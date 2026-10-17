@@ -1,6 +1,7 @@
 import { T5_ACT2, PARTES_T5_ACT2, ESTANTE_T5_ACT2, RESUMEN_T5_ACT2, ALT_T5_ACT2, REGLAS_T5_ACT2, COMPRA_T5_ACT2 } from "../../../../data/contabilidadT5Act2.js";
 import { evaluarParteT5Act2 } from "../../../../contabilidad/t5Act2.js";
 import CierreConMesa from "../b5/CierreConMesa.jsx";
+import PrecioPorTitulo from "./PrecioPorTitulo.jsx";
 import { useVuelta } from "../b5/ConVuelta.jsx";
 import { PARTES_V2_T5_ACT2, COMPRA_V2_T5_ACT2, ALT_V2_T5_ACT2, T5_ACT2_V2 } from "../../../../data/b5SegundaVuelta.js";
 
@@ -25,6 +26,8 @@ export const CONFIG_T5_ACT2 = {
   alt: ALT_T5_ACT2,
   evaluar: evaluarParteT5Act2,
   atributos: { "data-cierre-t5": true },
+  /* Lote 20 (D9): el elemento propio, «Precio por título», en los asientos de venta. */
+  elementoPropio: PrecioPorTitulo,
 };
 
 /* D8 (lote 18, Futaba): la variante, Comercializadora El Roble. */

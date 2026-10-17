@@ -223,3 +223,12 @@ Segundas frases de la B de las ventas (mandan sobre la tabla de la (2)):
 | Caja | «A Caja entra todo lo que le pagaron por la venta. Míralo en el hecho.» |
 | Ingresos financieros – ganancia en venta de títulos | «La ganancia es lo que sobra de lo recibido después de restar lo que costaron los títulos.» |
 | Gastos financieros – pérdida en venta de títulos | «La pérdida es lo que le faltó a lo recibido para llegar a lo que costaron los títulos.» |
+
+## Lote 20 · D9 — un elemento visual propio (P2 de Mai, 17-oct)
+
+Aprobada por Sakuta. Responde a Shoko (D9, «la misma mesa en las dos»). Va como hijo opcional de la mesa (`elementoPropio`), entre la devolución y «Siguiente asiento»; entra al confirmar, siempre con lo correcto (R10).
+
+- **b5-t5-a2 · «Precio por título»:** un eje de precio con el costo de cada título (marca discontinua, «$800») y el precio de venta (marca sólida, «$920» o «$750»). La zona entre las dos se llena: arriba del costo es **ganancia**, con relleno ámbar (va al HABER); abajo es **pérdida**, rayada en teal (va al DEBE). Bajo la zona va su palabra. Solo en los asientos de venta (2 y 4). Escala x(v) = (v − 700) / 300 · ancho. Texto alternativo: «Precio por título: costó $800 y se vende a $920; ganancia».
+- **b5-t6-a3 · «La deuda de Pablo Moncayo»:** tres barras de $180.000, «Caso a», «Caso b» y «Caso c», con tres estados por tramo: **castigada** (rayada, borde discontinuo), **revivida** (contorno de 2 #F8F9FA) y **pagada** (relleno rgba(184,196,212,.45) y contorno). Desde el ejemplo resuelto (las tres castigadas); cada asiento confirmado cambia su barra, que se resalta (contorno 2 nodo #CBDCF2) hasta el asiento siguiente. Alto = v / 180.000 · 72 px. Texto alternativo: «Caso b: pagada $100.000, revivida $80.000».
+- **Textos nuevos (PARA SHOKO):** «Precio por título», «La deuda de Pablo Moncayo», «castigada», «revivida» y «pagada». Fragmentos de las cuentas: «ganancia» y «pérdida».
+- **Movimiento:** la zona del precio con scaleX desde la marca del costo en 240 ms; el tramo nuevo de una barra, por opacidad en 240 ms; con movimiento reducido, al instante.

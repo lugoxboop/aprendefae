@@ -108,6 +108,8 @@ export const PARTES_T5_ACT2 = [
     fecha: "1 de agosto",
     hecho: "1 de agosto. Santa Pacha vende 1.875 títulos, el 75 %. Cada uno le había costado $800. Los vende a $920, sin el interés. Recibe $1.725.000 en Caja.",
     asiento: [d(CAJA, 1725000), h(INVERSIONES, 1500000), h(GANANCIA, 225000)],
+    /* Lote 20 (D9): el costo y el precio de venta de cada título, del hecho, para «Precio por título». */
+    precio: { costo: 800, venta: 920 },
     errores: {
       D: "Sobra una cuenta. Esta venta solo mueve Caja, Inversiones – títulos y la ganancia. No hay pérdida, porque vendió por más de lo que costaron. Y aquí no entran Bancos ni el interés.",
       C: "Caja sube porque recibe lo de la venta: va al Debe. Inversiones – títulos baja porque salen títulos, y la ganancia es un ingreso: las dos van al Haber.",
@@ -158,6 +160,7 @@ export const PARTES_T5_ACT2 = [
     fecha: "1 de noviembre",
     hecho: "1 de noviembre. Santa Pacha vende los 625 títulos que quedan. Cada uno le había costado $800. Los vende a $750 y recibe $468.750 en Caja.",
     asiento: [d(CAJA, 468750), d(PERDIDA, 31250), h(INVERSIONES, 500000)],
+    precio: { costo: 800, venta: 750 },
     errores: {
       D: "Sobra una cuenta. Esta venta solo mueve Caja, Inversiones – títulos y la pérdida. No hay ganancia, porque vendió por menos de lo que costaron. Y aquí no entran Bancos ni el interés, que se anota aparte.",
       C: "Caja sube con lo que recibe y la pérdida es un gasto: las dos van al Debe. La inversión baja porque salen títulos: va al Haber.",
@@ -177,6 +180,17 @@ export const PARTES_T5_ACT2 = [
     },
   },
 ];
+
+/*
+ * Lote 20 (D9, P2 de Mai): «Precio por título», solo en los asientos de venta. «ganancia» y «pérdida» son
+ * fragmentos de los nombres de cuenta; el título y la frase para el lector son nuevos (PARA SHOKO).
+ */
+export const PRECIO_T5_ACT2 = {
+  titulo: "Precio por título",
+  ganancia: "ganancia",
+  perdida: "pérdida",
+  lector: (costo, venta, palabra) => `Precio por título: costó ${costo} y se vende a ${venta}; ${palabra}`,
+};
 
 /* ═══════════ EL TUTORIAL: LA COMPRA DEL 1 DE MAYO, YA RESUELTA (p. 194) ═══════════ */
 

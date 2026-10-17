@@ -159,6 +159,17 @@ export const CASTIGO_T6_ACT3 = {
 };
 export const ALT_TUTORIAL_T6_ACT3 = "Ejemplo resuelto. En marzo del año siguiente, El Torito Currambero castiga la deuda de Pablo Moncayo. El asiento tiene Provisión para cuentas incobrables en el Debe y Cuentas por cobrar – clientes en el Haber, las dos por $180.000. Los dos totales dan $180.000.";
 
+/*
+ * Lote 20 (D9, P2 de Mai): «La deuda de Pablo Moncayo», los tres finales del castigo lado a lado. «Caso a»,
+ * «Caso b» y «Caso c» salen de cada parte; el título y los tres estados son nuevos (PARA SHOKO).
+ */
+export const DEUDA_T6_ACT3 = {
+  titulo: "La deuda de Pablo Moncayo",
+  castigada: "castigada",
+  revivida: "revivida",
+  pagada: "pagada",
+};
+
 /* ═══════════ TEXTO ALTERNATIVO ═══════════ */
 
 export const ALT_T6_ACT3 = "Actividad de registro. Hay cinco hechos sobre la deuda castigada de Pablo Moncayo, en los tres casos del libro. En cada uno, pon en la mesa las cuentas que mueve, ubícalas en el Debe o en el Haber y escribe cada valor. Abajo se ven los dos totales y la diferencia. Tienes un solo intento por asiento.";
