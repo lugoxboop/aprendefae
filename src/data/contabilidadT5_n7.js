@@ -50,6 +50,8 @@ const C = CIFRAS_N7;
 
 export const N7 = {
   id: N7_ID,
+  /* Lote O: el objetivo, de Near (paquetes/lote-o-objetivos.md). */
+  objetivo: "Registrar compras con gastos, intereses y dividendos en la cuenta y el lado que les tocan.",
   nombre: "¿A qué cuenta va?",
   consigna: "Lee cada hecho de Guayacán y arma su asiento: elige la cuenta y el lado de cada línea.",
   enunciado: [],

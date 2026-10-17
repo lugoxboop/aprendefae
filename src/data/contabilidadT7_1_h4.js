@@ -81,6 +81,8 @@ const miles = (n) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
 export const H4 = {
   id: H4_ID,
+  /* Lote O: el objetivo, de Near (paquetes/lote-o-objetivos.md). */
+  objetivo: "Hacer el cierre de un mes en el sistema periódico y hallar el costo de lo vendido.",
   nombre: "Cierra el mes",
   /* La v1: «Etiqueta». */
   etiqueta: "Cierra el mes · Inventarios I",

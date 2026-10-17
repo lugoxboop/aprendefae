@@ -287,6 +287,11 @@ const filasVistas = (caja) => [...caja.querySelectorAll("[data-tabla] [data-fila
 const filasDatos = (m, hasta) => KX[m].filas.slice(0, hasta + 1).map((f) => ({ f: f.f, entradas: (f.en ?? []).map(capaDato), salidas: (f.sa ?? []).map(capaDato), saldo: f.sal.map(capaDato) }));
 const nuevas = (caja) => [...caja.querySelectorAll(".ekx-fila.nueva")].map((r) => r.dataset.fila);
 
+/* Los botones de opción en el orden de los datos de la pantalla (fichas o métodos), por id. */
+const enOrdenDeDatos = (caja, selector, clave, lista) => {
+  const ids = (P.pantallas.find((p) => p.id === caja.querySelector("[data-pieza]").dataset.pantalla)?.[lista] ?? []).map((x) => x.id);
+  return [...caja.querySelectorAll(selector)].sort((a, b) => ids.indexOf(a.dataset[clave]) - ids.indexOf(b.dataset[clave]));
+};
 function retrato(caja) {
   const q = (s) => caja.querySelector(s);
   const msg = q("[role=status]");
@@ -299,7 +304,8 @@ function retrato(caja) {
     metodo: q("[data-metodo]").hidden ? null : q("[data-metodo]").textContent,
     dia: q("[data-dia]").hidden ? null : [q("[data-dia]").textContent, q("[data-dia]").classList.contains("espera")],
     pendiente: q("[data-pendiente]")?.dataset.fila ?? null,
-    fichas: [...caja.querySelectorAll("[data-ficha]")].map((b) => [b.dataset.ficha, b.textContent, ["mal", "pista"].filter((c) => b.classList.contains(c)).join(" ")]),
+    /* Lote V: en pantalla van barajadas; aquí, por id y en el orden de los datos de la pantalla. */
+    fichas: enOrdenDeDatos(caja, "[data-ficha]", "ficha", "fichas").map((b) => [b.dataset.ficha, b.textContent, ["mal", "pista"].filter((c) => b.classList.contains(c)).join(" ")]),
     rango: q(".ekx-control").hidden ? null : { valor: rango.value, rango: rango.dataset.rango, quieto: rango.getAttribute("aria-disabled"), tab: rango.tabIndex, texto: rango.getAttribute("aria-valuetext") },
     mensaje: { tipo: msg.dataset.mensaje ?? null, texto: msg.querySelector("[data-mensaje-texto]")?.textContent ?? "", mal: msg.classList.contains("mal") },
     seguir: [seguir.textContent, seguir.getAttribute("aria-disabled"), seguir.dataset.boton],
@@ -497,7 +503,7 @@ test("★★★ montada: las siete pantallas, estado por estado (tabla, deslizad
     assert.equal(lado.getAttribute("aria-label"), t.nombre);
     assert.deepEqual([...lado.querySelectorAll(".ekx-l-cab span")].map((s) => s.textContent), t.filas.map((f) => f.rubro));
     const met = (id) => lado.querySelector(`[data-metodo-lado="${id}"]`);
-    assert.deepEqual([...lado.querySelectorAll("[data-metodo-lado]")].map((b) => [b.dataset.metodoLado, b.querySelector(".ekx-l-tit").textContent, [...b.querySelectorAll(".ekx-l-v")].map((v) => v.textContent)]),
+    assert.deepEqual(enOrdenDeDatos(lado.closest("[data-pieza]").parentElement, "[data-metodo-lado]", "metodoLado", "metodos").map((b) => [b.dataset.metodoLado, b.querySelector(".ekx-l-tit").textContent, [...b.querySelectorAll(".ekx-l-v")].map((v) => v.textContent)]),
       near("lado-a-lado").opciones.map((o, k) => [o.id, t.metodos[k], t.filas.map((f) => cifraK(f.valores[k]))]));
     assert.equal(met("ueps").getAttribute("aria-label"), `${A.UEPS}. ${t.filas.map((f) => `${f.rubro}: ${cifraK(f.valores[1])}`).join("; ")}`);
     await tocar(met("ueps"));
@@ -594,6 +600,43 @@ test("★★★ K-1, la escalera con tres fichas: el 1.er error deja dos opcione
         m.desmontar();
       }
     }
+  }
+});
+
+test("★★★ lote V: fichas (PEPS, UEPS, promedio) y métodos (lado a lado) salen barajados con la función de los Hacer (azar fijado), el mismo conjunto, la correcta no siempre primero, y el orden no cambia al fallar", async () => {
+  const { barajadorDe } = await import("../../utils/barajar.js");
+  assert.match(readFileSync(new URL("../../components/mecanicas/libros/t7/ElKardexQueCrece.jsx", import.meta.url), "utf8"), /import \{ barajar \} from "\.\.\/\.\.\/\.\.\/\.\.\/utils\/barajar\.js"/);
+  const conOpciones = P.pantallas.filter((p) => p.fichas || p.metodos);
+  assert.deepEqual(conOpciones.map((p) => p.id), ["peps", "ueps", "promedio", "lado-a-lado"]);
+  const ordenes = [];
+  for (const semilla of ["a", "b", "c", "d", "e", "f"]) {
+    for (const p of conOpciones) {
+      const [sel, clave, lista] = p.fichas ? ["[data-ficha]", "ficha", p.fichas] : ["[data-metodo-lado]", "metodoLado", p.metodos];
+      const m = await montar(h(ElKardex, { pieza: desde(p.id), rotulo: "R", barajar: barajadorDe(semilla) }));
+      try {
+        const enPantalla = () => [...m.caja.querySelectorAll(sel)].map((b) => b.dataset[clave]);
+        const orden = enPantalla();
+        assert.deepEqual([...orden].sort(), lista.map((x) => x.id).sort(), `${p.id}: el mismo conjunto`);
+        if (p.metodos) {
+          /* Cada método lleva sus cifras, aunque cambie de lugar. */
+          const t = near("lado-a-lado").tabla;
+          for (const b of m.caja.querySelectorAll(sel)) {
+            const k = p.metodos.findIndex((x) => x.id === b.dataset.metodoLado);
+            assert.deepEqual([...b.querySelectorAll(".ekx-l-v")].map((v) => v.textContent), t.filas.map((f) => cifraK(f.valores[k])), b.dataset.metodoLado);
+          }
+        }
+        await tocar(m.caja.querySelector(`${sel.slice(0, -1)}="${lista.find((x) => !x.correcta).id}"]`));
+        assert.deepEqual(enPantalla(), orden, `${p.id}: al fallar no se rebaraja`);
+        ordenes.push({ id: p.id, datos: lista.map((x) => x.id), orden, correcta: lista.find((x) => x.correcta).id });
+      } finally {
+        m.desmontar();
+      }
+    }
+  }
+  for (const id of new Set(ordenes.map((o) => o.id))) {
+    const deEsta = ordenes.filter((o) => o.id === id);
+    assert.ok(deEsta.some((o) => o.orden.join() !== o.datos.join()), `${id}: en algún caso, distinto del orden de los datos`);
+    assert.ok(deEsta.some((o) => o.orden[0] !== o.correcta), `${id}: la correcta no queda siempre primero`);
   }
 });
 

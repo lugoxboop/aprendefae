@@ -48,6 +48,8 @@ const FALTANTE = OLMO_2.libros - OLMO_2.conteo;
 
 export const H5 = {
   id: H5_ID,
+  /* Lote O: el objetivo, de Near (paquetes/lote-o-objetivos.md). */
+  objetivo: "Registrar el ajuste que toca cuando el conteo físico no da lo mismo que los libros.",
   nombre: "Ajuste por conteo",
   consigna: "Registra cada ajuste. Tienes un solo intento por pregunta.",
   enunciado: ["La empresa Olmo usa el sistema permanente. Al cierre del año, el 31 de diciembre, hace su conteo físico."],

@@ -610,3 +610,8 @@ Literales del prompt: «Correcto», «No va aquí» e «Incorrecto.» (lector de
 
 11 · Lo que no verifiqué
 Nada medido en main: todo es [fuente] en mi réplica. Kaede compara con la pantalla y la cabecera reales. Los gestos con dedo real en un teléfono, incluido el arrastre corto de la ficha a 320. Que el 24 % de la parte rayada deje leer su rótulo en todos los anchos ([supuesto], con su parada en §2). La capa 3 sobre el tanque está especificada, no prototipada. Mido cuando Kaede la tenga. Las cifras en la pila monoespaciada: la publicada en main hoy va en Sora. Pasar a monoespaciada cambia el ancho y hay que remedir.
+
+
+## Nota del término 1 (Shoko, 16-oct, tras el cambio de nombre de #361)
+
+Nota: El libro la llama “Provisión para deudas incobrables”.

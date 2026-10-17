@@ -24,4 +24,15 @@
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-export const ICONO_POR_TEMA = {};
+import { TituloConReloj, FacturaPorCobrar } from "../contabilidad/identificadores/identificadoresB.jsx";
+import { CajasDelConteo, KardexAlDia, EtiquetaRebajada } from "../contabilidad/identificadores/identificadoresC.jsx";
+
+export const ICONO_POR_TEMA = {
+  /* Célula B (Mai, lote 16). */
+  "contabilidad/activos-financieros": TituloConReloj,
+  "contabilidad/cuentas-por-cobrar": FacturaPorCobrar,
+  /* Célula C (Watari, 17 oct.). «activos-financieros» ya lo tiene la Célula B. */
+  "contabilidad/inventarios-periodico": CajasDelConteo,
+  "contabilidad/inventarios-permanente": KardexAlDia,
+  "contabilidad/inventarios-descuentos-nic2": EtiquetaRebajada,
+};

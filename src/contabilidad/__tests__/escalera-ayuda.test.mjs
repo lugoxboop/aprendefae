@@ -332,6 +332,16 @@ const PISTA_CUAL_LE_TOCA = readFileSync(new URL("t7-3-condicionado-cual-le-toca.
 assert.ok(PISTA_CUAL_LE_TOCA, "no está la fila «Pista» de t7-3-condicionado-cual-le-toca.md");
 CAMBIOS.set(PISTA_CUAL_LE_TOCA[1], PISTA_CUAL_LE_TOCA[2]);
 /*
+ * T7-1 A2, lado a lado: Near rehace la pista (c3-mello-near.md, «## A2 · lado
+ * a lado», N-1 y N-2 de Mello): la de main nombraba la opción correcta.
+ */
+{
+  const A2_LADO = readFileSync(new URL("c3-mello-near.md", PAQUETES), "utf8").split("\n## ").find((x) => x.startsWith("A2 · lado a lado"));
+  const nueva = A2_LADO?.match(/^\| Pista \| «(.+?)» \|/m);
+  assert.ok(nueva, "no está la fila «Pista» de «A2 · lado a lado» en c3-mello-near.md");
+  CAMBIOS.set("Fíjate en quién descuenta la retención en cada caso: ¿La Reventa o su cliente?", nueva[1]);
+}
+/*
  * La entrega 6 de Near (lote1-entrega6-v1.md) cambia la pregunta del 23 % de
  * «descuentos-en-cadena»: «No: le rebaja menos» pasa a «Menor que 23 %» (la
  * correcta) y la tercera del anexo, «No: le rebaja más», a «Mayor que 23 %».

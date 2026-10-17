@@ -11,8 +11,12 @@
  * ninguna corrección obligatoria pendiente.
  *
  * ESTACIONES y PANTALLAS son, campo por campo y letra por letra, las del
- * código de referencia (a7.js de la v6). Una prueba las saca del HTML de la
- * v6 y las compara enteras, en los dos sentidos.
+ * código de referencia (a7.js de la v6) con el recorte B2 de Near encima
+ * (orquestador/conocimiento/paquetes/a7-n1-recorte.md): los controles de
+ * Recepción, Contabilidad y Conteos y los textos de p1 a p5. Una prueba saca
+ * la referencia del HTML de la v6, le aplica las tablas del paquete y la
+ * compara entera, en los dos sentidos. Con la cuenta de Near («todo lo que
+ * se ve a la vez») ninguna pantalla pasa de 60 palabras.
  *
  * El título: la sección de la v6 se llama «El viaje de una caja» (su h2). La
  * lista «Las tres» y el comentario del código aún la nombran con el título
@@ -48,84 +52,84 @@ export const INTERFAZ = {
  * cuelga (trazo punteado). Contabilidad recibe la hoja del informe; Conteos
  * lleva la marca «Cada cierto tiempo». Así quedan nombradas las seis medidas
  * de las pp. 208-209 (Mello, correcciones 1 y 2).
- * Los controles de las estaciones: de muestra (Watari), pendientes de Near.
+ * Los controles de las estaciones: Bodega y Salida, de muestra (Watari), que
+ * el recorte de Near deja igual; Recepción, Contabilidad y Conteos, del recorte.
  */
 export const ESTACIONES = [
-  { id: "recepcion", nombre: "Recepción", control: "Factura contra orden de compra", linea: true },
-  { id: "contabilidad", nombre: "Contabilidad", control: "Informe de recepción · si todo llegó bien", desde: "recepcion", hoja: true },
+  { id: "recepcion", nombre: "Recepción", control: "Factura contra orden", linea: true },
+  { id: "contabilidad", nombre: "Contabilidad", control: "Informe de recepción, si todo llegó bien", desde: "recepcion", hoja: true },
   { id: "bodega", nombre: "Bodega", control: "Techo, puertas y póliza", linea: true },
-  { id: "conteos", nombre: "Conteos", control: "Contar y comparar, también al azar", desde: "bodega", marca: "Cada cierto tiempo" },
+  { id: "conteos", nombre: "Conteos", control: "Conteo, también al azar", desde: "bodega", marca: "Cada cierto tiempo" },
   { id: "salida", nombre: "Salida", control: "Solo con requisición autorizada", linea: true },
 ];
 
 export const PANTALLAS = [
   /* Texto de muestra (Watari), pendiente de Near. */
   { id: "p0", presupuesto: 40, texto: "Al terminar, sabrás qué controles cuidan la mercancía desde que llega hasta que sale, y dónde se nota cuando uno falla.", boton: "Empezar" },
-  /* Texto de Mello (corrección 4), con las glosas de orden de compra, requisición y póliza. */
-  { id: "p1", presupuesto: 40, texto: "Así viaja un pedido. Suelta la caja y mira dónde lo controla el libro. Orden de compra: el pedido que se hizo. Requisición: la orden para sacar mercancía de la bodega. Póliza: el contrato de un seguro.", accion: "soltar" },
+  /* Las glosas de orden de compra, requisición y póliza (Mello, corrección 4), con el texto del recorte de Near. */
+  { id: "p1", presupuesto: 40, texto: "Así viaja un pedido. Suelta la caja y mira dónde lo controla el libro. Orden de compra: el pedido hecho. Requisición: la orden para sacar mercancía. Póliza: un seguro.", accion: "soltar" },
   /*
-   * Caso 1. Texto, ficha, pista y errores: de muestra (Watari), pendientes de
-   * Near; las cifras (80 y 100), al registro 5c. La ficha del acierto
-   * («Diferencia: 20 cajas») y el acierto: de Mello (corrección 3).
+   * Caso 1. Texto, acierto, pista y errores: del recorte de Near (los errores
+   * ya no dan la respuesta: «se veía antes»). La ficha y la del acierto
+   * («Diferencia: 20 cajas»), de la v6; las cifras (80 y 100), al registro 5c.
    * A7-1: en esta pantalla la hoja del informe no vuela nunca (el componente).
    */
   {
-    id: "p2", presupuesto: 40, texto: "Llega un pedido a una ferretería. La orden de compra pedía 80 cajas de tornillos y la factura cobra 100. Detén la caja donde se nota la diferencia.",
+    id: "p2", presupuesto: 40, texto: "Una ferretería pidió 80 cajas y le cobran 100. Detén la caja donde se ve la diferencia.",
     caso: {
       correcta: "recepcion", ficha: "Factura: 100 · Orden: 80", fichaBien: "Diferencia: 20 cajas",
-      bien: "✓ Al recibir. La factura se compara con la orden de compra y ahí se ve.",
-      pista: "Es en Recepción: la factura se compara con la orden de compra y ahí se ve.",
+      bien: "✓ Al recibir: la factura se compara con la orden.",
+      pista: "En Recepción: la factura se compara con la orden.",
       mal: {
-        contabilidad: "Ahí ya es tarde: contabilidad registra lo que dice el informe de recepción.",
-        bodega: "La caja ya entró. La diferencia se tenía que ver antes, al recibir.",
-        conteos: "El conteo llega mucho después. La diferencia se nota al recibir.",
-        salida: "Para entonces la caja ya está adentro. Se nota al recibir.",
+        contabilidad: "Ahí ya es tarde: contabilidad solo registra el informe.",
+        bodega: "La caja ya entró: la diferencia se veía antes.",
+        conteos: "El conteo llega mucho después: se veía antes.",
+        salida: "Para entonces la caja ya está adentro.",
       },
     },
   },
-  /* Caso 2. Todo de muestra (Watari), pendiente de Near; la cifra (10 cajas), al registro 5c. */
+  /* Caso 2. Textos del recorte de Near; la ficha, de la v6; la cifra (10 cajas), al registro 5c. */
   {
-    id: "p3", presupuesto: 40, texto: "Un empleado entrega 10 cajas a otra área porque alguien se las pidió de palabra. Detén la caja donde falla el control.",
+    id: "p3", presupuesto: 40, texto: "Un empleado entrega 10 cajas que le pidieron de palabra. Detén la caja donde falla el control.",
     caso: {
       correcta: "salida", ficha: "10 cajas · sin requisición",
-      bien: "✓ En la salida. Sin requisición, nada sale de la bodega: alguien tiene que autorizarla.",
-      pista: "Es en Salida. Sin requisición, nada sale de la bodega: alguien tiene que autorizarla.",
+      bien: "✓ En la salida: sin requisición autorizada, nada sale.",
+      pista: "Es en Salida: sin requisición autorizada, nada sale.",
       mal: {
-        recepcion: "La recepción revisa lo que llega, no lo que sale.",
-        contabilidad: "Contabilidad no decide quién saca mercancía de la bodega.",
-        bodega: "Techo y puertas cuidan la bodega, pero no deciden quién saca qué.",
-        conteos: "El conteo no dice quién saca mercancía. Eso lo dice la requisición.",
+        recepcion: "Recepción solo revisa lo que llega.",
+        contabilidad: "Contabilidad no decide quién saca mercancía.",
+        bodega: "Techo y puertas no deciden quién saca qué.",
+        conteos: "El conteo no decide quién saca mercancía.",
       },
     },
   },
   /*
-   * Caso 3 (A7-2 de Mello). De Mello, tal cual: las dos primeras frases del
-   * texto, la ficha y los errores de Recepción y de Bodega. De muestra
-   * (Watari), pendientes de Near: «Detén la caja donde falta el control.», el
-   * acierto, la pista y los errores de Contabilidad y Salida.
+   * Caso 3 (A7-2 de Mello). Del recorte de Near: el texto, la ficha (la de
+   * Mello repetía el texto), el acierto, la pista y los cuatro errores, sin
+   * el verbo «contar». El error de Recepción sigue siendo el de Mello.
    * Al acertar, la caja se queda en Bodega («aparcar»), decisión de Watari.
    */
   {
-    id: "p4", presupuesto: 40, texto: "La tienda abrió hace dos años. Desde entonces, lo que hay en la bodega solo se sabe por los libros. Detén la caja donde falta el control.",
+    id: "p4", presupuesto: 40, texto: "Hace dos años que nadie revisa la bodega. Detén la caja donde falta el control.",
     caso: {
-      correcta: "conteos", aparcar: "bodega", ficha: "Solo lo dicen los libros",
-      bien: "✓ En los conteos: el libro pide contar la mercancía cada cierto tiempo.",
-      pista: "Es en Conteos: el libro pide contar la mercancía cada cierto tiempo.",
+      correcta: "conteos", aparcar: "bodega", ficha: "2 años · solo libros",
+      bien: "✓ En los conteos: el libro pide uno cada cierto tiempo.",
+      pista: "Es en Conteos: el libro pide uno cada cierto tiempo.",
       mal: {
         recepcion: "Recibir bien no dice cuánto queda dos años después.",
-        contabilidad: "Contabilidad registra lo que entra. No cuenta lo que hay en la bodega.",
-        bodega: "Techo y puertas cuidan la mercancía, pero nadie la ha contado.",
-        salida: "La requisición cuida cada salida. No dice cuánto queda en la bodega.",
+        contabilidad: "Contabilidad registra lo que entra, no lo que hay.",
+        bodega: "Techo y puertas cuidan, pero no dicen cuánto hay.",
+        salida: "La requisición cuida cada salida, no lo que queda.",
       },
     },
   },
   /*
-   * Texto de muestra (Watari), pendiente de Near. «Siguiente pieza» es el botón
+   * Texto del recorte de Near. «Siguiente pieza» es el botón
    * del código de referencia; en T7-1 esta pieza es la última de Aprender y no
    * hay pieza a la que ir, así que el componente no lo pinta (un botón que no
    * hace nada). Queda aquí para que los datos sigan siendo los de la v6.
    */
-  { id: "p5", presupuesto: 40, texto: "El control empieza al recibir y termina cuando la mercancía sale. La caja pasa por recepción, bodega y salida. A contabilidad llega el informe, y los conteos revisan la bodega cada cierto tiempo.", boton: "Siguiente pieza" },
+  { id: "p5", presupuesto: 40, texto: "El control empieza al recibir y termina cuando la mercancía sale. El informe va a contabilidad, y la bodega se revisa cada cierto tiempo.", boton: "Siguiente pieza" },
 ];
 
 export const PIEZA_EL_VIAJE = {

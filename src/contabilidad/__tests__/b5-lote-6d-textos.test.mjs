@@ -84,7 +84,7 @@ test("★★★ T5 A2: las B específicas nuevas se activan con su valor exacto,
 
 test("★★★ la cabeza de la C y de la A nombra las cuentas que puso el estudiante; la de la B dice «No cuadra»", () => {
   const [p1, p2] = PARTES_T5_ACT2;
-  const C1 = "El interés entra a Caja, que sube. Y es un ingreso, que sube por el Haber.";
+  const C1 = "El interés entra a Caja, que sube por el Debe. Y es un ingreso, que sube por el Haber.";
   /* C: una al revés, el lado donde la puso, con mayúscula. */
   assert.equal(evaluarParteT5Act2(p1, [al(CAJA, "haber", 120000), al(INTERESES, "haber", 120000)]).texto, `Pusiste Caja en el Haber. ${C1}`);
   assert.equal(evaluarParteT5Act2(p1, [al(CAJA, "debe", 120000), al(INTERESES, "debe", 120000)]).texto, `Pusiste Ingresos por intereses en el Debe. ${C1}`);
@@ -96,7 +96,7 @@ test("★★★ la cabeza de la C y de la A nombra las cuentas que puso el estud
   assert.equal(evaluarParteT5Act2(p2, [al(CAJA, "debe", 1725000)]).texto, `Faltan ${INVERSIONES} e ${GANANCIA}. ${A2}`);
   /* B que nombra la cuenta (E3): «No cuadra el valor de…». */
   const conCaja = p2.asiento.map((e) => (e.cuenta === CAJA ? { ...e, valor: 1500000 } : e));
-  assert.equal(evaluarParteT5Act2(p2, conCaja).texto, "No cuadra el valor de Caja. A Caja entra lo que le pagaron por la venta, no lo que costaron los títulos.");
+  assert.equal(evaluarParteT5Act2(p2, conCaja).texto, "No cuadra el valor de Caja. A Caja entra todo lo que le pagaron por la venta. Míralo en el hecho.");
   /* La mesa genérica (Tema 6) arma igual sus cabezas. */
   const [castigo] = T6A2.PARTES_T6_ACT2;
   const [prov, clientes] = castigo.asiento.map((e) => e.cuenta);

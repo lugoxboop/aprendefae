@@ -60,6 +60,13 @@ export const CSS_H3 = `
 .t4h3-f.t4h3-s { border-top: 1px solid rgba(248,249,250,0.22); padding-top: 2px; color: ${C.texto}; }
 .t4h3-libro { display: flex; justify-content: space-between; align-items: center; gap: 8px; border: 1px solid ${C.neutro}; border-radius: 10px; padding: 6px 12px; min-height: 40px; }
 .t4h3-libro > span { white-space: nowrap; }
+/*
+ * D9 (Hanayama), solo en H3 (A2 no lo lleva): «Lo que dice el libro» es una
+ * hoja de libro mayor, con el doble margen a la izquierda: dos líneas
+ * verticales de 1 px #B8C4D4, 3 px entre ellas, del alto del bloque.
+ */
+.t4h3-libro { position: relative; padding-left: 22px; }
+.t4h3-libro::before { content: ""; position: absolute; left: 9px; top: 0; bottom: 0; width: 5px; box-sizing: border-box; border-left: 1px solid ${C.neutro}; border-right: 1px solid ${C.neutro}; pointer-events: none; }
 .t4h3-rot { font: 500 12px/1.3 "Inter", sans-serif; letter-spacing: .04em; color: ${C.texto2}; margin: 6px 0 0; }
 .t4h3-diria { margin: 0; font-size: 13px; line-height: 1.4; min-height: 19px; color: ${C.texto}; overflow-wrap: anywhere; }
 `;

@@ -4,46 +4,66 @@ import { ICONO_POR_TEMA } from "../../data/identificadoresDeTema.js";
  * ═══════════════════════════════════════════════════════════════════════════
  * EL IDENTIFICADOR VISUAL DE UN TEMA.
  *
- * Encargo de Mateo (16 oct.): hoy las nueve tarjetas de Contabilidad repiten
- * el mismo dibujo y las mismas dos píldoras, así que lo único que distingue
- * un tema de otro es un título largo. Cada tema va a tener su propio
- * identificador, y este es el ÚNICO sitio por el que entran.
+ * Encargo de Mateo (16 oct.): las nueve tarjetas de Contabilidad repetían el
+ * mismo dibujo y las mismas dos píldoras, así que lo único que distinguía un
+ * tema de otro era un título largo.
  *
- * El reparto que puso Miku: Xeno define el sistema una vez (tamaño, estilo,
- * paleta y movimiento) y lo deja en el canon; el diseñador de cada célula
- * dibuja los de SUS temas dentro de ese sistema; yo integro aquí. Por eso
- * este componente no dibuja nada: busca, y si no hay, devuelve el de la
- * materia, que es lo que se ve hoy.
+ * El reparto de Miku: Xeno define el sistema una vez (está en kit.md), el
+ * diseñador de cada célula dibuja los de SUS temas, y la integración es esta,
+ * una sola. Una célula SOLO añade su entrada al registro.
  *
  * QUÉ GARANTIZA ESTE SITIO, para que ninguna célula tenga que acordarse:
  *
  *   · Un tema sin identificador NO se rompe: cae en el de la materia. Las
  *     células pueden ir entrando de una en una, sin coordinarse entre ellas.
  *   · El dibujo es decorativo: el nombre accesible del tema ya lo da el
- *     aria-label de la tarjeta («Tema Las cuentas, el debe y el haber»). Un
- *     identificador que además se anunciara diría el nombre dos veces.
- *   · Movimiento reducido: si el sistema de Xeno trae microanimación, se
- *     apaga aquí para todas a la vez. Una célula no puede olvidarlo porque
- *     no es suyo.
+ *     aria-label de la tarjeta. Uno que se anunciara lo diría dos veces.
+ *   · EL MOVIMIENTO SE APAGA AQUÍ. La regla de `transform: var(--mueve)` con
+ *     hover, foco y pulsación de la tarjeta se escribe UNA vez, y su versión
+ *     de movimiento reducido con ella. Un diseñador declara qué se mueve
+ *     (`data-mueve` y `--mueve` en su dibujo) y no puede olvidarse de
+ *     apagarlo, porque apagarlo no es suyo.
+ *   · El color lo pone la tarjeta: trazo #CBDCF2 en reposo y #F8F9FA con
+ *     hover, foco o pulsación; el acento, en `--fae-acento`.
  *
- * LO QUE AÚN NO ESTÁ, dicho de frente: el tamaño y el estilo los fija Xeno
- * y todavía no los ha entregado. Hasta entonces el identificador se pinta
- * con el mismo hueco que el ícono de hoy, y el registro está vacío a
- * propósito: no hay ningún dibujo nuevo en la plataforma hasta que exista
- * el sistema. Esto es la toma de corriente, no la lámpara.
+ * El tamaño es 64, el del sistema. El hueco de antes era de 34.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-export default function IdentificadorDeTema({ tema, materia, respaldo = null }) {
+export const LADO_IDENTIFICADOR = 64;
+
+/* Se escribe una vez por página, no una por tarjeta. */
+export const CSS_IDENTIFICADOR = `
+.fae-identificador { color: #CBDCF2; display: inline-flex; align-items: center; justify-content: center; }
+.fae-card:hover .fae-identificador,
+.fae-card:focus-within .fae-identificador,
+.fae-card:active .fae-identificador { color: #F8F9FA; }
+.fae-identificador [data-mueve] {
+  transition: transform 400ms cubic-bezier(.3,.9,.4,1);
+  transform: none;
+}
+.fae-card:hover .fae-identificador [data-mueve],
+.fae-card:focus-within .fae-identificador [data-mueve],
+.fae-card:active .fae-identificador [data-mueve] { transform: var(--mueve, none); }
+@media (prefers-reduced-motion: reduce) {
+  .fae-identificador [data-mueve],
+  .fae-card:hover .fae-identificador [data-mueve],
+  .fae-card:focus-within .fae-identificador [data-mueve],
+  .fae-card:active .fae-identificador [data-mueve] { transition: none; transform: none; }
+}
+`;
+
+export default function IdentificadorDeTema({ tema, materia, respaldo = null, acento = null }) {
   const Dibujo = (tema && ICONO_POR_TEMA[`${materia}/${tema.id}`]) || null;
   if (!Dibujo) return respaldo;
   return (
     <span
+      className="fae-identificador"
       data-identificador={tema.id}
       aria-hidden="true"
-      style={{ display: "inline-flex", alignItems: "center", justifyContent: "center" }}
+      style={{ width: `${LADO_IDENTIFICADOR}px`, height: `${LADO_IDENTIFICADOR}px`, ...(acento ? { "--fae-acento": acento } : {}) }}
     >
-      <Dibujo />
+      <Dibujo size={LADO_IDENTIFICADOR} />
     </span>
   );
 }

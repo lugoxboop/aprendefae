@@ -57,6 +57,8 @@ const C = CIFRAS_N5;
 
 export const N5 = {
   id: N5_ID,
+  /* Lote O: el objetivo, de Near (paquetes/lote-o-objetivos.md). */
+  objetivo: "Calcular si una venta de acciones dio ganancia o pérdida, y registrarla por el costo.",
   nombre: "¿Ganó o perdió?",
   consigna: "Acacia vende sus acciones en dos partes. En cada venta, calcula si ganó o perdió y arma el asiento.",
   enunciado: ["El 1 de abril, Acacia usa efectivo que le sobra para comprar 900 acciones de otra empresa. Paga $5.100 por cada una, que es su valor nominal."],

@@ -5,10 +5,13 @@ import { prepararH2, evaluarH2, idLineaH2, puntuarH2, TOTAL_H2 } from "../../../
 import { Pulsos, Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Responder, useTanda } from "../piezas.jsx";
-import { Encabezado } from "../tema1/encabezado.jsx";
-import { CSS_T7_HACER, Ficha, Parrafos, TarjetaPregunta, Eleccion, Devolucion } from "./hacerT7.jsx";
+import { EncabezadoHacer } from "./hacerT7.jsx";
+import { CSS_T7_HACER, Ficha, Parrafos, TarjetaPregunta, Devolucion } from "./hacerT7.jsx";
 import { CasillaCifra, LineasConCuenta, ContadorConIntento } from "./armaLaLinea.jsx";
 import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
+import { leerCifra } from "../../../../contabilidad/elCierreCompleto.js";
+import { CONSECUENCIA_C4 as C4 } from "../../../../contabilidad/c4/t7_2_h2_c4.js";
+import { CSS_C4_T72, FiguraVentaDosCaras, EleccionC4, useVeredictoC4 } from "./FigurasC4T7_2.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -29,8 +32,23 @@ import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
  * LOTE 3 («Arma la línea», con T7-3 H1 de molde): el ítem 1 va con casilla
  * de cifra; el 3 se queda en elección. En cada asiento, cada línea elige su
  * cuenta del banco (la correcta y dos distractores de Near) y su lado.
+ *
+ * C4 · «TODA DECISIÓN SE PINTA» (Watari, D9; FigurasC4T7_2.jsx): en los
+ * ítems 1 y 3, la venta por sus dos caras (la factura y la bodega) pinta la
+ * cifra comprobada y el valor tocado, con lo que implica, antes del
+ * veredicto; el veredicto llega ESPERA_C4 después. Mientras se escribe, solo
+ * muestra la cifra (C4-1 de Mello). Lo que delataría la respuesta (IVA,
+ * retención, costo) sale cuando el ítem se responde. El intento se anota en
+ * el toque. Los asientos siguen como en main.
  * ═══════════════════════════════════════════════════════════════════════════
  */
+
+/*
+ * El contrato de la figura del motor (cabecera de decisionC4.jsx), para la prueba C5 de consecuencia-c: esta pieza
+ * no monta el motor, pero su Figura acepta su vista. Con una cifra que se está escribiendo, `vista.borrador` solo se
+ * MUESTRA en su lugar; `estado` (la consecuencia) existe solo después de comprobar (C4-1 de Mello).
+ */
+export const PIEZA_C4 = { ...C4, Figura: ({ estado, item, vista }) => <FiguraVentaDosCaras estado={estado ?? C4.consecuencia(item, null)} escrita={vista?.borrador ?? null} /> };
 
 export default function ArmaLosDosAsientos({ Marco, rotulo, titulo, acento, onCompletar, items = null, onComoSeJuega = null }) {
   const t = useTanda(() => items ?? prepararH2(barajar));
@@ -38,6 +56,9 @@ export default function ArmaLosDosAsientos({ Marco, rotulo, titulo, acento, onCo
   const [r, setR] = useState(null);
   const [comprobado, setComprobado] = useState(false);
   const [bien, setBien] = useState(0);
+  /* C4: la cifra que se va escribiendo: la figura solo la muestra; la consecuencia llega al comprobar (C4-1 de Mello). */
+  const [escrita, setEscrita] = useState(null);
+  const veredicto = useVeredictoC4();
   const zonaBoton = useRef(null);
   const tarjeta = useRef(null);
 
@@ -50,13 +71,14 @@ export default function ArmaLosDosAsientos({ Marco, rotulo, titulo, acento, onCo
   }, [t.terminado]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (listo) zonaBoton.current?.querySelector("button")?.focus(); }, [listo]);
 
+  /* C4: el toque es la consecuencia (y el único intento, que se anota ya); el veredicto llega después. */
   const elegir = (v) => {
-    if (r) return;
+    if (r || elegida != null) return;
     const nuevo = evaluarH2(item, v);
     t.anotar(item.id, nuevo.ok, v);
     if (nuevo.ok) setBien((n) => n + 1);
     setElegida(v);
-    setR(nuevo);
+    veredicto.programar(() => setR(nuevo));
   };
 
   const comprobar = (resultados) => {
@@ -68,12 +90,13 @@ export default function ArmaLosDosAsientos({ Marco, rotulo, titulo, acento, onCo
   };
 
   const avanzar = () => {
-    setElegida(null); setR(null); setComprobado(false);
+    veredicto.cancelar();
+    setElegida(null); setR(null); setComprobado(false); setEscrita(null);
     if (t.i + 1 < cuantos) { t.setI(t.i + 1); requestAnimationFrame(() => tarjeta.current?.focus()); }
     else t.setTerminado(true);
   };
 
-  const reiniciar = () => { t.reiniciar(); setElegida(null); setR(null); setComprobado(false); setBien(0); };
+  const reiniciar = () => { veredicto.cancelar(); t.reiniciar(); setElegida(null); setR(null); setComprobado(false); setBien(0); setEscrita(null); };
 
   if (t.terminado) {
     return (
@@ -85,11 +108,14 @@ export default function ArmaLosDosAsientos({ Marco, rotulo, titulo, acento, onCo
     );
   }
 
+  const itemC4 = C4.items.find((x) => x.id === item.id);
+  const estadoC4 = item.tipo === "asiento" ? null : C4.consecuencia(itemC4, item.tipo === "cifra" ? elegida : elegida == null ? null : String(elegida));
+
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
-      <style>{CSS_T7_HACER}</style>
+      <style>{CSS_T7_HACER}{CSS_C4_T72}</style>
       <div data-t7-2-h2>
-        <Encabezado consigna={sinUnSoloIntento(H2.consigna)} onComoSeJuega={onComoSeJuega} />
+        <EncabezadoHacer objetivo={H2.objetivo} consigna={sinUnSoloIntento(H2.consigna)} onComoSeJuega={onComoSeJuega} />
         <Parrafos textos={H2.enunciado} />
         <Ficha filas={FICHA_H2} />
         <div style={{ marginBottom: "12px" }}>
@@ -98,15 +124,18 @@ export default function ArmaLosDosAsientos({ Marco, rotulo, titulo, acento, onCo
           </ContadorConIntento>
         </div>
         <TarjetaPregunta id={item.id} encabezado={item.encabezado ?? null} pregunta={item.pregunta} pie={H2.pie} tarjetaRef={tarjeta} />
+        {estadoC4 && <FiguraVentaDosCaras estado={estadoC4} escrita={item.tipo === "cifra" && elegida == null ? escrita : null} />}
         {item.tipo === "eleccion" && (
           <>
-            <Eleccion opciones={item.opciones} r={r} elegida={elegida} onElegir={elegir} etiqueta={item.pregunta} />
+            <EleccionC4 opciones={item.opciones} r={r} elegida={elegida} onElegir={elegir} etiqueta={item.pregunta} />
             <Devolucion r={r} lectorError={r && !r.ok ? `Incorrecto. Iba aquí: ${r.textoCorrecta}. ` : null} />
           </>
         )}
         {item.tipo === "cifra" && (
           <>
-            <CasillaCifra key={item.id} id={item.id} onComprobar={elegir} comprobado={Boolean(r)} etiqueta={item.pregunta} iba={r && !r.ok ? r.textoCorrecta : null} />
+            <div onInput={(e) => setEscrita(leerCifra(e.target.value))}>
+              <CasillaCifra key={item.id} id={item.id} onComprobar={elegir} comprobado={elegida != null} etiqueta={item.pregunta} iba={r && !r.ok ? r.textoCorrecta : null} />
+            </div>
             <Devolucion r={r} lectorError={r && !r.ok ? "Incorrecto. " : null} />
           </>
         )}

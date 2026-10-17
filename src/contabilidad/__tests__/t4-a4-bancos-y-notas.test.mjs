@@ -257,3 +257,38 @@ test("★★★ D9 · P1: la libreta del banco lleva la pestaña «Extracto», r
     try { assert.equal(q(n, "[data-pestana]"), null, `${id} lleva la pestaña`); } finally { n.desmontar(); }
   }
 });
+
+test("★★★ D8 · el caso B: los siete movimientos y las seis causas del paquete (mismos id, lados y libretas); la conciliación con la consignación sin abonar y la nota crédito, y la respuesta es el renglón del banco, como en el caso 1", async () => {
+  const r = renglones(seccionDe(PAQ, "Caso B (D8), pantalla por pantalla"));
+  const K = A.DATOS_A4[2];
+  K.MOVIMIENTOS_A4.forEach((m, i) => {
+    assert.equal(m.texto, textoDe(r, `Movimiento ${i + 1} · tarjeta (caso B)`));
+    assert.equal(m.mayor.join(" / "), textoDe(r, `Movimiento ${i + 1} · en el mayor (caso B)`));
+    assert.deepEqual([m.id, m.va], [A.MOVIMIENTOS_A4[i].id, A.MOVIMIENTOS_A4[i].va], "un movimiento B cambia de id o de lado");
+  });
+  K.CAUSAS_A4.forEach((c, i) => {
+    assert.equal(c.tarjeta, textoDe(r, `Causa ${i + 1} · tarjeta (caso B)`));
+    assert.deepEqual([c.id, Boolean(c.emp), Boolean(c.ban)], [A.CAUSAS_A4[i].id, Boolean(A.CAUSAS_A4[i].emp), Boolean(A.CAUSAS_A4[i].ban)]);
+  });
+  const [e, b] = K.RENGLONES_CONCILIACION;
+  assert.equal(`${e.emp.t.join(" / ")} · ${e.emp.e}`, textoDe(r, "Renglón de la empresa (P4, caso B)"));
+  assert.equal(`${b.ban.t.join(" ")} · ${b.ban.e}`, textoDe(r, "Renglón del banco (P4, caso B)"));
+  for (const [k, v] of Object.entries(K.renglonLector)) assert.equal(v, textoDe(r, `Para el lector, el renglón «${k}» (P4, caso B)`));
+  const pb = P.casoB.pantallas.find((x) => x.id === "la-conciliacion");
+  const pa = P.pantallas.find((x) => x.id === "la-conciliacion");
+  const pos = (rs, id) => rs.findIndex((x) => x.id === id);
+  assert.equal(pos(K.RENGLONES_CONCILIACION, pb.correcta), pos(A.RENGLONES_CONCILIACION, pa.correcta), "la respuesta B no es el renglón del banco");
+  assert.ok(K.RENGLONES_CONCILIACION.find((x) => x.id === pb.correcta).ban && !K.RENGLONES_CONCILIACION.find((x) => x.id === pb.correcta).emp);
+  for (const p of P.casoB.pantallas) assert.equal(p.pie, P.pantallas.find((x) => x.id === p.id).pie, "A4 no lleva cifras nuevas: su pie no cambia");
+  const { PantallasT4 } = await import("../../components/ContabilidadT4View.jsx");
+  const { montar, h } = await import("./t4-dom.mjs");
+  const m = montar(h(PantallasT4, { pieza: P, rotulo: "T4 · APRENDER", caso: 2 }));
+  try {
+    for (const id of ["sube-y-baja", "las-notas", "sube-o-baja", "seis-causas"]) { await jugar(m, P, id); tocar(seguir(m)); }
+    assert.equal(q(m, "[data-pieza]").dataset.pantalla, "la-conciliacion");
+    tocar(q(m, '[data-destino="consignacion-sin-abonar"]'));
+    assert.equal(visible(q(m, "[data-mensaje] [data-devolucion]")), pb.errores["consignacion-sin-abonar"]);
+    tocar(q(m, '[data-destino="nota-credito"]'));
+    assert.ok(q(m, "[data-cierre][data-visible]"), "el acierto B no da la frase de cierre");
+  } finally { m.desmontar(); }
+});

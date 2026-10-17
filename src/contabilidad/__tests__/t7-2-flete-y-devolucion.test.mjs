@@ -1,4 +1,4 @@
-import { test } from "node:test";
+import { test, mock } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
@@ -27,7 +27,8 @@ import { PARCHES, parchado } from "./correccionesMelloRecortesT72.mjs";
 
 const dom = new JSDOM("<!doctype html><html><body></body></html>", { url: "http://localhost/", virtualConsole: new VirtualConsole() });
 const w = dom.window;
-w.matchMedia = () => ({ matches: false, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} });
+let REDUCIDO = false;
+w.matchMedia = (q) => ({ matches: REDUCIDO && /prefers-reduced-motion: reduce/.test(q), addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} });
 w.requestAnimationFrame = (f) => setTimeout(f, 0);
 for (const [k, v] of Object.entries({
   window: w, document: w.document, navigator: w.navigator, localStorage: w.localStorage,
@@ -38,6 +39,8 @@ for (const [k, v] of Object.entries({
   Object.defineProperty(globalThis, k, { value: v, configurable: true, writable: true });
 }
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+/* C4: el veredicto llega ESPERA_C4 después del toque; los temporizadores son los falsos de node:test. */
+mock.timers.enable({ apis: ["setTimeout"] });
 
 const React = await import("react");
 const { createRoot } = await import("react-dom/client");
@@ -47,6 +50,9 @@ const h = React.createElement;
 const D = await import("../../data/contabilidadT7_2_h5.js");
 const { FRASE_TARIFAS } = await import("../../data/contabilidadT7_3.js");
 const L = await import("../t7_2H5.js");
+const C4 = (await import("../c4/t7_2_h5_c4.js")).CONSECUENCIA_C4;
+const { ESPERA_C4 } = await import("../../components/mecanicas/libros/t7/decisionC4.jsx");
+const MC4 = await import("./correccionesMelloC4T72.mjs");
 const { DEBE, HABER, pesos } = await import("../../data/contabilidad.js");
 const { SUBJECTS, HACER, APRENDER, actividadesDeTipo, clasificacionDe } = await import("../../data/subjects.js");
 const { default: FleteYDevolucion } = await import("../../components/mecanicas/libros/t7/FleteYDevolucion.jsx");
@@ -182,6 +188,28 @@ const escribir = async (caja, id, valor) => {
   assert.equal(i.value, miles(valor));
 };
 const otro = (l) => (l === DEBE ? HABER : DEBE);
+/* C4: el reloj del veredicto, la línea que pinta la figura y el mensaje (vacío antes del veredicto). */
+const tick = async (ms) => { await act(async () => { mock.timers.tick(ms); }); };
+const lineaC4 = (caja) => caja.querySelector("[data-c4-linea]")?.textContent ?? null;
+const retros = (caja) => [...caja.querySelectorAll("[data-retro] [data-texto-retro]")].map((p) => p.textContent);
+const c4De = (id, x) => { const e = C4.consecuencia(C4.items.find((i) => i.id === id), x); return e.falla ?? e.cuadra ?? null; };
+/* C4-1 (Mello): con la cifra escrita y sin comprobar, la figura la muestra en su lugar y nada más. */
+function sinResultado(caja, it, v) {
+  const fig = caja.querySelector("[data-c4-figura]");
+  assert.ok([...fig.querySelectorAll("[data-c4-valor]")].some((b) => b.textContent === pesos(v)), `${it.id} · ${v}: la cifra, en su lugar`);
+  for (const x of MC4.C4_1_PROHIBIDO) assert.ok(!fig.outerHTML.includes(x), `${it.id} · ${v}: «${x}» antes de comprobar`);
+  assert.equal(fig.querySelector(".activa"), null);
+}
+/* Un toque o un «Comprobar» de la casilla: primero la consecuencia, sin veredicto; a los ESPERA_C4, el veredicto. */
+async function conVeredicto(m, it, x) {
+  assert.equal(lineaC4(m.caja), c4De(it.id, x), `${it.id}: la consecuencia de ${x}, en el acto`);
+  assert.deepEqual(retros(m.caja), [], `${it.id}: sin veredicto todavía`);
+  assert.equal(m.caja.querySelector("[data-retro] [data-panel]"), null);
+  await tick(ESPERA_C4 - 1);
+  assert.deepEqual(retros(m.caja), [], `${it.id}: ni 1 ms antes`);
+  await tick(1);
+  assert.equal(lineaC4(m.caja), c4De(it.id, x), `${it.id}: la consecuencia se queda a la vista`);
+}
 
 async function jugar(m, falla) {
   const detalle = [];
@@ -196,19 +224,27 @@ async function jugar(m, falla) {
       const v = falla(it.id) ? it.distractores[0].valor : it.correcta;
       assert.equal(m.caja.querySelector("[data-opcion]"), null, "sin opciones que regalen la cifra");
       assert.equal(boton(m.caja, "Comprobar").disabled, true, "«Comprobar» sin cifra");
+      assert.equal(lineaC4(m.caja), null, "sin cifra, la figura no dice nada");
       await escribir(m.caja, it.id, v);
+      /* C4-1 de Mello: la cifra escrita ya está en la figura, pero sin nada que dependa del resultado hasta comprobar. */
+      sinResultado(m.caja, it, v);
       await tocar(boton(m.caja, "Comprobar"));
       const ok = v === it.correcta;
       assert.equal(m.caja.querySelector(`[data-campo-cifra="${it.id}"]`).readOnly, true, "un solo intento");
       assert.equal(boton(m.caja, "Comprobar"), undefined);
+      await conVeredicto(m, it, v);
       assert.deepEqual([...m.caja.querySelectorAll("[data-retro] [data-texto-retro]")].map((p) => p.textContent), L.evaluarH5(it, v).textos);
       if (!ok) assert.deepEqual(L.evaluarH5(it, v).textos, [it.distractores[0].retro, `Iba aquí: ${pesos(it.correcta)}.`]);
       detalle.push({ item: it.id, ok, intentos: 1, respuesta: ok ? null : v, orden: detalle.length + 1 });
     } else if (it.tipo === "eleccion") {
       const v = falla(it.id) ? it.distractores[0].valor : it.correcta;
       assert.deepEqual(it.opciones.map((o) => o.texto), L.opcionesDeH5(it));
+      assert.equal(lineaC4(m.caja), null, "sin tocar, la figura no dice nada");
       await tocar(opcion(m.caja, v));
+      /* C4: al tocar, todas se bloquean y la tocada queda marcada mientras llega el veredicto. */
       for (const o of it.opciones) assert.equal(opcion(m.caja, o.valor).disabled, true);
+      assert.deepEqual(it.opciones.map((o) => opcion(m.caja, o.valor).dataset.estado), it.opciones.map((o) => (o.valor === v ? "elegida" : "libre")));
+      await conVeredicto(m, it, String(v));
       const ok = v === it.correcta;
       assert.deepEqual([...m.caja.querySelectorAll("[data-retro] [data-texto-retro]")].map((p) => p.textContent), L.evaluarH5(it, v).textos);
       if (!ok) assert.equal(opcion(m.caja, it.correcta).dataset.estado, "revelada");
@@ -373,6 +409,7 @@ test("★★★ lote 3: si la cuenta es la buena y falla el lado, sale la retroa
     for (const it of EN_ORDEN.slice(0, 5)) {
       if (it.tipo === "cifra") { await escribir(m.caja, it.id, it.correcta); await tocar(boton(m.caja, "Comprobar")); }
       else await tocar(opcion(m.caja, it.correcta));
+      await tick(ESPERA_C4);
       await tocar(boton(m.caja, D.BOTON_H5.siguiente));
     }
     const it = EN_ORDEN[5];
@@ -415,6 +452,8 @@ test("★★★ lote 5: lo de cada hecho se suma al cerrar su ítem, con las cue
         assert.deepEqual(firma(m.caja), despues[k - 1], "el asiento no está antes de comprobar");
         await tocar(boton(m.caja, "Comprobar"));
       }
+      /* C4: el ítem cierra con el veredicto, ESPERA_C4 después del toque; antes, la figura acumulada no suma. */
+      if (it.tipo !== "asiento") { assert.deepEqual(firma(m.caja), k ? despues[k - 1] : [], `antes del veredicto del ítem ${k + 1}`); await tick(ESPERA_C4); }
       assert.deepEqual(firma(m.caja), despues[k], `al cerrar el ítem ${k + 1}`);
       await tocar(boton(m.caja, k === EN_ORDEN.length - 1 ? D.BOTON_H5.verResumen : D.BOTON_H5.siguiente));
     }
@@ -422,4 +461,108 @@ test("★★★ lote 5: lo de cada hecho se suma al cerrar su ítem, con las cue
   } finally {
     m.desmontar();
   }
+});
+
+/* ═══════════ C4 · «TODA DECISIÓN SE PINTA» (Watari, D9; FigurasC4T7_2.jsx) ═══════════ */
+
+/* Hasta el ítem k, todo bien y con su veredicto. */
+async function hastaElItem(m, k) {
+  for (const it of EN_ORDEN.slice(0, k)) {
+    if (it.tipo === "cifra") { await escribir(m.caja, it.id, it.correcta); await tocar(boton(m.caja, "Comprobar")); }
+    else if (it.tipo === "eleccion") await tocar(opcion(m.caja, it.correcta));
+    else { for (const l of it.lineas) { await tocar(ficha(m.caja, l.id, l.cuenta)); await tocar(lado(m.caja, l.id, l.lado)); } await tocar(boton(m.caja, "Comprobar")); }
+    await tick(ESPERA_C4);
+    await tocar(boton(m.caja, D.BOTON_H5.siguiente));
+  }
+}
+const figuraC4 = (caja) => caja.querySelector("[data-c4-figura]");
+
+test("★★★ C4: cada opción y cada distractor de cifra pintan su consecuencia en la figura antes del veredicto, cada uno distinto", async () => {
+  let n = 0;
+  for (const [k, it] of EN_ORDEN.entries()) {
+    if (it.tipo === "asiento") {
+      const m = await montar();
+      try { await hastaElItem(m, k); assert.equal(figuraC4(m.caja), null, `${it.id}: el asiento sigue como en main, sin la figura`); } finally { m.desmontar(); }
+      continue;
+    }
+    const valores = [it.correcta, ...it.distractores.map((d) => d.valor)];
+    const vistas = [];
+    for (const v of valores) {
+      const m = await montar();
+      try {
+        await hastaElItem(m, k);
+        assert.equal(figuraC4(m.caja).dataset.c4Figura, C4.objeto, "el objeto propio de la actividad");
+        const vacia = figuraC4(m.caja).textContent;
+        if (it.tipo === "cifra") { await escribir(m.caja, it.id, v); await tocar(boton(m.caja, "Comprobar")); }
+        else await tocar(opcion(m.caja, v));
+        const x = it.tipo === "cifra" ? v : String(v);
+        const e = C4.consecuencia(C4.items.find((i) => i.id === it.id), x);
+        const fig = figuraC4(m.caja);
+        assert.notEqual(fig.textContent, vacia, `${it.id} · ${v}: la figura cambia`);
+        assert.equal(lineaC4(m.caja), e.falla ?? e.cuadra ?? null);
+        /* La mala se dice con ✕ y texto; la buena, con ✓ si Watari le da línea (en las cuentas de Mangle, la buena no la lleva). */
+        assert.equal(Boolean(e.falla), v !== it.correcta);
+        assert.equal(m.caja.querySelector("[data-c4-linea]")?.dataset.c4Linea ?? null, e.falla ? "falla" : e.cuadra ? "cuadra" : null);
+        if (e.falla || e.cuadra) assert.ok(m.caja.querySelector("[data-c4-linea] svg"));
+        if (it.tipo === "eleccion") {
+          /* Las cuentas del libro de Mangle son las opciones: el valor entra a la tocada, que dice qué le pasa; las otras, quietas. */
+          assert.ok(figuraC4(m.caja).contains(opcion(m.caja, v)), "la opción vive en la figura");
+          assert.deepEqual([opcion(m.caja, v).querySelector("[data-c4-mov]").textContent, opcion(m.caja, v).querySelector("[data-c4-efecto]").textContent], [e.mov, e.efecto]);
+          assert.equal(m.caja.querySelectorAll("[data-c4-mov]").length, 1);
+        } else {
+          assert.equal(m.caja.querySelector("[data-c4-tuya] [data-c4-valor]").textContent, pesos(v));
+        }
+        assert.deepEqual([...m.caja.querySelectorAll("[data-c4-mapa] .c4t72-nodo.activo")].map((x) => x.textContent).sort(), [e.mapa.de, e.mapa.a].sort());
+        assert.deepEqual(retros(m.caja), [], "el veredicto, todavía no");
+        vistas.push(fig.textContent);
+        await tick(ESPERA_C4);
+        assert.notDeepEqual(retros(m.caja), [], "y luego el veredicto");
+        n += 1;
+      } finally { m.desmontar(); }
+    }
+    assert.equal(new Set(vistas).size, valores.length, `${it.id}: cada opción, su figura`);
+  }
+  assert.equal(n, C4.items.filter((i) => i.tipo !== "propio").reduce((t, i) => t + i.opciones.length, 0));
+});
+
+test("★★★ C4: con movimiento reducido, el veredicto llega en el mismo toque, y la hoja apaga la animación", async () => {
+  REDUCIDO = true;
+  const m = await montar();
+  try {
+    const it = EN_ORDEN[0];
+    if (it.tipo === "cifra") { await escribir(m.caja, it.id, it.distractores[0].valor); await tocar(boton(m.caja, "Comprobar")); }
+    else await tocar(opcion(m.caja, it.distractores[0].valor));
+    assert.notDeepEqual(retros(m.caja), []);
+    assert.equal(m.caja.querySelector("[data-c4-linea]").dataset.c4Linea, "falla");
+  } finally { m.desmontar(); REDUCIDO = false; }
+  const { CSS_C4_T72 } = await import("../../components/mecanicas/libros/t7/FigurasC4T7_2.jsx");
+  assert.ok(CSS_C4_T72.includes("@media (prefers-reduced-motion: reduce) { .c4t72 *, .c4t72 *::before, .c4t72 *::after { animation: none !important; transition: none !important; } }"));
+  assert.match(CSS_C4_T72, /\.c4t72-mov \{ display: inline-block; animation: c4t72-entra 380ms/);
+  /* Colores: nada de teal ni ámbar; coral solo en lo que no cuadra; letra de 12 px o más. */
+  assert.doesNotMatch(CSS_C4_T72, /#2A9D8F|#3FA69A|#E9C46A|teal|ambar/i);
+  const conCoral = [...CSS_C4_T72.matchAll(/([^{}]+)\{([^{}]*var\(--coral(?:-texto)?\)[^{}]*)\}/g)].map((x) => x[1].trim());
+  assert.deepEqual(conCoral, [".c4t72-ren.activa.mal", ".c4t72-chip.mal", ".c4t72-falla"]);
+  assert.deepEqual([...CSS_C4_T72.matchAll(/font-size:\s*(\d+)px|\bfont:\s*\d{3}\s+(\d+)px/g)].map((x) => Number(x[1] ?? x[2])).filter((px) => px < 12), []);
+});
+
+test("★★★ C4-1 (Mello): en cada casilla de cifra, con la correcta y con cada distractor escritos, sin comprobar, la figura no califica", async () => {
+  let n = 0;
+  for (const [k, it] of EN_ORDEN.entries()) {
+    if (it.tipo !== "cifra") continue;
+    for (const v of [it.correcta, ...it.distractores.map((d) => d.valor)]) {
+      const m = await montar();
+      try {
+        await hastaElItem(m, k);
+        await escribir(m.caja, it.id, v);
+        await tick(ESPERA_C4 * 3);
+        sinResultado(m.caja, it, v);
+        assert.deepEqual(retros(m.caja), []);
+        /* Y al comprobar, la consecuencia; el veredicto, ESPERA_C4 después. */
+        await tocar(boton(m.caja, "Comprobar"));
+        assert.equal(lineaC4(m.caja), c4De(it.id, v));
+        n += 1;
+      } finally { m.desmontar(); }
+    }
+  }
+  assert.equal(n, EN_ORDEN.filter((i) => i.tipo === "cifra").length * 3);
 });

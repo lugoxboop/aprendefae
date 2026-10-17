@@ -25,7 +25,7 @@
  * no tapa «DEBE» ni «HABER» y la figura no crece al responder (Hanayama §9.5).
  * ═══════════════════════════════════════════════════════════════════════════
  */
-import { useId } from "react";
+import { useEffect, useId, useRef } from "react";
 import { useNumeroQueSube } from "../mecanicas/libros/verbos.jsx";
 import { FIGURA_CAJON, DEBE, HABER, NO_SE_MUEVE, MARCA } from "../../data/contabilidadT4.js";
 import { C, cifra, Marca } from "./comun.jsx";
@@ -111,6 +111,14 @@ button.t4cv-band:disabled { cursor: default; }
 .t4cv-d { color: ${C.debeTexto}; } .t4cv-hb { color: ${C.haber}; }
 .t4cv-oculto { visibility: hidden; }
 /*
+ * D9 (Hanayama), solo en A1 (la prop \`cajonA1\`; H1 no la pasa): el cajón es
+ * un cajón de verdad. Bajo su base, centrada, una manija de 24 × 4 px; con
+ * cada cobro, consignación o pago, el cajón «se abre» 4 px y vuelve
+ * (translateY, 220 ms de ida y 220 de vuelta). Con movimiento reducido, no se
+ * mueve.
+ */
+.t4cv-manija { position: absolute; left: calc(50% - 12px); bottom: -8px; width: 24px; height: 4px; border-radius: 2px; background: ${C.neutro}; pointer-events: none; }
+/*
  * A1 P6 (controles): los siete controles son botones de 44 px como mínimo en
  * la parte del cajón que cuidan (Hanayama); tocar uno enciende esa parte. No
  * se califican: sin pastilla. A1 P5 (el-faltante): lo que no llegó al libro,
@@ -187,8 +195,17 @@ function Columna({ lado, glosa, lineas, reserva, destinos, luz, vibra, palabras 
 export function Cajon({
   origen = null, glosas = {}, debe = [], haber = [], reserva = 1, saldo = null, vivo = [],
   bancos = {}, pago = {}, destinos = null, bandeja = null, luz = [], vibra = null, alt = FIGURA_CAJON.alt, children = null, palabras = false,
-  glosasCuenta = false, controles = null, sinAnotar = null, salidas = true,
+  glosasCuenta = false, controles = null, sinAnotar = null, salidas = true, cajonA1 = null,
 }) {
+  /* D9, solo A1: `cajonA1 = { abre }`; cada vez que `abre` sube, el cajón se abre 4 px y vuelve. */
+  const refCajon = useRef(null);
+  const abre = cajonA1?.abre ?? 0;
+  useEffect(() => {
+    const el = refCajon.current;
+    if (!abre || !el?.animate) return;
+    if (el.ownerDocument?.defaultView?.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches) return;
+    el.animate([{ transform: "translateY(0)" }, { transform: "translateY(4px)" }, { transform: "translateY(0)" }], { duration: 440, easing: "cubic-bezier(.3,.9,.4,1)" });
+  }, [abre]);
   const idAlt = useId();
   const visto = useNumeroQueSube(typeof saldo === "number" ? saldo : 0);
   const v = (k) => (vivo.includes(k) ? " t4cv-vivo" : "");
@@ -252,7 +269,8 @@ export function Cajon({
           </Band>
         )}
       </div>
-      <div className="t4cv-cajon" data-cajon data-luz={L("cajon")}>
+      <div className="t4cv-cajon" data-cajon data-luz={L("cajon")} ref={refCajon} data-abre={cajonA1 ? abre : undefined}>
+        {cajonA1 && <span className="t4cv-manija" aria-hidden="true" data-manija />}
         <Borde arriba />
         <Borde cerrado={!salidas} />
         {rc("cajon")

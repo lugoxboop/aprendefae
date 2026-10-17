@@ -390,3 +390,12 @@ test("★★★ D2: el objetivo de la pieza se ve antes de empezar, en el Encabe
     assert.ok(o.compareDocumentPosition(m.caja.querySelector("[data-encabezado] [data-consigna]")) & 4, "el objetivo no va antes de la consigna");
   } finally { m.desmontar(); }
 });
+
+test("★★★ D9 · «Lo que dice el libro» lleva el doble margen de una hoja de libro mayor (dos líneas de 1 px, 3 px entre ellas, del alto del bloque); A2 no", () => {
+  const src = readFileSync(new URL("../../components/t4/SeMueveLaCajaMenor.jsx", import.meta.url), "utf8");
+  const regla = src.split("\n").find((l) => l.startsWith(".t4h3-libro::before {")) ?? "";
+  assert.match(regla, /top: 0; bottom: 0; width: 5px; box-sizing: border-box; border-left: 1px solid \$\{C\.neutro\}; border-right: 1px solid \$\{C\.neutro\}/, "el doble margen no es de 1 px con 3 px entre líneas");
+  const m = montarJuego();
+  try { assert.ok(m.caja.querySelector(".t4h3-libro[data-libro]"), "no hay bloque del libro"); } finally { m.desmontar(); }
+  assert.doesNotMatch(readFileSync(new URL("../../components/t4/A2ElFondoFijo.jsx", import.meta.url), "utf8"), /t4h3-libro/);
+});

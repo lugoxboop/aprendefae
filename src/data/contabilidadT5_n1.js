@@ -3,8 +3,12 @@
  * T5 · N1 DE HACER — «¿Temporal o a largo plazo?» (Célula C).
  *
  * Fuente: la tanda 1 v1.1 de Near, con PASA de Mello. Copia en
- * orquestador/conocimiento/paquetes/t5-tanda1-v1.1.md; una prueba compara
- * cada texto de aquí contra ella, letra por letra.
+ * orquestador/conocimiento/paquetes/t5-tanda1-v1.1.md. Encima, el recorte B2
+ * de Near (paquetes/a7-n1-recorte.md): el enunciado y los ítems
+ * ritmo-del-negocio y la-intencion. Una prueba compara cada texto de aquí
+ * contra la tanda con el recorte encima, letra por letra. Lo que la entrega
+ * «N1: lo que pidió Mello» cambia y el recorte no toca (bonos-de-compania,
+ * la intro del bloque 2, los aciertos del caso 4) sigue pendiente: no está.
  *
  * Hacer Fácil, evaluativa, 10 FP: el motor compartido escala los FP con los
  * aciertos, con piso del 50 %. Migración 0110, que corre Erwin.
@@ -30,10 +34,12 @@ export const N1_ID = "t5-temporal-o-largo-plazo";
 
 export const N1 = {
   id: N1_ID,
+  /* Lote O: el objetivo, de Near (paquetes/lote-o-objetivos.md). */
+  objetivo: "Decidir si una inversión es temporal o si puede ser más apropiado llevarla a largo plazo.",
   nombre: "¿Temporal o a largo plazo?",
   enunciado: [
-    "Lee cada caso. Decide si la inversión es temporal o si puede ser más apropiado clasificarla a largo plazo. Después, decide a qué grupo pertenece. Tienes un solo intento por caso.",
-    "Recuerda las dos condiciones de una inversión temporal. Se puede vender rápido. Y se va a volver efectivo cuando haga falta, en un año o en un ciclo de operaciones, el que sea más largo.",
+    "Primero decide si cada inversión es temporal o si puede ser más apropiado llevarla a largo plazo. Después, ubica otras en su grupo y responde una pregunta final.",
+    "Es temporal si se puede vender rápido y se volverá efectivo cuando haga falta, en un año o en un ciclo de operaciones, el que sea más largo.",
   ],
   pie: "Basado en el libro, pp. 191-192",
 };
@@ -48,9 +54,9 @@ export const ITEMS_N1 = [
   /* ═══ Bloque 1 · temporal o a largo plazo ═══ */
   {
     id: "ritmo-del-negocio", bloque: 1, opciones: PLAZO, correcta: "Temporal",
-    pregunta: "A una empresa le sobra efectivo en esta época, por el ritmo de su negocio. Con él compra acciones que se compran y se venden todos los días. Las piensa vender cuando necesite el efectivo.",
-    error: "Esas acciones se venden rápido, y el efectivo le sobra solo por un tiempo, por el ritmo del negocio. El libro dice que eso justifica que sea temporal.",
-    acierto: "Así es. Se venden rápido, y el efectivo le sobra solo por un tiempo, por el ritmo del negocio. El libro dice que eso justifica que sea temporal.",
+    pregunta: "A una empresa le sobra efectivo por un tiempo, por el ritmo de su negocio. Compra acciones que se venden a diario y las venderá cuando necesite el dinero.",
+    error: "Se venden rápido, y el efectivo sobra solo por un tiempo. El libro dice que eso justifica la intención de volverlas efectivo.",
+    acierto: "Así es. Se venden rápido y el efectivo sobra solo un tiempo: eso justifica la intención de volverlas efectivo.",
   },
   {
     id: "no-se-negocian", bloque: 1, opciones: PLAZO, correcta: "Puede ser más apropiado a largo plazo",
@@ -99,14 +105,14 @@ export const ITEMS_N1 = [
   {
     id: "la-intencion", bloque: 3, barajar: true,
     opciones: [
-      "Con evidencias, como la historia de inversiones de la empresa y el propósito de la inversión.",
-      "Con que la gerencia lo diga por escrito.",
-      "Con el nombre del título que compró.",
+      "Con evidencias: su historia de inversiones.",
+      "Con una carta firmada por la gerencia.",
+      "Con el tipo de título que compró.",
     ],
-    correcta: "Con evidencias, como la historia de inversiones de la empresa y el propósito de la inversión.",
-    pregunta: "Una empresa dice que va a vender pronto sus títulos. ¿Con qué se debe apoyar esa intención?",
-    error: "No basta con decirlo ni con el nombre del título. El libro pide evidencias, como la historia de inversiones de la empresa.",
-    acierto: "Así es. El libro pide que la intención de la gerencia se apoye en evidencias, como la historia de inversiones de la empresa.",
+    correcta: "Con evidencias: su historia de inversiones.",
+    pregunta: "Una empresa dice que venderá pronto sus títulos. ¿Con qué debe apoyar esa intención?",
+    error: "No basta con que la gerencia lo diga ni con el tipo de título. El libro pide evidencias, como la historia de inversiones.",
+    acierto: "Así es. El libro pide apoyar la intención con evidencias, como la historia de inversiones y su propósito.",
   },
 ];
 

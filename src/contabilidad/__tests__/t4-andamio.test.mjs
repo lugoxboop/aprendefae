@@ -279,3 +279,51 @@ test("★★★ ningún texto de T4 queda «[ESCRITO POR CLAUDE — PENDIENTE DE
   const con = archivos.filter((f) => MARCA_PENDIENTE.test(readFileSync(new URL(f, raiz), "utf8")));
   assert.deepEqual(con, [], "archivos de T4 con textos sin revisar");
 });
+
+/* ═══════════ D8 · EL CASO DE CADA PIEZA ═══════════ */
+
+test("★★★ D8 · el caso: la primera vez el 1; ya terminada, el sorteo (1 o 2); el forzado manda; sin almacenamiento, el 1", async () => {
+  const C = await import("../../components/t4/caso.js");
+  const prev = Object.getOwnPropertyDescriptor(globalThis, "localStorage");
+  const mem = new Map();
+  Object.defineProperty(globalThis, "localStorage", { configurable: true, value: { getItem: (k) => (mem.has(k) ? mem.get(k) : null), setItem: (k, v) => mem.set(k, String(v)), removeItem: (k) => mem.delete(k) } });
+  try {
+    assert.equal(C.casoInicial("t4-a2-el-fondo-fijo", () => 0.9), 1, "la primera vez no es el caso 1");
+    C.marcarTerminada("t4-a2-el-fondo-fijo");
+    assert.equal(C.casoInicial("t4-a2-el-fondo-fijo", () => 0.9), 2);
+    assert.equal(C.casoInicial("t4-a2-el-fondo-fijo", () => 0.1), 1);
+    assert.equal(C.casoInicial("t4-a3-el-arqueo", () => 0.9), 1, "terminar una pieza sortea otra");
+    mem.set(C.CLAVE_FORZADO, "2");
+    assert.equal(C.casoInicial("t4-a3-el-arqueo", () => 0.1), 2, "el forzado no manda");
+    Object.defineProperty(globalThis, "localStorage", { configurable: true, get() { throw new Error("bloqueado"); } });
+    assert.equal(C.casoInicial("t4-a2-el-fondo-fijo", () => 0.9), 1, "sin almacenamiento no es el caso 1");
+    C.marcarTerminada("t4-a2-el-fondo-fijo");
+  } finally {
+    if (prev) Object.defineProperty(globalThis, "localStorage", prev); else delete globalThis.localStorage;
+  }
+});
+
+test("★★★ D8 · las seis piezas de Aprender tienen su caso B, con las mismas pantallas, en el mismo orden, y las mismas preguntas", async () => {
+  const { PIEZAS_T4 } = await import("../../components/ContabilidadT4View.jsx");
+  for (const { pieza: P } of PIEZAS_T4) {
+    assert.ok(P.casoB, `${P.id}: sin caso B`);
+    assert.equal(P.casoB.id, P.id);
+    assert.deepEqual(P.casoB.pantallas.map((p) => [p.id, Boolean(p.pregunta)]), P.pantallas.map((p) => [p.id, Boolean(p.pregunta)]), P.id);
+  }
+});
+
+test("★★ el identificador del tema (Hanayama, sistema de Xeno): 64 × 64, trazo de 3 px redondeado y currentColor; un solo elemento en el acento, que se mueve 4 px; sin letras ni círculos; en reposo, el billete a 4 px o más del cajón; todavía fuera del registro", async () => {
+  const src = readFileSync(new URL("../identificadores/CajonDePaso.jsx", import.meta.url), "utf8");
+  const svg = src.slice(src.indexOf("<svg"), src.indexOf("</svg>"));
+  assert.match(svg, /viewBox="0 0 64 64"/);
+  assert.match(svg, /stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/);
+  assert.equal((svg.match(/var\(--fae-acento\)/g) ?? []).length, 2, "el acento en más de un elemento");
+  assert.equal((svg.match(/data-mueve/g) ?? []).length, 1);
+  assert.match(svg, /"--mueve": "translateY\(4px\)"/);
+  assert.doesNotMatch(svg, /<text|<circle|<ellipse/);
+  const [, y, h] = svg.match(/<rect data-mueve x="\d+" y="(\d+)" width="\d+" height="(\d+)"/).map(Number);
+  const bocaY = 18;
+  assert.ok(bocaY - 1.5 - (y + h + 1.5) >= 4, "en reposo, el billete a menos de 4 px del cajón");
+  const reg = readFileSync(new URL("../../data/identificadoresDeTema.js", import.meta.url), "utf8");
+  assert.doesNotMatch(reg, /CajonDePaso/, "el identificador entró al registro antes de que el sitio compartido tenga el movimiento y el tamaño");
+});

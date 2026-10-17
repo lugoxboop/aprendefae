@@ -94,7 +94,7 @@ export default function HomeScreen({ onSelectSubject }) {
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
-          <span style={{ fontSize: "12.5px", color: "rgba(248,249,250,0.4)", whiteSpace: "nowrap" }}>
+          <span style={{ fontSize: "12.5px", color: "#A8B6C8", whiteSpace: "nowrap" }}>
             Entrar no pide registro.
           </span>
           <Footer />

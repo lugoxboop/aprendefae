@@ -23,7 +23,7 @@
  * Aprender: sin FP, sin catálogo y sin llamar al motor.
  * ═══════════════════════════════════════════════════════════════════════════
  */
-import { BOTON, DEBE, HABER } from "./contabilidadT4.js";
+import { BOTON, DEBE, HABER, pieCasoB, pieCortoB } from "./contabilidadT4.js";
 
 export const A2_ID = "t4-a2-el-fondo-fijo";
 
@@ -188,6 +188,46 @@ export const PANTALLAS_A2 = [
   },
 ];
 
+/*
+ * D8 · el caso B (Katsumi, lote nocturno): Marta Gil, junio. El fondo de
+ * 600.000 se abre el 1 y se repone el 30; los mismos ocho gastos, en el mismo
+ * orden, con otras cifras construidas (524.300; quedan 75.700). Se sube o se
+ * baja de a 100.000, entre 500.000 y 700.000. La misma decisión en cada
+ * pantalla; los textos alternativos, con las cifras y el nombre del B; los
+ * pies, con « · Cifras construidas».
+ */
+export const FONDO_B = 600_000;
+export const GASTOS_JUNIO_B = GASTOS_MAYO.map((g, i) => ({ ...g, valor: [41_000, 27_500, 36_200, 58_900, 121_600, 45_300, 39_800, 154_000][i] }));
+const GASTADO_B = GASTOS_JUNIO_B.reduce((s, g) => s + g.valor, 0);
+const datosA2 = (fondo, gastos, f) => {
+  const gastado = gastos.reduce((s, g) => s + g.valor, 0);
+  return {
+    FONDO: fondo, GASTOS_MAYO: gastos, GASTADO: gastado, QUEDA: fondo - gastado,
+    FONDO_MIN: fondo - PASO_FONDO, FONDO_MAX: fondo + PASO_FONDO, OPCIONES_QUEDA: [fondo - gastado, fondo, gastado],
+    F: f, sumaGastos: (n) => gastos.slice(0, n).reduce((s, g) => s + g.valor, 0),
+  };
+};
+/* Lo que la figura muestra en cada caso (A3 usa el fondo y lo gastado del mismo caso). */
+export const DATOS_A2 = {
+  1: datosA2(FONDO, GASTOS_MAYO, FIGURA_A2),
+  2: datosA2(FONDO_B, GASTOS_JUNIO_B, { ...FIGURA_A2, sobre: "LO QUE TIENE MARTA", razonSubir: "Tope: 700.000", razonBajar: "Mínimo: 500.000" }),
+};
+const TEXTOS_A2_B = {
+  "el-fondo": { alt: "El sobre de la caja menor. Al pagar, bajan los billetes y suben los soportes de gastos, pero la suma sigue en 600.000. Al reponer, vuelven los billetes." },
+  "la-apertura": { antes: ["El 1 de junio, Taller Ríos abre el fondo de Marta Gil con un cheque. Tócalo."], alt: "Un cheque de 600.000 sale de Bancos y llena el sobre. En el libro, Caja menor va al debe y Bancos al haber." },
+  "los-gastos": { antes: ["En junio, Marta paga con el fondo y guarda cada soporte: la factura o el recibo."], alt: "Marta paga los ocho gastos de junio, uno por uno. Los soportes llegan a 524.300 y los billetes quedan sin contar." },
+  "cuanto-queda": {
+    antes: ["¿Cuánto debería quedarle a Marta en billetes?"],
+    errores: { [FONDO_B]: "Ese es el fondo entero, como si Marta no hubiera pagado nada.", [GASTADO_B]: "Esa es la plata que ya salió del fondo: lo gastado." },
+    alt: "El sobre con 524.300 en soportes. La cifra que eliges para los billetes se suma con ellos y se compara con el fondo de 600.000.",
+  },
+  "el-reembolso": { antes: ["Reponer lo gastado es el reembolso. El 30 de junio, Marta entrega los soportes y le hacen un cheque. Tócalo."], alt: "Un cheque de 524.300 sale de Bancos. El sobre vuelve a tener 600.000 en billetes y ningún soporte, y la suma no cambia." },
+  "y-caja-menor": { acierto: "Caja menor no se mueve: el fondo sigue en $600.000.", alt: "El libro con cuatro cuentas, cada una con debe y haber. El cheque del reembolso, de 524.300, se pone en un debe y en un haber." },
+};
+const PANTALLAS_A2_B = PANTALLAS_A2.map((p) => ({ ...p, ...(TEXTOS_A2_B[p.id] ?? {}), pie: pieCasoB(p.pie) }));
+/* D8: el pie corto del caso B donde el largo pasaba de 60 palabras (sonda; Katsumi). */
+for (const p of PANTALLAS_A2_B) if (["la-apertura", "cuanto-queda", "y-caja-menor"].includes(p.id)) p.pie = pieCortoB(p.pie);
+
 export const PIEZA_EL_FONDO_FIJO = {
   id: A2_ID,
   numero: 2,
@@ -197,3 +237,4 @@ export const PIEZA_EL_FONDO_FIJO = {
   boton: BOTON.seguir,
   pantallas: PANTALLAS_A2,
 };
+PIEZA_EL_FONDO_FIJO.casoB = { ...PIEZA_EL_FONDO_FIJO, pantallas: PANTALLAS_A2_B };

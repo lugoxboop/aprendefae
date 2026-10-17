@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readdirSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -29,17 +29,42 @@ import { readdirSync } from "node:fs";
 const DATOS = new URL("../../data/", import.meta.url);
 /* Cada pendiente es «id de la pantalla · respuesta correcta»: así no la confunde
    otra pantalla con el mismo id, y no depende del archivo que la exporte. */
-const PENDIENTES = new Set([
-  "dos-cuentas-propias · «Para saber cuánto se devolvió en el periodo.»",
-]);
+const PENDIENTES = new Set([]);
+
+/*
+ * Datos de piezas retiradas: una pieza nueva las reemplazó con el mismo id y
+ * su componente viejo sigue en el árbol (lo leen pruebas de la escalera), pero
+ * ninguna vista lo monta. No se miden: el estudiante ya no las ve. Una prueba
+ * de abajo comprueba que de verdad nadie las monte.
+ *   · contabilidadT7_1_a6.js: la A6 tabular; la reemplaza
+ *     contabilidadT7_1_a6_c3.js (motor C3), con C1 arreglado.
+ */
+const RETIRADOS = new Map([["contabilidadT7_1_a6.js", "DevolucionesEnPeriodico.jsx"]]);
 
 const norm = (t) => String(t).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9\u00f1 ]/g, " ");
 const VACIAS = new Set("el la los las de del y o a en que se un una por con para es no lo al su sus mas menos ya ese esa este esta como".split(" "));
 const palabras = (t) => norm(t).split(/\s+/).filter((w) => w.length > 3 && !VACIAS.has(w));
 
+/*
+ * La clave «id · «respuesta»» si la pantalla se delata; si no, null. La
+ * consigna también va arriba de la pregunta, y las opciones del motor C3
+ * traen su texto en `t`.
+ */
+function seDelata(v) {
+  if (!Array.isArray(v.opciones) || !(v.parrafos || typeof v.texto === "string" || typeof v.consigna === "string")) return null;
+  const antes = [].concat(v.parrafos ?? [], v.texto ?? [], v.consigna ?? []).filter((x) => typeof x === "string").join(" ");
+  const correcta = v.opciones.find((o) => o.correcta);
+  if (!correcta || !antes) return null;
+  const respuesta = correcta.texto ?? correcta.t;
+  const w = palabras(respuesta);
+  const p = new Set(palabras(antes));
+  const dentro = w.filter((x) => p.has(x));
+  return w.length >= 2 && dentro.length / w.length >= 0.75 ? `${v.id} · «${respuesta}»` : null;
+}
+
 async function delatadas() {
   const out = new Map();
-  const archivos = readdirSync(DATOS).filter((f) => /^contabilidad(T5|T7)_.*\.js$/.test(f));
+  const archivos = readdirSync(DATOS).filter((f) => /^contabilidad(T5|T7)_.*\.js$/.test(f) && !RETIRADOS.has(f));
   assert.ok(archivos.length >= 30, `solo encontré ${archivos.length} archivos de datos de T5 y T7`);
   /* Una pantalla que dos archivos exportan se mide una sola vez. */
   const vistos = new Set();
@@ -48,16 +73,8 @@ async function delatadas() {
     const visitar = (v) => {
       if (!v || typeof v !== "object" || vistos.has(v)) return;
       vistos.add(v);
-      if (Array.isArray(v.opciones) && (v.parrafos || typeof v.texto === "string")) {
-        const antes = [].concat(v.parrafos ?? [], v.texto ?? []).filter((x) => typeof x === "string").join(" ");
-        const correcta = v.opciones.find((o) => o.correcta);
-        if (correcta && antes) {
-          const w = palabras(correcta.texto);
-          const p = new Set(palabras(antes));
-          const dentro = w.filter((x) => p.has(x));
-          if (w.length >= 2 && dentro.length / w.length >= 0.75) out.set(`${v.id} · «${correcta.texto}»`, f);
-        }
-      }
+      const k = seDelata(v);
+      if (k) out.set(k, f);
       for (const x of Object.values(v)) visitar(x);
     };
     for (const v of Object.values(m)) visitar(v);
@@ -82,4 +99,26 @@ test("★★ el medidor ve el rojo: una pantalla que copia su respuesta del pár
   assert.equal(w.filter((x) => p.has(x)).length, w.length);
   const q = new Set(palabras("Así cierra el periódico. Toca los asientos que le sobran."));
   assert.ok(palabras("Los de quitar el inventario inicial y colocar el final.").filter((x) => q.has(x)).length < 3);
+});
+
+test("★★ una pieza retirada no la monta nadie: ni una vista ni otro componente importan su componente viejo", () => {
+  const SRC = new URL("../../", import.meta.url);
+  const todos = (dir) => readdirSync(new URL(dir, SRC), { withFileTypes: true }).flatMap((e) =>
+    e.isDirectory() ? (e.name === "__tests__" ? [] : todos(`${dir}${e.name}/`)) : /\.(jsx?|mjs)$/.test(e.name) ? [`${dir}${e.name}`] : []);
+  const fuentes = todos("").map((f) => [f, readFileSync(new URL(f, SRC), "utf8")]);
+  for (const [datos, componente] of RETIRADOS) {
+    const usanDatos = fuentes.filter(([f, t]) => t.includes(`/${datos}"`)).map(([f]) => f);
+    assert.deepEqual(usanDatos.map((f) => f.split("/").pop()), [componente], `${datos}: solo lo importa ${componente}`);
+    assert.deepEqual(fuentes.filter(([, t]) => t.includes(`/${componente}"`)).map(([f]) => f), [], `${componente}: nadie lo monta`);
+  }
+});
+
+test("★★ el medidor lee el texto, la consigna y las opciones del motor C3 (`t`): la razón del libro, arriba, delataría «dos-cuentas-propias»", async () => {
+  const { PANTALLAS } = await import("../../data/contabilidadT7_1_a6_c3.js");
+  const dos = PANTALLAS.find((p) => p.id === "dos-cuentas-propias");
+  assert.equal(seDelata(dos), null, "como está, con la razón en el «¿Por qué?», no se delata");
+  const clave = `dos-cuentas-propias · «${dos.opciones[0].t}»`;
+  assert.equal(seDelata({ ...dos, texto: `${dos.texto} ${dos.porque}` }), clave, "en el texto");
+  assert.equal(seDelata({ ...dos, consigna: dos.porque }), clave, "en la consigna");
+  assert.equal(seDelata({ ...dos, texto: undefined, consigna: undefined, parrafos: [dos.porque] }), clave, "en los párrafos");
 });

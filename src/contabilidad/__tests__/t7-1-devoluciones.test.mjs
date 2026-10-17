@@ -2,43 +2,51 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
-import { conCorreccionesDeMello } from "./correccionesMello.mjs";
+import { ROTULOS_A6, A6JS, A6CSS, FILAS_NEAR_A6, FILAS_LEIDAS, NEAR_N5_A6 } from "./correccionesNearC3A6.mjs";
+
+/* Lote V: las opciones salen barajadas; se comparan por id (pares [id, texto]), sin perder la pareja id ↔ texto. */
+const porId = (pares) => [...pares].sort((a, b) => String(a[0]).localeCompare(String(b[0])));
+
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
- * T7-1 · A6 «Devoluciones en periódico» (Célula C).
+ * T7-1 · A6 «Devoluciones en periódico», en el motor C3 (Célula C).
  *
- *   · cada texto de los datos está, letra por letra, en la v1 de Near, y cada
- *     texto visible de la v1 está en los datos
- *   · la ficha, los asientos del 1 de junio y las líneas de los dos libros
- *     son los de la v1; las cifras se calculan y las sumas cuadran
- *   · cada pantalla y cada estado muestran exactamente sus textos
- *   · el error lleva a «Probar otra» y el acierto a «Seguir»; en los asientos,
- *     «Probar otra» devuelve solo las líneas mal puestas
- *   · la «Figura de A6» de Watari: las líneas del asiento aparecen una por
- *     una; el error va debajo de su línea; las sumas aparecen solo al
- *     acertar; el lado vacío desaparece al acertar; los cálculos de P4 llegan
- *     con el acierto
- *   · la tabla espejo sale de los dos asientos, en el orden del comprador; la
- *     fila de las devoluciones va en negrita solo con el acierto; encabezados
- *     y nombre de la tabla marcados como pendientes de revisión
- *   · fuera del catálogo de FP, sin la renta del 33 % ni cifras de medición
+ * La fuente es el a6.js de la «Pieza 3» del Patrón de enganche C3 de Watari
+ * (patron-enganche-c3-v1.html, CODIGO.a6): sus pantallas se ejecutan aquí y
+ * se comparan enteras con las de los datos, en los dos sentidos, con encima
+ * solo lo que dicen M-1 de Mello, los rótulos [W] de Near
+ * (correccionesNearC3A6.mjs) y los textos con que Near cerró el §5 de Mello
+ * (c3-mello-near.md: «dos-cuentas-propias» y las opciones del lado a lado).
  *
- * El ancho a 375 y 320 lo mide scripts/t7/medir-t7-1-a6.mjs en Chromium.
+ *   · textos: Watari ↔ datos, campo por campo; los de main que Watari conserva,
+ *     letra por letra contra contabilidadT7_1_a6.js; los de la figura, en su
+ *     a6.js o en la tabla de Near; ningún rótulo reemplazado queda
+ *   · la pieza montada, pantalla por pantalla y estado por estado: la escena,
+ *     la miniatura que no califica, la barra pelada, la tajada con A6-1 (la
+ *     barra del IVA entera hasta el acierto), los dos libros con sus
+ *     fantasmas, el cruce del lado a lado y el resumen; la escalera C2 en cada
+ *     pregunta y en cada línea; el foco; movimiento reducido
+ *   · C1: «El libro da la razón…» llega con el «¿Por qué?» del acierto
+ *   · B2 (≤ 60 palabras visibles) en cada pantalla, salvo las de
+ *     PENDIENTES_NEAR, que siguen pasándose (si dejan de pasarse, se sacan)
+ *   · catálogo (cero FP, mismo id, misma posición) y vista
+ *
+ * El ancho a 320, 375 y 1280 lo mide scripts/t7/medir-t7-1-a6.mjs en Chromium.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
 const dom = new JSDOM("<!doctype html><html><body></body></html>", { url: "http://localhost/", virtualConsole: new VirtualConsole() });
 const w = dom.window;
-w.matchMedia = () => ({ matches: false, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} });
+let REDUCIDO = false;
+w.matchMedia = (q) => ({ matches: REDUCIDO && /prefers-reduced-motion: reduce/.test(q), addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} });
+w.Element.prototype.scrollIntoView = () => {};
 for (const [k, v] of Object.entries({
   window: w, document: w.document, navigator: w.navigator, localStorage: w.localStorage,
   HTMLElement: w.HTMLElement, Element: w.Element, Node: w.Node, SVGElement: w.SVGElement,
   Event: w.Event, MouseEvent: w.MouseEvent, KeyboardEvent: w.KeyboardEvent,
   getComputedStyle: w.getComputedStyle.bind(w), matchMedia: w.matchMedia,
-})) {
-  Object.defineProperty(globalThis, k, { value: v, configurable: true, writable: true });
-}
+})) Object.defineProperty(globalThis, k, { value: v, configurable: true, writable: true });
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
 const React = await import("react");
@@ -46,497 +54,622 @@ const { createRoot } = await import("react-dom/client");
 const act = React.act;
 const h = React.createElement;
 
-const A = await import("../../data/contabilidadT7_1_a6.js");
+const A = await import("../../data/contabilidadT7_1_a6_c3.js");
+const MAIN = await import("../../data/contabilidadT7_1_a6.js");
+const COMP = await import("../../components/mecanicas/libros/t7/DevolucionesEnPeriodicoC3.jsx");
+const MOTOR = await import("../../components/mecanicas/libros/t7/aprenderC3.jsx");
+const Devoluciones = COMP.default;
 const { SUBJECTS, APRENDER } = await import("../../data/subjects.js");
-const { default: Devoluciones, CSS_A6 } = await import("../../components/mecanicas/libros/t7/DevolucionesEnPeriodico.jsx");
 const { PIEZAS_T7_1, TEMA_T7_1 } = await import("../../components/ContabilidadT7_1View.jsx");
-const { textosDelError, textosDeLinea, sinAsiEs } = await import("../../components/mecanicas/libros/t7/escaleraAyuda.js");
+const CANON = await import("../canonEnganche.js");
 
 const RAIZ = new URL("../../../", import.meta.url);
-const PAQUETE = readFileSync(new URL("orquestador/conocimiento/paquetes/t7-1-a6-v1.md", RAIZ), "utf8");
-const CONTENIDO = PAQUETE.slice(PAQUETE.indexOf("## Contenido"), PAQUETE.indexOf("## Erratas y nombres"));
-/* Lote 2 de la revisión de calidad (Near): las pistas del primer error y el anexo de la tercera opción. */
-const LOTE2_PISTAS = conCorreccionesDeMello(readFileSync(new URL("orquestador/conocimiento/paquetes/lote2-pistas-v1.md", RAIZ), "utf8"));
-const LOTE2_ANEXO = conCorreccionesDeMello(readFileSync(new URL("orquestador/conocimiento/paquetes/lote2-anexo-v1.md", RAIZ), "utf8"));
-const P = A.PIEZA_DEVOLUCIONES;
-const pantalla = (id) => P.pantallas.find((x) => x.id === id);
-const seccion = (marca, siguiente) => CONTENIDO.slice(CONTENIDO.indexOf(marca), siguiente ? CONTENIDO.indexOf(siguiente) : undefined);
+const leer = (f) => readFileSync(new URL(f, RAIZ), "utf8");
+const PAQ = "orquestador/conocimiento/paquetes/";
+const HTML = leer(`${PAQ}patron-enganche-c3-v1.html`);
+const INI = HTML.indexOf('<section class="sec" id="a6">');
+const SECCION = HTML.slice(INI, HTML.indexOf("</section>", INI));
+const MELLO = leer(`${PAQ}auditoria-mello-patron-c3.md`);
+const FUENTE = leer("src/components/mecanicas/libros/t7/DevolucionesEnPeriodicoC3.jsx");
+const FUENTE_DATOS = leer("src/data/contabilidadT7_1_a6_c3.js");
 
-const montar = async (el) => {
+/*
+ * Las pantallas que todavía pasan de 60 con los textos de Near: B2 no se exige
+ * en ellas. Esta lista solo encoge.
+ *   · dos-cuentas-propias: con los textos de c3-mello-near.md, 58 con el
+ *     acierto y 59 con el 2.º error, pero 65 con el 1.er error: la pista de
+ *     main (15 palabras), que Near deja igual, no entró en su conteo.
+ */
+const PENDIENTES_NEAR = new Set(["dos-cuentas-propias"]);
+
+const P = A.PIEZA_DEVOLUCIONES_C3;
+const pantalla = (id) => P.pantallas.find((x) => x.id === id);
+const pMain = (id) => MAIN.PIEZA_DEVOLUCIONES.pantallas.find((x) => x.id === id);
+const N = ROTULOS_A6;
+
+/* ═══════════ EL a6.js DE WATARI, EJECUTADO ═══════════ */
+
+const deWatari = () => new Function("window", `${A6JS}\nreturn window.C3A6.PANTALLAS;`)({});
+const conFunciones = (x) => JSON.parse(JSON.stringify(x, (k, v) => (typeof v === "function" ? `fn:${String(v)}` : v)));
+
+/* Lo de Watari con lo que cambia encima: M-1, los rótulos de Near y el §5 de Mello cerrado por Near. */
+const N5 = NEAR_N5_A6;
+const conOpciones = (p, correcta, otras) => p.opciones.forEach((o, i) => { o.t = i === 0 ? correcta : otras[i - 1]; });
+function esperadas() {
+  const R = deWatari();
+  const dos = R.find((x) => x.id === "dos-cuentas-propias");
+  assert.ok(dos.texto.endsWith(` ${N.consignaP3.watari}`), "la consigna de P3 ya no cierra el texto de Watari");
+  dos.texto = N5.dosCuentas.texto;
+  dos.consigna = N.consignaP3.near;
+  dos.pregunta = N5.dosCuentas.pregunta;
+  dos.bien = N5.dosCuentas.bien;
+  assert.deepEqual(dos.opciones.map((o) => o.id), ["saber-cuanto", "no-cambia", "no-se-tocan"]);
+  conOpciones(dos, N5.dosCuentas.correcta, N5.dosCuentas.otras);
+  dos.opciones[1].devolucion = N5.dosCuentas.noCambia;
+  dos.opciones[2].devolucion = N5.dosCuentas.noSeTocan;
+  const lado = R.find((x) => x.id === "lado-a-lado");
+  assert.ok(lado.texto.startsWith(`${N.consignaP8.watari} `), "la consigna de P8 ya no abre el texto de Watari");
+  lado.pregunta = lado.texto.slice(N.consignaP8.watari.length + 1);
+  lado.consigna = N.consignaP8.near;
+  delete lado.texto;
+  assert.deepEqual(lado.opciones.map((o) => o.id), ["al-reves", "en-el-debe", "ingresos"]);
+  conOpciones(lado, N5.ladoALado.correcta, N5.ladoALado.otras);
+  /* Para el recorrido de canonEnganche.js: qué tocar antes de que salga la pregunta (lo mismo que abre `antes`). */
+  dos.pasosAntes = ['[data-accion="modo"][data-v="aparte"]'];
+  lado.pasosAntes = ['[data-accion="fecha"][data-v="j1"]'];
+  return R;
+}
+
+/* ═══════════ MONTAR ═══════════ */
+
+async function montar(pieza = P, props = {}) {
   const caja = document.createElement("div");
   document.body.appendChild(caja);
   const raiz = createRoot(caja);
-  await act(async () => { raiz.render(el); });
-  return { caja, desmontar: () => { act(() => raiz.unmount()); caja.remove(); } };
-};
-const tocar = async (el) => {
-  assert.ok(el, "no está el elemento que se quería tocar");
-  await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
-};
-const boton = (caja, n) => caja.querySelector(`[data-boton="${n}"]`);
-const activos = (caja) => [...caja.querySelectorAll("[data-boton]")].filter((b) => b.getAttribute("aria-disabled") !== "true").map((b) => b.textContent);
-const estado = (caja) => caja.querySelector("[data-estado]")?.dataset.estado ?? null;
-const casilla = (caja, linea, lado) => caja.querySelector(`[data-linea="${linea}"][data-lado="${lado}"]`);
-const sumas = (caja) => [...caja.querySelectorAll("[data-suma]")].map((s) => s.textContent);
-const conPieza = (...ids) => ({ ...P, pantallas: ids.map(pantalla) });
-
-/* ═══════════ LO QUE EL ESTUDIANTE LEE, SACADO DE LOS DATOS ═══════════ */
-
-function textosVisibles() {
-  const t = [P.titulo];
-  for (const p of P.pantallas) {
-    for (const k of ["objetivo", "enunciado", "pregunta", "consigna", "siguiente", "boton", "pie"]) if (p[k]) t.push(p[k]);
-    t.push(...(p.parrafos ?? []));
-    for (const o of p.opciones ?? []) { t.push(o.texto); if (o.devolucion) t.push(o.devolucion); }
-    if (p.pista) t.push(p.pista);
-    for (const l of p.lineas ?? []) { t.push(l.devolucion); if (l.pista) t.push(l.pista); }
-    if (p.acierto) t.push(p.acierto.texto, ...(p.acierto.calculos ?? []));
-  }
-  return t;
-}
-
-/*
- * Los «…» de primer nivel del contenido de la v1 que el estudiante ve. Fuera
- * quedan las notas de Near: lo que va entre paréntesis, entre asteriscos
- * («*[…]*», «*No uso…*»), la cita del libro tras «El libro dice:» y las
- * etiquetas de los errores («- «no cambia»: …»).
- */
-function citasVisibles(md) {
-  const limpio = md
-    .replace(/\([^()]*\)/g, "")
-    .replace(/\*[^*\n]*\*/g, "")
-    .replace(/El libro dice: «[^»]*»\./g, "")
-    .replace(/^(\s*- )«[^»]*»: /gm, "$1");
-  const citas = [];
-  let nivel = 0;
-  let actual = "";
-  for (const c of limpio) {
-    if (c === "«") { if (nivel > 0) actual += c; nivel++; continue; }
-    if (c === "»") { nivel--; if (nivel > 0) actual += c; else { citas.push(actual); actual = ""; } continue; }
-    if (nivel > 0) actual += c;
-  }
-  assert.equal(nivel, 0, "las comillas de la v1 no cierran");
-  return citas;
-}
-
-function tablaDespuesDe(md, marca) {
-  const desde = md.indexOf(marca);
-  assert.ok(desde >= 0, `no está «${marca}» en la v1`);
-  const lineas = md.slice(desde).split("\n");
-  const inicio = lineas.findIndex((l) => l.startsWith("|"));
-  const filas = [];
-  for (const l of lineas.slice(inicio)) {
-    if (!l.startsWith("|")) break;
-    filas.push(l.slice(1, -1).split("|").map((c) => c.trim()));
-  }
-  return filas.filter((f) => !f.every((c) => /^-*$/.test(c)));
-}
-
-/* ═══════════ 1 · TEXTOS CONTRA LA v1 ═══════════ */
-
-test("★★★ cada texto de los datos está, letra por letra, en la v1 de Near (o, si es del lote 2, en su paquete)", () => {
-  const faltan = textosVisibles().filter((t) => !PAQUETE.includes(t) && !LOTE2_PISTAS.includes(t) && !LOTE2_ANEXO.includes(t));
-  /* Los botones no los trae la v1 (convención de AP1 y AP2): se comprueban aparte. */
-  assert.deepEqual(faltan.filter((t) => !Object.values(A.BOTON).includes(t)), [], "estos textos no están en la v1");
-  assert.deepEqual(textosVisibles().filter((t) => /[()]/.test(t)), [], "un texto visible con paréntesis escaparía al filtro de la prueba 2");
-});
-
-/* ═══════════ LOTE 2 · LAS PISTAS Y EL ANEXO DE NEAR ═══════════ */
-
-/* Las pistas del lote 2 de una pieza, por pantalla («id») o por línea («id · línea»). */
-function pistasDeNear(pieza) {
-  const desde = LOTE2_PISTAS.indexOf(`### ${pieza} `);
-  assert.ok(desde >= 0, `la pieza ${pieza} no está en el lote 2`);
-  const hasta = LOTE2_PISTAS.indexOf("\n### ", desde);
-  return Object.fromEntries(LOTE2_PISTAS.slice(desde, hasta < 0 ? undefined : hasta).split("\n").filter((l) => /^\| P\d/.test(l)).map((l) => {
-    const c = l.slice(1, -1).split("|").map((x) => x.trim());
-    const [, id, linea] = c[0].match(/`([^`]+)`(?: · (\S+))?/);
-    return [linea && linea !== "²" ? `${id} · ${linea}` : id, c[2].match(/^«(.+)»$/)[1]];
-  }));
-}
-
-/* Las pistas que llevan los datos de una pieza, con las mismas claves. */
-function pistasDeLosDatos(pieza) {
-  const out = {};
-  for (const p of pieza.pantallas) {
-    if (p.opciones) out[p.id] = p.pista;
-    for (const l of p.lineas ?? []) out[`${p.id} · ${l.id}`] = l.pista ?? p.pista;
-  }
-  return out;
-}
-
-test("★★★ lote 2 · pistas: cada pregunta y cada línea de Debe o Haber lleva la suya, letra por letra la de Near", () => {
-  assert.deepEqual(pistasDeLosDatos(P), pistasDeNear(A.A6_ID));
-  /* Sin preguntas de dos opciones: el anexo no toca esta pieza. */
-  assert.ok(!LOTE2_ANEXO.includes(`| ${A.A6_ID} |`));
-});
-
-test("★★★ cada texto visible de la v1 está en los datos: no falta ninguno", () => {
-  const datos = new Set(textosVisibles());
-  const citas = citasVisibles(CONTENIDO);
-  assert.ok(citas.length >= 45, `se leyeron solo ${citas.length} textos de la v1`);
-  assert.deepEqual(citas.filter((c) => !datos.has(c)), [], "estos textos de la v1 no están en los datos");
-});
-
-test("★★ los botones son los de la convención de AP1 y AP2, y el resumen no lleva", () => {
-  assert.deepEqual(A.BOTON, { empezar: "Empezar", seguir: "Seguir", confirmar: "Confirmar", probarOtra: "Probar otra" });
-  assert.equal(pantalla("resumen").boton, null);
-});
-
-/* ═══════════ 2 · TABLAS Y CIFRAS ═══════════ */
-
-test("★★★ la ficha y los dos asientos del 1 de junio son los de la v1", () => {
-  const ficha = tablaDespuesDe(CONTENIDO, "Ficha de la devolución:").slice(1);
-  assert.deepEqual(pantalla("el-caso").ficha.map((f) => [f.dato, f.texto]), ficha);
-  const t = tablaDespuesDe(CONTENIDO, "Asientos del 1 de junio");
-  const [comp, vend] = pantalla("el-caso").asientos;
-  const lado = (l, cual) => (l.lado === cual ? A.cifra(l.monto) : "");
-  assert.deepEqual(t[0], [comp.libro, "Debe", "Haber", "", vend.libro, "Debe", "Haber"]);
-  assert.deepEqual(t.slice(1), comp.lineas.map((l, i) => {
-    const v = vend.lineas[i];
-    return [l.cuenta, lado(l, A.DEBE), lado(l, A.HABER), "", v.cuenta, lado(v, A.DEBE), lado(v, A.HABER)];
-  }));
-});
-
-test("★★★ las líneas de los dos libros del 5 de junio son las de la v1, con su lado y su monto", () => {
-  const leer = (marca, sig) => {
-    const s = seccion(marca, sig);
-    const fila = s.split("\n").find((l) => /Líneas/.test(l));
-    return fila.split(": ").slice(1).join(": ").split(" · ").map((x) => {
-      const m = x.match(/^(.+) \$([\d.]+) → (Debe|Haber)$/);
-      assert.ok(m, `no se entiende la línea «${x}»`);
-      return { cuenta: m[1], cifra: m[2], lado: m[3] === "Debe" ? A.DEBE : A.HABER };
-    });
+  await act(async () => { raiz.render(h(Devoluciones, { pieza, rotulo: "R", ...props })); });
+  const q = (s) => caja.querySelector(s);
+  const qa = (s) => [...caja.querySelectorAll(s)];
+  const clic = async (el) => { assert.ok(el, "no está lo que se iba a tocar"); await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); }); };
+  return {
+    caja, q, qa, clic,
+    seguir: () => clic(q(".c3-seguir")),
+    accion: (a, v) => clic(q(`[data-accion="${a}"]${v ? `[data-v="${v}"]` : ""}`)),
+    op: (id) => clic(q(`[data-op="${id}"]`) ?? q(`[data-elige="${id}"]`)),
+    lado: (l) => clic(q(`.c3-lado[data-lado="${l}"]`)),
+    msg: () => q("[data-c3-msg]").textContent,
+    id: () => q("[data-pieza]").dataset.pantalla,
+    desmontar: () => { act(() => raiz.unmount()); caja.remove(); },
   };
-  const comoDatos = (id) => pantalla(id).lineas.map((l) => ({ cuenta: l.cuenta, cifra: A.cifra(l.monto), lado: l.lado }));
-  assert.deepEqual(comoDatos("libro-del-comprador"), leer("**P5", "**P6"));
-  assert.deepEqual(comoDatos("libro-del-vendedor"), leer("**P6", "**P7"));
+}
+const desde = (id) => ({ ...P, pantallas: P.pantallas.slice(P.pantallas.findIndex((x) => x.id === id)) });
+const enFoco = (el, msg) => assert.ok(el && document.activeElement === el, `${msg}: el foco está en ${document.activeElement?.tagName}.${document.activeElement?.className}`);
+const bloqueado = (m, si = true) => assert.equal(m.q(".c3-seguir").getAttribute("aria-disabled"), String(si));
+/* Lo que el estudiante ve: los nodos de texto cuyo elemento se ve. */
+const visible = (m) => {
+  const andar = document.createTreeWalker(m.caja, w.NodeFilter.SHOW_TEXT);
+  let t = "";
+  for (let n = andar.nextNode(); n; n = andar.nextNode()) if (n.parentElement && !n.parentElement.closest("style") && CANON.seVe(n.parentElement, w)) t += `${n.textContent} `;
+  return t;
+};
+const sinIbaAqui = (m) => assert.doesNotMatch(m.caja.textContent, /Iba aquí/);
+const ficha = (m, key) => m.q(`[data-ficha="${key}"]`);
+const texto = (el) => el?.textContent;
+
+/* ═══════════ 1 · TEXTOS ═══════════ */
+
+test("★★★ las pantallas son, campo por campo y letra por letra, las del a6.js de Watari con M-1, los rótulos de Near y el §5 de Mello cerrado por Near", () => {
+  assert.deepStrictEqual(conFunciones(A.PANTALLAS), conFunciones(esperadas()));
+  assert.equal(P.pantallas, A.PANTALLAS);
+  assert.deepEqual(P.pantallas.map((p) => p.id), ["portada", "que-es-una-devolucion", "dos-cuentas-propias", "el-caso", "cuanto-se-reversa", "libro-del-comprador", "libro-del-vendedor", "lado-a-lado", "resumen"]);
+  /* Las líneas de los dos libros son las de Watari, una por una. */
+  const R = deWatari();
+  assert.deepStrictEqual(A.COMPRADOR, R.find((x) => x.id === "libro-del-comprador").lineas);
+  assert.deepStrictEqual(A.VENDEDOR, R.find((x) => x.id === "libro-del-vendedor").lineas);
 });
 
-test("★★★ las cifras se calculan y las sumas del 5 de junio cuadran, como dice la v1", () => {
-  assert.deepEqual(
-    [A.CIFRAS.ivaCompra, A.CIFRAS.retCompra, A.CIFRAS.totalCompra, A.CIFRAS.ivaDevuelto, A.CIFRAS.retDevuelto, A.CIFRAS.totalDevuelto],
-    [2432000, 532000, 17100000, 384000, 84000, 2700000],
-  );
-  for (const [id, marca, sig] of [["libro-del-comprador", "**P5", "**P6"], ["libro-del-vendedor", "**P6", "**P7"]]) {
-    const ls = pantalla(id).lineas;
-    const s = (lado) => A.cifra(ls.filter((l) => l.lado === lado).reduce((t, l) => t + l.monto, 0));
-    assert.equal(s(A.DEBE), s(A.HABER), `${id} no cuadra`);
-    assert.ok(seccion(marca, sig).includes(`Sumas: ${s(A.DEBE)} = ${s(A.HABER)}`), id);
+test("★★★ M-1: la consigna va aparte del texto y de la pregunta en las dos pantallas con «antes»", () => {
+  for (const id of ["dos-cuentas-propias", "lado-a-lado"]) {
+    const p = pantalla(id);
+    assert.equal(typeof p.antes, "function", id);
+    assert.ok(p.consigna && p.pregunta, id);
+    assert.ok(!(p.texto ?? "").includes(p.consigna) && !(p.texto ?? "").includes(p.pregunta), id);
   }
+  assert.match(MELLO, /La pieza separa `consigna` de `texto`, y el motor pinta la consigna mientras `!P\.antes\(s\)`\./);
 });
 
-test("★★ cada error de línea es el de su línea en la v1, aunque la v1 los liste en otro orden", () => {
-  for (const [id, marca, sig] of [["libro-del-comprador", "**P5", "**P6"], ["libro-del-vendedor", "**P6", "**P7"]]) {
-    const s = seccion(marca, sig);
-    for (const l of pantalla(id).lineas) {
-      assert.ok(s.includes(`«${l.devolucion}»`), `${id} · ${l.id}`);
-      /* La explicación nombra la cuenta de su línea, o lo que esa cuenta representa. */
-      const clave = { proveedores: "proveedor", retencion: "retención", iva: "IVA", devoluciones: "Devoluciones", anticipo: "anticipo", clientes: "cliente" }[l.id];
-      assert.ok(l.devolucion.includes(clave), `${id} · ${l.id}: la explicación no es de esa línea`);
+test("★★★ «dos-cuentas-propias» y el lado a lado con los textos de Near (c3-mello-near.md); C1: la razón del libro, de main, en el «¿Por qué?»", () => {
+  const p = pantalla("dos-cuentas-propias");
+  const m = pMain("dos-cuentas-propias");
+  const d = N5.dosCuentas;
+  assert.equal(p.texto, d.texto);
+  assert.equal(p.pregunta, d.pregunta);
+  assert.deepEqual(p.opciones.map((o) => [o.id, o.t, o.devolucion ?? null, Boolean(o.correcta)]), [
+    ["saber-cuanto", d.correcta, null, true], ["no-cambia", d.otras[0], d.noCambia, false], ["no-se-tocan", d.otras[1], d.noSeTocan, false]]);
+  assert.equal(p.bien, d.bien);
+  /* Lo que no cambia: la razón del libro (párrafos 2.º a 4.º de main), la pista y el pie. */
+  assert.equal(p.porque, m.parrafos.slice(1).join(" "));
+  assert.ok(p.porque.startsWith("El libro da la razón: "));
+  assert.equal(p.pista, m.pista);
+  assert.equal(p.pie, m.pie);
+  /* N-2 de Mello: entre opciones, como mucho una palabra de diferencia. */
+  const pal = (t) => t.split(/\s+/).length;
+  for (const id of ["dos-cuentas-propias", "lado-a-lado"]) {
+    const n = pantalla(id).opciones.map((o) => pal(o.t));
+    assert.ok(Math.max(...n) - Math.min(...n) <= 1, `${id}: ${n}`);
+  }
+  const l = pantalla("lado-a-lado");
+  const ml = pMain("lado-a-lado");
+  assert.deepEqual(l.opciones.map((o) => o.t), [N5.ladoALado.correcta, ...N5.ladoALado.otras]);
+  assert.deepEqual(l.opciones.map((o) => o.devolucion ?? null), ml.opciones.map((o) => o.devolucion ?? null), "las devoluciones de main del lado a lado no cambian");
+  assert.equal(l.pista, ml.pista);
+  assert.equal(l.bien, ml.acierto.texto);
+});
+
+test("★★★ lo que Watari conserva de main va letra por letra: pistas, preguntas, opciones, devoluciones, aciertos, líneas, pies y resumen", () => {
+  /* Lo que Near reescribió para el §5 de Mello se mira en la prueba de arriba. */
+  const DE_NEAR = new Set(["dos-cuentas-propias"]);
+  for (const p of P.pantallas) {
+    const m = pMain(p.id);
+    assert.ok(m, p.id);
+    assert.equal(p.pie, m.pie, `${p.id}: pie`);
+    if (m.pista) assert.equal(p.pista, m.pista, `${p.id}: pista`);
+    if (m.opciones && !DE_NEAR.has(p.id)) {
+      const t = p.id !== "lado-a-lado";
+      assert.deepEqual(p.opciones.map((o) => [o.id, t ? o.t : null, o.devolucion ?? null, Boolean(o.correcta)]), m.opciones.map((o) => [o.id, t ? o.texto : null, o.devolucion ?? null, o.correcta]), p.id);
+      assert.equal(p.pregunta ?? p.texto, m.pregunta, `${p.id}: pregunta`);
+    }
+    if (m.acierto && !DE_NEAR.has(p.id)) assert.equal(p.bien, m.acierto.texto, `${p.id}: acierto`);
+    if (m.lineas) assert.deepEqual(p.lineas.map(({ id, cuenta, monto, lado, pista, devolucion }) => ({ id, cuenta, monto, lado, pista, devolucion })), m.lineas.map(({ id, cuenta, monto, lado, pista, devolucion }) => ({ id, cuenta, monto, lado, pista, devolucion })), p.id);
+  }
+  assert.equal(pantalla("portada").texto, pMain("portada").objetivo);
+  assert.deepEqual(pantalla("resumen").lista, pMain("resumen").parrafos);
+  assert.equal(pantalla("resumen").siguiente, pMain("resumen").siguiente);
+  assert.deepEqual(A.CALCULOS, pMain("cuanto-se-reversa").acierto.calculos);
+  for (const c of A.CALCULOS) assert.ok(A6JS.includes(c), c);
+});
+
+test("★★★ cada fantasma es la línea del 1 de junio que reversa: misma cuenta y monto que en main, al lado contrario", () => {
+  const [comp, vend] = pMain("el-caso").asientos;
+  for (const [lineas, original] of [[A.COMPRADOR, comp.lineas], [A.VENDEDOR, vend.lineas]]) {
+    assert.equal(lineas.length, original.length);
+    for (const l of lineas) {
+      const o = original.find((x) => x.cuenta === l.fantasma.cuenta && x.monto === l.fantasma.monto);
+      assert.ok(o, `${l.id}: su fantasma no está en el 1 de junio de main`);
+      assert.notEqual(o.lado, l.lado, `${l.id}: el fantasma va al lado contrario`);
+      assert.equal(l.fantasma.fecha, A.J1);
     }
   }
+  /* Las cifras se calculan y son las de main y las de Watari. */
+  assert.deepEqual(A.CIFRAS, MAIN.CIFRAS);
+  assert.ok(A6JS.includes("compra: 15200000, ivaCompra: 2432000, retCompra: 532000, totalCompra: 17100000, devuelto: 2400000, ivaDev: 384000, retDev: 84000, totalDev: 2700000"));
 });
 
-/* ═══════════ 3 · PANTALLAS Y ESTADOS, MONTADOS ═══════════ */
-
-/* Lo que hay en pantalla, en orden; las opciones se ordenan porque se barajan. */
-function enPantalla(caja) {
-  const out = [];
-  const opciones = [];
-  const marco = caja.querySelector("[data-pieza]");
-  for (const el of marco.querySelectorAll("[data-texto], [data-opcion], [data-boton], [data-pie], [data-palabra]")) {
-    if (el.matches("[data-opcion]")) { opciones.push(el.textContent); continue; }
-    out.push(el.textContent);
+test("★★★ los rótulos [W]: los de Near, letra por letra; los demás de la figura, en el a6.js de Watari; ningún rótulo reemplazado queda", () => {
+  assert.deepEqual(FILAS_LEIDAS, FILAS_NEAR_A6, "el ayudante lee todas las filas de A6 de Near");
+  const F = A.FIGURA;
+  const DE_NEAR = {
+    "escena.devolver": "devolver", "estado.directo": "directo", "estado.aparte": "aparte", "estado.titulo": "tituloEstado", "estado.neto": "neto",
+    "barra.comprada": "comprada", "barra.devuelta": "devuelta", "barra.queda": "queda", "barra.pelar": "pelar",
+    "libros.comprador": "libroComprador", "libros.vendedor": "libroVendedor",
+    "espejo.j1": "j1", "espejo.j5": "j5", "espejo.comprador": "comprador", "espejo.vendedor": "vendedor",
+  };
+  for (const [grupo, textos] of Object.entries(F)) {
+    for (const [k, t] of Object.entries(textos)) {
+      const clave = `${grupo}.${k}`;
+      if (DE_NEAR[clave]) assert.equal(t, N[DE_NEAR[clave]].near, clave);
+      else assert.ok(A6JS.includes(t), `${clave}: «${t}» no está en el a6.js de Watari`);
+    }
   }
-  return { textos: out, opciones: opciones.sort() };
+  assert.equal(pantalla("dos-cuentas-propias").consigna, N.consignaP3.near);
+  assert.equal(pantalla("lado-a-lado").consigna, N.consignaP8.near);
+  assert.equal(F.estado.neto, "Ventas, menos devoluciones");
+  /* Ningún rótulo de Watari que Near cambió sigue entre comillas en los datos ni en el componente. */
+  const todo = FUENTE_DATOS + FUENTE;
+  for (const r of Object.values(N)) {
+    /* «1 de junio» sigue siendo dato (la fecha de la barra y de cada fantasma): el selector se mira arriba. */
+    if (r.watari === r.near || r === N.j1) continue;
+    const re = new RegExp(`["'\`]${r.watari.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}["'\`]`);
+    assert.doesNotMatch(todo, re, `queda «${r.watari}»`);
+  }
+  assert.doesNotMatch(JSON.stringify(P) + JSON.stringify(F), /Ventas netas|Restar directo|Cuenta aparte|resultados · vendedor|anotarla\.|mira cada línea\./);
+});
+
+test("★★ el título y la sección: la pieza se llama como en main y el código es el de la «Pieza 3» de Watari", () => {
+  assert.equal(P.titulo, "Devoluciones en periódico");
+  assert.match(SECCION, /reemplaza DevolucionesEnPeriodico · arregla C1/);
+  assert.ok(A6JS.startsWith("/* C3 · T7-1 A6 «Devoluciones en periódico»"));
+  assert.ok(A6CSS.includes(".a6 .c3-lado { grid-row: 1 / -1; grid-template-rows: subgrid; }"));
+});
+
+/* ═══════════ 2 · LA PIEZA MONTADA ═══════════ */
+
+test("★★★ portada y P2: la mercancía vuelve al vendedor y la nota crédito viaja; los nombres llegan con ella; «Seguir» espera", async () => {
+  REDUCIDO = false;
+  const m = await montar();
+  assert.equal(m.id(), "portada");
+  assert.ok(m.q("[data-pieza]").classList.contains("dormida"));
+  assert.equal(texto(m.q("[data-texto]")), pantalla("portada").texto);
+  assert.equal(texto(m.q('[data-boton="empezar"]')), "Empezar");
+  assert.deepEqual(m.qa(".c3-cruce-rot span").map(texto), ["Vendedor", "Comprador"]);
+  const merc = ficha(m, "mercancia");
+  const nota = ficha(m, "nota");
+  assert.ok(merc.classList.contains("der"), "la mercancía, en el lado del comprador");
+  assert.equal(texto(merc), "MercancíaEn mal estado");
+  assert.ok(nota.classList.contains("oculta") && !nota.classList.contains("der"));
+  assert.equal(m.q('[data-accion="devolver"]'), null, "en la portada no hay botón de la escena");
+  await m.seguir();
+  assert.equal(m.id(), "que-es-una-devolucion");
+  enFoco(m.q("[data-texto]"), "al seguir, el foco va al texto");
+  bloqueado(m);
+  await m.seguir();
+  assert.equal(m.id(), "que-es-una-devolucion", "«Seguir» no avanza sin devolver");
+  assert.equal(m.q(".a6-nombres").getAttribute("aria-hidden"), "true");
+  assert.ok(!m.q(".a6-nombres").classList.contains("on"));
+  await m.accion("devolver");
+  assert.equal(ficha(m, "mercancia"), merc, "la ficha es el mismo nodo: se desliza");
+  assert.equal(ficha(m, "nota"), nota);
+  assert.ok(!merc.classList.contains("der"));
+  assert.equal(texto(merc), "MercancíaDevuelta");
+  assert.ok(nota.classList.contains("der") && !nota.classList.contains("oculta"));
+  assert.ok(m.q(".a6-nombres").classList.contains("on"));
+  assert.equal(m.q(".a6-nombres").getAttribute("aria-hidden"), null);
+  assert.equal(texto(m.q(".a6-nombres")), "Para el vendedor: devolución de ventasPara el comprador: devolución de compras");
+  assert.equal(m.q('[data-accion="devolver"]').getAttribute("aria-disabled"), "true");
+  bloqueado(m, false);
+  m.desmontar();
+});
+
+test("★★★ P3: la miniatura no califica; la pregunta sale después de ver «En su propia cuenta»; la razón del libro, solo en el «¿Por qué?»", async () => {
+  const m = await montar(desde("dos-cuentas-propias"));
+  const p = pantalla("dos-cuentas-propias");
+  assert.equal(texto(m.q("[data-texto]")), p.texto);
+  assert.equal(texto(m.q("[data-consigna]")), N.consignaP3.near);
+  assert.equal(m.q("[data-pregunta]"), null);
+  assert.equal(m.qa("[data-op]").length, 0, "0 opciones antes de ver la cuenta aparte");
+  assert.doesNotMatch(visible(m), /El libro da la razón|administradores/);
+  assert.deepEqual(m.qa('[data-accion="modo"]').map((b) => [texto(b), b.getAttribute("aria-pressed")]), [["Restar de las ventas", "true"], ["En su propia cuenta", "false"]]);
+  assert.equal(texto(m.q(".a6-er-tit")), "Estado de resultados · El Tajamar");
+  const fila = (f) => texto(m.q(`[data-fila="${f}"]`));
+  assert.equal(fila("ingresos"), "Ingresos por ventas$12.800.000");
+  assert.equal(fila("devoluciones"), "− Devoluciones de ventas—");
+  assert.ok(m.q('[data-fila="devoluciones"]').classList.contains("off"));
+  assert.equal(fila("neto"), "Ventas, menos devoluciones$12.800.000");
+  bloqueado(m);
+
+  await m.accion("modo", "aparte");
+  assert.equal(fila("ingresos"), "Ingresos por ventas$15.200.000");
+  assert.equal(fila("devoluciones"), "− Devoluciones de ventas$2.400.000");
+  assert.ok(!m.q('[data-fila="devoluciones"]').classList.contains("off"));
+  assert.equal(fila("neto"), "Ventas, menos devoluciones$12.800.000");
+  assert.equal(m.q("[data-consigna]").hidden, true, "M-1: la consigna se va cuando sale la pregunta");
+  assert.equal(texto(m.q("[data-pregunta]")), p.pregunta);
+  assert.deepEqual(porId(m.qa("[data-op]").map((b) => [b.dataset.op, texto(b)])), porId(p.opciones.map((o) => [o.id, o.t])));
+  /* Volver a «Restar de las ventas» no esconde la pregunta. */
+  await m.accion("modo", "directo");
+  assert.equal(fila("ingresos"), "Ingresos por ventas$12.800.000");
+  assert.equal(m.qa("[data-op]").length, 3);
+
+  /* Escalera C2. */
+  await m.op("no-cambia");
+  assert.ok(m.q('[data-op="no-cambia"]').classList.contains("mal"));
+  assert.equal(texto(m.q('[data-op="no-cambia"] [data-pastilla]')), "No va aquí");
+  assert.ok(m.msg().includes(p.pista));
+  assert.equal(m.qa(".c3-op.pista").length, 0);
+  enFoco(m.q("[data-c3-msg]"), "1.er error");
+  bloqueado(m);
+  await m.op("no-se-tocan");
+  assert.ok(m.msg().includes(p.opciones[2].devolucion));
+  assert.ok(!m.msg().includes(p.pista));
+  assert.ok(m.q('[data-op="saber-cuanto"]').classList.contains("pista"));
+  enFoco(m.q("[data-c3-msg]"), "2.º error");
+  sinIbaAqui(m);
+  assert.doesNotMatch(visible(m), /El libro da la razón/);
+  await m.op("saber-cuanto");
+  assert.ok(m.msg().includes(p.bien));
+  assert.ok(m.q('[data-op="saber-cuanto"]').classList.contains("bien"));
+  assert.doesNotMatch(visible(m), /El libro da la razón/, "la razón, plegada");
+  const pq = m.q('[data-boton="por-que"]');
+  assert.equal(pq.getAttribute("aria-expanded"), "false");
+  await m.clic(pq);
+  assert.equal(texto(m.q("[data-porque]")), p.porque);
+  enFoco(m.q("[data-porque]"), "al abrir el porqué");
+  bloqueado(m, false);
+  m.desmontar();
+});
+
+test("★★★ P4: la parte devuelta se pela de la barra de la compra; «Seguir» espera", async () => {
+  const m = await montar(desde("el-caso"));
+  assert.equal(texto(m.q("[data-texto]")), pantalla("el-caso").texto);
+  const fila = (f) => texto(m.q(`[data-fila="${f}"]`));
+  assert.equal(texto(m.q(".a6-cab")), "Dajema compra · El Tajamar vende1 de junio");
+  assert.equal(fila("comprada"), "Mercancía comprada$15.200.000");
+  assert.equal(fila("devuelta"), "Devuelta · 5 de junio—");
+  assert.equal(fila("queda"), "Se queda con Dajema—");
+  assert.ok(m.q('[data-fila="queda"]').classList.contains("off"));
+  assert.equal(texto(m.q(".c3-rotulo")), A.FIGURA.barra.rotulo);
+  assert.ok(!m.q('[data-barra="compra"] .dev').classList.contains("pelada"));
+  assert.equal(m.q('[data-barra="compra"] .queda').style.width, `${100 - A.PCT}%`);
+  bloqueado(m);
+  await m.accion("pelar");
+  assert.ok(m.q('[data-barra="compra"] .dev').classList.contains("pelada"));
+  assert.equal(fila("devuelta"), "Devuelta · 5 de junio$2.400.000");
+  assert.equal(fila("queda"), "Se queda con Dajema$12.800.000");
+  assert.equal(m.q('[data-accion="pelar"]').getAttribute("aria-disabled"), "true");
+  bloqueado(m, false);
+  m.desmontar();
+});
+
+test("★★★ P5 (A6-1 de Mello): la barra del IVA va entera hasta el acierto; el corte y los tres cálculos llegan con él", async () => {
+  REDUCIDO = false;
+  const m = await montar(desde("cuanto-se-reversa"));
+  const p = pantalla("cuanto-se-reversa");
+  const iva = () => m.qa('[data-barra="iva"] i');
+  const entera = (cuando) => {
+    assert.equal(iva().length, 1, `${cuando}: la barra del IVA no lleva corte`);
+    assert.ok(iva()[0].classList.contains("queda") && iva()[0].classList.contains("entera"), cuando);
+    assert.equal(iva()[0].style.width, "100%", cuando);
+    assert.equal(m.q('[data-barra="iva"] .dev'), null, cuando);
+    assert.equal(m.q("[data-calculos]"), null, `${cuando}: sin cálculos`);
+  };
+  assert.equal(texto(m.q("[data-texto]")), p.texto);
+  assert.equal(m.q("[data-pregunta]"), null, "las opciones van en la figura");
+  assert.deepEqual(porId(m.qa("[data-elige]").map((b) => [b.dataset.elige, texto(b)])), porId([["proporcional", "$384.000"], ["todo", "$2.432.000"], ["nada", "$0"]]));
+  assert.ok(m.q('[data-barra="mercancia"] .dev.marcada'), "la mercancía sí muestra su tajada");
+  entera("al llegar");
+  bloqueado(m);
+  await m.op("todo");
+  assert.ok(m.q('[data-elige="todo"]').classList.contains("mal"));
+  assert.equal(texto(m.q('[data-elige="todo"] [data-pastilla]')), "No va aquí");
+  assert.match(m.q('[data-elige="todo"]').getAttribute("aria-label"), /Incorrecto\.$/);
+  assert.ok(m.msg().includes(p.pista));
+  assert.equal(m.qa(".a6-base.pista").length, 0);
+  enFoco(m.q("[data-c3-msg]"), "1.er error");
+  entera("con el 1.er error");
+  await m.op("nada");
+  assert.ok(m.msg().includes(p.opciones[2].devolucion));
+  assert.ok(m.q('[data-elige="proporcional"]').classList.contains("pista"));
+  entera("con el 2.º error");
+  sinIbaAqui(m);
+  await m.op("proporcional");
+  assert.deepEqual(iva().map((i) => i.className), ["queda", "dev marcada"]);
+  assert.equal(iva()[1].style.width, `${A.PCT}%`);
+  assert.deepEqual(m.qa("[data-calculos] span").map(texto), A.CALCULOS);
+  assert.ok(m.q("[data-calculos]").classList.contains("nuevo"));
+  assert.ok(m.q('[data-elige="proporcional"]').classList.contains("bien"));
+  assert.equal(texto(m.q('[data-elige="proporcional"] [data-pastilla]')), "Correcto");
+  for (const b of m.qa("[data-elige]")) assert.equal(b.getAttribute("aria-disabled"), "true");
+  assert.ok(m.msg().includes(p.bien));
+  enFoco(m.q("[data-c3-msg]"), "acierto");
+  bloqueado(m, false);
+  m.desmontar();
+});
+
+for (const [id, L, titulo] of [["libro-del-comprador", A.COMPRADOR, "Libro de Dajema · 5 de junio"], ["libro-del-vendedor", A.VENDEDOR, "Libro de El Tajamar · 5 de junio"]]) {
+  test(`★★★ ${id}: línea por línea, con su escalera; cada línea deja enfrente su fantasma del 1 de junio`, async () => {
+    REDUCIDO = false;
+    const m = await montar(desde(id));
+    assert.equal(texto(m.q("[data-texto]")), pantalla(id).texto);
+    assert.equal(texto(m.q(".c3-t-tit")), titulo);
+    const otro = (l) => (l === "debe" ? "haber" : "debe");
+    for (const [k, l] of L.entries()) {
+      assert.equal(m.q(".a6-t").style.getPropertyValue("--n"), String(k + 1), "--n: las filas pareadas");
+      assert.equal(m.q(".c3-ficha").dataset.linea, l.id);
+      bloqueado(m);
+      if (k === 0) {
+        await m.lado(otro(l.lado));
+        assert.ok(m.msg().includes(l.pista), "1.er error: la pista de la línea");
+        assert.ok(!m.q(`.c3-lado[data-lado="${l.lado}"]`).classList.contains("pista"));
+        enFoco(m.q("[data-c3-msg]"), "1.er error de la línea");
+        await m.lado(otro(l.lado));
+        assert.ok(m.msg().includes(l.devolucion), "2.º error: su devolución");
+        assert.ok(m.q(`.c3-lado[data-lado="${l.lado}"]`).classList.contains("pista"));
+        sinIbaAqui(m);
+      }
+      await m.lado(l.lado);
+      const ren = m.q(`.c3-lado[data-lado="${l.lado}"] [data-ren="${l.id}"]`);
+      assert.ok(ren, `${l.id}: cae en su lado`);
+      assert.ok(ren.classList.contains("nuevo"));
+      const f = m.qa(`.c3-lado[data-lado="${otro(l.lado)}"] .c3-ren.fantasma`).at(-1);
+      assert.ok(f.classList.contains("nuevo"), "el fantasma aparece con su línea");
+      assert.equal(texto(f), `${l.fantasma.cuenta !== l.cuenta ? l.fantasma.cuenta : ""}${A.pesos(l.fantasma.monto)}1 de junio`, `${l.id}: el fantasma nombra la cuenta solo si cambia`);
+    }
+    /* Las filas: en cada lado, una por línea (la propia o el fantasma), en el mismo orden. */
+    for (const lado of ["debe", "haber"]) assert.equal(m.qa(`.c3-lado[data-lado="${lado}"] .c3-ren`).length, L.length);
+    assert.ok(m.msg().includes(pantalla(id).bien));
+    assert.equal(m.q(".c3-ficha"), null);
+    assert.equal(m.q(".a6-t").style.getPropertyValue("--n"), String(L.length + 1));
+    bloqueado(m, false);
+    m.desmontar();
+  });
 }
 
-test("★★★ cada pantalla y cada estado muestran exactamente sus textos", async () => {
-  const m = await montar(h(Devoluciones, { rotulo: "R" }));
-  const vistos = [];
-  try {
-    for (const p of P.pantallas) {
-      assert.equal(m.caja.querySelector("[data-pieza]").dataset.pantalla, p.id);
-      if (["portada", "lectura", "resumen", "caso"].includes(p.tipo)) {
-        const esperado = [p.objetivo, p.enunciado, ...(p.parrafos ?? []), p.siguiente, p.boton, p.pie].filter(Boolean);
-        assert.deepEqual(enPantalla(m.caja).textos, esperado, p.id);
-        vistos.push(p.id);
-        if (p.boton) await tocar(m.caja.querySelector("[data-boton]"));
-        continue;
-      }
-      if (p.tipo === "eleccion") {
-        const cab = [...p.parrafos, p.pregunta];
-        const ops = p.opciones.map((o) => o.texto).sort();
-        assert.deepEqual(enPantalla(m.caja), { textos: [...cab, A.BOTON.confirmar, p.pie], opciones: ops }, `${p.id} colocando`);
-        vistos.push(`${p.id}:colocando`);
-        /* La escalera de ayuda (lote 2): el 1.er error da la pista; el 2.º y siguientes, la respuesta con su porqué.
-         * Se recorren todas las incorrectas y luego se falla otra vez la primera, para ver los dos peldaños. */
-        assert.ok(p.pista, `${p.id} sin pista del lote 2`);
-        const malas = p.opciones.filter((x) => !x.correcta);
-        let fallos = 0;
-        for (const o of [...malas, malas[0]]) {
-          await tocar(m.caja.querySelector(`[data-opcion="${o.id}"]`));
-          await tocar(boton(m.caja, "confirmar"));
-          fallos++;
-          const esperados = textosDelError(p, o, fallos);
-          assert.deepEqual(esperados, fallos === 1 ? [p.pista] : [`La respuesta es «${p.opciones.find((x) => x.correcta).texto.replace(/\.$/, "")}».`, sinAsiEs(p.acierto.texto)].filter(Boolean), `${p.id} escalera ${fallos}`);
-          assert.deepEqual(enPantalla(m.caja), { textos: [...cab, A.INTERFAZ.incorrecto, ...esperados, A.BOTON.probarOtra, p.pie], opciones: ops }, `${p.id} error ${fallos} ${o.id}`);
-          vistos.push(`${p.id}:error${fallos}:${o.id}`);
-          await tocar(boton(m.caja, "probar-otra"));
-        }
-        await tocar(m.caja.querySelector(`[data-opcion="${p.opciones.find((x) => x.correcta).id}"]`));
-        await tocar(boton(m.caja, "confirmar"));
-        assert.deepEqual(enPantalla(m.caja), { textos: [...cab, A.INTERFAZ.correcto, p.acierto.texto, ...p.acierto.calculos, A.BOTON.seguir, p.pie], opciones: ops }, `${p.id} acierto`);
-        vistos.push(`${p.id}:acierto`);
-        await tocar(boton(m.caja, "seguir"));
-        continue;
-      }
-      /* lados: todo al revés dos veces (1.er error: la pista de cada línea; 2.º: la respuesta y su porqué, y la
-       * línea se cierra en su lado); luego, con todas cerradas, se confirma y es el acierto. */
-      const otro = (lado) => (lado === A.DEBE ? A.HABER : A.DEBE);
-      assert.deepEqual(enPantalla(m.caja).textos, [p.consigna, A.BOTON.confirmar, p.pie], `${p.id} colocando`);
-      vistos.push(`${p.id}:colocando`);
-      for (const fallos of [1, 2]) {
-        for (const l of p.lineas) await tocar(casilla(m.caja, l.id, otro(l.lado)));
-        await tocar(boton(m.caja, "confirmar"));
-        for (const l of p.lineas) {
-          assert.ok(l.pista, `${p.id} · ${l.id} sin pista del lote 2`);
-          assert.deepEqual(textosDeLinea(p, l, fallos), fallos === 1 ? [l.pista] : [`La respuesta es «${l.lado === A.DEBE ? "Debe" : "Haber"}».`, l.devolucion], `${p.id} · ${l.id} escalera ${fallos}`);
-        }
-        assert.deepEqual(enPantalla(m.caja).textos, [p.consigna, ...p.lineas.flatMap((l) => [A.INTERFAZ.incorrecto, ...textosDeLinea(p, l, fallos)]), A.BOTON.probarOtra, p.pie], `${p.id} error ${fallos}`);
-        vistos.push(`${p.id}:error${fallos}`);
-        await tocar(boton(m.caja, "probar-otra"));
-        for (const l of p.lineas) {
-          assert.equal(casilla(m.caja, l.id, l.lado).dataset.llena, fallos === 1 ? "no" : "si", `${p.id} · ${l.id} tras probar otra ${fallos}`);
-          assert.equal(casilla(m.caja, l.id, otro(l.lado)).dataset.llena, "no", `${p.id} · ${l.id} tras probar otra ${fallos}`);
-        }
-      }
-      /* Cerradas: tocar el otro lado no las mueve. */
-      for (const l of p.lineas) await tocar(casilla(m.caja, l.id, otro(l.lado)));
-      for (const l of p.lineas) assert.equal(casilla(m.caja, l.id, l.lado).dataset.llena, "si", `${p.id} · ${l.id} cerrada se movió`);
-      await tocar(boton(m.caja, "confirmar"));
-      assert.deepEqual(enPantalla(m.caja).textos, [p.consigna, A.INTERFAZ.correcto, p.acierto.texto, A.BOTON.seguir, p.pie], `${p.id} acierto`);
-      vistos.push(`${p.id}:acierto`);
-      await tocar(boton(m.caja, "seguir"));
-    }
-    /* Portada, P1 y el caso + 3 elecciones (colocando, 2 errores, el 2.º peldaño y el acierto)
-     * + 2 asientos (colocando, 1.er error, 2.º error y acierto) + resumen. */
-    assert.equal(vistos.length, 3 + 3 * 5 + 2 * 4 + 1);
-  } finally {
-    m.desmontar();
-  }
-});
-
-test("★★★ el error lleva a «Probar otra» y el acierto a «Seguir», en las preguntas y en los asientos", async () => {
-  for (const id of ["dos-cuentas-propias", "cuanto-se-reversa", "lado-a-lado"]) {
-    const p = pantalla(id);
-    const m = await montar(h(Devoluciones, { pieza: conPieza(id, "resumen"), rotulo: "R" }));
-    try {
-      assert.equal(boton(m.caja, "confirmar").getAttribute("aria-disabled"), "true");
-      await tocar(m.caja.querySelector(`[data-opcion="${p.opciones.find((o) => !o.correcta).id}"]`));
-      await tocar(boton(m.caja, "confirmar"));
-      assert.deepEqual(activos(m.caja), ["Probar otra"], id);
-      await tocar(boton(m.caja, "probar-otra"));
-      await tocar(m.caja.querySelector(`[data-opcion="${p.opciones.find((o) => o.correcta).id}"]`));
-      await tocar(boton(m.caja, "confirmar"));
-      assert.deepEqual(activos(m.caja), ["Seguir"], id);
-    } finally {
-      m.desmontar();
-    }
-  }
-});
-
-test("★★★ asiento: una línea a la vez, el error debajo de su línea, «Probar otra» devuelve solo las mal puestas, sumas solo al acertar", async () => {
-  const p = pantalla("libro-del-comprador");
-  const m = await montar(h(Devoluciones, { pieza: conPieza("libro-del-comprador", "resumen"), rotulo: "R" }));
-  const filas = () => [...m.caja.querySelectorAll("[data-fila]")].map((f) => f.dataset.fila);
-  try {
-    /* Una línea a la vez (Watari): se ve la primera, y cada colocación abre la siguiente. */
-    assert.deepEqual(filas(), ["proveedores"]);
-    assert.equal(m.caja.querySelector("[data-fecha]").textContent, "5 de junio");
-    assert.match(casilla(m.caja, "proveedores", A.DEBE).getAttribute("aria-label"), /Debe, vacía, lista para recibir$/);
-    assert.equal(boton(m.caja, "confirmar").getAttribute("aria-disabled"), "true");
-    for (const [k, l] of p.lineas.entries()) {
-      await tocar(casilla(m.caja, l.id, l.id === "retencion" ? A.HABER : l.lado));
-      assert.equal(filas().length, Math.min(k + 2, 4));
-    }
-    /* Sin sumas mientras se coloca: con cuatro montos fijos, el cuadre regalaría la respuesta. */
-    assert.equal(m.caja.querySelector("[data-sumas]") === null, true, "las sumas se ven antes del acierto");
-    await tocar(boton(m.caja, "confirmar"));
-    assert.equal(estado(m.caja), "error");
-    assert.equal(m.caja.querySelector("[data-sumas]") === null, true, "las sumas se ven en el error");
-    const mala = casilla(m.caja, "retencion", A.HABER);
-    assert.ok(mala.classList.contains("t7a6-cas-error"));
-    assert.ok(mala.querySelector(".t7a6-marca svg"), "la casilla mala no lleva la X");
-    assert.match(mala.getAttribute("aria-label"), /Haber, 84\.000, incorrecto$/);
-    /* El mensaje va debajo de su línea, y solo el de esa línea. */
-    const enLinea = m.caja.querySelector('[data-fila="retencion"] [data-mensaje=error]');
-    assert.ok(enLinea, "el error no está en su línea");
-    /* 1.er error de la línea: su pista (lote 2). */
-    const retencion = p.lineas.find((l) => l.id === "retencion");
-    const textosEnLinea = () => [...m.caja.querySelectorAll('[data-fila="retencion"] [data-mensaje=error] p')].map((x) => x.textContent);
-    assert.deepEqual(textosEnLinea(), [retencion.pista]);
-    assert.equal(m.caja.querySelectorAll("[data-mensaje=error]").length, 1);
-    await tocar(boton(m.caja, "probar-otra"));
-    assert.deepEqual(filas(), ["proveedores", "retencion", "iva", "devoluciones"], "las líneas visibles no se esconden al reintentar");
-    assert.equal(casilla(m.caja, "retencion", A.HABER).dataset.llena, "no");
-    assert.ok(p.lineas.filter((l) => l.id !== "retencion").every((l) => casilla(m.caja, l.id, l.lado).dataset.llena === "si"));
-    /* 2.º error de la misma línea: la respuesta y su porqué; «Probar otra» la deja cerrada en su lado. */
-    await tocar(casilla(m.caja, "retencion", A.HABER));
-    await tocar(boton(m.caja, "confirmar"));
-    assert.equal(estado(m.caja), "error");
-    assert.deepEqual(textosEnLinea(), ["La respuesta es «Debe».", retencion.devolucion]);
-    assert.equal(m.caja.querySelectorAll("[data-mensaje=error]").length, 1);
-    await tocar(boton(m.caja, "probar-otra"));
-    assert.equal(casilla(m.caja, "retencion", A.DEBE).dataset.llena, "si", "la línea cerrada no quedó en su lado");
-    assert.ok(p.lineas.filter((l) => l.id !== "retencion").every((l) => casilla(m.caja, l.id, l.lado).dataset.llena === "si"));
-    await tocar(casilla(m.caja, "retencion", A.HABER));
-    assert.equal(casilla(m.caja, "retencion", A.DEBE).dataset.llena, "si", "la línea cerrada se pudo mover");
-    assert.equal(casilla(m.caja, "retencion", A.HABER).dataset.llena, "no", "la línea cerrada se pudo mover");
-    await tocar(boton(m.caja, "confirmar"));
-    assert.equal(estado(m.caja), "acierto");
-    assert.deepEqual(sumas(m.caja), ["2.784.000", "2.784.000"]);
-    assert.equal(m.caja.querySelector("[data-sumas] .t7a6-sumas-rot").textContent, "Sumas");
-    for (const l of p.lineas) {
-      const vacia = casilla(m.caja, l.id, l.lado === A.DEBE ? A.HABER : A.DEBE);
-      assert.ok(vacia.classList.contains("t7a6-cas-nada"), `${l.id}: el lado vacío sigue a la vista`);
-      assert.match(casilla(m.caja, l.id, l.lado).getAttribute("aria-label"), /, correcto$/);
-    }
-  } finally {
-    m.desmontar();
-  }
-});
-
-test("★★ en P4 los cálculos no se ven antes del acierto: darían la respuesta", async () => {
-  const p = pantalla("cuanto-se-reversa");
-  const m = await montar(h(Devoluciones, { pieza: conPieza("cuanto-se-reversa"), rotulo: "R" }));
-  try {
-    assert.equal(m.caja.querySelectorAll("[data-calculo]").length, 0);
-    await tocar(m.caja.querySelector('[data-opcion="nada"]'));
-    await tocar(boton(m.caja, "confirmar"));
-    assert.equal(m.caja.querySelectorAll("[data-calculo]").length, 0);
-    await tocar(boton(m.caja, "probar-otra"));
-    await tocar(m.caja.querySelector('[data-opcion="proporcional"]'));
-    await tocar(boton(m.caja, "confirmar"));
-    assert.deepEqual([...m.caja.querySelectorAll("[data-calculo]")].map((c) => c.textContent), p.acierto.calculos);
-    /* El resultado de cada cálculo en blanco: lo que va después del último «= ». */
-    assert.deepEqual([...m.caja.querySelectorAll("[data-calculo] b")].map((b) => b.textContent), ["$384.000", "$84.000", "$2.700.000"]);
-  } finally {
-    m.desmontar();
-  }
-});
-
-test("★★ las opciones se barajan en cada intento", async () => {
-  const m = await montar(h(Devoluciones, { pieza: conPieza("lado-a-lado"), rotulo: "R" }));
-  try {
-    const orden = () => [...m.caja.querySelectorAll("[data-opcion]")].map((b) => b.dataset.opcion);
-    let antes = orden();
-    for (let i = 0; i < 15; i++) {
-      await tocar(m.caja.querySelector('[data-opcion="ingresos"]'));
-      await tocar(boton(m.caja, "confirmar"));
-      await tocar(boton(m.caja, "probar-otra"));
-      assert.notDeepEqual(orden(), antes);
-      antes = orden();
-    }
-  } finally {
-    m.desmontar();
-  }
-});
-
-test("★★★ la tabla espejo sale de los dos asientos, en el orden del comprador, y la fila de las devoluciones se señala solo al acertar", async () => {
-  const esp = pantalla("lado-a-lado").espejo;
-  const comp = pantalla("libro-del-comprador").lineas;
-  const vend = pantalla("libro-del-vendedor").lineas;
-  assert.equal(esp.fecha, "5 de junio");
-  assert.deepEqual(esp.filas.map((f) => f.monto), comp.map((l) => l.monto), "las filas no van en el orden del comprador");
-  for (const f of esp.filas) {
-    const c = comp.find((l) => l.monto === f.monto);
-    const v = vend.find((l) => l.monto === f.monto);
-    assert.deepEqual(f.comprador, { lado: c.lado, cuenta: c.cuenta });
-    assert.deepEqual(f.vendedor, { lado: v.lado, cuenta: v.cuenta });
-    assert.notEqual(f.comprador.lado, f.vendedor.lado, "no está en espejo");
-  }
+test("★★★ P8: la pregunta sale después de ver el 1 de junio; las ocho líneas cruzan de lado (los mismos nodos)", async () => {
+  const m = await montar(desde("lado-a-lado"));
   const p = pantalla("lado-a-lado");
-  const m = await montar(h(Devoluciones, { pieza: conPieza("lado-a-lado"), rotulo: "R" }));
-  const foco = () => [...m.caja.querySelectorAll("[data-fila-espejo].t7a6-esp-foco")].map((f) => f.dataset.filaEspejo);
-  try {
-    const t = m.caja.querySelector("[data-espejo]");
-    assert.equal(t.getAttribute("aria-label"), "5 de junio: el libro del comprador y el del vendedor, lado a lado");
-    assert.equal(t.dataset.revision, "pendiente");
-    assert.deepEqual([...t.querySelectorAll("[role=columnheader][data-revision=pendiente]")].map((x) => x.textContent), ["Dajema (comprador)", "El Tajamar (vendedor)"]);
-    assert.equal(t.querySelector("[data-fecha]").textContent, "5 de junio");
-    assert.deepEqual(
-      [...t.querySelectorAll("[data-fila-espejo]")].map((f) => f.textContent),
-      esp.filas.map((f) => `${f.cifra}${f.comprador.lado === A.DEBE ? "Debe" : "Haber"}${f.comprador.cuenta}${f.vendedor.lado === A.DEBE ? "Debe" : "Haber"}${f.vendedor.cuenta}`),
-    );
-    /* Mientras elige, nada señalado; en el error, tampoco; con el acierto, solo la fila de las devoluciones. */
-    assert.deepEqual(foco(), []);
-    await tocar(m.caja.querySelector('[data-opcion="en-el-debe"]'));
-    await tocar(boton(m.caja, "confirmar"));
-    assert.deepEqual(foco(), []);
-    await tocar(boton(m.caja, "probar-otra"));
-    await tocar(m.caja.querySelector(`[data-opcion="${p.opciones.find((o) => o.correcta).id}"]`));
-    await tocar(boton(m.caja, "confirmar"));
-    assert.deepEqual(foco(), ["2.400.000"]);
-  } finally {
-    m.desmontar();
-  }
+  assert.equal(m.q("[data-texto]").hidden, true);
+  assert.equal(texto(m.q("[data-consigna]")), N.consignaP8.near);
+  assert.equal(m.q("[data-pregunta]"), null);
+  assert.equal(m.qa("[data-op]").length, 0);
+  assert.deepEqual(m.qa('[data-accion="fecha"]').map((b) => [texto(b), b.getAttribute("aria-pressed")]), [["1 de junio · compra", "false"], ["5 de junio · devolución", "true"]]);
+  assert.deepEqual(m.qa(".a6-libro").map(texto), ["Dajema · comprador", "El Tajamar · vendedor"]);
+  const lineas = [...A.COMPRADOR.map((l) => ["comprador", l]), ...A.VENDEDOR.map((l) => ["vendedor", l])];
+  const nodos = lineas.map(([lb, l]) => ficha(m, `${lb}-${l.id}`));
+  const ver = (j1) => lineas.forEach(([lb, l], i) => {
+    const el = ficha(m, `${lb}-${l.id}`);
+    assert.equal(el, nodos[i], "el mismo nodo: la ficha se desliza");
+    const lado = j1 ? (l.lado === "debe" ? "haber" : "debe") : l.lado;
+    const c = j1 ? l.fantasma : l;
+    assert.equal(el.classList.contains("der"), lado === "haber", `${lb}-${l.id}`);
+    assert.equal(texto(el), `${c.cuenta}${A.pesos(c.monto)}`);
+  });
+  ver(false);
+  bloqueado(m);
+  await m.accion("fecha", "j1");
+  ver(true);
+  assert.equal(m.qa(".a6-espejo .c3-tile.der").length, 4, "al ver el 1 de junio, 4 de 8 fichas quedan en el haber");
+  assert.equal(m.q("[data-consigna]").hidden, true);
+  assert.equal(texto(m.q("[data-pregunta]")), p.pregunta);
+  await m.accion("fecha", "j5");
+  ver(false);
+  assert.equal(m.qa("[data-op]").length, 3, "la pregunta se queda");
+  await m.op("en-el-debe");
+  assert.ok(m.msg().includes(p.pista));
+  await m.op("ingresos");
+  assert.ok(m.msg().includes(p.opciones[2].devolucion));
+  assert.ok(m.q('[data-op="al-reves"]').classList.contains("pista"));
+  await m.op("al-reves");
+  assert.ok(m.msg().includes(p.bien));
+  bloqueado(m, false);
+  await m.seguir();
+  assert.equal(m.id(), "resumen");
+  m.desmontar();
 });
 
-test("★★ el lado de cada celda del espejo va siempre en su color y con su palabra", async () => {
-  const m = await montar(h(Devoluciones, { pieza: conPieza("lado-a-lado"), rotulo: "R" }));
-  try {
-    for (const l of m.caja.querySelectorAll(".t7a6-esp-lado")) {
-      const debe = l.textContent === "Debe";
-      assert.ok(["Debe", "Haber"].includes(l.textContent));
-      assert.ok(l.classList.contains(debe ? "t7a6-d" : "t7a6-h"), `«${l.textContent}» sin su color`);
+test("★★ resumen: la lista y el siguiente, sin botón ni figura", async () => {
+  const m = await montar(desde("resumen"));
+  assert.deepEqual(m.qa(".c3-lista li").map(texto), [...pantalla("resumen").lista, pantalla("resumen").siguiente]);
+  assert.equal(m.q(".c3-seguir").hidden, true);
+  assert.equal(m.q("[data-figura]").children.length, 0);
+  m.desmontar();
+});
+
+test("★★★ la pieza entera, de la portada al resumen; movimiento reducido: nada lleva la clase que anima", async () => {
+  REDUCIDO = true;
+  const m = await montar();
+  const ids = [];
+  const mira = () => { ids.push(m.id()); assert.equal(m.qa(".nuevo").length, 0, `${m.id()}: con movimiento reducido no hay .nuevo`); };
+  mira(); await m.seguir();
+  mira(); await m.accion("devolver"); await m.seguir();
+  mira(); await m.accion("modo", "aparte"); await m.op("saber-cuanto"); mira(); await m.seguir();
+  mira(); await m.accion("pelar"); await m.seguir();
+  mira(); await m.op("proporcional"); mira(); assert.ok(m.q("[data-calculos]")); await m.seguir();
+  for (const L of [A.COMPRADOR, A.VENDEDOR]) { mira(); for (const l of L) { await m.lado(l.lado); mira(); } await m.seguir(); }
+  mira(); await m.accion("fecha", "j1"); await m.op("al-reves"); mira(); await m.seguir();
+  mira();
+  assert.deepEqual([...new Set(ids)], P.pantallas.map((p) => p.id));
+  assert.match(MOTOR.CSS_C3, /@media \(prefers-reduced-motion: reduce\) \{ \.c3 \*/);
+  REDUCIDO = false;
+  m.desmontar();
+});
+
+/* ═══════════ 3 · B2 ═══════════ */
+
+/* Cada pantalla en todos sus estados: al llegar, tras tocar la figura, cada error y el acierto (porqué plegado). */
+/*
+ * Se cuenta como Mello (N-1): lo que se lee —texto, consigna, pregunta,
+ * opciones con su pastilla y mensaje—, con el medidor de canonEnganche.js. La
+ * cejilla «Pantalla n de N» del motor (aria-hidden, 4 palabras) no cuenta; el
+ * conteo bruto del medidor sale aparte, en el diagnóstico.
+ */
+const bruto_ = {};
+async function medirB2() {
+  const peor = {};
+  for (const p of P.pantallas) {
+    const m = await montar(desde(p.id));
+    const medir = () => {
+      const bruto = CANON.medirTarjeta(CANON.tarjetaDe(m.caja), w).texto;
+      const cejilla = CANON.contarPalabras(m.q(".c3-cejilla").textContent);
+      bruto_[p.id] = Math.max(bruto_[p.id] ?? 0, bruto);
+      peor[p.id] = Math.max(peor[p.id] ?? 0, bruto - cejilla);
+    };
+    medir();
+    const accion = { "que-es-una-devolucion": ["devolver"], "dos-cuentas-propias": ["modo", "aparte"], "el-caso": ["pelar"], "lado-a-lado": ["fecha", "j1"] }[p.id];
+    if (accion) { await m.accion(...accion); medir(); }
+    if (p.opciones) {
+      for (const o of p.opciones.filter((x) => !x.correcta)) { await m.op(o.id); medir(); }
+      await m.op(p.opciones.find((o) => o.correcta).id); medir();
     }
-  } finally {
+    for (const l of p.lineas ?? []) {
+      const otro = l.lado === "debe" ? "haber" : "debe";
+      await m.lado(otro); medir(); await m.lado(otro); medir(); await m.lado(l.lado); medir();
+    }
     m.desmontar();
   }
-  assert.match(CSS_A6, /\.t7a6-d \{ color: #2A9D8F; \} \.t7a6-h \{ color: #E9C46A; \}/);
+  return peor;
+}
+
+test("★★★ B2: ninguna pantalla pasa de 60 palabras visibles, salvo las que Near está reescribiendo (que siguen pasándose)", async (t) => {
+  const peor = await medirB2();
+  for (const [id, n] of Object.entries(peor)) t.diagnostic(`B2 ${id}: ${n} (bruto, con la cejilla: ${bruto_[id]})`);
+  assert.match(leer("src/components/mecanicas/libros/t7/aprenderC3.jsx"), /<p className="c3-cejilla" aria-hidden="true">/, "la cejilla que no se cuenta es la que el lector no lee");
+  assert.deepEqual(Object.keys(peor), P.pantallas.map((p) => p.id));
+  assert.deepEqual(Object.entries(peor).filter(([id, n]) => n > CANON.UMBRAL_B2_PALABRAS && !PENDIENTES_NEAR.has(id)), []);
+  /* Si una pendiente ya cumple, se saca de la lista: que ninguna se quede escondida. */
+  assert.deepEqual([...PENDIENTES_NEAR].filter((id) => peor[id] <= CANON.UMBRAL_B2_PALABRAS), []);
 });
 
-test("★★ P3: la tabla espejo del 1 de junio, ya resuelta, en el orden del comprador y sin sumas", async () => {
-  const esp = pantalla("el-caso").espejo;
-  assert.equal(esp.fecha, "1 de junio");
-  assert.deepEqual(esp.filas.map((f) => f.cifra), ["15.200.000", "2.432.000", "532.000", "17.100.000"]);
-  const m = await montar(h(Devoluciones, { pieza: conPieza("el-caso"), rotulo: "R" }));
-  try {
-    assert.equal(m.caja.querySelectorAll("[data-espejo]").length, 1);
-    assert.equal(m.caja.querySelector("[data-espejo]").getAttribute("aria-label"), "1 de junio: el libro del comprador y el del vendedor, lado a lado");
-    assert.equal(m.caja.querySelectorAll("[data-fila-espejo]").length, 4);
-    assert.equal(m.caja.querySelector("[data-sumas]") === null, true);
-    assert.equal(m.caja.querySelector("[data-linea]") === null, true, "en P3 nada se toca");
-    assert.ok(!m.caja.textContent.includes("17.632.000"));
-  } finally {
-    m.desmontar();
+/* ═══════════ 4 · CÓDIGO, CATÁLOGO Y VISTA ═══════════ */
+
+/* ═══════════ LOTE V · LAS OPCIONES, BARAJADAS ═══════════ */
+
+test("★★★ lote V: las opciones (las dos preguntas y los corchetes de P5) salen barajadas con la función compartida (azar fijado), el mismo conjunto, la correcta no siempre primero, y el orden no cambia al fallar", async () => {
+  const { barajadorDe } = await import("../../utils/barajar.js");
+  assert.match(leer("src/components/mecanicas/libros/t7/aprenderC3.jsx"), /import \{ barajar \} from "\.\.\/\.\.\/\.\.\/\.\.\/utils\/barajar\.js"/);
+  assert.match(FUENTE, /barajar=\{barajar\}/, "la pieza pasa `barajar` al motor");
+  const casos = [
+    { id: "dos-cuentas-propias", sel: ".c3-op[data-op]", leer: (b) => b.dataset.op, antes: (m) => m.accion("modo", "aparte") },
+    { id: "cuanto-se-reversa", sel: "[data-figura] [data-elige]", leer: (b) => b.dataset.elige, antes: async () => {} },
+    { id: "lado-a-lado", sel: ".c3-op[data-op]", leer: (b) => b.dataset.op, antes: (m) => m.accion("fecha", "j1") },
+  ];
+  for (const c of casos) {
+    const datos = pantalla(c.id).opciones.map((o) => o.id);
+    const buena = pantalla(c.id).opciones.find((o) => o.correcta).id;
+    const ordenes = [];
+    for (const semilla of ["a", "b", "c", "d", "e", "f"]) {
+      const m = await montar(desde(c.id), { barajar: barajadorDe(semilla) });
+      try {
+        await c.antes(m);
+        const enPantalla = () => m.qa(c.sel).map(c.leer);
+        const orden = enPantalla();
+        assert.deepEqual([...orden].sort(), [...datos].sort(), `${c.id}: el mismo conjunto`);
+        const mala = orden.find((x) => x !== buena);
+        await m.op(mala);
+        assert.ok(m.qa(c.sel).find((b) => c.leer(b) === mala).classList.contains("mal"), `${c.id}: era un error`);
+        assert.deepEqual(enPantalla(), orden, `${c.id}: al fallar no se rebaraja`);
+        ordenes.push(orden);
+      } finally {
+        m.desmontar();
+      }
+    }
+    assert.ok(ordenes.some((o) => o.join() !== datos.join()), `${c.id}: en algún caso, distinto del orden de los datos`);
+    assert.ok(ordenes.some((o) => o[0] !== buena), `${c.id}: la correcta no queda siempre primero`);
+    assert.ok(new Set(ordenes.map((o) => o.join())).size > 1, `${c.id}: el orden depende del azar`);
   }
 });
 
-/* ═══════════ 4 · LO QUE NO DEBE APARECER ═══════════ */
-
-test("★★ sin la renta del 33 %, sin cifras de medición del patrón, sin nada interno y sin «contar»", async () => {
-  const todo = JSON.stringify(P) + CSS_A6;
-  assert.doesNotMatch(todo, /33 ?%|renta/i);
-  for (const medida of ["45.793.000", "5.625.000", "1.375,13", "18.200"]) assert.ok(!todo.includes(medida), medida);
-  const texto = textosVisibles().join("\n");
-  for (const interno of ["≈", "glosa", "Regla 8", "Near", "Mello", "(p. ", "construcción"]) assert.ok(!texto.includes(interno), interno);
-  assert.doesNotMatch(texto, /(?<!\p{L})cont(ar|ó|amos|aron|aste)(?!\p{L})/iu);
+test("★★ el CSS: prefijo propio, subgrid con respaldo (@supports), sin teal ni ámbar, botones de 44 px", () => {
+  const css = COMP.CSS_A6;
+  for (const regla of css.split("\n").filter((l) => /\{/.test(l) && !/^\s*(@|\/\*|\})/.test(l))) assert.match(regla.trim(), /^\.a6/, regla);
+  const i = css.indexOf("@supports (grid-template-rows: subgrid) {");
+  assert.ok(i >= 0, "el subgrid va dentro de @supports");
+  const fin = css.indexOf("\n}\n", i);
+  assert.equal(css.split("subgrid").length - 1, 2, "subgrid solo en la condición y en su regla");
+  for (const x of ["grid-template-rows: subgrid;", "repeat(var(--n, 1), auto)"]) assert.ok(css.indexOf(x) > i && css.indexOf(x) < fin, x);
+  assert.doesNotMatch(css, /#2A9D8F|#3FA69A|#E9C46A|teal|ambar/i);
+  assert.match(css, /\.a6-base \{ min-height: 44px;/);
+  assert.match(css, /\.a6-espejo \.c3-tile:not\(\.a6-libro\) \{ min-height: 44px; \}/);
+  assert.doesNotMatch(css, /style\*=/, "sin selectores sobre el atributo style (React escribe «--a: 84…»)");
 });
 
-test("★★★ fuera del catálogo de FP; id t7-; va en T7-1 después de AP1", () => {
-  assert.equal(A.A6_ID, "t7-1-a6-devoluciones-en-periodico");
+test("★★ el motor no cambia: la pieza solo lo importa; nunca «Iba aquí»", () => {
+  assert.match(FUENTE, /import AprenderC3, \{ Cruce, AsientoT \} from "\.\/aprenderC3\.jsx";/);
+  assert.doesNotMatch(FUENTE, /Iba aquí|ibaAqui/);
+});
+
+test("★★ sin la renta del 33 %, sin nada interno y sin «contar» en lo que se ve", () => {
+  const textos = JSON.stringify(P) + JSON.stringify(A.FIGURA);
+  assert.doesNotMatch(textos, /33 ?%|renta/i);
+  for (const interno of ["≈", "Near", "Mello", "Watari", "[W]", "[R]", "PENDIENTE"]) assert.ok(!textos.includes(interno), interno);
+  assert.doesNotMatch(textos, /(?<!\p{L})cont(ar|ó|amos|aron|aste)(?!\p{L})/iu);
+});
+
+test("★★★ fuera del catálogo de FP; mismo id y misma posición en T7-1; la vista monta la pieza nueva", () => {
+  assert.equal(A.A6_ID, MAIN.A6_ID);
+  assert.equal(P.id, "t7-1-a6-devoluciones-en-periodico");
   const tema = SUBJECTS.contabilidad.topics.find((t) => t.id === TEMA_T7_1);
   const a = tema.actividades.find((x) => x.id === A.A6_ID);
   assert.deepEqual(a.clasificacion, { tipo: APRENDER });
   assert.equal(a.nombre, P.titulo);
-  /*
-   * El orden final de T7-1, completo, tal como lo fija el mapa (decisión de L):
-   * cada Hacer va justo después de la pieza que enseña lo que usa. Catorce
-   * actividades: siete de Aprender y los siete juegos.
-   */
   assert.deepEqual(tema.actividades.map((x) => x.id), [
     "t7-1-a1-la-cuenta-que-no-se-mueve", "t7-1-a2-la-factura-completa",
     "t7-1-que-cuenta-se-mueve", "t7-1-arma-la-factura",
@@ -547,9 +680,28 @@ test("★★★ fuera del catálogo de FP; id t7-; va en T7-1 después de AP1", 
     "t7-1-a7-control-interno", "t7-1-que-control-falta",
   ]);
   assert.deepEqual(PIEZAS_T7_1.map((x) => x.pieza.id), ["t7-1-a1-la-cuenta-que-no-se-mueve", "t7-1-a2-la-factura-completa", "t7-1-a3-tres-formas", "t7-1-a4-el-cierre-en-periodico", "t7-1-a5-importados-y-fletes", A.A6_ID, "t7-1-a7-control-interno"]);
+  const e = PIEZAS_T7_1.find((x) => x.pieza.id === A.A6_ID);
+  assert.equal(e.Pieza, Devoluciones);
+  assert.equal(e.pieza, P);
+  assert.equal(e.numero, 6);
+  assert.doesNotMatch(leer("src/components/ContabilidadT7_1View.jsx"), /DevolucionesEnPeriodico\.jsx|contabilidadT7_1_a6\.js/, "la vista ya no monta la A6 tabular");
   const dir = new URL("supabase/migrations/", RAIZ);
-  assert.deepEqual(readdirSync(dir).filter((f) => readFileSync(new URL(f, dir), "utf8").includes(A.A6_ID)), []);
-  for (const f of ["src/components/mecanicas/libros/t7/DevolucionesEnPeriodico.jsx", "src/data/contabilidadT7_1_a6.js"]) {
-    assert.doesNotMatch(readFileSync(new URL(f, RAIZ), "utf8"), /from\s+["'][^"']*\/(fp|lib\/supabase)[^"']*["']|registrarActividad(Completada)?\s*\(|\.rpc\s*\(/, f);
-  }
+  assert.deepEqual(readdirSync(dir).filter((f) => readFileSync(new URL(f, dir), "utf8").includes("devoluciones-en-periodico")), []);
+  for (const f of [FUENTE, FUENTE_DATOS]) assert.doesNotMatch(f, /from\s+["'][^"']*\/(fp|lib\/supabase)[^"']*["']|registrarActividad(Completada)?\s*\(|\.rpc\s*\(/);
+});
+
+test("★★ la vista entera monta A6 en el motor C3, en su posición", async () => {
+  const { default: Vista } = await import("../../components/ContabilidadT7_1View.jsx");
+  const { AuthContext } = await import("../../auth/AuthProvider.jsx");
+  const caja = document.createElement("div");
+  document.body.appendChild(caja);
+  const raiz = createRoot(caja);
+  await act(async () => { raiz.render(h(AuthContext.Provider, { value: { usuario: null, pedirCuenta() {} } }, h(Vista, { onBack() {} }))); });
+  const piezas = [...caja.querySelectorAll("[data-pieza]")].map((x) => x.dataset.pieza);
+  assert.equal(piezas[5], A.A6_ID);
+  const a6 = caja.querySelector(`[data-pieza="${A.A6_ID}"]`);
+  assert.ok(a6.classList.contains("c3") && a6.classList.contains("a6"));
+  assert.equal(a6.dataset.pantalla, "portada");
+  act(() => raiz.unmount());
+  caja.remove();
 });

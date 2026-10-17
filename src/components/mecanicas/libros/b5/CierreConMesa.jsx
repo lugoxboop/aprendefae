@@ -14,7 +14,7 @@ import { TONO_ROTULO } from "../debeHaber/piezasDebeHaber.jsx";
 import { estiloE4, CORRECTA, TACHADA, REVELADA, TACHADO } from "./MarcasE4.jsx";
 import {
   Pastilla, Mensaje, RegionViva, IconoCheck, CSS_B5H, CLASE_B5H, COMPROBAR_B, VER_MI_RESUMEN, siguienteDe,
-  PALABRA_B, REPOSO_B, ACIERTO_B, HUNDIDO_B,
+  PALABRA_B, REPOSO_B, ACIERTO_B, HUNDIDO_B, TEXTO_B,
 } from "./Devolucion.jsx";
 import { useReducido } from "../tema3/DosLineas.jsx";
 import { evaluarPregunta, formatearRespuesta, leerRespuesta } from "../../../../contabilidad/t6Act2.js";
@@ -329,9 +329,9 @@ function Mesa({ mesa, onSacar, onCifra, onDevolver, activa, resultado, enEstante
       </div>
       <div data-conector={cierra ? "cerrado" : "abierto"} style={{ margin: "10px 0 0", textAlign: "center" }}>
         <svg aria-hidden="true" viewBox="0 0 100 10" preserveAspectRatio="none" style={{ display: "block", width: "100%", height: "10px" }}>
-          <line x1="18" y1="5" x2="82" y2="5" stroke={cierra ? FAE.teal : "rgba(248,249,250,0.35)"} strokeWidth="1.4" strokeLinecap="round"
+          {/* Lote 14: cerrado es neutro (2 px sólido #F8F9FA, §5.2: el acierto no va en teal). */}
+          <line x1="18" y1="5" x2="82" y2="5" stroke={cierra ? TEXTO_B : "rgba(248,249,250,0.35)"} strokeWidth={cierra ? 2 : 1.4} strokeLinecap="round"
             strokeDasharray={cierra ? undefined : "4 4"} vectorEffect="non-scaling-stroke" />
-          {cierra && <circle cx="50" cy="5" r="2" fill={FAE.teal} vectorEffect="non-scaling-stroke" />}
         </svg>
         {!cierra && (t.debe > 0 || t.haber > 0) && (
           <p data-diferencia={Math.abs(t.debe - t.haber)} style={{ margin: "4px 0 0", ...CIFRA, fontSize: "12px", color: COLOR.apagado }}>

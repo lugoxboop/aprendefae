@@ -22,7 +22,9 @@ import assert from "node:assert/strict";
 const R = await import("./t4-aprender-rd.mjs");
 const { q, abrir, jugar, seguir, tocar, esperar, pruebasComunes, leer, seccionDe, renglones, textoDe } = R;
 const A = await import("../../data/contabilidadT4A2.js");
-const { visible } = await import("./t4-dom.mjs");
+const { visible, montar, h } = await import("./t4-dom.mjs");
+const { PantallasT4 } = await import("../../components/ContabilidadT4View.jsx");
+const { PAQUETES } = R;
 
 const P = A.PIEZA_EL_FONDO_FIJO;
 const { PAQ } = pruebasComunes({
@@ -231,4 +233,28 @@ test("★★★ D9 · la llave del sobre (solo A2): une «Billetes y monedas» c
   const A3 = (await import("../../data/contabilidadT4A3.js")).PIEZA_EL_ARQUEO;
   const n = await abrir(A3, A3.pantallas[0].id);
   try { assert.equal(n.caja.querySelector("[data-llave]"), null, "A3 lleva la llave"); } finally { n.desmontar(); }
+});
+
+test("★★★ D8 · jugado en el caso B: Marta Gil y 600.000; los gastos de junio llegan a 524.300 y quedan 75.700; los rótulos y los límites del B (500.000 a 700.000)", async () => {
+  const { DATOS_A2 } = await import("../../data/contabilidadT4A2.js");
+  const K = DATOS_A2[2];
+  const r = renglones(seccionDe(leer(`${PAQUETES}d4-t4-a2-v3-rediseno.md`), "Caso B (D8), pantalla por pantalla"));
+  assert.deepEqual([K.F.sobre, K.F.razonSubir, K.F.razonBajar], [textoDe(r, "Rótulo del sobre (caso B)"), textoDe(r, "Razón de «Subir» apagado (caso B)"), textoDe(r, "Razón de «Bajar» apagado (caso B)")]);
+  assert.deepEqual([K.FONDO, K.GASTADO, K.QUEDA, K.FONDO_MIN, K.FONDO_MAX], [600_000, 524_300, 75_700, 500_000, 700_000]);
+  assert.deepEqual(K.GASTOS_MAYO.map((g) => g.gasto), DATOS_A2[1].GASTOS_MAYO.map((g) => g.gasto), "los gastos B no son los mismos, en el mismo orden");
+  const m = montar(h(PantallasT4, { pieza: P, rotulo: "T4 · APRENDER", caso: 2 }));
+  try {
+    assert.equal(q(m, "[data-sobre] .t4sb-rot").textContent, "LO QUE TIENE MARTA");
+    assert.equal(q(m, '[data-fila-sobre="suman"]').dataset.valor, "600000");
+    await jugar(m, P, "el-fondo"); tocar(seguir(m));
+    tocar(q(m, "[data-accion=cheque]")); tocar(seguir(m));
+    for (let i = 0; i < 8; i++) tocar(q(m, "[data-accion=pagar]"));
+    assert.equal(q(m, '[data-fila-sobre="soportes"]').dataset.valor, "524300");
+    tocar(seguir(m));
+    assert.deepEqual([...m.caja.querySelectorAll("[data-opcion]")].map((x) => Number(x.dataset.opcion)), [75_700, 600_000, 524_300]);
+    tocar(q(m, '[data-opcion="600000"]'));
+    assert.equal(visible(q(m, "[data-mensaje] [data-devolucion]")), "Ese es el fondo entero, como si Marta no hubiera pagado nada.");
+    tocar(q(m, '[data-opcion="75700"]'));
+    assert.equal(q(m, "[data-mensaje]").dataset.mensaje, "acierto");
+  } finally { m.desmontar(); }
 });

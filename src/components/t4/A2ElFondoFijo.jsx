@@ -24,9 +24,10 @@ import { Tablero } from "./tablero.jsx";
 import { Fig, Sobre, Cheque, Rotulo, Chips } from "./aprender.jsx";
 import { DEBE, HABER, MARCA } from "../../data/contabilidadT4.js";
 import {
-  FONDO, GASTOS_MAYO, GASTADO, QUEDA, PAGOS_P0, PASO_FONDO, FONDO_MIN, FONDO_MAX, OPCIONES_QUEDA,
-  CAJA_MENOR as CM, BANCOS as B, CAJA as CJ, GASTOS_GENERALES as GG, CUENTAS_A2, REEMBOLSO_A2, errorReembolsoA2, FIGURA_A2 as F,
+  PAGOS_P0, PASO_FONDO, DATOS_A2,
+  CAJA_MENOR as CM, BANCOS as B, CAJA as CJ, GASTOS_GENERALES as GG, CUENTAS_A2, REEMBOLSO_A2, errorReembolsoA2,
 } from "../../data/contabilidadT4A2.js";
+import { useDatosCaso } from "./caso.js";
 
 export const CSS_A2 = `
 .t4a2-g { display: flex; justify-content: space-between; gap: 8px; min-height: 22px; margin: 0; font-size: 13px; color: ${C.texto2}; }
@@ -35,9 +36,11 @@ export const CSS_A2 = `
 `;
 
 const NOMBRE = "sobre-y-libro";
-const sumaGastos = (n) => GASTOS_MAYO.slice(0, n).reduce((s, g) => s + g.valor, 0);
+/* D8: las cifras, los gastos y los rótulos del caso en curso (1 o el B). */
+const useCasoA2 = () => useDatosCaso(DATOS_A2);
 
 function Libro({ cuentas, totales, recien = [] }) {
+  const { F } = useCasoA2();
   return (
     <>
       <Rotulo>{F.libro}</Rotulo>
@@ -48,6 +51,7 @@ function Libro({ cuentas, totales, recien = [] }) {
 
 /* P0 · pagar y reponer: los billetes bajan, los soportes suben, «Suman» se queda. */
 function Pagar({ p, onAccion }) {
+  const { FONDO, F, sumaGastos } = useCasoA2();
   const [n, setN] = useState(0);
   /* Lote B, capa 1: con el primer pago aparece la definición, debajo de la figura. */
   useEffect(() => { if (n > 0) onAccion?.(); }, [n > 0]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -74,6 +78,7 @@ function Pagar({ p, onAccion }) {
 
 /* P1 · la apertura: el cheque llena el sobre; Caja menor al debe y Bancos al haber. */
 function Apertura({ p }) {
+  const { FONDO, F } = useCasoA2();
   const [abierto, setAbierto] = useState(false);
   return (
     <Fig nombre={NOMBRE} alt={p.alt}>
@@ -89,6 +94,7 @@ function Apertura({ p }) {
 
 /* P2 · los gastos de mayo, uno por toque. Los billetes no se cuentan: 21.900 es la pregunta de P3. */
 function Gastos({ p }) {
+  const { GASTOS_MAYO, F, sumaGastos } = useCasoA2();
   const [n, setN] = useState(0);
   const g = n ? GASTOS_MAYO[n - 1] : null;
   const total = GASTOS_MAYO.length;
@@ -106,6 +112,7 @@ function Gastos({ p }) {
 
 /* P3 · ¿cuánto queda? La cifra elegida va a los billetes, y «Suman» dice si da el fondo. */
 function CuantoQueda({ p, onAcierto }) {
+  const { FONDO, GASTADO, QUEDA, OPCIONES_QUEDA, F } = useCasoA2();
   const [e, setE] = useState(null);
   const ok = e === QUEDA;
   useEffect(() => { if (ok) onAcierto?.(); }, [ok]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -127,6 +134,7 @@ function CuantoQueda({ p, onAcierto }) {
 
 /* P4 · el reembolso: el cheque repone los billetes; los soportes se van; «Suman» no se mueve. */
 function Reembolso({ p }) {
+  const { FONDO, GASTADO, QUEDA, F } = useCasoA2();
   const [hecho, setHecho] = useState(false);
   return (
     <Fig nombre={NOMBRE} alt={p.alt}>
@@ -142,6 +150,7 @@ function Reembolso({ p }) {
 
 /* P5 · ¿qué mueve el reembolso? La ficha en un debe y en un haber, y «Comprobar». */
 function YCajaMenor({ p, onAcierto }) {
+  const { FONDO, GASTADO, F } = useCasoA2();
   const [puestas, setPuestas] = useState({ [DEBE]: null, [HABER]: null });
   const [r, setR] = useState(null);
   const ok = Boolean(r) && r[DEBE] === REEMBOLSO_A2[DEBE] && r[HABER] === REEMBOLSO_A2[HABER];
@@ -185,6 +194,7 @@ function YCajaMenor({ p, onAcierto }) {
 
 /* P6 · subir y bajar el fondo, de a 100.000 (supuesto). Subir: Caja menor / Bancos. Bajar: Caja / Caja menor. */
 function SubirBajar({ p, onCierre }) {
+  const { FONDO, FONDO_MIN, FONDO_MAX, F } = useCasoA2();
   const [f, setF] = useState(FONDO);
   /* Lote B, capa 4: con el primer «Subir» o «Bajar», la frase de cierre debajo del libro. */
   const movido = f !== FONDO;
@@ -210,6 +220,7 @@ function SubirBajar({ p, onCierre }) {
 }
 
 function Quieta({ p }) {
+  const { FONDO, F } = useCasoA2();
   return <Fig nombre={NOMBRE} alt={p.alt}><Sobre llave rotulo={F.sobre} filas={[{ id: "billetes", r: F.billetes, v: FONDO }]} /></Fig>;
 }
 

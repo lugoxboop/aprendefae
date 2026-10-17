@@ -20,7 +20,8 @@ import HojaRevisionN3, { EjemploN3 } from "./HojaRevisionN3.jsx";
  */
 
 export const CONFIG_N3 = {
-  datos: { consigna: N3.enunciado[0], distintivo: N3.distintivo, pie: N3.pie },
+  /* El objetivo de los datos, cuando llegue (lote O), como en H7. */
+  datos: { ...(N3.objetivo ? { objetivo: N3.objetivo } : {}), consigna: N3.enunciado[0], distintivo: N3.distintivo, pie: N3.pie },
   botones: BOTON_N3, preparar: prepararN3, evaluar: evaluarN3,
   puntuar: puntuarN3, total: TOTAL_N3, resumen: resumenN3, marca: "t5-n3", etiqueta: "Pregunta",
   glosas: GLOSAS_N3, Figura: HojaRevisionN3, Antes: EjemploN3, figuraDebajo: true,
