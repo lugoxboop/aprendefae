@@ -196,3 +196,18 @@ export const ALT_TUTORIAL_T6_ACT2 = "Ejemplo resuelto. El 31 de diciembre de 200
 /* ═══════════ TEXTO ALTERNATIVO ═══════════ */
 
 export const ALT_T6_ACT2 = "Actividad de registro. Hay dos hechos de la provisión de El Torito Currambero. Antes, entre y después de los asientos, respondes tres preguntas sobre su saldo. En cada asiento, pon en la mesa las cuentas que mueve, ubícalas en el Debe o en el Haber y escribe cada valor. La T de la provisión se llena con cada respuesta. Tienes un solo intento por asiento y por pregunta.";
+
+/*
+ * ═══════════ LOTE 24 · D9 «EL AJUSTE DEL AÑO SIGUIENTE» (P2 de Mai) ═══════════
+ *
+ * La regla con el cero: a la izquierda, lo que la provisión se quedó corta; a la derecha, lo que pide el
+ * análisis; encima, el salto del ajuste. Entra solo tras la pregunta 3 (R10). Las cifras salen de los pasos
+ * de cada vuelta. PARA SHOKO: el título y las tres palabras son nuevos; el lector, armado con ellos.
+ */
+export const AJUSTE_T6_ACT2 = {
+  titulo: "El ajuste del año siguiente",
+  ajuste: "el ajuste",
+  corta: "se quedó corta",
+  pide: "pide el análisis",
+  lector: (ajuste, corta, pide) => `El ajuste, ${ajuste}: ${corta} que faltaron más ${pide} que pide el análisis`,
+};

@@ -312,6 +312,13 @@ export default function FichasUnNivel({
       )}
       {/* El veredicto es el estado de la evaluación (`r.ok`), no el texto. */}
       <RegionViva>{r && <Mensaje ok={r.ok} texto={r.texto} />}</RegionViva>
+      {/*
+        * Lote 24 (aditivo, D9): el elemento propio de la actividad, entre la devolución y «Siguiente», como en
+        * CierreConMesa (#441). Recibe las fichas de la tanda, cuál va y si su decisión 1 ya terminó.
+        */}
+      {config.elementoPropio && !modoDemo && (
+        <config.elementoPropio items={t.items} indice={t.i} hecha={etapa === 2 || (modo !== "antes" && fin)} reducido={reducido} />
+      )}
 
       {fin && !modoDemo && (
         <div ref={zonaBoton} data-boton-avanzar>

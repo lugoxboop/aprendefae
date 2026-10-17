@@ -10,6 +10,7 @@ import {
 } from "../../../../contabilidad/t6Act1.js";
 import TDeClientes from "./TDeClientes.jsx";
 import SegundaDeT6Act1 from "./EnCualCuenta.jsx";
+import QuienLeDebe from "./QuienLeDebe.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -62,6 +63,8 @@ export const CONFIG_D4_T6_ACT1 = {
 export const CONFIG_D4B_T6_ACT1 = {
   ...CONFIG_D4_T6_ACT1,
   segunda: { aplica: aplicaSegunda2T6Act1, correcta: correctaSegundaT6Act1, evaluar: evaluarSegunda2T6Act1, Vista: SegundaDeT6Act1, persistente: true },
+  /* Lote 24 (D9, Mai): la galería de deudores, entre la devolución y «Siguiente». */
+  elementoPropio: QuienLeDebe,
 };
 
 /* D8 (lote 18, Futaba): la vuelta 1 es la de hoy; la variante, las ocho fichas nuevas en su orden. */

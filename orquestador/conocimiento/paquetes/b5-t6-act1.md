@@ -260,3 +260,13 @@ Manda sobre todas las tablas de acierto y de segundo fallo de arriba. Fuente: en
 - Los aciertos de las 9 fichas pierden «Sí. » delante; el resto de cada texto se queda igual, letra por letra.
 - Tras el segundo fallo, la regla única (b5SegundoFallo.js) ya no quita ni pone nada: el acierto sale tal cual, debajo de la pastilla «Iba aquí». Ya no hay «No es esa.» delante.
 - El aviso del primer fallo pasa de «La ficha no se colocó.» a «La ficha volvió. Lee la pista y pruébala en otro cajón.» (solo en FichasUnNivel.jsx de la Célula B).
+
+## Lote 24 · D9 — un elemento visual propio (P2 de Mai, 17-oct)
+
+Aprobada por Sakuta. Responde a Shoko (D9, «la T y el estante se repiten»). Va como `elementoPropio` de las fichas a un nivel, entre la devolución y «Siguiente».
+
+- **«¿Quién le debe a la empresa?»:** una galería de deudores en dos grupos, cada uno con su borde. «Clientes»: una fila con el ícono ShoppingBag, «clientes» y «les vendió a crédito». «Otras cuentas por cobrar»: tres columnas (Briefcase, «socios y accionistas»; HardHat, «trabajadores»; User, «particulares») y, debajo, «otros motivos».
+- **Al responder la decisión 1** (Clientes u Otra), el número de la ficha entra bajo su deudor, resaltado (2 nodo y relleno navy) hasta la ficha siguiente; su deudor lleva contorno 2 #F8F9FA mientras tanto. Si la ficha es «otro», junto a «otros motivos». Al final de la partida se ve quién debía qué.
+- **La etiqueta de deudor** de cada ficha la da Futaba (`clientes`, `socios`, `trabajadores`, `particulares` u `otro`). Mientras no llega: las de Clientes, bajo «clientes»; las de otra cuenta, por su cuenta de «¿En cuál?» (lote 23), o junto a «otros motivos».
+- **Texto alternativo:** cambia con cada ficha, por ejemplo «Ficha 5: la debe un cliente; la empresa le vendió a crédito».
+- **Textos nuevos (PARA SHOKO):** «¿Quién le debe a la empresa?». Fragmentos de las definiciones de T6 A1: «clientes», «les vendió a crédito», «socios y accionistas», «trabajadores», «particulares» y «otros motivos».

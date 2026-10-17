@@ -2,7 +2,7 @@ import { segundoFalloDe } from "./b5SegundoFallo.js";
 import { repartirTanda } from "./b5Reparto.js";
 import {
   T6_ACT1, FICHAS_T6_ACT1, CLIENTES, CAJONES_T6_ACT1, FICHAS_V2_T6_ACT1, DEBITA, PISTA_CUENTA_T6_ACT1, DEVOLUCIONES_SEGUNDA_T6_ACT1,
-  EN_CUAL_T6_ACT1, EN_CUAL_POR_FICHA,
+  EN_CUAL_T6_ACT1, EN_CUAL_POR_FICHA, DEUDOR_POR_FICHA,
 } from "../data/contabilidadT6Act1.js";
 
 /*
@@ -82,6 +82,15 @@ export function evaluarSegunda2T6Act1(ficha, elegida, intento) {
   if (ficha.cuenta === CLIENTES) return evaluarSegundaT6Act1(ficha, elegida, intento);
   if (elegida === enCualDeT6Act1(ficha)) return { ok: true, texto: ficha.acierto };
   return { ok: false, texto: intento === 1 ? EN_CUAL_T6_ACT1.pista : segundoFalloDe(ficha.acierto) };
+}
+
+/* Lote 24 (D9): quién debe la ficha. La etiqueta de Futaba manda; sin ella, Clientes, o la cuenta de «¿En cuál?», o «otro». */
+const DEUDORES = ["socios", "trabajadores", "particulares"];
+export function deudorDeT6Act1(ficha) {
+  if (DEUDOR_POR_FICHA[ficha.id]) return DEUDOR_POR_FICHA[ficha.id];
+  if (ficha.cuenta === CLIENTES) return "clientes";
+  const cuenta = enCualDeT6Act1(ficha);
+  return DEUDORES.includes(cuenta) ? cuenta : "otro";
 }
 
 export function puntuarT6Act1(respuestas, cuantas) {
