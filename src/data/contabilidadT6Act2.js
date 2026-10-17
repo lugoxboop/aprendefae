@@ -75,7 +75,7 @@ export const PARTES_T6_ACT2 = [
     asiento: [d(PROVISION, 180000), h(CLIENTES, 180000)],
     errores: {
       D: "Sobra una cuenta. Este castigo solo mueve la provisión y Cuentas por cobrar – clientes. Todo el castigo va contra la provisión, aunque sea mayor que ella. Y aquí no entra plata.",
-      C: "Con el castigo bajan las dos: la provisión y lo que debe Pablo Moncayo.",
+      C: "Con el castigo bajan las dos, cada una por su lado: la provisión baja por el Debe y Cuentas por cobrar – clientes baja por el Haber.",
       A: "El castigo mueve la provisión y la deuda de Pablo Moncayo.",
       especificas: [
         { valor: 148800, clave: "C15", texto: "Usaste lo que tenía la provisión, $148.800. El castigo es por toda la deuda de Pablo Moncayo, $180.000, aunque la provisión no alcance." },
@@ -97,7 +97,7 @@ export const PARTES_T6_ACT2 = [
     asiento: [d(GASTO, 184600), h(PROVISION, 184600)],
     errores: {
       D: "Sobra una cuenta. Este hecho solo mueve el gasto y la provisión, como en diciembre de 2007.",
-      C: "Como en diciembre de 2007: el gasto sube, y la provisión también sube.",
+      C: "Como en diciembre de 2007: el gasto sube por el Debe y la provisión sube por el Haber.",
       A: "Al ajustar, se anota el gasto y sube la provisión.",
       especificas: [
         { valor: 153400, clave: "C12", texto: "Pusiste solo lo que pide el análisis, pero en marzo la provisión quedó corta. El registro también cubre lo que faltó: $153.400 + $31.200 = $184.600." },
