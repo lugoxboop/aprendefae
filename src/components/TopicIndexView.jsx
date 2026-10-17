@@ -10,7 +10,7 @@ import RankingFP from "./ranking/RankingFP.jsx";
 import LigaBoard from "./ligas/LigaBoard.jsx";
 import BannerRepaso from "./repaso/BannerRepaso.jsx";
 import { marcaDeTema } from "./shared/contenidoNuevo.jsx";
-import IdentificadorDeTema from "./shared/IdentificadorDeTema.jsx";
+import IdentificadorDeTema, { CSS_IDENTIFICADOR } from "./shared/IdentificadorDeTema.jsx";
 
 /*
  * Plantilla del índice de temas, compartida por las dos materias.
@@ -26,6 +26,14 @@ export default function TopicIndexView({
   background,
   topics,
   renderTopicIcon,
+  /*
+   * Sin píldoras en la cara cerrada cuando la tarjeta se parte (kit.md, el
+   * sistema de identificadores). Un dato idéntico en las nueve tarjetas no
+   * informa. Va como opción y NO por defecto porque esta vista también la usa
+   * Macroeconomía, que tiene estudiantes reales: las demás materias no la
+   * pasan y se ven igual.
+   */
+  sinPildorasAlCerrar = false,
   veilCenterAlpha,
   onOpenTopic,
 }) {
@@ -36,6 +44,9 @@ export default function TopicIndexView({
   const [abierta, setAbierta] = useState(null);
 
   return (
+    <>
+      {/* Una vez por página, no una por tarjeta: el movimiento y sus colores. */}
+      <style>{CSS_IDENTIFICADOR}</style>
     <div
       style={{
         position: "relative",
@@ -145,6 +156,7 @@ export default function TopicIndexView({
                     <IdentificadorDeTema
                       tema={topic}
                       materia={subjectId}
+                      acento={accent}
                       respaldo={renderTopicIcon(topic)}
                     />
                   ),
@@ -173,6 +185,7 @@ export default function TopicIndexView({
                     key={topic.id}
                     topic={topic}
                     {...comun}
+                    {...(sinPildorasAlCerrar ? { badges: null } : {})}
                     abierta={abierta === topic.id}
                     onAbrir={() => setAbierta(topic.id)}
                     onCerrar={() => setAbierta(null)}
@@ -223,5 +236,6 @@ export default function TopicIndexView({
         </div>
       </div>
     </div>
+    </>
   );
 }

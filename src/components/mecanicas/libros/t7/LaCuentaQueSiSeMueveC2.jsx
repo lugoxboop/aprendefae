@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Check, X } from "lucide-react";
 import { Panel } from "../../salaDeControl/marco.jsx";
+import { barajar } from "../../../../utils/barajar.js";
 import { PIEZA_LA_CUENTA_C2, PANTALLAS_C2, HECHOS, INICIO, MAX, INTERFAZ_C2 as T, renglonDe } from "../../../../data/contabilidadT7_2_a1_c2.js";
 
 /*
@@ -247,8 +248,10 @@ const Renglon = ({ r, nuevo }) => (
 
 const reducidoAhora = () => typeof window !== "undefined" && Boolean(window.matchMedia?.("(prefers-reduced-motion: reduce)").matches);
 
-export default function LaCuentaQueSiSeMueveC2({ pieza = PIEZA_LA_CUENTA_C2, rotulo }) {
+export default function LaCuentaQueSiSeMueveC2({ pieza = PIEZA_LA_CUENTA_C2, rotulo, barajar: barajarOpciones = barajar }) {
   const pantallas = pieza.pantallas;
+  /* Lote V (Mello): las opciones, barajadas UNA vez al montar (como los Hacer de T7 al armar la tanda); el orden no cambia al reintentar. `barajar` se inyecta en las pruebas. */
+  const [opciones] = useState(() => Object.fromEntries(pantallas.filter((x) => x.opciones).map((x) => [x.id, barajarOpciones(x.opciones)])));
   const [s, setS] = useState(() => estadoInicial(pantallas));
   const sRef = useRef(s);
   const commit = (t) => { sRef.current = t; setS(t); };
@@ -371,7 +374,7 @@ export default function LaCuentaQueSiSeMueveC2({ pieza = PIEZA_LA_CUENTA_C2, rot
           {P.conteo && !s.contado && <button type="button" className="t7cs-boton" data-accion="contar" onClick={onContar}>{T.contar}</button>}
           {P.opciones && (!P.conteo || s.contado) && (
             <div className="t7cs-ops" role="group">
-              {P.opciones.map((o) => {
+              {opciones[P.id].map((o) => {
                 const mal = !res && s.intento === o.id;
                 const pista = !res && s.pista && o.id === P.correcta;
                 const bien = res && o.id === P.correcta;

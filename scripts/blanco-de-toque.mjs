@@ -1,5 +1,6 @@
 /*
- * MIDE EL BLANCO DE TOQUE A 320 px, JUGANDO LA PÁGINA DE VERDAD.
+ * MIDE EL BLANCO DE TOQUE A 320 px —o al ancho que se le pida con
+ * `--ancho=`—, JUGANDO LA PÁGINA DE VERDAD.
  *
  * Por qué existe: a 320 px un dedo pide 44×44 px. Por debajo de eso el
  * estudiante falla el toque y concluye que la página no responde — no que
@@ -56,10 +57,17 @@ const { chromium } = pkg;
 
 const MINIMO = 44;
 const BASE = process.env.BASE ?? "http://127.0.0.1:8099";
-const pasos = process.argv.slice(2);
+/*
+ * El ancho, opcional y al final: `--ancho=375`. Nació midiendo solo a 320
+ * porque es donde el dedo lo pasa peor, pero el estándar de esta noche pide
+ * las dos pantallas, y un control que cabe a 320 puede dejar de caber a 375
+ * si su contenedor reparte el espacio de otra forma.
+ */
+const ANCHO = Number((process.argv.find((a) => a.startsWith("--ancho=")) || "").split("=")[1] || 320);
+const pasos = process.argv.slice(2).filter((a) => !a.startsWith("--ancho="));
 
 const navegador = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium" });
-const pagina = await navegador.newPage({ viewport: { width: 320, height: 820 } });
+const pagina = await navegador.newPage({ viewport: { width: ANCHO, height: 820 } });
 await pagina.goto(`${BASE}/`, { waitUntil: "networkidle" });
 /*
  * Los pasos no siempre son botones: en la lista de Hacer cada actividad es un
@@ -91,7 +99,7 @@ for (const paso of pasos) {
  */
 let altoReal = await pagina.evaluate(() => document.documentElement.scrollHeight);
 for (let intento = 0; intento < 3; intento++) {
-  await pagina.setViewportSize({ width: 320, height: Math.min(Math.max(altoReal + 200, 820), 16000) });
+  await pagina.setViewportSize({ width: ANCHO, height: Math.min(Math.max(altoReal + 200, 820), 16000) });
   await pagina.waitForTimeout(300);
   const nuevo = await pagina.evaluate(() => document.documentElement.scrollHeight);
   if (nuevo <= altoReal) break;

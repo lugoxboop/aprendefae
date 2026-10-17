@@ -31,7 +31,7 @@ import pkg from "/opt/npm-tools/node_modules/playwright-core/index.js";
 const { chromium } = pkg;
 
 const TEMA = process.argv[2] ?? "Introducción a la contabilidad";
-const ANCHO = Number(process.argv[3] ?? 320);
+const ANCHO = Number((process.argv[3] && !process.argv[3].startsWith("--")) ? process.argv[3] : 320);
 const RAIZ = `http://127.0.0.1:${process.env.PUERTO ?? 8099}/`;
 
 const MEDIR = `(() => {
@@ -126,13 +126,28 @@ for (const paso of ["Contabilidad", TEMA]) {
  * prueba las dos antes de rendirse; con una sola se quedaba fuera de T4 y
  * devolvía un cero que parecía un aprobado.
  */
+/*
+ * `--hacer` mide el camino de Hacer en vez de Aprender. Lo añado porque dije
+ * «Contabilidad entera sin fallos de contraste» midiendo solo Aprender, y eso
+ * es escribir «pasa» en vez de «pasan estas»: la mitad de cada tema son los
+ * juegos, y de esos no había dato.
+ */
+const HACER = process.argv.includes("--hacer");
 const entro = await (async () => {
-  for (const rotulo of ["El material que explica", "Aprender"]) {
+  for (const rotulo of HACER ? ["Los juegos que dan FP", "Hacer"] : ["El material que explica", "Aprender"]) {
     const puerta = p.locator(`button:visible:has-text("${rotulo}")`);
     if ((await puerta.count()) === 0) continue;
     await puerta.first().click({ timeout: 9000 }).catch(() => {});
     await p.waitForTimeout(700);
-    if ((await p.locator(AVANCE).count()) > 0) return rotulo;
+    /*
+     * Haber entrado se comprueba distinto en cada mitad: en Aprender hay un
+     * botón de avanzar; en Hacer se cae en el camino, que no tiene ninguno y
+     * sí tiene los nodos de las actividades.
+     */
+    const dentro = HACER
+      ? (await p.locator("[data-nodo], .fae-ch-estrecho").count()) > 0
+      : (await p.locator(AVANCE).count()) > 0;
+    if (dentro) return rotulo;
   }
   return null;
 })();
@@ -145,7 +160,7 @@ if (!entro) {
 const vistos = new Map();
 const sinMedir = new Set();
 let pantallas = 0;
-for (let i = 0; i < 30; i++) {
+for (let i = 0; i < (HACER ? 1 : 30); i++) {
   pantallas++;
   const tanda = await p.evaluate(MEDIR);
   for (const m of tanda.malos) {
@@ -171,7 +186,7 @@ console.log(`\n${malos.length} texto(s) por debajo del contraste que pide su tam
  * justo el error que esta casa tiene escrito con nombre: no medido no es lo
  * mismo que limpio.
  */
-if (pantallas <= 1) {
+if (pantallas <= 1 && !HACER) {
   console.log("NO MEDIDO: solo llegué a 1 pantalla, así que este cero no vale. Mira si el tema abre con otro rótulo.");
   process.exit(2);
 }

@@ -177,7 +177,9 @@ function leer(caja, pref) {
     acc: {
       contar: contar ? { texto: limpio(contar.textContent), inactivo: contar.disabled } : null,
       pregunta: q(".$-preg", acc) ? limpio(q(".$-preg", acc).textContent) : null,
-      ops: qq("[data-valor]", acc).map((b) => ({ texto: limpio(b.textContent), clases: clases(b, ["mal", "pista"]) })),
+      /* Lote V: en pantalla van barajadas; aquí, por su valor y en el orden de los datos, para comparar con la v6 opción por opción. */
+      ops: qq("[data-valor]", acc).sort((x, y) => D.VALORES.indexOf(Number(x.dataset.valor)) - D.VALORES.indexOf(Number(y.dataset.valor)))
+        .map((b) => ({ texto: limpio(b.textContent), clases: clases(b, ["mal", "pista"]) })),
       bien: q(".$-bien", acc) ? limpio(q(".$-bien", acc).textContent) : null,
     },
     msg: { texto: limpio(msg.textContent), clases: clases(msg, ["mal", "bien", "pista"]) },
@@ -721,6 +723,31 @@ test("★★★ pantalla 5 (el cierre): contar numera las cajas una por una; la 
   } finally {
     m.desmontar();
   }
+});
+
+test("★★★ lote V: los valores salen barajados con la función de los Hacer (azar fijado), el mismo conjunto, la correcta no siempre primero, y el orden no cambia al fallar", async () => {
+  const { barajadorDe } = await import("../../utils/barajar.js");
+  assert.match(readFileSync(new URL("../../components/mecanicas/libros/t7/LaCuentaQueNoSeMueve.jsx", import.meta.url), "utf8"), /import \{ barajar \} from "\.\.\/\.\.\/\.\.\/\.\.\/utils\/barajar\.js"/);
+  const ordenes = [];
+  for (const semilla of ["a", "b", "c", "d", "e", "f"]) {
+    const m = await montar("casa", { pieza: { ...P, pantallas: P.pantallas.slice(4) }, barajar: barajadorDe(semilla) });
+    try {
+      await m.contar();
+      await tick(A1.TIEMPOS.conteo * 6);
+      await m.cuenta("inventario");
+      const enPantalla = () => [...m.caja.querySelectorAll("[data-valor]")].map((b) => Number(b.dataset.valor));
+      const orden = enPantalla();
+      assert.deepEqual([...orden].sort((x, y) => x - y), [...D.VALORES].sort((x, y) => x - y), "el mismo conjunto");
+      await m.valor(orden.find((v) => v !== D.VALOR.correcta));
+      assert.deepEqual(enPantalla(), orden, "al fallar no se rebaraja");
+      ordenes.push(orden);
+    } finally {
+      m.desmontar();
+    }
+  }
+  assert.ok(ordenes.some((o) => o.join() !== D.VALORES.join()), "en algún caso, distinto del orden de los datos");
+  assert.ok(ordenes.some((o) => o[0] !== D.VALOR.correcta), "la correcta no queda siempre primero");
+  assert.ok(new Set(ordenes.map((o) => o.join())).size > 1, "el orden depende del azar");
 });
 
 test("★★★ pantalla 6: el resumen, el día suelto del 1 al 30 (el libro vuelve con él) y «Siguiente pieza»", async () => {

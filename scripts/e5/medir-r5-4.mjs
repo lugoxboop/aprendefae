@@ -125,13 +125,15 @@ for (const ancho of ANCHOS) {
       const celda = document.querySelector('[data-calendario] [data-dia="1"]');
       const top = raiz.getBoundingClientRect().top + window.scrollY;
       return {
-        encabezado: Math.round(frase.getBoundingClientRect().top + window.scrollY - top),
+        /* Lo propio de la actividad sobre la frase: del contador a la frase (el objetivo del asiento 1 va aparte). */
+        encabezado: Math.round(frase.getBoundingClientRect().top - document.querySelector("[data-progreso]").getBoundingClientRect().top),
+        objetivo: Math.round(document.querySelector("[data-objetivo]")?.getBoundingClientRect().height ?? 0),
         figura: Math.round(cal.getBoundingClientRect().top + window.scrollY - top),
         alto: Math.round(cal.getBoundingClientRect().height),
         celda: Math.round(celda.getBoundingClientRect().width * 10) / 10,
       };
     });
-    filas.push({ ancho, estado: `${id}-calendario`, alto: m.alto, actividad: null, nota: `encabezado ${m.encabezado}, figura desde ${m.figura}, celda ${m.celda}` });
+    filas.push({ ancho, estado: `${id}-calendario`, alto: m.alto, actividad: null, nota: `encabezado ${m.encabezado}${m.objetivo ? `, objetivo ${m.objetivo}` : ""}, figura desde ${m.figura}, celda ${m.celda}` });
     if (m.encabezado > 96) fallos.push(`${ancho} px · ${id} · ⛔ el encabezado mide ${m.encabezado} px (tope 96)`);
     if (m.figura > 280) fallos.push(`${ancho} px · ${id} · la figura empieza en ${m.figura} px (tope 280)`);
     if (!conPerilla) return;
@@ -150,8 +152,7 @@ for (const ancho of ANCHOS) {
     filas.push({ ancho, estado: `${id}-perilla`, alto: p.alto, actividad: null, nota: `área táctil efectiva ${p.ancho} × ${p.alto} px; perilla ${p.boton} px` });
     if (p.ancho < 44 || p.alto < 44) fallos.push(`${ancho} px · ${id} · ⛔ la perilla tiene un área táctil efectiva de ${p.ancho} × ${p.alto} px (mínimo 44)`);
   };
-  await estado("entrada");
-  await pg.click("[data-empezar]");
+  /* Takamura (#380): r5-4 no tiene entrada; abre en el asiento 1. */
   for (const [k, a] of ASIENTOS.entries()) {
     await estado(`${a.id}-vacio`);
     await calendario(a.id, Boolean(a.ventana));
@@ -196,7 +197,7 @@ console.log("ancho | estado | contenido | alto | nota");
 for (const f of filas) console.log(`${f.ancho} | ${f.estado} | ${f.actividad ?? "—"} | ${f.alto} | ${f.nota ?? "—"}`);
 const estados = filas.filter((f) => !f.estado.startsWith("hoja") && !/-(calendario|perilla)$/.test(f.estado)).length / ANCHOS.length;
 console.log(`\n${filas.length} medidas (${estados} estados × ${ANCHOS.length} anchos, más las hojas).`);
-if (estados !== 34) fallos.push(`se recorrieron ${estados} estados y son 34`); // + las dos ventanas (P2)
+if (estados !== 33) fallos.push(`se recorrieron ${estados} estados y son 33`); // + las dos ventanas (P2), − la entrada (Takamura)
 if (fallos.length) {
   console.log(`\nFALLA: ${fallos.length} problema(s)`);
   for (const f of fallos) console.log(`  · ${f}`);
