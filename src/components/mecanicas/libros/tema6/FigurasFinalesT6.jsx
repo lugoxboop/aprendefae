@@ -2,6 +2,7 @@ import { FAE } from "../../../../theme.js";
 import { COLOR } from "../../../../data/contabilidadTema3.js";
 import { TONO_ROTULO } from "../debeHaber/piezasDebeHaber.jsx";
 import { MONO } from "./TanqueProvision.jsx";
+import { ConLeyenda } from "./LeyendaFinal.jsx";
 import { HECHOS_T6, FIGURA_CAPA_3_T6 } from "../../../../data/contabilidadT6Pieza1.js";
 import { METODOS_T6_A2, FIGURA_CAPA_3_T6_A2 } from "../../../../data/contabilidadT6Pieza2.js";
 import { TABLERO_T6_A4, CASOS_T6_A4 } from "../../../../data/contabilidadT6Pieza4.js";
@@ -42,16 +43,6 @@ const CHIP = {
 /* La cifra destacada de la capa 3 (borde 2 nodo y relleno navy), con 1 px menos de relleno: mide lo mismo. */
 const DESTACADA = { ...CHIP, padding: "0 3px", border: `2px solid ${FAE.node}`, background: FAE.navy, fontFamily: SORA, fontWeight: 700 };
 const CIFRA = { ...CHIP, fontFamily: MONO };
-
-/* El modelo y, debajo, la frase buena como su leyenda. */
-function ConLeyenda({ id, leyenda, children }) {
-  return (
-    <div data-modelo-final={id}>
-      <div style={{ maxWidth: "320px", margin: "0 auto" }}>{children}</div>
-      {leyenda && <p data-leyenda style={{ margin: "8px 0 0", textAlign: "center", fontFamily: INTER, fontSize: "13px", lineHeight: 1.5, color: FAE.text }}>{leyenda}</p>}
-    </div>
-  );
-}
 
 /* ═══════════ T6 · A1 · la T de los clientes, con los seis hechos ═══════════ */
 const LADO_T6_A1 = { sube: "debe", baja: "haber" };
