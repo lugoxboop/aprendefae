@@ -13,7 +13,7 @@ import { useAuth } from "../auth/AuthProvider.jsx";
 import { useRecompensa } from "./shared/RecompensaCierre.jsx";
 import { ContextoResumen, useResumenDePartida } from "./shared/PantallaResumen.jsx";
 import { CSS_JUEGO, Cierre } from "./mecanicas/corazon/juego.jsx";
-import { C, INTER, SORA, MARCA, CEJILLA, HUNDIDO, Devolucion, BotonSiguiente, Punto, Cita } from "./repasoCap5/comun.jsx";
+import { C, INTER, SORA, MARCA, CEJILLA, HUNDIDO, Devolucion, BotonSiguiente, Punto, Cita, useIntento } from "./repasoCap5/comun.jsx";
 import { ToroNegro } from "./repasoCap5/ToroNegro.jsx";
 import { OpcionesTitulo } from "./repasoCap5/OpcionesTitulo.jsx";
 import { Flujos } from "./repasoCap5/Flujos.jsx";
@@ -180,8 +180,11 @@ function PorTema({ filas }) {
  * onCompletar(pct, ms, detalle), con una fila por pantalla y la respuesta
  * cuando falló (la opción elegida, o la clasificación entera en la 4).
  */
-export function RepasoCruzado({ onCompletar, pantallas = null }) {
-  const [tanda, setTanda] = useState(() => pantallas ?? prepararR5_1());
+export function RepasoCruzado({ onCompletar, pantallas = null, version: fija = null }) {
+  /* D8: los intentos pares juegan la versión B. */
+  const { version, terminar } = useIntento("r5-1", fija);
+  const proxima = useRef(version);
+  const [tanda, setTanda] = useState(() => pantallas ?? prepararR5_1(null, undefined, version));
   const [i, setI] = useState(0);
   const [r, setR] = useState(null);
   const [pistaAbierta, setPistaAbierta] = useState(false);
@@ -198,7 +201,10 @@ export function RepasoCruzado({ onCompletar, pantallas = null }) {
 
   useEffect(() => {
     /* v2.3: el rendimiento son los puntos ganados / 25, nunca aciertos / 7. */
-    if (terminado) onCompletar?.(puntuarR5_1(puntosDeR5_1(resultados)), Date.now() - inicio.current, detalle.current);
+    if (!terminado) return;
+    /* D8: el intento cuenta al terminar; el siguiente («Jugar otra vez») juega la otra versión. */
+    proxima.current = terminar();
+    onCompletar?.(puntuarR5_1(puntosDeR5_1(resultados)), Date.now() - inicio.current, detalle.current);
   }, [terminado]); // eslint-disable-line react-hooks/exhaustive-deps
   /* E2 de enganche.md: el foco baja a «Siguiente» SIN mover la página; lo que cambia sigue a la vista. */
   useEffect(() => { if (r) boton.current?.focus({ preventScroll: true }); }, [r]);
@@ -226,7 +232,7 @@ export function RepasoCruzado({ onCompletar, pantallas = null }) {
   };
 
   const reiniciar = () => {
-    setTanda((antes) => prepararR5_1(antes));
+    setTanda((antes) => prepararR5_1(antes, undefined, proxima.current));
     setI(0); setR(null); setPistaAbierta(false); setResultados({}); setTerminado(false);
     detalle.current = []; inicio.current = Date.now();
   };

@@ -301,7 +301,8 @@ const montar = async (el) => {
   montados.add(desmontar);
   return { caja, desmontar };
 };
-afterEach(() => { for (const d of [...montados]) d(); });
+/* D8: cada prueba empieza en el intento 1 (versión A); una partida terminada no pasa la B a la siguiente. */
+afterEach(() => { for (const d of [...montados]) d(); try { globalThis.localStorage?.clear(); } catch { /* sin almacenamiento */ } });
 const tocar = async (el) => {
   assert.ok(el, "no está el elemento que se quería tocar");
   await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });

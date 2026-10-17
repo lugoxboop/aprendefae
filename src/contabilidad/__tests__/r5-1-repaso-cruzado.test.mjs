@@ -82,6 +82,8 @@ const pasar = async (ms) => { await espera(ms); await act(async () => {}); };
 /* Lo montado se desmonta siempre, aunque la prueba falle a medias. */
 const montados = [];
 afterEach(() => {
+  /* D8: cada prueba empieza en el intento 1 (versión A). */
+  try { globalThis.localStorage?.clear(); } catch { /* sin almacenamiento */ }
   while (montados.length) montados.pop()();
   MOVIMIENTO.reducido = true;
 });

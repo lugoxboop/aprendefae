@@ -2,7 +2,7 @@ import { useState } from "react";
 import { C, INTER, MARCA, CIFRA, HUNDIDO } from "./comun.jsx";
 import { useReducido, useCifra } from "./movimiento.js";
 import { pesos } from "../../data/contabilidad.js";
-import { balanzaTras, anguloDe, MOVIMIENTO_BALANZA, RETENCION_FINAL } from "../../data/repasoCap5Balanza.js";
+import { BALANZA_A } from "../../data/repasoCap5Balanza.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -59,7 +59,9 @@ function Pesas({ n, nueva, reducido }) {
  * `hechos`: asientos ya en la balanza; `antes`: los que había antes de este
  * (las cifras cuentan desde ahí). `textos`: los de Miyata (BALANZA_R5_3).
  */
-export function Balanza({ hechos, antes = hechos, textos }) {
+export function Balanza({ hechos, antes = hechos, textos, datos = BALANZA_A }) {
+  /* D8: las cifras de la versión que se juega (balanzaDe de sus asientos). */
+  const { balanzaTras, anguloDe, MOVIMIENTO_BALANZA, RETENCION_FINAL } = datos;
   const reducido = useReducido();
   const [saltar, setSaltar] = useState(false);
   const quieta = reducido || saltar;

@@ -154,6 +154,8 @@ async function enVentana(pagina, selectores, ms, etiqueta, problemas) {
 
 for (const [ancho, alto] of VENTANAS) {
   const pagina = await navegador.newPage({ viewport: { width: ancho, height: alto } });
+  /* D8: con R5_VERSION=B se mide la versión B (el intento 2). */
+  if (process.env.R5_VERSION === "B") await pagina.addInitScript(() => { for (const n of [1, 2, 3, 4, 5]) localStorage.setItem(`fae:r5:intentos:r5-${n}`, "1"); });
   await pagina.goto(URL_R5_1);
   await pagina.waitForSelector("[data-r5-1]");
   await pagina.evaluate(() => document.fonts.ready);

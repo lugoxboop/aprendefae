@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { CSS_JUEGO, Cierre } from "../mecanicas/corazon/juego.jsx";
 /* Los estados de calificación, el punto y la palabra: de comun.jsx (B4, E3). */
 import {
   C, INTER, SORA, MARCA, CEJILLA, CIFRA, HUNDIDO, REPOSO, CSS_FOCO, Devolucion, BotonSiguiente, Responder, Comprobar, Cita,
-  ESTADOS, MarcaPieza, Pastilla, useTrasError,
+  ESTADOS, MarcaPieza, Pastilla, useTrasError, useIntento,
 } from "./comun.jsx";
 import { cifra, leerCifra } from "./ToroNegro.jsx";
 import { OpcionR5 } from "./OpcionR5.jsx";
@@ -11,15 +11,25 @@ import { Cabecera, Pista } from "./Cabecera.jsx";
 import { ACTIVIDAD_MATE, ConActividad, TarjetasDeDatos, Armador, HojaRenglon } from "./Mate.jsx";
 import { useReducido, useTemporizadores, useCifra, terminarAnimaciones, BARRA_DEL_SITIO } from "./movimiento.js";
 import { cifraK } from "../../contabilidad/t7_2Kardex.js";
-import { KARDEX, fila, enLibro, unitarioEnLibro, habriaSido, VENDIDO_PERIODICO, VENDIDO_PERMANENTE, FRANJA_DEL_10 } from "../../data/repasoCap5Permanente.js";
+import { KARDEX, fila, enLibro, unitarioEnLibro, habriaSido, FRANJA_DEL_10, CIFRAS_R5_5 } from "../../data/repasoCap5Permanente.js";
 import {
   R5_5, PANTALLAS, HOJA_PERMANENTE, ENTRADA_PERMANENTE, DATOS_DEL_LIBRO_PERMANENTE, DATOS_DECLARADOS_PERMANENTE,
-  ROTULOS_PERMANENTE as RP, DETALLES, MES_CORTO, AVISO_COMA, lineaHabriaSido, pantalla,
+  ROTULOS_PERMANENTE as RP, DETALLES, MES_CORTO, AVISO_COMA, lineaHabriaSido, pantalla, PANTALLAS_DE, rotulosDe,
 } from "../../data/repasoCap5PermanenteTextos.js";
 import {
   evaluarP1, evaluarP2, evaluarP3, evaluarP4, evaluarP5, estadosDeValoresP2, faltaLaComa, puntuarR5_5, respuestaDe, TOTAL_R5_5,
 } from "../../data/repasoCap5PermanenteJuego.js";
 import { puedeRevisarMate } from "../../data/repasoCap5MateJuego.js";
+
+/*
+ * D8 · la versión de la partida (A con el libro, B con las 5.600 del 28 de
+ * Miyata): el kárdex, las pantallas 4 y 5 y el rótulo del costo salen de ella.
+ */
+const VersionR5_5 = createContext("A");
+function useVersion() {
+  const version = useContext(VersionR5_5);
+  return { version, K: CIFRAS_R5_5[version], lista: PANTALLAS_DE[version], rp: rotulosDe(version) };
+}
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -134,7 +144,7 @@ function Encabezado({ f, declarado = false }) {
  * interacción, después del encabezado o del movimiento.
  */
 function FilaK({ id, modo, tapar = {}, mov = null, saldo = null, destapa = false, entra = false, declarado = false, slot = null, slotTras = "encabezado" }) {
-  const f = fila(id);
+  const f = useVersion().K.fila(id);
   if (modo === "plegada") {
     return (
       <div data-fila={id} data-modo="plegada" style={{ minHeight: "28px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" }}>
@@ -258,7 +268,7 @@ function Barra({ pasos, clave, contorno = null, linea = null }) {
   );
 }
 
-const estadoDe = (id) => { const s = fila(id).saldo; return { q: s[0], v: Math.round(s[2]) }; };
+const estadoDe = (id, K = CIFRAS_R5_5.A) => { const s = K.fila(id).saldo; return { q: s[0], v: Math.round(s[2]) }; };
 
 /* ═══════════ LOS CAMPOS ═══════════ */
 
@@ -589,12 +599,13 @@ function Pantalla3({ r, onCalificar, orden = null }) {
 /* ═══════════ PANTALLA 4 · LLEGA EL LOTE BARATO Y SALE LA DEL 28 ═══════════ */
 
 function Pantalla4({ r, onCalificar }) {
+  const { version, K, rp } = useVersion();
   const [promedio, setPromedio] = useState(null);
   const [costo, setCosto] = useState(null);
   const [aviso, setAviso] = useState(false);
   const revisar = () => {
     if (faltaLaComa(promedio)) { setAviso(true); return; }
-    onCalificar(evaluarP4({ promedio, costo }), { promedio, costo });
+    onCalificar(evaluarP4({ promedio, costo }, version), { promedio, costo });
   };
   const tapado = !r;
   return (
@@ -628,13 +639,13 @@ function Pantalla4({ r, onCalificar }) {
           tapar={{ mov: tapado ? [false, true, true] : NADA, saldo: tapado ? [false, true, true] : NADA }}
           slot={(
             <div style={MEDIA}>
-              <Campo dato="costo" etiqueta={RP.costoDeLas} tipo="total" valor={costo} bloqueado={Boolean(r)} estado={r ? r.estados.costo : null} onValor={setCosto} />
+              <Campo dato="costo" etiqueta={rp.costoDeLas} tipo="total" valor={costo} bloqueado={Boolean(r)} estado={r ? r.estados.costo : null} onValor={setCosto} />
             </div>
           )}
         />
       </Kardex>
       <div style={{ marginTop: "16px" }}>
-        <Barra clave={r ? "p4-revisada" : "p4"} pasos={r ? [estadoDe("v28")] : [estadoDe("c25")]} />
+        <Barra clave={r ? "p4-revisada" : "p4"} pasos={r ? [estadoDe("v28", K)] : [estadoDe("c25", K)]} />
       </div>
       {!r && <BotonRevisar activo={Boolean(promedio && costo)} onClick={revisar} />}
     </>
@@ -645,10 +656,11 @@ function Pantalla4({ r, onCalificar }) {
 
 /* v1.3, decisión 4: dos renglones, sin barras (con barras, el 0,3 % medía menos de 1 px). */
 function CostoDelMes() {
+  const { K } = useVersion();
   return (
     <div data-costo-del-mes style={{ ...HUNDIDO, borderRadius: "12px", padding: "10px 12px" }}>
       <p style={{ ...MARCA, margin: "0 0 4px" }}>{RP.vendidoEnElMes}</p>
-      {[[RP.periodico, VENDIDO_PERIODICO], [RP.permanente, VENDIDO_PERMANENTE]].map(([m, v]) => (
+      {[[RP.periodico, K.VENDIDO_PERIODICO], [RP.permanente, K.VENDIDO_PERMANENTE]].map(([m, v]) => (
         <div key={m} style={{ minHeight: "28px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <span style={MARCA}>{m}</span>
           <span style={{ ...NUMERO, fontSize: "15px", fontWeight: 600 }}>{cifra(v)}</span>
@@ -694,7 +706,8 @@ function FilaDelDiez({ abierta, onTocar }) {
 
 /* La fila del 10 es la única que se toca: abre su franja y, debajo del kárdex, las cuatro opciones. */
 function Pantalla5({ r, onCalificar }) {
-  const p = pantalla("p5");
+  const { version, lista } = useVersion();
+  const p = pantalla("p5", lista);
   const [abierta, setAbierta] = useState(false);
   const estado = (o) => {
     if (!r) return null;
@@ -719,7 +732,7 @@ function Pantalla5({ r, onCalificar }) {
         <div data-opciones className="r55-despliega" style={{ marginTop: "16px", display: "flex", flexDirection: "column", gap: "8px" }}>
           {p.opciones.map((o) => (
             <div key={o.id} data-opcion={o.id}>
-              <OpcionR5 estado={estado(o)} deshabilitada={Boolean(r)} onClick={() => onCalificar(evaluarP5(o.id), { elegida: o.id })}>
+              <OpcionR5 estado={estado(o)} deshabilitada={Boolean(r)} onClick={() => onCalificar(evaluarP5(o.id, version), { elegida: o.id })}>
                 {o.texto}
               </OpcionR5>
             </div>
@@ -755,7 +768,7 @@ function KardexCerrado() {
   return (
     <div data-kardex-cerrado>
       <Kardex>
-        {KARDEX.map((f) => <FilaK key={f.id} id={f.id} modo={f.id === "v28" ? "abierta" : "plegada"} />)}
+        {useVersion().K.KARDEX.map((f) => <FilaK key={f.id} id={f.id} modo={f.id === "v28" ? "abierta" : "plegada"} />)}
       </Kardex>
     </div>
   );
@@ -767,15 +780,22 @@ function KardexCerrado() {
  * `pasoInicial`: −1 abre en la entrada; las pruebas abren una pantalla directo.
  * `ordenP3`: el orden de los botones de la pantalla 3 (las pruebas lo fijan).
  */
-export function Permanente({ onCompletar, pasoInicial = -1, ordenP3 = null }) {
+export function Permanente({ onCompletar, pasoInicial = -1, ordenP3 = null, version: fija = null }) {
+  /* D8: los intentos pares juegan la versión B; el intento cuenta al terminar. */
+  const { version, terminar } = useIntento("r5-5", fija);
+  const [jugada, setJugada] = useState(version);
   return (
     <ConActividad actividad={ACTIVIDAD_PERMANENTE}>
-      <Partida onCompletar={onCompletar} pasoInicial={pasoInicial} ordenP3={ordenP3} />
+      <VersionR5_5.Provider value={jugada}>
+        <Partida key={jugada} onCompletar={onCompletar} pasoInicial={pasoInicial} ordenP3={ordenP3} alTerminar={terminar} alReiniciar={setJugada} />
+      </VersionR5_5.Provider>
     </ConActividad>
   );
 }
 
-function Partida({ onCompletar, pasoInicial, ordenP3 }) {
+function Partida({ onCompletar, pasoInicial, ordenP3, alTerminar, alReiniciar }) {
+  const { version, lista } = useVersion();
+  const proxima = useRef(version);
   const [paso, setPaso] = useState(pasoInicial);
   const [r, setR] = useState(null);
   const [pistaAbierta, setPistaAbierta] = useState(false);
@@ -789,7 +809,9 @@ function Partida({ onCompletar, pasoInicial, ordenP3 }) {
   const bien = Object.values(resultados).filter(Boolean).length;
 
   useEffect(() => {
-    if (terminado) onCompletar?.(puntuarR5_5(bien, TOTAL_R5_5), Date.now() - inicio.current, detalle.current);
+    if (!terminado) return;
+    proxima.current = alTerminar();
+    onCompletar?.(puntuarR5_5(bien, TOTAL_R5_5), Date.now() - inicio.current, detalle.current);
   }, [terminado]); // eslint-disable-line react-hooks/exhaustive-deps
   /* El foco baja a «Siguiente» sin mover la página (E2). */
   useEffect(() => { if (r) boton.current?.focus({ preventScroll: true }); }, [r]);
@@ -802,7 +824,7 @@ function Partida({ onCompletar, pasoInicial, ordenP3 }) {
     try { globalThis.scrollTo?.(0, Math.max(0, globalThis.scrollY + raiz.current.getBoundingClientRect().top - BARRA_DEL_SITIO)); } catch { /* sin ventana */ }
   }, [paso]);
 
-  const p = PANTALLAS[paso];
+  const p = lista[paso];
   const calificar = (veredicto, respuesta) => {
     if (r) return;
     detalle.current.push({ item: p.id, ok: veredicto.ok, intentos: 1, respuesta: veredicto.ok ? null : respuestaDe(p.id, respuesta), orden: detalle.current.length + 1, pista: pistaAbierta });
@@ -820,6 +842,7 @@ function Partida({ onCompletar, pasoInicial, ordenP3 }) {
     }
   };
   const reiniciar = () => {
+    if (proxima.current !== version) { alReiniciar(proxima.current); return; }
     setPaso(-1); setR(null); setPistaAbierta(false); setResultados({}); setTerminado(false); setIntento((n) => n + 1);
     detalle.current = []; inicio.current = Date.now();
   };
@@ -843,7 +866,7 @@ function Partida({ onCompletar, pasoInicial, ordenP3 }) {
   }
   const Mecanica = MECANICAS[p.id];
   return (
-    <div ref={raiz} data-r5-5 data-r5 data-paso={p.id} style={{ paddingTop: "12px" }}>
+    <div ref={raiz} data-r5-5 data-r5 data-paso={p.id} data-version={version} style={{ paddingTop: "12px" }}>
       <style>{CSS_JUEGO + CSS_PERMANENTE}</style>
       <Cabecera actual={paso} total={TOTAL_R5_5} escena="bodega" progreso={RP.progreso} />
       <p data-enunciado style={{ margin: "8px 0 0", fontFamily: INTER, fontSize: "16px", lineHeight: "24px", fontWeight: 600, color: C.texto }}>{p.enunciado}</p>
