@@ -47,6 +47,19 @@ export function balanzaDe(asientos) {
     DIFERENCIA_MAXIMA: maxima,
     RETENCION_FINAL: tras(MOVIMIENTO.length).retencion,
     anguloDe: (diferencia) => (maxima ? (GRADOS_MAXIMOS * diferencia) / maxima : 0),
+    /*
+     * D4 de Takamura: dónde habría quedado la balanza con el asiento del
+     * estudiante (el `hechos`-ésimo cambiado por sus renglones).
+     */
+    conTuAsiento: (hechos, renglones) => {
+      const e = tras(hechos - 1);
+      for (const r of renglones) {
+        const valor = Number(r.valor) || 0;
+        if (r.cuenta === IVA) e[r.lado] += valor;
+        if (r.cuenta === RETENCION) e.retencion += r.lado === "haber" ? valor : -valor;
+      }
+      return { ...e, diferencia: e.haber - e.debe };
+    },
   };
 }
 

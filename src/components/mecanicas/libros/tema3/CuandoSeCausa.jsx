@@ -3,13 +3,17 @@ import { FAE } from "../../../../theme.js";
 import { COLOR } from "../../../../data/contabilidadTema3.js";
 import {
   ACT2_T3, ITEMS_ACT2, pieDe, LEYENDA_ORDEN, ESTADO_VACIO, SE_CAUSA_AQUI, SIGUIENTE_ITEM, VER_RESUMEN, ALT_ACT2,
+  SEGUNDA_ACT2, MARCA_ACT2, SE_CAUSA_DIA,
 } from "../../../../data/contabilidadTema3Act2.js";
-import { evaluarAct2, puntuarAct2, esArrastre } from "../../../../contabilidad/cuandoSeCausa.js";
+import {
+  evaluarAct2, puntuarAct2, esArrastre, tieneSegunda, evaluarSegundaAct2,
+} from "../../../../contabilidad/cuandoSeCausa.js";
 import { Pulsos, Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Responder, useTanda } from "../piezas.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";
 import { Encabezado } from "../tema1/encabezado.jsx";
+import { useSegunda, OpcionSegunda, MensajeSegunda, mostrarTramo, pastillasTocadas } from "./segundaDecision.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -25,12 +29,27 @@ import { Encabezado } from "../tema1/encabezado.jsx";
  * cuenta. Tras responder, las filas se desactivan hasta el siguiente ítem.
  *
  * Coral solo en la marca equivocada. Ni verde azulado ni ámbar.
+ *
+ * ═══════════ LA SEGUNDA DECISIÓN (Hanayama; textos de Katsumi) ═══════════
+ *
+ * En los ítems que llevan `queda` (los seis del banco; no el ejemplo de la
+ * panadería), al acertar el día: el día queda en una línea sobre la pregunta
+ * y las marcas ceden su lugar a tres filas de ≥ 56 px, a todo el ancho. Un
+ * toque califica. La devolución del ítem y «Siguiente ítem» esperan a que se
+ * resuelva. El ítem cuenta solo si las dos decisiones son correctas (Yujiro);
+ * el detalle guarda las dos. Al fallar el día no hay segunda decisión.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
 const SORA = "Sora, sans-serif";
 const INTER = "Inter, sans-serif";
 const CORAL = FAE.coral;
+
+/* La forma de una fila de la línea, para que la segunda decisión la copie. */
+const FORMA_FILA = {
+  relleno: [14, 14], radio: "14px", altoMinimo: "56px",
+  letra: { fontFamily: INTER, fontSize: "15px", fontWeight: 600, lineHeight: 1.35 },
+};
 
 const CSS = `
 .fae-a2-fila { -webkit-tap-highlight-color: transparent; }
@@ -127,10 +146,17 @@ export default function CuandoSeCausa({
   const tarjeta = useRef(null);
   const zonaBoton = useRef(null);
   const primeraVez = useRef(true);
+  const pregunta = useRef(null);
+  const mensaje = useRef(null);
+  const zonaSegunda = useRef(null);
+  const segunda = useSegunda();
+  const toque = useRef({ inicio: null, arrastre: false });
 
   const item = t.items[t.i];
   const cuantos = t.items.length;
   const pct = puntuarAct2(respuestas, cuantos);
+  const enSegunda = Boolean(r?.ok && tieneSegunda(item));
+  const resuelto = Boolean(r && (!enSegunda || segunda.lista));
 
   useEffect(() => {
     if (t.terminado && !modoDemo) onCompletar?.(pct, Date.now() - t.inicio.current, t.detalle.current);
@@ -140,20 +166,58 @@ export default function CuandoSeCausa({
     if (primeraVez.current) { primeraVez.current = false; return; }
     if (!modoDemo) tarjeta.current?.focus({ preventScroll: false });
   }, [t.i]);
+  useEffect(() => {
+    if (enSegunda && !modoDemo) pregunta.current?.focus();
+  }, [enSegunda]);
+  /* El tramo de la pastilla al mensaje o al botón (lote A): al tocar mal, sin foco; al resolverse, con foco. */
+  useEffect(() => {
+    if (segunda.s && !segunda.lista && !modoDemo) mostrarTramo({ mensaje: mensaje.current, pastillas: pastillasTocadas(zonaSegunda.current) });
+  }, [segunda.s]);
+  useEffect(() => {
+    if (enSegunda && resuelto && !modoDemo) {
+      mostrarTramo({ mensaje: mensaje.current, pastillas: pastillasTocadas(zonaSegunda.current), boton: zonaBoton.current?.querySelector("button"), enfocar: true });
+    }
+  }, [resuelto]);
 
   const tocar = (marcaId) => {
     if (r) return;
     const nuevo = evaluarAct2(item, marcaId);
     t.anotar(item.id, nuevo.ok, nuevo.ok ? null : marcaId);
-    setRespuestas((xs) => [...xs, { id: item.id, ok: nuevo.ok }]);
+    if (tieneSegunda(item)) t.detalle.current[t.detalle.current.length - 1].respuestas = { dia: marcaId };
+    /* Con segunda decisión, la respuesta del ítem espera a que se resuelva. */
+    if (!(nuevo.ok && tieneSegunda(item))) setRespuestas((xs) => [...xs, { id: item.id, ok: nuevo.ok }]);
     setR({ ...nuevo, tocada: marcaId });
   };
+  const elegirSegunda = (id) => {
+    const ev = evaluarSegundaAct2(item, id);
+    if (!segunda.elegir(id, ev.ok, ev.correcta, ev.error)) return;
+    const d = t.detalle.current.find((x) => x.item === item.id);
+    if (d) {
+      d.respuestas = { ...d.respuestas, segunda: id };
+      if (!ev.ok) { d.ok = false; d.respuesta = id; }
+    }
+    setRespuestas((xs) => [...xs, { id: item.id, ok: ev.ok }]);
+  };
+  /* Como en la línea: si el dedo se arrastró más de 10 px, era scroll y no cuenta. */
+  const eventosToque = {
+    onPointerDown: (e) => { toque.current = { inicio: { x: e.clientX, y: e.clientY }, arrastre: false }; },
+    onPointerMove: (e) => {
+      const i = toque.current.inicio;
+      if (i && esArrastre(e.clientX - i.x, e.clientY - i.y)) toque.current.arrastre = true;
+    },
+    onPointerCancel: () => { toque.current.arrastre = true; },
+  };
+  const antesDeTocar = () => {
+    const fue = toque.current.arrastre;
+    toque.current = { inicio: null, arrastre: false };
+    return !fue;
+  };
   const avanzar = () => {
-    setR(null);
+    setR(null); segunda.reiniciar();
     if (t.i + 1 < cuantos) t.setI(t.i + 1);
     else t.setTerminado(true);
   };
-  const reiniciar = () => { t.reiniciar(); setR(null); setRespuestas([]); };
+  const reiniciar = () => { t.reiniciar(); setR(null); setRespuestas([]); segunda.reiniciar(); };
 
   if (t.terminado) {
     const bien = respuestas.filter((x) => x.ok).length;
@@ -205,16 +269,45 @@ export default function CuandoSeCausa({
           {pie && <p data-pie style={{ margin: "4px 0 0", fontFamily: INTER, fontSize: "12px", color: COLOR.apagado }}>{pie}</p>}
         </div>
 
+        {/* La segunda decisión, en el lugar de la línea y con la forma de sus filas. */}
+        {enSegunda && (
+          <div data-segunda ref={zonaSegunda}>
+            {/*
+              * «Se causa: {día}» y la pregunta en UNA línea (Hanayama, por B1): el
+              * rótulo en Inter 500 12 #A8B6C8 y la pregunta en Sora 600 15. Si no
+              * caben, la pregunta baja a la segunda línea, en el mismo bloque.
+              */}
+            <p ref={pregunta} tabIndex={-1} data-encabezado-segunda style={{
+              margin: "0 0 10px", display: "flex", flexWrap: "wrap", alignItems: "baseline", columnGap: "8px", rowGap: "2px", outline: "none",
+            }}>
+              <span data-se-causa-dia style={{ fontFamily: INTER, fontSize: "12px", fontWeight: 500, lineHeight: "18px", color: "#A8B6C8" }}>
+                {SE_CAUSA_DIA(item.marcas.find((m) => m.id === r.correcta).rotulo)}
+              </span>
+              <span data-pregunta-segunda style={{ fontFamily: SORA, fontSize: "15px", fontWeight: 600, lineHeight: "22px", color: COLOR.blanco }}>
+                {SEGUNDA_ACT2.pregunta}
+              </span>
+            </p>
+            <div role="group" aria-label={SEGUNDA_ACT2.pregunta} style={{ display: "flex", flexDirection: "column", rowGap: "8px" }}>
+              {SEGUNDA_ACT2.opciones.map((o) => (
+                <OpcionSegunda key={`${item.id}-${o.id}`} opcion={o} estado={segunda.estadoDe(o.id)} palabras={MARCA_ACT2}
+                  onTocar={elegirSegunda} forma={FORMA_FILA} eventos={eventosToque} antesDeTocar={antesDeTocar} />
+              ))}
+            </div>
+            <MensajeSegunda s={segunda.s} lista={segunda.lista} devolucion={item.acierto} refMensaje={mensaje}
+              letra={{ fontFamily: INTER, fontSize: "15px", lineHeight: "22px" }} />
+          </div>
+        )}
+
         {/* La leyenda de orden: la separación entre filas no es proporcional a los días. */}
-        <p data-leyenda style={{ margin: "0 0 10px", display: "flex", alignItems: "flex-start", gap: "6px", fontFamily: INTER, fontSize: "12.5px", lineHeight: 1.4, color: COLOR.apagado }}>
+        {!enSegunda && <p data-leyenda style={{ margin: "0 0 10px", display: "flex", alignItems: "flex-start", gap: "6px", fontFamily: INTER, fontSize: "12.5px", lineHeight: 1.4, color: COLOR.apagado }}>
           <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" style={{ flex: "none", marginTop: "2px" }}>
             <path d="M7 2 V12 M3 8 L7 12 L11 8" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
           {LEYENDA_ORDEN}
-        </p>
+        </p>}
 
         {/* Las filas, sobre su riel. Entre fila y fila, 8 px que no responden. */}
-        <div data-filas style={{ position: "relative", paddingLeft: "40px" }}>
+        {!enSegunda && <div data-filas style={{ position: "relative", paddingLeft: "40px" }}>
           <span aria-hidden="true" data-riel style={{
             position: "absolute", left: "15px", top: "28px", bottom: "28px", width: "2px", background: COLOR.quieto,
           }} />
@@ -223,7 +316,7 @@ export default function CuandoSeCausa({
               <Fila key={`${item.id}-${m.id}`} marca={m} estado={estadoDe(m)} onTocar={tocar} />
             ))}
           </div>
-        </div>
+        </div>}
 
         {!r && (
           <p data-estado-vacio style={{ margin: "10px 0 0", fontFamily: INTER, fontSize: "13.5px", color: COLOR.apagado }}>{ESTADO_VACIO}</p>
@@ -231,7 +324,8 @@ export default function CuandoSeCausa({
 
         {/* La retroalimentación: región viva. En un error, primero el tipo y después el acierto. */}
         <div data-retro aria-live="polite" aria-atomic="true">
-          {r && (
+          {/* Con segunda decisión, la devolución va en su mensaje, no aquí. */}
+          {r && !enSegunda && (
             <div data-panel={r.ok ? "acierto" : "error"} style={{
               marginTop: "12px", padding: "11px 13px", borderRadius: "11px",
               background: r.ok ? "rgba(184,196,212,0.13)" : "rgba(231,111,81,0.13)",
@@ -247,7 +341,7 @@ export default function CuandoSeCausa({
         </div>
       </div>
 
-      {r && !modoDemo && (
+      {resuelto && !modoDemo && (
         <div ref={zonaBoton}>
           <Responder onClick={avanzar}>{t.i + 1 === cuantos ? VER_RESUMEN : SIGUIENTE_ITEM}</Responder>
         </div>

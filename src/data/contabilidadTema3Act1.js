@@ -76,15 +76,19 @@ export const HECHOS_ACT1_T3 = [
   /* ── Grupo 3 · Entra dinero, pero no es ingreso ── */
   { id: "t3a1-sc-aporte", grupo: SIN_INGRESO, empresa: SAN_CALIXTO, fuente: "p. 121",
     texto: "Los socios abren la empresa con $15.000 en plata",
+    queEs: "aporte",
     acierto: "Entró plata, pero la empresa no vendió lo que ofrece. Es un aporte." },
   { id: "t3a1-cc-computador", grupo: SIN_INGRESO, empresa: COMPANIA_CUALQUIERA, fuente: "p. 130",
     texto: "Vendió un computador por $15.000, su mismo valor",
+    queEs: "activo",
     acierto: "No vende computadores. Entregó uno y recibió su mismo valor en plata." },
   { id: "t3a1-lv-prestamo", grupo: SIN_INGRESO, empresa: LAVALIMPIO, fuente: "p. 131",
     texto: "Recibió un préstamo de $5.000.000 de una entidad financiera",
+    queEs: "deuda",
     acierto: "El banco le prestó. Entró plata y nació una deuda, no un ingreso." },
   { id: "t3a1-lv-acciones", grupo: SIN_INGRESO, empresa: LAVALIMPIO, fuente: "p. 131",
     texto: "Se inicia el negocio con la venta de 5.000 acciones de $1.000, pagadas de contado",
+    queEs: "aporte",
     acierto: "Vender acciones no es vender lo que la empresa ofrece. Los accionistas pusieron plata: es un aporte, nunca un ingreso." },
 ];
 
@@ -97,6 +101,37 @@ export const ERRORES_ACT1_T3 = {
   /* C · confundió el grupo 1 con el 2. */
   C: "Fíjate en cuándo entra la plata. Si entró el mismo día, va en el primer grupo; si llega después, en el segundo.",
 };
+
+/*
+ * ═══════════ LA SEGUNDA DECISIÓN (Katsumi, textual; diseño de Hanayama) ═══════════
+ *
+ * Solo en los hechos del grupo 3, después de acertar el grupo: ¿qué es esa
+ * plata? Cada hecho del grupo 3 lleva su `queEs`. Un toque califica.
+ */
+export const APORTE = "aporte";
+export const DEUDA = "deuda";
+export const ACTIVO = "activo";
+
+export const SEGUNDA_ACT1_T3 = {
+  pregunta: "Si no es ingreso, ¿qué es esa plata?",
+  opciones: [
+    { id: APORTE, rotulo: "Un aporte" },
+    { id: DEUDA, rotulo: "Una deuda" },
+    { id: ACTIVO, rotulo: "Un activo vendido" },
+  ],
+};
+
+/* El error de la segunda decisión: [lo que era][lo que tocó]. */
+const NO_ENTREGO = "La empresa no entregó nada a cambio de esa plata.";
+const ENTREGO = "Nadie puso ni prestó: entregó algo suyo a cambio.";
+export const ERRORES_SEGUNDA_ACT1_T3 = {
+  [APORTE]: { [DEUDA]: "La plata la pusieron los socios, no un prestamista.", [ACTIVO]: NO_ENTREGO },
+  [DEUDA]: { [APORTE]: "La plata la prestó un banco, no los socios.", [ACTIVO]: NO_ENTREGO },
+  [ACTIVO]: { [APORTE]: ENTREGO, [DEUDA]: ENTREGO },
+};
+
+/* Las palabras de la pastilla (prompt maestro §4.2), las mismas de todo Contabilidad. */
+export const MARCA_ACT1_T3 = { bien: "Correcto", mal: "No va aquí", era: "Iba aquí" };
 
 /* Para el lector de pantalla: qué hay en la zona de juego (mío, descriptivo, como el de T1-6). */
 export const ALT_ACT1_T3 = "Una ficha con un hecho y su empresa, y tres grupos para tocar.";

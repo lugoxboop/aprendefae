@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { FAE } from "../../../../theme.js";
 import {
   T6_ACT6, GRUPOS_T6_ACT6, PARTES_T6_ACT6, PIES_T6_ACT6, ESCENARIO_T6_ACT6, ROTULOS_TOTAL_T6_ACT6,
@@ -8,7 +8,7 @@ import { pesos } from "../../../../data/contabilidad.js";
 import { SORA, INTER, TEXTO, SECUNDARIO, NODO, BORDES } from "./MaquinaPegada.jsx";
 import { Entra, KEYFRAMES_ENTRA } from "./CuentaQueSeLlena.jsx";
 import { CORRECTA, TACHADA, REVELADA } from "../b5/MarcasE4.jsx";
-import { Pastilla, PALABRA_B, TEXTO_B, CORAL_B, ACIERTO_B } from "../b5/Devolucion.jsx";
+import { Pastilla, PALABRA_B, TEXTO_B, CORAL_B, ACIERTO_B, RETRASO_REVELA_MS } from "../b5/Devolucion.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -47,6 +47,12 @@ import { Pastilla, PALABRA_B, TEXTO_B, CORAL_B, ACIERTO_B } from "../b5/Devoluci
  * la deuda (ya cayó), alineada con su cajón; si hay dos y no caben en sus
  * sitios, se acercan sin montarse. La palabra entra en el nombre accesible
  * del cajón. Sin relleno navy: lo activo es solo el borde de 2 #F8F9FA.
+ *
+ * LOTE 22 (D4, Shoko): la deuda cae primero en el cajón que eligió el
+ * estudiante; si falló, a los 0,7 s (cuando sale «Iba aquí») pasa al
+ * correcto, en 320 ms. Así dos decisiones distintas se ven distintas. Con
+ * movimiento reducido, sin trayecto: está en el elegido y luego, de golpe,
+ * en el correcto.
  *
  * Lo que entra es siempre el valor correcto. En blanco y negro: los cajones
  * se leen por sus marcas y su orden; la porción es relleno y el resto
@@ -127,6 +133,15 @@ function Eje({ respondidas, abierta, reducido, eleccion = null, casillas }) {
   };
   const palabraDe = { [CORRECTA]: PALABRA_B.correcto, [TACHADA]: PALABRA_B.noVaAqui, [REVELADA]: PALABRA_B.ibaAqui };
   const marcados = GRUPOS_T6_ACT6.map((g, k) => k).filter((k) => marcaDe(k));
+  /* Lote 22: si falló, la deuda espera en el cajón elegido hasta que sale «Iba aquí»; luego pasa al correcto. */
+  const errado = elegidoK >= 0 && elegidoK !== cajonDe(casilla) ? elegidoK : -1;
+  const [pasada, setPasada] = useState(null);
+  useEffect(() => {
+    if (errado < 0) return undefined;
+    const t = setTimeout(() => setPasada(casilla.id), RETRASO_REVELA_MS);
+    return () => clearTimeout(t);
+  }, [errado, casilla?.id]);
+  const enElegido = errado >= 0 && pasada !== casilla.id;
   return (
     <div data-eje {...(abierta !== null ? { "data-renglon-activo": "" } : {})} data-escalonado={escalonado ? "si" : "no"} style={{ position: "relative", height: `${TOPE_BARRA + ALTO_BARRA + 4 + LINEA_MARCA * (escalonado ? 2 : 1)}px`, margin: "4px 0 12px" }}>
       {/* La barra, partida en cuatro cajones. */}
@@ -178,10 +193,10 @@ function Eje({ respondidas, abierta, reducido, eleccion = null, casillas }) {
       {casillas.map((c, i) => {
         if (i > actual) return null;
         const enCajon = i < respondidas;
-        const k = cajonDe(c);
+        const k = i === actual && enElegido ? errado : cajonDe(c);
         const anterior = enCajon && i !== actual;
         return (
-          <span key={c.id} data-deuda={c.id} data-en-cajon={enCajon ? GRUPOS_T6_ACT6[k].id : ""} style={{
+          <span key={c.id} data-deuda={c.id} data-en-cajon={enCajon ? GRUPOS_T6_ACT6[k].id : ""} {...(i === actual && errado >= 0 ? { "data-de-paso": enElegido ? "si" : "no" } : {})} style={{
             position: "absolute", height: `${ALTO_PASTILLA}px`, boxSizing: "border-box", padding: enCajon ? "4px 0" : "2px 6px", borderRadius: "999px",
             top: enCajon ? `${TOPE_BARRA + (ALTO_BARRA - ALTO_PASTILLA) / 2}px` : 0,
             /* Esperando, siempre al inicio del eje, encima de él; en su cajón, centrada en él. */

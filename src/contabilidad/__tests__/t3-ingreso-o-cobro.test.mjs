@@ -14,6 +14,9 @@ import { JSDOM, VirtualConsole } from "jsdom";
  *   · montada: la empresa a la vista, los tres grupos, el reintento
  *   · en el camino, después de la pieza 1; con su fila en el catálogo
  *   · T1-6 no se tocó
+ *   · la segunda decisión del grupo 3 («¿qué es esa plata?»): textos de
+ *     Katsumi, un toque, pastillas, «Iba aquí» a los 0,7 s, la retro del
+ *     hecho después, cuenta solo con las dos bien y el detalle guarda las dos
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -58,6 +61,11 @@ const boton = (caja, texto) => [...caja.querySelectorAll("button")].find((b) => 
 const grupo = (caja, id) => caja.querySelector(`[data-grupo="${id}"]`);
 const retro = (caja) => [...caja.querySelectorAll('[role="status"]')].map((x) => x.textContent).join(" ");
 const colocar = async (caja, id) => { await tocar(grupo(caja, id)); await tocar(boton(caja, "Colocar la ficha")); };
+const opcion = (caja, id) => caja.querySelector(`[data-opcion-segunda="${id}"]`);
+const esperar = async (ms) => { await act(async () => { await new Promise((r) => setTimeout(r, ms)); }); };
+const mensaje = (caja) => caja.querySelector("[data-mensaje-segunda]");
+const textosMensaje = (caja) => [...caja.querySelectorAll("[data-texto-mensaje]")].map((x) => x.textContent);
+const delGrupo3 = A1.HECHOS_ACT1_T3.filter((x) => x.grupo === SIN_INGRESO);
 
 /* ═══════════ EL TEXTO DE GEN, TEXTUAL ═══════════ */
 
@@ -137,6 +145,9 @@ test("★★★ qué error toca: A era ingreso → grupo 3; B no era ingreso →
 test("★★ el puntaje: 1 al primer intento, la mitad al segundo", () => {
   assert.equal(L.puntuarAct1T3([{ primeroOk: true }, { primeroOk: false, segundoOk: true }, { primeroOk: false, segundoOk: false }], 3), 50);
   assert.equal(L.puntuarAct1T3([], 0), 0);
+  /* Con segunda decisión: cuenta solo si las dos son correctas (Yujiro). */
+  assert.equal(L.puntuarAct1T3([{ primeroOk: true, segundaOk: true }, { primeroOk: true, segundaOk: false }], 2), 50);
+  assert.equal(L.puntuarAct1T3([{ primeroOk: false, segundoOk: true, segundaOk: false }], 1), 0);
 });
 
 /* ═══════════ MONTADA ═══════════ */
@@ -175,7 +186,10 @@ test("★★★ error, reintento y acierto: el error es el de su tipo y el ítem
     assert.ok(retro(m.caja).includes(A1.ERRORES_ACT1_T3.B), retro(m.caja));
     assert.ok(m.caja.querySelector("[data-fallo]"));
     await colocar(m.caja, SIN_INGRESO);
-    assert.ok(retro(m.caja).includes(x.acierto));
+    assert.ok(m.caja.querySelector("[data-segunda]"), "al acertar el grupo 3 sale la segunda decisión");
+    assert.equal(retro(m.caja), "", "la retro del hecho espera a la segunda decisión");
+    await tocar(opcion(m.caja, x.queEs));
+    assert.deepEqual(textosMensaje(m.caja), [`Correcto. ${x.acierto}`]);
     await tocar(boton(m.caja, "Ver el resultado"));
     assert.equal(fin, 50);
   } finally { m.desmontar(); }
@@ -202,4 +216,133 @@ test("★★ tiene su fila en el catálogo del servidor y su etiqueta en el pane
 test("★★ T1-6 sigue intacta: el componente nuevo no importa nada de ella", () => {
   const fuente = readFileSync(new URL("../../components/mecanicas/libros/tema3/IngresoOCobro.jsx", import.meta.url), "utf8");
   assert.doesNotMatch(fuente, /EnCualEstadoAparece|T1_6|contabilidadTema1/);
+});
+
+/* ═══════════ LA SEGUNDA DECISIÓN: «¿QUÉ ES ESA PLATA?» ═══════════ */
+
+test("★★★ la segunda decisión: los textos de Katsumi, textuales, y qué es cada hecho del grupo 3", () => {
+  assert.equal(A1.SEGUNDA_ACT1_T3.pregunta, "Si no es ingreso, ¿qué es esa plata?");
+  assert.deepEqual(A1.SEGUNDA_ACT1_T3.opciones.map((o) => o.rotulo), ["Un aporte", "Una deuda", "Un activo vendido"]);
+  assert.deepEqual(A1.ERRORES_SEGUNDA_ACT1_T3, {
+    aporte: { deuda: "La plata la pusieron los socios, no un prestamista.", activo: "La empresa no entregó nada a cambio de esa plata." },
+    deuda: { aporte: "La plata la prestó un banco, no los socios.", activo: "La empresa no entregó nada a cambio de esa plata." },
+    activo: { aporte: "Nadie puso ni prestó: entregó algo suyo a cambio.", deuda: "Nadie puso ni prestó: entregó algo suyo a cambio." },
+  });
+  assert.deepEqual(A1.MARCA_ACT1_T3, { bien: "Correcto", mal: "No va aquí", era: "Iba aquí" });
+  assert.deepEqual(delGrupo3.map((x) => [x.id, x.queEs]), [
+    ["t3a1-sc-aporte", "aporte"], ["t3a1-cc-computador", "activo"], ["t3a1-lv-prestamo", "deuda"], ["t3a1-lv-acciones", "aporte"],
+  ]);
+  assert.ok(A1.HECHOS_ACT1_T3.filter((x) => x.grupo !== SIN_INGRESO).every((x) => !L.tieneSegunda(x)), "solo el grupo 3");
+  for (const x of delGrupo3) {
+    for (const o of A1.SEGUNDA_ACT1_T3.opciones) {
+      const r = L.evaluarSegundaAct1T3(x, o.id);
+      assert.equal(r.ok, o.id === x.queEs);
+      if (!r.ok) assert.equal(r.error, A1.ERRORES_SEGUNDA_ACT1_T3[x.queEs][o.id]);
+    }
+  }
+});
+
+test("★★★ al acertar el grupo 3: las pestañas ceden a la pregunta y tres pestañas; la ficha sigue; ni retro ni avance", async () => {
+  const x = delGrupo3[2];
+  const m = await montar({ items: [x] });
+  try {
+    await colocar(m.caja, SIN_INGRESO);
+    assert.ok(m.caja.querySelector("[data-ficha]"));
+    assert.equal(m.caja.querySelector("[data-grupos]"), null);
+    assert.equal(m.caja.querySelector("[data-pregunta-segunda]").textContent, "Si no es ingreso, ¿qué es esa plata?");
+    const ops = [...m.caja.querySelectorAll("[data-opcion-segunda]")];
+    assert.deepEqual(ops.map((o) => o.textContent), ["Un aporte", "Una deuda", "Un activo vendido"]);
+    for (const o of ops) {
+      assert.equal(o.style.width, "100%");
+      assert.equal(o.style.border, "1px solid rgba(248, 249, 250, 0.35)");
+      assert.equal(o.style.background, "transparent");
+      assert.equal(o.querySelector("[data-hueco-pastilla]").style.height, "20px");
+    }
+    assert.equal(retro(m.caja), "");
+    assert.equal(boton(m.caja, "Colocar la ficha"), undefined, "un toque califica: sin «Colocar la ficha»");
+    assert.equal(boton(m.caja, "Ver el resultado"), undefined);
+    assert.equal(document.activeElement, m.caja.querySelector("[data-pregunta-segunda]"));
+  } finally { m.desmontar(); }
+});
+
+test("★★★ segunda bien: «Correcto» con Check y 2 px #F8F9FA; después la retro del hecho; vale 1 y el detalle guarda las dos", async () => {
+  const x = delGrupo3[1];
+  let fin = null;
+  const m = await montar({ items: [x], onCompletar: (...a) => { fin = a; } });
+  try {
+    await colocar(m.caja, SIN_INGRESO);
+    await tocar(opcion(m.caja, "activo"));
+    const o = opcion(m.caja, "activo");
+    assert.equal(o.getAttribute("data-estado"), "bien");
+    assert.equal(o.style.border, "2px solid rgb(248, 249, 250)");
+    assert.equal(o.style.padding, "8px 10px");
+    assert.equal(o.querySelector("[data-pastilla]").textContent, "Correcto");
+    assert.ok(o.querySelector("[data-pastilla] svg"));
+    assert.equal(mensaje(m.caja).getAttribute("data-mensaje-segunda"), "acierto");
+    assert.equal(mensaje(m.caja).style.borderLeft, "3px solid rgb(184, 196, 212)");
+    assert.equal(mensaje(m.caja).style.background, "rgba(184, 196, 212, 0.12)");
+    assert.deepEqual(textosMensaje(m.caja), [`Correcto. ${x.acierto}`], "un solo bloque: «Correcto.» y la devolución");
+    assert.equal(retro(m.caja), "", "la devolución no sale también en la retro de abajo");
+    await tocar(opcion(m.caja, "deuda"));
+    assert.equal(opcion(m.caja, "deuda").getAttribute("data-estado"), "apagada");
+    await tocar(boton(m.caja, "Ver el resultado"));
+    assert.equal(fin[0], 100);
+    assert.deepEqual(fin[2].map(({ item, ok, respuesta, respuestas }) => ({ item, ok, respuesta, respuestas })), [
+      { item: x.id, ok: true, respuesta: null, respuestas: { grupo: SIN_INGRESO, segunda: "activo" } },
+    ]);
+  } finally { m.desmontar(); }
+});
+
+for (const [k, mal] of [[0, "deuda"], [0, "activo"], [1, "aporte"], [2, "aporte"], [2, "activo"]]) {
+  const x = delGrupo3[k];
+  test(`★★★ segunda mal (${x.id} · ${mal}): coral y «No va aquí», el error en su bloque; a los 0,7 s «Iba aquí» y la retro; vale 0`, async () => {
+    let fin = null;
+    const m = await montar({ items: [x], onCompletar: (...a) => { fin = a; } });
+    try {
+      await colocar(m.caja, SIN_INGRESO);
+      await tocar(opcion(m.caja, mal));
+      const o = opcion(m.caja, mal);
+      assert.equal(o.getAttribute("data-estado"), "mal");
+      assert.equal(o.style.border, "2px solid rgb(231, 111, 81)");
+      assert.equal(o.querySelector("[data-pastilla]").textContent, "No va aquí");
+      const bloque = mensaje(m.caja);
+      assert.equal(bloque.getAttribute("data-mensaje-segunda"), "error");
+      assert.deepEqual(textosMensaje(m.caja), [`Incorrecto: ${A1.ERRORES_SEGUNDA_ACT1_T3[x.queEs][mal]}`]);
+      assert.equal(bloque.style.borderLeft, "3px solid rgb(231, 111, 81)");
+      assert.equal(bloque.style.background, "rgba(184, 196, 212, 0.12)");
+      assert.equal(opcion(m.caja, x.queEs).getAttribute("data-estado"), "apagada");
+      assert.equal(retro(m.caja), "");
+      assert.equal(boton(m.caja, "Ver el resultado"), undefined);
+      await esperar(750);
+      const c = opcion(m.caja, x.queEs);
+      assert.equal(c.getAttribute("data-estado"), "era");
+      assert.equal(c.style.border, "2px solid rgb(248, 249, 250)");
+      assert.equal(c.querySelector("[data-pastilla]").textContent, "Iba aquí");
+      assert.equal(m.caja.querySelectorAll("[data-mensaje-segunda]").length, 1, "un solo bloque");
+      assert.deepEqual(textosMensaje(m.caja), [`Incorrecto: ${A1.ERRORES_SEGUNDA_ACT1_T3[x.queEs][mal]}`, x.acierto], "el error y después la devolución, en el mismo bloque");
+      assert.equal(retro(m.caja), "");
+      await tocar(boton(m.caja, "Ver el resultado"));
+      assert.equal(fin[0], 0, "sin puntos parciales");
+      assert.equal(fin[2][0].ok, false);
+      assert.equal(fin[2][0].respuesta, mal);
+      assert.deepEqual(fin[2][0].respuestas, { grupo: SIN_INGRESO, segunda: mal });
+    } finally { m.desmontar(); }
+  });
+}
+
+test("★★ el reintento y la segunda mal: vale 0; el detalle guarda el primer grupo y la segunda", async () => {
+  const x = delGrupo3[3];
+  let fin = null;
+  const m = await montar({ items: [x], onCompletar: (...a) => { fin = a; } });
+  try {
+    await colocar(m.caja, DESPUES);
+    await colocar(m.caja, SIN_INGRESO);
+    await tocar(opcion(m.caja, "deuda"));
+    await esperar(750);
+    await tocar(boton(m.caja, "Ver el resultado"));
+    assert.equal(fin[0], 0);
+    assert.deepEqual(fin[2].map(({ ok, respuesta, respuestas }) => ({ ok, respuesta, respuestas })), [
+      { ok: false, respuesta: DESPUES, respuestas: { grupo: DESPUES, segunda: "deuda" } },
+    ]);
+  } finally { m.desmontar(); }
 });

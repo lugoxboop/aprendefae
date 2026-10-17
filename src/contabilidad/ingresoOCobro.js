@@ -1,5 +1,5 @@
 import {
-  ACT1_T3, GRUPOS, HECHOS_ACT1_T3, ERRORES_ACT1_T3,
+  ACT1_T3, GRUPOS, HECHOS_ACT1_T3, ERRORES_ACT1_T3, ERRORES_SEGUNDA_ACT1_T3,
 } from "../data/contabilidadTema3Act1.js";
 
 /*
@@ -49,12 +49,29 @@ export function evaluarAct1T3(hecho, puesto) {
   return { ok: false, texto: `❌ ${ERRORES_ACT1_T3[patron]}`, patron };
 }
 
-/* El primer intento vale 1; el reintento, la mitad. Como en T1-6 y en el Tema 2. */
+/*
+ * La segunda decisión: solo los hechos del grupo 3 (los que llevan `queEs`),
+ * después de acertar el grupo. Un toque, un intento.
+ */
+export const tieneSegunda = (hecho) => Boolean(hecho?.queEs);
+
+export function evaluarSegundaAct1T3(hecho, elegida) {
+  const ok = elegida === hecho.queEs;
+  return { ok, correcta: hecho.queEs, error: ok ? null : ERRORES_SEGUNDA_ACT1_T3[hecho.queEs][elegida] };
+}
+
+/*
+ * El primer intento vale 1; el reintento, la mitad. Como en T1-6 y en el Tema 2.
+ * En un hecho con segunda decisión, el hecho cuenta solo si las dos son
+ * correctas, sin puntos parciales (Yujiro): con la segunda mal (`segundaOk`
+ * falso), vale 0.
+ */
 export const VALOR_SEGUNDO = 0.5;
 
 export function puntuarAct1T3(respuestas, cuantas) {
   if (!cuantas) return 0;
   const suma = respuestas.reduce((s, r) => {
+    if (r.segundaOk === false) return s;
     if (r.primeroOk) return s + 1;
     if (r.segundoOk) return s + VALOR_SEGUNDO;
     return s;

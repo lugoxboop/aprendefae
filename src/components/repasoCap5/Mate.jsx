@@ -613,7 +613,7 @@ function PantallaAsiento({ a, i, total, r, onRespondida, onSiguiente, botonRef }
       <Devolucion r={r && { ok: r.ok, textos: r.textos }} />
       {/* Después de la devolución, sin desplazamiento forzado (corrección 1 de Takamura). En el error, espera a «Iba aquí»: si no, el armador revelado lo empuja mientras anima. */}
       {/* P2 de Itagaki (r5-3): la balanza recibe las pesas después del mensaje. */}
-      {BALANZA && r && (r.ok || revelar) && <div style={{ marginTop: "16px" }}><Balanza hechos={i + 1} antes={i} textos={TEXTOS_BALANZA} datos={DATOS_BALANZA} /></div>}
+      {BALANZA && r && (r.ok || revelar) && <div style={{ marginTop: "16px" }}><Balanza hechos={i + 1} antes={i} textos={TEXTOS_BALANZA} datos={DATOS_BALANZA} tuyo={r.ok ? null : renglones} /></div>}
       {!CALENDARIO && !BALANZA && r && (r.ok || revelar) && <MesEnDosCuentas cuentas={MES_MATE.cuentas} movs={MOVIMIENTOS_MATE} hasta={i} linea={LINEAS_MES[a.id] ?? null} />}
       {r && <BotonSiguiente onClick={onSiguiente} botonRef={botonRef} sustantivo={RM.sustantivo} ultimo={i + 1 === total} />}
       </>)}

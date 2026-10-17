@@ -355,7 +355,7 @@ export function asientosMateDe(M, E, O) {
       operacion: "Compra a crédito",
       hecho: "Marzo 25: compra a crédito. Arma su asiento.",
       /* Decisión 2: la etiqueta es «Plazo del proveedor». */
-      renglones: [["Compra", `${u(O.a6.unidades)} unidades a ${c(O.a6.precio)}`], ["IVA", "16 %"], ["Retención", "3,5 % sobre el valor sin IVA"], ["Condiciones (del proveedor)", "5/15, n/30"]],
+      renglones: [["Compra", `${u(O.a6.unidades)} unidades a ${c(O.a6.precio)}`], ["IVA", "16 %"], ["Retención", "3,5 % sobre el valor sin IVA"], ["Plazo del proveedor", "5/15, n/30"]],
       correctos: [[d(COMPRAS, M.a6.compras), d(IVA, M.a6.iva), h(RETENCION, M.a6.retencion), h(PROVEEDORES, M.a6.pago)]],
       cruzado: {
         [IVA]: "En una compra, el IVA que pagas va al debe.",
@@ -478,5 +478,7 @@ export const BALANZA_R5_3 = {
   aFavor: "Te queda a favor",
   sobre: "Retenciones por pagar",
   final: (cifra) => `Marzo: ${cifra} de IVA son del Estado.`,
+  /* D4 de Takamura (Kamogawa): como en r5-2 y r5-5. */
+  asiQuedaba: (n) => `Así quedaba con tu asiento: ${n}`,
   alt: "Balanza del IVA: un platillo lleva lo pagado o devuelto y el otro lo cobrado. Baja el que pesa más.",
 };
