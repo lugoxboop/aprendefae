@@ -279,6 +279,12 @@ test("★★★ lote 6c · el ejemplo resuelto es su propio paso: primero el asi
   assert.deepEqual([...mesa.querySelectorAll("[data-en-mesa]")].map((n) => n.dataset.enMesa), e.asiento.map((m) => m.cuenta));
   assert.equal(ej.querySelector("[data-estante]"), null);
   assert.equal(ej.querySelector("[data-conector]").dataset.conector, "cerrado");
+  /* Lote 14: el conector cerrado es neutro: 2 px sólido #F8F9FA, sin teal ni punto (§5.2). */
+  const linea = ej.querySelector("[data-conector] line");
+  assert.equal(linea.getAttribute("stroke"), "#F8F9FA");
+  assert.equal(linea.getAttribute("stroke-width"), "2");
+  assert.ok(!linea.getAttribute("stroke-dasharray"));
+  assert.ok(!ej.querySelector("[data-conector] circle"));
   assert.ok(mesa.compareDocumentPosition(ej.querySelector("[data-hecho]")) & 4, "el asiento antes del enunciado");
   assert.equal(ej.querySelector("[data-hecho]").textContent, e.hecho);
   assert.deepEqual([...ej.querySelectorAll("[data-resolucion] p")].map((p) => p.textContent), e.resolucion);
