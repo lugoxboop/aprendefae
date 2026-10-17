@@ -314,6 +314,8 @@ export default function FichasUnNivel({
       }}>
         {c.texto}
       </p>
+      {/* Lote 23 (aditivo): lo que la actividad dibuja bajo la ficha, si lo pide (`config.bajoLaFicha`). */}
+      {config.bajoLaFicha && <config.bajoLaFicha ficha={c} tocados={tocados} correcta={correcta} fin={fin} reducido={reducido} />}
 
       <div data-estante role="group" aria-label={config.grupo} style={{ display: "grid", gridTemplateColumns: `repeat(${config.cajones.length}, minmax(0, 1fr))`, columnGap: "6px" }}>
         {config.cajones.map((k) => (

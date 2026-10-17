@@ -220,6 +220,31 @@ SEGUNDA_POR_FICHA_T6.efectivo = SEGUNDA_POR_FICHA_T6.pago;
 SEGUNDA_POR_FICHA_T6.danadas = SEGUNDA_POR_FICHA_T6.devolucion;
 export { SEGUNDA_POR_FICHA_T6 as DEVOLUCIONES_SEGUNDA_T6_ACT1 };
 
+/*
+ * ═══════════ LOTE 23 · «¿EN CUÁL?» (Shoko; textos de Futaba pendientes) ═══════════
+ *
+ * Las fichas de otra cuenta también llevan segunda decisión: en cuál de las cuentas de la p. 196 va. Las
+ * opciones son los nombres de cuenta que ya dicen los aciertos publicados. `EN_CUAL_POR_FICHA` sale de
+ * esos mismos aciertos; «prestamo-cliente» espera a Futaba (lo resuelve con el libro) y, mientras no
+ * esté, esa ficha sigue con la decisión 1 sola. PROVISIONAL HASTA FUTABA, PARA SHOKO: la pista general;
+ * el porqué del segundo error y el acierto son el acierto publicado de la ficha.
+ */
+export const EN_CUAL_T6_ACT1 = {
+  pregunta: "¿En cuál?",
+  opciones: [
+    { id: "socios", texto: "Cuentas por cobrar a socios y accionistas" },
+    { id: "trabajadores", texto: "Cuentas por cobrar a trabajadores" },
+    { id: "particulares", texto: "Préstamos a particulares" },
+    { id: "anticipos", texto: "Anticipos y avances" },
+    { id: "matriz", texto: "Cuentas por cobrar a casa matriz" },
+  ],
+  pista: "Mira quién recibe la plata y por qué.",
+};
+export const EN_CUAL_POR_FICHA = {
+  socio: "socios", trabajador: "trabajadores", particular: "particulares",
+  anticipo: "anticipos", matriz: "matriz", accionista: "socios", vecino: "particulares",
+};
+
 /* El resumen (Futaba, lote 6a): ya no habla de pesos; cada ficha vale entera. */
 export const resumenT6Act1 = (bien, cuantas) => `${bien} de ${cuantas} fichas bien al primer intento.`;
 

@@ -241,6 +241,38 @@ SEGUNDA_POR_FICHA["nv-trimestre"] = SEGUNDA_POR_FICHA["caso-pactado"];
 SEGUNDA_POR_FICHA["nv-redime"] = SEGUNDA_POR_FICHA["caso-redencion"];
 export { SEGUNDA_POR_FICHA as DEVOLUCIONES_SEGUNDA_T5_ACT1 };
 
+/*
+ * ═══════════ LOTE 23 · D4 INVERTIDA (Shoko) ═══════════
+ *
+ * En la mitad de las fichas se invierte la pregunta: se muestra la tira de la renta y se elige el título
+ * (el cajón). Las fichas invertidas de cada mazo son sus tres casos (uno por renta) y una más; en el
+ * error se dibuja lo que eligió el estudiante, como fantasma. La ficha invertida toma su pista y su
+ * acierto de la renta que muestra, no de su texto (que no se ve). La descripción es el texto
+ * alternativo del dibujo: dice la forma sin nombrar la renta. PARA SHOKO: todo este bloque es nuevo.
+ */
+export const INVERTIDAS_T5_ACT1 = [
+  ["caso-pactado", "caso-resultados", "caso-redencion", "def-interes"],
+  ["nv-trimestre", "nv-empresa", "nv-redime", "cedulas"],
+];
+export const INVERTIDA_T5_ACT1 = {
+  pregunta: "¿Qué título da esta renta?",
+  [RENTA_INTERES]: {
+    descripcion: "Ocho pagos iguales, uno en cada periodo.",
+    pista: "Mira las barras: llegan en cada periodo y todas iguales.",
+    acierto: "Un pago igual en cada periodo es un interés fijo: renta fija con interés.",
+  },
+  [RENTA_DIFERENCIA]: {
+    descripcion: "Ningún pago en el camino y uno solo en la redención.",
+    pista: "Mira cuándo llega la renta: nada en el camino y todo al final.",
+    acierto: "Nada hasta la redención y una sola barra al final: la renta es la diferencia entre compra y redención. Renta fija con descuento.",
+  },
+  [RENTA_RESULTADOS]: {
+    descripcion: "Pagos desiguales, y periodos sin pago.",
+    pista: "Mira las barras: cambian de un periodo a otro y a veces no hay.",
+    acierto: "Barras desiguales y con huecos: la renta depende de los resultados de la empresa. Renta variable.",
+  },
+};
+
 /* El resumen (Futaba, lote 6a): ya no habla de pesos; cada ficha vale entera. */
 export const resumenT5Act1 = (bien, cuantas) => `${bien} de ${cuantas} fichas bien al primer intento.`;
 

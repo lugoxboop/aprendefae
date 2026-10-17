@@ -2,7 +2,6 @@ import { FAE } from "../../../../theme.js";
 import { pesos } from "../../../../data/contabilidad.js";
 import { CLIENTES, PROVISION, CAJA } from "../../../../data/contabilidadT6Act3.js";
 import { DEBE, HABER } from "../../../../data/contabilidad.js";
-import { RAYADO_TEAL } from "./TanqueProvision.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -22,8 +21,10 @@ import { RAYADO_TEAL } from "./TanqueProvision.jsx";
  */
 
 const ALTO = 72;
+/* Lote 23 (Shoko): la trama de «castigada» va en el neutro #B8C4D4; en Contabilidad el teal es solo DEBE. */
+export const RAYADO_CASTIGADA = "repeating-linear-gradient(45deg, rgba(184,196,212,0.55) 0 3px, transparent 3px 7px)";
 const ESTILO = {
-  castigada: { backgroundImage: RAYADO_TEAL, border: `1.5px dashed ${FAE.text}` },
+  castigada: { backgroundImage: RAYADO_CASTIGADA, border: `1.5px dashed ${FAE.text}` },
   revivida: { border: `2px solid ${FAE.text}` },
   pagada: { background: "rgba(184,196,212,0.45)", border: `1.5px solid ${FAE.text}` },
 };

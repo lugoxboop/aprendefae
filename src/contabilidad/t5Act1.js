@@ -3,6 +3,7 @@ import { repartirTanda } from "./b5Reparto.js";
 import {
   T5_ACT1, FICHAS_T5_ACT1, FIJA, NOMBRE, CAJONES_T5_ACT1, FICHAS_V2_T5_ACT1, MAZOS_T5_ACT1,
   INTERES, DESCUENTO, RENTA_INTERES, RENTA_DIFERENCIA, RENTA_RESULTADOS, DEVOLUCIONES_SEGUNDA_T5_ACT1,
+  INVERTIDAS_T5_ACT1, INVERTIDA_T5_ACT1,
 } from "../data/contabilidadT5Act1.js";
 
 /*
@@ -67,7 +68,7 @@ export const fichaDeItemT5Act1 = (id) => TODAS_T5_ACT1.find((f) => f.id === Stri
 /* ═══ D4 (lote 19): la segunda decisión de las fichas de descripción ═══ */
 
 /* Las fichas de nombre siguen con el cajón; las de descripción se juegan con la pregunta de la renta. */
-export const aplicaSegundaT5Act1 = (ficha) => (ficha.clase === NOMBRE ? null : "antes");
+export const aplicaSegundaT5Act1 = (ficha) => (ficha.clase === NOMBRE || ficha.invertida ? null : "antes");
 
 /* Cómo recibe su renta quien lo tiene: sale del cajón de la ficha. */
 export const rentaDeT5Act1 = (ficha) => (ficha.tipo === INTERES ? RENTA_INTERES : ficha.tipo === DESCUENTO ? RENTA_DIFERENCIA : RENTA_RESULTADOS);
@@ -83,3 +84,15 @@ export function puntuarT5Act1(respuestas, cuantas) {
   if (!cuantas) return 0;
   return (respuestas.reduce((s, x) => s + x.valor, 0) / cuantas) * 100;
 }
+
+/* ═══ Lote 23 (D4, Shoko): la pregunta invertida ═══ */
+
+/*
+ * La ficha invertida muestra la tira de su renta y pregunta el título (el cajón): su texto, su pista y su
+ * acierto salen de la renta, y la evaluación es la de siempre. Las demás fichas del mazo no cambian.
+ */
+export function invertirT5Act1(ficha) {
+  const t = INVERTIDA_T5_ACT1[rentaDeT5Act1(ficha)];
+  return { ...ficha, invertida: true, texto: INVERTIDA_T5_ACT1.pregunta, pista: t.pista, acierto: t.acierto };
+}
+export const mazoInvertidoT5Act1 = (k) => mazoT5Act1(k).map((f) => (INVERTIDAS_T5_ACT1[k].includes(f.id) ? invertirT5Act1(f) : f));
