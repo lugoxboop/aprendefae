@@ -354,11 +354,11 @@ Manda sobre la (1) y la (5) en lo que nombra. La C y la A de los datos son solo 
 
 | Lugar | Texto literal |
 |---|---|
-| asiento 1 · C | «Con el castigo bajan las dos: la provisión y lo que debe Pablo Moncayo.» |
+| asiento 1 · C | «Con el castigo bajan las dos, cada una por su lado: la provisión baja por el Debe y Cuentas por cobrar – clientes baja por el Haber.» |
 | asiento 1 · A | «El castigo mueve la provisión y la deuda de Pablo Moncayo.» |
 | asiento 1 · C15 (148.800) | «Usaste lo que tenía la provisión, $148.800. El castigo es por toda la deuda de Pablo Moncayo, $180.000, aunque la provisión no alcance.» |
 | asiento 1 · B | «Ese valor no es lo que debía Pablo Moncayo, y el castigo va por toda su deuda. Míralo en el hecho.» |
-| asiento 2 · C | «Como en diciembre de 2007: el gasto sube, y la provisión también sube.» |
+| asiento 2 · C | «Como en diciembre de 2007: el gasto sube por el Debe y la provisión sube por el Haber.» |
 | asiento 2 · A | «Al ajustar, se anota el gasto y sube la provisión.» |
 | asiento 2 · C12 (153.400) | «Pusiste solo lo que pide el análisis, pero en marzo la provisión quedó corta. El registro también cubre lo que faltó: $153.400 + $31.200 = $184.600.» |
 | asiento 2 · B | «Ese valor no es lo que pide el análisis más lo que faltó en marzo. Haz esa suma.» |

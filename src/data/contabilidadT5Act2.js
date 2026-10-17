@@ -64,7 +64,7 @@ const NO_SE_VENDE = (que) => `Aquí no se vende ningún título, así que no hay
  * sola frase general, sin cuenta. Si la errada es
  * Inversiones – títulos, manda antes la C7.
  */
-const SEGUNDA_CAJA = "A Caja entra lo que le pagaron por la venta, no lo que costaron los títulos.";
+const SEGUNDA_CAJA = "A Caja entra todo lo que le pagaron por la venta. Míralo en el hecho.";
 
 /* ═══════════ LAS CUATRO PARTES: UN ASIENTO POR PANTALLA ═══════════ */
 
@@ -85,7 +85,7 @@ export const PARTES_T5_ACT2 = [
     asiento: [d(CAJA, 120000), h(INTERESES, 120000)],
     errores: {
       D: "Este hecho solo mueve Caja e Ingresos por intereses. El interés es un ingreso: no cambia la inversión.",
-      C: "El interés entra a Caja, que sube. Y es un ingreso, que sube por el Haber.",
+      C: "El interés entra a Caja, que sube por el Debe. Y es un ingreso, que sube por el Haber.",
       A: "El interés entra a Caja y, a la vez, es un ingreso.",
       /* Las B específicas (lote 6d-textos, Futaba): solo con ese valor exacto. */
       especificas: [
@@ -110,7 +110,7 @@ export const PARTES_T5_ACT2 = [
     asiento: [d(CAJA, 1725000), h(INVERSIONES, 1500000), h(GANANCIA, 225000)],
     errores: {
       D: "Sobra una cuenta. Esta venta solo mueve Caja, Inversiones – títulos y la ganancia. No hay pérdida, porque vendió por más de lo que costaron. Y aquí no entran Bancos ni el interés.",
-      C: "Caja sube porque recibe lo de la venta. Inversiones – títulos baja porque salen títulos, y la ganancia es un ingreso.",
+      C: "Caja sube porque recibe lo de la venta: va al Debe. Inversiones – títulos baja porque salen títulos, y la ganancia es un ingreso: las dos van al Haber.",
       A: "Inversiones – títulos baja por lo que costaron. Lo que recibió de más va a la ganancia.",
       C7: "Inversiones – títulos no se acredita por lo que se recibió. En el ejemplo del libro, se acredita por lo que costaron: 1.875 × $800 = $1.500.000. La diferencia, $225.000, es la ganancia.",
       /* La C7 en dos ramas (entrega 1): `C7` si lleva lo recibido; `C7otro` con cualquier otro valor que no sea el costo. */
@@ -119,7 +119,7 @@ export const PARTES_T5_ACT2 = [
       B: "Algún valor no cuadra con el hecho: lo recibido, el costo o la diferencia.",
       segunda: {
         [CAJA]: SEGUNDA_CAJA,
-        [GANANCIA]: "La ganancia no es todo lo recibido: es lo que sobra después de restar lo que costaron los títulos.",
+        [GANANCIA]: "La ganancia es lo que sobra de lo recibido después de restar lo que costaron los títulos.",
       },
       razones: {
         [BANCOS]: "En el ejemplo, lo de la venta entra a Caja. Bancos solo se movió el día de la compra.",
@@ -137,7 +137,7 @@ export const PARTES_T5_ACT2 = [
     asiento: [d(CAJA, 30000), h(INTERESES, 30000)],
     errores: {
       D: "Este hecho solo mueve Caja e Ingresos por intereses. Es igual que en agosto.",
-      C: "Como en agosto: Caja recibe el interés, que es un ingreso.",
+      C: "Como en agosto: Caja recibe el interés y va al Debe; el ingreso va al Haber.",
       A: "El interés entra a Caja y, a la vez, es un ingreso.",
       especificas: [
         { valor: 120000, clave: "B-sin-vender", texto: "Calculaste sobre $2.000.000, pero ya vendió el 75 %. El interés de noviembre es sobre los $500.000 que quedan." },
@@ -160,14 +160,14 @@ export const PARTES_T5_ACT2 = [
     asiento: [d(CAJA, 468750), d(PERDIDA, 31250), h(INVERSIONES, 500000)],
     errores: {
       D: "Sobra una cuenta. Esta venta solo mueve Caja, Inversiones – títulos y la pérdida. No hay ganancia, porque vendió por menos de lo que costaron. Y aquí no entran Bancos ni el interés, que se anota aparte.",
-      C: "Caja sube con lo que recibe. La pérdida es un gasto, y la inversión baja porque salen títulos.",
+      C: "Caja sube con lo que recibe y la pérdida es un gasto: las dos van al Debe. La inversión baja porque salen títulos: va al Haber.",
       A: "Inversiones – títulos se acredita por lo que costaron; lo que faltó para llegar a ese costo va a la pérdida.",
       C7: "Inversiones – títulos no se acredita por lo que se recibió. En el ejemplo del libro, se acredita por lo que costaron: 625 × $800 = $500.000. La diferencia, $31.250, es la pérdida.",
       C7otro: "Inversiones – títulos baja por lo que costaron los títulos que vendió. Son 625 × $800 = $500.000. Lo que le faltó para llegar a ese costo es la pérdida.",
       B: "Algún valor no cuadra con el hecho: lo recibido, el costo o la diferencia.",
       segunda: {
         [CAJA]: SEGUNDA_CAJA,
-        [PERDIDA]: "La pérdida no es todo el costo: es lo que le faltó a lo recibido para llegar a él.",
+        [PERDIDA]: "La pérdida es lo que le faltó a lo recibido para llegar a lo que costaron los títulos.",
       },
       razones: {
         [BANCOS]: "Como en agosto, lo de la venta entra a Caja.",

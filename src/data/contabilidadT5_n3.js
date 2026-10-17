@@ -39,6 +39,8 @@ export const N3_ID = "t5-revision-que-falta";
 
 export const N3 = {
   id: N3_ID,
+  /* Lote O: el objetivo, de Near (paquetes/lote-o-objetivos.md). */
+  objetivo: "Ver qué revisión del libro faltó en cada problema que tiene la empresa con sus inversiones.",
   nombre: "¿Qué revisión falta?",
   /* La D: la regla del intento sale de la consigna y va al distintivo (C5). */
   enunciado: ["Cada caso muestra un riesgo con las inversiones. Elige la acción del libro que hace falta."],

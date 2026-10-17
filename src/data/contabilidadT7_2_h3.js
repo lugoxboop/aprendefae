@@ -33,6 +33,8 @@ export const H3_ID = "t7-2-llena-el-kardex";
 
 export const H3 = {
   id: H3_ID,
+  /* Lote O: el objetivo, de Near (paquetes/lote-o-objetivos.md). */
+  objetivo: "Llenar un kárdex con PEPS, UEPS y promedio ponderado, y ver cómo cambia cada saldo.",
   nombre: "Llena el kárdex",
   consigna: "Llena el kárdex con los tres métodos. Toca la casilla con un punto y elige su valor. Tienes un solo intento por casilla.",
   /* Corrección de Near con el PASA de Mello: la empresa se llama Laurel. */

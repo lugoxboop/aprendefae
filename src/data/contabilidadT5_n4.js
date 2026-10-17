@@ -61,6 +61,8 @@ const C = CIFRAS_N4;
 
 export const N4 = {
   id: N4_ID,
+  /* Lote O: el objetivo, de Near (paquetes/lote-o-objetivos.md). */
+  objetivo: "Calcular el interés de cada trimestre y registrar su cobro, también después de vender títulos.",
   nombre: "El interés del periodo",
   enunciado: [
     "Caoba invierte efectivo que le sobra en 1.440 títulos. Paga $7.500 por cada uno, que es su valor nominal: en total, $10.800.000.",

@@ -99,7 +99,7 @@ export const PARTES_T6_ACT6 = [
     casillas: [
       { id: "u1", enunciado: "Una deuda lleva 2 meses vencida.", acierto: "Dos meses no pasan de tres: es del primer grupo, que en este ejemplo no se provisiona.", opciones: ubicar("u1", "g1", "g2", "G1") },
       /* El caso límite: «sin exceder de 6 meses», así que seis meses justos van al 5 % (la frontera de T6 · A5). */
-      { id: "u2", enunciado: "Una deuda lleva exactamente 6 meses vencida.", acierto: "Seis meses justos no pasan de seis: siguen en el grupo del 5 %.", opciones: ubicar("u2", "g2", "g3", "G2") },
+      { id: "u2", enunciado: "Una deuda lleva exactamente 6 meses vencida.", acierto: "Seis meses justos no pasan de seis: la deuda va en el grupo del 5 %.", opciones: ubicar("u2", "g2", "g3", "G2") },
       { id: "u3", enunciado: "Una deuda lleva 14 meses vencida.", acierto: "Catorce meses pasan de un año: es del grupo del 15 %.", opciones: ubicar("u3", "g4", "g3", "G3") },
     ],
   },

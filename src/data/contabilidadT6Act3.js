@@ -58,7 +58,7 @@ const REVIVIR = {
 };
 const PAGO = {
   D: "Sobra una cuenta. El pago solo mueve Caja y Cuentas por cobrar – clientes. La provisión ya se movió al revivir la deuda, y no hay ningún ingreso.",
-  C: "La plata entra a Caja y la deuda se cancela.",
+  C: "La plata entra a Caja, que va al Debe, y la deuda se cancela por el Haber.",
   A: "El pago mueve Caja y la deuda del cliente.",
   razones: {
     [PROVISION]: "La provisión ya se movió en el asiento anterior, al revivir la deuda.",

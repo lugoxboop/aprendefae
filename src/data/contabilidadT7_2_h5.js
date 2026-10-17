@@ -54,6 +54,8 @@ const C = CIFRAS_H5;
 
 export const H5 = {
   id: H5_ID,
+  /* Lote O: el objetivo, de Near (paquetes/lote-o-objetivos.md). */
+  objetivo: "Decidir a qué cuenta van los fletes y las devoluciones cuando la empresa usa el sistema permanente.",
   nombre: "Flete y devolución",
   /* Entrega 6 de Near: la consigna dice qué hacer. */
   consigna: "Para cada hecho, elige la cuenta o calcula lo que se pide. Tienes un solo intento por pregunta.",
