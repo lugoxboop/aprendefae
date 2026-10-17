@@ -24,4 +24,10 @@
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-export const ICONO_POR_TEMA = {};
+import { TituloConReloj, FacturaPorCobrar } from "../contabilidad/identificadores/identificadoresB.jsx";
+
+export const ICONO_POR_TEMA = {
+  /* Célula B (Mai, lote 16). */
+  "contabilidad/activos-financieros": TituloConReloj,
+  "contabilidad/cuentas-por-cobrar": FacturaPorCobrar,
+};
