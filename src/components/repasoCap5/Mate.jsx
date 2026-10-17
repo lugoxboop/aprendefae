@@ -3,15 +3,19 @@ import { CSS_JUEGO, Cierre } from "../mecanicas/corazon/juego.jsx";
 /* Los estados de calificación, el «ERA ESTE», los puntos y la palabra: de comun.jsx (B4, E3). */
 import {
   C, INTER, SORA, MARCA, CEJILLA, CONTADOR, CIFRA, HUNDIDO, REPOSO, SOLO_LECTOR, LECTOR, CSS_FOCO, Devolucion, BotonSiguiente, Responder, Comprobar, Cita,
-  ESTADOS, Punto, MarcaPieza, Pastilla, useTrasError,
+  ESTADOS, Punto, MarcaPieza, Pastilla, PuntoDelMes, useTrasError,
 } from "./comun.jsx";
 import { cifra, leerCifra } from "./ToroNegro.jsx";
 import { MesEnDosCuentas } from "./MesEnDosCuentas.jsx";
 import { Calendario, CSS_CALENDARIO } from "./Calendario.jsx";
+import { Balanza, CSS_BALANZA } from "./Balanza.jsx";
 import { movimientosDelMes } from "../../data/repasoCap5Mes.js";
 import {
-  R5_3, MES_MATE, ASIENTOS_MATE, HOJA_MATE, ENTRADA_MATE, DATOS_DEL_LIBRO, DATOS_DECLARADOS, ROTULOS_MATE as RM,
+  R5_3, MES_MATE, ASIENTOS_MATE, HOJA_MATE, ENTRADA_MATE, DATOS_DEL_LIBRO, DATOS_DECLARADOS, ROTULOS_MATE as RM, BALANZA_R5_3,
 } from "../../data/repasoCap5MateTextos.js";
+import { balanzaTras } from "../../data/repasoCap5Balanza.js";
+import { pesos } from "../../data/contabilidad.js";
+import { FEEDBACK } from "../../data/repasoCap5Comun.js";
 import { evaluarMate, puedeRevisarMate, sumasDe, puntuarR5_3, MAXIMO_POR_LADO } from "../../data/repasoCap5MateJuego.js";
 
 /*
@@ -52,6 +56,9 @@ export const ACTIVIDAD_MATE = {
   evaluarMate, puntuarR5_3, MES_CORTO: "MAR", DIAS: 31, NODO: 10, AVISO: null, LINEAS_MES: {},
   /* Lote de textos (Miyata): r5-3 no tiene pantalla de entrada; cada dato va en el asiento que lo usa. */
   SIN_ENTRADA: true,
+  /* P2 de Itagaki: la balanza del IVA es la figura del mes; salen «Datos de marzo» y el panel. */
+  BALANZA: true,
+  TEXTOS_BALANZA: BALANZA_R5_3,
 };
 const Actividad = createContext(ACTIVIDAD_MATE);
 const useActividad = () => useContext(Actividad);
@@ -523,7 +530,7 @@ const nombresDelMes = (asientos, nombres) => asientos.reduce((m, x) => ({ ...m, 
 const resumenDelMes = (asientos, resultados) => asientos.reduce((m, x) => ({ ...m, [x.dia]: [...(m[x.dia] ?? []), Boolean(resultados[x.id])] }), {});
 
 function PantallaAsiento({ a, i, total, r, onRespondida, onSiguiente, botonRef }) {
-  const { id, RM, R5_3, SIN_ENTRADA, CALENDARIO, TEXTOS_CALENDARIO: TC, ASIENTOS_MATE, evaluarMate, MES_MATE, MOVIMIENTOS_MATE, LINEAS_MES } = useActividad();
+  const { id, RM, R5_3, SIN_ENTRADA, BALANZA, TEXTOS_BALANZA, CALENDARIO, TEXTOS_CALENDARIO: TC, ASIENTOS_MATE, evaluarMate, MES_MATE, MOVIMIENTOS_MATE, LINEAS_MES } = useActividad();
   const [renglones, setRenglones] = useState([]);
   /* r5-4 (P2 de Itagaki): la ventana del descuento, en los asientos con condición. */
   const ventana = CALENDARIO && a.ventana ? { ...a.ventana, borde: a.ventana.factura + a.ventana.plazo } : null;
@@ -578,7 +585,7 @@ function PantallaAsiento({ a, i, total, r, onRespondida, onSiguiente, botonRef }
         </>
       )}
       {(!ventana || calVentana) && (<>
-      <div style={{ marginTop: "12px" }}><BotonDatos onAbrir={() => setDatos(true)} /></div>
+      {!BALANZA && <div style={{ marginTop: "12px" }}><BotonDatos onAbrir={() => setDatos(true)} /></div>}
       <div style={{ marginTop: "16px" }}>
         <Armador
           datos={{ "data-armador": "tu-asiento" }}
@@ -601,7 +608,9 @@ function PantallaAsiento({ a, i, total, r, onRespondida, onSiguiente, botonRef }
       {!r && <Comprobar activo={puedeRevisarMate(renglones)} onClick={() => { const v = evaluarMate(a, renglones); onRespondida(ventana ? { ...v, ok: v.ok && calVentana === "ok" } : v, renglones, ventana ? borde : null); }} dato="revisar" />}
       <Devolucion r={r && { ok: r.ok, textos: r.textos }} />
       {/* Después de la devolución, sin desplazamiento forzado (corrección 1 de Takamura). En el error, espera a «Iba aquí»: si no, el armador revelado lo empuja mientras anima. */}
-      {!CALENDARIO && r && (r.ok || revelar) && <MesEnDosCuentas cuentas={MES_MATE.cuentas} movs={MOVIMIENTOS_MATE} hasta={i} linea={LINEAS_MES[a.id] ?? null} />}
+      {/* P2 de Itagaki (r5-3): la balanza recibe las pesas después del mensaje. */}
+      {BALANZA && r && (r.ok || revelar) && <div style={{ marginTop: "16px" }}><Balanza hechos={i + 1} antes={i} textos={TEXTOS_BALANZA} /></div>}
+      {!CALENDARIO && !BALANZA && r && (r.ok || revelar) && <MesEnDosCuentas cuentas={MES_MATE.cuentas} movs={MOVIMIENTOS_MATE} hasta={i} linea={LINEAS_MES[a.id] ?? null} />}
       {r && <BotonSiguiente onClick={onSiguiente} botonRef={botonRef} sustantivo={RM.sustantivo} ultimo={i + 1 === total} />}
       </>)}
       {hoja && <HojaRenglon lado={hoja.lado} inicial={hoja.inicial} renglones={renglones} onListo={listo} onQuitar={quitar} onCancelar={() => setHoja(null)} />}
@@ -613,6 +622,28 @@ function PantallaAsiento({ a, i, total, r, onRespondida, onSiguiente, botonRef }
 
 /* ═══════════ LA PANTALLA FINAL (§6) ═══════════ */
 
+/*
+ * r5-3 · el resumen (P2 de Itagaki): la balanza en su estado final, la frase
+ * final de Miyata y una fila de 8 puntos (relleno si acertó, anillo coral si
+ * no) con una sola leyenda en palabras.
+ */
+function ResumenBalanza({ resultados }) {
+  const { ASIENTOS_MATE, TEXTOS_BALANZA: TB } = useActividad();
+  const final = balanzaTras(ASIENTOS_MATE.length);
+  return (
+    <div data-resumen-balanza>
+      <Balanza hechos={ASIENTOS_MATE.length} textos={TB} />
+      <p data-frase-final style={{ margin: "12px 0 0", fontFamily: INTER, fontSize: "15px", lineHeight: "22px", fontWeight: 600, color: C.texto }}>{TB.final(pesos(final.diferencia))}</p>
+      <div data-puntos-mes style={{ marginTop: "12px", display: "flex", gap: "8px", alignItems: "center" }} aria-label={ASIENTOS_MATE.map((a) => `${a.dia} de marzo: ${resultados[a.id] ? FEEDBACK.ok : FEEDBACK.mal}`).join(". ")} role="img">
+        {ASIENTOS_MATE.map((a) => <PuntoDelMes key={a.id} estado={resultados[a.id] ? "acierto" : "error"} />)}
+      </div>
+      <p data-leyenda-mes style={{ margin: "8px 0 0", display: "flex", gap: "12px", fontFamily: INTER, fontSize: "12px", color: C.atenuado }}>
+        <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}><PuntoDelMes estado="acierto" />{FEEDBACK.ok}</span>
+        <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}><PuntoDelMes estado="error" />{FEEDBACK.mal}</span>
+      </p>
+    </div>
+  );
+}
 function MarzoEnOcho({ resultados }) {
   const { ASIENTOS_MATE, RM, MES_CORTO } = useActividad();
   const bien = ASIENTOS_MATE.filter((a) => resultados[a.id]).length;
@@ -660,7 +691,7 @@ export function Mate(props) {
 }
 
 function Partida({ onCompletar, pasoInicial }) {
-  const { id, ASIENTOS_MATE, puntuarR5_3, MES_MATE, MOVIMIENTOS_MATE, SIN_ENTRADA, CALENDARIO, TEXTOS_CALENDARIO: TC, RM } = useActividad();
+  const { id, ASIENTOS_MATE, puntuarR5_3, MES_MATE, MOVIMIENTOS_MATE, SIN_ENTRADA, CALENDARIO, BALANZA, TEXTOS_CALENDARIO: TC, RM } = useActividad();
   /* -1: entrada; luego, un asiento por paso. Sin entrada (r5-3), se abre en el primer asiento. */
   const primero = SIN_ENTRADA ? 0 : -1;
   const [paso, setPaso] = useState(pasoInicial < 0 ? primero : pasoInicial);
@@ -699,11 +730,12 @@ function Partida({ onCompletar, pasoInicial }) {
   if (terminado) {
     return (
       <div {...{ [`data-${id}`]: true }} data-r5 data-cierre>
-        <style>{CSS_JUEGO + CSS_MATE + CSS_CALENDARIO}</style>
-        {CALENDARIO
+        <style>{CSS_JUEGO + CSS_MATE + CSS_CALENDARIO + CSS_BALANZA}</style>
+        {BALANZA && <ResumenBalanza resultados={resultados} />}
+        {!BALANZA && (CALENDARIO
           ? <Calendario mes={RM.mes} etiqueta={TC.alt} nombres={nombresDelMes(ASIENTOS_MATE, TC.nombres)} resumen={resumenDelMes(ASIENTOS_MATE, resultados)} />
-          : <MesEnDosCuentas cuentas={MES_MATE.cuentas} movs={MOVIMIENTOS_MATE} hasta={null} final={MES_MATE.final} />}
-        <div style={{ marginTop: "16px" }}><MarzoEnOcho resultados={resultados} /></div>
+          : <MesEnDosCuentas cuentas={MES_MATE.cuentas} movs={MOVIMIENTOS_MATE} hasta={null} final={MES_MATE.final} />)}
+        {!BALANZA && <div style={{ marginTop: "16px" }}><MarzoEnOcho resultados={resultados} /></div>}
         <Cierre pct={Math.round(puntuarR5_3(bien, total))} onReiniciar={reiniciar} />
       </div>
     );
@@ -711,7 +743,7 @@ function Partida({ onCompletar, pasoInicial }) {
   if (paso < 0) {
     return (
       <>
-        <style>{CSS_JUEGO + CSS_MATE + CSS_CALENDARIO}</style>
+        <style>{CSS_JUEGO + CSS_MATE + CSS_CALENDARIO + CSS_BALANZA}</style>
         <Entrada onEmpezar={() => setPaso(0)} />
       </>
     );
@@ -719,7 +751,7 @@ function Partida({ onCompletar, pasoInicial }) {
   const a = ASIENTOS_MATE[paso];
   return (
     <>
-      <style>{CSS_JUEGO + CSS_MATE + CSS_CALENDARIO}</style>
+      <style>{CSS_JUEGO + CSS_MATE + CSS_CALENDARIO + CSS_BALANZA}</style>
       <PantallaAsiento key={a.id} a={a} i={paso} total={total} r={r} onRespondida={responder(a)} onSiguiente={siguiente} botonRef={boton} />
     </>
   );
