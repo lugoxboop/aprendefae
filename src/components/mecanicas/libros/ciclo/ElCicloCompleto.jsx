@@ -160,8 +160,8 @@ export default function ElCicloCompleto({ onCompletar }) {
                   ETAPA {e.id}
                 </p>
                 <p style={{ fontSize: "13px", lineHeight: 1.4, color: FAE.text, margin: "0 0 3px" }}>{e.nombre}</p>
-                <p style={{ fontSize: "11px", lineHeight: 1.35, color: "rgba(248,249,250,0.45)", margin: "0 0 5px" }}>{e.subtema}</p>
-                <p style={{ fontFamily: "Sora, sans-serif", fontSize: "11px", fontWeight: 700, color: "rgba(248,249,250,0.45)", margin: 0, fontVariantNumeric: "tabular-nums" }}>
+                <p style={{ fontSize: "12px", lineHeight: 1.35, color: "#A8B6C8", margin: "0 0 5px" }}>{e.subtema}</p>
+                <p style={{ fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700, color: "#A8B6C8", margin: 0, fontVariantNumeric: "tabular-nums" }}>
                   {e.puntos} FP
                 </p>
               </div>
