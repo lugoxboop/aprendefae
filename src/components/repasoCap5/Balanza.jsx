@@ -74,7 +74,8 @@ export function Balanza({ hechos, antes = hechos, textos }) {
   const giro = quieta ? "none" : `transform 500ms ${CURVA}`;
   const lleno = RETENCION_FINAL ? Math.max(0, e.retencion) / RETENCION_FINAL : 0;
   const frase = e.diferencia >= 0 ? textos.aPagar : textos.aFavor;
-  const nombre = `${textos.platilloDebe} ${pesos(e.debe)}; ${textos.platilloHaber} ${pesos(e.haber)}; ${frase} ${pesos(Math.abs(e.diferencia))}; ${textos.sobre} ${pesos(e.retencion)}`;
+  /* §8: el texto alternativo de Miyata y, detrás, las cuatro cifras de este momento. */
+  const nombre = `${textos.alt} ${textos.platilloDebe} ${pesos(e.debe)}; ${textos.platilloHaber} ${pesos(e.haber)}; ${frase} ${pesos(Math.abs(e.diferencia))}; ${textos.sobre} ${pesos(e.retencion)}`;
   return (
     <div data-balanza data-hechos={hechos} data-angulo={theta.toFixed(2)} onClick={() => setSaltar(true)} style={{ ...HUNDIDO, borderRadius: "12px", padding: "12px", cursor: quieta ? "default" : "pointer" }}>
       <div role="img" aria-label={nombre} aria-live="polite">

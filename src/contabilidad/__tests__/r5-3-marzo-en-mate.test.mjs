@@ -108,23 +108,24 @@ function textosDelEstudiante() {
   return [...new Set(t)];
 }
 
-test("★★★ cada texto del estudiante está entero en el paquete (guarda: 115 textos distintos)", () => {
+test("★★★ cada texto del estudiante está entero en el paquete (guarda: 114 textos distintos)", () => {
   const textos = textosDelEstudiante();
-  assert.equal(textos.length, 115);
+  assert.equal(textos.length, 114);
   const escapar = (t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   /* Entero: tras «: », un salto de línea o «», hasta el fin del renglón o la comilla. */
-  const entero = (t) => new RegExp(`(?:: |\\n)${escapar(t)}(?:\\n|$)`).test(PAQUETE) || PLANO.includes(`«${t}»`) || PLANO.includes(`«${t}`);
+  const entero = (t) => new RegExp(`(?:: |\\n- |\\n)${escapar(t)}(?:\\n|$)`).test(PAQUETE) || PLANO.includes(`«${t}»`) || PLANO.includes(`«${t}`);
   /*
    * Excepciones, cada una con su regla:
    *  · el acierto del asiento 1 es la sustitución de la decisión 1;
    *  · los datos declarados de los fletes llevan «$» en pantalla (delta v2,
    *    nota de escritura) y el paquete los escribe sin él.
    */
-  const ACIERTO_A1 = "Bien. Restas el descuento, cobras el IVA sobre lo que queda y retienes sobre el valor sin IVA.";
+  /* v4 (Miyata, P2): el acierto nuevo vuelve a decir «cobras»; la decisión 1 lo sigue corrigiendo. */
+  const ACIERTO_A1 = "Restas el 5 %, cobras el IVA sobre lo que queda y retienes sin IVA. A Caja sale la diferencia.";
   assert.ok(entero(ACIERTO_A1), "el texto de Miyata que la decisión 1 corrige");
   assert.ok(PLANO.includes("donde dice «cobras el IVA» va «pagas el IVA sobre lo que queda»"));
   /* Lote de textos (Miyata): el acierto pierde su «Bien.»; la pastilla ya lo dice. */
-  const corregido = ACIERTO_A1.replace("cobras el IVA sobre lo que queda", "pagas el IVA sobre lo que queda").replace(/^Bien\. /, "");
+  const corregido = ACIERTO_A1.replace("cobras el IVA sobre lo que queda", "pagas el IVA sobre lo que queda");
   assert.equal(asiento("a1").acierto[0], corregido);
   const fuera = textos.filter((t) => t !== corregido && !entero(t) && !entero(t.replace(/\$/g, "")));
   assert.deepEqual(fuera, [], `no están en el paquete: ${fuera.join(" | ")}`);
@@ -326,7 +327,7 @@ test("★★★ dos textos idénticos se muestran una sola vez: el asiento al re
   assert.deepEqual(J.evaluarMate(a6, conDescuento).textos, ["Tocaste el descuento. El 5 % solo se gana si pagas en 15 días. En marzo no se paga, así que no se toca."]);
 });
 
-test("★★★ cada texto de cada asiento se alcanza con la hoja de doce cuentas (guarda: 8 asientos, 106 textos)", () => {
+test("★★★ cada texto de cada asiento se alcanza con la hoja de doce cuentas (guarda: 8 asientos, 105 textos)", () => {
   let total = 0;
   for (const a of A) {
     const alcanzados = new Set();
@@ -346,7 +347,7 @@ test("★★★ cada texto de cada asiento se alcanza con la hoja de doce cuenta
     total += todos.length;
     assert.deepEqual(todos.filter((t) => !alcanzados.has(t)), [], `${a.id}: textos que ningún camino alcanza`);
   }
-  assert.equal(total, 106);
+  assert.equal(total, 105);
 });
 
 test("★★★ el asiento 4 vale completo con «Compras (fletes)» o completo con «Compras», nunca mezclado", () => {
@@ -437,7 +438,7 @@ test("★★★ 5 de 8 —la mitad que se partía— calcularFP da lo mismo que 
 
 /* ═══════════ INFLESZ ═══════════ */
 
-test("★★★ INFLESZ: los 101 textos de 10 palabras o más pasan 65; los rótulos no se miden", () => {
+test("★★★ INFLESZ: los 100 textos de 10 palabras o más pasan 65; los rótulos no se miden", () => {
   let medidos = 0;
   const bajos = [];
   for (const t of textosDelEstudiante()) {
@@ -447,7 +448,7 @@ test("★★★ INFLESZ: los 101 textos de 10 palabras o más pasan 65; los rót
     medidos++;
     if (r.valor < UMBRAL) bajos.push(`${r.valor} · ${t}`);
   }
-  assert.equal(medidos, 101);
+  assert.equal(medidos, 100);
   assert.deepEqual(bajos, []);
   const rotulos = Object.values(T.ROTULOS_MATE).flatMap((x) => (typeof x === "string" ? [x] : typeof x === "object" ? Object.values(x) : [x(3, 8)]));
   for (const r of rotulos) assert.equal(inflesz(r).aplica, false, r);
@@ -549,13 +550,15 @@ test("★★★ se juega entera: hechos, «Iba aquí», la devolución, y el fin
     assert.deepEqual([...caja.querySelectorAll("[data-nodo]")].map((x) => x.dataset.estado), A.map((_, j) => (j < k ? "hecho" : j === k ? "actual" : "pendiente")));
     assert.equal(caja.querySelector("[data-marca-fecha]").textContent, `${a.dia} MAR`);
     assert.equal(caja.querySelector("[data-frase]").textContent, a.hecho);
-    assert.ok(!caja.querySelector("[data-hecho]").textContent.includes("declarado"), `${a.id}: marca de dato declarado en el hecho`);
+    /* P2 (Miyata): sin entrada ni hoja, la marca de dato declarado va en el renglón que lo usa, y solo ahí. */
+    assert.equal((caja.querySelector("[data-hecho]").textContent.match(/declarado por la célula/g) ?? []).length, a.renglones.filter(([, v]) => /declarado por la célula/.test(v)).length, `${a.id}: marca de dato declarado`);
+    /* P2 (Miyata): el precio del día 10 va como un renglón más del asiento 5, sin bloque aparte. */
     if (a.id === "a5") {
-      assert.ok(caja.querySelector("[data-otra-operacion]").textContent.includes("DE LA OPERACIÓN DEL 10 DE MARZO"));
-      assert.equal(caja.querySelectorAll("[data-renglon-hecho]").length, 2);
+      assert.equal(Boolean(caja.querySelector("[data-otra-operacion]")), false);
+      assert.equal(caja.querySelectorAll("[data-renglon-hecho]").length, 3);
     }
-    /* B5: el IVA va solo en «Datos de marzo», no en el hecho (Kamogawa). */
-    assert.ok(![...caja.querySelectorAll("[data-renglon-hecho]")].some((x) => /16 %/.test(x.textContent)), `${a.id}: «IVA · 16 %» en el hecho`);
+    /* P2 de Itagaki: sin «Datos de marzo», cada asiento trae las tasas que usa («IVA · 16 %» si lleva IVA). */
+    assert.equal([...caja.querySelectorAll("[data-renglon-hecho]")].some((x) => /^IVA16 %$/.test(x.textContent)), a.correctos[0].some((r) => r.cuenta === T.IVA), `${a.id}: «IVA · 16 %»`);
     if (a.fleteEnElSiguiente) assert.equal(caja.querySelector('[data-renglon-hecho="flete"]').textContent, "Fleteen el asiento siguiente");
     let renglones = a.correctos[0];
     if (a.id === "a6") renglones = renglones.map((c) => (c.cuenta === T.PROVEEDORES ? { ...c, valor: 14848000 } : c));
@@ -752,7 +755,7 @@ async function jugarCamino(k, renglones) {
   return pantalla;
 }
 
-test("★★★ E1 · cada texto del paquete sale en la pantalla en algún estado (guarda: 115 textos, 98 caminos)", async () => {
+test("★★★ E1 · cada texto del paquete sale en la pantalla en algún estado (guarda: 114 textos, 97 caminos)", async () => {
   vistas.length = 0;
   /* El asiento 1, con el objetivo encima (sin entrada ni «Datos de marzo»). */
   const asiento1 = await montar(h(Mate, {}));
@@ -765,10 +768,10 @@ test("★★★ E1 · cada texto del paquete sale en la pantalla en algún estad
   }
   const todo = vistas.join("\n");
   const textos = textosDelEstudiante();
-  assert.equal(textos.length, 115);
+  assert.equal(textos.length, 114);
   const faltan = textos.filter((t) => !todo.includes(t));
   assert.deepEqual(faltan, [], `no salen en pantalla: ${faltan.join(" | ")}`);
-  assert.equal(caminos, 98, "no jugó los caminos que dice jugar");
+  assert.equal(caminos, 97, "no jugó los caminos que dice jugar");
 });
 
 /* ═══════════ B5 · NINGUNA FRASE DOS VECES EN LA MISMA PANTALLA ═══════════ */
@@ -866,14 +869,23 @@ test("★★★ P2 · la balanza no delata: nada antes de «Comprobar»; despué
   /* Su nombre accesible dice las cuatro cifras. */
   const img = b.querySelector('[role="img"]');
   const B = T.BALANZA_R5_3;
-  assert.equal(img.getAttribute("aria-label"), `${B.platilloDebe} ${pesos(e.debe)}; ${B.platilloHaber} ${pesos(0)}; ${B.aFavor} ${pesos(Math.abs(e.diferencia))}; ${B.sobre} ${pesos(e.retencion)}`);
+  assert.equal(img.getAttribute("aria-label"), `${B.alt} ${B.platilloDebe} ${pesos(e.debe)}; ${B.platilloHaber} ${pesos(0)}; ${B.aFavor} ${pesos(Math.abs(e.diferencia))}; ${B.sobre} ${pesos(e.retencion)}`);
   assert.equal(img.getAttribute("aria-live"), "polite");
   /* Sin «Datos de marzo» ni el panel del mes. */
   assert.equal(Boolean(caja.querySelector("[data-mes-en-dos-cuentas]")), false);
 });
 
-test("★★★ ⛔ textos de prueba de la balanza: mientras Miyata no los mande, cada uno empieza con «[PRUEBA]»", () => {
+test("★★★ P2 §10 · los textos de la balanza son los de Miyata, literales en el paquete y dentro de sus topes", () => {
   const B = T.BALANZA_R5_3;
-  const todos = [B.platilloDebe, B.platilloHaber, B.aPagar, B.aFavor, B.sobre, B.final("$1"), B.alt];
-  assert.deepEqual(todos.filter((t) => !t.startsWith("[PRUEBA] ")), []);
+  const seccion = PAQUETE.slice(PAQUETE.indexOf("## v4 · r5-3 rediseñada"));
+  for (const t of [B.platilloDebe, B.platilloHaber, B.aPagar, B.aFavor, B.sobre]) assert.ok(seccion.includes(`«${t}»`), t);
+  assert.ok(seccion.includes(`«${B.final(pesos(BAL.balanzaTras(8).diferencia))}»`));
+  assert.ok(seccion.includes(`\n- ${B.alt}\n`));
+  /* Topes: platillos ≤ 18, diferencias ≤ 20, sobre ≤ 22, frase final ≤ 50 con la cifra, alternativo ≤ 120; nada de prueba. */
+  assert.ok(B.platilloDebe.length <= 18 && B.platilloHaber.length <= 18);
+  assert.ok(B.aPagar.length <= 20 && B.aFavor.length <= 20 && B.sobre.length <= 22);
+  assert.ok(B.final(pesos(BAL.balanzaTras(8).diferencia)).length <= 50 && B.alt.length <= 120);
+  assert.deepEqual([B.platilloDebe, B.platilloHaber, B.aPagar, B.aFavor, B.sobre, B.final("$1"), B.alt].filter((t) => t.includes("[PRUEBA]")), []);
+  /* Miyata asumió que el sobre guarda la retención por pagar del mes: $1.888.450, calculado aquí. */
+  assert.equal(BAL.RETENCION_FINAL, 1888450);
 });

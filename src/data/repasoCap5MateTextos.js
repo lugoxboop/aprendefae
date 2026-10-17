@@ -182,7 +182,7 @@ export const ASIENTOS_MATE = [
     fecha: "1 DE MARZO",
     operacion: "Compra de contado",
     hecho: "Marzo 1: compra de contado. Se usa el sistema periódico. Arma su asiento.",
-    renglones: [["Unidades", "1.000"], ["Precio por unidad", cifraConSigno(25000)], ["Descuento comercial", "5 %"], ["Retención", "3,5 % sobre el valor sin IVA"]],
+    renglones: [["Compra", `1.000 unidades a ${cifraConSigno(25000)}`], ["Descuento comercial", "5 %"], ["IVA", "16 %"], ["Retención", "3,5 % sobre el valor sin IVA"], ["Pago", "de contado"]],
     correctos: [[d(COMPRAS, M.a1.compras), d(IVA, M.a1.iva), h(RETENCION, M.a1.retencion), h(CAJA, M.a1.pago)]],
     cruzado: {
       [IVA]: "En la compra pagas IVA, así que va al debe. Al haber va el IVA que cobras al vender.",
@@ -203,9 +203,10 @@ export const ASIENTOS_MATE = [
       v(RETENCION, E.a1.retencionSinDescuento, "Retuviste sobre el precio sin descuento. La base es el valor ya rebajado."),
       v(CAJA, E.a1.cajaSinRetencion, "La empresa retiene cuando compra. Al proveedor le pagas $831.250 menos."),
     ],
-    generica: "Sigue el orden. Primero resta el descuento. Luego suma el IVA y resta la retención. Caja es lo que queda.",
+    generica: "El descuento comercial va primero. El IVA y la retención se calculan sobre el precio ya rebajado, y la retención nunca lleva IVA.",
     /* Decisión 1: «pagas el IVA sobre lo que queda», no «cobras». */
-    acierto: ["Restas el descuento, pagas el IVA sobre lo que queda y retienes sobre el valor sin IVA."],
+    /* Decisión 1 de Kamogawa (sigue vigente): en una compra el IVA se paga; Miyata volvió a escribir «cobras». */
+    acierto: ["Restas el 5 %, pagas el IVA sobre lo que queda y retienes sin IVA. A Caja sale la diferencia."],
   },
   {
     id: "a2",
@@ -214,7 +215,7 @@ export const ASIENTOS_MATE = [
     operacion: "Venta a crédito",
     hecho: "Marzo 10: venta a crédito a clientes varios. Arma su asiento.",
     /* Decisión 2: el valor corto, sin la marca de dato declarado. */
-    renglones: [["Unidades", "2.000"], ["Precio por unidad", cifraConSigno(45000)], ["Retención de los clientes", "no retienen"]],
+    renglones: [["Venta", `2.000 unidades a ${cifraConSigno(45000)}`], ["IVA", "16 %"], ["Retención de los clientes", "no retienen (declarado por la célula)"]],
     correctos: [[d(CLIENTES, M.a2.total), h(IVA, M.a2.iva), h(INGRESOS, M.a2.ingresos)]],
     cruzado: {
       [IVA]: "Al vender, cobras IVA para el Estado. Es una deuda: va al haber.",
@@ -234,17 +235,17 @@ export const ASIENTOS_MATE = [
       v(INGRESOS, E.a2.ingresosConIva, "El IVA no es ingreso tuyo. Lo cobras para el Estado."),
       v(CLIENTES, E.a2.clientesConRetencion, "Restaste una retención que no existe. Estos clientes no retienen."),
     ],
-    generica: "El cliente debe la venta más el 16 % de IVA. El ingreso es solo la venta.",
-    acierto: ["El cliente debe la venta más el IVA. El IVA queda por pagar y el ingreso es solo la venta."],
+    generica: "El IVA no es ingreso tuyo: va a IVA por pagar. Y estos clientes no retienen, así que no hay anticipo fiscal.",
+    acierto: ["El cliente debe la venta más el IVA. El IVA es del Estado: el ingreso es solo la venta."],
   },
   {
     id: "a3",
     dia: 15,
     fecha: "15 DE MARZO",
     operacion: "Compra de contado",
-    hecho: "Marzo 15: compra de contado. Arma el asiento de la compra.",
-    renglones: [["Compra", `600 unidades a ${cifraConSigno(30000)} de lista`], ["Descuento", "4 %, comercial"], ["Retención", "3,5 % sobre el valor sin IVA"]],
-    fleteEnElSiguiente: true,
+    hecho: "Marzo 15: compra de contado. El flete va en el asiento siguiente.",
+    renglones: [["Compra", `600 unidades a ${cifraConSigno(30000)} de lista`], ["Descuento", "4 %, comercial (declarado por la célula)"], ["IVA", "16 %"], ["Retención", "3,5 % sobre el valor sin IVA"]],
+    /* Miyata (P2): «El flete va en el asiento siguiente» ya está en la frase. */
     correctos: [[d(COMPRAS, M.a3.compras), d(IVA, M.a3.iva), h(RETENCION, M.a3.retencion), h(CAJA, M.a3.pago)]],
     cruzado: {
       [IVA]: "Este IVA lo pagas tú al comprar. Por eso va al debe.",
@@ -267,16 +268,16 @@ export const ASIENTOS_MATE = [
       v(COMPRAS, E.a3.comprasConFlete, "Sumaste el flete. El flete tiene su propio asiento: el siguiente."),
       v(CAJA, E.a3.cajaSinRetencion, "Te faltó la retención. Ese 3,5 % no sale de Caja: queda por pagar."),
     ],
-    generica: "Haz los mismos pasos del día 1, ahora con el 4 %.",
-    acierto: ["Precio de lista menos el 4 %, IVA sobre eso y retención sin IVA. Igual que el día 1."],
+    generica: "Resta el 4 % antes de todo. El IVA y la retención van sobre el precio rebajado. El flete no entra aquí.",
+    acierto: ["Mismos pasos del día 1, con el 4 %. El flete queda para su propio asiento."],
   },
   {
     id: "a4",
     dia: 15,
     fecha: "15 DE MARZO",
     operacion: "Flete de la compra",
-    hecho: "Marzo 15: pago de contado del transporte de lo comprado. Arma el asiento del flete.",
-    renglones: [["Valor del servicio", cifraConSigno(240000)], ["Retención", "1 %, sobre ese valor"]],
+    hecho: "Marzo 15: pagas de contado el transporte de lo comprado. Arma su asiento.",
+    renglones: [["Valor del servicio", `${cifraConSigno(240000)} (declarado por la célula)`], ["Retención en fletes", "1 %"]],
     /* Decisión 8: completo con una u otra cuenta, nunca mezclado. */
     correctos: [
       [d(COMPRAS_FLETES, M.a4.flete), h(RETENCION, M.a4.retencion), h(CAJA, M.a4.pago)],
@@ -302,22 +303,19 @@ export const ASIENTOS_MATE = [
       v(COMPRAS_FLETES, E.a4.fleteNeto, "El flete cuesta $240.000. Lo que sale de Caja es menos, por la retención."),
       v(COMPRAS, E.a4.fleteNeto, "El flete cuesta $240.000. Lo que sale de Caja es menos, por la retención."),
     ],
-    generica: "El flete vale $240.000. Réstale el 1 % y sabrás cuánto sale de Caja.",
+    generica: "Este flete es costo de comprar, no gasto. Y al transporte se le retiene el 1 %, no el 3,5 %.",
     /* Un acierto por variante, en el orden de `correctos`. */
-    acierto: [
-      "El flete suma al costo de la compra, en su propia subcuenta. Y al transporte se le retiene el 1 %.",
-      "También vale: el flete suma al costo de la compra. En Inventarios I lo llevamos a su subcuenta, Compras (fletes). Al transporte se le retiene el 1 %.",
-    ],
+    acierto: ["El flete trajo la mercancía: suma al costo de comprar. Al transporte se le retiene el 1 %.", "El flete trajo la mercancía: suma al costo de comprar. Al transporte se le retiene el 1 %."],
   },
   {
     id: "a5",
     dia: 20,
     fecha: "20 DE MARZO",
     operacion: "Devolución de venta",
-    hecho: "Marzo 20: vuelven unidades de las vendidas el día 10. Arma su asiento.",
+    hecho: "Marzo 20: vuelven 300 unidades de la venta del día 10. Arma su asiento.",
     /* Decisión 3: tres renglones normales y el precio del día 10 aparte, al final. */
-    renglones: [["Unidades devueltas", "300"], ["La venta del día 10 fue", "a crédito"]],
-    deOtraOperacion: ["Precio de venta del día 10", cifraConSigno(45000)],
+    renglones: [["Precio de venta del día 10", cifraConSigno(45000)], ["IVA", "16 %"], ["La venta fue", "a crédito"]],
+    /* Miyata (P2): el precio del día 10 ya va en los renglones del asiento. */
     correctos: [[d(DEVOLUCIONES, M.a5.ingresos), d(IVA, M.a5.iva), h(CLIENTES, M.a5.total)]],
     cruzado: {
       [IVA]: "Ese IVA ya no lo debes: vuelve al cliente. Tu deuda con el Estado baja, así que va al debe.",
@@ -337,8 +335,8 @@ export const ASIENTOS_MATE = [
       v(IVA, E.a5.ivaDeTodaLaVenta, "Ese es el IVA de toda la venta. Solo vuelven 300 unidades."),
       v(DEVOLUCIONES, E.a5.devolucionesDeTodaLaVenta, "Solo vuelven 300 de las 2.000. Haz la cuenta solo con esas 300."),
     ],
-    generica: "Calcula solo lo de las 300 unidades: su precio y su IVA.",
-    acierto: ["Devuelves la venta y su IVA. El cliente ahora debe $15.660.000 menos."],
+    generica: "Con las unidades vuelve su IVA. Y la devolución tiene cuenta propia: no se resta de Ingresos por ventas.",
+    acierto: ["Devuelves la venta y su IVA. El cliente debe $15.660.000 menos."],
   },
   {
     id: "a6",
@@ -347,7 +345,7 @@ export const ASIENTOS_MATE = [
     operacion: "Compra a crédito",
     hecho: "Marzo 25: compra a crédito. Arma su asiento.",
     /* Decisión 2: la etiqueta es «Plazo del proveedor». */
-    renglones: [["Unidades", "400"], ["Precio por unidad", cifraConSigno(32000)], ["Plazo del proveedor", "5/15, n/30"], ["Retención", "3,5 % sobre el valor sin IVA"]],
+    renglones: [["Compra", `400 unidades a ${cifraConSigno(32000)}`], ["IVA", "16 %"], ["Retención", "3,5 % sobre el valor sin IVA"], ["Condiciones (del proveedor)", "5/15, n/30"]],
     correctos: [[d(COMPRAS, M.a6.compras), d(IVA, M.a6.iva), h(RETENCION, M.a6.retencion), h(PROVEEDORES, M.a6.pago)]],
     cruzado: {
       [IVA]: "En una compra, el IVA que pagas va al debe.",
@@ -369,17 +367,17 @@ export const ASIENTOS_MATE = [
       v(RETENCION, E.a6.retencionConIva, "Retienes sobre $12.800.000. El IVA no entra en la base."),
       v(PROVEEDORES, E.a6.proveedorSinRetencion, "Te faltó restar la retención. Al proveedor le debes $448.000 menos."),
     ],
-    generica: "Calcula como si no hubiera descuento: aún no se ha pagado.",
-    acierto: ["Sin descuento, porque aún no se paga. Al proveedor le debes la compra con IVA, menos la retención."],
+    generica: "El 5 % solo se gana si pagas en 15 días, y en marzo no pagas. Calcula como si no hubiera descuento.",
+    acierto: ["Sin descuento, porque aún no pagas. Al proveedor le debes la compra con IVA, menos la retención."],
   },
   {
     id: "a7",
     dia: 31,
     fecha: "31 DE MARZO",
     operacion: "Venta de contado",
-    hecho: "Marzo 31: venta de contado a clientes varios, que no retienen. Arma su asiento.",
-    renglones: [["Unidades", "1.250"], ["Precio de lista", cifraConSigno(45000)], ["Descuento", "5 %, comercial"]],
-    fleteEnElSiguiente: true,
+    hecho: "Marzo 31: venta de contado a clientes varios. El flete va en el asiento siguiente.",
+    renglones: [["Venta", `1.250 unidades a ${cifraConSigno(45000)} de lista`], ["Descuento", "5 %, comercial (declarado por la célula)"], ["IVA", "16 %"], ["Retención de los clientes", "no retienen (declarado por la célula)"]],
+    /* Miyata (P2): «El flete va en el asiento siguiente» ya está en la frase. */
     correctos: [[d(CAJA, M.a7.total), h(IVA, M.a7.iva), h(INGRESOS, M.a7.ingresos)]],
     cruzado: {
       [IVA]: "Este IVA lo cobras para el Estado. Lo debes: va al haber.",
@@ -402,16 +400,16 @@ export const ASIENTOS_MATE = [
       v(CAJA, E.a7.cajaConRetencionArriba, "Sobra la retención. Estos clientes no retienen. A Caja entra todo: $61.987.500."),
       v(CAJA, E.a7.cajaConRetencionAbajo, "Sobra la retención. Estos clientes no retienen. A Caja entra todo: $61.987.500."),
     ],
-    generica: "Primero resta el 5 % al precio. Luego suma el IVA. Eso entra a Caja.",
-    acierto: ["Precio menos el 5 %, más el IVA. Entra todo a Caja, sin retención."],
+    generica: "El 5 % comercial se resta antes del IVA. Y como estos clientes no retienen, a Caja entra el total.",
+    acierto: ["Precio menos el 5 %, más el IVA. Entra todo a Caja, porque estos clientes no retienen."],
   },
   {
     id: "a8",
     dia: 31,
     fecha: "31 DE MARZO",
     operacion: "Flete de la venta",
-    hecho: "Marzo 31: pago del flete para llevar la mercancía vendida. Arma su asiento.",
-    renglones: [["Valor del servicio", cifraConSigno(200000)], ["Retención", "1 %, sobre ese valor"]],
+    hecho: "Marzo 31: pagas el transporte de lo vendido. Arma su asiento.",
+    renglones: [["Valor del servicio", `${cifraConSigno(200000)} (declarado por la célula)`], ["Retención en fletes", "1 %"]],
     correctos: [[d(GASTO_FLETES, M.a8.flete), h(RETENCION, M.a8.retencion), h(CAJA, M.a8.pago)]],
     cruzado: {
       [RETENCION]: "Lo que retienes al transportador lo debes. Va al haber.",
@@ -432,8 +430,8 @@ export const ASIENTOS_MATE = [
       v(CAJA, E.a8.cajaSinRetencion, "Al transportador también le retienes. Le pagas $2.000 menos."),
       v(GASTO_FLETES, E.a8.gastoNeto, "El flete cuesta $200.000. Lo que sale de Caja es menos, por la retención."),
     ],
-    generica: "Es como el flete del día 15, pero a otra cuenta: este es gasto de vender.",
-    acierto: ["Lo que cuesta vender es gasto. Y al transporte, como el día 15, se le retiene el 1 %."],
+    generica: "Este flete lleva lo vendido: va a Gasto de venta – fletes, no a Compras. La retención es del 1 %.",
+    acierto: ["Llevar lo vendido es gasto de vender. Y al transporte, como el día 15, se le retiene el 1 %."],
   },
 ];
 
@@ -457,16 +455,13 @@ export const MES_MATE = {
   },
 };
 
-/*
- * ⛔ TEXTOS DE PRUEBA de la balanza (P2 de Itagaki §10): los escribe Miyata.
- * Hasta que lleguen, cada uno empieza con «[PRUEBA]» y una prueba lo exige.
- */
+/* La balanza (P2 de Itagaki §10): los textos de Miyata. */
 export const BALANZA_R5_3 = {
-  platilloDebe: "[PRUEBA] IVA pagado",
-  platilloHaber: "[PRUEBA] IVA cobrado",
-  aPagar: "[PRUEBA] A pagar",
-  aFavor: "[PRUEBA] A favor",
-  sobre: "[PRUEBA] Retención",
-  final: (cifra) => `[PRUEBA] Debes ${cifra} de IVA`,
-  alt: "[PRUEBA] Balanza del IVA de marzo",
+  platilloDebe: "Pagado o devuelto",
+  platilloHaber: "Cobrado al vender",
+  aPagar: "Le debes al Estado",
+  aFavor: "Te queda a favor",
+  sobre: "Retenciones por pagar",
+  final: (cifra) => `Marzo: ${cifra} de IVA son del Estado.`,
+  alt: "Balanza del IVA: un platillo lleva lo pagado o devuelto y el otro lo cobrado. Baja el que pesa más.",
 };

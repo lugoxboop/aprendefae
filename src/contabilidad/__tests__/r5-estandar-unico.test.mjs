@@ -390,7 +390,7 @@ const CIFRA = /^[−+-]?\s?\$?\s?\d{1,3}(\.\d{3})+(,\d{1,2})?( u)?$|^[−+-]?\s?
 /* Sora solo para la cifra de resultado (§5.3): el contador en vivo de C.8, «n de m» y el % del cierre. */
 const RESULTADO = "[data-valor-contador], [data-n-de-m], [data-cierre] [data-pct], [data-resultado-cifra]";
 
-test("★★★ 5 · las cifras van en ui-monospace, SFMono-Regular, Menlo, Consolas con tabular-nums (guarda: 45 estados, 188 cifras)", async () => {
+test("★★★ 5 · las cifras van en ui-monospace, SFMono-Regular, Menlo, Consolas con tabular-nums (guarda: 45 estados, 174 cifras)", async () => {
   assert.equal(K.MONO, "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace");
   assert.deepEqual(K.CIFRA, { fontFamily: K.MONO, fontVariantNumeric: "tabular-nums" });
   const malas = [];
@@ -407,7 +407,7 @@ test("★★★ 5 · las cifras van en ui-monospace, SFMono-Regular, Menlo, Cons
     }
   });
   assert.equal(n, ESTADOS_DEL_RECORRIDO);
-  assert.equal(cifras, 188, "no miró las cifras que dice mirar");
+  assert.equal(cifras, 174, "no miró las cifras que dice mirar");
   assert.deepEqual([...new Set(malas)], []);
 });
 
