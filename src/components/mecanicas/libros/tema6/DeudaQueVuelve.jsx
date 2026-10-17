@@ -1,11 +1,12 @@
 import {
-  T6_ACT3, PARTES_T6_ACT3, ESTANTE_T6_ACT3, RESUMEN_T6_ACT3, ALT_T6_ACT3, DIARIO_T6_ACT3, CASTIGO_T6_ACT3, REGLAS_T6_ACT3,
+  T6_ACT3, PARTES_T6_ACT3, ESTANTE_T6_ACT3, RESUMEN_T6_ACT3, ALT_T6_ACT3, DIARIO_T6_ACT3, CASTIGO_T6_ACT3, REGLAS_T6_ACT3, DEUDA_T6_ACT3,
 } from "../../../../data/contabilidadT6Act3.js";
 import { evaluarParte } from "../../../../contabilidad/cierreConMesa.js";
 import CierreConMesa from "../b5/CierreConMesa.jsx";
 import { MesaConDiario } from "../b5/LibroDiario.jsx";
 import { useVuelta } from "../b5/ConVuelta.jsx";
-import { PARTES_V2_T6_ACT3, CASTIGO_V2_T6_ACT3, ALT_V2_T6_ACT3 } from "../../../../data/b5SegundaVuelta.js";
+import { PARTES_V2_T6_ACT3, CASTIGO_V2_T6_ACT3, ALT_V2_T6_ACT3, DEUDA_V2_T6_ACT3 } from "../../../../data/b5SegundaVuelta.js";
+import { crearDeudaPorCasos } from "./DeudaPorCasos.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -33,10 +34,14 @@ export const CONFIG_T6_ACT3 = {
   alt: ALT_T6_ACT3,
   evaluar: evaluarParte,
   atributos: { "data-cierre-t6-a3": true },
+  /* Lote 20 (D9): el elemento propio, la deuda por casos, con los tres finales lado a lado. */
+  elementoPropio: crearDeudaPorCasos(DEUDA_T6_ACT3),
 };
 
 /* D8 (lote 18, Futaba): la variante, La Ceiba y la deuda castigada de Hernán Ríos. */
-export const CONFIG_V2_T6_ACT3 = { ...CONFIG_T6_ACT3, ejemplo: CASTIGO_V2_T6_ACT3, partes: PARTES_V2_T6_ACT3, alt: ALT_V2_T6_ACT3 };
+export const CONFIG_V2_T6_ACT3 = {
+  ...CONFIG_T6_ACT3, ejemplo: CASTIGO_V2_T6_ACT3, partes: PARTES_V2_T6_ACT3, alt: ALT_V2_T6_ACT3, elementoPropio: crearDeudaPorCasos(DEUDA_V2_T6_ACT3),
+};
 
 /* La configuración llega como prop: al cambiar de vuelta, la mesa no se desmonta (su resumen sigue a la vista). */
 export function MesaDeudaQueVuelve({ config = CONFIG_T6_ACT3, ...props }) {

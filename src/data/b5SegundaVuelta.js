@@ -6,7 +6,7 @@ import {
 import {
   T6_ACT2, PARTES_T6_ACT2, PREGUNTAS_T6_ACT2, PROVISION_2007_T6_ACT2, ALT_T6_ACT2, GASTO, PROVISION, CLIENTES,
 } from "./contabilidadT6Act2.js";
-import { PARTES_T6_ACT3, CASTIGO_T6_ACT3, ALT_T6_ACT3, CAJA } from "./contabilidadT6Act3.js";
+import { PARTES_T6_ACT3, CASTIGO_T6_ACT3, ALT_T6_ACT3, CAJA, DEUDA_T6_ACT3 } from "./contabilidadT6Act3.js";
 import { ESCENA_T6_A3, MOMENTOS_T6_A3 } from "./contabilidadT6Pieza3.js";
 
 /*
@@ -56,6 +56,7 @@ export const PARTES_V2_T5_ACT2 = [
     ...P2_T5,
     hecho: "Escenario simulado. 1 de junio. El Roble vende 1.800 títulos, el 75 %. Cada uno le costó $950. Los vende a $980, sin el interés. Recibe $1.764.000 en Caja.",
     asiento: [d(CAJA_T5, 1764000), h(INVERSIONES, 1710000), h(GANANCIA, 54000)],
+    precio: { costo: 950, venta: 980 },
     errores: {
       ...P2_T5.errores,
       C: "Caja sube porque recibe lo de la venta. Inversiones – títulos baja porque salen títulos, y la ganancia es un ingreso.",
@@ -85,6 +86,7 @@ export const PARTES_V2_T5_ACT2 = [
     ...P4_T5,
     hecho: "Escenario simulado. 1 de septiembre. El Roble vende los 600 títulos que quedan. Cada uno le había costado $950. Los vende a $870 y recibe $522.000 en Caja.",
     asiento: [d(CAJA_T5, 522000), d(PERDIDA, 48000), h(INVERSIONES, 570000)],
+    precio: { costo: 950, venta: 870 },
     errores: {
       ...P4_T5.errores,
       C: "Caja sube con lo que recibe. La pérdida es un gasto, y la inversión baja porque salen títulos.",
@@ -261,3 +263,5 @@ export const CASTIGO_V2_T6_ACT3 = v2({
 });
 
 export const ALT_V2_T6_ACT3 = conCambios(ALT_T6_ACT3, CAMBIOS_T6);
+/* Lote 20 (D9): «La deuda de Hernán Ríos». */
+export const DEUDA_V2_T6_ACT3 = conCambios(DEUDA_T6_ACT3, CAMBIOS_T6);

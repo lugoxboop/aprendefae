@@ -404,6 +404,12 @@ export default function CierreConMesa({
   const textos = config.textos ?? {};
   /* El ejemplo resuelto, su propio paso antes del primero (lote 6c): solo en la partida entera, no en «Así se juega» ni con `items`. */
   const [enEjemplo, setEnEjemplo] = useState(() => Boolean(config.ejemplo) && !modoDemo && !items);
+  /*
+   * Lote 20 (D9, P2 de Mai): un elemento visual propio de la actividad, opcional; sin él, nada cambia. Va
+   * entre la devolución y «Siguiente asiento» (y en el ejemplo resuelto, bajo su explicación). Recibe las
+   * partes y cuántas están confirmadas: lo que entra es siempre lo correcto (el registro), nunca la mesa.
+   */
+  const ElementoPropio = (!modoDemo && config.elementoPropio) || null;
   const idInstruccion = useId();
   const [s, setS] = useState(vacio);
   const [todos, setTodos] = useState([]);
@@ -459,6 +465,7 @@ export default function CierreConMesa({
               ))}
             </div>
           )}
+          {ElementoPropio && <ElementoPropio partes={t.items} hechas={0} ejemplo={e} actual={null} reducido={reducido} />}
         </div>
         <div data-boton-empezar>
           <Responder onClick={() => setEnEjemplo(false)}>{textos.empezar ?? "Empezar"}</Responder>
@@ -570,6 +577,10 @@ export default function CierreConMesa({
             <Retro resultado={s.resultado} />
           </>
         ) : seccion(true)}
+
+        {ElementoPropio && (
+          <ElementoPropio partes={t.items} hechas={t.i + (comprobada ? 1 : 0)} ejemplo={config.ejemplo} actual={comprobada ? parte : null} reducido={reducido} />
+        )}
 
         {/* El ejemplo de «Así se juega» termina con su explicación. */}
         {comprobada && parte.resolucion && (
