@@ -174,6 +174,55 @@ export const PANTALLAS_A4 = [
   },
 ];
 
+/*
+ * D8 · el caso B (Katsumi, lote nocturno): A4 no lleva cifras nuevas (las de
+ * P0 son del libro), así que sus pies no cambian; cambian los siete
+ * movimientos y las seis causas (mismos id, lados y libretas) y la
+ * conciliación, que va con una consignación sin abonar y una nota crédito: la
+ * empresa ignora la nota crédito (el renglón del banco, como en el caso 1).
+ */
+export const MOVIMIENTOS_A4_B = MOVIMIENTOS_A4.map((m, i) => ({ ...m, ...[
+  { texto: "Un depósito de la empresa", mayor: ["Depósito"] },
+  { texto: "Una nota débito por comisiones", mayor: ["Nota débito", "del banco"] },
+  { texto: "Una nota crédito por intereses", mayor: ["Nota crédito", "del banco"] },
+  { texto: "Un cheque para pagarle al proveedor", mayor: ["Cheque girado"] },
+  { texto: "Una transferencia que llega de un cliente", mayor: ["Transferencia"] },
+  { texto: "Una transferencia que la empresa envía", mayor: ["Envío"] },
+  { texto: "Un cheque girado que después se anula", mayor: ["Cheque anulado"] },
+][i] }));
+const TARJETAS_B = {
+  "cheque-sin-cobrar": "Cheque girado el 29, que nadie ha cobrado",
+  "consignacion-sin-abonar": "Un depósito hecho el último día del mes",
+  "nota-debito": "El banco cobra una comisión a la cuenta",
+  "nota-credito": "El banco abona rendimientos a la cuenta",
+  "error-empresa": "La empresa anota mal una consignación",
+  "error-banco": "El banco suma mal un depósito",
+};
+export const CAUSAS_A4_B = CAUSAS_A4.map((c) => ({ ...c, tarjeta: TARJETAS_B[c.id] }));
+export const RENGLONES_CONCILIACION_B = [
+  { id: "consignacion-sin-abonar", emp: CAUSAS_A4.find((c) => c.id === "consignacion-sin-abonar").emp, ban: null },
+  { id: "nota-credito", emp: null, ban: NOTA_CREDITO_LIBRETA },
+];
+/* Lo que la figura muestra en cada caso. */
+export const DATOS_A4 = {
+  1: { MOVIMIENTOS_A4, CAUSAS_A4, RENGLONES_CONCILIACION, renglonLector: FIGURA_A4.renglonLector },
+  2: {
+    MOVIMIENTOS_A4: MOVIMIENTOS_A4_B, CAUSAS_A4: CAUSAS_A4_B, RENGLONES_CONCILIACION: RENGLONES_CONCILIACION_B,
+    renglonLector: {
+      "consignacion-sin-abonar": "Consignación sin abonar: la tiene la empresa; el banco todavía no la sabe",
+      "nota-credito": "Nota crédito: la tiene el banco; la empresa todavía no la sabe",
+    },
+  },
+};
+const PANTALLAS_A4_B = PANTALLAS_A4.map((p) => (p.id !== "la-conciliacion" ? p : {
+  ...p,
+  correcta: "nota-credito",
+  /* La respuesta cambia de id, no de papel: es el renglón del banco, el que la empresa ignora (la prueba de A4 lo mira). */
+  correctaB: true,
+  errores: { "consignacion-sin-abonar": "La consignación ya está en sus libros: la anotó al hacerla." },
+  alt: "Las dos libretas, cada una con un renglón: una consignación sin abonar en la de la empresa y una nota crédito en la del banco. Se toca el renglón que la empresa todavía no sabe.",
+}));
+
 export const PIEZA_BANCOS_Y_NOTAS = {
   id: A4_ID,
   numero: 4,
@@ -183,3 +232,4 @@ export const PIEZA_BANCOS_Y_NOTAS = {
   boton: BOTON.seguir,
   pantallas: PANTALLAS_A4,
 };
+PIEZA_BANCOS_Y_NOTAS.casoB = { ...PIEZA_BANCOS_Y_NOTAS, pantallas: PANTALLAS_A4_B };

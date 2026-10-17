@@ -173,7 +173,7 @@ export function pruebasComunes({ P, canon, datos, piezas, noNombra = {}, antesDe
       assert.deepEqual(c.extra, [], `${c.id}: un lugar del caso B que el caso 1 no tiene`);
       assert.deepEqual(porLugar(p), c.textos.map((x) => [lugarCanon(x.lugar), x.texto]), `${c.id} · caso B`);
       assert.deepEqual([p.modo, Boolean(p.pregunta), p.correcta === undefined, Object.keys(p.errores ?? {}).length], [a.modo, Boolean(a.pregunta), a.correcta === undefined, Object.keys(a.errores ?? {}).length], `${c.id}: la decisión cambia en el caso B`);
-      if (typeof a.correcta === "string") assert.equal(p.correcta, a.correcta, `${c.id}: la respuesta cambia en el caso B`);
+      if (typeof a.correcta === "string" && !p.correctaB) assert.equal(p.correcta, a.correcta, `${c.id}: la respuesta cambia en el caso B`);
     }
     for (const c of CANON_PB) {
       for (const x of c.textos.filter((y) => y.medida)) {
