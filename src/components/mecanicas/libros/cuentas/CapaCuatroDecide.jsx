@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { FAE } from "../../../../theme.js";
 import {
   Pastilla, Mensaje, RegionViva, CORRECTA, TACHADA, REVELADA,
-  CSS_B5H, CLASE_B5H, TEXTO_B, CORAL_B, NEUTRO_B, REPOSO_B, ACIERTO_B, ERROR_B,
+  CSS_B5H, CLASE_B5H, TEXTO_B, NEUTRO_B, REPOSO_B, ACIERTO_B, ERROR_B,
 } from "../b5/Devolucion.jsx";
 
 /*
@@ -55,8 +55,22 @@ const ROTULO = {
  * El botón de una opción. 44 de alto como piso, porque se toca con el pulgar;
  * el borde es lo que marca el estado y el acierto va en blanco neutro, nunca
  * en verde: en Contabilidad el verde ya significa DEBE (B4).
+ *
+ * POR QUÉ NO ES LA `Opcion` COMPARTIDA de corazon/juego.jsx: esa pinta el
+ * acierto en teal, que viene de Macroeconomía, donde el teal no significa
+ * nada más. Aquí significa DEBE, y un acierto en teal deja al color
+ * queriendo decir dos cosas a la vez. Por eso la Célula B se hizo sus
+ * primitivas de devolución, y por eso esta usa las de ella.
+ *
+ * Y por qué tampoco es `OpcionC4`: esa está atada a la hoja de estilos
+ * `c4-*` del motor de la Célula C. Colgar esta capa de ese motor la ataría a
+ * una actividad completa, con su Panel y su puntaje, para usar un botón.
+ *
+ * El nombre no es `Opcion` a propósito: opcion-avance.test.mjs prohíbe que
+ * cualquier archivo declare otra `Opcion`, para que nadie forkee la
+ * compartida sin darse cuenta. La Célula C resolvió lo mismo con `OpcionC4`.
  */
-function Opcion({ texto, marca, elegida, bloqueada, onClick }) {
+function OpcionDecide({ texto, marca, elegida, bloqueada, onClick }) {
   const borde = marca === CORRECTA ? ACIERTO_B : marca === TACHADA ? ERROR_B : marca === REVELADA ? ACIERTO_B : REPOSO_B;
   return (
     <button
@@ -131,7 +145,7 @@ function Decision({ decision, numero, total, onResuelta, onPintar }) {
       }}>{decision.pregunta}</p>
       <div style={{ display: "grid", gap: "8px" }}>
         {decision.opciones.map((o) => (
-          <Opcion
+          <OpcionDecide
             key={o.id}
             texto={o.t}
             marca={marcaDe(o)}
@@ -198,4 +212,3 @@ export default function CapaCuatroDecide({ pieza }) {
   );
 }
 
-export { CORAL_B };
