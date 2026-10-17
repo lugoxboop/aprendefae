@@ -43,6 +43,13 @@ import { CSS_C4_T72, FiguraVentaDosCaras, EleccionC4, useVeredictoC4 } from "./F
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
+/*
+ * El contrato de la figura del motor (cabecera de decisionC4.jsx), para la prueba C5 de consecuencia-c: esta pieza
+ * no monta el motor, pero su Figura acepta su vista. Con una cifra que se está escribiendo, `vista.borrador` solo se
+ * MUESTRA en su lugar; `estado` (la consecuencia) existe solo después de comprobar (C4-1 de Mello).
+ */
+export const PIEZA_C4 = { ...C4, Figura: ({ estado, item, vista }) => <FiguraVentaDosCaras estado={estado ?? C4.consecuencia(item, null)} escrita={vista?.borrador ?? null} /> };
+
 export default function ArmaLosDosAsientos({ Marco, rotulo, titulo, acento, onCompletar, items = null, onComoSeJuega = null }) {
   const t = useTanda(() => items ?? prepararH2(barajar));
   const [elegida, setElegida] = useState(null);

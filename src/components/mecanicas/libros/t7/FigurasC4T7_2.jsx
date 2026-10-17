@@ -78,10 +78,13 @@ export function useVeredictoC4() {
   return { programar, cancelar };
 }
 
-/* Lo que implica lo elegido, con texto (nunca solo color). */
+/*
+ * Lo que implica lo elegido, con texto (nunca solo color). Las clases `c4-falla-t72` y `c4-cuadra-t72` (sin reglas
+ * propias) son para que la sonda C5 de consecuencia-c, que busca «c4-falla» y «c4-cuadra», vea también esta figura.
+ */
 export function LineaC4({ estado }) {
-  if (estado?.falla) return <p className="c4t72-falla" data-c4-linea="falla"><X aria-hidden="true" strokeWidth={2.5} /><span>{estado.falla}</span></p>;
-  if (estado?.cuadra) return <p className="c4t72-cuadra" data-c4-linea="cuadra"><Check aria-hidden="true" strokeWidth={2.5} /><span>{estado.cuadra}</span></p>;
+  if (estado?.falla) return <p className="c4t72-falla c4-falla-t72" data-c4-linea="falla"><X aria-hidden="true" strokeWidth={2.5} /><span>{estado.falla}</span></p>;
+  if (estado?.cuadra) return <p className="c4t72-cuadra c4-cuadra-t72" data-c4-linea="cuadra"><Check aria-hidden="true" strokeWidth={2.5} /><span>{estado.cuadra}</span></p>;
   return null;
 }
 

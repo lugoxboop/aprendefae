@@ -51,6 +51,13 @@ import { FIGURA_T7_2_H5, cerradosDe } from "../../../../contabilidad/figuraAcumu
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
+/*
+ * El contrato de la figura del motor (cabecera de decisionC4.jsx), para la prueba C5 de consecuencia-c: esta pieza
+ * no monta el motor, pero su Figura acepta su vista. Con una cifra que se está escribiendo, `vista.borrador` solo se
+ * MUESTRA en su lugar; `estado` (la consecuencia) existe solo después de comprobar (C4-1 de Mello).
+ */
+export const PIEZA_C4 = { ...C4, Figura: ({ estado, item, vista }) => <FiguraMapaDeMangle estado={estado ?? C4.consecuencia(item, null)} item={item} escrita={vista?.borrador ?? null} /> };
+
 export default function FleteYDevolucion({ Marco, rotulo, titulo, acento, onCompletar, items = null, onComoSeJuega = null }) {
   const t = useTanda(() => items ?? prepararH5(barajar));
   const [elegida, setElegida] = useState(null);
