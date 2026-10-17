@@ -157,7 +157,21 @@ export default function IntroContabilidadView({ modo = null, nodoInicial = null,
           <div className="fae-insignia-actividad"><ActivityBadge tipo={esAprender ? APRENDER : HACER} size="sm" /></div>
 
           {esAprender ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
+            /*
+             * El hueco de abajo le reserva su banda a la ficha de FP, que es
+             * fija. Sin el, al detenerse el scroll abajo del todo a 320 px, la
+             * columna de flechas de «Los tres informes» queda con su primera
+             * flecha 2 px por encima del borde: 20 px libres arriba de la
+             * ficha y 36 abajo, los dos por debajo del piso de toque de 44.
+             * Con los 84 px, esa flecha baja y le quedan 46 libres.
+             *
+             * Medido con scripts/ficha-tapa.mjs (#349): 1 control a 320 sin el
+             * hueco, ninguno con el; a 375 ninguno en los dos casos.
+             *
+             * La reserva compartida de AccountControl es horizontal —le hace
+             * sitio al titulo en la cabecera— y no cubre este caso.
+             */
+            <div style={{ display: "flex", flexDirection: "column", gap: "40px", paddingBottom: "84px" }}>
               {PIEZAS_INTRO.map((pieza, k) => {
                 const { Capa2, Exploracion, Capa4 } = ESCENAS_INTRO[pieza.id];
                 return (
