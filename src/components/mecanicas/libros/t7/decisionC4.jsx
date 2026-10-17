@@ -16,8 +16,14 @@ import { ContadorConIntento } from "./armaLaLinea.jsx";
  * ═══════════════════════════════════════════════════════════════════════════
  * PATRÓN DE ENGANCHE C4 · «TODA DECISIÓN SE PINTA» (D4 y D9; Watari,
  * patron-enganche-c4-v1.html, motor4.js → aquí). Módulo de la Célula C.
- *   1. Al tocar una opción o escribir una cifra, la figura pinta su
+ *   1. Al tocar una opción o al «Comprobar» una cifra, la figura pinta su
  *      consecuencia (pieza.consecuencia, pura) en el acto.
+ *      CIFRA (Mello C4-1, bloquea): mientras se escribe, la figura recibe la
+ *      cifra SOLO para mostrarla en su lugar (el renglón, la casilla del
+ *      objeto): `vista.borrador`. Nada que dependa del resultado («Cuadra»,
+ *      «Sobran»/«Faltan», coral, la balanza nivelada) se pinta antes de
+ *      «Comprobar»: `vista.valor` (y `vista.eleccion`, `estado`) existen solo
+ *      después de comprobar. consecuencia-c.test.mjs lo comprueba (C5).
  *   2. El veredicto llega ESPERA_C4 = 380 ms después (sin espera con
  *      movimiento reducido): pastilla, «falla» en coral con ✕ y el mensaje.
  *   3. Hacer: un intento, la correcta con «Iba aquí» (b5/Devolucion.jsx),
@@ -37,7 +43,11 @@ import { ContadorConIntento } from "./armaLaLinea.jsx";
  *     opciones: [{ id, t, correcta?, msg?, v? }], pista, bien, porque, pie,
  *     subtema, formato?: "pesos"|"numero"|"factor"|"porcentaje" }
  *   Figura({ estado, item, vista, ctx }) solo pinta `estado`; marca con
- *   `c4-mov` lo que se anima. Con enFigura, pinta las opciones con
+ *   `c4-mov` lo que se anima. Cifra: `vista.borrador` (número que se está
+ *   escribiendo, o null) solo para escribirlo; `vista.valor` (el comprobado,
+ *   o null) y `estado` para la consecuencia. El componente exporta
+ *   PIEZA_C4 = { ...CONSECUENCIA_C4, Figura, ... } para que la prueba C5
+ *   pinte la figura con la cifra escrita sin comprobar. Con enFigura, pinta las opciones con
  *   <OpcionC4 ctx opcion>. «propio»: pieza.Propio({ item, terminar(ok, r) })
  *   (los asientos que siguen como en main).
  * ═══════════════════════════════════════════════════════════════════════════
@@ -45,6 +55,9 @@ import { ContadorConIntento } from "./armaLaLinea.jsx";
 
 export const ESPERA_C4 = 380;
 const INTERFAZ_C4 = { ...INTERFAZ_C3, marca: "Pregunta {n} de {total}" };
+/* C4-7 (Mello): en Hacer, los BOTONES_T7 publicados con «caso» en vez de «ítem», como el contador. */
+const aCaso = (t) => t.replace("ítem", "caso").replace("Ítem", "Caso");
+export const BOTONES_C4 = { siguiente: aCaso(BOTONES_T7.siguiente), verResumen: aCaso(BOTONES_T7.verResumen), contador: aCaso("Ítem") };
 
 /* ═══════════ CIFRAS ═══════════ */
 
@@ -68,7 +81,7 @@ export const opcionDeCifra = (I, n) => (n == null ? null : I.opciones.find((o) =
 
 /* ═══════════ EL ESTADO (puro) ═══════════ */
 
-const VACIO = { eleccion: null, errores: 0, resuelto: false, fallado: false, veredicto: false, texto: "", borrador: null, abierto: false };
+const VACIO = { eleccion: null, valor: null, errores: 0, resuelto: false, fallado: false, veredicto: false, texto: "", borrador: null, abierto: false };
 export const estadoInicialC4 = () => ({ i: 0, e: {}, n: 0, evento: "entra", foco: null });
 export const deItem = (s, I) => s.e[I.id] ?? VACIO;
 const cerrado = (E) => E.resuelto || E.fallado;
@@ -78,7 +91,8 @@ const poner = (s, I, E, extra) => ({ ...s, e: { ...s.e, [I.id]: E }, n: s.n + 1,
 
 function decidir(s, I, hacer, eleccion, ok) {
   const E = deItem(s, I);
-  return poner(s, I, { ...E, eleccion, veredicto: false, abierto: false, resuelto: ok, fallado: hacer && !ok, errores: E.errores + (ok ? 0 : 1) }, { evento: "consecuencia" });
+  const valor = tipoDe(I) === "cifra" ? eleccion : null;
+  return poner(s, I, { ...E, eleccion, valor, veredicto: false, abierto: false, resuelto: ok, fallado: hacer && !ok, errores: E.errores + (ok ? 0 : 1) }, { evento: "consecuencia" });
 }
 
 export function reducirC4(pieza, s, a) {
@@ -94,7 +108,7 @@ export function reducirC4(pieza, s, a) {
     case "escribir": {
       if (tipoDe(I) !== "cifra" || cerrado(E) || pendiente(E)) return s;
       const texto = enCasilla(I, a.texto);
-      return poner(s, I, { ...E, eleccion: null, veredicto: false, texto, borrador: leerC4(I, texto) }, { evento: "escribe" });
+      return poner(s, I, { ...E, eleccion: null, valor: null, veredicto: false, texto, borrador: leerC4(I, texto) }, { evento: "escribe" });
     }
     case "comprobar": {
       if (tipoDe(I) !== "cifra" || cerrado(E) || pendiente(E) || E.borrador == null || E.eleccion != null) return s;
@@ -118,19 +132,29 @@ export function reducirC4(pieza, s, a) {
   }
 }
 
-/* Lo que la figura y las opciones necesitan saber del ítem en curso. */
+/* Lo que la figura y las opciones necesitan saber del ítem en curso.
+ * C4-1: `valor` y `eleccion` solo existen tras «Comprobar»; `borrador` es la cifra que se escribe, solo para mostrarla. */
 export function vistaC4(pieza, I, E, reducido = false) {
   const hacer = pieza.modo === "hacer";
   const cifra = tipoDe(I) === "cifra";
-  const eleccion = E.eleccion ?? (cifra ? E.borrador : null);
+  const eleccion = E.eleccion ?? null;
   const op = cifra ? opcionDeCifra(I, eleccion) : I.opciones.find((o) => o.id === eleccion) ?? null;
   const ok = E.eleccion != null && E.resuelto;
   return {
-    modo: pieza.modo, eleccion, op, ok, veredicto: E.veredicto, resuelto: E.resuelto, fallado: E.fallado, errores: E.errores,
+    modo: pieza.modo, eleccion, valor: cifra ? E.valor ?? null : null, borrador: cifra ? E.borrador ?? null : null, op, ok, veredicto: E.veredicto, resuelto: E.resuelto, fallado: E.fallado, errores: E.errores,
     escribiendo: cifra && E.eleccion == null && E.borrador != null, pista: !hacer && E.errores >= 2 && !E.resuelto, reducido,
     bloqueada: cerrado(E) || pendiente(E), correcta: I.opciones.find((o) => o.correcta) ?? null,
   };
 }
+
+/* Lo que recibe la figura: la vista y el estado de la consecuencia (de `vista.eleccion`, nunca del borrador). */
+export function figuraC4(pieza, I, E, reducido = false) {
+  const vista = vistaC4(pieza, I, E, reducido);
+  return { vista, estado: tipoDe(I) === "propio" ? null : pieza.consecuencia(I, vista.eleccion) };
+}
+
+/* El ctx de la figura (y de OpcionC4 dentro de ella). */
+export const ctxC4 = (pieza, I, E, vista, elegir = () => {}) => ({ item: I, vista, reducido: vista.reducido, elegir, marca: (id) => marcaC4(pieza, I, E, id), pesos, fmt: (n) => fmtC4(I, n) });
 
 /* La marca de una opción: «tocada» (antes del veredicto) · «bien» · «mal» · «iba» (solo Hacer) · «pista» (solo Aprender, 2.º error). */
 export function marcaC4(pieza, I, E, id) {
@@ -224,7 +248,8 @@ export default function DecisionC4({ pieza, Marco = Panel, rotulo, acento, onCom
   const E = deItem(s, I);
   const tipo = tipoDe(I);
   const reducido = reducidoAhora();
-  const vista = { ...vistaC4(pieza, I, E, reducido), anim: !reducido && (s.evento === "consecuencia" || s.evento === "escribe") };
+  const fig = figuraC4(pieza, I, E, reducido);
+  const vista = { ...fig.vista, anim: !reducido && (s.evento === "consecuencia" || s.evento === "escribe") };
   const espera = pendiente(E) && tipo !== "propio";
 
   /* 2 · el veredicto, ESPERA_C4 después de la consecuencia (con movimiento reducido llega en el mismo toque). */
@@ -264,7 +289,7 @@ export default function DecisionC4({ pieza, Marco = Panel, rotulo, acento, onCom
     if (hacer) { t.anotar(I.id, ok, ok ? null : respuesta); if (ok) bien.current += 1; }
     despachar({ tipo: "propio", ok, respuesta });
   };
-  const ctx = { item: I, vista, reducido, elegir, marca: (id) => marcaC4(pieza, I, E, id), pesos, fmt: (n) => fmtC4(I, n) };
+  const ctx = ctxC4(pieza, I, E, vista, elegir);
 
   const reiniciar = () => { bien.current = 0; t.reiniciar(); despachar({ tipo: "reiniciar" }); };
   if (hacer && t.terminado) {
@@ -278,7 +303,7 @@ export default function DecisionC4({ pieza, Marco = Panel, rotulo, acento, onCom
     );
   }
 
-  const estado = tipo === "propio" ? null : pieza.consecuencia(I, vista.eleccion);
+  const estado = fig.estado;
   const msg = mensajeC4(pieza, I, E);
   const falla = E.veredicto && !E.resuelto && estado?.falla;
   const listo = cerrado(E) && E.veredicto;
@@ -311,7 +336,7 @@ export default function DecisionC4({ pieza, Marco = Panel, rotulo, acento, onCom
         {hacer && <EncabezadoHacer objetivo={pieza.objetivo ?? null} consigna={sinUnSoloIntento(pieza.consigna ?? "")} onComoSeJuega={onComoSeJuega} />}
         {hacer && (
           <ContadorConIntento>
-            <Pulsos total={pieza.items.length} hechos={s.i + (listo ? 1 : 0)} enCurso={s.i + 1} etiqueta="Ítem" />
+            <Pulsos total={pieza.items.length} hechos={s.i + (listo ? 1 : 0)} enCurso={s.i + 1} etiqueta={BOTONES_C4.contador} />
           </ContadorConIntento>
         )}
         {/* La cejilla: el subtema solo con el veredicto (en varias piezas nombra la respuesta). */}
@@ -361,7 +386,7 @@ export default function DecisionC4({ pieza, Marco = Panel, rotulo, acento, onCom
 
         <p className="c4-pie" data-pie hidden={!(I.pie ?? pieza.pie)}>{I.pie ?? pieza.pie}</p>
         {hacer
-          ? listo && <div data-responder><Responder onClick={avanzarHacer}>{ultimo ? BOTONES_T7.verResumen : BOTONES_T7.siguiente}</Responder></div>
+          ? listo && <div data-responder><Responder onClick={avanzarHacer}>{ultimo ? BOTONES_C4.verResumen : BOTONES_C4.siguiente}</Responder></div>
           : <button type="button" className="c4-seguir" aria-disabled={String(!listo)} onClick={seguirAprender} data-boton={ultimo ? "siguiente-pieza" : "seguir"}>{ultimo ? T.siguientePieza : T.seguir}</button>}
       </div>
     </Marco>
