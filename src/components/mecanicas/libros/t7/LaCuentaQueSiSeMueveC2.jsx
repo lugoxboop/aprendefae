@@ -3,6 +3,8 @@ import { Check, X } from "lucide-react";
 import { Panel } from "../../salaDeControl/marco.jsx";
 import { barajar } from "../../../../utils/barajar.js";
 import { PIEZA_LA_CUENTA_C2, PANTALLAS_C2, HECHOS, INICIO, MAX, INTERFAZ_C2 as T, renglonDe } from "../../../../data/contabilidadT7_2_a1_c2.js";
+import { CONSECUENCIA_C4 as C4 } from "../../../../contabilidad/c4/t7_2_a1_c4.js";
+import { ESPERA_C4 } from "./decisionC4.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -45,6 +47,19 @@ import { PIEZA_LA_CUENTA_C2, PANTALLAS_C2, HECHOS, INICIO, MAX, INTERFAZ_C2 as T
  * Teal y ámbar solo en los rótulos DEBE y HABER; coral solo en el error; el
  * acierto, con ✓ y borde neutro. Clases con el prefijo `t7cs-` (`c2-` y
  * `c2c-` en la C2). Movimiento reducido: sin animación y en el estado final.
+ *
+ * C4 · «TODA DECISIÓN SE PINTA» (Watari, patron-enganche-c4-v1.html, sección
+ * «t72-a1»; Mello: «Que el lado equivocado también mueva la cuenta, de modo
+ * que el saldo deje de cuadrar con la bodega, antes de la pista.»). En la
+ * pantalla 2, tocar un lado es la consecuencia, en el acto: las cajas del
+ * hecho entran o salen de la bodega (el hecho pasa, se ubique donde se
+ * ubique), el renglón cae en el lado TOCADO y el saldo se mueve con él; si
+ * el lado es el otro, la línea de la figura dice que no cuadra
+ * (consecuencia pura en contabilidad/c4/t7_2_a1_c4.js). El veredicto (la
+ * escalera C2 de siempre) llega ESPERA_C4 después; con movimiento reducido,
+ * en el mismo toque. El renglón del lado equivocado se queda a la vista
+ * hasta el toque siguiente; la bodega ya no se mueve otra vez por ese hecho.
+ * Las pantallas 3 y 4 siguen como en la C2 (Watari no las toca en la C4).
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -125,6 +140,12 @@ export const CSS_T7CS = `
 .t7cs-op[aria-disabled="true"] { cursor: default; }
 .t7cs-op.mal { border: 2px solid var(--coral); padding: 9px 11px; }
 .t7cs-op.pista, .t7cs-op.bien { border: 2px solid var(--texto); padding: 9px 11px; }
+/* C4: el lado tocado mientras llega el veredicto, y la línea de la consecuencia (✕ y texto en lo que no cuadra). */
+.t7cs-lado.blanco.tocada { outline: 2px solid var(--neutro); outline-offset: -2px; }
+.t7cs-lado[aria-disabled="true"] { cursor: default; }
+.t7cs-c4 { margin: 0; display: flex; gap: 6px; align-items: flex-start; font-size: 13px; line-height: 1.4; color: var(--texto); }
+.t7cs-c4.falla { color: var(--coral-texto); }
+.t7cs-c4 svg { width: 16px; height: 16px; flex: none; margin-top: 1px; }
 .t7cs-lista { margin: 0; padding: 10px 12px 10px 28px; display: grid; gap: 6px; font-size: 14px; border-left: 3px solid var(--neutro); }
 .t7cs-lista li { list-style: disc; }
 .t7cs-lista li.t7cs-sig { list-style: none; margin-left: -16px; color: var(--atenuado); font-size: 13px; }
@@ -172,21 +193,36 @@ function fallar(s, P, clave, id, mal) {
   return { ...s, errores, intento: id, pista: segundo || s.pista, msg: { tipo: "mal", t: segundo ? mal : P.pista }, nuevo: null };
 }
 
-/** Tocar un lado de Inventario de mercancías con el hecho que está por ubicar. */
+/** El saldo de la cuenta: debe menos haber, con el renglón del lado equivocado si lo hay (C4). */
+export const saldoDe = (s) => [...s.renglones, ...(s.tent ? [s.tent] : [])].reduce((n, r) => n + (r.lado === "debe" ? r.cajas : -r.cajas), 0);
+
+/**
+ * C4 · 1. Tocar un lado de Inventario de mercancías con el hecho que está por ubicar: la consecuencia, en el acto.
+ * Mira esto: las cajas del hecho entran o salen de la bodega y, en el mismo instante, el renglón cae en el lado
+ * tocado y el saldo cambia. Si el lado es el otro, el renglón queda aparte (`tent`) y el saldo deja de cuadrar.
+ */
 export function ubicar(s, P, lado, reducido) {
   const H = HECHOS[s.hecho];
-  if (!P.lados || !H) return s;
-  if (lado !== H.lado) return fallar(s, P, H.id, lado, H.devolucion);
-  /* Mira esto: las cajas entran o salen de la bodega y, en el mismo instante, el renglón cae en su lado y el saldo cambia. */
-  const r = renglon(s, H.lado, H.cajas, renglonDe(H.texto));
+  if (!P.lados || !H || s.espera) return s;
+  let t = { ...s, espera: true, toque: { hecho: s.hecho, lado }, msg: null, tent: null };
+  if (s.movido !== H.id) t = conBodega({ ...t, cajas: t.cajas + (H.lado === "debe" ? H.cajas : -H.cajas), movido: H.id }, !reducido);
+  const r = renglon(t, lado, H.cajas, renglonDe(H.texto));
+  return lado === H.lado ? { ...t, renglones: [...t.renglones, r], nuevo: r.uid } : { ...t, tent: r, nuevo: r.uid };
+}
+
+/** C4 · 2. El veredicto, ESPERA_C4 después: la escalera C2 (pista; luego la devolución con el lado bueno en blanco) o el acierto. */
+export function veredicto(s, P) {
+  const H = HECHOS[s.hecho];
+  if (!s.espera || !H) return s;
+  const t = { ...s, espera: false };
+  if (t.toque.lado !== H.lado) return fallar(t, P, H.id, t.toque.lado, H.devolucion);
   const hecho = s.hecho + 1;
   const fin = hecho >= HECHOS.length;
-  const t = {
-    ...s, cajas: s.cajas + (H.lado === "debe" ? H.cajas : -H.cajas), renglones: [...s.renglones, r], hecho, intento: null, pista: false, nuevo: r.uid,
-    msg: fin ? { tipo: "ok", t: P.bien, porque: P.porque, vista: Boolean(P.porqueALaVista) } : { tipo: "ok", t: "" },
-  };
-  return conBodega(t, !reducido);
+  return { ...t, hecho, movido: null, intento: null, pista: false, msg: fin ? { tipo: "ok", t: P.bien, porque: P.porque, vista: Boolean(P.porqueALaVista) } : { tipo: "ok", t: "" } };
 }
+
+/** Lo que dice la figura del último toque (consecuencia pura de c4/t7_2_a1_c4.js), mientras se ve ese hecho o el que se acaba de ubicar. */
+export const consecuenciaVista = (s) => (s.toque ? C4.consecuencia(C4.items[s.toque.hecho], s.toque.lado) : null);
 
 /** Elegir una opción de las pantallas 3 y 4. */
 export function elegir(s, P, id, reducido) {
@@ -211,7 +247,7 @@ export const abrirPorque = (s) => (s.msg ? { ...s, msg: { ...s.msg, abierto: tru
 export const quitarCaja = (s, uid) => ({ ...s, estante: s.estante.filter((c) => c.uid !== uid) });
 
 export function seguir(s, pantallas) {
-  return { ...s, p: Math.min(pantallas.length - 1, s.p + 1), intento: null, pista: false, msg: null, nuevo: null, cmv: s.cmv.map((r) => ({ ...r, nuevo: false })) };
+  return { ...s, p: Math.min(pantallas.length - 1, s.p + 1), intento: null, pista: false, msg: null, nuevo: null, toque: null, cmv: s.cmv.map((r) => ({ ...r, nuevo: false })) };
 }
 
 /*
@@ -223,15 +259,17 @@ export function estadoInicial(pantallas) {
   const k0 = Math.max(0, ORDEN.indexOf(pantallas[0]?.id));
   let s = {
     k0, p: 0, hecho: 0, cajas: INICIO, uid: 0, estante: [], resuelto: {}, errores: {}, intento: null, pista: false, msg: null, contado: false, cmv: [], nuevo: null,
+    /* C4: el último toque de la pantalla 2, el renglón del lado equivocado, el hecho cuya bodega ya se movió y si falta el veredicto. */
+    toque: null, tent: null, movido: null, espera: false,
     /* Cu-2 de Mello: el saldo inicial, en el debe. */
     renglones: [{ uid: 900, lado: "debe", cajas: INICIO, rot: T.saldoInicial }],
   };
   s = conBodega(s, false);
   const P = (id) => PANTALLAS_C2.find((x) => x.id === id);
-  if (k0 > ORDEN.indexOf("la-lista-del-libro")) for (const H of HECHOS) s = ubicar(s, P("la-lista-del-libro"), H.lado, true);
+  if (k0 > ORDEN.indexOf("la-lista-del-libro")) for (const H of HECHOS) s = veredicto(ubicar(s, P("la-lista-del-libro"), H.lado, true), P("la-lista-del-libro"));
   if (k0 > ORDEN.indexOf("el-permanente")) s = elegir(s, P("el-permanente"), P("el-permanente").correcta, true);
   if (k0 > ORDEN.indexOf("el-conteo-en-el-permanente")) s = elegir(contar(s), P("el-conteo-en-el-permanente"), P("el-conteo-en-el-permanente").correcta, true);
-  return { ...s, msg: null, nuevo: null, intento: null, pista: false, cmv: s.cmv.map((r) => ({ ...r, nuevo: false })) };
+  return { ...s, msg: null, nuevo: null, intento: null, pista: false, toque: null, cmv: s.cmv.map((r) => ({ ...r, nuevo: false })) };
 }
 
 /* ═══════════ LA PIEZA ═══════════ */
@@ -282,7 +320,15 @@ export default function LaCuentaQueSiSeMueveC2({ pieza = PIEZA_LA_CUENTA_C2, rot
     commit(t);
     for (const c of t.estante) if (c.sale) despues(TIEMPOS.sale, () => commit(quitarCaja(sRef.current, c.uid)));
   };
-  const onLado = (lado) => { conSalidas(ubicar(sRef.current, pantallas[sRef.current.p], lado, reducidoAhora())); setFoco({ que: "msg", n: Math.random() }); };
+  /* C4: primero la consecuencia; el veredicto, ESPERA_C4 después (con movimiento reducido, en el mismo toque), y el foco al mensaje. */
+  const onLado = (lado) => {
+    const P0 = pantallas[sRef.current.p];
+    const t = ubicar(sRef.current, P0, lado, reducidoAhora());
+    if (t === sRef.current) return;
+    conSalidas(t);
+    const llega = () => { commit(veredicto(sRef.current, P0)); setFoco({ que: "msg", n: Math.random() }); };
+    if (reducidoAhora()) llega(); else despues(ESPERA_C4, llega);
+  };
   const onOpcion = (id) => {
     const t = elegir(sRef.current, pantallas[sRef.current.p], id, reducidoAhora());
     if (t === sRef.current) return;
@@ -307,6 +353,7 @@ export default function LaCuentaQueSiSeMueveC2({ pieza = PIEZA_LA_CUENTA_C2, rot
 
   const vivas = vivasDe(s);
   const numero = new Map(vivas.map((c, i) => [c.uid, i + 1]));
+  const c4 = P.lados ? consecuenciaVista(s) : null;
   const cmvVisible = Boolean((P.cmv && s.resuelto[P.id]) || abs > 2);
   const conteoVisible = Boolean(P.conteo && s.contado) || abs > 3;
   const res = P.opciones ? Boolean(s.resuelto[P.id]) : false;
@@ -314,7 +361,8 @@ export default function LaCuentaQueSiSeMueveC2({ pieza = PIEZA_LA_CUENTA_C2, rot
   const boton = P.boton || T.seguir;
 
   const lado = (l) => {
-    const mal = abierta && s.intento === l;
+    const mal = abierta && !s.espera && s.intento === l;
+    const tocada = abierta && s.espera && s.toque?.lado === l;
     const pista = abierta && s.pista && l === H.lado;
     const etiqueta = `${l === "debe" ? T.ladoDebe : T.ladoHaber} ${T.de} ${T.inventario}${mal ? `. ${T.incorrecto}` : ""}`;
     const dentro = (
@@ -322,12 +370,12 @@ export default function LaCuentaQueSiSeMueveC2({ pieza = PIEZA_LA_CUENTA_C2, rot
         <span className="t7cs-lado-rot">{l === "debe" ? T.debe : T.haber}</span>
         {mal && <Pastilla ok={false} />}
         {P.resumen && <span className="t7cs-sub">{l === "debe" ? T.entradas : T.salidas}</span>}
-        <span className="t7cs-barras">{s.renglones.filter((r) => r.lado === l).map((r) => <Renglon key={r.uid} r={r} nuevo={r.uid === s.nuevo} />)}</span>
+        <span className="t7cs-barras">{[...s.renglones, ...(s.tent ? [s.tent] : [])].filter((r) => r.lado === l).map((r) => <Renglon key={r.uid} r={r} nuevo={r.uid === s.nuevo} />)}</span>
       </>
     );
-    const clases = `t7cs-lado${abierta ? " blanco" : ""}${mal ? " mal" : ""}${pista ? " pista" : ""}`;
+    const clases = `t7cs-lado${abierta ? " blanco" : ""}${mal ? " mal" : ""}${pista ? " pista" : ""}${tocada ? " tocada" : ""}`;
     return abierta
-      ? <button key={`${l}-b`} type="button" className={clases} data-lado={l} aria-label={etiqueta} onClick={() => onLado(l)}>{dentro}</button>
+      ? <button key={`${l}-b`} type="button" className={clases} data-lado={l} aria-label={etiqueta} aria-disabled={s.espera ? "true" : undefined} onClick={() => onLado(l)}>{dentro}</button>
       : <div key={`${l}-g`} className={clases} data-lado={l} role="group" aria-label={etiqueta}>{dentro}</div>;
   };
 
@@ -353,7 +401,7 @@ export default function LaCuentaQueSiSeMueveC2({ pieza = PIEZA_LA_CUENTA_C2, rot
             <div className="t7cs-t t7cs-hundido" data-t="inv">
               <p className="t7cs-t-nombre">{T.inventario}</p>
               <div className="t7cs-t-lados">{lado("debe")}{lado("haber")}</div>
-              <div className="t7cs-saldo"><span className="t7cs-saldo-rot">{T.saldo}</span><span className="t7cs-saldo-pista"><i className="t7cs-saldo-barra" style={{ "--l": s.cajas / MAX }} /></span></div>
+              <div className="t7cs-saldo"><span className="t7cs-saldo-rot">{T.saldo}</span><span className="t7cs-saldo-pista"><i className="t7cs-saldo-barra" style={{ "--l": saldoDe(s) / MAX }} /></span></div>
               <div className="t7cs-conteo" hidden={!conteoVisible}><span className="t7cs-saldo-rot">{T.conteo}</span><span className="t7cs-saldo-pista"><i className="t7cs-conteo-barra" style={{ "--l": s.cajas / MAX }} /></span></div>
             </div>
             <div className="t7cs-t t7cs-hundido" data-t="cmv" hidden={!cmvVisible}>
@@ -365,6 +413,14 @@ export default function LaCuentaQueSiSeMueveC2({ pieza = PIEZA_LA_CUENTA_C2, rot
               </div>
             </div>
           </div>
+          {/* C4: lo que implica el lado tocado, con texto (nunca solo color). */}
+          {P.lados && (
+            <div aria-live="polite" data-c4-vivo>
+              {c4 && (c4.falla
+                ? <p className="t7cs-c4 falla" data-c4-linea="falla"><X aria-hidden="true" strokeWidth={2.5} /><span>{c4.falla}</span></p>
+                : <p className="t7cs-c4" data-c4-linea="cuadra"><Check aria-hidden="true" strokeWidth={2.5} /><span>{c4.cuadra}</span></p>)}
+            </div>
+          )}
           <ul className="t7cs-lista" hidden={!P.lista}>
             {P.lista && <>{P.lista.map((x) => <li key={x} data-texto>{x}</li>)}<li className="t7cs-sig" data-texto>{P.siguiente}</li></>}
           </ul>

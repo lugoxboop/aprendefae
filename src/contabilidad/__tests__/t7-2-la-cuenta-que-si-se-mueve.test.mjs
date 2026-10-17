@@ -31,6 +31,16 @@ import { JSDOM, VirtualConsole } from "jsdom";
  *   · foco, cada pantalla montada sola, CSS (tokens, 12 px, 44 px),
  *     catálogo y vista
  *
+ * C4 · «TODA DECISIÓN SE PINTA» (Watari, patron-enganche-c4-v1.html, sección
+ * «t72-a1»): en la pantalla 2, el toque es la consecuencia (la bodega se
+ * mueve con el hecho, el renglón cae en el lado tocado, el saldo con él y la
+ * línea dice si cuadra) y el veredicto de la C2 llega ESPERA_C4 después. La
+ * referencia de la C2 no tiene ese paso: en cada toque se mira primero la
+ * consecuencia (contra c4/t7_2_a1_c4.js, que c4-t7-2.test.mjs compara con el
+ * código de Watari) y, con el veredicto, la pieza es la referencia MÁS lo
+ * que la C4 deja a la vista (el renglón del lado equivocado, el saldo que no
+ * cuadra con la bodega y la línea), calculado aparte.
+ *
  * JSDOM no anima: los temporizadores son los falsos de node:test. Que nada
  * se salga a 320 y 375 px lo mide scripts/t7/medir-t7-2-a1.mjs.
  * ═══════════════════════════════════════════════════════════════════════════
@@ -69,6 +79,8 @@ const { default: ContabilidadT7_2View, PIEZAS_T7_2, TEMA_T7_2 } = await import("
 const { AuthContext } = await import("../../auth/AuthProvider.jsx");
 const { VISTAS, vistaDeTema } = await import("../../ruta.js");
 const CE = await import("../canonEnganche.js");
+const C4 = (await import("../c4/t7_2_a1_c4.js")).CONSECUENCIA_C4;
+const { ESPERA_C4 } = await import("../../components/mecanicas/libros/t7/decisionC4.jsx");
 
 const RAIZ = new URL("../../../", import.meta.url);
 const NEAR = A.PIEZA_LA_CUENTA_QUE_SI_SE_MUEVE;
@@ -144,6 +156,8 @@ function leer(raiz, pref) {
       boton: el.tagName === "BUTTON" || el.getAttribute("role") === "button",
       etiqueta: el.getAttribute("aria-label"),
       clases: clases(el, ["blanco", "mal", "pista"]),
+      tocada: el.classList.contains("tocada"),
+      inactivo: el.getAttribute("aria-disabled") === "true",
       pastilla: limpio(q(".$b-pastilla", el)?.textContent),
       sub: limpio(q(".$c-sub", el)?.textContent),
       renglones: renglones(el),
@@ -183,6 +197,8 @@ function leer(raiz, pref) {
     })),
     msg: { texto: limpio(msg.textContent), mal: msg.classList.contains("mal"), porque: porque ? { texto: limpio(porque.textContent), abierto: porque.getAttribute("aria-expanded") } : null },
     pie: limpio(q(".$b-pie").textContent),
+    /* C4: la línea de la consecuencia (la referencia de la C2 no la tiene). */
+    c4: limpio(raiz.querySelector("[data-c4-linea]")?.textContent) || null,
     seguir: { texto: limpio(seguir.textContent), inactivo: seguir.getAttribute("aria-disabled") === "true" },
   };
 }
@@ -210,7 +226,8 @@ const RECORRIDO_LARGO = [
 const RECORRIDO_DERECHO = [
   ["seguir"], ...D.HECHOS.map((x) => ["lado", x.lado]), ["seguir"], ["op", "cada-venta"], ["seguir"], ["contar"], ["op", "verificar"], ["seguir"],
 ];
-const hacer = (m, [accion, arg]) => m[accion](arg);
+/* Un paso; en la pieza de la casa, el lado espera su veredicto (ESPERA_C4, o nada con movimiento reducido). */
+const hacer = async (m, [accion, arg]) => { await m[accion](arg); if (accion === "lado" && m.pref === "casa" && !REDUCIDO) await tick(ESPERA_C4); };
 
 /* ═══════════ 1 · LOS DATOS: NEAR, WATARI Y MELLO ═══════════ */
 
@@ -327,19 +344,66 @@ test("★★★ la mecánica repetida: la justificación de Watari que pide Mell
 
 /* ═══════════ 2 · LA PIEZA ↔ LA REFERENCIA CORREGIDA, ESTADO POR ESTADO ═══════════ */
 
+/*
+ * C4: lo que la pieza de la casa muestra, con el veredicto, frente a la referencia de la C2: lo mismo MÁS la
+ * consecuencia del último toque de la pantalla 2. Si el lado fue el equivocado, su renglón se queda en ese lado
+ * (aparte), el saldo es el de la cuenta y la bodega ya se movió con el hecho; la línea lo dice. Las cajas que
+ * llegaron animadas (`llegaron`) se toman de la casa: en ella llegan con el toque y no con el acierto.
+ */
+function conC4(ref, casa, toque) {
+  const l = structuredClone(ref);
+  if (!toque) return { ...l, c4: null };
+  const I = C4.items[toque.hecho];
+  const e = C4.consecuencia(I, toque.lado);
+  l.c4 = e.falla ?? e.cuadra;
+  if (e.falla) {
+    l.inv[toque.lado].renglones.push({ rot: D.renglonDe(I.texto), cajas: I.cajas, nuevo: false });
+    l.inv.saldo = e.cuenta;
+    l.bodega.vivas = e.bodega;
+    l.bodega.llegaron = casa.bodega.llegaron;
+  }
+  return l;
+}
+/* Lo que se lee de la referencia sin lo que solo tiene la casa (el lado tocado y bloqueado, que en la C2 no existe). */
+const sinTocada = (l) => ({ ...l, inv: { ...l.inv, debe: { ...l.inv.debe, tocada: false, inactivo: false }, haber: { ...l.inv.haber, tocada: false, inactivo: false } } });
+
 async function compararRecorrido(recorrido, reducido) {
   REDUCIDO = reducido;
   const casa = await montar("casa");
   const ref = await montar("ref");
   let pasos = 0;
+  let toque = null;
+  const igual = (msg) => assert.deepEqual(sinTocada(casa.leer()), conC4(ref.leer(), casa.leer(), toque), msg);
   try {
-    assert.deepEqual(casa.leer(), ref.leer(), "al empezar");
+    igual("al empezar");
     for (const [k, paso] of recorrido.entries()) {
-      await hacer(casa, paso); await hacer(ref, paso);
-      assert.deepEqual(casa.leer(), ref.leer(), `paso ${k + 1} · ${paso.join(" ")}`);
+      const donde = `paso ${k + 1} · ${paso.join(" ")}`;
+      const antes = casa.leer();
+      if (paso[0] === "lado") {
+        const hecho = D.HECHOS.findIndex((x) => x.texto === antes.hecho);
+        await casa.lado(paso[1]);
+        toque = { hecho, lado: paso[1] };
+        if (!reducido) {
+          /* 1 · la consecuencia, en el acto y sin veredicto. */
+          const e = C4.consecuencia(C4.items[hecho], paso[1]);
+          const l = casa.leer();
+          assert.deepEqual([l.msg.texto, l.c4, l.inv.saldo, l.bodega.vivas, l.hecho], ["", e.falla ?? e.cuadra, e.cuenta, e.bodega, antes.hecho], donde);
+          assert.deepEqual(l.inv[paso[1]].renglones.at(-1), { rot: D.renglonDe(D.HECHOS[hecho].texto), cajas: D.HECHOS[hecho].cajas, nuevo: true }, `${donde}: el renglón cae en el lado tocado`);
+          assert.deepEqual([l.inv[paso[1]].tocada, l.inv.debe.inactivo, l.inv.haber.inactivo], [true, true, true], `${donde}: los lados esperan el veredicto`);
+          await casa.lado(paso[1] === "debe" ? "haber" : "debe");
+          assert.deepEqual(casa.leer(), l, `${donde}: mientras espera, otro toque no hace nada`);
+        }
+        await ref.lado(paso[1]);
+        if (reducido) { igual(donde); pasos += 1; }
+      } else {
+        await hacer(casa, paso); await hacer(ref, paso);
+        if (casa.leer().marca !== antes.marca) toque = null;
+        igual(donde);
+        pasos += 1;
+      }
       await tick(400);
-      assert.deepEqual(casa.leer(), ref.leer(), `paso ${k + 1} · ${paso.join(" ")} (400 ms después)`);
-      pasos += 2;
+      igual(`${donde} (400 ms después)`);
+      pasos += 1;
     }
   } finally {
     casa.desmontar(); ref.desmontar(); REDUCIDO = false;
@@ -349,11 +413,12 @@ async function compararRecorrido(recorrido, reducido) {
 
 test("★★★ estado por estado, la pieza dice y muestra lo mismo que la referencia corregida (dos recorridos)", async () => {
   const n = (await compararRecorrido(RECORRIDO_LARGO, false)) + (await compararRecorrido(RECORRIDO_DERECHO, false));
-  assert.ok(n >= 80, `solo ${n} comparaciones`);
+  /* Cada paso se compara con el veredicto (400 ms después); los que no son lados, también en el acto; los 17 lados, además, uno por uno antes del veredicto. */
+  assert.equal(n, 71, `${n} comparaciones`);
 });
 
 test("★★★ con movimiento reducido, también lo mismo que la referencia: nada llega ni sale animado y el estado final es el correcto", async () => {
-  await compararRecorrido(RECORRIDO_LARGO, true);
+  assert.equal(await compararRecorrido(RECORRIDO_LARGO, true), 2 * RECORRIDO_LARGO.length);
   REDUCIDO = true;
   const m = await montar("casa");
   try {
@@ -417,6 +482,9 @@ test("★★★ Cu-1: la misma prueba, contra el código de Watari sin corregir,
 
 /* El saldo (largo de su barra, en cajas) contra el debe menos el haber de la cuenta, y contra la bodega. */
 const cuadra = (l) => sumar(l.inv.debe.renglones) - sumar(l.inv.haber.renglones) === l.inv.saldo && l.inv.saldo === l.bodega.vivas;
+/* C4: con el lado equivocado a la vista, el saldo sigue siendo debe menos haber, pero ya no es la bodega, y la línea lo dice con los dos números. */
+const noCuadraYLoDice = (l) => sumar(l.inv.debe.renglones) - sumar(l.inv.haber.renglones) === l.inv.saldo && l.inv.saldo !== l.bodega.vivas
+  && l.c4 === `No cuadra: la bodega tiene ${l.bodega.vivas} cajas y la cuenta dice ${l.inv.saldo}.`;
 
 test("★★★ Cu-2: «Saldo inicial» en el debe desde la portada, y el saldo es debe menos haber (y la bodega) en todo momento; al final, 9, 5 y 4", async () => {
   const m = await montar("casa");
@@ -424,11 +492,15 @@ test("★★★ Cu-2: «Saldo inicial» en el debe desde la portada, y el saldo 
     let l = m.leer();
     assert.deepEqual(l.inv.debe.renglones, [{ rot: MC.SALDO_INICIAL, cajas: D.INICIO, nuevo: false }]);
     assert.ok(cuadra(l), "en la portada");
+    let errores = 0;
     for (const paso of RECORRIDO_LARGO) {
       await hacer(m, paso); await tick(400);
       l = m.leer();
-      assert.ok(cuadra(l), `${paso.join(" ")}: debe ${sumar(l.inv.debe.renglones)}, haber ${sumar(l.inv.haber.renglones)}, saldo ${l.inv.saldo}, bodega ${l.bodega.vivas}`);
+      const malo = l.msg.mal && paso[0] === "lado";
+      errores += malo ? 1 : 0;
+      assert.ok(malo ? noCuadraYLoDice(l) : cuadra(l), `${paso.join(" ")}: debe ${sumar(l.inv.debe.renglones)}, haber ${sumar(l.inv.haber.renglones)}, saldo ${l.inv.saldo}, bodega ${l.bodega.vivas}, «${l.c4}»`);
     }
+    assert.equal(errores, 7, "los siete errores de la pantalla 2 del recorrido largo");
     assert.equal(l.marca, "Pantalla 5 de 5");
     assert.deepEqual({ debe: sumar(l.inv.debe.renglones), haber: sumar(l.inv.haber.renglones), saldo: l.inv.saldo }, MC.CU2_CUADRA);
   } finally {
@@ -482,48 +554,76 @@ test("★★★ pantalla 1: la figura espera atenuada (cinco cajas y el saldo in
 test("★★★ pantalla 2: la escalera en los lados (pista; luego ENTRA o SALE de Near con el lado bueno en blanco), el foco al mensaje, y cada acierto mueve bodega, renglón y saldo a la vez", async () => {
   const m = await montar("casa");
   const L = P.pantallas[1];
+  const F = (b, c) => `No cuadra: la bodega tiene ${b} cajas y la cuenta dice ${c}.`;
+  const BIEN = "La cuenta y la bodega dicen lo mismo.";
   try {
     await m.seguir();
     let l = m.leer();
     assert.equal(l.hecho, D.HECHOS[0].texto);
-    assert.deepEqual([l.inv.debe.boton, l.inv.haber.boton, l.seguir.inactivo], [true, true, true]);
+    assert.deepEqual([l.inv.debe.boton, l.inv.haber.boton, l.seguir.inactivo, l.c4], [true, true, true, null]);
     assert.equal(m.q('[data-t="inv"] [data-lado="debe"]').tagName, "BUTTON", "botones de verdad");
-    /* 1.er error: la pista. */
+    /* C4 · el lado equivocado: entran las tres cajas de la compra, pero el renglón cae en el haber y la cuenta baja; no cuadra. Sin veredicto todavía. */
     await m.lado("haber");
+    l = m.leer();
+    assert.deepEqual([l.bodega.vivas, l.bodega.llegaron, l.inv.saldo, l.c4, l.msg.texto], [8, 3, 2, F(8, 2), ""]);
+    assert.deepEqual(l.inv.haber.renglones, [{ rot: D.renglonDe(D.HECHOS[0].texto), cajas: 3, nuevo: true }]);
+    assert.deepEqual([l.inv.haber.clases, l.inv.haber.tocada, l.inv.haber.inactivo, l.inv.debe.inactivo], [["blanco"], true, true, true]);
+    assert.equal(m.q("[data-c4-linea]").dataset.c4Linea, "falla");
+    assert.ok(m.q("[data-c4-linea] svg"), "con ✕, no solo color");
+    await tick(ESPERA_C4 - 1);
+    assert.equal(m.leer().msg.texto, "", "ni 1 ms antes");
+    /* 1.er error, a los ESPERA_C4: la pista; la consecuencia se queda a la vista. */
+    await tick(1);
     l = m.leer();
     assert.equal(l.msg.texto, `${T.incorrecto} ${L.pista}`);
     assert.deepEqual([l.inv.haber.clases, l.inv.haber.pastilla, l.inv.haber.etiqueta], [["blanco", "mal"], T.noVaAqui, `${T.ladoHaber} de ${T.inventario}. ${T.incorrecto}`]);
-    assert.deepEqual(l.inv.debe.clases, ["blanco"]);
+    assert.deepEqual([l.inv.debe.clases, l.c4, l.inv.saldo, l.bodega.vivas], [["blanco"], F(8, 2), 2, 8]);
     enFoco(m.q(".$b-msg"), "el mensaje");
-    /* 2.º error: la devolución de Near y el lado bueno en blanco. */
+    /* 2.º error: la bodega no se mueve otra vez por el mismo hecho; luego, la devolución de Near y el lado bueno en blanco. */
     await m.lado("haber");
+    assert.deepEqual([m.leer().bodega.vivas, m.leer().bodega.llegaron, m.leer().inv.haber.renglones.length, m.leer().msg.texto], [8, 3, 1, ""]);
+    await tick(ESPERA_C4);
     l = m.leer();
     assert.equal(l.msg.texto, `${T.incorrecto} ${D.HECHOS[0].devolucion}`);
     assert.deepEqual(l.inv.debe.clases, ["blanco", "pista"]);
     assert.ok(l.msg.mal);
-    /* Acierto: entran las cajas, cae el renglón y el saldo crece, a la vez. */
+    /* Acierto: el renglón cae en el debe (el del haber se va), el saldo llega a las cajas y la línea dice que cuadra; luego, «Correcto». */
     await m.lado("debe");
+    l = m.leer();
+    assert.deepEqual([l.bodega.vivas, l.inv.saldo, l.c4, l.inv.haber.renglones, l.msg.texto, l.hecho], [8, 8, BIEN, [], "", D.HECHOS[0].texto]);
+    assert.deepEqual(l.inv.debe.renglones.at(-1), { rot: D.renglonDe(D.HECHOS[0].texto), cajas: 3, nuevo: true });
+    assert.equal(m.q("[data-c4-linea]").dataset.c4Linea, "cuadra");
+    await tick(ESPERA_C4);
     l = m.leer();
     assert.equal(l.msg.texto, T.correcto);
     enFoco(m.q(".$b-msg"), "el mensaje del acierto");
-    assert.deepEqual([l.bodega.vivas, l.bodega.llegaron, l.inv.saldo], [8, 3, 8]);
-    assert.deepEqual(l.inv.debe.renglones.at(-1), { rot: D.renglonDe(D.HECHOS[0].texto), cajas: 3, nuevo: true });
+    assert.deepEqual([l.bodega.vivas, l.bodega.llegaron, l.inv.saldo, l.c4], [8, 3, 8, BIEN]);
     assert.equal(l.hecho, D.HECHOS[1].texto);
-    /* La venta: salen dos cajas, que se van al terminar su animación. */
-    await m.lado("haber");
+    /* La venta, al debe: salen dos cajas (se van al terminar su animación) y la cuenta sube a 10. */
+    await m.lado("debe");
     l = m.leer();
-    assert.deepEqual([l.bodega.vivas, l.bodega.saliendo, l.inv.saldo], [6, 2, 6]);
+    assert.deepEqual([l.bodega.vivas, l.bodega.saliendo, l.inv.saldo, l.c4], [6, 2, 10, F(6, 10)]);
     await tick(C.TIEMPOS.sale - 1);
     assert.equal(m.leer().bodega.saliendo, 2);
     await tick(1);
     assert.equal(m.leer().bodega.saliendo, 0);
-    for (const x of D.HECHOS.slice(2)) await m.lado(x.lado);
+    await tick(ESPERA_C4 - C.TIEMPOS.sale);
+    assert.equal(m.leer().msg.texto, `${T.incorrecto} ${L.pista}`);
+    /* Y al haber: ya no sale ninguna caja más. */
+    await m.lado("haber");
     l = m.leer();
-    assert.deepEqual([l.hecho, l.bodega.vivas, l.inv.debe.boton, l.seguir.inactivo], [null, 5, false, false]);
+    assert.deepEqual([l.bodega.vivas, l.bodega.saliendo, l.inv.saldo, l.c4], [6, 0, 6, BIEN]);
+    await tick(ESPERA_C4);
+    for (const x of D.HECHOS.slice(2)) await hacer(m, ["lado", x.lado]);
+    l = m.leer();
+    assert.deepEqual([l.hecho, l.bodega.vivas, l.inv.debe.boton, l.seguir.inactivo, l.c4], [null, 5, false, false, BIEN]);
     assert.equal(l.msg.texto, `${T.correcto}${L.bien}${T.porQue}`);
     await m.porque();
     enFoco(m.q("[data-porque]"), "el porqué que se abre");
     assert.equal(m.leer().msg.texto, `${T.correcto}${L.bien}${L.porque}`);
+    /* Al seguir, la línea de la consecuencia se va con la pantalla. */
+    await m.seguir();
+    assert.equal(m.leer().c4, null);
   } finally {
     m.desmontar();
   }
@@ -643,6 +743,12 @@ test("★★★ la hoja es la de la C2 regla por regla (prefijo t7cs-), con la l
     ".t7cs-lado { display: grid; align-content: start; gap: 6px; min-height: 64px; min-width: 0; padding: 6px 8px; border: 0; border-radius: 8px; background: transparent; color: inherit; font: inherit; text-align: left; margin: 0; }",
     ".t7cs-lado.blanco:focus-visible { outline: 2px solid #F8F9FA; outline-offset: 2px; }",
     ".t7cs-renglon { display: grid; gap: 2px; font-size: 12px; line-height: 1.3; color: var(--atenuado); overflow-wrap: anywhere; }",
+    /* C4: el lado tocado mientras llega el veredicto, y la línea de la consecuencia. */
+    ".t7cs-lado.blanco.tocada { outline: 2px solid var(--neutro); outline-offset: -2px; }",
+    ".t7cs-lado[aria-disabled=\"true\"] { cursor: default; }",
+    ".t7cs-c4 { margin: 0; display: flex; gap: 6px; align-items: flex-start; font-size: 13px; line-height: 1.4; color: var(--texto); }",
+    ".t7cs-c4.falla { color: var(--coral-texto); }",
+    ".t7cs-c4 svg { width: 16px; height: 16px; flex: none; margin-top: 1px; }",
     ".t7cs-lista li { list-style: disc; }",
     ".t7cs-lista li.t7cs-sig { list-style: none; margin-left: -16px; color: var(--atenuado); font-size: 13px; }",
   ]);
@@ -657,7 +763,7 @@ test("★★★ colores: teal y ámbar solo en los rótulos DEBE y HABER; coral 
   assert.deepEqual(con("teal-texto"), ['.t7cs-lado[data-lado="debe"] .t7cs-lado-rot']);
   assert.deepEqual(con("ambar"), ['.t7cs-lado[data-lado="haber"] .t7cs-lado-rot']);
   assert.deepEqual(con("coral"), [".t7cs-pastilla.mal", ".t7cs-msg.mal", ".t7cs-lado.blanco.mal", ".t7cs-op.mal"]);
-  assert.deepEqual(con("coral-texto"), [".t7cs-pastilla.mal"]);
+  assert.deepEqual(con("coral-texto"), [".t7cs-pastilla.mal", ".t7cs-c4.falla"]);
   assert.ok(css.includes(".t7cs-pastilla.ok { color: var(--texto); border: 1px solid var(--texto); }"));
   assert.ok(css.includes(".t7cs-op.pista, .t7cs-op.bien { border: 2px solid var(--texto); padding: 9px 11px; }"));
   assert.equal((FUENTE.match(/#2A9D8F|#3FA69A|#E9C46A|#E76F51/gi) ?? []).length, 3, "solo en la declaración de los tokens");
