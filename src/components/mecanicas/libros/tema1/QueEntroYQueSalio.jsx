@@ -3,11 +3,13 @@ import { barajar } from "../../../../utils/barajar.js";
 import { FAE } from "../../../../theme.js";
 import { NEUTRO, NAVY_DEL_CHIP } from "../../../../data/contabilidadIntro.js";
 import {
-  T1_2, CLASES, ROTULO_ENTRA, ROTULO_SALE, ALT_T1_2, ESCENA_ERROR,
+  T1_2, CLASES, ROTULO_ENTRA, ROTULO_SALE, ALT_T1_2, ESCENA_ERROR, SEGUNDA_T1_2,
 } from "../../../../data/contabilidadTema1.js";
 import {
   sortearT1_2, evaluarT1_2, puntuar, pesoDeCadaItem, sinObjeto,
+  opcionesSegundaT1_2, correctaSegundaT1_2, porqueSegundaT1_2,
 } from "../../../../contabilidad/tema1.js";
+import SegundaDecisionT1 from "./segundaDecision.jsx";
 import { Retro, Pulsos, Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Responder, useTanda } from "../piezas.jsx";
@@ -58,13 +60,20 @@ const CSS = `
 
 const SORA = "Sora, sans-serif";
 
-function Recuadro({ rotulo, texto, marcado, late, vacio }) {
+/*
+ * `atenuado` lo pone la segunda decisión: un recuadro que se desvanece es lo
+ * que afirma quien dice que ahí no entra nada o que ese recuadro no cuenta.
+ * Se baja la opacidad y no el borde, para que el estado se mida mirando.
+ */
+function Recuadro({ rotulo, texto, marcado, late, vacio, atenuado = false }) {
   return (
     <div
       data-recuadro={rotulo}
       data-marcado={marcado ? "si" : "no"}
+      data-atenuado={atenuado ? "si" : undefined}
       className={late ? "fae-t12-late" : undefined}
       style={{
+        opacity: atenuado ? 0.4 : 1,
         padding: "9px 10px", borderRadius: "11px",
         background: "rgba(10,20,34,0.45)",
         border: `${marcado ? 2 : 1}px solid ${marcado ? NEUTRO : "rgba(248,249,250,0.14)"}`,
@@ -107,6 +116,9 @@ export default function QueEntroYQueSalio({
   const [respuestas, setRespuestas] = useState([]);
   const [marcada, setMarcada] = useState(null);
   const [rebotando, setRebotando] = useState(null);
+  /* La segunda decisión (D4): su escena para los dos recuadros. No puntúa. */
+  const [escenaSegunda, setEscenaSegunda] = useState(null);
+  const [segundaHecha, setSegundaHecha] = useState(false);
   const reloj = useRef(null);
   const zonaBoton = useRef(null);
 
@@ -121,8 +133,8 @@ export default function QueEntroYQueSalio({
   }, [t.terminado]);
   useEffect(() => () => clearTimeout(reloj.current), []);
   useEffect(() => {
-    if (r && !esperandoReintento && !modoDemo) zonaBoton.current?.querySelector("button")?.focus();
-  }, [r, esperandoReintento]);
+    if (r && !esperandoReintento && !modoDemo && segundaHecha) zonaBoton.current?.querySelector("button")?.focus();
+  }, [r, esperandoReintento, segundaHecha]);
 
   const responder = (clase) => {
     if (r && !esperandoReintento) return;
@@ -152,11 +164,13 @@ export default function QueEntroYQueSalio({
 
   const avanzar = () => {
     setR(null); setIntento(0); setMarcada(null); setRebotando(null);
+    setEscenaSegunda(null); setSegundaHecha(false);
     if (t.i + 1 < cuantas) t.setI(t.i + 1);
     else t.setTerminado(true);
   };
   const reiniciar = () => {
     t.reiniciar(); setR(null); setIntento(0); setRespuestas([]); setMarcada(null); setRebotando(null);
+    setEscenaSegunda(null); setSegundaHecha(false);
   };
 
   if (t.terminado) {
@@ -179,8 +193,16 @@ export default function QueEntroYQueSalio({
    * entrada que dice «sin insumo físico». Los demás resaltan los dos a la vez.
    */
   const escena = r && !r.ok ? ESCENA_ERROR[r.clave] ?? "los-dos" : null;
-  const marcaEntra = acertado || escena === "los-dos" || escena === "entra-vacio";
-  const marcaSale = acertado || escena === "los-dos" || escena === "objeto";
+  /*
+   * Mientras no haya segunda decisión, los recuadros se marcan como siempre.
+   * Cuando la hay, manda ella: cada opción deja los dos recuadros y la flecha
+   * en un retrato distinto de los otros dos, pareja por pareja.
+   */
+  const esc = escenaSegunda;
+  const marcaEntra = esc ? esc.entra === "marcado" : acertado || escena === "los-dos" || escena === "entra-vacio";
+  const marcaSale = esc ? esc.sale === "marcado" : acertado || escena === "los-dos" || escena === "objeto";
+  const trazoCortado = esc?.trazo === "cortado";
+  const trazoTenue = esc?.trazo === "vacio";
 
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
@@ -217,13 +239,18 @@ export default function QueEntroYQueSalio({
           marcado={marcaEntra}
           late={escena === "entra-vacio"}
           vacio={sinObjeto(e)}
+          atenuado={esc?.entra === "atenuado"}
         />
 
         <div style={{ minHeight: "26px", display: "flex", alignItems: "center", justifyContent: "center" }}>
           {acertado ? (
-            <span data-trazo={e.relacion} className="fae-t12-trazo" style={{
+            <span data-trazo={e.relacion} data-trazo-estado={esc?.trazo ?? undefined} className="fae-t12-trazo" style={{
               padding: "2px 8px", borderRadius: "7px", background: NEUTRO, color: NAVY_DEL_CHIP,
               fontFamily: SORA, fontSize: "10.5px", fontWeight: 700,
+              /* «No tiene que ver» se dibuja: la flecha queda tachada. */
+              opacity: trazoTenue ? 0.35 : 1,
+              textDecoration: trazoCortado ? "line-through" : "none",
+              outline: trazoCortado ? `2px solid ${FAE.coral}` : "none",
             }}>
               ↓ {e.relacion.toLowerCase()}
             </span>
@@ -238,6 +265,7 @@ export default function QueEntroYQueSalio({
           marcado={marcaSale}
           late={escena === "objeto"}
           vacio={false}
+          atenuado={esc?.sale === "atenuado"}
         />
       </div>
 
@@ -293,7 +321,27 @@ export default function QueEntroYQueSalio({
 
       {r && <Retro texto={r.texto} />}
 
+      {/*
+        ═══════ LA SEGUNDA DECISIÓN (D4) ═══════
+
+        La primera clasifica la empresa; esta pregunta la CONSECUENCIA de esa
+        clase: si quiere vender el doble, qué tiene que pasar con lo que entra.
+        La respuesta sale de la clase y no del enunciado, y cada opción deja
+        los dos recuadros de arriba en un estado distinto.
+      */}
       {r && !esperandoReintento && !modoDemo && (
+        <SegundaDecisionT1
+          pregunta={SEGUNDA_T1_2.pregunta}
+          opciones={opcionesSegundaT1_2(e)}
+          correcta={correctaSegundaT1_2(e)}
+          porque={porqueSegundaT1_2(e)}
+          escenaDe={(id) => SEGUNDA_T1_2.escena[id]}
+          onPintar={setEscenaSegunda}
+          onResuelta={() => setSegundaHecha(true)}
+        />
+      )}
+
+      {r && !esperandoReintento && !modoDemo && segundaHecha && (
         <div ref={zonaBoton}>
           <Responder onClick={avanzar}>
             {t.i + 1 === cuantas ? "Ver el resultado" : "Siguiente empresa"}

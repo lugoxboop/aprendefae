@@ -70,6 +70,16 @@ const escribir = (caja, parte, valor) => {
   });
 };
 const boton = (caja, texto) => [...caja.querySelectorAll("button")].find((b) => b.textContent.includes(texto));
+/*
+ * La segunda decisión (D4) va ANTES de escribir: de las tres partes, cuál no
+ * se mueve. Es obligatoria —sin ella las casillas van cerradas—, así que todo
+ * recorrido de la actividad la contesta primero. `decidir` la acierta.
+ */
+const decidir = (caja, indice) => {
+  const b = caja.querySelector(`[data-opcion-segunda="${parteQuieta(indice)}"]`);
+  assert.ok(b, `hecho ${indice + 1}: no hay segunda decisión que contestar`);
+  tocar(b);
+};
 
 /*
  * ═══════════ «INCLUDES» DE UNA CONSTANTE VACÍA NO COMPRUEBA NADA ═══════════
@@ -226,12 +236,19 @@ test("★★★ en modo corto no se puede escribir la parte quieta, y se arrastr
     for (let k = 0; k < 4; k += 1) {
       assert.equal(caja.querySelectorAll("[data-casilla] input").length, 3, `hecho ${k + 1}: no hay tres casillas`);
       assert.equal(caja.querySelectorAll("[data-arrastrado]").length, 0, `hecho ${k + 1}: algo se arrastró antes de tiempo`);
+      decidir(caja, k);
       anotar(caja, totalesTras(k + 1));
       tocar(boton(caja, "Anotar"));
       tocar(boton(caja, "Siguiente hecho"));
     }
     /* Del quinto en adelante, la quieta se arrastra. */
     const quieta = parteQuieta(4);
+    /*
+     * Antes de decidir, las tres casillas van iguales: si una trajera el
+     * arrastre puesto, la pregunta estaría contestada.
+     */
+    assert.equal(caja.querySelectorAll("[data-casilla] input").length, 3, "el arrastre delata la respuesta antes de decidir");
+    decidir(caja, 4);
     assert.equal(caja.querySelectorAll("[data-casilla] input").length, 2, "el quinto no entró en modo corto");
     const arrastrada = caja.querySelector(`[data-arrastrado="${quieta}"]`);
     assert.ok(arrastrada, "la parte quieta no se arrastra");
@@ -295,6 +312,7 @@ test("★★★ el historial va abierto desde el primer hecho anotado", () => {
      * Tras el segundo son 325.000, 25.000 y 300.000: tres cifras distintas.
      */
     for (let k = 0; k < 2; k += 1) {
+      decidir(caja, k);
       anotar(caja, totalesTras(k + 1));
       tocar(boton(caja, "Anotar"));
       tocar(boton(caja, "Siguiente hecho"));
@@ -320,6 +338,7 @@ test("★★ los ocho hechos van en orden, y son los ocho", () => {
     for (let k = 0; k < TRANSACCIONES_CAP2.length; k += 1) {
       assert.equal(caja.querySelector("[data-hecho]").getAttribute("data-hecho"), TRANSACCIONES_CAP2[k].id,
         `la posición ${k + 1} no trae el hecho ${k + 1}`);
+      decidir(caja, k);
       anotar(caja, totalesTras(k + 1));
       tocar(boton(caja, "Anotar"));
       tocar(boton(caja, k + 1 === TRANSACCIONES_CAP2.length ? "Ver el resultado" : "Siguiente hecho"));
@@ -333,6 +352,9 @@ test("★★ los ocho hechos van en orden, y son los ocho", () => {
 test("★★ no se puede anotar con una casilla vacía", () => {
   const { caja, desmontar } = montar();
   try {
+    /* Primero la segunda decisión: hasta contestarla las casillas van cerradas. */
+    assert.equal(boton(caja, "Primero: cuál no se mueve").disabled, true);
+    decidir(caja, 0);
     assert.equal(boton(caja, "Escribe los totales").disabled, true);
     escribir(caja, ACTIVO, 300000);
     assert.equal(boton(caja, "Escribe los totales").disabled, true, "se puede anotar con una sola cifra");
