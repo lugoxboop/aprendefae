@@ -251,3 +251,36 @@ test("★★★ D9 · el par de A5 son dos documentos (el extracto con la esquin
     assert.doesNotMatch(readFileSync(new URL(`../../components/t4/${f}`, import.meta.url), "utf8"), /documentos/, `${f} lleva los documentos de A5`);
   }
 });
+
+test("★★★ D8 · el caso B: San Calixto al 30 de abril; las partidas, los asientos y el mayor del paquete (mismos lados); los dos lados llegan a 4.912.400; jugado, el par y el mayor van con las cifras del B", async () => {
+  const { DATOS_A5 } = await import("../../data/contabilidadT4A5.js");
+  const r = renglones(seccionDe(PAQ, "Caso B (D8), pantalla por pantalla"));
+  const K = DATOS_A5[2];
+  const K1 = DATOS_A5[1];
+  const cifraB = (n) => n.toLocaleString("de-DE");
+  for (const [lado, ps, ps1] of [["del banco (P1)", K.PARTIDAS_BANCO, K1.PARTIDAS_BANCO], ["de la empresa (P2)", K.PARTIDAS_EMPRESA, K1.PARTIDAS_EMPRESA]]) {
+    ps.forEach((x, i) => {
+      assert.equal(x.texto, textoDe(r, `Partida ${i + 1} ${lado} · tarjeta (caso B)`));
+      assert.match(seccionDe(PAQ, "Caso B (D8), pantalla por pantalla"), new RegExp(`- Partida ${i + 1} ${lado.replace(/[()]/g, "\\$&")} · cifra \\(caso B\\): ${cifraB(x.monto).replace(/\./g, "\\.")} · va a: ${x.va === "mas" ? "Más" : "Menos"}`));
+      assert.equal(x.va, ps1[i].va, "una partida B cambia de lado");
+    });
+  }
+  assert.equal(K.ASIENTOS_A5[0].linea, textoDe(r, "Asiento 1 · línea (caso B)"));
+  assert.equal(K.ASIENTOS_A5[4].linea, textoDe(r, "Asiento 5 · línea (caso B)"));
+  assert.deepEqual(K.ASIENTOS_A5.map((a) => [a.debe, a.haber]), K1.ASIENTOS_A5.map((a) => [a.debe, a.haber]));
+  assert.equal(K.F.mayor, textoDe(r, "Mayor (caso B)"));
+  assert.deepEqual([K.EXTRACTO, K.LIBROS, K.DIFERENCIA_INICIAL, K.CONCILIADO_BANCO, K.CONCILIADO, K.SALDO_MAYOR], [3_120_400, 4_708_300, 1_587_900, 4_912_400, 4_912_400, 4_912_400]);
+  const { PantallasT4 } = await import("../../components/ContabilidadT4View.jsx");
+  const { montar, h } = await import("./t4-dom.mjs");
+  const m = montar(h(PantallasT4, { pieza: P, rotulo: "T4 · APRENDER", caso: 2 }));
+  try {
+    assert.equal(q(m, "[data-pieza]").dataset.casoPieza, "2");
+    assert.equal(visible(q(m, "p[data-caso]")), "San Calixto, 30 de abril.");
+    assert.match(q(m, "[data-par]").getAttribute("aria-label"), /3\.120\.400.*4\.708\.300/);
+    for (const id of ["dos-saldos", "lado-del-banco", "lado-de-la-empresa", "que-se-asienta", "los-asientos"]) { await jugar(m, P, id); tocar(seguir(m)); }
+    assert.equal(q(m, "[data-pieza]").dataset.pantalla, "el-mayor");
+    await jugar(m, P, "el-mayor");
+    assert.ok(m.caja.textContent.includes("Bancos · 30 de abril"), "el mayor no es el del 30 de abril");
+    assert.ok(m.caja.textContent.includes("4.912.400"), "el saldo del mayor no es el del caso B");
+  } finally { m.desmontar(); }
+});

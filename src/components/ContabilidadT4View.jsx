@@ -358,7 +358,7 @@ export function PantallasT4({ pieza: base, rotulo, caso = 1, onTerminada = null 
     <CasoT4.Provider value={pieza === base ? 1 : 2}>
     <Panel rotulo={rotulo} titulo={pieza.titulo}>
       <style>{CSS_PANTALLAS}</style>
-      <div ref={marco} tabIndex={-1} data-pieza={base.id} data-pantalla={p.id} data-caso={pieza === base ? "1" : "2"} style={{ outline: "none" }}>
+      <div ref={marco} tabIndex={-1} data-pieza={base.id} data-pantalla={p.id} data-caso-pieza={pieza === base ? "1" : "2"} style={{ outline: "none" }}>
         {/* D2: el objetivo de la pieza, fijo bajo el título, solo en la P0 (Shibukawa; Yujiro; texto de Katsumi). */}
         {k === 0 && pieza.objetivo && <p className="t4r-objetivo" data-objetivo>{pieza.objetivo}</p>}
         <PantallaT4 key={p.id} p={p} Cuerpo={Cuerpo} onAcierto={() => setAcertada(k)}

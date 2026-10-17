@@ -557,7 +557,7 @@ test("★★★ D8 · jugado en el caso B: Taller Ríos cobra 612.000; la consig
   const m = montar(h(PantallasT4, { pieza: P, rotulo: "T4 · APRENDER", caso: 2 }));
   const seguir = () => tocar(q(m, '[data-boton="seguir"]'));
   try {
-    assert.equal(q(m, "[data-pieza]").dataset.caso, "2");
+    assert.equal(q(m, "[data-pieza]").dataset.casoPieza, "2");
     seguir();
     assert.equal(q(m, "[data-origen] .t4cv-rot").textContent, "Taller Ríos Ltda.");
     tocar(q(m, "[data-accion=cobrar]"));

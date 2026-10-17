@@ -54,6 +54,57 @@
 - Texto alternativo: «El mayor de Bancos empieza en 4.373.100. Al asentar las cinco notas, suben 645.000 y 342.000, bajan 43.500, 236.000 y 468.000, y el saldo llega a 4.612.600. Debajo, el banco y la empresa quedan iguales.» (72,3)
 - Pie: «Basado en el libro, p. 191»
 
+
+## Caso B (D8), pantalla por pantalla
+
+D8 (lote nocturno, 16 oct 2026; textos de Katsumi, `celula-d/katsumi-d8-caso-b.md`): San Calixto se queda, porque es el título, y pasa al 30 de abril, con otras personas y cifras construidas. Las partidas van en el mismo orden y con los mismos lados; los asientos son los mismos, con las cifras del caso B. El sorteo elige el caso para toda la pieza; el primer recorrido usa siempre el caso 1. Aquí va solo lo que cambia. Cifras del caso B (construidas): extracto 3.120.400, libros 4.708.300, difieren en 1.587.900; los dos lados llegan a 4.912.400, que es también el saldo del mayor. En «que-se-asienta», el cheque es el de Marcela Ruiz (la partida 1 del banco). Los pies llevan además « · Cifras construidas».
+
+- Partida 1 del banco (P1) · tarjeta (caso B): «Cheque a Marcela Ruiz, sin cobrar» (<10)
+- Partida 1 del banco (P1) · cifra (caso B): 184.000 · va a: Menos
+- Partida 2 del banco (P1) · tarjeta (caso B): «Consignación del 30 de abril, sin abonar» (<10)
+- Partida 2 del banco (P1) · cifra (caso B): 2.415.000 · va a: Más
+- Partida 3 del banco (P1) · tarjeta (caso B): «Cheque a Diego Peña, sin cobrar» (<10)
+- Partida 3 del banco (P1) · cifra (caso B): 211.000 · va a: Menos
+- Partida 4 del banco (P1) · tarjeta (caso B): «Cheque a Sara Mejía, sin cobrar» (<10)
+- Partida 4 del banco (P1) · cifra (caso B): 88.000 · va a: Menos
+- Partida 5 del banco (P1) · tarjeta (caso B): «Cheque a Iván Rojas, sin cobrar» (<10)
+- Partida 5 del banco (P1) · cifra (caso B): 140.000 · va a: Menos
+- Partida 1 de la empresa (P2) · tarjeta (caso B): «Nota crédito del banco: pago de Hernán Castro» (<10)
+- Partida 1 de la empresa (P2) · cifra (caso B): 512.000 · va a: Más
+- Partida 2 de la empresa (P2) · tarjeta (caso B): «Nota débito del banco: chequera» (<10)
+- Partida 2 de la empresa (P2) · cifra (caso B): 38.900 · va a: Menos
+- Partida 3 de la empresa (P2) · tarjeta (caso B): «Nota crédito del banco: intereses de una inversión» (<10)
+- Partida 3 de la empresa (P2) · cifra (caso B): 296.000 · va a: Más
+- Partida 4 de la empresa (P2) · tarjeta (caso B): «Nota débito del banco: intereses de sobregiro» (<10)
+- Partida 4 de la empresa (P2) · cifra (caso B): 175.000 · va a: Menos
+- Partida 5 de la empresa (P2) · tarjeta (caso B): «Nota débito del banco: cheque devuelto de Pilar Vega» (<10)
+- Partida 5 de la empresa (P2) · cifra (caso B): 390.000 · va a: Menos
+- Asiento 1 · línea (caso B): «Pago de Hernán Castro: ya no debe esa factura.» (<10)
+- Asiento 5 · línea (caso B): «Cheque devuelto: Pilar Vega vuelve a deber.» (<10)
+- Mayor (caso B): «Bancos · 30 de abril»
+
+**P0 · dos-saldos**
+- Caso (bajo el par, desde el principio): «San Calixto, 30 de abril.» (<10)
+- Texto alternativo: «El saldo del banco, 3.120.400, y el de la empresa, 4.708.300, difieren en 1.587.900. Debajo, tres opciones sobre cuál es el saldo verdadero.» (76,2)
+- Pie: «Basado en el libro, p. 189 · Cifras construidas»
+
+**P1 · lado-del-banco**
+- Pie: «Basado en el libro, pp. 189-190 · Cifras construidas»
+
+**P2 · lado-de-la-empresa**
+- Pie: «Basado en el libro, pp. 189-190 · Cifras construidas»
+
+**P3 · que-se-asienta**
+- Texto alternativo: «El cheque a Marcela Ruiz, de 184.000, sin cobrar, y dos botones: se asienta o no se asienta.» (85,0)
+- Pie: «Basado en el libro, p. 190 · Cifras construidas»
+
+**P4 · los-asientos**
+- Pie: «Basado en el libro, p. 191 · Cifras construidas»
+
+**P5 · el-mayor**
+- Texto alternativo: «El mayor de Bancos empieza en 4.708.300. Al asentar las cinco notas, suben 512.000 y 296.000, bajan 38.900, 175.000 y 390.000, y el saldo llega a 4.912.400. Debajo, el banco y la empresa quedan iguales.» (72,3)
+- Pie: «Basado en el libro, p. 191 · Cifras construidas»
+
 ## El lado del banco (P1)
 
 - Partida 1 · tarjeta: «Cheque a Lorena Guerra, sin cobrar» (<10)

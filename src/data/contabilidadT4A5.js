@@ -22,7 +22,7 @@
  * Aprender: sin FP, sin catálogo y sin llamar al motor.
  * ═══════════════════════════════════════════════════════════════════════════
  */
-import { BOTON } from "./contabilidadT4.js";
+import { BOTON, pieCasoB } from "./contabilidadT4.js";
 
 export const A5_ID = "t4-a5-san-calixto";
 
@@ -188,6 +188,55 @@ export const PANTALLAS_A5 = [
   },
 ];
 
+/*
+ * D8 · el caso B (Katsumi, lote nocturno): San Calixto se queda (es el
+ * título) y pasa al 30 de abril, con otras personas y cifras construidas:
+ * extracto 3.120.400, libros 4.708.300, difieren en 1.587.900 y los dos
+ * llegan a 4.912.400. Las partidas, en el mismo orden, con los mismos lados;
+ * los asientos, los mismos con las cifras del B. La misma decisión en cada
+ * pantalla; los pies, con « · Cifras construidas».
+ */
+export const EXTRACTO_B = 3_120_400;
+export const LIBROS_B = 4_708_300;
+const conB = (partidas, nuevas) => partidas.map((x, i) => ({ ...x, ...nuevas[i] }));
+export const PARTIDAS_BANCO_B = conB(PARTIDAS_BANCO, [
+  { texto: "Cheque a Marcela Ruiz, sin cobrar", monto: 184_000 },
+  { texto: "Consignación del 30 de abril, sin abonar", monto: 2_415_000 },
+  { texto: "Cheque a Diego Peña, sin cobrar", monto: 211_000 },
+  { texto: "Cheque a Sara Mejía, sin cobrar", monto: 88_000 },
+  { texto: "Cheque a Iván Rojas, sin cobrar", monto: 140_000 },
+]);
+export const PARTIDAS_EMPRESA_B = conB(PARTIDAS_EMPRESA, [
+  { texto: "Nota crédito del banco: pago de Hernán Castro", monto: 512_000 },
+  { texto: "Nota débito del banco: chequera", monto: 38_900 },
+  { texto: "Nota crédito del banco: intereses de una inversión", monto: 296_000 },
+  { texto: "Nota débito del banco: intereses de sobregiro", monto: 175_000 },
+  { texto: "Nota débito del banco: cheque devuelto de Pilar Vega", monto: 390_000 },
+]);
+const LINEAS_B = { efrain: "Pago de Hernán Castro: ya no debe esa factura.", humberto: "Cheque devuelto: Pilar Vega vuelve a deber." };
+const ASIENTOS_A5_B = ASIENTOS_A5.map((a) => ({ ...a, monto: PARTIDAS_EMPRESA_B.find((x) => x.id === a.id).monto, linea: LINEAS_B[a.id] ?? a.linea }));
+function datosA5(extracto, libros, banco, empresa, asientos, f) {
+  const conciliadoBanco = saldoTrasA5(extracto, banco, banco.length);
+  const conciliado = saldoTrasA5(libros, empresa, empresa.length);
+  return {
+    EXTRACTO: extracto, LIBROS: libros, PARTIDAS_BANCO: banco, PARTIDAS_EMPRESA: empresa, ASIENTOS_A5: asientos,
+    CONCILIADO_BANCO: conciliadoBanco, CONCILIADO: conciliado, CHEQUE_P3: banco[0], DIFERENCIA_INICIAL: libros - extracto,
+    SALDO_MAYOR: asientos.reduce((s, a) => s + (a.debe === "bancos" ? a.monto : a.haber === "bancos" ? -a.monto : 0), libros),
+    F: f,
+  };
+}
+/* Lo que la figura muestra en cada caso. */
+export const DATOS_A5 = {
+  1: datosA5(EXTRACTO, LIBROS, PARTIDAS_BANCO, PARTIDAS_EMPRESA, ASIENTOS_A5, FIGURA_A5),
+  2: datosA5(EXTRACTO_B, LIBROS_B, PARTIDAS_BANCO_B, PARTIDAS_EMPRESA_B, ASIENTOS_A5_B, { ...FIGURA_A5, mayor: "Bancos · 30 de abril" }),
+};
+const TEXTOS_A5_B = {
+  "dos-saldos": { caso: "San Calixto, 30 de abril.", alt: "El saldo del banco, 3.120.400, y el de la empresa, 4.708.300, difieren en 1.587.900. Debajo, tres opciones sobre cuál es el saldo verdadero." },
+  "que-se-asienta": { alt: "El cheque a Marcela Ruiz, de 184.000, sin cobrar, y dos botones: se asienta o no se asienta." },
+  "el-mayor": { alt: "El mayor de Bancos empieza en 4.708.300. Al asentar las cinco notas, suben 512.000 y 296.000, bajan 38.900, 175.000 y 390.000, y el saldo llega a 4.912.400. Debajo, el banco y la empresa quedan iguales." },
+};
+const PANTALLAS_A5_B = PANTALLAS_A5.map((p) => ({ ...p, ...(TEXTOS_A5_B[p.id] ?? {}), pie: pieCasoB(p.pie) }));
+
 export const PIEZA_SAN_CALIXTO = {
   id: A5_ID,
   numero: 5,
@@ -197,4 +246,5 @@ export const PIEZA_SAN_CALIXTO = {
   boton: BOTON.seguir,
   pantallas: PANTALLAS_A5,
 };
+PIEZA_SAN_CALIXTO.casoB = { ...PIEZA_SAN_CALIXTO, pantallas: PANTALLAS_A5_B };
 

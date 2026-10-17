@@ -28,9 +28,12 @@ import { Tablero, Mayor, Par } from "./tablero.jsx";
 import { Fig, Chips, LectorError, useReducido } from "./aprender.jsx";
 import { DEBE, HABER, MARCA } from "../../data/contabilidadT4.js";
 import {
-  EXTRACTO, LIBROS, MAS, MENOS, PARTIDAS_BANCO, PARTIDAS_EMPRESA, saldoTrasA5, CONCILIADO, CONCILIADO_BANCO, CHEQUE_P3,
-  ASIENTOS_A5, SALDO_MAYOR, PASO_MAYOR_MS, ESPERA_NOTA_MS, DIFERENCIA_INICIAL, FIGURA_A5 as F,
+  MAS, MENOS, saldoTrasA5, PASO_MAYOR_MS, ESPERA_NOTA_MS, DATOS_A5,
 } from "../../data/contabilidadT4A5.js";
+import { useDatosCaso } from "./caso.js";
+
+/* D8: las cifras, las partidas, los asientos y los rótulos del caso en curso (1 o el B). */
+const useCasoA5 = () => useDatosCaso(DATOS_A5);
 
 export const CSS_A5 = `
 .t4a5-t { display: flex; justify-content: space-between; align-items: center; gap: 8px; border: 1px solid ${C.texto}; border-radius: 8px; padding: 6px 12px; min-height: 74px; }
@@ -61,6 +64,7 @@ const NOMBRE = "el-par";
  * acierto, el par abre su tercer lugar, «saldo verdadero: ?».
  */
 function Saldo({ p, onAcierto }) {
+  const { EXTRACTO, LIBROS, DIFERENCIA_INICIAL, F } = useCasoA5();
   const [e, setE] = useState(null);
   const ok = e === p.correcta;
   useEffect(() => { if (ok) onAcierto?.(); }, [ok]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -80,6 +84,7 @@ function Saldo({ p, onAcierto }) {
 
 /* P1 y P2 · un lado: cada partida a «Más» o a «Menos»; el saldo de ese lado cuenta. */
 function Lado({ p, onAcierto }) {
+  const { EXTRACTO, LIBROS, PARTIDAS_BANCO, PARTIDAS_EMPRESA, CONCILIADO_BANCO, F } = useCasoA5();
   const banco = p.lado === "banco";
   const partidas = banco ? PARTIDAS_BANCO : PARTIDAS_EMPRESA;
   const [i, setI] = useState(0);
@@ -124,6 +129,7 @@ function Lado({ p, onAcierto }) {
 
 /* P3 · ¿se asienta el cheque sin cobrar? */
 function Asienta({ p, onAcierto }) {
+  const { CHEQUE_P3, F } = useCasoA5();
   const [e, setE] = useState(null);
   const ok = e === p.correcta;
   useEffect(() => { if (ok) onAcierto?.(); }, [ok]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -146,6 +152,7 @@ function Asienta({ p, onAcierto }) {
  * nota siguiente. Error: «No va aquí», nada se escribe, su mensaje y reintento.
  */
 function Asientos({ p, onAcierto }) {
+  const { ASIENTOS_A5, F } = useCasoA5();
   const [i, setI] = useState(0);
   const [r, setR] = useState(null);
   const reloj = useRef(0);
@@ -181,6 +188,7 @@ function Asientos({ p, onAcierto }) {
 
 /* P5 · el mayor: asentar las cinco notas y llegar al saldo conciliado. */
 function ElMayor({ p, onCierre }) {
+  const { LIBROS, CONCILIADO, ASIENTOS_A5, SALDO_MAYOR, F } = useCasoA5();
   const reducido = useReducido();
   const [n, setN] = useState(0);
   const reloj = useRef(0);

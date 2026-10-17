@@ -450,7 +450,7 @@ test("★★★ D8 · jugado en el caso B: las filas B, la raya decide igual, y 
   movimientoReducido(true);
   const m = montar(h(PantallasT4, { pieza: P, rotulo: "T4 · APRENDER", caso: 2 }));
   try {
-    assert.equal(m.caja.querySelector("[data-pieza]").dataset.caso, "2");
+    assert.equal(m.caja.querySelector("[data-pieza]").dataset.casoPieza, "2");
     for (let i = 0; i < 3; i++) tocar(m.caja.querySelector('[data-boton="seguir"]'));
     assert.equal(m.caja.querySelector("[data-pieza]").dataset.pantalla, "cual-cruza");
     assert.deepEqual([...m.caja.querySelectorAll("[data-fila]")].map((f) => f.dataset.fila), ["repuestos", "pagare", "camion"]);
