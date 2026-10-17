@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { Panel } from "../../salaDeControl/marco.jsx";
+import { barajar } from "../../../../utils/barajar.js";
 import {
   PIEZA_LA_CUENTA_QUE_NO_SE_MUEVE, PANTALLAS, CUENTAS, TOQUE, VALORES, VALOR, TEXTOS,
   PRECIO, INICIO, FINAL, EVENTOS, CIERRE, cajasEn, pesos,
@@ -352,7 +353,9 @@ const MARCAS = [...EVENTOS.map((e) => e.dia), CIERRE].map((d) => {
 
 const reducidoAhora = () => typeof window !== "undefined" && Boolean(window.matchMedia?.("(prefers-reduced-motion: reduce)").matches);
 
-export default function LaCuentaQueNoSeMueve({ pieza = PIEZA_LA_CUENTA_QUE_NO_SE_MUEVE, rotulo }) {
+export default function LaCuentaQueNoSeMueve({ pieza = PIEZA_LA_CUENTA_QUE_NO_SE_MUEVE, rotulo, barajar: barajarOpciones = barajar }) {
+  /* Lote V (Mello): las opciones, barajadas UNA vez al montar (como los Hacer de T7 al armar la tanda); el orden no cambia al reintentar. `barajar` se inyecta en las pruebas. */
+  const [valores] = useState(() => barajarOpciones(VALORES));
   const pantallas = pieza.pantallas;
   const [s, setS] = useState(() => estadoInicial(pantallas));
   /* El estado de ahora, para los manejadores y los temporizadores: el deslizador puede mandar varios cambios antes de pintar. */
@@ -504,7 +507,7 @@ export default function LaCuentaQueNoSeMueve({ pieza = PIEZA_LA_CUENTA_QUE_NO_SE
           {P.id === "p4" && s.contado && s.cuentaCierre && !s.cierreOk && <>
             <p ref={pregRef} tabIndex={-1} className="t7a1-preg" data-texto>{TEXTOS.preguntaValor}</p>
             <div className="t7a1-ops" role="group" aria-label={TEXTOS.preguntaValor}>
-              {VALORES.map((v) => {
+              {valores.map((v) => {
                 const mal = s.intentoValor === v;
                 const pista = s.pista === "valor" && v === VALOR.correcta;
                 return (

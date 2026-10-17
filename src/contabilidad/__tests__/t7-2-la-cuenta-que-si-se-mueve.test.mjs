@@ -112,6 +112,7 @@ async function montar(cual, props = {}) {
   return conAcciones({ ...m, raiz: m.caja.querySelector("[data-pieza]"), pref: "casa" });
 }
 
+const ordenDeDatos = (b) => P.pantallas.flatMap((p) => (p.opciones ?? []).map((o) => o.id)).indexOf(b.dataset.op ?? b.dataset.opcion);
 const sel = (s, pref) => (pref === "ref" ? s.replace(/\$b-/g, "c2-").replace(/\$c-/g, "c2c-") : s.replace(/\$[bc]-/g, "t7cs-"));
 function conAcciones(m) {
   const q = (s) => m.caja.querySelector(sel(s, m.pref));
@@ -175,7 +176,8 @@ function leer(raiz, pref) {
     cmv: cmv.hidden ? null : renglones(q('[data-lado="debe"]', cmv)),
     lista: lista.hidden ? null : qq("li", lista).map((li) => limpio(li.textContent)),
     contar: contar ? limpio(contar.textContent) : null,
-    ops: qq("[data-op], [data-opcion]").map((b) => ({
+    /* Lote V: en pantalla van barajadas; aquí, por id y en el orden de los datos, para comparar con la referencia opción por opción. */
+    ops: qq("[data-op], [data-opcion]").sort((x, y) => ordenDeDatos(x) - ordenDeDatos(y)).map((b) => ({
       id: b.dataset.op ?? b.dataset.opcion, texto: limpio(b.textContent), clases: clases(b, ["mal", "pista", "bien"]),
       inactiva: b.getAttribute("aria-disabled") === "true", etiqueta: b.getAttribute("aria-label"),
     })),
@@ -564,6 +566,35 @@ test("★★★ pantallas 3, 4 y 5: la escalera en las opciones (pista; luego el
     enFoco(m.raiz, "sin texto, el foco va a la pieza");
   } finally {
     m.desmontar();
+  }
+});
+
+test("★★★ lote V: las opciones de las pantallas 3 y 4 salen barajadas con la función de los Hacer (azar fijado), el mismo conjunto, la correcta no siempre primero, y el orden no cambia al fallar", async () => {
+  const { barajadorDe } = await import("../../utils/barajar.js");
+  assert.match(readFileSync(new URL("../../components/mecanicas/libros/t7/LaCuentaQueSiSeMueveC2.jsx", import.meta.url), "utf8"), /import \{ barajar \} from "\.\.\/\.\.\/\.\.\/\.\.\/utils\/barajar\.js"/);
+  const conOpciones = P.pantallas.map((p, k) => [p, k]).filter(([p]) => p.opciones);
+  assert.equal(conOpciones.length, 2);
+  const ordenes = [];
+  for (const semilla of ["a", "b", "c", "d", "e", "f"]) {
+    for (const [p, k] of conOpciones) {
+      const m = await montar("casa", { pieza: { ...P, pantallas: P.pantallas.slice(k) }, barajar: barajadorDe(semilla) });
+      try {
+        if (p.conteo) await m.contar();
+        const enPantalla = () => [...m.caja.querySelectorAll("[data-opcion]")].map((b) => b.dataset.opcion);
+        const orden = enPantalla();
+        assert.deepEqual([...orden].sort(), p.opciones.map((o) => o.id).sort(), "el mismo conjunto");
+        await m.op(orden.find((id) => id !== p.correcta));
+        assert.deepEqual(enPantalla(), orden, "al fallar no se rebaraja");
+        ordenes.push({ id: p.id, datos: p.opciones.map((o) => o.id), orden, correcta: p.correcta });
+      } finally {
+        m.desmontar();
+      }
+    }
+  }
+  for (const id of new Set(ordenes.map((o) => o.id))) {
+    const deEsta = ordenes.filter((o) => o.id === id);
+    assert.ok(deEsta.some((o) => o.orden.join() !== o.datos.join()), `${id}: en algún caso, distinto del orden de los datos`);
+    assert.ok(deEsta.some((o) => o.orden[0] !== o.correcta), `${id}: la correcta no queda siempre primero`);
   }
 });
 
