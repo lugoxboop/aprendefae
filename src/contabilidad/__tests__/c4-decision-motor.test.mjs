@@ -256,3 +256,21 @@ test("leerC4 y fmtC4 · pesos, factor y porcentaje", () => {
   assert.equal(M.fmtC4({ formato: "porcentaje", opciones: [] }, 17.92), "17,92 %");
   assert.equal(M.fmtC4(pesos, 1955000), "$1.955.000");
 });
+
+/* ═══════════ EL FOCO EN UN ÍTEM SIN TEXTO (Misa, lote T7-1) ═══════════ */
+
+test("Foco · un ítem sin texto (solo pregunta) recibe el foco en su pregunta, no en el párrafo oculto", conReloj(async () => {
+  const sinTexto = { ...pieza("hacer"), items: [ITEMS[0], { ...ITEMS[1], texto: null }] };
+  const caja = document.createElement("div");
+  document.body.appendChild(caja);
+  const raiz = createRoot(caja);
+  await act(async () => { raiz.render(h(DecisionC4, { pieza: sinTexto, Marco, rotulo: "R" })); });
+  const q = (s) => caja.querySelector(s);
+  await act(async () => { q('[data-op="a"]').dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
+  await act(async () => { mock.timers.tick(380); });
+  await act(async () => { [...caja.querySelectorAll("button")].find((b) => b.textContent.trim() === M.BOTONES_C4.siguiente).dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
+  assert.equal(q("[data-texto]").hidden, true);
+  assert.ok(document.activeElement === q("[data-pregunta]"), "el foco no fue a la pregunta");
+  assert.equal(q("[data-pregunta]").getAttribute("tabindex"), "-1");
+  await act(async () => raiz.unmount());
+}));

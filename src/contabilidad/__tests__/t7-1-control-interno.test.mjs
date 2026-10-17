@@ -665,16 +665,17 @@ test("★★★ catálogo: Aprender, sin FP, el mismo id y la misma posición; e
   }
 });
 
-test("★★★ vista: T7-1 pinta la pieza nueva en el lugar de A7; ControlInterno ya no lo pinta ninguna vista (N2 de T5 salió con la entrega 5)", () => {
+test("★★★ vista: en el lugar de A7, T7-1 pinta ahora la versión C4 (t7-1-a7-c4.test.mjs); ni esta de la v6 ni ControlInterno las pinta ninguna vista", async () => {
   const ids = PIEZAS_T7_1.map((x) => x.pieza.id);
   assert.equal(ids.at(-1), A.A7_ID);
   assert.equal(ids.indexOf(A.A7_ID), ids.indexOf("t7-1-a6-devoluciones-en-periodico") + 1);
   const e = PIEZAS_T7_1.find((x) => x.pieza.id === A.A7_ID);
-  assert.equal(e.Pieza, ElViaje);
-  assert.equal(e.pieza, P);
-  assert.ok(!PIEZAS_T7_1.some((x) => x.Pieza === ControlInterno));
+  const { default: A7C4 } = await import("../../components/mecanicas/libros/t7/ElViajeDeUnaCajaC4.jsx");
+  assert.equal(e.Pieza, A7C4);
+  assert.equal(e.pieza.titulo, P.titulo);
+  assert.ok(!PIEZAS_T7_1.some((x) => x.Pieza === ElViaje || x.Pieza === ControlInterno));
   assert.ok(!PIEZAS_T5.some((x) => x.Pieza === ControlInterno));
-  assert.ok(!leer("src/components/ContabilidadT7_1View.jsx").includes("contabilidadT7_1_a7.js"));
+  assert.ok(!leer("src/components/ContabilidadT7_1View.jsx").includes("contabilidadT7_1_a7_viaje.js"));
 });
 
 test("★★ montada como en la vista: el rótulo y el título en la cabecera del Panel, su hoja de estilo dentro", async () => {

@@ -45,6 +45,8 @@ const L = await import("../t7H3.js");
 const { pesos } = await import("../../data/contabilidad.js");
 const { SUBJECTS, HACER, APRENDER, actividadesDeTipo, clasificacionDe } = await import("../../data/subjects.js");
 const { default: CuantoValeLoQueSobro } = await import("../../components/mecanicas/libros/t7/CuantoValeLoQueSobro.jsx");
+/* C4: la vista abre ahora CuantoValeLoQueSobroC4.jsx (patrón de enganche C4; su prueba es t7-1-*-c4.test.mjs). CuantoValeLoQueSobro.jsx sigue aquí para el recorrido de esta prueba. */
+const { default: CuantoValeLoQueSobroC4 } = await import("../../components/mecanicas/libros/t7/CuantoValeLoQueSobroC4.jsx");
 const { JUEGOS_T7_1, TEMA_T7_1 } = await import("../../components/ContabilidadT7_1View.jsx");
 const { etiquetaDeItem, recortar } = await import("../../docente/etiquetasItem.js");
 const { firma, textoFigura } = await import("./figuraAcumuladaPrueba.mjs");
@@ -265,7 +267,7 @@ test("★★★ en T7-1, entre AP3 y AP4: evaluativa, medio, 25 FP; las piezas d
 test("★★★ la vista abre desde el camino exactamente lo que el catálogo ofrece, y registra con el motor compartido", () => {
   const ofrecidas = actividadesDeTipo(TEMA, HACER).filter((a) => !a.pendiente).map((a) => a.id).sort();
   assert.deepEqual(JUEGOS_T7_1.map((j) => j.id).sort(), ofrecidas);
-  assert.equal(JUEGOS_T7_1.find((j) => j.id === D.H3_ID).Mecanica, CuantoValeLoQueSobro);
+  assert.equal(JUEGOS_T7_1.find((j) => j.id === D.H3_ID).Mecanica, CuantoValeLoQueSobroC4);
   assert.match(VISTA, /registrarActividadCompletada\(clas, \{\s*materiaId: MATERIA, temaId: TEMA_T7_1, actividadId, porcentajeAciertos: porcentaje, duracionMs, detalle,/);
   assert.match(VISTA, /onCompletar=\{\(pct, ms, detalle\) => completar\(juego\.id, pct, ms, detalle\)\}/);
   assert.match(leer("src/App.jsx"), /<ContabilidadT7_1View modo=\{modoTema\} nodoInicial=\{ruta\.extra\}/);
