@@ -2,14 +2,17 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { JSDOM, VirtualConsole } from "jsdom";
 import { SUBJECTS, HACER } from "../../data/subjects.js";
+import { OBJETIVOS_NEAR } from "./objetivosNear.mjs";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
  * LOTE O (Mello) · el `objetivo` de cada Hacer de T5 y T7.
  *
  *   · cada Hacer publicado de T5 y T7 lleva en sus datos un `objetivo` de una
- *     sola oración. Las oraciones son de Near y todavía no llegan: la prueba
- *     va en TODO y lista las que faltan.
+ *     sola oración. Las de la Célula C son las de Near
+ *     (paquetes/lote-o-objetivos.md, leído por objetivosNear.mjs), letra por
+ *     letra; `b5-t5-a2` (Célula B) y `t7-1-que-control-falta` conservan el
+ *     suyo.
  *   · el encabezado de cada Hacer de la Célula C (hacerT7.jsx →
  *     EncabezadoHacer, y la escalera de H7) pinta el objetivo con el mismo
  *     marcado que H7 (`[data-encabezado] > p[data-objetivo]`, antes de la
@@ -51,6 +54,12 @@ const publicados = Object.values(SUBJECTS).flatMap((s) => s.topics ?? [])
 
 const datos = {};
 for (const [id, [ruta, nombre]] of Object.entries(datosDe)) datos[id] = (await import(ruta))[nombre];
+/*
+ * Los objetivos tal como vienen en los datos, copiados ANTES de que la parte
+ * montada ponga el de prueba en N3 (con Node 24 las pruebas de datos pueden
+ * correr mientras ese cambio está puesto).
+ */
+const objetivoDe = Object.fromEntries(Object.entries(datos).map(([id, d]) => [id, d.objetivo]));
 
 /* Una sola oración: termina en punto y no tiene otro fin de oración dentro (un . ! ? seguido de espacio y mayúscula). */
 function unaOracion(x) {
@@ -76,9 +85,28 @@ test("★★ unaOracion: una sola oración terminada en punto", () => {
   assert.ok(!unaOracion(""));
 });
 
-test("★★★ cada Hacer de T5 y T7 tiene `objetivo` de una sola oración", { todo: "Hasta que lleguen las oraciones de Near" }, () => {
-  const faltan = publicados.filter((id) => !unaOracion(datos[id].objetivo));
+test("★★★ cada Hacer de T5 y T7 tiene `objetivo` de una sola oración", () => {
+  const faltan = publicados.filter((id) => !unaOracion(objetivoDe[id]));
   assert.deepEqual(faltan, [], `faltan ${faltan.length} de ${publicados.length}: ${faltan.join(", ")}`);
+});
+
+/* Los de la tabla de Near que no son de la Célula C: b5-t5-a2 conserva el suyo (hoy coincide). */
+const AJENOS = ["b5-t5-a2"];
+
+test("★★★ los 19 Hacer de la Célula C de la tabla de Near llevan su objetivo letra por letra", () => {
+  const deC = Object.keys(OBJETIVOS_NEAR).filter((id) => !AJENOS.includes(id));
+  assert.equal(deC.length, 19);
+  for (const id of deC) {
+    assert.ok(publicados.includes(id), `${id}: está publicado`);
+    assert.equal(objetivoDe[id], OBJETIVOS_NEAR[id], `${id}: el objetivo de Near`);
+  }
+  /* Los publicados fuera de la tabla son los que ya tenían el suyo. */
+  assert.deepEqual(publicados.filter((id) => !(id in OBJETIVOS_NEAR)).sort(), ["b5-t5-a1", "t7-1-que-control-falta"]);
+});
+
+test("★ b5-t5-a2 (Célula B) conserva su objetivo; hoy es el mismo de la tabla de Near", () => {
+  assert.equal(objetivoDe["b5-t5-a2"], "Registrar la inversión de Santa Pacha: sus intereses y sus dos ventas.");
+  assert.equal(objetivoDe["b5-t5-a2"], OBJETIVOS_NEAR["b5-t5-a2"]);
 });
 
 /* ═══════════ EL ENCABEZADO, MONTADO ═══════════ */
