@@ -27,7 +27,7 @@ const { SUBJECTS, APRENDER } = await import("../../data/subjects.js");
 const { PantallasT4, PIEZAS_T4, TEMA_T4 } = await import("../../components/ContabilidadT4View.jsx");
 const { inflesz } = await import("../../herramientas/inflesz.js");
 const { leer, PAQUETES, RAIZ } = await import("./t4-paquete.mjs");
-const { pantallasDe, seccionDe, renglones, textoDe } = await import("./t4-rediseno-canon.mjs");
+const { pantallasDe, seccionDe, renglones, textoDe, fusionB } = await import("./t4-rediseno-canon.mjs");
 
 const CANON = "d4-t4-a1-v6-rediseno.md";
 const PAQ = leer(`${PAQUETES}${CANON}`);
@@ -525,4 +525,57 @@ test("★★★ D9 · el cajón de A1 es un cajón: la manija bajo su base en to
   } finally { w.Element.prototype.animate = original; w.matchMedia = mm; }
   const h1 = readFileSync(new URL("../../components/t4/EntraOSaleDeCaja.jsx", import.meta.url), "utf8");
   assert.doesNotMatch(h1, /cajonA1/, "H1 lleva el cajón de A1");
+});
+
+/* ═══════════ D8 · EL CASO B ═══════════ */
+
+const CANON_B = fusionB(CANON_P, pantallasDe(PAQ, "Caso B (D8), pantalla por pantalla"));
+/* porLugar con los cheques del caso: en el B, la tarjeta del propio cambia. */
+const porLugarCaso = (p, cheques) => porLugar(p).map(([l, t]) => {
+  const m = l.match(/^Cheque «(\w+)» · tarjeta$/);
+  return m ? [l, cheques.find((c) => c.id === m[1]).tarjeta] : [l, t];
+});
+
+test("★★★ D8 · el caso B, texto por texto: el del paquete (lo del caso 1 con lo que cambia el B), en su lugar; la misma decisión en cada pantalla", () => {
+  const B = P.casoB;
+  assert.ok(B);
+  for (const [i, c] of CANON_B.entries()) {
+    const p = B.pantallas[i];
+    assert.equal(p.id, c.id);
+    assert.deepEqual(c.extra, [], `${c.id}: un lugar del caso B que el caso 1 no tiene`);
+    assert.deepEqual(porLugarCaso(p, A.CHEQUES_A1_B), c.textos.map((x) => [x.lugar, x.texto]), c.id);
+    const a = P.pantallas[i];
+    assert.deepEqual([p.correcta, p.opciones, p.pregunta, p.control], [a.correcta, a.opciones, a.pregunta, a.control], `${c.id}: la decisión cambia`);
+  }
+  assert.deepEqual([A.DATOS_A1[2].cobro, A.DATOS_A1[2].anotado, A.DATOS_A1[2].cobro - A.DATOS_A1[2].anotado], [612_000, 584_000, 28_000]);
+  assert.match(seccionDe(PAQ, "Caso B (D8), pantalla por pantalla"), /Origen del cajón: «Taller Ríos Ltda\.»/);
+  assert.equal(A.DATOS_A1[2].rotuloOrigen, "Taller Ríos Ltda.");
+  for (const p of B.pantallas.filter((x) => x.asiento)) for (const l of p.asiento.lineas) assert.equal(l.monto, 612_000, `${p.id}: el asiento no va con las cifras del caso B`);
+});
+
+test("★★★ D8 · jugado en el caso B: Taller Ríos cobra 612.000; la consignación los saca a Bancos; en «el-faltante», 584.000 anotados y «28.000 sin anotar»", async () => {
+  const m = montar(h(PantallasT4, { pieza: P, rotulo: "T4 · APRENDER", caso: 2 }));
+  const seguir = () => tocar(q(m, '[data-boton="seguir"]'));
+  try {
+    assert.equal(q(m, "[data-pieza]").dataset.caso, "2");
+    seguir();
+    assert.equal(q(m, "[data-origen] .t4cv-rot").textContent, "Taller Ríos Ltda.");
+    tocar(q(m, "[data-accion=cobrar]"));
+    assert.deepEqual([lineas(m, A.DEBE), saldo(m)], [["612.000"], "612000"]);
+    seguir();
+    tocar(q(m, `[data-destino="${A.DEBE}"]`));
+    assert.equal(visible(q(m, "[data-mensaje] [data-devolucion]")), "No entró plata nueva: son los mismos $612.000.");
+    tocar(q(m, `[data-destino="${A.HABER}"]`));
+    assert.deepEqual([lineas(m, A.HABER), saldo(m)], [["612.000"], "0"]);
+    seguir(); seguir();
+    assert.equal(q(m, "[data-hecho]").textContent, "Un cliente le paga con un cheque");
+    tocar(q(m, `[data-destino="${A.DEBE}"]`));
+    await esperar(A.ESPERA_CHEQUE_MS + 100);
+    assert.equal(q(m, "[data-hecho]").textContent, "Taller Ríos paga con un cheque propio");
+    tocar(q(m, `[data-destino="${A.NO_SE_MUEVE}"]`));
+    seguir();
+    assert.equal(q(m, "[data-monto=origen]").textContent, "612.000");
+    assert.deepEqual([lineas(m, A.DEBE), saldo(m)], [["584.000"], "584000"]);
+    assert.equal(q(m, "[data-sin-anotar]").textContent, "28.000 sin anotar");
+  } finally { m.desmontar(); }
 });

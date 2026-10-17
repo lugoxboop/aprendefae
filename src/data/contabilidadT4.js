@@ -218,6 +218,31 @@ export const PANTALLAS_A1 = [
   },
 ];
 
+/*
+ * D8 · el caso B (Katsumi, lote nocturno): Taller Ríos Ltda., que arregla
+ * motos; cobra 612.000 y, en «el-faltante», Lucía anota 584.000 (28.000 sin
+ * anotar). La misma decisión en cada pantalla; los pies llevan además
+ * « · Cifras construidas».
+ */
+export const COBRO_A1_B = 612_000;
+export const ANOTADO_A1_B = 584_000;
+export const CHEQUES_A1_B = CHEQUES_A1.map((c) => (c.id === "propio" ? { ...c, tarjeta: "Taller Ríos paga con un cheque propio" } : c));
+/* Lo que el cajón muestra en cada caso. */
+export const DATOS_A1 = {
+  1: { cobro: SUS_SERVICIOS, anotado: ANOTADO_A1, rotuloOrigen: FIGURA_CAJON.rotuloOrigen, cheques: CHEQUES_A1 },
+  2: { cobro: COBRO_A1_B, anotado: ANOTADO_A1_B, rotuloOrigen: "Taller Ríos Ltda.", cheques: CHEQUES_A1_B },
+};
+/* El pie del caso B: el mismo, más « · Cifras construidas» (si no lo lleva ya). */
+export const pieCasoB = (pie) => (pie.includes("Cifras construidas") ? pie : `${pie} · Cifras construidas`);
+const conMonto = (a, monto) => ({ ...a, lineas: a.lineas.map((l) => ({ ...l, monto })) });
+const PANTALLAS_A1_B = PANTALLAS_A1.map((p) => {
+  const b = { ...p, pie: pieCasoB(p.pie) };
+  if (p.id === "cobra") Object.assign(b, { antes: ["Taller Ríos arregla motos, y hoy los clientes le pagan de contado. Toca «Cobrar»."], asiento: conMonto(ASIENTO_COBRO, COBRO_A1_B) });
+  if (p.id === "consigna") Object.assign(b, { errores: { ...p.errores, [DEBE]: "No entró plata nueva: son los mismos $612.000." }, asiento: conMonto(ASIENTO_CONSIGNACION, COBRO_A1_B) });
+  if (p.id === "el-faltante") b.antes = ["Lucía cobra y anota. ¿Qué control faltó?"];
+  return b;
+});
+
 /* `numero` es el de la pieza en el corte de T4 y ordena PIEZAS_T4 en la vista: A0 = 0, A1 = 1. */
 export const PIEZA_LA_CAJA = {
   id: A1_ID,
@@ -228,3 +253,4 @@ export const PIEZA_LA_CAJA = {
   boton: BOTON.seguir,
   pantallas: PANTALLAS_A1,
 };
+PIEZA_LA_CAJA.casoB = { ...PIEZA_LA_CAJA, pantallas: PANTALLAS_A1_B };

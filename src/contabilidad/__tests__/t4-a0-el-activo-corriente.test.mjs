@@ -424,3 +424,44 @@ test("★★★ D6 · P3: el error va por fila: la deuda del lado corriente tien
   }
   movimientoReducido(false);
 });
+
+/* ═══════════ D8 · EL CASO B ═══════════ */
+
+const CANON_B = pantallasDe(PAQ, "Caso B (D8), pantalla por pantalla");
+
+test("★★★ D8 · el caso B: solo «cual-cruza» cambia, con las tres filas del paquete (la misma decisión: plata este mes, deuda a años, dura años) y el error de la deuda en el pagaré", () => {
+  const B = P.casoB;
+  assert.ok(B, "A0 no tiene caso B");
+  assert.deepEqual(B.pantallas.map((p) => p.id), P.pantallas.map((p) => p.id));
+  for (const [i, p] of B.pantallas.entries()) if (p.id !== "cual-cruza") assert.equal(p, P.pantallas[i], `${p.id} cambia en el caso B`);
+  assert.deepEqual(CANON_B.map((c) => c.id), ["cual-cruza"]);
+  const pb = B.pantallas.find((p) => p.id === "cual-cruza");
+  const pa = pantalla("cual-cruza");
+  assert.deepEqual(pb.filas.map((f) => `${f.texto.join(" ")} / ${f.glosa.join(" ")}`), CANON_B[0].textos.map((x) => x.texto));
+  assert.deepEqual(pb.filas.map((f) => f.mes), pa.filas.map((f) => f.mes), "la decisión cambia");
+  assert.deepEqual(pb.filas.map(Z.ladoCorrectoA0), pa.filas.map(Z.ladoCorrectoA0));
+  assert.equal(pb.errorFila.fila, "pagare");
+  assert.equal(pb.errorFila.texto, pa.errorFila.texto);
+  assert.equal(pb.error, pa.error);
+  assert.equal(pb.pie, pa.pie, "A0 no lleva cifras: su pie no cambia");
+});
+
+test("★★★ D8 · jugado en el caso B: las filas B, la raya decide igual, y la deuda del lado corriente da su error", async () => {
+  movimientoReducido(true);
+  const m = montar(h(PantallasT4, { pieza: P, rotulo: "T4 · APRENDER", caso: 2 }));
+  try {
+    assert.equal(m.caja.querySelector("[data-pieza]").dataset.caso, "2");
+    for (let i = 0; i < 3; i++) tocar(m.caja.querySelector('[data-boton="seguir"]'));
+    assert.equal(m.caja.querySelector("[data-pieza]").dataset.pantalla, "cual-cruza");
+    assert.deepEqual([...m.caja.querySelectorAll("[data-fila]")].map((f) => f.dataset.fila), ["repuestos", "pagare", "camion"]);
+    for (const [f, l] of [["repuestos", "despues"], ["pagare", "antes"], ["camion", "despues"]]) tocar(seg(m.caja, f, l));
+    tocar(m.caja.querySelector("[data-accion=pasar]"));
+    await esperar(0);
+    assert.equal(visible(m.caja.querySelector("[data-mensaje]")), pantalla("cual-cruza").errorFila.texto);
+    tocar(m.caja.querySelector("[data-accion=otra-vez]"));
+    for (const [f, l] of [["repuestos", "antes"], ["pagare", "despues"], ["camion", "despues"]]) tocar(seg(m.caja, f, l));
+    tocar(m.caja.querySelector("[data-accion=pasar]"));
+    await esperar(0);
+    assert.equal(m.caja.querySelector("[data-mensaje]").dataset.mensaje, "acierto");
+  } finally { m.desmontar(); movimientoReducido(false); }
+});

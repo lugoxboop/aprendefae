@@ -34,6 +34,7 @@ import { CSS_A2, CuerpoA2 } from "./t4/A2ElFondoFijo.jsx";
 import { CSS_A3, CuerpoA3 } from "./t4/A3ElArqueo.jsx";
 import { CSS_A4, CuerpoA4 } from "./t4/A4BancosYNotas.jsx";
 import { CSS_A5, CuerpoA5 } from "./t4/A5SanCalixto.jsx";
+import { CasoT4, casoInicial, marcarTerminada } from "./t4/caso.js";
 import EntraOSaleDeCaja from "./t4/EntraOSaleDeCaja.jsx";
 import SeMueveLaCajaMenor from "./t4/SeMueveLaCajaMenor.jsx";
 import ElArqueo from "./t4/ElArqueo.jsx";
@@ -99,6 +100,8 @@ export default function ContabilidadT4View({ modo = null, nodoInicial = null, on
   const tema = SUBJECTS[MATERIA].topics.find((t) => t.id === TEMA_T4);
   const rotulo = `${tema.title.toUpperCase()} · APRENDER`;
   const [nodoAbierto, setNodoAbierto] = useState(nodoInicial ?? null);
+  /* D8: el caso de cada pieza de Aprender, elegido al abrir la vista (el 1 la primera vez; al repetir, sorteo). */
+  const [casos] = useState(() => Object.fromEntries(PIEZAS_T4.map(({ pieza }) => [pieza.id, casoInicial(pieza.id)])));
   const hechas = useCompletadas();
   const { pedirCuenta, usuario } = useAuth();
   const [recompensa, celebrar, celebrando] = useRecompensa();
@@ -167,7 +170,7 @@ export default function ContabilidadT4View({ modo = null, nodoInicial = null, on
                   <p style={{ fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700, letterSpacing: "0.12em", color: FAE.ambar, margin: "0 0 10px" }}>
                     PIEZA {k + 1} DE {PIEZAS_T4.length}
                   </p>
-                  <Pieza pieza={pieza} rotulo={rotulo} />
+                  <Pieza pieza={pieza} rotulo={rotulo} caso={casos[pieza.id]} onTerminada={() => marcarTerminada(pieza.id)} />
                 </div>
               ))}
             </div>
@@ -309,7 +312,9 @@ function PantallaT4({ p, Cuerpo, onAcierto, seguirBoton }) {
   );
 }
 
-export function PantallasT4({ pieza, rotulo }) {
+export function PantallasT4({ pieza: base, rotulo, caso = 1, onTerminada = null }) {
+  /* D8: en el caso 2, la pieza del caso B (mismas pantallas y la misma decisión; otras cifras y nombres). */
+  const pieza = caso === 2 && base.casoB ? base.casoB : base;
   const [k, setK] = useState(0);
   const p = pieza.pantallas[k];
   const ultima = k === pieza.pantallas.length - 1;
@@ -317,7 +322,8 @@ export function PantallasT4({ pieza, rotulo }) {
   const primera = useRef(true);
   const seguir = () => setK((x) => Math.min(x + 1, pieza.pantallas.length - 1));
   useEffect(() => { if (primera.current) { primera.current = false; return; } marco.current?.focus(); }, [k]);
-  const Cuerpo = CUERPOS[pieza.id];
+  const Cuerpo = CUERPOS[base.id];
+  useEffect(() => { if (ultima) onTerminada?.(); }, [ultima]); // eslint-disable-line react-hooks/exhaustive-deps
   /* La pantalla en la que ya se acertó (se olvida al cambiar de pantalla, porque cambia `k`). */
   const [acertada, setAcertada] = useState(-1);
   const puedeSeguir = !p.pregunta || acertada === k;
@@ -349,14 +355,16 @@ export function PantallasT4({ pieza, rotulo }) {
   }, []);
 
   return (
+    <CasoT4.Provider value={pieza === base ? 1 : 2}>
     <Panel rotulo={rotulo} titulo={pieza.titulo}>
       <style>{CSS_PANTALLAS}</style>
-      <div ref={marco} tabIndex={-1} data-pieza={pieza.id} data-pantalla={p.id} style={{ outline: "none" }}>
+      <div ref={marco} tabIndex={-1} data-pieza={base.id} data-pantalla={p.id} data-caso={pieza === base ? "1" : "2"} style={{ outline: "none" }}>
         {/* D2: el objetivo de la pieza, fijo bajo el título, solo en la P0 (Shibukawa; Yujiro; texto de Katsumi). */}
         {k === 0 && pieza.objetivo && <p className="t4r-objetivo" data-objetivo>{pieza.objetivo}</p>}
         <PantallaT4 key={p.id} p={p} Cuerpo={Cuerpo} onAcierto={() => setAcertada(k)}
           seguirBoton={!ultima && puedeSeguir ? <SeguirAprender nueva onClick={seguir}>{pieza.boton ?? BOTON.seguir}</SeguirAprender> : null} />
       </div>
     </Panel>
+    </CasoT4.Provider>
   );
 }

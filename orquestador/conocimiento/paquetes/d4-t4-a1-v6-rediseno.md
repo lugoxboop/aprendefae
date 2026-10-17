@@ -64,6 +64,35 @@
 - Siguiente: «Siguiente: «El fondo fijo».» (<10)
 - Pie: «Basado en el libro, pp. 179-180»
 
+## Caso B (D8), pantalla por pantalla
+
+D8 (lote nocturno, 16 oct 2026; textos de Katsumi, `celula-d/katsumi-d8-caso-b.md`): el mismo recorrido con otra empresa y otras cifras construidas; la decisión de cada pantalla no cambia. El sorteo elige el caso para toda la pieza; el primer recorrido usa siempre el caso 1. Aquí va solo lo que cambia; lo demás es el caso 1. Cifras del caso B (construidas): cobro 612.000; en «el-faltante», anotado 584.000 y sin anotar 28.000. Origen del cajón: «Taller Ríos Ltda.». Los pies llevan además « · Cifras construidas».
+
+**P0 · dos-cuentas**
+- Pie: «Basado en el libro, p. 179, y en el Tema 2 · Cifras construidas»
+
+**P1 · cobra**
+- Antes de la figura: «Taller Ríos arregla motos, y hoy los clientes le pagan de contado. Toca «Cobrar».» (88,6)
+- Pie: «Basado en el libro, p. 180 · Cifras construidas»
+
+**P2 · consigna**
+- Error si va al debe: «No entró plata nueva: son los mismos $612.000.» (<10)
+- Pie: «Basado en el libro, p. 180 · Cifras construidas»
+
+**P3 · dos-salidas**
+- Pie: «Basado en el libro, p. 180 · Cifras construidas»
+
+**P4 · cheques**
+- Cheque «propio» · tarjeta: «Taller Ríos paga con un cheque propio» (<10)
+- Pie: «Basado en el libro, pp. 179, 180 y 187 · Cifras construidas»
+
+**P5 · el-faltante**
+- Antes de la figura: «Lucía cobra y anota. ¿Qué control faltó?» (<10)
+- Pie: «Basado en el libro, pp. 179-180 · Escenario simulado · Cifras construidas»
+
+**P6 · controles**
+- Pie: «Basado en el libro, pp. 179-180 · Cifras construidas»
+
 ## El cajón en P5 y P6
 
 En P5 (el-faltante) el cajón va sin salidas ni glosas: el origen muestra lo cobrado (435.000), el Debe y «En la caja», 410.000, y junto al tubo de entrada, en neutro, lo que no llegó al libro. Con el acierto, la pastilla «Correcto» en la tarjeta, sin mensaje (decisión de Yujiro), y se enciende lo que cuida la separación (el control 4): el tubo de entrada y las columnas.

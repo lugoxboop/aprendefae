@@ -28,14 +28,19 @@
  */
 import { useEffect, useRef, useState } from "react";
 import {
-  FIGURA_CAJON, SUS_SERVICIOS, DEBE, HABER, INTERFAZ,
-  CONTROLES_A1, CHEQUES_A1, CHEQUE_EN_FIGURA, ESPERA_CHEQUE_MS, ANOTADO_A1, SIN_ANOTAR_A1,
+  FIGURA_CAJON, DEBE, HABER, INTERFAZ,
+  CONTROLES_A1, CHEQUE_EN_FIGURA, ESPERA_CHEQUE_MS, DATOS_A1,
 } from "../../data/contabilidadT4.js";
 import { C, cifra, Mensaje } from "./comun.jsx";
 import { Cajon } from "./Cajon.jsx";
 import { Chips } from "./aprender.jsx";
+import { useDatosCaso } from "./caso.js";
 
-const M = cifra(SUS_SERVICIOS);
+/* D8: las cifras y los nombres del caso en curso (1 o el B). */
+function useCasoA1() {
+  const D = useDatosCaso(DATOS_A1);
+  return { ...D, M: cifra(D.cobro) };
+}
 /* D9 (Hanayama): el cajón de A1 lleva su manija en todas las pantallas; se abre con el cobro, la consignación y el pago. */
 const QUIETO = { abre: 0 };
 const VIBRA_MS = 260;
@@ -82,15 +87,16 @@ function Mapa({ p }) {
 }
 
 function Cobra({ p }) {
+  const { M, cobro, rotuloOrigen } = useCasoA1();
   const [hecho, setHecho] = useState(false);
   return (
     <>
       <Cajon
         cajonA1={{ abre: hecho ? 1 : 0 }}
-        origen={{ rotulo: FIGURA_CAJON.rotuloOrigen, monto: M, montoFoco: !hecho, accion: { id: "cobrar", texto: FIGURA_CAJON.acciones.cobrar, hecha: hecho, onClick: () => setHecho(true) } }}
+        origen={{ rotulo: rotuloOrigen, monto: M, montoFoco: !hecho, accion: { id: "cobrar", texto: FIGURA_CAJON.acciones.cobrar, hecha: hecho, onClick: () => setHecho(true) } }}
         glosas={{ debe: true }}
         debe={hecho ? [{ id: "cobro", v: M, foco: true }] : []}
-        saldo={hecho ? SUS_SERVICIOS : 0}
+        saldo={hecho ? cobro : 0}
         vivo={hecho ? ["entrada"] : []}
       />
       {hecho && <AsientoA1 asiento={p.asiento} />}
@@ -99,6 +105,7 @@ function Cobra({ p }) {
 }
 
 function Consigna({ p, onAcierto }) {
+  const { M, cobro } = useCasoA1();
   const [elegida, setElegida] = useState(null);
   const [vibra, sacudir] = useVibra();
   const ok = elegida === p.correcta;
@@ -115,7 +122,7 @@ function Consigna({ p, onAcierto }) {
         origen={{ texto: p.tarjeta, monto: M, montoFoco: !ok, clave: "consigna" }}
         debe={[{ id: "cobro", v: M }]}
         haber={ok ? [{ id: "consigna", v: M, foco: true }] : []}
-        saldo={ok ? 0 : SUS_SERVICIOS}
+        saldo={ok ? 0 : cobro}
         vivo={ok ? ["salida", "bancos"] : []}
         bancos={ok ? { monto: M } : {}}
         bandeja={{}}
@@ -130,6 +137,7 @@ function Consigna({ p, onAcierto }) {
 }
 
 function DosSalidas() {
+  const { M, cobro } = useCasoA1();
   const [salio, setSalio] = useState(null);
   /* D9: cada consignación o pago abre el cajón; «Otra vez» deja probar la otra, que lo vuelve a abrir. */
   const [abre, setAbre] = useState(0);
@@ -140,7 +148,7 @@ function DosSalidas() {
       glosas={{ haber: true }}
       debe={[{ id: "cobro", v: M }]}
       haber={salio ? [{ id: salio, v: M, foco: true }] : []}
-      saldo={salio ? 0 : SUS_SERVICIOS}
+      saldo={salio ? 0 : cobro}
       vivo={salio ? ["salida", salio] : []}
       bancos={{ monto: salio === "bancos" ? M : null, accion: { id: "consignar", texto: FIGURA_CAJON.acciones.consignar, hecha: Boolean(salio), onClick: () => sacar("bancos") } }}
       pago={{ monto: salio === "pago" ? M : null, accion: { id: "pagar", texto: FIGURA_CAJON.acciones.pagar, hecha: Boolean(salio), onClick: () => sacar("pago") } }}
@@ -159,6 +167,7 @@ function Cheques({ onAcierto }) {
   const [vibra, sacudir] = useVibra();
   const reloj = useRef(0);
   useEffect(() => () => clearTimeout(reloj.current), []);
+  const { cheques: CHEQUES_A1 } = useCasoA1();
   const ch = CHEQUES_A1[k];
   const ok = elegida === ch.correcta;
   const ambos = hechos.length === CHEQUES_A1.length;
@@ -189,6 +198,7 @@ function Cheques({ onAcierto }) {
 }
 
 function Faltante({ p, onAcierto }) {
+  const { M, cobro, anotado } = useCasoA1();
   const [elegida, setElegida] = useState(null);
   const ok = elegida === p.correcta;
   useEffect(() => { if (ok) onAcierto?.(); }, [ok]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -198,9 +208,9 @@ function Faltante({ p, onAcierto }) {
       <Cajon
         cajonA1={QUIETO}
         origen={{ monto: M }}
-        sinAnotar={`${cifra(SIN_ANOTAR_A1)} ${FIGURA_CAJON.sinAnotar}`}
-        debe={[{ id: "anotado", v: cifra(ANOTADO_A1) }]}
-        saldo={ANOTADO_A1}
+        sinAnotar={`${cifra(cobro - anotado)} ${FIGURA_CAJON.sinAnotar}`}
+        debe={[{ id: "anotado", v: cifra(anotado) }]}
+        saldo={anotado}
         salidas={false}
         luz={c?.luz ?? []}
         vivo={c?.vivo ?? []}
