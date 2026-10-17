@@ -21,9 +21,10 @@
  * corregido por Mello (correccionesMelloC3A2.mjs) y con los rótulos de Near
  * (correccionesNearC3A2.mjs).
  *
- * PENDIENTES DE NEAR (auditoria-mello-patron-c3.md §5; nunca en pantalla):
- *   · N-3: la portada en una sola oración.
- *   · N-1/N-2: el lado a lado pasa de 60 palabras; las opciones y el acierto.
+ * EL §5 DE MELLO, RESUELTO POR NEAR (c3-mello-near.md, en TEXTOS_A2): la
+ * portada en una oración (N-3) y, en el lado a lado (N-1 y N-2), la
+ * pregunta, las tres opciones, la pista y el acierto. Las devoluciones del
+ * lado a lado siguen siendo las de main.
  * Van con el texto actual de main hasta que Near los entregue.
  *
  * Pieza de Aprender: cero FP, no entra al catálogo.
@@ -92,7 +93,19 @@ export const CIFRAS_A2 = { mercancia: 5000000, iva: 800000, retencion: 175000, p
 
 /* ═══════════ LAS PANTALLAS ═══════════ */
 
-const PORTADA = { id: "portada", tipo: "portada", texto: MAIN.portada.objetivo, boton: BOTON.empezar, pie: MAIN.portada.pie };
+/* ═══════════ LOS TEXTOS DEL §5, DE NEAR (c3-mello-near.md), LETRA POR LETRA ═══════════ */
+
+export const TEXTOS_A2 = {
+  /* N-3 · la portada, en una oración (la propuesta de Mello). */
+  portada: "Al terminar, sabrás armar el asiento de una compra y de una venta con IVA y retención, y por qué cambian de lado.",
+  /* N-1 y N-2 · el lado a lado. */
+  pregunta: "¿Por qué la retención cambia de lado?",
+  opciones: { "quien-la-debe": "Depende de quién descuenta la retención.", "siempre-se-resta": "La retención siempre se resta del total.", "tarifa-distinta": "En la venta, la tarifa es distinta." },
+  pista: "Mira qué hace La Reventa con la retención en la compra, y qué le pasa en la venta.",
+  acierto: "Exacto. En la compra, La Reventa la descuenta y la debe. En la venta se la descuentan: es un anticipo.",
+};
+
+const PORTADA = { id: "portada", tipo: "portada", texto: TEXTOS_A2.portada, boton: BOTON.empezar, pie: MAIN.portada.pie };
 
 /* [R] Los dos primeros párrafos de Near, en dos frases (Watari). Las tarifas pasan a rótulo de la factura. */
 const DOS_IMPUESTOS = {
@@ -120,11 +133,12 @@ const LA_VENTA = {
   ...lados(V), pie: V.pie,
 };
 
-/* PENDIENTE DE NEAR (N-1, N-2): las opciones y el acierto pasan de 60 palabras. Con el texto de main hasta entonces. */
+/* Los textos de Near del §5; las devoluciones, las de main. */
 const L = MAIN["lado-a-lado"];
+const conTextoNuevo = (o) => ({ ...opcion(o), t: TEXTOS_A2.opciones[o.id], texto: TEXTOS_A2.opciones[o.id] });
 const LADO_A_LADO = {
-  id: "lado-a-lado", tipo: "eleccion", texto: "", consigna: ROTULOS_A2.consignaLadoALado, pregunta: L.pregunta,
-  pista: L.pista, opciones: L.opciones.map(opcion), antes: (s) => Boolean(s.fig.vioRoles), bien: L.acierto.textos[0], pie: L.pie,
+  id: "lado-a-lado", tipo: "eleccion", texto: "", consigna: ROTULOS_A2.consignaLadoALado, pregunta: TEXTOS_A2.pregunta,
+  pista: TEXTOS_A2.pista, opciones: L.opciones.map(conTextoNuevo), antes: (s) => Boolean(s.fig.vioRoles), bien: TEXTOS_A2.acierto, pie: L.pie,
   /* El canon ve la venta antes de tocar una opción (la pregunta sale después). */
   pasosAntes: ['[data-rol="venta"]'],
 };

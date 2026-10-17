@@ -69,3 +69,35 @@ export const PARES_A2 = [
   ["<span>Dirección de Impuestos</span>", `<span>${dian}</span>`],
   ["Factura de la venta · ", `${facturaVenta} · `],
 ];
+
+/* ═══════════ EL §5 DE MELLO, RESUELTO POR NEAR (c3-mello-near.md) ═══════════ */
+
+/*
+ * Los textos que Near reescribe para A2: la portada (N-3) y el lado a lado
+ * (N-1 y N-2). Cada uno sale de la tabla «Campo | Nuevo» de su sección, por
+ * el nombre exacto del campo; si un campo falta o se repite, falla.
+ */
+export const NEAR_5 = readFileSync(new URL("c3-mello-near.md", PAQUETES), "utf8");
+export const N3_A2 = seccion("N-3 · A2, portada", NEAR_5);
+export const LADO_A_LADO_A2 = seccion("A2 · lado a lado", NEAR_5);
+
+/** Los «…» de las filas cuyo campo (primera columna) es exactamente `campo`, en orden. */
+export function campo(nombre, md) {
+  const filas = md.split("\n").filter((l) => l.startsWith("| ") && l.split("|")[1].trim() === nombre);
+  if (!filas.length) falla(`«${nombre}»: no está en la tabla de Near`);
+  return filas.map((l) => { const t = comillas(l.split("|")[2]); if (t.length !== 1) falla(`«${nombre}»: ${t.length} textos en una fila`); return t[0]; });
+}
+const uno = (nombre, md) => { const t = campo(nombre, md); if (t.length !== 1) falla(`«${nombre}»: ${t.length} filas`); return t[0]; };
+
+const malas = campo("Opción", LADO_A_LADO_A2);
+if (malas.length !== 2) falla(`el lado a lado trae ${malas.length} opciones malas, no 2`);
+export const TEXTOS_NEAR_A2 = {
+  portada: uno("Portada", N3_A2),
+  pregunta: uno("Pregunta", LADO_A_LADO_A2),
+  /* En el orden de main: la correcta, «siempre se resta» y «la tarifa es distinta». */
+  opciones: [uno("Opción correcta", LADO_A_LADO_A2), ...malas],
+  pista: uno("Pista", LADO_A_LADO_A2),
+  acierto: uno("Acierto", LADO_A_LADO_A2),
+};
+/* Near deja las devoluciones de main. */
+if (!LADO_A_LADO_A2.includes("Las dos devoluciones de main no cambian.")) falla("Near ya no dice que las devoluciones de main no cambian");

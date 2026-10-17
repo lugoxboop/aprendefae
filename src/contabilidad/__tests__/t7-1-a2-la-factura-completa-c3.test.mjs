@@ -16,15 +16,12 @@ import { JSDOM, VirtualConsole } from "jsdom";
  *   · A2-1 y A2-2 reproducidos (§4 de Mello), la escalera en cada pregunta,
  *     el foco, movimiento reducido, B2 por pantalla, catálogo y vista
  *
- * PENDIENTES_NEAR: las pantallas que Near está reescribiendo (§5 de Mello).
- * B2 ≤ 60 no se les exige todavía; a todas las demás, sí. La lista solo
- * encoge: cuando lleguen los textos, se sacan de aquí.
+ * PENDIENTES_NEAR: las pantallas que Near estaba reescribiendo (§5 de
+ * Mello). Ya llegaron (c3-mello-near.md): la lista queda vacía y B2 ≤ 60 se
+ * exige en todas, también con los estados del canon. Solo encoge.
  * ═══════════════════════════════════════════════════════════════════════════
  */
-const PENDIENTES_NEAR = {
-  portada: "N-3 · Portada de A2 en una oración",
-  "lado-a-lado": "N-1 · B2: como mucho 60 palabras visibles; las opciones cuentan.",
-};
+const PENDIENTES_NEAR = {};
 
 const dom = new JSDOM("<!doctype html><html><body></body></html>", { url: "http://localhost/", virtualConsole: new VirtualConsole() });
 const w = dom.window;
@@ -126,9 +123,19 @@ const forma = (p) => {
   }));
 };
 
-test("★★★ datos ↔ código de referencia de Watari (corregido): pantalla por pantalla, letra por letra, en los dos sentidos", () => {
+/* La referencia de Watari con los textos del §5 de Near encima: la portada y, en el lado a lado, pregunta, opciones, pista y acierto. */
+const T5 = NR.TEXTOS_NEAR_A2;
+const conNear5 = (r) => {
+  if (r.id === "portada") return { ...r, texto: T5.portada };
+  if (r.id !== "lado-a-lado") return r;
+  const consigna = NR.ROTULOS_NEAR_A2.consignaLadoALado;
+  assert.ok(r.texto.startsWith(`${consigna} `), "Watari: la consigna abre el texto del lado a lado");
+  return { ...r, texto: `${consigna} ${T5.pregunta}`, pista: T5.pista, bien: T5.acierto, opciones: r.opciones.map((o, i) => ({ ...o, t: T5.opciones[i] })) };
+};
+
+test("★★★ datos ↔ código de referencia de Watari (corregido) con el §5 de Near: pantalla por pantalla, letra por letra, en los dos sentidos", () => {
   assert.deepEqual(P.pantallas.map((p) => p.id), REF.PANTALLAS.map((p) => p.id));
-  for (const [k, p] of P.pantallas.entries()) assert.deepEqual(forma(p), forma(REF.PANTALLAS[k]), p.id);
+  for (const [k, p] of P.pantallas.entries()) assert.deepEqual(forma(p), forma(conNear5(REF.PANTALLAS[k])), p.id);
   // Las correcciones de Mello no tocan PANTALLAS: la cruda dice lo mismo.
   assert.deepEqual(REF.PANTALLAS.map(forma), CRUDA.PANTALLAS.map(forma));
   // listo y antes, con el mismo comportamiento.
@@ -142,8 +149,8 @@ test("★★★ M-1: el lado a lado separa la consigna (la de Near y Mello) de l
   assert.equal(p.texto, "");
   assert.equal(p.consigna, MC.M1_CONSIGNA);
   assert.equal(p.consigna, NR.ROTULOS_NEAR_A2.consignaLadoALado);
-  assert.equal(p.pregunta, MP["lado-a-lado"].pregunta);
-  assert.equal(`${p.consigna} ${p.pregunta}`, refP("lado-a-lado").texto);
+  assert.equal(p.pregunta, NR.TEXTOS_NEAR_A2.pregunta);
+  assert.equal(`${p.consigna} ${p.pregunta}`, conNear5(refP("lado-a-lado")).texto);
 });
 
 test("★★★ datos ↔ main: los textos de Near salen de contabilidadT7_1_ap2.js, sin copias", () => {
@@ -156,12 +163,14 @@ test("★★★ datos ↔ main: los textos de Near salen de contabilidadT7_1_ap2
   const recortes = REF.PANTALLAS.map((r) => r.texto ?? "").filter((r) => !Object.values(MP).some((x) => [x.objetivo, x.consigna].includes(r)));
   for (const t of deMain) if (!recortes.some((r) => r.includes(t))) assert.ok(!src.includes(t), `copiado a mano: «${t.slice(0, 40)}…»`);
   // Y van tal cual en la pieza.
-  assert.equal(pant("portada").texto, MP.portada.objetivo);
-  for (const id of ["base-de-la-retencion", "lado-a-lado"]) {
+  {
+    const id = "base-de-la-retencion";
     assert.equal(pant(id).pista, MP[id].pista);
     assert.deepEqual(pant(id).opciones.map((o) => [o.id, o.t, o.devolucion]), MP[id].opciones.map((o) => [o.id, o.texto, o.devolucion]));
     assert.equal(pant(id).bien, MP[id].acierto.textos[0]);
   }
+  // En el lado a lado, de main quedan las devoluciones (Near: «Las dos devoluciones de main no cambian.»), con sus ids y la correcta.
+  assert.deepEqual(pant("lado-a-lado").opciones.map((o) => [o.id, Boolean(o.correcta), o.devolucion]), MP["lado-a-lado"].opciones.map((o) => [o.id, o.correcta, o.devolucion]));
   for (const id of ["lados-de-la-compra", "la-venta"]) {
     assert.deepEqual(pant(id).lineas.map((l) => [l.pista, l.devolucion, l.lado]), MP[id].lineas.map((l) => [l.pista, l.devolucion, l.lado]));
     assert.deepEqual(pant(id).lineas.map((l) => `${l.cuenta} · ${l.monto == null ? "$?" : MOTOR.pesos(l.monto)}`), MP[id].lineas.map((l) => l.texto));
@@ -465,8 +474,8 @@ test("★★ movimiento reducido: la retención no cae animada, las líneas no c
 
 /* ═══════════ 4 · B2 POR PANTALLA ═══════════ */
 
-test("★★★ B2: ninguna pantalla pasa de 60 palabras visibles, salvo las PENDIENTES_NEAR (§5 de Mello)", async (t) => {
-  for (const x of Object.values(PENDIENTES_NEAR)) assert.ok(MC.AUDITORIA.includes(x), x);
+test("★★★ B2: ninguna pantalla pasa de 60 palabras visibles (PENDIENTES_NEAR, vacía)", async (t) => {
+  assert.deepEqual(PENDIENTES_NEAR, {});
   const peor = {};
   const anotar = (m) => { const n = m.b2(); peor[m.pantalla()] = Math.max(peor[m.pantalla()] ?? 0, n); };
   for (const p of P.pantallas) {
@@ -483,13 +492,45 @@ test("★★★ B2: ninguna pantalla pasa de 60 palabras visibles, salvo las PEN
       if (p.lineas) for (const l of p.lineas) { await m.lado(l.lado === "debe" ? "haber" : "debe"); anotar(m); await m.lado(l.lado === "debe" ? "haber" : "debe"); anotar(m); await m.lado(l.lado); anotar(m); }
     } finally { m.desmontar(); }
   }
-  for (const [id, n] of Object.entries(peor)) t.diagnostic(`B2 ${id}: ${n}${PENDIENTES_NEAR[id] ? " (pendiente de Near)" : ""}`);
+  for (const [id, n] of Object.entries(peor)) t.diagnostic(`B2 ${id}: ${n}`);
   assert.deepEqual(Object.keys(peor), P.pantallas.map((p) => p.id));
-  const pasan = Object.entries(peor).filter(([, n]) => n > C.UMBRAL_B2_PALABRAS).map(([id]) => id);
-  assert.deepEqual(pasan.filter((id) => !PENDIENTES_NEAR[id]), [], "B2 > 60 fuera de lo pendiente de Near");
-  // Lo pendiente sigue pendiente de verdad (si Near ya lo arregló, se saca de la lista).
-  assert.ok(peor["lado-a-lado"] > C.UMBRAL_B2_PALABRAS, "el lado a lado ya cumple B2: sácalo de PENDIENTES_NEAR");
-  assert.equal(pant("portada").texto.split(/[.!?](\s|$)/).filter((x) => x && x.trim()).length, 2, "la portada ya es una oración (N-3): sácala de PENDIENTES_NEAR");
+  const pasan = Object.entries(peor).filter(([, n]) => n > C.UMBRAL_B2_PALABRAS).map(([id, n]) => `${id} (${n})`);
+  assert.deepEqual(pasan, [], "B2 > 60");
+  // N-3: la portada es una sola oración.
+  assert.equal(pant("portada").texto.split(/[.!?](\s|$)/).filter((x) => x && x.trim()).length, 1);
+});
+
+test("★★★ B2 con los estados del canon (canonEnganche.estadosDePantalla, cada pantalla montada sola): 60 o menos en todas", async (t) => {
+  const filas = [];
+  for (const [k, p] of P.pantallas.entries()) {
+    for (const { estado, pasos } of C.estadosDePantalla(p)) {
+      const m = await montar(h(Factura, { pieza: { ...P, pantallas: P.pantallas.slice(k) }, rotulo: "PIEZA 1 DE 1" }));
+      try {
+        for (const sel of pasos) await m.clic(m.q(sel));
+        filas.push([`${p.id} (${estado})`, m.b2()]);
+      } finally { m.desmontar(); }
+    }
+  }
+  for (const [e, n] of filas) t.diagnostic(`canon B2 ${e}: ${n}`);
+  assert.ok(filas.some(([e]) => e === "lado-a-lado (al acertar)"), "el canon llega al acierto del lado a lado");
+  assert.deepEqual(filas.filter(([, n]) => n > C.UMBRAL_B2_PALABRAS), []);
+});
+
+test("★★★ §5 de Near: los textos nuevos, letra por letra de c3-mello-near.md, en los dos sentidos", () => {
+  const T = D.TEXTOS_A2;
+  assert.deepEqual({ ...T, opciones: Object.values(T.opciones) }, NR.TEXTOS_NEAR_A2);
+  assert.deepEqual(Object.keys(T.opciones), MP["lado-a-lado"].opciones.map((o) => o.id), "en el orden de main: la correcta primero");
+  for (const x of [T.portada, T.pregunta, T.pista, T.acierto, ...Object.values(T.opciones)]) assert.ok(NR.NEAR_5.includes(`«${x}»`), x);
+  // Son nuevos de verdad: ninguno es el de main.
+  const viejo = MP["lado-a-lado"];
+  assert.notEqual(T.portada, MP.portada.objetivo);
+  assert.notEqual(T.pregunta, viejo.pregunta);
+  assert.notEqual(T.pista, viejo.pista);
+  assert.notEqual(T.acierto, viejo.acierto.textos[0]);
+  for (const o of viejo.opciones) assert.notEqual(T.opciones[o.id], o.texto);
+  // El ayudante falla si Near cambia la tabla.
+  assert.throws(() => NR.campo("Campo que no existe", NR.LADO_A_LADO_A2), /no está/);
+  assert.throws(() => NR.seccion("A2 · lado a lado", "# nada"), /no está/);
 });
 
 /* ═══════════ 5 · CATÁLOGO, VISTA Y CÓDIGO ═══════════ */
