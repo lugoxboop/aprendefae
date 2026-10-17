@@ -477,3 +477,52 @@ test("★★★ fuera del catálogo de FP: Aprender en subjects.js, ninguna migr
   assert.ok(pantallas.length > 500, "no se encontró el bloque de las pantallas");
   assert.doesNotMatch(pantallas, /registrar|completar|otorgarFP|onCompletar/);
 });
+
+test("★★★ D9 · el cajón de A1 es un cajón: la manija bajo su base en todas las pantallas; se abre 4 px y vuelve con el cobro, la consignación y cada pago; con movimiento reducido no se mueve", async () => {
+  const animados = [];
+  const original = w.Element.prototype.animate;
+  const mm = w.matchMedia;
+  w.Element.prototype.animate = function (frames, opts) { animados.push({ el: this, frames, opts }); return { cancel() {} }; };
+  const reducido = (v) => { w.matchMedia = (q) => ({ matches: v && /reduce/.test(q), addEventListener() {}, removeEventListener() {} }); };
+  try {
+    reducido(false);
+    for (const p of P.pantallas) {
+      const m = await abrir(p.id);
+      try {
+        const manija = q(m, "[data-cajon] > [data-manija]");
+        assert.ok(manija, `${p.id}: sin manija`);
+        assert.equal(manija.getAttribute("aria-hidden"), "true");
+      } finally { m.desmontar(); }
+    }
+    animados.length = 0;
+    const c = await abrir("cobra");
+    try {
+      assert.equal(q(c, "[data-cajon]").dataset.abre, "0");
+      tocar(q(c, "[data-accion=cobrar]"));
+      await esperar(0);
+      assert.equal(q(c, "[data-cajon]").dataset.abre, "1");
+      const a = animados.find((x) => x.el.matches("[data-cajon]"));
+      assert.ok(a, "el cobro no abre el cajón");
+      assert.deepEqual(a.frames.map((f) => f.transform), ["translateY(0)", "translateY(4px)", "translateY(0)"]);
+      assert.equal(a.opts.duration, 440);
+    } finally { c.desmontar(); }
+    const d = await abrir("dos-salidas");
+    try {
+      tocar(q(d, "[data-accion=consignar]"));
+      tocar(q(d, "[data-accion=otra-vez]"));
+      tocar(q(d, "[data-accion=pagar]"));
+      await esperar(0);
+      assert.equal(q(d, "[data-cajon]").dataset.abre, "2", "cada salida no abre el cajón");
+    } finally { d.desmontar(); }
+    reducido(true);
+    animados.length = 0;
+    const r = await abrir("cobra");
+    try {
+      tocar(q(r, "[data-accion=cobrar]"));
+      await esperar(0);
+      assert.equal(animados.filter((x) => x.el.matches("[data-cajon]")).length, 0, "con movimiento reducido el cajón se mueve");
+    } finally { r.desmontar(); }
+  } finally { w.Element.prototype.animate = original; w.matchMedia = mm; }
+  const h1 = readFileSync(new URL("../../components/t4/EntraOSaleDeCaja.jsx", import.meta.url), "utf8");
+  assert.doesNotMatch(h1, /cajonA1/, "H1 lleva el cajón de A1");
+});

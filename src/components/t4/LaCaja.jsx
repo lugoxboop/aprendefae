@@ -36,6 +36,8 @@ import { Cajon } from "./Cajon.jsx";
 import { Chips } from "./aprender.jsx";
 
 const M = cifra(SUS_SERVICIOS);
+/* D9 (Hanayama): el cajón de A1 lleva su manija en todas las pantallas; se abre con el cobro, la consignación y el pago. */
+const QUIETO = { abre: 0 };
 const VIBRA_MS = 260;
 
 export const CSS_A1 = `
@@ -76,7 +78,7 @@ function useVibra() {
 }
 
 function Mapa({ p }) {
-  return <Cajon glosasCuenta={Boolean(p.glosasCuenta)} />;
+  return <Cajon glosasCuenta={Boolean(p.glosasCuenta)} cajonA1={QUIETO} />;
 }
 
 function Cobra({ p }) {
@@ -84,6 +86,7 @@ function Cobra({ p }) {
   return (
     <>
       <Cajon
+        cajonA1={{ abre: hecho ? 1 : 0 }}
         origen={{ rotulo: FIGURA_CAJON.rotuloOrigen, monto: M, montoFoco: !hecho, accion: { id: "cobrar", texto: FIGURA_CAJON.acciones.cobrar, hecha: hecho, onClick: () => setHecho(true) } }}
         glosas={{ debe: true }}
         debe={hecho ? [{ id: "cobro", v: M, foco: true }] : []}
@@ -108,6 +111,7 @@ function Consigna({ p, onAcierto }) {
   return (
     <>
       <Cajon
+        cajonA1={{ abre: ok ? 1 : 0 }}
         origen={{ texto: p.tarjeta, monto: M, montoFoco: !ok, clave: "consigna" }}
         debe={[{ id: "cobro", v: M }]}
         haber={ok ? [{ id: "consigna", v: M, foco: true }] : []}
@@ -127,15 +131,19 @@ function Consigna({ p, onAcierto }) {
 
 function DosSalidas() {
   const [salio, setSalio] = useState(null);
+  /* D9: cada consignación o pago abre el cajón; «Otra vez» deja probar la otra, que lo vuelve a abrir. */
+  const [abre, setAbre] = useState(0);
+  const sacar = (a) => { setSalio(a); setAbre((n) => n + 1); };
   return (
     <Cajon
+      cajonA1={{ abre }}
       glosas={{ haber: true }}
       debe={[{ id: "cobro", v: M }]}
       haber={salio ? [{ id: salio, v: M, foco: true }] : []}
       saldo={salio ? 0 : SUS_SERVICIOS}
       vivo={salio ? ["salida", salio] : []}
-      bancos={{ monto: salio === "bancos" ? M : null, accion: { id: "consignar", texto: FIGURA_CAJON.acciones.consignar, hecha: Boolean(salio), onClick: () => setSalio("bancos") } }}
-      pago={{ monto: salio === "pago" ? M : null, accion: { id: "pagar", texto: FIGURA_CAJON.acciones.pagar, hecha: Boolean(salio), onClick: () => setSalio("pago") } }}
+      bancos={{ monto: salio === "bancos" ? M : null, accion: { id: "consignar", texto: FIGURA_CAJON.acciones.consignar, hecha: Boolean(salio), onClick: () => sacar("bancos") } }}
+      pago={{ monto: salio === "pago" ? M : null, accion: { id: "pagar", texto: FIGURA_CAJON.acciones.pagar, hecha: Boolean(salio), onClick: () => sacar("pago") } }}
     >
       <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "8px", visibility: salio ? "visible" : "hidden" }}>
         <button type="button" className="t4r-btn2" data-accion="otra-vez" onClick={() => setSalio(null)}>{FIGURA_CAJON.acciones.otraVez}</button>
@@ -165,6 +173,7 @@ function Cheques({ onAcierto }) {
   return (
     <>
       <Cajon
+        cajonA1={QUIETO}
         origen={{ texto: ch.tarjeta, clave: ch.id }}
         debe={hechos.includes("recibido") ? [{ id: "cheque", v: CHEQUE_EN_FIGURA.recibido, foco: k === 0 }] : []}
         vivo={hechos.includes("recibido") && k === 0 ? ["entrada"] : []}
@@ -187,6 +196,7 @@ function Faltante({ p, onAcierto }) {
   return (
     <>
       <Cajon
+        cajonA1={QUIETO}
         origen={{ monto: M }}
         sinAnotar={`${cifra(SIN_ANOTAR_A1)} ${FIGURA_CAJON.sinAnotar}`}
         debe={[{ id: "anotado", v: cifra(ANOTADO_A1) }]}
@@ -211,7 +221,7 @@ function Controles({ onCierre }) {
   useEffect(() => { if (todos) onCierre?.(); }, [todos]); // eslint-disable-line react-hooks/exhaustive-deps
   const tocar = (i) => { setK(i); setVistos((v) => new Set([...v, i])); };
   const c = k != null ? CONTROLES_A1[k] : null;
-  return <Cajon saldo="—" luz={c?.luz ?? []} vivo={c?.vivo ?? []} controles={{ lista: CONTROLES_A1, activo: k, onTocar: tocar }} />;
+  return <Cajon cajonA1={QUIETO} saldo="—" luz={c?.luz ?? []} vivo={c?.vivo ?? []} controles={{ lista: CONTROLES_A1, activo: k, onTocar: tocar }} />;
 }
 
 const CUERPOS = { mapa: Mapa, cobra: Cobra, consigna: Consigna, salidas: DosSalidas, cheques: Cheques, faltante: Faltante, controles: Controles };
