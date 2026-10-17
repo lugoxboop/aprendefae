@@ -10,6 +10,7 @@ import {
   PASOS_V2_T6_ACT2, PROVISION_V2_T6_ACT2, T6_ACT2_V2, ALT_V2_T6_ACT2, BARRA_V2_T6_ACT2, MOMENTOS_V2_T6_ACT2, ESCENA_V2_T6_ACT2,
 } from "../../../../data/b5SegundaVuelta.js";
 import { TanqueCifra } from "./CifraQueMueve.jsx";
+import AjusteDelAnoSiguiente from "./AjusteDelAnoSiguiente.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -52,6 +53,8 @@ export const CONFIG_T6_ACT2 = {
   /* Lote 17: en las preguntas 2 y 3, el tanque a la izquierda de la pregunta, el campo y «Comprobar». */
   lados: { tanque: TanqueCifra },
   atributos: { "data-cierre-t6-a2": true },
+  /* Lote 24 (D9, Mai): tras la pregunta 3, la regla del ajuste del año siguiente. Las cifras salen de los pasos de cada vuelta. */
+  elementoPropio: AjusteDelAnoSiguiente,
 };
 
 /* D8 (lote 18, Futaba): la variante, Distribuidora La Ceiba y Hernán Ríos, con su T y su bloque del estado. */

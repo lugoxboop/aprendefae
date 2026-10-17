@@ -377,3 +377,15 @@ Aprobada por Sakuta tal cual (bloque A del lote 17). Resumen para código; el pr
 - **Accesibilidad:** la Barra y el tanque llevan aria-hidden; el eco no se anuncia con cada tecla; la marca y la devolución, como hoy. La etiqueta oculta del campo: si main ya tiene una, se queda la de main.
 - **Textos:** ninguno nuevo a la vista; se reusan «Le faltan {cifra}», «El saldo queda en {cifra}», el rótulo de la provisión de la capa 1, las filas del estado de situación y las preguntas y devoluciones de main.
 - **Kaede (indispensable):** 1) escribir no mueve nada de sitio; 2) antes de «Comprobar», nada contra qué alinear; 3) tras «Comprobar», el modelo muestra lo correcto; 4) escalas como arriba (si cambian las cifras de main, la pista termina en el 66,67 % y el tope del tanque es 200.000).
+
+## Lote 24 · D9 — un elemento visual propio (P2 de Mai, 17-oct)
+
+Aprobada por Sakuta. Responde a Shoko (D9, «la T y el bloque repiten los de T6 A3»). Va como hijo opcional de la mesa (`elementoPropio`), el mismo mecanismo del lote 20, entre la devolución y «Siguiente». Entra siempre con lo correcto.
+
+- **«El ajuste del año siguiente»:** el ajuste de diciembre del año siguiente ($184.600) tiene dos partes: lo que la provisión **se quedó corta** en marzo ($31.200) y lo que **pide el análisis** para el año nuevo ($153.400). Es la regla de la capa 1: «Esa diferencia se suma a la provisión del año siguiente».
+- **El elemento:** una regla horizontal con el cero marcado. A la izquierda del cero, un tramo rayado teal, «se quedó corta $31.200». A la derecha, un tramo ámbar, «pide el análisis $153.400». Encima, un arco de salto del extremo izquierdo al derecho, «el ajuste $184.600»: se ve que el ajuste sale de debajo del cero, y no del saldo anterior.
+- **Escala:** x(v) = (v + 40.000) / 200.000 · ancho; el cero cae en el 20 %. En la variante (D8), la misma regla redondeada a 40.000: de −80.000 a 120.000.
+- **Cuándo entra:** solo tras la pregunta 3 (el saldo final). Antes delataría la respuesta: el tramo derecho es justo el saldo que se pregunta (R10). Explica la devolución del error más común: «Ese es el valor del ajuste, no el saldo».
+- **Movimiento:** los tramos entran con opacidad y scaleX en 240 ms, curva cubic-bezier(.3,.9,.4,1); con movimiento reducido, al instante.
+- **Texto alternativo:** «El ajuste, $184.600: $31.200 que faltaron más $153.400 que pide el análisis».
+- **Textos nuevos (PARA SHOKO):** «El ajuste del año siguiente», «el ajuste», «se quedó corta» y «pide el análisis».

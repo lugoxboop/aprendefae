@@ -250,3 +250,35 @@ export const resumenT6Act1 = (bien, cuantas) => `${bien} de ${cuantas} fichas bi
 
 /* La corrección de Shoko (las opciones con punto y coma), con la frase del botón adaptada a la hoja de Mai. PARA SHOKO. */
 export const ALT_T6_ACT1 = "Actividad de clasificación. Aparece un hecho. Elige entre tres opciones: Otra cuenta por cobrar; Clientes, se debita; o Clientes, se acredita. Toca el cajón donde va la ficha. Si fallas, tienes un intento más. Después de cada respuesta se lee la explicación.";
+
+/*
+ * ═══════════ LOTE 24 · D9 «¿QUIÉN LE DEBE A LA EMPRESA?» (P2 de Mai) ═══════════
+ *
+ * La galería de deudores: Clientes en su fila; Otras cuentas por cobrar en tres columnas y, debajo, «otros
+ * motivos». Las palabras son fragmentos de las definiciones de la capa 1 de T6 A1. La etiqueta de deudor
+ * de cada ficha la da Futaba (`DEUDOR_POR_FICHA`, vacía hasta que llegue); mientras tanto, la de Clientes
+ * va bajo «clientes» y la de otra cuenta sale de su cuenta («¿En cuál?»), o va junto a «otros motivos».
+ * PARA SHOKO: el título y el lector son nuevos.
+ */
+export const DEUDORES_T6_ACT1 = {
+  titulo: "¿Quién le debe a la empresa?",
+  clientes: { nombre: "Clientes", palabra: "clientes", motivo: "les vendió a crédito" },
+  otras: {
+    nombre: "Otras cuentas por cobrar",
+    columnas: [
+      { id: "socios", palabra: "socios y accionistas" },
+      { id: "trabajadores", palabra: "trabajadores" },
+      { id: "particulares", palabra: "particulares" },
+    ],
+    motivo: "otros motivos",
+  },
+  lector: (n, deudor) => `Ficha ${n}: ${deudor}`,
+  frases: {
+    clientes: "la debe un cliente; la empresa le vendió a crédito",
+    socios: "la deben socios y accionistas",
+    trabajadores: "la debe un trabajador",
+    particulares: "la debe un particular",
+    otro: "la deuda viene de otros motivos",
+  },
+};
+export const DEUDOR_POR_FICHA = {};
