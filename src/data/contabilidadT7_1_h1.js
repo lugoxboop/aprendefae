@@ -24,6 +24,8 @@ export const H1_ID = "t7-1-que-cuenta-se-mueve";
 
 export const H1 = {
   id: H1_ID,
+  /* Lote O: el objetivo, de Near (paquetes/lote-o-objetivos.md). */
+  objetivo: "Decidir qué cuenta se mueve con cada hecho cuando la empresa usa el sistema periódico.",
   nombre: "¿Qué cuenta se mueve?",
   consigna: [
     "La empresa usa el sistema de inventario periódico. Para cada hecho, elige qué cuenta se mueve en ese momento.",
