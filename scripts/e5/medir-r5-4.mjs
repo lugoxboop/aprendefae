@@ -89,6 +89,8 @@ function medirHoja(sel) {
 
 for (const ancho of ANCHOS) {
   const pg = await navegador.newPage({ viewport: { width: ancho, height: ALTO[ancho] }, deviceScaleFactor: 2 });
+  /* D8: con R5_VERSION=B se mide la versión B (el intento 2). */
+  if (process.env.R5_VERSION === "B") await pg.addInitScript(() => { for (const n of [1, 2, 3, 4, 5]) localStorage.setItem(`fae:r5:intentos:r5-${n}`, "1"); });
   await pg.goto(URL_BANCO);
   const iw = await pg.evaluate(() => window.innerWidth);
   if (iw !== ancho) fallos.push(`${ancho} px · window.innerWidth da ${iw}`);

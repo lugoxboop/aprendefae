@@ -1,6 +1,7 @@
 import { pesos } from "./contabilidad.js";
 import { CAJA, COMPRAS, CLIENTES, DEVOLUCIONES, INGRESOS, INVENTARIO, ROTULOS_MATE, COMUNES_MATE, DATOS_DECLARADOS as DECLARADOS_MATE } from "./repasoCap5MateTextos.js";
-import { CLAVES, EQUIVOCADAS as E, INGRESO_P2, INGRESO_P3, habriaSido, unitarioEnLibro } from "./repasoCap5Permanente.js";
+import { CLAVES, EQUIVOCADAS as E, INGRESO_P2, INGRESO_P3, habriaSido, unitarioEnLibro, CIFRAS_R5_5 } from "./repasoCap5Permanente.js";
+import { cifraK } from "../contabilidad/t7_2Kardex.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -84,7 +85,7 @@ export const ROTULOS_PERMANENTE = {
   costoUnitario: "COSTO UNITARIO",
   costoTotal: "COSTO TOTAL",
   nuevoPromedio: "NUEVO COSTO PROMEDIO",
-  costoDeLas: "COSTO DE LAS 6.100",
+  costoDeLas: `COSTO DE LAS ${cifraK(CIFRAS_R5_5.A.DATOS.venta28.unidades)}`,
   inventario: "INVENTARIO DE MERCANCÍAS",
   unidades: "Unidades",
   valorBarra: "Valor",
@@ -138,6 +139,68 @@ const DEV_P2 = {
     { valores: E.p2.loCobrado, texto: "Eso es lo que cobraste. Aquí va lo que te costaron esas 6.000 unidades." },
   ],
 };
+
+/*
+ * D8 · las pantallas 4 y 5 son plantillas: sus cifras salen del kárdex de cada
+ * versión. La A conserva sus enunciados; la B trae los de Miyata.
+ */
+const ENUNCIADOS = {
+  A: {
+    p4: (n) => `Entra el lote nuevo con su flete y luego vendes ${n}. Escribe el nuevo promedio y el costo de esa venta.`,
+    p5: (dif) => `Mismo mes: en permanente, el mes cuesta unos ${dif} más. Toca la venta del 10: ¿por qué cambia su costo?`,
+  },
+  B: {
+    p4: (n) => `Entra el lote nuevo con su flete. El 28 vendes ${n}. Escribe el nuevo promedio y el costo de esa venta.`,
+    p5: (dif) => `Mismo mes: en permanente, el costo del mes sale unos ${dif} más alto. Toca la venta del 10: ¿por qué cambia su costo?`,
+  },
+};
+const vendidas28 = (C) => cifraK(C.DATOS.venta28.unidades);
+
+function p4De(C, en) {
+  const n = vendidas28(C);
+  return {
+    id: "p4",
+    filas: ["c25", "v28"],
+    fila: "v28",
+    enunciado: en.p4(n),
+    clave: C.CLAVES.p4,
+    devoluciones: {
+      promedio: [
+        { valores: [C.EQUIVOCADAS.p4.promedioViejo], texto: "Ese es el promedio de antes de la compra. La entrada del 25 cambia el saldo: recalcula." },
+        { valores: [C.EQUIVOCADAS.p4.loteNuevo], texto: "Ese es el costo del lote nuevo solo. El promedio mezcla todo lo que hay en bodega." },
+        { valores: [C.EQUIVOCADAS.p4.sinPesar], texto: "Promediaste los dos costos sin pesar las unidades. Hay 450 de un lado y 7.750 del otro." },
+      ],
+      costo: [
+        { valores: [C.EQUIVOCADAS.p4.todoElSaldo], texto: `Ese es todo el saldo. Salen ${n} de las ${cifraK(C.fila("c25").saldo[0])} unidades.` },
+        { valores: [C.EQUIVOCADAS.p4.conPromedioViejo], texto: "Usaste el promedio viejo para esta venta. El lote del 25 ya está en bodega y baja el costo." },
+        { valores: C.EQUIVOCADAS.p4.loCobrado, texto: "Eso es lo que cobraste. Aquí va lo que costaron." },
+      ],
+    },
+    generica: `Suma la entrada al saldo y divide entre las unidades. Luego multiplica por las ${n} que salen.`,
+    acierto: `El lote barato bajó el promedio. Por eso estas ${n} salen más baratas que las del día 10.`,
+    pista: "¿Cuántas unidades hay después de la compra, y cuánto valen todas juntas?",
+  };
+}
+
+function p5De(C, en) {
+  const dif = pesos(C.DIFERENCIA_REDONDA);
+  return {
+    id: "p5",
+    fila: "v10",
+    enunciado: en.p5(dif),
+    /* No se muestra (B5): la pregunta ya va en el enunciado. */
+    pregunta: "¿Por qué la venta del 10 cuesta distinto en cada sistema?",
+    opciones: [
+      { id: "a", texto: "El periódico promedia todo el mes, con el lote del 25.", correcta: true },
+      { id: "b", texto: "Es por el redondeo que el permanente hace en cada venta del mes.", retro: `El redondeo mueve pesos, no ${dif}. La diferencia está en qué compras entran en cada promedio.` },
+      { id: "c", texto: "El periódico no resta la devolución que le hiciste al proveedor.", retro: "El periódico sí la resta: el disponible es el mismo en los dos. La diferencia está en cuándo se calcula el promedio." },
+      { id: "d", texto: "En el permanente, la devolución del 15 sube el costo de la venta.", retro: "La devolución vuelve al mismo costo con que salió. No cambia el promedio ni el costo de la venta del 10." },
+    ],
+    generica: "El permanente usa lo que había el día 10. El periódico espera a fin de mes.",
+    acierto: "El periódico le pone a la venta del 10 un costo que solo se conoce a fin de mes. Es como costear la leche vendida el día 10 con un promedio que incluye leche que aún no llegaba.",
+    pista: "Mira qué compras existían ya el día 10, y cuáles llegaron después.",
+  };
+}
 
 export const PANTALLAS = [
   {
@@ -212,45 +275,14 @@ export const PANTALLAS = [
     acierto: "Vuelven al costo con que salieron. El costo de la venta baja y la bodega recupera esas unidades.",
     pista: "¿A qué valor salieron estas unidades de la bodega el día 10?",
   },
-  {
-    id: "p4",
-    filas: ["c25", "v28"],
-    fila: "v28",
-    enunciado: "Entra el lote nuevo con su flete y luego vendes 6.100. Escribe el nuevo promedio y el costo de esa venta.",
-    clave: CLAVES.p4,
-    devoluciones: {
-      promedio: [
-        { valores: [E.p4.promedioViejo], texto: "Ese es el promedio de antes de la compra. La entrada del 25 cambia el saldo: recalcula." },
-        { valores: [E.p4.loteNuevo], texto: "Ese es el costo del lote nuevo solo. El promedio mezcla todo lo que hay en bodega." },
-        { valores: [E.p4.sinPesar], texto: "Promediaste los dos costos sin pesar las unidades. Hay 450 de un lado y 7.750 del otro." },
-      ],
-      costo: [
-        { valores: [E.p4.todoElSaldo], texto: "Ese es todo el saldo. Salen 6.100 de las 8.200 unidades." },
-        { valores: [E.p4.conPromedioViejo], texto: "Usaste el promedio viejo para esta venta. El lote del 25 ya está en bodega y baja el costo." },
-        { valores: E.p4.loCobrado, texto: "Eso es lo que cobraste. Aquí va lo que costaron." },
-      ],
-    },
-    generica: "Suma la entrada al saldo y divide entre las unidades. Luego multiplica por las 6.100 que salen.",
-    acierto: "El lote barato bajó el promedio. Por eso estas 6.100 salen más baratas que las del día 10.",
-    pista: "¿Cuántas unidades hay después de la compra, y cuánto valen todas juntas?",
-  },
-  {
-    id: "p5",
-    fila: "v10",
-    enunciado: "Mismo mes: en permanente, el mes cuesta unos $77.500 más. Toca la venta del 10: ¿por qué cambia su costo?",
-    /* No se muestra (B5): la pregunta ya va en el enunciado. */
-    pregunta: "¿Por qué la venta del 10 cuesta distinto en cada sistema?",
-    opciones: [
-      { id: "a", texto: "El periódico promedia todo el mes, con el lote del 25.", correcta: true },
-      { id: "b", texto: "Es por el redondeo que el permanente hace en cada venta del mes.", retro: "El redondeo mueve pesos, no $77.500. La diferencia está en qué compras entran en cada promedio." },
-      { id: "c", texto: "El periódico no resta la devolución que le hiciste al proveedor.", retro: "El periódico sí la resta: el disponible es el mismo en los dos. La diferencia está en cuándo se calcula el promedio." },
-      { id: "d", texto: "En el permanente, la devolución del 15 sube el costo de la venta.", retro: "La devolución vuelve al mismo costo con que salió. No cambia el promedio ni el costo de la venta del 10." },
-    ],
-    generica: "El permanente usa lo que había el día 10. El periódico espera a fin de mes.",
-    acierto: "El periódico le pone a la venta del 10 un costo que solo se conoce a fin de mes. Es como costear la leche vendida el día 10 con un promedio que incluye leche que aún no llegaba.",
-    pista: "Mira qué compras existían ya el día 10, y cuáles llegaron después.",
-  },
+  p4De(CIFRAS_R5_5.A, ENUNCIADOS.A),
+  p5De(CIFRAS_R5_5.A, ENUNCIADOS.A),
 ];
 
-export const pantalla = (id) => PANTALLAS.find((p) => p.id === id);
+/* D8 · la versión B: las pantallas 1 a 3 son las mismas; la 4 y la 5, con las 5.600 del 28. */
+export const PANTALLAS_B = PANTALLAS.map((p) => ({ p4: p4De(CIFRAS_R5_5.B, ENUNCIADOS.B), p5: p5De(CIFRAS_R5_5.B, ENUNCIADOS.B) })[p.id] ?? p);
+export const PANTALLAS_DE = { A: PANTALLAS, B: PANTALLAS_B };
+export const rotulosDe = (version) => ({ ...ROTULOS_PERMANENTE, costoDeLas: `COSTO DE LAS ${vendidas28(CIFRAS_R5_5[version])}` });
+
+export const pantalla = (id, lista = PANTALLAS) => lista.find((p) => p.id === id);
 export { precio };

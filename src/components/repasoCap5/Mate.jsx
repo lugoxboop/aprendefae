@@ -3,7 +3,7 @@ import { CSS_JUEGO, Cierre } from "../mecanicas/corazon/juego.jsx";
 /* Los estados de calificación, el «ERA ESTE», los puntos y la palabra: de comun.jsx (B4, E3). */
 import {
   C, INTER, SORA, MARCA, CEJILLA, CONTADOR, CIFRA, HUNDIDO, REPOSO, SOLO_LECTOR, LECTOR, CSS_FOCO, Devolucion, BotonSiguiente, Responder, Comprobar, Cita,
-  ESTADOS, Punto, MarcaPieza, Pastilla, PuntoDelMes, useTrasError,
+  ESTADOS, Punto, MarcaPieza, Pastilla, PuntoDelMes, useTrasError, useIntento,
 } from "./comun.jsx";
 import { cifra, leerCifra } from "./ToroNegro.jsx";
 import { MesEnDosCuentas } from "./MesEnDosCuentas.jsx";
@@ -11,9 +11,9 @@ import { Calendario, CSS_CALENDARIO } from "./Calendario.jsx";
 import { Balanza, CSS_BALANZA } from "./Balanza.jsx";
 import { movimientosDelMes } from "../../data/repasoCap5Mes.js";
 import {
-  R5_3, MES_MATE, ASIENTOS_MATE, HOJA_MATE, ENTRADA_MATE, DATOS_DEL_LIBRO, DATOS_DECLARADOS, ROTULOS_MATE as RM, BALANZA_R5_3,
+  R5_3, MES_MATE, ASIENTOS_MATE, ASIENTOS_MATE_B, HOJA_MATE, ENTRADA_MATE, DATOS_DEL_LIBRO, DATOS_DECLARADOS, ROTULOS_MATE as RM, BALANZA_R5_3,
 } from "../../data/repasoCap5MateTextos.js";
-import { balanzaTras } from "../../data/repasoCap5Balanza.js";
+import { BALANZA_A, BALANZA_B } from "../../data/repasoCap5Balanza.js";
 import { pesos } from "../../data/contabilidad.js";
 import { FEEDBACK } from "../../data/repasoCap5Comun.js";
 import { evaluarMate, puedeRevisarMate, sumasDe, puntuarR5_3, MAXIMO_POR_LADO } from "../../data/repasoCap5MateJuego.js";
@@ -59,7 +59,11 @@ export const ACTIVIDAD_MATE = {
   /* P2 de Itagaki: la balanza del IVA es la figura del mes; salen «Datos de marzo» y el panel. */
   BALANZA: true,
   TEXTOS_BALANZA: BALANZA_R5_3,
+  DATOS_BALANZA: BALANZA_A,
+  version: "A",
 };
+/* D8 · la versión B de r5-3: los asientos de Miyata y su balanza. */
+export const ACTIVIDAD_MATE_B = { ...ACTIVIDAD_MATE, ASIENTOS_MATE: ASIENTOS_MATE_B, DATOS_BALANZA: BALANZA_B, version: "B" };
 const Actividad = createContext(ACTIVIDAD_MATE);
 const useActividad = () => useContext(Actividad);
 /* r5-5 usa el armador, su hoja y las tarjetas de la entrada con sus propios datos. */
@@ -530,7 +534,7 @@ const nombresDelMes = (asientos, nombres) => asientos.reduce((m, x) => ({ ...m, 
 const resumenDelMes = (asientos, resultados) => asientos.reduce((m, x) => ({ ...m, [x.dia]: [...(m[x.dia] ?? []), Boolean(resultados[x.id])] }), {});
 
 function PantallaAsiento({ a, i, total, r, onRespondida, onSiguiente, botonRef }) {
-  const { id, RM, R5_3, SIN_ENTRADA, BALANZA, TEXTOS_BALANZA, CALENDARIO, TEXTOS_CALENDARIO: TC, ASIENTOS_MATE, evaluarMate, MES_MATE, MOVIMIENTOS_MATE, LINEAS_MES } = useActividad();
+  const { id, RM, R5_3, SIN_ENTRADA, BALANZA, TEXTOS_BALANZA, DATOS_BALANZA, CALENDARIO, TEXTOS_CALENDARIO: TC, ASIENTOS_MATE, evaluarMate, MES_MATE, MOVIMIENTOS_MATE, LINEAS_MES } = useActividad();
   const [renglones, setRenglones] = useState([]);
   /* r5-4 (P2 de Itagaki): la ventana del descuento, en los asientos con condición. */
   const ventana = CALENDARIO && a.ventana ? { ...a.ventana, borde: a.ventana.factura + a.ventana.plazo } : null;
@@ -609,7 +613,7 @@ function PantallaAsiento({ a, i, total, r, onRespondida, onSiguiente, botonRef }
       <Devolucion r={r && { ok: r.ok, textos: r.textos }} />
       {/* Después de la devolución, sin desplazamiento forzado (corrección 1 de Takamura). En el error, espera a «Iba aquí»: si no, el armador revelado lo empuja mientras anima. */}
       {/* P2 de Itagaki (r5-3): la balanza recibe las pesas después del mensaje. */}
-      {BALANZA && r && (r.ok || revelar) && <div style={{ marginTop: "16px" }}><Balanza hechos={i + 1} antes={i} textos={TEXTOS_BALANZA} /></div>}
+      {BALANZA && r && (r.ok || revelar) && <div style={{ marginTop: "16px" }}><Balanza hechos={i + 1} antes={i} textos={TEXTOS_BALANZA} datos={DATOS_BALANZA} /></div>}
       {!CALENDARIO && !BALANZA && r && (r.ok || revelar) && <MesEnDosCuentas cuentas={MES_MATE.cuentas} movs={MOVIMIENTOS_MATE} hasta={i} linea={LINEAS_MES[a.id] ?? null} />}
       {r && <BotonSiguiente onClick={onSiguiente} botonRef={botonRef} sustantivo={RM.sustantivo} ultimo={i + 1 === total} />}
       </>)}
@@ -629,10 +633,11 @@ function PantallaAsiento({ a, i, total, r, onRespondida, onSiguiente, botonRef }
  */
 function ResumenBalanza({ resultados }) {
   const { ASIENTOS_MATE, TEXTOS_BALANZA: TB } = useActividad();
-  const final = balanzaTras(ASIENTOS_MATE.length);
+  const { DATOS_BALANZA } = useActividad();
+  const final = DATOS_BALANZA.balanzaTras(ASIENTOS_MATE.length);
   return (
     <div data-resumen-balanza>
-      <Balanza hechos={ASIENTOS_MATE.length} textos={TB} />
+      <Balanza hechos={ASIENTOS_MATE.length} textos={TB} datos={DATOS_BALANZA} />
       <p data-frase-final style={{ margin: "12px 0 0", fontFamily: INTER, fontSize: "15px", lineHeight: "22px", fontWeight: 600, color: C.texto }}>{TB.final(pesos(final.diferencia))}</p>
       <div data-puntos-mes style={{ marginTop: "12px", display: "flex", gap: "8px", alignItems: "center" }} aria-label={ASIENTOS_MATE.map((a) => `${a.dia} de marzo: ${resultados[a.id] ? FEEDBACK.ok : FEEDBACK.mal}`).join(". ")} role="img">
         {ASIENTOS_MATE.map((a) => <PuntoDelMes key={a.id} estado={resultados[a.id] ? "acierto" : "error"} />)}
@@ -678,20 +683,29 @@ function MarzoEnOcho({ resultados }) {
  * `pasoInicial`: −1 abre en la entrada (la partida); las pruebas abren un
  * asiento directo.
  */
-export function MesContable({ actividad, onCompletar, pasoInicial = -1 }) {
+export function MesContable({ actividad, onCompletar, pasoInicial = -1, alTerminar = null, alReiniciar = null }) {
   return (
     <Actividad.Provider value={actividad}>
-      <Partida onCompletar={onCompletar} pasoInicial={pasoInicial} />
+      <Partida onCompletar={onCompletar} pasoInicial={pasoInicial} alTerminar={alTerminar} alReiniciar={alReiniciar} />
     </Actividad.Provider>
   );
 }
 
-export function Mate(props) {
-  return <MesContable actividad={ACTIVIDAD_MATE} {...props} />;
+/*
+ * D8: los intentos pares juegan la versión B. El intento cuenta al terminar;
+ * «Jugar otra vez» abre la versión que sigue (si cambia, se monta de nuevo).
+ */
+export function Mate({ version: fija = null, ...props }) {
+  const { version, terminar } = useIntento("r5-3", fija);
+  const [jugada, setJugada] = useState(version);
+  const actividad = jugada === "B" ? ACTIVIDAD_MATE_B : ACTIVIDAD_MATE;
+  return <MesContable key={jugada} actividad={actividad} alTerminar={terminar} alReiniciar={setJugada} {...props} />;
 }
 
-function Partida({ onCompletar, pasoInicial }) {
-  const { id, ASIENTOS_MATE, puntuarR5_3, MES_MATE, MOVIMIENTOS_MATE, SIN_ENTRADA, CALENDARIO, BALANZA, TEXTOS_CALENDARIO: TC, RM } = useActividad();
+function Partida({ onCompletar, pasoInicial, alTerminar = null, alReiniciar = null }) {
+  const actividadActual = useActividad();
+  const { id, ASIENTOS_MATE, puntuarR5_3, MES_MATE, MOVIMIENTOS_MATE, SIN_ENTRADA, CALENDARIO, BALANZA, TEXTOS_CALENDARIO: TC, RM } = actividadActual;
+  const proxima = useRef(null);
   /* -1: entrada; luego, un asiento por paso. Sin entrada (r5-3), se abre en el primer asiento. */
   const primero = SIN_ENTRADA ? 0 : -1;
   const [paso, setPaso] = useState(pasoInicial < 0 ? primero : pasoInicial);
@@ -705,7 +719,9 @@ function Partida({ onCompletar, pasoInicial }) {
   const bien = Object.values(resultados).filter(Boolean).length;
 
   useEffect(() => {
-    if (terminado) onCompletar?.(puntuarR5_3(bien, total), Date.now() - inicio.current, detalle.current);
+    if (!terminado) return;
+    proxima.current = alTerminar?.() ?? null;
+    onCompletar?.(puntuarR5_3(bien, total), Date.now() - inicio.current, detalle.current);
   }, [terminado]); // eslint-disable-line react-hooks/exhaustive-deps
   /* El foco baja a «Siguiente» SIN mover la página (corrección 1 de Takamura): se ven juntos ERA ESTE y la devolución. */
   useEffect(() => { if (r) boton.current?.focus({ preventScroll: true }); }, [r]);
@@ -723,6 +739,9 @@ function Partida({ onCompletar, pasoInicial }) {
     try { globalThis.scrollTo?.(0, 0); } catch { /* sin ventana */ }
   };
   const reiniciar = () => {
+    /* D8: si el intento que sigue es de la otra versión, se monta de nuevo con ella. */
+    const { version } = actividadActual;
+    if (alReiniciar && proxima.current && proxima.current !== version) { alReiniciar(proxima.current); return; }
     setPaso(primero); setR(null); setResultados({}); setTerminado(false);
     detalle.current = []; inicio.current = Date.now();
   };

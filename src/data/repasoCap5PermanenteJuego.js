@@ -1,6 +1,6 @@
 import { contra } from "./repasoCap5MateJuego.js";
-import { PANTALLAS, COMUNES_PERMANENTE, R5_5, pantalla } from "./repasoCap5PermanenteTextos.js";
-import { TOLERANCIA_P4 } from "./repasoCap5Permanente.js";
+import { PANTALLAS, PANTALLAS_B, COMUNES_PERMANENTE, R5_5, pantalla } from "./repasoCap5PermanenteTextos.js";
+import { TOLERANCIA_P4, CIFRAS_R5_5 } from "./repasoCap5Permanente.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -94,20 +94,23 @@ export function evaluarP3({ unitario, renglones }) {
   return veredicto(p, errores, { estados: { valor: valorOk ? "ok" : "mal" }, asiento });
 }
 
-export const costoAceptadoP4 = (costo) => Number(costo) >= TOLERANCIA_P4.desde && Number(costo) <= TOLERANCIA_P4.hasta;
+export const costoAceptadoP4 = (costo, tol = TOLERANCIA_P4) => Number(costo) >= tol.desde && Number(costo) <= tol.hasta;
 
-export function evaluarP4({ promedio, costo }) {
-  const p = pantalla("p4");
+/* D8: las pantallas 4 y 5 cambian con la versión; sin versión, la A. */
+const PANTALLAS_POR_VERSION = { A: PANTALLAS, B: PANTALLAS_B };
+
+export function evaluarP4({ promedio, costo }, version = "A") {
+  const p = pantalla("p4", PANTALLAS_POR_VERSION[version]);
   const promedioOk = mismoUnitario(promedio, p.clave.promedio);
-  const costoOk = costoAceptadoP4(costo);
+  const costoOk = costoAceptadoP4(costo, CIFRAS_R5_5[version].TOLERANCIA_P4);
   const errores = [];
   if (!promedioOk) errores.push(textoDeValor(p.devoluciones.promedio, promedio, p.generica, mismoUnitario));
   if (!costoOk) errores.push(textoDeValor(p.devoluciones.costo, Number(costo), p.generica));
   return veredicto(p, errores, { estados: { promedio: promedioOk ? "ok" : "mal", costo: costoOk ? "ok" : "mal" } });
 }
 
-export function evaluarP5(elegida) {
-  const p = pantalla("p5");
+export function evaluarP5(elegida, version = "A") {
+  const p = pantalla("p5", PANTALLAS_POR_VERSION[version]);
   const o = p.opciones.find((x) => x.id === elegida);
   if (o?.correcta) return { ok: true, textos: [p.acierto], elegida };
   /*

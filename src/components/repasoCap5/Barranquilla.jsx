@@ -1,9 +1,12 @@
+import { useState } from "react";
+import { useIntento } from "./comun.jsx";
 import { MesContable } from "./Mate.jsx";
 import { movimientosDelMes } from "../../data/repasoCap5Mes.js";
 import { evaluarBarranquilla, puntuarR5_4 } from "../../data/repasoCap5BarranquillaJuego.js";
 import {
   R5_4, ASIENTOS_BARRANQUILLA, HOJA_BARRANQUILLA, ENTRADA_BARRANQUILLA, AVISO_BARRANQUILLA,
   DATOS_DEL_LIBRO_BARRANQUILLA, DATOS_DECLARADOS_BARRANQUILLA, ROTULOS_BARRANQUILLA, CALENDARIO_R5_4,
+  ASIENTOS_BARRANQUILLA_B, CALENDARIO_R5_4_B,
   MES_BARRANQUILLA, LINEAS_MES_BARRANQUILLA,
 } from "../../data/repasoCap5BarranquillaTextos.js";
 
@@ -46,8 +49,22 @@ export const ACTIVIDAD_BARRANQUILLA = {
   /* Takamura (#380): sin pantalla de entrada; las tarjetas viven en «Datos de septiembre». */
   SIN_ENTRADA: true,
   TEXTOS_CALENDARIO: CALENDARIO_R5_4,
+  version: "A",
 };
 
-export function Barranquilla(props) {
-  return <MesContable actividad={ACTIVIDAD_BARRANQUILLA} {...props} />;
+/* D8 · la versión B: el pago del 18 y el cobro del 26, sin descuento. */
+export const ACTIVIDAD_BARRANQUILLA_B = {
+  ...ACTIVIDAD_BARRANQUILLA,
+  ASIENTOS_MATE: ASIENTOS_BARRANQUILLA_B,
+  MOVIMIENTOS_MATE: movimientosDelMes(ASIENTOS_BARRANQUILLA_B, MES_BARRANQUILLA.cuentas),
+  TEXTOS_CALENDARIO: CALENDARIO_R5_4_B,
+  version: "B",
+};
+
+/* D8: los intentos pares juegan la versión B; el intento cuenta al terminar. */
+export function Barranquilla({ version: fija = null, ...props }) {
+  const { version, terminar } = useIntento("r5-4", fija);
+  const [jugada, setJugada] = useState(version);
+  const actividad = jugada === "B" ? ACTIVIDAD_BARRANQUILLA_B : ACTIVIDAD_BARRANQUILLA;
+  return <MesContable key={jugada} actividad={actividad} alTerminar={terminar} alReiniciar={setJugada} {...props} />;
 }

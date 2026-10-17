@@ -447,3 +447,48 @@ export const LINEAS_MES_BARRANQUILLA = {
   a4: "Vendes hoy y cobras luego. Caja y descuento esperan.",
   a6: "Se corrige una venta que aún no se ha cobrado.",
 };
+
+/*
+ * ═══════════ VERSIÓN B (D8, Miyata) ═══════════
+ *
+ * El pago se hace el 18 y el cobro el 26: los dos caen fuera de la ventana y
+ * no hay descuento. El calendario es el mismo (el borde se sigue arrastrando
+ * al 17 y al 25); el pago cae un día después. En B, el texto de A «Caja sin
+ * descuento» sería la respuesta correcta: sale.
+ */
+export const DIAS_B = { a7: O.a7.dia + 1, a9: O.a9.dia + 1 }; // 18 · 26
+const SIN_DESCUENTO = "Esta vez no hay descuento: se pagó tarde. Esa cuenta no se usa.";
+const tarde = (a, dia, extra) => ({
+  ...a,
+  dia,
+  fecha: `${dia} DE SEPTIEMBRE`,
+  ventana: { ...a.ventana, pago: dia },
+  falta: {},
+  cuentaMal: { ...a.cuentaMal, [DESCUENTO]: SIN_DESCUENTO },
+  ...extra,
+});
+export const ASIENTOS_BARRANQUILLA_B = ASIENTOS_BARRANQUILLA.map((a) => {
+  if (a.id === "a7") {
+    return tarde(a, DIAS_B.a7, {
+      correctos: [[d(PROVEEDORES, N.a7.saldo), h(CAJA, N.a7.saldo)]],
+      valorMal: [v(CAJA, N.a7.caja, `Tomaste el descuento. Pagas el ${DIAS_B.a7}, fuera de los 15 días: el 10 % ya no aplica.`)],
+      acierto: ["Pagaste un día tarde y perdiste el 10 %. Sale de Caja el saldo completo."],
+    });
+  }
+  if (a.id === "a9") {
+    return tarde(a, DIAS_B.a9, {
+      correctos: [[d(CAJA, N.a9.saldo), h(CLIENTES, N.a9.saldo)]],
+      valorMal: [v(CAJA, N.a9.caja, `Le diste el descuento. El cliente paga el ${DIAS_B.a9}, fuera de los 15 días: el 5 % ya no aplica.`)],
+      acierto: ["El cliente pagó un día tarde y perdió el 5 %. Entra a Caja el saldo completo."],
+    });
+  }
+  return a;
+});
+export const CALENDARIO_R5_4_B = {
+  ...CALENDARIO_R5_4,
+  ventanaOk: {
+    a7: `La ventana cierra el 17: quince días sin contar el 2. Pagas el ${DIAS_B.a7}, un día tarde, y pagas la factura completa.`,
+    a9: `La ventana cierra el 25: quince días desde el 10, sin contarlo. El cliente paga el ${DIAS_B.a9} y pierde su 5 %.`,
+  },
+  nombres: { ...CALENDARIO_R5_4.nombres, a7: `Pago, día ${DIAS_B.a7}`, a9: `Cobro, día ${DIAS_B.a9}` },
+};
