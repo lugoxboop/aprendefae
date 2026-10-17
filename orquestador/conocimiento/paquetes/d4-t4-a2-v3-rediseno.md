@@ -66,7 +66,7 @@
 
 ## Caso B (D8), pantalla por pantalla
 
-D8 (lote nocturno, 16 oct 2026; textos de Katsumi, `celula-d/katsumi-d8-caso-b.md`): el mismo recorrido con otra encargada y otras cifras construidas; la decisión de cada pantalla no cambia. El sorteo elige el caso para toda la pieza (A3 usa las cifras de A2 del mismo caso); el primer recorrido usa siempre el caso 1. Aquí va solo lo que cambia; «(completa)» marca una pantalla cuyos lugares cambian (los errores van por cifra) y va entera. Cifras del caso B (construidas): fondo 600.000, abierto el 1 de junio y repuesto el 30; los mismos ocho gastos, en el mismo orden: 41.000 · 27.500 · 36.200 · 58.900 · 121.600 · 45.300 · 39.800 · 154.000 = 524.300; quedan 75.700. Se sube o se baja de a 100.000, entre 500.000 y 700.000. Los pies llevan además « · Cifras construidas» (P6 ya lo lleva).
+D8 (lote nocturno, 16 oct 2026; textos de Katsumi, `celula-d/katsumi-d8-caso-b.md`): el mismo recorrido con otra encargada y otras cifras construidas; la decisión de cada pantalla no cambia. El sorteo elige el caso para toda la pieza (A3 usa las cifras de A2 del mismo caso); el primer recorrido usa siempre el caso 1. Aquí va solo lo que cambia; «(completa)» marca una pantalla cuyos lugares cambian (los errores van por cifra) y va entera. Cifras del caso B (construidas): fondo 600.000, abierto el 1 de junio y repuesto el 30; los mismos ocho gastos, en el mismo orden: 41.000 · 27.500 · 36.200 · 58.900 · 121.600 · 45.300 · 39.800 · 154.000 = 524.300; quedan 75.700. Se sube o se baja de a 100.000, entre 500.000 y 700.000. Los pies llevan además « · Cifras construidas» (P6 ya lo lleva). Donde el pie largo hacía pasar la pantalla de 60 palabras (sonda), el pie del caso B queda «Cifras construidas, p. N» (Katsumi): «la-apertura», «cuanto-queda», «y-caja-menor».
 
 - Rótulo del sobre (caso B): «LO QUE TIENE MARTA»
 - Razón de «Subir» apagado (caso B): «Tope: 700.000»
@@ -79,7 +79,7 @@ D8 (lote nocturno, 16 oct 2026; textos de Katsumi, `celula-d/katsumi-d8-caso-b.m
 **P1 · la-apertura**
 - Antes de la figura: «El 1 de junio, Taller Ríos abre el fondo de Marta Gil con un cheque. Tócalo.» (93,7)
 - Texto alternativo: «Un cheque de 600.000 sale de Bancos y llena el sobre. En el libro, Caja menor va al debe y Bancos al haber.» (97,8)
-- Pie: «Basado en el libro, pp. 181 y 183 · Cifras construidas»
+- Pie: «Cifras construidas, pp. 181 y 183»
 
 **P2 · los-gastos**
 - Antes de la figura: «En junio, Marta paga con el fondo y guarda cada soporte: la factura o el recibo.» (81,8)
@@ -92,7 +92,7 @@ D8 (lote nocturno, 16 oct 2026; textos de Katsumi, `celula-d/katsumi-d8-caso-b.m
 - Error · 524300 (✗ y el texto): «Esa es la plata que ya salió del fondo: lo gastado.» (99,6)
 - Error · 600000 (✗ y el texto): «Ese es el fondo entero, como si Marta no hubiera pagado nada.» (75,4)
 - Texto alternativo: «El sobre con 524.300 en soportes. La cifra que eliges para los billetes se suma con ellos y se compara con el fondo de 600.000.» (87,2)
-- Pie: «Basado en el libro, p. 184 · Cifras construidas»
+- Pie: «Cifras construidas, p. 184»
 
 **P4 · el-reembolso**
 - Antes de la figura: «Reponer lo gastado es el reembolso. El 30 de junio, Marta entrega los soportes y le hacen un cheque. Tócalo.» (78,7)
@@ -102,7 +102,7 @@ D8 (lote nocturno, 16 oct 2026; textos de Katsumi, `celula-d/katsumi-d8-caso-b.m
 **P5 · y-caja-menor**
 - Acierto (tras «Correcto.»): «Caja menor no se mueve: el fondo sigue en $600.000.» (90,9)
 - Texto alternativo: «El libro con cuatro cuentas, cada una con debe y haber. El cheque del reembolso, de 524.300, se pone en un debe y en un haber.» (93,2)
-- Pie: «Basado en el libro, pp. 182 y 184 · Cifras construidas»
+- Pie: «Cifras construidas, pp. 182 y 184»
 
 ## Rótulos de la figura
 

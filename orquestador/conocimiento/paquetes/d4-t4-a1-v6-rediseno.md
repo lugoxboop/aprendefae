@@ -66,7 +66,7 @@
 
 ## Caso B (D8), pantalla por pantalla
 
-D8 (lote nocturno, 16 oct 2026; textos de Katsumi, `celula-d/katsumi-d8-caso-b.md`): el mismo recorrido con otra empresa y otras cifras construidas; la decisión de cada pantalla no cambia. El sorteo elige el caso para toda la pieza; el primer recorrido usa siempre el caso 1. Aquí va solo lo que cambia; lo demás es el caso 1. Cifras del caso B (construidas): cobro 612.000; en «el-faltante», anotado 584.000 y sin anotar 28.000. Origen del cajón: «Taller Ríos Ltda.». Los pies llevan además « · Cifras construidas».
+D8 (lote nocturno, 16 oct 2026; textos de Katsumi, `celula-d/katsumi-d8-caso-b.md`): el mismo recorrido con otra empresa y otras cifras construidas; la decisión de cada pantalla no cambia. El sorteo elige el caso para toda la pieza; el primer recorrido usa siempre el caso 1. Aquí va solo lo que cambia; lo demás es el caso 1. Cifras del caso B (construidas): cobro 612.000; en «el-faltante», anotado 584.000 y sin anotar 28.000. Origen del cajón: «Taller Ríos Ltda.». Los pies llevan además « · Cifras construidas». Donde el pie largo hacía pasar la pantalla de 60 palabras (sonda), el pie del caso B queda «Cifras construidas, p. N» (Katsumi): «consigna», «cheques».
 
 **P0 · dos-cuentas**
 - Pie: «Basado en el libro, p. 179, y en el Tema 2 · Cifras construidas»
@@ -77,14 +77,14 @@ D8 (lote nocturno, 16 oct 2026; textos de Katsumi, `celula-d/katsumi-d8-caso-b.m
 
 **P2 · consigna**
 - Error si va al debe: «No entró plata nueva: son los mismos $612.000.» (<10)
-- Pie: «Basado en el libro, p. 180 · Cifras construidas»
+- Pie: «Cifras construidas, p. 180»
 
 **P3 · dos-salidas**
 - Pie: «Basado en el libro, p. 180 · Cifras construidas»
 
 **P4 · cheques**
 - Cheque «propio» · tarjeta: «Taller Ríos paga con un cheque propio» (<10)
-- Pie: «Basado en el libro, pp. 179, 180 y 187 · Cifras construidas»
+- Pie: «Cifras construidas, pp. 179, 180 y 187»
 
 **P5 · el-faltante**
 - Antes de la figura: «Lucía cobra y anota. ¿Qué control faltó?» (<10)

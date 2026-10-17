@@ -57,7 +57,7 @@
 
 ## Caso B (D8), pantalla por pantalla
 
-D8 (lote nocturno, 16 oct 2026; textos de Katsumi, `celula-d/katsumi-d8-caso-b.md`): San Calixto se queda, porque es el título, y pasa al 30 de abril, con otras personas y cifras construidas. Las partidas van en el mismo orden y con los mismos lados; los asientos son los mismos, con las cifras del caso B. El sorteo elige el caso para toda la pieza; el primer recorrido usa siempre el caso 1. Aquí va solo lo que cambia. Cifras del caso B (construidas): extracto 3.120.400, libros 4.708.300, difieren en 1.587.900; los dos lados llegan a 4.912.400, que es también el saldo del mayor. En «que-se-asienta», el cheque es el de Marcela Ruiz (la partida 1 del banco). Los pies llevan además « · Cifras construidas».
+D8 (lote nocturno, 16 oct 2026; textos de Katsumi, `celula-d/katsumi-d8-caso-b.md`): San Calixto se queda, porque es el título, y pasa al 30 de abril, con otras personas y cifras construidas. Las partidas van en el mismo orden y con los mismos lados; los asientos son los mismos, con las cifras del caso B. El sorteo elige el caso para toda la pieza; el primer recorrido usa siempre el caso 1. Aquí va solo lo que cambia. Cifras del caso B (construidas): extracto 3.120.400, libros 4.708.300, difieren en 1.587.900; los dos lados llegan a 4.912.400, que es también el saldo del mayor. En «que-se-asienta», el cheque es el de Marcela Ruiz (la partida 1 del banco). Los pies llevan además « · Cifras construidas». Donde el pie largo hacía pasar la pantalla de 60 palabras (sonda), el pie del caso B queda «Cifras construidas, p. N» (Katsumi): «dos-saldos».
 
 - Partida 1 del banco (P1) · tarjeta (caso B): «Cheque a Marcela Ruiz, sin cobrar» (<10)
 - Partida 1 del banco (P1) · cifra (caso B): 184.000 · va a: Menos
@@ -86,7 +86,7 @@ D8 (lote nocturno, 16 oct 2026; textos de Katsumi, `celula-d/katsumi-d8-caso-b.m
 **P0 · dos-saldos**
 - Caso (bajo el par, desde el principio): «San Calixto, 30 de abril.» (<10)
 - Texto alternativo: «El saldo del banco, 3.120.400, y el de la empresa, 4.708.300, difieren en 1.587.900. Debajo, tres opciones sobre cuál es el saldo verdadero.» (76,2)
-- Pie: «Basado en el libro, p. 189 · Cifras construidas»
+- Pie: «Cifras construidas, p. 189»
 
 **P1 · lado-del-banco**
 - Pie: «Basado en el libro, pp. 189-190 · Cifras construidas»

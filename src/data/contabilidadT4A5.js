@@ -22,7 +22,7 @@
  * Aprender: sin FP, sin catálogo y sin llamar al motor.
  * ═══════════════════════════════════════════════════════════════════════════
  */
-import { BOTON, pieCasoB } from "./contabilidadT4.js";
+import { BOTON, pieCasoB, pieCortoB } from "./contabilidadT4.js";
 
 export const A5_ID = "t4-a5-san-calixto";
 
@@ -236,6 +236,8 @@ const TEXTOS_A5_B = {
   "el-mayor": { alt: "El mayor de Bancos empieza en 4.708.300. Al asentar las cinco notas, suben 512.000 y 296.000, bajan 38.900, 175.000 y 390.000, y el saldo llega a 4.912.400. Debajo, el banco y la empresa quedan iguales." },
 };
 const PANTALLAS_A5_B = PANTALLAS_A5.map((p) => ({ ...p, ...(TEXTOS_A5_B[p.id] ?? {}), pie: pieCasoB(p.pie) }));
+/* D8: el pie corto del caso B donde el largo pasaba de 60 palabras (sonda; Katsumi). */
+for (const p of PANTALLAS_A5_B) if (["dos-saldos"].includes(p.id)) p.pie = pieCortoB(p.pie);
 
 export const PIEZA_SAN_CALIXTO = {
   id: A5_ID,

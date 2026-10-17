@@ -1,0 +1,120 @@
+{
+ "t4-a0-el-activo-corriente": {
+  "cual-cruza": [
+   {
+    "click": "[data-fila=repuestos] [data-seg=despues]"
+   },
+   {
+    "click": "[data-fila=pagare] [data-seg=antes]"
+   },
+   {
+    "click": "[data-fila=camion] [data-seg=despues]",
+    "mide": "marcado"
+   },
+   {
+    "click": "[data-accion=pasar]",
+    "espera": 3200,
+    "mide": "error",
+    "veredicto": "error"
+   },
+   {
+    "click": "[data-accion=otra-vez]",
+    "espera": 200
+   },
+   {
+    "click": "[data-fila=repuestos] [data-seg=antes]"
+   },
+   {
+    "click": "[data-fila=pagare] [data-seg=despues]"
+   },
+   {
+    "click": "[data-fila=camion] [data-seg=despues]"
+   },
+   {
+    "click": "[data-accion=pasar]",
+    "espera": 3200,
+    "mide": "acierto",
+    "veredicto": "acierto"
+   }
+  ]
+ },
+ "t4-a2-el-fondo-fijo": {
+  "cuanto-queda": [
+   {
+    "click": "[data-opcion='600000']",
+    "espera": 500,
+    "mide": "error con 600000",
+    "veredicto": "error"
+   },
+   {
+    "click": "[data-opcion='524300']",
+    "espera": 500,
+    "mide": "error con 524300",
+    "veredicto": "error"
+   },
+   {
+    "click": "[data-opcion='75700']",
+    "espera": 600,
+    "mide": "acierto",
+    "veredicto": "acierto"
+   }
+  ]
+ },
+ "t4-a3-el-arqueo": {
+  "el-cheque": [
+   {
+    "click": "[data-opcion='524300']",
+    "espera": 500,
+    "mide": "error con 524300",
+    "veredicto": "error"
+   },
+   {
+    "click": "[data-opcion='527100']",
+    "espera": 500,
+    "mide": "error con 527100",
+    "veredicto": "error"
+   },
+   {
+    "click": "[data-opcion='521500']",
+    "espera": 600,
+    "mide": "acierto",
+    "veredicto": "acierto"
+   }
+  ],
+  "el-faltante": [
+   {
+    "click": "[data-opcion='524300']",
+    "espera": 500,
+    "mide": "error con 524300",
+    "veredicto": "error"
+   },
+   {
+    "click": "[data-opcion='519000']",
+    "espera": 500,
+    "mide": "error con 519000",
+    "veredicto": "error"
+   },
+   {
+    "click": "[data-opcion='529600']",
+    "espera": 600,
+    "mide": "acierto",
+    "veredicto": "acierto"
+   }
+  ]
+ },
+ "t4-a4-bancos-y-notas": {
+  "la-conciliacion": [
+   {
+    "click": "[data-destino=consignacion-sin-abonar]",
+    "espera": 500,
+    "mide": "error con la consignación",
+    "veredicto": "error"
+   },
+   {
+    "click": "[data-destino=nota-credito]",
+    "espera": 600,
+    "mide": "acierto y frase de cierre"
+   }
+  ]
+ }
+}

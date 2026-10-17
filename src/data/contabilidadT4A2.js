@@ -23,7 +23,7 @@
  * Aprender: sin FP, sin catálogo y sin llamar al motor.
  * ═══════════════════════════════════════════════════════════════════════════
  */
-import { BOTON, DEBE, HABER, pieCasoB } from "./contabilidadT4.js";
+import { BOTON, DEBE, HABER, pieCasoB, pieCortoB } from "./contabilidadT4.js";
 
 export const A2_ID = "t4-a2-el-fondo-fijo";
 
@@ -225,6 +225,8 @@ const TEXTOS_A2_B = {
   "y-caja-menor": { acierto: "Caja menor no se mueve: el fondo sigue en $600.000.", alt: "El libro con cuatro cuentas, cada una con debe y haber. El cheque del reembolso, de 524.300, se pone en un debe y en un haber." },
 };
 const PANTALLAS_A2_B = PANTALLAS_A2.map((p) => ({ ...p, ...(TEXTOS_A2_B[p.id] ?? {}), pie: pieCasoB(p.pie) }));
+/* D8: el pie corto del caso B donde el largo pasaba de 60 palabras (sonda; Katsumi). */
+for (const p of PANTALLAS_A2_B) if (["la-apertura", "cuanto-queda", "y-caja-menor"].includes(p.id)) p.pie = pieCortoB(p.pie);
 
 export const PIEZA_EL_FONDO_FIJO = {
   id: A2_ID,

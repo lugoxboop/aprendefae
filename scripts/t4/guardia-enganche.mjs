@@ -68,11 +68,18 @@ export const B1_PALABRAS = 40;
 const ANCHO = 320;
 export const E2_VENTANAS = [{ width: 320, height: 568 }, { width: 375, height: 667 }];
 const PLANES = JSON.parse(readFileSync(resolve(RAIZ, "scripts/t4/sonda-enganche/enganche_planes.json"), "utf8"));
+if (process.env.GUARDIA_CASO_T4 === "2") for (const [pz, ps] of Object.entries(JSON.parse(readFileSync(resolve(RAIZ, "scripts/t4/sonda-enganche/enganche_planes_b.json"), "utf8")))) Object.assign(PLANES[pz] ??= {}, ps);
 
 const servidor = await createServer({ root: RAIZ, logLevel: "error", server: { port: 0, host: "127.0.0.1" } });
 await servidor.listen();
 const BASE = `http://127.0.0.1:${servidor.httpServer.address().port}/scripts/t4/harness-t4/index.html`;
 const navegador = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});
+/* D8: GUARDIA_CASO_T4=2 mira el caso B de las piezas de Aprender (fuerza el caso en cada página) y juega el plan del B donde cambia. */
+const CASO_T4 = process.env.GUARDIA_CASO_T4;
+if (CASO_T4 === "1" || CASO_T4 === "2") {
+  const nueva = navegador.newPage.bind(navegador);
+  navegador.newPage = async (...a) => { const pg = await nueva(...a); await pg.addInitScript((c) => { try { localStorage.setItem("aprendefae-t4-caso", c); } catch { /* sin almacenamiento */ } }, CASO_T4); return pg; };
+}
 const fallos = [];
 const filas = [];
 

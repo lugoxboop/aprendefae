@@ -30,7 +30,7 @@
  * Aprender: sin FP, sin catálogo y sin llamar al motor.
  * ═══════════════════════════════════════════════════════════════════════════
  */
-import { BOTON, DEBE, HABER, pieCasoB } from "./contabilidadT4.js";
+import { BOTON, DEBE, HABER, pieCasoB, pieCortoB } from "./contabilidadT4.js";
 import { FONDO, GASTADO, QUEDA, DATOS_A2 } from "./contabilidadT4A2.js";
 
 export const A3_ID = "t4-a3-el-arqueo";
@@ -273,6 +273,8 @@ const TEXTOS_A3_B = {
   },
 };
 const PANTALLAS_A3_B = PANTALLAS_A3.map((p) => ({ ...p, ...(TEXTOS_A3_B[p.id] ?? {}), pie: pieCasoB(p.pie) }));
+/* D8: el pie corto del caso B donde el largo pasaba de 60 palabras (sonda; Katsumi). */
+for (const p of PANTALLAS_A3_B) if (["el-sobrante", "el-cheque", "el-asiento", "el-faltante", "camino-1"].includes(p.id)) p.pie = pieCortoB(p.pie);
 
 export const PIEZA_EL_ARQUEO = {
   id: A3_ID,

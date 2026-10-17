@@ -234,6 +234,8 @@ export const DATOS_A1 = {
 };
 /* El pie del caso B: el mismo, más « · Cifras construidas» (si no lo lleva ya). */
 export const pieCasoB = (pie) => (pie.includes("Cifras construidas") ? pie : `${pie} · Cifras construidas`);
+/* Donde el pie largo hacía pasar la pantalla de 60 palabras (sonda), el corto de Katsumi: «Cifras construidas, p. N». */
+export const pieCortoB = (pie) => pie.replace(/ · Cifras construidas$/, "").replace(/^Basado en el libro, /, "Cifras construidas, ");
 const conMonto = (a, monto) => ({ ...a, lineas: a.lineas.map((l) => ({ ...l, monto })) });
 const PANTALLAS_A1_B = PANTALLAS_A1.map((p) => {
   const b = { ...p, pie: pieCasoB(p.pie) };
@@ -243,6 +245,8 @@ const PANTALLAS_A1_B = PANTALLAS_A1.map((p) => {
   return b;
 });
 
+/* D8: el pie corto del caso B donde el largo pasaba de 60 palabras (sonda; Katsumi). */
+for (const p of PANTALLAS_A1_B) if (["consigna", "cheques"].includes(p.id)) p.pie = pieCortoB(p.pie);
 /* `numero` es el de la pieza en el corte de T4 y ordena PIEZAS_T4 en la vista: A0 = 0, A1 = 1. */
 export const PIEZA_LA_CAJA = {
   id: A1_ID,
