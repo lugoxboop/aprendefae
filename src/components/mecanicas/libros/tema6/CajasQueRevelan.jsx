@@ -159,7 +159,7 @@ export function useFormaQueCabe(forma) {
 /* Una opción se parte si su texto ocupa más de un renglón. */
 export const seParteAlguna = (grupo) => [...grupo.querySelectorAll("[data-texto-opcion]")].some((t) => t.getClientRects().length > 1);
 
-export function Caja({ caja, abierto, onAbrir, estiloTitulo = LECTURA, forma = "columna", intentos = [], onElegir = () => {}, onSeParte = () => {}, vuelta = 0, figura = null }) {
+export function Caja({ caja, abierto, onAbrir, estiloTitulo = LECTURA, forma = "columna", intentos = [], onElegir = () => {}, onSeParte = () => {}, vuelta = 0, figura = null, despues = null }) {
   const id = useId();
   const reducido = useReducido();
   const decide = caja.decide;
@@ -245,6 +245,8 @@ export function Caja({ caja, abierto, onAbrir, estiloTitulo = LECTURA, forma = "
                 onElegir={(id) => { if (sePuedeElegir(decide, intentos, id)) onElegir(id); }} />
             ))}
           </div>
+          {/* C4 (prop opcional `c4` de CajasQueRevelan): la consecuencia de lo tocado, bajo las opciones. Sin `c4`, nada. */}
+          {despues}
         </div>
       )}
       <div id={id} data-revela={caja.id} aria-live="polite">
@@ -276,7 +278,16 @@ export function Caja({ caja, abierto, onAbrir, estiloTitulo = LECTURA, forma = "
  * cajas ya cerradas, en el orden en que se cerraron) y se llena siempre con
  * lo correcto; lo último que entró va resaltado.
  */
-export default function CajasQueRevelan({ consigna, contexto = null, cajas, final, estiloTitulo = LECTURA, forma: pedida = "columna", atributos = {}, Figura = null }) {
+/*
+ * C4 · «toda decisión se pinta» (Célula C; `c4` opcional, sin ella todo como siempre):
+ *   c4 = { consecuencia(cajaId, opcionId) → estado, espera, css?,
+ *          Figura?({ decididas, pintado, vista }): reemplaza a `Figura` en la figura pegada,
+ *          EnCaja?({ caja, estado, vista }): va dentro de la caja, bajo sus opciones }.
+ * Al tocar una opción, la consecuencia se pinta en el acto; la escalera de siempre (marca, pista,
+ * devolución o texto) llega `espera` ms después, al instante con movimiento reducido. `vista` =
+ * { veredicto, anim, cerrado }: lo que dice si la opción era buena o mala sale solo con el veredicto.
+ */
+export default function CajasQueRevelan({ consigna, contexto = null, cajas, final, estiloTitulo = LECTURA, forma: pedida = "columna", atributos = {}, Figura = null, c4 = null }) {
   const [forma, seParte, vuelta] = useFormaQueCabe(pedida);
   const reducido = useReducido();
   const [abiertos, setAbiertos] = useState(() => new Set());
@@ -289,6 +300,26 @@ export default function CajasQueRevelan({ consigna, contexto = null, cajas, fina
   const todos = cajas.every(lista);
   /* Las cajas cerradas, en el orden en que se cerraron (lo que la figura llena). */
   const [orden, setOrden] = useState(() => []);
+  /* C4: lo pintado por caja ({ [cajaId]: { opcion, estado } }), la última tocada y la que espera su veredicto. */
+  const [pintado, setPintado] = useState(() => ({}));
+  const [ultimaC4, setUltimaC4] = useState(null);
+  const [espera, setEspera] = useState(null);
+  const relojC4 = useRef(null);
+  useEffect(() => () => clearTimeout(relojC4.current), []);
+  const tocarEn = (x, o) => {
+    if (!c4) { elegirEn(x, o); return; }
+    if (espera) return;
+    setPintado((p) => ({ ...p, [x.id]: { opcion: o, estado: c4.consecuencia(x.id, o) } }));
+    setUltimaC4(x.id);
+    if (reducido) { elegirEn(x, o); return; }
+    setEspera(x.id);
+    clearTimeout(relojC4.current);
+    relojC4.current = setTimeout(() => { setEspera(null); elegirEn(x, o); }, c4.espera);
+  };
+  const vistaC4 = (cajaId) => {
+    const x = cajas.find((k) => k.id === cajaId);
+    return { veredicto: espera !== cajaId, anim: !reducido, cerrado: Boolean(x?.decide && escalera(x.decide, elecciones[cajaId]).resuelta) };
+  };
   const elegirEn = (x, o) => {
     const nuevos = elegir(x.decide, elecciones[x.id] ?? [], o);
     setElecciones((e) => ({ ...e, [x.id]: nuevos }));
@@ -309,17 +340,21 @@ export default function CajasQueRevelan({ consigna, contexto = null, cajas, fina
   return (
     <div ref={contenedor} {...atributos} className={CLASE_T5}>
       <EstilosT5 />
+      {c4?.css && <style>{c4.css}</style>}
       <p style={{ ...LECTURA, fontFamily: SORA }}>{consigna}</p>
       {contexto && <p style={{ ...LECTURA, marginTop: "12px" }}>{contexto}</p>}
       {Figura && (
         <FiguraPegada ref={figura} contenedor={contenedor}>
-          <Figura decididas={orden} />
+          {c4?.Figura
+            ? <c4.Figura decididas={orden} pintado={ultimaC4 ? { caja: ultimaC4, ...pintado[ultimaC4] } : null} vista={ultimaC4 ? vistaC4(ultimaC4) : null} />
+            : <Figura decididas={orden} />}
         </FiguraPegada>
       )}
       <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: Figura ? "4px" : "12px" }}>
         {cajas.map((x) => (
           <Caja key={x.id} caja={x} estiloTitulo={estiloTitulo} forma={forma} abierto={abiertos.has(x.id)} onAbrir={() => setAbiertos((s) => new Set(s).add(x.id))}
-            intentos={elecciones[x.id]} onElegir={(o) => elegirEn(x, o)} onSeParte={seParte} vuelta={vuelta} figura={Figura ? figura : null} />
+            intentos={elecciones[x.id]} onElegir={(o) => tocarEn(x, o)} onSeParte={seParte} vuelta={vuelta} figura={Figura ? figura : null}
+            despues={c4?.EnCaja && pintado[x.id] ? <c4.EnCaja caja={x} estado={pintado[x.id].estado} vista={vistaC4(x.id)} /> : null} />
         ))}
       </div>
       <div ref={bloqueFinal} data-final aria-live="polite">
