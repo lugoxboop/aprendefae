@@ -72,6 +72,8 @@ const panel = (caja) => caja.querySelector("[data-panel]");
 const textosRetro = (caja) => [...caja.querySelectorAll("[data-texto-retro]")].map((x) => x.textContent);
 const opcion = (caja, id) => caja.querySelector(`[data-opcion-segunda="${id}"]`);
 const avance = (caja) => [...caja.querySelectorAll("button")].find((b) => ["Siguiente ítem", "Ver mi resumen"].includes(b.textContent));
+const mensaje = (caja) => caja.querySelector("[data-mensaje-segunda]");
+const textosMensaje = (caja) => [...caja.querySelectorAll("[data-texto-mensaje]")].map((x) => x.textContent);
 const esperar = async (ms) => { await act(async () => { await new Promise((r) => setTimeout(r, ms)); }); };
 const correctaDe = (item) => item.marcas.find((x) => x.tipo === HECHO).id;
 
@@ -367,9 +369,10 @@ test("★★★ segunda bien: 2 px #F8F9FA y «Correcto» con Check; después la
     assert.equal(o.querySelector("[data-pastilla]").textContent, "Correcto");
     assert.ok(o.querySelector("[data-pastilla] svg"));
     assert.equal(o.getAttribute("aria-label"), "Por pagar, correcto");
-    assert.equal(m.caja.querySelector("[data-error-segunda]"), null);
-    assert.equal(panel(m.caja).getAttribute("data-panel"), "acierto");
-    assert.deepEqual(textosRetro(m.caja), [item.acierto]);
+    assert.equal(mensaje(m.caja).getAttribute("data-mensaje-segunda"), "acierto");
+    assert.equal(mensaje(m.caja).style.borderLeft, "3px solid rgb(184, 196, 212)");
+    assert.deepEqual(textosMensaje(m.caja), [`Correcto. ${item.acierto}`], "un solo bloque: «Correcto.» y la devolución");
+    assert.equal(panel(m.caja), null);
     await tocar(opcion(m.caja, "nada"));
     assert.equal(opcion(m.caja, "nada").getAttribute("data-estado"), "apagada", "un toque califica: no hay otro");
     await tocar(avance(m.caja));
@@ -392,8 +395,9 @@ for (const [k, mal] of [[0, "nada"], [0, "por-pagar"], [1, "por-cobrar"], [1, "n
       assert.equal(o.getAttribute("data-estado"), "mal");
       assert.equal(o.style.border, "2px solid rgb(231, 111, 81)");
       assert.equal(o.querySelector("[data-pastilla]").textContent, "No va aquí");
-      const bloque = m.caja.querySelector("[data-error-segunda]");
-      assert.equal(bloque.textContent, `Incorrecto: ${A2.ERRORES_SEGUNDA_ACT2[item.queda][mal]}`);
+      const bloque = mensaje(m.caja);
+      assert.equal(bloque.getAttribute("data-mensaje-segunda"), "error");
+      assert.deepEqual(textosMensaje(m.caja), [`Incorrecto: ${A2.ERRORES_SEGUNDA_ACT2[item.queda][mal]}`]);
       assert.equal(bloque.style.borderLeft, "3px solid rgb(231, 111, 81)");
       assert.equal(bloque.style.background, "rgba(184, 196, 212, 0.12)");
       assert.equal(opcion(m.caja, item.queda).getAttribute("data-estado"), "apagada", "«Iba aquí» espera 0,7 s");
@@ -404,8 +408,9 @@ for (const [k, mal] of [[0, "nada"], [0, "por-pagar"], [1, "por-cobrar"], [1, "n
       assert.equal(c.getAttribute("data-estado"), "era");
       assert.equal(c.style.border, "2px solid rgb(248, 249, 250)");
       assert.equal(c.querySelector("[data-pastilla]").textContent, "Iba aquí");
-      assert.equal(panel(m.caja).getAttribute("data-panel"), "devolucion");
-      assert.deepEqual(textosRetro(m.caja), [item.acierto]);
+      assert.equal(m.caja.querySelectorAll("[data-mensaje-segunda]").length, 1, "un solo bloque");
+      assert.deepEqual(textosMensaje(m.caja), [`Incorrecto: ${A2.ERRORES_SEGUNDA_ACT2[item.queda][mal]}`, item.acierto], "el error y después la devolución, en el mismo bloque");
+      assert.equal(panel(m.caja), null);
       await tocar(avance(m.caja));
       assert.equal(fin[0], 0, "sin puntos parciales");
       assert.equal(fin[2][0].ok, false);

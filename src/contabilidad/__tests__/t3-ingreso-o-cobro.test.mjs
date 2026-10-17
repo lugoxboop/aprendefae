@@ -63,6 +63,8 @@ const retro = (caja) => [...caja.querySelectorAll('[role="status"]')].map((x) =>
 const colocar = async (caja, id) => { await tocar(grupo(caja, id)); await tocar(boton(caja, "Colocar la ficha")); };
 const opcion = (caja, id) => caja.querySelector(`[data-opcion-segunda="${id}"]`);
 const esperar = async (ms) => { await act(async () => { await new Promise((r) => setTimeout(r, ms)); }); };
+const mensaje = (caja) => caja.querySelector("[data-mensaje-segunda]");
+const textosMensaje = (caja) => [...caja.querySelectorAll("[data-texto-mensaje]")].map((x) => x.textContent);
 const delGrupo3 = A1.HECHOS_ACT1_T3.filter((x) => x.grupo === SIN_INGRESO);
 
 /* ═══════════ EL TEXTO DE GEN, TEXTUAL ═══════════ */
@@ -187,7 +189,7 @@ test("★★★ error, reintento y acierto: el error es el de su tipo y el ítem
     assert.ok(m.caja.querySelector("[data-segunda]"), "al acertar el grupo 3 sale la segunda decisión");
     assert.equal(retro(m.caja), "", "la retro del hecho espera a la segunda decisión");
     await tocar(opcion(m.caja, x.queEs));
-    assert.ok(retro(m.caja).includes(x.acierto));
+    assert.deepEqual(textosMensaje(m.caja), [`Correcto. ${x.acierto}`]);
     await tocar(boton(m.caja, "Ver el resultado"));
     assert.equal(fin, 50);
   } finally { m.desmontar(); }
@@ -276,8 +278,11 @@ test("★★★ segunda bien: «Correcto» con Check y 2 px #F8F9FA; después la
     assert.equal(o.style.padding, "8px 10px");
     assert.equal(o.querySelector("[data-pastilla]").textContent, "Correcto");
     assert.ok(o.querySelector("[data-pastilla] svg"));
-    assert.ok(retro(m.caja).startsWith("Correcto"));
-    assert.ok(retro(m.caja).includes(x.acierto));
+    assert.equal(mensaje(m.caja).getAttribute("data-mensaje-segunda"), "acierto");
+    assert.equal(mensaje(m.caja).style.borderLeft, "3px solid rgb(184, 196, 212)");
+    assert.equal(mensaje(m.caja).style.background, "rgba(184, 196, 212, 0.12)");
+    assert.deepEqual(textosMensaje(m.caja), [`Correcto. ${x.acierto}`], "un solo bloque: «Correcto.» y la devolución");
+    assert.equal(retro(m.caja), "", "la devolución no sale también en la retro de abajo");
     await tocar(opcion(m.caja, "deuda"));
     assert.equal(opcion(m.caja, "deuda").getAttribute("data-estado"), "apagada");
     await tocar(boton(m.caja, "Ver el resultado"));
@@ -300,8 +305,9 @@ for (const [k, mal] of [[0, "deuda"], [0, "activo"], [1, "aporte"], [2, "aporte"
       assert.equal(o.getAttribute("data-estado"), "mal");
       assert.equal(o.style.border, "2px solid rgb(231, 111, 81)");
       assert.equal(o.querySelector("[data-pastilla]").textContent, "No va aquí");
-      const bloque = m.caja.querySelector("[data-error-segunda]");
-      assert.equal(bloque.textContent, `Incorrecto: ${A1.ERRORES_SEGUNDA_ACT1_T3[x.queEs][mal]}`);
+      const bloque = mensaje(m.caja);
+      assert.equal(bloque.getAttribute("data-mensaje-segunda"), "error");
+      assert.deepEqual(textosMensaje(m.caja), [`Incorrecto: ${A1.ERRORES_SEGUNDA_ACT1_T3[x.queEs][mal]}`]);
       assert.equal(bloque.style.borderLeft, "3px solid rgb(231, 111, 81)");
       assert.equal(bloque.style.background, "rgba(184, 196, 212, 0.12)");
       assert.equal(opcion(m.caja, x.queEs).getAttribute("data-estado"), "apagada");
@@ -312,8 +318,9 @@ for (const [k, mal] of [[0, "deuda"], [0, "activo"], [1, "aporte"], [2, "aporte"
       assert.equal(c.getAttribute("data-estado"), "era");
       assert.equal(c.style.border, "2px solid rgb(248, 249, 250)");
       assert.equal(c.querySelector("[data-pastilla]").textContent, "Iba aquí");
-      assert.ok(retro(m.caja).includes(x.acierto));
-      assert.ok(!retro(m.caja).includes("✅"), "con la segunda mal, la retro no lleva el ✅");
+      assert.equal(m.caja.querySelectorAll("[data-mensaje-segunda]").length, 1, "un solo bloque");
+      assert.deepEqual(textosMensaje(m.caja), [`Incorrecto: ${A1.ERRORES_SEGUNDA_ACT1_T3[x.queEs][mal]}`, x.acierto], "el error y después la devolución, en el mismo bloque");
+      assert.equal(retro(m.caja), "");
       await tocar(boton(m.caja, "Ver el resultado"));
       assert.equal(fin[0], 0, "sin puntos parciales");
       assert.equal(fin[2][0].ok, false);

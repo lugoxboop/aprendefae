@@ -15,8 +15,14 @@ import { SOLO_LECTOR } from "../verbos.jsx";
  *     «Comprobar». Es Hacer: un intento
  *   · acierto: la opción con 2 px #F8F9FA y la pastilla «Correcto» (Check)
  *   · error: lo tocado con 2 px coral y «No va aquí» (X), y el error en el
- *     bloque (fondo neutro, raya coral de 3 px). A los 0,7 s, «Iba aquí» en la
- *     correcta, con 2 px #F8F9FA. Después, la devolución del ítem
+ *     bloque del mensaje (fondo neutro, raya coral de 3 px). A los 0,7 s,
+ *     «Iba aquí» en la correcta, con 2 px #F8F9FA, y la devolución del ítem
+ *     como segundo párrafo del MISMO bloque
+ *   · acierto: el bloque lleva solo la devolución, tras «Correcto.» (raya
+ *     neutra)
+ *   · al calificar, un solo desplazamiento para el tramo de la pastilla al
+ *     mensaje (o al botón, si cabe): el de los Hacer de T4 (lote A), copiado
+ *     por valor en `mostrarTramo`
  *   · la pastilla va dentro de la opción, a todo el ancho, en un hueco de
  *     20 px reservado: no mueve nada. En reposo: 1 px rgba(248,249,250,.35),
  *     sin relleno. El borde de 2 px se come 1 px del relleno interior, así el
@@ -30,6 +36,7 @@ export const RETARDO_IBA_MS = 700;
 const REPOSO = "rgba(248,249,250,0.35)";
 const BLANCO = "#F8F9FA";
 const NEUTRO_FONDO = "rgba(184,196,212,0.12)";
+const NEUTRO = "#B8C4D4";
 
 /*
  * El estado de la segunda decisión de un ítem. `elegir(id, ok, correcta, error)`
@@ -117,17 +124,70 @@ export function OpcionSegunda({ opcion, estado, palabras, onTocar, forma, evento
   );
 }
 
-/* El error de la segunda decisión: fondo neutro y raya coral de 3 px. */
-export function BloqueError({ texto, letra }) {
-  if (!texto) return null;
+/*
+ * El mensaje de la segunda decisión: UN bloque, fondo neutro y raya de 3 px.
+ *   · error: raya coral; el error es el primer párrafo y, cuando `lista`,
+ *     la devolución es el segundo
+ *   · acierto: raya neutra; solo la devolución, tras «Correcto.»
+ * Es región viva, y enfocable (tabindex −1) para `mostrarTramo`.
+ */
+export const CORRECTO = "Correcto.";
+export function MensajeSegunda({ s, lista, devolucion, letra, refMensaje }) {
   return (
-    <div data-error-segunda style={{
-      marginTop: "10px", padding: "11px 13px", borderRadius: "11px",
-      background: NEUTRO_FONDO, borderLeft: `3px solid ${FAE.coral}`,
-    }}>
-      <p style={{ margin: 0, color: FAE.text, ...letra }}>
-        <span style={SOLO_LECTOR}>Incorrecto: </span>{texto}
-      </p>
+    <div aria-live="polite" aria-atomic="true">
+      {s && (
+        <div ref={refMensaje} tabIndex={-1} data-mensaje-segunda={s.ok ? "acierto" : "error"} style={{
+          marginTop: "10px", padding: "11px 13px", borderRadius: "11px", outline: "none",
+          background: NEUTRO_FONDO, borderLeft: `3px solid ${s.ok ? NEUTRO : FAE.coral}`,
+        }}>
+          {s.ok ? (
+            <p data-texto-mensaje style={{ margin: 0, color: FAE.text, ...letra }}>
+              <b data-palabra>{CORRECTO}</b> {devolucion}
+            </p>
+          ) : (
+            <>
+              <p data-texto-mensaje style={{ margin: 0, color: FAE.text, ...letra }}>
+                <span style={SOLO_LECTOR}>Incorrecto: </span>{s.error}
+              </p>
+              {lista && <p data-texto-mensaje style={{ margin: "6px 0 0", color: FAE.text, ...letra }}>{devolucion}</p>}
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 }
+
+/*
+ * El tramo, copiado por valor de mostrarTramo de src/components/t4/hacerComun.jsx
+ * (lote A; T4 es de otra célula y no se importa): desde la pastilla tocada
+ * más alta hasta el pie del botón de avance si cabe en la ventana menos
+ * 16 px (lo mínimo, con 8 px de margen, y el foco al botón); si no, hasta el
+ * pie del mensaje, y el foco al mensaje. `boton` es null antes de que salga.
+ */
+export function mostrarTramo({ mensaje, pastillas = [], boton = null, enfocar = false }) {
+  const V = mensaje?.ownerDocument?.defaultView;
+  if (!mensaje || !V) return;
+  const alto = V.innerHeight;
+  const b = enfocar ? boton : null;
+  const medir = () => {
+    const tope = Math.min(mensaje.getBoundingClientRect().top, ...pastillas.map((p) => p.getBoundingClientRect().top));
+    return { tope, pieMsg: mensaje.getBoundingClientRect().bottom, pieBoton: b ? b.getBoundingClientRect().bottom : null };
+  };
+  let g = medir();
+  const alBoton = b != null && g.pieBoton - g.tope <= alto - 16;
+  if (enfocar && !alBoton) { mensaje.focus?.(); g = medir(); }
+  const pie = alBoton ? g.pieBoton : g.pieMsg;
+  let dy = 0;
+  if (pie - g.tope <= alto - 16) {
+    if (g.tope < 8) dy = g.tope - 8;
+    else if (pie > alto - 8) dy = pie - (alto - 8);
+  } else dy = g.tope - 8;
+  if (alBoton) b.focus?.({ preventScroll: true });
+  if (!dy || !V.scrollBy) return;
+  const quieto = V.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+  V.scrollBy({ top: dy, behavior: quieto ? "auto" : "smooth" });
+}
+
+/* Las pastillas tocadas (acierto y error) dentro de un contenedor; «Iba aquí» no se tocó. */
+export const pastillasTocadas = (el) => [...(el?.querySelectorAll?.('[data-pastilla="bien"], [data-pastilla="mal"]') ?? [])];

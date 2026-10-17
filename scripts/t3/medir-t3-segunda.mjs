@@ -2,12 +2,17 @@
  * ═══════════════════════════════════════════════════════════════════════════
  * T3 · LA SEGUNDA DECISIÓN DE LAS ACTS. 1 Y 2, MEDIDA EN CHROMIUM.
  *
- * A 320 y 375 px, para cada ítem con segunda decisión: al llegar (acertado el
- * grupo o el día), con cada error (a los 0,8 s, ya con «Iba aquí» y la
- * devolución) y con el acierto. En cada estado:
- *   · palabras de la tarjeta, con la regla de canonEnganche.js (tope: 60)
- *   · el ancho de la opción más angosta (tope: no menos de 280 px)
- *   · que las opciones no cambien de alto ni de sitio al salir la pastilla
+ * A 320×568 y 375×667, para cada ítem con segunda decisión: al llegar
+ * (acertado el grupo o el día), con cada error (a los 0,8 s, ya con «Iba
+ * aquí» y la devolución) y con el acierto. En cada estado (Hanayama):
+ *   · B1: la primera opción empieza a ≤ 280 px del borde de arriba de la
+ *     tarjeta (tope a 320)
+ *   · E2: tras el desplazamiento del tramo, la pastilla tocada y el mensaje
+ *     caben enteros en la ventana, y el foco también
+ *   · que las opciones no cambien de alto ni de sitio (respecto de la
+ *     tarjeta) al salir la pastilla
+ *   · palabras de la tarjeta, con la regla de canonEnganche.js: solo de
+ *     informe, porque B2 es de Aprender y estas piezas son Hacer
  *
  *   node scripts/t3/medir-t3-segunda.mjs [carpeta-de-capturas]
  *
@@ -20,7 +25,7 @@ import { existsSync, mkdirSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { HECHOS_ACT1_T3, SEGUNDA_ACT1_T3, SIN_INGRESO } from "../../src/data/contabilidadTema3Act1.js";
 import { ITEMS_ACT2, SEGUNDA_ACT2, HECHO } from "../../src/data/contabilidadTema3Act2.js";
-import { UMBRAL_B2_PALABRAS } from "../../src/contabilidad/canonEnganche.js";
+import { UMBRAL_B1_PX } from "../../src/contabilidad/canonEnganche.js";
 
 const RAIZ = resolve(import.meta.dirname, "../..");
 const require = createRequire(import.meta.url);
@@ -28,7 +33,7 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE ?? "/opt/node-tools/n
 const CAPTURAS = process.argv[2] ?? null;
 if (CAPTURAS) mkdirSync(CAPTURAS, { recursive: true });
 const FUENTES = "/tmp/claude-0/fuentes/";
-const ANCHO_MINIMO = 280;
+const ALTOS = { 320: 568, 375: 667 };
 
 const CASOS = [
   ...HECHOS_ACT1_T3.filter((x) => x.queEs).map((x) => ({
@@ -49,7 +54,7 @@ const filas = [];
 const fallos = [];
 
 async function contexto(ancho) {
-  const ctx = await navegador.newContext({ viewport: { width: ancho, height: 900 }, deviceScaleFactor: 2 });
+  const ctx = await navegador.newContext({ viewport: { width: ancho, height: ALTOS[ancho] }, deviceScaleFactor: 2 });
   if (existsSync(`${FUENTES}fuentes.css`)) {
     const css = readFileSync(`${FUENTES}fuentes.css`, "utf8");
     await ctx.route("https://fonts.googleapis.com/**", (r) => r.fulfill({ status: 200, contentType: "text/css", body: css }));
@@ -65,11 +70,21 @@ async function contexto(ancho) {
 const medir = (pg) => pg.evaluate(async () => {
   const C = await import("/src/contabilidad/canonEnganche.js");
   const raiz = document.querySelector("[data-pieza-t3]");
+  const tarjeta = C.tarjetaDe(raiz).getBoundingClientRect();
   const ops = [...raiz.querySelectorAll("[data-opcion-segunda]")].map((o) => o.getBoundingClientRect());
+  const alto = window.innerHeight;
+  const entera = (el) => { if (!el) return null; const r = el.getBoundingClientRect(); return r.top >= -0.5 && r.bottom <= alto + 0.5; };
+  const pastilla = raiz.querySelector('[data-pastilla="bien"], [data-pastilla="mal"]');
+  const mensaje = raiz.querySelector("[data-mensaje-segunda]");
+  const foco = document.activeElement && raiz.contains(document.activeElement) ? document.activeElement : null;
   return {
     palabras: C.medirTarjeta(C.tarjetaDe(raiz), window).texto,
     ancho: Math.min(...ops.map((r) => r.width)),
-    cajas: ops.map((r) => [Math.round(r.top * 10) / 10, Math.round(r.height * 10) / 10]),
+    b1: Math.round((ops[0].top - tarjeta.top) * 10) / 10,
+    cajas: ops.map((r) => [Math.round((r.top - tarjeta.top) * 10) / 10, Math.round(r.height * 10) / 10]),
+    e2: pastilla ? Boolean(entera(pastilla) && entera(mensaje)) : null,
+    foco: foco ? entera(foco) : null,
+    quien: foco ? (foco.matches("[data-mensaje-segunda]") ? "mensaje" : foco.tagName === "BUTTON" ? foco.textContent.trim() : foco.tagName) : null,
   };
 });
 
@@ -85,14 +100,16 @@ for (const ancho of [320, 375]) {
       await pg.evaluate(() => document.fonts.ready);
       for (const s of caso.primera) await pg.click(s);
       await pg.waitForSelector("[data-opcion-segunda]");
-      if (toque) { await pg.click(`[data-opcion-segunda="${toque}"]`); await pg.waitForTimeout(800); }
+      /* 0,7 s para «Iba aquí» y la devolución, y lo que tarde el desplazamiento suave. */
+      if (toque) { await pg.click(`[data-opcion-segunda="${toque}"]`); await pg.waitForTimeout(1600); }
       const m = await medir(pg);
       if (!toque) base = m.cajas;
       const quieto = JSON.stringify(m.cajas) === JSON.stringify(base);
-      filas.push({ ancho, pieza: caso.pieza, id: caso.id, estado, palabras: m.palabras, ancho_op: Math.round(m.ancho * 10) / 10, quieto });
+      filas.push({ ancho, pieza: caso.pieza, id: caso.id, estado, palabras: m.palabras, ancho_op: Math.round(m.ancho * 10) / 10, b1: m.b1, e2: m.e2, foco: m.quien, quieto });
       const donde = `${ancho} · ${caso.id} · ${estado}`;
-      if (m.palabras > UMBRAL_B2_PALABRAS) fallos.push(`${donde}: ${m.palabras} palabras`);
-      if (m.ancho < ANCHO_MINIMO) fallos.push(`${donde}: la opción mide ${m.ancho.toFixed(1)} px`);
+      if (ancho === 320 && m.b1 > UMBRAL_B1_PX) fallos.push(`${donde}: B1, la primera opción empieza a ${m.b1} px`);
+      if (m.e2 === false) fallos.push(`${donde}: E2, la pastilla tocada o el mensaje no caben enteros en la ventana`);
+      if (m.foco === false) fallos.push(`${donde}: el foco quedó fuera de la ventana`);
       if (!quieto) fallos.push(`${donde}: las opciones se movieron al salir la pastilla`);
       if (CAPTURAS) await pg.screenshot({ path: `${CAPTURAS}/${ancho}-${caso.id}-${estado.replace(/\s+/g, "-")}.png`, fullPage: true });
       await pg.close();
@@ -104,7 +121,8 @@ for (const ancho of [320, 375]) {
 await navegador.close();
 await servidor.close();
 
-console.log("ancho | pieza | ítem | estado | palabras | opción px | quieto");
-for (const f of filas) console.log(`${f.ancho} | ${f.pieza} | ${f.id} | ${f.estado} | ${f.palabras} | ${f.ancho_op} | ${f.quieto ? "sí" : "NO"}`);
+console.log("ancho | pieza | ítem | estado | B1 px | E2 | foco | quieto | opción px | palabras (informe)");
+const sn = (v) => (v == null ? "—" : v ? "sí" : "NO");
+for (const f of filas) console.log(`${f.ancho} | ${f.pieza} | ${f.id} | ${f.estado} | ${f.b1} | ${sn(f.e2)} | ${f.foco ?? "—"} | ${sn(f.quieto)} | ${f.ancho_op} | ${f.palabras}`);
 console.log(fallos.length ? `\n${fallos.length} fuera de tope:\n${fallos.join("\n")}` : "\nTodo dentro de los topes.");
 process.exit(fallos.length ? 1 : 0);

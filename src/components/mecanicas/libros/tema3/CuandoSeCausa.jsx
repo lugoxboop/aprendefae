@@ -13,7 +13,7 @@ import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Responder, useTanda } from "../piezas.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";
 import { Encabezado } from "../tema1/encabezado.jsx";
-import { useSegunda, OpcionSegunda, BloqueError } from "./segundaDecision.jsx";
+import { useSegunda, OpcionSegunda, MensajeSegunda, mostrarTramo, pastillasTocadas } from "./segundaDecision.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -147,6 +147,8 @@ export default function CuandoSeCausa({
   const zonaBoton = useRef(null);
   const primeraVez = useRef(true);
   const pregunta = useRef(null);
+  const mensaje = useRef(null);
+  const zonaSegunda = useRef(null);
   const segunda = useSegunda();
   const toque = useRef({ inicio: null, arrastre: false });
 
@@ -167,6 +169,15 @@ export default function CuandoSeCausa({
   useEffect(() => {
     if (enSegunda && !modoDemo) pregunta.current?.focus();
   }, [enSegunda]);
+  /* El tramo de la pastilla al mensaje o al botón (lote A): al tocar mal, sin foco; al resolverse, con foco. */
+  useEffect(() => {
+    if (segunda.s && !segunda.lista && !modoDemo) mostrarTramo({ mensaje: mensaje.current, pastillas: pastillasTocadas(zonaSegunda.current) });
+  }, [segunda.s]);
+  useEffect(() => {
+    if (enSegunda && resuelto && !modoDemo) {
+      mostrarTramo({ mensaje: mensaje.current, pastillas: pastillasTocadas(zonaSegunda.current), boton: zonaBoton.current?.querySelector("button"), enfocar: true });
+    }
+  }, [resuelto]);
 
   const tocar = (marcaId) => {
     if (r) return;
@@ -260,7 +271,7 @@ export default function CuandoSeCausa({
 
         {/* La segunda decisión, en el lugar de la línea y con la forma de sus filas. */}
         {enSegunda && (
-          <div data-segunda>
+          <div data-segunda ref={zonaSegunda}>
             <p data-se-causa-dia style={{ margin: "0 0 6px", fontFamily: INTER, fontSize: "13.5px", fontWeight: 700, color: COLOR.blanco }}>
               {SE_CAUSA_DIA(item.marcas.find((m) => m.id === r.correcta).rotulo)}
             </p>
@@ -275,9 +286,8 @@ export default function CuandoSeCausa({
                   onTocar={elegirSegunda} forma={FORMA_FILA} eventos={eventosToque} antesDeTocar={antesDeTocar} />
               ))}
             </div>
-            <div aria-live="polite" aria-atomic="true">
-              <BloqueError texto={segunda.s?.error} letra={{ fontFamily: INTER, fontSize: "15px", lineHeight: "22px" }} />
-            </div>
+            <MensajeSegunda s={segunda.s} lista={segunda.lista} devolucion={item.acierto} refMensaje={mensaje}
+              letra={{ fontFamily: INTER, fontSize: "15px", lineHeight: "22px" }} />
           </div>
         )}
 
@@ -307,14 +317,15 @@ export default function CuandoSeCausa({
 
         {/* La retroalimentación: región viva. En un error, primero el tipo y después el acierto. */}
         <div data-retro aria-live="polite" aria-atomic="true">
-          {r && (!enSegunda || segunda.lista) && (
-            <div data-panel={!r.ok ? "error" : enSegunda && !segunda.s.ok ? "devolucion" : "acierto"} style={{
+          {/* Con segunda decisión, la devolución va en su mensaje, no aquí. */}
+          {r && !enSegunda && (
+            <div data-panel={r.ok ? "acierto" : "error"} style={{
               marginTop: "12px", padding: "11px 13px", borderRadius: "11px",
               background: r.ok ? "rgba(184,196,212,0.13)" : "rgba(231,111,81,0.13)",
               borderLeft: `3px solid ${r.ok ? COLOR.neutro : CORAL}`,
               animation: "fae-a2-fundido 150ms ease-out both",
             }}>
-              {!(enSegunda && !segunda.s.ok) && <span style={SOLO_LECTOR}>{r.ok ? "Correcto: " : "Incorrecto: "}</span>}
+              <span style={SOLO_LECTOR}>{r.ok ? "Correcto: " : "Incorrecto: "}</span>
               {r.textos.map((x) => (
                 <p key={x} data-texto-retro style={{ margin: "0 0 4px", fontFamily: INTER, fontSize: "15px", lineHeight: "22px", color: COLOR.blanco }}>{x}</p>
               ))}

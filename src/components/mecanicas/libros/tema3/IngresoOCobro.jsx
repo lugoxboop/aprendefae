@@ -11,7 +11,7 @@ import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Responder, useTanda } from "../piezas.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";
 import { Encabezado } from "../tema1/encabezado.jsx";
-import { useSegunda, OpcionSegunda, BloqueError } from "./segundaDecision.jsx";
+import { useSegunda, OpcionSegunda, MensajeSegunda, mostrarTramo, pastillasTocadas } from "./segundaDecision.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -74,6 +74,8 @@ export default function IngresoOCobro({
   const reloj = useRef(null);
   const zonaBoton = useRef(null);
   const pregunta = useRef(null);
+  const mensaje = useRef(null);
+  const zonaSegunda = useRef(null);
   const segunda = useSegunda();
   /* La respuesta del hecho, guardada hasta que se resuelva la segunda decisión. */
   const pendiente = useRef(null);
@@ -93,8 +95,16 @@ export default function IngresoOCobro({
   }, [t.terminado]);
   useEffect(() => () => clearTimeout(reloj.current), []);
   useEffect(() => {
-    if (resuelto && !modoDemo) zonaBoton.current?.querySelector("button")?.focus();
+    if (!resuelto || modoDemo) return;
+    const boton = zonaBoton.current?.querySelector("button");
+    /* Con segunda decisión, el tramo de la pastilla al mensaje o al botón (lote A). */
+    if (enSegunda) mostrarTramo({ mensaje: mensaje.current, pastillas: pastillasTocadas(zonaSegunda.current), boton, enfocar: true });
+    else boton?.focus();
   }, [resuelto]);
+  /* Al tocar una opción mal: el tramo hasta el mensaje, sin mover el foco. */
+  useEffect(() => {
+    if (segunda.s && !segunda.lista && !modoDemo) mostrarTramo({ mensaje: mensaje.current, pastillas: pastillasTocadas(zonaSegunda.current) });
+  }, [segunda.s]);
   useEffect(() => {
     if (enSegunda && !modoDemo) pregunta.current?.focus();
   }, [enSegunda]);
@@ -202,7 +212,7 @@ export default function IngresoOCobro({
 
         {/* La segunda decisión, en el lugar de los grupos y con su misma forma. */}
         {enSegunda && (
-          <div data-segunda>
+          <div data-segunda ref={zonaSegunda}>
             <p ref={pregunta} tabIndex={-1} data-pregunta-segunda style={{
               margin: "0 0 8px", fontFamily: SORA, fontSize: "14px", fontWeight: 700, lineHeight: 1.3, color: FAE.text, outline: "none",
             }}>
@@ -214,9 +224,8 @@ export default function IngresoOCobro({
                   onTocar={elegirSegunda} forma={FORMA_PESTANA} />
               ))}
             </div>
-            <div aria-live="polite" aria-atomic="true">
-              <BloqueError texto={segunda.s?.error} letra={{ fontSize: "13px", lineHeight: 1.55 }} />
-            </div>
+            <MensajeSegunda s={segunda.s} lista={segunda.lista} devolucion={h.acierto} refMensaje={mensaje}
+              letra={{ fontSize: "13px", lineHeight: 1.55 }} />
           </div>
         )}
 
@@ -272,7 +281,8 @@ export default function IngresoOCobro({
         )}
       </div>
 
-      {r && (!enSegunda || segunda.lista) && <Retro texto={enSegunda && !segunda.s.ok ? h.acierto : r.texto} />}
+      {/* Con segunda decisión, la devolución va en su mensaje, no aquí. */}
+      {r && !enSegunda && <Retro texto={r.texto} />}
 
       {puedeResponder && (
         <Responder onClick={enviar} deshabilitado={!completo}>
