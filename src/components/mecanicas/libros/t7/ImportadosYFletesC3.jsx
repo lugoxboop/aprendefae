@@ -115,7 +115,7 @@ function OpcionesEnFigura({ ctx, clase }) {
   const res = Boolean(s.resuelto[P.id]);
   return (
     <div className={`c3-ops ${clase}`} role="group" aria-label={F.opciones}>
-      {P.opciones.map((o) => {
+      {ctx.ordenar(P.opciones).map((o) => {
         const m = ctx.marca(o.id);
         const rebota = m === "mal" && ctx.evento === "error" && !ctx.reducido;
         return (
@@ -277,7 +277,7 @@ function Viaje({ ctx }) {
       {leyenda && <p className="a5-leyenda" data-leyenda>{["vendedor", "comprador"].map((q) => <span key={q}><i className={`a5-paga-${q}`} aria-hidden="true" />{V.leyenda[q]}</span>)}</p>}
       {v.paso === 1 && (
         <div className="c3-ops" role="group" aria-label={paso.texto}>
-          {paso.opciones.map((o) => {
+          {ctx.ordenar(paso.opciones, `${V.id}:${paso.id}`).map((o) => {
             const mal = !v.p2.resuelto && v.p2.intento === o.id;
             const revela = v.p2.resuelto && v.p2.peldano === "respuesta" && o.correcta;
             const bien = v.p2.resuelto && v.p2.peldano === "acierto" && o.correcta;
@@ -348,12 +348,12 @@ export function piezaParaElMotor(pieza) {
   };
 }
 
-export default function ImportadosYFletesC3({ pieza = PIEZA_IMPORTADOS_Y_FLETES_C3, rotulo }) {
+export default function ImportadosYFletesC3({ pieza = PIEZA_IMPORTADOS_Y_FLETES_C3, rotulo, barajar }) {
   const motor = piezaParaElMotor(pieza);
   return (
     <>
       <style>{CSS_A5_C3}</style>
-      <AprenderC3 pieza={motor} rotulo={rotulo} />
+      <AprenderC3 pieza={motor} rotulo={rotulo} barajar={barajar} />
     </>
   );
 }

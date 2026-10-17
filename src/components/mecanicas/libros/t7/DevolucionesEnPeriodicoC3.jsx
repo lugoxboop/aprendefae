@@ -169,7 +169,7 @@ function tajada(ctx) {
           ? <><i className="queda" style={{ width: `${100 - PCT}%` }} /><i className="dev marcada" style={{ width: `${PCT}%` }} /></>
           : <i className="queda entera" style={{ width: "100%" }} />}
       </div>
-      <div className="a6-bases" role="group" aria-label={T.bases}>{base("proporcional", 100 - PCT, 100, true)}{base("todo", 0, 100)}{base("nada", 0, 0)}</div>
+      <div className="a6-bases" role="group" aria-label={T.bases}>{ctx.ordenar([{ id: "proporcional", a: 100 - PCT, b: 100, fin: true }, { id: "todo", a: 0, b: 100 }, { id: "nada", a: 0, b: 0 }]).map((x) => base(x.id, x.a, x.b, x.fin))}</div>
       {res && <div className={`c3-calc${ctx.evento === "acierto" && !ctx.reducido ? " nuevo" : ""}`} data-calculos>{CALCULOS.map((c) => <span key={c} className="c3-num">{c}</span>)}</div>}
     </div>
   );
@@ -217,11 +217,11 @@ export function figuraA6(ctx) {
   return null;
 }
 
-export default function DevolucionesEnPeriodicoC3({ pieza = PIEZA_DEVOLUCIONES_C3, rotulo }) {
+export default function DevolucionesEnPeriodicoC3({ pieza = PIEZA_DEVOLUCIONES_C3, rotulo, barajar }) {
   return (
     <>
       <style>{CSS_A6}</style>
-      <AprenderC3 pieza={{ ...pieza, figura: figuraA6 }} rotulo={rotulo} />
+      <AprenderC3 pieza={{ ...pieza, figura: figuraA6 }} rotulo={rotulo} barajar={barajar} />
     </>
   );
 }
