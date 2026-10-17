@@ -1,7 +1,8 @@
 import CasillasEnOrden from "../b5/CasillasEnOrden.jsx";
-import CajonesDelTiempo, { anuncioDe } from "./CajonesDelTiempo.jsx";
+import { useVuelta } from "../b5/ConVuelta.jsx";
+import CajonesDelTiempo, { anuncioDe, crearCajones } from "./CajonesDelTiempo.jsx";
 import {
-  T6_ACT6, REGLAS_T6_ACT6, PARTES_T6_ACT6, ERRORES_T6_ACT6, ALT_T6_ACT6,
+  T6_ACT6, REGLAS_T6_ACT6, PARTES_T6_ACT6, ERRORES_T6_ACT6, ALT_T6_ACT6, PARTES_V2_T6_ACT6, ERRORES_V2_T6_ACT6, ESCENARIO_V2_T6_ACT6,
 } from "../../../../data/contabilidadT6Act6.js";
 import { pegarPorcentaje } from "../../../../contabilidad/t6Pieza5.js";
 
@@ -42,6 +43,17 @@ export const CONFIG_T6_ACT6 = {
   visual: { Componente: CajonesDelTiempo, anuncio: anuncioDe, enDemo: true, opciones: (c, demo) => demo || c.parte === PARTES_T6_ACT6[0].id },
 };
 
+/* D8 (lote 18, Futaba): la variante, con sus deudas, su cartera y su figura. */
+const V2 = crearCajones(PARTES_V2_T6_ACT6, ESCENARIO_V2_T6_ACT6);
+export const CONFIG_V2_T6_ACT6 = {
+  ...CONFIG_T6_ACT6,
+  partes: PARTES_V2_T6_ACT6.map((p) => ({ ...p, casillas: conPorcentaje(p.casillas) })),
+  errores: Object.fromEntries(Object.entries(ERRORES_V2_T6_ACT6).map(([k, t]) => [k, pegarPorcentaje(t)])),
+  visual: { ...CONFIG_T6_ACT6.visual, Componente: V2.CajonesDelTiempo, anuncio: V2.anuncioDe, opciones: (c, demo) => demo || c.parte === PARTES_V2_T6_ACT6[0].id },
+};
+
 export default function ProvisionPorEdades(props) {
-  return <CasillasEnOrden config={CONFIG_T6_ACT6} {...props} />;
+  const { variante, alCompletar } = useVuelta(T6_ACT6.id, props.onCompletar);
+  if (props.modoDemo) return <CasillasEnOrden config={CONFIG_T6_ACT6} {...props} />;
+  return <CasillasEnOrden {...props} config={variante ? CONFIG_V2_T6_ACT6 : CONFIG_T6_ACT6} onCompletar={alCompletar} />;
 }

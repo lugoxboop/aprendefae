@@ -1,7 +1,7 @@
 import { segundoFalloDe } from "./b5SegundoFallo.js";
 import { repartirTanda } from "./b5Reparto.js";
 import {
-  T5_ACT1, FICHAS_T5_ACT1, FIJA, NOMBRE, CAJONES_T5_ACT1,
+  T5_ACT1, FICHAS_T5_ACT1, FIJA, NOMBRE, CAJONES_T5_ACT1, FICHAS_V2_T5_ACT1, MAZOS_T5_ACT1,
 } from "../data/contabilidadT5Act1.js";
 
 /*
@@ -56,8 +56,12 @@ export function evaluarT5Act1(ficha, marcado, intento = 1) {
 /* Cada ficha vale entera al acertar (lote 6a: ya no hay dos niveles que pesar). En el segundo intento, la mitad (el componente). */
 export const valorDeItemT5Act1 = (ficha, r) => (r.ok ? 1 : 0);
 
+/* D8 (lote 18): las fichas de las dos vueltas, y el mazo fijo de cada una (0 · la de hoy, 1 · la variante). */
+export const TODAS_T5_ACT1 = [...FICHAS_T5_ACT1, ...FICHAS_V2_T5_ACT1];
+export const mazoT5Act1 = (k) => MAZOS_T5_ACT1[k].map((id) => TODAS_T5_ACT1.find((f) => f.id === id));
+
 /* Para el panel docente: el ítem es la ficha, y se lee por su texto. */
-export const fichaDeItemT5Act1 = (id) => FICHAS_T5_ACT1.find((f) => f.id === id)?.texto ?? null;
+export const fichaDeItemT5Act1 = (id) => TODAS_T5_ACT1.find((f) => f.id === id)?.texto ?? null;
 
 export function puntuarT5Act1(respuestas, cuantas) {
   if (!cuantas) return 0;

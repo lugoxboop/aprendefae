@@ -1,7 +1,7 @@
 import { segundoFalloDe } from "./b5SegundoFallo.js";
 import { repartirTanda } from "./b5Reparto.js";
 import {
-  T6_ACT1, FICHAS_T6_ACT1, CLIENTES, CAJONES_T6_ACT1,
+  T6_ACT1, FICHAS_T6_ACT1, CLIENTES, CAJONES_T6_ACT1, FICHAS_V2_T6_ACT1,
 } from "../data/contabilidadT6Act1.js";
 
 /*
@@ -47,7 +47,7 @@ export function evaluarT6Act1(ficha, marcado, intento = 1) {
 export const valorDeItemT6Act1 = (ficha, r) => (r.ok ? 1 : 0);
 
 /* Para el panel docente: el ítem es la ficha, y se lee por su texto. */
-export const fichaDeItemT6Act1 = (id) => FICHAS_T6_ACT1.find((f) => f.id === id)?.texto ?? null;
+export const fichaDeItemT6Act1 = (id) => [...FICHAS_T6_ACT1, ...FICHAS_V2_T6_ACT1].find((f) => f.id === id)?.texto ?? null;
 
 export function puntuarT6Act1(respuestas, cuantas) {
   if (!cuantas) return 0;

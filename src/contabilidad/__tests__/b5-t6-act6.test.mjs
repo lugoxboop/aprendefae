@@ -1,4 +1,6 @@
-import { test } from "node:test";
+import { test, beforeEach } from "node:test";
+/* D8 (lote 18): cada prueba arranca en la vuelta 1 (la de hoy); la segunda vuelta tiene su propia prueba. */
+beforeEach(() => { try { globalThis.window?.localStorage?.clear(); } catch { /* sin almacenamiento */ } });
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";

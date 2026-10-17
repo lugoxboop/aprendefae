@@ -144,6 +144,65 @@ export const HECHOS_T6_ACT4 = [
   },
 ];
 
+/*
+ * ═══════════ D8 · LA SEGUNDA VUELTA: DIEZ HECHOS NUEVOS (Futaba, lote 18) ═══════════
+ *
+ * El mismo reparto (3 · 3 · 2 · 2) y los mismos mapas de error, hecho por hecho, que el banco de hoy. Los
+ * dos que llevan fecha van rotulados «Escenario simulado» en el propio hecho.
+ */
+export const HECHOS_V2_T6_ACT4 = [
+  {
+    id: "qd2-01", respuesta: A_CLIENTES, errores: VENTA,
+    texto: "Escenario simulado. El 3 de marzo, un colegio se lleva cuadernos a crédito y queda de pagarlos en un mes.",
+    acierto: "Cuentas por cobrar – clientes. Lo que debe el colegio sube, y se debita.",
+  },
+  {
+    id: "qd2-02", respuesta: A_CAJA, errores: COBRO,
+    texto: "Escenario simulado. El 20 de marzo, el colegio paga los cuadernos que compró a crédito.",
+    acierto: "Caja. Entra la plata, y la deuda del colegio baja.",
+  },
+  {
+    id: "qd2-03", respuesta: A_CAJA, errores: COBRO,
+    texto: "Un cliente llega y paga en efectivo una factura vieja.",
+    acierto: "Caja. La plata entra a Caja; lo que deben los clientes baja y se acredita.",
+  },
+  {
+    id: "qd2-04", respuesta: A_CLIENTES, errores: VENTA,
+    texto: "A la empresa le devuelven el cheque con el que un cliente canceló su factura.",
+    acierto: "Cuentas por cobrar – clientes. Ese pago no llegó, así que la deuda vuelve.",
+  },
+  {
+    id: "qd2-05", respuesta: A_GASTO, errores: DIRECTO,
+    texto: "Una empresa que usa la anulación directa da por perdida la deuda de un cliente.",
+    acierto: "Gasto provisiones – cuentas incobrables. Sin provisión, el castigo va al gasto.",
+  },
+  {
+    id: "qd2-06", respuesta: A_PROVISION, errores: CONTRA_PROVISION,
+    texto: "Una empresa con provisión castiga la deuda de un cliente que quebró.",
+    acierto: "Provisión para cuentas incobrables. El gasto ya se anotó al crearla; al castigar, la provisión baja.",
+  },
+  {
+    id: "qd2-07", respuesta: A_PROVISION, errores: CONTRA_PROVISION,
+    texto: "En abril, la empresa da por perdida una deuda. Tiene provisión desde diciembre.",
+    acierto: "Provisión para cuentas incobrables. Si hay provisión, el castigo va contra ella.",
+  },
+  {
+    id: "qd2-08", respuesta: A_GASTO, errores: AJUSTE,
+    texto: "Al cierre del año, la empresa crea por primera vez su provisión.",
+    acierto: "Gasto provisiones – cuentas incobrables. Crear la provisión es anotar el gasto desde ya.",
+  },
+  {
+    id: "qd2-09", respuesta: A_CLIENTES, errores: { ...REVIVIR, [A_CAJA]: "E10" },
+    texto: "Un cliente cuya deuda ya se castigó aparece y abona una parte. Primero se revive.",
+    acierto: "Cuentas por cobrar – clientes. Revivir es reversar el castigo: la deuda vuelve a subir.",
+  },
+  {
+    id: "qd2-10", respuesta: A_CAJA, errores: COBRO,
+    texto: "Ya revivida la deuda, entra el abono del cliente.",
+    acierto: "Caja. Entra la plata del abono, y la deuda revivida baja por ese valor.",
+  },
+];
+
 /* ═══════════ EL TUTORIAL: UN HECHO FUERA DEL BANCO ═══════════ */
 
 export const EJEMPLO_T6_ACT4 = {
@@ -178,6 +237,17 @@ export const SE_ACREDITA_T6_ACT4 = {
   "qd-09": PROVISION,
   "qd-10": CLIENTES,
   "b5-t6-a4-tutorial": PROVISION,
+  /* D8 (lote 18): los de la segunda vuelta, hecho por hecho como los de hoy. */
+  "qd2-01": INGRESOS,
+  "qd2-02": CLIENTES,
+  "qd2-03": CLIENTES,
+  "qd2-04": BANCOS,
+  "qd2-05": CLIENTES,
+  "qd2-06": CLIENTES,
+  "qd2-07": CLIENTES,
+  "qd2-08": PROVISION,
+  "qd2-09": PROVISION,
+  "qd2-10": CLIENTES,
 };
 
 export const ALT_T6_ACT4 = "Actividad de elección. Aparece un hecho. Elige cuál de las cuatro cuentas se debita: Cuentas por cobrar – clientes, Caja, Gasto provisiones – cuentas incobrables o Provisión para cuentas incobrables. Tienes un intento por hecho, y después se lee la explicación.";

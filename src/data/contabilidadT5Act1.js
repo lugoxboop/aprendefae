@@ -124,7 +124,8 @@ export const FICHAS_T5_ACT1 = [
     id: "def-interes", clase: DEFINICION, renta: FIJA, tipo: INTERES,
     texto: "Le paga un interés fijo durante un periodo determinado.",
     pista: "Lee de dónde sale la renta: ¿de un interés o de una diferencia? ¿Y se pacta al invertir?",
-    acierto: "Un interés fijo durante un periodo determinado. Así define el libro la renta fija con interés.",
+    /* Lote 18 (Futaba, texto suelto G; INFLESZ 80,2). */
+    acierto: "Le paga un interés fijo durante un tiempo dado. Así define el libro la renta fija con interés.",
   },
   {
     id: "caso-pactado", clase: CASO, renta: FIJA, tipo: INTERES,
@@ -162,6 +163,45 @@ export const FICHAS_T5_ACT1 = [
     pista: "Fíjate en qué gana: ¿un interés que le pagan, o la diferencia entre lo que pagó y lo que recibe?",
     acierto: "Gana la diferencia entre lo que pagó y el valor de redención: es renta fija con descuento.",
   },
+];
+
+/*
+ * ═══════════ D8 · LA SEGUNDA VUELTA: CUATRO FICHAS NUEVAS Y DOS MAZOS FIJOS (Futaba, lote 18) ═══════════
+ *
+ * Fuente: acciones comunes, p. 191; renta variable, fija con interés y con descuento, pp. 192-193. La
+ * clase de las nuevas sigue a la ficha de hoy cuyas devoluciones toman en la decisión 2 (D4).
+ */
+export const FICHAS_V2_T5_ACT1 = [
+  {
+    id: "nv-capital", clase: NOMBRE, renta: VARIABLE, tipo: null,
+    texto: "Acciones comunes de una compañía",
+    pista: "Piensa de qué depende lo que recibe quien tiene acciones. ¿Se sabe el día de la compra?",
+    acierto: "Son acciones: lo que rinden depende de cómo le vaya a la compañía que las emitió. Es renta variable.",
+  },
+  {
+    id: "nv-empresa", clase: CASO, renta: VARIABLE, tipo: null,
+    texto: "Lo que rinde sube si a la empresa que lo emitió le va bien, y baja si le va mal.",
+    pista: "Si lo que rinde cambia con la suerte de la empresa, ¿se pudo pactar al invertir?",
+    acierto: "Si lo que rinde sigue a la empresa que lo emitió, es renta variable.",
+  },
+  {
+    id: "nv-trimestre", clase: CASO, renta: FIJA, tipo: INTERES,
+    texto: "Cada trimestre paga el interés que se pactó al comprarlo.",
+    pista: "Lee de dónde sale la renta y cuándo se pactó. ¿Es un interés o una diferencia?",
+    acierto: "Un interés pactado al invertir, que se paga cada trimestre: renta fija con interés.",
+  },
+  {
+    id: "nv-redime", clase: CASO, renta: FIJA, tipo: DESCUENTO,
+    texto: "Quien lo compra gana la diferencia entre lo que pagó y lo que le pagan al redimirlo.",
+    pista: "Fíjate en qué gana: ¿un interés que le pagan, o una diferencia al final?",
+    acierto: "Gana la diferencia entre lo que pagó y el valor de redención: renta fija con descuento.",
+  },
+];
+
+/* Los dos mazos, en su orden: la vuelta 1 y la vuelta 2, sin fichas repetidas. */
+export const MAZOS_T5_ACT1 = [
+  ["acciones", "cdt", "def-descuento", "def-emisora", "caso-pactado", "participacion", "caso-resultados", "def-interes", "caso-redencion"],
+  ["bonos", "nv-capital", "cert", "def-dividendos", "nv-trimestre", "canjeables", "nv-empresa", "cedulas", "nv-redime"],
 ];
 
 /* El resumen (Futaba, lote 6a): ya no habla de pesos; cada ficha vale entera. */
