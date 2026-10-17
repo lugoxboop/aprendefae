@@ -49,3 +49,27 @@ export function itemsAprender(pantallas, propios = []) {
     pie: p.pie,
   }));
 }
+
+/*
+ * Los ítems de un Hacer de T7-3 que NO va al motor (H1, H2, H4, H5: puntúan por
+ * unidad y llevan la figura acumulada; lo de #424, T7-2): la forma del motor
+ * para la regla consecuencia-c. Cada opción, con su número o texto como id
+ * (en texto, como en main); los asientos, «propio» (siguen como en main).
+ * `texto(it, v)`: cómo dice la opción la pieza (pesos, factor, porcentaje…).
+ */
+export function itemsHacer(items, texto, extra = () => ({})) {
+  return items.map((it) => (it.tipo === "asiento"
+    ? { id: it.id, tipo: "propio", pregunta: it.pregunta, opciones: [], ...extra(it) }
+    : {
+      id: it.id, tipo: it.tipo === "cifra" ? "cifra" : "eleccion", pregunta: it.pregunta, ...(it.tipo === "cifra" ? { formato: "pesos" } : {}),
+      opciones: [it.correcta, ...it.distractores.map((d) => d.valor)].map((v) => ({
+        id: String(v), v: typeof v === "number" ? v : undefined, t: texto(it, v),
+        correcta: v === it.correcta, msg: it.distractores.find((d) => d.valor === v)?.retro ?? null,
+      })),
+      bien: it.acierto, ...extra(it),
+    }));
+}
+/* La elección de una consecuencia: la cifra comprobada (número) o el id de la opción tocada (texto). */
+export const valorDe = (item, e) => (e == null || e === "" ? null : item.tipo === "cifra" ? Number(e) : item.opciones.find((o) => o.id === String(e)) ?? null);
+/* «Sobran $X frente al…»: la plantilla de Watari, con la contracción de Mello (C4-5). */
+export const frente = (x, t, que) => `${x > t ? "Sobran" : "Faltan"} ${pesos(Math.abs(x - t))} frente ${que.startsWith("el ") ? `al ${que.slice(3)}` : `a ${que}`}.`;

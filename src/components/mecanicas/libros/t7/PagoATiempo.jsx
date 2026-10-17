@@ -9,9 +9,13 @@ import { EncabezadoHacer } from "./hacerT7.jsx";
 import { CSS_T73_PATRON } from "./PatronT7_3.jsx";
 import FiguraAcumulada from "./FiguraAcumulada.jsx";
 import { FIGURA_T7_3_H4, cerradosDe } from "../../../../contabilidad/figuraAcumulada.js";
-import { CSS_T7_HACER, Ficha, Parrafos, TarjetaPregunta, Eleccion, Devolucion } from "./hacerT7.jsx";
+import { CSS_T7_HACER, Ficha, Parrafos, TarjetaPregunta, Devolucion } from "./hacerT7.jsx";
 import { CasillaCifra, LineasConCuenta, ContadorConIntento } from "./armaLaLinea.jsx";
 import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
+import { leerCifra } from "../../../../contabilidad/elCierreCompleto.js";
+import { CONSECUENCIA_C4 as C4 } from "../../../../contabilidad/c4/t73h4_c4.js";
+import { CSS_C4_T72, EleccionC4, useVeredictoC4 } from "./FigurasC4T7_2.jsx";
+import { CSS_C4_T73H, FiguraCalendarioPago } from "./FigurasC4T7_3.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -36,8 +40,21 @@ import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
  *
  * LOTE 5 (L): la factura, el descuento y el pago, en una sola cuenta que crece
  * en la figura acumulada (FiguraAcumulada.jsx) y se queda hasta el cierre.
+ *
+ * C4 · «TODA DECISIÓN SE PINTA» (Watari, D9; FigurasC4T7_3.jsx, con el
+ * precedente de T7-2, #424): al tocar una opción o al comprobar una cifra,
+ * la figura de la actividad pinta lo que implica, antes del veredicto; el
+ * veredicto llega ESPERA_C4 después (con movimiento reducido, en el acto).
+ * Mientras se escribe, la figura solo muestra la cifra (C4-1 de Mello). El
+ * intento se anota en el toque. Los asientos siguen como en main.
  * ═══════════════════════════════════════════════════════════════════════════
  */
+/*
+ * El contrato de la figura del motor (cabecera de decisionC4.jsx), para la prueba C5 de consecuencia-c: esta pieza
+ * no monta el motor, pero su Figura acepta su vista. Con una cifra que se está escribiendo, `vista.borrador` solo se
+ * MUESTRA en su lugar; `estado` (la consecuencia) existe solo después de comprobar (C4-1 de Mello).
+ */
+export const PIEZA_C4 = { ...C4, Figura: ({ estado, item, vista }) => <FiguraCalendarioPago estado={estado ?? C4.consecuencia(item, null)} item={item} escrita={vista?.borrador ?? null} /> };
 
 export default function PagoATiempo({ Marco, rotulo, titulo, acento, onCompletar, items = null, onComoSeJuega = null }) {
   const t = useTanda(() => items ?? prepararH4(barajar));
@@ -45,6 +62,9 @@ export default function PagoATiempo({ Marco, rotulo, titulo, acento, onCompletar
   const [r, setR] = useState(null);
   const [comprobado, setComprobado] = useState(false);
   const [bien, setBien] = useState(0);
+  /* C4: la cifra que se va escribiendo: la figura solo la muestra; la consecuencia llega al comprobar (C4-1 de Mello). */
+  const [escrita, setEscrita] = useState(null);
+  const veredicto = useVeredictoC4();
   const zonaBoton = useRef(null);
   const tarjeta = useRef(null);
 
@@ -57,13 +77,14 @@ export default function PagoATiempo({ Marco, rotulo, titulo, acento, onCompletar
   }, [t.terminado]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (listo) zonaBoton.current?.querySelector("button")?.focus(); }, [listo]);
 
+  /* C4: el toque es la consecuencia (y el único intento, que se anota ya); el veredicto llega después. */
   const elegir = (v) => {
-    if (r) return;
+    if (r || elegida != null) return;
     const nuevo = evaluarH4(item, v);
     t.anotar(item.id, nuevo.ok, v);
     if (nuevo.ok) setBien((n) => n + 1);
     setElegida(v);
-    setR(nuevo);
+    veredicto.programar(() => setR(nuevo));
   };
 
   const comprobar = (resultados) => {
@@ -75,12 +96,14 @@ export default function PagoATiempo({ Marco, rotulo, titulo, acento, onCompletar
   };
 
   const avanzar = () => {
+    veredicto.cancelar();
+    setEscrita(null);
     setElegida(null); setR(null); setComprobado(false);
     if (t.i + 1 < cuantos) { t.setI(t.i + 1); requestAnimationFrame(() => tarjeta.current?.focus()); }
     else t.setTerminado(true);
   };
 
-  const reiniciar = () => { t.reiniciar(); setElegida(null); setR(null); setComprobado(false); setBien(0); };
+  const reiniciar = () => { veredicto.cancelar(); setEscrita(null); t.reiniciar(); setElegida(null); setR(null); setComprobado(false); setBien(0); };
 
   if (t.terminado) {
     return (
@@ -92,8 +115,13 @@ export default function PagoATiempo({ Marco, rotulo, titulo, acento, onCompletar
     );
   }
 
+  const itemC4 = C4.items.find((x) => x.id === item.id);
+  const estadoC4 = item.tipo === "asiento" ? null : C4.consecuencia(itemC4, elegida == null ? null : item.tipo === "cifra" ? elegida : String(elegida));
+  const escritaC4 = item.tipo === "cifra" && elegida == null ? escrita : null;
+
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
+      <style>{CSS_C4_T72}{CSS_C4_T73H}</style>
       <style>{CSS_T7_HACER + CSS_T73_PATRON}</style>
       <div data-t7-3-h4>
         <EncabezadoHacer objetivo={H4.objetivo} consigna={sinUnSoloIntento(H4.consigna)} onComoSeJuega={onComoSeJuega} />
@@ -112,15 +140,18 @@ export default function PagoATiempo({ Marco, rotulo, titulo, acento, onCompletar
           </div>
         )}
         <TarjetaPregunta id={item.id} encabezado={item.encabezado ?? null} pregunta={item.pregunta} pie={H4.pie} tarjetaRef={tarjeta} />
+        {estadoC4 && <FiguraCalendarioPago estado={estadoC4} item={item} escrita={escritaC4} />}
         {item.tipo === "eleccion" && (
           <>
-            <Eleccion opciones={item.opciones} r={r} elegida={elegida} onElegir={elegir} etiqueta={item.pregunta} />
+            <EleccionC4 opciones={item.opciones} r={r} elegida={elegida} onElegir={elegir} etiqueta={item.pregunta} />
             <Devolucion r={r} lectorError={r && !r.ok ? `Incorrecto. Iba aquí: ${r.textoCorrecta}. ` : null} />
           </>
         )}
         {item.tipo === "cifra" && (
           <>
-            <CasillaCifra key={item.id} id={item.id} onComprobar={elegir} comprobado={Boolean(r)} etiqueta={item.pregunta} iba={r && !r.ok ? r.textoCorrecta : null} />
+            <div onInput={(e) => setEscrita(leerCifra(e.target.value))}>
+              <CasillaCifra key={item.id} id={item.id} onComprobar={elegir} comprobado={elegida != null} etiqueta={item.pregunta} iba={r && !r.ok ? r.textoCorrecta : null} />
+            </div>
             <Devolucion r={r} lectorError={r && !r.ok ? "Incorrecto. " : null} />
           </>
         )}

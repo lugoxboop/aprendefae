@@ -35,6 +35,11 @@ for (const f of ["a1", "a2", "a3", "a4", "a5", "a6", "a7"]) {
   const { CONSECUENCIA_C4 } = await import(resolve(RAIZ, `src/contabilidad/c4/t73${f}_c4.js`));
   ITEMS[CONSECUENCIA_C4.id] = CONSECUENCIA_C4.items;
 }
+const HACER_SIN_MOTOR = [];
+for (const [h, raiz] of [["h1", "[data-t7-3-h1]"], ["h2", "[data-t7-3-h2]"], ["h4", "[data-t7-3-h4]"], ["h5", "[data-t7-3-h5]"]]) {
+  const { CONSECUENCIA_C4 } = await import(resolve(RAIZ, `src/contabilidad/c4/t73${h}_c4.js`));
+  HACER_SIN_MOTOR.push([h, raiz, CONSECUENCIA_C4.items]);
+}
 const PIEZAS = ["t7-3-descuento-comercial", "t7-3-descuentos-en-cadena", "t7-3-descuento-condicionado", "t7-3-descuento-en-dos-libros", "t7-3-sobrantes-y-faltantes", "t7-3-provision-inventarios", "t7-3-nic2-costo"];
 
 const servidor = await createServer({ root: RAIZ, logLevel: "error", server: { port: 0, host: "127.0.0.1" } });
@@ -167,6 +172,35 @@ for (const ancho of ANCHOS) {
   }
   await medirEstado(h, H, "h7-cierre", ancho, ++n);
   await h.close();
+
+  /* ═══ Hacer sin motor: H1, H2, H4 y H5 (FigurasC4T7_3.jsx), con sus asientos ═══ */
+  for (const [hash, raiz, ids] of HACER_SIN_MOTOR) {
+    const pg2 = await ctx.newPage();
+    await pg2.goto(`${URL_BANCO}#${hash}`);
+    await pg2.waitForSelector(raiz);
+    for (const [k, I] of ids.entries()) {
+      await medirEstado(pg2, raiz, `${hash}-${k + 1}-llega`, ancho, ++n);
+      if (I.tipo === "propio") {
+        for (const linea of await pg2.$$eval(`${raiz} [data-linea-cuenta]`, (xs) => xs.map((x) => x.dataset.lineaCuenta))) {
+          await pg2.click(`${raiz} [data-linea-cuenta="${linea}"] [data-ficha-cuenta]`);
+          await pg2.click(`${raiz} [data-linea-cuenta="${linea}"] button:text-is("Debe")`);
+        }
+        await pg2.click(`${raiz} button:text-is("Comprobar")`);
+      } else {
+        const o = I.opciones[k % 2 ? 1 : 0];
+        if (I.tipo === "cifra") {
+          await pg2.fill(`${raiz} [data-campo-cifra="${I.id}"]`, String(o.v));
+          await medirEstado(pg2, raiz, `${hash}-${k + 1}-escrita`, ancho, ++n);
+          await pg2.click(`${raiz} button:text-is("Comprobar")`);
+        } else await pg2.click(`${raiz} [data-opcion="${o.id}"] button`);
+        await medirEstado(pg2, raiz, `${hash}-${k + 1}-toca`, ancho, ++n);
+        await espera(pg2);
+      }
+      await medirEstado(pg2, raiz, `${hash}-${k + 1}-veredicto`, ancho, ++n);
+      await pg2.click(`${raiz} ~ div button, ${raiz} + div button`);
+    }
+    await pg2.close();
+  }
   await ctx.close();
 }
 
