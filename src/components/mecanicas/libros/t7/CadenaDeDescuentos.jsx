@@ -5,7 +5,7 @@ import { prepararH2, evaluarH2, puntuarH2, TOTAL_H2 } from "../../../../contabil
 import { Pulsos, Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Responder, useTanda } from "../piezas.jsx";
-import { Encabezado } from "../tema1/encabezado.jsx";
+import { EncabezadoHacer } from "./hacerT7.jsx";
 import { CSS_T73_PATRON } from "./PatronT7_3.jsx";
 import FiguraAcumulada from "./FiguraAcumulada.jsx";
 import { FIGURA_T7_3_H2, cerradosDe } from "../../../../contabilidad/figuraAcumulada.js";
@@ -78,7 +78,7 @@ export default function CadenaDeDescuentos({ Marco, rotulo, titulo, acento, onCo
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS_T7_HACER + CSS_T73_PATRON}</style>
       <div data-t7-3-h2>
-        <Encabezado consigna={sinUnSoloIntento(H2.consigna)} onComoSeJuega={onComoSeJuega} />
+        <EncabezadoHacer objetivo={H2.objetivo} consigna={sinUnSoloIntento(H2.consigna)} onComoSeJuega={onComoSeJuega} />
         <Parrafos textos={H2.enunciado} />
         <Ficha filas={FICHA_H2} />
         <FiguraAcumulada figura={FIGURA_T7_3_H2} cerrados={cerradosDe(t.i, listo)} listo={listo} />

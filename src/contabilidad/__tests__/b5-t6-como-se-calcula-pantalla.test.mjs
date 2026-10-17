@@ -384,7 +384,8 @@ test("★★ la pieza va quinta en el tema: la vista dice «PIEZA 5 DE 5» y le 
   const vista = readFileSync(new URL("../../components/ContabilidadTema6View.jsx", import.meta.url), "utf8");
   assert.match(vista, /PIEZA \{k \+ 1\} DE \{PUBLICADAS\}/);
   assert.match(vista, /const PUBLICADAS = PIEZAS\.length;/);
-  assert.deepEqual(ESCENAS_TEMA6[D.PIEZA_COMO_SE_CALCULA.id], { Capa2: LaTablaDelEjemplo, Exploracion: CuatroGrupos, Capa4: ESCENAS_TEMA6[D.PIEZA_COMO_SE_CALCULA.id].Capa4 });
+  assert.deepEqual(ESCENAS_TEMA6[D.PIEZA_COMO_SE_CALCULA.id], { Capa2: LaTablaDelEjemplo, Exploracion: CuatroGrupos, Capa4: ESCENAS_TEMA6[D.PIEZA_COMO_SE_CALCULA.id].Capa4, FiguraFinal: ESCENAS_TEMA6[D.PIEZA_COMO_SE_CALCULA.id].FiguraFinal });
+  assert.ok(ESCENAS_TEMA6[D.PIEZA_COMO_SE_CALCULA.id].FiguraFinal, "lote 12: el modelo final de la capa 4");
 });
 
 /* ═══════════ LAS CONDICIONES DE SHOKO ═══════════ */

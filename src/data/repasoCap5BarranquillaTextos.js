@@ -109,6 +109,15 @@ export const CALENDARIO_R5_4 = {
     a7: "Los 15 días se cuentan desde la factura, no desde el inicio del mes. El día de la factura no cuenta; el último día sí.",
     a9: "El plazo no es el día 15 del mes: son 15 días desde la venta. El día 10 no entra en la cuenta, y el último sí.",
   },
+  /*
+   * Takamura (veredicto de #380): la devolución de la ventana nombra el error.
+   * Por día final: 15 (contó desde el 1 del mes) y, en el pago del 17, 16
+   * (contó el día de la factura). Cualquier otro, la genérica (`ventanaMal`).
+   */
+  ventanaPorError: {
+    a7: { 15: "Los 15 días se cuentan desde la factura, no desde el 1 del mes.", 16: "El día de la factura no cuenta: el primer día es el 3. Cuenta 15 desde ahí." },
+    a9: { 15: "Los 15 días se cuentan desde la factura, no desde el 1 del mes." },
+  },
   alt: "Calendario de septiembre con la fecha de la factura y una ventana de descuento que se alarga o se acorta día a día.",
   /* El nombre corto de cada operación, para el nombre accesible de su celda. */
   nombres: {
@@ -310,7 +319,7 @@ export const ASIENTOS_BARRANQUILLA = [
     operacion: "Pago",
     hecho: "Pagas la compra del día 2. Arrastra el borde hasta el último día con descuento.",
     /* P2 de Itagaki: salen los renglones de fechas; el calendario muestra los días. */
-    renglones: [["Saldo por pagar", pesos(N.a7.saldo)], ["Condiciones", "10/15, n/30"]],
+    renglones: [["Saldo por pagar", pesos(N.a7.saldo)], ["Condición", "10/15, n/30"]],
     /* La ventana del descuento: factura del 2, 15 días (10/15), pago del 17. */
     ventana: { factura: O.a7.factura, plazo: CONDICIONES.compra.plazo, pago: O.a7.dia }, // 2 · 15 · 17
     correctos: [[d(PROVEEDORES, N.a7.saldo), h(DESCUENTO, N.a7.descuento), h(CAJA, N.a7.caja)]],
@@ -319,13 +328,14 @@ export const ASIENTOS_BARRANQUILLA = [
       [CAJA]: "Va al revés. La deuda se cancela por el debe. El dinero sale por el haber.",
       [DESCUENTO]: "Aquí tú recibes el descuento. Cuando lo recibes, va al haber.",
     },
-    falta: {},
+    /* Takamura: «Falta el renglón del descuento» va primero. */
+    falta: { [DESCUENTO]: "Falta el renglón del descuento." },
     cuentaMal: {
       [COMPRAS]: "Este descuento tiene su propia cuenta: Descuento comercial condicionado.",
       [DEV_COMPRAS]: "Nadie devolvió nada hoy. Lo que ganas es un descuento por pagar a tiempo.",
     },
     valorMal: [
-      v(CAJA, E.a7.cajaSinDescuento, "Sí ganas el descuento. Del 2 al 17 pasaron 15 días: el día de la compra no cuenta, y el día 15 sí. Te toca el 10 %."),
+      v(CAJA, E.a7.cajaSinDescuento, "Sí ganas el descuento. Te toca el 10 %."),
       v(DESCUENTO, E.a7.descuentoSinDevolucion, "Usaste la factura sin la devolución. El descuento va sobre lo que se paga: $9.395.500."),
       v(DESCUENTO, E.a7.descuentoDelCinco, "El descuento por pagar a tiempo es el 10 %. El 5 % comercial ya se restó el día 2."),
       v(DESCUENTO, E.a7.descuentoSumado, "Sumaste el 5 % al 10 %. El 5 % ya se aplicó el día 2. Ahora solo va el 10 %."),
@@ -365,7 +375,7 @@ export const ASIENTOS_BARRANQUILLA = [
     fecha: "25 DE SEPTIEMBRE",
     operacion: "Cobro",
     hecho: "Cobras la venta del día 10. Arrastra el borde hasta el último día con descuento.",
-    renglones: [["Saldo por cobrar", pesos(N.a9.saldo)], ["Condiciones", "5/15, n/30"]],
+    renglones: [["Saldo por cobrar", pesos(N.a9.saldo)], ["Condición", "5/15, n/30"]],
     ventana: { factura: O.a9.factura, plazo: CONDICIONES.venta.plazo, pago: O.a9.dia }, // 10 · 15 · 25
     correctos: [[d(CAJA, N.a9.caja), d(DESCUENTO, N.a9.descuento), h(CLIENTES, N.a9.saldo)]],
     cruzado: {

@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Panel } from "../../salaDeControl/marco.jsx";
+import { barajar } from "../../../../utils/barajar.js";
 import { POR_QUE } from "./plegable.jsx";
 import { PIEZA_EL_KARDEX, KARDEX_A3, BOTON, INTERFAZ } from "../../../../data/contabilidadT7_2_a3.js";
 import { FICHAS_K1, ORDEN_EN_PANTALLA, SIGUE_HASTA_EL_20, PORQUE_LADO_A_LADO, ROTULOS_W } from "../../../../data/contabilidadT7_2_a3_c2.js";
@@ -352,8 +353,12 @@ function irA(x, P, i) {
   return { ...x, idx: i, visto: Math.max(x.visto, i), anim: { nueva: paso ? i : null, desde: paso ? totalSaldo(P.metodo, x.idx) : null, n: x.anim.n + 1 } };
 }
 
-function Pantalla({ P, numero, total, enfocar, onSeguir }) {
+function Pantalla({ P, numero, total, enfocar, onSeguir, barajarOpciones }) {
   const [s, setS] = useState(() => inicial(P));
+  /* Lote V (Mello): las opciones, barajadas UNA vez al montar la pantalla (como los Hacer de T7 al armar la tanda); el orden no cambia al reintentar. `barajar` se inyecta en las pruebas. */
+  /* Los métodos llevan su columna (k) para leer sus cifras en la tabla. */
+  const [fichas] = useState(() => (P.fichas ? barajarOpciones(P.fichas) : null));
+  const [metodos] = useState(() => (P.metodos ? barajarOpciones(P.metodos.map((x, k) => ({ x, k }))) : null));
   const [ancho, setAncho] = useState(false);
   const raiz = useRef(null);
   const txt = useRef(null);
@@ -427,7 +432,7 @@ function Pantalla({ P, numero, total, enfocar, onSeguir }) {
         {!P.tabla && <Tabla P={P} s={s} ancho={ancho} esperando={esperando} />}
         {P.fichas && !res && (
           <div className="ekx-fichas" role="group" aria-label={P.huecoCosto ? ROTULOS_W.costoPromedio : ROTULOS_W.salidas} data-fichas>
-            {P.fichas.map((f) => {
+            {fichas.map((f) => {
               const mal = s.intento === f.id;
               const pista = s.pista && f.correcta;
               return (
@@ -444,7 +449,7 @@ function Pantalla({ P, numero, total, enfocar, onSeguir }) {
         {P.tabla && (
           <div className={`ekx-lado ekx-hundido${res ? " resuelto" : ""}`} role="group" aria-label={P.tabla.nombre} data-lado>
             <div className="ekx-l-cab" aria-hidden="true">{P.tabla.filas.map(([rubro]) => <span key={rubro}>{rubro}</span>)}</div>
-            {P.metodos.map((x, k) => {
+            {metodos.map(({ x, k }) => {
               const mal = !res && s.intento === x.id;
               const pista = !res && s.pista && x.correcta;
               const bien = res && x.correcta;
@@ -509,7 +514,7 @@ function Pantalla({ P, numero, total, enfocar, onSeguir }) {
 
 /* ═══════════ LA PIEZA ═══════════ */
 
-export default function ElKardexQueCrece({ pieza = PIEZA_KARDEX_C2, rotulo }) {
+export default function ElKardexQueCrece({ pieza = PIEZA_KARDEX_C2, rotulo, barajar: barajarOpciones = barajar }) {
   const [k, setK] = useState(0);
   const [movido, setMovido] = useState(false);
   const marco = useRef(null);
@@ -525,7 +530,7 @@ export default function ElKardexQueCrece({ pieza = PIEZA_KARDEX_C2, rotulo }) {
     <Panel rotulo={rotulo} titulo={pieza.titulo}>
       <style>{CSS_KX}</style>
       <div ref={marco} tabIndex={-1} data-pieza={pieza.id} data-pantalla={p.id} style={{ outline: "none" }}>
-        <Pantalla key={p.id} P={p} numero={k + 1} total={pieza.pantallas.length} enfocar={movido} onSeguir={seguir} />
+        <Pantalla key={p.id} P={p} numero={k + 1} total={pieza.pantallas.length} enfocar={movido} onSeguir={seguir} barajarOpciones={barajarOpciones} />
       </div>
     </Panel>
   );

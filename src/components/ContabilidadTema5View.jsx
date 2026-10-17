@@ -157,13 +157,13 @@ export default function ContabilidadTema5View({ modo = null, nodoInicial = null,
                     </div>
                   );
                 }
-                const { Capa2, Exploracion, Capa4 } = ESCENAS_TEMA5[pieza.id];
+                const { Capa2, Exploracion, Capa4, FiguraFinal } = ESCENAS_TEMA5[pieza.id];
                 return (
                   <div key={pieza.id}>
                     <p style={{ fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700, letterSpacing: "0.12em", color: FAE.ambar, margin: "0 0 10px" }}>
                       PIEZA {k + 1} DE {PUBLICADAS}
                     </p>
-                    <CuatroCapas pieza={pieza} Capa2={Capa2} Exploracion={Exploracion} Capa4={Capa4} rotulo={rotulo} />
+                    <CuatroCapas pieza={pieza} Capa2={Capa2} Exploracion={Exploracion} Capa4={Capa4} FiguraFinal={FiguraFinal} rotulo={rotulo} />
                   </div>
                 );
               })}
