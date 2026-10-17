@@ -2,7 +2,8 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
-import { seccion, compararDatos, recorrer, prepararDom, citas } from "./t7-3-recorte.mjs";
+import { seccion, compararDatos, prepararDom, citas } from "./t7-3-recorte.mjs";
+import { recorrerC4, conReloj } from "./t7-3-c4.mjs";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -25,8 +26,9 @@ const h = React.createElement;
 
 const A = await import("../../data/contabilidadT7_3_a6.js");
 const { SUBJECTS, APRENDER } = await import("../../data/subjects.js");
-const { default: PantallasT7_3 } = await import("../../components/mecanicas/libros/t7/PantallasT7_3.jsx");
-const { textosDelError } = await import("../../components/mecanicas/libros/t7/escaleraAyuda.js");
+const { cifra } = await import("../../components/mecanicas/libros/t7/PantallasT7_3.jsx");
+const { default: AprenderT7_3C4 } = await import("../../components/mecanicas/libros/t7/AprenderT7_3C4.jsx");
+const { CONSECUENCIA_C4: C4 } = await import("../c4/t73a6_c4.js");
 const { PIEZAS_T7_3, TEMA_T7_3 } = await import("../../components/ContabilidadT7_3View.jsx");
 
 const RAIZ = new URL("../../../", import.meta.url);
@@ -76,37 +78,52 @@ test("★★★ las cifras de I-3: la provisión estimada y la pérdida real, en
   assert.equal([est.titular, per.titular].join(" · "), s("resumen").lineas[0]);
 });
 
-/* ═══════════ 2 · MONTADA ═══════════ */
+/* ═══════════ 2 · MONTADA: EL PATRÓN C4 (toda decisión se pinta) ═══════════ */
 
 const montar = async () => {
   const caja = document.createElement("div");
   document.body.appendChild(caja);
   const raiz = createRoot(caja);
-  await act(async () => { raiz.render(h(PantallasT7_3, { pieza: P, rotulo: "R" })); });
+  await act(async () => { raiz.render(h(AprenderT7_3C4, { pieza: P, rotulo: "R" })); });
   return { caja, desmontar: () => { act(() => raiz.unmount()); caja.remove(); } };
 };
-const tocar = async (el) => {
-  assert.ok(el, "no está el elemento que se quería tocar");
-  await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
-};
+/* Los tres renglones: inventario, provisión (saldo) y gasto del periodo, con su cifra. */
+const renglones = (c) => [...c.querySelectorAll("[data-c4-objeto='provision'] [data-renglon]")].map((r) => r.querySelector(".rg-v").textContent);
+const C = A.I3_LIBRO;
+const m$ = (n) => `${n < 0 ? "−" : ""}${cifra(Math.abs(n))}`;
 
-test("★★★ se recorre entera: cada pantalla y cada estado, contra el recorte", async () => {
+test("★★★ se recorre entera en el patrón C4: cada pantalla y cada estado, contra el recorte; la cuenta tocada mueve inventario, provisión y gasto", conReloj(async () => {
   const m = await montar();
   try {
-    await recorrer({
-      caja: m.caja, P, S, tocar, w, textosDelError,
-      async alLlegar(k, c) {
+    await recorrerC4({
+      c: m.caja, w, act, P, S, c4: C4,
+      async alLlegar(id) {
+        const c = m.caja;
         const as = [...c.querySelectorAll("[data-asiento]")];
-        if (S.pantallas[k].id === "resumen") {
+        if (id === "resumen") {
           /* Los dos asientos, uno debajo del otro, cada uno con su rótulo. */
           assert.deepEqual(as.map((a) => a.querySelector("[data-titular]").textContent), ["Estimar → gasto", "Pérdida real → provisión"]);
           assert.ok(as[0].compareDocumentPosition(as[1]) & w.Node.DOCUMENT_POSITION_FOLLOWING);
         } else assert.equal(as.length, 0);
+        /* Al estimar, todo en cero; al cierre, la provisión y el gasto ya están. */
+        if (id === "estimar") assert.deepEqual(renglones(c), ["0", "0", "0"]);
+        if (id === "la-perdida") assert.deepEqual(renglones(c), ["0", cifra(C.provision), cifra(C.provision)]);
       },
-      async alFallar(k, c) {
+      async alElegir(id, o) {
+        const c = m.caja;
+        const M = id === "estimar" ? C.provision : C.perdida;
+        const esperado = id === "estimar"
+          ? { gasto: [0, M, M], provision: [0, -M, 0], inventario: [M, 0, 0] }[o.id]
+          : { provision: [-M, C.provision - M, C.provision], gasto: [-M, C.provision, C.provision + M], inventario: [M, C.provision, C.provision] }[o.id];
+        assert.deepEqual(renglones(c), esperado.map(m$), `${id} · ${o.id}`);
+        assert.equal(c.querySelectorAll("[data-c4-objeto='provision'] [data-toca]").length, 1);
         assert.equal(c.querySelector("[data-asiento]"), null);
       },
-      async alAcertar(k, c) {
+      async alVeredicto(id, o, H) {
+        assert.ok(H.figura().querySelector("[data-renglon].t73c4-mal"), `${id} · ${o.id}: el renglón en coral`);
+      },
+      async alAcertar() {
+        const c = m.caja;
         assert.equal(c.querySelectorAll("[data-asiento]").length, 1);
         assert.equal(c.querySelector("[data-asiento]").dataset.asiento, "sin-fecha");
       },
@@ -114,7 +131,7 @@ test("★★★ se recorre entera: cada pantalla y cada estado, contra el recort
   } finally {
     m.desmontar();
   }
-});
+}));
 
 /* ═══════════ 3 · CATÁLOGO Y TEMA ═══════════ */
 
@@ -129,6 +146,7 @@ test("★★★ fuera del catálogo de FP; en T7-3, justo después de A5", () =>
   assert.equal(ids.indexOf(A.A6_ID), ids.indexOf("t7-3-sobrantes-y-faltantes") + 1);
   const piezas = PIEZAS_T7_3.map((x) => x.pieza.id);
   assert.equal(piezas.indexOf(A.A6_ID), piezas.indexOf("t7-3-sobrantes-y-faltantes") + 1);
+  assert.equal(PIEZAS_T7_3.find((x) => x.pieza.id === A.A6_ID).Pieza, AprenderT7_3C4);
   const dir = new URL("supabase/migrations/", RAIZ);
   assert.deepEqual(readdirSync(dir).filter((f) => readFileSync(new URL(f, dir), "utf8").includes(A.A6_ID)), []);
   assert.doesNotMatch(leer("src/data/contabilidadT7_3_a6.js"), /from\s+["'][^"']*\/(fp|lib\/supabase)[^"']*["']|registrarActividad(Completada)?\s*\(|\.rpc\s*\(/);

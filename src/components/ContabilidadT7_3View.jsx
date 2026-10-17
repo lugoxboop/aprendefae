@@ -29,7 +29,7 @@ import EntraAlCosto from "./mecanicas/libros/t7/EntraAlCosto.jsx";
 import { H6 } from "../data/contabilidadT7_3_h6.js";
 import CostoOValorNeto from "./mecanicas/libros/t7/CostoOValorNeto.jsx";
 import { H7 } from "../data/contabilidadT7_3_h7.js";
-import PantallasT7_3 from "./mecanicas/libros/t7/PantallasT7_3.jsx";
+import AprenderT7_3C4 from "./mecanicas/libros/t7/AprenderT7_3C4.jsx";
 import { PIEZA_EL_DESCUENTO_COMERCIAL } from "../data/contabilidadT7_3.js";
 import { PIEZA_DESCUENTOS_EN_CADENA } from "../data/contabilidadT7_3_a2.js";
 import { PIEZA_EL_DESCUENTO_CONDICIONADO } from "../data/contabilidadT7_3_a3.js";
@@ -60,15 +60,19 @@ export const TEMA_T7_3 = "inventarios-descuentos-nic2";
  * publicadas. A8 «fórmulas y revelación» (t7-3-nic2-formulas) salió con la
  * fusión de la entrega 4 de Near: lo suyo va dentro de A7, «La NIC 2 del
  * libro». Sus archivos se quedan.
+ *
+ * C4 (D4 de Mello): las siete se pintan con el patrón «toda decisión se
+ * pinta» (t7/AprenderT7_3C4.jsx sobre el motor t7/decisionC4.jsx); sus datos
+ * son los mismos de Near.
  */
 export const PIEZAS_T7_3 = [
-  { numero: PIEZA_EL_DESCUENTO_COMERCIAL.numero, pieza: PIEZA_EL_DESCUENTO_COMERCIAL, Pieza: PantallasT7_3 },
-  { numero: PIEZA_DESCUENTOS_EN_CADENA.numero, pieza: PIEZA_DESCUENTOS_EN_CADENA, Pieza: PantallasT7_3 },
-  { numero: PIEZA_EL_DESCUENTO_CONDICIONADO.numero, pieza: PIEZA_EL_DESCUENTO_CONDICIONADO, Pieza: PantallasT7_3 },
-  { numero: PIEZA_EL_DESCUENTO_EN_DOS_LIBROS.numero, pieza: PIEZA_EL_DESCUENTO_EN_DOS_LIBROS, Pieza: PantallasT7_3 },
-  { numero: PIEZA_SOBRANTES_Y_FALTANTES.numero, pieza: PIEZA_SOBRANTES_Y_FALTANTES, Pieza: PantallasT7_3 },
-  { numero: PIEZA_LA_PROVISION.numero, pieza: PIEZA_LA_PROVISION, Pieza: PantallasT7_3 },
-  { numero: PIEZA_NIC2_COSTO.numero, pieza: PIEZA_NIC2_COSTO, Pieza: PantallasT7_3 },
+  { numero: PIEZA_EL_DESCUENTO_COMERCIAL.numero, pieza: PIEZA_EL_DESCUENTO_COMERCIAL, Pieza: AprenderT7_3C4 },
+  { numero: PIEZA_DESCUENTOS_EN_CADENA.numero, pieza: PIEZA_DESCUENTOS_EN_CADENA, Pieza: AprenderT7_3C4 },
+  { numero: PIEZA_EL_DESCUENTO_CONDICIONADO.numero, pieza: PIEZA_EL_DESCUENTO_CONDICIONADO, Pieza: AprenderT7_3C4 },
+  { numero: PIEZA_EL_DESCUENTO_EN_DOS_LIBROS.numero, pieza: PIEZA_EL_DESCUENTO_EN_DOS_LIBROS, Pieza: AprenderT7_3C4 },
+  { numero: PIEZA_SOBRANTES_Y_FALTANTES.numero, pieza: PIEZA_SOBRANTES_Y_FALTANTES, Pieza: AprenderT7_3C4 },
+  { numero: PIEZA_LA_PROVISION.numero, pieza: PIEZA_LA_PROVISION, Pieza: AprenderT7_3C4 },
+  { numero: PIEZA_NIC2_COSTO.numero, pieza: PIEZA_NIC2_COSTO, Pieza: AprenderT7_3C4 },
 ].sort((a, b) => a.numero - b.numero);
 
 /* Lo que se puede abrir desde el camino. Una prueba lo compara con el catálogo. */

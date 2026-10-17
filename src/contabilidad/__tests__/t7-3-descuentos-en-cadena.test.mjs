@@ -2,7 +2,8 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
-import { seccion, compararDatos, recorrer, prepararDom } from "./t7-3-recorte.mjs";
+import { seccion, compararDatos, prepararDom } from "./t7-3-recorte.mjs";
+import { recorrerC4, conReloj } from "./t7-3-c4.mjs";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -28,8 +29,9 @@ const h = React.createElement;
 const A = await import("../../data/contabilidadT7_3_a2.js");
 const { FRASE_TARIFAS } = await import("../../data/contabilidadT7_3.js");
 const { SUBJECTS, APRENDER } = await import("../../data/subjects.js");
-const { default: PantallasT7_3, cifra } = await import("../../components/mecanicas/libros/t7/PantallasT7_3.jsx");
-const { textosDelError } = await import("../../components/mecanicas/libros/t7/escaleraAyuda.js");
+const { cifra } = await import("../../components/mecanicas/libros/t7/PantallasT7_3.jsx");
+const { default: AprenderT7_3C4 } = await import("../../components/mecanicas/libros/t7/AprenderT7_3C4.jsx");
+const { CONSECUENCIA_C4: C4 } = await import("../c4/t73a2_c4.js");
 const { PIEZAS_T7_3, TEMA_T7_3 } = await import("../../components/ContabilidadT7_3View.jsx");
 
 const RAIZ = new URL("../../../", import.meta.url);
@@ -130,42 +132,43 @@ test("★★★ la frase de las tarifas va en el pie del asiento, la pantalla qu
   assert.ok(!JSON.stringify(P.pantallas.map(({ pie, ...p }) => p)).includes(FRASE_TARIFAS));
 });
 
-/* ═══════════ 2 · MONTADA ═══════════ */
+/* ═══════════ 2 · MONTADA: EL PATRÓN C4 (toda decisión se pinta) ═══════════ */
 
 const montar = async () => {
   const caja = document.createElement("div");
   document.body.appendChild(caja);
   const raiz = createRoot(caja);
-  await act(async () => { raiz.render(h(PantallasT7_3, { pieza: P, rotulo: "R" })); });
+  await act(async () => { raiz.render(h(AprenderT7_3C4, { pieza: P, rotulo: "R" })); });
   return { caja, desmontar: () => { act(() => raiz.unmount()); caja.remove(); } };
 };
-const tocar = async (el) => {
-  assert.ok(el, "no está el elemento que se quería tocar");
-  await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
-};
-const filasDe = (fig) => [...fig.querySelectorAll("[data-renglon]")].map((r) => [r.querySelector(".rg-op").textContent, r.querySelector(".rg-rot").textContent.replace(/^(menos|por|igual a) /, ""), r.querySelector(".rg-v").textContent, r.classList.contains("rg-res")]);
+const filasDe = (fig) => [...fig.querySelectorAll("[data-renglon]")].map((r) => [r.querySelector(".rg-op").textContent, r.querySelector(".rg-rot").textContent.replace(/^(menos|por|igual a) /, "").replace(/\u00a0/g, " "), r.querySelector(".rg-v").textContent.replace(/\u00a0/g, " "), r.classList.contains("rg-res")]);
 const CADENA = [
   ["", "Precio de lista", "4.200.000", false],
-  ["−", "Descuento 5 %", "210.000", false],
+  ["−", "Descuento 5 %", "210.000", false],
   ["=", "Saldo", "3.990.000", true],
-  ["−", "Descuento 8 % del saldo", "319.200", false],
+  ["−", "Descuento 8 % del saldo", "319.200", false],
   ["=", "Saldo", "3.670.800", true],
-  ["−", "Descuento 10 % del saldo", "367.080", false],
+  ["−", "Descuento 10 % del saldo", "367.080", false],
   ["=", "Valor a facturar", "3.303.720", true],
 ];
+/* La barra: cada tramo con lo que queda o lo rebajado, en pesos de la lista, y su rótulo (dentro o en la leyenda). */
+const tramos = (c) => [...c.querySelectorAll("[data-c4-objeto='barra'] [data-tramo]")].map((t) => [t.dataset.tramo, Number(t.style.flexGrow ?? t.style.flex.split(" ")[0])]);
+const rotulos = (c) => [...c.querySelectorAll("[data-c4-objeto='barra'] [data-tramo] span"), ...c.querySelectorAll("[data-c4-objeto='barra'] [data-leyenda]")].map((x) => x.textContent).join(" · ");
 
-test("★★★ se recorre entera: cada pantalla y cada estado, contra el recorte", async () => {
+test("★★★ se recorre entera en el patrón C4: cada pantalla y cada estado, contra el recorte; la barra se corta como dice cada opción", conReloj(async () => {
   const m = await montar();
+  const L = A.H2_LIBRO.lista;
   try {
-    await recorrer({
-      caja: m.caja, P, S, tocar, w, textosDelError, tarifas: ["asiento"], frase: FRASE_TARIFAS,
-      async alLlegar(k, c) {
-        const id = S.pantallas[k].id;
+    await recorrerC4({
+      c: m.caja, w, act, P, S, c4: C4, frase: FRASE_TARIFAS,
+      async alLlegar(id) {
+        const c = m.caja;
         const figs = [...c.querySelectorAll("figure[data-renglones]")];
         if (id === "pasos") {
-          /* Al principio, solo el primer descuento. */
+          /* Al principio, solo el primer descuento, y la barra con el 5 % ya cortado. */
           assert.equal(figs.length, 1);
           assert.deepEqual(filasDe(figs[0]), CADENA.slice(0, 3));
+          assert.deepEqual(tramos(c).map((t) => t[0]), ["queda", "corte"]);
         }
         if (id === "atajo") {
           assert.deepEqual(filasDe(figs[0]), [["", "Complementos", "0,95 × 0,92 × 0,90", false], ["=", "Factor", "0,7866", true]]);
@@ -176,13 +179,29 @@ test("★★★ se recorre entera: cada pantalla y cada estado, contra el recort
           assert.equal(figs[0].querySelector("figcaption").textContent, "$4.200.000 → $3.303.720");
           assert.deepEqual(filasDe(figs[0]), CADENA);
         }
-        if (id === "ejemplo" || id === "portada") assert.equal(figs.length, 0);
+        if (id === "ejemplo") {
+          assert.equal(figs.length, 0);
+          /* La lista entera, sin cortar. */
+          assert.deepEqual(tramos(c), [["queda", 1]]);
+        }
       },
-      async alFallar(k, c) {
-        if (S.pantallas[k].id === "pasos") assert.deepEqual(filasDe(c.querySelector("figure[data-renglones]")), CADENA.slice(0, 3));
+      async alElegir(id, o) {
+        const c = m.caja;
+        /* La barra suma siempre la lista; lo rebajado según la opción, antes del veredicto. */
+        const suma = tramos(c).reduce((x, t) => x + t[1], 0);
+        assert.ok(Math.abs(suma - 1) < 1e-9, `${id} · ${o.id}: la barra no suma la lista`);
+        const queda = Math.round(tramos(c)[0][1] * L);
+        if (id === "ejemplo") assert.equal(queda, { igual: 3_234_000, mayor: 3_108_000, menor: A.H2_LIBRO.factura }[o.id]);
+        if (id === "ejemplo" && o.id === "menor") assert.equal(rotulos(c), "$3.303.720 · 10 % · 8 % · 5 %");
+        if (id === "pasos") assert.match(rotulos(c), new RegExp(`8 % de \\${o.texto.replace(/\./g, "\\.")} = `));
+        if (id === "atajo") assert.equal(queda, Number(o.texto.replace(/\D/g, "")));
+        if (id === "pasos") assert.deepEqual(filasDe(c.querySelector("figure[data-renglones]")), CADENA.slice(0, 3), "la cadena de Near no crece antes del acierto");
       },
-      async alAcertar(k, c) {
-        const id = S.pantallas[k].id;
+      async alVeredicto(id, o, H) {
+        assert.ok(H.figura().querySelector("[data-tramo].t73c4-mal"), `${id} · ${o.id}: el tramo en coral`);
+      },
+      async alAcertar(id) {
+        const c = m.caja;
         if (id === "pasos") {
           /* Con el acierto, la misma cadena crece; los renglones nuevos entran con el fundido. */
           const figs = [...c.querySelectorAll("figure[data-renglones]")];
@@ -190,13 +209,14 @@ test("★★★ se recorre entera: cada pantalla y cada estado, contra el recort
           assert.deepEqual(filasDe(figs[0]), CADENA);
           assert.deepEqual([...figs[0].querySelectorAll("[data-renglon]")].map((r) => r.classList.contains("rg-nuevo")), [false, false, false, true, true, true, true]);
         }
-        if (id === "atajo") assert.equal(c.querySelectorAll("[data-renglon]").length, 2);
+        if (id === "atajo") assert.equal(c.querySelectorAll("figure[data-renglones] [data-renglon]").length, 2);
+        assert.equal(c.querySelector("[data-tramo].t73c4-mal"), null);
       },
     });
   } finally {
     m.desmontar();
   }
-});
+}));
 
 /* ═══════════ 3 · CATÁLOGO Y TEMA ═══════════ */
 
@@ -211,6 +231,7 @@ test("★★★ fuera del catálogo de FP; en T7-3, después de A1 (y de H1 si y
   assert.equal(ids.indexOf(A.A2_ID), ids.indexOf("t7-3-descuento-comercial") + 1);
   const piezas = PIEZAS_T7_3.map((x) => x.pieza.id);
   assert.equal(piezas.indexOf(A.A2_ID), piezas.indexOf("t7-3-descuento-comercial") + 1);
+  assert.equal(PIEZAS_T7_3.find((x) => x.pieza.id === A.A2_ID).Pieza, AprenderT7_3C4);
   const dir = new URL("supabase/migrations/", RAIZ);
   assert.deepEqual(readdirSync(dir).filter((f) => readFileSync(new URL(f, dir), "utf8").includes(A.A2_ID)), []);
   assert.doesNotMatch(leer("src/data/contabilidadT7_3_a2.js"), /from\s+["'][^"']*\/(fp|lib\/supabase)[^"']*["']|registrarActividad(Completada)?\s*\(|\.rpc\s*\(/);
