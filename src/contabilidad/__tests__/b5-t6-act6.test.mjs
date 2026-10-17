@@ -270,8 +270,9 @@ test("★★★ el eje: cuatro cajones de 22 · 22 · 28 · 28 %, marcas «3 mes
     assert.equal(deuda.style.top, "0px", `casilla ${k + 1}: encima del eje`);
     assert.equal(deuda.querySelector("[data-palito]"), null, "sin palito");
     assert.equal(deuda.dataset.enCajon, "");
-    /* Se falla a propósito: la deuda cae igual en su cajón CORRECTO. */
+    /* Se falla a propósito: la deuda acaba igual en su cajón CORRECTO (lote 22: tras pasar por el elegido). */
     await tocar(opcion(caja, c.opciones.find((o) => o.tipo)));
+    await act(() => new Promise((r) => setTimeout(r, 760)));
     const id = D.GRUPOS_T6_ACT6.find((g) => g.nombre === correcta(c).texto).id;
     assert.equal(deuda.dataset.enCajon, id, `casilla ${k + 1}: en su cajón correcto`);
     assert.equal(izquierda(deuda), centros[id], `casilla ${k + 1}: centrada en su cajón`);
@@ -460,7 +461,13 @@ test("★★★ lote 6c · en las casillas 1 a 3 sale la lista de rangos: se toc
     assert.match(boton(bueno).getAttribute("aria-label"), /\. Iba aquí$/);
     assert.equal(franja(bueno).textContent, "Iba aquí");
     assert.equal(franja(bueno).querySelector("svg"), null, "«Iba aquí» va sin ícono");
-    assert.equal(caja.querySelector(`[data-deuda="${c.id}"]`).dataset.enCajon, bueno, "la deuda cae en el correcto");
+    /* Lote 22: la deuda cae primero en el cajón elegido y, cuando sale «Iba aquí», pasa al correcto. */
+    const deuda = () => caja.querySelector(`[data-deuda="${c.id}"]`);
+    assert.equal(deuda().dataset.enCajon, malo, "la deuda cae primero en el elegido");
+    assert.equal(deuda().dataset.dePaso, "si");
+    await act(() => new Promise((r) => setTimeout(r, 760)));
+    assert.equal(deuda().dataset.enCajon, bueno, "y después pasa al correcto");
+    assert.equal(deuda().dataset.dePaso, "no");
     assert.ok([...caja.querySelectorAll("[data-eje] button[data-cajon]")].every((b) => b.disabled), "un solo intento");
     await siguiente(caja);
   }
@@ -480,6 +487,7 @@ test("★★★ «Así se juega» enseña el mismo gesto que la partida: la deud
   const g3 = D.GRUPOS_T6_ACT6.find((g) => g.id === "g3");
   await tocar(caja.querySelector(`[data-opcion="${g3.nombre}"]`).closest("button"));
   assert.equal(caja.querySelector("[data-deuda]").dataset.enCajon, "g3", "cae en su cajón");
+  assert.equal(caja.querySelector("[data-deuda]").dataset.dePaso, undefined, "si acierta, no pasa por otro cajón");
   assert.equal(caja.querySelector('[data-eje] button[data-cajon="g3"]').dataset.marcaE4, "correcta");
   assert.ok(caja.querySelector("[data-resolucion]"), "y la resolución del ejemplo");
   desmontar();
