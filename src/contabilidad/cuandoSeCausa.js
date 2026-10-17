@@ -1,4 +1,4 @@
-import { ITEMS_ACT2, ERROR_POR_TIPO, HECHO, ERRORES_SEGUNDA_ACT2 } from "../data/contabilidadTema3Act2.js";
+import { ITEMS_ACT2, ITEMS_ACT2_RETIRADOS, ERROR_POR_TIPO, HECHO, ERRORES_SEGUNDA_ACT2 } from "../data/contabilidadTema3Act2.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -51,5 +51,11 @@ export const esArrastre = (dx, dy) => Math.hypot(dx, dy) > UMBRAL_ARRASTRE;
 /* Para el panel docente: el hecho de un id, con su empresa delante. */
 export const hechoDeItem = (id) => {
   const it = ITEMS_ACT2.find((x) => x.id === id);
+  return it ? `${it.empresa} · ${it.hecho}` : null;
+};
+
+/* Para el panel docente: un ítem retirado del banco, que ya jugaron estudiantes. */
+export const hechoDeItemRetirado = (id) => {
+  const it = ITEMS_ACT2_RETIRADOS.find((x) => x.id === id);
   return it ? `${it.empresa} · ${it.hecho}` : null;
 };

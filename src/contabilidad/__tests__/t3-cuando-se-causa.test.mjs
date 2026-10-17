@@ -281,6 +281,11 @@ test("★★ va después de la pieza 3 en el camino del Tema 3, y tiene regla do
   assert.equal(tema.actividades.find((a) => a.id === "t3-cuando-se-causa").clasificacion.tipo, HACER);
   assert.deepEqual(JUEGOS.map((j) => j.id).slice(0, 2), ["t3-ingreso-o-cobro", "t3-cuando-se-causa"]);
   assert.equal(REGLAS["t3-cuando-se-causa"]("t3a2-jcc"), "San Calixto · Cotizó el 4 y le pidieron el trabajo el 6. Prestó el servicio a JCC el 8 y facturó el 12.");
+  /* El ítem retirado en el #439 se sigue leyendo en el panel docente, pero ya no sale en la partida (Yujiro). */
+  assert.equal(REGLAS["t3-cuando-se-causa"]("t3a2-pago-60-dias"), "Una empresa de servicios · Cotiza y acuerda el trabajo. Presta el servicio. Le pagan 60 días después.");
+  assert.equal(A2.ITEMS_ACT2.some((x) => x.id === "t3a2-pago-60-dias"), false);
+  assert.deepEqual(A2.ITEMS_ACT2_RETIRADOS.map((x) => x.id), ["t3a2-pago-60-dias"]);
+  assert.equal(REGLAS["t3-cuando-se-causa"]("t3a2-no-existe"), null);
   const dir = new URL("../../../supabase/migrations/", import.meta.url);
   const sql = readdirSync(dir).filter((f) => f.endsWith(".sql")).map((f) => readFileSync(new URL(f, dir), "utf8")).join("\n");
   assert.match(sql, /\('t3-cuando-se-causa',\s*'contabilidad',\s*'ingresos-gastos-y-caja'/);

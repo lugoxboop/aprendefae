@@ -173,6 +173,16 @@ export const SE_CAUSA_DIA = (dia) => `Se causa: ${dia}`;
 /* Las palabras de la pastilla (prompt maestro §4.2), las mismas de todo Contabilidad. */
 export const MARCA_ACT2 = { bien: "Correcto", mal: "No va aquí", era: "Iba aquí" };
 
+/*
+ * LOS ÍTEMS RETIRADOS (Yujiro, como los de T4 · H1). Ya no salen en la
+ * partida, pero fp_detalle guarda su item_id y el panel docente los sigue
+ * leyendo por su hecho. Se guardan SOLO para eso; la partida no los usa.
+ *   · t3a2-pago-60-dias: lo reemplazó t3a2-lcdv en el #439 (Katsumi)
+ */
+export const ITEMS_ACT2_RETIRADOS = [
+  { id: "t3a2-pago-60-dias", empresa: "Una empresa de servicios", hecho: "Cotiza y acuerda el trabajo. Presta el servicio. Le pagan 60 días después." },
+];
+
 /* El pie de cada ítem (Levi). */
 export const pieDe = (item) => (item.basado ? `Basado en el libro, ${item.fuente}` : `Libro, ${item.fuente}`);
 

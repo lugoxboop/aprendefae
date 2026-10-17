@@ -48,7 +48,7 @@ import { cuentaDeItemDocente } from "../contabilidad/saldoDeLaCuenta.js";
 import { textoDeItem as textoDeItemA6 } from "../contabilidad/armaElAsiento.js";
 import { textoDeItem as textoDeItemA7 } from "../contabilidad/asientoCompuesto.js";
 import { hechoDeItem as hechoDeAct1T3 } from "../contabilidad/ingresoOCobro.js";
-import { hechoDeItem as hechoDeAct2T3 } from "../contabilidad/cuandoSeCausa.js";
+import { hechoDeItem as hechoDeAct2T3, hechoDeItemRetirado as hechoRetiradoAct2T3 } from "../contabilidad/cuandoSeCausa.js";
 import { hechoDeItemAct4 as hechoDeAct4T3, hechoDeItemAct5 as hechoDeAct5T3 } from "../contabilidad/armaElAjuste.js";
 import { hechoDeParte as hechoDeParteT3 } from "../contabilidad/elCierreCompleto.js";
 import { CASOS_ACT7 } from "../data/contabilidadTema3Act7.js";
@@ -599,7 +599,8 @@ Object.assign(REGLAS, {
    * de San Calixto se distinguen solo por la fecha y el cliente.
    */
   "t3-ingreso-o-cobro": (id) => hechoDeAct1T3(id),
-  "t3-cuando-se-causa": (id) => hechoDeAct2T3(id),
+  /* Act. 2: también los ítems retirados del banco (t3a2-pago-60-dias, #439), que ya jugaron estudiantes. */
+  "t3-cuando-se-causa": (id) => hechoDeAct2T3(id) ?? hechoRetiradoAct2T3(id),
   "t3-ajuste-acumulado": (id) => hechoDeAct4T3(id),
   "t3-ajuste-diferido": (id) => hechoDeAct5T3(id),
   "t3-mismo-hecho": (id) => hechoDeAct3T3(id),
