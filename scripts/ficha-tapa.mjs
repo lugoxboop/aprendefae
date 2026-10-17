@@ -47,10 +47,39 @@ const MIRA = `(() => {
     const cx = (r.left + r.right) / 2;
     const cy = (r.top + r.bottom) / 2;
     if (cy < 0 || cy > window.innerHeight) continue;
-    const quien = document.elementFromPoint(cx, cy);
-    const centroTapado = quien && (env.contains(quien) || quien === env);
-    if (!centroTapado) continue;
-    tapados.push({ texto: txt.slice(0, 40), etiqueta: el.tagName.toLowerCase(), tocable: /^(button|a)$/i.test(el.tagName) });
+    const tocable = /^(button|a)$/i.test(el.tagName);
+
+    /*
+     * TERCER CRITERIO, y la razon de cambiarlo otra vez.
+     *
+     * El segundo era «el centro queda debajo». Acuso una flecha de 34 x 94 a
+     * la que la ficha le tapa 38 px del medio y le deja 46 libres abajo: mas
+     * que el piso de toque de 44. El dedo llega de sobra. El centro es el
+     * sitio natural en un boton de 44, pero en uno alto no manda.
+     *
+     * Asi que para lo que se TOCA: inalcanzable es que no quede ni una zona
+     * libre de 44 x 44 (o del tamano del control, si es mas chico). Se calcula
+     * exacto porque el estorbo es un solo rectangulo: arriba, abajo, izquierda
+     * y derecha de la ficha dentro del control.
+     *
+     * Para lo que se LEE sigue valiendo el centro: un texto con la ficha
+     * encima no se lee ahi, y no hay dedo que lo arregle.
+     */
+    if (tocable) {
+      const pideW = Math.min(44, r.width);
+      const pideH = Math.min(44, r.height);
+      const sobras = [
+        { w: r.width, h: Math.min(r.bottom, f.top) - r.top },
+        { w: r.width, h: r.bottom - Math.max(r.top, f.bottom) },
+        { w: Math.min(r.right, f.left) - r.left, h: r.height },
+        { w: r.right - Math.max(r.left, f.right), h: r.height },
+      ];
+      if (sobras.some((c) => c.w >= pideW && c.h >= pideH)) continue;
+    } else {
+      const quien = document.elementFromPoint(cx, cy);
+      if (!(quien && (env.contains(quien) || quien === env))) continue;
+    }
+    tapados.push({ texto: txt.slice(0, 40), etiqueta: el.tagName.toLowerCase(), tocable });
   }
   return { ficha: [Math.round(f.left), Math.round(f.top), Math.round(f.width), Math.round(f.height)], tapados };
 })()`;
