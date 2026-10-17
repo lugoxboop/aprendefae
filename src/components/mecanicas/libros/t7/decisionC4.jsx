@@ -37,7 +37,9 @@ import { ContadorConIntento } from "./armaLaLinea.jsx";
  *      eleccion: id de opción (elección) · número escrito (cifra) · null.
  *      consecuencia-c.test.mjs encuentra todo *_c4.js y comprueba la regla.
  *   b) El componente: <DecisionC4 pieza={{ ...CONSECUENCIA_C4, titulo, Figura,
- *        enFigura?, objetivo?, consigna?, pie?, resumen?(bien, total), Propio? }}
+ *        enFigura?, objetivo?, consigna?, pie?, resumen?(bien, total), Propio?,
+ *        Antes? ({ item }: lo que va entre el contador y el ítem: el resto del
+ *        enunciado o la pantalla de un bloque, como en main) }}
  *        Marco rotulo acento onCompletar(pct, ms, detalle) onComoSeJuega />
  *   item = { id, tipo?: "eleccion"|"cifra"|"propio", texto, pregunta,
  *     opciones: [{ id, t, correcta?, msg?, v? }], pista, bien, porque, pie,
@@ -342,6 +344,7 @@ export default function DecisionC4({ pieza, Marco = Panel, rotulo, acento, onCom
             <Pulsos total={pieza.items.length} hechos={s.i + (listo ? 1 : 0)} enCurso={s.i + 1} etiqueta={BOTONES_C4.contador} />
           </ContadorConIntento>
         )}
+        {pieza.Antes && <pieza.Antes item={I} />}
         {/* La cejilla: el subtema solo con el veredicto (en varias piezas nombra la respuesta). */}
         <p className="c4-cejilla" aria-hidden="true" data-cejilla>
           {[!hacer && llenar(T.marca, { n: s.i + 1, total: pieza.items.length }), E.veredicto && I.subtema].filter(Boolean).join(" · ")}

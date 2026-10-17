@@ -13,6 +13,10 @@ import { sinUnSoloIntento } from "../armaLaLinea.js";
  *     recorteNearA7N1.mjs): el enunciado, ritmo-del-negocio y la-intencion
  *   · B2: con la cuenta de Near, el enunciado y cada ítem ≤ 60 palabras
  *   · sin cifras; la cautela del libro va entera en la opción
+ *   · patrón C4 (motor t7/decisionC4.jsx, registro c4/t5N1_c4.js): al
+ *     tocar, el caso cae en su cajón del balance; el veredicto, a los 380 ms;
+ *     la mala con su falla y la correcta con «Iba aquí»; el foco al mensaje
+ *   · B2: más de 60 palabras solo en PENDIENTES_NEAR (Near los recorta)
  *   · un solo intento por ítem; los bloques 1 y 2 en el orden de la tanda,
  *     el bloque 3 barajado; nueve unidades; el porcentaje es aciertos / 9
  *   · evaluativa, fácil, 10 FP, en el cliente y en la migración 0110; en T5
@@ -23,7 +27,9 @@ import { sinUnSoloIntento } from "../armaLaLinea.js";
 
 const dom = new JSDOM("<!doctype html><html><body></body></html>", { url: "http://localhost/", virtualConsole: new VirtualConsole() });
 const w = dom.window;
-w.matchMedia = () => ({ matches: false, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} });
+/* REDUCIDO: el recorrido de siempre corre con movimiento reducido (veredicto en el mismo toque); la prueba C4 lo apaga. */
+let REDUCIDO = true;
+w.matchMedia = (q) => ({ matches: REDUCIDO && /prefers-reduced-motion: reduce/.test(q), addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} });
 w.requestAnimationFrame = (f) => setTimeout(f, 0);
 for (const [k, v] of Object.entries({
   window: w, document: w.document, navigator: w.navigator, localStorage: w.localStorage,
@@ -46,6 +52,9 @@ const { SUBJECTS, HACER, actividadesDeTipo, clasificacionDe } = await import("..
 const { default: TemporalOLargoPlazo } = await import("../../components/mecanicas/libros/t5/TemporalOLargoPlazo.jsx");
 const { JUEGOS, TEMA: TEMA_T5 } = await import("../../components/ContabilidadTema5View.jsx");
 const { etiquetaDeItem, recortar } = await import("../../docente/etiquetasItem.js");
+const C4 = await import("../../components/mecanicas/libros/t7/decisionC4.jsx");
+const C4N1 = await import("../c4/t5N1_c4.js");
+const CANON = await import("../canonEnganche.js");
 const R = await import("./recorteNearA7N1.mjs");
 
 const RAIZ = new URL("../../../", import.meta.url);
@@ -166,11 +175,11 @@ test("★★★ sin cifras; la cautela del libro va entera, y nada interno sale 
   for (const interno of ["CONSTRUCCIÓN", "construcción", "Near", "Mello", "INFLESZ", "C5-"]) assert.ok(!texto.includes(interno), interno);
 });
 
-/* ═══════════ 2 · LA MECÁNICA, MONTADA ═══════════ */
+/* ═══════════ 2 · LA MECÁNICA, MONTADA (patrón C4, t7/decisionC4.jsx) ═══════════ */
 
 /* El bloque 3, sin barajar, para el recorrido; la prueba de abajo comprueba que se baraja. */
 const EN_ORDEN = L.prepararN1((xs) => xs);
-const Marco = ({ children }) => h("div", { "data-marco": true }, children);
+const Marco = ({ children }) => h("section", { "data-marco": true }, children);
 const montar = async (props = {}) => {
   const caja = document.createElement("div");
   document.body.appendChild(caja);
@@ -183,32 +192,65 @@ const tocar = async (el) => {
   assert.ok(el, "no está el elemento que se quería tocar");
   await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
 };
-const opcion = (caja, v) => caja.querySelector(`[data-opcion="${CSS.escape(v)}"] button`);
+/* El veredicto llega 380 ms después del toque (ESPERA_C4); con movimiento reducido, en el mismo toque. */
+const esperar = async (ms = C4.ESPERA_C4 + 20) => { await act(async () => { await new Promise((r) => setTimeout(r, ms)); }); };
+const opcion = (caja, v) => [...caja.querySelectorAll("[data-op]")].find((b) => b.dataset.op === v);
 const boton = (caja, texto) => [...caja.querySelectorAll("button")].find((b) => b.textContent === texto);
-globalThis.CSS = globalThis.CSS ?? { escape: (s) => s.replace(/["\\]/g, "\\$&") };
 
-async function jugar(m, falla) {
+async function jugar(m, falla, { reducido = true } = {}) {
+  REDUCIDO = reducido;
   const detalle = [];
   for (const [k, it] of EN_ORDEN.entries()) {
-    assert.equal(m.caja.querySelector("[data-pregunta]").textContent, it.pregunta, `orden: el ítem ${k + 1}`);
-    assert.equal(m.caja.querySelector("[data-item] [data-pie]").textContent, D.N1.pie);
-    assert.deepEqual([...m.caja.querySelectorAll("[data-intro]")].map((p) => p.textContent), it.intro ? [it.intro] : [], `intro del ítem ${k + 1}`);
-    assert.deepEqual([...m.caja.querySelectorAll("[data-opcion]")].map((x) => x.dataset.opcion), D.ITEMS_N1[k].opciones);
+    const q = (sel) => m.caja.querySelector(sel);
+    assert.equal(q("[data-texto]").textContent, it.pregunta, `orden: el ítem ${k + 1}`);
+    assert.equal(q("[data-pie]").textContent, D.N1.pie);
+    assert.deepEqual([...m.caja.querySelectorAll("[data-enunciado] p")].map((p) => p.textContent), D.N1.enunciado.slice(1), "el resto del enunciado, siempre a la vista");
+    assert.deepEqual([...m.caja.querySelectorAll("[data-intro] p")].map((p) => p.textContent), it.intro ? [it.intro] : [], `intro del ítem ${k + 1}`);
+    assert.deepEqual([...m.caja.querySelectorAll("[data-op]")].map((x) => x.dataset.op), D.ITEMS_N1[k].opciones, "las opciones, en el orden de la tanda");
+    assert.deepEqual([...m.caja.querySelectorAll("[data-texto-opcion]")].map((x) => x.textContent), D.ITEMS_N1[k].opciones, "el texto de cada opción, el de Near");
+    /* El objeto: el balance (bloque 1) con sus dos lados, la clase de título o lo que respalda la intención. */
+    const marco = { 1: "balance", 2: "clase", 3: "intencion" }[D.ITEMS_N1[k].bloque];
+    assert.equal(q("[data-objeto-n1]").dataset.objetoN1, marco);
+    assert.equal(q("[data-objeto-n1] .t5c4-tit").textContent, C4N1.FIGURA_N1_C4[marco]);
+    assert.deepEqual([...m.caja.querySelectorAll("[data-rotulo]")].map((x) => x.textContent), marco === "balance" ? [C4N1.FIGURA_N1_C4.corriente, C4N1.FIGURA_N1_C4.noCorriente] : []);
+    assert.equal(q("[data-chip]"), null, "nada cae antes de tocar");
     const v = falla(it.id) ? it.opciones.find((o) => o.valor !== it.correcta).valor : it.correcta;
-    await tocar(opcion(m.caja, v));
-    for (const o of it.opciones) assert.equal(opcion(m.caja, o.valor).disabled, true);
     const ok = v === it.correcta;
-    assert.deepEqual([...m.caja.querySelectorAll("[data-retro] [data-texto-retro]")].map((p) => p.textContent), [ok ? it.acierto : it.error]);
-    if (!ok) assert.equal(opcion(m.caja, it.correcta).dataset.estado, "revelada");
+    await tocar(opcion(m.caja, v));
+    /* 1 · la consecuencia: el caso cae en el cajón tocado. */
+    assert.ok(opcion(m.caja, v).querySelector("[data-chip]"), `${it.id}: el caso no cayó en su cajón`);
+    assert.equal(q("[data-chip]").textContent, C4N1.FIGURA_N1_C4.chip);
+    if (!reducido) {
+      assert.equal(q("[data-mensaje]"), null, "el veredicto llegó antes de 380 ms");
+      assert.equal(q("[data-falla]"), null);
+      assert.ok(opcion(m.caja, v).classList.contains("tocada"));
+      await esperar();
+    }
+    /* 2 · el veredicto: el mensaje de Near, la marca, la falla de la mala y «Iba aquí» en la buena. */
+    assert.deepEqual([...m.caja.querySelectorAll("[data-mensaje] [data-texto-retro]")].map((p) => p.textContent), [ok ? it.acierto : it.error]);
+    assert.ok(opcion(m.caja, v).classList.contains(ok ? "bien" : "mal"));
+    for (const o of it.opciones) assert.equal(opcion(m.caja, o.valor).getAttribute("aria-disabled"), "true", "un solo intento");
+    if (ok) assert.equal(q("[data-falla]"), null);
+    else {
+      assert.equal(q("[data-falla]").textContent, { 1: C4N1.FALLA_N1_C4.balance, 2: C4N1.FALLA_N1_C4.otro, 3: C4N1.FALLA_N1_C4.intencion[v] }[D.ITEMS_N1[k].bloque]);
+      assert.ok(q("[data-falla] svg"), "la falla, con su ✕");
+      assert.ok(opcion(m.caja, it.correcta).classList.contains("iba"));
+      assert.equal(opcion(m.caja, it.correcta).querySelector("[data-pastilla]").textContent, "Iba aquí");
+      assert.ok(opcion(m.caja, v).querySelector("[data-chip]"), "la mala se queda a la vista");
+    }
+    assert.equal(document.activeElement, q("[data-c4-msg]"), "el foco va al mensaje");
     detalle.push({ item: it.id, ok, intentos: 1, respuesta: ok ? null : v, orden: detalle.length + 1 });
-    await tocar(boton(m.caja, k === 8 ? D.BOTON_N1.verResumen : D.BOTON_N1.siguiente));
+    await tocar(boton(m.caja, k === 8 ? C4.BOTONES_C4.verResumen : C4.BOTONES_C4.siguiente));
+    if (k < 8) assert.equal(document.activeElement, q("[data-texto]"), "el foco va al caso siguiente");
   }
+  REDUCIDO = true;
   return detalle;
 }
 
 test("★★★ la tanda entera: nueve ítems, un intento cada uno, y el porcentaje es aciertos / 9", async () => {
   const m = await montar();
   try {
+    assert.equal(m.caja.querySelector("[data-consigna]").textContent, sinUnSoloIntento(D.N1.enunciado[0]));
     for (const p of D.N1.enunciado) assert.ok(m.caja.textContent.includes(sinUnSoloIntento(p)), p);
     assert.ok(m.caja.querySelector("[data-contador-intento] [data-un-intento]"), "el distintivo junto al contador");
     const fallos = new Set(["no-se-negocian", "bonos-del-gobierno", "la-intencion"]);
@@ -219,7 +261,19 @@ test("★★★ la tanda entera: nueve ítems, un intento cada uno, y el porcent
     assert.deepEqual(det.map((d) => d.item), L.unidadesN1());
     assert.equal(L.TOTAL_N1, 9);
     assert.equal(pct, (6 / 9) * 100);
+    assert.equal(pct, L.puntuarN1(6));
     assert.ok(m.caja.querySelector("[data-resumen]").textContent === D.resumenN1(6, 9));
+  } finally {
+    m.desmontar();
+  }
+});
+
+test("★★★ C4 · sin movimiento reducido: la consecuencia en el acto, el veredicto a los 380 ms (todos los ítems, uno mal y uno bien alternados)", async () => {
+  const m = await montar();
+  try {
+    const detalle = await jugar(m, (id) => D.ITEMS_N1.findIndex((x) => x.id === id) % 2 === 0, { reducido: false });
+    assert.deepEqual(m.completados[0][2], detalle);
+    assert.equal(m.completados[0][0], (4 / 9) * 100);
   } finally {
     m.desmontar();
   }
@@ -233,6 +287,85 @@ test("★★ solo el bloque 3 se baraja", () => {
     vistos.add(p[8].opciones.map((o) => o.valor).join("|"));
   }
   assert.ok(vistos.size > 1, "el bloque 3 no se baraja");
+  /* Y la pieza montada sin `items` baraja una vez por partida, con el mismo preparar. */
+  assert.match(leer("src/components/mecanicas/libros/t5/TemporalOLargoPlazo.jsx"), /useState\(\(\) => piezaN1\(items \?\? prepararN1\(\)\)\)/);
+});
+
+/* ═══════════ 2b · C4: LA CONSECUENCIA, PURA (contabilidad/c4/t5N1_c4.js) ═══════════ */
+
+test("★★★ C4 · el registro lleva los ítems de Near tal cual, en los dos sentidos: caso, opciones, correcta, error y acierto", () => {
+  const P = C4N1.CONSECUENCIA_C4;
+  assert.equal(P.id, "t5-n1");
+  assert.equal(P.objeto, "El balance de la empresa");
+  assert.equal(P.modo, "hacer");
+  assert.deepEqual(P.items.map((x) => x.id), D.ITEMS_N1.map((x) => x.id));
+  for (const [k, x] of P.items.entries()) {
+    const it = D.ITEMS_N1[k];
+    assert.equal(x.texto, it.pregunta);
+    assert.equal(x.intro, it.intro ?? null);
+    assert.equal(x.bien, it.acierto);
+    assert.equal(x.pie, D.N1.pie);
+    assert.deepEqual(x.opciones.map((o) => o.t), it.opciones);
+    assert.deepEqual(x.opciones.map((o) => o.id), it.opciones, "el id es el texto: el detalle guarda lo mismo que en main");
+    assert.deepEqual(x.opciones.filter((o) => o.correcta).map((o) => o.t), [it.correcta]);
+    for (const o of x.opciones) assert.equal(o.msg, it.error);
+  }
+});
+
+test("★★★ C4 · cada opción pinta su cajón; la mala, con su falla [W] (la intención, con las de Mello C4-4); sin elegir, nada cae", () => {
+  assert.deepEqual(Object.keys(C4N1.FALLA_N1_C4.intencion), D.ITEMS_N1[8].opciones.filter((o) => o !== D.ITEMS_N1[8].correcta));
+  assert.deepEqual(Object.values(C4N1.FALLA_N1_C4.intencion), ["Así bastaría con decirlo, y el libro pide evidencias.", "Así decidiría el nombre del título, no la intención."]);
+  const P = C4N1.CONSECUENCIA_C4;
+  for (const it of P.items) {
+    const base = P.consecuencia(it, null);
+    assert.deepEqual(base, { marco: C4N1.marcoDeN1(it), cajon: null });
+    for (const o of it.opciones) {
+      const e = P.consecuencia(it, o.id);
+      assert.equal(e.cajon, o.id);
+      assert.equal(e.rotulo, it.bloque === 1 ? (o.t === "Temporal" ? C4N1.FIGURA_N1_C4.corriente : C4N1.FIGURA_N1_C4.noCorriente) : null);
+      assert.equal(e.falla, o.correcta ? undefined : { 1: C4N1.FALLA_N1_C4.balance, 2: C4N1.FALLA_N1_C4.otro, 3: C4N1.FALLA_N1_C4.intencion[o.id] }[it.bloque]);
+    }
+  }
+});
+
+/* ═══════════ 2c · B2 · 60 PALABRAS (PENDIENTES_NEAR) ═══════════ */
+
+/*
+ * PENDIENTES_NEAR: los ítems con un estado de más de 60 palabras visibles. Son
+ * textos de Near, y él los está recortando: se dejan como en main y siguen
+ * pasándose. Si uno deja de pasarse, se saca de la lista (que ninguno se
+ * quede escondido). Se cuenta lo que se lee del ítem con la regla de
+ * canonEnganche.js (la figura aparte: los cajones son las opciones), sin lo
+ * fijo de toda la tanda (encabezado, resto del enunciado y contador), como
+ * en la tabla de Watari (N1: 64).
+ */
+const FIJO = "[data-encabezado], [data-antes-n1] [data-enunciado], [data-contador-intento]";
+const PENDIENTES_NEAR = new Set(["ritmo-del-negocio"]);
+
+test("★★★ B2: ningún ítem pasa de 60 palabras visibles, salvo los que Near está recortando (que siguen pasándose)", async (t) => {
+  const peor = {};
+  for (const malo of [false, true]) {
+    const m = await montar();
+    try {
+      for (const [k, it] of EN_ORDEN.entries()) {
+        const medir = () => {
+          const r = CANON.medirTarjeta(CANON.tarjetaDe(m.caja), w);
+          const fijo = [...m.caja.querySelectorAll(FIJO)].reduce((n, el) => n + CANON.contarPalabras(el.textContent), 0);
+          peor[it.id] = Math.max(peor[it.id] ?? 0, r.texto - fijo);
+        };
+        medir();
+        await tocar(opcion(m.caja, malo ? it.opciones.find((o) => o.valor !== it.correcta).valor : it.correcta));
+        medir();
+        await tocar(boton(m.caja, k === 8 ? C4.BOTONES_C4.verResumen : C4.BOTONES_C4.siguiente));
+      }
+    } finally {
+      m.desmontar();
+    }
+  }
+  for (const [id, n] of Object.entries(peor)) t.diagnostic(`B2 ${id}: ${n}`);
+  assert.deepEqual(Object.keys(peor), D.ITEMS_N1.map((x) => x.id));
+  assert.deepEqual(Object.entries(peor).filter(([id, n]) => n > CANON.UMBRAL_B2_PALABRAS && !PENDIENTES_NEAR.has(id)), []);
+  assert.deepEqual([...PENDIENTES_NEAR].filter((id) => peor[id] <= CANON.UMBRAL_B2_PALABRAS), []);
 });
 
 /* ═══════════ 3 · CATÁLOGO, VISTA, MIGRACIÓN, PANEL DOCENTE ═══════════ */
