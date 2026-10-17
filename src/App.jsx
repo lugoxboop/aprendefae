@@ -226,10 +226,20 @@ export default function App() {
     );
   }
 
-  /* El primer tema de Contabilidad, con sus dos mitades como los demás. */
+  /*
+   * El primer tema de Contabilidad, con sus dos mitades como los demás.
+   *
+   * Y AHORA TAMBIÉN CON `wrap`, que le faltaba. Era la única de las 23 vistas
+   * que devolvía sin envolver, así que al entrar aquí desaparecían la ficha de
+   * la cuenta, el aviso de FP, el momento de racha, el diálogo de acceso y el
+   * contexto de navegación. Lo peor no era la ficha: este tema tiene siete
+   * juegos que dan FP, y quien los ganaba aquí no veía ninguna confirmación.
+   * Se notó midiendo la ficha para #349 — en T1 no aparecía, y la causa no
+   * era la ficha.
+   */
   if (view === "introduccion-contabilidad") {
-    return (
-      <Suspense fallback={null}>
+    return wrap(
+      <Suspense fallback={siteFallback}>
         <IntroContabilidadView modo={modoTema} nodoInicial={ruta.extra} onBack={() => setView("contabilidad")} />
       </Suspense>
     );
