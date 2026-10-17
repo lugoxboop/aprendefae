@@ -6,9 +6,12 @@ import { Pulsos, Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Responder, useTanda } from "../piezas.jsx";
 import { EncabezadoHacer } from "./hacerT7.jsx";
-import { CSS_T7_HACER, TEXTO, Parrafos, TarjetaPregunta, Eleccion, Devolucion } from "./hacerT7.jsx";
+import { CSS_T7_HACER, TEXTO, Parrafos, TarjetaPregunta, Devolucion } from "./hacerT7.jsx";
 import { CasillaCifra, LineasConCuenta, ContadorConIntento } from "./armaLaLinea.jsx";
 import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
+import { leerCifra } from "../../../../contabilidad/elCierreCompleto.js";
+import { CONSECUENCIA_C4 as C4 } from "../../../../contabilidad/c4/t7_2_h5_c4.js";
+import { CSS_C4_T72, FiguraMapaDeMangle, CuentaDeMangle, EleccionC4, useVeredictoC4 } from "./FigurasC4T7_2.jsx";
 import FiguraAcumulada from "./FiguraAcumulada.jsx";
 import { FIGURA_T7_2_H5, cerradosDe } from "../../../../contabilidad/figuraAcumulada.js";
 
@@ -36,6 +39,15 @@ import { FIGURA_T7_2_H5, cerradosDe } from "../../../../contabilidad/figuraAcumu
  *
  * LOTE 5 (L): arriba del ítem, la figura acumulada (FiguraAcumulada.jsx): lo
  * de cada hecho se suma al cerrar su ítem, y el asiento del hecho 4 al final.
+ *
+ * C4 · «TODA DECISIÓN SE PINTA» (Watari, D9; FigurasC4T7_2.jsx): debajo de
+ * la pregunta, el mapa de Mangle. Cada hecho es una flecha; en los ítems de
+ * cuenta, las cuentas del libro de Mangle son las opciones (viven en la
+ * figura): el valor entra a la tocada y la cuenta dice qué le pasa. En los
+ * de cifra, mientras se escribe la figura solo muestra la cifra (C4-1 de
+ * Mello); al comprobar, la cifra entra al cálculo con lo que implica. Todo
+ * antes del veredicto, que llega ESPERA_C4 después. La figura acumulada no
+ * cambia.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -45,6 +57,9 @@ export default function FleteYDevolucion({ Marco, rotulo, titulo, acento, onComp
   const [r, setR] = useState(null);
   const [comprobado, setComprobado] = useState(false);
   const [bien, setBien] = useState(0);
+  /* C4: la cifra que se va escribiendo: la figura solo la muestra; la consecuencia llega al comprobar (C4-1 de Mello). */
+  const [escrita, setEscrita] = useState(null);
+  const veredicto = useVeredictoC4();
   const zonaBoton = useRef(null);
   const tarjeta = useRef(null);
 
@@ -57,13 +72,14 @@ export default function FleteYDevolucion({ Marco, rotulo, titulo, acento, onComp
   }, [t.terminado]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (listo) zonaBoton.current?.querySelector("button")?.focus(); }, [listo]);
 
+  /* C4: el toque es la consecuencia (y el único intento, que se anota ya); el veredicto llega después. */
   const elegir = (v) => {
-    if (r) return;
+    if (r || elegida != null) return;
     const nuevo = evaluarH5(item, v);
     t.anotar(item.id, nuevo.ok, v);
     if (nuevo.ok) setBien((n) => n + 1);
     setElegida(v);
-    setR(nuevo);
+    veredicto.programar(() => setR(nuevo));
   };
 
   const comprobar = (resultados) => {
@@ -75,12 +91,13 @@ export default function FleteYDevolucion({ Marco, rotulo, titulo, acento, onComp
   };
 
   const avanzar = () => {
-    setElegida(null); setR(null); setComprobado(false);
+    veredicto.cancelar();
+    setElegida(null); setR(null); setComprobado(false); setEscrita(null);
     if (t.i + 1 < cuantos) { t.setI(t.i + 1); requestAnimationFrame(() => tarjeta.current?.focus()); }
     else t.setTerminado(true);
   };
 
-  const reiniciar = () => { t.reiniciar(); setElegida(null); setR(null); setComprobado(false); setBien(0); };
+  const reiniciar = () => { veredicto.cancelar(); t.reiniciar(); setElegida(null); setR(null); setComprobado(false); setBien(0); setEscrita(null); };
 
   if (t.terminado) {
     return (
@@ -92,9 +109,12 @@ export default function FleteYDevolucion({ Marco, rotulo, titulo, acento, onComp
     );
   }
 
+  const itemC4 = C4.items.find((x) => x.id === item.id);
+  const estadoC4 = item.tipo === "asiento" ? null : C4.consecuencia(itemC4, item.tipo === "cifra" ? elegida : elegida);
+
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
-      <style>{CSS_T7_HACER}</style>
+      <style>{CSS_T7_HACER}{CSS_C4_T72}</style>
       <div data-t7-2-h5>
         <EncabezadoHacer objetivo={H5.objetivo} consigna={sinUnSoloIntento(H5.consigna)} onComoSeJuega={onComoSeJuega} />
         <Parrafos textos={H5.enunciado} />
@@ -106,15 +126,24 @@ export default function FleteYDevolucion({ Marco, rotulo, titulo, acento, onComp
         </div>
         <p key={`hecho-${item.hecho}`} className="fae-t7h-entra" data-hecho={item.hecho + 1} style={{ ...TEXTO, margin: "0 0 10px" }}>{HECHOS_H5[item.hecho]}</p>
         <TarjetaPregunta id={item.id} encabezado={encabezadoDeHecho(item.hecho)} pregunta={item.pregunta} pie={H5.pie} tarjetaRef={tarjeta} />
+        {estadoC4 && (
+          <FiguraMapaDeMangle estado={estadoC4} item={item} escrita={item.tipo === "cifra" && elegida == null ? escrita : null}>
+            {item.tipo === "eleccion" && (
+              <EleccionC4 opciones={item.opciones} r={r} elegida={elegida} onElegir={elegir} etiqueta={item.pregunta}
+                contenido={(o) => <CuentaDeMangle nombre={o.texto} estado={estadoC4} />} />
+            )}
+          </FiguraMapaDeMangle>
+        )}
         {item.tipo === "eleccion" && (
           <>
-            <Eleccion opciones={item.opciones} r={r} elegida={elegida} onElegir={elegir} etiqueta={item.pregunta} />
             <Devolucion r={r} lectorError={r && !r.ok ? `Incorrecto. Iba aquí: ${r.textoCorrecta}. ` : null} />
           </>
         )}
         {item.tipo === "cifra" && (
           <>
-            <CasillaCifra key={item.id} id={item.id} onComprobar={elegir} comprobado={Boolean(r)} etiqueta={item.pregunta} iba={r && !r.ok ? r.textoCorrecta : null} />
+            <div onInput={(e) => setEscrita(leerCifra(e.target.value))}>
+              <CasillaCifra key={item.id} id={item.id} onComprobar={elegir} comprobado={elegida != null} etiqueta={item.pregunta} iba={r && !r.ok ? r.textoCorrecta : null} />
+            </div>
             <Devolucion r={r} lectorError={r && !r.ok ? "Incorrecto. " : null} />
           </>
         )}
