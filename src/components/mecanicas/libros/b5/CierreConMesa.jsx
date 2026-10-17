@@ -384,7 +384,7 @@ function Pregunta({ parte, texto, onTexto, resultado, Bloque, reducido, etiqueta
   const fallo = Boolean(resultado) && !resultado.ok;
   return (
     <>
-      {Bloque && <Bloque comprobada={Boolean(resultado)} reducido={reducido} />}
+      {Bloque && <Bloque comprobada={Boolean(resultado)} reducido={reducido} texto={texto} />}
       <div data-pregunta={parte.id} style={{ marginTop: "12px" }}>
         <Campo id={parte.id} valor={texto} onCambio={onTexto} bloqueado={Boolean(resultado)} etiqueta={etiqueta}
           tachado={fallo} acertado={Boolean(resultado?.ok)} formatear={formatearRespuesta} />
@@ -472,6 +472,8 @@ export default function CierreConMesa({
   const comprobada = Boolean(s.resultado);
   const esPregunta = parte.tipo === "pregunta";
   const Visual = config.visual ?? null;
+  /* Lote 17 (a2): lo que va a la izquierda de una pregunta (el tanque), con la cifra que se escribe. */
+  const Lado = esPregunta ? config.lados?.[parte.lado] ?? null : null;
   const enEstante = config.estante.filter((c) => !s.mesa.some((m) => m.cuenta === c));
   const sacar = (cuenta, lado) => setS((x) => (x.mesa.some((m) => m.cuenta === cuenta) ? x : { ...x, mesa: [...x.mesa, { cuenta, lado, texto: "" }] }));
   const cifra = (cuenta, texto) => setS((x) => ({ ...x, mesa: x.mesa.map((m) => (m.cuenta === cuenta ? { ...m, texto } : m)) }));
@@ -518,6 +520,36 @@ export default function CierreConMesa({
     </div>
   ) : null;
   const listo = esPregunta ? leerRespuesta(s.texto) !== null : s.mesa.length > 0 && s.mesa.every((m) => leerCifra(m.texto) !== null);
+  /* La parte: su rótulo y su pregunta (o su mesa), la devolución si `conRetro` y «Comprobar». */
+  const seccion = (conRetro) => (
+    <section key={`${parte.id}-parte`} data-parte={parte.id} data-estado-parte={comprobada ? "comprobada" : "activa"}
+      aria-describedby={parte.instruccion ? idInstruccion : undefined}
+      style={{
+        /*
+         * Sin borde y sin relleno lateral (hoja de Mai, calidad 1): un borde nunca toca el texto, y con
+         * relleno «1.725.000» no cabe a 320. Lo que agrupaba el borde lo agrupan 16 px de aire.
+         */
+        margin: esPregunta ? "16px 0 0" : 0, padding: 0,
+      }}>
+      {esPregunta && rotuloParte}
+      {esPregunta ? (
+        <Pregunta parte={parte} texto={s.texto} onTexto={(texto) => setS((x) => ({ ...x, texto }))} resultado={s.resultado}
+          Bloque={config.bloques?.[parte.bloque] ?? null} reducido={reducido} etiqueta={textos.campo} />
+      ) : (
+        <Mesa mesa={s.mesa} activa={!comprobada} resultado={s.resultado} enEstante={enEstante}
+          onSacar={sacar} onCifra={cifra} onDevolver={devolver} entre={<>{rotuloParte}{hechoCard}</>} />
+      )}
+      {conRetro && <Retro resultado={s.resultado} />}
+      {!comprobada && (
+        <>
+          <BotonConfirmar deshabilitado={!listo} onClick={confirmar}>{esPregunta ? textos.comprobar ?? COMPROBAR_B : COMPROBAR_B}</BotonConfirmar>
+          {!modoDemo && !esPregunta && (
+            <p data-un-intento style={{ margin: "9px 0 0", fontSize: "12px", lineHeight: 1.45, color: COLOR.apagado, textAlign: "center" }}>{AVISO_UN_INTENTO}</p>
+          )}
+        </>
+      )}
+    </section>
+  );
 
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
@@ -525,37 +557,19 @@ export default function CierreConMesa({
       <div className={CLASE_B5H}>
       <div className="fae-b5k" {...config.atributos}>
         {!modoDemo && encabezado(`${textos.etiqueta ?? "Asiento"} ${t.i + 1} de ${cuantas}`)}
-        {Visual && !modoDemo && <Visual paso={t.i} comprobada={comprobada} reducido={reducido} />}
+        {Visual && !modoDemo && <Visual paso={t.i} comprobada={comprobada} reducido={reducido} texto={esPregunta ? s.texto : ""} />}
 
-        {esPregunta && hechoCard}
+        {esPregunta && !Lado && hechoCard}
 
-        <section key={`${parte.id}-parte`} data-parte={parte.id} data-estado-parte={comprobada ? "comprobada" : "activa"}
-          aria-describedby={parte.instruccion ? idInstruccion : undefined}
-          style={{
-            /*
-             * Sin borde y sin relleno lateral (hoja de Mai, calidad 1): un borde nunca toca el texto, y con
-             * relleno «1.725.000» no cabe a 320. Lo que agrupaba el borde lo agrupan 16 px de aire.
-             */
-            margin: esPregunta ? "16px 0 0" : 0, padding: 0,
-          }}>
-          {esPregunta && rotuloParte}
-          {esPregunta ? (
-            <Pregunta parte={parte} texto={s.texto} onTexto={(texto) => setS((x) => ({ ...x, texto }))} resultado={s.resultado}
-              Bloque={config.bloques?.[parte.bloque] ?? null} reducido={reducido} etiqueta={textos.campo} />
-          ) : (
-            <Mesa mesa={s.mesa} activa={!comprobada} resultado={s.resultado} enEstante={enEstante}
-              onSacar={sacar} onCifra={cifra} onDevolver={devolver} entre={<>{rotuloParte}{hechoCard}</>} />
-          )}
-          <Retro resultado={s.resultado} />
-          {!comprobada && (
-            <>
-              <BotonConfirmar deshabilitado={!listo} onClick={confirmar}>{esPregunta ? textos.comprobar ?? COMPROBAR_B : COMPROBAR_B}</BotonConfirmar>
-              {!modoDemo && !esPregunta && (
-                <p data-un-intento style={{ margin: "9px 0 0", fontSize: "12px", lineHeight: 1.45, color: COLOR.apagado, textAlign: "center" }}>{AVISO_UN_INTENTO}</p>
-              )}
-            </>
-          )}
-        </section>
+        {Lado ? (
+          <>
+            <div data-fila-lado style={{ display: "grid", gridTemplateColumns: "84px minmax(0, 1fr)", columnGap: "10px", alignItems: "start" }}>
+              <Lado parte={parte} texto={s.texto} resultado={s.resultado} reducido={reducido} />
+              <div style={{ minWidth: 0 }}>{hechoCard}{seccion(false)}</div>
+            </div>
+            <Retro resultado={s.resultado} />
+          </>
+        ) : seccion(true)}
 
         {/* El ejemplo de «Así se juega» termina con su explicación. */}
         {comprobada && parte.resolucion && (

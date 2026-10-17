@@ -134,7 +134,7 @@ export const PREGUNTAS_T6_ACT2 = [
       { valor: 2803800, clave: "T2", texto: "La provisión no se suma: se resta de Cuentas por cobrar – clientes." },
     ],
     "Ese valor no sale de restar la provisión a lo que deben los clientes. Haz esa resta.",
-    /* Con el bloque «En el estado de situación financiera», «El valor neto» vacío y encendido. */
+    /* Con el bloque «En el estado de situación financiera», «El valor neto» vacío y encendido; debajo, la Barra del valor neto (lote 17). */
     { bloque: "estado" }),
   pregunta(2,
     "Después del castigo, ¿cuánto le falta a la provisión?",
@@ -143,7 +143,9 @@ export const PREGUNTAS_T6_ACT2 = [
       { valor: 0, clave: "T5", texto: "La provisión era menor que lo castigado, así que no alcanzó. Resta $148.800 de $180.000." },
       { valor: 328800, clave: "T6", texto: "El castigo baja la provisión: se resta, no se suma." },
     ],
-    "Compara lo que había en la provisión con lo que se castigó: la diferencia es lo que falta."),
+    "Compara lo que había en la provisión con lo que se castigó: la diferencia es lo que falta.",
+    /* Lote 17: el tanque a la izquierda de la pregunta; la cifra escrita baja desde el cero. */
+    { lado: "tanque", tanque: "faltante" }),
   pregunta(3,
     "¿Cuál es el saldo final de la provisión?",
     153400,
@@ -152,8 +154,16 @@ export const PREGUNTAS_T6_ACT2 = [
       { valor: 184600, clave: "T9", texto: "Ese es el valor del ajuste, no el saldo. Antes del ajuste, a la provisión le faltaban $31.200." },
       { valor: 333400, clave: "T10", texto: "Falta restar el castigo de marzo. Son $148.800 menos $180.000, más $184.600." },
     ],
-    "Parte de lo que le faltaba a la provisión en marzo y súmale el registro de diciembre."),
+    "Parte de lo que le faltaba a la provisión en marzo y súmale el registro de diciembre.",
+    /* Lote 17: el tanque a la izquierda de la pregunta; la cifra escrita sube desde el cero. */
+    { lado: "tanque", tanque: "nivel" }),
 ];
+
+/*
+ * La escala de la Barra del valor neto (lote 17, P2 de Mai): solo la cola del dominio,
+ * x(v) = (v − desde) / ancho. Regla: la pista acaba en lo que deben los clientes, en el 66,67 %.
+ */
+export const BARRA_T6_ACT2 = { desde: 2255000, ancho: 600000, clientes: 2655000, neto: PREGUNTAS_T6_ACT2[0].correcta };
 
 /* Los cinco pasos, en el orden de la hoja de Mai. */
 export const PASOS_T6_ACT2 = [PREGUNTAS_T6_ACT2[0], PARTES_T6_ACT2[0], PREGUNTAS_T6_ACT2[1], PARTES_T6_ACT2[1], PREGUNTAS_T6_ACT2[2]];
