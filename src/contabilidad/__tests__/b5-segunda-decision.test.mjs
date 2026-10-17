@@ -219,10 +219,10 @@ test("★★★ lote 23 (D4, Shoko): t6-a1 · la de otra cuenta sigue con «¿En
   assert.ok(caja.querySelector('[data-lado-t="debe"]').disabled, "la T, quieta");
   assert.ok(!caja.querySelector("[data-boton-avanzar]"));
   await tocar(opcion(caja, "trabajadores"));
-  assert.equal(devolucion(caja), T6.EN_CUAL_T6_ACT1.pista);
+  assert.equal(devolucion(caja), T6.EN_CUAL_POR_FICHA.socio.pista, "lote 25: la pista de Futaba de la ficha");
   assert.equal(opcion(caja, "trabajadores").dataset.marca, "tachada");
   await tocar(opcion(caja, "particulares"));
-  assert.match(devolucion(caja), /Cuentas por cobrar a socios y accionistas/);
+  assert.equal(devolucion(caja), T6.EN_CUAL_POR_FICHA.socio.porque, "y su porqué");
   assert.equal(opcion(caja, "socios").dataset.marca, "revelada");
   assert.ok(caja.querySelector("[data-boton-avanzar]"));
   await avanzar(caja);
@@ -231,7 +231,7 @@ test("★★★ lote 23 (D4, Shoko): t6-a1 · la de otra cuenta sigue con «¿En
   desmontar();
 });
 
-test("★★★ lote 23: cada ficha de otra cuenta tiene su cuenta de la p. 196, menos «prestamo-cliente», que espera a Futaba", () => {
+test("★★★ lote 25 (Futaba): cada ficha de otra cuenta tiene su cuenta de la p. 196, su pista y su porqué, menos «prestamo-cliente» (hueco del libro: solo la decisión 1)", () => {
   const otras = [...T6.FICHAS_T6_ACT1, ...T6.FICHAS_V2_T6_ACT1].filter((x) => x.cuenta === T6.OTRA);
   const sin = otras.filter((x) => !L6.enCualDeT6Act1(x)).map((x) => x.id);
   assert.deepEqual(sin, ["prestamo-cliente"]);
@@ -240,7 +240,15 @@ test("★★★ lote 23: cada ficha de otra cuenta tiene su cuenta de la p. 196,
     const cuenta = L6.enCualDeT6Act1(x);
     assert.ok(ids.has(cuenta));
     assert.ok(x.acierto.includes(T6.EN_CUAL_T6_ACT1.opciones.find((o) => o.id === cuenta).texto), `${x.id}: la cuenta es la que dice su acierto`);
+    const d = T6.EN_CUAL_POR_FICHA[x.id];
+    assert.ok(d.pista && d.porque, `${x.id}: pista y porqué`);
+    assert.ok(d.porque.includes(T6.EN_CUAL_T6_ACT1.opciones.find((o) => o.id === cuenta).texto), `${x.id}: el porqué nombra la cuenta`);
   }
+  assert.deepEqual(T6.EN_CUAL_T6_ACT1.opciones.map((o) => o.texto), [
+    "Cuentas por cobrar a socios y accionistas", "Cuentas por cobrar a trabajadores", "Préstamos a particulares",
+    "Cuentas por cobrar a casa matriz", "Anticipos y avances",
+  ], "las cinco de Futaba, en su orden");
+  assert.equal(T6.EN_CUAL_POR_FICHA.vecino, T6.EN_CUAL_POR_FICHA.particular, "vecino toma las de particular");
 });
 
 test("★★★ lote 23 (D4, Shoko): en t6-a4 el tanque va primero a lo que eligió (fantasma) y después al estado correcto", async () => {

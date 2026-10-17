@@ -2,7 +2,7 @@ import { segundoFalloDe } from "./b5SegundoFallo.js";
 import { repartirTanda } from "./b5Reparto.js";
 import {
   T6_ACT1, FICHAS_T6_ACT1, CLIENTES, CAJONES_T6_ACT1, FICHAS_V2_T6_ACT1, DEBITA, PISTA_CUENTA_T6_ACT1, DEVOLUCIONES_SEGUNDA_T6_ACT1,
-  EN_CUAL_T6_ACT1, EN_CUAL_POR_FICHA, DEUDOR_POR_FICHA,
+  EN_CUAL_POR_FICHA, DEUDOR_POR_FICHA,
 } from "../data/contabilidadT6Act1.js";
 
 /*
@@ -75,13 +75,15 @@ export function evaluarSegundaT6Act1(ficha, elegida, intento) {
  * decisión 2 de cada ficha: el lado de la T (Clientes) o la cuenta (otra). Acierto, el de la ficha; primer
  * error, la pista; segundo, el porqué (C2).
  */
-export const enCualDeT6Act1 = (ficha) => EN_CUAL_POR_FICHA[ficha.id] ?? null;
+export const enCualDeT6Act1 = (ficha) => EN_CUAL_POR_FICHA[ficha.id]?.cuenta ?? null;
 export const aplicaSegunda2T6Act1 = (ficha) => (ficha.cuenta === CLIENTES || enCualDeT6Act1(ficha) ? "despues" : null);
 export const correctaSegundaT6Act1 = (ficha) => (ficha.cuenta === CLIENTES ? ladoDeT6Act1(ficha) : enCualDeT6Act1(ficha));
 export function evaluarSegunda2T6Act1(ficha, elegida, intento) {
   if (ficha.cuenta === CLIENTES) return evaluarSegundaT6Act1(ficha, elegida, intento);
   if (elegida === enCualDeT6Act1(ficha)) return { ok: true, texto: ficha.acierto };
-  return { ok: false, texto: intento === 1 ? EN_CUAL_T6_ACT1.pista : segundoFalloDe(ficha.acierto) };
+  /* Lote 25: la pista y el porqué de Futaba, ficha por ficha. */
+  const d = EN_CUAL_POR_FICHA[ficha.id];
+  return { ok: false, texto: intento === 1 ? d.pista : d.porque };
 }
 
 /* Lote 24 (D9): quién debe la ficha. La etiqueta de Futaba manda; sin ella, Clientes, o la cuenta de «¿En cuál?», o «otro». */

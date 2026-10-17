@@ -96,7 +96,7 @@ test("★★★ cada pieza abre la de hoy en la vuelta 1 y la variante en la vue
   const hoyYVariante = {
     "b5-t5-a1": ["Acciones de otra empresa", "Bonos"],
     "b5-t5-a2": ["1 de mayo. Santa Pacha", "Escenario simulado. 1 de marzo. El Roble"],
-    "b5-t6-a1": [null, "La empresa le entrega plata a un proveedor como anticipo"],
+    "b5-t6-a1": [null, "Un hotel hospeda a un cliente"],
     "b5-t6-a2": ["31 de diciembre de 2007. El Torito Currambero", "Escenario simulado. 31 de diciembre. La Ceiba"],
     "b5-t6-a3": ["Marzo del año siguiente. El Torito Currambero", "Escenario simulado. Mayo. La Ceiba"],
     "b5-t6-a4": [null, null],
@@ -116,7 +116,7 @@ test("★★★ cada pieza abre la de hoy en la vuelta 1 y la variante en la vue
   }
 });
 
-test("★★★ fichas: dos mazos fijos de 9, sin repetidas entre ellos; t6-a1, ocho nuevas con reparto 4 · 2 · 2", () => {
+test("★★★ fichas: dos mazos fijos de 9, sin repetidas entre ellos; t6-a1, seis nuevas con reparto 2 · 2 · 2 (lote 25: salen casa matriz y anticipo)", () => {
   const [m1, m2] = [0, 1].map(mazoT5Act1);
   assert.equal(m1.length, 9);
   assert.equal(m2.length, 9);
@@ -124,9 +124,10 @@ test("★★★ fichas: dos mazos fijos de 9, sin repetidas entre ellos; t6-a1, 
   assert.equal(new Set([...m1, ...m2].map((f) => f.id)).size, 18);
   assert.ok(T5A1.FICHAS_V2_T5_ACT1.every((f) => m2.includes(f)));
   const v2 = T6A1.FICHAS_V2_T6_ACT1;
-  assert.equal(v2.length, 8);
+  assert.equal(v2.length, 6);
+  assert.ok(!v2.some((f) => f.id === "matriz" || f.id === "anticipo"), "lote 25: salen de la vuelta");
   const cuenta = (c, l) => v2.filter((f) => f.cuenta === c && f.lado === l).length;
-  assert.deepEqual([cuenta(T6A1.OTRA, null), cuenta(T6A1.CLIENTES, T6A1.DEBITA), cuenta(T6A1.CLIENTES, T6A1.ACREDITA)], [4, 2, 2]);
+  assert.deepEqual([cuenta(T6A1.OTRA, null), cuenta(T6A1.CLIENTES, T6A1.DEBITA), cuenta(T6A1.CLIENTES, T6A1.ACREDITA)], [2, 2, 2]);
 });
 
 test("★★★ las mesas de la variante: cada asiento cuadra y lleva «Escenario simulado»; las cuentas de Futaba", () => {
