@@ -26,6 +26,7 @@
 
 import { TituloConReloj, FacturaPorCobrar } from "../contabilidad/identificadores/identificadoresB.jsx";
 import { CajasDelConteo, KardexAlDia, EtiquetaRebajada } from "../contabilidad/identificadores/identificadoresC.jsx";
+import { MazoDelCapitulo } from "../contabilidad/identificadores/identificadoresE.jsx";
 
 export const ICONO_POR_TEMA = {
   /* Célula B (Mai, lote 16). */
@@ -35,4 +36,6 @@ export const ICONO_POR_TEMA = {
   "contabilidad/inventarios-periodico": CajasDelConteo,
   "contabilidad/inventarios-permanente": KardexAlDia,
   "contabilidad/inventarios-descuentos-nic2": EtiquetaRebajada,
+  /* Célula E (Itagaki, P2). */
+  "contabilidad/repaso-capitulo-5": MazoDelCapitulo,
 };

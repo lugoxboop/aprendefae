@@ -193,24 +193,22 @@ test("★★★ la escala es fija todo el mes, el tramo mide 8 px como mínimo, 
 const acumulado = (caja, cuenta, lado) => Number(caja.querySelector(`[data-cuenta-mes="${cuenta}"] [data-lado-mes="${lado}"] [data-acumulado]`).dataset.acumulado);
 const textoAcumulado = (caja, cuenta, lado) => caja.querySelector(`[data-cuenta-mes="${cuenta}"] [data-lado-mes="${lado}"] [data-acumulado]`).textContent;
 
-test("★★★ en r5-3 el panel va después de la devolución y antes de «Siguiente», y entra la cifra CORRECTA aunque el estudiante falle", async () => {
+test("★★★ en r5-3 (P2 de Itagaki) la balanza ocupa el lugar del panel: después de la devolución y antes de «Siguiente», con la cifra CORRECTA aunque el estudiante falle", async () => {
   const { caja } = await montar(h(Mate, { pasoInicial: 0 }));
-  assert.equal(Boolean(caja.querySelector("[data-mes-en-dos-cuentas]")), false, "antes de revisar, el panel no existe");
+  assert.equal(Boolean(caja.querySelector("[data-balanza]")), false, "antes de revisar, la balanza no existe");
   /* Un asiento mal: Caja por el valor sin retención y el IVA sin descuento. */
   const C = T.ASIENTOS_MATE[0].correctos[0];
   for (const r of C) await anadir(caja, r.lado, r.cuenta, r.cuenta === T.CAJA ? 27550000 : r.cuenta === T.IVA ? 4000000 : r.valor);
   await tocar(caja.querySelector("[data-revisar]"));
   assert.equal(caja.querySelector("[data-devolucion]").dataset.devolucion, "error");
-  const panel = caja.querySelector("[data-mes-en-dos-cuentas]");
+  assert.equal(Boolean(caja.querySelector("[data-mes-en-dos-cuentas]")), false, "el panel salió de r5-3");
+  const balanza = caja.querySelector("[data-balanza]");
   const devolucion = caja.querySelector("[data-devolucion]");
   const siguiente = caja.querySelector("[data-siguiente]");
-  assert.ok(devolucion.compareDocumentPosition(panel) & w.Node.DOCUMENT_POSITION_FOLLOWING, "después de la devolución");
-  assert.ok(panel.compareDocumentPosition(siguiente) & w.Node.DOCUMENT_POSITION_FOLLOWING, "antes de «Siguiente»");
-  /* Las del asiento correcto (26.718.750 y 3.800.000), no las del estudiante (27.550.000 y 4.000.000). */
-  assert.equal(acumulado(caja, T.CAJA, "haber"), 26718750);
-  assert.equal(acumulado(caja, T.IVA, "debe"), 3800000);
-  assert.equal(textoAcumulado(caja, T.CAJA, "haber"), "26.718.750");
-  assert.equal(caja.querySelector(`[data-cuenta-mes="${T.IVA}"] [data-diferencia]`).textContent, `Te queda a favor${cifraTexto(3800000)}`);
+  assert.ok(devolucion.compareDocumentPosition(balanza) & w.Node.DOCUMENT_POSITION_FOLLOWING, "después de la devolución");
+  assert.ok(balanza.compareDocumentPosition(siguiente) & w.Node.DOCUMENT_POSITION_FOLLOWING, "antes de «Siguiente»");
+  /* El IVA del asiento correcto (3.800.000), no el del estudiante (4.000.000). */
+  assert.equal(balanza.querySelector('[data-acumulado-balanza="debe"]').dataset.valor, "3800000");
 });
 
 test("★★★ el rayado va solo en el asiento en curso: lo del anterior pasa a liso; al final, todo liso y sin leyenda", async () => {
