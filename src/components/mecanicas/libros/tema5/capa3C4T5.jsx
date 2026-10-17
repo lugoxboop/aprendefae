@@ -3,6 +3,7 @@ import { PIEZA_TRES_MOMENTOS } from "../../../../data/contabilidadT5Pieza2.js";
 import { CAJON_TEMPORAL, CAJON_NO_TEMPORAL, consecuenciaP1 } from "../../../../contabilidad/c4/t5P1_c4.js";
 import { FIGURA_P2_C4, consecuenciaP2 } from "../../../../contabilidad/c4/t5P2_c4.js";
 import { NotaC4, CSS_T5C4, ESPERA_C4 } from "../t5/figurasC4T5.jsx";
+import { barajar } from "../../../../utils/barajar.js";
 import DosPaquetes from "./DosPaquetes.jsx";
 import DosVentas from "./DosVentas.jsx";
 
@@ -133,8 +134,9 @@ export function EnCajaP2C4({ caja, estado, vista }) {
 export const C4_P1 = { consecuencia: consecuenciaP1, Figura: FiguraP1C4, espera: ESPERA_C4, css: CSS + CSS_T5C4 };
 export const C4_P2 = { consecuencia: consecuenciaP2, EnCaja: EnCajaP2C4, espera: ESPERA_C4, css: CSS + CSS_T5C4 };
 
-export function DosPaquetesC4() { return <DosPaquetes c4={C4_P1} />; }
-export function DosVentasC4() { return <DosVentas c4={C4_P2} />; }
+/* D8: las opciones de cada caja, barajadas una vez por intento (`mezclar`); inyectable en las pruebas. */
+export function DosPaquetesC4({ mezclar = barajar }) { return <DosPaquetes c4={C4_P1} mezclar={mezclar} />; }
+export function DosVentasC4({ mezclar = barajar }) { return <DosVentas c4={C4_P2} mezclar={mezclar} />; }
 
 /* Por id de pieza: la capa 3 con C4. La vista la usa en vez de la de ESCENAS_TEMA5. */
 export const EXPLORACION_C4_T5 = {
