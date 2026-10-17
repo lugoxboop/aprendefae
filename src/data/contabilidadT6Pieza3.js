@@ -26,6 +26,8 @@ export const PIEZA_LA_PROVISION = {
     {
       termino: "Provisión para cuentas incobrables",
       definicion: "Es una cuenta donde la empresa anota, al cierre, lo que calcula que no va a cobrar de lo que le deben sus clientes. Se crea con un asiento: se debita Gasto provisiones – cuentas incobrables y se acredita Provisión para cuentas incobrables.",
+      delLibro: "El libro la llama «Provisión para deudas incobrables».",
+      rotuloDelLibro: "Nota",
     },
     {
       termino: "Al revés de Clientes",

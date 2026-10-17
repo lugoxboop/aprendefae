@@ -114,7 +114,7 @@ test("★★★ todo texto de los datos es literal del paquete guardado (paquete
   assert.deepEqual(textos.filter((t) => !FUENTE.includes(t)), []);
 });
 
-test("★★★ manda Futaba, y encima B2: los seis términos (nota en el 3, cita solo en el 5) y los 19 pasos y el cierre con su etiqueta", () => {
+test("★★★ manda Futaba, y encima B2: los seis términos (nota en el 1 y en el 3, cita solo en el 5) y los 19 pasos y el cierre con su etiqueta", () => {
   const n = D.PIEZA_LA_PROVISION.nombres;
   assert.deepEqual(n.map((x) => x.termino), ["Provisión para cuentas incobrables", "Al revés de Clientes", "Valor neto", "El gasto", "Castigar contra la provisión", "Subestimada y sobrestimada"]);
   /* B2 (un término por pantalla, 15-oct), guardada al final del paquete: los nuevos, literales; «el de hoy», como en Futaba. */
@@ -127,7 +127,9 @@ test("★★★ manda Futaba, y encima B2: los seis términos (nota en el 3, cit
   }
   assert.equal(n[2].rotuloDelLibro, "Nota");
   assert.match(n[4].delLibro, /^«.*» \(p\. 202\)$/);
-  assert.deepEqual([0, 1, 3, 5].map((k) => n[k].delLibro), [undefined, undefined, undefined, undefined]);
+  assert.equal(n[0].delLibro, "El libro la llama «Provisión para deudas incobrables».", "Shoko, 16-oct: el puente con el nombre del libro");
+  assert.equal(n[0].rotuloDelLibro, "Nota");
+  assert.deepEqual([1, 3, 5].map((k) => n[k].delLibro), [undefined, undefined, undefined]);
   const filas = new Map();
   for (const l of FUTABA.split("\n")) {
     const c = l.split("\t");
