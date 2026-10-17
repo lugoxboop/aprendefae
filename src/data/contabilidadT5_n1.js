@@ -30,6 +30,8 @@ export const N1_ID = "t5-temporal-o-largo-plazo";
 
 export const N1 = {
   id: N1_ID,
+  /* Lote O: el objetivo, de Near (paquetes/lote-o-objetivos.md). */
+  objetivo: "Decidir si una inversión es temporal o si puede ser más apropiado llevarla a largo plazo.",
   nombre: "¿Temporal o a largo plazo?",
   enunciado: [
     "Lee cada caso. Decide si la inversión es temporal o si puede ser más apropiado clasificarla a largo plazo. Después, decide a qué grupo pertenece. Tienes un solo intento por caso.",

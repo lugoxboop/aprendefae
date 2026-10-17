@@ -68,7 +68,10 @@ test("★★ la clave lleva la materia: dos materias pueden tener el mismo id de
   }
 });
 
-test("★★ el registro entra vacío: nadie dibuja antes del sistema de Xeno", () => {
-  assert.equal(Object.keys(ICONO_POR_TEMA).length, 0,
-    "hay identificadores registrados; si el sistema ya existe, quita esta prueba a conciencia");
+/* El sistema de Xeno ya existe (kit.md, 16 oct.) y las células registran: la prueba del registro vacío se quitó a conciencia en el lote 16 de B. */
+test("★★ cada entrada del registro es un componente con clave «materia/tema»", () => {
+  for (const [clave, Dibujo] of Object.entries(ICONO_POR_TEMA)) {
+    assert.match(clave, /^[a-z0-9-]+\/[a-z0-9-]+$/, `clave sin «materia/tema»: ${clave}`);
+    assert.equal(typeof Dibujo, "function", `${clave}: el registro espera un componente`);
+  }
 });

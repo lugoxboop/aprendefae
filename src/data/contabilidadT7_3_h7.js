@@ -39,6 +39,8 @@ export const H7_ID = "t7-3-costo-o-vnr";
 
 export const H7 = {
   id: H7_ID,
+  /* Lote O: el objetivo, de Near (paquetes/lote-o-objetivos.md). */
+  objetivo: "Medir cada inventario al costo o al valor neto realizable, el que sea menor.",
   nombre: "¿Costo o valor neto realizable?",
   aviso: FRASE_NIC2,
   consigna: "Según la NIC 2 del libro, el inventario se mide al costo o al valor neto realizable, el que sea menor. Calcula y decide en cada caso. Tienes un solo intento por pregunta.",

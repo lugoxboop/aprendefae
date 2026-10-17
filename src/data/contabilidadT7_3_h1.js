@@ -49,6 +49,8 @@ const C = CIFRAS_H1;
 
 export const H1 = {
   id: H1_ID,
+  /* Lote O: el objetivo, de Near (paquetes/lote-o-objetivos.md). */
+  objetivo: "Calcular una factura con descuento comercial y registrar la venta por lo que queda.",
   nombre: "Descuento en la factura",
   consigna: "Calcula la factura y arma el asiento de la venta. Tienes un solo intento por pregunta.",
   enunciado: [
