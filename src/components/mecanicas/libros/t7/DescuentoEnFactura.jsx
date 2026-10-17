@@ -5,7 +5,7 @@ import { prepararH1, evaluarH1, idLineaH1, puntuarH1, TOTAL_H1 } from "../../../
 import { Pulsos, Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Responder, useTanda } from "../piezas.jsx";
-import { Encabezado } from "../tema1/encabezado.jsx";
+import { EncabezadoHacer } from "./hacerT7.jsx";
 import { FigurasHacer, CSS_T73_PATRON } from "./PatronT7_3.jsx";
 import { CSS_T7_HACER, Ficha, Parrafos, TarjetaPregunta, Eleccion, Devolucion } from "./hacerT7.jsx";
 import { CasillaCifra, LineasConCuenta, ContadorConIntento } from "./armaLaLinea.jsx";
@@ -92,7 +92,7 @@ export default function DescuentoEnFactura({ Marco, rotulo, titulo, acento, onCo
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS_T7_HACER + CSS_T73_PATRON}</style>
       <div data-t7-3-h1>
-        <Encabezado consigna={sinUnSoloIntento(H1.consigna)} onComoSeJuega={onComoSeJuega} />
+        <EncabezadoHacer objetivo={H1.objetivo} consigna={sinUnSoloIntento(H1.consigna)} onComoSeJuega={onComoSeJuega} />
         <Parrafos textos={H1.enunciado} />
         <Ficha filas={FICHA_H1} />
         <FigurasHacer figuras={FIGURAS_H1} respondidos={t.i + (listo ? 1 : 0)} listo={listo} />

@@ -9,7 +9,7 @@ import { formatearCifra, leerCifra } from "../../../../contabilidad/elCierreComp
 import { Pulsos, Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Responder, useTanda } from "../piezas.jsx";
-import { Encabezado } from "../tema1/encabezado.jsx";
+import { EncabezadoHacer } from "./hacerT7.jsx";
 import { ContadorConIntento } from "./armaLaLinea.jsx";
 import { Plegable } from "./plegable.jsx";
 import {
@@ -320,7 +320,7 @@ export default function ArmaLaFactura({ Marco, rotulo, titulo, acento, onComplet
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS_B5H + CSS_C2F}</style>
       <div data-h2 ref={raiz} className={`${CLASE_B5H} ${P}`} style={{ position: "relative" }}>
-        <Encabezado consigna={sinUnSoloIntento(H2.consigna)} onComoSeJuega={onComoSeJuega} />
+        <EncabezadoHacer objetivo={H2.objetivo} consigna={sinUnSoloIntento(H2.consigna)} onComoSeJuega={onComoSeJuega} />
         <ContadorConIntento>
           <Pulsos total={cuantos} hechos={t.i + (r ? 1 : 0)} enCurso={t.i + 1} etiqueta="Ítem" />
         </ContadorConIntento>

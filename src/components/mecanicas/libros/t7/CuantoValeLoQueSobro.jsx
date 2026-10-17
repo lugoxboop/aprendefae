@@ -8,7 +8,7 @@ import { OpcionC as Opcion, CSS_T7_HACER } from "./hacerT7.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Responder, useTanda } from "../piezas.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";
-import { Encabezado } from "../tema1/encabezado.jsx";
+import { EncabezadoHacer } from "./hacerT7.jsx";
 import { Plegable } from "./plegable.jsx";
 import { ContadorConIntento } from "./armaLaLinea.jsx";
 import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
@@ -118,7 +118,7 @@ export default function CuantoValeLoQueSobro({ Marco, rotulo, titulo, acento, on
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS + CSS_T7_HACER}</style>
       <div data-h3>
-        <Encabezado consigna={sinUnSoloIntento(H3.consigna)} onComoSeJuega={onComoSeJuega} />
+        <EncabezadoHacer objetivo={H3.objetivo} consigna={sinUnSoloIntento(H3.consigna)} onComoSeJuega={onComoSeJuega} />
         <p data-entrada style={{ ...TEXTO, fontSize: "14px", lineHeight: "21px", margin: "0 0 8px" }}>{H3.entrada}</p>
         <Ficha />
         <FiguraAcumulada figura={FIGURA_T7_1_H3} cerrados={cerradosDe(t.i, Boolean(r))} listo={Boolean(r)} />

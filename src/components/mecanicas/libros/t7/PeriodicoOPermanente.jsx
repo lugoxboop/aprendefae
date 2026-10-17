@@ -6,7 +6,7 @@ import { prepararH4, evaluarH4, puntuarH4, TOTAL_H4 } from "../../../../contabil
 import { Pulsos, Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Responder, useTanda } from "../piezas.jsx";
-import { Encabezado } from "../tema1/encabezado.jsx";
+import { EncabezadoHacer } from "./hacerT7.jsx";
 import { CSS_T7_HACER, LADOS_T7, Parrafos, TarjetaPregunta, Eleccion, Devolucion } from "./hacerT7.jsx";
 import { ContadorConIntento } from "./armaLaLinea.jsx";
 import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
@@ -112,7 +112,7 @@ export default function PeriodicoOPermanente({ Marco, rotulo, titulo, acento, on
       <style>{CSS_T7_HACER}</style>
       <style>{CSS_H4}</style>
       <div data-t7-2-h4>
-        <Encabezado consigna={sinUnSoloIntento(H4.consigna)} onComoSeJuega={onComoSeJuega} />
+        <EncabezadoHacer objetivo={H4.objetivo} consigna={sinUnSoloIntento(H4.consigna)} onComoSeJuega={onComoSeJuega} />
         <Parrafos textos={H4.enunciado} />
         <div style={{ marginBottom: "12px" }}>
           <ContadorConIntento>

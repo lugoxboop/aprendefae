@@ -5,7 +5,7 @@ import { prepararH6, evaluarH6, idLineaH6, puntuarH6, TOTAL_H6 } from "../../../
 import { Pulsos, Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { AsientoEnLineas, Responder, useTanda } from "../piezas.jsx";
-import { Encabezado } from "../tema1/encabezado.jsx";
+import { EncabezadoHacer } from "./hacerT7.jsx";
 import { CSS_T7_HACER, Ficha, Parrafos, TarjetaPregunta, Eleccion, Devolucion } from "./hacerT7.jsx";
 import { CasillaCifra, LineasConCuenta, ContadorConIntento } from "./armaLaLinea.jsx";
 import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
@@ -97,7 +97,7 @@ export default function DevolucionDosLibros({ Marco, rotulo, titulo, acento, onC
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS_T7_HACER}</style>
       <div data-h6>
-        <Encabezado consigna={sinUnSoloIntento(H6.consigna)} onComoSeJuega={onComoSeJuega} />
+        <EncabezadoHacer objetivo={H6.objetivo} consigna={sinUnSoloIntento(H6.consigna)} onComoSeJuega={onComoSeJuega} />
         <Parrafos textos={H6.enunciado} />
         <div data-compra-resuelta style={{ display: "grid", gap: "8px", margin: "0 0 12px" }}>
           <AsientoEnLineas lineas={COMPRA_RESUELTA_H6.comprador} rotulo="COMPRADOR" acento="#A8B6C8" />

@@ -514,6 +514,9 @@ export function HojaRenglon({ lado, inicial = null, renglones, onListo, onQuitar
 
 let siguienteId = 0;
 
+/* r5-4 (Takamura): la devolución de la ventana según el día en que terminó; si no está prevista, la genérica. */
+export const textoDeVentanaMal = (TC, id, borde) => TC.ventanaPorError?.[id]?.[borde] ?? TC.ventanaMal[id];
+
 /* r5-4: los puntos del mes (asientos ya hechos), los nombres de cada día y el resumen. */
 const marcasDelMes = (asientos, hechos) => asientos.slice(0, hechos).reduce((m, x) => ({ ...m, [x.dia]: (m[x.dia] ?? 0) + 1 }), {});
 const nombresDelMes = (asientos, nombres) => asientos.reduce((m, x) => ({ ...m, [x.dia]: [...(m[x.dia] ?? []), nombres[x.id]] }), {});
@@ -550,13 +553,16 @@ function PantallaAsiento({ a, i, total, r, onRespondida, onSiguiente, botonRef }
       {CALENDARIO && (
         <>
           <div style={{ marginTop: "16px" }}><Hecho a={a} parte="frase" /></div>
+          {/* Takamura (#380): con ventana, los datos (la condición hace falta para arrastrar) van arriba del calendario. */}
+          {ventana && <div style={{ marginTop: "12px" }}><Hecho a={a} parte="datos" /></div>}
           <div style={{ marginTop: "12px" }}>
             <Calendario
               mes={RM.mes}
               etiqueta={TC.alt}
-              actual={a.dia}
+              /* Takamura (#380): con ventana, el día del pago no se marca (ni se nombra) hasta comprobar: si no, regala la respuesta. */
+              actual={ventana && !calVentana ? null : a.dia}
               marcas={marcasDelMes(ASIENTOS_MATE, r ? i + 1 : i)}
-              nombres={nombresDelMes(ASIENTOS_MATE, TC.nombres)}
+              nombres={nombresDelMes(ventana && !calVentana ? ASIENTOS_MATE.slice(0, i) : ASIENTOS_MATE, TC.nombres)}
               ventana={ventana}
               borde={borde}
               onBorde={setBorde}
@@ -565,10 +571,10 @@ function PantallaAsiento({ a, i, total, r, onRespondida, onSiguiente, botonRef }
             />
           </div>
           {ventana && !calVentana && <Comprobar activo={borde > ventana.factura} onClick={comprobarVentana} dato="revisar-ventana" />}
+          {!ventana && <div style={{ marginTop: "12px" }}><Hecho a={a} parte="datos" /></div>}
           {ventana && calVentana && (
-            <Devolucion r={{ ok: calVentana === "ok", textos: [calVentana === "ok" ? TC.ventanaOk[a.id] : TC.ventanaMal[a.id]] }} dato="devolucion-ventana" />
+            <Devolucion r={{ ok: calVentana === "ok", textos: [calVentana === "ok" ? TC.ventanaOk[a.id] : textoDeVentanaMal(TC, a.id, borde)] }} dato="devolucion-ventana" />
           )}
-          {(!ventana || calVentana) && <div style={{ marginTop: "12px" }}><Hecho a={a} parte="datos" /></div>}
         </>
       )}
       {(!ventana || calVentana) && (<>
