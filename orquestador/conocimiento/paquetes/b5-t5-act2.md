@@ -198,19 +198,19 @@ Manda sobre la §3.3 y la (2). La C y la A de los datos son solo el porqué: la 
 
 | Parte | Tipo | Texto literal |
 |---|---|---|
-| p1 | C | «El interés entra a Caja, que sube. Y es un ingreso, que sube por el Haber.» |
+| p1 | C | «El interés entra a Caja, que sube por el Debe. Y es un ingreso, que sube por el Haber.» |
 | p1 | A | «El interés entra a Caja y, a la vez, es un ingreso.» |
 | p1 | B | «Ese no es el interés de un trimestre sobre $2.000.000 al 24 % al año. Haz la cuenta por tres meses.» |
 | p1 | B-anual | «Pusiste el interés de todo el año. Aquí llega solo el de un trimestre: tres de los doce meses.» |
 | p1 | B-mes | «Pusiste el interés de un solo mes. Aquí llega el de un trimestre: tres meses.» |
-| p2 | C | «Caja sube porque recibe lo de la venta. Inversiones – títulos baja porque salen títulos, y la ganancia es un ingreso.» |
+| p2 | C | «Caja sube porque recibe lo de la venta: va al Debe. Inversiones – títulos baja porque salen títulos, y la ganancia es un ingreso: las dos van al Haber.» |
 | p2 | A | «Inversiones – títulos baja por lo que costaron. Lo que recibió de más va a la ganancia.» |
 | p2 | B | «Algún valor no cuadra con el hecho: lo recibido, el costo o la diferencia.» |
-| p3 | C | «Como en agosto: Caja recibe el interés, que es un ingreso.» |
+| p3 | C | «Como en agosto: Caja recibe el interés y va al Debe; el ingreso va al Haber.» |
 | p3 | A | «El interés entra a Caja y, a la vez, es un ingreso.» |
 | p3 | B | «Ese no es el interés de un trimestre sobre los $500.000 que quedan. Haz la cuenta por tres meses.» |
 | p3 | B-sin-vender | «Calculaste sobre $2.000.000, pero ya vendió el 75 %. El interés de noviembre es sobre los $500.000 que quedan.» |
-| p4 | C | «Caja sube con lo que recibe. La pérdida es un gasto, y la inversión baja porque salen títulos.» |
+| p4 | C | «Caja sube con lo que recibe y la pérdida es un gasto: las dos van al Debe. La inversión baja porque salen títulos: va al Haber.» |
 | p4 | A | «Inversiones – títulos se acredita por lo que costaron; lo que faltó para llegar a ese costo va a la pérdida.» |
 | p4 | B | «Algún valor no cuadra con el hecho: lo recibido, el costo o la diferencia.» |
 
@@ -220,6 +220,6 @@ Segundas frases de la B de las ventas (mandan sobre la tabla de la (2)):
 
 | Cuenta | Segunda frase |
 |---|---|
-| Caja | «A Caja entra lo que le pagaron por la venta, no lo que costaron los títulos.» |
-| Ingresos financieros – ganancia en venta de títulos | «La ganancia no es todo lo recibido: es lo que sobra después de restar lo que costaron los títulos.» |
-| Gastos financieros – pérdida en venta de títulos | «La pérdida no es todo el costo: es lo que le faltó a lo recibido para llegar a él.» |
+| Caja | «A Caja entra todo lo que le pagaron por la venta. Míralo en el hecho.» |
+| Ingresos financieros – ganancia en venta de títulos | «La ganancia es lo que sobra de lo recibido después de restar lo que costaron los títulos.» |
+| Gastos financieros – pérdida en venta de títulos | «La pérdida es lo que le faltó a lo recibido para llegar a lo que costaron los títulos.» |

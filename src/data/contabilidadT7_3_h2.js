@@ -61,6 +61,8 @@ const C = CIFRAS_H2;
 
 export const H2 = {
   id: H2_ID,
+  /* Lote O: el objetivo, de Near (paquetes/lote-o-objetivos.md). */
+  objetivo: "Calcular una cadena de descuentos, uno sobre otro, y lo que queda debiendo el cliente.",
   nombre: "La cadena de descuentos",
   consigna: "Calcula la cadena de descuentos y lo que queda debiendo el cliente. Tienes un solo intento por pregunta.",
   enunciado: [

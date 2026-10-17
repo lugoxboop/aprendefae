@@ -50,6 +50,8 @@ const C = CIFRAS_H2;
 
 export const H2 = {
   id: H2_ID,
+  /* Lote O: el objetivo, de Near (paquetes/lote-o-objetivos.md). */
+  objetivo: "Registrar una venta en el sistema permanente con sus dos asientos: la venta y su costo.",
   /* Decisión de L: no el nombre de la v1, que es el de A2. */
   nombre: "Arma los dos asientos",
   consigna: "Registra la venta en sus dos asientos. Tienes un solo intento por pregunta.",

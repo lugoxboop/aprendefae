@@ -50,6 +50,8 @@ const C = CIFRAS_H5;
 
 export const H5 = {
   id: H5_ID,
+  /* Lote O: el objetivo, de Near (paquetes/lote-o-objetivos.md). */
+  objetivo: "Distinguir lo que forma parte del costo de la mercancía de lo que es un gasto.",
   nombre: "¿Costo o gasto?",
   /* La v1: «Etiqueta». */
   etiqueta: "¿Costo o gasto? · Inventarios I",
