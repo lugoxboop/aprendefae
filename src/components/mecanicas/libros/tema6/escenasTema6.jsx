@@ -6,7 +6,6 @@ import { PIEZA_NO_VA_A_PAGAR, PREGUNTA_FINAL_T6_A2, OPCIONES_FINAL_T6_A2 } from 
 import DosDias from "./DosDias.jsx";
 import DosMetodos from "./DosMetodos.jsx";
 import { PIEZA_LA_PROVISION, PREGUNTA_FINAL_T6_A3, OPCIONES_FINAL_T6_A3, PIE_FINAL_T6_A3, TANQUE_T6_A3 } from "../../../../data/contabilidadT6Pieza3.js";
-import { useEffect, useMemo } from "react";
 import TanqueProvision from "./TanqueProvision.jsx";
 import LaProvision from "./LaProvision.jsx";
 import TanqueMomentos from "./TanqueMomentos.jsx";
@@ -19,6 +18,7 @@ import LaTablaDelEjemplo from "./LaTablaDelEjemplo.jsx";
 import CuatroGrupos from "./CuatroGrupos.jsx";
 import { PIE } from "./CajasQueRevelan.jsx";
 import { FinalT6A1, FinalT6A2, FinalT6A4, FinalT6A5 } from "./FigurasFinalesT6.jsx";
+import { evaluadorDe, useEscenaConLeyenda } from "./LeyendaFinal.jsx";
 
 /*
  * Las capas propias de las piezas de Aprender del Tema 6, como las de los
@@ -28,26 +28,6 @@ import { FinalT6A1, FinalT6A2, FinalT6A4, FinalT6A5 } from "./FigurasFinalesT6.j
  * debajo, fuera de UnaFrase.
  */
 const PieCapa4 = ({ texto }) => <p data-pie style={{ ...PIE, margin: "12px 0 0" }}>{texto}</p>;
-/*
- * Lote 7 (A3) y lote 12 (A1, A2, A4 y A5): la frase buena viaja como «escena»;
- * así la leyenda del modelo final la pone un efecto, no el render.
- */
-const evaluadorDe = (opciones) => (id) => {
-  const o = opciones.find((x) => x.id === id);
-  return { correcta: Boolean(o?.correcta), feedback: o?.feedback ?? "", escena: o?.correcta ? o.texto : null };
-};
-function LeyendaDeLaFrase({ escena, ponerLeyenda }) {
-  useEffect(() => {
-    if (!ponerLeyenda || !escena) return undefined;
-    ponerLeyenda(escena);
-    return () => ponerLeyenda(null);
-  }, [escena, ponerLeyenda]);
-  return null;
-}
-/* Un tipo estable: si cambiara en cada render, la leyenda se quitaría y se pondría sin fin. */
-const useEscenaConLeyenda = (ponerLeyenda) =>
-  useMemo(() => function EscenaConLeyenda({ escena }) { return <LeyendaDeLaFrase escena={escena} ponerLeyenda={ponerLeyenda} />; }, [ponerLeyenda]);
-
 const evaluar = evaluadorDe(OPCIONES_FINAL_T6);
 export function EnUnaFraseT6({ ponerLeyenda = null }) {
   const Escena = useEscenaConLeyenda(ponerLeyenda);
