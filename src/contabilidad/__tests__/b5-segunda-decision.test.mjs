@@ -90,6 +90,46 @@ test("★★★ t5-a1: la ficha de descripción no pregunta el cajón; C2 con la
   desmontar();
 });
 
+test("★★★ lote 23 (D4, Shoko): t5-a1 dibuja lo elegido por error como fantasma desde el primer error, sin revelar lo correcto", async () => {
+  const f = T5F("def-interes");
+  const { caja, desmontar } = await montar(QueRentaDa, [f]);
+  await tocar(opcion(caja, T5.RENTA_DIFERENCIA));
+  assert.equal(caja.querySelector("[data-tira-renta] [data-fantasma]").dataset.fantasma, T5.RENTA_DIFERENCIA, "lo que eligió, dibujado");
+  assert.ok(!caja.querySelector("[data-correcta-tira]"), "C2: lo correcto aún no");
+  desmontar();
+});
+
+test("★★★ lote 23 (D4, Shoko): la mitad de las fichas invierte la pregunta: los tres casos de cada mazo y una más", () => {
+  for (const k of [0, 1]) {
+    const mazo = L5.mazoInvertidoT5Act1(k);
+    const inv = mazo.filter((x) => x.invertida);
+    assert.equal(inv.length, 4, `mazo ${k}: 4 de 9`);
+    assert.deepEqual(new Set(inv.map(L5.rentaDeT5Act1)), new Set([T5.RENTA_INTERES, T5.RENTA_DIFERENCIA, T5.RENTA_RESULTADOS]), "las tres rentas");
+    assert.ok(inv.every((x) => x.texto === T5.INVERTIDA_T5_ACT1.pregunta && L5.aplicaSegundaT5Act1(x) === null), "preguntan el título con los cajones");
+    assert.ok(mazo.some((x) => !x.invertida && L5.aplicaSegundaT5Act1(x) === "antes"), "y quedan fichas con la pregunta de la renta");
+  }
+});
+
+test("★★★ lote 23 (D4, Shoko): la ficha invertida muestra la tira y se elige el título; el cajón errado dibuja su renta como fantasma", async () => {
+  const f = L5.invertirT5Act1(T5F("caso-pactado")); // renta: interés fijo → «Fija con interés»
+  const { caja, desmontar } = await montar(QueRentaDa, [f]);
+  assert.equal(caja.querySelector("[data-ficha]").textContent, T5.INVERTIDA_T5_ACT1.pregunta);
+  const grafico = caja.querySelector("[data-grafico-renta]");
+  assert.equal(grafico.dataset.graficoRenta, T5.RENTA_INTERES);
+  assert.equal(grafico.querySelector("[data-tira-renta]").getAttribute("aria-label"), T5.INVERTIDA_T5_ACT1[T5.RENTA_INTERES].descripcion, "el texto alternativo dice la forma, no el nombre");
+  assert.equal(grafico.querySelector("[data-correcta-tira]").dataset.correctaTira, T5.RENTA_INTERES, "la tira se ve desde el principio");
+  assert.ok(!caja.querySelector("[data-pregunta-segunda]"), "sin la pregunta de la renta");
+  assert.ok(!caja.querySelector('[data-cajon="variable"]').disabled, "los cajones se eligen");
+  await tocar(caja.querySelector('[data-cajon="variable"]'));
+  assert.equal(devolucion(caja), T5.INVERTIDA_T5_ACT1[T5.RENTA_INTERES].pista);
+  assert.equal(caja.querySelector("[data-grafico-renta] [data-fantasma]").dataset.fantasma, T5.RENTA_RESULTADOS, "lo elegido, como fantasma");
+  await tocar(caja.querySelector('[data-cajon="fija/descuento"]'));
+  assert.equal(caja.querySelector("[data-grafico-renta] [data-fantasma]").dataset.fantasma, T5.RENTA_DIFERENCIA, "el último error");
+  assert.equal(caja.querySelector('[data-cajon="fija/interes"]').dataset.marca, "revelada");
+  assert.match(devolucion(caja), /renta fija con interés/);
+  desmontar();
+});
+
 test("★★★ t5-a1: la ficha de nombre sigue con el cajón, sin la pregunta de la renta", async () => {
   const { caja, desmontar } = await montar(QueRentaDa, [T5F("acciones")]);
   assert.ok(!caja.querySelector("[data-pregunta-segunda]"));
@@ -144,8 +184,9 @@ test("★★★ lote 22 (bug de #440): en t6-a1 el cajón correcto nunca queda c
   desmontar();
 });
 
-test("★★★ t6-a1: la de otra cuenta lleva solo la decisión 1 (con su pista si va a Clientes)", async () => {
-  const f = T6F("socio");
+test("★★★ t6-a1: la de otra cuenta sin «¿En cuál?» en los datos lleva solo la decisión 1 (con su pista si va a Clientes)", async () => {
+  /* Lote 23: «prestamo-cliente» espera la cuenta de Futaba; mientras tanto, solo la decisión 1. */
+  const f = T6F("prestamo-cliente");
   const { caja, desmontar } = await montar(ClientesOOtra, [f]);
   await tocar(caja.querySelector('[data-cajon="clientes"]'));
   assert.equal(devolucion(caja), f.pista);
@@ -157,7 +198,7 @@ test("★★★ t6-a1: la de otra cuenta lleva solo la decisión 1 (con su pista
 });
 
 test("★★★ puntaje: la decisión 2 suma como una más; t6-a1 con 2 fichas (una de Clientes) son 3 decisiones", async () => {
-  const { caja, pct, desmontar } = await montar(ClientesOOtra, [T6F("pago"), T6F("socio")]);
+  const { caja, pct, desmontar } = await montar(ClientesOOtra, [T6F("pago"), T6F("prestamo-cliente")]);
   await tocar(caja.querySelector('[data-cajon="clientes"]'));
   await tocar(caja.querySelector('[data-lado-t="debe"]'));
   await tocar(caja.querySelector('[data-lado-t="haber"]'));
@@ -165,6 +206,67 @@ test("★★★ puntaje: la decisión 2 suma como una más; t6-a1 con 2 fichas (
   await tocar(caja.querySelector('[data-cajon="otra"]'));
   await avanzar(caja);
   assert.equal(Math.round(pct()), Math.round(((1 + 0.5 + 1) / 3) * 100));
+  desmontar();
+});
+
+test("★★★ lote 23 (D4, Shoko): t6-a1 · la de otra cuenta sigue con «¿En cuál?», con las cuentas de la p. 196; C2; la T queda quieta", async () => {
+  const f = T6F("socio");
+  const { caja, pct, desmontar } = await montar(ClientesOOtra, [f]);
+  await tocar(caja.querySelector('[data-cajon="otra"]'));
+  assert.equal(devolucion(caja), null, "la decisión 1 no dice nada: su acierto diría la cuenta");
+  assert.equal(caja.querySelector("[data-segunda-decision='en-cual'] [data-pregunta-segunda]").textContent, T6.EN_CUAL_T6_ACT1.pregunta);
+  assert.deepEqual([...caja.querySelectorAll("[data-opcion-segunda]")].map((b) => b.dataset.opcionSegunda), T6.EN_CUAL_T6_ACT1.opciones.map((o) => o.id));
+  assert.ok(caja.querySelector('[data-lado-t="debe"]').disabled, "la T, quieta");
+  assert.ok(!caja.querySelector("[data-boton-avanzar]"));
+  await tocar(opcion(caja, "trabajadores"));
+  assert.equal(devolucion(caja), T6.EN_CUAL_T6_ACT1.pista);
+  assert.equal(opcion(caja, "trabajadores").dataset.marca, "tachada");
+  await tocar(opcion(caja, "particulares"));
+  assert.match(devolucion(caja), /Cuentas por cobrar a socios y accionistas/);
+  assert.equal(opcion(caja, "socios").dataset.marca, "revelada");
+  assert.ok(caja.querySelector("[data-boton-avanzar]"));
+  await avanzar(caja);
+  /* Dos decisiones: la 1 entera y la 2 en cero. */
+  assert.equal(Math.round(pct()), 50);
+  desmontar();
+});
+
+test("★★★ lote 23: cada ficha de otra cuenta tiene su cuenta de la p. 196, menos «prestamo-cliente», que espera a Futaba", () => {
+  const otras = [...T6.FICHAS_T6_ACT1, ...T6.FICHAS_V2_T6_ACT1].filter((x) => x.cuenta === T6.OTRA);
+  const sin = otras.filter((x) => !L6.enCualDeT6Act1(x)).map((x) => x.id);
+  assert.deepEqual(sin, ["prestamo-cliente"]);
+  const ids = new Set(T6.EN_CUAL_T6_ACT1.opciones.map((o) => o.id));
+  for (const x of otras.filter((y) => L6.enCualDeT6Act1(y))) {
+    const cuenta = L6.enCualDeT6Act1(x);
+    assert.ok(ids.has(cuenta));
+    assert.ok(x.acierto.includes(T6.EN_CUAL_T6_ACT1.opciones.find((o) => o.id === cuenta).texto), `${x.id}: la cuenta es la que dice su acierto`);
+  }
+});
+
+test("★★★ lote 23 (D4, Shoko): en t6-a4 el tanque va primero a lo que eligió (fantasma) y después al estado correcto", async () => {
+  const x = A4.HECHOS_T6_ACT4.find((y) => y.id === "qd-06"); // la correcta es «Baja»
+  const { caja, desmontar } = await montar(QueSeDebita, [x]);
+  const tanque = () => caja.querySelector("[data-tanque-mini]");
+  const linea = () => tanque().querySelector("[data-nivel-linea]");
+  const espera = () => act(() => new Promise((r) => setTimeout(r, 760)));
+  await tocar(caja.querySelector(`[data-opcion="${x.respuesta}"]`).closest("button"));
+  /* Primer error: va a «Sube» como fantasma y vuelve a «antes» (la pista no dice la respuesta). */
+  await tocar(opcion(caja, A4.P_SUBE));
+  assert.equal(tanque().dataset.dePaso, A4.P_SUBE);
+  assert.equal(linea().style.top, "23px", "el nivel, en «Sube»");
+  assert.match(linea().style.borderTop, /dashed/, "como fantasma: línea discontinua");
+  await espera();
+  assert.equal(tanque().dataset.dePaso, undefined);
+  assert.equal(linea().style.top, "47px", "de vuelta en «antes»");
+  /* Segundo error: va a «No cambia» y después al estado correcto, con el fantasma de lo elegido. */
+  await tocar(opcion(caja, A4.P_IGUAL));
+  assert.equal(tanque().dataset.dePaso, A4.P_IGUAL);
+  assert.equal(tanque().querySelector("[data-fantasma]"), null, "mientras va, no hay fantasma fijo");
+  await espera();
+  assert.equal(tanque().dataset.dePaso, undefined);
+  assert.equal(tanque().dataset.nivel, A4.P_BAJA);
+  assert.equal(linea().style.top, "71px", "en «Baja», el correcto");
+  assert.equal(tanque().querySelector("[data-fantasma]").dataset.fantasma, A4.P_IGUAL);
   desmontar();
 });
 

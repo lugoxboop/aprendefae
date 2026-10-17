@@ -6,8 +6,10 @@ import {
 import {
   sortearT6Act1, evaluarT6Act1, valorDeItemT6Act1, puntuarT6Act1,
   evaluarCuentaT6Act1, aplicaSegundaT6Act1, ladoDeT6Act1, evaluarSegundaT6Act1,
+  aplicaSegunda2T6Act1, correctaSegundaT6Act1, evaluarSegunda2T6Act1,
 } from "../../../../contabilidad/t6Act1.js";
 import TDeClientes from "./TDeClientes.jsx";
+import SegundaDeT6Act1 from "./EnCualCuenta.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -53,12 +55,21 @@ export const CONFIG_D4_T6_ACT1 = {
   segunda: { aplica: aplicaSegundaT6Act1, correcta: ladoDeT6Act1, evaluar: evaluarSegundaT6Act1, Vista: TDeClientes, persistente: true },
 };
 
+/*
+ * Lote 23 (D4, Shoko): las fichas de otra cuenta llevan también su segunda decisión, «¿En cuál?», con las
+ * cuentas de la p. 196 (tema6/EnCualCuenta.jsx). CONFIG_D4_T6_ACT1 queda como la del lote 19 para sus pruebas.
+ */
+export const CONFIG_D4B_T6_ACT1 = {
+  ...CONFIG_D4_T6_ACT1,
+  segunda: { aplica: aplicaSegunda2T6Act1, correcta: correctaSegundaT6Act1, evaluar: evaluarSegunda2T6Act1, Vista: SegundaDeT6Act1, persistente: true },
+};
+
 /* D8 (lote 18, Futaba): la vuelta 1 es la de hoy; la variante, las ocho fichas nuevas en su orden. */
-const CONFIG_V2_T6_ACT1 = { ...CONFIG_D4_T6_ACT1, sortear: () => FICHAS_V2_T6_ACT1 };
+const CONFIG_V2_T6_ACT1 = { ...CONFIG_D4B_T6_ACT1, sortear: () => FICHAS_V2_T6_ACT1 };
 
 export default function ClientesOOtra(props) {
   const { variante, alCompletar } = useVuelta(T6_ACT1.id, props.onCompletar);
   /* «Así se juega» sigue con su guion de un cajón hasta que Mai dé el de las dos decisiones (lote 19, en el PR). */
   if (props.modoDemo) return <FichasUnNivel config={CONFIG_T6_ACT1} {...props} />;
-  return <FichasUnNivel {...props} config={variante ? CONFIG_V2_T6_ACT1 : CONFIG_D4_T6_ACT1} onCompletar={alCompletar} />;
+  return <FichasUnNivel {...props} config={variante ? CONFIG_V2_T6_ACT1 : CONFIG_D4B_T6_ACT1} onCompletar={alCompletar} />;
 }
