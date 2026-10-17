@@ -311,3 +311,19 @@ test("★★★ D8 · las seis piezas de Aprender tienen su caso B, con las mism
     assert.deepEqual(P.casoB.pantallas.map((p) => [p.id, Boolean(p.pregunta)]), P.pantallas.map((p) => [p.id, Boolean(p.pregunta)]), P.id);
   }
 });
+
+test("★★ el identificador del tema (Hanayama, sistema de Xeno): 64 × 64, trazo de 3 px redondeado y currentColor; un solo elemento en el acento, que se mueve 4 px; sin letras ni círculos; en reposo, el billete a 4 px o más del cajón; todavía fuera del registro", async () => {
+  const src = readFileSync(new URL("../identificadores/CajonDePaso.jsx", import.meta.url), "utf8");
+  const svg = src.slice(src.indexOf("<svg"), src.indexOf("</svg>"));
+  assert.match(svg, /viewBox="0 0 64 64"/);
+  assert.match(svg, /stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/);
+  assert.equal((svg.match(/var\(--fae-acento\)/g) ?? []).length, 2, "el acento en más de un elemento");
+  assert.equal((svg.match(/data-mueve/g) ?? []).length, 1);
+  assert.match(svg, /"--mueve": "translateY\(4px\)"/);
+  assert.doesNotMatch(svg, /<text|<circle|<ellipse/);
+  const [, y, h] = svg.match(/<rect data-mueve x="\d+" y="(\d+)" width="\d+" height="(\d+)"/).map(Number);
+  const bocaY = 18;
+  assert.ok(bocaY - 1.5 - (y + h + 1.5) >= 4, "en reposo, el billete a menos de 4 px del cajón");
+  const reg = readFileSync(new URL("../../data/identificadoresDeTema.js", import.meta.url), "utf8");
+  assert.doesNotMatch(reg, /CajonDePaso/, "el identificador entró al registro antes de que el sitio compartido tenga el movimiento y el tamaño");
+});
