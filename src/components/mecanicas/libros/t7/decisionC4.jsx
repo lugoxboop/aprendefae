@@ -242,6 +242,7 @@ export default function DecisionC4({ pieza, Marco = Panel, rotulo, acento, onCom
   const [s, despachar] = useReducer((e, a) => reducirC4(pieza, e, a), undefined, estadoInicialC4);
   const bien = useRef(0);
   const txt = useRef(null);
+  const preg = useRef(null);
   const msgRef = useRef(null);
   const porqueRef = useRef(null);
   const marco = useRef(null);
@@ -264,7 +265,9 @@ export default function DecisionC4({ pieza, Marco = Panel, rotulo, acento, onCom
   useEffect(() => {
     if (!s.foco) return;
     const el = { msg: msgRef, porque: porqueRef, txt }[s.foco.que]?.current;
-    (el ?? marco.current)?.focus({ preventScroll: true });
+    /* Un ítem sin texto (solo pregunta) lleva el foco a su pregunta: un párrafo oculto no lo recibe. */
+    const destino = el?.hidden ? (preg.current && !preg.current.hidden ? preg.current : null) : el;
+    (destino ?? marco.current)?.focus({ preventScroll: true });
   }, [s.foco]);
 
   useEffect(() => {
@@ -353,7 +356,7 @@ export default function DecisionC4({ pieza, Marco = Panel, rotulo, acento, onCom
             {Figura && <Figura estado={estado} item={I} vista={vista} ctx={ctx} />}
           </div>
           {falla && <p className="c4-falla" data-falla><IconoX /><span>{falla}</span></p>}
-          <p className="c4-preg" data-pregunta hidden={!I.pregunta}>{I.pregunta}</p>
+          <p ref={preg} className="c4-preg" tabIndex={-1} data-pregunta hidden={!I.pregunta}>{I.pregunta}</p>
 
           {tipo === "eleccion" && !enFigura && (
             <div className="c4-ops" role="group" aria-label={I.pregunta || undefined}>

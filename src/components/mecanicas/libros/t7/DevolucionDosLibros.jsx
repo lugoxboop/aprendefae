@@ -6,7 +6,11 @@ import { Pulsos, Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { AsientoEnLineas, Responder, useTanda } from "../piezas.jsx";
 import { EncabezadoHacer } from "./hacerT7.jsx";
-import { CSS_T7_HACER, Ficha, Parrafos, TarjetaPregunta, Eleccion, Devolucion } from "./hacerT7.jsx";
+import { CSS_T7_HACER, Ficha, Parrafos, TarjetaPregunta, Devolucion } from "./hacerT7.jsx";
+import { leerCifra } from "../../../../contabilidad/elCierreCompleto.js";
+import { CONSECUENCIA_C4 as C4, escribiendoH6 } from "../../../../contabilidad/c4/t71h6_c4.js";
+import { CSS_T71C4, CSS_T71_FUERA, FiguraNotaCredito } from "./c4T71.jsx";
+import { EleccionC4, useVeredictoC4 } from "./FigurasC4T7_2.jsx";
 import { CasillaCifra, LineasConCuenta, ContadorConIntento } from "./armaLaLinea.jsx";
 import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
 import FiguraAcumulada from "./FiguraAcumulada.jsx";
@@ -40,12 +44,33 @@ import { FIGURA_T7_1_H6, cerradosDe } from "../../../../contabilidad/figuraAcumu
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
+/*
+ * C4 · «TODA DECISIÓN SE PINTA» (Watari, sección t71-h6; precedente de #424:
+ * la pieza no monta el motor). Debajo de la pregunta, la nota crédito de El
+ * Nogal (FiguraNotaCredito, c4T71.jsx): al tocar una cifra, o al comprobar la
+ * escrita, la cifra entra a su renglón y la nota dice qué parte de lo
+ * devuelto es; el veredicto llega ESPERA_C4 después. Mientras se escribe, la
+ * figura solo muestra la cifra (C4-1 de Mello). Los asientos siguen como en
+ * main; la figura acumulada no cambia.
+ *
+ * El contrato de la figura del motor, para la prueba C5 de consecuencia-c.
+ */
+export const PIEZA_C4 = {
+  ...C4,
+  Figura: ({ estado, item, vista }) => (
+    <FiguraNotaCredito estado={vista?.valor == null && vista?.borrador != null ? escribiendoH6(item, vista.borrador) : estado ?? C4.consecuencia(item, null)} />
+  ),
+};
+
 export default function DevolucionDosLibros({ Marco, rotulo, titulo, acento, onCompletar, items = null, onComoSeJuega = null }) {
   const t = useTanda(() => items ?? prepararH6(barajar));
   const [elegida, setElegida] = useState(null);
   const [r, setR] = useState(null);
   const [comprobado, setComprobado] = useState(false);
   const [bien, setBien] = useState(0);
+  /* C4: la cifra que se va escribiendo (la figura solo la muestra) y el reloj del veredicto. */
+  const [escrita, setEscrita] = useState(null);
+  const veredicto = useVeredictoC4();
   const zonaBoton = useRef(null);
   const tarjeta = useRef(null);
 
@@ -58,13 +83,14 @@ export default function DevolucionDosLibros({ Marco, rotulo, titulo, acento, onC
   }, [t.terminado]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (listo) zonaBoton.current?.querySelector("button")?.focus(); }, [listo]);
 
+  /* C4: el toque (o «Comprobar») es la consecuencia y el único intento, que se anota ya; el veredicto llega después. */
   const elegir = (v) => {
-    if (r) return;
+    if (r || elegida != null) return;
     const nuevo = evaluarH6(item, v);
     t.anotar(item.id, nuevo.ok, v);
     if (nuevo.ok) setBien((n) => n + 1);
     setElegida(v);
-    setR(nuevo);
+    veredicto.programar(() => setR(nuevo));
   };
 
   const comprobar = (resultados) => {
@@ -76,12 +102,13 @@ export default function DevolucionDosLibros({ Marco, rotulo, titulo, acento, onC
   };
 
   const avanzar = () => {
-    setElegida(null); setR(null); setComprobado(false);
+    veredicto.cancelar();
+    setElegida(null); setR(null); setComprobado(false); setEscrita(null);
     if (t.i + 1 < cuantos) { t.setI(t.i + 1); requestAnimationFrame(() => tarjeta.current?.focus()); }
     else t.setTerminado(true);
   };
 
-  const reiniciar = () => { t.reiniciar(); setElegida(null); setR(null); setComprobado(false); setBien(0); };
+  const reiniciar = () => { veredicto.cancelar(); t.reiniciar(); setElegida(null); setR(null); setComprobado(false); setBien(0); setEscrita(null); };
 
   if (t.terminado) {
     return (
@@ -93,9 +120,11 @@ export default function DevolucionDosLibros({ Marco, rotulo, titulo, acento, onC
     );
   }
 
+  const itemC4 = C4.items.find((x) => x.id === item.id);
+
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
-      <style>{CSS_T7_HACER}</style>
+      <style>{CSS_T7_HACER}{CSS_T71C4}{CSS_T71_FUERA}</style>
       <div data-h6>
         <EncabezadoHacer objetivo={H6.objetivo} consigna={sinUnSoloIntento(H6.consigna)} onComoSeJuega={onComoSeJuega} />
         <Parrafos textos={H6.enunciado} />
@@ -111,15 +140,21 @@ export default function DevolucionDosLibros({ Marco, rotulo, titulo, acento, onC
           </ContadorConIntento>
         </div>
         <TarjetaPregunta id={item.id} encabezado={item.encabezado ?? null} pregunta={item.pregunta} pie={H6.pie} tarjetaRef={tarjeta} />
+        {item.tipo !== "asiento" && (
+          <FiguraNotaCredito estado={item.tipo === "cifra" && elegida == null && escrita != null
+            ? escribiendoH6(itemC4, escrita) : C4.consecuencia(itemC4, elegida)} />
+        )}
         {item.tipo === "eleccion" && (
           <>
-            <Eleccion opciones={item.opciones} r={r} elegida={elegida} onElegir={elegir} etiqueta={item.pregunta} />
+            <EleccionC4 opciones={item.opciones} r={r} elegida={elegida} onElegir={elegir} etiqueta={item.pregunta} />
             <Devolucion r={r} lectorError={r && !r.ok ? `Incorrecto. Iba aquí: ${r.textoCorrecta}. ` : null} />
           </>
         )}
         {item.tipo === "cifra" && (
           <>
-            <CasillaCifra key={item.id} id={item.id} onComprobar={elegir} comprobado={Boolean(r)} etiqueta={item.pregunta} iba={r && !r.ok ? r.textoCorrecta : null} />
+            <div onInput={(e) => setEscrita(leerCifra(e.target.value))}>
+              <CasillaCifra key={item.id} id={item.id} onComprobar={elegir} comprobado={elegida != null} etiqueta={item.pregunta} iba={r && !r.ok ? r.textoCorrecta : null} />
+            </div>
             <Devolucion r={r} lectorError={r && !r.ok ? "Incorrecto. " : null} />
           </>
         )}

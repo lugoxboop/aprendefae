@@ -48,6 +48,8 @@ const D = await import("../../data/contabilidadT7_1_h7.js");
 const L = await import("../t7H7.js");
 const { SUBJECTS, HACER, APRENDER, actividadesDeTipo, clasificacionDe } = await import("../../data/subjects.js");
 const { default: QueControlFalta } = await import("../../components/mecanicas/libros/t7/QueControlFalta.jsx");
+/* C4: la vista abre ahora QueControlFaltaC4.jsx (patrón de enganche C4; su prueba es t7-1-*-c4.test.mjs). QueControlFalta.jsx sigue aquí para el recorrido de esta prueba. */
+const { default: QueControlFaltaC4 } = await import("../../components/mecanicas/libros/t7/QueControlFaltaC4.jsx");
 const { JUEGOS_T7_1, TEMA_T7_1 } = await import("../../components/ContabilidadT7_1View.jsx");
 const { etiquetaDeItem, recortar } = await import("../../docente/etiquetasItem.js");
 
@@ -288,7 +290,7 @@ test("★★★ en T7-1, después de A7 y última: exploratoria, fácil, 10 FP",
 test("★★★ la vista abre lo que el catálogo ofrece y registra con el motor compartido", () => {
   const ofrecidas = actividadesDeTipo(TEMA, HACER).filter((a) => !a.pendiente).map((a) => a.id).sort();
   assert.deepEqual(JUEGOS_T7_1.map((j) => j.id).sort(), ofrecidas);
-  assert.equal(JUEGOS_T7_1.find((j) => j.id === D.H7_ID).Mecanica, QueControlFalta);
+  assert.equal(JUEGOS_T7_1.find((j) => j.id === D.H7_ID).Mecanica, QueControlFaltaC4);
   assert.match(VISTA, /registrarActividadCompletada\(clas, \{\s*materiaId: MATERIA, temaId: TEMA_T7_1, actividadId, porcentajeAciertos: porcentaje, duracionMs, detalle,/);
 });
 
