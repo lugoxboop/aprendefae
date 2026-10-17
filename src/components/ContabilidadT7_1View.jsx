@@ -31,8 +31,8 @@ import QueControlFalta from "./mecanicas/libros/t7/QueControlFalta.jsx";
 import { H7 } from "../data/contabilidadT7_1_h7.js";
 import LaCuentaQueNoSeMueve from "./mecanicas/libros/t7/LaCuentaQueNoSeMueve.jsx";
 import { PIEZA_LA_CUENTA_QUE_NO_SE_MUEVE } from "../data/contabilidadT7_1.js";
-import LaFacturaCompleta from "./mecanicas/libros/t7/LaFacturaCompleta.jsx";
-import { PIEZA_LA_FACTURA_COMPLETA } from "../data/contabilidadT7_1_ap2.js";
+import LaFacturaCompletaC3 from "./mecanicas/libros/t7/LaFacturaCompletaC3.jsx";
+import { PIEZA_A2_C3 } from "../data/contabilidadT7_1_a2_c3.js";
 import TresFormas from "./mecanicas/libros/t7/TresFormas.jsx";
 import { PIEZA_TRES_FORMAS } from "../data/contabilidadT7_1_ap3.js";
 import DevolucionesEnPeriodicoC3 from "./mecanicas/libros/t7/DevolucionesEnPeriodicoC3.jsx";
@@ -62,7 +62,8 @@ export const TEMA_T7_1 = "inventarios-periodico";
 /* En el orden del número de pieza. El rótulo «Pieza n de N» cuenta las publicadas. */
 export const PIEZAS_T7_1 = [
   { numero: PIEZA_LA_CUENTA_QUE_NO_SE_MUEVE.numero, pieza: PIEZA_LA_CUENTA_QUE_NO_SE_MUEVE, Pieza: LaCuentaQueNoSeMueve },
-  { numero: PIEZA_LA_FACTURA_COMPLETA.numero, pieza: PIEZA_LA_FACTURA_COMPLETA, Pieza: LaFacturaCompleta },
+  /* A2: «La factura completa» del Patrón de enganche C3 (motor C3) reemplaza a la de la v2 de Near, con el mismo id. */
+  { numero: PIEZA_A2_C3.numero, pieza: PIEZA_A2_C3, Pieza: LaFacturaCompletaC3 },
   { numero: PIEZA_TRES_FORMAS.numero, pieza: PIEZA_TRES_FORMAS, Pieza: TresFormas },
   { numero: PIEZA_EL_CIERRE.numero, pieza: PIEZA_EL_CIERRE, Pieza: ElCierreEnPeriodico },
   /* A5: «Importados y fletes» con el Patrón de enganche C3 (motor aprenderC3.jsx), con el mismo id. */
