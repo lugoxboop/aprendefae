@@ -118,16 +118,16 @@ function textosDeAsiento(a) {
   return [...new Set([...Object.values(a.cruzado), ...Object.values(a.falta), ...cm, ...a.valorMal.map((x) => x.texto), a.generica, ...a.acierto])];
 }
 function textosDelEstudiante() {
-  const t = [T.R5_4.objetivo, T.R5_4.cita, T.ENTRADA_BARRANQUILLA.apertura, T.AVISO_BARRANQUILLA, ...T.DATOS_DECLARADOS_BARRANQUILLA.datos, T.COMUNES_BARRANQUILLA.cuentaNoPrevista, T.COMUNES_BARRANQUILLA.hayMas];
+  const t = [T.R5_4.objetivo, T.R5_4.cita, ...T.DATOS_DECLARADOS_BARRANQUILLA.datos, T.COMUNES_BARRANQUILLA.cuentaNoPrevista, T.COMUNES_BARRANQUILLA.hayMas];
   for (const g of T.DATOS_DEL_LIBRO_BARRANQUILLA) if (g.nota) t.push(g.nota);
   for (const a of A) t.push(a.hecho, ...textosDeAsiento(a));
   /* P2 de Itagaki: las líneas del panel del mes salen con el panel. */
   return [...new Set(t)];
 }
 
-test("★★★ cada texto del estudiante está entero en el paquete (guarda: 117 textos distintos)", () => {
+test("★★★ cada texto del estudiante está entero en el paquete (guarda: 116 textos distintos)", () => {
   const textos = textosDelEstudiante();
-  assert.equal(textos.length, 117);
+  assert.equal(textos.length, 116);
   const escapar = (t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const entero = (t) => new RegExp(`(?:: |:\\*\\* |\\n- |\\| )${escapar(t)}(?:\\n| \\||$)`).test(PAQUETE) || PLANO.includes(`«${t}»`) || PAQUETE_MES.includes(`| ${t} |`);
   const fuera = textos.filter((t) => !entero(t));
@@ -309,7 +309,7 @@ function caminosDe(a) {
   return c.filter((x) => MJ.puedeRevisarMate(x) && ["debe", "haber"].every((l) => x.filter((y) => y.lado === l).length <= MJ.MAXIMO_POR_LADO));
 }
 
-test("★★★ cada texto de cada asiento se alcanza con la hoja de once cuentas (guarda: 10 asientos, 98 textos)", () => {
+test("★★★ cada texto de cada asiento se alcanza con la hoja de once cuentas (guarda: 10 asientos, 99 textos)", () => {
   let total = 0;
   for (const a of A) {
     const alcanzados = new Set();
@@ -318,7 +318,7 @@ test("★★★ cada texto de cada asiento se alcanza con la hoja de once cuenta
     total += todos.length;
     assert.deepEqual(todos.filter((t) => !alcanzados.has(t)), [], `${a.id}: textos que ningún camino alcanza`);
   }
-  assert.equal(total, 98);
+  assert.equal(total, 99);
 });
 
 test("★★ la hoja tiene las 11 cuentas en orden alfabético, como en r5-3 (decisión 4)", () => {
@@ -398,16 +398,25 @@ test("★★ P2 · el calendario de septiembre: 30 días en 7 columnas, el día 
 
 /* ═══════════ LA PANTALLA ═══════════ */
 
-test("★★★ E1 · la entrada pinta el objetivo, el aviso una sola vez, la línea y las tarjetas; el bloque de la operación sale en 3 y 6", async () => {
+test("★★★ E1 · Takamura: la entrada se funde con el asiento 1 (objetivo y aviso una vez, encima) y las tarjetas pasan a «Datos de septiembre»; el bloque de la operación sale en 3 y 6", async () => {
   const { caja } = await montar(h(Barranquilla, {}));
-  const raiz = caja.querySelector('[data-paso="entrada"]');
+  assert.equal(Boolean(caja.querySelector('[data-paso="entrada"]')), false, "sigue la pantalla de entrada");
+  assert.equal(Boolean(caja.querySelector("[data-empezar]")), false);
+  const raiz = caja.querySelector('[data-paso="a1"]');
   assert.equal(raiz.hasAttribute("data-r5-4"), true);
-  assert.equal(raiz.querySelector("[data-objetivo]").textContent, T.R5_4.objetivo);
-  assert.equal(raiz.querySelector("[data-aviso]").textContent, T.AVISO_BARRANQUILLA);
-  /* B5: «IVA ni retención» una vez en la entrada. */
+  assert.equal(raiz.firstElementChild.textContent, T.R5_4.objetivo);
+  /* B5: el aviso de la entrada no se repite: lo dice el botón «Datos de septiembre» («Sin IVA ni retención…»), una vez. */
+  assert.equal(Boolean(raiz.querySelector("[data-aviso]")), false);
   assert.equal(raiz.textContent.split("IVA ni retención").length - 1, 1);
-  assert.equal(raiz.querySelectorAll("[data-dato-declarado]").length, 5);
-  assert.equal(raiz.querySelector("h3").textContent, "Septiembre en Barranquilla");
+  /* Ningún muro: de la apertura de la entrada no queda nada en el asiento 1. */
+  assert.equal(raiz.textContent.includes(T.ENTRADA_BARRANQUILLA.apertura), false);
+  /* Las tarjetas, en la hoja «Datos de septiembre». */
+  await tocar(raiz.querySelector("[data-boton-datos]"));
+  assert.equal(document.querySelectorAll("[data-hoja-datos] [data-dato-declarado]").length, 5);
+  /* El asiento 2 no repite ni el objetivo ni el aviso. */
+  const a2 = await montar(h(Barranquilla, { pasoInicial: 1 }));
+  assert.equal(Boolean(a2.caja.querySelector("[data-objetivo]")) || Boolean(a2.caja.querySelector("[data-aviso]")), false);
+  a2.desmontar();
   for (const id of ["a3", "a6"]) {
     const k = A.findIndex((x) => x.id === id);
     const pantalla = await montar(h(Barranquilla, { pasoInicial: k }));
@@ -444,7 +453,7 @@ async function jugarCamino(k, renglones) {
   return pantalla;
 }
 
-test("★★★ E1 · cada texto del paquete sale en la pantalla en algún estado (guarda: 117 textos, 96 caminos)", async () => {
+test("★★★ E1 · cada texto del paquete sale en la pantalla en algún estado (guarda: 116 textos, 102 caminos)", async () => {
   const vistas = [];
   const entrada = await montar(h(Barranquilla, {}));
   vistas.push(document.body.textContent);
@@ -459,10 +468,10 @@ test("★★★ E1 · cada texto del paquete sale en la pantalla en algún estad
   }
   const todo = vistas.join("\n");
   const textos = textosDelEstudiante();
-  assert.equal(textos.length, 117);
+  assert.equal(textos.length, 116);
   const faltan = textos.filter((t) => !todo.includes(t));
   assert.deepEqual(faltan, [], `no salen en pantalla: ${faltan.join(" | ")}`);
-  assert.equal(caminos, 96, "no jugó los caminos que dice jugar");
+  assert.equal(caminos, 102, "no jugó los caminos que dice jugar");
 });
 
 test("★★ B5 de enganche.md: ninguna frase sale dos veces en la misma pantalla (los nombres de cuenta no cuentan)", async () => {
@@ -523,7 +532,6 @@ test("★★★ el mes en dos cuentas: las cifras de Miyata siguen en los datos,
 test("★★★ se juega entera: diez asientos (dos con ventana), el final con «SEPTIEMBRE EN 10 ASIENTOS», el calendario del resumen y el detalle", async () => {
   const fin = [];
   const { caja } = await montar(h(Barranquilla, { onCompletar: (...x) => fin.push(x) }));
-  await tocar(caja.querySelector("[data-empezar]"));
   for (const [k, a] of A.entries()) {
     assert.equal(caja.querySelector("[data-progreso]").textContent, `Asiento ${k + 1} de 10`);
     /* Falla el pago del 17: Caja sin descuento. */
@@ -557,7 +565,7 @@ test("★★ B4: r5-4 no define estados ni colores de calificación propios: los
   assert.match(fuente, /import \{ MesContable \} from "\.\/Mate\.jsx"/);
 });
 
-test("★★★ todo texto de 10 palabras o más pasa 65 con inflesz.js (guarda: 98 medidos)", () => {
+test("★★★ todo texto de 10 palabras o más pasa 65 con inflesz.js (guarda: 96 medidos)", () => {
   let medidos = 0;
   const bajos = [];
   for (const t of textosDelEstudiante()) {
@@ -567,7 +575,7 @@ test("★★★ todo texto de 10 palabras o más pasa 65 con inflesz.js (guarda:
     medidos++;
     if (r.valor < UMBRAL) bajos.push(`${r.valor} · ${t}`);
   }
-  assert.equal(medidos, 98, "no midió los textos que dice medir");
+  assert.equal(medidos, 96, "no midió los textos que dice medir");
   assert.deepEqual(bajos, []);
   /* Los dos que Kamogawa sustituyó (daban 59,7) ya pasan. */
   for (const id of ["a8", "a10"]) assert.ok(inflesz(asiento(id).hecho).valor >= UMBRAL, id);
@@ -692,8 +700,8 @@ test("★★★ P2 §10 · los textos del calendario son los de Miyata, literale
   const k = A.findIndex((x) => x.id === "a7");
   const { caja } = await montar(h(Barranquilla, { pasoInicial: k }));
   assert.equal(caja.querySelector('[data-calendario] [role="grid"]').getAttribute("aria-label"), C.alt);
-  assert.equal(caja.querySelector('[data-dia="17"]').getAttribute("aria-label"), `17 de septiembre: ${C.nombres.a7}`);
   await abrirVentana(caja, A[k]);
+  assert.equal(caja.querySelector('[data-dia="17"]').getAttribute("aria-label"), `17 de septiembre: ${C.nombres.a7}`);
   assert.ok(caja.querySelector("[data-devolucion-ventana]").textContent.endsWith(C.ventanaOk.a7));
 });
 
@@ -706,4 +714,62 @@ test("★★ P2 · el área táctil de la perilla mide 44 × 44, centrada en la 
   assert.deepEqual([area.style.width, area.style.height, area.style.marginLeft, area.style.marginTop], ["44px", "44px", "-22px", "-22px"]);
   const boton = caja.querySelector("[data-perilla-boton]");
   assert.deepEqual([boton.style.width, boton.style.height], ["16px", "16px"]);
+});
+
+/* ═══════════ TAKAMURA · VEREDICTO DE #380 ═══════════ */
+
+test("★★★ Takamura 2 · el calendario no regala la respuesta: antes de comprobar la ventana no hay pago, ni contorno del día en curso, ni nombre del pago en su celda", async () => {
+  for (const id of ["a7", "a9"]) {
+    const a = asiento(id);
+    const { caja, desmontar } = await montar(h(Barranquilla, { pasoInicial: A.findIndex((x) => x.id === id) }));
+    const cal = caja.querySelector("[data-calendario]");
+    assert.equal(cal.querySelectorAll("[data-pago]").length, 0, `${id}: el pago está antes de comprobar`);
+    assert.equal(cal.querySelectorAll('[data-actual="si"]').length, 0, `${id}: el día del pago está marcado`);
+    assert.equal(cal.querySelector(`[data-dia="${a.ventana.pago}"]`).getAttribute("aria-label").includes(T.CALENDARIO_R5_4.nombres[id]), false, `${id}: el lector dice el día del pago`);
+    /* Ni con la ventana a medio arrastrar. */
+    await tocar(cal.querySelector(`[data-dia="${a.ventana.pago - 3}"]`));
+    assert.equal(caja.querySelectorAll("[data-calendario] [data-pago]").length, 0);
+    /* Al comprobar, aparecen los tres. */
+    await tocar(caja.querySelector("[data-revisar-ventana]"));
+    assert.ok(caja.querySelector(`[data-dia="${a.ventana.pago}"] [data-pago]`));
+    assert.equal(caja.querySelector('[data-calendario] [data-actual="si"]').dataset.dia, String(a.ventana.pago));
+    assert.ok(caja.querySelector(`[data-dia="${a.ventana.pago}"]`).getAttribute("aria-label").includes(T.CALENDARIO_R5_4.nombres[id]));
+    /* Los datos, con la condición, van arriba del calendario; un solo nombre: «Condición». */
+    const datos = caja.querySelector("[data-hecho]");
+    assert.ok(datos.compareDocumentPosition(caja.querySelector("[data-calendario]")) & w.Node.DOCUMENT_POSITION_FOLLOWING);
+    assert.ok(a.renglones.some(([e]) => e === "Condición") && !a.renglones.some(([e]) => e === "Condiciones"));
+    desmontar();
+  }
+});
+
+test("★★★ Takamura 3 · la devolución de la ventana nombra el error: 15 (desde el 1 del mes), 16 (contó el día de la factura) y, si no, la genérica", async () => {
+  const C = T.CALENDARIO_R5_4;
+  const casos = [["a7", 15, C.ventanaPorError.a7[15]], ["a7", 16, C.ventanaPorError.a7[16]], ["a7", 20, C.ventanaMal.a7], ["a9", 15, C.ventanaPorError.a9[15]], ["a9", 24, C.ventanaMal.a9]];
+  assert.equal(C.ventanaPorError.a7[15], "Los 15 días se cuentan desde la factura, no desde el 1 del mes.");
+  assert.equal(C.ventanaPorError.a7[16], "El día de la factura no cuenta: el primer día es el 3. Cuenta 15 desde ahí.");
+  for (const [id, borde, texto] of casos) {
+    const { caja, desmontar } = await montar(h(Barranquilla, { pasoInicial: A.findIndex((x) => x.id === id) }));
+    await abrirVentana(caja, asiento(id), borde);
+    const dev = caja.querySelector("[data-devolucion-ventana]");
+    assert.equal(dev.dataset.devolucionVentana, "error");
+    assert.equal(dev.textContent, `Incorrecto. ${texto}`, `${id} · ${borde}`);
+    desmontar();
+  }
+  /* Los textos nuevos están en el paquete. */
+  const seccion = PAQUETE.slice(PAQUETE.indexOf("## v2.1 · correcciones de Takamura"));
+  for (const t of [...Object.values(C.ventanaPorError.a7), ...Object.values(C.ventanaPorError.a9)]) assert.ok(seccion.includes(`\n- ${t}\n`), t);
+});
+
+test("★★★ Takamura 5 · el pago sin descuento: «Falta el renglón del descuento» primero, el de Caja sin la frase de los días, y sin la genérica", () => {
+  const a7 = asiento("a7");
+  const N = B.CIFRAS_BARRANQUILLA.a7;
+  const r = J.evaluarBarranquilla(a7, [R("debe", T.PROVEEDORES, N.saldo), R("haber", T.CAJA, N.saldo)]);
+  assert.deepEqual(r.textos, ["Falta el renglón del descuento.", "Sí ganas el descuento. Te toca el 10 %."]);
+  assert.ok(!r.textos.includes(a7.generica));
+  assert.ok(!r.textos.some((t) => /no cuenta/.test(t)), "la frase de los días repite el calendario");
+  /* Una genérica sola sí sale; con un texto específico al lado, calla y avisa que hay más. */
+  assert.deepEqual(J.evaluarBarranquilla(a7, bien(a7).map((x) => (x.cuenta === T.CAJA ? { ...x, valor: 7 } : x))).textos, [a7.generica]);
+  const dos = J.evaluarBarranquilla(a7, [R("debe", T.PROVEEDORES, N.saldo), R("haber", T.DESCUENTO, N.descuento), R("haber", T.CAJA, 7), R("haber", T.DEV_COMPRAS, 5)]);
+  assert.ok(!dos.textos.includes(a7.generica));
+  assert.equal(dos.textos.at(-1), T.COMUNES_BARRANQUILLA.hayMas);
 });

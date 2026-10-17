@@ -20,6 +20,11 @@ import LibroMayorBackground from "./backgrounds/LibroMayorBackground.jsx";
  */
 export default function ContabilidadTopicIndex({ onOpenTopic }) {
   const subject = SUBJECTS.contabilidad;
+  /*
+   * `sinPildorasAlCerrar`: solo Contabilidad. Macroeconomía usa esta misma
+   * vista y tiene estudiantes reales; no se toca sin el visto bueno de Mateo
+   * (kit.md, el sistema de identificadores).
+   */
   return (
     <TopicIndexView
       subjectId={subject.id}
@@ -30,6 +35,7 @@ export default function ContabilidadTopicIndex({ onOpenTopic }) {
       background={<LibroMayorBackground />}
       topics={subject.topics}
       renderTopicIcon={() => <ContabilidadIcon />}
+      sinPildorasAlCerrar
       onOpenTopic={onOpenTopic}
     />
   );

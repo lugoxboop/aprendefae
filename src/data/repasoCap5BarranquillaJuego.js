@@ -16,7 +16,8 @@ import { ASIENTOS_BARRANQUILLA, COMUNES_BARRANQUILLA, ORDEN_BARRANQUILLA, R5_4 }
  */
 
 export const TOTAL_R5_4 = ASIENTOS_BARRANQUILLA.length;
-const BARRANQUILLA = { comunes: COMUNES_BARRANQUILLA, orden: ORDEN_BARRANQUILLA };
+/* Takamura (#380): si hay un texto específico, la genérica no sale. */
+const BARRANQUILLA = { comunes: COMUNES_BARRANQUILLA, orden: ORDEN_BARRANQUILLA, sinGenerica: true };
 
 export const evaluarBarranquilla = (a, renglones) => evaluarAsiento(a, renglones, BARRANQUILLA);
 

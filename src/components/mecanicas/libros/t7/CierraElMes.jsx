@@ -10,7 +10,7 @@ import { Pulsos, Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Responder, useTanda } from "../piezas.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";
-import { Encabezado } from "../tema1/encabezado.jsx";
+import { EncabezadoHacer } from "./hacerT7.jsx";
 import { CSS_T7_HACER, Ficha, LineasConComprobar, TEXTO, INTER, APAGADO } from "./hacerT7.jsx";
 import { Plegable } from "./plegable.jsx";
 import { ContadorConIntento } from "./armaLaLinea.jsx";
@@ -134,7 +134,7 @@ export default function CierraElMes({ Marco, rotulo, titulo, acento, onCompletar
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS_T7_HACER + CSS}</style>
       <div data-h4>
-        <Encabezado consigna={sinUnSoloIntento(H4.consigna.join(" "))} onComoSeJuega={onComoSeJuega} />
+        <EncabezadoHacer objetivo={H4.objetivo} consigna={sinUnSoloIntento(H4.consigna.join(" "))} onComoSeJuega={onComoSeJuega} />
         <p data-entrada style={{ ...TEXTO, fontSize: "14px", lineHeight: "21px", margin: "0 0 8px" }}>{H4.entrada}</p>
         <Ficha filas={FICHA_H4} />
         {/* La figura acumulada: en la parte 1 la tabla es el ítem mismo; se queda, ya resuelta, desde la parte 2. */}

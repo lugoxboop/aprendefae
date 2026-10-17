@@ -70,6 +70,7 @@ const { PIEZAS_T7_2, TEMA_T7_2 } = await import("../../components/ContabilidadT7
 const RAIZ = new URL("../../../", import.meta.url);
 const leer = (f) => readFileSync(new URL(f, RAIZ), "utf8");
 const P = D.PIEZA_LAS_CAPAS;
+const ORDEN_OPS = P.pantallas.flatMap((p) => (p.opciones ?? []).map((o) => o.id));
 const pantalla = (id) => P.pantallas.find((x) => x.id === id);
 const CAPAS = P.pantallas.filter((x) => x.tipo === "capas");
 const contar = (t) => t.split(/\s+/).filter((x) => /[\p{L}\p{N}]/u.test(x)).length;
@@ -284,7 +285,8 @@ function retrato(raiz) {
     sale: [q(".ea4-sale").textContent, [...q(".ea4-sale").querySelectorAll("span")].map((s) => s.textContent)],
     rango: { min: rango.min, max: rango.max, value: rango.value, step: rango.step, disabled: rango.disabled, label: rango.getAttribute("aria-label"), valuetext: rango.getAttribute("aria-valuetext") },
     marcas: [...q(".ea4-marcas").querySelectorAll("i")].map((i) => i.style.left),
-    ops: [...raiz.querySelectorAll(".ea4-op")].map((b) => ({ id: b.dataset.op, t: b.querySelector("span").textContent, clases: clases(b, ["mal", "pista"]), disabled: b.disabled, em: [...b.querySelectorAll("em")].map((e) => e.textContent) })),
+    /* Lote V: en pantalla van barajadas; aquí, por id y en el orden de los datos, para comparar con la v6 opción por opción. */
+    ops: [...raiz.querySelectorAll(".ea4-op")].sort((a, b) => ORDEN_OPS.indexOf(a.dataset.op) - ORDEN_OPS.indexOf(b.dataset.op)).map((b) => ({ id: b.dataset.op, t: b.querySelector("span").textContent, clases: clases(b, ["mal", "pista"]), disabled: b.disabled, em: [...b.querySelectorAll("em")].map((e) => e.textContent) })),
     msg: { texto: msg.textContent, tipo: clases(msg, ["mal", "bien", "pista"]).join(" "), role: msg.getAttribute("role") },
     seguir: [q(".ea4-seguir").textContent, q(".ea4-seguir").disabled],
   };
@@ -543,6 +545,36 @@ test("★★★ A4-N1 frente a la v6 sola: la v6 deja el acierto pegado a otra f
     x.comparar("28 feb con A4-N1");
   } finally {
     x.fin();
+  }
+});
+
+test("★★★ lote V: las opciones de las pantallas 5 y 6 salen barajadas con la función de los Hacer (azar fijado), el mismo conjunto, la correcta no siempre primero, y el orden no cambia al fallar", async () => {
+  const { barajadorDe } = await import("../../utils/barajar.js");
+  assert.match(leer("src/components/mecanicas/libros/t7/LasCapasQueLaVentaCorta.jsx"), /import \{ barajar \} from "\.\.\/\.\.\/\.\.\/\.\.\/utils\/barajar\.js"/);
+  const conOpciones = P.pantallas.map((p, k) => [p, k]).filter(([p]) => p.opciones);
+  assert.deepEqual(conOpciones.map(([p]) => p.id), ["promedio", "mismo-final"]);
+  const ordenes = [];
+  for (const semilla of ["a", "b", "c", "d", "e", "f"]) {
+    for (const [p, k] of conOpciones) {
+      const m = await montar(h(LasCapas, { pieza: { ...P, pantallas: P.pantallas.slice(k) }, rotulo: "R", barajar: barajadorDe(semilla) }));
+      try {
+        const enPantalla = () => [...m.caja.querySelectorAll(".ea4-op")].map((b) => b.dataset.op);
+        const orden = enPantalla();
+        assert.deepEqual([...orden].sort(), p.opciones.map((o) => o.id).sort(), `${p.id}: el mismo conjunto`);
+        const mala = m.caja.querySelector(`.ea4-op[data-op="${orden.find((id) => id !== p.elegir.correcta)}"]`);
+        await act(async () => { mala.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
+        assert.ok(m.caja.querySelector(".ea4-op.mal"), `${p.id}: el error se marcó`);
+        assert.deepEqual(enPantalla(), orden, `${p.id}: al fallar no se rebaraja`);
+        ordenes.push({ id: p.id, datos: p.opciones.map((o) => o.id), orden, correcta: p.elegir.correcta });
+      } finally {
+        m.desmontar();
+      }
+    }
+  }
+  for (const id of new Set(ordenes.map((o) => o.id))) {
+    const deEsta = ordenes.filter((o) => o.id === id);
+    assert.ok(deEsta.some((o) => o.orden.join() !== o.datos.join()), `${id}: en algún caso, distinto del orden de los datos`);
+    assert.ok(deEsta.some((o) => o.orden[0] !== o.correcta), `${id}: la correcta no queda siempre primero`);
   }
 });
 
