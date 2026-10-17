@@ -53,6 +53,8 @@ const DIEZ = (C.factura * 10) / 100;
 
 export const H4 = {
   id: H4_ID,
+  /* Lote O: el objetivo, de Near (paquetes/lote-o-objetivos.md). */
+  objetivo: "Registrar en los dos libros el descuento condicionado de un cliente que paga a tiempo.",
   nombre: "Pagó a tiempo",
   consigna: "Registra el descuento en los dos libros. Tienes un solo intento por pregunta.",
   enunciado: [

@@ -614,4 +614,4 @@ Nada medido en main: todo es [fuente] en mi réplica. Kaede compara con la panta
 
 ## Nota del término 1 (Shoko, 16-oct, tras el cambio de nombre de #361)
 
-Nota: El libro la llama «Provisión para deudas incobrables».
+Nota: El libro la llama “Provisión para deudas incobrables”.

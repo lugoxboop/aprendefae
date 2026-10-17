@@ -57,6 +57,8 @@ const C = CIFRAS_H6;
 
 export const H6 = {
   id: H6_ID,
+  /* Lote O: el objetivo, de Near (paquetes/lote-o-objetivos.md). */
+  objetivo: "Registrar una devolución en el libro del comprador y en el del vendedor.",
   nombre: "La devolución en dos libros",
   /* La v1: «Etiqueta». */
   etiqueta: "La devolución en dos libros · Inventarios I",

@@ -145,7 +145,7 @@ Mandan sobre (1) y (2), por id y campo. El acierto de cada casilla sale debajo d
 Id	Campo	Texto nuevo (literal)	Pie	Motivo
 P2 · un cero de más o de menos	Devolución	Ese valor tiene un cero de más o de menos. Repite la multiplicación.	—	Nombra el error probable; ya no empieza por «Revisa».
 Casilla u1	Acierto	Dos meses no pasan de tres: es del primer grupo, que en este ejemplo no se provisiona.	—	Campo nuevo `acierto`, debajo de «Correcto».
-Casilla u2	Acierto	Seis meses justos no pasan de seis: siguen en el grupo del 5 %.	—	—
+Casilla u2	Acierto	Seis meses justos no pasan de seis: la deuda va en el grupo del 5 %.	—	—
 Casilla u3	Acierto	Catorce meses pasan de un año: es del grupo del 15 %.	—	—
 Casilla p4	Acierto	El 5 % de $560.000 es $28.000.	—	—
 Casilla p5	Acierto	El 10 % de $160.000 es $16.000.	—	—

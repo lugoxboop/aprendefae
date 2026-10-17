@@ -38,6 +38,8 @@ export const H2_ID = "t7-1-arma-la-factura";
 
 export const H2 = {
   id: H2_ID,
+  /* Lote O: el objetivo, de Near (paquetes/lote-o-objetivos.md). */
+  objetivo: "Armar una factura con IVA y retención, y registrar la compra y la venta.",
   nombre: "Arma la factura",
   /* La v1: «Etiqueta del panel docente». */
   etiqueta: "Arma la factura · Inventarios I",

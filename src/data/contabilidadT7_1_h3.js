@@ -36,6 +36,8 @@ export const H3_ID = "t7-1-cuanto-vale-lo-que-sobro";
 
 export const H3 = {
   id: H3_ID,
+  /* Lote O: el objetivo, de Near (paquetes/lote-o-objetivos.md). */
+  objetivo: "Calcular cuánto vale el inventario final con PEPS, UEPS y promedio ponderado.",
   nombre: "¿Cuánto vale lo que sobró?",
   /* La v1: «Etiqueta». */
   etiqueta: "¿Cuánto vale lo que sobró? · Inventarios I",
