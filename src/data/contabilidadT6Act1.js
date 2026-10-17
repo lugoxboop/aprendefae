@@ -193,6 +193,33 @@ export const FICHAS_V2_T6_ACT1 = [
   },
 ];
 
+/*
+ * ═══════════ D4 · DOS DECISIONES (P2 de Mai y devoluciones de Futaba, lote 19) ═══════════
+ *
+ * La decisión 1 se parte: «Clientes» u «Otra cuenta por cobrar». Las de Clientes siguen con la 2: tocar el
+ * DEBE o el HABER de la T «Cuentas por cobrar – clientes», donde entran como «Ficha N».
+ */
+export const CAJONES_D4_T6_ACT1 = [
+  { cuenta: CLIENTES, rotulo: "Clientes" },
+  { cuenta: OTRA, rotulo: "Otra cuenta por cobrar" },
+];
+/* La pista de la decisión 1 cuando una de Clientes va a otra cuenta (la de cada ficha habla del lado, que es la 2). PARA SHOKO. */
+export const PISTA_CUENTA_T6_ACT1 = "Mira de dónde viene la deuda: ¿de una venta a crédito a un cliente, o de un préstamo?";
+export const SEGUNDA_T6_ACT1 = { pregunta: "¿En qué lado de la T entra?", debe: "DEBE", haber: "HABER", ficha: (n) => `Ficha ${n}` };
+
+const SEGUNDA_POR_FICHA_T6 = {
+  "venta-mercancia": { pista: "Después de esto, ¿lo que debe el cliente sube o baja? Busca el lado donde sube.", porque: "La deuda del cliente sube, y en una cuenta de activo lo que sube va al DEBE." },
+  "venta-servicio": { pista: "Un servicio vendido sin cobrarlo deja una deuda. ¿Esa deuda sube o baja?", porque: "El servicio queda debiéndose: la deuda sube, y lo que sube en Clientes va al DEBE." },
+  pago: { pista: "Después de pagar esa parte, ¿el cliente debe más o menos que antes?", porque: "Lo que pagó ya no lo debe: la deuda baja, y lo que baja en Clientes va al HABER." },
+  devolucion: { pista: "Lo que el cliente regresa, ¿lo sigue teniendo que pagar?", porque: "Lo que regresó ya no lo tiene que pagar: la deuda baja y va al HABER." },
+  descuento: { pista: "Con la rebaja, ¿el cliente debe más o menos que antes?", porque: "La rebaja le quita deuda al cliente: lo que baja en Clientes va al HABER." },
+};
+SEGUNDA_POR_FICHA_T6.hotel = SEGUNDA_POR_FICHA_T6["venta-servicio"];
+SEGUNDA_POR_FICHA_T6.neveras = SEGUNDA_POR_FICHA_T6["venta-mercancia"];
+SEGUNDA_POR_FICHA_T6.efectivo = SEGUNDA_POR_FICHA_T6.pago;
+SEGUNDA_POR_FICHA_T6.danadas = SEGUNDA_POR_FICHA_T6.devolucion;
+export { SEGUNDA_POR_FICHA_T6 as DEVOLUCIONES_SEGUNDA_T6_ACT1 };
+
 /* El resumen (Futaba, lote 6a): ya no habla de pesos; cada ficha vale entera. */
 export const resumenT6Act1 = (bien, cuantas) => `${bien} de ${cuantas} fichas bien al primer intento.`;
 

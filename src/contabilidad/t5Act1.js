@@ -2,6 +2,7 @@ import { segundoFalloDe } from "./b5SegundoFallo.js";
 import { repartirTanda } from "./b5Reparto.js";
 import {
   T5_ACT1, FICHAS_T5_ACT1, FIJA, NOMBRE, CAJONES_T5_ACT1, FICHAS_V2_T5_ACT1, MAZOS_T5_ACT1,
+  INTERES, DESCUENTO, RENTA_INTERES, RENTA_DIFERENCIA, RENTA_RESULTADOS, DEVOLUCIONES_SEGUNDA_T5_ACT1,
 } from "../data/contabilidadT5Act1.js";
 
 /*
@@ -60,8 +61,23 @@ export const valorDeItemT5Act1 = (ficha, r) => (r.ok ? 1 : 0);
 export const TODAS_T5_ACT1 = [...FICHAS_T5_ACT1, ...FICHAS_V2_T5_ACT1];
 export const mazoT5Act1 = (k) => MAZOS_T5_ACT1[k].map((id) => TODAS_T5_ACT1.find((f) => f.id === id));
 
-/* Para el panel docente: el ítem es la ficha, y se lee por su texto. */
-export const fichaDeItemT5Act1 = (id) => TODAS_T5_ACT1.find((f) => f.id === id)?.texto ?? null;
+/* Para el panel docente: el ítem es la ficha (o su segunda decisión, «/2»), y se lee por su texto. */
+export const fichaDeItemT5Act1 = (id) => TODAS_T5_ACT1.find((f) => f.id === String(id).replace(/\/2$/, ""))?.texto ?? null;
+
+/* ═══ D4 (lote 19): la segunda decisión de las fichas de descripción ═══ */
+
+/* Las fichas de nombre siguen con el cajón; las de descripción se juegan con la pregunta de la renta. */
+export const aplicaSegundaT5Act1 = (ficha) => (ficha.clase === NOMBRE ? null : "antes");
+
+/* Cómo recibe su renta quien lo tiene: sale del cajón de la ficha. */
+export const rentaDeT5Act1 = (ficha) => (ficha.tipo === INTERES ? RENTA_INTERES : ficha.tipo === DESCUENTO ? RENTA_DIFERENCIA : RENTA_RESULTADOS);
+
+/* Acierto: el de la ficha. Primer error: la pista de Futaba; segundo: su porqué (C2). */
+export function evaluarSegundaT5Act1(ficha, elegida, intento) {
+  if (elegida === rentaDeT5Act1(ficha)) return { ok: true, texto: ficha.acierto };
+  const d = DEVOLUCIONES_SEGUNDA_T5_ACT1[ficha.id];
+  return { ok: false, texto: intento === 1 ? d.pista : d.porque };
+}
 
 export function puntuarT5Act1(respuestas, cuantas) {
   if (!cuantas) return 0;

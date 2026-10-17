@@ -5,7 +5,9 @@ import {
 } from "../../../../data/contabilidadT5Act1.js";
 import {
   sortearT5Act1, evaluarT5Act1, valorDeItemT5Act1, puntuarT5Act1, mazoT5Act1,
+  aplicaSegundaT5Act1, rentaDeT5Act1, evaluarSegundaT5Act1,
 } from "../../../../contabilidad/t5Act1.js";
+import TiraDeRenta from "./TiraDeRenta.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -38,8 +40,11 @@ export const CONFIG_T5_ACT1 = {
   resumen: resumenT5Act1,
 };
 
+/* D4 (lote 19, P2 de Mai): las fichas de descripción se juegan con la pregunta de la renta y su tira. */
+export const SEGUNDA_DECISION_T5_ACT1 = { aplica: aplicaSegundaT5Act1, correcta: rentaDeT5Act1, evaluar: evaluarSegundaT5Act1, Vista: TiraDeRenta };
+
 /* D8 (lote 18, Futaba): dos mazos fijos, sin fichas repetidas; la vuelta 1 y, desde la 2, se alternan. */
-const CONFIG_POR_VUELTA = [0, 1].map((k) => ({ ...CONFIG_T5_ACT1, sortear: () => mazoT5Act1(k) }));
+const CONFIG_POR_VUELTA = [0, 1].map((k) => ({ ...CONFIG_T5_ACT1, segunda: SEGUNDA_DECISION_T5_ACT1, sortear: () => mazoT5Act1(k) }));
 
 export default function QueRentaDa(props) {
   const { variante, alCompletar } = useVuelta(T5_ACT1.id, props.onCompletar);

@@ -64,13 +64,24 @@ export default function EligeUnaOpcion({
   const reducido = useReducido();
   const [aciertos, setAciertos] = useState(0);
   const [terminado, setTerminado] = useState(false);
+  /*
+   * Lote 19 (D4, P2 de Mai): la segunda decisión, opcional (`config.segunda`); sin ella, nada cambia. Sigue a
+   * la primera en cada hecho, pregunta otra cosa y mueve su modelo; pista al primer error y porqué al
+   * segundo (C2). Suma como una decisión más: el primer intento vale entero; el segundo, la mitad.
+   */
+  const segunda = config.segunda ?? null;
+  const [elegidas2, setElegidas2] = useState([]);
+  const [r2, setR2] = useState(null);
+  const [suma2, setSuma2] = useState(0);
 
   const respondidos = useRef(new Set());
   const detalle = useRef([]);
   const inicio = useRef(Date.now());
 
   const hecho = hechos[i];
-  const pct = porcentaje(aciertos, hechos.length);
+  const pct = segunda ? porcentaje(aciertos + suma2, hechos.length * 2) : porcentaje(aciertos, hechos.length);
+  const fin2 = Boolean(r2) && (r2.ok || elegidas2.length >= 2);
+  const correcta2 = segunda && elegida ? segunda.correcta(hecho) : null;
 
   useEffect(() => {
     if (terminado && !modoDemo) onCompletar?.(pct, Date.now() - inicio.current, detalle.current);
@@ -85,9 +96,19 @@ export default function EligeUnaOpcion({
     setElegida(opcion);
   };
 
+  const elegir2 = (id) => {
+    if (fin2 || elegidas2.includes(id)) return;
+    const intento = elegidas2.length + 1;
+    const nuevo = segunda.evaluar(hecho, id, intento);
+    if (intento === 1) detalle.current.push({ item: `${hecho.id}/2`, ok: nuevo.ok, intentos: 1, respuesta: nuevo.ok ? null : id, orden: detalle.current.length + 1 });
+    if (nuevo.ok) setSuma2((n) => n + (intento === 1 ? 1 : 0.5));
+    setElegidas2((xs) => [...xs, id]);
+    setR2(nuevo);
+  };
+
   const avanzar = () => {
-    if (!elegida) return;
-    setElegida(null);
+    if (!elegida || (segunda && !fin2)) return;
+    setElegida(null); setElegidas2([]); setR2(null);
     if (i + 1 < hechos.length) setI(i + 1);
     else setTerminado(true);
   };
@@ -95,6 +116,7 @@ export default function EligeUnaOpcion({
   const reiniciar = () => {
     setHechos(sortear());
     setI(0); setElegida(null); setAciertos(0); setTerminado(false);
+    setElegidas2([]); setR2(null); setSuma2(0);
     respondidos.current = new Set();
     detalle.current = [];
     inicio.current = Date.now();
@@ -124,7 +146,7 @@ export default function EligeUnaOpcion({
         notas={[config.nota, config.regla].filter(Boolean)} contador={`${config.etiqueta} ${i + 1} de ${hechos.length}`} />}
       {modoDemo && <p data-regla style={ESTILO_REGLA}>{config.regla}</p>}
       {/* Un visual propio, la figura (b5-t6-a4: el asiento mínimo, hoja 4 de Mai). Lote 6c: va antes del hecho. */}
-      {config.visual && <config.visual hecho={hecho} elegida={elegida} reducido={reducido} />}
+      {config.visual && <config.visual hecho={hecho} elegida={elegida} reducido={reducido} segunda={segunda ? { elegidas: elegidas2, correcta: correcta2, fin: fin2 } : null} />}
       <div data-hecho={hecho.id}>
         <Enunciado acento={acento}>{hecho.texto}</Enunciado>
       </div>
@@ -143,7 +165,13 @@ export default function EligeUnaOpcion({
         ))}
       </Opciones>
       <RegionViva>{elegida && <Mensaje ok={ok} texto={retro} />}</RegionViva>
-      {elegida && !modoDemo && <div data-boton-avanzar><Responder onClick={avanzar}>{botonDeAvance(config.etiqueta, i + 1 === hechos.length)}</Responder></div>}
+      {segunda && elegida && !modoDemo && (
+        <>
+          <segunda.Vista hecho={hecho} activa={!fin2} elegidas={elegidas2} correcta={correcta2} fin={fin2} onElegir={elegir2} reducido={reducido} />
+          <RegionViva>{r2 && <Mensaje ok={r2.ok} texto={r2.texto} />}</RegionViva>
+        </>
+      )}
+      {elegida && !modoDemo && (!segunda || fin2) && <div data-boton-avanzar><Responder onClick={avanzar}>{botonDeAvance(config.etiqueta, i + 1 === hechos.length)}</Responder></div>}
       {!modoDemo && <p style={SOLO_LECTOR}>{config.alt}</p>}
       </div>
     </Marco>

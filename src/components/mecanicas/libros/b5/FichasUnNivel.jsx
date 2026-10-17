@@ -127,6 +127,16 @@ export default function FichasUnNivel({
   const [rebotando, setRebotando] = useState(false);
   const [cuentas, setCuentas] = useState({});
   const [anuncio, setAnuncio] = useState("");
+  /*
+   * Lote 19 (D4, P2 de Mai): la segunda decisión, opcional (`config.segunda`). Sin ella, nada cambia.
+   * `etapa` 1 es el cajón; 2, la decisión que pregunta otra cosa y mueve su modelo (`segunda.Vista`).
+   * Con `aplica(ficha)` en «antes», la ficha se juega solo con la 2 y entra después a su cajón; con
+   * «despues», la 2 sigue a la 1 y suma una decisión más al puntaje.
+   */
+  const segunda = config.segunda ?? null;
+  const [etapa, setEtapa] = useState(1);
+  const [elegidas, setElegidas] = useState([]);
+  const [historial, setHistorial] = useState([]);
   const reloj = useRef(null);
   const zonaBoton = useRef(null);
   const ficha = useRef(null);
@@ -136,8 +146,13 @@ export default function FichasUnNivel({
 
   const c = t.items[t.i];
   const cuantas = t.items.length;
-  const pct = config.puntuar(respuestas, cuantas);
-  const fin = Boolean(r) && (r.ok || tocados.length >= 2);
+  const modo = segunda?.aplica(c) ?? null;
+  const enDos = modo === "antes" || etapa === 2;
+  /* Con la segunda decisión, el puntaje se reparte entre todas las decisiones de la tanda. */
+  const decisiones = cuantas + (segunda ? t.items.filter((x) => segunda.aplica(x) === "despues").length : 0);
+  const pct = config.puntuar(respuestas, decisiones);
+  const fin2 = Boolean(r) && (r.ok || elegidas.length >= 2);
+  const fin = enDos ? fin2 : Boolean(r) && (r.ok || tocados.length >= 2) && modo !== "despues";
   const correcta = config.destino(c);
 
   useEffect(() => {
@@ -175,6 +190,14 @@ export default function FichasUnNivel({
     }
 
     setTocados((xs) => [...xs, cajon.clave]);
+    /* Lote 19: si sigue la segunda decisión, la primera se anota y se pasa a la 2 sin su devolución (diría la respuesta de la 2). */
+    if (modo === "despues" && termina) {
+      if (intento === 1) t.anotar(c.id, nuevo.ok, nuevo.ok ? null : cajon.clave);
+      setRespuestas((xs) => [...xs, { id: c.id, valor: intento === 1 ? valor : valor / 2, primeroOk: intento === 1 && nuevo.ok }]);
+      setR(null);
+      setEtapa(2);
+      return;
+    }
     if (intento === 1) {
       t.anotar(c.id, nuevo.ok, nuevo.ok ? null : cajon.clave);
       if (nuevo.ok) setRespuestas((xs) => [...xs, { id: c.id, valor, primeroOk: true }]);
@@ -187,17 +210,46 @@ export default function FichasUnNivel({
     setR({ ...nuevo, primero: false });
   };
 
+  /* Lote 19: la segunda decisión. Pista al primer error; al segundo, el porqué (C2). */
+  const elegir = (id) => {
+    if (fin2 || elegidas.includes(id)) return;
+    const intento = elegidas.length + 1;
+    const nuevo = segunda.evaluar(c, id, intento);
+    const termina = nuevo.ok || intento === 2;
+    setElegidas((xs) => [...xs, id]);
+    if (intento === 1) t.anotar(`${c.id}/2`, nuevo.ok, nuevo.ok ? null : id);
+    if (termina) {
+      setRespuestas((xs) => [...xs, { id: `${c.id}/2`, valor: nuevo.ok ? (intento === 1 ? 1 : 0.5) : 0, primeroOk: nuevo.ok && intento === 1 }]);
+      setHistorial((xs) => [...xs, { ficha: c, n: t.i + 1, elegidas: [...elegidas, id], correcta: segunda.correcta(c) }]);
+      /* La ficha que se jugó solo con la 2 entra a su cajón, como en la 1. */
+      if (modo === "antes") {
+        const lamina = nuevo.ok && intento === 1 ? BIEN : SEGUNDO;
+        volarCopia(ficha.current, cajones.current[correcta], { reducido }).then(() => {
+          setCuentas((x) => {
+            const laminas = [...(x[correcta] ?? []), lamina];
+            setAnuncio(lecturaUnNivel(config.cajones.find((k) => k.clave === correcta), laminas));
+            return { ...x, [correcta]: laminas };
+          });
+        });
+      }
+    }
+    setR({ ...nuevo, primero: intento === 1 });
+  };
+
   const avanzar = () => {
-    setR(null); setTocados([]); setRebotando(false);
+    setR(null); setTocados([]); setRebotando(false); setEtapa(1); setElegidas([]);
     if (t.i + 1 < cuantas) t.setI(t.i + 1);
     else t.setTerminado(true);
   };
   const reiniciar = () => {
     t.reiniciar(); setR(null); setTocados([]); setRespuestas([]); setCuentas({}); setAnuncio(""); setRebotando(false);
+    setEtapa(1); setElegidas([]); setHistorial([]);
   };
 
   if (t.terminado) {
-    const bien = respuestas.filter((x) => x.primeroOk).length;
+    /* Bien al primer intento: la ficha con todas sus decisiones a la primera (con una sola decisión, lo de siempre). */
+    const deFicha = (x) => x.id.replace(/\/2$/, "");
+    const bien = t.items.filter((f) => respuestas.some((x) => deFicha(x) === f.id) && respuestas.filter((x) => deFicha(x) === f.id).every((x) => x.primeroOk)).length;
     return (
       <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
         <style>{CSS}</style>
@@ -231,15 +283,19 @@ export default function FichasUnNivel({
         {c.texto}
       </p>
 
-      <div data-estante role="group" aria-label={config.grupo} style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", columnGap: "6px" }}>
+      <div data-estante role="group" aria-label={config.grupo} style={{ display: "grid", gridTemplateColumns: `repeat(${config.cajones.length}, minmax(0, 1fr))`, columnGap: "6px" }}>
         {config.cajones.map((k) => (
-          <Cajon key={k.clave} cajon={k} laminas={cuentas[k.clave]} marca={marcas[k.clave]}
-            puede={!fin && !tocados.includes(k.clave)} onTocar={tocar} refDe={refDe} />
+          <Cajon key={k.clave} cajon={k} laminas={cuentas[k.clave]} marca={modo === "antes" ? null : marcas[k.clave]}
+            puede={!fin && !enDos && !tocados.includes(k.clave)} onTocar={tocar} refDe={refDe} />
         ))}
       </div>
+      {segunda && (enDos || segunda.persistente) && (
+        <segunda.Vista ficha={c} activa={enDos && !fin2} elegidas={enDos ? elegidas : []} correcta={enDos ? segunda.correcta(c) : null}
+          fin={enDos && fin2} onElegir={elegir} historial={historial} numero={t.i + 1} reducido={reducido} />
+      )}
       <p data-anuncio-estante aria-live="polite" style={SOLO_LECTOR}>{anuncio}</p>
 
-      {r && !fin && (
+      {r && !fin && !enDos && (
         <p data-fallo style={{
           margin: "9px 0 0", padding: "7px 10px", borderRadius: "10px",
           fontSize: "12px", textAlign: "center", color: "rgba(248,249,250,0.75)",

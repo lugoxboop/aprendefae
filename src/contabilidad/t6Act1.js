@@ -1,7 +1,7 @@
 import { segundoFalloDe } from "./b5SegundoFallo.js";
 import { repartirTanda } from "./b5Reparto.js";
 import {
-  T6_ACT1, FICHAS_T6_ACT1, CLIENTES, CAJONES_T6_ACT1, FICHAS_V2_T6_ACT1,
+  T6_ACT1, FICHAS_T6_ACT1, CLIENTES, CAJONES_T6_ACT1, FICHAS_V2_T6_ACT1, DEBITA, PISTA_CUENTA_T6_ACT1, DEVOLUCIONES_SEGUNDA_T6_ACT1,
 } from "../data/contabilidadT6Act1.js";
 
 /*
@@ -47,7 +47,27 @@ export function evaluarT6Act1(ficha, marcado, intento = 1) {
 export const valorDeItemT6Act1 = (ficha, r) => (r.ok ? 1 : 0);
 
 /* Para el panel docente: el ítem es la ficha, y se lee por su texto. */
-export const fichaDeItemT6Act1 = (id) => [...FICHAS_T6_ACT1, ...FICHAS_V2_T6_ACT1].find((f) => f.id === id)?.texto ?? null;
+export const fichaDeItemT6Act1 = (id) => [...FICHAS_T6_ACT1, ...FICHAS_V2_T6_ACT1].find((f) => f.id === String(id).replace(/\/2$/, ""))?.texto ?? null;
+
+/* ═══ D4 (lote 19): la decisión 1 es la cuenta; la 2, el lado de la T (solo las de Clientes) ═══ */
+
+/* `marcado` es { cuenta }. Las de Clientes pasan a la 2 sin devolución; las otras, la de siempre. */
+export function evaluarCuentaT6Act1(ficha, marcado, intento = 1) {
+  const ok = marcado.cuenta === ficha.cuenta;
+  if (ok) return { ok, texto: ficha.cuenta === CLIENTES ? null : ficha.acierto, patron: null };
+  if (intento === 2) return { ok, texto: segundoFalloDe(ficha.acierto), patron: "segundo" };
+  return { ok, texto: ficha.cuenta === CLIENTES ? PISTA_CUENTA_T6_ACT1 : ficha.pista, patron: "pista" };
+}
+
+export const aplicaSegundaT6Act1 = (ficha) => (ficha.cuenta === CLIENTES ? "despues" : null);
+export const ladoDeT6Act1 = (ficha) => (ficha.lado === DEBITA ? "debe" : "haber");
+
+/* Acierto: el de la ficha. Primer error: la pista de Futaba; segundo: su porqué (C2). */
+export function evaluarSegundaT6Act1(ficha, elegida, intento) {
+  if (elegida === ladoDeT6Act1(ficha)) return { ok: true, texto: ficha.acierto };
+  const d = DEVOLUCIONES_SEGUNDA_T6_ACT1[ficha.id];
+  return { ok: false, texto: intento === 1 ? d.pista : d.porque };
+}
 
 export function puntuarT6Act1(respuestas, cuantas) {
   if (!cuantas) return 0;

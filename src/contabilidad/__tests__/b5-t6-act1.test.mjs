@@ -43,7 +43,14 @@ const { createRoot } = await import("react-dom/client");
 const act = React.act;
 const h = React.createElement;
 
-const { default: ClientesOOtra } = await import("../../components/mecanicas/libros/tema6/ClientesOOtra.jsx");
+/*
+ * Lote 19: estas pruebas son la decisión única de las fichas a un nivel (tres cajones) y montan FichasUnNivel
+ * con esa configuración, sin `segunda`: así prueban también que el cambio de FichasUnNivel es compatible.
+ * Las dos decisiones de la pieza (D4) tienen su propia prueba (b5-segunda-decision.test.mjs).
+ */
+const { CONFIG_T6_ACT1 } = await import("../../components/mecanicas/libros/tema6/ClientesOOtra.jsx");
+const { default: FichasUnNivel } = await import("../../components/mecanicas/libros/b5/FichasUnNivel.jsx");
+const ClientesOOtra = (props) => h(FichasUnNivel, { config: CONFIG_T6_ACT1, ...props });
 const { MarcoLibros } = await import("../../components/mecanicas/bloques/marcos.jsx");
 const L = await import("../t6Act1.js");
 const D = await import("../../data/contabilidadT6Act1.js");

@@ -204,6 +204,43 @@ export const MAZOS_T5_ACT1 = [
   ["bonos", "nv-capital", "cert", "def-dividendos", "nv-trimestre", "canjeables", "nv-empresa", "cedulas", "nv-redime"],
 ];
 
+/*
+ * ═══════════ D4 · LA SEGUNDA DECISIÓN (P2 de Mai y devoluciones de Futaba, lote 19) ═══════════
+ *
+ * Las fichas de descripción (definición y caso) dejan de preguntar el cajón: preguntan cómo recibe su
+ * renta quien tiene el título, y al responder entran a su cajón. Las de nombre siguen con la decisión 1.
+ * Las opciones son fragmentos de las fichas; los rótulos de la tira, «Compra» y «Redención». Futaba
+ * confirmó que los tres dibujos dicen lo que dice el libro (pp. 192-193). PARA SHOKO: pregunta y rótulos.
+ */
+export const RENTA_INTERES = "interes";
+export const RENTA_DIFERENCIA = "diferencia";
+export const RENTA_RESULTADOS = "resultados";
+export const SEGUNDA_T5_ACT1 = {
+  pregunta: "¿Cómo recibe su renta quien lo tiene?",
+  opciones: [
+    { id: RENTA_INTERES, texto: "Un interés fijo durante un periodo" },
+    { id: RENTA_DIFERENCIA, texto: "La diferencia entre compra y redención" },
+    { id: RENTA_RESULTADOS, texto: "Según los resultados de la empresa" },
+  ],
+  compra: "Compra",
+  redencion: "Redención",
+};
+
+/* Pista al primer error y porqué al segundo (Futaba). Las de la vuelta 2 toman las de su ficha gemela. */
+const SEGUNDA_POR_FICHA = {
+  "def-emisora": { pista: "La ficha dice que el rendimiento depende de la empresa. ¿Eso da pagos iguales o que cambian?", porque: "Si el rendimiento depende de la empresa, cada pago puede ser distinto, y en algunos no llega nada." },
+  "def-dividendos": { pista: "Piensa qué título paga dividendos. ¿Paga siempre lo mismo?", porque: "Los dividendos siguen la situación de la empresa: cambian de un periodo a otro, y a veces no hay." },
+  "caso-resultados": { pista: "Si lo que recibe se decide según los resultados, ¿puede ser el mismo en cada periodo?", porque: "Lo que recibe sube o baja con los resultados de la empresa, así que los pagos no son iguales." },
+  "def-interes": { pista: "La ficha habla de un interés fijo. ¿Llega en cada periodo o solo al final?", porque: "Un interés fijo se paga en cada periodo y es el mismo siempre: pagos iguales de principio a fin." },
+  "caso-pactado": { pista: "Si desde la compra se sabe qué interés pagará, ¿cambia de un periodo a otro?", porque: "El interés quedó pactado al comprar: llega igual en cada periodo, aunque lo pague una empresa." },
+  "def-descuento": { pista: "La ficha habla de una diferencia entre dos valores. ¿Cuándo se conoce el segundo valor?", porque: "Mientras no se redime, no llega nada. La renta es la diferencia que aparece al final, en la redención." },
+  "caso-redencion": { pista: "Fíjate cuándo gana: ¿en cada periodo, o una sola vez, cuando lo redime?", porque: "Gana una sola vez, al redimirlo: la diferencia entre lo que pagó y lo que le pagan al final." },
+};
+SEGUNDA_POR_FICHA["nv-empresa"] = SEGUNDA_POR_FICHA["caso-resultados"];
+SEGUNDA_POR_FICHA["nv-trimestre"] = SEGUNDA_POR_FICHA["caso-pactado"];
+SEGUNDA_POR_FICHA["nv-redime"] = SEGUNDA_POR_FICHA["caso-redencion"];
+export { SEGUNDA_POR_FICHA as DEVOLUCIONES_SEGUNDA_T5_ACT1 };
+
 /* El resumen (Futaba, lote 6a): ya no habla de pesos; cada ficha vale entera. */
 export const resumenT5Act1 = (bien, cuantas) => `${bien} de ${cuantas} fichas bien al primer intento.`;
 
