@@ -4,6 +4,8 @@ import {
 import { evaluarParte } from "../../../../contabilidad/cierreConMesa.js";
 import CierreConMesa from "../b5/CierreConMesa.jsx";
 import { MesaConDiario } from "../b5/LibroDiario.jsx";
+import { useVuelta } from "../b5/ConVuelta.jsx";
+import { PARTES_V2_T6_ACT3, CASTIGO_V2_T6_ACT3, ALT_V2_T6_ACT3 } from "../../../../data/b5SegundaVuelta.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -33,11 +35,19 @@ export const CONFIG_T6_ACT3 = {
   atributos: { "data-cierre-t6-a3": true },
 };
 
-export function MesaDeudaQueVuelve(props) {
-  return <CierreConMesa config={CONFIG_T6_ACT3} {...props} />;
+/* D8 (lote 18, Futaba): la variante, La Ceiba y la deuda castigada de Hernán Ríos. */
+export const CONFIG_V2_T6_ACT3 = { ...CONFIG_T6_ACT3, ejemplo: CASTIGO_V2_T6_ACT3, partes: PARTES_V2_T6_ACT3, alt: ALT_V2_T6_ACT3 };
+
+/* La configuración llega como prop: al cambiar de vuelta, la mesa no se desmonta (su resumen sigue a la vista). */
+export function MesaDeudaQueVuelve({ config = CONFIG_T6_ACT3, ...props }) {
+  return <CierreConMesa config={config} {...props} />;
 }
 
 export default function DeudaQueVuelve(props) {
+  const { variante, alCompletar } = useVuelta(T6_ACT3.id, props.onCompletar);
   if (props.modoDemo) return <MesaDeudaQueVuelve {...props} />;
-  return <MesaConDiario Juego={MesaDeudaQueVuelve} inicial={CASTIGO_T6_ACT3} textos={DIARIO_T6_ACT3} agrupar {...props} />;
+  return (
+    <MesaConDiario {...props} Juego={MesaDeudaQueVuelve} config={variante ? CONFIG_V2_T6_ACT3 : CONFIG_T6_ACT3} inicial={variante ? CASTIGO_V2_T6_ACT3 : CASTIGO_T6_ACT3}
+      textos={DIARIO_T6_ACT3} agrupar onCompletar={alCompletar} />
+  );
 }

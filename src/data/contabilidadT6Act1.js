@@ -136,6 +136,63 @@ export const FICHAS_T6_ACT1 = [
   },
 ];
 
+/*
+ * ═══════════ D8 · LA SEGUNDA VUELTA: OCHO FICHAS NUEVAS, EN SU ORDEN (Futaba, lote 18) ═══════════
+ *
+ * La vuelta 1 son las 8 de hoy (con su sorteo). Fuente: p. 196 (anticipos y avances; casa matriz; socios y
+ * accionistas; préstamos a particulares) y p. 197 (débitos y créditos de Clientes). Reparto 4 · 2 · 2.
+ */
+export const FICHAS_V2_T6_ACT1 = [
+  {
+    id: "anticipo", cuenta: OTRA, lado: null,
+    texto: "La empresa le entrega plata a un proveedor como anticipo de una compra que aún no recibe.",
+    pista: "¿Esta deuda viene de una venta a crédito a un cliente? Mira quién recibió la plata y por qué.",
+    acierto: "Es un anticipo a un proveedor, no una venta a crédito. Va en otra cuenta por cobrar: Anticipos y avances.",
+  },
+  {
+    id: "hotel", cuenta: CLIENTES, lado: DEBITA,
+    texto: "Un hotel hospeda a un cliente y le da 30 días para pagar la cuenta.",
+    pista: "Después del hospedaje, ¿el cliente debe más o menos? No te guíes por quién presta el servicio.",
+    acierto: "Es un servicio vendido a crédito: el cliente queda debiendo, así que se debita.",
+  },
+  {
+    id: "matriz", cuenta: OTRA, lado: null,
+    texto: "La casa matriz recibe plata de la empresa y se compromete a devolverla.",
+    pista: "¿Hubo una venta a crédito? Piensa qué deudas recoge Cuentas por cobrar – clientes.",
+    acierto: "Es una deuda de la casa matriz, no de un cliente. Va en otra cuenta por cobrar: Cuentas por cobrar a casa matriz.",
+  },
+  {
+    id: "efectivo", cuenta: CLIENTES, lado: ACREDITA,
+    texto: "Un cliente llega con efectivo y cancela la factura que tenía pendiente.",
+    pista: "Después de pagar, ¿el cliente debe más o menos que antes?",
+    acierto: "Baja: se acredita. La deuda se cancela.",
+  },
+  {
+    id: "accionista", cuenta: OTRA, lado: null,
+    texto: "Un accionista recibe plata de la empresa y firma que la devolverá.",
+    pista: "Fíjate por qué el accionista le debe a la empresa. ¿La deuda vino de una venta a crédito?",
+    acierto: "Es un préstamo, no una venta a crédito. Va en otra cuenta por cobrar: Cuentas por cobrar a socios y accionistas.",
+  },
+  {
+    id: "neveras", cuenta: CLIENTES, lado: DEBITA,
+    texto: "Un cliente se lleva tres neveras y firma la factura para pagarlas en dos meses.",
+    pista: "Después de esto, ¿lo que debe el cliente sube o baja?",
+    acierto: "Es una venta a crédito: el cliente queda debiendo las neveras, así que se debita.",
+  },
+  {
+    id: "danadas", cuenta: CLIENTES, lado: ACREDITA,
+    texto: "Un cliente devuelve dos cajas dañadas de un pedido que todavía no paga.",
+    pista: "Lo que el cliente devuelve, ¿lo sigue teniendo que pagar?",
+    acierto: "Baja: se acredita. Lo que devolvió ya no lo tiene que pagar.",
+  },
+  {
+    id: "vecino", cuenta: OTRA, lado: null,
+    texto: "Un comerciante vecino, que no es cliente, recibe plata de la empresa para devolverla en un mes.",
+    pista: "Mira por qué esta persona le debe a la empresa. ¿Compró algo a crédito?",
+    acierto: "Es un préstamo a un particular, no una venta a crédito. Va en otra cuenta por cobrar: Préstamos a particulares.",
+  },
+];
+
 /* El resumen (Futaba, lote 6a): ya no habla de pesos; cada ficha vale entera. */
 export const resumenT6Act1 = (bien, cuantas) => `${bien} de ${cuantas} fichas bien al primer intento.`;
 

@@ -1,4 +1,4 @@
-import { HECHOS_T6_ACT4, ERRORES_T6_ACT4 } from "../data/contabilidadT6Act4.js";
+import { HECHOS_T6_ACT4, HECHOS_V2_T6_ACT4, ERRORES_T6_ACT4 } from "../data/contabilidadT6Act4.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -21,4 +21,4 @@ export function retroT6Act4(hecho, elegida) {
 export const veredictoT6Act4 = (hecho, elegida) => (elegida === hecho.respuesta ? "correcta" : "error");
 
 /* Para el panel docente: el ítem es el hecho, y se lee por su texto. */
-export const hechoDeItemT6Act4 = (id) => HECHOS_T6_ACT4.find((h) => h.id === id)?.texto ?? null;
+export const hechoDeItemT6Act4 = (id) => [...HECHOS_T6_ACT4, ...HECHOS_V2_T6_ACT4].find((h) => h.id === id)?.texto ?? null;

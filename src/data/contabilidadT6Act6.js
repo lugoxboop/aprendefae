@@ -153,4 +153,74 @@ export const ERRORES_T6_ACT6 = {
   P7: "Te falta un grupo. Suma la provisión de los tres grupos que sí la llevan.",
 };
 
+/*
+ * ═══════════ D8 · LA SEGUNDA VUELTA (Futaba, lote 18) ═══════════
+ *
+ * Las mismas dos partes con otras deudas y otra cartera, construidas (escenario simulado). Los ids llevan
+ * «-v2» para que el registro de cada casilla no se mezcle con el de hoy; los errores de la parte 2 son los
+ * de hoy, y los de la parte 1, los de Futaba (Gc1 a Gc3 y el G0 con la plantilla de hoy).
+ */
+export const ESCENARIO_V2_T6_ACT6 = {
+  total: 2040000,
+  grupos: [
+    { id: "g1", monto: 1092000, porcentaje: 0 },
+    { id: "g2", monto: 568000, porcentaje: 5 },
+    { id: "g3", monto: 136000, porcentaje: 10 },
+    { id: "g4", monto: 244000, porcentaje: 15 },
+  ],
+  provision: 78600,
+  neto: 1961400,
+};
+
+const ubicarV2 = (casilla, correcto, cerca, tipoCerca) => GRUPOS_T6_ACT6.map((g) => ({
+  texto: g.nombre,
+  tipo: g.id === correcto ? null : g.id === cerca ? tipoCerca : `G0-${casilla}-${g.id}`,
+}));
+
+export const PARTES_V2_T6_ACT6 = [
+  {
+    id: "ubicar",
+    casillas: [
+      { id: "u1-v2", enunciado: "Una deuda lleva exactamente 3 meses vencida.", acierto: "Tres meses justos no pasan de tres: es del primer grupo, que en este ejemplo no se provisiona.", opciones: ubicarV2("u1-v2", "g1", "g2", "Gc1") },
+      { id: "u2-v2", enunciado: "Una deuda lleva exactamente 12 meses vencida.", acierto: "Doce meses justos no pasan de un año: siguen en el grupo del 10 %.", opciones: ubicarV2("u2-v2", "g3", "g4", "Gc2") },
+      { id: "u3-v2", enunciado: "Una deuda lleva 25 meses vencida.", acierto: "Veinticinco meses pasan de un año: es del grupo del 15 %.", opciones: ubicarV2("u3-v2", "g4", "g3", "Gc3") },
+    ],
+  },
+  {
+    id: "calcular",
+    datos: {
+      filas: [
+        { nombre: "Lo que deben los clientes al 31 de diciembre", valor: "$2.040.000", total: true },
+        { nombre: "Vigentes o hasta 3 meses", valor: "$1.092.000" },
+        { nombre: "Más de 3 hasta 6 meses", valor: "$568.000" },
+        { nombre: "Más de 6 meses hasta 1 año", valor: "$136.000" },
+        { nombre: "Más de 1 año", valor: "$244.000" },
+      ],
+    },
+    casillas: [
+      { id: "p4-v2", enunciado: "¿Cuánta provisión lleva el grupo de más de tres hasta seis meses?", acierto: "El 5 % de $568.000 es $28.400.", opciones: [op(28400), op(56800, "P1"), op(2840, "P2")] },
+      { id: "p5-v2", enunciado: "¿Cuánta provisión lleva el grupo de más de seis meses hasta un año?", acierto: "El 10 % de $136.000 es $13.600.", opciones: [op(13600), op(6800, "P1"), op(20400, "P1")] },
+      { id: "p6-v2", enunciado: "¿Cuánta provisión lleva el grupo de más de un año?", acierto: "El 15 % de $244.000 es $36.600.", opciones: [op(36600), op(24400, "P1"), op(3660, "P2")] },
+      { id: "p7-v2", enunciado: "¿Cuál es el total de la provisión?", acierto: "Los tres grupos que llevan provisión suman $78.600.", opciones: [op(78600), op(42000, "P7"), op(133200, "P4")] },
+      { id: "p8-v2", enunciado: "¿Cuál es el valor neto de lo que deben los clientes?", acierto: "A $2.040.000 se le resta la provisión de $78.600: quedan $1.961.400.", opciones: [op(1961400), op(2040000, "P5"), op(2118600, "P6")] },
+    ],
+  },
+];
+
+/* Los rangos de la plantilla del G0 de hoy («Ese grupo es para deudas de [rango]. Esta lleva N meses vencida.»). */
+const RANGO_G0 = { g1: "vigentes o de hasta tres meses", g2: "de más de tres hasta seis meses", g3: "de más de seis meses hasta un año", g4: "de más de un año" };
+const g0 = (casilla, grupo, meses) => [`G0-${casilla}-${grupo}`, `Ese grupo es para deudas ${RANGO_G0[grupo]}. Esta lleva ${meses} meses vencida.`];
+
+export const ERRORES_V2_T6_ACT6 = {
+  ...Object.fromEntries(Object.entries(ERRORES_T6_ACT6).filter(([k]) => k.startsWith("P"))),
+  Gc1: "Tres meses justos no pasan de tres: todavía caben con las vigentes y las de hasta tres meses.",
+  Gc2: "El grupo del 10 % llega hasta un año, sin pasar de él. Doce meses justos todavía caben ahí.",
+  Gc3: "Veinticinco meses ya pasan de un año: va en el grupo de más de un año.",
+  ...Object.fromEntries([
+    g0("u1-v2", "g3", 3), g0("u1-v2", "g4", 3),
+    g0("u2-v2", "g1", 12), g0("u2-v2", "g2", 12),
+    g0("u3-v2", "g1", 25), g0("u3-v2", "g2", 25),
+  ]),
+};
+
 export const ALT_T6_ACT6 = "Actividad de casillas. Primero ubicas tres deudas en su grupo según los meses que llevan vencidas. Después calculas la provisión de tres grupos, el total y el valor neto. Tienes un intento por casilla; si fallas, se muestra la razón y el valor correcto.";

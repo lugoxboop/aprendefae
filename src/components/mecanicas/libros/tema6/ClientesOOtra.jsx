@@ -1,6 +1,7 @@
 import FichasUnNivel from "../b5/FichasUnNivel.jsx";
+import { useVuelta } from "../b5/ConVuelta.jsx";
 import {
-  T6_ACT1, REGLAS_T6_ACT1, CAJONES_T6_ACT1, GRUPO_T6_ACT1, ALT_T6_ACT1, resumenT6Act1,
+  T6_ACT1, REGLAS_T6_ACT1, CAJONES_T6_ACT1, GRUPO_T6_ACT1, ALT_T6_ACT1, resumenT6Act1, FICHAS_V2_T6_ACT1,
 } from "../../../../data/contabilidadT6Act1.js";
 import {
   sortearT6Act1, evaluarT6Act1, valorDeItemT6Act1, puntuarT6Act1,
@@ -37,6 +38,11 @@ export const CONFIG_T6_ACT1 = {
   resumen: resumenT6Act1,
 };
 
+/* D8 (lote 18, Futaba): la vuelta 1 es la de hoy; la variante, las ocho fichas nuevas en su orden. */
+const CONFIG_V2_T6_ACT1 = { ...CONFIG_T6_ACT1, sortear: () => FICHAS_V2_T6_ACT1 };
+
 export default function ClientesOOtra(props) {
-  return <FichasUnNivel config={CONFIG_T6_ACT1} {...props} />;
+  const { variante, alCompletar } = useVuelta(T6_ACT1.id, props.onCompletar);
+  if (props.modoDemo) return <FichasUnNivel config={CONFIG_T6_ACT1} {...props} />;
+  return <FichasUnNivel {...props} config={variante ? CONFIG_V2_T6_ACT1 : CONFIG_T6_ACT1} onCompletar={alCompletar} />;
 }

@@ -212,7 +212,7 @@ Devoluciones de acierto (tras ✅). Las líneas dependen de la letra de la devol
 | cdt | «Sí. El libro pone el CDT entre los títulos que pagan un interés fijo durante un periodo.» | 3 · 2 |
 | bonos | «Sí. El libro pone los bonos en la renta fija con interés.» | 2 · 2 |
 | cedulas | «Sí. Las cédulas hipotecarias van con el CDT y los bonos: renta fija con interés.» | 3 · 2 |
-| def-interes | «Sí. Un interés fijo durante un periodo determinado. Así define el libro la renta fija con interés.» | 3 · 3 |
+| def-interes | «Sí. Le paga un interés fijo durante un tiempo dado. Así define el libro la renta fija con interés.» | 3 · 3 |
 | caso-pactado | «Sí. El interés quedó fijo al invertir, aunque lo pague una empresa: es renta fija con interés.» | 3 · 3 |
 | participacion | «Sí. El libro pone los títulos de participación entre los de descuento.» | 2 · 2 |
 | cert | «Sí. El CERT está en la lista del libro de renta fija con descuento.» | 2 · 2 |
@@ -369,3 +369,8 @@ Manda sobre todas las tablas de acierto y de segundo fallo de arriba. Fuente: en
 - Los aciertos de las 14 fichas pierden «Sí. » delante; el resto de cada texto se queda igual, letra por letra.
 - Tras el segundo fallo, la regla única (b5SegundoFallo.js) ya no quita ni pone nada: el acierto sale tal cual, debajo de la pastilla «Iba aquí». Ya no hay «No es esa.» delante.
 - El aviso del primer fallo pasa de «La ficha no se colocó.» a «La ficha volvió. Lee la pista y pruébala en otro cajón.» (solo en FichasUnNivel.jsx de la Célula B).
+
+
+## Lote 18 · texto suelto G (Futaba, 17-oct)
+
+El acierto de def-interes pasa a «Le paga un interés fijo durante un tiempo dado. Así define el libro la renta fija con interés.» (INFLESZ 80,2). La fila de la tabla de aciertos se actualizó con él.

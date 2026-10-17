@@ -1,5 +1,6 @@
 import EligeUnaOpcion from "../b5/EligeUnaOpcion.jsx";
-import { T6_ACT4, REGLAS_T6_ACT4, OPCIONES_T6_ACT4, HECHOS_T6_ACT4, ALT_T6_ACT4 } from "../../../../data/contabilidadT6Act4.js";
+import { useVuelta } from "../b5/ConVuelta.jsx";
+import { T6_ACT4, REGLAS_T6_ACT4, OPCIONES_T6_ACT4, HECHOS_T6_ACT4, HECHOS_V2_T6_ACT4, ALT_T6_ACT4 } from "../../../../data/contabilidadT6Act4.js";
 import { retroT6Act4, veredictoT6Act4 } from "../../../../contabilidad/t6Act4.js";
 import AsientoMinimo from "./AsientoMinimo.jsx";
 
@@ -33,6 +34,11 @@ export const CONFIG_T6_ACT4 = {
   visual: AsientoMinimo,
 };
 
+/* D8 (lote 18, Futaba): la variante, diez hechos nuevos con el mismo reparto. */
+const CONFIG_V2_T6_ACT4 = { ...CONFIG_T6_ACT4, banco: HECHOS_V2_T6_ACT4 };
+
 export default function QueSeDebita(props) {
-  return <EligeUnaOpcion config={CONFIG_T6_ACT4} {...props} />;
+  const { variante, alCompletar } = useVuelta(T6_ACT4.id, props.onCompletar);
+  if (props.modoDemo) return <EligeUnaOpcion config={CONFIG_T6_ACT4} {...props} />;
+  return <EligeUnaOpcion {...props} config={variante ? CONFIG_V2_T6_ACT4 : CONFIG_T6_ACT4} onCompletar={alCompletar} />;
 }
