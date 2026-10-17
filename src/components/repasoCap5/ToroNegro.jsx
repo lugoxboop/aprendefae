@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { CSS_JUEGO, Cierre } from "../mecanicas/corazon/juego.jsx";
 import { pesos } from "../../data/contabilidad.js";
+import { FEEDBACK } from "../../data/repasoCap5Comun.js";
 /* Los estados de calificación, el «ERA ESTE», los puntos y la palabra: de comun.jsx (B4). */
 import {
   C, INTER, SORA, MARCA, CONTADOR, CIFRA, HUNDIDO, HUNDIDO_OPACO, REPOSO, ELEGIDO, SOLO_LECTOR, CSS_FOCO, Devolucion, BotonSiguiente, Comprobar,
@@ -464,6 +465,9 @@ function TarjetaSaldo({ valor, lado, onValor, onLado, estados = null, soloLectur
   );
 }
 
+/* El saldo con su signo, como el del libro: el haber suma, el debe resta. */
+const conSigno = (valor, lado) => (lado === "debito" ? -valor : valor);
+
 function PreguntaSaldo({ p, onRespondida, r, respuestas = {} }) {
   const [valor, setValor] = useState(null);
   const [lado, setLado] = useState(null);
@@ -478,6 +482,17 @@ function PreguntaSaldo({ p, onRespondida, r, respuestas = {} }) {
           <TarjetaSaldo soloLectura marca={RT.eraEste} valor={correctoDe(p, respuestas).valor} lado={p.correcto.lado} idCampo={`${idCampo}-era`} />
         </div>
       )}
+      {/*
+        * D4 de Takamura: si falló, el medidor muestra su saldo con contorno
+        * discontinuo (encima del correcto, en su color) y la línea «Así quedaba
+        * con tu saldo: N».
+        */}
+      {r && !r.ok && revelar && (
+        <div data-tu-saldo style={{ ...HUNDIDO, marginTop: "12px", borderRadius: "12px", padding: "12px 16px" }}>
+          <Medidor saldo={conSigno(correctoDe(p, respuestas).valor, p.correcto.lado)} fantasma={conSigno(valor ?? 0, lado)} />
+          <p data-linea-tu-saldo style={{ margin: "4px 0 0", fontFamily: INTER, fontSize: "14px", lineHeight: "20px", color: C.atenuado }}>{RT.asiQuedaba(cifra(valor ?? 0))}</p>
+        </div>
+      )}
       {!r && <BotonRevisar activo={puedeRevisarSaldo({ valor, lado })} onClick={() => onRespondida(evaluarSaldo(p, { valor, lado }, respuestas), `${valor} | ${lado ?? "sin lado"}`, { valor, lado })} />}
     </>
   );
@@ -490,13 +505,15 @@ function PreguntaSaldo({ p, onRespondida, r, respuestas = {} }) {
  * y, 0,7 s después, «Iba aquí: {valor}» (casilla con cifra; sin reintento).
  */
 function Bajo({ estado, era }) {
-  /* «mal» y «vacia» son error: los dos revelan. */
-  const revela = useTrasError(Boolean(estado) && estado !== "ok");
+  /* «mal» revela a los 0,7 s. Kamogawa: una fila «vacia» no es un error; solo dice lo que iba, en #B8C4D4. */
+  const revela = useTrasError(estado === "mal");
   if (!estado) return null;
   return (
     <span data-bajo={estado} style={{ display: "flex", flexWrap: "wrap", justifyContent: "flex-end", gap: "4px 10px", marginTop: "4px" }}>
-      <Pastilla estado={estado === "ok" ? "ok" : "mal"} />
-      {estado !== "ok" && revela && <Pastilla estado="revelada" valor={cifra(era)} />}
+      {estado === "vacia"
+        ? <span data-veredicto="revelada" style={{ fontFamily: INTER, fontSize: "12px", fontWeight: 700, lineHeight: "16px", color: C.atenuado, whiteSpace: "nowrap" }}>{`${FEEDBACK.revelada}: ${cifra(era)}`}</span>
+        : <Pastilla estado={estado === "ok" ? "ok" : "mal"} />}
+      {estado === "mal" && revela && <Pastilla estado="revelada" valor={cifra(era)} />}
     </span>
   );
 }

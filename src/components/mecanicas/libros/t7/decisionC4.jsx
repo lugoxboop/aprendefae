@@ -37,7 +37,9 @@ import { ContadorConIntento } from "./armaLaLinea.jsx";
  *      eleccion: id de opción (elección) · número escrito (cifra) · null.
  *      consecuencia-c.test.mjs encuentra todo *_c4.js y comprueba la regla.
  *   b) El componente: <DecisionC4 pieza={{ ...CONSECUENCIA_C4, titulo, Figura,
- *        enFigura?, objetivo?, consigna?, pie?, resumen?(bien, total), Propio? }}
+ *        enFigura?, objetivo?, consigna?, pie?, resumen?(bien, total), Propio?,
+ *        Antes? ({ item }: lo que va entre el contador y el ítem: el resto del
+ *        enunciado o la pantalla de un bloque, como en main) }}
  *        Marco rotulo acento onCompletar(pct, ms, detalle) onComoSeJuega />
  *   item = { id, tipo?: "eleccion"|"cifra"|"propio", texto, pregunta,
  *     opciones: [{ id, t, correcta?, msg?, v? }], pista, bien, porque, pie,
@@ -240,6 +242,7 @@ export default function DecisionC4({ pieza, Marco = Panel, rotulo, acento, onCom
   const [s, despachar] = useReducer((e, a) => reducirC4(pieza, e, a), undefined, estadoInicialC4);
   const bien = useRef(0);
   const txt = useRef(null);
+  const preg = useRef(null);
   const msgRef = useRef(null);
   const porqueRef = useRef(null);
   const marco = useRef(null);
@@ -262,7 +265,9 @@ export default function DecisionC4({ pieza, Marco = Panel, rotulo, acento, onCom
   useEffect(() => {
     if (!s.foco) return;
     const el = { msg: msgRef, porque: porqueRef, txt }[s.foco.que]?.current;
-    (el ?? marco.current)?.focus({ preventScroll: true });
+    /* Un ítem sin texto (solo pregunta) lleva el foco a su pregunta: un párrafo oculto no lo recibe. */
+    const destino = el?.hidden ? (preg.current && !preg.current.hidden ? preg.current : null) : el;
+    (destino ?? marco.current)?.focus({ preventScroll: true });
   }, [s.foco]);
 
   useEffect(() => {
@@ -339,6 +344,7 @@ export default function DecisionC4({ pieza, Marco = Panel, rotulo, acento, onCom
             <Pulsos total={pieza.items.length} hechos={s.i + (listo ? 1 : 0)} enCurso={s.i + 1} etiqueta={BOTONES_C4.contador} />
           </ContadorConIntento>
         )}
+        {pieza.Antes && <pieza.Antes item={I} />}
         {/* La cejilla: el subtema solo con el veredicto (en varias piezas nombra la respuesta). */}
         <p className="c4-cejilla" aria-hidden="true" data-cejilla>
           {[!hacer && llenar(T.marca, { n: s.i + 1, total: pieza.items.length }), E.veredicto && I.subtema].filter(Boolean).join(" · ")}
@@ -350,7 +356,7 @@ export default function DecisionC4({ pieza, Marco = Panel, rotulo, acento, onCom
             {Figura && <Figura estado={estado} item={I} vista={vista} ctx={ctx} />}
           </div>
           {falla && <p className="c4-falla" data-falla><IconoX /><span>{falla}</span></p>}
-          <p className="c4-preg" data-pregunta hidden={!I.pregunta}>{I.pregunta}</p>
+          <p ref={preg} className="c4-preg" tabIndex={-1} data-pregunta hidden={!I.pregunta}>{I.pregunta}</p>
 
           {tipo === "eleccion" && !enFigura && (
             <div className="c4-ops" role="group" aria-label={I.pregunta || undefined}>

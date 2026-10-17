@@ -100,6 +100,8 @@ export const ROTULOS_R5_2 = {
   /* Lote de textos (Miyata): los botones del lado en P4, «Debe · Haber». */
   botonLado: { debito: "Debe", credito: "Haber" },
   eraEste: "Iba aquí",
+  /* D4 de Takamura: bajo el medidor, cuando el saldo de P4 falla. */
+  asiQuedaba: (n) => `Así quedaba con tu saldo: ${n}`,
   tituloLibro: "Provisión para cuentas incobrables",
   sinMovimientos: "Sin movimientos",
   saldoDebito: "SALDO DÉBITO",

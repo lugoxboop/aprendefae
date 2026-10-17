@@ -15,19 +15,19 @@ import { ContextoResumen, useResumenDePartida } from "./shared/PantallaResumen.j
 import { MarcoLibros } from "./mecanicas/bloques/marcos.jsx";
 import { bloqueDeDificultad } from "../hacer/bloques.js";
 import JuegoConTutorial from "./mecanicas/libros/JuegoConTutorial.jsx";
-import QueCuentaSeMueve from "./mecanicas/libros/t7/QueCuentaSeMueve.jsx";
+import QueCuentaSeMueveC4 from "./mecanicas/libros/t7/QueCuentaSeMueveC4.jsx";
 import { H1 } from "../data/contabilidadT7_1_h1.js";
 import ArmaLaFactura from "./mecanicas/libros/t7/ArmaLaFactura.jsx";
 import { H2 } from "../data/contabilidadT7_1_h2.js";
-import CuantoValeLoQueSobro from "./mecanicas/libros/t7/CuantoValeLoQueSobro.jsx";
+import CuantoValeLoQueSobroC4 from "./mecanicas/libros/t7/CuantoValeLoQueSobroC4.jsx";
 import { H3 } from "../data/contabilidadT7_1_h3.js";
 import CierraElMes from "./mecanicas/libros/t7/CierraElMes.jsx";
 import { H4 } from "../data/contabilidadT7_1_h4.js";
-import CostoOGasto from "./mecanicas/libros/t7/CostoOGasto.jsx";
+import CostoOGastoC4 from "./mecanicas/libros/t7/CostoOGastoC4.jsx";
 import { H5 } from "../data/contabilidadT7_1_h5.js";
 import DevolucionDosLibros from "./mecanicas/libros/t7/DevolucionDosLibros.jsx";
 import { H6 } from "../data/contabilidadT7_1_h6.js";
-import QueControlFalta from "./mecanicas/libros/t7/QueControlFalta.jsx";
+import QueControlFaltaC4 from "./mecanicas/libros/t7/QueControlFaltaC4.jsx";
 import { H7 } from "../data/contabilidadT7_1_h7.js";
 import LaCuentaQueNoSeMueve from "./mecanicas/libros/t7/LaCuentaQueNoSeMueve.jsx";
 import { PIEZA_LA_CUENTA_QUE_NO_SE_MUEVE } from "../data/contabilidadT7_1.js";
@@ -41,8 +41,7 @@ import ElCierreEnPeriodico from "./mecanicas/libros/t7/ElCierreEnPeriodico.jsx";
 import { PIEZA_EL_CIERRE } from "../data/contabilidadT7_1_ap4.js";
 import ImportadosYFletesC3 from "./mecanicas/libros/t7/ImportadosYFletesC3.jsx";
 import { PIEZA_IMPORTADOS_Y_FLETES_C3 } from "../data/contabilidadT7_1_a5_c3.js";
-import ElViajeDeUnaCaja from "./mecanicas/libros/t7/ElViajeDeUnaCaja.jsx";
-import { PIEZA_EL_VIAJE } from "../data/contabilidadT7_1_a7_viaje.js";
+import ElViajeDeUnaCajaC4, { PIEZA_A7_C4 } from "./mecanicas/libros/t7/ElViajeDeUnaCajaC4.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -70,19 +69,19 @@ export const PIEZAS_T7_1 = [
   { numero: PIEZA_IMPORTADOS_Y_FLETES_C3.numero, pieza: PIEZA_IMPORTADOS_Y_FLETES_C3, Pieza: ImportadosYFletesC3 },
   /* A6: «Devoluciones en periódico» en el motor C3 (Patrón de enganche C3) reemplaza a la tabular, con el mismo id. */
   { numero: PIEZA_DEVOLUCIONES_C3.numero, pieza: PIEZA_DEVOLUCIONES_C3, Pieza: DevolucionesEnPeriodicoC3 },
-  /* A7: «El viaje de una caja» (Patrón de enganche C v6) reemplaza a «Control interno de los inventarios», con el mismo id. */
-  { numero: PIEZA_EL_VIAJE.numero, pieza: PIEZA_EL_VIAJE, Pieza: ElViajeDeUnaCaja },
+  /* A7: «El viaje de una caja» en el patrón de enganche C4 (motor decisionC4.jsx, textos de Near), con el mismo id. */
+  { numero: PIEZA_A7_C4.numero, pieza: PIEZA_A7_C4, Pieza: ElViajeDeUnaCajaC4 },
 ].sort((a, b) => a.numero - b.numero);
 
-/* Lo que se puede abrir desde el camino. Una prueba lo compara con el catálogo. */
+/* Lo que se puede abrir desde el camino. Una prueba lo compara con el catálogo. Los …C4 son el patrón de enganche C4 (motor decisionC4.jsx). */
 export const JUEGOS_T7_1 = [
-  { id: H1.id, Mecanica: QueCuentaSeMueve, titulo: H1.nombre },
+  { id: H1.id, Mecanica: QueCuentaSeMueveC4, titulo: H1.nombre },
   { id: H2.id, Mecanica: ArmaLaFactura, titulo: H2.nombre },
-  { id: H3.id, Mecanica: CuantoValeLoQueSobro, titulo: H3.nombre },
+  { id: H3.id, Mecanica: CuantoValeLoQueSobroC4, titulo: H3.nombre },
   { id: H4.id, Mecanica: CierraElMes, titulo: H4.nombre },
-  { id: H5.id, Mecanica: CostoOGasto, titulo: H5.nombre },
+  { id: H5.id, Mecanica: CostoOGastoC4, titulo: H5.nombre },
   { id: H6.id, Mecanica: DevolucionDosLibros, titulo: H6.nombre },
-  { id: H7.id, Mecanica: QueControlFalta, titulo: H7.nombre },
+  { id: H7.id, Mecanica: QueControlFaltaC4, titulo: H7.nombre },
 ];
 
 /* El rótulo del bloque sale de la dificultad del catálogo, como en el Tema 3. */

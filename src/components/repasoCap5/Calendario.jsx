@@ -44,6 +44,7 @@ export const CSS_CALENDARIO = `
 .r54-punto { animation: r54-punto 200ms ${CURVA} both; }
 .r54-late { animation: r54-late 240ms ${CURVA} both; }
 [data-perilla]:active [data-perilla-boton] { transform: scale(.96); }
+.r54-a-sangre { margin-left: -16px; margin-right: -16px; }
 @media (prefers-reduced-motion: reduce) { .r54-cae, .r54-punto, .r54-late { animation: none; } }
 `;
 
@@ -184,7 +185,13 @@ export function Calendario({
   );
 
   return (
-    <div data-calendario style={{ ...HUNDIDO, borderRadius: "12px", padding: "10px 0" }}>
+    /*
+     * Kamogawa (tocar el día, con un blanco de 44 px): el calendario sale del
+     * margen de 16 px y ocupa el ancho de la pantalla, así la celda mide
+     * (320 − 12) / 7 = 44 px a 320 y 51,9 a 375. Sin radio ni bordes laterales,
+     * porque toca los dos lados.
+     */
+    <div data-calendario className="r54-a-sangre" style={{ ...HUNDIDO, borderLeft: "none", borderRight: "none", borderRadius: 0, padding: "10px 0" }}>
       <div
         ref={rejilla}
         role="grid"
