@@ -3,6 +3,9 @@ import { TONO_ROTULO } from "../debeHaber/piezasDebeHaber.jsx";
 import { ESCENA_T6_A3, MOMENTOS_T6_A3, CUENTA_T_T6_A3 } from "../../../../data/contabilidadT6Pieza3.js";
 import { SORA, INTER, TEXTO, SECUNDARIO, BORDES } from "./MaquinaPegada.jsx";
 import { HUNDIDO_B, TEXTO_B } from "../b5/Devolucion.jsx";
+import { BARRA_T6_ACT2 } from "../../../../data/contabilidadT6Act2.js";
+import { FIGURAS_CAPA1_B } from "../../../../data/figurasCapa1B.js";
+import { Eco, BarraNeto } from "./CifraQueMueve.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -98,8 +101,16 @@ function Columna({ lado, movimientos, reducido }) {
   );
 }
 
-/* El estado de situación financiera (T6 · A3): Clientes, la provisión restada y, bajo un filete, el neto. Solo en la pregunta 1. */
-export function BloqueEstado({ comprobada, reducido }) {
+/* El prefijo publicado de un saldo («Le faltan», «El saldo queda en»): lo que va antes de la cifra. */
+const prefijoDe = (texto) => texto.replace(/\s*[−-]?\$.*$/, "");
+/* «provisión», el rótulo de la Barra del valor neto en la capa 1 (lote 10). */
+const ROTULO_PROVISION = FIGURAS_CAPA1_B["b5-t6-a3-la-provision-de-un-ano-al-siguiente"][0].provision;
+
+/*
+ * El estado de situación financiera (T6 · A3): Clientes, la provisión restada y, bajo un filete, el neto.
+ * Solo en la pregunta 1. Lote 17: la cifra escrita hace eco en «El valor neto» y mueve la Barra de abajo.
+ */
+export function BloqueEstado({ comprobada, reducido, texto = "" }) {
   const activo = !comprobada;
   return (
     <div data-bloque-estado style={{ ...HUNDIDO_B, borderRadius: "10px", padding: "6px 8px 8px", display: "flex", flexDirection: "column", gap: "6px", margin: "10px 0 0" }}>
@@ -113,14 +124,17 @@ export function BloqueEstado({ comprobada, reducido }) {
       <div style={{ borderTop: `1px solid ${BORDES}`, paddingTop: "6px" }}>
         <div data-fila-neto {...marcaActivo(activo)} style={{ display: "grid", gridTemplateColumns: "1fr auto", columnGap: "8px", alignItems: "baseline", ...NOMBRE, color: TEXTO, ...resalte(activo) }}>
           <span>{E.neto}</span>
-          <span data-valor style={{ whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums", minWidth: "1px" }}>{comprobada && <Entra reducido={reducido}>{E.valorNeto}</Entra>}</span>
+          <span data-valor style={{ whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums", minWidth: "1px", display: "inline-flex", alignItems: "center", height: "20px", alignSelf: "center" }}>
+            {comprobada ? <Entra reducido={reducido}><Eco firme={E.valorNeto} /></Entra> : <Eco texto={texto} />}
+          </span>
         </div>
       </div>
+      <BarraNeto texto={texto} comprobada={comprobada} escala={BARRA_T6_ACT2} rotulo={ROTULO_PROVISION} reducido={reducido} />
     </div>
   );
 }
 
-export default function CuentaQueSeLlena({ paso, comprobada, reducido, cierre = null }) {
+export default function CuentaQueSeLlena({ paso, comprobada, reducido, cierre = null, texto = "" }) {
   const c = estadoDeLaCuenta(paso, comprobada);
   return (
     <div data-cuenta-que-se-llena style={{ display: "flex", flexDirection: "column", gap: "10px", margin: "0 0 12px" }}>
@@ -143,7 +157,10 @@ export default function CuentaQueSeLlena({ paso, comprobada, reducido, cierre = 
         )}
         {/* Mientras se pregunta, el hueco del saldo ocupa las dos columnas: si estuviera bajo un lado, delataría la respuesta. */}
         {c.huecoSaldo && (
-          <div data-saldo="hueco" data-renglon-activo="" style={{ minHeight: "22px", ...resalte(true), margin: "8px -6px 0" }} />
+          <div data-saldo="hueco" data-renglon-activo="" style={{ minHeight: "22px", height: "22px", ...resalte(true), margin: "8px -6px 0", display: "flex", alignItems: "center", justifyContent: "center", lineHeight: "20px" }}>
+            {/* Lote 17: el eco de la cifra escrita, con las palabras del saldo que se pregunta. */}
+            <Eco texto={texto} prefijo={prefijoDe((paso === 2 ? MARZO : DIC_SIGUIENTE).saldo.texto)} />
+          </div>
         )}
         {c.saldo && !c.saldo.enContra && !c.huecoSaldo && (
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", marginTop: "8px" }}>

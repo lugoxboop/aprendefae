@@ -5,6 +5,7 @@ import { evaluarParte } from "../../../../contabilidad/cierreConMesa.js";
 import CierreConMesa from "../b5/CierreConMesa.jsx";
 import { MesaConDiario } from "../b5/LibroDiario.jsx";
 import CuentaQueSeLlena, { BloqueEstado } from "./CuentaQueSeLlena.jsx";
+import { TanqueCifra } from "./CifraQueMueve.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -44,6 +45,8 @@ export const CONFIG_T6_ACT2 = {
   textos: PASOS_TEXTOS_T6_ACT2,
   visual: CuentaDeA2,
   bloques: { estado: BloqueEstado },
+  /* Lote 17: en las preguntas 2 y 3, el tanque a la izquierda de la pregunta, el campo y «Comprobar». */
+  lados: { tanque: TanqueCifra },
   atributos: { "data-cierre-t6-a2": true },
 };
 

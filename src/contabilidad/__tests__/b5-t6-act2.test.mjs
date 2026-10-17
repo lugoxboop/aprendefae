@@ -112,7 +112,7 @@ const L6D = FUENTE.slice(FUENTE.indexOf("## (6) Lote 6d-textos"));
 const textosDeDatos = () => {
   const out = [];
   const recoger = (v, k) => {
-    if (typeof v === "string") { if (!["id", "lado", "dificultad", "clave"].includes(k)) out.push(v); }
+    if (typeof v === "string") { if (!["id", "lado", "tanque", "dificultad", "clave"].includes(k)) out.push(v); }
     else if (Array.isArray(v)) v.forEach((x) => recoger(x, k));
     else if (v && typeof v === "object") for (const [kk, x] of Object.entries(v)) recoger(x, kk);
   };
