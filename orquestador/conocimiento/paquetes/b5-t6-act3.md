@@ -410,7 +410,7 @@ Manda sobre la (1) y la (2) en lo que nombra. La C y la A de los datos son solo 
 |---|---|
 | REVIVIR · C | «Revivir es reversar el castigo: lo que se debitó entonces ahora se acredita, y al revés.» |
 | REVIVIR · A | «Revivir mueve la deuda y la provisión, como el castigo pero al revés.» |
-| PAGO · C | «La plata entra a Caja y la deuda se cancela.» |
+| PAGO · C | «La plata entra a Caja, que va al Debe, y la deuda se cancela por el Haber.» |
 | PAGO · A | «El pago mueve Caja y la deuda del cliente.» |
 | asiento 1 · B | «En el caso a, el cliente paga toda la factura, así que se revive toda. Ese valor no es la factura completa.» |
 | asiento 2 · B | «A Caja entra lo que pagó Pablo Moncayo, que es toda la factura. Ese valor no coincide.» |

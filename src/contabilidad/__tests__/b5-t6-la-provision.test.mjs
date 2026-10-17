@@ -127,7 +127,7 @@ test("★★★ manda Futaba, y encima B2: los seis términos (nota en el 1 y en
   }
   assert.equal(n[2].rotuloDelLibro, "Nota");
   assert.match(n[4].delLibro, /^«.*» \(p\. 202\)$/);
-  assert.equal(n[0].delLibro, "El libro la llama «Provisión para deudas incobrables».", "Shoko, 16-oct: el puente con el nombre del libro");
+  assert.equal(n[0].delLibro, "El libro la llama “Provisión para deudas incobrables”.", "Shoko, 16-oct: el puente con el nombre del libro");
   assert.equal(n[0].rotuloDelLibro, "Nota");
   assert.deepEqual([1, 3, 5].map((k) => n[k].delLibro), [undefined, undefined, undefined]);
   const filas = new Map();
