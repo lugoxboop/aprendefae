@@ -35,8 +35,8 @@ export const FALLA_N1_C4 = {
   otro: "Ahí quedaría con otra clase de la que es.",
   /* Mello C4-4 (auditoria-mello-patron-c4.md): la del bloque 3, por opción. [W] pendiente de Near. */
   intencion: {
-    "Con que la gerencia lo diga por escrito.": "Así bastaría con decirlo, y el libro pide evidencias.",
-    "Con el nombre del título que compró.": "Así decidiría el nombre del título, no la intención.",
+    "Con una carta firmada por la gerencia.": "Así bastaría con decirlo, y el libro pide evidencias.",
+    "Con el tipo de título que compró.": "Así decidiría el nombre del título, no la intención.",
   },
 };
 
