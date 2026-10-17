@@ -642,7 +642,10 @@ test("★★★ se juega entera: regla del libro, «Iba aquí», los dos textos,
   const bajo = (id) => caja.querySelector(`[data-fila-grupo="${id}"] [data-bajo]`);
   assert.deepEqual([bajo("1-30").dataset.bajo, bajo("1-30").textContent], ["mal", "No va aquíIncorrecto.Iba aquí: 249.900"]);
   assert.deepEqual([bajo("31-60").dataset.bajo, bajo("31-60").textContent], ["ok", "Correcto"]);
-  assert.deepEqual([bajo("vigentes").dataset.bajo, bajo("vigentes").textContent], ["vacia", "No va aquíIncorrecto.Iba aquí: 0"]);
+  /* Kamogawa: una fila vacía no es un error: sin «No va aquí», solo «Iba aquí: N» en #B8C4D4. */
+  assert.deepEqual([bajo("vigentes").dataset.bajo, bajo("vigentes").textContent], ["vacia", "Iba aquí: 0"]);
+  assert.equal(bajo("vigentes").querySelector("[data-veredicto]").style.color, "rgb(184, 196, 212)");
+  assert.equal(bajo("vigentes").querySelectorAll("svg").length, 0);
   assert.equal(caja.querySelector('[data-fila-grupo="vigentes"] input').dataset.campoValor, "vacia");
   assert.equal(caja.querySelector('[data-fila-grupo="1-30"] input').dataset.campoValor, "mal");
   assert.equal(caja.querySelector("[data-fila-total] [data-bajo]").textContent, "No va aquíIncorrecto.Iba aquí: 2.283.400");
@@ -777,4 +780,39 @@ test("★★ v2.1 · B4 de enganche.md: ni el acierto ni «Iba aquí» van en te
   assert.ok(!/data-era-este[^>]*C\.teal/.test(fuente), "«Iba aquí» en teal");
   /* El teal sigue donde significa DEBE o DÉBITO. */
   assert.ok(/l === "debe" \? C\.teal/.test(fuente));
+});
+
+/* ═══════════ D4 DE TAKAMURA · TU SALDO EN EL MEDIDOR ═══════════ */
+
+test("★★★ D4 · al revisar el saldo, si falló, el medidor muestra su saldo con contorno discontinuo y «Así quedaba con tu saldo: N»; si acertó, nada", async () => {
+  const k = P.findIndex((p) => p.tipo === "saldo");
+  const p4 = P[k];
+  const pasos = [{ tipo: "pregunta", i: k }];
+  const jugar = async (valor, lado) => {
+    const m = await montar(h(ToroNegro, { preparar: () => ({ hoja: HOJA }), pasos }));
+    await escribir(campo(m.caja), String(valor));
+    if (lado) await tocar(m.caja.querySelector(`[data-tarjeta-saldo='respuesta'] [data-lado='${lado}']`));
+    await tocar(m.caja.querySelector("[data-revisar]"));
+    return m;
+  };
+  /* La cifra bien y el lado mal: su saldo, discontinuo, en el haber; el correcto, lleno, en el debe. */
+  const mal = await jugar(J.correctoDe(p4).valor, "credito");
+  const bloque = mal.caja.querySelector("[data-tu-saldo]");
+  assert.ok(bloque, "no está el medidor con tu saldo");
+  assert.equal(bloque.querySelector("[data-medidor]").dataset.medidor, "debito");
+  const discontinuo = [...bloque.querySelectorAll("[data-medidor] span")].filter((x) => /dashed/.test(x.style.border));
+  assert.equal(discontinuo.length, 1);
+  assert.equal(discontinuo[0].style.left, "50%", "tu saldo no quedó en el haber");
+  assert.equal(bloque.querySelector("[data-linea-tu-saldo]").textContent, `Así quedaba con tu saldo: ${cifra(J.correctoDe(p4).valor)}`);
+  mal.desmontar();
+  /* Con 0, la línea lo dice y no hay barra discontinua (no hay saldo que dibujar). */
+  const cero = await jugar(0, null);
+  assert.equal(cero.caja.querySelector("[data-linea-tu-saldo]").textContent, "Así quedaba con tu saldo: 0");
+  assert.equal([...cero.caja.querySelectorAll("[data-tu-saldo] [data-medidor] span")].filter((x) => /dashed/.test(x.style.border)).length, 0);
+  cero.desmontar();
+  /* Bien: no hay medidor de «tu saldo». */
+  const bien = await jugar(J.correctoDe(p4).valor, p4.correcto.lado);
+  assert.equal(Boolean(bien.caja.querySelector("[data-tu-saldo]")), false);
+  bien.desmontar();
+  assert.equal(T.ROTULOS_R5_2.asiQuedaba("1"), "Así quedaba con tu saldo: 1");
 });

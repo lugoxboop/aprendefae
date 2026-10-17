@@ -26,7 +26,13 @@ import { conCorreccionesDeMello } from "./correccionesMello.mjs";
 
 const dom = new JSDOM("<!doctype html><html><body></body></html>", { url: "http://localhost/", virtualConsole: new VirtualConsole() });
 const w = dom.window;
-w.matchMedia = () => ({ matches: false, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} });
+/*
+ * C4: el recorrido de siempre corre con movimiento reducido (REDUCIDO), y el
+ * veredicto llega en el mismo toque. Las pruebas C4 lo apagan para ver la
+ * consecuencia antes del veredicto, que llega a los 380 ms.
+ */
+let REDUCIDO = true;
+w.matchMedia = (q) => ({ matches: REDUCIDO && /prefers-reduced-motion: reduce/.test(q), addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} });
 w.requestAnimationFrame = (f) => setTimeout(f, 0);
 for (const [k, v] of Object.entries({
   window: w, document: w.document, navigator: w.navigator, localStorage: w.localStorage,
@@ -358,6 +364,101 @@ test("★★★ lote 5: la cuenta de intereses crece trimestre a trimestre, cada
     }
     assert.equal(m.caja.querySelector("[data-figura-acumulada]"), null);
   } finally {
+    m.desmontar();
+  }
+});
+
+/* ═══════════ C4 · «TODA DECISIÓN SE PINTA» (patrón de Watari, #t5-n4) ═══════════ */
+
+const C4N4 = await import("../c4/t5N4_c4.js");
+const { ESPERA_C4 } = await import("../../components/mecanicas/libros/t7/decisionC4.jsx");
+const esperar = async (ms = ESPERA_C4 + 20) => { await act(async () => { await new Promise((r) => setTimeout(r, ms)); }); };
+
+test("★★★ C4 · el registro lleva los ítems de Near tal cual (los dos sentidos); el asiento sigue como en main («propio»)", () => {
+  const P = C4N4.CONSECUENCIA_C4;
+  assert.equal(P.id, "t5-n4");
+  assert.equal(P.objeto, "Los cobros del año");
+  assert.equal(P.modo, "hacer");
+  assert.deepEqual(P.items.map((x) => x.id), D.ITEMS_N4.map((x) => x.id));
+  for (const [k, x] of P.items.entries()) {
+    const it = D.ITEMS_N4[k];
+    if (it.tipo === "asiento") { assert.equal(x.tipo, "propio"); continue; }
+    assert.equal(x.tipo, it.tipo);
+    assert.equal(x.pregunta, it.pregunta);
+    assert.equal(x.bien, it.acierto);
+    assert.deepEqual(x.opciones.map((o) => o.id), L.opcionesDeN4(it).map(String));
+    assert.deepEqual(x.opciones.filter((o) => o.correcta).map((o) => o.id), [String(it.correcta)]);
+    assert.deepEqual(x.opciones.filter((o) => !o.correcta).map((o) => o.msg), it.distractores.map((d) => d.retro));
+    if (it.tipo === "cifra") assert.deepEqual(x.opciones.map((o) => o.v), L.opcionesDeN4(it));
+  }
+});
+
+test("★★★ C4 · cada opción cambia los cobros del año: cuántos y cuánto; la mala con su falla [W]", () => {
+  const P = C4N4.CONSECUENCIA_C4;
+  const de = (id, e) => P.consecuencia(P.items.find((x) => x.id === id), e);
+  assert.deepEqual(de("cada-cuanto", null), { titulo: "Caoba · $10.800.000 al 16 % anual", cada: 3, cupon: null, cobros: 0, alto: 0 });
+  assert.deepEqual([de("cada-cuanto", "Cada mes").cobros, de("cada-cuanto", "Cada 3 meses").cobros, de("cada-cuanto", "Cada 12 meses").cobros], [12, 4, 1]);
+  assert.equal(de("cada-cuanto", "Cada mes").falla, "Así serían 12 cobros al año, y es trimestre vencido.");
+  assert.equal(de("cada-cuanto", "Cada 3 meses").cuadra, "Trimestre vencido: cuatro cobros al año.");
+  assert.equal(de("primer-trimestre", 1_728_000).falla, "Ese cobro equivale a un 64 % anual; la tasa es 16 %.");
+  assert.equal(de("primer-trimestre", 144_000).falla, "Ese cobro equivale a un 5,3 % anual; la tasa es 16 %.");
+  assert.equal(de("primer-trimestre", 432_000).falla, undefined);
+  assert.equal(de("base-del-segundo", 10_800_000).titulo, "Caoba · $10.800.000 al 16 % anual");
+  assert.equal(de("base-del-segundo", 5_700_000).cupon, 228_000);
+  assert.equal(de("base-del-segundo", 5_100_000).falla, "Así cobra interés sobre $5.100.000. Y le quedan $5.700.000.");
+  /* El segundo trimestre va sobre lo que le queda (ya se respondió en el ítem 4). */
+  assert.equal(de("segundo-trimestre", null).titulo, "Caoba · $5.700.000 al 16 % anual");
+  assert.equal(de("segundo-trimestre", 432_000).falla, "Ese cobro sale de una inversión de $10.800.000, y le quedan $5.700.000.");
+  /* La cifra a medio escribir también pinta. */
+  assert.equal(de("primer-trimestre", 4).cupon, 4);
+});
+
+test("★★★ C4 · montada: la frecuencia tocada cambia los cupones en el acto; la cifra escrita solo se muestra hasta comprobar (C4-1); el veredicto a los 380 ms", async () => {
+  REDUCIDO = false;
+  const m = await montar();
+  const q = (s) => m.caja.querySelector(s);
+  const cupones = () => [...m.caja.querySelectorAll("[data-cobros-n4] [data-cupon]")].map((x) => x.closest("[data-mes]").dataset.mes);
+  const retro = () => [...m.caja.querySelectorAll("[data-retro] [data-texto-retro]")].map((x) => x.textContent);
+  try {
+    /* Ítem 1 · «Cada mes»: doce cupones al tocar; el veredicto, después. */
+    assert.ok(q("[data-figura-acumulada], [data-figura]"), "la figura");
+    assert.deepEqual(cupones(), []);
+    assert.equal(q("[data-linea-cobros]").textContent, "Cobros: ?");
+    await tocar(opcion(m.caja, "Cada mes"));
+    assert.equal(cupones().length, 12);
+    assert.equal(q("[data-linea-cobros]").textContent, "Cada cobro: $144.000");
+    assert.ok(q("[data-cobros-n4]").classList.contains("t5c4-anim"));
+    assert.deepEqual(retro(), [], "el veredicto llegó antes de 380 ms");
+    assert.equal(q("[data-falla]"), null);
+    await tocar(opcion(m.caja, "Cada 3 meses"));
+    assert.equal(cupones().length, 12, "mientras llega el veredicto no se toca otra");
+    await esperar();
+    const x1 = EN_ORDEN[0];
+    assert.deepEqual(retro(), [x1.distractores[0].retro]);
+    assert.equal(q("[data-falla]").textContent, "Así serían 12 cobros al año, y es trimestre vencido.");
+    await tocar(boton(m.caja, D.BOTON_N4.siguiente));
+    /* Ítem 2 · la cifra pinta con cada número; la buena da cuatro cupones. */
+    assert.deepEqual(cupones(), []);
+    /* Mello C4-1: la cifra que se escribe solo se muestra en su renglón; los cupones, al comprobar. */
+    await escribir(m.caja, "primer-trimestre", 43);
+    assert.equal(q("[data-linea-cobros]").textContent, "Cada cobro: $43");
+    assert.deepEqual(cupones(), []);
+    await escribir(m.caja, "primer-trimestre", 432000);
+    assert.equal(q("[data-linea-cobros]").textContent, "Cada cobro: $432.000");
+    assert.deepEqual(cupones(), []);
+    assert.doesNotMatch(q("[data-cobros-n4]").outerHTML, /c4-cuadra|c4-falla| mal/, "la buena escrita no califica antes de comprobar");
+    await tocar(boton(m.caja, "Comprobar"));
+    assert.deepEqual(cupones(), ["3", "6", "9", "12"]);
+    assert.deepEqual(retro(), []);
+    await esperar();
+    assert.deepEqual(retro(), [EN_ORDEN[1].acierto]);
+    assert.equal(q("[data-falla]"), null);
+    assert.equal(q("[data-cuadra]").textContent, "Es el 16 % anual, por 3 meses.");
+    /* El asiento: sin objeto C4 (sigue como en main). */
+    await tocar(boton(m.caja, D.BOTON_N4.siguiente));
+    assert.equal(q("[data-cobros-n4]"), null);
+  } finally {
+    REDUCIDO = true;
     m.desmontar();
   }
 });

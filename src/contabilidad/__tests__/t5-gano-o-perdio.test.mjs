@@ -29,7 +29,13 @@ import { conCorreccionesDeMelloN5, FILA_PLEGADA_N5 } from "./correccionesMelloN5
 
 const dom = new JSDOM("<!doctype html><html><body></body></html>", { url: "http://localhost/", virtualConsole: new VirtualConsole() });
 const w = dom.window;
-w.matchMedia = () => ({ matches: false, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} });
+/*
+ * C4: el recorrido de siempre corre con movimiento reducido (REDUCIDO), y el
+ * veredicto llega en el mismo toque. Las pruebas C4 lo apagan para ver la
+ * consecuencia antes del veredicto, que llega a los 380 ms.
+ */
+let REDUCIDO = true;
+w.matchMedia = (q) => ({ matches: REDUCIDO && /prefers-reduced-motion: reduce/.test(q), addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} });
 w.requestAnimationFrame = (f) => setTimeout(f, 0);
 for (const [k, v] of Object.entries({
   window: w, document: w.document, navigator: w.navigator, localStorage: w.localStorage,
@@ -510,4 +516,127 @@ test("★★★ el panel docente: cada una de las diez unidades tiene etiqueta, 
   assert.equal(new Set(ids.map((id) => L.unidadDeN5(id))).size, 10);
   assert.equal(L.unidadDeN5("asiento-con-ganancia"), null);
   assert.equal(L.unidadDeN5("no-existe"), null);
+});
+
+/* ═══════════ C4 · «TODA DECISIÓN SE PINTA» (patrón de Watari, #t5-n5) ═══════════ */
+
+const C4N5 = await import("../c4/t5N5_c4.js");
+const { ESPERA_C4 } = await import("../../components/mecanicas/libros/t7/decisionC4.jsx");
+const esperar = async (ms = ESPERA_C4 + 20) => { await act(async () => { await new Promise((r) => setTimeout(r, ms)); }); };
+
+test("★★★ C4 · el registro lleva los ítems de Near tal cual (los dos sentidos); Ganó o Perdió va con el monto, como en main", () => {
+  const P = C4N5.CONSECUENCIA_C4;
+  assert.equal(P.id, "t5-n5");
+  assert.equal(P.objeto, "Las 900 acciones de Acacia");
+  assert.equal(P.modo, "hacer");
+  assert.deepEqual(P.items.map((x) => x.id), D.ITEMS_N5.map((x) => x.id));
+  for (const [k, x] of P.items.entries()) {
+    const it = D.ITEMS_N5[k];
+    if (it.tipo === "asiento") { assert.equal(x.tipo, "propio"); continue; }
+    assert.equal(x.pregunta, it.pregunta);
+    assert.equal(x.pista, it.pista);
+    assert.equal(x.bien, it.acierto);
+    assert.deepEqual(x.opciones.filter((o) => !o.correcta).map((o) => o.msg), it.distractores.map((d) => d.retro));
+    /* El id de cada opción es lo que guarda el detalle (respuestaN5): «perdio|165000» o la cifra. */
+    const ids = [[it.resultado, it.correcta], ...it.distractores.map((d) => [d.resultado, d.valor])].map(([r, v]) => (r ? `${r}|${v}` : String(v)));
+    assert.deepEqual(x.opciones.map((o) => o.id), ids);
+    assert.equal(x.opciones.find((o) => o.correcta).id, it.resultado ? L.respuestaN5(it, { resultado: it.resultado, valor: it.correcta }) : String(it.correcta));
+    assert.equal(x.tipo, it.resultado ? "eleccion" : "cifra");
+  }
+});
+
+test("★★★ C4 · la cifra dice cuántas acciones son; Ganó o Perdió con el monto; la falla que dice la cifra buena espera al cierre (E8)", () => {
+  const P = C4N5.CONSECUENCIA_C4;
+  const de = (id, e) => P.consecuencia(P.items.find((x) => x.id === id), e);
+  assert.deepEqual(de("lo-que-recibe", null), { titulo: "900 acciones · compradas a $5.100", total: 900, acciones: null, linea: "? acciones" });
+  assert.equal(de("lo-que-recibe", 4_860_000).falla, "Así son 900, no las 550 que vendió.");
+  assert.equal(de("lo-que-recibe", 1_890_000).acciones, 350);
+  /* Mello C4-3: el error real del distractor; y nada de acciones partidas ni montos negativos. */
+  assert.equal(de("lo-que-costaron", 2_970_000).falla, "Así cada acción habría costado $5.400: es el precio de venta, no el de compra.");
+  assert.equal(de("lo-que-costaron", 2_000_000).linea, "? acciones");
+  assert.equal(de("lo-que-costaron", 2_000_000).acciones, null);
+  for (const it of P.items.filter((x) => x.tipo !== "propio")) {
+    for (const e of [null, ...it.opciones.map((o) => o.v ?? o.id), 1, 2_000_000, 2_970_001]) {
+      const s = JSON.stringify(P.consecuencia(it, e));
+      assert.doesNotMatch(s, /−|-\$|\d,\d/, `${it.id} · ${e}: ${s}`);
+    }
+  }
+  assert.equal(de("lo-que-costaron", 2_805_000).cuadra, "Son las 550 que vendió.");
+  assert.equal(de("gano-o-perdio-1", "perdio|165000").falla, "Así, $165.000 quedarían como pérdida.");
+  assert.equal(de("gano-o-perdio-1", { resultado: "gano", valor: 165_000 }).cuadra, "Ganó esa diferencia.");
+  assert.equal(de("gano-o-perdio-1", { resultado: null, valor: 165_000 }).falla, undefined, "sin Ganó o Perdió no hay veredicto");
+  const d = de("gano-o-perdio-2", "1540000");
+  assert.equal(d.falla, "$1.540.000 no es eso: lo que costó menos lo que recibe da $245.000.");
+  assert.equal(d.delata, true);
+  assert.equal(de("gano-o-perdio-2", "gano|245000").delata, undefined);
+});
+
+test("★★★ C4 · montada: la cifra escrita solo se muestra (C4-1), la barra se mueve al comprobar; el veredicto (con su escalera) a los 380 ms; la falla que delata sale al cerrar", async () => {
+  REDUCIDO = false;
+  const m = await montar();
+  const q = (s) => m.caja.querySelector(s);
+  const retro = () => [...m.caja.querySelectorAll("[data-retro] [data-texto-retro]")].map((x) => x.textContent);
+  const comprobar = () => tocar(boton(m.caja, "Comprobar"));
+  try {
+    const x1 = EN_ORDEN[0];
+    assert.equal(q("[data-titulo-acciones]").textContent, "900 acciones · compradas a $5.100");
+    assert.equal(q("[data-linea-acciones]").textContent, "? acciones");
+    assert.equal(q("[data-barra]"), null);
+    /* Mello C4-1: mientras se escribe, la cifra solo se muestra; nada que califique. */
+    await escribir(m.caja, x1.id, "4860000");
+    assert.equal(q("[data-borrador]").textContent, "$4.860.000");
+    assert.equal(q("[data-barra]"), null);
+    await escribir(m.caja, x1.id, "2970000");
+    assert.equal(q("[data-borrador]").textContent, "$2.970.000");
+    assert.equal(q("[data-barra]"), null, "la cifra buena escrita no muestra nada antes de comprobar");
+    assert.doesNotMatch(q("[data-acciones-n5]").outerHTML, /c4-cuadra|c4-falla| mal/);
+    await escribir(m.caja, x1.id, "1890000");
+    await comprobar();
+    /* La consecuencia, al comprobar; el veredicto, 380 ms después. */
+    assert.equal(q("[data-barra]").dataset.barra, "350");
+    assert.equal(q("[data-linea-acciones]").textContent, "350 acciones × $5.400");
+    assert.deepEqual(retro(), [], "el veredicto llegó antes de 380 ms");
+    assert.equal(q("[data-falla]"), null);
+    await esperar();
+    assert.deepEqual(retro(), [x1.distractores[1].retro]);
+    assert.equal(q("[data-falla]").textContent, "Así son 350, no las 550 que vendió.");
+    assert.ok(q("[data-barra]").classList.contains("mal"));
+    /* Escalera: se vuelve a escribir; la falla se va con la cifra nueva. */
+    await escribir(m.caja, x1.id, "2970000");
+    assert.equal(q("[data-falla]"), null);
+    assert.equal(q("[data-barra]"), null);
+    await comprobar();
+    assert.equal(q("[data-barra]").dataset.barra, "550");
+    await esperar();
+    assert.deepEqual(retro(), [x1.acierto]);
+    assert.equal(q("[data-cuadra]").textContent, "Son las 550 que vendió.");
+    await tocar(boton(m.caja, D.BOTON_N5.siguiente));
+    await escribir(m.caja, "lo-que-costaron", "2805000");
+    await comprobar();
+    await esperar();
+    await tocar(boton(m.caja, D.BOTON_N5.siguiente));
+    /* Ganó o Perdió · la elección y la cifra se ven junto a «Las 550»; sin la fila de lo que recibe y costó (E8). */
+    assert.equal(q("[data-linea-acciones]").textContent, "Las 550");
+    assert.equal(q("[data-fila-acciones]"), null);
+    await tocar(q('[data-resultado="gano"]'));
+    await escribir(m.caja, "gano-o-perdio-1", "2970000");
+    assert.equal(q("[data-borrador]").textContent, "Ganó $2.970.000");
+    await comprobar();
+    assert.equal(q("[data-eleccion-n5]").textContent, "Ganó $2.970.000");
+    await esperar();
+    assert.deepEqual(retro(), [D.ITEMS_N5[2].distractores[1].retro]);
+    assert.equal(q("[data-falla]"), null, "la falla que da la diferencia espera al cierre");
+    await tocar(q('[data-resultado="perdio"]'));
+    await escribir(m.caja, "gano-o-perdio-1", "165000");
+    assert.equal(q("[data-borrador]").textContent, "Perdió $165.000");
+    await comprobar();
+    assert.equal(q("[data-eleccion-n5]").textContent, "Perdió $165.000");
+    await esperar();
+    assert.equal(q("[data-falla]").textContent, "Así, $165.000 quedarían como pérdida.");
+    assert.equal(q("[data-fila-acciones]").textContent, "Recibe $2.970.000 · le costaron $2.805.000");
+    assert.ok(boton(m.caja, D.BOTON_N5.siguiente), "dos errores: el ítem se cierra");
+  } finally {
+    REDUCIDO = true;
+    m.desmontar();
+  }
 });

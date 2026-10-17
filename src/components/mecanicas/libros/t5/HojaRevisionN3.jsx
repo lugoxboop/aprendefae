@@ -1,4 +1,6 @@
 import { HOJA_N3, EJEMPLO_N3 } from "../../../../data/contabilidadT5_n3.js";
+import { HOJA_N3_C4, consecuenciaN3 } from "../../../../contabilidad/c4/t5N3_c4.js";
+import { CSS_T5C4, NotaC4 } from "./figurasC4T5.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -14,6 +16,13 @@ import { HOJA_N3, EJEMPLO_N3 } from "../../../../data/contabilidadT5_n3.js";
  * falta. Empieza sin filas. El orden fijo de Mello (N3-4) evita que dos
  * casos con la misma acción queden seguidos.
  *
+ * C4 (patrón de Watari, «toda decisión se pinta»): con `c4` (EscaleraHacer),
+ * la hoja lleva el renglón de «Este caso» con la revisión tocada, en el acto,
+ * y debajo dice si el caso queda cubierto o sin cubrir
+ * (contabilidad/c4/t5N3_c4.js). Con el veredicto, la frase de lo que implica
+ * la mala, con ✕. Cuando el caso se cierra, su fila de siempre entra a la
+ * hoja con la acción que le hacía falta.
+ *
  * El ejemplo: el caso del fondo fiduciario ya resuelto, con su acción y su
  * nota. No se toca ni da puntos; sale encima del primer caso.
  * ═══════════════════════════════════════════════════════════════════════════
@@ -27,6 +36,7 @@ const CSS = `
 .n3hj th:first-child { width: 62%; }
 .n3hj td { font: 400 13px/1.45 "Inter", sans-serif; vertical-align: top; padding: 8px 6px; border-bottom: 1px solid ${P.raya}; overflow-wrap: break-word; }
 .n3hj td:last-child { font-weight: 600; }
+.n3hj tr.n3hj-c4 td { border-bottom: 1px dashed ${P.borde}; }
 .n3ej { margin: 0 0 12px; padding: 10px 12px; border-radius: 11px; border: 1px dashed rgba(184,196,212,0.45); }
 .n3ej-rot { margin: 0 0 4px; font: 700 12px/1.3 "Sora", "Inter", sans-serif; letter-spacing: .08em; color: ${P.texto2}; text-transform: uppercase; }
 .n3ej p { margin: 0; font: 400 14px/1.45 "Inter", sans-serif; color: ${P.texto}; }
@@ -34,12 +44,18 @@ const CSS = `
 .n3ej-nota { color: ${P.texto2} !important; font-size: 13px !important; }
 `;
 
-/** items: los casos en su orden; resueltos: los ids ya resueltos. */
-export default function HojaRevisionN3({ items, resueltos }) {
+/** items: los casos en su orden; resueltos: los ids ya resueltos; i: el caso en curso; c4: { eleccion, veredicto, anim }. */
+export default function HojaRevisionN3({ items, resueltos, i = 0, c4 = null }) {
   const filas = items.filter((it) => resueltos.includes(it.id));
+  const actual = items[i];
+  const estado = c4 && actual ? consecuenciaN3(actual.id, c4.eleccion) : null;
+  const abierto = estado && !resueltos.includes(actual.id);
   return (
-    <div data-hoja-n3>
-      <style>{CSS}</style>
+    <>
+    {/* El estilo, fuera de la figura: su texto no es la figura (y la prueba C5 la lee entera). */}
+    <style>{CSS}{c4 ? CSS_T5C4 : ""}</style>
+    <div data-hoja-n3 className={c4 ? `t5c4${c4.anim ? " t5c4-anim" : ""}` : undefined} data-figura={c4 ? true : undefined} aria-live={c4 ? "polite" : undefined}>
+      {c4 && <p className="t5c4-tit" data-titulo-hoja>{HOJA_N3_C4.titulo}</p>}
       <table className="n3hj">
         <thead><tr><th scope="col">{HOJA_N3.caso}</th><th scope="col">{HOJA_N3.accion}</th></tr></thead>
         <tbody>
@@ -49,9 +65,23 @@ export default function HojaRevisionN3({ items, resueltos }) {
               <td data-celda="accion">{it.correcta}</td>
             </tr>
           ))}
+          {abierto && estado.revision && (
+            <tr data-fila-c4 data-revision={estado.revision} className="n3hj-c4">
+              <td data-celda="caso">{HOJA_N3_C4.esteCaso}</td>
+              <td data-celda="accion"><span className="t5c4-mov">{estado.revision}</span></td>
+            </tr>
+          )}
         </tbody>
       </table>
+      {estado && (
+        <p data-estado-caso={estado.cubierto == null ? "sin-revisar" : estado.cubierto ? "cubierto" : "abierto"}
+          className={`t5c4-estado${estado.cubierto == null ? "" : estado.cubierto ? " cubierto" : " abierto"}`}>
+          {estado.cubierto == null ? HOJA_N3_C4.estado.sinRevisar : estado.cubierto ? HOJA_N3_C4.estado.cubierto : HOJA_N3_C4.estado.abierto}
+        </p>
+      )}
+      {estado && <NotaC4 estado={estado} vista={c4} />}
     </div>
+    </>
   );
 }
 

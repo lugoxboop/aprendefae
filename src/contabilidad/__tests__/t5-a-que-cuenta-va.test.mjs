@@ -30,7 +30,13 @@ import { PAQUETE_N7, CORRECCIONES_N7, NUEVOS_N7, conCorreccionesN7 } from "./cor
 
 const dom = new JSDOM("<!doctype html><html><body></body></html>", { url: "http://localhost/", virtualConsole: new VirtualConsole() });
 const w = dom.window;
-w.matchMedia = () => ({ matches: false, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} });
+/*
+ * C4: el recorrido de siempre corre con movimiento reducido (REDUCIDO), y el
+ * veredicto llega en el mismo toque. Las pruebas C4 lo apagan para ver la
+ * consecuencia antes del veredicto, que llega a los 380 ms.
+ */
+let REDUCIDO = true;
+w.matchMedia = (q) => ({ matches: REDUCIDO && /prefers-reduced-motion: reduce/.test(q), addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} });
 w.requestAnimationFrame = (f) => setTimeout(f, 0);
 for (const [k, v] of Object.entries({
   window: w, document: w.document, navigator: w.navigator, localStorage: w.localStorage,
@@ -429,4 +435,78 @@ test("★★★ el panel docente: cada una de las diez unidades tiene etiqueta, 
   assert.equal(new Set(ids.map((id) => L.unidadDeN7(id))).size, 10);
   assert.equal(L.unidadDeN7("la-compra"), null);
   assert.equal(L.unidadDeN7("no-existe"), null);
+});
+
+/* ═══════════ C4 · «TODA DECISIÓN SE PINTA» (patrón de Watari, #t5-n7) ═══════════ */
+
+const C4N7 = await import("../c4/t5N7_c4.js");
+const { ESPERA_C4 } = await import("../../components/mecanicas/libros/t7/decisionC4.jsx");
+const esperar = async (ms = ESPERA_C4 + 20) => { await act(async () => { await new Promise((r) => setTimeout(r, ms)); }); };
+
+test("★★★ C4 · el registro lleva la casilla de Near tal cual (los dos sentidos); los cuatro asientos siguen como en main", () => {
+  const P = C4N7.CONSECUENCIA_C4;
+  assert.equal(P.id, "t5-n7");
+  assert.equal(P.objeto, "El libro de Guayacán");
+  assert.equal(P.objeto, D.FIGURA_N7.titulo);
+  assert.equal(P.modo, "hacer");
+  assert.deepEqual(P.items.map((x) => x.id), D.ITEMS_N7.map((x) => x.id));
+  for (const [k, x] of P.items.entries()) {
+    const it = D.ITEMS_N7[k];
+    if (it.tipo === "asiento") { assert.equal(x.tipo, "propio"); continue; }
+    assert.equal(x.tipo, "cifra");
+    assert.equal(x.texto, it.intro);
+    assert.equal(x.pregunta, it.pregunta);
+    assert.equal(x.pista, it.pista);
+    assert.equal(x.bien, it.acierto);
+    assert.equal(x.porque, it.porque);
+    assert.deepEqual(x.opciones.map((o) => o.v), [it.correcta, ...it.distractores.map((d) => d.valor)]);
+    assert.deepEqual(x.opciones.filter((o) => !o.correcta).map((o) => o.msg), it.distractores.map((d) => d.retro));
+  }
+  const x = P.items[0];
+  assert.deepEqual(P.consecuencia(x, null), { cuenta: "Inversiones – títulos", pago: "Lo que pagó: precio $2.150.000 + gastos de la compra $34.000", debe: null });
+  assert.equal(P.consecuencia(x, 2_184_000).cuadra, "Entra todo lo que pagó.");
+  assert.equal(P.consecuencia(x, 2_150_000).falla, "Entra solo el precio: faltan los gastos de la compra.");
+  assert.equal(P.consecuencia(x, 34_000).falla, "Entran solo los gastos: falta el precio.");
+  assert.deepEqual(P.consecuencia(x, 2_000_000), { cuenta: "Inversiones – títulos", pago: "Lo que pagó: precio $2.150.000 + gastos de la compra $34.000", debe: 2_000_000, falla: "Faltan $184.000 frente a lo que pagó.", delata: true });
+});
+
+test("★★★ C4 · montada: la cifra entra al debe con cada número; el veredicto a los 380 ms; la falla que delata espera al cierre", async () => {
+  REDUCIDO = false;
+  const m = await montar();
+  const q = (s) => m.caja.querySelector(s);
+  const retro = () => [...m.caja.querySelectorAll("[data-retro] [data-texto-retro]")].map((x) => x.textContent);
+  const comprobar = () => tocar(boton(m.caja, "Comprobar"));
+  try {
+    const x0 = D.ITEMS_N7[0];
+    assert.equal(q("[data-debe-n7]").textContent, "Debe —");
+    assert.equal(q("[data-pago-n7]").textContent, "Lo que pagó: precio $2.150.000 + gastos de la compra $34.000");
+    await escribir(m.caja, x0.id, "2000");
+    assert.equal(q("[data-cifra-n7]").textContent, "$2.000");
+    await escribir(m.caja, x0.id, "2000000");
+    assert.equal(q("[data-cifra-n7]").textContent, "$2.000.000");
+    await escribir(m.caja, x0.id, "2184000");
+    assert.doesNotMatch(q("[data-entra-n7]").outerHTML, /c4-cuadra|c4-falla| mal/, "C4-1: la buena escrita no califica antes de comprobar");
+    await escribir(m.caja, x0.id, "2000000");
+    assert.doesNotMatch(q("[data-figura-n7] [data-cuenta-inversiones]").textContent, /\$/, "la cuenta T no se mueve antes del asiento (E8)");
+    await comprobar();
+    assert.deepEqual(retro(), [], "el veredicto llegó antes de 380 ms");
+    await esperar();
+    assert.ok(retro().length > 0, "la escalera de siempre: la pista");
+    assert.equal(q("[data-falla]"), null, "la falla que da la diferencia espera al cierre (E8)");
+    assert.ok(!m.caja.textContent.includes("184.000") && !m.caja.textContent.includes("2.184.000"), "C1: ni la falla ni la figura dicen el costo antes de cerrar");
+    /* 2.º intento, el precio solo: su falla sale con el veredicto, y el ítem se cierra. */
+    await escribir(m.caja, x0.id, "2150000");
+    assert.equal(q("[data-falla]"), null);
+    assert.equal(q("[data-cifra-n7]").textContent, "$2.150.000");
+    await comprobar();
+    await esperar();
+    assert.equal(q("[data-falla]").textContent, "Entra solo el precio: faltan los gastos de la compra.");
+    assert.ok(q("[data-cifra-n7]").classList.contains("mal"));
+    assert.ok(boton(m.caja, D.BOTON_N7.siguiente), "dos errores: la casilla se cierra");
+    await tocar(boton(m.caja, D.BOTON_N7.siguiente));
+    assert.equal(q("[data-entra-n7]"), null, "en los asientos no hay casilla: nada provisional");
+  } finally {
+    REDUCIDO = true;
+    m.desmontar();
+  }
 });

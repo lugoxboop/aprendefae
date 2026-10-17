@@ -25,7 +25,13 @@ import { paqueteDConMello, entrega5ConMello, ORDEN_N3 } from "./correccionesMell
 
 const dom = new JSDOM("<!doctype html><html><body></body></html>", { url: "http://localhost/", virtualConsole: new VirtualConsole() });
 const w = dom.window;
-w.matchMedia = () => ({ matches: false, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} });
+/*
+ * C4: el recorrido de siempre corre con movimiento reducido (REDUCIDO), y el
+ * veredicto llega en el mismo toque. Las pruebas C4 lo apagan para ver la
+ * consecuencia antes del veredicto, que llega a los 380 ms.
+ */
+let REDUCIDO = true;
+w.matchMedia = (q) => ({ matches: REDUCIDO && /prefers-reduced-motion: reduce/.test(q), addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {} });
 w.requestAnimationFrame = (f) => setTimeout(f, 0);
 for (const [k, v] of Object.entries({
   window: w, document: w.document, navigator: w.navigator, localStorage: w.localStorage,
@@ -165,7 +171,8 @@ const tocar = async (el) => {
 const opcion = (caja, v) => [...caja.querySelectorAll("[data-opcion]")].find((x) => x.dataset.opcion === v)?.querySelector("button");
 const boton = (caja, texto) => [...caja.querySelectorAll("button")].find((b) => b.textContent === texto);
 const retro = (caja) => [...caja.querySelectorAll("[data-retro] [data-texto-retro]")].map((p) => p.textContent);
-const filasHoja = (caja) => [...caja.querySelectorAll("[data-hoja-n3] tbody tr")].map((tr) => [...tr.querySelectorAll("td")].map((td) => td.textContent));
+/* Las filas de los casos cerrados; el renglón C4 de «Este caso» (data-fila-c4) se mira aparte. */
+const filasHoja = (caja) => [...caja.querySelectorAll("[data-hoja-n3] tbody tr:not([data-fila-c4])")].map((tr) => [...tr.querySelectorAll("td")].map((td) => td.textContent));
 
 test("★★★ la tanda entera: ejemplo, glosas, la escalera caso a caso, la hoja que crece, el foco y solo el primer intento", async () => {
   const m = await montar();
@@ -296,4 +303,100 @@ test("★★★ el panel docente: todo item_id que guarda la partida tiene etiqu
     m.desmontar();
   }
   assert.equal(etiquetaDeItem(D.N3_ID, "fondo-fiduciario"), recortar(D.EJEMPLO_N3.pregunta));
+});
+
+/* ═══════════ C4 · «TODA DECISIÓN SE PINTA» (patrón de Watari, #t5-n3) ═══════════ */
+
+const C4N3 = await import("../c4/t5N3_c4.js");
+const { ESPERA_C4 } = await import("../../components/mecanicas/libros/t7/decisionC4.jsx");
+const esperar = async (ms = ESPERA_C4 + 20) => { await act(async () => { await new Promise((r) => setTimeout(r, ms)); }); };
+
+test("★★★ C4 · el registro lleva los casos de Near tal cual (los dos sentidos) y cada revisión deja el caso cubierto o sin cubrir", () => {
+  const P = C4N3.CONSECUENCIA_C4;
+  assert.equal(P.id, "t5-n3");
+  assert.equal(P.objeto, "La hoja de revisión");
+  assert.equal(P.modo, "hacer");
+  assert.deepEqual(P.items.map((x) => x.id), D.ITEMS_N3.map((x) => x.id));
+  for (const [k, x] of P.items.entries()) {
+    const it = D.ITEMS_N3[k];
+    assert.equal(x.texto, it.pregunta);
+    assert.equal(x.bien, it.acierto);
+    assert.equal(x.pista, D.PISTA_N3);
+    assert.deepEqual(x.opciones.map((o) => o.id), D.ACCIONES_N3);
+    assert.deepEqual(x.opciones.filter((o) => o.correcta).map((o) => o.t), [it.correcta]);
+    for (const o of x.opciones.filter((y) => !y.correcta)) assert.equal(o.msg, it.porQueNo[o.id]);
+    assert.deepEqual(P.consecuencia(x, null), { caso: x.id, revision: null, cubierto: null });
+    for (const o of x.opciones) {
+      assert.deepEqual(P.consecuencia(x, o.id), o.correcta
+        ? { caso: x.id, revision: o.id, cubierto: true }
+        : { caso: x.id, revision: o.id, cubierto: false, falla: C4N3.FALLA_N3_C4 });
+    }
+  }
+});
+
+test("★★★ C4 · montada: la revisión tocada entra a la hoja en el acto; el veredicto (la escalera de siempre) a los 380 ms", async () => {
+  REDUCIDO = false;
+  const m = await montar();
+  const q = (s) => m.caja.querySelector(s);
+  try {
+    const it = EN_ORDEN[0];
+    const [mal1, mal2] = D.ACCIONES_N3.filter((a) => a !== it.correcta);
+    assert.equal(q("[data-titulo-hoja]").textContent, C4N3.HOJA_N3_C4.titulo);
+    assert.equal(q("[data-estado-caso]").textContent, C4N3.HOJA_N3_C4.estado.sinRevisar);
+    assert.equal(q("[data-fila-c4]"), null);
+    /* 1.er toque, malo: la consecuencia antes del veredicto. */
+    await tocar(opcion(m.caja, mal1));
+    assert.deepEqual([...q("[data-fila-c4]").querySelectorAll("td")].map((td) => td.textContent), [C4N3.HOJA_N3_C4.esteCaso, mal1]);
+    assert.equal(q("[data-estado-caso]").dataset.estadoCaso, "abierto");
+    assert.equal(q("[data-estado-caso]").textContent, C4N3.HOJA_N3_C4.estado.abierto);
+    assert.equal(opcion(m.caja, mal1).dataset.estado, "tocada");
+    assert.deepEqual(retro(m.caja), [], "el veredicto llegó antes de 380 ms");
+    assert.equal(q("[data-falla]"), null, "la falla salió antes del veredicto");
+    await tocar(opcion(m.caja, mal2));
+    assert.equal(q("[data-fila-c4]").dataset.revision, mal1, "mientras llega el veredicto no se toca otra");
+    await esperar();
+    assert.deepEqual(retro(m.caja), [D.PISTA_N3, it.porQueNo[mal1]]);
+    assert.equal(q("[data-falla]").textContent, C4N3.FALLA_N3_C4);
+    assert.ok(q("[data-falla] svg"), "la falla, con su ✕");
+    assert.equal(opcion(m.caja, mal1).dataset.estado, "incorrecta");
+    assert.ok(document.activeElement === q("[data-retro] [data-panel]"), "el foco va al mensaje");
+    /* 2.º toque, el bueno: cubierto en el acto; luego el acierto y la fila de siempre. */
+    await tocar(opcion(m.caja, it.correcta));
+    assert.equal(q("[data-fila-c4]").dataset.revision, it.correcta);
+    assert.equal(q("[data-estado-caso]").dataset.estadoCaso, "cubierto");
+    assert.equal(q("[data-falla]"), null, "la falla de antes se va con la consecuencia nueva");
+    assert.deepEqual(filasHoja(m.caja), []);
+    await esperar();
+    assert.deepEqual(retro(m.caja), [it.acierto]);
+    assert.deepEqual(filasHoja(m.caja), [[it.pregunta, it.correcta]]);
+    assert.equal(q("[data-fila-c4]"), null, "cerrado, el caso va en su fila");
+    await tocar(boton(m.caja, D.BOTON_N3.siguiente));
+    assert.equal(q("[data-estado-caso]").textContent, C4N3.HOJA_N3_C4.estado.sinRevisar, "el caso siguiente empieza sin revisar");
+    /* Solo el primer intento suma: el detalle guardó el error del primero. */
+    for (const [k, x] of EN_ORDEN.slice(1).entries()) {
+      await tocar(opcion(m.caja, x.correcta));
+      await esperar();
+      await tocar(boton(m.caja, k === EN_ORDEN.length - 2 ? D.BOTON_N3.verResumen : D.BOTON_N3.siguiente));
+    }
+    const [pct, , det] = m.completados[0];
+    assert.equal(pct, L.puntuarN3(4));
+    assert.deepEqual(det.map((d) => [d.item, d.ok, d.respuesta]), EN_ORDEN.map((x, k) => [x.id, k > 0, k ? null : mal1]));
+  } finally {
+    REDUCIDO = true;
+    m.desmontar();
+  }
+});
+
+test("★★ C4 · con movimiento reducido, el veredicto llega en el mismo toque y nada se anima", async () => {
+  const m = await montar();
+  try {
+    const it = EN_ORDEN[0];
+    const mal = D.ACCIONES_N3.find((a) => a !== it.correcta);
+    await tocar(opcion(m.caja, mal));
+    assert.deepEqual(retro(m.caja), [D.PISTA_N3, it.porQueNo[mal]]);
+    assert.equal(m.caja.querySelector("[data-falla]").textContent, C4N3.FALLA_N3_C4);
+    assert.ok(!m.caja.querySelector("[data-hoja-n3]").classList.contains("t5c4-anim"));
+  } finally {
+    m.desmontar();
+  }
 });

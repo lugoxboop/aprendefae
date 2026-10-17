@@ -10,6 +10,10 @@ import { CasillaCifra, LineasConCuenta, ContadorConIntento, DistintivoIntento } 
 import { sinUnSoloIntento, TEXTOS_ARMA } from "../../../../contabilidad/armaLaLinea.js";
 import { FAE } from "../../../../theme.js";
 import { SOLO_LECTOR } from "../verbos.jsx";
+import { leerCifra } from "../../../../contabilidad/elCierreCompleto.js";
+import { ESPERA_C4 } from "../t7/decisionC4.jsx";
+import { reducidoAhora } from "../t7/aprenderC3.jsx";
+import { CSS_T5C4 } from "./figurasC4T5.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -51,12 +55,28 @@ import { SOLO_LECTOR } from "../verbos.jsx";
  *   datos.consigna    la consigna aparte del enunciado (si no, es el primer
  *                     párrafo del enunciado); datos.distintivo, el texto del
  *                     distintivo junto al contador.
+ *
+ * EL PATRÓN C4, «TODA DECISIÓN SE PINTA» (T5 N4, N5 y N7), opcional:
+ *   config.c4         { consecuencia(ítem, entrada) }: la función pura de
+ *                     contabilidad/c4/*_c4.js (entrada: la opción, la cifra
+ *                     o, con Ganó o Perdió, { resultado, valor }). La Figura
+ *                     recibe además c4 = { estado, vista }, con vista =
+ *                     { veredicto, ok, anim, cerrado }, y pinta el estado.
+ *   · al tocar una opción o comprobar una cifra, la figura pinta la
+ *     consecuencia en el acto; el veredicto (el de siempre, con su escalera
+ *     y su puntaje) llega ESPERA_C4 = 380 ms después, o en el mismo toque con
+ *     movimiento reducido. Mientras tanto no se puede responder otra vez.
+ *   · la cifra que se escribe solo se muestra en su lugar (vista.borrador,
+ *     Mello C4-1): nada que dependa del resultado se pinta antes de
+ *     «Comprobar»; la consecuencia llega al comprobar.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
 export default function PreguntasConAsientoT5({ config, Marco, rotulo, titulo, acento, onCompletar, items = null, onComoSeJuega = null }) {
   const { datos, botones, preparar, evaluar, idLinea, puntuar, total, resumen, marca } = config;
-  const { escalera = false, resultados = null, Figura = null, respuesta = (_it, v) => v } = config;
+  const { escalera = false, resultados = null, Figura = null, respuesta = (_it, v) => v, c4 = null } = config;
+  /* C4: lo que la figura pinta (`entrada`), si espera el veredicto y si ya lo tiene. */
+  const [c4s, setC4s] = useState(C4_VACIO);
   const [fallos, setFallos] = useState(0);
   const [resultado, setResultado] = useState(null);
   const mensaje = useRef(null);
@@ -93,7 +113,36 @@ export default function PreguntasConAsientoT5({ config, Marco, rotulo, titulo, a
     setR(nuevo);
   };
 
+  /* C4 · el veredicto, ESPERA_C4 después de la consecuencia. */
+  useEffect(() => {
+    if (!c4s.pendiente) return undefined;
+    const id = setTimeout(() => { setC4s((x) => ({ ...x, pendiente: false, respondida: true })); responder(c4s.v); }, ESPERA_C4);
+    return () => clearTimeout(id);
+  }, [c4s.pendiente]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const entradaDe = (v, res = resultado) => (item.resultado ? { resultado: res, valor: v } : v);
+
   const elegir = (v) => {
+    if (!c4) { responder(v); return; }
+    if (listo || c4s.pendiente) return;
+    const reducido = reducidoAhora();
+    if (reducido) { setC4s({ entrada: entradaDe(v), v, pendiente: false, respondida: true, anim: false }); responder(v); return; }
+    setC4s({ entrada: entradaDe(v), v, pendiente: true, respondida: false, anim: true });
+  };
+
+  /* C4 · la cifra escrita y Ganó o Perdió cambian la figura en el acto, sin veredicto. */
+  const escribir = (ev) => {
+    if (!c4 || listo || c4s.pendiente || !ev.target.matches?.("[data-campo-cifra]")) return;
+    /* Mello C4-1: lo escrito solo se muestra (`borrador`); la consecuencia llega con «Comprobar». */
+    const valor = leerCifra(ev.target.value);
+    setC4s({ entrada: null, v: valor, pendiente: false, respondida: false, anim: false });
+  };
+  const elegirResultado = (res) => {
+    setResultado(res);
+    if (c4 && !listo && !c4s.pendiente) setC4s({ entrada: null, v: c4s.v, pendiente: false, respondida: false, anim: false });
+  };
+
+  const responder = (v) => {
     if (escalera) { elegirConEscalera(v); return; }
     if (r) return;
     const nuevo = evaluar(item, v);
@@ -119,12 +168,12 @@ export default function PreguntasConAsientoT5({ config, Marco, rotulo, titulo, a
   };
 
   const avanzar = () => {
-    setElegida(null); setR(null); setComprobado(false); setFallos(0); setResultado(null);
+    setElegida(null); setR(null); setComprobado(false); setFallos(0); setResultado(null); setC4s(C4_VACIO);
     if (t.i + 1 < cuantos) { t.setI(t.i + 1); requestAnimationFrame(() => tarjeta.current?.focus()); }
     else t.setTerminado(true);
   };
 
-  const reiniciar = () => { t.reiniciar(); setElegida(null); setR(null); setComprobado(false); setBien(0); setFallos(0); setResultado(null); };
+  const reiniciar = () => { t.reiniciar(); setElegida(null); setR(null); setComprobado(false); setBien(0); setFallos(0); setResultado(null); setC4s(C4_VACIO); };
 
   if (t.terminado) {
     return (
@@ -137,13 +186,19 @@ export default function PreguntasConAsientoT5({ config, Marco, rotulo, titulo, a
   }
 
   const [consigna, ...resto] = datos.consigna ? [datos.consigna, ...datos.enunciado] : datos.enunciado;
+  const itemC4 = c4?.items.find((x) => x.id === item.id && (x.tipo ?? "eleccion") !== "propio") ?? null;
+  const figC4 = c4 ? { estado: itemC4 ? c4.consecuencia(itemC4, c4s.entrada) : null, vista: {
+    veredicto: c4s.respondida && Boolean(r), ok: Boolean(r?.ok), anim: c4s.anim, cerrado: Boolean(listo),
+    /* C4-1: la cifra que se escribe, solo para mostrarla; y Ganó o Perdió, tal como se eligió. */
+    borrador: c4s.entrada == null ? c4s.v : null, resultado: item.resultado ? resultado : null,
+  } } : undefined;
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
-      <style>{CSS_T7_HACER}</style>
+      <style>{CSS_T7_HACER}{c4 ? CSS_T5C4 : ""}</style>
       <div {...{ [`data-${marca}`]: true }}>
         <EncabezadoHacer objetivo={datos.objetivo} consigna={sinUnSoloIntento(consigna)} onComoSeJuega={onComoSeJuega} />
         {resto.length > 0 && <div style={{ marginBottom: "12px" }}><Parrafos textos={resto} /></div>}
-        {Figura && <Figura items={t.items} i={t.i} listo={Boolean(listo)} />}
+        {Figura && <Figura items={t.items} i={t.i} listo={Boolean(listo)} c4={figC4} />}
         <div style={{ marginBottom: "12px" }}>
           <DistintivoIntento.Provider value={datos.distintivo ?? TEXTOS_ARMA.unIntento}>
             <ContadorConIntento>
@@ -160,23 +215,23 @@ export default function PreguntasConAsientoT5({ config, Marco, rotulo, titulo, a
           </>
         )}
         {item.tipo === "cifra" && !escalera && (
-          <>
+          <div onChange={escribir} style={{ display: "contents" }}>
             <CasillaCifra key={item.id} id={item.id} onComprobar={elegir} comprobado={Boolean(r)} etiqueta={item.pregunta} iba={r && !r.ok ? r.textoCorrecta : null} />
             <Devolucion r={r} lectorError={r && !r.ok ? "Incorrecto. " : null} />
-          </>
+          </div>
         )}
         {item.tipo === "cifra" && escalera && (
-          <>
+          <div onChange={escribir} style={{ display: "contents" }}>
             <CasillaCifra key={item.id} id={item.id} onComprobar={elegir} comprobado={Boolean(listo)} etiqueta={item.pregunta} iba={listo && r && !r.ok ? r.textoCorrecta : null}
               extra={item.resultado && resultados ? (
                 <ElegirResultado opciones={resultados} elegido={resultado} bueno={listo ? item.resultado : null}
-                  deshabilitado={Boolean(listo)} onElegir={setResultado} etiqueta={item.pregunta} />
+                  deshabilitado={Boolean(listo)} onElegir={elegirResultado} etiqueta={item.pregunta} />
               ) : null}
               extraListo={!item.resultado || resultado !== null} />
             <div ref={mensaje} tabIndex={-1} data-mensaje-escalera style={{ outline: "none" }}>
               <Devolucion key={fallos + (listo ? 10 : 0)} r={r} lectorError={r && !r.ok ? "Incorrecto. " : null} />
             </div>
-          </>
+          </div>
         )}
         {item.tipo === "asiento" && (item.lineas.every((l) => l.banco) ? (
           <LineasConCuenta key={item.id} lineas={item.orden.map((id) => item.lineas.find((l) => l.id === id))}
@@ -194,6 +249,8 @@ export default function PreguntasConAsientoT5({ config, Marco, rotulo, titulo, a
     </Marco>
   );
 }
+
+const C4_VACIO = { entrada: null, v: null, pendiente: false, respondida: false, anim: false };
 
 /*
  * Dos opciones de un toque junto a la casilla (Ganó o Perdió), que se pueden
