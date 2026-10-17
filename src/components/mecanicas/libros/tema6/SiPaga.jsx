@@ -1,7 +1,9 @@
-import { ESCENA_T6_A4, PASOS_T6_A4, CIERRE_T6_A4, PARADA_T6_A4 } from "../../../../data/contabilidadT6Pieza4.js";
+import { PASOS_T6_A4, CIERRE_T6_A4, PARADA_T6_A4 } from "../../../../data/contabilidadT6Pieza4.js";
 import { T6_A4 } from "../../../../contabilidad/t6Pieza4.js";
 import MaquinaPegada from "./MaquinaPegada.jsx";
-import { escenaDeMomentos } from "./Momentos.jsx";
+import { crearFichas } from "../../../../contabilidad/fichaQueEntra.js";
+import { FICHAS_T6_A4 } from "../../../../data/fichasQueEntran.js";
+import { crearEscenaFichas } from "./FichaQueEntra.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -16,38 +18,20 @@ import { escenaDeMomentos } from "./Momentos.jsx";
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-const E = ESCENA_T6_A4;
 const TODOS = [...PASOS_T6_A4, CIERRE_T6_A4];
 
-export const MOMENTOS_ESCENA_T6_A4 = [
-  {
-    fecha: { id: "fecha0", texto: E.momentos[0].fecha },
-    piezas: [
-      { id: "castiga", tipo: "hecho", texto: E.castiga },
-      { id: "provision1", tipo: "anotacion", cuenta: E.provision, movimiento: E.monto, lado: "debe" },
-      { id: "clientes1", tipo: "anotacion", cuenta: E.clientes, linea: E.aNombre, movimiento: E.monto, lado: "haber" },
-    ],
-  },
-  {
-    fecha: { id: "fecha1", texto: E.momentos[1].fecha },
-    piezas: [
-      { id: "vuelve", tipo: "hecho", texto: E.vuelve },
-      { id: "primero", tipo: "etiqueta", texto: E.primero },
-      { id: "clientes2", tipo: "anotacion", cuenta: E.clientes, movimiento: E.monto, lado: "debe" },
-      { id: "provision2", tipo: "anotacion", cuenta: E.provision, movimiento: E.monto, lado: "haber" },
-      { id: "despues", tipo: "etiqueta", texto: E.despues },
-      { id: "caja", tipo: "anotacion", cuenta: E.caja, movimiento: E.monto, lado: "debe" },
-      { id: "clientes3", tipo: "anotacion", cuenta: E.clientes, movimiento: E.monto, lado: "haber" },
-    ],
-  },
-];
 
-const Escena = escenaDeMomentos({ momentos: MOMENTOS_ESCENA_T6_A4, estadoPaso: T6_A4.estadoPaso, reservas: T6_A4.reservas, textos: E });
+/* Lote 21 (P2 de Mai): la tabla del caso a, con la deuda que se revive y el pago que entra a Caja. */
+const FICHAS = crearFichas(TODOS, FICHAS_T6_A4);
+const Escena = crearEscenaFichas(FICHAS_T6_A4);
 
 /* La predicción se escribe sobre la silueta del primer asiento del segundo momento (§2a de Mai). */
-const PARADA = { ...PARADA_T6_A4, etiquetaEn: "clientes2" };
+/* Lote 21: en la tabla del caso a, la parada resalta el sitio de lo que se revive y la etiqueta va sobre él. */
+export const PARADA_SI_PAGA = { ...PARADA_T6_A4, etiquetaEn: "revive", resaltados: ["revive"] };
+export const estadoSiPaga = FICHAS.estado;
+const PARADA = PARADA_SI_PAGA;
 
 export default function SiPaga() {
   /* Sin pasos juntados (hoja 7 de Mai), con la parada entre el 4 y el 5. */
-  return <MaquinaPegada todos={TODOS} estadoPaso={T6_A4.estadoPaso} duracion={T6_A4.duracion} escena={Escena} parada={PARADA} atributos={{ "data-capa2-t6-a4": true }} />;
+  return <MaquinaPegada todos={TODOS} estadoPaso={FICHAS.estado} duracion={T6_A4.duracion} escena={Escena} parada={PARADA} atributos={{ "data-capa2-t6-a4": true }} />;
 }

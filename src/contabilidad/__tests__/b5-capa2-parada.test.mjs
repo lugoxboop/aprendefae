@@ -60,6 +60,8 @@ const TANQUE = await import("../../components/mecanicas/libros/tema6/LaProvision
 const TITULOS = await import("../../components/mecanicas/libros/tema5/TresMomentos.jsx");
 const E4 = await import("../t6Pieza4.js");
 const E6 = await import("../t6Pieza5.js");
+const SIPAGA = await import("../../components/mecanicas/libros/tema6/SiPaga.jsx");
+const TABLA = await import("../../components/mecanicas/libros/tema6/LaTablaDelEjemplo.jsx");
 
 /* Cada pieza: su componente, cuántos pasos quedan, su parada y su estado por paso (el que se ve). */
 /* `en`: la pieza de la escena que lleva la etiqueta; `dice`: lo que escribe cada opción (§2a de Mai). */
@@ -69,8 +71,9 @@ const PIEZAS = [
   { nombre: "T5 · A2", en: "caja", dice: textoDeOpcion(D5.PARADA_T5_A2), Componente: await C("tema5/TresMomentos"), pasos: 14, parada: TITULOS.PARADA_TITULOS, estado: TITULOS.estadoTitulos, duracion: E5.T5_A2_JUNTO.duracion },
   /* Lote 7: la escena del tanque; la parada resalta el gasto y la fila del castigo, y la etiqueta va sobre la bandeja del gasto. */
   { nombre: "T6 · A3", en: "bandejaGasto", dice: { si: "Otra vez en marzo", "si-parte": "En marzo, solo lo que faltó", no: "Solo en diciembre" }, Componente: await C("tema6/LaProvision"), pasos: 15, parada: TANQUE.PARADA_TANQUE, estado: TANQUE.estadoTanque, duracion: E3.T6_A3_JUNTO.duracion },
-  { nombre: "T6 · A4", en: "clientes2", dice: textoDeOpcion(D4.PARADA_T6_A4), Componente: await C("tema6/SiPaga"), pasos: 9, parada: D4.PARADA_T6_A4, estado: E4.T6_A4.estadoPaso, duracion: E4.T6_A4.duracion },
-  { nombre: "T6 · A5", en: "res2", dice: textoDeOpcion(D6.PARADA_T6_A5), Componente: await C("tema6/LaTablaDelEjemplo"), pasos: 10, parada: D6.PARADA_T6_A5, estado: E6.T6_A5_JUNTO.estadoPaso, duracion: E6.T6_A5_JUNTO.duracion, pegar: pegarPorcentaje },
+  /* Lote 21: la ficha que entra; la parada resalta el sitio de la respuesta y la etiqueta va sobre él. El paso que viene lleva gesto: «Reproducir» se pausa ahí. */
+  { nombre: "T6 · A4", en: "revive", dice: textoDeOpcion(D4.PARADA_T6_A4), Componente: await C("tema6/SiPaga"), pasos: 9, parada: SIPAGA.PARADA_SI_PAGA, estado: SIPAGA.estadoSiPaga, duracion: E4.T6_A4.duracion, gestoDespues: true },
+  { nombre: "T6 · A5", en: "v2", dice: textoDeOpcion(D6.PARADA_T6_A5), Componente: await C("tema6/LaTablaDelEjemplo"), pasos: 10, parada: TABLA.PARADA_TABLA, estado: TABLA.estadoTabla, duracion: E6.T6_A5_JUNTO.duracion, pegar: pegarPorcentaje, gestoDespues: true },
 ];
 
 const montar = async (el) => {
@@ -259,7 +262,8 @@ for (const p of PIEZAS) {
       await tocar(caja.querySelector(`[data-parada] [data-opcion="${p.parada.correcta}"]`));
       await tocar(btn(caja, "reproducir"));
       assert.equal(contador(caja), `Paso ${p.parada.antes} de ${p.pasos}`, "la parada no tiene duración");
-      assert.equal(btn(caja, "reproducir").getAttribute("aria-pressed"), "true", "y sigue reproduciendo");
+      /* Si el paso que viene lleva gesto (lote 21), «Reproducir» se pausa ahí hasta hacerlo. */
+      assert.equal(btn(caja, "reproducir").getAttribute("aria-pressed"), p.gestoDespues ? "false" : "true", p.gestoDespues ? "se pausa en el gesto" : "y sigue reproduciendo");
       desmontar();
     } finally {
       mock.timers.reset();

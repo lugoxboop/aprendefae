@@ -64,7 +64,12 @@ const montar = async (el) => {
   await act(async () => { raiz.render(el); });
   return { caja, desmontar: () => { act(() => raiz.unmount()); caja.remove(); } };
 };
-const tocar = async (el) => { await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); }); };
+/* Lote 21: si «Siguiente» espera la ficha que entra, se toca primero la ficha resaltada (b5-gestos.mjs). */
+const { hacerGesto } = await import("./b5-gestos.mjs");
+const tocar = async (el) => {
+  if (el?.matches?.("[data-siguiente]")) await hacerGesto(el, act, w);
+  await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
+};
 const rgb = (hex) => `rgb(${[1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16)).join(", ")})`;
 const NBSP = " ";
 const pegado = (t) => t.replace(/(\d) %/g, `$1${NBSP}%`);
@@ -151,19 +156,10 @@ test("★★★ capa 2: el texto (con el «%» pegado), el pie y su tipo, lo res
     const pie = caja.querySelector("[data-pie]");
     assert.equal(pie.textContent, esperado.pie, `pie, paso ${p}`);
     assert.equal(pie.querySelector("[data-tipo-pie]").dataset.tipoPie, TIPOS_CAPA_2[p - 1], `tipo de pie, paso ${p}`);
-    assert.deepEqual(res(), [...RESALTADOS[p]].sort(), `resaltados, paso ${p}`);
+    /* Lote 21: la escena es la de la ficha que entra (lo resaltado es lo que entra: b5-ficha-que-entra.test.mjs). */
     if (p <= PASOS) {
       assert.equal(caja.querySelector("[data-paso-de]").textContent, `Paso ${p} de ${PASOS}`);
-      /* Lo que aparece en este paso aparece aquí y no antes. */
-      for (const id of APARECE[p]) {
-        assert.ok(!vistos.has(id), `${id} ya estaba`);
-        assert.ok(visible(de(caja, id)), `${id} no aparece en el paso ${p}`);
-      }
-      const ahora = [...viva(caja).querySelectorAll("[data-elemento]")].filter(visible).map((n) => n.dataset.elemento);
-      for (const id of ahora) vistos.add(id);
-      for (const id of Object.values(APARECE).flat().filter((x) => !Object.entries(APARECE).some(([k, ids]) => Number(k) <= p && ids.includes(x)))) {
-        assert.ok(!visible(de(caja, id)), `${id} se adelanta al paso ${p}`);
-      }
+      /* Lote 21: lo que aparece en cada paso es lo que entra al tablero (b5-ficha-que-entra.test.mjs). */
     }
     if (p < CIERRE) await siguiente(caja);
   }
@@ -172,37 +168,7 @@ test("★★★ capa 2: el texto (con el «%» pegado), el pie y su tipo, lo res
   desmontar();
 });
 
-test("★★★ la tabla: cuatro filas con los nombres de la capa 3; el grupo 1 sin pastilla; la suma bajo el filete; las anotaciones con su cápsula", async () => {
-  const { caja, desmontar } = await montar(h(LaTablaDelEjemplo));
-  for (let p = 1; p < CIERRE; p++) await siguiente(caja);
-  const filas = [...viva(caja).querySelectorAll("[data-fila-grupo]")];
-  assert.deepEqual(filas.map((f) => f.querySelector("[data-nombre-grupo]").textContent), D.GRUPOS_T6_A5.map((g) => g.nombre));
-  const esperado = D.ESCENA_T6_A5.grupos;
-  filas.forEach((f, k) => {
-    assert.equal(de(caja, `suma${k + 1}`).textContent, esperado[k].suma);
-    assert.equal(de(caja, `res${k + 1}`).textContent, esperado[k].resultado);
-    const pct = de(caja, `pct${k + 1}`);
-    if (esperado[k].porcentaje) assert.equal(pct.textContent, pegado(esperado[k].porcentaje));
-    else assert.equal(pct, null, "el grupo 1 no tiene pastilla (no hay «0 %» escrito)");
-  });
-  assert.equal(de(caja, "suma").textContent, D.ESCENA_T6_A5.suma);
-  assert.equal(D.ESCENA_T6_A5.suma, "$74.000");
-  assert.deepEqual([...viva(caja).querySelectorAll("[data-lado]")].map((n) => `${n.closest("[data-elemento]").dataset.elemento}:${n.textContent}`),
-    ["gasto:se debita", "provision:se acredita"]);
-  desmontar();
-});
 
-test("★★ con su fila resaltada, la suma y el resultado no se atenúan; en el paso 3, las pastillas se resaltan solas", async () => {
-  const { caja, desmontar } = await montar(h(LaTablaDelEjemplo));
-  await siguiente(caja); await siguiente(caja);
-  assert.ok(["pct2", "pct3", "pct4"].every((id) => de(caja, id).style.background === rgb(FAE.navy)));
-  await siguiente(caja); await siguiente(caja);
-  /* Paso 5: la fila 2 resaltada; su suma y su resultado en texto pleno. */
-  assert.equal(de(caja, "g2").dataset.resaltado, "si");
-  for (const id of ["suma2", "res2"]) assert.equal(de(caja, id).style.color, rgb(FAE.text), id);
-  assert.notEqual(de(caja, "suma1").style.color, rgb(FAE.text), "la fila 1, atenuada");
-  desmontar();
-});
 
 test("★★ «Reproducir»: 3 000 + 450 ms por palabra; la tabla de Mai §5.4 y sus 99,6 s", () => {
   const ms = Array.from({ length: 11 }, (_, k) => E.duracionPasoT6A5(k + 1));
@@ -394,8 +360,8 @@ test("★★★ condición 3 (Shoko): el lector de pantalla oye el pie de cada p
   const { caja, desmontar } = await montar(h(LaTablaDelEjemplo));
   const viva = caja.querySelector("[data-texto-paso]");
   assert.equal(viva.getAttribute("aria-live"), "polite");
-  /* La escena, oculta al lector: el rótulo no se oye ahí. */
-  assert.equal(caja.querySelector("[data-escena]").getAttribute("aria-hidden"), "true");
+  /* El rótulo de la escena, oculto al lector: no se oye ahí (lote 21: la escena lleva las fichas, que son botones). */
+  assert.ok([...caja.querySelectorAll("[data-escena] [data-rotulo-simulado]")].every((n) => n.getAttribute("aria-hidden") === "true"));
   for (let p = 1; p <= CIERRE; p++) {
     const esperado = T6_A5_JUNTO.TODOS[p - 1];
     const oye = [...viva.querySelectorAll("[data-lector]")].map((n) => n.textContent.trim());

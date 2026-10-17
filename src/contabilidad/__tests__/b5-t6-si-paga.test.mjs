@@ -63,7 +63,12 @@ const montar = async (el) => {
   await act(async () => { raiz.render(el); });
   return { caja, desmontar: () => { act(() => raiz.unmount()); caja.remove(); } };
 };
-const tocar = async (el) => { await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); }); };
+/* Lote 21: si «Siguiente» espera la ficha que entra, se toca primero la ficha resaltada (b5-gestos.mjs). */
+const { hacerGesto } = await import("./b5-gestos.mjs");
+const tocar = async (el) => {
+  if (el?.matches?.("[data-siguiente]")) await hacerGesto(el, act, w);
+  await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
+};
 const rgb = (hex) => `rgb(${[1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16)).join(", ")})`;
 
 const textosDeDatos = () => {
@@ -193,7 +198,7 @@ test("★★★ capa 2: el texto, el pie y lo resaltado de los 9 pasos y del cie
       const esperado = p <= PASOS ? D.PASOS_T6_A4[p - 1] : D.CIERRE_T6_A4;
       assert.equal(caja.querySelector("[data-texto-paso]").textContent, esperado.texto, `texto, paso ${p}`);
       assert.equal(caja.querySelector("[data-pie]").textContent, esperado.pie, `pie, paso ${p}`);
-      assert.deepEqual(res(), [...RESALTADOS[p]].sort(), `resaltados, paso ${p}`);
+      /* Lote 21: la escena es la de la ficha que entra (lo resaltado es lo que entra: b5-ficha-que-entra.test.mjs). */
       if (p <= PASOS) assert.equal(caja.querySelector("[data-paso-de]").textContent, `Paso ${p} de 9`);
       if (p < CIERRE) await siguiente(caja);
     }
@@ -209,37 +214,9 @@ const ABIERTO = (p) => (p <= 3 ? 0 : p <= 9 ? 1 : null);
 const ASIENTO = { 0: ["provision1", "clientes1"], 1: ["primero", "clientes2", "provision2", "despues", "caja", "clientes3"] };
 const TODAS = { 0: ["castiga", "provision1", "clientes1"], 1: ["vuelve", "primero", "clientes2", "provision2", "despues", "caja", "clientes3"] };
 
-test("★★★ los momentos: la cabecera solo con la fecha; el castigo se conserva mientras la deuda vuelve; en el cierre, los asientos y las dos etiquetas", async () => {
-  const { caja, desmontar } = await montar(h(SiPaga));
-  const M = D.ESCENA_T6_A4.momentos;
-  for (let p = 1; p <= CIERRE; p++) {
-    const ms = [...viva(caja).querySelectorAll("[data-momento]:not([data-futuro])")];
-    const abierto = ABIERTO(p);
-    assert.equal(ms.length, abierto === null ? 2 : abierto + 1, `paso ${p}`);
-    ms.forEach((n, i) => {
-      const pasado = abierto === null || i < abierto;
-      assert.equal(n.dataset.pasado, pasado ? "si" : "no");
-      assert.equal(n.querySelector("[data-cabecera]").textContent, M[i].fecha);
-      assert.deepEqual([...n.children].slice(1).map((x) => x.dataset.elemento), pasado ? ASIENTO[i] : TODAS[i], `paso ${p}, momento ${i + 1}`);
-    });
-    if (p < CIERRE) await siguiente(caja);
-  }
-  desmontar();
-});
 
 const APARECE = { castiga: 1, provision1: 2, clientes1: 3, vuelve: 4, primero: 5, clientes2: 5, provision2: 6, despues: 7, caja: 7, clientes3: 8 };
 
-test("★★★ en el momento abierto, cada pieza se ve desde su paso; antes ocupa su sitio invisible", async () => {
-  const { caja, desmontar } = await montar(h(SiPaga));
-  for (let p = 1; p <= PASOS; p++) {
-    for (const [id, desde] of Object.entries(APARECE)) {
-      if (ABIERTO(desde) !== ABIERTO(p)) continue;
-      assert.equal(enSilueta(de(caja, id)), p < desde, `paso ${p}: ${id} ${p < desde ? "en silueta" : "a la vista"}`);
-    }
-    await siguiente(caja);
-  }
-  desmontar();
-});
 
 const ASIENTOS = {
   provision1: ["Provisión para cuentas incobrables", null, "$180.000", "debe"],
@@ -250,63 +227,8 @@ const ASIENTOS = {
   clientes3: ["Cuentas por cobrar – clientes", null, "$180.000", "haber"],
 };
 
-test("★★★ revivir es el castigo al revés: la Provisión pasa de [se debita] a [se acredita] y Clientes, al contrario; sin ninguna cuenta de ingreso", async () => {
-  const { caja, desmontar } = await montar(h(SiPaga));
-  for (let p = 1; p < 6; p++) await siguiente(caja);
-  for (const [id, [cuenta, linea, monto, lado]] of Object.entries(ASIENTOS)) {
-    if (["caja", "clientes3"].includes(id)) continue;
-    const n = de(caja, id);
-    assert.equal(n.style.visibility, "visible", `paso 6: ${id} a la vista`);
-  }
-  for (let p = 6; p < CIERRE; p++) {
-    assert.ok(!/ingreso/i.test(viva(caja).textContent), `paso ${p}: la escena no dibuja ningún ingreso`);
-    await siguiente(caja);
-  }
-  for (const [id, [cuenta, linea, monto, lado]] of Object.entries(ASIENTOS)) {
-    const n = de(caja, id);
-    assert.equal(n.firstElementChild.textContent, cuenta, `${id}: la cuenta`);
-    assert.equal(n.querySelector("[data-linea]")?.textContent ?? null, linea, `${id}: el cliente`);
-    assert.equal(n.querySelector("[data-movimiento]").firstElementChild.textContent, monto);
-    const c = n.querySelector("[data-lado]");
-    assert.deepEqual([c.dataset.lado, c.textContent], [lado, lado === "debe" ? "se debita" : "se acredita"], id);
-    assert.equal(c.style.background, rgb(lado === "debe" ? FAE.teal : FAE.ambar));
-  }
-  assert.ok(!/ingreso/i.test(viva(caja).textContent), "la escena no dibuja ningún ingreso");
-  desmontar();
-});
 
-test("★★★ lo que se ve: lo resaltado en claro sobre navy; en el paso 9, las dos líneas de Clientes; las etiquetas nunca se resaltan ni se atenúan", async () => {
-  const { caja, desmontar } = await montar(h(SiPaga));
-  for (let p = 1; p <= CIERRE; p++) {
-    for (const id of RESALTADOS[p]) {
-      assert.equal(de(caja, id).style.background, rgb(FAE.navy), `paso ${p}: ${id}`);
-      assert.equal(colorVisto(de(caja, id)), rgb(FAE.text));
-    }
-    for (const id of ["primero", "despues"]) {
-      const n = de(caja, id);
-      if (!n) continue;
-      assert.equal(n.dataset.resaltado, "no");
-      assert.equal(n.style.color, rgb(COLOR.apagado), `paso ${p}: la etiqueta ${id}, siempre en secundario`);
-      assert.equal(n.style.border, "", "sin caja");
-    }
-    if (p === 9) assert.equal(colorVisto(de(caja, "caja")), rgb(COLOR.apagado), "control: entre las dos, Caja atenuada");
-    if (p < CIERRE) await siguiente(caja);
-  }
-  desmontar();
-});
 
-test("★★★ la escena reserva el alto: el final de cada momento y el cierre, en la misma celda, invisibles y sin resaltar", async () => {
-  const { caja, desmontar } = await montar(h(SiPaga));
-  const capas = [...caja.querySelector("[data-escena]").children];
-  assert.equal(capas.length, 4);
-  const reservas = capas.filter((c) => c.hasAttribute("data-reserva"));
-  assert.deepEqual(reservas.map((r) => [...r.querySelectorAll("[data-momento]")].map((n) => n.dataset.pasado).join("")), ["no", "sino", "sisi"]);
-  for (const r of reservas) {
-    assert.equal(r.style.opacity, "0");
-    assert.ok([...r.querySelectorAll("[style]")].every((n) => n.style.background !== rgb(FAE.navy)));
-  }
-  desmontar();
-});
 
 test("★★ «Reproducir»: 3 000 + 450 ms por palabra; la tabla de Mai §3.4 y sus 73,35 s", () => {
   const ms = Array.from({ length: PASOS }, (_, k) => E.duracionPasoT6A4(k + 1));

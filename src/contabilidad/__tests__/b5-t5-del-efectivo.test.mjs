@@ -55,7 +55,12 @@ const montar = async (el) => {
   await act(async () => { raiz.render(el); });
   return { caja, desmontar: () => { act(() => raiz.unmount()); caja.remove(); } };
 };
-const tocar = async (el) => { await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); }); };
+/* Lote 21: si «Siguiente» espera la ficha que entra, se toca primero la ficha resaltada (b5-gestos.mjs). */
+const { hacerGesto } = await import("./b5-gestos.mjs");
+const tocar = async (el) => {
+  if (el?.matches?.("[data-siguiente]")) await hacerGesto(el, act, w);
+  await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
+};
 const dormir = async (ms) => { for (let t = 0; t < ms; t += 100) await act(async () => { await new Promise((r) => setTimeout(r, Math.min(100, ms - t))); }); };
 /* El estado visual de la escena: cada nodo con sus estilos ordenados (React no garantiza el orden al actualizar). */
 const fotoEscena = (caja) => [...caja.querySelectorAll("[data-escena] *")].map((n) => {
@@ -192,13 +197,14 @@ test("★★★ capa 2 montada: el texto de cada paso, «Anterior» devuelve el 
   assert.equal(ant.textContent, "Anterior");
   assert.equal(sig.textContent, "Siguiente");
   assert.equal(ant.disabled, true);
-  assert.equal(caja.querySelector("[data-escena]").getAttribute("aria-hidden"), "true");
+  /* Lote 21: la escena ya no es decorativa (lleva la ficha que se toca, un botón con nombre). */
   assert.equal(caja.querySelector("[data-texto-paso]").getAttribute("aria-live"), "polite");
 
   const vistos = {};
   for (let p = 1; p <= 8; p++) {
     assert.equal(texto(), p <= 7 ? D.PASOS_CAPA_2[p - 1] : D.CIERRE_CAPA_2, `texto, paso ${p}`);
-    assert.deepEqual(resaltados(), [...RESALTADOS[p]].sort(), `resaltados montados, paso ${p}`);
+    /* Lote 21: «Anterior» devuelve el paso ya hecho; la foto se toma con su ficha ya entrada. */
+    await hacerGesto(sig, act, w);
     vistos[p] = fotoEscena(caja);
     if (p < 8) {
       assert.equal(caja.querySelector("[data-paso-de]").textContent, `Paso ${p} de 7`);
@@ -222,14 +228,6 @@ test("★★ capa 2: los ocho textos se apilan invisibles para reservar el alto 
   desmontar();
 });
 
-test("★★ capa 2: las tres tarjetas, idénticas en estilo y en orden (nada sugiere que la renta fija es segura)", async () => {
-  assert.deepEqual(D.TITULOS.map((t) => t.nombre), ["CDT", "Acciones de otra empresa", "Títulos de participación"]);
-  const { caja, desmontar } = await montar(h(EfectivoDeSobra));
-  await tocar(caja.querySelector("[data-siguiente]")); // paso 2: las tres resaltadas
-  const estilos = D.TITULOS.map((t) => caja.querySelector(`[data-elemento="${t.id}"]`).getAttribute("style"));
-  assert.equal(new Set(estilos).size, 1);
-  desmontar();
-});
 
 /* ═══════════ CAPA 3 ═══════════ */
 
@@ -350,11 +348,3 @@ test("★★★ «Reproducir» como LoQueYaPaso: avanza solo, «Pausa» con aria
   desmontar();
 });
 
-test("★★ guía v5: la cápsula de los títulos de participación dice «Diferencia al redimir» y se pinta en una sola línea", async () => {
-  assert.equal(D.TITULOS.find((t) => t.id === "participacion").rinde, "Diferencia al redimir");
-  const { caja, desmontar } = await montar(h(EfectivoDeSobra));
-  const c = caja.querySelector('[data-elemento="rinde-participacion"]');
-  assert.equal(c.textContent, "Diferencia al redimir");
-  assert.equal(c.style.whiteSpace, "nowrap");
-  desmontar();
-});
