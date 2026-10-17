@@ -260,7 +260,11 @@ export default function FichasUnNivel({
     );
   }
 
-  const marcas = marcasDe(config.cajones, tocados, correcta, fin);
+  /*
+   * Lote 22 (bug de #440): en la decisión 2 el `fin` es el de la 2, pero la 1 ya terminó; sin esto, el cajón
+   * correcto ya tocado salía «No va aquí» hasta el final de la 2.
+   */
+  const marcas = marcasDe(config.cajones, tocados, correcta, fin || (modo === "despues" && etapa === 2));
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS + CSS_B5H}</style>
