@@ -50,11 +50,23 @@ for (const [id, pieza] of Object.entries(DECIDE_POR_PIEZA)) {
   test(`${id} · D4: elegir distinto se ve distinto`, () => {
     for (const d of pieza.decisiones) {
       assert.equal(typeof d.estado, "function", `${d.clave}: sin estado()`);
-      const retratos = d.opciones.map((o) => JSON.stringify(d.estado(o.id)));
-      assert.ok(
-        new Set(retratos).size > 1,
-        `${d.clave}: todas las opciones dejan la figura igual, así que la decisión no se ve`,
-      );
+      /*
+       * PAREJA POR PAREJA, no «que no sean todas iguales». Esa versión floja
+       * dejó pasar un caso real en A1: las dos opciones malas devolvían el
+       * mismo estado —y encima el que ya había dejado la decisión anterior—,
+       * así que elegirlas no movía la figura. La prueba decía verde porque la
+       * correcta sí era distinta. Dos elecciones distintas que se ven igual
+       * son, para el estudiante, la misma elección.
+       */
+      const retratos = d.opciones.map((o) => [o.id, JSON.stringify(d.estado(o.id))]);
+      for (let i = 0; i < retratos.length; i++) {
+        for (let j = i + 1; j < retratos.length; j++) {
+          assert.notEqual(
+            retratos[i][1], retratos[j][1],
+            `${d.clave}: «${retratos[i][0]}» y «${retratos[j][0]}» dejan la figura idéntica, así que elegir una u otra no se ve`,
+          );
+        }
+      }
     }
   });
 

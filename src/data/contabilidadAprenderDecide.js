@@ -67,7 +67,23 @@ export const DECIDE_A1 = {
       ],
       porque: "$50 menos $30. La diferencia entre los dos movimientos, del lado del mayor.",
       pista: "Reste el movimiento menor del mayor. Mire la figura: lo que queda en pie después de cancelar.",
-      estado: (eleccion) => ({ ...CASO_A1, cancelar: eleccion === "20", lado: "debe" }),
+      /*
+       * Cada cifra mala se PINTA como lo que afirma, no se deja la figura
+       * quieta. Si eligió $80 fue porque sumó: la figura pone los dos valores
+       * del mismo lado y el total dice 80, que es exactamente su confusión
+       * puesta a la vista. Si eligió $50 fue porque el crédito no contaba:
+       * desaparece de la derecha y quedan 50 limpios.
+       *
+       * Antes las dos malas devolvían el mismo estado, y encima el que ya
+       * había dejado la decisión 1, así que elegirlas no movía nada. La
+       * prueba no lo atrapaba porque solo exigía que no fueran todas iguales;
+       * ahora las exige distintas entre sí.
+       */
+      estado: (eleccion) => {
+        if (eleccion === "80") return { ...CASO_A1, debitos: [{ valor: 50 }, { valor: 30 }], creditos: [], cancelar: true, lado: "debe" };
+        if (eleccion === "50") return { ...CASO_A1, creditos: [], cancelar: true, lado: "debe" };
+        return { ...CASO_A1, cancelar: true, lado: "debe" };
+      },
     },
   ],
   cierre: "Eso es todo lo que hace una cuenta: dos lados, dos movimientos y una diferencia que se queda del lado que pesó más.",
