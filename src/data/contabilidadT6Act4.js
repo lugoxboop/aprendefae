@@ -250,4 +250,39 @@ export const SE_ACREDITA_T6_ACT4 = {
   "qd2-10": CLIENTES,
 };
 
+/*
+ * ═══════════ D4 · LA SEGUNDA DECISIÓN: «¿QUÉ LE PASA A LA PROVISIÓN?» (P2 de Mai y Futaba, lote 19) ═══════════
+ *
+ * La correcta sale del asiento del banco: la provisión en el HABER sube; en el DEBE, baja; fuera del
+ * asiento, no cambia (contabilidad/t6Act4.js). Futaba comprobó los 10 hechos: ninguno es dudoso.
+ * PARA SHOKO: la pregunta, las tres opciones y el rótulo del tanque.
+ */
+export const P_SUBE = "sube";
+export const P_BAJA = "baja";
+export const P_IGUAL = "igual";
+export const SEGUNDA_T6_ACT4 = {
+  pregunta: "¿Qué le pasa a la provisión?",
+  opciones: [{ id: P_SUBE, texto: "Sube" }, { id: P_BAJA, texto: "Baja" }, { id: P_IGUAL, texto: "No cambia" }],
+  rotulo: "Provisión",
+};
+
+const MIRA = "Mira el asiento que acabas de armar. ¿La provisión aparece en él?";
+const CASTIGO = { pista: "En el asiento del castigo, ¿en qué lado quedó la provisión?", porque: "La provisión se debita al castigar, y lo que se debita en ella la hace bajar." };
+const COBROS = { pista: MIRA, porque: "Cobrar mueve Caja y Clientes. La provisión no está en el asiento, así que no cambia." };
+const DEVOLUCIONES_SEGUNDA = {
+  "qd-01": { pista: MIRA, porque: "Vender a crédito mueve Clientes e ingresos. La provisión no está en el asiento, así que no cambia." },
+  "qd-02": COBROS,
+  "qd-03": COBROS,
+  "qd-04": { pista: MIRA, porque: "El cheque devuelto vuelve a subir la deuda del cliente. La provisión no se toca." },
+  "qd-05": { pista: MIRA, porque: "Con la anulación directa no hay provisión: el castigo va al gasto y la provisión no cambia." },
+  "qd-06": CASTIGO,
+  "qd-07": CASTIGO,
+  "qd-08": { pista: "En el asiento del ajuste, ¿en qué lado quedó la provisión?", porque: "Al ajustar se acredita la provisión, y lo que se acredita en ella la hace subir." },
+  "qd-09": { pista: "Revivir es el castigo al revés. ¿En qué lado quedó la provisión ahora?", porque: "Al revivir se acredita la provisión: es el castigo al revés, así que sube." },
+  "qd-10": { pista: MIRA, porque: "El pago de una deuda revivida mueve Caja y Clientes. La provisión ya se movió antes, al revivir." },
+};
+/* Vuelta 2 (D8): cada hecho nuevo es el gemelo del de hoy con su mismo número (mismo grupo y mismo asiento); el 8, «crea por primera vez», toma el del ajuste, como pide Futaba. */
+HECHOS_V2_T6_ACT4.forEach((h, k) => { DEVOLUCIONES_SEGUNDA[h.id] = DEVOLUCIONES_SEGUNDA[HECHOS_T6_ACT4[k].id]; });
+export { DEVOLUCIONES_SEGUNDA as DEVOLUCIONES_SEGUNDA_T6_ACT4 };
+
 export const ALT_T6_ACT4 = "Actividad de elección. Aparece un hecho. Elige cuál de las cuatro cuentas se debita: Cuentas por cobrar – clientes, Caja, Gasto provisiones – cuentas incobrables o Provisión para cuentas incobrables. Tienes un intento por hecho, y después se lee la explicación.";

@@ -38,7 +38,14 @@ const { createRoot } = await import("react-dom/client");
 const act = React.act;
 const h = React.createElement;
 
-const { default: QueSeDebita } = await import("../../components/mecanicas/libros/tema6/QueSeDebita.jsx");
+/*
+ * Lote 19: estas pruebas son la decisión 1 («¿Qué se debita?») y montan la elección con la configuración de
+ * siempre, sin `segunda`: así prueban también que el cambio de EligeUnaOpcion es compatible. La decisión 2
+ * (qué le pasa a la provisión) tiene su propia prueba (b5-segunda-decision.test.mjs).
+ */
+const { CONFIG_T6_ACT4 } = await import("../../components/mecanicas/libros/tema6/QueSeDebita.jsx");
+const { default: EligeUnaOpcion } = await import("../../components/mecanicas/libros/b5/EligeUnaOpcion.jsx");
+const QueSeDebita = (props) => React.createElement(EligeUnaOpcion, { config: CONFIG_T6_ACT4, ...props });
 const { MarcoLibros } = await import("../../components/mecanicas/bloques/marcos.jsx");
 const L = await import("../t6Act4.js");
 const D = await import("../../data/contabilidadT6Act4.js");
