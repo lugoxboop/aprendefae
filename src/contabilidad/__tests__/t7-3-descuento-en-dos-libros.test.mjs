@@ -2,7 +2,8 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
-import { seccion, compararDatos, recorrer, prepararDom, citas, CONDICION } from "./t7-3-recorte.mjs";
+import { seccion, compararDatos, prepararDom, citas, CONDICION } from "./t7-3-recorte.mjs";
+import { recorrerC4, conReloj } from "./t7-3-c4.mjs";
 import { NO_OPERACIONAL as C7, CORRECCIONES_T73, MELLO_T73, NEAR_T73, aplicarAlRecorte, palabrasAlAcertar } from "./correccionesMelloAciertos.mjs";
 
 /*
@@ -34,8 +35,9 @@ const h = React.createElement;
 const A = await import("../../data/contabilidadT7_3_a4.js");
 const A3 = await import("../../data/contabilidadT7_3_a3.js");
 const { SUBJECTS, APRENDER } = await import("../../data/subjects.js");
-const { default: PantallasT7_3, cifra } = await import("../../components/mecanicas/libros/t7/PantallasT7_3.jsx");
-const { textosDelError } = await import("../../components/mecanicas/libros/t7/escaleraAyuda.js");
+const { cifra } = await import("../../components/mecanicas/libros/t7/PantallasT7_3.jsx");
+const { default: AprenderT7_3C4 } = await import("../../components/mecanicas/libros/t7/AprenderT7_3C4.jsx");
+const { CONSECUENCIA_C4: C4 } = await import("../c4/t73a4_c4.js");
 const { PIEZAS_T7_3, TEMA_T7_3 } = await import("../../components/ContabilidadT7_3View.jsx");
 
 const RAIZ = new URL("../../../", import.meta.url);
@@ -118,53 +120,77 @@ test("★★★ las cifras son las de A3: el mismo ejemplo", () => {
   for (const t of ts) assert.deepEqual([...t.debe, ...t.haber].map((m) => m.monto), [C.condicionado]);
 });
 
-/* ═══════════ 2 · MONTADA ═══════════ */
+/* ═══════════ 2 · MONTADA: EL PATRÓN C4 (toda decisión se pinta) ═══════════ */
 
 const montar = async () => {
   const caja = document.createElement("div");
   document.body.appendChild(caja);
   const raiz = createRoot(caja);
-  await act(async () => { raiz.render(h(PantallasT7_3, { pieza: P, rotulo: "R" })); });
+  await act(async () => { raiz.render(h(AprenderT7_3C4, { pieza: P, rotulo: "R" })); });
   return { caja, desmontar: () => { act(() => raiz.unmount()); caja.remove(); } };
-};
-const tocar = async (el) => {
-  assert.ok(el, "no está el elemento que se quería tocar");
-  await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
 };
 /* Una cuenta T: [titular, cuenta, lo del debe, lo del haber]. */
 const cuentaT = (t) => [t.querySelector(".t73p-titular").textContent, t.querySelector(".t73p-t-cuenta").textContent,
   [...t.querySelectorAll('[data-lado-t="debe"] [data-mov-t]')].map((x) => x.textContent), [...t.querySelectorAll('[data-lado-t="haber"] [data-mov-t]')].map((x) => x.textContent)];
 const SALDO = cifra(A3.H3_LIBRO.condicionado);
+const DOBLE = cifra(2 * A3.H3_LIBRO.condicionado);
 
-test("★★★ se recorre entera: cada pantalla y cada estado, contra el recorte", async () => {
+test("★★★ se recorre entera en el patrón C4: cada pantalla y cada estado, contra el recorte; la línea cae en el libro que dice cada opción", conReloj(async () => {
   const m = await montar();
   try {
-    await recorrer({
-      caja: m.caja, P, S, tocar, w, textosDelError,
-      async alLlegar(k, c) {
-        const id = S.pantallas[k].id;
+    await recorrerC4({
+      c: m.caja, w, act, P, S, c4: C4,
+      async alLlegar(id) {
+        const c = m.caja;
         const ts = [...c.querySelectorAll("[data-cuenta-t]")];
-        if (id === "cierre") {
-          /* La cuenta T de San Calixto, con el saldo en el debe, antes del texto. */
+        if (id === "el-pago") {
+          /* Los dos libros, lado a lado: San Calixto ya lo anotó al debe; el de Santa Martha, vacío. */
+          assert.deepEqual(ts.map(cuentaT), [["San Calixto · lo da", DCC, [SALDO], []], ["Santa Martha · lo recibe", DCC, [], []]]);
+        } else if (id === "cierre") {
+          /* La cuenta T de San Calixto, con el saldo en el debe, después del texto (el texto va arriba, en el motor). */
           assert.deepEqual(ts.map(cuentaT), [["San Calixto", DCC, [SALDO], []]]);
-          const tras = [...c.querySelectorAll("[data-texto]")].find((x) => x.textContent.startsWith("Al final del periodo"));
-          assert.ok(ts[0].compareDocumentPosition(tras) & w.Node.DOCUMENT_POSITION_FOLLOWING);
+          assert.equal(c.querySelector("[data-saldo]"), null);
         } else if (id === "resumen") {
           /* Las dos, una al lado de la otra, con su rótulo arriba. */
           const fig = c.querySelector("figure[data-cuentas-t-lado]");
           assert.equal(fig.querySelector("figcaption").textContent, "San Calixto: debe · Santa Martha: haber");
           assert.equal(fig.querySelector(".t73p-ts-lado-par").children.length, 2);
           assert.deepEqual(ts.map(cuentaT), [["San Calixto", DCC, [SALDO], []], ["Santa Martha", DCC, [], [SALDO]]]);
+        } else if (id === "no-operacional") {
+          /* Los renglones del estado de resultados son las opciones; ninguno trae cifra todavía. */
+          assert.equal(c.querySelector(".c4-ops"), null, "las opciones van en la figura");
+          assert.deepEqual([...c.querySelectorAll("[data-renglon-v]")].map((x) => x.textContent), ["—", "—", "—"]);
+          assert.equal(c.querySelector("[data-utilidad]").textContent, "Efecto en la utilidad: ?");
         } else assert.equal(ts.length, 0);
       },
-      async alFallar(k, c) {
-        if (S.pantallas[k].id === "el-pago") assert.equal(c.querySelector("[data-asiento]"), null);
-        /* C7: el acierto de P3 (tres frases) no se pliega tampoco cuando lo da el 2.º error. */
-        if (S.pantallas[k].id === "no-operacional") assert.equal(c.querySelector("[data-mensaje] [data-por-que], [data-mensaje] [data-plegado]"), null);
+      async alElegir(id, o) {
+        const c = m.caja;
+        const ts = [...c.querySelectorAll("[data-cuenta-t]")].map(cuentaT);
+        if (id === "el-pago") {
+          assert.deepEqual(ts[1], ["Santa Martha · lo recibe", DCC, o.id === "debe" ? [SALDO] : [], o.id === "haber" ? [SALDO] : []]);
+          /* «No se anota»: la cifra queda fuera del libro, tachada. */
+          assert.equal(c.querySelector("[data-fuera]")?.textContent ?? null, o.id === "no-se-anota" ? SALDO : null);
+          assert.equal(c.querySelector("[data-asiento]"), null);
+        }
+        if (id === "cierre") {
+          assert.deepEqual(ts[0], ["San Calixto", DCC, o.id === "debe" ? [SALDO, SALDO] : [SALDO], o.id === "haber" ? [SALDO] : []]);
+          assert.equal(c.querySelector("[data-saldo]").textContent, `Saldo: $${{ debe: DOBLE, haber: "0", "no-se-cierra": SALDO }[o.id]}`);
+        }
+        if (id === "no-operacional") {
+          assert.deepEqual([...c.querySelectorAll("[data-renglon-v]")].map((x) => [x.dataset.renglonV, x.textContent]).filter(([, v]) => v !== "—"), [[o.id, `$${SALDO}`]]);
+          assert.equal(c.querySelector("[data-utilidad]").textContent, `Efecto en la utilidad: ${o.id === "ingreso" ? "+" : "−"} $${SALDO}`);
+        }
       },
-      async alAcertar(k, c) {
-        if (S.pantallas[k].id === "no-operacional") assert.equal(c.querySelector("[data-mensaje] [data-por-que], [data-mensaje] [data-plegado], [data-porque-a-la-vista]"), null);
-        if (S.pantallas[k].id !== "el-pago") return;
+      async alVeredicto(id, o, H) {
+        if (id === "no-operacional") assert.ok(H.op(o.id).classList.contains("mal"));
+        else assert.ok(H.figura().querySelector(".t73c4-mal"), `${id} · ${o.id}: el libro en coral`);
+        /* C7: el acierto de P3 no se pliega tampoco cuando llega el 2.º error. */
+        if (id === "no-operacional") assert.equal(m.caja.querySelector(".c4-porque, [data-porque]"), null);
+      },
+      async alAcertar(id) {
+        const c = m.caja;
+        if (id === "no-operacional") assert.equal(c.querySelector(".c4-porque, [data-porque]"), null);
+        if (id !== "el-pago") return;
         const as = c.querySelector("[data-asiento]");
         assert.equal(as.dataset.asiento, "sin-fecha");
         assert.deepEqual([...as.querySelectorAll("[data-linea]")].map((x) => [x.dataset.linea, x.dataset.lado]), [["Cuentas por pagar – proveedores", "debe"], [DCC, "haber"], ["Caja o Bancos", "haber"]]);
@@ -173,7 +199,7 @@ test("★★★ se recorre entera: cada pantalla y cada estado, contra el recort
   } finally {
     m.desmontar();
   }
-});
+}));
 
 /* ═══════════ 3 · CATÁLOGO Y TEMA ═══════════ */
 
@@ -188,6 +214,7 @@ test("★★★ fuera del catálogo de FP; en T7-3, justo después de A3", () =>
   assert.equal(ids.indexOf(A.A4_ID), ids.indexOf("t7-3-descuento-condicionado") + 1);
   const piezas = PIEZAS_T7_3.map((x) => x.pieza.id);
   assert.equal(piezas.indexOf(A.A4_ID), piezas.indexOf("t7-3-descuento-condicionado") + 1);
+  assert.equal(PIEZAS_T7_3.find((x) => x.pieza.id === A.A4_ID).Pieza, AprenderT7_3C4);
   const dir = new URL("supabase/migrations/", RAIZ);
   assert.deepEqual(readdirSync(dir).filter((f) => readFileSync(new URL(f, dir), "utf8").includes(A.A4_ID)), []);
   assert.doesNotMatch(leer("src/data/contabilidadT7_3_a4.js"), /from\s+["'][^"']*\/(fp|lib\/supabase)[^"']*["']|registrarActividad(Completada)?\s*\(|\.rpc\s*\(/);

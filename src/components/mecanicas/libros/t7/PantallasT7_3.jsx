@@ -164,7 +164,7 @@ export const CSS_T73P = `
  * tarifas debajo. Con `marca` (la fusión de la NIC 2, `pieMarca`), la marca
  * de un ejemplo construido, «Ejemplo que no es del libro», también debajo.
  */
-function Pie({ texto, tarifas = false, marca = null }) {
+export function Pie({ texto, tarifas = false, marca = null }) {
   return (
     <>
       <p className="t73p-pie" data-pie>{texto}</p>
@@ -174,7 +174,7 @@ function Pie({ texto, tarifas = false, marca = null }) {
   );
 }
 
-function Boton({ nombre, texto, onClick, inactivo = false }) {
+export function Boton({ nombre, texto, onClick, inactivo = false }) {
   return (
     <button type="button" className="t73p-btn" data-boton={nombre} aria-disabled={inactivo ? "true" : undefined} onClick={inactivo ? undefined : onClick}>
       {texto}
@@ -210,7 +210,7 @@ function Mensaje({ ok, textos, porque = null, porqueALaVista = false, enteros = 
  * Near para verse enteros: no pasan por el plegado automático, que es para
  * los textos largos de antes. Su «¿Por qué?» va escrito aparte.
  */
-const Textos = ({ lista, clase = "t73p-p", nueva = false, enteros = false }) => (lista ?? []).map((t) => <p key={t} className={`${clase}${nueva ? " t73p-nueva" : ""}`} data-texto>{enteros ? t : <Plegable texto={t} />}</p>);
+export const Textos = ({ lista, clase = "t73p-p", nueva = false, enteros = false }) => (lista ?? []).map((t) => <p key={t} className={`${clase}${nueva ? " t73p-nueva" : ""}`} data-texto>{enteros ? t : <Plegable texto={t} />}</p>);
 
 function Ficha({ ficha }) {
   return (
@@ -245,7 +245,7 @@ export function Asiento({ asiento, nuevo = false, revelar = false }) {
         const id = `t73p-def-${String(l.cuenta).replace(/\W+/g, "-")}`;
         const abierto = abierta === l.cuenta;
         return (
-          <div key={l.cuenta} className="t73p-as-r" role="row" data-linea={l.cuenta} data-lado={l.lado} data-en-blanco={l.enBlanco && !revelar ? "" : undefined}>
+          <div key={l.cuenta} className={`t73p-as-r${l.marca ? ` ${l.marca}` : ""}`} role="row" data-linea={l.cuenta} data-lado={l.lado} data-en-blanco={l.enBlanco && !revelar ? "" : undefined}>
             <span role="rowheader" className={l.lado === DEBE ? undefined : "t73p-sangria"}>
               {l.terminos
                 ? <button type="button" className="t73p-termino" data-termino={l.cuenta} aria-expanded={abierto} aria-controls={abierto ? id : undefined} onClick={() => setAbierta(abierto ? null : l.cuenta)}>{l.cuenta}</button>
@@ -333,7 +333,7 @@ function Fichas({ medida, fichas, nuevo = false }) {
 
 /* Las figuras del Patrón T7-3: { tipo: "renglones", titulo, filas, nota } o { tipo: "plazos", venta, condiciones, pago }. */
 /* Con `acerto`, cada figura toma lo que trae para el acierto (`alAcertar`). */
-const Figuras = ({ lista, nuevo = false, acerto = false }) => (lista ?? []).map((f0, k) => {
+export const Figuras = ({ lista, nuevo = false, acerto = false }) => (lista ?? []).map((f0, k) => {
   const f = acerto && f0.alAcertar ? { ...f0, ...f0.alAcertar } : f0;
   if (f.tipo === "plazos") return <Plazos key={k} {...f} nuevo={nuevo || (acerto && Boolean(f0.alAcertar))} />;
   if (f.tipo === "barras") return <Barras key={k} titulo={f.titulo} barras={f.barras} escala={f.escala ?? null} nuevo={nuevo} />;
@@ -347,7 +347,7 @@ const Figuras = ({ lista, nuevo = false, acerto = false }) => (lista ?? []).map(
  * norma pide informar», en el resumen). No es un botón de interfaz: lleva
  * `aria-expanded` y su contenido solo se pinta abierto.
  */
-function Desplegable({ d }) {
+export function Desplegable({ d }) {
   const [abierto, setAbierto] = useState(false);
   const id = "t73p-desplegable";
   return (
@@ -376,7 +376,7 @@ const CuentasTLado = ({ fig }) => (
 );
 
 /* Lo que una pantalla trae antes de su pregunta o de su botón. */
-function Cuerpo({ p, acerto = false, enteros = false }) {
+export function Cuerpo({ p, acerto = false, enteros = false }) {
   return (
     <>
       {p.objetivo && <p className="t73p-p" data-texto data-objetivo>{p.objetivo}</p>}

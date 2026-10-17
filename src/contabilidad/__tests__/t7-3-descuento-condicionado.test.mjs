@@ -1,8 +1,9 @@
-import { test } from "node:test";
+import { test, mock } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
-import { seccion, compararDatos, recorrer, prepararDom, CONDICION } from "./t7-3-recorte.mjs";
+import { seccion, compararDatos, prepararDom, CONDICION } from "./t7-3-recorte.mjs";
+import { recorrerC4, conReloj } from "./t7-3-c4.mjs";
 import { CONDICIONES as C7, CORRECCIONES_T73, MELLO_T73, NEAR_T73, aplicarAlRecorte, palabrasAlAcertar } from "./correccionesMelloAciertos.mjs";
 import { CUAL_LE_TOCA as CLT, SOBRE_QUE_MELLO as SQ, FIGURA_ANTES, FILA_FIGURA_NEAR, TABLA_NEAR, NEAR_CLT, MELLO_OBLIGATORIA, MELLO_PARA_MISA, palabrasNear } from "./correccionesMelloCualLeToca.mjs";
 
@@ -45,9 +46,10 @@ const h = React.createElement;
 const A = await import("../../data/contabilidadT7_3_a3.js");
 const { FRASE_TARIFAS } = await import("../../data/contabilidadT7_3.js");
 const { SUBJECTS, APRENDER } = await import("../../data/subjects.js");
-const { default: PantallasT7_3, cifra, textosDeErrorT73 } = await import("../../components/mecanicas/libros/t7/PantallasT7_3.jsx");
+const { cifra } = await import("../../components/mecanicas/libros/t7/PantallasT7_3.jsx");
+const { default: AprenderT7_3C4 } = await import("../../components/mecanicas/libros/t7/AprenderT7_3C4.jsx");
+const { CONSECUENCIA_C4: C4 } = await import("../c4/t73a3_c4.js");
 const CE = await import("../canonEnganche.js");
-const { textosDelError } = await import("../../components/mecanicas/libros/t7/escaleraAyuda.js");
 const { PIEZAS_T7_3, TEMA_T7_3 } = await import("../../components/ContabilidadT7_3View.jsx");
 
 const RAIZ = new URL("../../../", import.meta.url);
@@ -241,31 +243,28 @@ test("★★★ la frase de las tarifas va en el pie de P3, la que da el IVA y l
   assert.ok(!JSON.stringify(P.pantallas.map(({ pie, ...p }) => p)).includes(FRASE_TARIFAS));
 });
 
-/* ═══════════ 2 · MONTADA ═══════════ */
+/* ═══════════ 2 · MONTADA: EL PATRÓN C4 (toda decisión se pinta) ═══════════ */
 
-const montar = async () => {
+const montar = async (pantallas = P.pantallas) => {
   const caja = document.createElement("div");
   document.body.appendChild(caja);
   const raiz = createRoot(caja);
-  await act(async () => { raiz.render(h(PantallasT7_3, { pieza: P, rotulo: "R" })); });
+  await act(async () => { raiz.render(h(AprenderT7_3C4, { pieza: { ...P, pantallas }, rotulo: "R" })); });
   return { caja, desmontar: () => { act(() => raiz.unmount()); caja.remove(); } };
 };
-const tocar = async (el) => {
-  assert.ok(el, "no está el elemento que se quería tocar");
-  await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
-};
-const filasDe = (fig) => [...fig.querySelectorAll("[data-renglon]")].map((r) => [r.querySelector(".rg-op").textContent, r.querySelector(".rg-rot").textContent.replace(/^(menos|por|igual a) /, ""), r.querySelector(".rg-v").textContent]);
+const sp = (x) => JSON.parse(JSON.stringify(x).replace(/\u00a0/g, " "));
+const filasDe = (fig) => sp([...fig.querySelectorAll("[data-renglon]")].map((r) => [r.querySelector(".rg-op").textContent, r.querySelector(".rg-rot").textContent.replace(/^(menos|por|igual a) /, ""), r.querySelector(".rg-v").textContent]));
 const plazos = (c) => {
   const f = c.querySelector("[data-plazos]");
-  return f && {
+  return f && sp({
     titulo: f.querySelector("figcaption").textContent,
     dias: [...f.querySelectorAll("[data-plazo] b")].map((b) => b.textContent),
     lleva: [...f.querySelectorAll("[data-lleva]")].map((b) => b.textContent),
     pago: f.querySelector("[data-pago]")?.textContent ?? null,
     venta: f.querySelector(".pz-ini") !== null,
-  };
+  });
 };
-const LINEA = { titulo: "5 % · 15/10 · 5/20 · n/30", dias: ["día 10", "día 20", "día 30"], venta: false };
+const LINEA = sp({ titulo: "5 % · 15/10 · 5/20 · n/30", dias: ["día 10", "día 20", "día 30"], venta: false });
 /*
  * La franja de `cual-le-toca` (PLAZOS_A3, sin rótulo de días): cada etiqueta
  * de abajo, con un espacio entre su parte en negrita y lo que lleva
@@ -280,149 +279,166 @@ const franjaA3 = (c) => {
   };
 };
 /* Aciertos C7: la línea de P1. */
-const LINEA_P1 = { titulo: "5 % comercial · 15/10 · 5/20 · n/30", dias: ["10", "20", "30 días"], venta: false };
+const LINEA_P1 = sp({ titulo: "5 % comercial · 15/10 · 5/20 · n/30", dias: ["10", "20", "30 días"], venta: false });
 
-test("★★★ se recorre entera: cada pantalla y cada estado, contra el recorte", async () => {
+/* La marca C4 de la franja: el plazo que la opción tocada implica, con lo que le daría. */
+const marcaC4 = (c) => c.querySelector("[data-marca-c4]")?.textContent.replace(/\u00a0/g, " ") ?? null;
+const zonas = (c) => Object.fromEntries([...c.querySelectorAll("[data-zona]")].map((z) => [z.dataset.zona, [...z.querySelectorAll("[data-chip]")].map((x) => x.textContent.replace(/\u00a0/g, " "))]));
+
+test("★★★ se recorre entera en el patrón C4: cada pantalla y cada estado, contra el recorte; el pago, el libro y el 15 % se pintan con cada opción", conReloj(async () => {
   const m = await montar();
   try {
-    await recorrer({
-      caja: m.caja, P, S, tocar, w, textosDelError: textosDeErrorT73, tarifas: ["cual-le-toca"], frase: FRASE_TARIFAS,
-      async alLlegar(k, c) {
-        const id = S.pantallas[k].id;
-        if (id === "condiciones") assert.deepEqual(plazos(c), { ...LINEA_P1, lleva: [], pago: null });
-        if (id === "resumen") assert.deepEqual(plazos(c), { ...LINEA, lleva: ["15 %", "5 %", "sin descuento"], pago: "Pago · 4 jun" });
+    await recorrerC4({
+      c: m.caja, w, act, P, S, c4: C4, frase: FRASE_TARIFAS,
+      async alLlegar(id, H) {
+        const c = m.caja;
+        if (id === "condiciones") {
+          assert.deepEqual(plazos(c), { ...LINEA_P1, lleva: [], pago: null });
+          /* El día 30 lo da la pregunta: la marca está, sin descuento todavía. */
+          assert.equal(marcaC4(c), "Día 30");
+        }
+        if (id === "resumen") assert.deepEqual(plazos(c), { ...LINEA, lleva: ["15 %", "5 %", "sin descuento"], pago: "Pago · 4 jun" });
         if (!["condiciones", "resumen", "cual-le-toca"].includes(id)) assert.equal(plazos(c), null);
         if (id === "cual-le-toca") {
-          /* La franja tal cual PLAZOS_A3(false): la venta y lo que lleva cada plazo, sin el pago; y nada más. */
+          /* La franja tal cual PLAZOS_A3(false), sin el pago y SIN marca: el día 10 es la respuesta (Mello). */
           assert.deepEqual(franjaA3(c), { etiquetas: FIGURA_ANTES, pago: null });
-          assert.equal(c.querySelectorAll("figure, [data-figura]").length, 1);
+          assert.equal(marcaC4(c), null);
           assert.equal(c.querySelector("figure[data-renglones]"), null);
-          assert.doesNotMatch(c.textContent, /3\.990\.000|4\.488\.750/);
+          assert.doesNotMatch(c.textContent, /3\.990\.000|4\.488\.750|[Dd]ía 10/);
           /* El texto, la figura y la pregunta, en ese orden. */
-          const [t, preg] = [c.querySelector("[data-texto]:not([data-pregunta])"), c.querySelector("[data-pregunta]")];
+          const [t, preg] = [c.querySelector("[data-texto].c4-txt"), c.querySelector("[data-pregunta]")];
           assert.equal(t.textContent, CLT.texto);
           assert.ok(t.compareDocumentPosition(c.querySelector("[data-plazos]")) & w.Node.DOCUMENT_POSITION_FOLLOWING);
           assert.ok(c.querySelector("[data-plazos]").compareDocumentPosition(preg) & w.Node.DOCUMENT_POSITION_FOLLOWING);
         }
+        if (id === "que-es") assert.deepEqual(zonas(c), { factura: ["Comercial 5 %", "Condicionado"], libro: [] });
         if (id === "sobre-que") {
           /* Mello: la factura y la frase, antes de la pregunta; el pago y el asiento, todavía no. */
-          assert.equal(c.querySelectorAll("figure, [data-figura]").length, 1);
           const fig = c.querySelector("figure[data-renglones]");
           assert.equal(fig.querySelector("figcaption").textContent, "Factura de San Calixto");
-          assert.deepEqual(filasDe(fig), [["", "Precio de lista", cifra(SQ.factura.lista)], ["−", `Descuento comercial ${SQ.factura.comercial} %`, "210.000"], ["=", "Valor a facturar", cifra(SQ.factura.factura)]]);
-          const frase = [...c.querySelectorAll("[data-texto]")].find((x) => x.textContent === SQ.frase);
-          assert.ok(fig.compareDocumentPosition(frase) & w.Node.DOCUMENT_POSITION_FOLLOWING);
-          assert.ok(frase.compareDocumentPosition(c.querySelector("[data-pregunta]")) & w.Node.DOCUMENT_POSITION_FOLLOWING);
+          assert.deepEqual(filasDe(fig), [["", "Precio de lista", cifra(SQ.factura.lista)], ["−", `Descuento comercial ${SQ.factura.comercial} %`, "210.000"], ["=", "Valor a facturar", cifra(SQ.factura.factura)]]);
+          assert.equal(c.querySelector("[data-texto].c4-txt").textContent, SQ.frase);
+          assert.ok(c.querySelector("[data-texto].c4-txt").compareDocumentPosition(c.querySelector("[data-pregunta]")) & w.Node.DOCUMENT_POSITION_FOLLOWING);
           assert.equal(c.querySelector("[data-asiento]"), null);
+          /* El 15 %, en blanco. */
+          assert.deepEqual(filasDe(c.querySelector("[data-c4-objeto='quince']")).at(-1), ["", "15 %", "$?"]);
         }
       },
-      async alFallar(k, c) {
-        const id = S.pantallas[k].id;
-        if (id === "condiciones") assert.deepEqual(plazos(c).lleva, [], "lo que lleva cada plazo daría la respuesta");
-        if (id === "sobre-que") {
-          assert.equal(c.querySelector("[data-asiento]"), null);
-          /* La factura no sale de la pregunta. */
-          assert.ok(c.querySelector("figure[data-renglones]"));
+      async alElegir(id, o) {
+        const c = m.caja;
+        if (id === "condiciones") {
+          assert.equal(marcaC4(c), `Día 30 · ${o.texto === "Ninguno" ? "sin descuento" : o.texto}`);
+          assert.deepEqual(plazos(c).lleva, [], "lo que lleva cada plazo daría la respuesta");
         }
-        if (id === "cual-le-toca") assert.equal(franjaA3(c).pago, null, "el pago daría la respuesta");
-      },
-      async alAcertar(k, c) {
-        const id = S.pantallas[k].id;
         if (id === "cual-le-toca") {
-          /* La misma franja crece: marca el pago del día 10, con el fundido; ninguna figura nueva. */
-          assert.equal(c.querySelectorAll("figure, [data-figura]").length, 1);
+          /* El pago cae en el plazo que la opción implica; nunca en el día 10 antes de acertar. */
+          assert.equal(marcaC4(c), o.texto === "Ninguno" ? "sin descuento" : o.texto);
+          const dia = { "15 %": 5, "5 %": 15, Ninguno: 25 }[o.texto];
+          assert.equal(c.querySelector("[data-marca-c4]").parentElement.style.left, `${(dia / 30) * 100}%`);
+          assert.equal(franjaA3(c).pago, null, "el pago daría la respuesta");
+        }
+        if (id === "que-es") {
+          const libro = { comercial: ["Comercial 5 %"], condicionado: ["Condicionado"], "los-dos": ["Comercial 5 %", "Condicionado"] }[o.id];
+          assert.deepEqual(zonas(c).libro, libro);
+          assert.equal(zonas(c).factura.length + libro.length, 2);
+        }
+        if (id === "sobre-que") {
+          const b = Number(o.texto.replace(/\D/g, ""));
+          assert.deepEqual(filasDe(c.querySelector("[data-c4-objeto='quince']")).at(-1), ["", `15 % de $${cifra(b)}`, cifra(b * 0.15)]);
+          assert.equal(c.querySelector("[data-asiento]"), null);
+        }
+      },
+      async alVeredicto(id, o, H) {
+        assert.ok(H.figura().querySelector(".t73c4-mal"), `${id} · ${o.id}: sin la marca coral`);
+        if (id === "cual-le-toca") assert.doesNotMatch(H.falla(), /día 10/, "la falla no dice la respuesta");
+      },
+      async alAcertar(id) {
+        const c = m.caja;
+        if (id === "cual-le-toca") {
+          /* La misma franja crece: marca el pago del día 10, con el fundido. */
           assert.deepEqual(franjaA3(c), { etiquetas: FIGURA_ANTES, pago: "Pago · 4 jun" });
           assert.ok(c.querySelector("[data-pago]").classList.contains("rg-nuevo"));
         }
         if (id === "condiciones") {
           /* La misma línea, ahora con lo que lleva cada plazo, con el fundido. */
           assert.equal(c.querySelectorAll("[data-plazos]").length, 1);
-          assert.deepEqual(plazos(c), { ...LINEA_P1, lleva: ["15 %", "5 %", "sin descuento"], pago: null });
-          /* C7: nada plegado en el acierto. */
-          assert.equal(c.querySelector("[data-mensaje] [data-por-que], [data-mensaje] [data-plegado], [data-porque-a-la-vista]"), null);
+          assert.deepEqual(plazos(c), { ...LINEA_P1, lleva: ["15 %", "5 %", "sin descuento"], pago: null });
           assert.ok([...c.querySelectorAll("[data-lleva]")].every((x) => x.classList.contains("rg-nuevo")));
         }
         if (id === "sobre-que") {
           /* La factura sigue arriba; el pago en renglones, su asiento y, debajo, por qué va al debe. */
-          const [factura, fig] = c.querySelectorAll("figure[data-renglones]");
-          assert.equal(factura.querySelector("figcaption").textContent, "Factura de San Calixto");
-          assert.equal(fig.querySelector("figcaption").textContent, "El pago del 4 de junio");
-          assert.deepEqual(filasDe(fig), [["", "Lo que debía", "4.488.750"], ["−", "Descuento condicionado", "598.500"], ["=", "Paga", "3.890.250"]]);
+          const figs = [...c.querySelectorAll("figure[data-renglones]")].filter((f) => !f.dataset.c4Objeto);
+          assert.equal(figs[0].querySelector("figcaption").textContent, "Factura de San Calixto");
+          assert.equal(figs[1].querySelector("figcaption").textContent, "El pago del 4 de junio");
+          assert.deepEqual(filasDe(figs[1]), [["", "Lo que debía", "4.488.750"], ["−", "Descuento condicionado", "598.500"], ["=", "Paga", "3.890.250"]]);
           const as = c.querySelector("[data-asiento]");
           assert.equal(as.dataset.asiento, "sin-fecha");
           assert.equal(as.querySelector("[data-sumas]"), null);
-          const tras = [...c.querySelectorAll("[data-mensaje] ~ [data-texto]")].map((x) => x.textContent);
+          const tras = [...c.querySelectorAll("[data-del-acierto] > [data-texto]")].map((x) => x.textContent);
           assert.deepEqual(tras, pantalla("sobre-que").acierto.despues);
-          assert.ok(as.compareDocumentPosition(c.querySelector("[data-mensaje] ~ [data-texto]")) & w.Node.DOCUMENT_POSITION_FOLLOWING);
+          assert.ok(as.compareDocumentPosition(c.querySelector("[data-del-acierto] > [data-texto]")) & w.Node.DOCUMENT_POSITION_FOLLOWING);
         }
       },
     });
   } finally {
     m.desmontar();
   }
-});
+}));
 
-/* Monta la pieza desde una pantalla y toca, en orden, lo que digan los selectores. */
-const desde = async (id, pasos) => {
-  const caja = document.createElement("div");
-  document.body.appendChild(caja);
-  const raiz = createRoot(caja);
+/* Monta la pieza desde una pantalla y toca, en orden, las opciones dadas (con su veredicto). */
+const desde = async (id, ops) => {
   const k = P.pantallas.findIndex((x) => x.id === id);
-  await act(async () => { raiz.render(h(PantallasT7_3, { pieza: { ...P, pantallas: P.pantallas.slice(k) }, rotulo: "R" })); });
-  for (const sel of pasos) await tocar(caja.querySelector(sel));
-  return { caja, desmontar: () => { act(() => raiz.unmount()); caja.remove(); } };
+  const m = await montar(P.pantallas.slice(k));
+  for (const o of ops) {
+    await act(async () => { m.caja.querySelector(`[data-op="${o}"]`).dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
+    await act(async () => { mock.timers.tick(380); });
+  }
+  return m;
 };
-const elegir = (id) => [`[data-opcion="${id}"]`, '[data-boton="confirmar"]'];
-const errorVisto = (c) => [...c.querySelectorAll('[data-mensaje="error"] [data-texto]')].map((x) => x.textContent);
+const errorVisto = (c) => c.querySelector('[data-mensaje="error"] [data-texto-retro]')?.textContent ?? null;
 
-test("★★★ `cual-le-toca` · escalera: el 1.er error da la pista (sea cual sea la mala); desde el 2.º, la devolución propia de la que se tocó; el foco, al mensaje", async () => {
+test("★★★ `cual-le-toca` · escalera C2 del motor: el 1.er error da la pista (sea cual sea la mala); desde el 2.º, la devolución propia de la que se tocó; el foco, al mensaje", conReloj(async () => {
   const p = pantalla("cual-le-toca");
   const dev = (id) => p.opciones.find((o) => o.id === id).devolucion;
   for (const [a, b] of [["cinco", "ninguno"], ["ninguno", "cinco"], ["cinco", "cinco"], ["ninguno", "ninguno"]]) {
-    const m = await desde("cual-le-toca", elegir(a));
+    const m = await desde("cual-le-toca", [a]);
     try {
-      assert.deepEqual(errorVisto(m.caja), [CLT.pista], `${a}: 1.er error`);
-      assert.equal(w.document.activeElement, m.caja.querySelector("[data-mensaje]"));
-      await tocar(m.caja.querySelector('[data-boton="probar-otra"]'));
-      for (const sel of elegir(b)) await tocar(m.caja.querySelector(sel));
-      assert.deepEqual(errorVisto(m.caja), [dev(b)], `${a} → ${b}: 2.º error`);
-      assert.equal(w.document.activeElement, m.caja.querySelector("[data-mensaje]"));
+      assert.equal(errorVisto(m.caja), CLT.pista, `${a}: 1.er error`);
+      assert.equal(w.document.activeElement, m.caja.querySelector("[data-c4-msg]"));
+      await act(async () => { m.caja.querySelector(`[data-op="${b}"]`).dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
+      await act(async () => { mock.timers.tick(380); });
+      assert.equal(errorVisto(m.caja), dev(b), `${a} → ${b}: 2.º error`);
+      assert.equal(w.document.activeElement, m.caja.querySelector("[data-c4-msg]"));
       /* La franja sigue sin el pago, también con el error. */
       assert.equal(franjaA3(m.caja).pago, null);
-      /* Un 3.er error: otra vez la devolución propia. */
-      await tocar(m.caja.querySelector('[data-boton="probar-otra"]'));
-      for (const sel of elegir(a)) await tocar(m.caja.querySelector(sel));
-      assert.deepEqual(errorVisto(m.caja), [dev(a)], `${a} → ${b} → ${a}: 3.er error`);
+      await act(async () => { m.caja.querySelector(`[data-op="${a}"]`).dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
+      await act(async () => { mock.timers.tick(380); });
+      assert.equal(errorVisto(m.caja), dev(a), `${a} → ${b} → ${a}: 3.er error`);
     } finally {
       m.desmontar();
     }
   }
-  /* Los textos son los del paquete, y la variante vale solo donde la pantalla la pide: `sobre-que` sigue con la escalera común. */
   assert.deepEqual(CLT.errores.map((e) => e.texto), [dev("cinco"), dev("ninguno")]);
-  const sq = pantalla("sobre-que");
-  assert.deepEqual(textosDeErrorT73(sq, sq.opciones[1], 2), textosDelError(sq, sq.opciones[1], 2));
-  assert.deepEqual(textosDeErrorT73(p, p.opciones[1], 1), [CLT.pista]);
-});
+}));
 
 /*
- * B2 con la sonda (canonEnganche.js, la medida de canon-enganche.test.mjs):
- * palabras de texto visibles, sin la figura ni lo plegado. Ninguna de las dos
- * pantallas pasa de 60 en ningún estado: al llegar, con cada error (1.º y
- * 2.º) y al acertar. Por eso el asiento del acierto de `sobre-que` se queda
- * ahí (L: si pasara de 60, iría al resumen).
+ * B2 con la sonda (canonEnganche.js): palabras de texto visibles, sin la
+ * figura ni lo plegado. Ninguna de las dos pantallas pasa de 60 en ningún
+ * estado: al llegar, con cada error (1.º y 2.º) y al acertar. En el patrón
+ * C4 cuentan también la falla (texto, fuera de la figura) y las opciones.
  */
-test("★★★ B2 (sonda): `cual-le-toca` y `sobre-que` no pasan de 60 palabras de texto visibles en ningún estado, con el asiento en `sobre-que`", async () => {
+test("★★★ B2 (sonda): `cual-le-toca` y `sobre-que`, estado por estado; solo el 2.º error de `cual-le-toca` pasa de 60 (62, a la vista de L), con el asiento en `sobre-que`", conReloj(async () => {
   const medidas = {};
   for (const id of ["cual-le-toca", "sobre-que"]) {
     const p = pantalla(id);
     const malas = p.opciones.filter((o) => !o.correcta).map((o) => o.id);
-    const estados = { "al llegar": [], "al acertar": elegir(p.opciones.find((o) => o.correcta).id) };
+    const estados = { "al llegar": [], "al acertar": [p.opciones.find((o) => o.correcta).id] };
     for (const a of malas) {
-      estados[`1.er error ${a}`] = elegir(a);
-      for (const b of malas) estados[`2.º error ${a}→${b}`] = [...elegir(a), '[data-boton="probar-otra"]', ...elegir(b)];
+      estados[`1.er error ${a}`] = [a];
+      for (const b of malas) estados[`2.º error ${a}→${b}`] = [a, b];
     }
-    for (const [estado, pasos] of Object.entries(estados)) {
-      const m = await desde(id, pasos);
+    for (const [estado, ops] of Object.entries(estados)) {
+      const m = await desde(id, ops);
       try {
         medidas[`${id} · ${estado}`] = CE.medirTarjeta(CE.tarjetaDe(m.caja), w).texto;
       } finally {
@@ -430,13 +446,25 @@ test("★★★ B2 (sonda): `cual-le-toca` y `sobre-que` no pasan de 60 palabras
       }
     }
   }
-  assert.deepEqual(Object.entries(medidas).filter(([, n]) => n > CE.UMBRAL_B2_PALABRAS), []);
-  /* Medido el 16 de octubre de 2026: al acertar y el estado más largo. */
+  /*
+   * B2 > 60, A LA VISTA DE L, NEAR Y MELLO: en el patrón C4, el 2.º error de
+   * `cual-le-toca` llega a 62 (texto 30 con la cejilla «Pregunta 3 de 4»,
+   * más la devolución de Near y la falla de la figura). Se fija la lista
+   * exacta: cualquier estado nuevo por encima de 60 rompe la prueba.
+   */
+  assert.deepEqual(Object.entries(medidas).filter(([, n]) => n > CE.UMBRAL_B2_PALABRAS), B2_SOBRE_60);
+  /* Medido el 17 de octubre de 2026 en el patrón C4: al acertar y el estado más largo. */
   const mayor = (id) => Math.max(...Object.entries(medidas).filter(([k]) => k.startsWith(id)).map(([, n]) => n));
-  assert.deepEqual([medidas["cual-le-toca · al acertar"], mayor("cual-le-toca")], [45, 51]);
-  assert.deepEqual([medidas["sobre-que · al acertar"], mayor("sobre-que")], [38, 41]);
+  assert.deepEqual([medidas["cual-le-toca · al acertar"], mayor("cual-le-toca")], MEDIDA_CLT);
+  assert.deepEqual([medidas["sobre-que · al acertar"], mayor("sobre-que")], MEDIDA_SQ);
   assert.ok(pantalla("sobre-que").acierto.asientos.length === 1);
-});
+}));
+const MEDIDA_CLT = [52, 62];
+const MEDIDA_SQ = [33, 59];
+const B2_SOBRE_60 = [
+  ["cual-le-toca · 2.º error cinco→cinco", 62], ["cual-le-toca · 2.º error cinco→ninguno", 62],
+  ["cual-le-toca · 2.º error ninguno→cinco", 62], ["cual-le-toca · 2.º error ninguno→ninguno", 62],
+];
 
 /* ═══════════ 3 · CATÁLOGO Y TEMA ═══════════ */
 
@@ -451,6 +479,7 @@ test("★★★ fuera del catálogo de FP; en T7-3, después de A2 (y de H2 si y
   assert.equal(ids.indexOf(A.A3_ID), ids.indexOf("t7-3-descuentos-en-cadena") + 1);
   const piezas = PIEZAS_T7_3.map((x) => x.pieza.id);
   assert.equal(piezas.indexOf(A.A3_ID), piezas.indexOf("t7-3-descuentos-en-cadena") + 1);
+  assert.equal(PIEZAS_T7_3.find((x) => x.pieza.id === A.A3_ID).Pieza, AprenderT7_3C4);
   const dir = new URL("supabase/migrations/", RAIZ);
   assert.deepEqual(readdirSync(dir).filter((f) => readFileSync(new URL(f, dir), "utf8").includes(A.A3_ID)), []);
   assert.doesNotMatch(leer("src/data/contabilidadT7_3_a3.js"), /from\s+["'][^"']*\/(fp|lib\/supabase)[^"']*["']|registrarActividad(Completada)?\s*\(|\.rpc\s*\(/);

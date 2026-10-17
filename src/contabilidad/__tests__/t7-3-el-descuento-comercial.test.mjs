@@ -2,7 +2,8 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
-import { seccion, compararDatos, recorrer, prepararDom, citas } from "./t7-3-recorte.mjs";
+import { seccion, compararDatos, prepararDom, citas } from "./t7-3-recorte.mjs";
+import { recorrerC4, conReloj } from "./t7-3-c4.mjs";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -28,8 +29,9 @@ const h = React.createElement;
 
 const A = await import("../../data/contabilidadT7_3.js");
 const { SUBJECTS, APRENDER } = await import("../../data/subjects.js");
-const { default: PantallasT7_3, cifra } = await import("../../components/mecanicas/libros/t7/PantallasT7_3.jsx");
-const { textosDelError } = await import("../../components/mecanicas/libros/t7/escaleraAyuda.js");
+const { cifra } = await import("../../components/mecanicas/libros/t7/PantallasT7_3.jsx");
+const { default: AprenderT7_3C4 } = await import("../../components/mecanicas/libros/t7/AprenderT7_3C4.jsx");
+const { CONSECUENCIA_C4: C4 } = await import("../c4/t73a1_c4.js");
 const { PIEZAS_T7_3, TEMA_T7_3 } = await import("../../components/ContabilidadT7_3View.jsx");
 const { VISTAS, vistaDeTema } = await import("../../ruta.js");
 
@@ -107,77 +109,82 @@ test("★★★ la frase de las tarifas va en el pie de P2, la pantalla que las 
   assert.match(RECORTE, /La frase de las tarifas \(«Las tarifas de este ejercicio son datos del libro…»\) pasa del cuerpo al pie/);
 });
 
-/* ═══════════ 2 · MONTADA ═══════════ */
+/* ═══════════ 2 · MONTADA: EL PATRÓN C4 (toda decisión se pinta) ═══════════ */
 
 const montar = async () => {
   const caja = document.createElement("div");
   document.body.appendChild(caja);
   const raiz = createRoot(caja);
-  await act(async () => { raiz.render(h(PantallasT7_3, { pieza: P, rotulo: "R" })); });
+  await act(async () => { raiz.render(h(AprenderT7_3C4, { pieza: P, rotulo: "R" })); });
   return { caja, desmontar: () => { act(() => raiz.unmount()); caja.remove(); } };
 };
-const tocar = async (el) => {
-  assert.ok(el, "no está el elemento que se quería tocar");
-  await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
-};
-const celdaIngresos = (c) => [...c.querySelectorAll('[data-linea="Ingresos por ventas"] [role="cell"]')].map((x) => x.textContent);
+const ingresos = (c) => [...c.querySelectorAll('[data-linea="Ingresos por ventas"] [role="cell"]')].map((x) => x.textContent);
+/* Los renglones de la factura: signo, rótulo y cifra («12 %» lleva espacio que no se parte; aquí se lee como espacio). */
+const sp = (t) => t.replace(/\u00a0/g, " ");
+const filas = (c) => [...c.querySelectorAll("[data-c4-objeto] [data-renglon]")].map((r) => [r.querySelector(".rg-op").textContent, sp(r.querySelector(".rg-rot").lastChild.textContent), sp(r.querySelector(".rg-v").textContent)]);
 
-test("★★★ se recorre entera: cada pantalla y cada estado, contra el recorte", async () => {
+test("★★★ se recorre entera en el patrón C4: cada pantalla y cada estado, contra el recorte; cada opción pinta su factura", conReloj(async () => {
   const m = await montar();
   try {
-    await recorrer({
-      caja: m.caja, P, S, tocar, w, textosDelError, tarifas: ["ejemplo"], frase: A.FRASE_TARIFAS,
-      async alLlegar(k, c) {
-        if (S.pantallas[k].id === "ejemplo") {
-          /* Los renglones de la factura van antes de la pregunta. */
-          const fig = c.querySelector("figure[data-renglones]");
-          assert.equal(fig.querySelector("figcaption").textContent, "Factura de San Calixto");
-          assert.ok(fig.compareDocumentPosition(c.querySelector("[data-pregunta]")) & w.Node.DOCUMENT_POSITION_FOLLOWING);
+    await recorrerC4({
+      c: m.caja, w, act, P, S, c4: C4, frase: A.FRASE_TARIFAS,
+      async alLlegar(id, H) {
+        const c = m.caja;
+        if (id === "ejemplo") {
+          /* La factura de Near (sus tres renglones) y, debajo, lo que la base tocada calcula: en blanco al llegar. */
+          assert.deepEqual(filas(c).slice(0, 3), [["", "Precio de lista", "4.200.000"], ["−", "Descuento comercial 15 %", "630.000"], ["=", "Valor a facturar", "3.570.000"]]);
+          assert.deepEqual(filas(c).slice(3).map((f) => f[2]), ["$?", "$?", "$?"]);
+          assert.ok(H.figura().compareDocumentPosition(H.q("[data-pregunta]")) & w.Node.DOCUMENT_POSITION_FOLLOWING);
         }
-        if (S.pantallas[k].id !== "no-se-registra") {
-          assert.equal(c.querySelector("[data-termino]"), null);
-          return;
-        }
-        /* Ingresos por ventas, en blanco, y sin sumas. */
-        assert.deepEqual(celdaIngresos(c), ["", "$?"]);
+        if (id !== "no-se-registra") return;
+        /* Ingresos por ventas, en blanco, y sin sumas; las cuentas que se abren (Mello), una a la vez. */
+        assert.deepEqual(ingresos(c), ["", "$?"]);
         assert.equal(c.querySelector("[data-sumas]"), null);
-        /* Las cuentas que se abren: Anticipo fiscal e IVA por pagar; una a la vez. */
         const term = (n) => c.querySelector(`[data-termino="${n}"]`);
         assert.deepEqual([...c.querySelectorAll("[data-termino]")].map((x) => x.textContent), ["Anticipo fiscal", "IVA por pagar"]);
-        for (const b of c.querySelectorAll("[data-termino]")) {
-          assert.equal(b.tagName, "BUTTON");
-          assert.equal(b.getAttribute("aria-expanded"), "false");
-        }
-        assert.equal(c.querySelector("[data-definicion]"), null);
-        const abierta = () => [...c.querySelectorAll("[data-definicion] [data-def-termino]")].map((x) => [x.querySelector("dt").textContent, x.querySelector("dd").textContent]);
-        await tocar(term("IVA por pagar"));
+        await H.tocar(term("IVA por pagar"));
         assert.equal(term("IVA por pagar").getAttribute("aria-expanded"), "true");
-        assert.equal(c.querySelector(`#${term("IVA por pagar").getAttribute("aria-controls")}`), c.querySelector("[data-definicion]"));
-        assert.deepEqual(abierta(), [["IVA", DEFINICIONES.IVA]]);
-        await tocar(term("Anticipo fiscal"));
+        assert.deepEqual([...c.querySelectorAll("[data-definicion] [data-def-termino]")].map((x) => [x.querySelector("dt").textContent, x.querySelector("dd").textContent]), [["IVA", DEFINICIONES.IVA]]);
+        await H.tocar(term("Anticipo fiscal"));
         assert.equal(term("IVA por pagar").getAttribute("aria-expanded"), "false");
-        assert.equal(term("Anticipo fiscal").getAttribute("aria-expanded"), "true");
-        assert.deepEqual(abierta(), [["Retención", DEFINICIONES["Retención"]], ["Anticipo fiscal", DEFINICIONES["Anticipo fiscal"]]]);
-        /* Tocarla otra vez la cierra. */
-        await tocar(term("Anticipo fiscal"));
+        assert.deepEqual([...c.querySelectorAll("[data-definicion] [data-def-termino]")].map((x) => x.querySelector("dt").textContent), ["Retención", "Anticipo fiscal"]);
+        await H.tocar(term("Anticipo fiscal"));
         assert.equal(c.querySelector("[data-definicion]"), null);
-        assert.equal(term("Anticipo fiscal").getAttribute("aria-expanded"), "false");
       },
-      async alFallar(k, c) {
-        if (S.pantallas[k].id === "no-se-registra") assert.deepEqual(celdaIngresos(c), ["", "$?"]);
+      async alElegir(id, o, H) {
+        const c = m.caja;
+        const x = Number(o.texto.replace(/\D/g, ""));
+        if (id === "dos-clases") {
+          /* La rebaja entra a la factura o sale de ella, antes del veredicto. */
+          const valor = filas(c).at(-1)[2];
+          assert.equal(valor, o.id === "comercial" ? "lista − 10 %" : "precio de lista");
+          assert.equal(Boolean(c.querySelector("[data-aparte]")), o.id === "condicionado");
+          assert.equal(filas(c).some((f) => f[1] === "Descuento 10 %"), o.id === "comercial");
+        }
+        if (id === "ejemplo") {
+          /* El IVA y la retención se recalculan sobre la base tocada. */
+          assert.deepEqual(filas(c).slice(3), [["+", `IVA 16 % sobre $${cifra(x)}`, cifra(x * 0.16)], ["−", `Retención 3,5 % sobre $${cifra(x)}`, cifra(x * 0.035)], ["=", "Debe el cliente", cifra(A.H1_LIBRO.factura + x * 0.16 - x * 0.035)]]);
+        }
+        if (id === "no-se-registra") {
+          /* La cifra tocada entra a la línea de Ingresos por ventas del asiento. */
+          assert.deepEqual(ingresos(c), ["", cifra(x)]);
+          assert.match(c.querySelector('[data-linea="Ingresos por ventas"]').className, /t73c4-toca/);
+          assert.equal(c.querySelector("[data-cobra]").textContent, "Lo que se cobra por la mercancía: $3.570.000");
+        }
       },
-      async alAcertar(k, c) {
-        if (S.pantallas[k].id !== "no-se-registra") return;
-        /* Con el acierto, la línea se llena con lo facturado; las definiciones siguen a mano. */
-        assert.deepEqual(celdaIngresos(c), ["", cifra(A.H1_LIBRO.factura)]);
-        await tocar(c.querySelector('[data-termino="IVA por pagar"]'));
-        assert.equal(c.querySelectorAll("[data-definicion]").length, 1);
+      async alVeredicto(id, o, H) {
+        /* Con el veredicto, lo que la mala movió pasa a coral. */
+        assert.ok(H.figura().querySelector(".t73c4-mal"), `${id} · ${o.id}: sin la marca coral`);
+      },
+      async alAcertar(id, H) {
+        if (id === "no-se-registra") assert.deepEqual(ingresos(m.caja), ["", cifra(A.H1_LIBRO.factura)]);
+        assert.equal(H.figura().querySelector(".t73c4-mal"), null);
       },
     });
   } finally {
     m.desmontar();
   }
-});
+}));
 
 /* ═══════════ 3 · CATÁLOGO Y TEMA ═══════════ */
 
@@ -199,10 +206,10 @@ test("★★★ fuera del catálogo de FP; abre T7-3, que va justo después de T
   assert.equal(a.nombre, P.titulo);
   assert.equal(tema.actividades[0].id, A.A1_ID);
   assert.equal(PIEZAS_T7_3[0].pieza.id, A.A1_ID);
-  assert.equal(PIEZAS_T7_3[0].Pieza, PantallasT7_3);
+  assert.equal(PIEZAS_T7_3[0].Pieza, AprenderT7_3C4);
   const dir = new URL("supabase/migrations/", RAIZ);
   assert.deepEqual(readdirSync(dir).filter((f) => readFileSync(new URL(f, dir), "utf8").includes(A.A1_ID)), []);
-  for (const f of ["src/components/mecanicas/libros/t7/PantallasT7_3.jsx", "src/data/contabilidadT7_3.js"]) {
+  for (const f of ["src/components/mecanicas/libros/t7/PantallasT7_3.jsx", "src/components/mecanicas/libros/t7/AprenderT7_3C4.jsx", "src/contabilidad/c4/t73a1_c4.js", "src/data/contabilidadT7_3.js"]) {
     assert.doesNotMatch(leer(f), /from\s+["'][^"']*\/(fp|lib\/supabase)[^"']*["']|registrarActividad(Completada)?\s*\(|\.rpc\s*\(/, f);
   }
 });

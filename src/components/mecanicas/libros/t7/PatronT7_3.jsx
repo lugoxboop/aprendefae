@@ -76,14 +76,24 @@ export function Renglones({ titulo, filas, nota = null, nuevo = false }) {
  * `ocultarLleva` calla lo que lleva cada plazo (la pregunta lo pide), y sin
  * `venta` no se marca la venta.
  */
-export function Plazos({ venta, condiciones, pago = null, nuevo = false, titulo = null, rotDia = null, ocultarLleva = false }) {
+export function Plazos({ venta, condiciones, pago = null, nuevo = false, titulo = null, rotDia = null, ocultarLleva = false, marca = null }) {
   const pos = (d) => `${(d / 30) * 100}%`;
+  /* C4 (t7/AprenderT7_3C4.jsx): el día que dice la opción tocada, con lo que le daría; pegado al borde si cae en un extremo. */
+  const borde = (d) => (d / 30 > 0.78 ? "-100%" : d / 30 < 0.22 ? "0" : "-50%");
   const conDia = condiciones.filter((c) => c.dia);
   const lleva = (c) => (ocultarLleva ? null : sinPartir(c.lleva));
   return (
     <div className="t73pt">
       <figure className="pz" aria-label="Plazos del descuento condicionado" data-plazos>
         <figcaption className="rg-tit">{titulo ? sinPartir(titulo) : `Condiciones ${condiciones.map((c) => sinPartir(c.cond)).join(", ")}`}</figcaption>
+        {marca && (
+          <div className="pz-c4" aria-hidden="true">
+            {/* La posición va en la caja de afuera; la animación de quien la usa (también transform), en la de adentro. */}
+            <span className="pz-c4-pos" style={{ left: pos(marca.dia), transform: `translateX(${borde(marca.dia)})` }}>
+              <span className={`pz-c4-et${marca.clase ? ` ${marca.clase}` : ""}`} data-marca-c4>{sinPartir(marca.rot)}</span>
+            </span>
+          </div>
+        )}
         <div className="pz-arriba" aria-hidden="true">
           {pago && <span className={`pz-pago${nuevo ? " rg-nuevo" : ""}`} style={{ left: pos(pago.dia) }} data-pago>Pago · {pago.fecha}</span>}
         </div>
@@ -91,6 +101,7 @@ export function Plazos({ venta, condiciones, pago = null, nuevo = false, titulo 
           <i className="pz-tick" style={{ left: 0 }} />
           {conDia.map((c) => <i key={c.dia} className="pz-tick" style={{ left: pos(c.dia) }} />)}
           {pago && <i className={`pz-mark${nuevo ? " rg-nuevo" : ""}`} style={{ left: pos(pago.dia) }} />}
+          {marca && <i className={`pz-c4-mark${marca.clase ? ` ${marca.clase}` : ""}`} style={{ left: pos(marca.dia) }} />}
         </div>
         {rotDia ? (
           <div className="pz-abajo" aria-hidden="true" data-plazos-dias>
@@ -118,6 +129,7 @@ export function Plazos({ venta, condiciones, pago = null, nuevo = false, titulo 
           {venta && <li>Venta: {venta}</li>}
           {conDia.map((c) => <li key={c.dia}>A los {c.dia} días{lleva(c) ? `: ${lleva(c)}` : ""}</li>)}
           {pago && <li>Pago: {pago.fecha}, a los {pago.dia} días</li>}
+          {marca && <li data-marca-c4-lector>{marca.rot}</li>}
         </ul>
       </figure>
     </div>
@@ -224,6 +236,11 @@ export const CSS_T73_PATRON = `
 .t73pt .pz-et.pz-fin b { font-weight: 600; }
 .t73pt .pz-et.pz-fin-dia { transform: translateX(-100%); text-align: right; }
 .t73pt .pz-lleva-baja { position: absolute; right: 0; top: 34px; white-space: nowrap; }
+/* C4: el día de la opción tocada, en su propio renglón, sobre la franja. */
+.t73pt .pz-c4 { position: relative; height: 26px; }
+.t73pt .pz-c4-pos { position: absolute; top: 0; display: block; }
+.t73pt .pz-c4-et { display: inline-block; white-space: nowrap; font: 600 12px/1.2 "Inter", sans-serif; padding: 3px 6px; border-radius: 6px; border: 1px solid var(--p-borde); background: var(--p-fondo); color: var(--p-texto); }
+.t73pt .pz-c4-mark { position: absolute; top: -6px; width: 4px; height: 22px; margin-left: -2px; border-radius: 2px; background: var(--p-texto); }
 /* Barras: libros contra conteo, a la misma escala. Neutras: ni debe ni haber. */
 .t73pt .br { margin: 0 0 12px; display: grid; gap: 8px; border: 1px solid var(--p-borde); border-radius: 10px; padding: 10px 12px; min-width: 0; }
 .t73pt .br .rg-tit { padding-bottom: 0; }

@@ -1,103 +1,72 @@
-import { useEffect, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { barajar } from "../../../../utils/barajar.js";
-import { H7, CASOS_H7, FIGURAS_H7, BOTON_H7, fichaH7, resumenH7 } from "../../../../data/contabilidadT7_3_h7.js";
-import { prepararH7, evaluarH7, puntuarH7, TOTAL_H7 } from "../../../../contabilidad/t7_3H7.js";
-import { Pulsos, Cierre } from "../../corazon/juego.jsx";
-import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
-import { Responder, useTanda } from "../piezas.jsx";
-import { EncabezadoHacer } from "./hacerT7.jsx";
-import { CSS_T7_HACER, Ficha, Parrafos, TarjetaPregunta, Eleccion, Devolucion } from "./hacerT7.jsx";
+import { H7, CASOS_H7, FIGURAS_H7, ITEMS_H7, fichaH7, resumenH7 } from "../../../../data/contabilidadT7_3_h7.js";
+import { prepararH7 } from "../../../../contabilidad/t7_3H7.js";
+import { CONSECUENCIA_C4, itemsH7, W_H7 } from "../../../../contabilidad/c4/t73h7_c4.js";
+import DecisionC4 from "./decisionC4.jsx";
+import { Panel } from "../../salaDeControl/marco.jsx";
+import { Ficha } from "./hacerT7.jsx";
 import { FranjaNIC2, FigurasHacer, CSS_T73_PATRON } from "./PatronT7_3.jsx";
-import { ContadorConIntento } from "./armaLaLinea.jsx";
-import { sinUnSoloIntento } from "../../../../contabilidad/armaLaLinea.js";
+import { CSS_T73C4, Cuadra, Regla } from "./T73C4Comun.jsx";
+import { pesos } from "../../../../contabilidad/c4/t73.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
- * T7-3 · HACER 7 · ¿COSTO O VALOR NETO REALIZABLE? (Célula C)
+ * T7-3 · HACER 7 · ¿COSTO O VALOR NETO REALIZABLE? (Célula C) · PATRÓN C4.
  *
- * Arriba, siempre a la vista, la frase fija de la NIC 2; luego la consigna.
- * Debajo, un ítem a la vez, en el orden de la tabla, con su caso encima: el
- * texto del caso y su ficha (la de la regla 10c que propone Near), y «Caso 1»
- * a «Caso 3» como encabezado de la pregunta. Cifras barajadas: UN SOLO
- * TOQUE; la buena se enseña.
+ * Arriba, siempre a la vista, la frase fija de la NIC 2; luego el encabezado
+ * del motor C4 (t7/decisionC4.jsx) con el objetivo y la consigna. Un ítem a
+ * la vez, en el orden de la tabla: el texto del caso; la figura (su objeto,
+ * «la línea costo – VNR»): la ficha de la regla 10c, la línea con el precio,
+ * el costo y, en la medida, el valor neto realizable, y la cifra tocada sobre
+ * ella; debajo, las cuentas del Patrón T7-3, que aparecen después de su
+ * ítem. Cifras barajadas en cada partida, como en main: UN SOLO TOQUE; la
+ * buena se enseña («Iba aquí»). Al terminar: onCompletar(pct, ms, detalle),
+ * con el primer (único) intento de cada ítem.
  *
- * Seis unidades; las piezas son las de los Hacer de T7-3 (hacerT7.jsx, sin
- * cambiarlo). Al terminar: onCompletar(pct, ms, detalle).
+ * La consecuencia de cada cifra es pura (src/contabilidad/c4/t73h7_c4.js).
+ * FIGURA PROVISIONAL PARA WATARI (su prototipo, f73.js).
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-export default function CostoOValorNeto({ Marco, rotulo, titulo, acento, onCompletar, items = null, onComoSeJuega = null }) {
-  const t = useTanda(() => items ?? prepararH7(barajar));
-  const [elegida, setElegida] = useState(null);
-  const [r, setR] = useState(null);
-  const [bien, setBien] = useState(0);
-  const zonaBoton = useRef(null);
-  const tarjeta = useRef(null);
+const ORDEN = ITEMS_H7.map((it) => it.id);
 
-  const item = t.items[t.i];
-  const cuantos = t.items.length;
-  const listo = Boolean(r);
+function FiguraH7({ estado, item, vista }) {
+  const c = CASOS_H7[item.caso];
+  const listo = vista.veredicto && (vista.resuelto || vista.fallado);
+  return (
+    <div className="t73c4" data-c4-estado={JSON.stringify(estado)}>
+      <div data-caso={item.caso + 1}><Ficha filas={fichaH7(c)} /></div>
+      <div className="t73c4-obj" data-c4-objeto="linea">
+        <p className="t73c4-tit" data-encabezado-item>{c.encabezado} · {c.quien}</p>
+        <Regla marcas={estado.marcas} desde={estado.desde} hasta={estado.hasta} valor={estado.valor} vista={vista} fmt={pesos} />
+        <p className="t73c4-linea" data-gastos>{W_H7.vender(c.vender)}{c.terminar ? ` · ${W_H7.terminar(c.terminar)}` : ""}</p>
+      </div>
+      <Cuadra estado={estado} vista={vista} />
+      <FigurasHacer figuras={FIGURAS_H7} respondidos={ORDEN.indexOf(item.id) + (listo ? 1 : 0)} listo={listo} />
+    </div>
+  );
+}
 
-  useEffect(() => {
-    if (t.terminado) onCompletar?.(puntuarH7(bien), Date.now() - t.inicio.current, t.detalle.current);
-  }, [t.terminado]); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => { if (listo) zonaBoton.current?.querySelector("button")?.focus(); }, [listo]);
-
-  const elegir = (v) => {
-    if (r) return;
-    const nuevo = evaluarH7(item, v);
-    t.anotar(item.id, nuevo.ok, v);
-    if (nuevo.ok) setBien((n) => n + 1);
-    setElegida(v);
-    setR(nuevo);
-  };
-
-  const avanzar = () => {
-    setElegida(null); setR(null);
-    if (t.i + 1 < cuantos) { t.setI(t.i + 1); requestAnimationFrame(() => tarjeta.current?.focus()); }
-    else t.setTerminado(true);
-  };
-
-  const reiniciar = () => { t.reiniciar(); setElegida(null); setR(null); setBien(0); };
-
-  if (t.terminado) {
+export default function CostoOValorNeto({ Marco = Panel, rotulo, titulo, acento, onCompletar, items = null, onComoSeJuega = null }) {
+  /* Las cifras, barajadas al montar (como en main); `items` las fija (pruebas). */
+  const [base] = useState(() => items ?? prepararH7(barajar));
+  const losItems = useMemo(() => itemsH7(base), [base]);
+  /* La frase de la NIC 2 va primero, también en el cierre: el marco del motor la pone antes que todo. */
+  const MarcoH7 = useMemo(() => function MarcoConFranja({ children, ...p }) {
     return (
-      <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
-        <style>{CSS_T73_PATRON}</style>
-        <FranjaNIC2 texto={H7.aviso} />
-        <Cierre pct={Math.round(puntuarH7(bien))} onReiniciar={reiniciar} textoReiniciar="Otra vez">
-          <p data-resumen style={TEXTO_CIERRE}>{resumenH7(bien, TOTAL_H7)}</p>
-        </Cierre>
+      <Marco {...p}>
+        <style>{CSS_T73_PATRON + CSS_T73C4}</style>
+        <div data-t7-3-h7 className="t73pt-pieza">
+          <FranjaNIC2 texto={H7.aviso} />
+          {children}
+        </div>
       </Marco>
     );
-  }
-
-  const caso = CASOS_H7[item.caso];
-  return (
-    <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
-      <style>{CSS_T7_HACER + CSS_T73_PATRON}</style>
-      <div data-t7-3-h7 className="t73pt-pieza">
-        <FranjaNIC2 texto={H7.aviso} />
-        <EncabezadoHacer objetivo={H7.objetivo} consigna={sinUnSoloIntento(H7.consigna)} onComoSeJuega={onComoSeJuega} />
-        <div style={{ marginBottom: "12px" }}>
-          <ContadorConIntento>
-            <Pulsos total={cuantos} hechos={t.i + (listo ? 1 : 0)} enCurso={t.i + 1} etiqueta="Pregunta" />
-          </ContadorConIntento>
-        </div>
-        <div key={`caso-${item.caso}`} className="fae-t7h-entra" data-caso={item.caso + 1}>
-          <Parrafos textos={[caso.texto]} dato="caso" />
-          <Ficha filas={fichaH7(caso)} />
-        </div>
-        <FigurasHacer figuras={FIGURAS_H7} respondidos={t.i + (listo ? 1 : 0)} listo={listo} />
-        <TarjetaPregunta id={item.id} encabezado={caso.encabezado} pregunta={item.pregunta} pie={H7.pie} tarjetaRef={tarjeta} />
-        <Eleccion opciones={item.opciones} r={r} elegida={elegida} onElegir={elegir} etiqueta={item.pregunta} />
-        <Devolucion r={r} lectorError={r && !r.ok ? `Incorrecto. Iba aquí: ${r.textoCorrecta}. ` : null} />
-      </div>
-      {listo && (
-        <div ref={zonaBoton}>
-          <Responder onClick={avanzar}>{t.i + 1 === cuantos ? BOTON_H7.verResumen : BOTON_H7.siguiente}</Responder>
-        </div>
-      )}
-    </Marco>
-  );
+  }, [Marco]);
+  const pieza = {
+    ...CONSECUENCIA_C4, items: losItems, titulo, objetivo: H7.objetivo, consigna: H7.consigna, pie: H7.pie,
+    resumen: resumenH7, Figura: FiguraH7, clase: "t73h7",
+  };
+  return <DecisionC4 pieza={pieza} Marco={MarcoH7} rotulo={rotulo} acento={acento} onCompletar={onCompletar} onComoSeJuega={onComoSeJuega} />;
 }
