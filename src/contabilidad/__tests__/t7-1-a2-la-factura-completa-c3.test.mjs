@@ -222,7 +222,8 @@ const lectura = (raiz) => {
     ren: [...f.querySelectorAll(".a2-ren")].map((x) => [x.className, x.textContent]),
     dian: [f.querySelector(".a2-dian").className.replace(" llega", ""), f.querySelector(".a2-dian").textContent],
     tarifa: f.querySelector(".a2-tarifa").textContent,
-    bases: [...f.querySelectorAll("[data-elige]")].map((x) => [x.dataset.elige, x.className, x.querySelector("span").textContent, x.getAttribute("aria-disabled")]),
+    /* Lote V: los corchetes salen barajados; se comparan por id. */
+    bases: [...f.querySelectorAll("[data-elige]")].map((x) => [x.dataset.elige, x.className, x.querySelector("span").textContent, x.getAttribute("aria-disabled")]).sort((a, b) => a[0].localeCompare(b[0])),
   };
 };
 
@@ -311,7 +312,7 @@ test("★★★ la base (corchetes en la figura): pista, devolución con la corr
     enFoco(m.q(".c3-txt"), "al seguir");
     assert.equal(m.q(".c3-txt").textContent, p.texto);
     assert.equal(m.q(".c3-op"), null, "las opciones son los corchetes de la figura, no una lista aparte");
-    assert.deepEqual([...m.caja.querySelectorAll("[data-figura] [data-elige]")].map((b) => b.dataset.elige), ["sin-iva", "solo-iva", "con-iva"]);
+    assert.deepEqual([...m.caja.querySelectorAll("[data-figura] [data-elige]")].map((b) => b.dataset.elige).sort(), ["sin-iva", "solo-iva", "con-iva"].sort(), "lote V: los tres corchetes, en cualquier orden");
     bloqueado(m);
     await m.op("con-iva");
     assert.ok(m.q('[data-elige="con-iva"]').classList.contains("mal"));
@@ -559,6 +560,43 @@ test("★★★ vista: T7-1 pinta la pieza C3 en el lugar de A2; la vieja ya no 
   assert.ok(!PIEZAS_T7_1.some((x) => x.Pieza === Vieja || x.pieza === MAIN.PIEZA_LA_FACTURA_COMPLETA));
   const vista = leer("src/components/ContabilidadT7_1View.jsx");
   assert.ok(!vista.includes("LaFacturaCompleta.jsx") && !vista.includes("contabilidadT7_1_ap2.js"));
+});
+
+/* ═══════════ LOTE V · LAS OPCIONES, BARAJADAS ═══════════ */
+
+test("★★★ lote V: los corchetes de la base y las opciones del lado a lado salen barajados con la función compartida (azar fijado), el mismo conjunto, la correcta no siempre primero, y el orden no cambia al fallar", async () => {
+  const { barajadorDe } = await import("../../utils/barajar.js");
+  assert.match(readFileSync(new URL("../../components/mecanicas/libros/t7/aprenderC3.jsx", import.meta.url), "utf8"), /import \{ barajar \} from "\.\.\/\.\.\/\.\.\/\.\.\/utils\/barajar\.js"/);
+  assert.match(readFileSync(new URL("../../components/mecanicas/libros/t7/LaFacturaCompletaC3.jsx", import.meta.url), "utf8"), /barajar=\{barajar\}/, "la pieza pasa `barajar` al motor");
+  const casos = [
+    { id: "base-de-la-retencion", sel: "[data-figura] [data-elige]", leer: (b) => b.dataset.elige, antes: async () => {} },
+    { id: "lado-a-lado", sel: ".c3-op[data-op]", leer: (b) => b.dataset.op, antes: (m) => m.rol("venta") },
+  ];
+  for (const c of casos) {
+    const datos = pant(c.id).opciones.map((o) => o.id);
+    const correcta = pant(c.id).opciones.find((o) => o.correcta).id;
+    const ordenes = [];
+    for (const semilla of ["a", "b", "c", "d", "e", "f"]) {
+      const m = await montar(h(Factura, { rotulo: "INVENTARIOS I · APRENDER", barajar: barajadorDe(semilla) }));
+      try {
+        await m.ir(c.id);
+        await c.antes(m);
+        const enPantalla = () => [...m.caja.querySelectorAll(c.sel)].map(c.leer);
+        const orden = enPantalla();
+        assert.deepEqual([...orden].sort(), [...datos].sort(), `${c.id}: el mismo conjunto`);
+        const mala = orden.find((x) => x !== correcta);
+        await m.clic(m.q(`[data-op="${mala}"]`));
+        assert.ok(m.q(`[data-op="${mala}"]`).classList.contains("mal"), `${c.id}: era un error`);
+        assert.deepEqual(enPantalla(), orden, `${c.id}: al fallar no se rebaraja`);
+        ordenes.push(orden);
+      } finally {
+        m.desmontar();
+      }
+    }
+    assert.ok(ordenes.some((o) => o.join() !== datos.join()), `${c.id}: en algún caso, distinto del orden de los datos`);
+    assert.ok(ordenes.some((o) => o[0] !== correcta), `${c.id}: la correcta no queda siempre primero`);
+    assert.ok(new Set(ordenes.map((o) => o.join())).size > 1, `${c.id}: el orden depende del azar`);
+  }
 });
 
 test("★★ montada como en la vista: rótulo y título en la cabecera del Panel; el motor C3 y su hoja", async () => {

@@ -1,4 +1,5 @@
-import { useEffect, useReducer, useRef } from "react";
+import { useEffect, useReducer, useRef, useState } from "react";
+import { barajar } from "../../../../utils/barajar.js";
 import { Panel } from "../../salaDeControl/marco.jsx";
 import { Pastilla, Mensaje, RegionViva, CORRECTA, TACHADA, CSS_B5H, CLASE_B5H, LECTOR_INCORRECTO } from "../b5/Devolucion.jsx";
 
@@ -17,7 +18,8 @@ import { Pastilla, Mensaje, RegionViva, CORRECTA, TACHADA, CSS_B5H, CLASE_B5H, L
  *     enFigura, lineas: [{ id, cuenta, monto, lado, pista, devolucion, fantasma? }],
  *     lista, siguiente, pie, boton (null: sin botón) }
  *   ctx (lo recibe la figura) = { s, P, evento, reducido, fig(cambios), elegir(id),
- *     ubicar(lado), marca(idOpcion) → "mal" | "pista" | "bien" | null, interfaz }
+ *     ubicar(lado), marca(idOpcion) → "mal" | "pista" | "bien" | null, interfaz,
+ *     ordenar(lista, clave = P.id) → la lista en el orden barajado al montar }
  *   C3.AsientoT ({ ctx, titulo, lineas?, resueltas? }) · C3.Cruce ({ clave, fichas,
  *     rotulos? }) · C3.pesos(n) · CSS_C3 (prefijo c3-).
  *
@@ -251,8 +253,24 @@ export const C3 = { pesos, Cruce, cruce: Cruce, AsientoT, asientoT: AsientoT };
 
 /* ═══════════ EL MOTOR ═══════════ */
 
-export default function AprenderC3({ pieza, rotulo }) {
+/*
+ * Lote V (Mello): las opciones de cada pantalla (y las de sus `pasos`, con la
+ * clave «pantalla:paso»), barajadas UNA vez al montar, como T7-1 A1; el orden
+ * no cambia al reintentar. Solo los ids: la lista se rearma con `ordenar`.
+ */
+export function ordenesAlMontar(pantallas, barajarOpciones = barajar) {
+  const o = {};
+  for (const p of pantallas) {
+    if (p.opciones) o[p.id] = barajarOpciones(p.opciones.map((x) => x.id));
+    for (const paso of p.pasos ?? []) if (paso.opciones) o[`${p.id}:${paso.id}`] = barajarOpciones(paso.opciones.map((x) => x.id));
+  }
+  return o;
+}
+
+export default function AprenderC3({ pieza, rotulo, barajar: barajarOpciones = barajar }) {
   const pantallas = pieza.pantallas;
+  /* `barajar` se inyecta en las pruebas para fijar el azar. */
+  const [ordenes] = useState(() => ordenesAlMontar(pantallas, barajarOpciones));
   const T = { ...INTERFAZ_C3, ...(pieza.interfaz ?? {}) };
   const [s, despachar] = useReducer((e, a) => reducir(pantallas, e, a), pieza, estadoInicial);
   const marco = useRef(null);
@@ -284,6 +302,10 @@ export default function AprenderC3({ pieza, rotulo }) {
     fig: (cambios) => despachar({ tipo: "fig", cambios }),
     elegir: (id) => despachar({ tipo: "elegir", id }),
     ubicar: (lado) => despachar({ tipo: "ubicar", lado }),
+    ordenar: (lista, clave = P.id) => {
+      const ids = ordenes[clave];
+      return ids ? ids.map((id) => lista.find((x) => x.id === id)).filter(Boolean) : lista;
+    },
   };
   const listo = estaListo(P, s);
   const ultima = s.p === pantallas.length - 1;
@@ -318,7 +340,7 @@ export default function AprenderC3({ pieza, rotulo }) {
           {verPregunta && <>
             {P.pregunta && <p className="c3-preg" data-pregunta>{P.pregunta}</p>}
             <div className="c3-ops" role="group" aria-label={P.pregunta || undefined}>
-              {P.opciones.map((o) => {
+              {ctx.ordenar(P.opciones).map((o) => {
                 const m = marca(o.id);
                 return (
                   <button key={o.id} type="button" className={`c3-op${m ? ` ${m}` : ""}`} data-op={o.id}
