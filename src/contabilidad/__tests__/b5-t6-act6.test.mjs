@@ -456,6 +456,12 @@ test("★★★ lote 6c · en las casillas 1 a 3 sale la lista de rangos: se toc
     assert.equal(boton(malo).style.boxShadow, "inset 0 0 0 2px #E76F51");
     const franja = (id) => caja.querySelector(`[data-franja-pastillas] [data-pastilla-cajon="${id}"] [data-pastilla]`);
     assert.equal(franja(malo).textContent, "No va aquí");
+    /* Lote 28 (Shoko): la franja de las pastillas va DEBAJO del eje y de sus marcas, no encima: no tapa nada. */
+    const fr = caja.querySelector("[data-franja-pastillas]");
+    const barraAbajo = parseFloat(boton(malo).parentElement.style.top) + parseFloat(boton(malo).parentElement.style.height);
+    assert.ok(parseFloat(fr.style.top) > barraAbajo, "la franja, bajo la barra de los cajones");
+    const marca = Math.max(...[...caja.querySelectorAll("[data-eje] [data-marca]")].map((m) => parseFloat(m.style.top)));
+    assert.ok(parseFloat(fr.style.top) >= marca + 16, "y bajo las marcas");
     assert.ok(franja(malo).querySelector('[data-icono="tache"]'));
     assert.equal(boton(bueno).dataset.marcaE4, "revelada");
     assert.match(boton(bueno).getAttribute("aria-label"), /\. Iba aquí$/);
