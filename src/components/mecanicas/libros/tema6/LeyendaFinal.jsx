@@ -1,5 +1,6 @@
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FAE } from "../../../../theme.js";
+import { vueltasDe, sumarVuelta, esVariante } from "../../../../contabilidad/b5Vuelta.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -29,6 +30,23 @@ function LeyendaDeLaFrase({ escena, ponerLeyenda }) {
 /* Un tipo estable: si cambiara en cada render, la leyenda se quitaría y se pondría sin fin. */
 export const useEscenaConLeyenda = (ponerLeyenda) =>
   useMemo(() => function EscenaConLeyenda({ escena }) { return <LeyendaDeLaFrase escena={escena} ponerLeyenda={ponerLeyenda} />; }, [ponerLeyenda]);
+
+/*
+ * Lote 27 · D8 (propuesta de Shoko): la capa 4 de la segunda visita usa la pregunta de antes del cambio C1.
+ * Cuenta como visita cada capa 4 acertada (la frase buena llega a la leyenda); la visita k usa la de antes
+ * si es impar, como las vueltas de los Hacer (b5Vuelta.js). La figura lee la misma cuenta al montarse.
+ */
+const claveAprender = (id) => `aprender:${id}`;
+export const useVarianteCapa4 = (id) => useState(() => esVariante(vueltasDe(claveAprender(id))))[0];
+export function useVueltaCapa4(id, ponerLeyenda) {
+  const variante = useVarianteCapa4(id);
+  const contada = useRef(false);
+  const poner = useCallback((t) => {
+    if (t && !contada.current) { contada.current = true; sumarVuelta(claveAprender(id)); }
+    ponerLeyenda?.(t);
+  }, [id, ponerLeyenda]);
+  return { variante, poner };
+}
 
 /* El modelo y, debajo, la frase buena como su leyenda. */
 export function ConLeyenda({ id, leyenda, children }) {

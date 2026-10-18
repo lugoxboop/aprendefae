@@ -7,7 +7,7 @@ import { VENTAS_T5_A2, OPCIONES_CAPA_3_T5_A2, PREGUNTA_CAPA_3_T5_A2, PISTA_CAPA_
  *
  * Objeto propio: las ventas y su diferencia. La diferencia de cada título
  * (lo que recibe menos lo que costó, sin signo) cae en «Ganancia», en
- * «Pérdida» o en «Sin diferencia», la que diga la opción tocada; Inversiones
+ * «Pérdida» o en «Ni ganancia ni pérdida» (lote 27, Shoko: como la opción), la que diga la opción tocada; Inversiones
  * – títulos sale siempre por el costo. Mello pidió «lo mismo» que en P1.
  *
  * Las cifras salen de las cajas de main («Costó $650 cada uno», «Se vende a
@@ -25,7 +25,7 @@ const cifraDe = (t) => Number(String(t).replace(/\D/g, ""));
 
 /* [W] pendiente de Near · los rótulos y las líneas de la figura. */
 export const FIGURA_P2_C4 = {
-  zonas: { ganancia: "Ganancia", perdida: "Pérdida", "ni-una": "Sin diferencia" },
+  zonas: { ganancia: "Ganancia", perdida: "Pérdida", "ni-una": "Ni ganancia ni pérdida" },
   venta: (nombre, recibe, costo) => `${nombre} · recibe ${pesos(recibe)}, costó ${pesos(costo)}`,
   sale: (costo) => `Inversiones – títulos sale por ${pesos(costo)} cada uno.`,
   porTitulo: (d) => `${pesos(d)} por título`,

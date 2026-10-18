@@ -247,10 +247,11 @@ test("★★★ capa 3: el tablero es una tabla; el caso a viene lleno, con el r
   const rotulo = t.querySelector('[data-fila="a"] [data-rotulo-ejemplo]');
   assert.equal(rotulo.textContent, "Ejemplo");
   assert.equal(rotulo.style.fontSize, "12px", "letra mínima");
-  const fila = (id) => [...t.querySelectorAll(`[data-fila="${id}"] td div`)].map((d) => d.textContent);
+  /* Lote 27: bajo la cifra revivida puede ir el fantasma de lo elegido por error; aquí se lee solo el valor de cada celda. */
+  const fila = (id) => [...t.querySelectorAll(`[data-fila="${id}"] td[data-celda]`)].map((td) => td.firstElementChild.textContent);
   assert.deepEqual(fila("a"), ["$180.000", "$180.000"], "el ejemplo, lleno desde el principio");
   for (const id of ["b", "c"]) assert.deepEqual(fila(id), ["", ""], "al principio, vacías");
-  assert.ok([...t.querySelectorAll('[data-fila="b"] td div, [data-fila="c"] td div')].every((d) => d.style.border.startsWith("1px solid rgba(184, 196, 212, 0.5)")), "vacías con borde atenuado");
+  assert.ok([...t.querySelectorAll('[data-fila="b"] td[data-celda] > div, [data-fila="c"] td[data-celda] > div')].every((d) => d.style.border.startsWith("1px solid rgba(184, 196, 212, 0.5)")), "vacías con borde atenuado");
   assert.deepEqual([...caja.querySelectorAll("[data-hecho]")].map((n) => n.dataset.hecho), ["b", "c"], "el caso a ya no se pregunta: solo b y c, desde el principio");
   const lectura = (n) => [...n.querySelectorAll("p:not([data-pie])")].map((p) => p.textContent).join("");
   for (const [k, c] of [D.CASOS_T6_A4[2], D.CASOS_T6_A4[1]].entries()) {
@@ -264,7 +265,7 @@ test("★★★ capa 3: el tablero es una tabla; el caso a viene lleno, con el r
     assert.equal(lectura(caja.querySelector(`[data-revela="${c.id}"]`)), typeof c.falla === "string" ? c.falla : c.falla[mala]);
     assert.equal(caja.querySelector(`[data-revela="${c.id}"] [data-pie]`).textContent, c.pie);
     assert.deepEqual(fila(c.id), [c.revive, c.entran]);
-    const [rev, ent] = t.querySelectorAll(`[data-fila="${c.id}"] td div`);
+    const [rev, ent] = [...t.querySelectorAll(`[data-fila="${c.id}"] td[data-celda]`)].map((td) => td.firstElementChild);
     assert.deepEqual([rev.style.fontSize, rev.style.fontWeight, rev.style.border, rev.style.background], ["15px", "700", `2px solid ${rgb(FAE.node)}`, rgb(FAE.navy)], "la revivida, destacada");
     assert.deepEqual([ent.style.fontSize, ent.style.border, ent.style.background], ["13px", `1px solid ${rgb(COLOR.neutro)}`, "transparent"]);
     for (const d of [rev, ent]) assert.equal(d.style.whiteSpace, "nowrap");

@@ -66,6 +66,8 @@ const SECUNDARIO = "#A8B6C8";
 export const HUNDIDO = { background: "rgba(10,20,34,0.45)", border: "1px solid rgba(248,249,250,0.12)" };
 export const RELLENO_AMBAR = "rgba(233,196,106,0.38)";
 export const RAYADO_TEAL = "repeating-linear-gradient(45deg, rgba(42,157,143,0.55) 0 3px, transparent 3px 7px)";
+/* Lote 27 (Shoko): el faltante va en el neutro #B8C4D4, como «castigada» en b5-t6-a3; el teal es solo DEBE. */
+export const RAYADO_NEUTRO = "repeating-linear-gradient(45deg, rgba(184,196,212,0.55) 0 3px, transparent 3px 7px)";
 
 const MAXIMO = 200000;
 const MINIMO = -40000;
@@ -160,13 +162,13 @@ const TanqueProvision = forwardRef(function TanqueProvision({
           ...linea(cero - 1, { height: "2px" }), background: FAE.ambar, opacity: visto > 0 ? 1 : 0,
           transform: `translateY(${-hRelleno}px)`, transition: t.relleno === "none" ? "none" : `${t.relleno}, opacity 120ms linear`,
         }} />
-        {/* El faltante (DEBE), hacia abajo desde el cero. */}
+        {/* El faltante, hacia abajo desde el cero: rayado neutro (lote 27). */}
         <span data-faltante style={{
-          ...linea(cero, { height: `${abajo}px` }), backgroundImage: RAYADO_TEAL, transformOrigin: "50% 0",
+          ...linea(cero, { height: `${abajo}px` }), backgroundImage: RAYADO_NEUTRO, transformOrigin: "50% 0",
           transform: `scaleY(${hFaltante / abajo})`, transition: t.faltante,
         }} />
         <span data-borde-faltante style={{
-          ...linea(cero - 1, { height: "2px" }), background: FAE.teal, opacity: visto < 0 ? 1 : 0,
+          ...linea(cero - 1, { height: "2px" }), background: NEUTRO, opacity: visto < 0 ? 1 : 0,
           transform: `translateY(${hFaltante}px)`, transition: t.faltante === "none" ? "none" : `${t.faltante}, opacity 120ms linear`,
         }} />
         {/* La línea del cero. */}

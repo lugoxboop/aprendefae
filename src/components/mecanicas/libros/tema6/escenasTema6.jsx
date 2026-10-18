@@ -1,11 +1,13 @@
 import UnaFrase from "../intro/UnaFrase.jsx";
-import { PIEZA_LO_QUE_LE_DEBEN, PREGUNTA_FINAL_T6, OPCIONES_FINAL_T6, PIE_FINAL_T6 } from "../../../../data/contabilidadT6Pieza1.js";
+import { PIEZA_LO_QUE_LE_DEBEN, PREGUNTA_FINAL_T6, OPCIONES_FINAL_T6, PIE_FINAL_T6, PREGUNTA_FINAL_ANTES_C1_T6, OPCIONES_FINAL_ANTES_C1_T6 } from "../../../../data/contabilidadT6Pieza1.js";
 import DosMomentos from "./DosMomentos.jsx";
 import SeisHechos from "./SeisHechos.jsx";
 import { PIEZA_NO_VA_A_PAGAR, PREGUNTA_FINAL_T6_A2, OPCIONES_FINAL_T6_A2 } from "../../../../data/contabilidadT6Pieza2.js";
 import DosDias from "./DosDias.jsx";
 import DosMetodos from "./DosMetodos.jsx";
-import { PIEZA_LA_PROVISION, PREGUNTA_FINAL_T6_A3, OPCIONES_FINAL_T6_A3, PIE_FINAL_T6_A3, TANQUE_T6_A3 } from "../../../../data/contabilidadT6Pieza3.js";
+import {
+  PIEZA_LA_PROVISION, PREGUNTA_FINAL_T6_A3, OPCIONES_FINAL_T6_A3, PIE_FINAL_T6_A3, TANQUE_T6_A3, PREGUNTA_FINAL_ANTES_C1_T6_A3, OPCIONES_FINAL_ANTES_C1_T6_A3,
+} from "../../../../data/contabilidadT6Pieza3.js";
 import TanqueProvision from "./TanqueProvision.jsx";
 import LaProvision from "./LaProvision.jsx";
 import TanqueMomentos from "./TanqueMomentos.jsx";
@@ -18,7 +20,7 @@ import LaTablaDelEjemplo from "./LaTablaDelEjemplo.jsx";
 import CuatroGrupos from "./CuatroGrupos.jsx";
 import { PIE } from "./CajasQueRevelan.jsx";
 import { FinalT6A1, FinalT6A2, FinalT6A4, FinalT6A5 } from "./FigurasFinalesT6.jsx";
-import { evaluadorDe, useEscenaConLeyenda } from "./LeyendaFinal.jsx";
+import { evaluadorDe, useEscenaConLeyenda, useVueltaCapa4 } from "./LeyendaFinal.jsx";
 
 /*
  * Las capas propias de las piezas de Aprender del Tema 6, como las de los
@@ -28,9 +30,13 @@ import { evaluadorDe, useEscenaConLeyenda } from "./LeyendaFinal.jsx";
  * debajo, fuera de UnaFrase.
  */
 const PieCapa4 = ({ texto }) => <p data-pie style={{ ...PIE, margin: "12px 0 0" }}>{texto}</p>;
+/* Lote 27 · D8: en la segunda visita (A1 y A3, las que cambió el lote C1), la pregunta de antes, sin pie. */
 const evaluar = evaluadorDe(OPCIONES_FINAL_T6);
+const evaluarAntes = evaluadorDe(OPCIONES_FINAL_ANTES_C1_T6);
 export function EnUnaFraseT6({ ponerLeyenda = null }) {
-  const Escena = useEscenaConLeyenda(ponerLeyenda);
+  const { variante, poner } = useVueltaCapa4(PIEZA_LO_QUE_LE_DEBEN.id, ponerLeyenda);
+  const Escena = useEscenaConLeyenda(poner);
+  if (variante) return <UnaFrase pregunta={PREGUNTA_FINAL_ANTES_C1_T6} opciones={OPCIONES_FINAL_ANTES_C1_T6} Escena={Escena} evaluar={evaluarAntes} />;
   return (
     <>
       <UnaFrase pregunta={PREGUNTA_FINAL_T6} opciones={OPCIONES_FINAL_T6} Escena={Escena} evaluar={evaluar} />
@@ -46,8 +52,11 @@ export function EnUnaFraseT6A2({ ponerLeyenda = null }) {
 }
 
 const evaluarA3 = evaluadorDe(OPCIONES_FINAL_T6_A3);
+const evaluarA3Antes = evaluadorDe(OPCIONES_FINAL_ANTES_C1_T6_A3);
 export function EnUnaFraseT6A3({ ponerLeyenda = null }) {
-  const Escena = useEscenaConLeyenda(ponerLeyenda);
+  const { variante, poner } = useVueltaCapa4(PIEZA_LA_PROVISION.id, ponerLeyenda);
+  const Escena = useEscenaConLeyenda(poner);
+  if (variante) return <UnaFrase pregunta={PREGUNTA_FINAL_ANTES_C1_T6_A3} opciones={OPCIONES_FINAL_ANTES_C1_T6_A3} Escena={Escena} evaluar={evaluarA3Antes} />;
   return (
     <>
       <UnaFrase pregunta={PREGUNTA_FINAL_T6_A3} opciones={OPCIONES_FINAL_T6_A3} Escena={Escena} evaluar={evaluarA3} />

@@ -38,7 +38,7 @@ const ESPERADO = {
 };
 
 test("★★★ [W] la consecuencia: las cifras de las cajas, la diferencia sin signo y cada nota, letra por letra", () => {
-  assert.deepEqual(C4.FIGURA_P2_C4.zonas, { ganancia: "Ganancia", perdida: "Pérdida", "ni-una": "Sin diferencia" });
+  assert.deepEqual(C4.FIGURA_P2_C4.zonas, { ganancia: "Ganancia", perdida: "Pérdida", "ni-una": "Ni ganancia ni pérdida" });
   for (const v of D.VENTAS_T5_A2) {
     for (const o of D.OPCIONES_CAPA_3_T5_A2) {
       const e = C4.consecuenciaP2(v.id, o.id);
