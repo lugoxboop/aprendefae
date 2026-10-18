@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { FAE } from "../../../../theme.js";
 import { SEGUNDA_T6_ACT4, P_SUBE, P_BAJA } from "../../../../data/contabilidadT6Act4.js";
-import { PreguntaSegunda, OpcionesSegunda, fantasmaDe, FANTASMA, CURVA_B } from "../b5/SegundaDecision.jsx";
+import { PreguntaSegunda, OpcionesSegunda, FANTASMA, CURVA_B } from "../b5/SegundaDecision.jsx";
 import { HUNDIDO, RELLENO_AMBAR } from "./TanqueProvision.jsx";
 import AsientoMinimo from "./AsientoMinimo.jsx";
 import { RETRASO_REVELA_MS } from "../b5/Devolucion.jsx";
@@ -23,6 +23,8 @@ import { RETRASO_REVELA_MS } from "../b5/Devolucion.jsx";
  * discontinua), y a los 0,7 s sigue: al estado correcto si ya terminó, o de
  * vuelta a «antes» tras el primer error (la pista no dice la respuesta, C2).
  * Con movimiento reducido, sin trayecto: los dos estados, uno tras otro.
+ * Lote 28: al volver a «antes» tras el primer error, el nivel elegido queda
+ * como fantasma (línea coral discontinua), no solo la opción tachada.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -44,7 +46,8 @@ export function TanqueMini({ elegidas = [], correcta = null, fin = false, reduci
   }, [errada, elegidas.length]);
   const deViaje = errada !== null && vistas < elegidas.length;
   const nivel = deViaje ? nivelDe(errada) : fin ? nivelDe(correcta) : ALTO / 2;
-  const fantasma = deViaje ? null : fantasmaDe(elegidas, correcta, fin);
+  /* Lote 28 (Shoko): lo elegido por error se queda dibujado como fantasma desde el primer error (lo que hubiera pasado), como en la capa 3 del lote 27; al final, junto a lo correcto. */
+  const fantasma = deViaje ? null : elegidas.filter((x) => x !== correcta).at(-1) ?? null;
   return (
     <div data-tanque-mini data-nivel={fin ? correcta : "antes"} {...(deViaje ? { "data-de-paso": errada } : {})} role="img" aria-label={fin ? `${S.rotulo}: ${palabra(correcta).toLowerCase()}` : S.rotulo}
       style={{ position: "relative", width: "84px", height: `${ALTO}px`, borderRadius: "10px", overflow: "hidden", boxSizing: "border-box", ...HUNDIDO }}>

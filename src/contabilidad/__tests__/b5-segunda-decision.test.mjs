@@ -295,3 +295,29 @@ test("★★★ t6-a4: tras el DEBE, «¿Qué le pasa a la provisión?»; el tan
   assert.equal(Math.round(pct()), 75);
   desmontar();
 });
+
+/* ═══ Lote 28 · las Hacer que Shoko dejó abiertas ═══ */
+
+test("★★★ lote 28 · t5-a1: la inversa aparece desde la segunda ficha: las invertidas van en las posiciones 2, 4, 6 y 8", () => {
+  for (const k of [0, 1]) {
+    const mazo = L5.mazoInvertidoT5Act1(k);
+    assert.equal(mazo.length, 9);
+    assert.deepEqual(mazo.map((f, i) => (f.invertida ? i : null)).filter((i) => i !== null), [1, 3, 5, 7]);
+    assert.equal(new Set(mazo.map((f) => f.id)).size, 9, "las mismas fichas, sin repetir");
+  }
+});
+
+test("★★★ lote 28 · t6-a4: tras el primer error, el nivel elegido queda en el tanque como fantasma (no solo la opción tachada)", async () => {
+  const x = A4.HECHOS_T6_ACT4.find((y) => y.id === "qd-06"); // la correcta es «Baja»
+  const { caja, desmontar } = await montar(QueSeDebita, [x]);
+  await tocar(caja.querySelector(`[data-opcion="${x.respuesta}"]`).closest("button"));
+  await tocar(opcion(caja, A4.P_SUBE));
+  await act(() => new Promise((r) => setTimeout(r, 760)));
+  const t = caja.querySelector("[data-tanque-mini]");
+  assert.equal(t.dataset.nivel, "antes", "C2: el nivel no dice la respuesta");
+  assert.equal(t.querySelector("[data-fantasma]").dataset.fantasma, A4.P_SUBE, "lo que hubiera pasado, como fantasma");
+  await tocar(opcion(caja, A4.P_BAJA));
+  assert.equal(t.dataset.nivel, A4.P_BAJA, "se corrige con lo correcto");
+  assert.equal(t.querySelector("[data-fantasma]").dataset.fantasma, A4.P_SUBE, "y el fantasma se queda");
+  desmontar();
+});

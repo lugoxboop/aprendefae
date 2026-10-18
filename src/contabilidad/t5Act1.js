@@ -95,4 +95,14 @@ export function invertirT5Act1(ficha) {
   const t = INVERTIDA_T5_ACT1[rentaDeT5Act1(ficha)];
   return { ...ficha, invertida: true, texto: INVERTIDA_T5_ACT1.pregunta, pista: t.pista, acierto: t.acierto };
 }
-export const mazoInvertidoT5Act1 = (k) => mazoT5Act1(k).map((f) => (INVERTIDAS_T5_ACT1[k].includes(f.id) ? invertirT5Act1(f) : f));
+/*
+ * Lote 28 (Shoko: «la segunda decisión sigue siendo la primera con otras palabras»): las invertidas se
+ * intercalan, en las posiciones 2, 4, 6 y 8 de la tanda, para que la inversa aparezca desde la segunda ficha
+ * (antes, la primera llegaba en la quinta). Cada grupo conserva el orden de Futaba.
+ */
+export function mazoInvertidoT5Act1(k) {
+  const mazo = mazoT5Act1(k).map((f) => (INVERTIDAS_T5_ACT1[k].includes(f.id) ? invertirT5Act1(f) : f));
+  const inv = mazo.filter((f) => f.invertida);
+  const resto = mazo.filter((f) => !f.invertida);
+  return mazo.map((_, i) => (i % 2 === 1 && inv.length ? inv.shift() : resto.shift() ?? inv.shift()));
+}

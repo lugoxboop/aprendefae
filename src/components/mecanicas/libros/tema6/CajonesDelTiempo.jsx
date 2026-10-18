@@ -54,6 +54,13 @@ import { Pastilla, PALABRA_B, TEXTO_B, CORAL_B, ACIERTO_B, RETRASO_REVELA_MS } f
  * movimiento reducido, sin trayecto: está en el elegido y luego, de golpe,
  * en el correcto.
  *
+ * LOTE 28 (Shoko): las pastillas «No va aquí», «Correcto» e «Iba aquí» ya no
+ * flotan encima del eje: van DEBAJO, en una franja propia bajo las marcas,
+ * alineada con su cajón y reservada siempre (no tapa nada ni mueve nada al
+ * aparecer). Y el escalonado de las marcas se vuelve a medir cada vez que
+ * cambia el ancho del eje (ResizeObserver): a 375 «6 meses» bajaba a una
+ * segunda línea con sitio de sobra porque se había medido antes de tiempo.
+ *
  * Lo que entra es siempre el valor correcto. En blanco y negro: los cajones
  * se leen por sus marcas y su orden; la porción es relleno y el resto
  * contorno; lo activo, por el borde de 2 y el relleno.
@@ -101,6 +108,8 @@ const ALTO_BARRA = 44;
  */
 const SEPARACION_MINIMA = 8;
 const LINEA_MARCA = 16;
+/* Lote 28: la franja de las pastillas, bajo las marcas (y bajo su escalón, si lo hay), siempre reservada. */
+const TOPE_PASTILLAS = (escalonado) => TOPE_BARRA + ALTO_BARRA + 4 + LINEA_MARCA * (escalonado ? 2 : 1) + 6;
 function useEscalonado() {
   const marcas = useRef([]);
   const [escalonado, setEscalonado] = useState(false);
@@ -115,7 +124,11 @@ function useEscalonado() {
     let vivo = true;
     document.fonts?.ready?.then(() => { if (vivo) medir(); });
     window.addEventListener("resize", medir);
-    return () => { vivo = false; window.removeEventListener("resize", medir); };
+    /* Lote 28: también cuando cambia el ancho del eje (el Panel se acomoda después del primer pintado). */
+    const caja = marcas.current[0]?.parentElement;
+    const ro = typeof ResizeObserver !== "undefined" && caja ? new ResizeObserver(medir) : null;
+    ro?.observe(caja);
+    return () => { vivo = false; window.removeEventListener("resize", medir); ro?.disconnect(); };
   }, []);
   return { marcas, escalonado };
 }
@@ -143,7 +156,7 @@ function Eje({ respondidas, abierta, reducido, eleccion = null, casillas }) {
   }, [errado, casilla?.id]);
   const enElegido = errado >= 0 && pasada !== casilla.id;
   return (
-    <div data-eje {...(abierta !== null ? { "data-renglon-activo": "" } : {})} data-escalonado={escalonado ? "si" : "no"} style={{ position: "relative", height: `${TOPE_BARRA + ALTO_BARRA + 4 + LINEA_MARCA * (escalonado ? 2 : 1)}px`, margin: "4px 0 12px" }}>
+    <div data-eje {...(abierta !== null ? { "data-renglon-activo": "" } : {})} data-escalonado={escalonado ? "si" : "no"} style={{ position: "relative", height: `${TOPE_PASTILLAS(escalonado) + ALTO_PASTILLA}px`, margin: "4px 0 12px" }}>
       {/* La barra, partida en cuatro cajones. */}
       <div style={{ position: "absolute", top: `${TOPE_BARRA}px`, left: 0, right: 0, height: `${ALTO_BARRA}px`, display: "flex" }}>
         {GRUPOS_T6_ACT6.map((g, k) => {
@@ -178,8 +191,8 @@ function Eje({ respondidas, abierta, reducido, eleccion = null, casillas }) {
           );
         })}
       </div>
-      {/* Lote 6d: las pastillas, en la franja de encima del eje, alineadas con su cajón (la palabra ya está en el nombre del cajón). */}
-      {marcados.length > 0 && <FranjaDePastillas marcados={marcados} marcaDe={marcaDe} />}
+      {/* Lote 28: las pastillas, en su franja bajo las marcas, alineadas con su cajón (la palabra ya está en el nombre del cajón). */}
+      {marcados.length > 0 && <FranjaDePastillas marcados={marcados} marcaDe={marcaDe} top={TOPE_PASTILLAS(escalonado)} />}
       {/* Las marcas, bajo los bordes interiores. */}
       {/* Medidos siempre en la primera línea: el escalón del medio va por transform, que no mueve su caja de medida. */}
       {MARCAS.map((m, k) => (
@@ -220,14 +233,14 @@ function Eje({ respondidas, abierta, reducido, eleccion = null, casillas }) {
  * izquierdo de su cajón y la de la derecha termina en el borde derecho del suyo; con una sola, se alinea
  * por el lado que tiene sitio. Los huecos de los extremos se encogen antes de que dos se monten.
  */
-function FranjaDePastillas({ marcados, marcaDe }) {
+function FranjaDePastillas({ marcados, marcaDe, top }) {
   const hueco = (pct) => <span aria-hidden="true" style={{ flex: `0 1 ${pct}%`, minWidth: 0 }} />;
   const relleno = <span aria-hidden="true" style={{ flex: "1 1 0", minWidth: "6px" }} />;
   const pastilla = (k) => <span key={k} data-pastilla-cajon={GRUPOS_T6_ACT6[k].id} style={{ flex: "none", display: "flex" }}><Pastilla marca={marcaDe(k)} /></span>;
   const [a, b] = marcados;
   const alaIzquierda = (k) => k <= 1;
   return (
-    <div data-franja-pastillas aria-hidden="true" style={{ position: "absolute", top: 0, left: 0, right: 0, height: `${ALTO_PASTILLA}px`, display: "flex", alignItems: "center", pointerEvents: "none" }}>
+    <div data-franja-pastillas aria-hidden="true" style={{ position: "absolute", top: `${top}px`, left: 0, right: 0, height: `${ALTO_PASTILLA}px`, display: "flex", alignItems: "center", pointerEvents: "none" }}>
       {b === undefined
         ? (alaIzquierda(a)
           ? <>{hueco(BORDES_EJE[a])}{pastilla(a)}{relleno}</>
