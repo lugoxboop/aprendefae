@@ -1,4 +1,6 @@
-import { CONSIGNA_CAPA_3_T6_A2, PREGUNTA_CAPA_3_T6_A2, OPCIONES_CAPA_3_T6_A2, METODOS_T6_A2, FINAL_CAPA_3_T6_A2 } from "../../../../data/contabilidadT6Pieza2.js";
+import { useState } from "react";
+import { CONSIGNA_CAPA_3_T6_A2, PREGUNTA_CAPA_3_T6_A2, OPCIONES_CAPA_3_T6_A2, METODOS_T6_A2, FINAL_CAPA_3_T6_A2, PIEZA_NO_VA_A_PAGAR } from "../../../../data/contabilidadT6Pieza2.js";
+import { useSegundaVisita, barajarDistinto } from "./LeyendaFinal.jsx";
 import CajasQueRevelan, { LECTURA } from "./CajasQueRevelan.jsx";
 import { FiguraT6A2 } from "./FigurasCapa3.jsx";
 
@@ -22,6 +24,11 @@ const NOMBRE = { ...LECTURA, fontFamily: "Sora, sans-serif", fontWeight: 600 };
 /* La regla de Mai (§2): en fila solo si todas caben en un renglón a 320. La segunda opción se parte a 320 (medido en Chromium): columna. */
 const FORMA = "columna";
 
+/* Lote 28 · D8: desde la segunda visita, otro orden de cajas y de opciones (una vez por intento). */
+const barajadas = () => barajarDistinto(CAJAS).map((c) => ({ ...c, decide: { ...c.decide, opciones: barajarDistinto(c.decide.opciones) } }));
+
 export default function DosMetodos() {
-  return <CajasQueRevelan consigna={CONSIGNA_CAPA_3_T6_A2} cajas={CAJAS} final={FINAL_CAPA_3_T6_A2} estiloTitulo={NOMBRE} forma={FORMA} atributos={{ "data-capa3-t6-a2": true }} Figura={FiguraT6A2} />;
+  const segunda = useSegundaVisita(PIEZA_NO_VA_A_PAGAR.id);
+  const [cajas] = useState(() => (segunda ? barajadas() : CAJAS));
+  return <CajasQueRevelan consigna={CONSIGNA_CAPA_3_T6_A2} cajas={cajas} final={FINAL_CAPA_3_T6_A2} estiloTitulo={NOMBRE} forma={FORMA} atributos={{ "data-capa3-t6-a2": true }} Figura={FiguraT6A2} />;
 }

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { FAE } from "../../../../theme.js";
 import { COLOR } from "../../../../data/contabilidadTema3.js";
 import {
-  CONSIGNA_CAPA_3_T6_A5, PREGUNTA_CAPA_3_T6_A5, GRUPOS_T6_A5, TABLERO_T6_A5, FINAL_CAPA_3_T6_A5, ROTULO_SIMULADO_T6_A5,
+  CONSIGNA_CAPA_3_T6_A5, PREGUNTA_CAPA_3_T6_A5, GRUPOS_T6_A5, TABLERO_T6_A5, FINAL_CAPA_3_T6_A5, ROTULO_SIMULADO_T6_A5, PIEZA_COMO_SE_CALCULA,
 } from "../../../../data/contabilidadT6Pieza5.js";
 import { pegarPorcentaje } from "../../../../contabilidad/t6Pieza5.js";
 import { useReducido } from "../tema3/DosLineas.jsx";
@@ -12,6 +12,7 @@ import { escalera, elegir } from "./escaleraB5.js";
 import { RotuloSimulado, PieDeFuente } from "./FuentesT6A5.jsx";
 import { MONO } from "./TanqueProvision.jsx";
 import { Fantasma, erradaDe } from "./FigurasCapa3.jsx";
+import { useSegundaVisita, barajarDistinto } from "./LeyendaFinal.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -69,12 +70,21 @@ const DECIDE = Object.fromEntries(GRUPOS_T6_A5.map((g) => [g.id, {
 
 export default function CuatroGrupos() {
   const reducido = useReducido();
+  /*
+   * Lote 28 · D8: desde la segunda visita, las cuatro deudas cambian de orden y sus opciones se barajan, una
+   * vez por intento (cada deuda es independiente: el orden no rompe nada). El tablero sigue por grupos.
+   */
+  const segunda = useSegundaVisita(PIEZA_COMO_SE_CALCULA.id);
+  const [{ grupos, decide }] = useState(() => ({
+    grupos: segunda ? barajarDistinto(GRUPOS_T6_A5) : GRUPOS_T6_A5,
+    decide: segunda ? Object.fromEntries(Object.entries(DECIDE).map(([id, d]) => [id, { ...d, opciones: barajarDistinto(d.opciones) }])) : DECIDE,
+  }));
   const [abiertos, setAbiertos] = useState(() => new Set());
   const [elecciones, setElecciones] = useState(() => ({}));
   /* En fila, salvo que alguna opción se parta donde se pinta (Sakuta, 15-oct). */
   const [forma, seParte, vuelta] = useFormaQueCabe("fila");
   const bloqueFinal = useRef(null);
-  const decidido = (g) => escalera(DECIDE[g.id], elecciones[g.id]).resuelta;
+  const decidido = (g) => escalera(decide[g.id], elecciones[g.id]).resuelta;
   const todos = GRUPOS_T6_A5.every(decidido);
 
   useEffect(() => {
@@ -104,7 +114,7 @@ export default function CuatroGrupos() {
               <tr key={g.id} data-fila={g.id}>
                 <th scope="row" style={NOMBRE_FILA}>{g.nombre}</th>
                 <Celda cifra={decidido(g) ? TABLERO_T6_A5.celdas[k] : null} id={g.id}
-                  fantasma={DECIDE[g.id].opciones.find((o) => o.id === erradaDe(elecciones[g.id], g.correcta))?.texto ?? null} />
+                  fantasma={decide[g.id].opciones.find((o) => o.id === erradaDe(elecciones[g.id], g.correcta))?.texto ?? null} />
               </tr>
             ))}
           </tbody>
@@ -128,13 +138,13 @@ export default function CuatroGrupos() {
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "12px" }}>
-        {GRUPOS_T6_A5.map((g) => (
+        {grupos.map((g) => (
           <Caja key={g.id}
             caja={{
-              id: g.id, titulo: g.deuda, revela: pegarPorcentaje(g.revela), pie: <PieDeFuente texto={g.pie} />, decide: DECIDE[g.id],
+              id: g.id, titulo: g.deuda, revela: pegarPorcentaje(g.revela), pie: <PieDeFuente texto={g.pie} />, decide: decide[g.id],
             }}
             estiloTitulo={NOMBRE_CAJA} forma={forma} onSeParte={seParte} vuelta={vuelta} abierto={abiertos.has(g.id)} onAbrir={() => setAbiertos((s) => new Set(s).add(g.id))}
-            intentos={elecciones[g.id]} onElegir={(o) => setElecciones((e) => ({ ...e, [g.id]: elegir(DECIDE[g.id], e[g.id] ?? [], o) }))} />
+            intentos={elecciones[g.id]} onElegir={(o) => setElecciones((e) => ({ ...e, [g.id]: elegir(decide[g.id], e[g.id] ?? [], o) }))} />
         ))}
       </div>
 
