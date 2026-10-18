@@ -52,7 +52,7 @@ export function crearEscenaFichas(pieza) {
     const Sitio = ({ id, tenue, sinHueco }) => {
       const s = estado.sitios[id];
       if (!s) return sinHueco ? <span style={{ minHeight: "32px" }} /> : <span data-sitio={id} data-vacio="si" style={{ minHeight: `${ALTO}px`, boxSizing: "border-box", borderRadius: "8px", border: `1px dashed rgba(248,249,250,${tenue ? 0.1 : 0.22})` }} />;
-      /* Lo que entra va en sus renglones (una lista en los datos): el sitio reserva dos y no crece al llenarse. */
+      /* Lo que entra va en sus renglones (una lista en los datos): el sitio reserva dos. Un renglón que no cabe a 320 parte la palabra en vez de cortarse («Títulos de participación», T5 A1). */
       const lineas = Array.isArray(s.texto) ? s.texto : [s.texto];
       return (
         <span data-sitio={id} data-nuevo={s.nuevo ? "si" : "no"} style={{
@@ -61,7 +61,7 @@ export function crearEscenaFichas(pieza) {
           border: s.nuevo ? `2px solid ${NODO}` : `1px solid ${BORDES}`, background: s.nuevo ? NAVY : "transparent", animation: s.nuevo ? entra : "none",
           fontFamily: INTER, fontSize: "12px", fontWeight: 600, lineHeight: "16px", color: TEXTO,
         }}>
-          {lineas.map((l) => <span key={l} style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "clip" }}><ConCifras texto={l} /></span>)}
+          {lineas.map((l) => <span key={l} lang="es" style={{ overflowWrap: "anywhere", hyphens: "auto" }}><ConCifras texto={l} /></span>)}
         </span>
       );
     };
