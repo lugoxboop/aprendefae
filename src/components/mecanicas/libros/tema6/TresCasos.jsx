@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { FAE } from "../../../../theme.js";
 import { COLOR } from "../../../../data/contabilidadTema3.js";
 import {
-  CONSIGNA_CAPA_3_T6_A4, PREGUNTA_CAPA_3_T6_A4, OPCIONES_CAPA_3_T6_A4, TABLERO_T6_A4, CASOS_T6_A4, FINAL_CAPA_3_T6_A4,
+  CONSIGNA_CAPA_3_T6_A4, PREGUNTA_CAPA_3_T6_A4, OPCIONES_CAPA_3_T6_A4, TABLERO_T6_A4, CASOS_T6_A4, FINAL_CAPA_3_T6_A4, PIEZA_SI_PAGA,
 } from "../../../../data/contabilidadT6Pieza4.js";
 import { useReducido } from "../tema3/DosLineas.jsx";
 import EstilosT5, { CLASE_T5 } from "../tema5/EstilosT5.jsx";
@@ -10,6 +10,7 @@ import { Caja, LECTURA, PIE, useFormaQueCabe } from "./CajasQueRevelan.jsx";
 import { escalera, elegir } from "./escaleraB5.js";
 import { MONO } from "./TanqueProvision.jsx";
 import { Fantasma, erradaDe } from "./FigurasCapa3.jsx";
+import { useSegundaVisita, barajarDistinto } from "./LeyendaFinal.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -50,7 +51,7 @@ const NOMBRE_CAJA = { ...LECTURA, fontFamily: SORA, fontWeight: 600, lineHeight:
 const ROTULO_EJEMPLO = { display: "block", marginTop: "2px", fontFamily: INTER, fontSize: "12px", fontWeight: 400, lineHeight: 1.35, color: COLOR.apagado };
 /* El caso a es el ejemplo; los demás se preguntan. */
 const PREGUNTADOS = CASOS_T6_A4.filter((c) => !c.ejemplo);
-const decideDe = (c) => ({ pregunta: PREGUNTA_CAPA_3_T6_A4, opciones: OPCIONES_CAPA_3_T6_A4, correcta: c.correcta, falla: c.falla, pista: c.pista });
+const decideDe = (c, opciones = OPCIONES_CAPA_3_T6_A4) => ({ pregunta: PREGUNTA_CAPA_3_T6_A4, opciones, correcta: c.correcta, falla: c.falla, pista: c.pista });
 const CABECERA = { padding: 0, fontFamily: INTER, fontSize: "12px", fontWeight: 400, lineHeight: 1.35, color: COLOR.apagado, textAlign: "center" };
 
 function Celda({ cifra, destacada, fantasma = null, id }) {
@@ -76,6 +77,15 @@ const textoDe = (id) => OPCIONES_CAPA_3_T6_A4.find((o) => o.id === id)?.texto ??
 
 export default function TresCasos() {
   const reducido = useReducido();
+  /*
+   * Lote 28 · D8: desde la segunda visita, las cajas b y c cambian de orden y sus opciones se barajan, una
+   * vez por intento (los casos no se suman: el orden no rompe nada). El tablero sigue a, b, c.
+   */
+  const segunda = useSegundaVisita(PIEZA_SI_PAGA.id);
+  const [{ preguntados, opcionesDe }] = useState(() => ({
+    preguntados: segunda ? barajarDistinto(PREGUNTADOS) : PREGUNTADOS,
+    opcionesDe: Object.fromEntries(PREGUNTADOS.map((c) => [c.id, segunda ? barajarDistinto(OPCIONES_CAPA_3_T6_A4) : OPCIONES_CAPA_3_T6_A4])),
+  }));
   const [abiertos, setAbiertos] = useState(() => new Set());
   const [elecciones, setElecciones] = useState(() => ({}));
   /* En fila, salvo que alguna opción se parta donde se pinta (Sakuta, 15-oct). */
@@ -133,11 +143,11 @@ export default function TresCasos() {
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "12px" }}>
-        {PREGUNTADOS.map((c) => (
+        {preguntados.map((c) => (
           <Caja key={c.id} estiloTitulo={NOMBRE_CAJA} forma={forma} onSeParte={seParte} vuelta={vuelta}
-            caja={{ id: c.id, titulo: c.nombre, revela: c.revela, pie: c.pie, decide: decideDe(c) }}
+            caja={{ id: c.id, titulo: c.nombre, revela: c.revela, pie: c.pie, decide: decideDe(c, opcionesDe[c.id]) }}
             abierto={abiertos.has(c.id)} onAbrir={() => setAbiertos((s) => new Set(s).add(c.id))}
-            intentos={elecciones[c.id]} onElegir={(o) => setElecciones((e) => ({ ...e, [c.id]: elegir(decideDe(c), e[c.id] ?? [], o) }))} />
+            intentos={elecciones[c.id]} onElegir={(o) => setElecciones((e) => ({ ...e, [c.id]: elegir(decideDe(c, opcionesDe[c.id]), e[c.id] ?? [], o) }))} />
         ))}
       </div>
 

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FAE } from "../../../../theme.js";
 import { vueltasDe, sumarVuelta, esVariante } from "../../../../contabilidad/b5Vuelta.js";
+import { barajar } from "../../../../utils/barajar.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -47,6 +48,22 @@ export function useVueltaCapa4(id, ponerLeyenda) {
   }, [id, ponerLeyenda]);
   return { variante, poner };
 }
+
+/*
+ * Lote 28 · D8 en T6 A2, A4 y A5 (sin pregunta de antes de C1): desde la segunda visita (una capa 4 ya
+ * acertada), la capa 3 baraja una vez por intento el orden de sus cajas y el de las opciones de cada caja,
+ * como la Célula C en #449; siempre distinto del de los datos, para que la visita no salga igual. La capa 4
+ * (UnaFrase) ya baraja sus opciones en cada intento. Sin texto nuevo.
+ */
+export function barajarDistinto(xs, mezclar = barajar) {
+  if (xs.length < 2) return xs;
+  for (let k = 0; k < 8; k++) {
+    const r = mezclar(xs);
+    if (r.some((x, i) => x !== xs[i])) return r;
+  }
+  return [...xs.slice(1), xs[0]];
+}
+export const useSegundaVisita = (id) => useState(() => vueltasDe(claveAprender(id)) >= 1)[0];
 
 /* El modelo y, debajo, la frase buena como su leyenda. */
 export function ConLeyenda({ id, leyenda, children }) {
