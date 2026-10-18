@@ -2,9 +2,9 @@ import { FAE } from "../../../../theme.js";
 import { COLOR } from "../../../../data/contabilidadTema3.js";
 import { TONO_ROTULO } from "../debeHaber/piezasDebeHaber.jsx";
 import { MONO } from "../tema6/TanqueProvision.jsx";
-import { ConLeyenda } from "../tema6/LeyendaFinal.jsx";
+import { ConLeyenda, useVarianteCapa4 } from "../tema6/LeyendaFinal.jsx";
 import { PAQUETES, FIGURA_CAPA_3 } from "../../../../data/contabilidadT5Pieza1.js";
-import { ESCENA_T5_A2, FIGURA_CAPA_3_T5_A2 } from "../../../../data/contabilidadT5Pieza2.js";
+import { ESCENA_T5_A2, FIGURA_CAPA_3_T5_A2, FINAL_T5_A2, PIEZA_TRES_MOMENTOS } from "../../../../data/contabilidadT5Pieza2.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -17,11 +17,11 @@ import { ESCENA_T5_A2, FIGURA_CAPA_3_T5_A2 } from "../../../../data/contabilidad
  * `leyenda`, la frase buena, que queda debajo (ConLeyenda). Ninguna palabra
  * ni cifra vive aquí: todo sale de los datos de la pieza.
  *   · A1: los dos cajones de la capa 3, con cada paquete en el suyo.
- *   · A2: la cuenta de las inversiones de la capa 2 al final: entró por lo
- *     que costó la compra y salió, en las dos ventas, por lo que costaron los
- *     títulos vendidos. Las cifras de la capa 3 van por título («Costó $650
- *     cada uno») y a 320 no caben en una T de unos 100 px; las de la capa 2
- *     son la misma regla, en una línea cada una.
+ *   · A2 (lote 27, Shoko): la T del caso de la pregunta, los 260 títulos:
+ *     Caja $273.000 al DEBE; al HABER, Inversiones – títulos $221.000 y la
+ *     ganancia $52.000, con el pie «Escenario simulado». Antes era el caso de
+ *     Santa Pacha, que no es el que se pregunta. Las cifras del HABER son la
+ *     respuesta: entran solo al responder (con la leyenda); antes, su hueco.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -56,8 +56,14 @@ export function FinalT5A1({ leyenda = null }) {
   );
 }
 
-/* ═══════════ T5 · A2 · la T de las inversiones, al final ═══════════ */
-export function FinalT5A2({ leyenda = null }) {
+/* ═══════════ T5 · A2 · la T de la venta de la pregunta ═══════════ */
+const HUECO = { display: "inline-block", width: "60px", height: "12px", borderRadius: "4px", background: "rgba(248,249,250,0.08)", verticalAlign: "middle" };
+/*
+ * Lote 27 · D8: en la segunda visita la pregunta es la de antes del cambio C1 (la venta de agosto de Santa
+ * Pacha), y la T es la de entonces: la cuenta de las inversiones, con la compra y lo que costaron las dos
+ * ventas. Su HABER también es la respuesta: entra con ella.
+ */
+function FinalT5A2AntesC1({ leyenda }) {
   const E = ESCENA_T5_A2;
   const F = FIGURA_CAPA_3_T5_A2;
   const LINEA_T = `2px solid ${BORDES}`;
@@ -66,18 +72,53 @@ export function FinalT5A2({ leyenda = null }) {
     <div data-columna={lado} style={{ padding: "2px 6px 0", borderLeft: lado === "haber" ? LINEA_T : "none", minWidth: 0, display: "flex", flexDirection: "column", gap: "2px" }}>
       <p style={{ ...TITULO, fontWeight: 700, letterSpacing: "0.1em", color: TONO_ROTULO[lado] }}>{F[lado]}</p>
       {entradas[lado].map((x) => (
-        <p key={x} data-entrada style={{ ...TITULO, fontFamily: MONO, fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap" }}>{x}</p>
+        <p key={x} data-entrada={x} style={{ ...TITULO, fontFamily: MONO, fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap" }}>
+          {lado === "debe" || leyenda ? x : <span data-hueco aria-hidden="true" style={HUECO} />}
+        </p>
+      ))}
+    </div>
+  );
+  return (
+    <ConLeyenda id="t5-a2" leyenda={leyenda}>
+      <div data-figura="t5-a2-final" data-antes-c1>
+        <p style={TITULO}>{E.inversiones}</p>
+        <div style={{ marginTop: "3px", borderTop: LINEA_T, display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)" }}>
+          {columna("debe")}
+          {columna("haber")}
+        </div>
+      </div>
+    </ConLeyenda>
+  );
+}
+
+export function FinalT5A2({ leyenda = null }) {
+  const variante = useVarianteCapa4(PIEZA_TRES_MOMENTOS.id);
+  if (variante) return <FinalT5A2AntesC1 leyenda={leyenda} />;
+  const F = FIGURA_CAPA_3_T5_A2;
+  const LINEA_T = `2px solid ${BORDES}`;
+  /* R10: lo que se pregunta (el HABER) solo con la respuesta; Caja ya lo dice la pregunta. */
+  const respondida = Boolean(leyenda);
+  const columna = (lado) => (
+    <div data-columna={lado} style={{ padding: "2px 6px 0", borderLeft: lado === "haber" ? LINEA_T : "none", minWidth: 0, display: "flex", flexDirection: "column", gap: "4px" }}>
+      <p style={{ ...TITULO, fontWeight: 700, letterSpacing: "0.1em", color: TONO_ROTULO[lado] }}>{F[lado]}</p>
+      {FINAL_T5_A2[lado].map((x) => (
+        <div key={x.cuenta} data-entrada={x.cuenta}>
+          <p style={{ ...CABECERA, color: FAE.text }}>{x.cuenta}</p>
+          <p data-cifra-final style={{ ...TITULO, fontFamily: MONO, fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap" }}>
+            {lado === "debe" || respondida ? x.cifra : <span data-hueco aria-hidden="true" style={HUECO} />}
+          </p>
+        </div>
       ))}
     </div>
   );
   return (
     <ConLeyenda id="t5-a2" leyenda={leyenda}>
       <div data-figura="t5-a2-final">
-        <p style={TITULO}>{E.inversiones}</p>
-        <div style={{ marginTop: "3px", borderTop: LINEA_T, display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)" }}>
+        <div style={{ borderTop: LINEA_T, display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)" }}>
           {columna("debe")}
           {columna("haber")}
         </div>
+        <p data-pie-final style={{ ...CABECERA, margin: "4px 0 0" }}>{FINAL_T5_A2.pie}</p>
       </div>
     </ConLeyenda>
   );

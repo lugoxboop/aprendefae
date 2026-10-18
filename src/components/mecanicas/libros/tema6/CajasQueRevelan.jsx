@@ -276,7 +276,9 @@ export function Caja({ caja, abierto, onAbrir, estiloTitulo = LECTURA, forma = "
  * pequeña entre la consigna y las cajas, pegada arriba de la capa mientras se
  * recorren las cajas (FiguraPegada.jsx). Recibe `decididas` (los ids de las
  * cajas ya cerradas, en el orden en que se cerraron) y se llena siempre con
- * lo correcto; lo último que entró va resaltado.
+ * lo correcto; lo último que entró va resaltado. Lote 27 (D4, Shoko; aditivo):
+ * recibe también `elecciones` ({ [cajaId]: opciones tocadas, en orden }), para
+ * dibujar como fantasma lo que eligió el estudiante cuando falló.
  */
 /*
  * C4 · «toda decisión se pinta» (Célula C; `c4` opcional, sin ella todo como siempre):
@@ -347,7 +349,7 @@ export default function CajasQueRevelan({ consigna, contexto = null, cajas, fina
         <FiguraPegada ref={figura} contenedor={contenedor}>
           {c4?.Figura
             ? <c4.Figura decididas={orden} pintado={ultimaC4 ? { caja: ultimaC4, ...pintado[ultimaC4] } : null} vista={ultimaC4 ? vistaC4(ultimaC4) : null} />
-            : <Figura decididas={orden} />}
+            : <Figura decididas={orden} elecciones={elecciones} />}
         </FiguraPegada>
       )}
       <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: Figura ? "4px" : "12px" }}>

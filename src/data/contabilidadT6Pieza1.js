@@ -217,3 +217,37 @@ export const OPCIONES_FINAL_T6 = [
   },
 ];
 export const PIE_FINAL_T6 = "Basado en el libro, p. 197";
+
+/*
+ * ═══════════ LOTE 27 · D8 (propuesta de Shoko): LA CAPA 4 DE LA SEGUNDA VISITA ═══════════
+ *
+ * En la segunda visita (y en las pares), la capa 4 usa la pregunta que tenía antes del cambio C1 (lote
+ * C2·C1·C7): escrita y aprobada, copiada tal cual de la versión anterior a ese lote. Sin pie: no lo llevaba.
+ */
+export const PREGUNTA_FINAL_ANTES_C1_T6 = "¿Qué le pasa a Cuentas por cobrar – clientes el día que el cliente paga?";
+export const OPCIONES_FINAL_ANTES_C1_T6 = [
+  {
+    id: "b5-t6-baja",
+    texto: "Baja, porque la deuda se paga; el ingreso ya estaba anotado.",
+    correcta: true,
+    feedback: "Correcto. El 25 de enero, en los libros de Comercializadora Santa Pacha, Cuentas por cobrar – clientes baja: se acredita. No se anota ningún ingreso. Ese ya estaba desde el 10.",
+  },
+  {
+    id: "b5-t6-sube",
+    texto: "Sube, porque ese día a la empresa le entra plata del cliente.",
+    correcta: false,
+    feedback: "No es esa. La plata entra a Caja, y Caja sí sube. Lo que deben los clientes baja, porque la deuda se pagó.",
+  },
+  {
+    id: "b5-t6-no-cambia",
+    texto: "No cambia, porque el pago del cliente solo se anota en Caja.",
+    correcta: false,
+    feedback: "No es esa. En el ejemplo, el pago movió dos cuentas: Caja subió y Cuentas por cobrar – clientes bajó, por el mismo valor.",
+  },
+  {
+    id: "b5-t6-baja-con-ingreso",
+    texto: "Baja, y ese mismo día se anota también el ingreso por la venta.",
+    correcta: false,
+    feedback: "No es esa. El ingreso se anotó el día de la venta, el 10 de enero. El día del pago no hay un ingreso nuevo: solo entra la plata y baja la deuda.",
+  },
+];

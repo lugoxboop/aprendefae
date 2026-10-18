@@ -11,6 +11,7 @@ import { Caja, LECTURA, PIE, useFormaQueCabe } from "./CajasQueRevelan.jsx";
 import { escalera, elegir } from "./escaleraB5.js";
 import { RotuloSimulado, PieDeFuente } from "./FuentesT6A5.jsx";
 import { MONO } from "./TanqueProvision.jsx";
+import { Fantasma, erradaDe } from "./FigurasCapa3.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -41,10 +42,10 @@ const ATENUADO = "rgba(184,196,212,.50)";
 const NOMBRE_CAJA = { ...LECTURA, fontFamily: SORA, fontWeight: 600, lineHeight: 1.35 };
 const NOMBRE_FILA = { padding: 0, fontFamily: SORA, fontSize: "13px", fontWeight: 600, lineHeight: 1.3, color: FAE.text, textAlign: "left" };
 
-function Celda({ cifra }) {
+function Celda({ cifra, fantasma = null, id }) {
   const llena = Boolean(cifra);
   return (
-    <td data-celda style={{ padding: 0, width: "104px" }}>
+    <td data-celda style={{ padding: 0, width: "104px", verticalAlign: "top" }}>
       <div style={{
         minHeight: "36px", boxSizing: "border-box", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center",
         border: llena ? `2px solid ${FAE.node}` : `1px solid ${ATENUADO}`, background: llena ? FAE.navy : "transparent",
@@ -54,6 +55,8 @@ function Celda({ cifra }) {
       }}>
         {cifra}
       </div>
+      {/* Lote 27 (D4, Shoko): lo elegido por error entra a la fila de su grupo, como fantasma, y se queda junto a lo correcto. */}
+      {fantasma && <div style={{ marginTop: "4px" }}><Fantasma id={id} texto={fantasma} centrada /></div>}
     </td>
   );
 }
@@ -100,7 +103,8 @@ export default function CuatroGrupos() {
             {GRUPOS_T6_A5.map((g, k) => (
               <tr key={g.id} data-fila={g.id}>
                 <th scope="row" style={NOMBRE_FILA}>{g.nombre}</th>
-                <Celda cifra={decidido(g) ? TABLERO_T6_A5.celdas[k] : null} />
+                <Celda cifra={decidido(g) ? TABLERO_T6_A5.celdas[k] : null} id={g.id}
+                  fantasma={DECIDE[g.id].opciones.find((o) => o.id === erradaDe(elecciones[g.id], g.correcta))?.texto ?? null} />
               </tr>
             ))}
           </tbody>

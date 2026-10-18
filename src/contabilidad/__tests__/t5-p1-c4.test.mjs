@@ -139,8 +139,12 @@ test("★★★ la vista pasa esta capa 3 a CuatroCapas (y CuatroCapas no cambia
   assert.match(vista, /Exploracion=\{EXPLORACION_C4_T5\[pieza\.id\] \?\? Exploracion\}/);
 });
 
-/* La huella del recorrido de la capa 3 de P1, P2 y T6 A1 sin C4, tomada con el código de main (efa2501e). */
-const HUELLA_MAIN_CAJAS = "55a03213a750282b2acb1df4efe82a43e5327940a2e0a999d29ab1fb3bc4bf47";
+/*
+ * La huella del recorrido de la capa 3 de P1, P2 y T6 A1 sin C4, tomada con el código de main (efa2501e).
+ * Lote 27 (Célula B, D4 de Shoko en T6 A1): la figura de T6 A1 dibuja también, como fantasma, lo que se
+ * eligió por error; huella nueva, tomada con ese código. P1 y P2 no cambian.
+ */
+const HUELLA_MAIN_CAJAS = "de6c4264d3e6217381b8cf6028123eacce2889445a4c75d40dfcd22e926de3f2";
 test("★★★ sin la prop `c4`, CajasQueRevelan pinta exactamente lo de main (P1, P2 y T6 A1, paso a paso)", async () => {
   assert.equal(await recorridoCajas(), HUELLA_MAIN_CAJAS);
 });

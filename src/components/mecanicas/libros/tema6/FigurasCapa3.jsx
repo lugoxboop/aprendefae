@@ -2,6 +2,7 @@ import { FAE } from "../../../../theme.js";
 import { COLOR } from "../../../../data/contabilidadTema3.js";
 import { TONO_ROTULO } from "../debeHaber/piezasDebeHaber.jsx";
 import { ConCifras } from "./TanqueProvision.jsx";
+import { FANTASMA } from "../b5/SegundaDecision.jsx";
 import { PAQUETES, FIGURA_CAPA_3 } from "../../../../data/contabilidadT5Pieza1.js";
 import { FIGURA_CAPA_3_T5_A2 } from "../../../../data/contabilidadT5Pieza2.js";
 import { HECHOS_T6, FIGURA_CAPA_3_T6 } from "../../../../data/contabilidadT6Pieza1.js";
@@ -28,8 +29,12 @@ import { METODOS_T6_A2, FIGURA_CAPA_3_T6_A2 } from "../../../../data/contabilida
  *     cambia va debajo, tras «Sin movimiento:».
  *   · T6 · A2: la rejilla de los dos métodos por los dos momentos, con su
  *     título: dónde aparece el gasto («—» donde no aparece).
- * Sin coral ni color de acierto: la figura no califica, registra. Ningún
- * texto vive aquí.
+ * Sin color de acierto: la figura registra. Lote 27 (D4, Shoko): lo que el
+ * estudiante eligió por error entra también, como FANTASMA (borde coral
+ * discontinuo y tachado, como en los Hacer), donde dijo su opción, y se queda
+ * junto a lo correcto: la T de T6 · A1 por el lado elegido (o en «Sin
+ * movimiento:»), la celda de la columna elegida en la rejilla de T6 · A2.
+ * Ningún texto vive aquí.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -65,12 +70,28 @@ function Entrada({ id, texto, detalle = null, ultima, centrada = false }) {
   );
 }
 
+/* Lote 27 · lo elegido por error: tachado, con borde coral discontinuo; no ocupa el sitio de lo correcto. */
+export function Fantasma({ id, texto, centrada = false }) {
+  return (
+    <p data-fantasma={id} style={{
+      margin: 0, boxSizing: "border-box", borderRadius: "6px", padding: "1.5px 4.5px", border: FANTASMA, background: "transparent",
+      fontFamily: INTER, fontSize: "12px", fontWeight: 600, lineHeight: 1.35, color: FAE.text, textDecoration: "line-through", textDecorationThickness: "1.5px",
+      fontVariantNumeric: "tabular-nums", textAlign: centrada ? "center" : "left",
+    }}>
+      <ConCifras texto={texto} />
+    </p>
+  );
+}
+/* La última opción equivocada de una caja (la que se dibuja), o null. */
+export const erradaDe = (intentos = [], correcta) => intentos.filter((o) => o !== correcta).at(-1) ?? null;
+
 /* Una cuenta T pequeña: el nombre, la línea de la T y sus dos columnas; `debajo`, lo que va bajo la T. */
-function CuentaPequena({ figura, entradas, ultima, debajo = null, atributos }) {
+function CuentaPequena({ figura, entradas, ultima, debajo = null, atributos, fantasmas = [] }) {
   const columna = (lado) => (
     <div data-columna={lado} style={{ padding: "6px 4px 2px", borderLeft: lado === "haber" ? LINEA_T : "none", display: "flex", flexDirection: "column", gap: "4px" }}>
       <p style={{ ...ROTULO, color: TONO_ROTULO[lado] }}>{figura[lado]}</p>
       {entradas.filter((e) => e.lado === lado).map((e) => <Entrada key={e.id} id={e.id} texto={e.texto} detalle={e.detalle} ultima={e.id === ultima} />)}
+      {fantasmas.filter((e) => e.lado === lado).map((e) => <Fantasma key={e.id} id={e.id} texto={e.texto} />)}
     </div>
   );
   return (
@@ -130,25 +151,33 @@ export function FiguraT5A2({ decididas }) {
 
 /* ═══════════ T6 · A1 · la T de los clientes ═══════════ */
 const LADO_T6_A1 = { sube: "debe", baja: "haber" };
-export function FiguraT6A1({ decididas }) {
+export function FiguraT6A1({ decididas, elecciones = {} }) {
   const F = FIGURA_CAPA_3_T6;
   const hechos = decididas.map((id) => HECHOS_T6.find((x) => x.id === id)).filter(Boolean);
   const entradas = hechos.filter((x) => LADO_T6_A1[x.correcta]).map((x) => ({ id: x.id, lado: LADO_T6_A1[x.correcta], texto: x.corto }));
   const quietos = hechos.filter((x) => !LADO_T6_A1[x.correcta]);
+  /* Lote 27: el hecho entra también por el lado que eligió el estudiante, aunque esté mal (o en «Sin movimiento:»). */
+  const errados = HECHOS_T6.map((x) => ({ x, o: erradaDe(elecciones[x.id], x.correcta) })).filter(({ o }) => o);
+  const fantasmas = errados.filter(({ o }) => LADO_T6_A1[o]).map(({ x, o }) => ({ id: x.id, lado: LADO_T6_A1[o], texto: x.corto }));
+  const quietosFantasma = errados.filter(({ o }) => !LADO_T6_A1[o]).map(({ x }) => x);
   const ultima = ultimaDe(decididas);
-  const debajo = quietos.length ? (
+  const debajo = quietos.length || quietosFantasma.length ? (
     <div data-sin-movimiento style={{ marginTop: "8px", display: "flex", flexWrap: "wrap", alignItems: "center", gap: "6px" }}>
       <span style={{ ...CABECERA, textAlign: "left" }}>{F.sinMovimiento}</span>
       {quietos.map((x) => <Entrada key={x.id} id={x.id} texto={x.corto} ultima={x.id === ultima} />)}
+      {quietosFantasma.map((x) => <Fantasma key={x.id} id={x.id} texto={x.corto} />)}
     </div>
   ) : null;
-  return <CuentaPequena figura={F} entradas={entradas} ultima={ultima} debajo={debajo} atributos={{ "data-figura": "t6-a1" }} />;
+  return <CuentaPequena figura={F} entradas={entradas} ultima={ultima} debajo={debajo} fantasmas={fantasmas} atributos={{ "data-figura": "t6-a1" }} />;
 }
 
 /* ═══════════ T6 · A2 · la rejilla de los dos métodos ═══════════ */
-export function FiguraT6A2({ decididas }) {
+/* Lote 27: la opción elegida dice en qué columna aparece el gasto; «Cuando se vende a crédito» no tiene columna en la rejilla. */
+const COLUMNA_T6_A2 = { "dia-castigo": "castigo", cierre: "cierre" };
+export function FiguraT6A2({ decididas, elecciones = {} }) {
   const F = FIGURA_CAPA_3_T6_A2;
   const ultima = ultimaDe(decididas);
+  const columnaErrada = (m) => COLUMNA_T6_A2[erradaDe(elecciones[m.id], m.correcta)] ?? null;
   return (
     <div data-figura="t6-a2" aria-live="polite" style={{ ...MARCO, padding: "8px 10px 10px" }}>
       <p data-titulo-figura style={{ ...NOMBRE_CUENTA, marginBottom: "6px" }}>{F.titulo}</p>
@@ -167,10 +196,12 @@ export function FiguraT6A2({ decididas }) {
               <tr key={m.id} data-fila={m.id}>
                 <th scope="row" style={{ padding: 0, fontFamily: SORA, fontSize: "12.5px", fontWeight: 600, lineHeight: 1.3, color: FAE.text, textAlign: "left" }}>{m.nombre}</th>
                 {F.columnas.map((c) => (
-                  <td key={c.id} data-celda={c.id} style={{ padding: 0 }}>
+                  <td key={c.id} data-celda={c.id} style={{ padding: 0, verticalAlign: "top" }}>
                     {lleno
                       ? <Entrada id={`${m.id}-${c.id}`} texto={F.filas[m.id][c.id]} ultima={m.id === ultima} centrada />
                       : <div aria-hidden="true" style={{ minHeight: ALTO_ENTRADA, boxSizing: "border-box", borderRadius: "6px", border: `1px solid ${ATENUADO}` }} />}
+                    {/* Lote 27: la celda que eligió el estudiante, marcada con el gasto como fantasma. */}
+                    {columnaErrada(m) === c.id && <div style={{ marginTop: "4px" }}><Fantasma id={`${m.id}-${c.id}`} texto={F.gasto} centrada /></div>}
                   </td>
                 ))}
               </tr>

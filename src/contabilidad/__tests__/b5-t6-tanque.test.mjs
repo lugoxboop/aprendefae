@@ -18,7 +18,7 @@ import { JSDOM, VirtualConsole } from "jsdom";
  *   · lo que se ve: el nivel del tanque en su escala, las filas de la T (la
  *     nueva, con borde de 2 px #F8F9FA), la parte de la barra, los rótulos;
  *   · el lector: el nombre literal del tanque y la fecha oculta de cada fila;
- *   · color por rol: ámbar el HABER, teal el DEBE, nunca coral; cifras en la
+ *   · color por rol: ámbar el HABER, teal el DEBE (el faltante, neutro desde el lote 27), nunca coral; cifras en la
  *     pila monoespaciada.
  * El arrastre real con el ratón se mide en Chromium (scripts/b5/medir-b5-tanque.mjs).
  * ═══════════════════════════════════════════════════════════════════════════
@@ -366,12 +366,12 @@ test("★★★ todo el recorrido: los 15 pasos, la parada y el cierre, sin avis
   assert.deepEqual(avisos, []);
 });
 
-test("★★★ color por rol y cifras: relleno ámbar, faltante teal, nunca coral; DEBE #3FA69A, HABER ámbar; las cifras de la escena en la pila monoespaciada", async () => {
+test("★★★ color por rol y cifras: relleno ámbar, faltante neutro #B8C4D4 (lote 27, Shoko: el teal es solo DEBE), nunca coral; DEBE #3FA69A, HABER ámbar; las cifras de la escena en la pila monoespaciada", async () => {
   const { caja, desmontar } = await montar(h(LaProvision));
   const escena = caja.querySelector("[data-escena-tanque]");
   assert.equal(caja.querySelector("[data-relleno]").style.background, "rgba(233, 196, 106, 0.38)");
-  assert.match(caja.querySelector("[data-faltante]").style.backgroundImage, /rgba\(42, ?157, ?143, ?0.55\)/);
-  assert.equal(caja.querySelector("[data-borde-faltante]").style.background, rgb(FAE.teal));
+  assert.match(caja.querySelector("[data-faltante]").style.backgroundImage, /rgba\(184, ?196, ?212, ?0.55\)/);
+  assert.equal(caja.querySelector("[data-borde-faltante]").style.background, rgb("#B8C4D4"));
   assert.deepEqual([...caja.querySelectorAll("[data-columna] > p")].map((p) => p.style.color), [rgb("#3FA69A"), rgb(FAE.ambar)]);
   const html = escena.outerHTML.toLowerCase();
   assert.ok(!html.includes(FAE.coral.toLowerCase()) && !html.includes(rgb(FAE.coral)), "sin coral");

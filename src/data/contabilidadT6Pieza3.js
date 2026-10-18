@@ -298,3 +298,37 @@ export const TANQUE_T6_A3 = {
   faltante: "$31.200",
   pide: "$153.400",
 };
+
+/*
+ * ═══════════ LOTE 27 · D8 (propuesta de Shoko): LA CAPA 4 DE LA SEGUNDA VISITA ═══════════
+ *
+ * En la segunda visita (y en las pares), la capa 4 usa la pregunta que tenía antes del cambio C1 (lote
+ * C2·C1·C7): escrita y aprobada, copiada tal cual de la versión anterior a ese lote. Sin pie: no lo llevaba.
+ */
+export const PREGUNTA_FINAL_ANTES_C1_T6_A3 = "En marzo, ¿por qué El Torito no anota un gasto al castigar la deuda de Pablo Moncayo?";
+export const OPCIONES_FINAL_ANTES_C1_T6_A3 = [
+  {
+    id: "b5-t6-a3-diciembre",
+    texto: "Porque el gasto se anotó en diciembre, al crear la provisión.",
+    correcta: true,
+    feedback: "Correcto. El gasto se anotó el 31 de diciembre, cuando se creó la provisión. En marzo se debita la provisión.",
+  },
+  {
+    id: "b5-t6-a3-cobrar",
+    texto: "Porque la deuda de Pablo Moncayo todavía se puede cobrar.",
+    correcta: false,
+    feedback: "No es esa. La empresa la considera irrecuperable, y por eso la castiga.",
+  },
+  {
+    id: "b5-t6-a3-caja",
+    texto: "Porque castigar una deuda solo mueve Caja y Cuentas por cobrar – clientes.",
+    correcta: false,
+    feedback: "No es esa. Al castigar no entra plata. Se debita la provisión y se acredita Cuentas por cobrar – clientes.",
+  },
+  {
+    id: "b5-t6-a3-pierden",
+    texto: "Porque los $31.200 que faltaron se pierden sin anotarse.",
+    correcta: false,
+    feedback: "No es esa. Los $31.200 no se pierden: se suman a la provisión del año siguiente, que por eso es de $184.600.",
+  },
+];

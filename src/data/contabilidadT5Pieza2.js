@@ -215,6 +215,17 @@ export const OPCIONES_FINAL_T5_A2 = [
 export const PIE_FINAL_T5_A2 = "Escenario simulado";
 
 /*
+ * Lote 27 (Shoko): la T del modelo final de la capa 4 muestra el caso de la pregunta (los 260 títulos), no el
+ * de Santa Pacha: Caja $273.000 al DEBE; al HABER, Inversiones – títulos $221.000 y la ganancia $52.000. Las
+ * cifras son las de la pregunta y de su respuesta (CIFRAS_CONSTRUIDAS_T5_A2); las cuentas, las de la escena.
+ */
+export const FINAL_T5_A2 = {
+  debe: [{ cuenta: ESCENA_T5_A2.caja, cifra: "$273.000" }],
+  haber: [{ cuenta: ESCENA_T5_A2.inversiones, cifra: "$221.000" }, { cuenta: ESCENA_T5_A2.ganancia, cifra: "$52.000" }],
+  pie: PIE_SIMULADO_T5_A2,
+};
+
+/*
  * Las cifras construidas de las capas 3 y 4 (C1-2 y C1-3), también en el
  * registro de T5 (orquestador/conocimiento/registro-cifras-construidas-t5.json,
  * «construidas_b5»). Ninguna es de Santa Pacha ni del banco.
@@ -281,3 +292,37 @@ export const TITULOS_T5_A2 = {
   nombreRiel: "Títulos que se venden",
   nombreBancos: "Bancos, $2.000.000",
 };
+
+/*
+ * ═══════════ LOTE 27 · D8 (propuesta de Shoko): LA CAPA 4 DE LA SEGUNDA VISITA ═══════════
+ *
+ * En la segunda visita (y en las pares), la capa 4 usa la pregunta que tenía antes del cambio C1 (lote
+ * C2·C1·C7): escrita y aprobada, copiada tal cual de la versión anterior a ese lote. Sin pie: no lo llevaba.
+ */
+export const PREGUNTA_FINAL_ANTES_C1_T5_A2 = "En la venta de agosto, ¿por cuánto se acredita Inversiones – títulos?";
+export const OPCIONES_FINAL_ANTES_C1_T5_A2 = [
+  {
+    id: "b5-t5-a2-costo",
+    texto: "Por $1.500.000, el costo de los 1.875 vendidos.",
+    correcta: true,
+    feedback: "Correcto. En el ejemplo, el libro acredita Inversiones – títulos por el costo: 1.875 títulos a $800. Lo que se recibió de más es la ganancia.",
+  },
+  {
+    id: "b5-t5-a2-recibido",
+    texto: "Por $1.725.000, lo que se recibió por la venta.",
+    correcta: false,
+    feedback: "No es esa. Los $1.725.000 entran a Caja. La inversión se acredita por lo que costó, y la diferencia va a la ganancia.",
+  },
+  {
+    id: "b5-t5-a2-ganancia",
+    texto: "Por $225.000, la ganancia que dejó la venta.",
+    correcta: false,
+    feedback: "No es esa. Los $225.000 son la ganancia y van a su propia cuenta. La inversión se acredita por lo que costaron esos títulos.",
+  },
+  {
+    id: "b5-t5-a2-toda",
+    texto: "Por $2.000.000, lo que costó toda la inversión.",
+    correcta: false,
+    feedback: "No es esa. Ese día solo se vendió el 75 %. Se acredita lo que costaron esos 1.875 títulos, no toda la inversión.",
+  },
+];

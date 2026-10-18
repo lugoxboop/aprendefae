@@ -9,6 +9,7 @@ import EstilosT5, { CLASE_T5 } from "../tema5/EstilosT5.jsx";
 import { Caja, LECTURA, PIE, useFormaQueCabe } from "./CajasQueRevelan.jsx";
 import { escalera, elegir } from "./escaleraB5.js";
 import { MONO } from "./TanqueProvision.jsx";
+import { Fantasma, erradaDe } from "./FigurasCapa3.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -34,6 +35,10 @@ import { MONO } from "./TanqueProvision.jsx";
  * B5 de Futaba: los textos que se revelan ya no llevan cifras (están en el
  * tablero) y solo los lee quien acierta; quien falla dos veces lee la
  * devolución de su opción (Caja). El del caso a va bajo su fila.
+ *
+ * Lote 27 (D4, Shoko): la cifra que eligió el estudiante por error queda
+ * escrita en la celda «Se revive», como fantasma (tachada, borde coral
+ * discontinuo), junto a la correcta: desde el error, y también después.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -48,10 +53,10 @@ const PREGUNTADOS = CASOS_T6_A4.filter((c) => !c.ejemplo);
 const decideDe = (c) => ({ pregunta: PREGUNTA_CAPA_3_T6_A4, opciones: OPCIONES_CAPA_3_T6_A4, correcta: c.correcta, falla: c.falla, pista: c.pista });
 const CABECERA = { padding: 0, fontFamily: INTER, fontSize: "12px", fontWeight: 400, lineHeight: 1.35, color: COLOR.apagado, textAlign: "center" };
 
-function Celda({ cifra, destacada }) {
+function Celda({ cifra, destacada, fantasma = null, id }) {
   const llena = Boolean(cifra);
   return (
-    <td data-celda={destacada ? "revive" : "entran"} style={{ padding: 0 }}>
+    <td data-celda={destacada ? "revive" : "entran"} style={{ padding: 0, verticalAlign: "top" }}>
       <div style={{
         minHeight: "36px", boxSizing: "border-box", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center",
         border: !llena ? `1px solid ${ATENUADO}` : destacada ? `2px solid ${FAE.node}` : `1px solid ${BORDES}`,
@@ -62,9 +67,12 @@ function Celda({ cifra, destacada }) {
       }}>
         {cifra}
       </div>
+      {fantasma && <div style={{ marginTop: "4px" }}><Fantasma id={id} texto={fantasma} centrada /></div>}
     </td>
   );
 }
+
+const textoDe = (id) => OPCIONES_CAPA_3_T6_A4.find((o) => o.id === id)?.texto ?? null;
 
 export default function TresCasos() {
   const reducido = useReducido();
@@ -105,7 +113,7 @@ export default function TresCasos() {
                     {c.letra}
                     {c.ejemplo && <span data-rotulo-ejemplo style={ROTULO_EJEMPLO}>{TABLERO_T6_A4.ejemplo}</span>}
                   </th>
-                  <Celda cifra={lleno ? c.revive : null} destacada />
+                  <Celda cifra={lleno ? c.revive : null} destacada id={c.id} fantasma={c.ejemplo ? null : textoDe(erradaDe(elecciones[c.id], c.correcta))} />
                   <Celda cifra={lleno ? c.entran : null} />
                 </tr>
               );

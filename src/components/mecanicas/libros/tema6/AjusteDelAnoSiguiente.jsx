@@ -1,15 +1,16 @@
 import { FAE } from "../../../../theme.js";
 import { pesos } from "../../../../data/contabilidad.js";
 import { AJUSTE_T6_ACT2 } from "../../../../data/contabilidadT6Act2.js";
-import { CIFRA_MONO, RELLENO_AMBAR, RAYADO_TEAL, CURVA } from "./TanqueProvision.jsx";
+import { CIFRA_MONO, RELLENO_AMBAR, RAYADO_NEUTRO, CURVA } from "./TanqueProvision.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
  * b5-t6-a2 · «EL AJUSTE DEL AÑO SIGUIENTE» (lote 24, D9, P2 de Mai).
  *
  * Una regla horizontal con el cero marcado. A la izquierda del cero, rayado
- * teal, lo que la provisión se quedó corta en marzo (es saldo del DEBE, como
- * en el tanque de T6 A3); a la derecha, en ámbar, lo que pide el análisis.
+ * neutro #B8C4D4, lo que la provisión se quedó corta en marzo (lote 27: como
+ * el faltante del tanque de T6 A3, que Shoko pasó al neutro); a la derecha,
+ * en ámbar, lo que pide el análisis.
  * Encima, el arco del salto, de un extremo al otro: el ajuste. Así se ve que
  * el ajuste sale de debajo del cero, no del saldo anterior.
  *
@@ -69,7 +70,7 @@ export default function AjusteDelAnoSiguiente({ partes, hechas, reducido }) {
         </svg>
         {/* La regla: los dos tramos, el cero y la línea base. */}
         <span data-tramo-ajuste="corta" style={{ position: "absolute", top: "44px", height: "22px", left: `${x0}%`, width: `${cero - x0}%`, boxSizing: "border-box",
-          backgroundImage: RAYADO_TEAL, borderBottom: `2px solid ${FAE.teal}`, ...entra("100% 50%") }} />
+          backgroundImage: RAYADO_NEUTRO, borderBottom: "2px solid #B8C4D4", ...entra("100% 50%") }} />
         <span data-tramo-ajuste="pide" style={{ position: "absolute", top: "44px", height: "22px", left: `${cero}%`, width: `${x1 - cero}%`, boxSizing: "border-box",
           background: RELLENO_AMBAR, borderTop: `2px solid ${FAE.ambar}`, ...entra("0 50%") }} />
         <span style={{ position: "absolute", left: 0, right: 0, top: "66px", borderTop: "1px solid #B8C4D4" }} />

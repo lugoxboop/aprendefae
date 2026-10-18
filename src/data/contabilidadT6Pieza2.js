@@ -154,6 +154,8 @@ export const FIGURA_CAPA_3_T6_A2 = {
     "anulacion-directa": { cierre: "—", castigo: "Gasto" },
     provisiones: { cierre: "Gasto", castigo: "—" },
   },
+  /* Lote 27: lo que dibuja, como fantasma, la celda que eligió el estudiante (la misma palabra de las filas). */
+  gasto: "Gasto",
 };
 export const FINAL_CAPA_3_T6_A2 = {
   texto: "En los dos métodos, al castigar, se acredita Cuentas por cobrar – clientes. Lo que cambia es qué se debita y cuándo aparece el gasto.",

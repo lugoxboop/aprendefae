@@ -1,12 +1,14 @@
 import UnaFrase from "../intro/UnaFrase.jsx";
-import { PIEZA_DEL_EFECTIVO, PREGUNTA_FINAL_T5, OPCIONES_FINAL_T5, PIE_FINAL_T5 } from "../../../../data/contabilidadT5Pieza1.js";
+import { PIEZA_DEL_EFECTIVO, PREGUNTA_FINAL_T5, OPCIONES_FINAL_T5, PIE_FINAL_T5, PREGUNTA_FINAL_ANTES_C1_T5, OPCIONES_FINAL_ANTES_C1_T5 } from "../../../../data/contabilidadT5Pieza1.js";
 import EfectivoDeSobra from "./EfectivoDeSobra.jsx";
 import DosPaquetes from "./DosPaquetes.jsx";
-import { PIEZA_TRES_MOMENTOS, PREGUNTA_FINAL_T5_A2, OPCIONES_FINAL_T5_A2, PIE_FINAL_T5_A2 } from "../../../../data/contabilidadT5Pieza2.js";
+import {
+  PIEZA_TRES_MOMENTOS, PREGUNTA_FINAL_T5_A2, OPCIONES_FINAL_T5_A2, PIE_FINAL_T5_A2, PREGUNTA_FINAL_ANTES_C1_T5_A2, OPCIONES_FINAL_ANTES_C1_T5_A2,
+} from "../../../../data/contabilidadT5Pieza2.js";
 import TresMomentos from "./TresMomentos.jsx";
 import DosVentas from "./DosVentas.jsx";
 import { PIE } from "../tema6/CajasQueRevelan.jsx";
-import { evaluadorDe, useEscenaConLeyenda } from "../tema6/LeyendaFinal.jsx";
+import { evaluadorDe, useEscenaConLeyenda, useVueltaCapa4 } from "../tema6/LeyendaFinal.jsx";
 import { FinalT5A1, FinalT5A2 } from "./FigurasFinalesT5.jsx";
 
 /*
@@ -19,9 +21,13 @@ import { FinalT5A1, FinalT5A2 } from "./FigurasFinalesT5.jsx";
  * Lote 13: encima de la pregunta, el modelo final de la pieza
  * (FigurasFinalesT5.jsx), con la frase buena como su leyenda, como en T6.
  */
+/* Lote 27 · D8: en la segunda visita, la pregunta de antes del cambio C1 (sin pie: no lo llevaba). */
 const evaluar = evaluadorDe(OPCIONES_FINAL_T5);
+const evaluarAntes = evaluadorDe(OPCIONES_FINAL_ANTES_C1_T5);
 export function EnUnaFraseT5({ ponerLeyenda = null }) {
-  const Escena = useEscenaConLeyenda(ponerLeyenda);
+  const { variante, poner } = useVueltaCapa4(PIEZA_DEL_EFECTIVO.id, ponerLeyenda);
+  const Escena = useEscenaConLeyenda(poner);
+  if (variante) return <UnaFrase pregunta={PREGUNTA_FINAL_ANTES_C1_T5} opciones={OPCIONES_FINAL_ANTES_C1_T5} Escena={Escena} evaluar={evaluarAntes} />;
   return (
     <>
       <UnaFrase pregunta={PREGUNTA_FINAL_T5} opciones={OPCIONES_FINAL_T5} Escena={Escena} evaluar={evaluar} />
@@ -31,8 +37,11 @@ export function EnUnaFraseT5({ ponerLeyenda = null }) {
 }
 
 const evaluarA2 = evaluadorDe(OPCIONES_FINAL_T5_A2);
+const evaluarA2Antes = evaluadorDe(OPCIONES_FINAL_ANTES_C1_T5_A2);
 export function EnUnaFraseT5A2({ ponerLeyenda = null }) {
-  const Escena = useEscenaConLeyenda(ponerLeyenda);
+  const { variante, poner } = useVueltaCapa4(PIEZA_TRES_MOMENTOS.id, ponerLeyenda);
+  const Escena = useEscenaConLeyenda(poner);
+  if (variante) return <UnaFrase pregunta={PREGUNTA_FINAL_ANTES_C1_T5_A2} opciones={OPCIONES_FINAL_ANTES_C1_T5_A2} Escena={Escena} evaluar={evaluarA2Antes} />;
   return (
     <>
       <UnaFrase pregunta={PREGUNTA_FINAL_T5_A2} opciones={OPCIONES_FINAL_T5_A2} Escena={Escena} evaluar={evaluarA2} />

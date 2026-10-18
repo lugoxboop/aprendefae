@@ -214,7 +214,8 @@ test("★★★ capa 3: el tablero es una tabla; cada deuda llena la celda de su
   const tabla = caja.querySelector("[data-tablero] table");
   assert.equal(tabla.querySelector("thead th").textContent, "Se provisiona");
   assert.deepEqual([...tabla.querySelectorAll("tbody th")].map((th) => th.textContent), D.GRUPOS_T6_A5.map((g) => g.nombre));
-  const celdas = () => [...tabla.querySelectorAll("tbody [data-celda]")].map((c) => c.textContent);
+  /* Lote 27: la celda lleva también el fantasma de lo elegido por error; aquí se lee solo su valor. */
+  const celdas = () => [...tabla.querySelectorAll("tbody [data-celda]")].map((c) => c.firstElementChild.textContent);
   assert.deepEqual(celdas(), ["", "", "", ""]);
   /* Las cajas cerradas (C1-14): la deuda suelta, sin el nombre ni el monto del grupo, que delataban la respuesta. */
   assert.deepEqual([...caja.querySelectorAll("[data-hecho] button[aria-expanded]")].map((b) => b.textContent), [

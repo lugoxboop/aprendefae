@@ -1,4 +1,4 @@
-import { test, mock } from "node:test";
+import { test, mock, beforeEach } from "node:test";
 import assert from "node:assert/strict";
 import { JSDOM, VirtualConsole } from "jsdom";
 const dom = new JSDOM("<!doctype html><html><body></body></html>", { url: "http://localhost/", virtualConsole: new VirtualConsole() });
@@ -18,6 +18,8 @@ for (const [k, v] of Object.entries({
   Object.defineProperty(globalThis, k, { value: v, configurable: true, writable: true });
 }
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+/* Lote 27 · D8: la capa 4 cuenta las visitas en el navegador; cada prueba empieza en la primera. */
+beforeEach(() => { try { window.localStorage.clear(); } catch { /* sin almacenamiento */ } });
 
 const React = await import("react");
 const { createRoot } = await import("react-dom/client");
@@ -83,7 +85,7 @@ for (const c of CASOS) {
   });
 }
 
-test("★★★ T5 · A1: cada paquete en su cajón; T5 · A2: la inversión entra por la compra y sale, en las dos ventas, por lo que costó", async () => {
+test("★★★ T5 · A1: cada paquete en su cajón; T5 · A2 (lote 27): la T de los 260 títulos, con el HABER solo al responder", async () => {
   const a = await montar(h(ESCENAS_TEMA5[P1.PIEZA_DEL_EFECTIVO.id].FiguraFinal, { leyenda: null }));
   for (const p of P1.PAQUETES) {
     const cajon = a.caja.querySelector(`[data-entrada="${p.id}"]`).closest("[data-cajon]").dataset.cajon;
@@ -91,11 +93,18 @@ test("★★★ T5 · A1: cada paquete en su cajón; T5 · A2: la inversión ent
   }
   a.desmontar();
   const E = P2.ESCENA_T5_A2;
-  const b = await montar(h(ESCENAS_TEMA5[P2.PIEZA_TRES_MOMENTOS.id].FiguraFinal, { leyenda: null }));
-  const lado = (l) => [...b.caja.querySelectorAll(`[data-columna="${l}"] [data-entrada]`)].map((x) => x.textContent);
-  assert.deepEqual(lado("debe"), [E.compra]);
-  assert.deepEqual(lado("haber"), [E.costado1, E.costado2]);
-  const n = (t) => Number(t.replace(/\D/g, ""));
-  assert.equal(n(E.compra), n(E.costado1) + n(E.costado2), "la cuenta queda en cero");
+  const Final = ESCENAS_TEMA5[P2.PIEZA_TRES_MOMENTOS.id].FiguraFinal;
+  const lado = (caja, l) => [...caja.querySelectorAll(`[data-columna="${l}"] [data-entrada]`)].map((x) => [x.dataset.entrada, x.querySelector("[data-cifra-final]").textContent]);
+  const b = await montar(h(Final, { leyenda: null }));
+  assert.deepEqual(lado(b.caja, "debe"), [[E.caja, "$273.000"]], "Caja, lo que dice la pregunta");
+  assert.deepEqual(lado(b.caja, "haber"), [[E.inversiones, ""], [E.ganancia, ""]], "R10: el HABER es la respuesta, en blanco");
+  assert.equal(b.caja.querySelectorAll("[data-hueco]").length, 2);
+  assert.equal(b.caja.querySelector("[data-pie-final]").textContent, "Escenario simulado");
   b.desmontar();
+  const c = await montar(h(Final, { leyenda: "la buena" }));
+  assert.deepEqual(lado(c.caja, "haber"), [[E.inversiones, "$221.000"], [E.ganancia, "$52.000"]]);
+  assert.ok(P2.PREGUNTA_FINAL_T5_A2.includes("$273.000") && P2.PREGUNTA_FINAL_T5_A2.includes("260 títulos"), "el caso de la pregunta");
+  const n = (t) => Number(t.replace(/\D/g, ""));
+  assert.equal(n("$273.000"), n("$221.000") + n("$52.000"), "el asiento cuadra");
+  c.desmontar();
 });

@@ -115,6 +115,10 @@ const CAJAS_DE = {
 };
 
 const PISTAS = filas(seccion("### Pistas"));
+/* Lote 27 (nivel de Shoko): la pista del paquete A de T5 A1 cambia; la nueva, literal, en el paquete del lote 27. */
+const L27 = leer("orquestador/conocimiento/paquetes/b5-lote27-capa4-antes-c1.md");
+const PISTA_L27 = L27.match(/T5 A1 · pista de la capa 3 \(paquete A\): «([^»]+)»/)[1];
+for (const f of PISTAS) if (f[0] === "T5 A1" && f[1] === "Paquete A") f[2] = PISTA_L27;
 const TERCERAS = filas(seccion("### Terceras opciones"));
 /* La pista literal de una caja o de la parada de una pieza. */
 const pistaDe = (pieza, id) => {

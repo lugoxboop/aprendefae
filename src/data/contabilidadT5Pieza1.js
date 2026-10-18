@@ -146,7 +146,7 @@ export const PAQUETES = [
     revela: "Se venden fácil. Y su historia de inversiones respalda que se volverán efectivo cuando haga falta. Cumple las dos condiciones.",
     correcta: "si",
     falla: "Sí se vende fácil: se negocia públicamente. Y ya vendió inversiones así cuando le faltó efectivo.",
-    pista: "Revisa las dos condiciones, una por una, con lo que dice la descripción del paquete.",
+    pista: "Toma las dos condiciones, una por una, y compáralas con lo que dice el paquete.",
   },
   {
     id: "b",
@@ -212,3 +212,37 @@ export const OPCIONES_FINAL_T5 = [
   },
 ];
 export const PIE_FINAL_T5 = "Escenario simulado";
+
+/*
+ * ═══════════ LOTE 27 · D8 (propuesta de Shoko): LA CAPA 4 DE LA SEGUNDA VISITA ═══════════
+ *
+ * En la segunda visita (y en las pares), la capa 4 usa la pregunta que tenía antes del cambio C1 (lote
+ * C2·C1·C7): escrita y aprobada, copiada tal cual de la versión anterior a ese lote. Sin pie: no lo llevaba.
+ */
+export const PREGUNTA_FINAL_ANTES_C1_T5 = "¿Qué decide si un activo financiero es temporal?";
+export const OPCIONES_FINAL_ANTES_C1_T5 = [
+  {
+    id: "b5-dos-condiciones",
+    texto: "Que se pueda vender fácil y vaya a volverse efectivo cuando haga falta.",
+    correcta: true,
+    feedback: "Correcto. Los dos paquetes eran acciones, y uno no cumplió la primera condición: el tipo de documento no decide solo.",
+  },
+  {
+    id: "b5-corto-plazo",
+    texto: "Que sea un documento a corto plazo, como un bono de tesorería.",
+    correcta: false,
+    feedback: "No es esa. Los bonos de tesorería suelen estar entre los temporales, pero el tipo de documento no decide solo: también tiene que cumplir las dos condiciones.",
+  },
+  {
+    id: "b5-interes-fijo",
+    texto: "Que le pague a la empresa un interés fijo durante cierto tiempo.",
+    correcta: false,
+    feedback: "No es esa. Eso describe la renta fija con interés. Si es temporal y qué tipo de renta da son dos preguntas distintas.",
+  },
+  {
+    id: "b5-intencion",
+    texto: "Que la empresa diga que lo va a volver efectivo cuando lo necesite.",
+    correcta: false,
+    feedback: "No basta con decirlo. La intención cuenta, pero se apoya en evidencias, como la historia de inversiones de la empresa.",
+  },
+];
