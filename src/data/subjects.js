@@ -447,8 +447,10 @@ export const SUBJECTS = {
           { id: "en-que-talla-va", nombre: "¿En Qué Talla Va?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
           /* Aplicación */
           { id: "volante-de-la-tasa", nombre: "El Volante de la Tasa", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          { id: "la-tasa-que-muerde", nombre: "La Tasa que Muerde", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           { id: "caja-de-herramientas", nombre: "La Caja de Herramientas", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           { id: "crea-o-cambia-de-manos", nombre: "¿Crea o Cambia de Manos?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          { id: "el-freno-del-encaje", nombre: "El Freno del Encaje", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           { id: "a-quien-le-pega-la-tasa", nombre: "¿A Quién Le Pega la Tasa?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           { id: "las-dos-entradas", nombre: "Las Dos Entradas", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           { id: "que-toco-el-banco", nombre: "¿Qué Tocó el Banco?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
@@ -459,6 +461,7 @@ export const SUBJECTS = {
           { id: "corriente-de-decisiones", nombre: "Corriente de Decisiones", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           { id: "el-rezago", nombre: "El Rezago", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           { id: "la-escalera-del-encaje", nombre: "La Escalera del Encaje", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
+          { id: "repo-o-definitiva", nombre: "¿Repo o Definitiva?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           /* Maestría */
           { id: "dilema-banquero-central", nombre: "El Dilema del Banquero Central", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
           { id: "duelo-de-instrumentos", nombre: "Duelo de Instrumentos", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
