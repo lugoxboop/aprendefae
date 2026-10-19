@@ -257,6 +257,130 @@ export const CASOS_TASA = [
       },
     ],
   },
+  {
+    id: "doce-contra-trece",
+    titulo: "Marzo",
+    hecho: "La tasa está en 12. La inflación del año va en 13. La meta sigue siendo 3.",
+    base: { tasa: 12, inflacion: 13 },
+    decisiones: [
+      {
+        id: "lectura",
+        tipo: CLASIFICACION,
+        etiqueta: "¿dónde queda la tasa?",
+        pregunta: "¿Dónde queda la tasa frente a la inflación?",
+        respuesta: "debajo",
+        opciones: [
+          {
+            id: "debajo",
+            nombre: "Por debajo de la inflación",
+            lectura: "debajo",
+            retro: "✅ Sí. Doce menos trece da menos uno. La tasa se ve alta y aun así no frena: queda un punto por debajo.",
+          },
+          {
+            id: "igual",
+            nombre: "Justo en la inflación",
+            lectura: "igual",
+            retro: "❌ Igual sería con las dos cifras iguales. Doce no es trece, aunque se parezcan: hay un punto de diferencia.",
+          },
+          {
+            id: "encima",
+            nombre: "Por encima de la inflación",
+            lectura: "encima",
+            retro: "❌ Miraste el tamaño de la tasa y no la distancia. Doce es una tasa alta, pero trece es más: no frena.",
+          },
+        ],
+      },
+      {
+        id: "inflacion-baja",
+        tipo: CONSECUENCIA,
+        etiqueta: "si la inflación baja a diez",
+        pregunta: "La inflación del año baja a 10. La Junta no toca la tasa. ¿Qué pasa con el freno?",
+        respuesta: "aprieta-solo",
+        opciones: [
+          {
+            id: "aprieta-solo",
+            nombre: "Aprieta solo: la tasa queda encima",
+            estado: { tasa: 12, inflacion: 10 },
+            retro: "✅ Eso es. La Junta no movió nada y el freno se puso: la tasa pasó de estar debajo a estar dos puntos encima.",
+          },
+          {
+            id: "sigue-igual",
+            nombre: "Sigue igual: la Junta no movió la tasa",
+            estado: { tasa: 12, inflacion: 13 },
+            retro: "❌ Otra vez el freno medido con una sola cifra. La que se movió fue la inflación, y eso cambia la distancia.",
+          },
+          {
+            id: "suelta",
+            nombre: "Suelta: con menos inflación el crédito sale más barato",
+            estado: { tasa: 9, inflacion: 10 },
+            retro: "❌ Confundiste el precio de las cosas con el precio del crédito. La tasa sigue en 12: nadie la bajó.",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "seis-contra-cuatro",
+    titulo: "Agosto",
+    hecho: "La tasa está en 6. La inflación del año va en 4. La meta sigue siendo 3.",
+    base: { tasa: 6, inflacion: 4 },
+    decisiones: [
+      {
+        id: "lectura",
+        tipo: CLASIFICACION,
+        etiqueta: "¿dónde queda la tasa?",
+        pregunta: "¿Dónde queda la tasa frente a la inflación?",
+        respuesta: "encima",
+        opciones: [
+          {
+            id: "debajo",
+            nombre: "Por debajo de la inflación",
+            lectura: "debajo",
+            retro: "❌ Pusiste la lectura al otro lado. Seis es más que cuatro, así que la tasa va a la derecha de la inflación.",
+          },
+          {
+            id: "igual",
+            nombre: "Justo en la inflación",
+            lectura: "igual",
+            retro: "❌ Igual sería con las dos cifras iguales. Entre seis y cuatro hay dos puntos de distancia.",
+          },
+          {
+            id: "encima",
+            nombre: "Por encima de la inflación",
+            lectura: "encima",
+            retro: "✅ Correcto. Seis menos cuatro da dos. Una tasa baja también frena, si la inflación está más abajo.",
+          },
+        ],
+      },
+      {
+        id: "suben-las-dos",
+        tipo: CONSECUENCIA,
+        etiqueta: "si suben las dos cifras",
+        pregunta: "La Junta sube la tasa un punto y la inflación sube dos. ¿Qué pasa con el freno?",
+        respuesta: "suelta",
+        opciones: [
+          {
+            id: "suelta",
+            nombre: "Suelta: la distancia se cierra a un punto",
+            estado: { tasa: 7, inflacion: 6 },
+            retro: "✅ Bien visto. La Junta subió y el freno se soltó igual, porque la inflación subió más: de dos puntos a uno.",
+          },
+          {
+            id: "aprieta",
+            nombre: "Aprieta: la Junta subió la tasa",
+            estado: { tasa: 7, inflacion: 4 },
+            retro: "❌ Leíste solo la decisión de la Junta. Si la otra cifra sube más, subir la tasa no alcanza para apretar.",
+          },
+          {
+            id: "sigue-igual",
+            nombre: "Sigue igual: las dos subieron",
+            estado: { tasa: 7, inflacion: 5 },
+            retro: "❌ Subieron las dos, pero no lo mismo: una punto, la otra dos. Si no suben parejo, la distancia cambia.",
+          },
+        ],
+      },
+    ],
+  },
 ];
 
 /* ═══════════════════ B · ¿REPO O DEFINITIVA? ═══════════════════ */
@@ -466,6 +590,130 @@ export const CASOS_REPO = [
       },
     ],
   },
+  {
+    id: "la-base-quedo-grande",
+    titulo: "Sobra para siempre",
+    hecho: "El Banco les compró TES a los bancos hace años y los tiene. Hoy sobra plata de forma permanente y la tasa a un día está por debajo de la del Banco.",
+    base: { tes: 3, plata: 3, tasaDia: -1 },
+    decisiones: [
+      {
+        id: "cual-operacion",
+        tipo: CLASIFICACION,
+        etiqueta: "¿qué operación?",
+        pregunta: "¿Qué operación pide este caso?",
+        respuesta: "venta-definitiva",
+        opciones: [
+          {
+            id: "venta-definitiva",
+            nombre: "Venta definitiva: el Banco entrega TES y recoge plata",
+            estado: { tes: 2, plata: 2, tasaDia: 0, devuelve: false },
+            retro: "✅ Correcto. El exceso vino para quedarse, así que se recoge para siempre. Los TES vuelven a los bancos y no regresan.",
+          },
+          {
+            id: "repo-contraccion",
+            nombre: "Repo de contracción: el Banco recibe la plata por unos días",
+            estado: { tes: 2, plata: 2, tasaDia: 0, devuelve: true },
+            retro: "❌ Le pusiste plazo a un problema sin plazo. Al vencer, la plata vuelve y el exceso permanente sigue ahí.",
+          },
+          {
+            id: "repo-expansion",
+            nombre: "Repo de expansión: el Banco compra TES y mete plata",
+            estado: { tes: 4, plata: 4, tasaDia: -2, devuelve: true },
+            retro: "❌ Esa mete plata donde ya sobra, y la tasa a un día se alejaría todavía más de la del Banco.",
+          },
+        ],
+      },
+      {
+        id: "al-mes",
+        tipo: CONSECUENCIA,
+        etiqueta: "un mes después",
+        pregunta: "Pasa un mes desde la venta. ¿Qué queda en la mesa?",
+        respuesta: "base-mas-baja",
+        opciones: [
+          {
+            id: "base-mas-baja",
+            nombre: "Los TES siguen en los bancos y la base quedó más baja",
+            estado: { tes: 2, plata: 2, tasaDia: 0, devuelve: false },
+            retro: "✅ Eso es. La venta no vence, así que nadie tiene que renovarla: la base bajó un peldaño y se queda ahí.",
+          },
+          {
+            id: "tes-vuelven",
+            nombre: "Los TES vuelven al Banco y la plata se queda fuera",
+            estado: { tes: 3, plata: 2, tasaDia: 0, devuelve: false },
+            retro: "❌ Los TES los compraron los bancos y son suyos. Una pata sola no se deshace: la venta movió las dos.",
+          },
+          {
+            id: "hay-que-renovar",
+            nombre: "La operación vence y el Banco la renueva cada semana",
+            estado: { tes: 3, plata: 3, tasaDia: -1, devuelve: true },
+            retro: "❌ Lo que vence y se renueva es el repo. Si esto venciera, al mes estarías igual que al principio.",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "faltante-que-no-se-va",
+    titulo: "Tres meses cortos",
+    hecho: "Los bancos llevan tres meses cortos de plata y el Banco les ha renovado el repo semana a semana. El faltante no se va.",
+    base: { tes: 3, plata: 3, tasaDia: 0, devuelve: true },
+    decisiones: [
+      {
+        id: "cual-operacion",
+        tipo: CLASIFICACION,
+        etiqueta: "¿qué operación?",
+        pregunta: "¿Qué operación pide este caso?",
+        respuesta: "pasar-a-definitiva",
+        opciones: [
+          {
+            id: "pasar-a-definitiva",
+            nombre: "Compra definitiva: el faltante dejó de ser pasajero",
+            estado: { tes: 3, plata: 3, tasaDia: 0, devuelve: false },
+            retro: "✅ Exacto. Tres meses de renovar dicen que no era de unos días. Lo que ya es permanente se resuelve con una compra.",
+          },
+          {
+            id: "seguir-renovando",
+            nombre: "Seguir renovando el repo cada semana",
+            estado: { tes: 3, plata: 3, tasaDia: 0, devuelve: true },
+            retro: "❌ Sirve, pero el sistema queda colgado de una firma cada semana. La compra definitiva no pide firmas.",
+          },
+          {
+            id: "repo-contraccion",
+            nombre: "Repo de contracción: recoger plata del sistema",
+            estado: { tes: 2, plata: 2, tasaDia: 2, devuelve: true },
+            retro: "❌ Esa va al otro lado: le quita plata a quien ya está corto, y la tasa a un día se iría por encima de la del Banco.",
+          },
+        ],
+      },
+      {
+        id: "que-cambia-en-la-mesa",
+        tipo: CONSECUENCIA,
+        etiqueta: "qué cambia al pasar a compra",
+        pregunta: "El Banco cambia el repo por una compra definitiva. ¿Qué cambia en la mesa?",
+        respuesta: "mismo-sitio-sin-plazo",
+        opciones: [
+          {
+            id: "mismo-sitio-sin-plazo",
+            nombre: "Los TES y la plata quedan donde están, pero sin fecha de vuelta",
+            estado: { tes: 3, plata: 3, tasaDia: 0, devuelve: false },
+            retro: "✅ Así es, y es lo fino del tema: la plata no se mueve de sitio. Lo que cambia es que deja de tener que volver.",
+          },
+          {
+            id: "entra-mas-plata",
+            nombre: "Entra más plata al sistema que con el repo",
+            estado: { tes: 4, plata: 4, tasaDia: -1, devuelve: false },
+            retro: "❌ Una compra no mete más plata que un repo del mismo tamaño. Lo que cambia es el plazo, no el monto.",
+          },
+          {
+            id: "sale-la-plata",
+            nombre: "La plata del repo vuelve y la compra entra después",
+            estado: { tes: 2, plata: 2, tasaDia: 1, devuelve: false },
+            retro: "❌ Si la plata volviera primero, el sistema quedaría corto un día. La compra reemplaza al repo sin ese hueco.",
+          },
+        ],
+      },
+    ],
+  },
 ];
 
 /* ═══════════════════ C · EL FRENO DEL ENCAJE ═══════════════════ */
@@ -655,7 +903,7 @@ export const CASOS_ENCAJE = [
         opciones: [
           {
             id: "queda-corto",
-            nombre: "Queda corto: la reserva baja 100 y la línea solo baja 10",
+            nombre: "Queda corto: le quitan 100 de reserva y la línea solo cede 10",
             estado: { depositos: 1900, encaje: 10, reserva: 100, credito: 150 },
             retro: "✅ Exacto, y aquí está lo fino: el retiro sale entero de la reserva, pero el encaje solo cede diez de cada cien. Faltan 90.",
           },
@@ -670,6 +918,130 @@ export const CASOS_ENCAJE = [
             nombre: "Le sobra: con menos depósitos le piden menos reserva",
             estado: { depositos: 1900, encaje: 10, reserva: 200, credito: 150 },
             retro: "❌ Mira solo el lado de lo exigido y se olvida del otro. La reserva también se movió, y mucho más que la línea.",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "nieve-sube-el-encaje",
+    titulo: "Banco Nieve",
+    hecho: "Nieve tiene 3.000 en depósitos y 300 de reserva. El encaje va en 10 de cada 100. Le quedan 180 para prestar.",
+    base: { depositos: 3000, encaje: 10, reserva: 300, credito: 180 },
+    decisiones: [
+      {
+        id: "como-queda",
+        tipo: CLASIFICACION,
+        etiqueta: "¿cumple el encaje?",
+        pregunta: "¿Cómo queda Nieve hoy?",
+        respuesta: "justo",
+        opciones: [
+          {
+            id: "falta",
+            nombre: "Le falta reserva",
+            lectura: "falta",
+            retro: "❌ Diez de cada cien sobre 3.000 piden 300, y Nieve tiene 300. Llega a la línea justo, no se queda corto.",
+          },
+          {
+            id: "justo",
+            nombre: "Cumple justo",
+            lectura: "justo",
+            retro: "✅ Sí. Piden 300 y tiene 300. Cumple, y sin un peso de margen: cualquier cosa que pase lo deja corto.",
+          },
+          {
+            id: "sobra",
+            nombre: "Le sobra reserva",
+            lectura: "sobra",
+            retro: "❌ Sobrar sería tener más de 300. Tiene exactamente 300: toca la línea y no la pasa.",
+          },
+        ],
+      },
+      {
+        id: "sube-a-doce",
+        tipo: CONSECUENCIA,
+        etiqueta: "si el encaje sube a doce",
+        pregunta: "El Banco sube el encaje a 12 de cada 100. Nieve no mueve nada todavía. ¿Cómo queda?",
+        respuesta: "queda-corto",
+        opciones: [
+          {
+            id: "queda-corto",
+            nombre: "Queda corto: ahora piden 360 y tiene 300",
+            estado: { depositos: 3000, encaje: 12, reserva: 300, credito: 180 },
+            retro: "✅ Correcto. La línea sube a 360 y la reserva se queda en 300: le faltan 60 sin que nadie le haya tocado la plata.",
+          },
+          {
+            id: "se-ajusta-solo",
+            nombre: "Sigue justo: la reserva se ajusta al encaje nuevo",
+            estado: { depositos: 3000, encaje: 12, reserva: 360, credito: 180 },
+            retro: "❌ A nadie le sube la reserva por decreto. El encaje sube la línea; llegar a ella le toca al banco, y le cuesta.",
+          },
+          {
+            id: "piden-menos",
+            nombre: "Le sobra: con el encaje nuevo piden menos",
+            estado: { depositos: 3000, encaje: 8, reserva: 300, credito: 180 },
+            retro: "❌ Subir el encaje pide MÁS reserva, no menos. Le pusiste la línea más abajo de donde estaba.",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "palma-le-sobra",
+    titulo: "Banco Palma",
+    hecho: "Palma tiene 5.000 en depósitos y 460 de reserva. El encaje va en 8 de cada 100. Le quedan 220 para prestar.",
+    base: { depositos: 5000, encaje: 8, reserva: 460, credito: 220 },
+    decisiones: [
+      {
+        id: "como-queda",
+        tipo: CLASIFICACION,
+        etiqueta: "¿cumple el encaje?",
+        pregunta: "¿Cómo queda Palma hoy?",
+        respuesta: "sobra",
+        opciones: [
+          {
+            id: "falta",
+            nombre: "Le falta reserva",
+            lectura: "falta",
+            retro: "❌ Ocho de cada cien sobre 5.000 piden 400, y Palma guarda 460. Está por encima de la línea, no por debajo.",
+          },
+          {
+            id: "justo",
+            nombre: "Cumple justo",
+            lectura: "justo",
+            retro: "❌ Justo sería con 400 exactos. Palma tiene 460: sesenta más de los que le piden.",
+          },
+          {
+            id: "sobra",
+            nombre: "Le sobra reserva",
+            lectura: "sobra",
+            retro: "✅ Así es. Piden 400 y tiene 460. Esos 60 de más están quietos sin que ninguna norma los obligue a estarlo.",
+          },
+        ],
+      },
+      {
+        id: "presta-lo-que-sobra",
+        tipo: CONSECUENCIA,
+        etiqueta: "si presta lo que sobra",
+        pregunta: "Palma presta los 60 que le sobran. ¿Qué cambia?",
+        respuesta: "baja-a-la-linea",
+        opciones: [
+          {
+            id: "baja-a-la-linea",
+            nombre: "La reserva baja a 400 y el crédito nuevo sube a 280",
+            estado: { depositos: 5000, encaje: 8, reserva: 400, credito: 280 },
+            retro: "✅ Eso es. Puede bajar hasta la línea y ni un peso más: el encaje es un piso, no una cifra que se negocie.",
+          },
+          {
+            id: "presta-sin-tocar",
+            nombre: "El crédito nuevo sube a 280 y la reserva se queda en 460",
+            estado: { depositos: 5000, encaje: 8, reserva: 460, credito: 280 },
+            retro: "❌ Los 60 que presta salen de la reserva. No se puede prestar la misma plata y seguir teniéndola guardada.",
+          },
+          {
+            id: "se-pasa-de-largo",
+            nombre: "La reserva baja a 340 y el crédito nuevo sube a 340",
+            estado: { depositos: 5000, encaje: 8, reserva: 340, credito: 340 },
+            retro: "❌ Te pasaste de la línea. Prestar 120 deja la reserva en 340, por debajo de los 400 que le exigen: eso ya es incumplir.",
           },
         ],
       },

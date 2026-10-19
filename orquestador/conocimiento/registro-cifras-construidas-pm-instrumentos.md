@@ -55,9 +55,30 @@ El eje de la figura va de 4 a 14 (`EJE_TASA`), fijo en los tres casos: una
 escala que se moviera con el caso haría que la misma distancia midiera distinto
 en cada pantalla.
 
-Las tres lecturas posibles colocan la ficha a −2, 0 y +2 puntos de la
-inflación (`LECTURA_EJE`). No son cifras del contenido: son las tres posiciones
-que hacen distinguibles las tres opciones en la figura.
+**La ficha de la tasa marca siempre la cifra del caso.** Antes se colocaba a −2,
+0 o +2 puntos de la inflación según la categoría elegida, y eso le hacía afirmar
+cifras que no eran: en Junio, con el acierto puesto, marcaba 8 donde el caso
+decía 10. Lo encontró el auditor de la A6. La categoría elegida se dibuja ahora
+como una banda sobre el eje (`BANDA_EJE`), que es geometría de interfaz y no una
+cifra del contenido: por eso no entra en este registro.
+
+### Dos casos más (tanda de 3 de 5)
+
+| # | Caso | Uso | Cifra | Cálculo | Clase |
+| --- | --- | --- | --- | --- | --- |
+| 53 | Marzo | tasa de intervención | 12 | 12 | Dato del enunciado |
+| 54 | Marzo | inflación del año | 13 | 13 | Dato del enunciado |
+| 55 | Marzo | distancia de hoy | −1 | 12 − 13 | Respuesta calificada (lectura) |
+| 56 | Marzo | inflación que baja | 10 | 10 | Dato del enunciado (consecuencia) |
+| 57 | Marzo | distancia después | +2 | 12 − 10 | Respuesta calificada (consecuencia) |
+| 58 | Marzo | tasa del distractor «suelta» | 9 | 9 | Distractor |
+| 59 | Agosto | tasa de intervención | 6 | 6 | Dato del enunciado |
+| 60 | Agosto | inflación del año | 4 | 4 | Dato del enunciado |
+| 61 | Agosto | distancia de hoy | +2 | 6 − 4 | Respuesta calificada (lectura) |
+| 62 | Agosto | tasa tras subir un punto | 7 | 6 + 1 | Dato del enunciado (consecuencia) |
+| 63 | Agosto | inflación tras subir dos | 6 | 4 + 2 | Dato del enunciado (consecuencia) |
+| 64 | Agosto | distancia después | +1 | 7 − 6 | Respuesta calificada (consecuencia) |
+| 65 | Agosto | inflación del distractor «sigue igual» | 5 | 5 | Distractor |
 
 ## B · `repo-o-definitiva`
 
@@ -79,6 +100,17 @@ cuánto. Un monto habría obligado a inventar un saldo de base monetaria.
 La tasa a un día no lleva número: lleva **pasos** respecto a la tasa del Banco,
 que es la línea del medio. Un porcentaje habría sido una cifra vigente
 disfrazada, y lo que importa es si está arriba, encima o abajo de la del Banco.
+
+### Dos casos más (tanda de 3 de 5)
+
+| # | Caso | Uso | Cifra | Cálculo | Clase |
+| --- | --- | --- | --- | --- | --- |
+| 66 | Sobra para siempre | reparto de partida: TES del Banco y plata del sistema | 3 y 3 | 3 | Dato del enunciado |
+| 67 | Sobra para siempre | TES y plata tras la venta definitiva | 2 y 2 | 3 − 1 | Respuesta calificada |
+| 68 | Sobra para siempre | TES y plata del distractor «repo de expansión» | 4 y 4 | 3 + 1 | Distractor |
+| 69 | Tres meses cortos | meses que lleva renovándose el repo | 3 | 3 | Dato del enunciado |
+| 70 | Tres meses cortos | reparto de partida, ya con el repo puesto | 3 y 3 | 3 | Dato del enunciado |
+| 71 | Tres meses cortos | TES y plata al pasar a compra definitiva | 3 y 3 | sin cambio | Respuesta calificada (lo que cambia es el plazo, no el monto) |
 
 ## C · `el-freno-del-encaje`
 
@@ -118,7 +150,40 @@ encaje) = depositos × encaje / 100`, y una prueba la recalcula
 | 51 | Sierra | faltante después | 90 | 190 − 100 | Intermedia (la dice la devolución) |
 | 52 | Sierra | reserva del distractor «sigue justo» | 190 | 190 | Distractor |
 
+### Dos casos más (tanda de 3 de 5)
+
+| # | Caso | Uso | Cifra | Cálculo | Clase |
+| --- | --- | --- | --- | --- | --- |
+| 72 | Nieve | depósitos | 3.000 | 3000 | Dato del enunciado |
+| 73 | Nieve | encaje, de cada 100 | 10 | 10 | Dato del enunciado |
+| 74 | Nieve | reserva guardada | 300 | 300 | Dato del enunciado |
+| 75 | Nieve | reserva exigida hoy | 300 | 3000 × 10 / 100 | Respuesta calificada (lectura) |
+| 76 | Nieve | crédito nuevo | 180 | 180 | Dato del enunciado |
+| 77 | Nieve | encaje nuevo, de cada 100 | 12 | 12 | Dato del enunciado (consecuencia) |
+| 78 | Nieve | reserva exigida con el encaje nuevo | 360 | 3000 × 12 / 100 | Respuesta calificada (consecuencia) |
+| 79 | Nieve | faltante | 60 | 360 − 300 | Intermedia (la dice la devolución) |
+| 80 | Nieve | reserva del distractor «se ajusta solo» | 360 | 360 | Distractor |
+| 81 | Nieve | encaje del distractor «piden menos» | 8 | 8 | Distractor |
+| 82 | Palma | depósitos | 5.000 | 5000 | Dato del enunciado |
+| 83 | Palma | encaje, de cada 100 | 8 | 8 | Dato del enunciado |
+| 84 | Palma | reserva guardada | 460 | 460 | Dato del enunciado |
+| 85 | Palma | reserva exigida | 400 | 5000 × 8 / 100 | Respuesta calificada (lectura) |
+| 86 | Palma | sobrante | 60 | 460 − 400 | Intermedia |
+| 87 | Palma | crédito nuevo antes | 220 | 220 | Dato del enunciado |
+| 88 | Palma | reserva después de prestar lo que sobra | 400 | 460 − 60 | Respuesta calificada (consecuencia) |
+| 89 | Palma | crédito nuevo después | 280 | 220 + 60 | Respuesta calificada (consecuencia) |
+| 90 | Palma | reserva del distractor «se pasa de largo» | 340 | 460 − 120 | Distractor |
+| 91 | Palma | crédito del distractor «se pasa de largo» | 340 | 220 + 120 | Distractor |
+
 El tanque de la figura se escala de 0 a 500 (`TOPE_TANQUE`) y no con los
 depósitos: con 4.000 arriba, los 60 que faltan medirían 2 px y la figura diría
 «da lo mismo» justo donde se pregunta por la diferencia (E11 de la Célula E).
-La barra del crédito se escala de 0 a 300 (`TOPE_CREDITO`).
+La barra del crédito se escala de 0 a 400 (`TOPE_CREDITO`), que es el tope que
+cabe con los 340 de Palma.
+
+**La línea del encaje cae siempre en lo exigido**, calculado, con su cifra al
+lado. Antes se colocaba a ±22 px del relleno según la categoría elegida, así que
+con la clasificación acertada no caía donde decía la cuenta —80 px frente a 69
+en Aurora 1—. Lo encontró el auditor de la A6. La categoría elegida se dibuja
+ahora como una banda sobre el relleno (`BANDA_TANQUE`): geometría de interfaz,
+no una cifra del contenido.

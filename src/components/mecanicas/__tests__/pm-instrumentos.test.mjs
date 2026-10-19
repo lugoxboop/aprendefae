@@ -95,7 +95,7 @@ function huellaFigura(caja) {
 
 test("★★★ cada caso pide una clasificación y una consecuencia, no la misma pregunta dos veces", () => {
   for (const { ficha, casos } of PIEZAS) {
-    assert.equal(casos.length, 3, `${ficha.id}: tres casos`);
+    assert.equal(casos.length, 5, `${ficha.id}: cinco casos en el banco`);
     for (const caso of casos) {
       const tipos = caso.decisiones.map((d) => d.tipo);
       assert.deepEqual(tipos, [D.CLASIFICACION, D.CONSECUENCIA], `${ficha.id} · ${caso.id}: los dos tipos, en ese orden`);
@@ -143,40 +143,123 @@ test("★★★ el encaje exigido se recalcula, no se declara", () => {
 /* ─────────────────── la figura, medida en el DOM ─────────────────── */
 
 test("★★★ D4: cada opción deja la figura en un estado distinto, pareja por pareja", () => {
+  /*
+   * Caso por caso, con la tanda FIJADA a ese caso (`elegirCasos`): desde que
+   * cada tanda sortea tres de cinco, el índice del ítem ya no dice qué caso
+   * viene, y sin fijarlo esto compararía pantallas de casos distintos.
+   */
   for (const { ficha, casos, Juego } of PIEZAS) {
-    const total = casos.reduce((s, c) => s + c.decisiones.length, 0);
-    for (let item = 0; item < total; item++) {
-      const huellas = new Map();
-      const decision = casos.flatMap((c) => c.decisiones)[item];
-      /*
-       * Una partida nueva por opción, y la opción se busca POR SU TEXTO: las
-       * de consecuencia se barajan al montar, así que el mismo índice no es la
-       * misma opción en dos partidas. Buscarla por índice daba un falso rojo.
-       */
+    for (const caso of casos) {
+      for (const [item, decision] of caso.decisiones.entries()) {
+        const huellas = new Map();
+        for (const o of decision.opciones) {
+          const m = montar(React.createElement(Juego, { onCompletar: () => {}, elegirCasos: () => [caso] }));
+          try {
+            for (let j = 0; j < item; j++) {
+              tocar(opciones(m.caja)[0]);
+              tocar([...m.caja.querySelectorAll("button")].find((b) => /Siguiente|Ver resultado/.test(b.textContent)));
+            }
+            const antes = huellaFigura(m.caja);
+            const boton = opciones(m.caja).find((b) => b.textContent.trim() === o.nombre);
+            assert.ok(boton, `${ficha.id} · ${caso.id} · «${o.nombre}» no está en pantalla`);
+            tocar(boton);
+            const despues = huellaFigura(m.caja);
+            assert.notEqual(despues, antes, `${ficha.id} · ${caso.id} · «${o.nombre}»: la figura no se movió al elegir`);
+            const choque = huellas.get(despues);
+            assert.equal(choque, undefined, `${ficha.id} · ${caso.id}: «${o.nombre}» deja la figura igual que «${choque}»`);
+            huellas.set(despues, o.nombre);
+          } finally {
+            m.desmontar();
+          }
+        }
+        assert.equal(huellas.size, 3, `${ficha.id} · ${caso.id} · ${decision.id}: tres estados distintos`);
+      }
+    }
+  }
+});
+
+/* ─────────────────── la fidelidad de la figura ─────────────────── */
+
+test("★★★ la figura nunca afirma una cifra que el caso no dice, ni con el acierto puesto", () => {
+  /*
+   * EL DEFECTO QUE ESTO CAZA, con su historia: la ficha de la tasa se colocaba
+   * a ±2 puntos de la inflación según la CATEGORÍA elegida, así que en Junio,
+   * con el ACIERTO puesto, marcaba 8 mientras el hecho decía 10. La figura
+   * afirmaba una cifra falsa y nada la desmentía. Lo encontró el auditor A6.
+   *
+   * La regla, en una línea: la ficha lee la MAGNITUD del caso; la categoría
+   * elegida se dibuja aparte, en la banda.
+   */
+  for (const caso of D.CASOS_TASA) {
+    for (const [item, decision] of caso.decisiones.entries()) {
       for (const o of decision.opciones) {
-        const m = montar(React.createElement(Juego, { onCompletar: () => {} }));
+        const m = montar(React.createElement(M.LaTasaQueMuerde, { onCompletar: () => {}, elegirCasos: () => [caso] }));
         try {
           for (let j = 0; j < item; j++) {
             tocar(opciones(m.caja)[0]);
-            const seguir = [...m.caja.querySelectorAll("button")].find((b) => /Siguiente|Ver resultado/.test(b.textContent));
-            tocar(seguir);
+            tocar([...m.caja.querySelectorAll("button")].find((b) => /Siguiente|Ver resultado/.test(b.textContent)));
           }
-          const antes = huellaFigura(m.caja);
-          const texto = o.nombre;
-          const boton = opciones(m.caja).find((b) => b.textContent.trim() === o.nombre);
-          assert.ok(boton, `${ficha.id} · ítem ${item + 1}: «${o.nombre}» no está en pantalla`);
-          tocar(boton);
-          const despues = huellaFigura(m.caja);
-          assert.notEqual(despues, antes, `${ficha.id} · ítem ${item + 1} · «${texto}»: la figura no se movió al elegir`);
-          const choque = [...huellas.entries()].find(([h]) => h === despues);
-          assert.equal(choque, undefined, `${ficha.id} · ítem ${item + 1}: «${texto}» deja la figura igual que «${choque?.[1]}»`);
-          huellas.set(despues, texto);
+          tocar(opciones(m.caja).find((b) => b.textContent.trim() === o.nombre));
+          const esperada = o.estado ? o.estado.tasa : caso.base.tasa;
+          const ficha = m.caja.querySelector('[data-ficha="tasa"]');
+          assert.ok(ficha, `${caso.id} · ${o.id}: sin ficha de tasa tras responder`);
+          assert.equal(Number(ficha.dataset.valor), esperada, `${caso.id} · ${o.id}: la ficha dice otra cifra que el caso`);
+          /* Y la banda de la lectura sí cambia con la categoría. */
+          if (o.lectura) assert.equal(m.caja.querySelector("[data-banda]").dataset.banda, o.lectura);
         } finally {
           m.desmontar();
         }
       }
-      assert.equal(huellas.size, 3, `${ficha.id} · ítem ${item + 1}: tres estados distintos`);
     }
+  }
+});
+
+test("★★★ la línea del encaje cae en lo exigido, no a una distancia fija del relleno", () => {
+  /* El mismo defecto, más leve, que midió el auditor: con la clasificación
+     acertada la línea quedaba a 80 px y lo exigido estaba a 69. */
+  for (const caso of D.CASOS_ENCAJE) {
+    for (const [item, decision] of caso.decisiones.entries()) {
+      for (const o of decision.opciones) {
+        const m = montar(React.createElement(M.ElFrenoDelEncaje, { onCompletar: () => {}, elegirCasos: () => [caso] }));
+        try {
+          for (let j = 0; j < item; j++) {
+            tocar(opciones(m.caja)[0]);
+            tocar([...m.caja.querySelectorAll("button")].find((b) => /Siguiente|Ver resultado/.test(b.textContent)));
+          }
+          tocar(opciones(m.caja).find((b) => b.textContent.trim() === o.nombre));
+          const estado = o.estado ?? caso.base;
+          const exigido = D.encajeExigido(estado.depositos, estado.encaje);
+          const linea = m.caja.querySelector('[data-linea="exigido"]');
+          assert.ok(linea, `${caso.id} · ${o.id}: sin línea tras responder`);
+          const esperado = Math.round((exigido / M.TOPE_TANQUE) * 86);
+          assert.equal(Number(linea.dataset.alto), esperado, `${caso.id} · ${o.id}: la línea no cae en lo exigido (${exigido})`);
+          assert.ok(linea.textContent.includes(String(exigido)), `${caso.id} · ${o.id}: la línea no dice su cifra`);
+          if (o.lectura) assert.equal(m.caja.querySelector("[data-banda]").dataset.banda, o.lectura);
+        } finally {
+          m.desmontar();
+        }
+      }
+    }
+  }
+});
+
+/* ─────────────────── D8: dos tandas no son la misma ─────────────────── */
+
+test("★★★ D8: cada tanda sortea tres casos de cinco, así que una segunda no repite la primera", () => {
+  assert.equal(M.CASOS_POR_TANDA, 3);
+  for (const { ficha, casos } of PIEZAS) {
+    const tandas = new Set();
+    for (let k = 0; k < 200; k++) {
+      const t = M.sortearCasos(casos);
+      assert.equal(t.length, 3, `${ficha.id}: una tanda son tres casos`);
+      assert.equal(new Set(t.map((c) => c.id)).size, 3, `${ficha.id}: un caso repetido en la misma tanda`);
+      for (const c of t) assert.ok(casos.includes(c), `${ficha.id}: un caso que no es del banco`);
+      tandas.add(t.map((c) => c.id).join("+"));
+    }
+    /* Cinco casos tomados de tres en tres y en orden dan 60 tandas posibles.
+       Con 200 sorteos tienen que salir muchas más de una: si saliera una sola,
+       el sorteo no sortea. */
+    assert.ok(tandas.size > 20, `${ficha.id}: solo ${tandas.size} tandas distintas en 200 sorteos`);
   }
 });
 
@@ -207,12 +290,11 @@ test("★★★ al fallar, la figura NO queda como al acertar, y la buena queda 
    * muesca de la mesa—; donde no, manda la opción revelada y la devolución.
    */
   for (const { ficha, casos, Juego } of PIEZAS) {
-    for (const [c, caso] of casos.entries()) {
-      for (const [k, decision] of caso.decisiones.entries()) {
-        const item = c * caso.decisiones.length + k;
+    for (const caso of casos) {
+      for (const [item, decision] of caso.decisiones.entries()) {
         const huellas = {};
         for (const o of decision.opciones) {
-          const m = montar(React.createElement(Juego, { onCompletar: () => {} }));
+          const m = montar(React.createElement(Juego, { onCompletar: () => {}, elegirCasos: () => [caso] }));
           try {
             for (let j = 0; j < item; j++) {
               tocar(opciones(m.caja)[0]);
@@ -240,10 +322,11 @@ test("★★★ al fallar, la figura NO queda como al acertar, y la buena queda 
 
 test("★★★ seis decisiones, el avance no se adelanta, y acertarlas todas registra 100", () => {
   for (const { ficha, casos, Juego } of PIEZAS) {
-    const total = casos.reduce((s, c) => s + c.decisiones.length, 0);
-    assert.equal(total, 6, `${ficha.id}: seis decisiones`);
+    const tanda = casos.slice(0, M.CASOS_POR_TANDA);
+    const total = tanda.reduce((s, c) => s + c.decisiones.length, 0);
+    assert.equal(total, 6, `${ficha.id}: seis decisiones por tanda`);
     let registro = null;
-    const m = montar(React.createElement(Juego, { onCompletar: (pct, ms, detalle) => { registro = { pct, detalle }; } }));
+    const m = montar(React.createElement(Juego, { onCompletar: (pct, ms, detalle) => { registro = { pct, detalle }; }, elegirCasos: () => tanda }));
     try {
       for (let i = 0; i < total; i++) {
         const rotulo = m.caja.querySelector("[data-avance]").textContent.trim();
@@ -271,7 +354,8 @@ test("★★★ seis decisiones, el avance no se adelanta, y acertarlas todas re
 test("★★★ fallar las seis da 0 y cada fallo deja su respuesta en el detalle", () => {
   for (const { ficha, casos, Juego } of PIEZAS) {
     let registro = null;
-    const m = montar(React.createElement(Juego, { onCompletar: (pct, ms, detalle) => { registro = { pct, detalle }; } }));
+    const tanda = casos.slice(0, M.CASOS_POR_TANDA);
+    const m = montar(React.createElement(Juego, { onCompletar: (pct, ms, detalle) => { registro = { pct, detalle }; }, elegirCasos: () => tanda }));
     try {
       for (let i = 0; i < 6; i++) {
         const id = m.caja.querySelector("[data-decision]").dataset.decision;

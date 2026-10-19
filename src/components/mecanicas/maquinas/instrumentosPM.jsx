@@ -75,6 +75,10 @@ const ROTULO_TIPO_ESTILO = (acento) => ({ margin: "12px 0 6px", fontFamily: SORA
  * `sticky` las dos se ven juntas, que es lo que pide D10, sin mover la
  * devolución del sitio que pide E2 (entre lo que se tocó y «Siguiente»).
  */
+/* Las lecturas en palabras, para que la banda no informe solo con el color. */
+const ROTULO_LECTURA_EJE = { debajo: "debajo de la inflación", igual: "justo en la inflación", encima: "encima de la inflación" };
+const ROTULO_LECTURA_TANQUE = { falta: "le falta reserva", justo: "cumple justo", sobra: "le sobra reserva" };
+
 const PEGADA = { position: "sticky", top: 0, zIndex: 2, background: FAE.bg, paddingBottom: "6px" };
 const CIFRA_FIGURA = { fontFamily: SORA, fontSize: "13px", fontWeight: 700, fontVariantNumeric: "tabular-nums", color: FAE.text };
 
@@ -93,10 +97,27 @@ const tonoDe = (veredicto) => (veredicto === "ok" ? FAE.teal : veredicto === "ma
 
 const posEje = (v) => ((v - EJE_TASA.minimo) / (EJE_TASA.maximo - EJE_TASA.minimo)) * 100;
 
-/* Dónde cae la ficha de la tasa según la lectura que eligió el estudiante:
-   dos puntos a cada lado de la inflación, o encima de ella. Tres sitios
-   distintos, que es lo que hace distinguibles las tres opciones. */
-const LECTURA_EJE = { debajo: -2, igual: 0, encima: 2 };
+/*
+ * ═══════════ LA FICHA LEE LA CIFRA; LA BANDA LEE LA CATEGORÍA ═══════════
+ *
+ * Antes la ficha de la tasa se colocaba a ±2 puntos de la inflación según la
+ * categoría elegida, y eso rompía la fidelidad: en el caso de Junio, con el
+ * ACIERTO puesto, la ficha marcaba 8 mientras el hecho de la misma pantalla
+ * decía que la tasa estaba en 10 y la devolución decía «diez menos seis da
+ * cuatro». La figura afirmaba una cifra falsa, y como el acierto no dibujaba
+ * fantasma de corrección, nada la desmentía. Lo encontró el auditor de la A6.
+ *
+ * Así que la ficha SIEMPRE marca la cifra del caso, y lo que cambia con la
+ * opción elegida es una BANDA sobre el eje: el tramo donde el estudiante dijo
+ * que caería la tasa. La banda lleva su veredicto en el tono y en el signo, y
+ * las tres bandas son tres tramos distintos del eje, así que las tres opciones
+ * siguen dejando la figura en estados distintos.
+ */
+const BANDA_EJE = {
+  debajo: (x) => ({ izquierda: 0, ancho: x }),
+  igual: (x) => ({ izquierda: Math.max(0, x - 7), ancho: 14 }),
+  encima: (x) => ({ izquierda: x, ancho: 100 - x }),
+};
 
 function Ficha({ rotulo, valor, izquierda, tono, marca = null, fantasma = false, arriba = false }) {
   return (
@@ -123,11 +144,18 @@ function Ficha({ rotulo, valor, izquierda, tono, marca = null, fantasma = false,
 function FiguraTasa({ base, estado, lectura, verdad, veredicto, pendiente }) {
   const hoy = estado ?? base;
   const inflacion = hoy.inflacion;
-  /* Con la clasificación sin responder no hay ficha de tasa puesta: ponerla
-     sería contestar la pregunta. Con lectura, va al lado que eligió. */
-  const tasa = lectura ? inflacion + LECTURA_EJE[lectura] : pendiente ? null : hoy.tasa;
-  const tasaVerdad = !verdad ? null : typeof verdad === "string" ? base.tasa : verdad.tasa;
+  /*
+   * Con la clasificación sin responder no hay ficha de tasa puesta: ponerla
+   * sería contestar la pregunta. En cuanto se responde, la ficha marca la
+   * cifra del caso —acierte o falle—, nunca un desplazamiento de categoría.
+   */
+  const tasa = pendiente ? null : hoy.tasa;
+  const tasaVerdad = !verdad || typeof verdad === "string" ? null : verdad.tasa;
+  const inflacionVerdad = !verdad || typeof verdad === "string" ? null : verdad.inflacion;
   const frena = tasa !== null && tasa > inflacion;
+  const banda = lectura ? BANDA_EJE[lectura](posEje(inflacion)) : null;
+  const tono = tonoDe(veredicto);
+  const marca = veredicto === "ok" ? "✓" : veredicto === "mal" ? "✗" : "";
 
   return (
     <div data-figura="tasa" style={{ ...CAJA_FIGURA, height: "150px" }}>
@@ -136,7 +164,29 @@ function FiguraTasa({ base, estado, lectura, verdad, veredicto, pendiente }) {
         {/* la ficha de la inflación, arriba del eje */}
         <span style={{ position: "absolute", left: 0, right: 0, top: 0, height: "46px" }}>
           <Ficha rotulo="inflación" valor={inflacion} izquierda={posEje(inflacion)} tono={NEUTRO} arriba />
+          {/*
+            Y dónde iba la inflación, si la opción elegida la dejó en otro
+            sitio. Hace falta: en el caso de Octubre la consecuencia mueve la
+            INFLACIÓN y no la tasa, así que sin este fantasma elegir «sigue
+            igual» no movía nada de la figura.
+          */}
+          {inflacionVerdad !== null && inflacionVerdad !== inflacion && (
+            <Ficha rotulo="iba aquí" valor={inflacionVerdad} izquierda={posEje(inflacionVerdad)} tono={FAE.teal} marca="✓" fantasma arriba />
+          )}
         </span>
+        {/* la banda: el tramo del eje que eligió el estudiante */}
+        {banda && (
+          <span
+            data-banda={lectura}
+            data-izquierda={banda.izquierda.toFixed(1)}
+            style={{
+              position: "absolute", top: "38px", height: "24px", borderRadius: "4px",
+              left: `${banda.izquierda}%`, width: `${banda.ancho}%`,
+              background: veredicto === "ok" ? "rgba(42,157,143,0.18)" : "rgba(231,111,81,0.16)",
+              border: `1px solid ${tono}`, transition: "left 220ms ease, width 220ms ease",
+            }}
+          />
+        )}
         {/* el eje y sus marcas: estructura, así que node y nunca teal ni coral */}
         <span aria-hidden="true" style={{ position: "absolute", left: 0, right: 0, top: "50px", height: "1.5px", background: "rgba(248,249,250,0.22)" }} />
         {[4, 6, 8, 10, 12, 14].map((v) => (
@@ -157,19 +207,16 @@ function FiguraTasa({ base, estado, lectura, verdad, veredicto, pendiente }) {
           />
         )}
         <span style={{ position: "absolute", left: 0, right: 0, top: "58px", height: "46px" }}>
-          {tasa !== null && (
-            <Ficha
-              rotulo="tasa"
-              valor={tasa}
-              izquierda={posEje(tasa)}
-              tono={tonoDe(veredicto)}
-              marca={veredicto === "ok" ? "✓" : veredicto === "mal" ? "✗" : null}
-            />
-          )}
+          {tasa !== null && <Ficha rotulo="tasa" valor={tasa} izquierda={posEje(tasa)} tono={NEUTRO} />}
           {tasaVerdad !== null && tasaVerdad !== tasa && (
             <Ficha rotulo="iba aquí" valor={tasaVerdad} izquierda={posEje(tasaVerdad)} tono={FAE.teal} marca="✓" fantasma />
           )}
         </span>
+        {banda && (
+          <span data-rotulo-banda style={{ position: "absolute", left: 0, top: "86px", fontSize: "12px", color: tono }}>
+            {marca} tu lectura: {ROTULO_LECTURA_EJE[lectura]}
+          </span>
+        )}
         {tasa === null && (
           <span data-sin-poner style={{ position: "absolute", left: 0, top: "62px", fontSize: "12px", color: SECUNDARIO }}>
             La ficha de la tasa todavía no está puesta.
@@ -203,7 +250,7 @@ function Columna({ rotulo, tes, plata, tono, temporal = false, tesVerdad = null,
       <p style={{ margin: "0 0 5px", fontSize: "12px", lineHeight: 1.25, color: SECUNDARIO }}>{rotulo}</p>
       <div data-tes={tes} style={{ position: "relative", display: "flex", gap: "3px", marginBottom: "6px", minHeight: "16px" }}>
         {Array.from({ length: tes }, (_, k) => (
-          <span key={k} aria-hidden="true" style={{ width: "12px", height: "16px", borderRadius: "2px", background: "rgba(203,220,242,0.22)", border: `1px solid ${tono}` }} />
+          <span key={k} aria-hidden="true" style={{ width: "12px", height: "16px", borderRadius: "2px", background: "rgba(203,220,242,0.22)", border: `1px ${temporal ? "dashed" : "solid"} ${tono}` }} />
         ))}
         {tesVerdad !== null && tesVerdad !== tes && (
           <span
@@ -297,18 +344,31 @@ function FiguraMesa({ base, estado, verdad, veredicto }) {
    encaje, 0 a 500, y los depósitos van en cifra. */
 export const TOPE_TANQUE = 500;
 const ALTO_TANQUE = 86;
-const TOPE_CREDITO = 300;
+const TOPE_CREDITO = 400;
 const alturaDe = (v) => Math.max(0, Math.min(1, v / TOPE_TANQUE)) * ALTO_TANQUE;
 
-/* Dónde cae la línea del encaje según la lectura elegida: por encima del
-   relleno (le falta reserva), justo en él (cumple) o por debajo (le sobra).
-   22 px de separación, que a 320 px se ven de lejos. */
-const LECTURA_LINEA = { falta: 22, justo: 0, sobra: -22 };
+/*
+ * MISMO ARREGLO QUE EN EL EJE DE LA TASA, y mismo defecto de origen: la línea
+ * del encaje se colocaba a ±22 px del relleno según la categoría elegida, así
+ * que con la clasificación ACERTADA no caía en lo exigido —80 px frente a 69
+ * en Aurora 1, 47 frente a 55 en Aurora 2—. La figura decía una magnitud que
+ * no era. Lo encontró el auditor de la A6.
+ *
+ * Ahora la línea SIEMPRE cae en lo exigido, con su cifra, y la categoría
+ * elegida se dibuja como una BANDA sobre el relleno: por encima si dijo que le
+ * falta, pegada si dijo que cumple justo, por debajo si dijo que le sobra.
+ * Tres bandas, tres alturas distintas.
+ */
+const BANDA_TANQUE = {
+  falta: (h) => ({ abajo: h, alto: 20 }),
+  justo: (h) => ({ abajo: Math.max(0, h - 3), alto: 6 }),
+  sobra: (h) => ({ abajo: Math.max(0, h - 20), alto: 20 }),
+};
 
 function Linea({ alto, tono, rotulo, fantasma = false }) {
   return (
     <span
-      data-linea={fantasma ? "verdad" : "elegida"}
+      data-linea={fantasma ? "verdad" : "exigido"}
       data-alto={Math.round(alto)}
       style={{
         position: "absolute", left: "-3px", right: "-3px", bottom: `${alto}px`,
@@ -328,13 +388,14 @@ function FiguraTanque({ base, estado, lectura, verdad, veredicto, pendiente }) {
   const exigido = encajeExigido(hoy.depositos, hoy.encaje);
   const altoReserva = alturaDe(hoy.reserva);
   const tono = tonoDe(veredicto);
-  const marca = veredicto === "ok" ? "✓ " : veredicto === "mal" ? "✗ " : "";
+  const marca = veredicto === "ok" ? "✓" : veredicto === "mal" ? "✗" : "";
   /* Sin responder la clasificación, la línea no está puesta: su altura es lo
-     que se pregunta. Con lectura, va al lado del relleno que eligió. */
-  const altoLinea = lectura ? Math.max(4, altoReserva + LECTURA_LINEA[lectura]) : pendiente ? null : alturaDe(exigido);
-  /* La verdad: la línea donde iba (si falló la lectura) o la reserva que debía
-     quedar (si falló la consecuencia). Nunca las dos, que es lo que se falló. */
-  const lineaVerdad = typeof verdad === "string" ? alturaDe(encajeExigido(base.depositos, base.encaje)) : null;
+     que se pregunta. En cuanto se responde, cae en lo exigido y lleva su cifra. */
+  const altoLinea = pendiente ? null : alturaDe(exigido);
+  const banda = lectura ? BANDA_TANQUE[lectura](altoReserva) : null;
+  /* El fantasma solo hace falta donde la verdad no se puede dibujar sola: en
+     la consecuencia, que mueve la reserva. En la clasificación la verdad ES la
+     línea, y ya está puesta. */
   const reservaVerdad = verdad && typeof verdad !== "string" ? alturaDe(verdad.reserva) : null;
 
   return (
@@ -347,10 +408,19 @@ function FiguraTanque({ base, estado, lectura, verdad, veredicto, pendiente }) {
             data-alto-reserva={Math.round(altoReserva)}
             style={{ position: "absolute", left: "2px", right: 0, bottom: 0, height: `${altoReserva}px`, background: "rgba(203,220,242,0.28)", border: `1px solid ${NEUTRO}`, transition: "height 220ms ease" }}
           />
-          {altoLinea !== null && (
-            <Linea alto={altoLinea} tono={tono} rotulo={lectura ? `${marca}tu línea` : `piden ${exigido}`} />
+          {banda && (
+            <span
+              data-banda={lectura}
+              data-abajo={Math.round(banda.abajo)}
+              style={{
+                position: "absolute", left: "-5px", right: "-5px", bottom: `${banda.abajo}px`, height: `${banda.alto}px`,
+                borderRadius: "3px", border: `1px solid ${tono}`,
+                background: veredicto === "ok" ? "rgba(42,157,143,0.18)" : "rgba(231,111,81,0.16)",
+                transition: "bottom 220ms ease, height 220ms ease",
+              }}
+            />
           )}
-          {lineaVerdad !== null && <Linea alto={lineaVerdad} tono={FAE.teal} rotulo={`iba en ${encajeExigido(base.depositos, base.encaje)}`} fantasma />}
+          {altoLinea !== null && <Linea alto={altoLinea} tono={FAE.text} rotulo={`piden ${exigido}`} />}
           {reservaVerdad !== null && <Linea alto={reservaVerdad} tono={FAE.teal} rotulo={`iba en ${verdad.reserva}`} fantasma />}
         </div>
         <div style={{ flex: "1 1 auto", minWidth: 0 }}>
@@ -367,6 +437,11 @@ function FiguraTanque({ base, estado, lectura, verdad, veredicto, pendiente }) {
             </span>
             <span style={{ ...CIFRA_FIGURA, fontSize: "12px" }}>{hoy.credito}</span>
           </div>
+          {banda && (
+            <p data-rotulo-banda style={{ margin: "5px 0 0", fontSize: "12px", color: tono }}>
+              {marca} tu lectura: {ROTULO_LECTURA_TANQUE[lectura]}
+            </p>
+          )}
         </div>
       </div>
     </div>
@@ -383,8 +458,19 @@ function FiguraTanque({ base, estado, lectura, verdad, veredicto, pendiente }) {
  * primera casilla en un caso, en la tercera en otro y en la segunda en el
  * tercero.
  */
-function itemsDe(casos) {
-  return casos.flatMap((caso) =>
+export const CASOS_POR_TANDA = 3;
+
+/*
+ * D8: una segunda tanda no puede ser la misma partida. Cada juego tiene cinco
+ * casos y cada tanda sortea TRES, así que cambian los casos, su orden y las
+ * respuestas correctas. Antes eran los tres mismos casos en el mismo orden y
+ * lo único que se movía era el orden de las opciones de consecuencia: dos
+ * tandas eran mecánicamente idénticas, y eso es lo que el auditor midió.
+ */
+export const sortearCasos = (casos) => barajar(casos).slice(0, CASOS_POR_TANDA);
+
+function itemsDe(casos, elegir = sortearCasos) {
+  return elegir(casos).flatMap((caso) =>
     caso.decisiones.map((decision) => ({
       caso,
       decision,
@@ -394,8 +480,10 @@ function itemsDe(casos) {
   );
 }
 
-export function DosDecisiones({ ficha, casos, Figura, Marco, rotulo, acento, onCompletar }) {
-  const [items, setItems] = useState(() => itemsDe(casos));
+/* `elegirCasos` existe para las pruebas y la sonda: fija la tanda en vez de
+   sortearla, que es la única forma de comparar el MISMO ítem tres veces. */
+export function DosDecisiones({ ficha, casos, Figura, Marco, rotulo, acento, onCompletar, elegirCasos }) {
+  const [items, setItems] = useState(() => itemsDe(casos, elegirCasos));
   const [n, setN] = useState(0);
   const [elegida, setElegida] = useState(null);
   const [aciertos, setAciertos] = useState(0);
@@ -443,7 +531,7 @@ export function DosDecisiones({ ficha, casos, Figura, Marco, rotulo, acento, onC
     else setTerminado(true);
   };
   const reiniciar = () => {
-    setItems(itemsDe(casos)); setN(0); setElegida(null); setAciertos(0); setTerminado(false);
+    setItems(itemsDe(casos, elegirCasos)); setN(0); setElegida(null); setAciertos(0); setTerminado(false);
     detalle.current = []; inicio.current = Date.now();
   };
 
@@ -507,19 +595,19 @@ export function DosDecisiones({ ficha, casos, Figura, Marco, rotulo, acento, onC
 
 /* ═══════════════════ LAS TRES, CON SU MARCO ═══════════════════ */
 
-export const LaTasaQueMuerde = ({ onCompletar }) => (
+export const LaTasaQueMuerde = ({ onCompletar, elegirCasos }) => (
   <DosDecisiones ficha={TASA} casos={CASOS_TASA} Figura={FiguraTasa} Marco={MarcoMaquinas}
-    rotulo="APLICACIÓN" acento={FAE.teal} onCompletar={onCompletar} />
+    rotulo="APLICACIÓN" acento={FAE.teal} onCompletar={onCompletar} elegirCasos={elegirCasos} />
 );
 
-export const RepoODefinitiva = ({ onCompletar }) => (
+export const RepoODefinitiva = ({ onCompletar, elegirCasos }) => (
   <DosDecisiones ficha={REPO} casos={CASOS_REPO} Figura={FiguraMesa} Marco={MarcoMaquinas}
-    rotulo="ANÁLISIS" acento={FAE.teal} onCompletar={onCompletar} />
+    rotulo="ANÁLISIS" acento={FAE.teal} onCompletar={onCompletar} elegirCasos={elegirCasos} />
 );
 
-export const ElFrenoDelEncaje = ({ onCompletar }) => (
+export const ElFrenoDelEncaje = ({ onCompletar, elegirCasos }) => (
   <DosDecisiones ficha={ENCAJE} casos={CASOS_ENCAJE} Figura={FiguraTanque} Marco={MarcoMaquinas}
-    rotulo="APLICACIÓN" acento={FAE.teal} onCompletar={onCompletar} />
+    rotulo="APLICACIÓN" acento={FAE.teal} onCompletar={onCompletar} elegirCasos={elegirCasos} />
 );
 
 /* Para las pruebas: las figuras, con el mismo nombre que su instrumento. */
