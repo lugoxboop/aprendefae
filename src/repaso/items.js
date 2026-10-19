@@ -501,6 +501,13 @@ export const POOL = [...POLITICA_ECONOMICA, ...DEMANDA_AGREGADA, ...POLITICA_FIS
 export const ACTIVIDADES_DEL_POOL = [...new Set(POOL.map((x) => x.actividad))];
 
 export const ACTIVIDADES_FUERA_DEL_POOL = [
+  /*
+   * Los tres instrumentos (Célula A). Fuera del pool a propósito: sus ítems no
+   * son preguntas sueltas —la segunda decisión de cada caso solo significa algo
+   * después de la primera— y meterlas cambiaría el Repaso Diario que los
+   * estudiantes ya tienen. Es la misma razón de la Fábrica del Dinero.
+   */
+  "la-tasa-que-muerde", "repo-o-definitiva", "el-freno-del-encaje",
   "arma-grupo-logico", "cadena-de-transmision", "disena-respuesta-monetaria", "disena-presupuesto",
   "simulador-de-crisis", "cirugia-reconstruccion",
   "explica-la-politica", "explica-paciente", "explica-contribuyente", "explicaselo-a-un-deudor",

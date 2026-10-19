@@ -4,6 +4,7 @@ import {
   Stamp, Sheet, FileStack, ToggleLeft, ArrowRightLeft,
   Folder, MessageSquarePlus, Split, EqualNot,
   HandCoins, Layers, Target,
+  Ruler, Repeat, Dam,
 } from "lucide-react";
 
 /*
@@ -436,6 +437,18 @@ export const ICONOS_ACTIVIDAD = {
   "el-rezago": RelojCorrea,
   "crea-o-cambia-de-manos": HandCoins,
   "la-escalera-del-encaje": EscaleraDescendente,
+  /*
+   * Los tres instrumentos (Célula A). Ruler es la regla con la que se mide la
+   * distancia entre la tasa y la inflación; Repeat es la operación que vuelve
+   * atrás, que es lo único que separa un repo de una compra; Dam es el muro
+   * que retiene, que es lo que hace el encaje. Las tres estaban libres entre
+   * las del sitio. Respaldos, en orden, si alguna dejara de existir: Percent y
+   * SlidersHorizontal para la primera, Undo2 para la segunda, Shield para la
+   * tercera.
+   */
+  "la-tasa-que-muerde": Ruler,
+  "repo-o-definitiva": Repeat,
+  "el-freno-del-encaje": Dam,
   /* «Las tallas del dinero» (0091), de lucide mientras Watari no dibuje los suyos. */
   "en-que-talla-va": Layers,
   "que-toco-el-banco": Target,

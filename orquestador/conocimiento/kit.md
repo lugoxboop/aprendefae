@@ -175,6 +175,41 @@ relevantes dieron una mediana de 89% más alto en pruebas de transferencia que
 solo palabras. Imágenes decorativas y diagramas separados de sus etiquetas
 sobrecargan la memoria de trabajo y perjudican el aprendizaje.
 
+### Una figura que codifica la CATEGORÍA de la respuesta rompe la fidelidad, y D4 no lo ve (auditoría A6, 18 oct.)
+
+Hallazgo del auditor de la Célula A sobre `macro/instrumentos-pm`. Vale para
+cualquier célula, porque el patrón es tentador y el kit no lo cazaba.
+
+Cuando la decisión del estudiante es una CATEGORÍA («por encima de la
+inflación», «le falta reserva») y la figura la dibuja moviendo una pieza a un
+desplazamiento fijo —±2 puntos de eje, ±22 px de relleno— pasan dos cosas:
+
+- **D4 pasa.** Las tres opciones dejan la figura en tres estados distintos, que
+  es lo que D4 pide, y una sonda que mida la huella visual da verde.
+- **La fidelidad se rompe**, y es un prerrequisito, no una dimensión. La pieza
+  queda afirmando una magnitud que el caso no dice. Medido: con la respuesta
+  **correcta** puesta, la ficha rotulada «tasa» marcaba 8 mientras el hecho de
+  la misma pantalla decía 10 y la devolución decía «diez menos seis da cuatro».
+  Y el arrastre: la decisión siguiente bajaba la tasa dos puntos y la ficha no
+  se movía, porque su posición nunca había salido de la cifra.
+
+**Y el acierto es el caso peor, no el mejor.** El fantasma de corrección —«iba
+aquí»— se dibuja solo cuando el estudiante falla. Si la figura miente con el
+acierto puesto, no hay nada en pantalla que la desmienta: queda una cifra falsa
+sola, firmada por un visto verde.
+
+**La regla:** la pieza que lleva una cifra lee la **magnitud del caso**, siempre
+y acierte o falle. La **categoría** elegida se dibuja aparte y sin cifra —una
+banda sobre el tramo del eje, un recuadro sobre el relleno—, con su veredicto en
+el tono y en el signo. Así las tres opciones siguen siendo tres estados
+distintos y ninguna afirma un número que no es.
+
+**Cómo se comprueba, y no es con la sonda de D4:** por cada opción de cada
+decisión, se lee el atributo de la pieza con cifra y se compara con la cifra que
+el banco declara para ese caso. Una prueba que solo compare huellas visuales
+entre opciones no puede encontrar esto, porque el defecto es que las tres son
+distintas *y* una es falsa.
+
 ### Dimensión 12 — Accesibilidad — RECONSTRUIDO
 | Nivel | Criterio verificable |
 |---|---|

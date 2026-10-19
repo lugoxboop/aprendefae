@@ -23,6 +23,7 @@ import {
 import { MEMORAMAS, CLASIFICACIONES } from "../data/cimientos.js";
 import { ESLABONES_ARTERIA, PREGUNTAS_DOS_ENTRADAS } from "../data/monetariaRepaso.js";
 import { hechoDeItemCreaOCambia, casillaDeItemEscalera } from "../data/pmFabricaDelDinero.js";
+import { etiquetaDeInstrumento } from "../data/pmInstrumentos.js";
 import { EN_QUE_TALLA_VA, QUE_TOCO_EL_BANCO } from "../data/pmAgregados.js";
 import {
   CAMBIOS_ACERCA, CASO_GABINETE, CASO_CONSEJO, RONDAS_AUGE, RONDAS_AJUSTE,
@@ -478,6 +479,14 @@ Object.assign(REGLAS, {
   "las-dos-entradas": (id) => porId(PREGUNTAS_DOS_ENTRADAS, "texto")[id] ?? null,
   "crea-o-cambia-de-manos": (id) => hechoDeItemCreaOCambia(id),
   "la-escalera-del-encaje": (id) => casillaDeItemEscalera(id),
+  /*
+   * Los tres instrumentos (Célula A). El id es «caso:decision», y la etiqueta,
+   * el caso y el rótulo corto de la decisión: sin el caso, las tres lecturas
+   * de Aurora y Sierra se leerían igual en la tabla del profesor.
+   */
+  "la-tasa-que-muerde": (id) => etiquetaDeInstrumento("la-tasa-que-muerde", id),
+  "repo-o-definitiva": (id) => etiquetaDeInstrumento("repo-o-definitiva", id),
+  "el-freno-del-encaje": (id) => etiquetaDeInstrumento("el-freno-del-encaje", id),
   "en-que-talla-va": (id) => porId(EN_QUE_TALLA_VA.items, "texto")[id] ?? null,
   "que-toco-el-banco": (id) => porId(QUE_TOCO_EL_BANCO.items, "texto")[id] ?? null,
   "el-rezago": (id) => {

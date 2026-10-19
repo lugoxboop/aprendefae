@@ -350,7 +350,7 @@ test("★★★ el sitio en el camino, el nivel y los FP: A Análisis 50, B Apli
   const sql = readFileSync(new URL("../../../../supabase/migrations/0052_monetaria_dos_actividades.sql", import.meta.url), "utf8");
   assert.match(sql, /\('las-dos-entradas',\s+'macroeconomia', 'politica-monetaria', 'evaluativa', 'medio',\s+25, 1\)/);
   assert.match(sql, /\('por-cual-arteria-entra', 'macroeconomia', 'politica-monetaria', 'evaluativa', 'dificil', 50, 1\)/);
-  assert.equal(actividadesDeTipo(tema, HACER).reduce((s, a) => s + a.clasificacion.fpBase, 0), 750);
+  assert.equal(actividadesDeTipo(tema, HACER).reduce((s, a) => s + a.clasificacion.fpBase, 0), 850);
 });
 
 test("★★ los registros: etiquetas del docente, formato del resumen, fuera del Repaso y en la lista de novedades", () => {
@@ -372,7 +372,8 @@ test("★★★ insertar las dos no toca el progreso ni los FP de nadie: todo va
   const tema = SUBJECTS.macroeconomia.topics.find((t) => t.id === "politica-monetaria");
   const nuevas = new Set([ARTERIA.id, DOS_ENTRADAS.id,
     /* las dos de la 0073 */ "crea-o-cambia-de-manos", "la-escalera-del-encaje",
-    /* las dos de la 0091 */ "en-que-talla-va", "que-toco-el-banco"]);
+    /* las dos de la 0091 */ "en-que-talla-va", "que-toco-el-banco",
+    /* los tres instrumentos (Célula A) */ "la-tasa-que-muerde", "repo-o-definitiva", "el-freno-del-encaje"]);
   const actuales = actividadesDeTipo(tema, HACER);
   /* El camino de antes: las doce de siempre, en su orden. */
   const antes = actuales.filter((a) => !nuevas.has(a.id));

@@ -259,6 +259,7 @@ const PANTALLAS = [
     "MemoramaBancoCentral", "QuienDecideEsto", "VolanteDeLaTasa", "CajaDeHerramientas", "AQuienLePegaLaTasa", "CadenaDeTransmision",
     "CorrienteDeDecisiones", "ElRezago", "DilemaBanqueroCentral", "DueloDeInstrumentos", "DisenaRespuestaMonetaria",
   ]],
+  ["maquinas/instrumentosPM.jsx", ["LaTasaQueMuerde", "RepoODefinitiva", "ElFrenoDelEncaje"]],
   ["corazon/BancoTransfusiones.jsx", ["default"]], ["corazon/Biopsia.jsx", ["default"]], ["corazon/Cirugia.jsx", ["default"]],
   ["corazon/Electrocardiograma.jsx", ["default"]], ["corazon/SalaMonitores.jsx", ["default"]], ["corazon/Termometro.jsx", ["default"]],
   ["corazon/Triage.jsx", ["default"]],
@@ -283,7 +284,7 @@ test("antes de responder, ninguna de las pantallas enseña coral: ni marcos, ni 
       }
     }
   }
-  assert.equal(n, 36);
+  assert.equal(n, 39);
 });
 
 test("ninguna pantalla lleva su propia copia del avance o de la opción", () => {

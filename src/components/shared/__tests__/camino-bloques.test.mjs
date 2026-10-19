@@ -209,8 +209,14 @@ test("ninguna línea ni ningún nodo cae en la franja de un título, con los blo
    * acaba ahora en el lado izquierdo, así que el título de Análisis pasa a la
    * DERECHA. Misma regla.
    */
-  /* Con las cuatro nuevas (0073 y 0091) el reparto queda 3-6-6-3: medido, no supuesto. */
-const LADOS = { "politica-monetaria": [-1, -1, 1, -1] };
+  /*
+   * Con las cuatro nuevas (0073 y 0091) el reparto quedó 3-6-6-3, y con los
+   * tres instrumentos (Célula A) queda 3-8-7-3: medido, no supuesto. Con ese
+   * reparto el título de Maestría vuelve a la DERECHA, porque Análisis acaba
+   * ahora en el lado izquierdo. Misma regla de siempre —el título va al lado
+   * contrario del nodo que lo precede—, otro resultado.
+   */
+const LADOS = { "politica-monetaria": [-1, -1, 1, 1] };
   for (const temaId of TEMAS) {
     const nodos = nodosDelTema(temaId);
     assert.deepEqual(disposicionPorBloques(bloquesDe(nodos), nodos.length).cabeceras.map((c) => c.lado), LADOS[temaId] ?? [-1, -1, -1, 1], temaId);
@@ -219,12 +225,12 @@ const LADOS = { "politica-monetaria": [-1, -1, 1, -1] };
 
 /* ─────────────────────────────── los iconos ─────────────────────────────── */
 
-test("las 54 actividades tienen icono y lo pintan; una sin icono enseña su número y no rompe el camino", () => {
+test("las 57 actividades tienen icono y lo pintan; una sin icono enseña su número y no rompe el camino", () => {
   const ids = TEMAS.flatMap((t) => actividadesDeTipo(temaDe(t), HACER).map((a) => a.id));
-  assert.equal(ids.length, 54);
+  assert.equal(ids.length, 57);
   for (const id of ids) assert.ok(iconoDe(id), `${id} sin icono`);
   assert.deepEqual(Object.keys(ICONOS_ACTIVIDAD).sort(), [...ids].sort(), "ni iconos de más ni de menos");
-  assert.equal(new Set(Object.values(ICONOS_ACTIVIDAD)).size, 54, "ningún icono repetido entre dos actividades");
+  assert.equal(new Set(Object.values(ICONOS_ACTIVIDAD)).size, 57, "ningún icono repetido entre dos actividades");
 
   for (const temaId of TEMAS) {
     const m = montar(camino(nodosDelTema(temaId)));

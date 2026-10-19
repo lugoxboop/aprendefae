@@ -531,6 +531,16 @@ const GESTOS = {
   "la-escalera-del-encaje": () => <FichaADestinos id="la-escalera-del-encaje" forma="ranura" n={3} destinos={[0, 1, 2]} />,
   "en-que-talla-va": () => <FichaADestinos id="en-que-talla-va" forma="ranura" n={4} destinos={[1, 2]} />,
   "que-toco-el-banco": () => <FichaADestinos id="que-toco-el-banco" forma="ranura" n={4} destinos={[0, 3]} />,
+  /*
+   * Los tres instrumentos (Célula A). Las tres ponen una pieza en uno de tres
+   * sitios, que es literalmente su gesto: la ficha de la tasa en el eje, la
+   * operación en la mesa y la línea del encaje en el tanque. Así que el gesto
+   * de la ficha a tres destinos, con un recorrido distinto cada una para que
+   * tres nodos vecinos no animen lo mismo.
+   */
+  "la-tasa-que-muerde": () => <FichaADestinos id="la-tasa-que-muerde" forma="ranura" n={3} destinos={[2, 0]} />,
+  "repo-o-definitiva": () => <FichaADestinos id="repo-o-definitiva" forma="ranura" n={3} destinos={[1, 2]} />,
+  "el-freno-del-encaje": () => <FichaADestinos id="el-freno-del-encaje" forma="ranura" n={3} destinos={[1, 0]} />,
   "duelo-de-instrumentos": () => <Consejo id="duelo-de-instrumentos" figura="engranaje" />,
   "disena-respuesta-monetaria": PanelGesto,
 };

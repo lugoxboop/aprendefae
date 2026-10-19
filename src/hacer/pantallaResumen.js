@@ -182,6 +182,10 @@ export const FORMATO_MACRO = {
   "por-cual-arteria-entra": X,
   "crea-o-cambia-de-manos": X,
   "la-escalera-del-encaje": X,
+  /* Los tres instrumentos (Célula A): seis decisiones calificadas, X de N. */
+  "la-tasa-que-muerde": X,
+  "repo-o-definitiva": X,
+  "el-freno-del-encaje": X,
   "en-que-talla-va": X,
   "que-toco-el-banco": X,
   "el-rezago": P,

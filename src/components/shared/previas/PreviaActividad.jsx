@@ -131,6 +131,10 @@ export const PREVIAS = {
   "la-escalera-del-encaje": { tema: "bloques", tipo: "gesto" },
   "en-que-talla-va": { tema: "bloques", tipo: "gesto" },
   "que-toco-el-banco": { tema: "bloques", tipo: "gesto" },
+  /* Los tres instrumentos (Célula A): las tres mueven una pieza a un sitio. */
+  "la-tasa-que-muerde": { tema: "bloques", tipo: "gesto" },
+  "repo-o-definitiva": { tema: "bloques", tipo: "gesto" },
+  "el-freno-del-encaje": { tema: "bloques", tipo: "gesto" },
   "dilema-banquero-central": {
     tipo: "estatica",
     /*
