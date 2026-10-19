@@ -92,3 +92,29 @@ for (const p of PIEZAS) {
     m.desmontar();
   });
 }
+
+/* ═══ Bug de #455: acertar la capa 4 tiene que contar la visita en A2, A4 y A5 ═══ */
+const { default: CuatroCapas } = await import("../../components/mecanicas/maquinas/CuatroCapas.jsx");
+const { ESCENAS_TEMA6 } = await import("../../components/mecanicas/libros/tema6/escenasTema6.jsx");
+const PIEZA = { [D2.PIEZA_NO_VA_A_PAGAR.id]: [D2.PIEZA_NO_VA_A_PAGAR, D2.OPCIONES_FINAL_T6_A2], [D4.PIEZA_SI_PAGA.id]: [D4.PIEZA_SI_PAGA, D4.OPCIONES_FINAL_T6_A4], [D5.PIEZA_COMO_SE_CALCULA.id]: [D5.PIEZA_COMO_SE_CALCULA, D5.OPCIONES_FINAL_T6_A5] };
+const Nada = () => null;
+
+for (const p of PIEZAS) {
+  test(`★★★ bug de #455 · ${p.n}: acertar la capa 4 sube la cuenta de visitas, y la carga siguiente sale barajada`, async () => {
+    const [pieza, opciones] = PIEZA[p.id];
+    const E = ESCENAS_TEMA6[pieza.id];
+    const clave = `fae-b5-vueltas:aprender:${p.id}`;
+    /* Primera visita: las cuatro capas, con la capa 3 de verdad; la capa 3, en el orden de los datos. */
+    let m = await montar(h(CuatroCapas, { pieza, Capa2: Nada, Exploracion: E.Exploracion, Capa4: E.Capa4, FiguraFinal: E.FiguraFinal }));
+    assert.deepEqual([...m.caja.querySelectorAll('[data-capa="3"] [data-hecho]')].map((z) => z.dataset.hecho), p.cajas);
+    assert.equal(window.localStorage.getItem(clave), null, "antes de acertar, sin visita contada");
+    await tocar(m.caja.querySelector(`[data-una-frase] [data-opcion="${opciones.find((o) => o.correcta).id}"]`));
+    assert.equal(window.localStorage.getItem(clave), "1", "acertar la capa 4 cuenta la visita");
+    m.desmontar();
+    /* La carga siguiente: la capa 3 sale barajada. */
+    m = await montar(h(CuatroCapas, { pieza, Capa2: Nada, Exploracion: E.Exploracion, Capa4: E.Capa4, FiguraFinal: E.FiguraFinal }));
+    const cajas = [...m.caja.querySelectorAll('[data-capa="3"] [data-hecho]')].map((z) => z.dataset.hecho);
+    assert.ok(distinto(cajas, p.cajas), `segunda visita: otro orden de cajas (${cajas.join(", ")})`);
+    m.desmontar();
+  });
+}

@@ -46,8 +46,14 @@ export function EnUnaFraseT6({ ponerLeyenda = null }) {
 }
 
 const evaluarA2 = evaluadorDe(OPCIONES_FINAL_T6_A2);
+/*
+ * Lote 28 (bug de #455): A2, A4 y A5 no tienen pregunta de antes de C1, pero cuentan la visita igual que las
+ * demás (useVueltaCapa4): acertar la capa 4 sube fae-b5-vueltas:aprender:<id>, y desde la segunda visita su
+ * capa 3 sale barajada.
+ */
 export function EnUnaFraseT6A2({ ponerLeyenda = null }) {
-  const Escena = useEscenaConLeyenda(ponerLeyenda);
+  const { poner } = useVueltaCapa4(PIEZA_NO_VA_A_PAGAR.id, ponerLeyenda);
+  const Escena = useEscenaConLeyenda(poner);
   return <UnaFrase pregunta={PREGUNTA_FINAL_T6_A2} opciones={OPCIONES_FINAL_T6_A2} Escena={Escena} evaluar={evaluarA2} />;
 }
 
@@ -68,7 +74,8 @@ export function EnUnaFraseT6A3({ ponerLeyenda = null }) {
 const evaluarA4 = evaluadorDe(OPCIONES_FINAL_T6_A4);
 /* La capa 4 nueva (entrega 2): UnaFrase sin cambios y, debajo, su pie de fuente. */
 export function EnUnaFraseT6A4({ ponerLeyenda = null }) {
-  const Escena = useEscenaConLeyenda(ponerLeyenda);
+  const { poner } = useVueltaCapa4(PIEZA_SI_PAGA.id, ponerLeyenda);
+  const Escena = useEscenaConLeyenda(poner);
   return (
     <>
       <UnaFrase pregunta={PREGUNTA_FINAL_T6_A4} opciones={OPCIONES_FINAL_T6_A4} Escena={Escena} evaluar={evaluarA4} />
@@ -81,7 +88,8 @@ export function EnUnaFraseT6A4({ ponerLeyenda = null }) {
 const OPCIONES_A5 = OPCIONES_FINAL_T6_A5.map((o) => ({ ...o, texto: pegarPorcentaje(o.texto), feedback: pegarPorcentaje(o.feedback) }));
 const evaluarA5 = evaluadorDe(OPCIONES_A5);
 export function EnUnaFraseT6A5({ ponerLeyenda = null }) {
-  const Escena = useEscenaConLeyenda(ponerLeyenda);
+  const { poner } = useVueltaCapa4(PIEZA_COMO_SE_CALCULA.id, ponerLeyenda);
+  const Escena = useEscenaConLeyenda(poner);
   return <UnaFrase pregunta={pegarPorcentaje(PREGUNTA_FINAL_T6_A5)} opciones={OPCIONES_A5} Escena={Escena} evaluar={evaluarA5} />;
 }
 
