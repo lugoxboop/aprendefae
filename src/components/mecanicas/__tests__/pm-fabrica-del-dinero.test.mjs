@@ -300,7 +300,7 @@ test("★★ B: el demo es la primera vuelta de Juan (10, 90, 190), avanza solo,
 
 const FILA = /\(\s*'([^']+)',\s*'([^']+)',\s*'([^']+)',\s*'(exploratoria|evaluativa)',\s*'(facil|medio|dificil|experto)',\s*(\d+)\s*(?:,\s*(\d+)\s*)?\)/g;
 
-test("★★★ la 0073: un insert aditivo con on conflict do nothing, sin nada que borre o cambie; su propia comprobación dice 16 filas y 715 FP, y con la 0091 el tema queda en 18 y 750", () => {
+test("★★★ la 0073: un insert aditivo con on conflict do nothing, sin nada que borre o cambie; su propia comprobación dice 16 filas y 715 FP, y con la 0091 y la 0255 el tema queda en 21 y 850", () => {
   const sql = readFileSync("supabase/migrations/0073_monetaria_fabrica_del_dinero.sql", "utf8");
   const sentencias = sql.split("\n").filter((l) => !l.trim().startsWith("--")).join("\n");
   assert.match(sentencias, /insert into public\.actividad_catalogo/);
@@ -321,8 +321,12 @@ test("★★★ la 0073: un insert aditivo con on conflict do nothing, sin nada 
       for (const m of s.slice(ins.index, fin).matchAll(FILA)) if (m[3] === "politica-monetaria") tema.set(m[1], Number(m[6]));
     }
   }
-  /* 16 tras la 0073; 18 con las dos de la 0091, que entró en el mismo cableado. */
-  assert.equal(tema.size, 18);
-  assert.equal([...tema.values()].reduce((a, b) => a + b, 0), 750);
+  /*
+   * El total del tema sumando TODAS las migraciones, que crece cada vez que
+   * entra un juego: 16 tras la 0073; 18 con las dos de la 0091, que entró en
+   * el mismo cableado; y 21 con los tres instrumentos de la 0255.
+   */
+  assert.equal(tema.size, 21);
+  assert.equal([...tema.values()].reduce((a, b) => a + b, 0), 850);
   assert.ok(!tema.has(F.APRENDER_FABRICA.id), "Aprender no paga");
 });
