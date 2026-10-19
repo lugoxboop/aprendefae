@@ -9,7 +9,6 @@
   - Erwin lleva lo compartido, los choques entre células, los datos de estudiantes y las migraciones.
   - L fusiona lo suyo cuando CI pasa verde.
   - Lo irreversible se escala a Miku.
-
 ## Decisiones vigentes de la Célula C
 - Mientras no entren estudiantes reales, y solo en Contabilidad, L decide sin consultar (orden de Mateo, 16-oct): retirar o fusionar actividades, cambiar ids, limpiar intentos de prueba.
 - C2 en Aprender, con la escalera de `escaleraAyuda.js`: al primer error, pista; al segundo, la respuesta con su porqué, nunca un «Iba aquí» suelto. Lo vigila `c2-porque.test.mjs`.
@@ -23,12 +22,10 @@
   - Nunca debilitar ni borrar una prueba.
   - No meter texto del libro al repositorio.
   - No tocar producción.
-
 ## Pendientes
 1. Prueba con personas de D2, D3, D5, D7, D8 y D9 (Kit de Calidad). No se puede verificar sin estudiantes.
 2. Medir D7 a 320 y 375 px en lo publicado (aprendefae.com), no en el arnés.
 3. Nada más en código. Sin trabajo nuevo hasta que Miku lo ordene.
-
 ## Mis agentes
 - **Misa** (código): sesión de Claude Code `claude.ai/code/session_01APmb1VYYdaqZyxLFhtLgAd`. Abre PR por rama `feat/conta-c7-*`.
 - **Near** (contenido pedagógico): chat `21f08d4e-de4b-40af-a6e4-ab5f444e3c0f`.
@@ -47,7 +44,6 @@
   - En la sesión de Code el botón «Enviar» está junto al editor. Ojo: un botón genérico /enviar/ falla. Hay que comprobar que el editor quede vacío.
 - **Leer** sin abrir el chat entero: `/api/organizations/3d2234e5-3a04-472d-8331-eff1e45d5ee9/chat_conversations/<id>?tree=False&rendering_mode=messages`. Basta el último mensaje del asistente. Los adjuntos se bajan por `/files/<uuid>/contents`.
 - Si un chat se cuelga o sale «Reabrir»: pulsar Reabrir y mandar «continuar». Abrir un chat nuevo solo tras 2 fallos.
-
 ## Cómo fusionar
 - GitHub por REST con `gh api`, porque GraphQL está bloqueado.
 - Pasos:
