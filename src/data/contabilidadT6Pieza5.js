@@ -291,3 +291,22 @@ export const PARADA_T6_A5 = {
   pie: PIE_PORCENTAJE,
   resaltados: ["g2"],
 };
+
+/*
+ * ═══════════ LOTE 29 · D8 · LA CAPA 4 DE LA SEGUNDA VISITA (auditado por Shoko; textos de Futaba) ═══════════
+ *
+ * Desde la segunda visita (fae-b5-vueltas:aprender ≥ 1), la capa 4 usa esta pregunta y cambia la correcta.
+ * Las opciones son las mismas de la primera visita (sus textos y su orden); cada una lleva su devolución de
+ * Futaba, con «Correcto.» o «No es esa.» delante, como todas las de la capa 4. La frase pegada al modelo es
+ * la devolución de la correcta (sin «Correcto.»). La primera visita no cambia.
+ */
+const segundaVisita = (opciones, correcta, devoluciones) => opciones.map((o) => ({
+  ...o, correcta: o.id === correcta, feedback: `${o.id === correcta ? "Correcto." : "No es esa."} ${devoluciones[o.id]}`, frase: devoluciones[o.id],
+}));
+export const PREGUNTA_FINAL_V2_T6_A5 = "Una deuda de $380.000 lleva cuatro meses vencida. Con los porcentajes del ejemplo, ¿cuánto se provisiona por ella?";
+export const OPCIONES_FINAL_V2_T6_A5 = segundaVisita(OPCIONES_FINAL_T6_A5, "b5-t6-a5-diez", {
+  "b5-t6-a5-diez": "Cuatro meses pasan de tres y no de seis: le toca el 5 %. El 5 % de $380.000 es $19.000.",
+  "b5-t6-a5-veinte": "Ese es el 10 %, que es para deudas de más de seis meses. Cuatro meses no pasan de seis.",
+  "b5-t6-a5-treinta": "Ese es el 15 %, que es para deudas de más de un año. Cuatro meses están lejos de un año.",
+  "b5-t6-a5-nada": "Cuatro meses ya pasan de tres: esta deuda sí entra en la provisión del ejemplo.",
+});

@@ -585,3 +585,14 @@ Pegado tal cual de entregas/mai-enganche-b1-b5.md (§2a, §2b y §3) y de entreg
 - Capa 3: quien acierta ve el texto que se revela; quien falla dos veces ve la devolución de su opción y la figura, pero NO ese texto.
 - **Cajas ya respondidas:** muestran solo la opción elegida con su marca (cumple E4). Vale para la capa 3 de las siete piezas.
 - Nombre accesible del grupo de opciones: T6 A5 «¿Qué porcentaje le toca?»
+
+## Lote 29 · D8 · la capa 4 de la segunda visita (textos de Futaba, auditados por Shoko)
+
+Desde la segunda visita (fae-b5-vueltas:aprender ≥ 1), la capa 4 usa esta pregunta y cambia la correcta. Las opciones son las mismas de la primera visita. Cada devolución va con «Correcto.» o «No es esa.» delante, como todas las de la capa 4; la frase pegada al modelo es la devolución de la correcta. La primera visita no cambia.
+
+Pregunta: «Una deuda de $380.000 lleva cuatro meses vencida. Con los porcentajes del ejemplo, ¿cuánto se provisiona por ella?»
+
+- b5-t6-a5-veinte · «$38.000» — «No es esa. Ese es el 10 %, que es para deudas de más de seis meses. Cuatro meses no pasan de seis.»
+- ✓ b5-t6-a5-diez · «$19.000» — «Correcto. Cuatro meses pasan de tres y no de seis: le toca el 5 %. El 5 % de $380.000 es $19.000.»
+- b5-t6-a5-treinta · «$57.000» — «No es esa. Ese es el 15 %, que es para deudas de más de un año. Cuatro meses están lejos de un año.»
+- b5-t6-a5-nada · «Nada» — «No es esa. Cuatro meses ya pasan de tres: esta deuda sí entra en la provisión del ejemplo.»

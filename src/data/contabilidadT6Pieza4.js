@@ -158,7 +158,8 @@ export const OPCIONES_FINAL_T6_A4 = [
   },
   {
     id: "b5-t6-a4-castigados",
-    texto: "Siguen castigados, como en el caso c: no se reviven.",
+    /* Lote 29 (Futaba, en las dos visitas): el texto de la opción, sin el caso c. */
+    texto: "Siguen castigados, porque esa parte no se revive.",
     correcta: false,
     feedback: "No es esa. Eso pasa en el caso c, cuando avisa que ya no puede pagar más. En el caso b promete pagar, así que la deuda volvió completa.",
   },
@@ -170,7 +171,8 @@ export const OPCIONES_FINAL_T6_A4 = [
   },
   {
     id: "b5-t6-a4-caja",
-    texto: "En Caja, porque el cliente ya prometió pagarlos.",
+    /* Lote 29 (Futaba, en las dos visitas). */
+    texto: "En Caja, apenas el cliente los pague.",
     correcta: false,
     feedback: "No es esa. A Caja solo entra lo que paga. Una promesa no es plata.",
   },
@@ -198,3 +200,22 @@ export const PARADA_T6_A4 = {
   pie: "Basado en el libro, p. 204",
   resaltados: ["vuelve"],
 };
+
+/*
+ * ═══════════ LOTE 29 · D8 · LA CAPA 4 DE LA SEGUNDA VISITA (auditado por Shoko; textos de Futaba) ═══════════
+ *
+ * Desde la segunda visita (fae-b5-vueltas:aprender ≥ 1), la capa 4 usa esta pregunta y cambia la correcta.
+ * Las opciones son las mismas de la primera visita (sus textos y su orden); cada una lleva su devolución de
+ * Futaba, con «Correcto.» o «No es esa.» delante, como todas las de la capa 4. La frase pegada al modelo es
+ * la devolución de la correcta (sin «Correcto.»). La primera visita no cambia.
+ */
+const segundaVisita = (opciones, correcta, devoluciones) => opciones.map((o) => ({
+  ...o, correcta: o.id === correcta, feedback: `${o.id === correcta ? "Correcto." : "No es esa."} ${devoluciones[o.id]}`, frase: devoluciones[o.id],
+}));
+export const PREGUNTA_FINAL_V2_T6_A4 = "En el caso c, ¿dónde quedan los $80.000 que ya no puede pagar?";
+export const OPCIONES_FINAL_V2_T6_A4 = segundaVisita(OPCIONES_FINAL_T6_A4, "b5-t6-a4-castigados", {
+  "b5-t6-a4-castigados": "Como ya no puede pagar más, solo se revive lo que abonó. Lo que falta sigue castigado.",
+  "b5-t6-a4-pendiente": "Eso pasa en el caso b, cuando promete pagar el resto. Aquí ya no puede pagar más, así que no se revive.",
+  "b5-t6-a4-provision": "La provisión no guarda deudas. Lo que no se va a pagar no se revive: sigue castigado.",
+  "b5-t6-a4-caja": "A Caja solo entra lo que paga. Lo que ya no puede pagar nunca entra.",
+});

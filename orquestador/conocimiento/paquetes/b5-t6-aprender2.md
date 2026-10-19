@@ -267,3 +267,14 @@ Textos nuevos (para Shoko): «Nada», «Gasto» y «Provisión».
 
 - T6 A2 · rejilla de la capa 3: título «¿Cuándo aparece el gasto?». Anulación directa: Al cerrar el periodo «—», Al castigar «Gasto». Provisiones: Al cerrar el periodo «Gasto», Al castigar «—». «Provisión» ya no aparece en la rejilla: delataba la respuesta de la capa 4.
 - Capa 1: solo se pliega la cita del libro, con el control «Ver lo que dice el libro» (solo si el término trae cita). Las notas se ven siempre, bajo la definición.
+
+## Lote 29 · D8 · la capa 4 de la segunda visita (textos de Futaba, auditados por Shoko)
+
+Desde la segunda visita (fae-b5-vueltas:aprender ≥ 1), la capa 4 usa esta pregunta y cambia la correcta. Las opciones son las mismas de la primera visita. Cada devolución va con «Correcto.» o «No es esa.» delante, como todas las de la capa 4; la frase pegada al modelo es la devolución de la correcta. La primera visita no cambia.
+
+Pregunta: «Con la anulación directa, ¿qué se debita el día que se castiga una deuda?»
+
+- b5-t6-a2-provision · «La provisión, porque el gasto ya estaba anotado.» — «No es esa. Eso pasa con el método de provisiones. Con la anulación directa no se crea ninguna provisión: el castigo va al gasto.»
+- ✓ b5-t6-a2-gasto · «El gasto, porque la deuda se perdió ese día.» — «Correcto. Con la anulación directa no hay provisión: la deuda se saca de Clientes y su valor va al gasto ese mismo día.»
+- b5-t6-a2-clientes · «Cuentas por cobrar – clientes, porque la deuda desaparece.» — «No es esa. Cuentas por cobrar – clientes baja con el castigo, así que se acredita. Lo que se debita es el gasto.»
+- b5-t6-a2-ingresos · «Ingresos por ventas, porque nunca se cobró.» — «No es esa. La venta sí ocurrió y su ingreso se queda. La pérdida va al gasto, el día en que la deuda se da por perdida.»

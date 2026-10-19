@@ -18,7 +18,8 @@ import { barajar } from "../../../../utils/barajar.js";
  */
 export const evaluadorDe = (opciones) => (id) => {
   const o = opciones.find((x) => x.id === id);
-  return { correcta: Boolean(o?.correcta), feedback: o?.feedback ?? "", escena: o?.correcta ? o.texto : null };
+  /* Lote 29: si la opción trae su `frase` (la devolución de la correcta en la segunda visita), esa va pegada al modelo. */
+  return { correcta: Boolean(o?.correcta), feedback: o?.feedback ?? "", escena: o?.correcta ? (o.frase ?? o.texto) : null };
 };
 function LeyendaDeLaFrase({ escena, ponerLeyenda }) {
   useEffect(() => {
