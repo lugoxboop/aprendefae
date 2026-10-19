@@ -570,3 +570,16 @@ Pegado tal cual de entregas/mai-enganche-b1-b5.md (§2a, §2b y §3) y de entreg
 - Capa 3: quien acierta ve el texto que se revela; quien falla dos veces ve la devolución de su opción y la figura, pero NO ese texto.
 - **Cajas ya respondidas:** muestran solo la opción elegida con su marca (cumple E4). Vale para la capa 3 de las siete piezas.
 - Nombre accesible del grupo de opciones: T6 A4 «¿Cuánto se revive?»
+
+## Lote 29 · D8 · la capa 4 de la segunda visita (textos de Futaba, auditados por Shoko)
+
+Desde la segunda visita (fae-b5-vueltas:aprender ≥ 1), la capa 4 usa esta pregunta y cambia la correcta. Las opciones son las mismas de la primera visita. Cada devolución va con «Correcto.» o «No es esa.» delante, como todas las de la capa 4; la frase pegada al modelo es la devolución de la correcta. La primera visita no cambia.
+
+En las dos visitas cambian dos textos de opción: «Siguen castigados, porque esa parte no se revive.» y «En Caja, apenas el cliente los pague.». Las devoluciones de la primera visita no cambian.
+
+Pregunta: «En el caso c, ¿dónde quedan los $80.000 que ya no puede pagar?»
+
+- b5-t6-a4-pendiente · «En Cuentas por cobrar – clientes, como deuda pendiente.» — «No es esa. Eso pasa en el caso b, cuando promete pagar el resto. Aquí ya no puede pagar más, así que no se revive.»
+- ✓ b5-t6-a4-castigados · «Siguen castigados, porque esa parte no se revive.» — «Correcto. Como ya no puede pagar más, solo se revive lo que abonó. Lo que falta sigue castigado.»
+- b5-t6-a4-provision · «En la provisión, hasta que el cliente los pague.» — «No es esa. La provisión no guarda deudas. Lo que no se va a pagar no se revive: sigue castigado.»
+- b5-t6-a4-caja · «En Caja, apenas el cliente los pague.» — «No es esa. A Caja solo entra lo que paga. Lo que ya no puede pagar nunca entra.»

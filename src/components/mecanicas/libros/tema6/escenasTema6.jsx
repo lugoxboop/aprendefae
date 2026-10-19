@@ -2,7 +2,7 @@ import UnaFrase from "../intro/UnaFrase.jsx";
 import { PIEZA_LO_QUE_LE_DEBEN, PREGUNTA_FINAL_T6, OPCIONES_FINAL_T6, PIE_FINAL_T6, PREGUNTA_FINAL_ANTES_C1_T6, OPCIONES_FINAL_ANTES_C1_T6 } from "../../../../data/contabilidadT6Pieza1.js";
 import DosMomentos from "./DosMomentos.jsx";
 import SeisHechos from "./SeisHechos.jsx";
-import { PIEZA_NO_VA_A_PAGAR, PREGUNTA_FINAL_T6_A2, OPCIONES_FINAL_T6_A2 } from "../../../../data/contabilidadT6Pieza2.js";
+import { PIEZA_NO_VA_A_PAGAR, PREGUNTA_FINAL_T6_A2, OPCIONES_FINAL_T6_A2, PREGUNTA_FINAL_V2_T6_A2, OPCIONES_FINAL_V2_T6_A2 } from "../../../../data/contabilidadT6Pieza2.js";
 import DosDias from "./DosDias.jsx";
 import DosMetodos from "./DosMetodos.jsx";
 import {
@@ -11,16 +11,16 @@ import {
 import TanqueProvision from "./TanqueProvision.jsx";
 import LaProvision from "./LaProvision.jsx";
 import TanqueMomentos from "./TanqueMomentos.jsx";
-import { PIEZA_SI_PAGA, PREGUNTA_FINAL_T6_A4, OPCIONES_FINAL_T6_A4, PIE_FINAL_T6_A4 } from "../../../../data/contabilidadT6Pieza4.js";
+import { PIEZA_SI_PAGA, PREGUNTA_FINAL_T6_A4, OPCIONES_FINAL_T6_A4, PIE_FINAL_T6_A4, PREGUNTA_FINAL_V2_T6_A4, OPCIONES_FINAL_V2_T6_A4 } from "../../../../data/contabilidadT6Pieza4.js";
 import SiPaga from "./SiPaga.jsx";
 import TresCasos from "./TresCasos.jsx";
-import { PIEZA_COMO_SE_CALCULA, PREGUNTA_FINAL_T6_A5, OPCIONES_FINAL_T6_A5 } from "../../../../data/contabilidadT6Pieza5.js";
+import { PIEZA_COMO_SE_CALCULA, PREGUNTA_FINAL_T6_A5, OPCIONES_FINAL_T6_A5, PREGUNTA_FINAL_V2_T6_A5, OPCIONES_FINAL_V2_T6_A5 } from "../../../../data/contabilidadT6Pieza5.js";
 import { pegarPorcentaje } from "../../../../contabilidad/t6Pieza5.js";
 import LaTablaDelEjemplo from "./LaTablaDelEjemplo.jsx";
 import CuatroGrupos from "./CuatroGrupos.jsx";
 import { PIE } from "./CajasQueRevelan.jsx";
 import { FinalT6A1, FinalT6A2, FinalT6A4, FinalT6A5 } from "./FigurasFinalesT6.jsx";
-import { evaluadorDe, useEscenaConLeyenda, useVueltaCapa4 } from "./LeyendaFinal.jsx";
+import { evaluadorDe, useEscenaConLeyenda, useVueltaCapa4, useSegundaVisita } from "./LeyendaFinal.jsx";
 
 /*
  * Las capas propias de las piezas de Aprender del Tema 6, como las de los
@@ -45,7 +45,9 @@ export function EnUnaFraseT6({ ponerLeyenda = null }) {
   );
 }
 
+/* Lote 29 · D8: desde la segunda visita, A2, A4 y A5 usan la pregunta de Futaba y cambian la correcta (mismas opciones). */
 const evaluarA2 = evaluadorDe(OPCIONES_FINAL_T6_A2);
+const evaluarA2V2 = evaluadorDe(OPCIONES_FINAL_V2_T6_A2);
 /*
  * Lote 28 (bug de #455): A2, A4 y A5 no tienen pregunta de antes de C1, pero cuentan la visita igual que las
  * demás (useVueltaCapa4): acertar la capa 4 sube fae-b5-vueltas:aprender:<id>, y desde la segunda visita su
@@ -53,7 +55,9 @@ const evaluarA2 = evaluadorDe(OPCIONES_FINAL_T6_A2);
  */
 export function EnUnaFraseT6A2({ ponerLeyenda = null }) {
   const { poner } = useVueltaCapa4(PIEZA_NO_VA_A_PAGAR.id, ponerLeyenda);
+  const segunda = useSegundaVisita(PIEZA_NO_VA_A_PAGAR.id);
   const Escena = useEscenaConLeyenda(poner);
+  if (segunda) return <UnaFrase pregunta={PREGUNTA_FINAL_V2_T6_A2} opciones={OPCIONES_FINAL_V2_T6_A2} Escena={Escena} evaluar={evaluarA2V2} />;
   return <UnaFrase pregunta={PREGUNTA_FINAL_T6_A2} opciones={OPCIONES_FINAL_T6_A2} Escena={Escena} evaluar={evaluarA2} />;
 }
 
@@ -72,13 +76,17 @@ export function EnUnaFraseT6A3({ ponerLeyenda = null }) {
 }
 
 const evaluarA4 = evaluadorDe(OPCIONES_FINAL_T6_A4);
+const evaluarA4V2 = evaluadorDe(OPCIONES_FINAL_V2_T6_A4);
 /* La capa 4 nueva (entrega 2): UnaFrase sin cambios y, debajo, su pie de fuente. */
 export function EnUnaFraseT6A4({ ponerLeyenda = null }) {
   const { poner } = useVueltaCapa4(PIEZA_SI_PAGA.id, ponerLeyenda);
+  const segunda = useSegundaVisita(PIEZA_SI_PAGA.id);
   const Escena = useEscenaConLeyenda(poner);
   return (
     <>
-      <UnaFrase pregunta={PREGUNTA_FINAL_T6_A4} opciones={OPCIONES_FINAL_T6_A4} Escena={Escena} evaluar={evaluarA4} />
+      {segunda
+        ? <UnaFrase pregunta={PREGUNTA_FINAL_V2_T6_A4} opciones={OPCIONES_FINAL_V2_T6_A4} Escena={Escena} evaluar={evaluarA4V2} />
+        : <UnaFrase pregunta={PREGUNTA_FINAL_T6_A4} opciones={OPCIONES_FINAL_T6_A4} Escena={Escena} evaluar={evaluarA4} />}
       <PieCapa4 texto={PIE_FINAL_T6_A4} />
     </>
   );
@@ -87,9 +95,13 @@ export function EnUnaFraseT6A4({ ponerLeyenda = null }) {
 /* T6 · A5: el «%» pegado a su número también en la pregunta y las devoluciones (Mai §7). */
 const OPCIONES_A5 = OPCIONES_FINAL_T6_A5.map((o) => ({ ...o, texto: pegarPorcentaje(o.texto), feedback: pegarPorcentaje(o.feedback) }));
 const evaluarA5 = evaluadorDe(OPCIONES_A5);
+const OPCIONES_A5_V2 = OPCIONES_FINAL_V2_T6_A5.map((o) => ({ ...o, texto: pegarPorcentaje(o.texto), feedback: pegarPorcentaje(o.feedback), frase: pegarPorcentaje(o.frase) }));
+const evaluarA5V2 = evaluadorDe(OPCIONES_A5_V2);
 export function EnUnaFraseT6A5({ ponerLeyenda = null }) {
   const { poner } = useVueltaCapa4(PIEZA_COMO_SE_CALCULA.id, ponerLeyenda);
+  const segunda = useSegundaVisita(PIEZA_COMO_SE_CALCULA.id);
   const Escena = useEscenaConLeyenda(poner);
+  if (segunda) return <UnaFrase pregunta={pegarPorcentaje(PREGUNTA_FINAL_V2_T6_A5)} opciones={OPCIONES_A5_V2} Escena={Escena} evaluar={evaluarA5V2} />;
   return <UnaFrase pregunta={pegarPorcentaje(PREGUNTA_FINAL_T6_A5)} opciones={OPCIONES_A5} Escena={Escena} evaluar={evaluarA5} />;
 }
 

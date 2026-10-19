@@ -118,3 +118,42 @@ for (const p of PIEZAS) {
     m.desmontar();
   });
 }
+
+/* ═══ Lote 29 · D8: en la segunda visita, la capa 4 de A2, A4 y A5 usa la pregunta de Futaba y cambia la correcta ═══ */
+const V2 = {
+  [D2.PIEZA_NO_VA_A_PAGAR.id]: { hoy: D2.PREGUNTA_FINAL_T6_A2, otra: D2.PREGUNTA_FINAL_V2_T6_A2, opciones: D2.OPCIONES_FINAL_V2_T6_A2, correcta: "b5-t6-a2-gasto", antes: "b5-t6-a2-provision" },
+  [D4.PIEZA_SI_PAGA.id]: { hoy: D4.PREGUNTA_FINAL_T6_A4, otra: D4.PREGUNTA_FINAL_V2_T6_A4, opciones: D4.OPCIONES_FINAL_V2_T6_A4, correcta: "b5-t6-a4-castigados", antes: "b5-t6-a4-pendiente" },
+  [D5.PIEZA_COMO_SE_CALCULA.id]: { hoy: D5.PREGUNTA_FINAL_T6_A5, otra: D5.PREGUNTA_FINAL_V2_T6_A5, opciones: D5.OPCIONES_FINAL_V2_T6_A5, correcta: "b5-t6-a5-diez", antes: "b5-t6-a5-veinte", pegar: pegarPorcentaje },
+};
+
+for (const p of PIEZAS) {
+  test(`★★★ lote 29 · D8 · ${p.n}: en la segunda visita, la capa 4 trae otra pregunta y otra correcta (las mismas opciones); la frase pegada es su devolución`, async () => {
+    const [pieza, opcionesHoy] = PIEZA[p.id];
+    const v = V2[p.id];
+    const pegar = v.pegar ?? ((t) => t);
+    const E = ESCENAS_TEMA6[pieza.id];
+    assert.equal(opcionesHoy.find((o) => o.correcta).id, v.antes, "la primera visita no cambia");
+    assert.deepEqual(v.opciones.map((o) => [o.id, o.texto]), opcionesHoy.map((o) => [o.id, o.texto]), "las mismas opciones");
+    window.localStorage.setItem(`fae-b5-vueltas:aprender:${p.id}`, "1");
+    const m = await montar(h(CuatroCapas, { pieza, Capa2: Nada, Exploracion: Nada, Capa4: E.Capa4, FiguraFinal: E.FiguraFinal }));
+    const capa4 = m.caja.querySelector('[data-capa="4"]');
+    assert.ok(capa4.textContent.includes(pegar(v.otra)), "la pregunta de la segunda visita");
+    assert.ok(!capa4.textContent.includes(pegar(v.hoy)), "no la de la primera");
+    /* La que era correcta en la primera visita ahora es un error, con su devolución. */
+    await tocar(capa4.querySelector(`[data-una-frase] [data-opcion="${v.antes}"]`));
+    assert.equal(m.caja.querySelector("[data-figura-final] [data-leyenda]"), null, "la de antes ya no es la buena");
+    assert.ok(capa4.textContent.includes(pegar(v.opciones.find((o) => o.id === v.antes).feedback)));
+    await tocar(capa4.querySelector("[data-otra-vez]"));
+    await tocar(capa4.querySelector(`[data-una-frase] [data-opcion="${v.correcta}"]`));
+    const buena = v.opciones.find((o) => o.id === v.correcta);
+    assert.ok(buena.feedback.startsWith("Correcto. "));
+    assert.equal(m.caja.querySelector("[data-figura-final] [data-leyenda]").textContent, pegar(buena.frase), "la frase pegada es la devolución de la correcta");
+    m.desmontar();
+  });
+}
+
+test("★★★ lote 29 · T6 A4: en las dos visitas, los textos nuevos de «castigados» y «caja»", () => {
+  const t = (id) => D4.OPCIONES_FINAL_T6_A4.find((o) => o.id === id).texto;
+  assert.equal(t("b5-t6-a4-castigados"), "Siguen castigados, porque esa parte no se revive.");
+  assert.equal(t("b5-t6-a4-caja"), "En Caja, apenas el cliente los pague.");
+});

@@ -192,3 +192,22 @@ export const OPCIONES_FINAL_T6_A2 = [
     feedback: "No es esa. La venta sí ocurrió y su ingreso se queda. La pérdida se anota por otro lado: contra la provisión.",
   },
 ];
+
+/*
+ * ═══════════ LOTE 29 · D8 · LA CAPA 4 DE LA SEGUNDA VISITA (auditado por Shoko; textos de Futaba) ═══════════
+ *
+ * Desde la segunda visita (fae-b5-vueltas:aprender ≥ 1), la capa 4 usa esta pregunta y cambia la correcta.
+ * Las opciones son las mismas de la primera visita (sus textos y su orden); cada una lleva su devolución de
+ * Futaba, con «Correcto.» o «No es esa.» delante, como todas las de la capa 4. La frase pegada al modelo es
+ * la devolución de la correcta (sin «Correcto.»). La primera visita no cambia.
+ */
+const segundaVisita = (opciones, correcta, devoluciones) => opciones.map((o) => ({
+  ...o, correcta: o.id === correcta, feedback: `${o.id === correcta ? "Correcto." : "No es esa."} ${devoluciones[o.id]}`, frase: devoluciones[o.id],
+}));
+export const PREGUNTA_FINAL_V2_T6_A2 = "Con la anulación directa, ¿qué se debita el día que se castiga una deuda?";
+export const OPCIONES_FINAL_V2_T6_A2 = segundaVisita(OPCIONES_FINAL_T6_A2, "b5-t6-a2-gasto", {
+  "b5-t6-a2-gasto": "Con la anulación directa no hay provisión: la deuda se saca de Clientes y su valor va al gasto ese mismo día.",
+  "b5-t6-a2-provision": "Eso pasa con el método de provisiones. Con la anulación directa no se crea ninguna provisión: el castigo va al gasto.",
+  "b5-t6-a2-clientes": "Cuentas por cobrar – clientes baja con el castigo, así que se acredita. Lo que se debita es el gasto.",
+  "b5-t6-a2-ingresos": "La venta sí ocurrió y su ingreso se queda. La pérdida va al gasto, el día en que la deuda se da por perdida.",
+});

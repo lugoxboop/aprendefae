@@ -1,4 +1,4 @@
-import { test } from "node:test";
+import { test, beforeEach } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
@@ -39,6 +39,8 @@ for (const [k, v] of Object.entries({
   Object.defineProperty(globalThis, k, { value: v, configurable: true, writable: true });
 }
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+/* Lote 29 · D8: la capa 4 cuenta las visitas en el navegador; cada prueba empieza en la primera. */
+beforeEach(() => { try { w.localStorage.clear(); } catch { /* sin almacenamiento */ } });
 
 const React = await import("react");
 const { createRoot } = await import("react-dom/client");
