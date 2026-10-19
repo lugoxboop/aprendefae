@@ -83,6 +83,8 @@ const GESTOS = [
   "crea-o-cambia-de-manos", "la-escalera-del-encaje",
   /* «Las tallas del dinero» (0091) */
   "en-que-talla-va", "que-toco-el-banco",
+  /* Los tres instrumentos (Célula A) */
+  "la-tasa-que-muerde", "repo-o-definitiva", "el-freno-del-encaje",
 ];
 
 /* ─────────────────────────────── el registro ─────────────────────────────── */
@@ -90,7 +92,7 @@ const GESTOS = [
 /* Las cuatro de una sola decisión: mismo criterio, las cuatro quietas. */
 const QUIETAS = ["agujero-fiscal", "biopsia-economica", "dilema-banquero-central", "expediente-gabinete"];
 
-test("las 54 tienen su previsualización decidida: 43 gestos, el clip del tablero y cuatro quietas con su razón", () => {
+test("las 57 tienen su previsualización decidida: 46 gestos, el clip del tablero y cuatro quietas con su razón", () => {
   const ids = TEMAS.flatMap((t) => actividadesDeTipo(temaDe(t), HACER).map((a) => a.id));
   assert.deepEqual(Object.keys(PREVIAS).sort(), [...ids].sort());
   assert.deepEqual(Object.entries(PREVIAS).filter(([, p]) => p.tipo === "gesto").map(([id]) => id).sort(), [...GESTOS].sort());
@@ -218,7 +220,7 @@ const sinEstilos = (el) => {
 
 test("ninguna previsualización enseña texto, y el coral solo aparece donde es de error", async () => {
   const animadas = Object.entries(PREVIAS).filter(([, p]) => p.tipo !== "estatica").map(([id]) => id);
-  assert.equal(animadas.length, 50);
+  assert.equal(animadas.length, 53);
   for (const id of animadas) {
     const m = montar(React.createElement(PreviaActividad, { actividadId: id, respaldo: React.createElement("i", { "data-respaldo": true }) }));
     await esperar(120);

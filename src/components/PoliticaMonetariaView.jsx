@@ -20,6 +20,7 @@ import {
 } from "./mecanicas/maquinas/actividades.jsx";
 import { PorCualArteriaEntra, LasDosEntradas } from "./mecanicas/maquinas/monetariaRepaso.jsx";
 import { EscenaFabrica, ExploraFabrica, CreaOCambiaDeManos, LaEscaleraDelEncaje } from "./mecanicas/maquinas/fabricaDelDinero.jsx";
+import { LaTasaQueMuerde, RepoODefinitiva, ElFrenoDelEncaje } from "./mecanicas/maquinas/instrumentosPM.jsx";
 import { APRENDER_QUIEN_MANDA, APRENDER_INSTRUMENTOS, APRENDER_TRANSMISIONES } from "../data/politicaMonetaria.js";
 import { EscenaTallas, ExploraTallas } from "./mecanicas/maquinas/tallasDelDinero.jsx";
 import { EnQueTallaVa, QueTocoElBanco } from "./mecanicas/maquinas/actividadesAgregados.jsx";
@@ -58,8 +59,10 @@ const JUEGOS = [
   { id: "quien-decide-esto", Mecanica: QuienDecideEsto },
   { id: "en-que-talla-va", Mecanica: EnQueTallaVa },
   { id: "volante-de-la-tasa", Mecanica: VolanteDeLaTasa },
+  { id: "la-tasa-que-muerde", Mecanica: LaTasaQueMuerde },
   { id: "caja-de-herramientas", Mecanica: CajaDeHerramientas },
   { id: "crea-o-cambia-de-manos", Mecanica: CreaOCambiaDeManos },
+  { id: "el-freno-del-encaje", Mecanica: ElFrenoDelEncaje },
   { id: "a-quien-le-pega-la-tasa", Mecanica: AQuienLePegaLaTasa },
   { id: "las-dos-entradas", Mecanica: LasDosEntradas },
   { id: "que-toco-el-banco", Mecanica: QueTocoElBanco },
@@ -69,6 +72,7 @@ const JUEGOS = [
   { id: "corriente-de-decisiones", Mecanica: CorrienteDeDecisiones },
   { id: "el-rezago", Mecanica: ElRezago },
   { id: "la-escalera-del-encaje", Mecanica: LaEscaleraDelEncaje },
+  { id: "repo-o-definitiva", Mecanica: RepoODefinitiva },
   { id: "dilema-banquero-central", Mecanica: DilemaBanqueroCentral },
   { id: "duelo-de-instrumentos", Mecanica: DueloDeInstrumentos },
   { id: "disena-respuesta-monetaria", Mecanica: DisenaRespuestaMonetaria },

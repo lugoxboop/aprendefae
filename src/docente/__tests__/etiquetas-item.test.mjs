@@ -22,6 +22,7 @@ import {
 } from "../../data/politicaFiscal.js";
 import { MEMORAMAS, CLASIFICACIONES } from "../../data/cimientos.js";
 import * as PM from "../../data/politicaMonetaria.js";
+import * as PMI from "../../data/pmInstrumentos.js";
 import * as CU from "../../contabilidad/bancos.js";
 import * as CUA from "../../data/contabilidadActividades.js";
 import { transaccionesDe, renglonesDe } from "../../components/mecanicas/libros/LaMayorizacion.jsx";
@@ -141,6 +142,11 @@ const IDS = {
   "dilema-banquero-central": [PM.DILEMA_BANQUERO.id],
   "duelo-de-instrumentos": PM.DUELO_INSTRUMENTOS.casos.flatMap((c) => c.duelos.map((d) => `${c.id}:${d.id}`)),
   "disena-respuesta-monetaria": PM.DISENA_RESPUESTA.casos.flatMap((c) => PM.CASILLAS_RESPUESTA.map((k) => `${c.id}:${k.id}`)),
+
+  /* Política monetaria · los tres instrumentos (Célula A): «caso:decision». */
+  "la-tasa-que-muerde": PMI.itemsDe("la-tasa-que-muerde"),
+  "repo-o-definitiva": PMI.itemsDe("repo-o-definitiva"),
+  "el-freno-del-encaje": PMI.itemsDe("el-freno-del-encaje"),
 
   /*
    * Contabilidad · Las cuentas, el debe y el haber (0042). Las cinco que ya
