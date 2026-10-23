@@ -125,7 +125,17 @@ export function pruebaObjetivo({ P, canon }) {
       assert.equal(o?.textContent, P.objetivo);
       assert.equal(raiz.firstElementChild, o, "el objetivo no es lo primero bajo el título");
       assert.equal(o.closest(".t4r"), null, "el objetivo va dentro de la pantalla");
-      assert.equal(q(m, "[data-pieza] .t4r").firstElementChild.matches("[data-figura]") || Boolean(q(m, "[data-pieza] .t4r").firstElementChild.querySelector(":scope > [data-figura]")), true, "la P0 ya no abre con la figura");
+      /*
+       * Hilo de Katsumi (23 oct): la P0 puede abrir con la pregunta de predicción
+       * antes de la figura, siempre dentro de B1 (como mucho 40 palabras antes de
+       * ella; los px los mide la sonda en Chromium).
+       */
+      const pant = q(m, "[data-pieza] .t4r");
+      const fig = pant.querySelector("[data-figura]");
+      assert.ok(fig, "la P0 no tiene figura");
+      const antesDeFig = [...pant.querySelectorAll("[data-texto]")].filter((e) => e.compareDocumentPosition(fig) & 4 && !e.closest("[data-figura]"));
+      const pal = antesDeFig.map((e) => e.textContent).join(" ").split(/\s+/).filter(Boolean).length;
+      assert.ok(pal <= 40, `la P0 lleva ${pal} palabras antes de la figura (B1: 40)`);
       if (P.pantallas[0].pregunta) await jugar(m, P, P.pantallas[0].id);
       assert.equal(q(m, "[data-objetivo]")?.textContent, P.objetivo, "el objetivo se va al responder la P0");
       tocar(seguir(m));

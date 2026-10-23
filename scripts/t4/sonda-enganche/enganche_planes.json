@@ -22,7 +22,7 @@
   "se-consume": [{"click": "[data-accion=pasar]", "espera": 3200, "mide": "fin del año"}]
  },
  "t4-a1-la-caja": {
-  "cobra": [{"click": "[data-accion=cobrar]", "espera": 700, "mide": "cobrado"}],
+  "cobra": [{"click": "[data-destino=haber]", "espera": 400, "mide": "error al haber", "veredicto": "error"}, {"click": "[data-destino=no-se-mueve]", "espera": 400, "mide": "error a la bandeja", "veredicto": "error"}, {"click": "[data-destino=debe]", "espera": 700, "mide": "acierto", "veredicto": "acierto"}],
   "consigna": [
    {"click": "[data-destino=debe]", "espera": 400, "mide": "error al debe", "veredicto": "error"},
    {"click": "[data-destino=no-se-mueve]", "espera": 400, "mide": "error a la bandeja", "veredicto": "error"},
