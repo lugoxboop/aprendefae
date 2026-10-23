@@ -331,6 +331,81 @@ export function evaluarT1_5(indice, escrito, ejemplo = null) {
   };
 }
 
+/*
+ * ═══════════ T1-5 CON LAS DOS TORRES (P2 de Mai) ═══════════
+ *
+ * Dos decisiones por hecho, en vez de tres cifras: cuál parte no se mueve, y
+ * con cuánto queda cada una de las otras dos. La segunda se pide SIEMPRE sobre
+ * las dos que de verdad se mueven, aunque la primera haya fallado: así cada
+ * una se califica por su lado y el registro guarda las dos.
+ */
+
+/* El total más alto del recorrido (tras el hecho 7). La escala es fija para los 8: este valor mide 150 px. */
+export const TOPE_TORRES_T1_5 = 475000;
+export const ALTO_TORRE_T1_5 = 150;
+export const altoDeTorre = (valor) => (Math.max(0, valor) * ALTO_TORRE_T1_5) / TOPE_TORRES_T1_5;
+
+/** Qué hace un hecho, partiendo de `antes`: cuál se queda, cuáles se mueven, cuánto y hacia dónde. */
+export function movimientoT1_5(antes, hecho) {
+  const despues = totalesDesde(antes, hecho);
+  const quieta = quietaEntre(antes, despues, hecho.id);
+  const mueven = [ACTIVO, PASIVO, PATRIMONIO].filter((p) => p !== quieta);
+  const delta = (p) => despues[p] - antes[p];
+  const monto = Math.abs(delta(mueven[0]));
+  if (Math.abs(delta(mueven[1])) !== monto) throw new Error(`el hecho ${hecho.id} no mueve sus dos partes por el mismo valor`);
+  return { antes, despues, quieta, mueven, monto, signos: Object.fromEntries(mueven.map((p) => [p, Math.sign(delta(p))])) };
+}
+
+/*
+ * ═══════════ LA DECISIÓN 2 ES EL TOTAL NUEVO (auditoría de Shoko, 23-oct) ═══════════
+ *
+ * Con «+ monto» y «− monto» el estudiante decidía solo el sentido: era la
+ * pregunta de t1-4 otra vez (C6). Ahora elige con cuánto queda cada parte que
+ * se mueve, entre tres: el total anterior más el monto, el total anterior
+ * menos el monto, y el monto solo (confundir el movimiento con el saldo).
+ *
+ * Cuando dos de las tres dan la misma cifra (total anterior en cero: el monto
+ * solo ES el total nuevo) se deja una sola. Van de menor a mayor, para que la
+ * posición no delate la correcta. Las negativas (hecho 3, el pasivo: 25.000 −
+ * 50.000) se dejan: es la cifra que da restar donde había que sumar.
+ */
+export function opcionesTotalT1_5(mov, parte) {
+  const valores = [mov.antes[parte] + mov.monto, mov.antes[parte] - mov.monto, mov.monto];
+  return [...new Set(valores)].sort((a, b) => a - b);
+}
+
+/*
+ * Califica las dos decisiones. `totales` trae la cifra elegida para cada
+ * parte que de verdad se mueve. La devolución sigue la ficha (§3): si falló
+ * la primera, C; si no, con la segunda mal, A cuando los lados no darían
+ * igual ({Z} es la diferencia) y B cuando darían igual con otras cifras.
+ *
+ * `elegido` son los totales que habría dado lo que eligió el estudiante: de
+ * ahí sale el fantasma, solo en la torre que difiere de la correcta.
+ */
+export function evaluarTorresT1_5(mov, quietaElegida, totales) {
+  const quietaOk = quietaElegida === mov.quieta;
+  const totalesOk = Object.fromEntries(mov.mueven.map((p) => [p, totales[p] === mov.despues[p]]));
+  const direccionOk = mov.mueven.every((p) => totalesOk[p]);
+  const elegido = { ...mov.antes };
+  for (const p of mov.mueven) elegido[p] = totales[p] ?? mov.antes[p];
+  const fantasma = {
+    izquierda: elegido[ACTIVO] !== mov.despues[ACTIVO],
+    derecha: elegido[PASIVO] !== mov.despues[PASIVO] || elegido[PATRIMONIO] !== mov.despues[PATRIMONIO],
+  };
+  const base = { ok: quietaOk && direccionOk, quietaOk, direccionOk, totalesOk, elegido, real: mov.despues, fantasma };
+  if (!quietaOk) return { ...base, patron: "C", texto: ERROR_T1_5.C };
+  if (!direccionOk) {
+    const hueco = Math.abs(elegido[ACTIVO] - (elegido[PASIVO] + elegido[PATRIMONIO]));
+    if (hueco) return { ...base, patron: "A", hueco, texto: ERROR_T1_5.A.replace("{Z}", pesos(hueco)) };
+    return { ...base, patron: "B", texto: ERROR_T1_5.B };
+  }
+  return { ...base, patron: null, texto: null };
+}
+
+/* El emoji de veredicto con que abren los textos publicados (❌, ✅) no se pinta: el veredicto lo dicen la marca y la palabra. */
+export const sinEmoji = (texto) => (texto ?? "").replace(/^[\u2705\u274C\u2714\u2716]\uFE0F?\s*/u, "");
+
 /* ═══════════════════ T1-6 · ¿EN CUÁL ESTADO APARECE? ═══════════════════ */
 
 /*
@@ -605,7 +680,12 @@ export const empresaDeItem = (id) => {
 };
 
 /* T1-4 y T1-5 comparten banco: el ítem es la transacción, y se lee tal cual. */
-export const hechoDeItem = (id) => TRANSACCIONES_CAP2.find((t) => t.id === id)?.texto ?? null;
+/*
+ * T1-5 con las torres guarda dos ítems por hecho, «cal-2:quieta» y
+ * «cal-2:direccion»; los registros viejos traen el id solo. Los dos se leen
+ * como el hecho.
+ */
+export const hechoDeItem = (id) => TRANSACCIONES_CAP2.find((t) => t.id === String(id).split(":")[0])?.texto ?? null;
 
 /* T1-8: la situación que había que leer. */
 export const situacionDeItem = (id) => situacionPorId(id)?.texto ?? null;

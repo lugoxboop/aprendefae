@@ -1,5 +1,5 @@
 import {
-  T1_1, T1_2, T1_5, ZONA_DENTRO, ZONA_FUERA, ROTULO_ZONA, CLASES, ROTULO_ENTRA, ROTULO_SALE,
+  T1_1, T1_2, T1_5, TORRES_T1_5, ZONA_DENTRO, ZONA_FUERA, ROTULO_ZONA, CLASES, ROTULO_ENTRA, ROTULO_SALE,
 } from "./contabilidadTema1.js";
 import { ACTIVO, PASIVO, PATRIMONIO, pesos } from "./contabilidad.js";
 
@@ -105,35 +105,39 @@ export const EJEMPLO_T1_5 = {
   antes: { [ACTIVO]: 500000, [PASIVO]: 0, [PATRIMONIO]: 500000 },
 };
 
-/* Lo que se escribe, en el formato de la actividad: con puntos, sin «$» (el «$» ya está en la casilla). */
-const cifra = (n) => pesos(n).slice(1);
+/*
+ * Lo que se escribía antes de las torres. Queda exportado (ESCRITO_EJEMPLO_T1_5)
+ * porque es el estado al que llega el ejemplo: $700.000 = $200.000 + $500.000.
+ */
 const ESCRITO_T1_5 = { [ACTIVO]: 700000, [PASIVO]: 200000, [PATRIMONIO]: 500000 };
 
+/*
+ * Con las torres (P2 de Mai, decisión 2 de Shoko): la mano toca la parte
+ * quieta, el total nuevo de las otras dos y «Anotar». Los pasos y el
+ * alternativo son nuevos, PARA SHOKO. El ejemplo sigue siendo el horno a
+ * crédito: Shoko pidió cambiarlo (es el mismo de t1-4) y lo escribe Futaba.
+ */
 const ASI_T1_5 = {
   actividadId: T1_5.id,
   titulo: T1_5.nombre,
-  consigna: T1_5.consigna,
+  consigna: TORRES_T1_5.consigna,
   pasos: [
     "Lee el hecho de la panadería.",
-    "Escribe los tres totales, aunque alguno no cambie.",
-    "Toca Anotar.",
+    "Toca la parte que no se mueve.",
+    "En las otras dos, elige con cuánto quedan. Luego toca Anotar.",
   ],
-  /* El de Levi. La pantalla le antepone «Ejemplo: ». */
-  alt: "la panadería compró un horno a crédito por $200.000. Al empezar tenía $500.000, debía $0 y lo de los dueños era $500.000. Se escriben $700.000 en «Lo que tiene», $200.000 en «Lo que debe» y $500.000 en «Lo que es de los dueños», y se toca «Anotar». El pie dice: «Los dos lados dan igual: $700.000.»",
+  /* La pantalla le antepone «Ejemplo: ». */
+  alt: "la panadería compró un horno a crédito por $200.000. Al empezar tenía $500.000, debía $0 y lo de los dueños era $500.000. Se toca «Lo que es de los dueños», que no se mueve. En «Lo que tiene» se elige $700.000 y en «Lo que debe», $200.000, y se toca «Anotar». Las dos torres suben a $700.000.",
   demo: { ejemplo: EJEMPLO_T1_5 },
   guion: {
-    /*
-     * Las tres cifras una por una, el pie, y termina tocando «Anotar»: la
-     * fila nueva entra en «Lo que llevas». Sin barras: T1-5 no las tiene.
-     * 9,5 s en total (Levi pidió no pasar de 10).
-     */
+    /* La parte quieta, los dos totales nuevos y «Anotar»: las torres suben juntas. 9,5 s, como antes. */
     duracion: 9500,
     toques: [
-      { ms: 1500, en: `[data-casilla="${ACTIVO}"] input`, escribe: cifra(ESCRITO_T1_5[ACTIVO]) },
-      { ms: 3000, en: `[data-casilla="${PASIVO}"] input`, escribe: cifra(ESCRITO_T1_5[PASIVO]) },
-      { ms: 4500, en: `[data-casilla="${PATRIMONIO}"] input`, escribe: cifra(ESCRITO_T1_5[PATRIMONIO]) },
-      { ms: 6000, en: "[data-pie]", senala: true },
-      { ms: 7500, texto: "Anotar" },
+      { ms: 1500, en: `[data-parte="${PATRIMONIO}"]` },
+      { ms: 3500, en: `[data-opcion-total="${ACTIVO}:700000"]` },
+      { ms: 5000, en: `[data-opcion-total="${PASIVO}:200000"]` },
+      { ms: 6500, en: "[data-torres]", senala: true },
+      { ms: 7800, texto: TORRES_T1_5.anotar },
     ],
   },
   cuadros: { gesto: 1 },
