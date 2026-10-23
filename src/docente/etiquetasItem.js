@@ -1,3 +1,6 @@
+import { CUADRA_POR_VALOR, DEL_DIARIO_AL_MAYOR, LAS_QUE_VUELVEN_A_CERO } from "../data/contabilidadT2HacerNuevas.js";
+import { renglonesDe as renglonesDeT2 } from "../contabilidad/t2HacerNuevas.js";
+import { pesos as pesosT2 } from "../data/contabilidad.js";
 import {
   RONDAS_GANADORES, BANCO_CORRIENTE, ESCENARIOS_EXPLICA, CASOS_CRISIS, NOMBRES_RANURA,
 } from "../data/juegosPolitica2.js";
@@ -822,6 +825,33 @@ Object.assign(REGLAS, {
   "r5-4": (id) => unidadDeR5_4(id),
   /* r5-5. Cada pantalla, por su número y su título. */
   "r5-5": (id) => unidadDeR5_5(id),
+});
+
+/* ── Contabilidad T2 · las tres Hacer nuevas del lote T2-2 (Célula C, #471) ── */
+Object.assign(REGLAS, {
+  /* `cpv-NN`: el tipo de caso y las cuentas del asiento. */
+  "cu-cuadra-por-valor": (id) => {
+    const c = CUADRA_POR_VALOR.casos.find((x) => x.id === id);
+    if (!c) return null;
+    const tipo = { completar: "Completar", juzgar: "Cuadra o no", encontrar: "Línea que descuadra" }[c.tipo];
+    return `${tipo}: ${c.lineas.map((l) => l.cuenta).join(", ")}`;
+  },
+  /* `ddm-<caso>-N`: el renglón del diario que se pregunta. */
+  "cu-del-diario-al-mayor": (id) => {
+    for (const caso of DEL_DIARIO_AL_MAYOR.casos) {
+      const it = caso.items.find((x) => x.id === id);
+      if (!it) continue;
+      const r = renglonesDeT2(caso)[it.renglon];
+      const que = it.tipo === "destino" ? "A qué cuenta va" : "De qué renglón sale";
+      return `${que}: ${r.fecha} · ${r.cuenta} · ${pesosT2(r.monto)}`;
+    }
+    return null;
+  },
+  /* `lvc-…`: la cuenta y su clase. */
+  "cu-las-que-vuelven-a-cero": (id) => {
+    const c = LAS_QUE_VUELVEN_A_CERO.caso.cuentas.find((x) => x.id === id);
+    return c ? `Vuelve a cero o pasa: ${c.nombre}` : null;
+  },
 });
 
 /*
