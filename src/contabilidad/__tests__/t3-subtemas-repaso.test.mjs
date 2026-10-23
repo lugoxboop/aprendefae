@@ -6,7 +6,7 @@ import assert from "node:assert/strict";
  * Hacer, sus claves son las del detalle de cada actividad y las reglas usan
  * exactamente los valores de su banco.
  */
-const S = await import("../../data/contabilidadTema3Subtemas.js");
+const S = await import("../../data/subtemasContabilidadT3.js");
 const { SUBJECTS, HACER, actividadesDeTipo } = await import("../../data/subjects.js");
 
 const HACER_T3 = actividadesDeTipo(SUBJECTS.contabilidad.topics.find((t) => t.id === "ingresos-gastos-y-caja"), HACER).map((a) => a.id);
