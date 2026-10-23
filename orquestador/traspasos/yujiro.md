@@ -34,10 +34,12 @@
 - Hanayama, diseño: claude.ai/chat/930849c0-7d5d-431e-a1b2-30f3e19b19dc. Prompt maestro de diseño. Especifica sobre el prototipo; no toca lo compartido.
 - Shibukawa, auditoría: claude.ai/chat/3361c35f-ee1b-4585-8736-6e061d5bfdb1. Prompt de auditores y Kit literal. No ve la pantalla: hay que mandarle capturas a 320x568 y 375x667. Da PASA o FALLA.
 - Flujo: Katsumi -> Hanayama -> Baki -> Shibukawa -> fusión.
+- Ukyo (diseño y UI de todo el proyecto desde el 23 oct; no es de la célula): claude.ai/chat/93230b0c-b04b-4a7a-b601-bcae85595d95. Especifica el panel docente, el patrón de slides (#470) y el logito de T4; le hablo directo.
+- Varas de aceptación de la célula (panel docente y slides de T4): `orquestador/revisiones/panel-docente/aceptacion.md`.
 
 ## Cómo hablarles y arrancar
 - Ya no son subagentes: cada uno vive en su chat o sesión fija (arriba), capacitado con su prompt maestro del canon (sha a557d1f) y el contexto de la célula. Un encargo nuevo va a esa misma sede, un mensaje por lote.
-- Mensajes con Chrome, una pestaña en el grupo propio: el texto se inserta con `document.execCommand('insertText')` en `[contenteditable="true"]` (los prompts largos se traen de raw.githubusercontent.com por sha dentro de la página) y se envía con Return; en Claude Code, con el botón «Enviar». Ojo: el cuadro de «Nueva sesión» de Claude Code puede tener el borrador de otro general; no se borra.
+- Mensajes con Chrome, una pestaña en el grupo propio: el texto se inserta con `document.execCommand('insertText')` en `[contenteditable="true"]` (los prompts largos se traen de raw.githubusercontent.com por sha dentro de la página) y se envía con un clic en el botón (`button[aria-label="Enviar mensaje"]` en los chats, «Enviar» en Claude Code). Return a veces no envía: comprobar siempre que el cuadro quedó vacío. Ojo: el cuadro de «Nueva sesión» de Claude Code puede tener el borrador de otro general; no se borra.
 - Herramientas: sonda `scripts/t4/sonda-enganche/` (README; `--tema=t4`), guardia `scripts/t4/guardia-enganche.mjs`, medidor `scripts/t4/medir-t4.mjs`.
 - GraphQL bloqueado: PR y fusión por REST (`gh api .../pulls`, `PUT .../merge` con el sha completo). Nunca force push; `npm ci`, nunca `npm install`.
 - Reglas de eficiencia: `orquestador/conocimiento/protocolo-de-eficiencia.md` (Erwin). Órdenes de Mateo llegan por Miku; lo irreversible se le escala a ella.
