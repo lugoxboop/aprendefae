@@ -1,4 +1,4 @@
-2026-10-23 12:24 (hora Bogotá)
+2026-10-23 12:42 (hora Bogotá)
 - Regla i (buscar antes de abrir; skill en vez del prompt maestro) pasada a Kaede, Futaba, Mai y Shoko, junto con su lote: terminado
 - Cambio de tema (orden de Mateo, 23-oct): B suelta T6 y toma T1 introduccion-contabilidad; vara pasada a los cuatro agentes (solo se agrega, nunca se borra): terminado
 - T1 · fondo de los 4 Aprender en secuencia (Futaba): terminado, en orquestador/conocimiento/fichas/b-t1-aprender-secuencia-y-hacer.md
@@ -11,7 +11,7 @@
 - T1 · auditoría de la ficha de Futaba (Shoko): terminado, en revisiones/b-t1-ficha-futaba-shoko.md; Futaba la aplica y escribe las frases de la 2.ª visita: en curso
 - T1 · auditoría de los bancos de H1/H2 y de la P2 de las torres (Shoko): terminado, en revisiones/b-t1-bancos-y-torres-shoko.md; decidí que el puntaje de t1-5 queda (es reversible) y que H2 entra como segunda decisión de t1-desde-donde-preguntan, sin Hacer aparte
 - T1 · t1-5 rehecho con el total nuevo como decisión 2 (Kaede, #496): en curso; correcciones de Shoko en el PR
-- Cruce de la auditoría de Shoko a Futaba (aciertos y nuevo ejemplo de t1-5, tabla de H1/H2) y a Mai (P2 de t1-5 y H2 dentro de t1-1): bloqueado: Chrome desconectado en el equipo de Mateo; reintento
+- Cruce de la auditoría de Shoko a Futaba (aciertos y nuevo ejemplo de t1-5, tabla de H1/H2) y a Mai (P2 de t1-5 y H2 dentro de t1-1): bloqueado: Chrome desconectado en el equipo de Mateo desde las 11:58 (#issue a Miku); reintento cada 30 min
 - T1 · datos de los Aprender por pantalla y prueba de ids publicados (Kaede, #485): en curso; el CI de pruebas falla en #485 y #496 (avisado en el PR)
 - T1 · forma de presentación de los Aprender: bloqueado: espera el patrón de Ukyo y el componente de Erwin
 - T1 · logito del tema: bloqueado: espera el diseño de Ukyo
