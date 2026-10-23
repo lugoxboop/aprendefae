@@ -1,9 +1,11 @@
-2026-10-23 09:08 (hora Bogotá)
-- Célula A (T1, T2, T3, portada, índice del banco, íconos): terminado
+2026-10-23 11:14 (hora Bogotá)
+- Regla «Contabilidad tiene estudiantes: solo se agrega» en nocturno.md y celulas.md: bloqueado: va en el PR #490, falta visto bueno para fusionar
+- Encargo 1 · índice de Contabilidad con cuatro temas visibles (bandera OCULTAR_TEMAS_FUERA_DEL_SEMESTRE; nada borrado, FP y progreso intactos): bloqueado: PR #490 listo y verde, falta visto bueno para fusionar
+- Encargo 2 · motor del Repaso Diario de Contabilidad + migración 0152: bloqueado: PR #490, falta visto bueno; queda oculto hasta que lleguen los pools
+- Encargo 2 · etiquetado de subtemas por célula: en curso — pedido en #477 (B, T1), #478 (C, T2), #479 (E, T3), #480 (D, T4)
+- Encargo 3 · SecuenciaAprender sobre el patrón de Ukyo (#470): bloqueado: PR #491 listo y verde, falta visto bueno; cómo usarlo, en #492 para las cuatro células
+- Regla i (buscar antes de abrir) pasada a Gen, Xeno, Levi y Sai en un solo mensaje cada uno: terminado
+- Capacitación de la Célula A: en curso — espero las confirmaciones de Levi (auditores-v1) y Sai (construccion-v1)
 - Lo compartido (componentes comunes, choques entre células, datos de estudiantes, destrabar generales): en curso
-- Capacitación de la Célula A (orden de Mateo, no producir): en curso — Gen y Xeno vivos y con prompt maestro; a Levi se le pegó auditores-v1 completo; a Sai se le mandó construccion-v1. Espero sus confirmaciones
-- Prompt maestro de construcción (no existía para ningún constructor) y enlaces de Gen y Sai en celulas.md: bloqueado: PR #466 abierto, falta visto bueno para fusionar (lo compartido toca a las cinco células)
-- #349 ficha de FP fija vs. oculta al bajar: bloqueado: espera que Xeno diga si le basta; el arreglo de fondo toca Macroeconomía y no va sin Mateo
-- Capa 1 de CuatroCapas (guardas de 60 palabras y figura/interacción): bloqueado: esperan los recortes de Near
-- TODO de Gen (opción correcta más larga que las demás): en curso
-- Acceso a Chrome: terminado
+- #349 ficha de FP fija vs. oculta al bajar: bloqueado: espera que Xeno diga si le basta
+- Capa 1 de CuatroCapas (guardas B1 y B2): bloqueado: esperan los recortes de Near
