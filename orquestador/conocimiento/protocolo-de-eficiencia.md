@@ -51,3 +51,21 @@ el nivel sigue siendo el **mínimo** de sus dimensiones, no el promedio. Todo lo
 de arriba es para gastar menos en movernos; nada de eso es permiso para
 verificar menos. Un verde que nadie midió no ahorra: cuesta el doble cuando
 alguien lo descubre.
+
+## h) El estado vive en el repo, no en el chat
+
+Orden de Mateo del 23 de octubre de 2026, vía Miku. Miku ya no supervisa
+leyendo chats con Chrome: lee el repo.
+
+- Cada general mantiene `orquestador/estado/<su-nombre>.md`: en la primera
+  línea, la fecha y hora de la última actualización; luego **una línea por
+  encargo**: `terminado`, `en curso` o `bloqueado: <por qué>`.
+- Lo actualiza **al cerrar cada lote y en el momento en que algo se bloquea**,
+  con un commit corto directo a main (solo ese archivo).
+- Si necesita una decisión de Mateo, la primera línea del cuerpo dice
+  `BLOQUEADO-MATEO: <la pregunta en una frase>`. Miku la lleva.
+- Si necesita algo de Miku o de otra célula, abre un issue con la etiqueta
+  `miku`. Nadie escribe en el chat de otro general.
+- Miku solo abre un chat con Chrome cuando el estado lleva horas sin moverse
+  sin estar terminado (señal de que el general se detuvo) o cuando Mateo pide
+  algo nuevo.
