@@ -93,7 +93,8 @@ export const claseDe = (marca) => (marca === REVELADA ? "fae-b5h-revelado" : und
  */
 export function Pastilla({ marca, valor = null, envuelve = false }) {
   if (marca !== CORRECTA && marca !== TACHADA && marca !== REVELADA) return null;
-  const palabra = marca === CORRECTA ? PALABRA_B.correcto : marca === TACHADA ? PALABRA_B.noVaAqui : valor != null ? ibaAquiCon(valor) : PALABRA_B.ibaAqui;
+  /* `valor` en la correcta (T1-5, «Correcto: se queda igual»): solo si se pasa; sin él, como siempre. */
+  const palabra = marca === CORRECTA ? (valor != null ? `${PALABRA_B.correcto}: ${valor}` : PALABRA_B.correcto) : marca === TACHADA ? PALABRA_B.noVaAqui : valor != null ? ibaAquiCon(valor) : PALABRA_B.ibaAqui;
   return (
     <span data-pastilla={marca} className={marca === REVELADA ? "fae-b5h-revela" : "fae-b5h-nueva"} style={{
       display: "inline-flex", alignItems: "center", gap: envuelve ? "2px 4px" : "4px", maxWidth: "100%", boxSizing: "border-box",

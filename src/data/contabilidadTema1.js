@@ -429,6 +429,33 @@ export const ACIERTO_T1_5_FINAL = "✅ Y ahí está el mes completo. Lo que tien
 
 export const ALT_T1_5 = `Tres casillas para escribir: ${enLista(PARTES.map((p) => p.idea))}.`;
 
+/*
+ * ═══════════ T1-5 CON LAS DOS TORRES (P2 de Mai, 23-oct) ═══════════
+ *
+ * Los textos nuevos de la P2 (orquestador/conocimiento/fichas/
+ * b-t1-5-torres-p2-mai.md, §7). PARA SHOKO. Lo publicado de arriba no se
+ * toca: los 8 hechos, PARTES y ERROR_T1_5 se reusan tal cual (la vista les
+ * quita el emoji al pintarlos), y `T1_5.consigna` se queda como estaba
+ * aunque la vista ya no la muestre.
+ *
+ * La consigna nueva está pendiente de que Futaba la confirme (§7). El
+ * acierto por hecho también: hasta que llegue, los hechos 1 a 7 dicen solo
+ * «Correcto.» y el 8 lleva ACIERTO_T1_5_FINAL sin el emoji (§0).
+ */
+export const TORRES_T1_5 = {
+  consigna: "Lee el hecho. Di cuál no se mueve y hacia dónde van las otras dos.",
+  preguntaQuieta: "¿Cuál de las tres NO se mueve con este hecho?",
+  preguntaDireccion: "¿Las otras dos suben o bajan?",
+  /* «Correcto: se queda igual» e «Iba aquí: se queda igual»: lo que se pega a la palabra de la pastilla. */
+  quedaIgual: "se queda igual",
+  anotar: "Anotar",
+  siguiente: "Siguiente",
+  verResultado: "Ver el resultado",
+  contador: "Hecho [n] de [N]",
+  /* Lo que se lee sin ver las torres (§7). [X], [Y], [Z]: los tres totales; [T], el de cada lado. */
+  alt: "Lo que tiene, [X]; lo que debe, [Y], más lo que es de los dueños, [Z]: dan [T].",
+};
+
 /* ═══════════════════ T1-6 · ¿EN CUÁL ESTADO APARECE? ═══════════════════ */
 
 export const T1_6 = {

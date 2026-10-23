@@ -331,6 +331,63 @@ export function evaluarT1_5(indice, escrito, ejemplo = null) {
   };
 }
 
+/*
+ * ═══════════ T1-5 CON LAS DOS TORRES (P2 de Mai) ═══════════
+ *
+ * Dos decisiones por hecho, en vez de tres cifras: cuál parte NO se mueve, y
+ * en las otras dos, «+ monto» o «− monto». La segunda se pide SIEMPRE sobre
+ * las dos que de verdad se mueven, aunque la primera haya fallado: así cada
+ * una se califica por su lado y el registro guarda las dos.
+ */
+
+/* El total más alto del recorrido (tras el hecho 7). La escala es fija para los 8: este valor mide 150 px. */
+export const TOPE_TORRES_T1_5 = 475000;
+export const ALTO_TORRE_T1_5 = 150;
+export const altoDeTorre = (valor) => (Math.max(0, valor) * ALTO_TORRE_T1_5) / TOPE_TORRES_T1_5;
+
+/** Qué hace un hecho, partiendo de `antes`: cuál se queda, cuáles se mueven, cuánto y hacia dónde. */
+export function movimientoT1_5(antes, hecho) {
+  const despues = totalesDesde(antes, hecho);
+  const quieta = quietaEntre(antes, despues, hecho.id);
+  const mueven = [ACTIVO, PASIVO, PATRIMONIO].filter((p) => p !== quieta);
+  const delta = (p) => despues[p] - antes[p];
+  const monto = Math.abs(delta(mueven[0]));
+  if (Math.abs(delta(mueven[1])) !== monto) throw new Error(`el hecho ${hecho.id} no mueve sus dos partes por el mismo valor`);
+  return { antes, despues, quieta, mueven, monto, signos: Object.fromEntries(mueven.map((p) => [p, Math.sign(delta(p))])) };
+}
+
+/*
+ * Califica las dos decisiones. `signos` trae +1 o −1 para cada parte que de
+ * verdad se mueve. La devolución sigue la ficha (§3): si falló la primera, C;
+ * si no, con la segunda mal, A cuando los lados no darían igual ({Z} es la
+ * diferencia) y B cuando darían igual con otras cifras.
+ *
+ * `elegido` son los totales que habría dado lo que eligió el estudiante: de
+ * ahí sale el fantasma, solo en la torre que difiere de la correcta.
+ */
+export function evaluarTorresT1_5(mov, quietaElegida, signos) {
+  const quietaOk = quietaElegida === mov.quieta;
+  const signosOk = Object.fromEntries(mov.mueven.map((p) => [p, signos[p] === mov.signos[p]]));
+  const direccionOk = mov.mueven.every((p) => signosOk[p]);
+  const elegido = { ...mov.antes };
+  for (const p of mov.mueven) elegido[p] += (signos[p] ?? 0) * mov.monto;
+  const fantasma = {
+    izquierda: elegido[ACTIVO] !== mov.despues[ACTIVO],
+    derecha: elegido[PASIVO] !== mov.despues[PASIVO] || elegido[PATRIMONIO] !== mov.despues[PATRIMONIO],
+  };
+  const base = { ok: quietaOk && direccionOk, quietaOk, direccionOk, signosOk, elegido, real: mov.despues, fantasma };
+  if (!quietaOk) return { ...base, patron: "C", texto: ERROR_T1_5.C };
+  if (!direccionOk) {
+    const hueco = Math.abs(elegido[ACTIVO] - (elegido[PASIVO] + elegido[PATRIMONIO]));
+    if (hueco) return { ...base, patron: "A", hueco, texto: ERROR_T1_5.A.replace("{Z}", pesos(hueco)) };
+    return { ...base, patron: "B", texto: ERROR_T1_5.B };
+  }
+  return { ...base, patron: null, texto: null };
+}
+
+/* El emoji de veredicto con que abren los textos publicados (❌, ✅) no se pinta: el veredicto lo dicen la marca y la palabra. */
+export const sinEmoji = (texto) => (texto ?? "").replace(/^[\u2705\u274C\u2714\u2716]\uFE0F?\s*/u, "");
+
 /* ═══════════════════ T1-6 · ¿EN CUÁL ESTADO APARECE? ═══════════════════ */
 
 /*
@@ -605,7 +662,12 @@ export const empresaDeItem = (id) => {
 };
 
 /* T1-4 y T1-5 comparten banco: el ítem es la transacción, y se lee tal cual. */
-export const hechoDeItem = (id) => TRANSACCIONES_CAP2.find((t) => t.id === id)?.texto ?? null;
+/*
+ * T1-5 con las torres guarda dos ítems por hecho, «cal-2:quieta» y
+ * «cal-2:direccion»; los registros viejos traen el id solo. Los dos se leen
+ * como el hecho.
+ */
+export const hechoDeItem = (id) => TRANSACCIONES_CAP2.find((t) => t.id === String(id).split(":")[0])?.texto ?? null;
 
 /* T1-8: la situación que había que leer. */
 export const situacionDeItem = (id) => situacionPorId(id)?.texto ?? null;

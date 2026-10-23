@@ -1,195 +1,253 @@
 import { useEffect, useRef, useState } from "react";
 import { FAE } from "../../../../theme.js";
 import { pesos, ACTIVO, PASIVO, PATRIMONIO } from "../../../../data/contabilidad.js";
-import { NEUTRO, NAVY_DEL_CHIP } from "../../../../data/contabilidadIntro.js";
 import {
-  T1_5, PARTES, TRANSACCIONES_CAP2, PIE_T1_5, HISTORIAL_T1_5,
-  ACIERTO_T1_5_FINAL, ALT_T1_5, SEGUNDA_T1_5,
+  T1_5, PARTES, TRANSACCIONES_CAP2, ACIERTO_T1_5_FINAL, TORRES_T1_5,
 } from "../../../../data/contabilidadTema1.js";
 import {
-  totalesTras, parteQuieta, enModoCorto, evaluarT1_5, puntuar, pesoDeCadaItem, EN_CERO,
-  opcionesSegundaT1_5, correctaSegundaT1_5, escenaSegundaT1_5,
+  totalesTras, movimientoT1_5, evaluarTorresT1_5, altoDeTorre, ALTO_TORRE_T1_5, sinEmoji, pesoDeCadaItem,
 } from "../../../../contabilidad/tema1.js";
-import SegundaDecisionT1 from "./segundaDecision.jsx";
-import { Retro, Pulsos, Cierre } from "../../corazon/juego.jsx";
+import { Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
-import { Responder, CampoCifra, leerCifra } from "../piezas.jsx";
-import { SOLO_LECTOR } from "../verbos.jsx";
-import { Encabezado, IdeaConTermino } from "./encabezado.jsx";
+import EncabezadoCompacto from "../b5/EncabezadoCompacto.jsx";
+import {
+  Pastilla, Mensaje, RegionViva, CORRECTA, TACHADA, REVELADA, CSS_B5H, CLASE_B5H, CORAL_B, TEXTO_B, NEUTRO_B,
+} from "../b5/Devolucion.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
- * T1-5 · LA ECUACIÓN EN MOVIMIENTO
+ * T1-5 · LA ECUACIÓN EN MOVIMIENTO — LAS DOS TORRES (P2 de Mai, 23-oct).
  *
- * Las ocho transacciones de Caleja, en orden, desde cero hasta 465.000. No hay
- * sorteo: es un recorrido, y saltarse un hecho dejaría los totales siguientes
- * sin explicación.
+ * Ficha: orquestador/conocimiento/fichas/b-t1-5-torres-p2-mai.md.
  *
- * ═══════════ EL PIE COMPRUEBA MIENTRAS SE ESCRIBE ═══════════
+ * El estudiante ve dos torres —«Lo que tiene» contra «Lo que debe» más «Lo
+ * que es de los dueños»— subir y bajar por el monto de cada hecho cuando dice
+ * qué parte se queda quieta y hacia dónde van las otras dos. Los ocho hechos
+ * de Caleja, en orden, de cero a $465.000.
  *
- * No espera a enviar. Si los dos lados no dan igual, se ve antes de responder
- * — que es exactamente lo que hace un contador: mirar si cuadra. Comprobar
- * solo al final convertiría la ecuación en una calificación en vez de en una
- * herramienta.
+ * Lo que se fue: las tres casillas de cifra, el pie que comparaba los lados
+ * mientras se escribía (era la respuesta, R10), el reintento y el modo corto.
  *
- * ═══════════ EL HISTORIAL VA ABIERTO ═══════════
+ * ═══════════ DOS DECISIONES, UN INTENTO ═══════════
  *
- * Y no detrás de un botón. Lo de atrás es el dato con el que se calcula lo de
- * adelante: esconderlo obliga a memorizar tres cifras que no son el punto de
- * la actividad.
+ * 1 · tocar la parte que NO se mueve. Se marca al instante (E4).
+ * 2 · en las otras dos —las que de verdad se mueven, aunque la 1 haya
+ *     fallado—, «+ monto» o «− monto». Las torres NO se mueven todavía.
+ * «Anotar»: las torres van a los totales correctos, también en el error, y si
+ * lo elegido daba otra altura queda el fantasma —el contorno coral
+ * discontinuo de la torre que habría salido— solo en la torre que difiere.
  *
- * ═══════════ DESDE EL QUINTO, MODO CORTO ═══════════
- *
- * Solo se piden los dos totales que cambian. El tercero se arrastra y se
- * enseña arrastrado, con su rótulo. Lo que se recorta es la mecanografía.
+ * El veredicto lo pinta esta pieza (Check y X de lucide, sin emoji). `Retro`
+ * y `Responder`, que son compartidos, no se usan aquí: van con Erwin (#487).
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
+const SORA = "Sora, sans-serif";
+const INTER = "Inter, sans-serif";
+const CIFRA = { fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace", fontVariantNumeric: "tabular-nums" };
+const SECUNDARIO = "#A8B6C8";
+const NAVY = "#1D3557";
+const TEAL = "#2A9D8F";
+const MAS = 1;
+const MENOS = -1;
+
 const CSS = `
-@keyframes fae-t15-fila { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
-.fae-t15-fila { animation: fae-t15-fila 300ms ease-out both; }
+.fae-t15-tramo { transform-origin: 50% 100%; transition: transform 320ms cubic-bezier(.3,.9,.4,1); }
+@keyframes fae-t15-fantasma { from { opacity: 0; } to { opacity: 1; } }
+.fae-t15-fantasma { animation: fae-t15-fantasma 240ms ease-out both; }
 @media (prefers-reduced-motion: reduce) {
-  .fae-t15-fila { animation: none !important; opacity: 1 !important; transform: none !important; }
+  .fae-t15-tramo { transition: none !important; }
+  .fae-t15-fantasma { animation: none !important; opacity: 1 !important; }
 }
 `;
 
-const SORA = "Sora, sans-serif";
-const CIFRA = {
-  fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
-  fontVariantNumeric: "tabular-nums",
-};
+const ancho = (n) => `${n}px`;
+const conSigno = (s, monto) => `${s === MAS ? "+" : "−"} ${pesos(monto)}`;
+const parte = (id) => PARTES.find((p) => p.id === id);
+
+/*
+ * Un tramo de torre. Mide siempre ALTO_TORRE_T1_5 y se escala con scaleY
+ * desde abajo; `sobre` es cuánto lo sube el tramo de debajo (translateY), para
+ * que la animación sea solo transform.
+ */
+function Tramo({ valor, sobre = 0, estilo, dato }) {
+  const h = altoDeTorre(valor);
+  return (
+    <div
+      data-tramo={dato}
+      data-alto={h.toFixed(2)}
+      className="fae-t15-tramo"
+      style={{
+        position: "absolute", left: 0, right: 0, bottom: 0, height: ancho(ALTO_TORRE_T1_5), boxSizing: "border-box",
+        transform: `translateY(${-altoDeTorre(sobre)}px) scaleY(${h / ALTO_TORRE_T1_5})`, ...estilo,
+      }}
+    />
+  );
+}
+
+const RELLENO_TIENE = { background: "rgba(184,196,212,.30)", outline: `2px solid ${TEXTO_B}`, outlineOffset: "-2px" };
+const RAYADO_DEBE = { background: `repeating-linear-gradient(135deg, rgba(184,196,212,.55) 0 2px, transparent 2px 7px)`, outline: `1px solid ${NEUTRO_B}`, outlineOffset: "-1px" };
+const TENUE_DUENOS = { background: "rgba(184,196,212,.14)", outline: `1px solid ${NEUTRO_B}`, outlineOffset: "-1px" };
+const MUESTRA = { [ACTIVO]: RELLENO_TIENE, [PASIVO]: RAYADO_DEBE, [PATRIMONIO]: TENUE_DUENOS };
+
+/* La torre que habría salido con lo elegido: contorno coral discontinuo, solo si difiere. */
+function Fantasma({ valor, dato }) {
+  return (
+    <div data-fantasma={dato} className="fae-t15-fantasma" aria-hidden="true" style={{
+      position: "absolute", left: "-3px", right: "-3px", bottom: 0, height: ancho(altoDeTorre(valor)),
+      border: `2px dashed ${CORAL_B}`, borderRadius: "3px", boxSizing: "border-box", pointerEvents: "none",
+    }} />
+  );
+}
+
+function Torres({ t, fantasma }) {
+  const izquierda = t[ACTIVO];
+  const derecha = t[PASIVO] + t[PATRIMONIO];
+  const alt = TORRES_T1_5.alt
+    .replace("[X]", pesos(t[ACTIVO])).replace("[Y]", pesos(t[PASIVO])).replace("[Z]", pesos(t[PATRIMONIO]))
+    .replace("[T]", pesos(izquierda));
+  const total = (v, lado) => (
+    <p data-total={lado} style={{ margin: "0 0 6px", textAlign: "center", fontFamily: INTER, fontSize: "12px", fontWeight: 600, color: TEXTO_B, ...CIFRA }}>
+      {pesos(v)}
+    </p>
+  );
+  return (
+    <div data-torres role="img" aria-label={alt} style={{
+      height: "244px", boxSizing: "border-box", padding: "14px 16px 0", borderRadius: "12px",
+      background: "rgba(10,20,34,0.45)", border: "1px solid rgba(248,249,250,0.12)",
+      display: "grid", gridTemplateColumns: "1fr 28px 1fr", alignItems: "end",
+    }}>
+      <div>
+        {total(izquierda, "izquierda")}
+        <div data-torre="izquierda" style={{ position: "relative", height: ancho(ALTO_TORRE_T1_5), margin: "0 auto", width: "64%", borderBottom: `2px solid ${NEUTRO_B}` }}>
+          <Tramo valor={t[ACTIVO]} estilo={RELLENO_TIENE} dato={ACTIVO} />
+          {fantasma?.izquierda != null && <Fantasma valor={fantasma.izquierda} dato="izquierda" />}
+        </div>
+      </div>
+      <p aria-hidden="true" style={{ margin: "0 0 68px", textAlign: "center", fontFamily: SORA, fontSize: "16px", fontWeight: 700, color: SECUNDARIO }}>=</p>
+      <div>
+        {total(derecha, "derecha")}
+        <div data-torre="derecha" style={{ position: "relative", height: ancho(ALTO_TORRE_T1_5), margin: "0 auto", width: "64%", borderBottom: `2px solid ${NEUTRO_B}` }}>
+          <Tramo valor={t[PASIVO]} estilo={RAYADO_DEBE} dato={PASIVO} />
+          <Tramo valor={t[PATRIMONIO]} sobre={t[PASIVO]} estilo={TENUE_DUENOS} dato={PATRIMONIO} />
+          {fantasma?.derecha != null && <Fantasma valor={fantasma.derecha} dato="derecha" />}
+        </div>
+      </div>
+      <div style={{ gridColumn: "1 / -1", height: "14px" }} />
+    </div>
+  );
+}
+
+function Leyenda() {
+  return (
+    <ul data-leyenda style={{ margin: "8px 0 0", padding: 0, listStyle: "none", display: "flex", flexWrap: "wrap", gap: "4px 14px" }}>
+      {PARTES.map((p) => (
+        <li key={p.id} style={{ display: "flex", alignItems: "center", gap: "6px", fontFamily: INTER, fontSize: "12px", color: SECUNDARIO }}>
+          <span aria-hidden="true" style={{ width: "14px", height: "14px", borderRadius: "2px", ...MUESTRA[p.id] }} />
+          {p.idea}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/* El botón de avance de la pieza: teal con texto oscuro; sin las dos decisiones, apagado. */
+function Avance({ children, onClick, deshabilitado = false, refBoton }) {
+  return (
+    <button ref={refBoton} type="button" data-avance onClick={onClick} disabled={deshabilitado} style={{
+      width: "100%", minHeight: "44px", marginTop: "14px", borderRadius: "999px", cursor: deshabilitado ? "default" : "pointer",
+      fontFamily: SORA, fontSize: "14px", fontWeight: 700,
+      background: deshabilitado ? "transparent" : TEAL, color: deshabilitado ? SECUNDARIO : "#06202A",
+      border: deshabilitado ? "1px solid rgba(248,249,250,.16)" : `1px solid ${TEAL}`,
+    }}>
+      {children}
+    </button>
+  );
+}
+
+/* Borde de un botón según su estado: reposo, elegido (antes de anotar), o la marca E4. */
+function bordeDe({ elegido, marca }) {
+  if (marca === CORRECTA || marca === REVELADA) return { border: `2px solid ${TEXTO_B}`, background: "transparent" };
+  if (marca === TACHADA) return { border: `2px solid ${CORAL_B}`, background: "transparent" };
+  if (elegido) return { border: `2px solid ${TEXTO_B}`, background: NAVY };
+  return { border: "1px solid rgba(248,249,250,0.35)", background: "transparent" };
+}
 
 /*
  * ═══════════ EL MODO DEMO DE «ASÍ SE JUEGA» ═══════════
  *
  * Es este mismo componente. `ejemplo` ({ hecho, antes }) le da un hecho de
- * fuera del recorrido y el estado del que parte —el recorrido de verdad parte
- * de cero—; `modoDemo` le quita el encabezado, el avance y el botón de seguir,
- * y no llama a `onCompletar`: ni FP, ni intentos, ni progreso. Con ejemplo se
- * escriben las tres casillas, como en los primeros hechos de la partida.
+ * fuera del recorrido y el estado del que parte; `modoDemo` le quita el
+ * encabezado y el avance tras anotar, y no llama a `onCompletar`: ni FP, ni
+ * intentos, ni progreso. El flujo es el mismo de la partida.
  */
 export default function LaEcuacionEnMovimiento({
-  Marco, rotulo, titulo, acento, onCompletar, ejemplo = null, modoDemo = false, onComoSeJuega = null,
+  Marco, rotulo, titulo, acento, onCompletar, ejemplo = null, modoDemo = false,
 }) {
   const total = ejemplo ? 1 : TRANSACCIONES_CAP2.length;
   const [i, setI] = useState(0);
-  const [texto, setTexto] = useState({});
+  const [quietaElegida, setQuietaElegida] = useState(null);
+  const [signos, setSignos] = useState({});
   const [r, setR] = useState(null);
-  const [intento, setIntento] = useState(0);
-  const [respuestas, setRespuestas] = useState([]);
+  const [puntos, setPuntos] = useState([]);
   const [terminado, setTerminado] = useState(false);
   const detalle = useRef([]);
   const inicio = useRef(Date.now());
-  const zonaBoton = useRef(null);
-  /*
-   * ═══════════ LA SEGUNDA DECISIÓN (D4), Y AQUÍ VA PRIMERO ═══════════
-   *
-   * Esta actividad ya pedía la consecuencia —los tres totales nuevos— hecho
-   * tras hecho, y eso era toda la interacción. Lo que faltaba era la
-   * CLASIFICACIÓN, así que va antes de escribir: de las tres partes, ¿cuál no
-   * se mueve con este hecho? Era lo que la actividad decidía sola desde el
-   * quinto hecho, cuando arrastraba la parte quieta; ahora lo decide el
-   * estudiante y se ve en qué casilla cae el arrastre.
-   *
-   * Y por eso el arrastre NO se dibuja antes de decidir: enseñarlo sería
-   * contestar la pregunta en los hechos del modo corto.
-   *
-   * No puntúa: `evaluarT1_5`, `respuestas` y `detalle` siguen contando solo
-   * los totales escritos, con el mismo peso por hecho que antes.
-   */
-  const [escenaSegunda, setEscenaSegunda] = useState(null);
+  const botonSeguir = useRef(null);
 
   const h = ejemplo ? ejemplo.hecho : TRANSACCIONES_CAP2[i];
   const antes = ejemplo ? ejemplo.antes : totalesTras(i);
-  const corto = ejemplo ? false : enModoCorto(i);
-  const quieta = corto ? parteQuieta(i) : null;
-  /*
-   * La demo de «Así se juega» no lleva segunda decisión: su guion está escrito
-   * y probado contra las tres casillas y el botón «Anotar».
-   */
-  const conSegunda = !modoDemo && !ejemplo;
-  const correctaQuieta = conSegunda ? correctaSegundaT1_5(i) : null;
-  const quietaMarcada = escenaSegunda?.quieta ?? null;
-  /*
-   * Las casillas se abren cuando el arrastre quedó donde de verdad va. Si
-   * falló, la figura enseña su elección —el arrastre en la casilla
-   * equivocada— y vuelve a la correcta al salir «Iba aquí»: de ahí sale el
-   * permiso de escribir, sin un segundo aviso que lo diga.
-   */
-  const segundaLista = !conSegunda || quietaMarcada === correctaQuieta;
+  const mov = movimientoT1_5(antes, h);
+  const listo = quietaElegida !== null && mov.mueven.every((p) => signos[p] === MAS || signos[p] === MENOS);
 
-  /*
-   * En modo corto la parte quieta no se escribe: se arrastra. Pero ANTES de
-   * decidir las tres casillas van iguales —las tres con su campo, cerrado—,
-   * porque si una trajera el arrastre puesto, la pregunta estaría contestada:
-   * la que no pide número es justo la que no se mueve.
-   */
-  const seEscribe = (p) => !segundaLista || !corto || p !== quieta;
-
-  const pct = puntuar(respuestas, total);
-  const esperandoReintento = Boolean(r && !r.ok && intento === 1);
-  const puedeResponder = !r || esperandoReintento;
-
-  /* Lo que hay escrito ahora mismo, con lo arrastrado ya puesto. */
-  const escrito = {};
-  for (const p of PARTES) {
-    escrito[p.id] = seEscribe(p.id) ? leerCifra(texto[p.id] ?? "") : antes[p.id];
-  }
-  const completo = PARTES.every((p) => escrito[p.id] !== null);
-
-  /* El pie comprueba mientras se escribe, no al enviar. */
-  const izquierda = escrito[ACTIVO];
-  const derecha = completo ? escrito[PASIVO] + escrito[PATRIMONIO] : null;
-  const cuadra = completo && izquierda === derecha;
+  /* Cada decisión vale la mitad del hecho; los hechos pesan lo mismo que antes. */
+  const pct = total ? (puntos.reduce((s, x) => s + (x.quietaOk ? 0.5 : 0) + (x.direccionOk ? 0.5 : 0), 0) / total) * 100 : 0;
 
   useEffect(() => {
     if (terminado && !modoDemo) onCompletar?.(pct, Date.now() - inicio.current, detalle.current);
   }, [terminado]);
   useEffect(() => {
-    if (r && !esperandoReintento && !modoDemo) zonaBoton.current?.querySelector("button")?.focus();
-  }, [r, esperandoReintento]);
+    if (r && !modoDemo) botonSeguir.current?.focus();
+  }, [r]);
 
-  const enviar = () => {
-    if (!completo || (r && !esperandoReintento)) return;
-    const nuevo = evaluarT1_5(i, escrito, ejemplo);
-    const anotado = PARTES.map((p) => `${p.id}:${escrito[p.id]}`).join(" ");
-
-    if (intento === 0) {
-      detalle.current.push({
-        item: h.id, ok: nuevo.ok, intentos: 1,
-        respuesta: nuevo.ok ? null : anotado, orden: detalle.current.length + 1,
-      });
-      if (!nuevo.ok) { setR({ ...nuevo, primero: true }); setIntento(1); return; }
-      setRespuestas((xs) => [...xs, { id: h.id, primeroOk: true }]);
-      setR({ ...nuevo, primero: true });
-      return;
+  const anotar = () => {
+    if (!listo || r) return;
+    const nuevo = evaluarTorresT1_5(mov, quietaElegida, signos);
+    if (!modoDemo) {
+      /* Las dos decisiones, cada una con su ítem e `intentos: 1`. */
+      const orden = detalle.current.length;
+      detalle.current.push(
+        { item: `${h.id}:quieta`, ok: nuevo.quietaOk, intentos: 1, respuesta: nuevo.quietaOk ? null : quietaElegida, orden: orden + 1 },
+        {
+          item: `${h.id}:direccion`, ok: nuevo.direccionOk, intentos: 1, orden: orden + 2,
+          respuesta: nuevo.direccionOk ? null : mov.mueven.map((p) => `${p}:${signos[p] === MAS ? "+" : "-"}`).join(" "),
+        },
+      );
+      setPuntos((xs) => [...xs, { id: h.id, quietaOk: nuevo.quietaOk, direccionOk: nuevo.direccionOk }]);
     }
-    setRespuestas((xs) => [...xs, { id: h.id, primeroOk: false, segundoOk: nuevo.ok }]);
-    setIntento(2);
-    setR({ ...nuevo, primero: false });
+    setR(nuevo);
   };
 
   const avanzar = () => {
-    setR(null); setIntento(0); setTexto({}); setEscenaSegunda(null);
+    setR(null); setQuietaElegida(null); setSignos({});
     if (i + 1 < total) setI(i + 1);
     else setTerminado(true);
   };
   const reiniciar = () => {
-    setI(0); setTexto({}); setR(null); setIntento(0); setRespuestas([]); setTerminado(false); setEscenaSegunda(null);
+    setI(0); setR(null); setQuietaElegida(null); setSignos({}); setPuntos([]); setTerminado(false);
     detalle.current = []; inicio.current = Date.now();
   };
 
   if (terminado) {
-    const bien = respuestas.filter((x) => x.primeroOk).length;
+    const bien = puntos.filter((x) => x.quietaOk && x.direccionOk).length;
     const fin = totalesTras(total);
     return (
       <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
-        <style>{CSS}</style>
         <Cierre pct={Math.round(pct)} onReiniciar={reiniciar} textoReiniciar="Otra vez desde cero">
           <p style={TEXTO_CIERRE}>
             {bien} de {total} al primer intento. Cada hecho valía {pesoDeCadaItem(total).toFixed(2)} %.
           </p>
-          <p data-cierre-final style={TEXTO_CIERRE}>{ACIERTO_T1_5_FINAL}</p>
+          <p data-cierre-final style={TEXTO_CIERRE}>{sinEmoji(ACIERTO_T1_5_FINAL)}</p>
           <p data-final style={{ ...TEXTO_CIERRE, ...CIFRA }}>
             {pesos(fin[ACTIVO])} = {pesos(fin[PASIVO] + fin[PATRIMONIO])}
           </p>
@@ -198,234 +256,134 @@ export default function LaEcuacionEnMovimiento({
     );
   }
 
-  const revelado = r && !esperandoReintento && !r.ok ? r.real : null;
-  const marcada = (p) => (r && !r.ok ? (r.resaltar ?? []).includes(p) : false);
+  /* R10: antes de anotar, las torres enseñan el estado anterior; después, el correcto, también en el error. */
+  const enTorres = r ? r.real : antes;
+  const fantasma = r && !r.ok ? {
+    izquierda: r.fantasma.izquierda ? r.elegido[ACTIVO] : null,
+    derecha: r.fantasma.derecha ? r.elegido[PASIVO] + r.elegido[PATRIMONIO] : null,
+  } : null;
+
+  const marcaQuieta = (id) => {
+    if (quietaElegida === null) return null;
+    if (id === mov.quieta) return quietaElegida === id ? CORRECTA : REVELADA;
+    return quietaElegida === id ? TACHADA : null;
+  };
+  const marcaSigno = (id, s) => {
+    if (!r) return null;
+    const correcto = mov.signos[id] === s;
+    if (signos[id] === s) return correcto ? CORRECTA : TACHADA;
+    return correcto ? REVELADA : null;
+  };
+
+  const ultimoHecho = !ejemplo && i + 1 === total;
+  const textoAcierto = ultimoHecho ? sinEmoji(ACIERTO_T1_5_FINAL) : null;
+
+  /* Una función y no un componente: definido aquí dentro, React lo volvería a montar en cada render y perdería el foco. */
+  const renderParte = (id) => {
+    const p = parte(id);
+    const marca = marcaQuieta(id);
+    const muestraSignos = quietaElegida !== null && mov.mueven.includes(id);
+    return (
+      <div key={id} data-casilla={id} style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+        <button
+          type="button"
+          data-parte={id}
+          aria-pressed={quietaElegida === id}
+          disabled={quietaElegida !== null}
+          onClick={() => setQuietaElegida(id)}
+          style={{
+            minHeight: "44px", width: "100%", padding: "7px 10px", borderRadius: "12px", textAlign: "left",
+            display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "4px",
+            color: TEXTO_B, cursor: quietaElegida === null ? "pointer" : "default", ...bordeDe({ marca }),
+          }}
+        >
+          <span style={{ fontFamily: INTER, fontSize: "12px", fontWeight: 600, lineHeight: 1.3 }}>{p.idea}</span>
+          <span style={{ fontFamily: INTER, fontSize: "12px", lineHeight: 1.3, color: SECUNDARIO, ...CIFRA }}>
+            {p.termino} · {pesos(antes[id])}
+          </span>
+          {marca && <Pastilla marca={marca} valor={TORRES_T1_5.quedaIgual} envuelve />}
+        </button>
+        {muestraSignos && (
+          <div role="group" aria-label={p.idea} data-signos={id} style={{ display: "flex", gap: "6px" }}>
+            {[MAS, MENOS].map((s) => {
+              const m = marcaSigno(id, s);
+              return (
+                <button
+                  key={s}
+                  type="button"
+                  data-signo={`${id}:${s === MAS ? "+" : "-"}`}
+                  aria-pressed={signos[id] === s}
+                  disabled={Boolean(r)}
+                  onClick={() => setSignos((x) => ({ ...x, [id]: s }))}
+                  style={{
+                    flex: 1, minWidth: 0, minHeight: "44px", padding: "6px 6px", borderRadius: "12px",
+                    display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "4px",
+                    fontFamily: INTER, fontSize: "13px", fontWeight: 600, color: TEXTO_B, cursor: r ? "default" : "pointer",
+                    ...CIFRA, ...bordeDe({ elegido: !r && signos[id] === s, marca: m }),
+                  }}
+                >
+                  {conSigno(s, mov.monto)}
+                  {m && <Pastilla marca={m} valor={m === REVELADA ? conSigno(s, mov.monto) : null} envuelve />}
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
-      <style>{CSS}</style>
-      {!modoDemo && (
-        <>
-          <Encabezado objetivo={T1_5.objetivo} consigna={T1_5.consigna} onComoSeJuega={onComoSeJuega} />
-          <div style={{ marginBottom: "12px" }}>
-            <Pulsos total={total} hechos={i + (r && !esperandoReintento ? 1 : 0)} enCurso={i + 1} etiqueta="Hecho" />
-          </div>
-        </>
-      )}
-
-      {/* Aquí dentro no entra el vocabulario del Tema 2. */}
-      <div data-contenido>
-        <p data-hecho={h.id} style={{
-          margin: "0 0 12px", padding: "10px 12px", borderRadius: "11px",
-          fontSize: "13px", lineHeight: 1.45, color: FAE.text,
-          background: "rgba(10,20,34,0.5)", border: "1px solid rgba(248,249,250,0.16)",
-        }}>
-          {h.texto}
-        </p>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: "9px" }}>
-          {PARTES.map((p) => (
-            <div
-              key={p.id}
-              data-casilla={p.id}
-              data-arrastrada={seEscribe(p.id) ? undefined : "si"}
-              /*
-               * La marca de la segunda decisión: «si» en la parte que el
-               * estudiante señaló como quieta, «no» en las otras dos. Es lo
-               * que hace visible su elección —y, si falló, su error— en la
-               * misma figura donde después escribe.
-               */
-              data-marca-quieta={quietaMarcada ? (quietaMarcada === p.id ? "si" : "no") : undefined}
-              style={quietaMarcada ? {
-                padding: "6px", borderRadius: "13px",
-                border: quietaMarcada === p.id
-                  ? "1px dashed rgba(248,249,250,0.45)"
-                  : `2px solid ${NEUTRO}`,
-              } : undefined}
-            >
-              <span style={{ display: "block", marginBottom: "4px" }}>
-                <IdeaConTermino
-                  idea={p.idea}
-                  termino={p.termino}
-                  tamano={12}
-                  color={marcada(p.id) ? FAE.coral : FAE.text}
-                />
-              </span>
-              {seEscribe(p.id) ? (
-                <CampoCifra
-                  valor={texto[p.id] ?? ""}
-                  onCambio={(v) => setTexto((t) => ({ ...t, [p.id]: v }))}
-                  onEnviar={enviar}
-                  deshabilitado={!puedeResponder || !segundaLista}
-                  etiqueta={`${p.idea}, total nuevo`}
-                  estado={r && !r.ok ? (marcada(p.id) ? "incorrecta" : null) : null}
-                />
-              ) : (
-                /*
-                 * Arrastrada: se enseña el número Y por qué está ahí. Una cifra
-                 * que aparece sola en una casilla que no se puede tocar se lee
-                 * como un dato del enunciado, no como una consecuencia.
-                 */
-                <p data-arrastrado={p.id} style={{
-                  margin: 0, padding: "11px 13px", borderRadius: "12px",
-                  background: "rgba(14,27,46,0.45)", border: "1px dashed rgba(248,249,250,0.22)",
-                  display: "flex", flexWrap: "wrap", alignItems: "baseline", gap: "3px 8px",
-                }}>
-                  <span style={{ ...CIFRA, fontSize: "15px", color: FAE.text }}>{pesos(antes[p.id])}</span>
-                  <span style={{ fontSize: "11px", color: "rgba(248,249,250,0.55)" }}>
-                    {PIE_T1_5.arrastrado}
-                  </span>
-                </p>
-              )}
-              {revelado && revelado[p.id] !== escrito[p.id] && (
-                <p data-era={p.id} style={{
-                  margin: "4px 0 0", fontSize: "11px", color: "rgba(248,249,250,0.6)", ...CIFRA,
-                }}>
-                  era {pesos(revelado[p.id])}
-                </p>
-              )}
-            </div>
-          ))}
-        </div>
-
-        {/*
-          ═══════ LA SEGUNDA DECISIÓN (D4), ANTES DE ESCRIBIR ═══════
-
-          Clasificar primero y calcular después: la pregunta es de otro tipo
-          que la de los totales, y cada opción deja el arrastre en una casilla
-          distinta de las tres de arriba.
-        */}
-        {conSegunda && puedeResponder && (
-          <SegundaDecisionT1
-            pregunta={SEGUNDA_T1_5.pregunta}
-            opciones={opcionesSegundaT1_5(i, h)}
-            correcta={correctaQuieta}
-            porque={SEGUNDA_T1_5.porque}
-            escenaDe={escenaSegundaT1_5}
-            onPintar={setEscenaSegunda}
+      <style>{CSS}{CSS_B5H}</style>
+      <div className={CLASE_B5H} data-t15-torres>
+        {!modoDemo && (
+          <EncabezadoCompacto
+            objetivo={T1_5.objetivo}
+            contador={TORRES_T1_5.contador.replace("[n]", String(i + 1)).replace("[N]", String(total))}
+            consigna={TORRES_T1_5.consigna}
           />
         )}
 
-        {/* ═══════════ EL PIE, QUE COMPRUEBA MIENTRAS SE ESCRIBE ═══════════ */}
-        <div data-pie data-cuadra={completo ? (cuadra ? "si" : "no") : "incompleto"} style={{
-          marginTop: "11px", padding: "9px 11px", borderRadius: "11px",
-          background: "rgba(10,20,34,0.45)",
-          border: `1px solid ${completo && !cuadra ? FAE.coral : "rgba(248,249,250,0.16)"}`,
-        }}>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "4px 10px", alignItems: "baseline" }}>
-            <span style={{ fontSize: "11px", color: "rgba(248,249,250,0.6)" }}>{PIE_T1_5.izquierda}</span>
-            <span data-lado="izquierda" style={{ ...CIFRA, fontSize: "13px", color: FAE.text }}>
-              {izquierda === null ? "—" : pesos(izquierda)}
-            </span>
-            <span aria-hidden="true" style={{ fontSize: "13px", color: "rgba(248,249,250,0.6)" }}>
-              {completo ? (cuadra ? "=" : "≠") : "?"}
-            </span>
-            <span style={{ fontSize: "11px", color: "rgba(248,249,250,0.6)" }}>{PIE_T1_5.derecha}</span>
-            <span data-lado="derecha" style={{ ...CIFRA, fontSize: "13px", color: FAE.text }}>
-              {derecha === null ? "—" : pesos(derecha)}
-            </span>
-          </div>
-          {completo && (
-            <p data-veredicto style={{
-              margin: "5px 0 0", fontSize: "11.5px",
-              color: cuadra ? "rgba(248,249,250,0.7)" : FAE.coral,
-            }}>
-              {cuadra
-                ? PIE_T1_5.cuadra.replace("[X]", pesos(izquierda))
-                : PIE_T1_5.noCuadra.replace("[Z]", pesos(Math.abs(izquierda - derecha)))}
-            </p>
-          )}
-        </div>
-
-        {/* ═══════════ EL HISTORIAL, ABIERTO ═══════════ */}
-        <div data-historial style={{
-          marginTop: "11px", padding: "9px 11px", borderRadius: "11px",
-          background: "rgba(10,20,34,0.35)", border: "1px solid rgba(248,249,250,0.12)",
-        }}>
-          <p style={{
-            margin: "0 0 6px", fontFamily: SORA, fontSize: "9.5px", fontWeight: 700,
-            letterSpacing: "0.14em", color: "rgba(248,249,250,0.5)",
+        <div data-contenido>
+          <p data-hecho={h.id} style={{
+            margin: "0 0 12px", padding: "10px 12px", borderRadius: "11px",
+            fontFamily: INTER, fontSize: "14px", fontWeight: 600, lineHeight: 1.45, color: TEXTO_B,
+            background: "rgba(10,20,34,0.5)", border: "1px solid rgba(248,249,250,0.16)",
           }}>
-            {HISTORIAL_T1_5.titulo.toUpperCase()}
+            {h.texto}
           </p>
-          {ejemplo ? (
-            /*
-             * El ejemplo no parte de cero: el historial dice de dónde arranca.
-             * Y como la demo no tiene «Siguiente hecho», la fila del hecho
-             * entra al anotarlo bien, que es donde termina la demo.
-             */
-            <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: "4px" }}>
-              <li data-fila-historial="inicio" style={{ fontSize: "11px", color: "rgba(248,249,250,0.65)" }}>
-                <span style={{ ...CIFRA }}>
-                  {HISTORIAL_T1_5.filaInicio
-                    .replace("[X]", pesos(antes[ACTIVO]))
-                    .replace("[Y]", pesos(antes[PASIVO]))
-                    .replace("[Z]", pesos(antes[PATRIMONIO]))}
-                </span>
-              </li>
-              {r?.ok && (
-                <li data-fila-historial={h.id} className="fae-t15-fila" style={{ fontSize: "11px", color: "rgba(248,249,250,0.65)" }}>
-                  <span style={{ ...CIFRA }}>
-                    {HISTORIAL_T1_5.fila
-                      .replace("[n]", "1")
-                      .replace("[X]", pesos(r.real[ACTIVO]))
-                      .replace("[Y]", pesos(r.real[PASIVO]))
-                      .replace("[Z]", pesos(r.real[PATRIMONIO]))}
-                  </span>
-                </li>
-              )}
-            </ul>
-          ) : i === 0 ? (
-            <p data-historial-vacio style={{ margin: 0, fontSize: "11.5px", color: "rgba(248,249,250,0.45)" }}>
-              {HISTORIAL_T1_5.vacio}
-            </p>
-          ) : (
-            <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: "4px" }}>
-              {TRANSACCIONES_CAP2.slice(0, i).map((x, k) => {
-                const t = totalesTras(k + 1);
-                return (
-                  <li key={x.id} data-fila-historial={x.id} className="fae-t15-fila" style={{
-                    display: "flex", flexWrap: "wrap", gap: "2px 8px", alignItems: "baseline",
-                    fontSize: "11px", color: "rgba(248,249,250,0.65)",
-                  }}>
-                    {/* «Hecho [n]: [X] = [Y] + [Z]» — con el desglose de los dos lados. */}
-                    <span style={{ ...CIFRA }}>
-                      {HISTORIAL_T1_5.fila
-                        .replace("[n]", String(k + 1))
-                        .replace("[X]", pesos(t[ACTIVO]))
-                        .replace("[Y]", pesos(t[PASIVO]))
-                        .replace("[Z]", pesos(t[PATRIMONIO]))}
-                    </span>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
+
+          <Torres t={enTorres} fantasma={fantasma} />
+          <Leyenda />
+
+          <p data-pregunta style={{
+            margin: "14px 0 8px", minHeight: "39.2px", fontFamily: INTER, fontSize: "14px", fontWeight: 600, lineHeight: 1.4, color: TEXTO_B,
+          }}>
+            {quietaElegida === null ? TORRES_T1_5.preguntaQuieta : TORRES_T1_5.preguntaDireccion}
+          </p>
+
+          {/* Las partes, alineadas con sus torres: lo que tiene a la izquierda; lo que debe y lo de los dueños a la derecha. */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", alignItems: "start" }}>
+            {renderParte(ACTIVO)}
+            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+              {renderParte(PASIVO)}
+              {renderParte(PATRIMONIO)}
+            </div>
+          </div>
         </div>
+
+        <RegionViva>
+          {r && <Mensaje ok={r.ok} texto={r.ok ? textoAcierto : sinEmoji(r.texto)} />}
+        </RegionViva>
+
+        {!r && <Avance onClick={anotar} deshabilitado={!listo}>{TORRES_T1_5.anotar}</Avance>}
+        {r && !modoDemo && (
+          <Avance onClick={avanzar} refBoton={botonSeguir}>
+            {i + 1 === total ? TORRES_T1_5.verResultado : TORRES_T1_5.siguiente}
+          </Avance>
+        )}
       </div>
-
-      {r && r.texto && <Retro texto={r.texto} />}
-
-      {puedeResponder && (
-        <Responder onClick={enviar} deshabilitado={!completo || !segundaLista}>
-          {!segundaLista ? "Primero: cuál no se mueve" : completo ? "Anotar" : "Escribe los totales"}
-        </Responder>
-      )}
-      {r && !esperandoReintento && !modoDemo && (
-        <div ref={zonaBoton}>
-          <Responder onClick={avanzar}>
-            {i + 1 === total ? "Ver el resultado" : "Siguiente hecho"}
-          </Responder>
-        </div>
-      )}
-
-      {!modoDemo && <p style={SOLO_LECTOR}>{ALT_T1_5}</p>}
-      {!modoDemo && (
-        <p style={SOLO_LECTOR}>
-          Antes de este hecho: {PARTES.map((p) => `${p.idea} ${pesos(antes[p.id])}`).join(", ")}.
-          {i === 0 ? ` La empresa arranca en ${pesos(EN_CERO[ACTIVO])}.` : ""}
-        </p>
-      )}
     </Marco>
   );
 }

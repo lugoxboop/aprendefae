@@ -44,42 +44,40 @@ const LaEcuacionEnMovimiento = (await import("../../components/mecanicas/libros/
 const { MarcoLibros } = await import("../../components/mecanicas/bloques/marcos.jsx");
 const {
   totalesTras, parteQuieta, enModoCorto, evaluarT1_5, efectoDe,
+  movimientoT1_5, evaluarTorresT1_5, altoDeTorre, sinEmoji, hechoDeItem,
 } = await import("../tema1.js");
 const {
-  TRANSACCIONES_CAP2, T1_5, PARTES, ERROR_T1_5, DESDE_EL_CORTO, PIE_T1_5, HISTORIAL_T1_5,
+  TRANSACCIONES_CAP2, T1_5, PARTES, ERROR_T1_5, DESDE_EL_CORTO, TORRES_T1_5, ACIERTO_T1_5_FINAL,
 } = await import("../../data/contabilidadTema1.js");
 const { ACTIVO, PASIVO, PATRIMONIO, pesos } = await import("../../data/contabilidad.js");
 const { FAE } = await import("../../theme.js");
 
+let completado = null;
 const montar = () => {
+  completado = null;
   const caja = document.createElement("div");
   document.body.appendChild(caja);
   const raiz = createRoot(caja);
   act(() => raiz.render(React.createElement(LaEcuacionEnMovimiento, {
-    Marco: MarcoLibros, rotulo: "PRUEBA", titulo: "Prueba", acento: FAE.ambar, onCompletar: () => {},
+    Marco: MarcoLibros, rotulo: "PRUEBA", titulo: "Prueba", acento: FAE.ambar,
+    onCompletar: (pct, ms, detalle) => { completado = { pct, detalle }; },
   })));
   return { caja, desmontar: () => { act(() => raiz.unmount()); caja.remove(); } };
 };
 const tocar = (el) => act(() => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
-const escribir = (caja, parte, valor) => {
-  const campo = caja.querySelector(`[data-casilla="${parte}"] input`);
-  act(() => {
-    const setter = Object.getOwnPropertyDescriptor(w.HTMLInputElement.prototype, "value").set;
-    setter.call(campo, String(valor));
-    campo.dispatchEvent(new w.Event("input", { bubbles: true }));
-  });
-};
 const boton = (caja, texto) => [...caja.querySelectorAll("button")].find((b) => b.textContent.includes(texto));
-/*
- * La segunda decisión (D4) va ANTES de escribir: de las tres partes, cuál no
- * se mueve. Es obligatoria —sin ella las casillas van cerradas—, así que todo
- * recorrido de la actividad la contesta primero. `decidir` la acierta.
- */
-const decidir = (caja, indice) => {
-  const b = caja.querySelector(`[data-opcion-segunda="${parteQuieta(indice)}"]`);
-  assert.ok(b, `hecho ${indice + 1}: no hay segunda decisión que contestar`);
-  tocar(b);
+const mov = (k) => movimientoT1_5(totalesTras(k), TRANSACCIONES_CAP2[k]);
+/* Las dos decisiones del hecho k: cada una bien, o mal a propósito. */
+const decidir = (caja, k, { quieta = true, signos = true } = {}) => {
+  const m = mov(k);
+  tocar(caja.querySelector(`[data-parte="${quieta ? m.quieta : m.mueven[0]}"]`));
+  for (const p of m.mueven) {
+    const s = signos ? m.signos[p] : -m.signos[p];
+    tocar(caja.querySelector(`[data-signo="${p}:${s > 0 ? "+" : "-"}"]`));
+  }
 };
+const totalDe = (caja, lado) => caja.querySelector(`[data-total="${lado}"]`).textContent;
+const altoDe = (caja, parte) => Number(caja.querySelector(`[data-tramo="${parte}"]`).dataset.alto);
 
 /*
  * ═══════════ «INCLUDES» DE UNA CONSTANTE VACÍA NO COMPRUEBA NADA ═══════════
@@ -95,12 +93,6 @@ const contiene = (texto, cadena, que) => {
 };
 const CORAL = /#e76f51|rgba?\(\s*231,\s*111,\s*81/i;
 
-/* Escribe los tres totales; en modo corto, solo los que tienen casilla. */
-const anotar = (caja, valores) => {
-  for (const p of PARTES) {
-    if (caja.querySelector(`[data-casilla="${p.id}"] input`)) escribir(caja, p.id, valores[p.id]);
-  }
-};
 
 /* ═══════════════════ LOS TOTALES ═══════════════════ */
 
@@ -229,139 +221,152 @@ test("★★ el modo corto empieza en el quinto hecho, ni antes ni después", ()
   }
 });
 
-test("★★★ en modo corto no se puede escribir la parte quieta, y se arrastra sola", () => {
+/* ═══════════════════ LAS DOS TORRES (P2 de Mai) ═══════════════════ */
+
+test("★★★ ya no hay casillas de cifra, ni pie que compara mientras se escribe, ni historial", () => {
   const { caja, desmontar } = montar();
   try {
-    /* Los cuatro primeros: las tres casillas se escriben. */
-    for (let k = 0; k < 4; k += 1) {
-      assert.equal(caja.querySelectorAll("[data-casilla] input").length, 3, `hecho ${k + 1}: no hay tres casillas`);
-      assert.equal(caja.querySelectorAll("[data-arrastrado]").length, 0, `hecho ${k + 1}: algo se arrastró antes de tiempo`);
-      decidir(caja, k);
-      anotar(caja, totalesTras(k + 1));
-      tocar(boton(caja, "Anotar"));
-      tocar(boton(caja, "Siguiente hecho"));
-    }
-    /* Del quinto en adelante, la quieta se arrastra. */
-    const quieta = parteQuieta(4);
-    /*
-     * Antes de decidir, las tres casillas van iguales: si una trajera el
-     * arrastre puesto, la pregunta estaría contestada.
-     */
-    assert.equal(caja.querySelectorAll("[data-casilla] input").length, 3, "el arrastre delata la respuesta antes de decidir");
-    decidir(caja, 4);
-    assert.equal(caja.querySelectorAll("[data-casilla] input").length, 2, "el quinto no entró en modo corto");
-    const arrastrada = caja.querySelector(`[data-arrastrado="${quieta}"]`);
-    assert.ok(arrastrada, "la parte quieta no se arrastra");
-    assert.ok(arrastrada.textContent.includes(pesos(totalesTras(4)[quieta])),
-      "la arrastrada no enseña el total que venía de antes");
-    contiene(arrastrada.textContent, PIE_T1_5.arrastrado,
-      "la arrastrada no dice por qué está ahí: se lee como un dato del enunciado");
+    assert.equal(caja.querySelectorAll("input").length, 0, "quedó un CampoCifra");
+    assert.equal(caja.querySelector("[data-pie]"), null, "quedó el pie que daba la respuesta (R10)");
+    assert.equal(caja.querySelector("[data-historial]"), null);
+    assert.ok(caja.querySelector('[data-torres][role="img"]'), "no están las torres");
   } finally { desmontar(); }
 });
 
-/* ═══════════════════ EL PIE Y EL HISTORIAL ═══════════════════ */
+test("★★★ la escala es fija: $475.000 miden 150 px en los ocho hechos", () => {
+  assert.equal(altoDeTorre(475000), 150);
+  assert.equal(altoDeTorre(0), 0);
+  /* Lo honesto de la ficha: $10.000 mueven 3,2 px. */
+  assert.equal(altoDeTorre(10000).toFixed(1), "3.2");
+});
 
-test("★★★ el pie comprueba mientras se escribe, sin esperar a enviar", () => {
+test("★★★ cada hecho mueve dos partes por el mismo monto y deja una quieta, y las torres siguen la tabla de Mai", () => {
+  const TABLA = [
+    [300000, 0, 300000], [325000, 25000, 300000], [375000, 75000, 300000], [365000, 65000, 300000],
+    [465000, 65000, 400000], [415000, 65000, 350000], [475000, 125000, 350000], [465000, 115000, 350000],
+  ];
+  for (let k = 0; k < 8; k += 1) {
+    const m = mov(k);
+    assert.equal(m.mueven.length, 2);
+    assert.equal(m.quieta, parteQuieta(k), `hecho ${k + 1}: la quieta`);
+    assert.deepEqual([m.despues[ACTIVO], m.despues[PASIVO], m.despues[PATRIMONIO]], TABLA[k], `hecho ${k + 1}`);
+  }
+});
+
+test("★★★ R10: antes de «Anotar» las torres no se mueven; al anotar van a los totales correctos", () => {
   const { caja, desmontar } = montar();
   try {
-    const pie = () => caja.querySelector("[data-pie]");
-    assert.equal(pie().getAttribute("data-cuadra"), "incompleto", "el pie opina sin tener las tres cifras");
-
-    const real = totalesTras(1);
-    anotar(caja, { ...real, [PASIVO]: real[PASIVO] + 4000 });
-    assert.equal(pie().getAttribute("data-cuadra"), "no", "el pie no avisa de que no cuadra");
-    /* «Hay [Z] de diferencia»: la diferencia es la que se escribió de más. */
-    assert.equal(caja.querySelector("[data-veredicto]").textContent,
-      PIE_T1_5.noCuadra.replace("[Z]", pesos(4000)), "el veredicto no dice cuánta diferencia hay");
-    /*
-     * Y el aviso va en coral EN EL PIE, no en cualquier parte de la pantalla:
-     * un mutante que quitaba el borde del pie sobrevivía porque quedaba coral
-     * en otro sitio.
-     */
-    assert.ok(CORAL.test(pie().getAttribute("style") ?? ""), "el pie no se marca en coral al no cuadrar");
-    /* Y no hace falta haber enviado nada. */
-    assert.equal(caja.querySelectorAll("[data-era]").length, 0, "se reveló algo sin enviar");
-
-    anotar(caja, real);
-    assert.equal(pie().getAttribute("data-cuadra"), "si", "el pie no reconoce que cuadra");
-    assert.equal(caja.querySelector("[data-veredicto]").textContent,
-      PIE_T1_5.cuadra.replace("[X]", pesos(real[ACTIVO])), "el veredicto no dice en cuánto dan igual");
-    assert.ok(!CORAL.test(pie().getAttribute("style") ?? ""), "el pie sigue en coral aunque cuadre");
+    decidir(caja, 0);
+    decidir(caja, 0); /* tocar de nuevo no cambia nada: la parte ya está decidida */
+    assert.equal(totalDe(caja, "izquierda"), "$0", "las torres se movieron antes de anotar");
+    assert.equal(altoDe(caja, ACTIVO), 0);
+    tocar(boton(caja, TORRES_T1_5.anotar));
+    assert.equal(totalDe(caja, "izquierda"), "$300.000");
+    assert.equal(totalDe(caja, "derecha"), "$300.000");
+    assert.equal(altoDe(caja, ACTIVO).toFixed(2), altoDeTorre(300000).toFixed(2));
   } finally { desmontar(); }
 });
 
-test("★★★ el historial va abierto desde el primer hecho anotado", () => {
+test("★★★ el modelo corre también en el error, y el fantasma sale solo en la torre que difiere", () => {
   const { caja, desmontar } = montar();
   try {
-    const hist = () => caja.querySelector("[data-historial]");
-    assert.ok(hist(), "no hay historial");
-    /*
-     * Abierto quiere decir que NO está detrás de un botón ni dentro de un
-     * details plegado. Lo de atrás es el dato con el que se calcula lo de
-     * adelante.
-     */
-    assert.equal(hist().tagName, "DIV", "el historial se volvió plegable");
-    assert.equal(hist().hidden, false);
-    contiene(hist().textContent, HISTORIAL_T1_5.vacio, "el historial vacío");
+    decidir(caja, 0);
+    tocar(boton(caja, TORRES_T1_5.anotar));
+    tocar(boton(caja, TORRES_T1_5.siguiente));
+    /* Hecho 2: entra un computador a crédito (+25.000 activo, +25.000 pasivo). Las dos al revés. */
+    decidir(caja, 1, { signos: false });
+    tocar(boton(caja, TORRES_T1_5.anotar));
+    const real = totalesTras(2);
+    assert.equal(totalDe(caja, "izquierda"), pesos(real[ACTIVO]), "en el error las torres no fueron a lo correcto");
+    assert.equal(totalDe(caja, "derecha"), pesos(real[PASIVO] + real[PATRIMONIO]));
+    assert.ok(caja.querySelector('[data-fantasma="izquierda"]'));
+    assert.ok(caja.querySelector('[data-fantasma="derecha"]'));
+    /* B: dan igual (las dos bajaron) pero no son las cifras del hecho. */
+    assert.equal(caja.querySelector("[data-texto-retro]").textContent, sinEmoji(ERROR_T1_5.B));
+  } finally { desmontar(); }
+  /* Solo una torre distinta: el fantasma solo ahí. */
+  const m = mov(1);
+  const r = evaluarTorresT1_5(m, m.quieta, { [ACTIVO]: 1, [PASIVO]: -1 });
+  assert.deepEqual(r.fantasma, { izquierda: false, derecha: true });
+  assert.equal(r.patron, "A");
+  assert.equal(r.texto, ERROR_T1_5.A.replace("{Z}", pesos(50000)));
+});
 
-    /*
-     * Se avanzan DOS hechos, no uno. Tras el primero los tres totales son
-     * 300.000, 0 y 300.000: comprobar que la fila «desglosa los dos lados»
-     * contra esas cifras no comprueba nada, porque el activo y el patrimonio
-     * son el mismo número. Sobrevivió un mutante que borraba el desglose.
-     * Tras el segundo son 325.000, 25.000 y 300.000: tres cifras distintas.
-     */
-    for (let k = 0; k < 2; k += 1) {
-      decidir(caja, k);
-      anotar(caja, totalesTras(k + 1));
-      tocar(boton(caja, "Anotar"));
-      tocar(boton(caja, "Siguiente hecho"));
-    }
+test("★★★ la primera decisión se marca al instante, y la segunda va siempre sobre las dos que de verdad se mueven", () => {
+  const { caja, desmontar } = montar();
+  try {
+    assert.equal(caja.querySelector("[data-pregunta]").textContent, TORRES_T1_5.preguntaQuieta);
+    assert.equal(caja.querySelectorAll("[data-signos]").length, 0, "los «+» y «−» salieron antes de decidir la quieta");
+    const m = mov(0);
+    tocar(caja.querySelector(`[data-parte="${m.mueven[0]}"]`)); /* mal: esa sí se mueve */
+    assert.equal(caja.querySelector(`[data-parte="${m.mueven[0]}"] [data-pastilla]`).dataset.pastilla, "tachada");
+    const iba = caja.querySelector(`[data-parte="${m.quieta}"] [data-pastilla]`);
+    assert.equal(iba.dataset.pastilla, "revelada");
+    assert.equal(iba.textContent, `Iba aquí: ${TORRES_T1_5.quedaIgual}`);
+    assert.equal(caja.querySelector("[data-pregunta]").textContent, TORRES_T1_5.preguntaDireccion);
+    assert.deepEqual([...caja.querySelectorAll("[data-signos]")].map((g) => g.dataset.signos).sort(), [...m.mueven].sort(),
+      "la segunda decisión no va sobre las dos que se mueven");
+    for (const p of m.mueven) tocar(caja.querySelector(`[data-signo="${p}:${m.signos[p] > 0 ? "+" : "-"}"]`));
+    tocar(boton(caja, TORRES_T1_5.anotar));
+    assert.equal(caja.querySelector("[data-texto-retro]").textContent, sinEmoji(ERROR_T1_5.C));
+  } finally { desmontar(); }
+  /* Acertada, la pastilla dice «Correcto: se queda igual». */
+  const dos = montar();
+  try {
+    tocar(dos.caja.querySelector(`[data-parte="${mov(0).quieta}"]`));
+    assert.equal(dos.caja.querySelector(`[data-parte="${mov(0).quieta}"] [data-pastilla]`).textContent, `Correcto: ${TORRES_T1_5.quedaIgual}`);
+  } finally { dos.desmontar(); }
+});
 
-    const fila = caja.querySelector(`[data-fila-historial="${TRANSACCIONES_CAP2[1].id}"]`);
-    assert.ok(fila, "el hecho anotado no entró al historial");
-    const t = totalesTras(2);
-    assert.equal(new Set([t[ACTIVO], t[PASIVO], t[PATRIMONIO]]).size, 3,
-      "las tres cifras de este paso ya no son distintas: la prueba dejó de comprobar el desglose");
-    for (const p of PARTES) {
-      assert.ok(fila.textContent.includes(pesos(t[p.id])),
-        `la fila no trae ${p.idea}: el historial dejó de desglosar los dos lados`);
-    }
-    /* Y dice «Hecho 2: …», el texto que decidió Levi. */
-    assert.equal(fila.textContent, `Hecho 2: ${pesos(t[ACTIVO])} = ${pesos(t[PASIVO])} + ${pesos(t[PATRIMONIO])}`);
+test("★★ «Anotar» no se puede tocar sin las dos decisiones", () => {
+  const { caja, desmontar } = montar();
+  try {
+    const anotar = () => boton(caja, TORRES_T1_5.anotar);
+    assert.equal(anotar().disabled, true);
+    const m = mov(0);
+    tocar(caja.querySelector(`[data-parte="${m.quieta}"]`));
+    assert.equal(anotar().disabled, true);
+    tocar(caja.querySelector(`[data-signo="${m.mueven[0]}:+"]`));
+    assert.equal(anotar().disabled, true, "se puede anotar con una sola dirección");
+    tocar(caja.querySelector(`[data-signo="${m.mueven[1]}:+"]`));
+    assert.equal(anotar().disabled, false);
   } finally { desmontar(); }
 });
 
-test("★★ los ocho hechos van en orden, y son los ocho", () => {
+test("★★★ los ocho hechos en orden, un solo intento, y el registro guarda dos decisiones por hecho", () => {
   const { caja, desmontar } = montar();
   try {
     for (let k = 0; k < TRANSACCIONES_CAP2.length; k += 1) {
-      assert.equal(caja.querySelector("[data-hecho]").getAttribute("data-hecho"), TRANSACCIONES_CAP2[k].id,
-        `la posición ${k + 1} no trae el hecho ${k + 1}`);
-      decidir(caja, k);
-      anotar(caja, totalesTras(k + 1));
-      tocar(boton(caja, "Anotar"));
-      tocar(boton(caja, k + 1 === TRANSACCIONES_CAP2.length ? "Ver el resultado" : "Siguiente hecho"));
+      assert.equal(caja.querySelector("[data-hecho]").getAttribute("data-hecho"), TRANSACCIONES_CAP2[k].id);
+      assert.equal(caja.querySelector("[data-contador]").textContent, `Hecho ${k + 1} de 8`);
+      /* El hecho 3 con la quieta mal: no hay reintento, se sigue. */
+      decidir(caja, k, { quieta: k !== 2 });
+      tocar(boton(caja, TORRES_T1_5.anotar));
+      assert.equal(boton(caja, TORRES_T1_5.anotar), undefined, "quedó un reintento");
+      if (k === 7) assert.equal(caja.querySelector("[data-texto-retro]").textContent, sinEmoji(ACIERTO_T1_5_FINAL));
+      tocar(boton(caja, k === 7 ? TORRES_T1_5.verResultado : TORRES_T1_5.siguiente));
     }
-    assert.ok(caja.querySelector("[data-final]"), "no se llega al cierre");
-    assert.ok(caja.querySelector("[data-final]").textContent.includes(pesos(465000)),
-      "el cierre no enseña los 465.000");
+    assert.ok(caja.querySelector("[data-final]").textContent.includes(pesos(465000)));
+    assert.ok(!/[✅❌]/u.test(caja.textContent), "se pintó un emoji");
   } finally { desmontar(); }
+  assert.ok(completado, "no se llamó a onCompletar");
+  assert.equal(completado.detalle.length, 16);
+  assert.ok(completado.detalle.every((d) => d.intentos === 1));
+  assert.deepEqual(completado.detalle.slice(4, 6).map((d) => [d.item, d.ok]), [["cal-3:quieta", false], ["cal-3:direccion", true]]);
+  /* 7 hechos enteros y medio del tercero: 7,5 de 8. */
+  assert.equal(completado.pct, (7.5 / 8) * 100);
+  /* El panel docente lee los dos ítems como el hecho. */
+  assert.equal(hechoDeItem("cal-3:quieta"), TRANSACCIONES_CAP2[2].texto);
+  assert.equal(hechoDeItem("cal-3"), TRANSACCIONES_CAP2[2].texto);
 });
 
-test("★★ no se puede anotar con una casilla vacía", () => {
-  const { caja, desmontar } = montar();
-  try {
-    /* Primero la segunda decisión: hasta contestarla las casillas van cerradas. */
-    assert.equal(boton(caja, "Primero: cuál no se mueve").disabled, true);
-    decidir(caja, 0);
-    assert.equal(boton(caja, "Escribe los totales").disabled, true);
-    escribir(caja, ACTIVO, 300000);
-    assert.equal(boton(caja, "Escribe los totales").disabled, true, "se puede anotar con una sola cifra");
-    escribir(caja, PASIVO, 0);
-    escribir(caja, PATRIMONIO, 300000);
-    assert.equal(boton(caja, "Anotar").disabled, false);
-  } finally { desmontar(); }
+test("★★ sin emoji al pintar, y los textos publicados no se tocan", () => {
+  for (const t of Object.values(ERROR_T1_5)) {
+    assert.ok(/^❌ /u.test(t), "el texto publicado cambió");
+    assert.ok(!/[✅❌]/u.test(sinEmoji(t)));
+  }
+  assert.ok(ACIERTO_T1_5_FINAL.startsWith("✅ "));
+  assert.equal(sinEmoji(ACIERTO_T1_5_FINAL), ACIERTO_T1_5_FINAL.slice(2));
 });
 
 /* ═══════════════════ EL VOCABULARIO Y EL CORAL ═══════════════════ */
@@ -386,9 +391,12 @@ test("★★ el coral solo sale cuando algo está mal", () => {
   try {
     const contenido = () => caja.querySelector("[data-contenido]").innerHTML;
     assert.ok(!CORAL.test(contenido()), "hay coral antes de que nadie se equivoque");
-    const real = totalesTras(1);
-    anotar(caja, { ...real, [PASIVO]: real[PASIVO] + 4000 });
-    assert.ok(CORAL.test(contenido()), "no cuadrar no se marca en coral");
+    decidir(caja, 0);
+    tocar(boton(caja, TORRES_T1_5.anotar));
+    assert.ok(!CORAL.test(contenido()), "un acierto se marca en coral");
+    tocar(boton(caja, TORRES_T1_5.siguiente));
+    decidir(caja, 1, { quieta: false });
+    assert.ok(CORAL.test(contenido()), "tocar la parte que se mueve no se marca en coral");
   } finally { desmontar(); }
 });
 
