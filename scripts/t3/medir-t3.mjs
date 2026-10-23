@@ -30,6 +30,8 @@
  * estados midió cada pieza: un cero no es un «pasa».
  *
  *   node scripts/t3/medir-t3.mjs [carpeta-de-capturas]
+ *   SOLO_A3=1 node scripts/t3/medir-t3.mjs     (solo el alto de las casillas y
+ *                                             de la hoja de la act. 3, a 320)
  *
  * Imprime la tabla de la línea base en Markdown y el detalle de cada
  * hallazgo. Sale con 1 si algo no cumple (es la línea base: hoy puede salir
@@ -257,7 +259,8 @@ const resultados = [];
 const detalle = [];
 let ok = true;
 
-for (const ancho of ANCHOS) {
+/* SOLO_A3=1 mide solo el encargo 3 (las casillas y la hoja de la act. 3), sin la línea base. */
+for (const ancho of process.env.SOLO_A3 ? [] : ANCHOS) {
   const ctx = await contexto(ancho);
   for (const p of PIEZAS) {
     const k = p.k ?? null;
@@ -304,6 +307,52 @@ for (const ancho of ANCHOS) {
   await ctx.close();
 }
 
+/*
+ * ENCARGO 3 (#469, §7 de e3-t3-itagaki-lenguaje-hacer-v1): a 320, el alto de
+ * las casillas de la act. 3 y de su hoja «Elige la cuenta», y, para
+ * comparar, la hoja de r5 (HojaRenglon, scripts/e5/harness-r5). El objeto 1
+ * se iguala a la act. 3 si se aparta en más de 4 px de 44.
+ */
+/* Lo de dentro de un <figure> es el ejemplo de «Así se juega»: no cuenta. */
+const alto = (sel) => [...document.querySelectorAll(sel)].filter((e) => !e.closest("figure")).map((e) => Math.round(e.getBoundingClientRect().height * 10) / 10);
+const medidasA3 = {};
+{
+  const ctx = await contexto(320);
+  const pg = await ctx.newPage();
+  await pg.goto(`${BASE}#hacer:${ACT3_T3.id}`);
+  await pg.waitForTimeout(1200);
+  /* «Así se juega» primero: se sale por su botón hasta que aparezcan las casillas. */
+  for (let k = 0; k < 8 && (await pg.locator("[data-asj-siguiente]").count()); k++) {
+    const b = pg.locator('button:visible:has-text("Siguiente"), button:visible:has-text("Jugar"), button:visible:has-text("Empezar")');
+    if (!(await b.count())) break;
+    await b.first().click();
+    await pg.waitForTimeout(700);
+  }
+  medidasA3.casillas = await pg.evaluate(alto, "[data-casilla]");
+  await pg.locator("[data-casilla]:not(figure [data-casilla])").first().click();
+  await pg.waitForTimeout(900);
+  medidasA3.hoja = await pg.evaluate(alto, "[data-hoja]");
+  medidasA3.opcionesHoja = [...new Set(await pg.evaluate(alto, "[data-hoja] [data-opcion]"))];
+  medidasA3.botonesHoja = await pg.evaluate(() => [...document.querySelectorAll("[data-hoja] button:not([data-opcion])")].map((b) => `${(b.textContent || "").trim().slice(0, 20)} ${Math.round(b.getBoundingClientRect().height)}`));
+  await ctx.close();
+}
+const medidasR5 = {};
+{
+  const ctx = await contexto(320);
+  const pg = await ctx.newPage();
+  await pg.goto(`${BASE.replace("/scripts/t3/harness-t3/", "/scripts/e5/harness-r5/")}#r5-3`);
+  await pg.waitForTimeout(1500);
+  const anadir = pg.locator('[data-anadir="debe"]');
+  if (await anadir.count()) {
+    await anadir.first().click();
+    await pg.waitForTimeout(900);
+    medidasR5.hoja = await pg.evaluate(alto, "[data-hoja-renglon]");
+    medidasR5.filas = [...new Set(await pg.evaluate(alto, "[data-hoja-renglon] [data-cuenta]"))];
+    medidasR5.cabecera = await pg.evaluate(() => [...document.querySelectorAll("[data-hoja-renglon] [data-cancelar]")].map((b) => Math.round(b.getBoundingClientRect().height)));
+  }
+  await ctx.close();
+}
+
 await navegador.close();
 await servidor.close();
 
@@ -329,5 +378,13 @@ for (const r of resultados) {
   console.log("");
 }
 console.log("</details>");
+console.log("\n**Act. 3 a 320 (encargo 3)**");
+console.log(`- casillas: ${medidasA3.casillas?.join(", ") || "no se alcanzaron"} px`);
+console.log(`- hoja «Elige la cuenta»: ${medidasA3.hoja?.join(", ") || "no se abrió"} px de alto; opciones de ${medidasA3.opcionesHoja?.join(", ")} px; otros botones: ${medidasA3.botonesHoja?.join(" · ") || "—"}`);
+console.log(`- hoja de r5-3 (HojaRenglon): ${medidasR5.hoja?.join(", ") || "no se abrió"} px de alto; filas de ${medidasR5.filas?.join(", ")} px; «Cancelar» ${medidasR5.cabecera?.join(", ")} px`);
+if (process.env.SOLO_A3) {
+  console.log("\nSOLO_A3: se midió solo el encargo 3; la línea base no se corrió y no hay veredicto.");
+  process.exit(0);
+}
 console.log(ok ? "\nPASA: T3 cumple a 320 y a 375 en todos los estados medidos." : "\nNO CUMPLE: ver la tabla (es la línea base).");
 process.exit(ok ? 0 : 1);
