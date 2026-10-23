@@ -38,6 +38,7 @@
 - Varas de aceptación de la célula (panel docente y slides de T4): `orquestador/revisiones/panel-docente/aceptacion.md`.
 
 ## Cómo hablarles y arrancar
+- Regla i (23 oct): si hay que rehacer un agente, se le da su skill (`.claude/skills/celula-*`), no el prompt maestro entero; buscar con `scripts/canon.mjs` antes de abrir.
 - Ya no son subagentes: cada uno vive en su chat o sesión fija (arriba), capacitado con su prompt maestro del canon (sha a557d1f) y el contexto de la célula. Un encargo nuevo va a esa misma sede, un mensaje por lote.
 - Mensajes con Chrome, una pestaña en el grupo propio: el texto se inserta con `document.execCommand('insertText')` en `[contenteditable="true"]` (los prompts largos se traen de raw.githubusercontent.com por sha dentro de la página) y se envía con un clic en el botón (`button[aria-label="Enviar mensaje"]` en los chats, «Enviar» en Claude Code). Return a veces no envía: comprobar siempre que el cuadro quedó vacío. Ojo: el cuadro de «Nueva sesión» de Claude Code puede tener el borrador de otro general; no se borra.
 - Herramientas: sonda `scripts/t4/sonda-enganche/` (README; `--tema=t4`), guardia `scripts/t4/guardia-enganche.mjs`, medidor `scripts/t4/medir-t4.mjs`.
