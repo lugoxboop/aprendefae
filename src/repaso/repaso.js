@@ -20,6 +20,21 @@ export const ID_REPASO = "repaso-diario";
 /* Los temas (materias, en el lenguaje de la ficha) cuyo contenido entra al pool. v1: solo Macro. */
 export const MATERIAS_DEL_POOL = ["politica-economica", "demanda-agregada", "politica-fiscal", "politica-monetaria"];
 
+/*
+ * EL REPASO DE CONTABILIDAD (orden de Mateo del 23-oct-2026). El mismo motor,
+ * otro pool: mezcla lo ya visto entre los cuatro temas que se ven este
+ * semestre. Es una actividad aparte —su propio id, su propio «hecho hoy»—, así
+ * que hacer el de Macro no gasta el de Contabilidad ni al revés. Todo lo
+ * demás (cupos, tope, desbloqueo, mensajes) es la misma regla.
+ */
+export const ID_REPASO_CONTABILIDAD = "repaso-diario-contabilidad";
+export const TEMAS_DEL_POOL_CONTABILIDAD = [
+  "introduccion-contabilidad",
+  "cuentas-debe-haber",
+  "ingresos-gastos-y-caja",
+  "efectivo-caja-menor-bancos",
+];
+
 export const ITEMS_POR_REPASO = 10;
 export const MINIMO_ACTIVIDADES = 3;
 export const MINIMO_POOL = 10;

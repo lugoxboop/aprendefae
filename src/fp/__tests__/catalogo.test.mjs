@@ -240,7 +240,7 @@ test("una actividad retirada no la sigue ofreciendo el cliente", () => {
   assert.deepEqual(puestas, [], `retiradas que el cliente todavía ofrece: ${puestas.join(", ")}`);
 });
 
-test("renovable a diario: las mismas en el cliente y en el servidor, y solo el Repaso", () => {
+test("renovable a diario: las mismas en el cliente y en el servidor, y solo los Repasos", () => {
   /*
    * La marca cambia qué cuenta como repetición en registrar_fp. Si el cliente
    * la creyera puesta y el servidor no, el Repaso de mañana pagaría 0 sin
@@ -253,5 +253,6 @@ test("renovable a diario: las mismas en el cliente y en el servidor, y solo el R
   for (const act of ACTIVIDADES_TRANSVERSALES) if (act.clasificacion?.renovableDiario) cliente.add(act.id);
 
   assert.deepEqual([...renovablesDelServidor()].sort(), [...cliente].sort());
-  assert.deepEqual([...cliente], ["repaso-diario"]);
+  /* Los dos Repasos Diarios (0033 y 0152), y nada más. */
+  assert.deepEqual([...cliente], ["repaso-diario", "repaso-diario-contabilidad"]);
 });
