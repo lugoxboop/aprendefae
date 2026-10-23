@@ -433,7 +433,8 @@ export const ALT_T1_5 = `Tres casillas para escribir: ${enLista(PARTES.map((p) =
  * ═══════════ T1-5 CON LAS DOS TORRES (P2 de Mai, 23-oct) ═══════════
  *
  * Los textos nuevos de la P2 (orquestador/conocimiento/fichas/
- * b-t1-5-torres-p2-mai.md, §7). PARA SHOKO. Lo publicado de arriba no se
+ * b-t1-5-torres-p2-mai.md, §7), con las correcciones de la auditoría de
+ * Shoko (revisiones/b-t1-bancos-y-torres-shoko.md). PARA SHOKO. Lo publicado de arriba no se
  * toca: los 8 hechos, PARTES y ERROR_T1_5 se reusan tal cual (la vista les
  * quita el emoji al pintarlos), y `T1_5.consigna` se queda como estaba
  * aunque la vista ya no la muestre.
@@ -443,9 +444,11 @@ export const ALT_T1_5 = `Tres casillas para escribir: ${enLista(PARTES.map((p) =
  * «Correcto.» y el 8 lleva ACIERTO_T1_5_FINAL sin el emoji (§0).
  */
 export const TORRES_T1_5 = {
-  consigna: "Lee el hecho. Di cuál no se mueve y hacia dónde van las otras dos.",
-  preguntaQuieta: "¿Cuál de las tres NO se mueve con este hecho?",
-  preguntaDireccion: "¿Las otras dos suben o bajan?",
+  consigna: "Lee el hecho. Di cuál no se mueve y con cuánto quedan las otras dos.",
+  /* El «no» va en negrilla, no en mayúsculas (Shoko): la vista resalta la palabra `negrillaQuieta`. */
+  preguntaQuieta: "¿Cuál de las tres no se mueve con este hecho?",
+  negrillaQuieta: "no",
+  preguntaDireccion: "¿Con cuánto queda cada una de las otras dos?",
   /* «Correcto: se queda igual» e «Iba aquí: se queda igual»: lo que se pega a la palabra de la pastilla. */
   quedaIgual: "se queda igual",
   anotar: "Anotar",

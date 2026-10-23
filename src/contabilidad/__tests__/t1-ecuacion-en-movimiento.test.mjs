@@ -44,7 +44,7 @@ const LaEcuacionEnMovimiento = (await import("../../components/mecanicas/libros/
 const { MarcoLibros } = await import("../../components/mecanicas/bloques/marcos.jsx");
 const {
   totalesTras, parteQuieta, enModoCorto, evaluarT1_5, efectoDe,
-  movimientoT1_5, evaluarTorresT1_5, altoDeTorre, sinEmoji, hechoDeItem,
+  movimientoT1_5, evaluarTorresT1_5, opcionesTotalT1_5, altoDeTorre, sinEmoji, hechoDeItem,
 } = await import("../tema1.js");
 const {
   TRANSACCIONES_CAP2, T1_5, PARTES, ERROR_T1_5, DESDE_EL_CORTO, TORRES_T1_5, ACIERTO_T1_5_FINAL,
@@ -67,14 +67,14 @@ const montar = () => {
 const tocar = (el) => act(() => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
 const boton = (caja, texto) => [...caja.querySelectorAll("button")].find((b) => b.textContent.includes(texto));
 const mov = (k) => movimientoT1_5(totalesTras(k), TRANSACCIONES_CAP2[k]);
+/* El total elegido para una parte: el correcto, o el de restar donde había que sumar (o al revés). */
+const totalPara = (m, p, bien) => (bien ? m.despues[p] : m.antes[p] - m.signos[p] * m.monto);
+const elegirTotal = (caja, p, v) => tocar(caja.querySelector(`[data-opcion-total="${p}:${v}"]`));
 /* Las dos decisiones del hecho k: cada una bien, o mal a propósito. */
 const decidir = (caja, k, { quieta = true, signos = true } = {}) => {
   const m = mov(k);
   tocar(caja.querySelector(`[data-parte="${quieta ? m.quieta : m.mueven[0]}"]`));
-  for (const p of m.mueven) {
-    const s = signos ? m.signos[p] : -m.signos[p];
-    tocar(caja.querySelector(`[data-signo="${p}:${s > 0 ? "+" : "-"}"]`));
-  }
+  for (const p of m.mueven) elegirTotal(caja, p, totalPara(m, p, signos));
 };
 const totalDe = (caja, lado) => caja.querySelector(`[data-total="${lado}"]`).textContent;
 const altoDe = (caja, parte) => Number(caja.querySelector(`[data-tramo="${parte}"]`).dataset.alto);
@@ -286,7 +286,7 @@ test("★★★ el modelo corre también en el error, y el fantasma sale solo en
   } finally { desmontar(); }
   /* Solo una torre distinta: el fantasma solo ahí. */
   const m = mov(1);
-  const r = evaluarTorresT1_5(m, m.quieta, { [ACTIVO]: 1, [PASIVO]: -1 });
+  const r = evaluarTorresT1_5(m, m.quieta, { [ACTIVO]: m.despues[ACTIVO], [PASIVO]: m.antes[PASIVO] - m.monto });
   assert.deepEqual(r.fantasma, { izquierda: false, derecha: true });
   assert.equal(r.patron, "A");
   assert.equal(r.texto, ERROR_T1_5.A.replace("{Z}", pesos(50000)));
@@ -296,7 +296,7 @@ test("★★★ la primera decisión se marca al instante, y la segunda va siemp
   const { caja, desmontar } = montar();
   try {
     assert.equal(caja.querySelector("[data-pregunta]").textContent, TORRES_T1_5.preguntaQuieta);
-    assert.equal(caja.querySelectorAll("[data-signos]").length, 0, "los «+» y «−» salieron antes de decidir la quieta");
+    assert.equal(caja.querySelectorAll("[data-totales]").length, 0, "los totales salieron antes de decidir la quieta");
     const m = mov(0);
     tocar(caja.querySelector(`[data-parte="${m.mueven[0]}"]`)); /* mal: esa sí se mueve */
     assert.equal(caja.querySelector(`[data-parte="${m.mueven[0]}"] [data-pastilla]`).dataset.pastilla, "tachada");
@@ -304,9 +304,9 @@ test("★★★ la primera decisión se marca al instante, y la segunda va siemp
     assert.equal(iba.dataset.pastilla, "revelada");
     assert.equal(iba.textContent, `Iba aquí: ${TORRES_T1_5.quedaIgual}`);
     assert.equal(caja.querySelector("[data-pregunta]").textContent, TORRES_T1_5.preguntaDireccion);
-    assert.deepEqual([...caja.querySelectorAll("[data-signos]")].map((g) => g.dataset.signos).sort(), [...m.mueven].sort(),
+    assert.deepEqual([...caja.querySelectorAll("[data-totales]")].map((g) => g.dataset.totales).sort(), [...m.mueven].sort(),
       "la segunda decisión no va sobre las dos que se mueven");
-    for (const p of m.mueven) tocar(caja.querySelector(`[data-signo="${p}:${m.signos[p] > 0 ? "+" : "-"}"]`));
+    for (const p of m.mueven) elegirTotal(caja, p, m.despues[p]);
     tocar(boton(caja, TORRES_T1_5.anotar));
     assert.equal(caja.querySelector("[data-texto-retro]").textContent, sinEmoji(ERROR_T1_5.C));
   } finally { desmontar(); }
@@ -326,9 +326,9 @@ test("★★ «Anotar» no se puede tocar sin las dos decisiones", () => {
     const m = mov(0);
     tocar(caja.querySelector(`[data-parte="${m.quieta}"]`));
     assert.equal(anotar().disabled, true);
-    tocar(caja.querySelector(`[data-signo="${m.mueven[0]}:+"]`));
-    assert.equal(anotar().disabled, true, "se puede anotar con una sola dirección");
-    tocar(caja.querySelector(`[data-signo="${m.mueven[1]}:+"]`));
+    elegirTotal(caja, m.mueven[0], m.despues[m.mueven[0]]);
+    assert.equal(anotar().disabled, true, "se puede anotar con un solo total");
+    elegirTotal(caja, m.mueven[1], m.despues[m.mueven[1]]);
     assert.equal(anotar().disabled, false);
   } finally { desmontar(); }
 });
@@ -367,6 +367,66 @@ test("★★ sin emoji al pintar, y los textos publicados no se tocan", () => {
   }
   assert.ok(ACIERTO_T1_5_FINAL.startsWith("✅ "));
   assert.equal(sinEmoji(ACIERTO_T1_5_FINAL), ACIERTO_T1_5_FINAL.slice(2));
+});
+
+test("★★★ la decisión 2 es el total nuevo: anterior más el monto, anterior menos el monto, o el monto solo", () => {
+  /* Hecho 2: entra un computador a crédito por 25.000; el activo venía de 300.000. */
+  const m = mov(1);
+  assert.deepEqual(opcionesTotalT1_5(m, ACTIVO), [25000, 275000, 325000]);
+  /* Total anterior en cero: el monto solo ES el total nuevo, así que van dos y no se repite ninguna. */
+  assert.deepEqual(opcionesTotalT1_5(m, PASIVO), [-25000, 25000]);
+  for (let k = 0; k < 8; k += 1) {
+    const mk = mov(k);
+    for (const p of mk.mueven) {
+      const ops = opcionesTotalT1_5(mk, p);
+      assert.ok(ops.includes(mk.despues[p]), `hecho ${k + 1}, ${p}: la correcta no está entre las opciones`);
+      assert.equal(new Set(ops).size, ops.length);
+      assert.deepEqual(ops, [...ops].sort((a, b) => a - b), "las opciones no van de menor a mayor");
+    }
+  }
+  const { caja, desmontar } = montar();
+  try {
+    decidir(caja, 0);
+    tocar(boton(caja, TORRES_T1_5.anotar));
+    tocar(boton(caja, TORRES_T1_5.siguiente));
+    tocar(caja.querySelector(`[data-parte="${m.quieta}"]`));
+    assert.equal(caja.querySelector("[data-pregunta]").textContent, TORRES_T1_5.preguntaDireccion);
+    /* El monto solo, en vez del total: «Iba aquí: $325.000». */
+    elegirTotal(caja, ACTIVO, 25000);
+    elegirTotal(caja, PASIVO, 25000);
+    tocar(boton(caja, TORRES_T1_5.anotar));
+    const iba = caja.querySelector(`[data-opcion-total="${ACTIVO}:325000"] [data-pastilla]`);
+    assert.equal(iba.textContent, "Iba aquí: $325.000");
+    assert.equal(caja.querySelector(`[data-opcion-total="${ACTIVO}:25000"] [data-pastilla]`).dataset.pastilla, "tachada");
+  } finally { desmontar(); }
+});
+
+test("★★ la pregunta 1 lleva el «no» en negrilla, no en mayúsculas", () => {
+  const { caja, desmontar } = montar();
+  try {
+    assert.ok(!/NO/.test(caja.querySelector("[data-pregunta]").textContent));
+    assert.equal(caja.querySelector("[data-pregunta] [data-negrilla]").textContent, "no");
+  } finally { desmontar(); }
+});
+
+test("★★★ el id, el fpBase y la forma del registro no cambian (decisión de Sakuta sobre el puntaje)", () => {
+  assert.equal(T1_5.id, "t1-la-ecuacion-en-movimiento");
+  assert.equal(T1_5.fpBase, 50);
+  const { caja, desmontar } = montar();
+  try {
+    for (let k = 0; k < 8; k += 1) {
+      decidir(caja, k);
+      tocar(boton(caja, TORRES_T1_5.anotar));
+      tocar(boton(caja, k === 7 ? TORRES_T1_5.verResultado : TORRES_T1_5.siguiente));
+    }
+  } finally { desmontar(); }
+  /* onCompletar(pct, ms, detalle): la misma firma que llega a registrarActividadCompletada, y cada fila con las claves de siempre. */
+  assert.equal(completado.pct, 100);
+  for (const d of completado.detalle) {
+    assert.deepEqual(Object.keys(d).sort(), ["intentos", "item", "ok", "orden", "respuesta"]);
+    assert.equal(typeof d.item, "string");
+  }
+  assert.deepEqual(completado.detalle.map((d) => d.orden), completado.detalle.map((_, k) => k + 1));
 });
 
 /* ═══════════════════ EL VOCABULARIO Y EL CORAL ═══════════════════ */

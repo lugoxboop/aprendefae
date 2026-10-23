@@ -334,8 +334,8 @@ export function evaluarT1_5(indice, escrito, ejemplo = null) {
 /*
  * ═══════════ T1-5 CON LAS DOS TORRES (P2 de Mai) ═══════════
  *
- * Dos decisiones por hecho, en vez de tres cifras: cuál parte NO se mueve, y
- * en las otras dos, «+ monto» o «− monto». La segunda se pide SIEMPRE sobre
+ * Dos decisiones por hecho, en vez de tres cifras: cuál parte no se mueve, y
+ * con cuánto queda cada una de las otras dos. La segunda se pide SIEMPRE sobre
  * las dos que de verdad se mueven, aunque la primera haya fallado: así cada
  * una se califica por su lado y el registro guarda las dos.
  */
@@ -357,25 +357,43 @@ export function movimientoT1_5(antes, hecho) {
 }
 
 /*
- * Califica las dos decisiones. `signos` trae +1 o −1 para cada parte que de
- * verdad se mueve. La devolución sigue la ficha (§3): si falló la primera, C;
- * si no, con la segunda mal, A cuando los lados no darían igual ({Z} es la
- * diferencia) y B cuando darían igual con otras cifras.
+ * ═══════════ LA DECISIÓN 2 ES EL TOTAL NUEVO (auditoría de Shoko, 23-oct) ═══════════
+ *
+ * Con «+ monto» y «− monto» el estudiante decidía solo el sentido: era la
+ * pregunta de t1-4 otra vez (C6). Ahora elige con cuánto queda cada parte que
+ * se mueve, entre tres: el total anterior más el monto, el total anterior
+ * menos el monto, y el monto solo (confundir el movimiento con el saldo).
+ *
+ * Cuando dos de las tres dan la misma cifra (total anterior en cero: el monto
+ * solo ES el total nuevo) se deja una sola. Van de menor a mayor, para que la
+ * posición no delate la correcta. Las negativas (hecho 3, el pasivo: 25.000 −
+ * 50.000) se dejan: es la cifra que da restar donde había que sumar.
+ */
+export function opcionesTotalT1_5(mov, parte) {
+  const valores = [mov.antes[parte] + mov.monto, mov.antes[parte] - mov.monto, mov.monto];
+  return [...new Set(valores)].sort((a, b) => a - b);
+}
+
+/*
+ * Califica las dos decisiones. `totales` trae la cifra elegida para cada
+ * parte que de verdad se mueve. La devolución sigue la ficha (§3): si falló
+ * la primera, C; si no, con la segunda mal, A cuando los lados no darían
+ * igual ({Z} es la diferencia) y B cuando darían igual con otras cifras.
  *
  * `elegido` son los totales que habría dado lo que eligió el estudiante: de
  * ahí sale el fantasma, solo en la torre que difiere de la correcta.
  */
-export function evaluarTorresT1_5(mov, quietaElegida, signos) {
+export function evaluarTorresT1_5(mov, quietaElegida, totales) {
   const quietaOk = quietaElegida === mov.quieta;
-  const signosOk = Object.fromEntries(mov.mueven.map((p) => [p, signos[p] === mov.signos[p]]));
-  const direccionOk = mov.mueven.every((p) => signosOk[p]);
+  const totalesOk = Object.fromEntries(mov.mueven.map((p) => [p, totales[p] === mov.despues[p]]));
+  const direccionOk = mov.mueven.every((p) => totalesOk[p]);
   const elegido = { ...mov.antes };
-  for (const p of mov.mueven) elegido[p] += (signos[p] ?? 0) * mov.monto;
+  for (const p of mov.mueven) elegido[p] = totales[p] ?? mov.antes[p];
   const fantasma = {
     izquierda: elegido[ACTIVO] !== mov.despues[ACTIVO],
     derecha: elegido[PASIVO] !== mov.despues[PASIVO] || elegido[PATRIMONIO] !== mov.despues[PATRIMONIO],
   };
-  const base = { ok: quietaOk && direccionOk, quietaOk, direccionOk, signosOk, elegido, real: mov.despues, fantasma };
+  const base = { ok: quietaOk && direccionOk, quietaOk, direccionOk, totalesOk, elegido, real: mov.despues, fantasma };
   if (!quietaOk) return { ...base, patron: "C", texto: ERROR_T1_5.C };
   if (!direccionOk) {
     const hueco = Math.abs(elegido[ACTIVO] - (elegido[PASIVO] + elegido[PATRIMONIO]));

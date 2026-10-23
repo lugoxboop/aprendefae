@@ -5,7 +5,7 @@ import {
   T1_5, PARTES, TRANSACCIONES_CAP2, ACIERTO_T1_5_FINAL, TORRES_T1_5,
 } from "../../../../data/contabilidadTema1.js";
 import {
-  totalesTras, movimientoT1_5, evaluarTorresT1_5, altoDeTorre, ALTO_TORRE_T1_5, sinEmoji, pesoDeCadaItem,
+  totalesTras, movimientoT1_5, evaluarTorresT1_5, opcionesTotalT1_5, altoDeTorre, ALTO_TORRE_T1_5, sinEmoji, pesoDeCadaItem,
 } from "../../../../contabilidad/tema1.js";
 import { Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
@@ -32,7 +32,9 @@ import {
  *
  * 1 · tocar la parte que NO se mueve. Se marca al instante (E4).
  * 2 · en las otras dos —las que de verdad se mueven, aunque la 1 haya
- *     fallado—, «+ monto» o «− monto». Las torres NO se mueven todavía.
+ *     fallado—, con cuánto queda cada una: el total anterior más el monto,
+ *     menos el monto, o el monto solo (auditoría de Shoko: con «+/− monto»
+ *     solo se decidía el sentido, como en t1-4). Las torres NO se mueven todavía.
  * «Anotar»: las torres van a los totales correctos, también en el error, y si
  * lo elegido daba otra altura queda el fantasma —el contorno coral
  * discontinuo de la torre que habría salido— solo en la torre que difiere.
@@ -48,8 +50,6 @@ const CIFRA = { fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, mono
 const SECUNDARIO = "#A8B6C8";
 const NAVY = "#1D3557";
 const TEAL = "#2A9D8F";
-const MAS = 1;
-const MENOS = -1;
 
 const CSS = `
 .fae-t15-tramo { transform-origin: 50% 100%; transition: transform 320ms cubic-bezier(.3,.9,.4,1); }
@@ -62,8 +62,15 @@ const CSS = `
 `;
 
 const ancho = (n) => `${n}px`;
-const conSigno = (s, monto) => `${s === MAS ? "+" : "−"} ${pesos(monto)}`;
+/* Una cifra con su signo de verdad: un total negativo se lee con «−», no con un guion. */
+const cifra = (v) => (v < 0 ? `−${pesos(-v)}` : pesos(v));
 const parte = (id) => PARTES.find((p) => p.id === id);
+/* La pregunta con una palabra en negrilla (el «no» de Shoko, que antes iba en mayúsculas). */
+function conNegrilla(texto, palabra) {
+  const k = texto.indexOf(` ${palabra} `);
+  if (k < 0) return texto;
+  return <>{texto.slice(0, k + 1)}<b data-negrilla style={{ fontWeight: 800 }}>{palabra}</b>{texto.slice(k + 1 + palabra.length)}</>;
+}
 
 /*
  * Un tramo de torre. Mide siempre ALTO_TORRE_T1_5 y se escala con scaleY
@@ -187,7 +194,7 @@ export default function LaEcuacionEnMovimiento({
   const total = ejemplo ? 1 : TRANSACCIONES_CAP2.length;
   const [i, setI] = useState(0);
   const [quietaElegida, setQuietaElegida] = useState(null);
-  const [signos, setSignos] = useState({});
+  const [totales, setTotales] = useState({});
   const [r, setR] = useState(null);
   const [puntos, setPuntos] = useState([]);
   const [terminado, setTerminado] = useState(false);
@@ -198,7 +205,7 @@ export default function LaEcuacionEnMovimiento({
   const h = ejemplo ? ejemplo.hecho : TRANSACCIONES_CAP2[i];
   const antes = ejemplo ? ejemplo.antes : totalesTras(i);
   const mov = movimientoT1_5(antes, h);
-  const listo = quietaElegida !== null && mov.mueven.every((p) => signos[p] === MAS || signos[p] === MENOS);
+  const listo = quietaElegida !== null && mov.mueven.every((p) => totales[p] !== undefined);
 
   /* Cada decisión vale la mitad del hecho; los hechos pesan lo mismo que antes. */
   const pct = total ? (puntos.reduce((s, x) => s + (x.quietaOk ? 0.5 : 0) + (x.direccionOk ? 0.5 : 0), 0) / total) * 100 : 0;
@@ -212,7 +219,7 @@ export default function LaEcuacionEnMovimiento({
 
   const anotar = () => {
     if (!listo || r) return;
-    const nuevo = evaluarTorresT1_5(mov, quietaElegida, signos);
+    const nuevo = evaluarTorresT1_5(mov, quietaElegida, totales);
     if (!modoDemo) {
       /* Las dos decisiones, cada una con su ítem e `intentos: 1`. */
       const orden = detalle.current.length;
@@ -220,7 +227,7 @@ export default function LaEcuacionEnMovimiento({
         { item: `${h.id}:quieta`, ok: nuevo.quietaOk, intentos: 1, respuesta: nuevo.quietaOk ? null : quietaElegida, orden: orden + 1 },
         {
           item: `${h.id}:direccion`, ok: nuevo.direccionOk, intentos: 1, orden: orden + 2,
-          respuesta: nuevo.direccionOk ? null : mov.mueven.map((p) => `${p}:${signos[p] === MAS ? "+" : "-"}`).join(" "),
+          respuesta: nuevo.direccionOk ? null : mov.mueven.map((p) => `${p}:${totales[p]}`).join(" "),
         },
       );
       setPuntos((xs) => [...xs, { id: h.id, quietaOk: nuevo.quietaOk, direccionOk: nuevo.direccionOk }]);
@@ -229,12 +236,12 @@ export default function LaEcuacionEnMovimiento({
   };
 
   const avanzar = () => {
-    setR(null); setQuietaElegida(null); setSignos({});
+    setR(null); setQuietaElegida(null); setTotales({});
     if (i + 1 < total) setI(i + 1);
     else setTerminado(true);
   };
   const reiniciar = () => {
-    setI(0); setR(null); setQuietaElegida(null); setSignos({}); setPuntos([]); setTerminado(false);
+    setI(0); setR(null); setQuietaElegida(null); setTotales({}); setPuntos([]); setTerminado(false);
     detalle.current = []; inicio.current = Date.now();
   };
 
@@ -268,10 +275,10 @@ export default function LaEcuacionEnMovimiento({
     if (id === mov.quieta) return quietaElegida === id ? CORRECTA : REVELADA;
     return quietaElegida === id ? TACHADA : null;
   };
-  const marcaSigno = (id, s) => {
+  const marcaTotal = (id, v) => {
     if (!r) return null;
-    const correcto = mov.signos[id] === s;
-    if (signos[id] === s) return correcto ? CORRECTA : TACHADA;
+    const correcto = mov.despues[id] === v;
+    if (totales[id] === v) return correcto ? CORRECTA : TACHADA;
     return correcto ? REVELADA : null;
   };
 
@@ -282,7 +289,7 @@ export default function LaEcuacionEnMovimiento({
   const renderParte = (id) => {
     const p = parte(id);
     const marca = marcaQuieta(id);
-    const muestraSignos = quietaElegida !== null && mov.mueven.includes(id);
+    const muestraTotales = quietaElegida !== null && mov.mueven.includes(id);
     return (
       <div key={id} data-casilla={id} style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
         <button
@@ -303,27 +310,28 @@ export default function LaEcuacionEnMovimiento({
           </span>
           {marca && <Pastilla marca={marca} valor={TORRES_T1_5.quedaIgual} envuelve />}
         </button>
-        {muestraSignos && (
-          <div role="group" aria-label={p.idea} data-signos={id} style={{ display: "flex", gap: "6px" }}>
-            {[MAS, MENOS].map((s) => {
-              const m = marcaSigno(id, s);
+        {muestraTotales && (
+          /* Tres cifras (o dos, si se repiten), una debajo de otra: a 320 la columna mide unos 140 px. */
+          <div role="group" aria-label={p.idea} data-totales={id} style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+            {opcionesTotalT1_5(mov, id).map((v) => {
+              const m = marcaTotal(id, v);
               return (
                 <button
-                  key={s}
+                  key={v}
                   type="button"
-                  data-signo={`${id}:${s === MAS ? "+" : "-"}`}
-                  aria-pressed={signos[id] === s}
+                  data-opcion-total={`${id}:${v}`}
+                  aria-pressed={totales[id] === v}
                   disabled={Boolean(r)}
-                  onClick={() => setSignos((x) => ({ ...x, [id]: s }))}
+                  onClick={() => setTotales((x) => ({ ...x, [id]: v }))}
                   style={{
-                    flex: 1, minWidth: 0, minHeight: "44px", padding: "6px 6px", borderRadius: "12px",
+                    width: "100%", minHeight: "44px", padding: "6px 8px", borderRadius: "12px",
                     display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "4px",
                     fontFamily: INTER, fontSize: "13px", fontWeight: 600, color: TEXTO_B, cursor: r ? "default" : "pointer",
-                    ...CIFRA, ...bordeDe({ elegido: !r && signos[id] === s, marca: m }),
+                    ...CIFRA, ...bordeDe({ elegido: !r && totales[id] === v, marca: m }),
                   }}
                 >
-                  {conSigno(s, mov.monto)}
-                  {m && <Pastilla marca={m} valor={m === REVELADA ? conSigno(s, mov.monto) : null} envuelve />}
+                  {cifra(v)}
+                  {m && <Pastilla marca={m} valor={m === REVELADA ? cifra(v) : null} envuelve />}
                 </button>
               );
             })}
@@ -360,7 +368,7 @@ export default function LaEcuacionEnMovimiento({
           <p data-pregunta style={{
             margin: "14px 0 8px", minHeight: "39.2px", fontFamily: INTER, fontSize: "14px", fontWeight: 600, lineHeight: 1.4, color: TEXTO_B,
           }}>
-            {quietaElegida === null ? TORRES_T1_5.preguntaQuieta : TORRES_T1_5.preguntaDireccion}
+            {quietaElegida === null ? conNegrilla(TORRES_T1_5.preguntaQuieta, TORRES_T1_5.negrillaQuieta) : TORRES_T1_5.preguntaDireccion}
           </p>
 
           {/* Las partes, alineadas con sus torres: lo que tiene a la izquierda; lo que debe y lo de los dueños a la derecha. */}

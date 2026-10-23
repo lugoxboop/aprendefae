@@ -112,9 +112,10 @@ export const EJEMPLO_T1_5 = {
 const ESCRITO_T1_5 = { [ACTIVO]: 700000, [PASIVO]: 200000, [PATRIMONIO]: 500000 };
 
 /*
- * Con las torres (P2 de Mai): la mano toca la parte quieta, los dos «+» y
- * «Anotar». Los pasos y el alternativo son nuevos, PARA SHOKO; la consigna es
- * la de las torres (pendiente de que Futaba la confirme).
+ * Con las torres (P2 de Mai, decisión 2 de Shoko): la mano toca la parte
+ * quieta, el total nuevo de las otras dos y «Anotar». Los pasos y el
+ * alternativo son nuevos, PARA SHOKO. El ejemplo sigue siendo el horno a
+ * crédito: Shoko pidió cambiarlo (es el mismo de t1-4) y lo escribe Futaba.
  */
 const ASI_T1_5 = {
   actividadId: T1_5.id,
@@ -123,18 +124,18 @@ const ASI_T1_5 = {
   pasos: [
     "Lee el hecho de la panadería.",
     "Toca la parte que no se mueve.",
-    "En las otras dos, elige más o menos. Luego toca Anotar.",
+    "En las otras dos, elige con cuánto quedan. Luego toca Anotar.",
   ],
   /* La pantalla le antepone «Ejemplo: ». */
-  alt: "la panadería compró un horno a crédito por $200.000. Al empezar tenía $500.000, debía $0 y lo de los dueños era $500.000. Se toca «Lo que es de los dueños», que no se mueve. En «Lo que tiene» y en «Lo que debe» se elige «+ $200.000», y se toca «Anotar». Las dos torres suben a $700.000.",
+  alt: "la panadería compró un horno a crédito por $200.000. Al empezar tenía $500.000, debía $0 y lo de los dueños era $500.000. Se toca «Lo que es de los dueños», que no se mueve. En «Lo que tiene» se elige $700.000 y en «Lo que debe», $200.000, y se toca «Anotar». Las dos torres suben a $700.000.",
   demo: { ejemplo: EJEMPLO_T1_5 },
   guion: {
-    /* La parte quieta, los dos «+» y «Anotar»: las torres suben juntas. 9,5 s, como antes. */
+    /* La parte quieta, los dos totales nuevos y «Anotar»: las torres suben juntas. 9,5 s, como antes. */
     duracion: 9500,
     toques: [
       { ms: 1500, en: `[data-parte="${PATRIMONIO}"]` },
-      { ms: 3500, en: `[data-signo="${ACTIVO}:+"]` },
-      { ms: 5000, en: `[data-signo="${PASIVO}:+"]` },
+      { ms: 3500, en: `[data-opcion-total="${ACTIVO}:700000"]` },
+      { ms: 5000, en: `[data-opcion-total="${PASIVO}:200000"]` },
       { ms: 6500, en: "[data-torres]", senala: true },
       { ms: 7800, texto: TORRES_T1_5.anotar },
     ],

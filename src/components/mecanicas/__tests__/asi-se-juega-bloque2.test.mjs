@@ -114,10 +114,10 @@ test("★★ el bloque 2 son T1-1, T1-2 y T1-5, con la consigna de cada activida
     "Mira el cuadro de lo que entra.", "Mira el cuadro de lo que sale.", "Toca la clase de empresa que es.",
   ]);
   assert.deepEqual(ASI_TODAS[T1_5.id].pasos, [
-    "Lee el hecho de la panadería.", "Toca la parte que no se mueve.", "En las otras dos, elige más o menos. Luego toca Anotar.",
+    "Lee el hecho de la panadería.", "Toca la parte que no se mueve.", "En las otras dos, elige con cuánto quedan. Luego toca Anotar.",
   ]);
   assert.equal(ASI_TODAS[T1_5.id].alt,
-    "la panadería compró un horno a crédito por $200.000. Al empezar tenía $500.000, debía $0 y lo de los dueños era $500.000. Se toca «Lo que es de los dueños», que no se mueve. En «Lo que tiene» y en «Lo que debe» se elige «+ $200.000», y se toca «Anotar». Las dos torres suben a $700.000.");
+    "la panadería compró un horno a crédito por $200.000. Al empezar tenía $500.000, debía $0 y lo de los dueños era $500.000. Se toca «Lo que es de los dueños», que no se mueve. En «Lo que tiene» se elige $700.000 y en «Lo que debe», $200.000, y se toca «Anotar». Las dos torres suben a $700.000.");
   assert.ok(ASI_TODAS[T1_5.id].guion.duracion <= 10000, "la demo de T1-5 pasa de 10 s");
   assert.equal(ASI_TODAS[T1_5.id].guion.toques.at(-1).texto, "Anotar", "la demo de T1-5 no termina tocando «Anotar»");
   assert.equal(ASI_TODAS[T1_1.id].alt,
@@ -236,9 +236,9 @@ await esperar(() => caja.querySelector("[data-asj-control]").textContent === "Ve
         assert.ok(escenario().querySelector('[role="status"]').textContent.includes("Entró harina. Salió pan."));
       }
       if (id === T1_5.id) {
-        /* La mano tocó la parte quieta, los dos «+» y «Anotar»: las dos torres subieron a $700.000. */
+        /* La mano tocó la parte quieta, los dos totales nuevos y «Anotar»: las dos torres subieron a $700.000. */
         assert.equal(escenario().querySelector('[data-parte="patrimonio"] [data-pastilla]').dataset.pastilla, "correcta");
-        assert.equal(escenario().querySelector('[data-signo="activo:+"] [data-pastilla]').dataset.pastilla, "correcta");
+        assert.equal(escenario().querySelector('[data-opcion-total="activo:700000"] [data-pastilla]').dataset.pastilla, "correcta");
         assert.equal(escenario().querySelector('[data-total="izquierda"]').textContent, "$700.000");
         assert.equal(escenario().querySelector('[data-total="derecha"]').textContent, "$700.000");
         assert.equal(escenario().querySelector('[data-mensaje]').dataset.mensaje, "acierto");
@@ -267,8 +267,8 @@ test("★★ «Pausar» también para la mano de T1-5 entre toque y toque, y «S
   const { caja, desmontar } = montar(pantalla(T1_5.id, { escala: 1 }));
   try {
     const marcada = () => caja.querySelector('[data-asj-escenario] [data-parte="patrimonio"] [data-pastilla]');
-    const signo = () => caja.querySelector('[data-asj-escenario] [data-signo="activo:+"]').getAttribute("aria-pressed");
-    /* Tras el primer toque (la parte quieta) y antes del segundo (el «+» de lo que tiene). */
+    const signo = () => caja.querySelector('[data-asj-escenario] [data-opcion-total="activo:700000"]').getAttribute("aria-pressed");
+    /* Tras el primer toque (la parte quieta) y antes del segundo (el total de lo que tiene). */
     await esperar(() => marcada(), 4000);
     tocar(caja.querySelector("[data-asj-control]"));
     await act(async () => { await new Promise((r) => setTimeout(r, 2500)); });
