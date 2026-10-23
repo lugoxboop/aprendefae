@@ -1,9 +1,12 @@
-2026-10-23 10:40 (hora Bogotá)
-- Cambio de tema (orden de Mateo, 23-oct): la Célula C suelta T5 y T7 (44 piezas, ocultas por Erwin, nada borrado) y toma T2 cuentas-debe-haber. Regla dura: Contabilidad tiene estudiantes activos; solo se agrega
-- Equipo capacitado: Misa con construccion-v1; Near, Watari y Mello con el protocolo de eficiencia; la vara de lo reversible ya la tienen los cuatro: terminado
-- T2 · Aprender a presentación, fondo: en curso (Near rehace el hilo de las 5 piezas, una idea por pantalla)
-- T2 · Aprender a presentación, forma: bloqueado: espera el patrón de Ukyo y el componente compartido de Erwin
-- T2 · Hacer nuevas: en curso (Near el contenido y Watari la forma de 3 huecos: diario→mayor, cuentas nominales, débitos = créditos; Misa el inventario técnico en #471)
-- T2 · Línea base contra el Kit: en curso (Mello audita las Aprender y fija los criterios de aceptación; Misa mide con sondas las 7 Hacer y el desafío, #471)
-- T2 · Subtemas para el Repaso Diario de Contabilidad: en curso, adelantado sin esperar a Erwin (Near etiqueta, Misa arma el módulo, #471)
-- T2 · Logito del tema: bloqueado: espera que Ukyo lo publique
+2026-10-23 11:19 (hora Bogotá)
+- Cambio a T2 cuentas-debe-haber; T5 y T7 quedan ocultos por Erwin, nada borrado. Regla dura: Contabilidad tiene estudiantes; solo se agrega
+- Regla i (buscar antes de abrir, skills): terminado. Llegó a Misa, Near, Watari y Mello
+- Lote T2-1 (hilo de slides, 3 Hacer nuevas, subtemas, línea base): terminado. Entregas y decisiones en orquestador/conocimiento/paquetes/c-t2-1-*
+- Lote T2-2 · bancos de las 3 Hacer nuevas sobre la forma de Watari, y slides con S1-S13: en curso (Near)
+- Lote T2-2 · figura de cada slide de las 5 Aprender: en curso (Watari)
+- Lote T2-2 · auditoría de la forma de las 3 Hacer nuevas: en curso (Mello)
+- Subtemas de T2 para el Repaso Diario: en curso (Misa, #482); lo conecta Erwin
+- Línea base de las sondas de T2 y esqueleto de las 3 Hacer: en curso (Misa, #471)
+- Cáscara de las slides de Aprender: bloqueado: espera el patrón de Ukyo y el componente compartido de Erwin
+- Logito de T2: bloqueado: espera que Ukyo lo publique
+- Migración del catálogo de las 3 Hacer nuevas: en espera. Correrla en producción es la parada anunciada; irá por issue miku cuando el PR esté listo

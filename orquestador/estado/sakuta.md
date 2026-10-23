@@ -1,11 +1,18 @@
-2026-10-23 09:22 (hora Bogotá)
-- Célula B, Hacer (b5-t5-a1, b5-t5-a2, b5-t6-a1 a a4, b5-t6-a6) y Aprender (T5 A1, T5 A2, T6 A1 a A5) en Avanzado verificable (Shoko, lote 28): terminado
-- Revisión de la célula: Kaede, Futaba, Mai y Shoko vivos; Futaba, Mai y Shoko con su prompt maestro del canon (pedagógicos, diseñadores, auditores); Kaede es constructor y trabaja por lote: terminado
-- Kaede capacitado con construccion-v1 (confirmó en 5 líneas, sin producir): terminado
-- Contador de la 2.ª visita (T6 A2, A4, A5): sube solo al acertar la capa 4, probado sin forzar: terminado
-- Auditoría de Shoko a la 2.ª visita del #458 y a los dos textos de opción de T6 A4: en curso (6 hojas a 320 y 375 enviadas)
-- Etiqueta de deudor de «préstamo-cliente» (lo último de Contabilidad/B según Kaede): bloqueado: necesita texto de Futaba, y la orden vigente es capacitar, no producir
-- D7, la ficha de FP tapa texto a 320 en reposo (b5-t5-a1, b5-t5-a2, b5-t6-a3): bloqueado: es de Erwin (#349)
-- Capa 1 de CuatroCapas, una microdecisión por término: bloqueado: es compartido; va a Levi
-- Prueba con personas (D2 y D3 en las 14 piezas; Avanzado de D5, D8 y D9): bloqueado: requiere estudiantes reales
-- PR #40, paquete versionado: en curso (no se fusiona)
+2026-10-23 11:14 (hora Bogotá)
+- Regla i (buscar antes de abrir; skill en vez del prompt maestro) pasada a Kaede, Futaba, Mai y Shoko, junto con su lote: terminado
+- Cambio de tema (orden de Mateo, 23-oct): B suelta T6 y toma T1 introduccion-contabilidad; vara pasada a los cuatro agentes (solo se agrega, nunca se borra): terminado
+- T1 · fondo de los 4 Aprender en secuencia (Futaba): terminado, en orquestador/conocimiento/fichas/b-t1-aprender-secuencia-y-hacer.md
+- T1 · auditoría de base (Shoko): terminado, en orquestador/conocimiento/revisiones/b-t1-base-shoko.md
+- T1 · subtemas de los 7 Hacer para el Repaso Diario: terminado por B, entregado a Erwin (#474)
+- T1 · bancos de H1 y H2 y textos sin emoji (Futaba): terminado, en fichas/b-t1-bancos-h1-h2-y-sin-emoji.md
+- T1 · diseño de H1 y H2 (Mai): en curso
+- T1 · auditoría de los 7 Hacer y P2 de t1-la-ecuacion-en-movimiento (Mai): terminado, en fichas/; las otras seis P2: en curso
+- T1 · construcción de t1-la-ecuacion-en-movimiento (Kaede): en curso, cuando cierre el #485
+- Lo compartido que falla en los 7 Hacer (Retro con emoji y teal, «era esta»): bloqueado: es de Erwin (#487); B lo parchea dentro de cada pieza
+- T1 · auditoría de la ficha de Futaba (Shoko): terminado, en revisiones/b-t1-ficha-futaba-shoko.md; Futaba la aplica y escribe las frases de la 2.ª visita: en curso
+- T1 · auditoría de los bancos de H1/H2 y de la P2 de las torres (Shoko): en curso
+- T1 · datos de los Aprender por pantalla y prueba de ids publicados (Kaede, #485): en curso
+- T1 · forma de presentación de los Aprender: bloqueado: espera el patrón de Ukyo y el componente de Erwin
+- T1 · logito del tema: bloqueado: espera el diseño de Ukyo
+- T1 · D1 (verdad contra el libro): bloqueado: faltan las pp. 1-31 y las páginas del cap. 2 que cita T1 (#467)
+- T6 (oculto hasta el próximo semestre): los dos cambios de texto de Shoko del #458 quedan anotados en su chat para retomarlos

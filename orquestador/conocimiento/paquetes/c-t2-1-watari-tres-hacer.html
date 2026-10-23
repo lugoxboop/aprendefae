@@ -1,0 +1,280 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<meta charset="utf-8"><title>Tres Hacer nuevas de T2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<style>
+/* Concepto: un pliego técnico para quien construye — reglas arriba, teléfonos reales en medio, procedencia de cada cifra al lado. Tema oscuro único, como el producto. */
+:root {
+  --g-bg: #08111E;      /* fondo del pliego (no es del producto) */
+  --g-panel: #0E1B2E;   /* fondo real de las actividades */
+  --g-ink: #F8F9FA;
+  --g-muted: #A8B6C8;
+  --g-line: #22324A;
+  --g-error: #E76F51;
+  --f-display: "Sora", "Inter", system-ui, sans-serif;
+  --f-body: "Inter", system-ui, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme: dark;
+}
+body { background: var(--g-bg); color: var(--g-ink); font-family: var(--f-body); font-size: 15px; line-height: 1.55; margin: 0; }
+.pliego { max-width: 1120px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 96px; display: grid; gap: 56px; grid-template-columns: minmax(0, 1fr); }
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+h1 { font-size: clamp(28px, 5vw, 44px); line-height: 1.1; }
+h2 { font-size: 24px; line-height: 1.2; }
+h3 { font-size: 17px; line-height: 1.3; }
+p { margin: 0; max-width: 68ch; }
+a { color: var(--g-ink); }
+code, .mono { font-family: var(--f-mono); font-size: 0.86em; }
+.eyebrow { font-family: var(--f-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--g-muted); }
+.sec { display: grid; gap: 20px; grid-template-columns: minmax(0, 1fr); }
+.pliego > *, .visor, .telefonos { min-width: 0; }
+.visor { grid-template-columns: minmax(0, 1fr); }
+.sec > header { display: grid; gap: 8px; border-top: 1px solid var(--g-line); padding-top: 20px; }
+.lead { color: var(--g-muted); font-size: 16px; }
+.cab { display: grid; gap: 14px; }
+.meta { display: flex; flex-wrap: wrap; gap: 8px 20px; color: var(--g-muted); font-size: 13px; }
+.rejilla { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 16px; }
+.regla { border: 1px solid var(--g-line); border-radius: 12px; padding: 16px; display: grid; gap: 6px; align-content: start; }
+.regla b { font-family: var(--f-display); font-size: 15px; }
+.regla p { color: var(--g-muted); font-size: 14px; }
+.tabla-wrap { overflow-x: auto; border: 1px solid var(--g-line); border-radius: 12px; }
+table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 14px; }
+th, td { text-align: left; vertical-align: top; padding: 10px 14px; border-bottom: 1px solid var(--g-line); }
+th { font-family: var(--f-mono); font-weight: 500; font-size: 12px; letter-spacing: .04em; color: var(--g-muted); text-transform: uppercase; background: var(--g-panel); }
+tr:last-child td { border-bottom: 0; }
+td.num { font-variant-numeric: tabular-nums; white-space: nowrap; font-family: var(--f-mono); }
+td .near, li .near { color: var(--g-muted); font-style: italic; }
+.est { font-family: var(--f-mono); font-size: 12px; letter-spacing: .06em; white-space: nowrap; }
+.prov { display: inline-block; font-family: var(--f-mono); font-size: 11px; letter-spacing: .05em; padding: 2px 7px; border-radius: 4px; border: 1px solid var(--g-line); color: var(--g-muted); white-space: nowrap; }
+.prov.m { border-color: #3B7A72; color: #8FD3C9; }
+.prov.e { border-color: #7A5A24; color: #E9C46A; }
+.prov.c { border-color: #4A5E7A; color: #C9D5E4; }
+.prov.d { border-color: #4A5E7A; color: var(--g-muted); }
+.procedencia { border: 1px solid var(--g-line); border-radius: 12px; padding: 16px; font-size: 14px; display: grid; gap: 6px; background: var(--g-panel); }
+.procedencia p { color: var(--g-muted); max-width: none; }
+ul.limpia { margin: 0; padding-left: 18px; display: grid; gap: 6px; max-width: 72ch; }
+ul.limpia li::marker { color: var(--g-muted); }
+
+/* visor de estados */
+.visor { display: grid; gap: 14px; }
+.estados { display: flex; flex-wrap: wrap; gap: 6px; }
+.estados button { font: 500 13px var(--f-mono); letter-spacing: .04em; color: var(--g-muted); background: transparent; border: 1px solid var(--g-line); border-radius: 999px;
+  padding: 0 14px; min-height: 36px; cursor: pointer; }
+.estados button[aria-pressed="true"] { color: var(--g-bg); background: var(--g-ink); border-color: var(--g-ink); }
+.estados button:focus-visible { outline: 2px solid var(--g-ink); outline-offset: 2px; }
+.telefonos { display: flex; gap: 24px; align-items: flex-start; overflow-x: auto; padding-bottom: 8px; }
+.tel { flex: none; display: grid; gap: 8px; }
+.tel-rot { font-family: var(--f-mono); font-size: 12px; color: var(--g-muted); display: flex; justify-content: space-between; gap: 8px; }
+.pantalla { position: relative; padding: 16px 30px; border: 1px solid var(--g-line); border-radius: 18px; overflow: hidden; background: var(--g-panel); }
+.tel[data-w="375"] .pantalla { width: 315px; } /* caja de contenido: 315 + 2 × 30 de relleno = 375 */
+.tel[data-w="320"] .pantalla { width: 260px; } /* 260 + 2 × 30 = 320 */
+.pantalla .bandeja { position: static !important; }
+/* 30 px por lado = 16 de página + 14 del panel: contenido de 315 a 375 y 260 a 320, medido por Misa */
+.lado { display: grid; gap: 12px; align-content: start; min-width: 0; flex: 1 1 280px; max-width: 420px; }
+.lado h3 { font-size: 15px; }
+.lado ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 14px; color: var(--g-ink); }
+.lado .nota { font-size: 13px; color: var(--g-muted); }
+
+/* íconos en la guía */
+.ico-demo { display: flex; gap: 14px; align-items: center; }
+.ico-demo svg { width: 40px; height: 40px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+
+pre { margin: 0; background: var(--g-panel); border: 1px solid var(--g-line); border-radius: 12px; padding: 16px; overflow-x: auto; font: 12.5px/1.55 var(--f-mono); color: #DCE3EC; }
+details { border: 1px solid var(--g-line); border-radius: 12px; padding: 0 16px; }
+details[open] { padding-bottom: 16px; }
+summary { cursor: pointer; padding-block: 14px; font-family: var(--f-display); font-weight: 600; }
+.copiar { font: 500 12px var(--f-mono); background: transparent; color: var(--g-ink); border: 1px solid var(--g-line); border-radius: 6px; padding: 6px 10px; cursor: pointer; justify-self: start; }
+.alerta { border: 1px solid #7A5A24; border-radius: 12px; padding: 14px 16px; display: grid; gap: 4px; font-size: 14px; }
+.alerta b { color: #E9C46A; font-family: var(--f-display); }
+.indice { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; }
+.indice a { color: var(--g-muted); text-decoration: none; border-bottom: 1px solid var(--g-line); }
+.indice a:hover { color: var(--g-ink); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+.mq { --texto:#F8F9FA; --aten:#A8B6C8; --neutro:#B8C4D4; --teal:#2A9D8F; --teal-t:#3FA69A; --ambar:#E9C46A; --coral:#E76F51; --coral-t:#EE8266;
+  background:#1F2D3D; color:var(--texto); font:400 14px/1.45 Inter, system-ui, sans-serif; display:grid; gap:10px; box-sizing:border-box; }
+.mq * { box-sizing:border-box; }
+.mq p { margin:0; }
+.mq .cej { font:700 12px/1.3 Sora, Inter, sans-serif; letter-spacing:.08em; text-transform:uppercase; color:var(--aten); }
+.mq .txt { font-size:15px; }
+.mq .hund { background:rgba(10,20,34,.45); border:1px solid rgba(248,249,250,.12); border-radius:12px; padding:10px 12px; display:grid; gap:8px; }
+.mq .tit { font:600 13px/1.3 Sora, Inter, sans-serif; }
+.mq .num { font-family:"JetBrains Mono", ui-monospace, monospace; font-variant-numeric:tabular-nums; font-weight:600; font-size:13px; white-space:nowrap; }
+.mq .td { color:var(--teal-t); } .mq .th { color:var(--ambar); }
+.mq svg { width:16px; height:16px; flex:none; }
+.mq .pas { display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:999px; font:600 12px/1.2 Inter, sans-serif; white-space:nowrap; }
+.mq .pas.ok { border:1px solid var(--texto); } .mq .pas.mal { border:1px solid var(--coral); color:var(--coral-t); } .mq .pas.iba { border:1px dashed var(--texto); }
+.mq .falla, .mq .cuadra { display:flex; gap:6px; align-items:flex-start; font-size:13px; line-height:1.4; } .mq .falla { color:var(--coral-t); }
+.mq .msg { padding:10px 12px; background:rgba(184,196,212,.12); border-left:3px solid var(--neutro); border-radius:0 10px 10px 0; font-size:14px; }
+.mq .msg.mal { border-left-color:var(--coral); } .mq .msg .pas { margin-right:6px; }
+.mq .seguir { min-height:44px; border-radius:12px; border:0; background:var(--neutro); color:#1D3557; font:600 15px Inter, sans-serif; }
+.mq .seguir[aria-disabled="true"] { background:transparent; border:2px solid rgba(248,249,250,.35); color:var(--aten); }
+.mq .malb { outline:2px solid var(--coral); outline-offset:-2px; }
+/* a */
+.mq .diario { margin:0; padding:0; list-style:none; display:grid; gap:4px; }
+.mq .ren { display:grid; grid-template-columns:3.6em minmax(0,1fr) 3.6em auto; gap:6px; align-items:center; min-height:32px; padding:4px 8px; border-radius:6px; font-size:13px; }
+.mq .ren.hecho { color:var(--aten); } .mq .ren.cur { outline:2px solid var(--texto); outline-offset:-2px; color:var(--texto); }
+.mq .ren.enlazado, .mq .ln.enlazado { background:rgba(184,196,212,.16); }
+.mq .ctas { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:8px; }
+.mq .cta { min-height:88px; display:grid; align-content:start; gap:4px; padding:8px; border-radius:10px; border:1px solid rgba(248,249,250,.35); background:transparent; color:var(--texto); font:inherit; text-align:left; }
+.mq .cta.elegida { border:2px solid var(--texto); padding:7px; } .mq .cta.elegida.malb { border-color:var(--coral); outline:0; }
+.mq .cta-tit { font-weight:600; font-size:13px; }
+.mq .cta-t { display:grid; grid-template-columns:1fr 1fr; border-top:2px solid var(--neutro); min-height:30px; }
+.mq .cta-t > span { display:grid; align-content:start; gap:2px; padding:4px 2px 0; } .mq .cta-t > span:first-child { border-right:2px solid var(--neutro); }
+.mq .ln { font:600 12px/1.25 "JetBrains Mono", monospace; border-radius:4px; padding:1px 2px; }
+.mq .ln.nueva { outline:2px solid var(--texto); } .mq .ln.nueva.malb { outline-color:var(--coral); }
+.mq .ln.fantasma { outline:1px dashed var(--texto); display:grid; gap:2px; justify-items:start; }
+.mq .orden { display:grid; grid-template-columns:1fr 1fr; border:1px solid var(--neutro); border-radius:10px; overflow:hidden; }
+.mq .orden button { min-height:44px; border:0; background:transparent; color:var(--texto); font:600 13px Inter, sans-serif; } .mq .orden .on { background:var(--neutro); color:#1D3557; }
+/* b */
+.mq .lista { margin:0; padding:0; list-style:none; display:grid; gap:4px; }
+.mq .cu { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:4px 8px; min-height:32px; padding:4px 8px; border-radius:6px; font-size:13px; border:1px solid rgba(248,249,250,.12); }
+.mq .cu.cur { outline:2px solid var(--texto); outline-offset:-2px; } .mq .cu.vacio { color:var(--aten); border-style:dashed; } .mq .cu s { color:var(--aten); }
+.mq .cierre { display:grid; gap:4px; padding:8px; border-radius:8px; border:1px dashed var(--neutro); }
+.mq .gyp { display:flex; justify-content:space-between; gap:8px; font-size:13px; padding:2px 4px; } .mq .gyp.tot { border-top:1px solid rgba(248,249,250,.35); padding-top:6px; font-weight:600; } .mq .gyp.vacio { color:var(--aten); }
+.mq .ops { display:grid; gap:8px; }
+.mq .op { min-height:44px; display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:4px 8px; padding:10px 12px; border-radius:12px; border:1px solid rgba(248,249,250,.35); background:transparent; color:var(--texto); font:500 14px Inter, sans-serif; text-align:left; }
+.mq .op.bien, .mq .op.pista { border:2px solid var(--texto); padding:9px 11px; } .mq .op.malb { border:2px solid var(--coral); outline:0; padding:9px 11px; }
+/* c */
+.mq .asiento { width:100%; min-width:0; border-collapse:collapse; font-size:13px; } .mq .asiento td { padding:4px 2px; border-bottom:0; vertical-align:middle; text-align:left; } .mq .asiento td.num { text-align:right; }
+.mq .asiento tr.sum td { border-top:1px solid rgba(248,249,250,.35); font-weight:600; } .mq .hueco { border:1px dashed var(--neutro); border-radius:4px; padding:0 6px; }
+.mq .columnas { position:relative; display:grid; grid-template-columns:1fr 1fr; gap:16px; height:150px; padding:0 8px; border-bottom:2px solid var(--neutro); }
+.mq .col { display:flex; align-items:flex-end; } .mq .pila { width:100%; height:100%; display:flex; flex-direction:column-reverse; gap:2px; }
+.mq .bar { display:grid; place-items:center; border-radius:3px; font:600 12px/1 "JetBrains Mono", monospace; color:#0E1B2E; }
+.mq .col.d .bar { background:var(--teal); } .mq .col.h .bar { background:var(--ambar); }
+.mq .bar.corta { outline:2px solid var(--coral); outline-offset:1px; }
+.mq .nivel { position:absolute; left:0; right:0; border-top:2px dashed var(--neutro); } .mq .nivel.igual { border-top-style:solid; border-top-color:var(--texto); }
+.mq .hueco-barra { position:absolute; right:8px; width:calc(50% - 16px); border:2px dashed var(--coral); border-bottom:0; border-radius:3px 3px 0 0; }
+.mq .conteo { display:grid; grid-template-columns:1fr 1fr; gap:16px; font-size:12px; color:var(--aten); text-align:center; }
+.mq .casilla { display:flex; flex-wrap:wrap; gap:8px; } .mq .casilla input { flex:1 1 120px; min-width:0; min-height:44px; border-radius:10px; border:1px solid rgba(248,249,250,.35); background:rgba(10,20,34,.45); color:var(--texto); font:600 16px "JetBrains Mono", monospace; padding:0 12px; }
+.mq .cmp { min-height:44px; padding:0 14px; border-radius:12px; border:2px solid var(--neutro); background:transparent; color:var(--texto); font:600 14px Inter, sans-serif; } .mq .cmp[aria-disabled="true"] { opacity:.5; }
+.mq .escrito { flex:1 1 100%; min-height:44px; display:flex; flex-wrap:wrap; align-items:center; gap:4px 10px; padding:8px 12px; border-radius:10px; border:2px solid var(--texto); } .mq .escrito.malb { border-color:var(--coral); outline:0; } .mq .escrito.iba { border-style:dashed; }
+
+.marcos { display:flex; flex-wrap:wrap; gap:20px; align-items:flex-start; } .marco { display:grid; gap:6px; max-width:100%; overflow-x:auto; }
+.marco-rot { font:500 12px var(--f-mono); color:var(--g-muted); display:flex; justify-content:space-between; gap:8px; }
+.marco-caja { box-sizing:content-box; padding:16px 31px; background:#1F2D3D; border:1px solid var(--g-line); border-radius:18px; }
+.estados { display:flex; flex-wrap:wrap; gap:8px; } .estados button { font:500 13px var(--f-mono); color:var(--g-ink); background:transparent; border:1px solid var(--g-line); border-radius:999px; min-height:44px; padding:0 16px; cursor:pointer; }
+.estados button.on { border:2px solid var(--g-ink); } .estados button:focus-visible { outline:2px solid var(--g-ink); outline-offset:2px; }
+.frase { font-family:var(--f-display); font-size:19px; line-height:1.4; max-width:64ch; }
+.norman { display:grid; gap:8px; } .norman p { margin:0; max-width:76ch; line-height:1.5; } .norman b { font-family:var(--f-mono); font-size:12px; letter-spacing:.04em; text-transform:uppercase; color:var(--g-muted); margin-right:8px; }
+.nota { color:var(--g-muted); font-size:14px; max-width:76ch; } .pide { border-left:3px solid #B8C4D4; padding-left:12px; }
+</style>
+<main class="pliego">
+  <header class="cab"><span class="eyebrow">Célula C · Lote T2-1 · La forma de tres Hacer nuevas · Para Near, Misa y Erwin · Watari</span>
+    <h1>Tres Hacer nuevas de T2</h1>
+    <p class="lead">Las tres actividades nuevas de «Las cuentas, el debe y el haber». Por cada una: la idea visual, qué toca el estudiante, el momento «mira esto», cómo se ve el error y cómo cabe a 320 y 375 px. Las maquetas son jugables por estados. Near ajusta su banco a esta forma.</p>
+    <div class="meta"><span>v1 · 23 de octubre de 2026</span><span>main 44569e59</span><span>Prompt maestro (15-16 oct) · Kit de Calidad · regla C4: toda decisión se pinta</span></div>
+    <div class="alerta"><b>Para Near, en una línea</b><span>Cada pieza dice qué campos lleva su banco, cuántos casos y qué trampas incluir. Los textos entre corchetes de las maquetas son tuyos.</span></div>
+    <div class="alerta"><b>Para Erwin, en una línea</b><span>No pido ningún componente compartido nuevo. Las tres reutilizan <code>CuentaT</code>, <code>AsientoEnLineas</code>, <code>CampoCifra</code>, los verbos y <code>OpcionC</code>, y su figura propia vive en la célula.</span></div>
+  </header>
+  <section class="sec" id="decisiones"><header><span class="eyebrow">Lo que decidí (todo se puede deshacer)</span><h2>Decisiones del lote</h2></header>
+    <ul class="limpia marcas">
+      <li><b>Ids nuevos, nunca los retirados.</b> cu-del-diario-al-mayor, cu-las-que-vuelven-a-cero y cu-cuadra-por-valor no existen en main. Los retirados (cu-mayorizacion, cu-cuadra-o-no, cu-simple-o-compuesto, cu-error-escondido y cu-corriente-de-cuentas) pueden tener registros de estudiantes: no se reusan, y así nada de lo existente se toca.</li>
+      <li><b>Orden en el camino.</b> Las tres van después de los 7 Hacer de hoy: primero «Cuadra por valor», luego «Del diario al mayor» y al final «Las que vuelven a cero». Siguen el orden del capítulo: asiento, mayor, cierre. Las dos últimas llevan a «El Ciclo Completo», que recorre diario, mayor, saldos y estado.</li>
+      <li><b>Hacer de un intento por caso</b>, en el estándar único: acierto en neutro con «Correcto», error en coral con «No va aquí» y la correcta con «Iba aquí». Siempre con la regla C4: primero se ve la consecuencia y después el veredicto.</li>
+      <li><b>Un objeto propio por actividad (D9)</b>: los dos libros, la línea del cierre y las columnas por valor. Ninguno repite la balanza, que es el hilo del desafío.</li>
+    </ul></section>
+  
+  <section class="sec" id="cu-cuadra-por-valor"><header><span class="eyebrow">Hacer nueva 1 · id cu-cuadra-por-valor · 8.º Hacer, después de «El asiento compuesto»</span><h2>Cuadra por valor</h2><p class="frase">El estudiante VE crecer las columnas del Debe y del Haber según el valor de cada línea, y no según cuántas líneas tienen, cuando completa o juzga un asiento. Las dos quedan a la misma altura solo si los totales son iguales. Eso explica que lo que cuadra es el total del debe contra el total del haber, no el número de cuentas.</p></header>
+    <div class="norman"><p><b>Objeto propio</b> Las dos columnas del asiento, con una altura por valor</p><p><b>Qué toca</b> Hay tres tipos de caso. <b>Completar</b>: el asiento tiene una línea sin monto; el estudiante escribe la cifra y la columna crece con cada número, antes de «Comprobar». <b>Juzgar</b>: ve un asiento y elige «Cuadra» o «No cuadra». <b>Encontrar</b>: toca la línea que descuadra el asiento; las líneas son botones.</p><p><b>Mira esto</b> Al acertar, las tres barras del debe y la única barra del haber terminan a la misma altura. La línea de nivel pasa de discontinua a sólida, y debajo quedan los conteos: «3 cuentas · $1.000» contra «1 cuenta · $1.000». El contraste entre muchas cuentas y una sola, con la misma altura, es la lección.</p><p><b>El error</b> La columna queda corta o se pasa. El tramo que falta se ve como un hueco con borde coral discontinuo, y aparece la frase «Faltan $700 en el haber: las dos columnas no llegan a la misma altura». La cifra correcta aparece en su casilla con «Iba aquí». En «Juzgar», la opción mala dibuja el asiento de esa respuesta, con su desnivel visible.</p><p><b>320 y 375</b> A 320 y a 375 px: arriba va el asiento en tabla, con su fila de sumas, y debajo las dos columnas, de 150 px de alto, con el nivel. Una barra lleva su monto dentro solo si mide 25 % o más de la escala; si no, el monto queda en la tabla y no se repite. Lo que no es texto va en teal para el debe y en ámbar para el haber.</p></div>
+    <div class="estados" role="group" aria-label="Estado de la maqueta"><button type="button" data-k="c" data-e="inicio" class=on>Inicio</button><button type="button" data-k="c" data-e="acierto">Acierto: «mira esto»</button><button type="button" data-k="c" data-e="error">Error</button></div>
+    <div class="marcos"><div class="marco"><div class="marco-rot"><span>320 px</span><span>contenido 258</span></div><div class="marco-caja" style="width:258px"><div class="mq" data-k="c" style="width:258px"></div></div></div><div class="marco"><div class="marco-rot"><span>375 px</span><span>contenido 313</span></div><div class="marco-caja" style="width:313px"><div class="mq" data-k="c" style="width:313px"></div></div></div></div>
+    <div class="procedencia"><div><span class="prov m">MEDIDO EN MAQUETA</span></div><p>Medí 6 estados a 258 y 313 px (el contenido a 320 y 375). La letra más chica mide 12 px. No hay botones de menos de 44 px (0) ni nada que se salga de su caja (0). El estado más alto mide 713 px. Los datos son de muestra; los pone Near.</p></div>
+    <h3>Reutiliza lo que hay en main</h3><ul class="limpia marcas"><li><code>AsientoEnLineas</code> con <code>totales</code> (piezas.jsx) para la tabla y la fila de sumas, que es exactamente lo que se pregunta.</li><li>Las columnas por valor de <code>CuentaDeValor</code> (verbos.jsx, verbo 2). Se usan sin cancelar: aquí se comparan las alturas, no se restan.</li><li><code>CampoCifra</code> (piezas.jsx), para la cifra escrita.</li></ul>
+    <h3 class="pide">Lo que Near escribe: la forma del banco</h3><ul class="limpia marcas"><li><b>asientos</b>: [{ lineas: [{ cuenta, lado, monto | null }] }]. De 6 a 8 casos por partida: 3 de completar, 2 de juzgar y 1 a 3 de encontrar.</li><li>Hay que incluir a propósito tres trampas: un asiento de 3 contra 1 que sí cuadra, uno de 2 contra 2 que no cuadra y uno donde el error está en el monto, no en el número de líneas.</li><li><b>completar</b>: { correcta, distractores: [{ valor, retro }] }, por ejemplo el valor de una sola línea del debe. <b>juzgar</b>: { cuadra: sí | no, porqué, retro de la opción mala }. <b>encontrar</b>: { línea, retro por cada línea mala }.</li></ul>
+    <p class="nota">No es «¿Cuadra o no cuadra?» retirada (cu-cuadra-o-no): esa usaba la balanza, y la balanza ya es el hilo de «El Ciclo Completo». Aquí el objeto son las columnas por valor, con tres tipos de caso.</p>
+  </section>
+  <section class="sec" id="cu-del-diario-al-mayor"><header><span class="eyebrow">Hacer nueva 2 · id cu-del-diario-al-mayor · 9.º Hacer, después de «Cuadra por valor»</span><h2>Del diario al mayor</h2><p class="frase">El estudiante VE cada renglón del diario caer en la cuenta T de su cuenta, del mismo lado y con su fecha, cuando toca esa cuenta; y VE el mismo renglón encendido en los dos libros a la vez. Eso explica que el diario y el mayor guardan los mismos datos: uno los ordena por fecha y el otro por cuenta.</p></header>
+    <div class="norman"><p><b>Objeto propio</b> Los dos libros: el diario y el mayor, a la vista a la vez</p><p><b>Qué toca</b> Arriba está el diario, con un renglón marcado. Abajo están las cuentas T del mayor, y cada cuenta es un botón de 44 px o más. El estudiante toca la cuenta a la que va el renglón. El lado no se elige: se copia del diario, porque aquí se enseña a agrupar y no a decidir el lado (eso lo practica «¿Debita o acredita?»). Hay un segundo tipo de caso, al revés: el mayor muestra una línea encendida y el estudiante toca su renglón en el diario.</p><p><b>Mira esto</b> Con el acierto, el renglón queda enlazado: se resaltan a la vez la línea del diario y la del mayor. Aparece el selector «Por fecha / Por cuenta», que reordena los mismos renglones de una vista a la otra. Las fichas se deslizan con transform y no se crea ningún dato nuevo. El selector no califica.</p><p><b>El error</b> La ficha cae en la cuenta equivocada y se queda ahí, con borde coral, «No va aquí» y una frase con la consecuencia: «Así, Mercancías tendría dos movimientos y el diario solo le da uno». En la cuenta correcta aparece su fantasma, con línea discontinua blanca e «Iba aquí». En el caso al revés, el renglón tocado muestra que su cuenta o su monto no coinciden con la línea del mayor.</p><p><b>320 y 375</b> A 320 px: el diario va en una sola columna (fecha · cuenta · lado · monto) y el mayor en una cuadrícula de 2 × 2 de cuentas T de 125 px. A 375 px es igual, con más aire. Se admiten como máximo 4 cuentas y 7 renglones por caso, para que las dos vistas quepan sin rotar el teléfono.</p></div>
+    <div class="estados" role="group" aria-label="Estado de la maqueta"><button type="button" data-k="a" data-e="inicio" class=on>Inicio</button><button type="button" data-k="a" data-e="mira">Acierto: «mira esto»</button><button type="button" data-k="a" data-e="error">Error</button></div>
+    <div class="marcos"><div class="marco"><div class="marco-rot"><span>320 px</span><span>contenido 258</span></div><div class="marco-caja" style="width:258px"><div class="mq" data-k="a" style="width:258px"></div></div></div><div class="marco"><div class="marco-rot"><span>375 px</span><span>contenido 313</span></div><div class="marco-caja" style="width:313px"><div class="mq" data-k="a" style="width:313px"></div></div></div></div>
+    <div class="procedencia"><div><span class="prov m">MEDIDO EN MAQUETA</span></div><p>Medí 6 estados a 258 y 313 px (el contenido a 320 y 375). La letra más chica mide 12 px. No hay botones de menos de 44 px (0) ni nada que se salga de su caja (0). El estado más alto mide 819 px. Los datos son de muestra; los pone Near.</p></div>
+    <h3>Reutiliza lo que hay en main</h3><ul class="limpia marcas"><li><code>CuentaT</code> (mecanicas/libros/piezas.jsx), en su versión compacta, para cada cuenta del mayor.</li><li>La ficha que cae y <code>useMovimientoReducido</code> (mecanicas/libros/verbos.jsx), para el renglón que viaja.</li><li>El renglón del diario de <code>b5/LibroDiario.jsx</code>, abierto y sin el botón «Ver».</li></ul>
+    <h3 class="pide">Lo que Near escribe: la forma del banco</h3><ul class="limpia marcas"><li><b>caso</b>: { empresa, asientos: [{ fecha, lineas: [{ cuenta, lado, monto }] }] }. Entre 2 y 3 asientos, de 5 a 7 renglones, de 3 a 4 cuentas.</li><li><b>items</b>, de 5 a 7 por partida. Tipo <code>destino</code>: { renglón, porqué, por cada cuenta mala su retro }. Tipo <code>origen</code>: { línea del mayor, porqué, por cada renglón malo su retro }.</li><li>Cada retro dice lo que pasaría, no la respuesta. Ejemplo: «Así, Bancos recibe un pago que entró a Caja».</li></ul>
+    <p class="nota">No es «La mayorización» retirada (cu-mayorizacion): esa era un set entero de 24 pasos con una segunda fase de saldos. Esta pide una decisión por caso, enseña que son dos vistas y deja los saldos para «El saldo de la cuenta».</p>
+  </section>
+  <section class="sec" id="cu-las-que-vuelven-a-cero"><header><span class="eyebrow">Hacer nueva 3 · id cu-las-que-vuelven-a-cero · 10.º Hacer, el último antes de «El Ciclo Completo»</span><h2>Las que vuelven a cero</h2><p class="frase">El estudiante VE cada cuenta cruzar la línea del cierre: las nominales (ingresos, gastos y costos) vacían su saldo en Ganancias y pérdidas y llegan en cero al mes siguiente, y las reales cruzan con su saldo intacto, cuando él decide qué le pasa a cada una. Eso explica que las nominales miden un periodo y las reales lo que la empresa tiene.</p></header>
+    <div class="norman"><p><b>Objeto propio</b> La línea del cierre: el mes, la caja de Ganancias y pérdidas, y el mes siguiente</p><p><b>Qué toca</b> Arriba están las cuentas de marzo, con sus saldos. Una de ellas está marcada. El estudiante elige una de dos opciones: «Vuelve a cero en el cierre» o «Pasa a abril con su saldo». Hay de 6 a 8 cuentas por partida, mezcladas.</p><p><b>Mira esto</b> Al clasificar la última cuenta, el mes se cierra entero. Las nominales caen en Ganancias y pérdidas, la caja suma «= Utilidad del mes» y abril queda con las reales llenas y las nominales en $0. Es la misma imagen con la que empieza «El Ciclo Completo».</p><p><b>El error</b> La consecuencia se queda a la vista. Si pone una real en cero, Caja llega a abril en $0, con borde coral y la frase «Así, en abril Caja diría $0, y en la caja siguen $600». Si pasa una nominal, Ventas llega a abril con el saldo de marzo, con la frase «Así, abril empieza con ventas que hizo marzo». La opción correcta lleva «Iba aquí».</p><p><b>320 y 375</b> A 320 y a 375 px la figura es vertical: marzo arriba, el cierre en el medio y abril abajo. Cada cuenta baja con transform. No hay columnas lado a lado, porque no cabrían con nombres como «Gasto de arriendo».</p></div>
+    <div class="estados" role="group" aria-label="Estado de la maqueta"><button type="button" data-k="b" data-e="inicio" class=on>Inicio</button><button type="button" data-k="b" data-e="acierto">Acierto</button><button type="button" data-k="b" data-e="error">Error</button><button type="button" data-k="b" data-e="mira">«Mira esto»: el mes cerrado</button></div>
+    <div class="marcos"><div class="marco"><div class="marco-rot"><span>320 px</span><span>contenido 258</span></div><div class="marco-caja" style="width:258px"><div class="mq" data-k="b" style="width:258px"></div></div></div><div class="marco"><div class="marco-rot"><span>375 px</span><span>contenido 313</span></div><div class="marco-caja" style="width:313px"><div class="mq" data-k="b" style="width:313px"></div></div></div></div>
+    <div class="procedencia"><div><span class="prov m">MEDIDO EN MAQUETA</span></div><p>Medí 8 estados a 258 y 313 px (el contenido a 320 y 375). La letra más chica mide 12 px. No hay botones de menos de 44 px (0) ni nada que se salga de su caja (0). El estado más alto mide 806 px. Los datos son de muestra; los pone Near.</p></div>
+    <h3>Reutiliza lo que hay en main</h3><ul class="limpia marcas"><li><code>CuentaT compacta</code> para Ganancias y pérdidas.</li><li><code>useNumeroQueSube</code> (verbos.jsx) para la utilidad que se suma.</li><li>Las dos opciones son las <code>OpcionC</code> de <code>t7/hacerT7.jsx</code>, con su pastilla y su contorno. Ya están en el estándar único.</li></ul>
+    <h3 class="pide">Lo que Near escribe: la forma del banco</h3><ul class="limpia marcas"><li><b>caso</b>: { empresa, mes, mesSiguiente, cuentas: [{ nombre, clase: real | nominal, saldo }] }. De 6 a 8 cuentas: al menos 2 de ingresos, 2 de gastos o costos y 3 reales, entre ellas una de pasivo.</li><li><b>por cuenta</b>: { porqué, retro si la pasa, retro si la pone en cero }. Solo lleva el retro de la opción mala que le corresponde.</li><li>Un texto final que nombre la utilidad que pasa al patrimonio. Es el puente con el desafío.</li></ul>
+    <p class="nota">Ninguna de las cinco retiradas trataba las nominales. Esta es nueva.</p>
+  </section>
+  <section class="sec" id="noverif"><header><span class="eyebrow">Lo que no verifiqué</span><h2>Pendiente</h2></header>
+    <ul class="limpia marcas"><li>Las maquetas muestran estados, no las piezas construidas. El movimiento y la jugada completa se miden cuando Misa las construya.</li><li>La forma de los Aprender y el logito de T2 son de Ukyo. Aquí no hay nada de ellos.</li><li>No lo he visto en un teléfono real.</li></ul></section>
+</main>
+<script>/* T2-1 · Maquetas de forma de tres Hacer nuevas (Watari, 23-oct). Datos de muestra: los reemplaza Near. */
+(function () {
+  const $ = (n) => '$' + n.toLocaleString('es-CO');
+  const X = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
+  const V = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
+  const ok = `<span class="pas ok">${V}Correcto</span>`, mal = `<span class="pas mal">${X}No va aquí</span>`, iba = '<span class="pas iba">Iba aquí</span>';
+  const falla = (t) => `<p class="falla">${X}<span>${t}</span></p>`, cuadra = (t) => `<p class="cuadra">${V}<span>${t}</span></p>`;
+  const msg = (t, m) => `<div class="msg${m ? ' mal' : ''}"><p>${m ? '' : ok}${t}</p></div>`;
+
+  // ── a) Del diario al mayor
+  const DIA = [['1 mar', 'Caja', 'D', 500], ['1 mar', 'Capital', 'H', 500], ['5 mar', 'Mercancías', 'D', 200], ['5 mar', 'Caja', 'H', 200], ['9 mar', 'Caja', 'D', 300], ['9 mar', 'Ventas', 'H', 300]];
+  function a(est) {
+    const cur = 3; const puestos = [0, 1, 2]; const destino = est === 'error' ? 'Mercancías' : est === 'inicio' ? null : 'Caja';
+    const fila = (r, i) => `<li class="ren${i === cur ? ' cur' : ''}${puestos.includes(i) ? ' hecho' : ''}${est === 'mira' && r[1] === 'Caja' ? ' enlazado' : ''}"><span>${r[0]}</span><span>${r[1]}</span><b class="${r[2] === 'D' ? 'td' : 'th'}">${r[2] === 'D' ? 'Debe' : 'Haber'}</b><b class="num">${$(r[3])}</b></li>`;
+    const T = (c) => { const lineas = DIA.map((r, i) => [r, i]).filter(([r, i]) => r[1] === c && puestos.includes(i));
+      const nueva = destino === c; const ghost = est === 'error' && c === 'Caja';
+      const lado = (L) => lineas.filter(([r]) => r[2] === L).map(([r]) => `<span class="ln${est === 'mira' && c === 'Caja' ? ' enlazado' : ''}">${r[0]} · ${$(r[3])}</span>`).join('')
+        + (nueva && L === 'H' ? `<span class="ln nueva${est === 'error' ? ' malb' : ''}">5 mar · ${$(200)}</span>` : '') + (ghost && L === 'H' ? `<span class="ln fantasma">5 mar · ${$(200)} ${iba}</span>` : '');
+      return `<button type="button" class="cta${nueva ? (est === 'error' ? ' elegida malb' : ' elegida') : ''}" aria-label="Cuenta ${c}"><span class="cta-tit">${c}</span><span class="cta-t"><span>${lado('D')}</span><span>${lado('H')}</span></span>${nueva && est === 'error' ? mal : ''}</button>`; };
+    return `<p class="cej">Caso 4 de 7</p><p class="txt">Toca la cuenta del mayor donde va el renglón marcado.</p>
+      <section class="hund"><p class="tit">Libro diario · por fecha</p><ol class="diario">${DIA.map(fila).join('')}</ol></section>
+      <section class="hund"><p class="tit">Libro mayor · por cuenta</p><div class="ctas">${['Caja', 'Capital', 'Mercancías', 'Ventas'].map(T).join('')}</div>
+      ${est === 'error' ? falla('Así, Mercancías tendría dos movimientos y el diario solo le da uno.') : est === 'mira' ? cuadra('El mismo renglón, en los dos libros: el diario lo ordena por fecha y el mayor por cuenta.') : ''}</section>
+      ${est === 'mira' ? `<div class="orden" role="group"><button type="button">Por fecha</button><button type="button" class="on">Por cuenta</button></div>` : ''}
+      ${est === 'error' ? msg('[Retro de Near para este distractor.]', true) : est === 'mira' ? msg('[Acierto de Near.]') : ''}
+      <button type="button" class="seguir"${est === 'inicio' ? ' aria-disabled="true"' : ''}>Seguir</button>`;
+  }
+  // ── b) Las que vuelven a cero
+  const CU = [['Caja', 'real', 600], ['Ventas', 'nominal', 300], ['Gasto de arriendo', 'nominal', 120], ['Proveedores', 'real', 200]];
+  function b(est) {
+    const cur = est === 'error' ? 'Caja' : 'Ventas'; const hechas = est === 'mira' ? CU.map((c) => c[0]) : [];
+    const elige = est === 'error' ? 'cero' : est === 'acierto' ? 'cero' : null;
+    const destino = (c) => { if (hechas.includes(c[0])) return c[1] === 'nominal' ? 'cero' : 'pasa'; if (c[0] === cur && elige) return elige; return null; };
+    const fila = (c) => { const d = destino(c); const malo = est === 'error' && c[0] === cur;
+      return `<li class="cu${c[0] === cur && !hechas.length ? ' cur' : ''}${malo ? ' malb' : ''}"><span>${c[0]}</span><b class="num">${d === 'cero' ? '<s>' + $(c[2]) + '</s>' : $(c[2])}</b></li>`; };
+    const abril = (c) => { const d = destino(c); if (!d) return `<li class="cu vacio"><span>${c[0]}</span><b class="num">—</b></li>`; const malo = est === 'error' && c[0] === cur;
+      return `<li class="cu${malo ? ' malb' : ''} llega"><span>${c[0]}</span><b class="num">${d === 'cero' ? '$0' : $(c[2])}</b>${malo ? mal : ''}</li>`; };
+    const gyp = CU.filter((c) => destino(c) === 'cero');
+    const ing = gyp.filter((c) => c[0] === 'Ventas' || (est === 'error' && c[0] === 'Caja')).reduce((t, c) => t + c[2], 0), gas = gyp.filter((c) => c[0].startsWith('Gasto')).reduce((t, c) => t + c[2], 0);
+    return `<p class="cej">Cuenta ${est === 'mira' ? '4 de 4' : '1 de 4'}</p><p class="txt">${est === 'mira' ? 'El mes queda cerrado.' : `Llega el cierre de marzo. ¿Qué pasa con <b>${cur}</b>?`}</p>
+      <section class="hund linea"><p class="tit">31 de marzo · antes del cierre</p><ul class="lista">${CU.map(fila).join('')}</ul>
+        <div class="cierre"><p class="tit">Cierre · Ganancias y pérdidas</p>${gyp.length ? gyp.map((c) => `<p class="gyp${est === 'error' && c[0] === cur ? ' malb' : ''}"><span>${c[0].startsWith('Gasto') ? '− ' : '+ '}${c[0]}</span><b class="num">${$(c[2])}</b></p>`).join('') + (est === 'mira' ? `<p class="gyp tot"><span>= Utilidad del mes</span><b class="num">${$(ing - gas)}</b></p>` : '') : '<p class="gyp vacio">Vacía</p>'}</div>
+        <p class="tit">1 de abril · después del cierre</p><ul class="lista">${CU.map(abril).join('')}</ul>
+        ${est === 'error' ? falla('Así, en abril Caja diría $0, y en la caja siguen $600.') : est === 'acierto' ? cuadra('Ventas mide marzo: su saldo pasa a Ganancias y pérdidas y abril empieza en $0.') : est === 'mira' ? cuadra('Las de periodo vuelven a cero; las de lo que hay siguen.') : ''}</section>
+      ${est === 'mira' ? '' : `<div class="ops"><button type="button" class="op${est === 'acierto' ? ' bien' : ''}${est === 'error' ? ' malb' : ''}">Vuelve a cero en el cierre${est === 'acierto' ? ok : est === 'error' ? mal : ''}</button><button type="button" class="op${est === 'error' ? ' pista' : ''}">Pasa a abril con su saldo${est === 'error' ? iba : ''}</button></div>`}
+      ${est === 'error' ? msg('[Retro de Near.]', true) : est === 'acierto' ? msg('[Acierto de Near.]') : ''}
+      <button type="button" class="seguir"${est === 'inicio' ? ' aria-disabled="true"' : ''}>${est === 'mira' ? 'Terminar' : 'Seguir'}</button>`;
+  }
+  // ── c) Cuadra por valor
+  const DEB = [['Caja', 300], ['Clientes', 500], ['Gasto de fletes', 200]];
+  function c(est) {
+    const v = est === 'inicio' ? null : est === 'error' ? 300 : 1000; const td = 1000; const esc = 1200; const h = (x) => (100 * x / esc).toFixed(1);
+    const col = (lineas, lado, extra = '') => `<div class="col ${lado}"><div class="pila">${lineas.map(([n, x], i) => `<span class="bar" style="height:${h(x)}%" title="${n}">${x >= 250 ? $(x) : ''}</span>`).join('')}${extra}</div></div>`;
+    const haber = v == null ? '' : `<span class="bar h${est === 'error' ? ' corta' : ''}" style="height:${h(v)}%">${$(v)}</span>`;
+    return `<p class="cej">Caso 2 de 6</p><p class="txt">Completa el asiento: ¿por cuánto va Ventas?</p>
+      <section class="hund"><table class="asiento"><tbody>${DEB.map(([n, x]) => `<tr><td>${n}</td><td class="num td">${$(x)}</td><td></td></tr>`).join('')}
+        <tr><td>Ventas</td><td></td><td class="num th">${v == null ? '<span class="hueco">$?</span>' : $(v)}</td></tr>
+        <tr class="sum"><td>Sumas</td><td class="num">${$(td)}</td><td class="num">${v == null ? '—' : $(v)}</td></tr></tbody></table>
+        <div class="columnas"><span class="nivel${v === td ? ' igual' : ''}" style="bottom:${h(td)}%"></span>${col(DEB, 'd')}${col([], 'h', haber)}${est === 'error' ? `<span class="hueco-barra" style="bottom:${h(v)}%;height:${h(td - v)}%"></span>` : ''}</div>
+        <p class="conteo"><span>3 cuentas · ${$(td)}</span><span>1 cuenta · ${v == null ? '$?' : $(v)}</span></p>
+        ${est === 'error' ? falla('Faltan $700 en el haber: las dos columnas no llegan a la misma altura.') : est === 'acierto' ? cuadra('Tres cuentas contra una, y cuadra: lo que se iguala es el valor.') : ''}</section>
+      <div class="casilla">${v == null ? '<input type="text" inputmode="decimal" aria-label="Valor de Ventas" placeholder="$"><button type="button" class="cmp" aria-disabled="true">Comprobar</button>' : `<p class="escrito${est === 'error' ? ' malb' : ' bien'}"><span class="num">${$(v)}</span>${est === 'error' ? mal : ok}</p>${est === 'error' ? `<p class="escrito iba"><span class="num">${$(td)}</span>${iba}</p>` : ''}`}</div>
+      ${est === 'error' ? msg('[Retro de Near para el valor escrito.]', true) : est === 'acierto' ? msg('[Acierto de Near.]') : ''}
+      <button type="button" class="seguir"${est === 'inicio' ? ' aria-disabled="true"' : ''}>Seguir</button>`;
+  }
+  window.T21 = { a, b, c };
+})();
+
+document.querySelectorAll('.mq[data-k]').forEach((m) => { m.innerHTML = T21[m.dataset.k]({"a": "inicio", "b": "inicio", "c": "inicio"}[m.dataset.k]); });
+document.querySelectorAll('.estados button').forEach((b) => b.addEventListener('click', () => { const k = b.dataset.k;
+  b.parentNode.querySelectorAll('button').forEach((x) => x.classList.toggle('on', x === b));
+  document.querySelectorAll('.mq[data-k="' + k + '"]').forEach((m) => { m.innerHTML = T21[k](b.dataset.e); }); }));
+</script>
+</body></html>
