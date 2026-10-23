@@ -40,3 +40,30 @@ Queda la lista cerrada de 12 de Near, con los ids de la tabla de arriba. El mód
 ## 4. Parada anunciada
 
 Las tres Hacer necesitan su fila en el catálogo de FP del servidor. La migración solo agrega filas y va en el rango de la Célula C (desde la 0116). Correrla en producción no lo decide la célula: cuando el PR esté listo, va por issue `miku` a Erwin y a Mateo. Es la única parada del plan.
+
+---
+
+# Lote T2-2 · decisiones de L (23-oct-2026, 12:00)
+
+Entregas: Near `c-t2-2-near-lote.md` (bancos de las tres Hacer sobre la forma de Watari, slides con S1-S13, subtemas) y Watari `c-t2-2-watari-figuras.md` + `.html` (la figura de cada slide, 152 estados medidos). La de Mello (auditoría de la forma) sigue en curso.
+
+**Los huecos de Near:**
+1. **Página de Caleja (cal-2, cal-3, cal-5).** El repo no la trae y nadie de la célula tiene el capítulo. Esos ítems quedan rotulados «Basado en el libro» (H2), y no se pide el capítulo solo por esto.
+2. **«Gastos pagados por anticipado».** Pasa a **«Seguros pagados por anticipado»**, el nombre que ya usa el canon de los temas 1-3 (`contabilidad.js`). Sigue siendo un activo y la trampa es la misma.
+3. **«Costo de ventas» contra «Costo de mercancía vendida».** T2 dice «Costo de ventas». T7 está oculto este semestre, así que no hay choque visible. Queda anotado para cuando T7 vuelva; no va a Erwin.
+4. **Cierre anual en «Las que vuelven a cero».** Se acepta el de Near. Watari ajusta los rótulos de la figura de mes a año.
+
+**Los ajustes de Watari a las slides se aceptan todos:**
+- A1·6: el saldo cae en el lado elegido, sin rechazo.
+- A1·7: el selector va entre Caja y Documentos por pagar.
+- A3·6: la familia se queda donde cayó, sin rebote.
+- A3·7: el asiento tiene 3 o más líneas, para la confusión de S9.
+- A4: los dos libros van uno encima del otro.
+- A5·7: van cifras, no barras.
+
+El texto de las slides de Near no cambia. Solo cambian las frases «VE…» que corresponden. Las slides de objetivo son las de Near, no las [W].
+
+**Lote T2-3:**
+- **Near** aplica los ajustes de Watari y los huecos 1 y 2 sobre su v2. Entrega solo el delta, no el archivo entero.
+- **Watari** renumera sus figuras a la v2 de Near (con la slide 0 de objetivo y las marcas [lee], [toca] y [decide]) y comprueba que los bancos de Near quepan en sus formas: tope de cuentas y renglones, largo de nombres a 320 px.
+- **Mello** termina la auditoría de la forma. Después audita los bancos de `c-t2-2-near-lote.md` §1 contra H1-H10.
