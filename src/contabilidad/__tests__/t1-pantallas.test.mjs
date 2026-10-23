@@ -5,20 +5,20 @@ import { JSDOM, VirtualConsole } from "jsdom";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
- * TEMA 1 · APRENDER — LA LISTA DE PANTALLAS DICE LO MISMO QUE LA PIEZA.
+ * TEMA 1 · APRENDER — LA SECUENCIA DE FUTABA, EN DATOS, SIN TOCAR LO QUE SE VE.
  *
- * `contabilidadT1Pantallas.js` es el contenido de las cuatro piezas puesto
- * como presentación: una pantalla tras otra. Sirve el día que el componente
- * de Erwin la lea; hasta entonces, el estudiante sigue viendo `CuatroCapas`.
- * Lo que se rompe sin ruido es que las dos versiones se separen. Tres cosas:
+ * `contabilidadT1Pantallas.js` es el contenido de las cuatro piezas en el
+ * orden de pantallas de la ficha b-t1-aprender-secuencia-y-hacer.md. Lo va a
+ * leer el componente de presentación de Erwin; hoy no lo lee nadie. Tres
+ * cosas se rompen sin ruido:
  *
- * 1 · CADA TEXTO ES EL DE LA CONSTANTE. Por identidad, no por parecido: una
- *     copia se queda atrás en la primera corrección.
- * 2 · LOS PASOS SON LOS QUE SE RECORREN. Se monta cada capa 2 y se pulsa
- *     Siguiente hasta el cierre: el rótulo y el texto de cada paso tienen que
- *     ser los de su pantalla, en el mismo orden y sin una de más ni de menos.
- * 3 · LOS RÓTULOS QUE SALIERON DE LOS COMPONENTES siguen diciendo, letra por
- *     letra, lo que decían, y no vuelven a escribirse dentro del componente.
+ * 1 · EL ORDEN. Cuántas pantallas tiene cada pieza y en qué orden, como en la
+ *     tabla de la ficha.
+ * 2 · EL ORIGEN DE CADA TEXTO. Lo que se dice «publicado» tiene que SER una
+ *     constante publicada; lo que se dice nuevo o recortado no puede serlo.
+ *     Si no, Shoko revisa lo que no cambió y se salta lo que sí.
+ * 3 · LO QUE SE VE HOY. Las capas 2 montadas siguen diciendo los textos
+ *     publicados, paso por paso: la secuencia no se coló en la pieza.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -43,14 +43,109 @@ const React = await import("react");
 const { createRoot } = await import("react-dom/client");
 const act = React.act ?? (await import("react-dom/test-utils")).act;
 
-const {
-  PANTALLAS_T1, pantallasDe, CAPA_OBJETIVO, CAPA_NOMBRES, CAPA_MIRALO, CAPA_EXPLORA, CAPA_FRASE,
-} = await import("../../data/contabilidadT1Pantallas.js");
+const S = await import("../../data/contabilidadT1Pantallas.js");
+const { PANTALLAS_T1, pantallasDe, textosDe, PUBLICADO, RECORTADO, NUEVO } = S;
 const I = await import("../../data/contabilidadIntro.js");
 const P = await import("../../data/contabilidadPiezas234.js");
+const T = await import("../../data/contabilidadTema1.js");
 const { ESCENAS_INTRO } = await import("../../components/mecanicas/libros/intro/escenasIntro.jsx");
 
 const IDS = [I.ID, P.ID_P2, P.ID_P3, P.ID_P4];
+
+/* Todas las cadenas publicadas en los tres archivos de datos de T1, a cualquier profundidad. */
+const PUBLICADAS = new Set();
+const recoger = (x, vistos = new Set()) => {
+  if (typeof x === "string") { PUBLICADAS.add(x); return; }
+  if (!x || typeof x !== "object" || vistos.has(x)) return;
+  vistos.add(x);
+  for (const v of Object.values(x)) recoger(v, vistos);
+};
+for (const m of [I, P, T]) recoger(m);
+
+const palabras = (t) => t.trim().split(/\s+/).filter((x) => /[\p{L}\p{N}]/u.test(x)).length;
+
+/* ═══════════════════ 1 · EL ORDEN ═══════════════════ */
+
+test("★★ cada pieza tiene las pantallas de la tabla de la ficha, numeradas sin huecos", () => {
+  assert.deepEqual(Object.keys(PANTALLAS_T1), IDS);
+  /*
+   * La ficha titula a3 «19 pantallas» y a4 «15», pero sus tablas tienen 18 y 14 filas.
+   * Aquí manda la tabla: es la que dice qué va en cada una. Devuelto a Futaba.
+   */
+  const esperadas = { [I.ID]: 17, [P.ID_P2]: 15, [P.ID_P3]: 18, [P.ID_P4]: 14 };
+  for (const id of IDS) {
+    const ps = pantallasDe(id);
+    assert.equal(ps.length, esperadas[id], `${id}: ${ps.length} pantallas`);
+    assert.deepEqual(ps.map((p) => p.n), ps.map((_, k) => k + 1), `${id}: numeración`);
+  }
+  assert.deepEqual(pantallasDe("t1-desde-donde-preguntan"), []);
+});
+
+test("★★ el patrón: abre prediciendo, tiene al menos una parada o decisión, y cierra con frase y puente", () => {
+  for (const id of IDS) {
+    const hace = pantallasDe(id).map((p) => p.hace);
+    assert.equal(hace[0], "predice", `${id}: abre con el gancho`);
+    assert.ok(hace.some((h) => h === "parada" || h === "elige"), `${id}: sin parada`);
+    assert.deepEqual(hace.slice(-2), ["frase", "puente"], `${id}: cierre`);
+  }
+});
+
+test("★ la pantalla 18 de a3 es la 1 de a4: un solo texto, no dos copias", () => {
+  assert.equal(pantallasDe(P.ID_P3).at(-1).texto[0], pantallasDe(P.ID_P4)[0].texto[0]);
+});
+
+test("★★ paradas, decisiones y frases: exactamente una correcta, y la de la frase es la publicada", () => {
+  for (const id of IDS) {
+    for (const p of pantallasDe(id).filter((x) => ["parada", "elige", "frase"].includes(x.hace))) {
+      assert.equal(p.opciones.filter((o) => o.correcta).length, 1, `${id} · ${p.n}: correctas`);
+      if (p.hace === "parada") assert.ok(p.opciones.every((o) => o.devolucion?.texto), `${id} · ${p.n}: falta devolución`);
+    }
+  }
+  const pares = [[I.ID, I.OPCIONES], [P.ID_P2, P.OPCIONES_P2], [P.ID_P3, P.OPCIONES_P3], [P.ID_P4, P.OPCIONES_P4]];
+  for (const [id, publicadas] of pares) {
+    const f = pantallasDe(id).find((p) => p.hace === "frase");
+    assert.deepEqual(f.opciones.map((o) => [o.id, o.correcta]), publicadas.map((o) => [o.id, o.correcta]), `${id}: la frase`);
+  }
+  /* a1 · 15: solo el usuario que cierra el ciclo es la correcta. */
+  const elige = pantallasDe(I.ID).find((p) => p.hace === "elige");
+  assert.equal(elige.opciones.find((o) => o.correcta).id, I.USUARIOS.find((u) => u.cierraElCiclo).id);
+});
+
+/* ═══════════════════ 2 · EL ORIGEN DE CADA TEXTO ═══════════════════ */
+
+test("★★ «publicado» es una constante publicada; «nuevo» y «recortado» no lo son, y el recorte dice de cuál sale", () => {
+  const malos = [];
+  let n = 0;
+  for (const id of IDS) {
+    for (const p of pantallasDe(id)) {
+      for (const t of [...textosDe(p), ...(p.cita ? [p.cita] : [])]) {
+        n += 1;
+        const donde = `${id} · ${p.n}: «${t.texto.slice(0, 40)}»`;
+        if (t.origen === PUBLICADO && !PUBLICADAS.has(t.texto)) malos.push(`${donde} dice publicado y no lo es`);
+        if (t.origen === NUEVO && PUBLICADAS.has(t.texto)) malos.push(`${donde} dice nuevo y ya está publicado`);
+        if (t.origen === RECORTADO && (!PUBLICADAS.has(t.de) || t.de === t.texto)) malos.push(`${donde}: recorte sin texto publicado de origen`);
+        if (![PUBLICADO, NUEVO, RECORTADO].includes(t.origen)) malos.push(`${donde}: sin origen`);
+      }
+    }
+  }
+  assert.deepEqual(malos, []);
+  assert.ok(n > 150, `solo ${n} textos revisados: textosDe no está recorriendo las pantallas`);
+});
+
+test("★★ ningún texto que no es cita pasa de 25 palabras (la regla de la ficha)", () => {
+  const largos = [];
+  for (const id of IDS) {
+    for (const p of pantallasDe(id)) {
+      for (const t of textosDe(p)) {
+        /* Las opciones publicadas de capa 4 y las preguntas de la p. 3 se conservan como están. */
+        if (palabras(t.texto) > 25) largos.push(`${id} · ${p.n}: ${palabras(t.texto)} palabras «${t.texto.slice(0, 40)}»`);
+      }
+    }
+  }
+  assert.deepEqual(largos, []);
+});
+
+/* ═══════════════════ 3 · LO QUE SE VE HOY NO CAMBIÓ ═══════════════════ */
 
 const montar = (Comp) => {
   const caja = document.createElement("div");
@@ -61,70 +156,17 @@ const montar = (Comp) => {
 };
 const tocar = (el) => act(() => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
 
-/* ═══════════════════ LA FORMA ═══════════════════ */
-
-test("★★ hay una lista por pieza, con las cinco capas en orden y claves únicas", () => {
-  assert.deepEqual(Object.keys(PANTALLAS_T1), IDS);
-  for (const id of IDS) {
-    const ps = pantallasDe(id);
-    const capas = ps.map((p) => p.capa);
-    assert.deepEqual([...new Set(capas)], [CAPA_OBJETIVO, CAPA_NOMBRES, CAPA_MIRALO, CAPA_EXPLORA, CAPA_FRASE], `${id}: capas fuera de orden o faltantes`);
-    assert.equal(new Set(ps.map((p) => p.clave)).size, ps.length, `${id}: dos pantallas con la misma clave`);
-  }
-  assert.deepEqual(pantallasDe("t1-desde-donde-preguntan"), [], "un id que no es pieza de Aprender no tiene pantallas");
-});
-
-/* ═══════════════════ 1 · LOS TEXTOS SON LOS DE LAS CONSTANTES ═══════════════════ */
-
-test("★★ el objetivo, los nombres y la frase final apuntan a las mismas constantes que lee CuatroCapas", () => {
-  for (const pieza of P.PIEZAS_INTRO) {
-    const ps = pantallasDe(pieza.id);
-    assert.equal(ps[0].texto, pieza.objetivo, `${pieza.id}: el objetivo`);
-    const nombres = ps.filter((p) => p.capa === CAPA_NOMBRES);
-    if (pieza.capa1EnLista) {
-      /* La pieza 1 conserva la capa 1 en lista: una sola pantalla con todo (la siembra cuenta los verbos de la cita). */
-      assert.equal(nombres.length, 1);
-      assert.equal(nombres[0].nombres, pieza.nombres);
-    } else {
-      /* Las otras tres, como las pagina CuatroCapas: un término por pantalla, la siembra al final. */
-      assert.equal(nombres.length, pieza.nombres.length, `${pieza.id}: un término por pantalla`);
-      pieza.nombres.forEach((n, k) => {
-        assert.equal(nombres[k].termino, n.termino);
-        assert.equal(nombres[k].definicion, n.definicion);
-        assert.equal(nombres[k].delLibro, n.delLibro);
-      });
-    }
-  }
-  const fraseDe = (id) => pantallasDe(id).find((p) => p.capa === CAPA_FRASE);
-  assert.equal(fraseDe(I.ID).pregunta, I.PREGUNTA_FINAL);
-  assert.equal(fraseDe(I.ID).opciones, I.OPCIONES);
-  assert.equal(fraseDe(P.ID_P2).opciones, P.OPCIONES_P2);
-  assert.equal(fraseDe(P.ID_P3).opciones, P.OPCIONES_P3);
-  assert.equal(fraseDe(P.ID_P4).opciones, P.OPCIONES_P4);
-});
-
-test("★★ capa 3: lo de cada exploración sale de su constante, y la pieza 3 da una pantalla por pregunta", () => {
-  const explora = (id) => pantallasDe(id).filter((p) => p.capa === CAPA_EXPLORA);
-  const [u] = explora(I.ID);
-  assert.equal(u.usuarios, I.USUARIOS);
-  assert.equal(u.vacio, I.VACIO_CAPA_3);
-  assert.equal(u.texto, I.TEXTO_DEL_SELECTOR);
-  const [c] = explora(P.ID_P2);
-  assert.equal(c.casos, P.CASOS_P2);
-  assert.equal(c.nota, P.NOTA_CAPA3_P2);
-  const q = explora(P.ID_P3);
-  assert.deepEqual(q.map((x) => x.pregunta), P.PREGUNTAS_P3);
-  assert.ok(q.every((x) => x.consigna === P.CONSIGNA_P3 && x.respuestas === P.RESPUESTAS_P3));
-  const [f] = explora(P.ID_P4);
-  assert.equal(f.flechas, P.FLECHAS_P4);
-  assert.equal(f.consigna, P.CONSIGNA_P4);
-});
-
-/* ═══════════════════ 2 · LOS PASOS SON LOS QUE SE RECORREN ═══════════════════ */
+const PUBLICADO_CAPA2 = {
+  [I.ID]: [I.TEXTOS, I.CIERRE, I.ROTULO_CIERRE],
+  [P.ID_P2]: [P.TEXTOS_P2, P.CIERRE_P2, P.ROTULO_CIERRE_P2],
+  [P.ID_P3]: [P.TEXTOS_P3, P.CIERRE_P3, P.ROTULO_CIERRE_P3],
+  [P.ID_P4]: [P.TEXTOS_P4, P.CIERRE_P4, P.ROTULO_CIERRE_P4],
+};
 
 for (const id of IDS) {
-  test(`★★ ${id}: la capa 2 montada recorre exactamente sus pantallas, rótulo y texto`, () => {
-    const esperadas = pantallasDe(id).filter((p) => p.capa === CAPA_MIRALO);
+  test(`★★ ${id}: la capa 2 que ve hoy el estudiante sigue diciendo los textos publicados, paso por paso`, () => {
+    const [textos, cierre, rotuloCierre] = PUBLICADO_CAPA2[id];
+    const pasos = Object.keys(textos).map(Number).sort((a, b) => a - b);
     const { caja, desmontar } = montar(ESCENAS_INTRO[id].Capa2);
     try {
       const vistas = [];
@@ -134,18 +176,12 @@ for (const id of IDS) {
         if (sig.disabled) break;
         tocar(sig);
       }
-      assert.equal(vistas.length, esperadas.length, `${id}: ${vistas.length} pantallas recorridas, la lista tiene ${esperadas.length}`);
-      esperadas.forEach((p, k) => {
-        assert.equal(vistas[k].texto, p.texto, `${id} · ${p.clave}: el texto del paso`);
-        assert.ok(vistas[k].todo.includes(p.rotulo), `${id} · ${p.clave}: falta el rótulo «${p.rotulo}»`);
-        assert.ok(vistas[k].todo.includes(p.alternativo), `${id} · ${p.clave}: falta el alternativo`);
-      });
-      assert.equal(esperadas.at(-1).clave, "cierre");
+      assert.deepEqual(vistas.map((v) => v.texto), [...pasos.map((n) => textos[n]), cierre]);
+      pasos.forEach((n, k) => assert.ok(vistas[k].todo.includes(`Paso ${n} de ${pasos.length}`)));
+      assert.ok(vistas.at(-1).todo.includes(rotuloCierre));
     } finally { desmontar(); }
   });
 }
-
-/* ═══════════════════ 3 · LOS RÓTULOS QUE SALIERON DE LOS COMPONENTES ═══════════════════ */
 
 test("★ los rótulos movidos a datos dicen lo mismo que decían, y el componente ya no los escribe", () => {
   const movidos = [
@@ -162,4 +198,10 @@ test("★ los rótulos movidos a datos dicen lo mismo que decían, y el componen
     const fuente = readFileSync(new URL(`../../components/mecanicas/libros/intro/${archivo}`, import.meta.url), "utf8");
     assert.ok(!fuente.includes(antes), `${archivo}: «${antes.slice(0, 30)}» volvió a escribirse en el componente`);
   }
+});
+
+test("★ nada de la vista lee todavía la secuencia: el estudiante ve CuatroCapas", () => {
+  const vista = readFileSync(new URL("../../components/IntroContabilidadView.jsx", import.meta.url), "utf8");
+  assert.ok(!vista.includes("contabilidadT1Pantallas"), "la vista ya lee la secuencia: eso es el cambio de forma, va con el componente de Erwin");
+  assert.ok(vista.includes("<CuatroCapas"));
 });
