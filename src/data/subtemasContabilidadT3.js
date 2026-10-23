@@ -20,7 +20,8 @@ import { ACT7_T3, CASOS_ACT7 } from "./contabilidadTema3Act7.js";
  *     `${actividad}:${item}`, igual que en items.js;
  *   · el CAMPO DEL BANCO que sirve para [regla], con sus valores sacados del
  *     banco (no escritos a mano: si el banco cambia, la prueba lo dice);
- *   · el nombre de cada subtema: `null` hasta que lleguen los de Miyata.
+ *   · el subtema de cada una, con los nombres de Miyata: seis [fijo] y una
+ *     [regla] (El mismo hecho, por escenario).
  *
  * No copia contenido: lee los bancos de las actividades.
  * ═══════════════════════════════════════════════════════════════════════════
@@ -61,32 +62,47 @@ export const valoresDeRegla = (actividad) => {
   return a ? [...new Set(a.banco.map((x) => x[a.campo]))] : [];
 };
 
-/* [fijo] — vacío hasta que Miyata diga si alguna actividad lleva un solo subtema. */
-export const SUBTEMA_FIJO_T3 = {};
-
 /*
- * [regla] — del dato del banco al subtema, escrito a mano como en Macro. Los
- * nombres van en `null` hasta que Miyata los entregue; las claves son los
- * valores del campo de cada banco, y una prueba comprueba que sean
- * exactamente esos (ni falta ni sobra uno).
+ * Los nombres de Miyata (paquete e3-t3-miyata-v1, sección C; Kamogawa en
+ * #469). Dos condiciones de Kamogawa:
+ *   · «Impuesto y utilidad neta» no se publica en el Repaso hasta que exista
+ *     su pieza (Takamura): no está aquí;
+ *   · los dos Hacer nuevos (t3-gasto-o-pago → «Gasto y pago»,
+ *     t3-del-resultado-a-la-caja → «Resultado y caja») no se declaran hasta
+ *     que se construyan.
  */
-export const SUBTEMA_REGLA_T3 = {
-  /* ¿Ingreso o cobro?: el grupo correcto del hecho. */
-  "t3-ingreso-o-cobro": { "mismo-dia": null, despues: null, "sin-ingreso": null },
-  /* ¿Cuándo se causa?: qué queda el día en que se causa. */
-  "t3-cuando-se-causa": { "por-cobrar": null, "por-pagar": null, nada: null },
-  /* El mismo hecho, dos empresas: el par (acumulado: máquina y equipos; diferido: arriendo y servicio). */
-  "t3-mismo-hecho": { maquina: null, arriendo: null, equipos: null, servicio: null },
-  /* Arma el ajuste acumulado: gasto o ingreso por causar. */
-  "t3-ajuste-acumulado": { gasto: null, ingreso: null },
-  /* Arma el ajuste diferido: pago o cobro anticipado. */
-  "t3-ajuste-diferido": { pago: null, cobro: null },
-  /* ¿Qué le toca a este periodo?: pago o cobro. */
-  "t3-que-le-toca": { pago: null, cobro: null },
-  /* El cierre completo: la parte (1 ingresos, 2 gastos, 3 saldo). */
-  "t3-cierre-completo": { 1: null, 2: null, 3: null },
+const INGRESO_Y_COBRO = "Ingreso y cobro";
+const CAUSACION = "Causación";
+const AJUSTE_ACUMULADO = "Ajuste acumulado";
+const AJUSTE_DIFERIDO = "Ajuste diferido";
+const REPARTO = "Reparto por periodos";
+const CIERRE = "Cierre del periodo";
+
+/* [fijo] — toda la actividad tiene un mismo subtema. */
+export const SUBTEMA_FIJO_T3 = {
+  "t3-ingreso-o-cobro": INGRESO_Y_COBRO,
+  "t3-cuando-se-causa": CAUSACION,
+  "t3-ajuste-acumulado": AJUSTE_ACUMULADO,
+  "t3-ajuste-diferido": AJUSTE_DIFERIDO,
+  "t3-que-le-toca": REPARTO,
+  "t3-cierre-completo": CIERRE,
 };
 
-/* Lo que falta nombrar: [actividad, valor]. Vacío = listo para cablear. */
-export const subtemasPendientesT3 = () =>
-  Object.entries(SUBTEMA_REGLA_T3).flatMap(([act, regla]) => Object.entries(regla).filter(([, n]) => !n).map(([v]) => [act, v]));
+/*
+ * [regla] — del dato del banco al subtema. El mismo hecho, dos empresas va
+ * por escenario, y el banco no trae un campo de clase: el escenario es el id
+ * del par (`par.id`, que es también su `item` en el detalle). Los cuatro
+ * pares caen en uno de los dos escenarios de Miyata; ninguno quedó sin casa.
+ */
+export const SUBTEMA_REGLA_T3 = {
+  "t3-mismo-hecho": { maquina: AJUSTE_ACUMULADO, equipos: AJUSTE_ACUMULADO, arriendo: AJUSTE_DIFERIDO, servicio: AJUSTE_DIFERIDO },
+};
+
+/** El subtema de un ítem de T3 por su clave de historial, o lanza: un subtema vacío no puede pasar en silencio. */
+export function subtemaDeT3(actividad, item) {
+  const fijo = SUBTEMA_FIJO_T3[actividad];
+  if (fijo) return fijo;
+  const nombre = SUBTEMA_REGLA_T3[actividad]?.[item];
+  if (!nombre) throw new Error(`Sin subtema: ${actividad} · ${item}`);
+  return nombre;
+}
