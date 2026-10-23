@@ -174,8 +174,7 @@ siguen como estaban. El estado de la pieza vive en el contenedor, no dentro de l
 En la primera pantalla de la primera pieza está apagado y su razón visible es el contador
 «Pantalla 1 de N». Una pantalla Haz ya resuelta no se vuelve a bloquear.
 
-El estado (pieza, pantalla, pasos, resueltas) se guarda en la pestaña con una clave por tema y
-pieza, como `Presentacion.jsx`. Es solo posición de interfaz: no es dato de estudiantes ni sale
+El estado (pieza, pantalla, pasos, resueltas) se guarda en la pestaña con una clave por tema, pieza **y caso** (`tema/pieza/caso`; D8, caso B), como `Presentacion.jsx` más el caso. Un caso nuevo arranca limpio; volver al anterior lo encuentra como lo dejó. Es solo posición de interfaz: no es dato de estudiantes ni sale
 del dispositivo.
 
 ### 5.3 Literales de los botones
@@ -402,3 +401,12 @@ B4 aplica a las pastillas de Haz.
   `prompts/disenadores-de-celula-v1.md`, `kit-de-calidad.md` (dimensiones 7 y 9), `enganche.md`,
   `presentacion/Presentacion.jsx`, `mecanicas/maquinas/CuatroCapas.jsx`,
   `IntroContabilidadView.jsx`, `scripts/t4/sonda-enganche/README.md`.
+
+## 16. Respuestas a Hanayama (Célula D, 23 oct)
+
+a) **Reserva de figura: aceptada por pieza**, no fija en 150/200. La figura de la pieza mide lo de su pantalla más alta (la misma en todas, regla D5), con tope **220 px a 320 y 319 a 375**; el apoyo baja debajo y puede desbordar hasta 40 px a 320. Si una figura pasa del tope, la pantalla se parte. El primer control sigue dentro de los primeros 280 px (B1).
+b) **Objetivo D2:** es el titular de la pantalla 1 (una oración, máx. 2 líneas). **Pie «Basado en el libro, pp. …»:** en la zona de razón (Inter 12, #A8B6C8) del **Cierre**, una vez por pieza; no se repite en cada pantalla (B5).
+c) **Pantallas de un solo control** son **Haz** si el control tiene que dar una respuesta válida para seguir (cobrar, el cheque, Contar, «Pagar el siguiente») y **Míralo** si solo se explora (el extracto). Nunca pasos de una Apertura: la Apertura se arma sola y no cuenta para B3. Las dos primeras cuentan para B3.
+d) **Sí**: la clave de persistencia incluye el caso (§5.2 corregido). El segundo intento no hereda el estado del primero.
+
+Adoptado en los slides de T4: C2 (al segundo error se muestra lo correcto y se libera «Siguiente») y decisión en la pantalla 1, que la Apertura permite.
