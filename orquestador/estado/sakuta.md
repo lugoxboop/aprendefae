@@ -1,4 +1,4 @@
-2026-10-23 12:42 (hora Bogotá)
+2026-10-23 13:14 (hora Bogotá)
 - Regla i (buscar antes de abrir; skill en vez del prompt maestro) pasada a Kaede, Futaba, Mai y Shoko, junto con su lote: terminado
 - Cambio de tema (orden de Mateo, 23-oct): B suelta T6 y toma T1 introduccion-contabilidad; vara pasada a los cuatro agentes (solo se agrega, nunca se borra): terminado
 - T1 · fondo de los 4 Aprender en secuencia (Futaba): terminado, en orquestador/conocimiento/fichas/b-t1-aprender-secuencia-y-hacer.md
