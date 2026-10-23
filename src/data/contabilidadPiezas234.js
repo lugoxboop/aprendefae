@@ -106,6 +106,9 @@ export const TEXTOS_P2 = {
  * Tema 2 (ejemplo 3, cap. 3, p. 90), y el cierre lo nombra para que el
  * estudiante no llegue allá con una regla incompleta.
  */
+/* El rótulo de la pantalla del cierre (antes escrito en `LaEcuacionContable.jsx`). */
+export const ROTULO_CIERRE_P2 = "La regla";
+
 export const CIERRE_P2 = "Nunca vas a ver que uno suba y el otro baje. O suben juntos, o bajan juntos, o se quedan los dos igual. Si ves otra cosa, algo está mal anotado.";
 
 export const SUBEN = "suben";
@@ -246,6 +249,9 @@ export const TEXTOS_P3 = {
   3: "El 31 de diciembre se toma otra foto. Muestra cómo quedó.",
   4: "Entre las dos fotos pasó todo el año. Eso es lo que cuenta el otro informe: qué vendió y qué gastó en ese tramo.",
 };
+
+/* El rótulo de la pantalla del cierre (antes escrito en `LaFotoYLaPelicula.jsx`). */
+export const ROTULO_CIERRE_P3 = "Las dos fotos y el tramo";
 
 export const CIERRE_P3 = "Las dos fotos son del mismo tipo de informe, en dos días distintos. Lo que va en medio explica por qué la segunda no se parece a la primera.";
 
@@ -416,6 +422,9 @@ export const TEXTOS_P4 = {
   3: "Segunda flecha. La plata que queda al final es la misma que aparece en la foto.",
   4: "Tres flechas más. Cada motivo por el que se movió la plata explica una línea de la foto.",
 };
+
+/* El rótulo de la pantalla del cierre (antes escrito en `ComoSeArticulan.jsx`). */
+export const ROTULO_CIERRE_P4 = "Las cinco a la vez";
 
 export const CIERRE_P4 = "Cuenta las flechas: son cinco y todas llegan a la foto. Los otros dos cuentan qué pasó en el año. La foto guarda cómo quedó la empresa.";
 
