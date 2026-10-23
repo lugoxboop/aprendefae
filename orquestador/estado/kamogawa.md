@@ -1,9 +1,12 @@
-2026-10-23 09:22 (hora Bogotá)
-- Célula E, repaso-capitulo-5: r5-1, r5-2, r5-4 y r5-5 en Avanzado verificable mirando (Takamura, 17-oct), en main y CI verde: terminado
-- Revisión de la célula (orden de Mateo: capacitar, no producir): Ippo, Miyata, Itagaki y Takamura vivos y con su ficha y prompt maestro en el chat: terminado
-- Ippo capacitado con construccion-v1: terminado (confirmó en 5 líneas; sin ramas ni PR abiertos)
-- r5-3, re-auditoría de Takamura a #444 (D4 de la balanza y «Plazo del proveedor»): en curso (capturas de medir-r5-3 a 320 y 375, A y B, enviadas)
-- r5-4, dos detalles de Takamura (ocultar «Iba aquí» con el asiento todo correcto; margen de 16 px del calendario a 320): bloqueado: listo para Ippo; espera la orden de producir
-- Banco C.2, D.1 y D.2: bloqueado: la Célula D ya terminó T4; listo para arrancar, espera la orden de producir
-- Botón «Entrar» a 320, «RESULTADO» del Cierre a 11 px e insignia del cierre de r5-2: bloqueado: es compartido, de Erwin
-- Prueba con personas (D2, D3, D5, D7 y D9 en las cinco piezas): bloqueado: requiere estudiantes reales
+2026-10-23 10:39 (hora Bogotá)
+- Cambio de tema (orden de Mateo, 23-oct): Célula E suelta repaso-capitulo-5 y toma T3, ingresos-gastos-y-caja: terminado
+- r5 cerrado: r5-1 a r5-5 en Avanzado (r5-3 re-auditada por Takamura el 23-oct); detalles de r5-4 y banco C.2/D.1/D.2 documentados en #469, sin hacer porque el tema se oculta: terminado
+- Célula capacitada: Ippo, Miyata, Itagaki y Takamura con su prompt maestro (Ippo con construccion-v1) y con la vara y la regla de estudiantes activos: terminado
+- T3, hilo lógico completo de los Aprender en presentación (Miyata): en curso
+- T3, Hacer nuevos: cuáles y cuántos (Miyata) y lenguaje visual de los Hacer de T3 (Itagaki): en curso
+- T3, línea base del Kit de lo publicado (4 Aprender, 7 Hacer) (Takamura): en curso
+- T3, sonda medir-t3 (Ippo, #469): en curso
+- T3, subtemas para el Repaso Diario: nombres (Miyata) e inventario (Ippo, #469): en curso
+- T3, forma de los Aprender-presentación: bloqueado: espera el patrón de Ukyo y el componente de Erwin
+- T3, logito del tema: bloqueado: espera el de Ukyo
+- Capítulo 4 del libro (pp. 117-176) para Miyata: bloqueado: pedido a Miku en #468 (no frena el arranque)
