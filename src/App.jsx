@@ -103,6 +103,7 @@ const VISTAS_CON_TITULO = new Set([
   "inventarios-descuentos-nic2",
   "repaso-capitulo-5",
   "repaso-diario",
+  "repaso-diario-contabilidad",
 ]);
 
 export default function App() {
@@ -369,6 +370,15 @@ export default function App() {
     return wrap(
       <Suspense fallback={siteFallback}>
         <RepasoView onBack={() => setView("macroeconomia")} />
+      </Suspense>
+    );
+  }
+
+  /* El Repaso Diario de Contabilidad: el mismo motor, su propio pool (repasos.js). */
+  if (view === "repaso-diario-contabilidad") {
+    return wrap(
+      <Suspense fallback={siteFallback}>
+        <RepasoView idRepaso="repaso-diario-contabilidad" onBack={() => setView("contabilidad")} />
       </Suspense>
     );
   }
