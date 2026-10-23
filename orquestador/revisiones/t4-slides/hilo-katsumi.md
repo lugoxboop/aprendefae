@@ -112,3 +112,19 @@ Texto NUEVO de devolución en A4 (pantalla 1):
 | A5 | 6 | 100 % | Sí | 4 | ninguna |
 
 Ninguna pieza tiene dos pantallas de lectura seguidas. Todo texto de 10 palabras o más mide 65 o más, y la copia contra el libro da 0.
+
+## Preauditoría en papel de Shibukawa (23 oct)
+
+Vara para «acción sin decisión»: es acción real si el estudiante elige entre dos o más opciones, o si mueve un modelo cuyo resultado depende de lo que hace. Un toque con un solo resultado posible (una pista, «Tócalo», «Pasa el año», tocar para revelar) es **lectura con botón**, y para A3 cuenta como lectura.
+
+- **A0 · FALLA:** p2, p3 y p4 son tres lecturas con botón seguidas. La acción real llega solo al 33 % y hay una sola decisión distinta, porque p5 repite la de p1 sobre otro caso. Además p3 y p4 sobran. Corrección: fundir p2 a p4 en una pantalla con una decisión distinta (p. ej., ordenar los corrientes de más a menos cerca de la plata, con el efectivo primero, p. 178). → Katsumi.
+- **A1 · PASA en papel** (3 decisiones distintas, 83 % de acción). En captura: la salida «pagar» de p3 tiene que mostrar por qué el libro no paga con la caja.
+- **A2 · FALLA:** p2 y p3 son lecturas seguidas y la acción real llega al 57 %. Corrección literal en p2: «El 1 de mayo, Sus Servicios abre el fondo de Rosa Primorosa con un cheque. ¿De qué cuenta sale?», con las fichas Bancos, Caja y Caja menor. Si mide 65 o más, pasa sin volver a revisión.
+- **A3 · PASA en papel** (3 decisiones distintas; las cifras cuadran).
+- **A4 · PASA en papel** (2 decisiones distintas, no 3; 80 % de acción).
+- **A5 · PASA en papel** (4 decisiones distintas).
+- **Transversal:**
+  - A1 y A10 deben medirse con el texto literal en las pantallas con «…».
+  - La mecánica «¿por qué lado se mueve la cuenta?» ya va en su 4.º uso o más (A1 p1-p2, A4 p1 y p3, A5 p5): Katsumi tiene que justificarla.
+  - A2 p7 debe decir en pantalla «Basado en el libro, p. 182».
+  - La parada de Baki sobre el índice de progreso tiene que cerrarse con evidencia antes de fusionar A0 y A1.
