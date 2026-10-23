@@ -1,13 +1,17 @@
-2026-10-23 10:52 (hora Bogotá)
+2026-10-23 11:14 (hora Bogotá)
+- Regla i (buscar antes de abrir; skill en vez del prompt maestro) pasada a Kaede, Futaba, Mai y Shoko, junto con su lote: terminado
 - Cambio de tema (orden de Mateo, 23-oct): B suelta T6 y toma T1 introduccion-contabilidad; vara pasada a los cuatro agentes (solo se agrega, nunca se borra): terminado
 - T1 · fondo de los 4 Aprender en secuencia (Futaba): terminado, en orquestador/conocimiento/fichas/b-t1-aprender-secuencia-y-hacer.md
 - T1 · auditoría de base (Shoko): terminado, en orquestador/conocimiento/revisiones/b-t1-base-shoko.md
 - T1 · subtemas de los 7 Hacer para el Repaso Diario: terminado por B, entregado a Erwin (#474)
-- T1 · Hacer nuevos t1-un-dia-o-un-ano y t1-quien-pregunta-esto (aprobados): en curso (banco: Futaba; diseño: Mai)
-- T1 · textos de los 7 Hacer sin emoji: en curso (Futaba)
-- T1 · rediseño de los 7 Hacer contra el modelo único (Mai): en curso
-- T1 · auditoría de la ficha de Futaba antes de construir (Shoko): en curso
-- T1 · datos de los Aprender por pantalla, prueba de ids publicados y medición de los Hacer (Kaede): en curso
+- T1 · bancos de H1 y H2 y textos sin emoji (Futaba): terminado, en fichas/b-t1-bancos-h1-h2-y-sin-emoji.md
+- T1 · diseño de H1 y H2 (Mai): en curso
+- T1 · auditoría de los 7 Hacer y P2 de t1-la-ecuacion-en-movimiento (Mai): terminado, en fichas/; las otras seis P2: en curso
+- T1 · construcción de t1-la-ecuacion-en-movimiento (Kaede): en curso, cuando cierre el #485
+- Lo compartido que falla en los 7 Hacer (Retro con emoji y teal, «era esta»): bloqueado: es de Erwin (#487); B lo parchea dentro de cada pieza
+- T1 · auditoría de la ficha de Futaba (Shoko): terminado, en revisiones/b-t1-ficha-futaba-shoko.md; Futaba la aplica y escribe las frases de la 2.ª visita: en curso
+- T1 · auditoría de los bancos de H1/H2 y de la P2 de las torres (Shoko): en curso
+- T1 · datos de los Aprender por pantalla y prueba de ids publicados (Kaede, #485): en curso
 - T1 · forma de presentación de los Aprender: bloqueado: espera el patrón de Ukyo y el componente de Erwin
 - T1 · logito del tema: bloqueado: espera el diseño de Ukyo
 - T1 · D1 (verdad contra el libro): bloqueado: faltan las pp. 1-31 y las páginas del cap. 2 que cita T1 (#467)
