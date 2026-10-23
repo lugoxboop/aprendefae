@@ -1197,6 +1197,27 @@ export const ACTIVIDADES_TRANSVERSALES = [
     /* Medio fija el tiempo mínimo antes de recortar FP; la base de 60 anula la de Medio. */
     clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 60, renovableDiario: true },
   },
+  /*
+   * El Repaso Diario de Contabilidad (orden de Mateo del 23-oct-2026). El
+   * mismo motor y la misma clasificación que el de Macro; su pool son los
+   * cuatro temas del semestre (src/repaso/contabilidad/). Su fila del
+   * servidor es la migración 0152.
+   *
+   * `publicado: false` lo deja fuera del índice mientras el pool se llena:
+   * cada célula entrega el etiquetado de su tema, y un banner que solo dice
+   * «te faltan actividades» porque el pool aún está vacío sería mentirle al
+   * estudiante. Se publica poniéndolo en true cuando la prueba del pool de
+   * Contabilidad diga que los cuatro temas tienen ítems.
+   */
+  {
+    id: "repaso-diario-contabilidad",
+    nombre: "El Repaso Diario",
+    materiaId: "contabilidad",
+    temaId: "repaso-diario-contabilidad",
+    indice: "contabilidad",
+    publicado: false,
+    clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 60, renovableDiario: true },
+  },
 ];
 
 for (const a of ACTIVIDADES_TRANSVERSALES) {
