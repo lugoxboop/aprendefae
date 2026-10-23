@@ -1,0 +1,283 @@
+{
+  "fecha": "2026-10-23T15:40:41.446Z",
+  "url": "http://localhost:8099",
+  "curso": {
+    "estudiantes": 28,
+    "prueba": 2,
+    "enGrupo": 22
+  },
+  "medidas": {
+    "375x667": {
+      "ancho": 375,
+      "alto": 667,
+      "total": 10638,
+      "pliegue": 667,
+      "vistoDeEntrada": [
+        "barra",
+        "titulo",
+        "materias",
+        "cohorte",
+        "cabecera"
+      ],
+      "bloques": [
+        {
+          "id": "barra",
+          "nombre": "Barra superior (logo, volver, «Panel docente»)",
+          "y": 20,
+          "alto": 38,
+          "palabras": 2
+        },
+        {
+          "id": "titulo",
+          "nombre": "Título de la materia + «Exportar informe»",
+          "y": 84,
+          "alto": 40,
+          "palabras": 3
+        },
+        {
+          "id": "materias",
+          "nombre": "Selector de materia (pastillas)",
+          "y": 130,
+          "alto": 35,
+          "palabras": 2
+        },
+        {
+          "id": "cohorte",
+          "nombre": "Frase de cohorte (grupo / cuentas de prueba)",
+          "y": 182,
+          "alto": 81,
+          "palabras": 30
+        },
+        {
+          "id": "cabecera",
+          "nombre": "Cabecera resumen (activos, alertas pendientes, desde tu última visita)",
+          "y": 287,
+          "alto": 354,
+          "palabras": 43,
+          "tarjetas": 3
+        },
+        {
+          "id": "alertas",
+          "nombre": "Alertas (una tarjeta por alerta) + «Qué no está midiendo»",
+          "y": 667,
+          "alto": 1110,
+          "palabras": 163,
+          "tarjetas": 8,
+          "altoUna": 127,
+          "altoNoMide": 19
+        },
+        {
+          "id": "destacados",
+          "nombre": "Destacados (tope de 3 + «Ver los N restantes»)",
+          "y": 1805,
+          "alto": 473,
+          "palabras": 64
+        },
+        {
+          "id": "periodo",
+          "nombre": "Resumen del periodo (3 KPI)",
+          "y": 2305,
+          "alto": 400,
+          "palabras": 41
+        },
+        {
+          "id": "temas",
+          "nombre": "Avance por tema (una barra por tema)",
+          "y": 2734,
+          "alto": 1110,
+          "palabras": 126,
+          "filas": 10,
+          "altoUna": 84
+        },
+        {
+          "id": "rendimiento",
+          "nombre": "Rendimiento por actividad (selector + vista)",
+          "y": 3872,
+          "alto": 2405,
+          "palabras": 621
+        },
+        {
+          "id": "estudiantes",
+          "nombre": "Estudiantes activos (buscador, «Solo mi grupo», filas)",
+          "y": 6305,
+          "alto": 4269,
+          "palabras": 709,
+          "filas": 28
+        },
+        {
+          "id": "fila",
+          "nombre": "Una fila de estudiante, cerrada",
+          "y": 6461,
+          "alto": 140,
+          "palabras": 26
+        }
+      ],
+      "partesRendimiento": [
+        {
+          "rotulo": "LA TERMINARON",
+          "y": 4147
+        },
+        {
+          "rotulo": "DISTRIBUCIÓN POR BANDAS",
+          "y": 4599
+        },
+        {
+          "rotulo": "DIAGNÓSTICO POR PREGUNTA",
+          "y": 5651
+        },
+        {
+          "rotulo": "QUIÉN ES QUIÉN",
+          "y": 4812
+        }
+      ],
+      "detalle": {
+        "altoFilaAbierta": 501,
+        "altoDetalle": 362,
+        "y": 6461
+      },
+      "errores": []
+    },
+    "1366x768": {
+      "ancho": 1366,
+      "alto": 768,
+      "total": 6752,
+      "pliegue": 768,
+      "vistoDeEntrada": [
+        "barra",
+        "titulo",
+        "materias",
+        "cohorte",
+        "cabecera",
+        "alertas"
+      ],
+      "bloques": [
+        {
+          "id": "barra",
+          "nombre": "Barra superior (logo, volver, «Panel docente»)",
+          "y": 23,
+          "alto": 38,
+          "palabras": 2
+        },
+        {
+          "id": "titulo",
+          "nombre": "Título de la materia + «Exportar informe»",
+          "y": 87,
+          "alto": 46,
+          "palabras": 3
+        },
+        {
+          "id": "materias",
+          "nombre": "Selector de materia (pastillas)",
+          "y": 139,
+          "alto": 35,
+          "palabras": 2
+        },
+        {
+          "id": "cohorte",
+          "nombre": "Frase de cohorte (grupo / cuentas de prueba)",
+          "y": 191,
+          "alto": 41,
+          "palabras": 30
+        },
+        {
+          "id": "cabecera",
+          "nombre": "Cabecera resumen (activos, alertas pendientes, desde tu última visita)",
+          "y": 256,
+          "alto": 121,
+          "palabras": 43,
+          "tarjetas": 3
+        },
+        {
+          "id": "alertas",
+          "nombre": "Alertas (una tarjeta por alerta) + «Qué no está midiendo»",
+          "y": 403,
+          "alto": 827,
+          "palabras": 163,
+          "tarjetas": 8,
+          "altoUna": 87,
+          "altoNoMide": 19
+        },
+        {
+          "id": "destacados",
+          "nombre": "Destacados (tope de 3 + «Ver los N restantes»)",
+          "y": 1258,
+          "alto": 227,
+          "palabras": 64
+        },
+        {
+          "id": "periodo",
+          "nombre": "Resumen del periodo (3 KPI)",
+          "y": 1513,
+          "alto": 157,
+          "palabras": 41
+        },
+        {
+          "id": "temas",
+          "nombre": "Avance por tema (una barra por tema)",
+          "y": 1699,
+          "alto": 797,
+          "palabras": 126,
+          "filas": 10,
+          "altoUna": 63
+        },
+        {
+          "id": "rendimiento",
+          "nombre": "Rendimiento por actividad (selector + vista)",
+          "y": 2524,
+          "alto": 1873,
+          "palabras": 621
+        },
+        {
+          "id": "estudiantes",
+          "nombre": "Estudiantes activos (buscador, «Solo mi grupo», filas)",
+          "y": 4424,
+          "alto": 2264,
+          "palabras": 709,
+          "filas": 28
+        },
+        {
+          "id": "fila",
+          "nombre": "Una fila de estudiante, cerrada",
+          "y": 4513,
+          "alto": 69,
+          "palabras": 26
+        }
+      ],
+      "partesRendimiento": [
+        {
+          "rotulo": "LA TERMINARON",
+          "y": 2766
+        },
+        {
+          "rotulo": "DISTRIBUCIÓN POR BANDAS",
+          "y": 2890
+        },
+        {
+          "rotulo": "DIAGNÓSTICO POR PREGUNTA",
+          "y": 3903
+        },
+        {
+          "rotulo": "QUIÉN ES QUIÉN",
+          "y": 3084
+        }
+      ],
+      "detalle": {
+        "altoFilaAbierta": 317,
+        "altoDetalle": 249,
+        "y": 4513
+      },
+      "errores": []
+    }
+  },
+  "rpcsPedidas": [
+    "es_docente",
+    "materias_docente",
+    "panel_actividad",
+    "panel_estudiantes",
+    "panel_grupo_actividad",
+    "panel_historial",
+    "panel_items",
+    "panel_resumen",
+    "racha_momento"
+  ]
+}
