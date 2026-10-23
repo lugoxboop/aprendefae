@@ -9,6 +9,31 @@ procedencia: decidido
 > Decidido el 13 de octubre de 2026 por Mateo. Reparto de temas acordado con
 > Levi sobre el inventario de fuentes verificado por Gen.
 
+## CONTABILIDAD YA TIENE ESTUDIANTES: solo se agrega, nunca se borra
+
+**Orden de Mateo del 23 de octubre de 2026, vía Miku. Va antes que cualquier
+otra regla de este documento.**
+
+Contabilidad dejó de ser terreno libre. Desde hoy vale para ella **la misma
+regla que para Macroeconomía**: solo se agrega. Nunca se borra lo existente
+—una actividad, una pieza, un tema, una fila del servidor, un id— ni los datos
+que un estudiante ya dejó en él: progreso, intentos, FP ganado.
+
+En la práctica:
+
+- **Cambiar no es borrar y volver a escribir.** Una pieza publicada que se
+  rehace entra como pieza nueva o detrás de una bandera; la vieja se conserva
+  hasta que Mateo diga otra cosa.
+- **Ocultar sí, borrar no.** Lo que no se ve este semestre se esconde con una
+  bandera que se deshace en una línea (ver `TEMAS_OCULTOS` en
+  `src/data/subjects.js`), y su código, sus datos y su FP se quedan.
+- **Las migraciones de Contabilidad solo agregan.** Ningún `DELETE`, ningún
+  `DROP` y ningún `UPDATE` que cambie FP, intentos o progreso ya registrados.
+- **Un id publicado no se renombra.** Renombrarlo es borrar el viejo para el
+  servidor y dejar huérfano lo que el estudiante hizo con él.
+- **Borrar o dañar algo de esto es lo irreversible**: no lo decide un general.
+  Se escala a Miku, que se lo lleva a Mateo.
+
 ## El alcance de Contabilidad es FINITO
 
 El curso del profesor cubre **los capítulos 1 a 5 y nada más**. No hay capítulos
