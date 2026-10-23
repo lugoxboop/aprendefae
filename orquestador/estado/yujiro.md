@@ -1,4 +1,4 @@
-2026-10-23 09:40 (hora Bogotá)
+2026-10-23 09:15 (hora Bogotá)
 - T4 «Efectivo, caja menor y bancos» (6 Aprender, 5 Hacer, kit D1/D4/D6 en Avanzado): terminado
 - #439 de T3 (D4 de la Célula A): terminado (fusionado)
 - Capacitar la célula (Baki, Katsumi, Hanayama, Shibukawa en sedes fijas, enlaces en traspasos/yujiro.md): terminado
