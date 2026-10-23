@@ -7,7 +7,7 @@
  * 2026, con su ajuste: el control 7 (caja menor) enciende Bancos, porque el
  * fondo se abre y se repone con cheque de Bancos (pp. 181-184). Textos:
  * Katsumi (celula-d/katsumi-texto-rediseno.md), aprobados tal cual. Copia en
- * el canon: orquestador/conocimiento/paquetes/d4-t4-a1-v6-rediseno.md. Una
+ * el canon: orquestador/conocimiento/paquetes/d4-t4-a1-v7-hilo.md. Una
  * prueba compara cada texto de aquí contra ella, letra por letra.
  *
  * Siete pantallas; en cinco el estudiante opera el cajón: cobra, manda la
@@ -155,17 +155,24 @@ export const ESPERA_CHEQUE_MS = 1400;
  */
 export const PANTALLAS_A1 = [
   {
-    id: "dos-cuentas", tipo: "mapa", figura: "cajon",
-    /* Lote B, capa 1: abre con el cajón; las definiciones pasan a glosas de sus cuentas, y el puente al Tema 2 va debajo, desde el principio (P0 no tiene acción). */
+    /*
+     * Hilo de Katsumi (23 oct 2026, orquestador/revisiones/t4-slides/hilo-katsumi.md):
+     * la pantalla 1 es la decisión de predicción y absorbe a «dos-cuentas» (sus
+     * glosas de Caja y Bancos y el puente al Tema 2). La tarjeta del cobro va a
+     * debe, haber o «no se mueve», y el asiento sale con el acierto.
+     */
+    id: "cobra", tipo: "cobra", figura: "cajon", pregunta: true,
     glosasCuenta: true,
-    despues: ["En el Tema 2 la plata ya iba en dos cuentas."],
-    pie: "Basado en el libro, p. 179, y en el Tema 2",
-  },
-  {
-    id: "cobra", tipo: "cobra", figura: "cajon",
-    antes: ["Sus Servicios arregla computadores, y hoy los clientes le pagan de contado. Toca «Cobrar»."],
+    antes: [
+      "En el Tema 2 la plata ya iba en dos cuentas.",
+      "Sus Servicios arregla computadores, y hoy los clientes le pagan de contado.",
+      "¿Por dónde entra esa plata a Caja?",
+    ],
+    correcta: DEBE,
+    acierto: "",
+    errores: { [HABER]: "Aquí la empresa recibe, no paga.", [NO_SE_MUEVE]: "Le pagan de contado: esa plata no pasó por el banco." },
     asiento: ASIENTO_COBRO,
-    pie: PIE_180,
+    pie: "Basado en el libro, pp. 179-180, y en el Tema 2",
   },
   {
     id: "consigna", tipo: "consigna", figura: "cajon", pregunta: true,
@@ -239,7 +246,7 @@ export const pieCortoB = (pie) => pie.replace(/ · Cifras construidas$/, "").rep
 const conMonto = (a, monto) => ({ ...a, lineas: a.lineas.map((l) => ({ ...l, monto })) });
 const PANTALLAS_A1_B = PANTALLAS_A1.map((p) => {
   const b = { ...p, pie: pieCasoB(p.pie) };
-  if (p.id === "cobra") Object.assign(b, { antes: ["Taller Ríos arregla motos, y hoy los clientes le pagan de contado. Toca «Cobrar»."], asiento: conMonto(ASIENTO_COBRO, COBRO_A1_B) });
+  if (p.id === "cobra") Object.assign(b, { antes: [p.antes[0], "Taller Ríos arregla motos, y hoy los clientes le pagan de contado.", p.antes[2]], asiento: conMonto(ASIENTO_COBRO, COBRO_A1_B) });
   if (p.id === "consigna") Object.assign(b, { errores: { ...p.errores, [DEBE]: "No entró plata nueva: son los mismos $612.000." }, asiento: conMonto(ASIENTO_CONSIGNACION, COBRO_A1_B) });
   if (p.id === "el-faltante") b.antes = ["Lucía cobra y anota. ¿Qué control faltó?"];
   return b;

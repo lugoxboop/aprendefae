@@ -82,24 +82,35 @@ function useVibra() {
   return [vibra, sacudir];
 }
 
-function Mapa({ p }) {
-  return <Cajon glosasCuenta={Boolean(p.glosasCuenta)} cajonA1={QUIETO} />;
-}
-
-function Cobra({ p }) {
+function Cobra({ p, onAcierto }) {
+  /* Hilo de Katsumi: el cobro es una decisión (debe, haber o «no se mueve»), como la consignación. */
   const { M, cobro, rotuloOrigen } = useCasoA1();
-  const [hecho, setHecho] = useState(false);
+  const [elegida, setElegida] = useState(null);
+  const [vibra, sacudir] = useVibra();
+  const ok = elegida === p.correcta;
+  useEffect(() => { if (ok) onAcierto?.(); }, [ok]); // eslint-disable-line react-hooks/exhaustive-deps
+  const elegir = (d) => {
+    if (ok) return;
+    setElegida(d);
+    if (d !== p.correcta) sacudir(d);
+  };
   return (
     <>
       <Cajon
-        cajonA1={{ abre: hecho ? 1 : 0 }}
-        origen={{ rotulo: rotuloOrigen, monto: M, montoFoco: !hecho, accion: { id: "cobrar", texto: FIGURA_CAJON.acciones.cobrar, hecha: hecho, onClick: () => setHecho(true) } }}
+        cajonA1={{ abre: ok ? 1 : 0 }}
+        glosasCuenta={Boolean(p.glosasCuenta)}
+        origen={{ rotulo: rotuloOrigen, monto: M, montoFoco: !ok, clave: "cobro" }}
         glosas={{ debe: true }}
-        debe={hecho ? [{ id: "cobro", v: M, foco: true }] : []}
-        saldo={hecho ? cobro : 0}
-        vivo={hecho ? ["entrada"] : []}
+        debe={ok ? [{ id: "cobro", v: M, foco: true }] : []}
+        saldo={ok ? cobro : 0}
+        vivo={ok ? ["entrada"] : []}
+        bandeja={{}}
+        destinos={{ activos: !ok, onElegir: elegir, marcas: elegida ? { [elegida]: ok ? "bien" : "mal" } : {} }}
+        palabras
+        vibra={vibra}
       />
-      {hecho && <AsientoA1 asiento={p.asiento} />}
+      {elegida && <Mensaje key={elegida} ok={ok} texto={ok ? p.acierto : p.errores[elegida]} />}
+      {ok && <AsientoA1 asiento={p.asiento} />}
     </>
   );
 }
@@ -234,7 +245,7 @@ function Controles({ onCierre }) {
   return <Cajon cajonA1={QUIETO} saldo="—" luz={c?.luz ?? []} vivo={c?.vivo ?? []} controles={{ lista: CONTROLES_A1, activo: k, onTocar: tocar }} />;
 }
 
-const CUERPOS = { mapa: Mapa, cobra: Cobra, consigna: Consigna, salidas: DosSalidas, cheques: Cheques, faltante: Faltante, controles: Controles };
+const CUERPOS = { cobra: Cobra, consigna: Consigna, salidas: DosSalidas, cheques: Cheques, faltante: Faltante, controles: Controles };
 
 /* El cuerpo de una pantalla de A1: el cajón y lo que sale debajo con la acción. */
 export function CuerpoA1({ p, onAcierto, onCierre }) {

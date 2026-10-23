@@ -6,7 +6,7 @@ import { readFileSync, readdirSync } from "node:fs";
  * ═══════════════════════════════════════════════════════════════════════════
  * T4 · A1 «La caja» (Célula D) · REDISEÑO DE ENGANCHE.
  *
- *   · cada texto es el del paquete vigente (d4-t4-a1-v6-rediseno.md, los
+ *   · cada texto es el del paquete vigente (d4-t4-a1-v7-hilo.md, los
  *     textos de Katsumi aprobados por Yujiro), letra por letra, en su lugar
  *   · el cajón operable de Hanayama: cobrar, mandar la consignación al lado
  *     que se cree, sacar la plata por cada salida, decidir con los cheques y
@@ -29,7 +29,7 @@ const { inflesz } = await import("../../herramientas/inflesz.js");
 const { leer, PAQUETES, RAIZ } = await import("./t4-paquete.mjs");
 const { pantallasDe, seccionDe, renglones, textoDe, fusionB } = await import("./t4-rediseno-canon.mjs");
 
-const CANON = "d4-t4-a1-v6-rediseno.md";
+const CANON = "d4-t4-a1-v7-hilo.md";
 const PAQ = leer(`${PAQUETES}${CANON}`);
 const CANON_P = pantallasDe(PAQ);
 const P = A.PIEZA_LA_CAJA;
@@ -59,6 +59,7 @@ function porLugar(p) {
 
 /* Las dos preguntas, bien: la consignación al haber; el cheque recibido al debe y, 1,4 s después, el propio a la bandeja. */
 async function acertar(m, p) {
+  if (p.tipo === "cobra") tocar(m.caja.querySelector(`[data-destino="${A.DEBE}"]`));
   if (p.tipo === "consigna") tocar(m.caja.querySelector(`[data-destino="${A.HABER}"]`));
   if (p.tipo === "cheques") {
     tocar(m.caja.querySelector(`[data-destino="${A.DEBE}"]`));
@@ -91,17 +92,18 @@ pruebaObjetivo({ P, canon: CANON });
 
 /* ═══════════ 1 · EL TEXTO, CONTRA EL PAQUETE ═══════════ */
 
-test("★★★ el paquete vigente es el del rediseño (v6) y lo dice, con la decisión del control 7; los datos lo nombran", async () => {
+test("★★★ el paquete vigente es el del hilo (v7) y lo dice, con la decisión del control 7; los datos lo nombran", async () => {
   assert.match(PAQ, /\*\*Este archivo es la versión vigente de A1\.\*\*/);
   assert.match(PAQ, /\*\*el control 7 \(caja menor\) enciende Bancos\*\*/);
   assert.match(leer("src/data/contabilidadT4.js"), new RegExp(CANON.replace(/\./g, "\\.")));
 });
 
-test("★★★ las 7 pantallas, en el orden del paquete (lote B: sale el resumen en lista; la P5 de antes se parte en «el-faltante» y «controles»); título e id; todas con el cajón", async () => {
+test("★★★ las 6 pantallas, en el orden del paquete (hilo: «dos-cuentas» se funde en «cobra»); título e id; todas con el cajón", async () => {
   assert.equal(P.id, "t4-a1-la-caja");
   assert.equal(P.titulo, "La caja");
   assert.deepEqual(P.pantallas.map((p) => p.id), CANON_P.map((p) => p.id));
-  assert.equal(P.pantallas.length, 7);
+  assert.equal(P.pantallas.length, 6);
+  assert.equal(P.pantallas.some((p) => p.id === "dos-cuentas"), false);
   assert.ok(!P.pantallas.some((p) => p.id === "resumen" || p.resumen), "queda una pantalla de resumen (capa 4)");
   for (const p of P.pantallas) assert.equal(p.figura, "cajon", p.id);
 });
@@ -150,7 +152,7 @@ test("★★★ los dos asientos de la p. 180 cuadran; la única cifra del libro
 /* ═══════════ 2 · LA PANTALLA Y EL CAJÓN ═══════════ */
 
 test("★★★ cada pantalla, en el orden de Hanayama: antes → cajón → después → frase de cierre → siguiente → «Seguir» → pie (en las preguntas, tras el acierto)", async () => {
-  const m = await abrir("dos-cuentas");
+  const m = await abrir("cobra");
   try {
     for (const [k, p] of P.pantallas.entries()) {
       const zona = q(m, "[data-pieza]");
@@ -163,16 +165,27 @@ test("★★★ cada pantalla, en el orden de Hanayama: antes → cajón → des
       const orden = [...zona.querySelectorAll("[data-texto], [data-figura], [data-boton], [data-pie]")]
         .filter((e) => !e.parentElement.closest("[data-figura]"))
         .map((e) => (e.matches("[data-figura]") ? "FIGURA" : e.matches("[data-boton]") ? "SEGUIR" : e.matches("[data-pie]") ? "PIE" : e.textContent));
-      const esperado = [...(p.antes ?? []), "FIGURA", ...(p.despues ?? []), ...(p.cierre ? [p.cierre] : []), ...(p.siguiente ? [p.siguiente] : []), ...(k < 6 ? ["SEGUIR"] : []), "PIE"];
+      const esperado = [...(p.antes ?? []), "FIGURA", ...(p.despues ?? []), ...(p.cierre ? [p.cierre] : []), ...(p.siguiente ? [p.siguiente] : []), ...(k < 5 ? ["SEGUIR"] : []), "PIE"];
       assert.deepEqual(orden, esperado, p.id);
-      if (k < 6) tocar(zona.querySelector('[data-boton="seguir"]'));
+      if (k < 5) tocar(zona.querySelector('[data-boton="seguir"]'));
     }
   } finally { m.desmontar(); }
 });
 
-test("★★★ D7 · en las tres pantallas con pregunta, «Seguir» no aparece sin el acierto: ni al llegar, ni tras cada error, ni con un solo cheque; la última (controles) no lo lleva", async () => {
-  assert.deepEqual(P.pantallas.filter((p) => p.pregunta).map((p) => p.id), ["consigna", "cheques", "el-faltante"]);
+test("★★★ D7 · en las cuatro pantallas con pregunta, «Seguir» no aparece sin el acierto: ni al llegar, ni tras cada error, ni con un solo cheque; la última (controles) no lo lleva", async () => {
+  assert.deepEqual(P.pantallas.filter((p) => p.pregunta).map((p) => p.id), ["cobra", "consigna", "cheques", "el-faltante"]);
   const seguir = (m) => q(m, '[data-boton="seguir"]');
+  const b = await abrir("cobra");
+  try {
+    assert.equal(seguir(b), null, "cobra, al llegar");
+    for (const d of [A.HABER, A.NO_SE_MUEVE]) {
+      tocar(q(b, `[data-destino="${d}"]`));
+      assert.equal(q(b, "[data-mensaje]").dataset.mensaje, "error");
+      assert.equal(seguir(b), null, `cobra, tras el error en ${d}`);
+    }
+    tocar(q(b, `[data-destino="${A.DEBE}"]`));
+    assert.ok(seguir(b), "cobra: tras el acierto no aparece «Seguir»");
+  } finally { b.desmontar(); }
   const c = await abrir("consigna");
   try {
     assert.equal(seguir(c), null, "consigna, al llegar");
@@ -212,14 +225,15 @@ test("★★★ D7 · en las tres pantallas con pregunta, «Seguir» no aparece 
   } finally { k.desmontar(); }
 });
 
-test("★★★ P0: el cajón con sus rótulos (Caja, Debe, Haber, Bancos, Pago en efectivo) y la glosa de cada cuenta bajo su nombre, sin acción ni cifra", async () => {
-  const m = await abrir("dos-cuentas");
+test("★★★ P0 (hilo): la pregunta antes del cajón (B1); el cajón con la glosa de cada cuenta bajo su nombre y la tarjeta del cobro, sin botón y con los tres destinos", async () => {
+  const m = await abrir("cobra");
   try {
     const zona = q(m, "[data-pieza] .t4r");
-    assert.ok(zona.firstElementChild.matches("[data-figura]"), "P0 no abre con el cajón (capa 1)");
+    assert.deepEqual([...zona.children].slice(0, 3).map((e) => e.textContent), pantalla("cobra").antes, "P0 no abre con sus tres textos");
     const fig = q(m, "[data-figura=cajon]");
-    assert.equal(fig.querySelector("button"), null);
-    assert.equal(visible(fig), "Cajaa la mano, como tu billeteraDebeHaberBancosen el bancoPagoen efectivo");
+    assert.equal(fig.querySelector("[data-accion]"), null, "queda el botón «Cobrar»");
+    for (const d of [A.DEBE, A.HABER, A.NO_SE_MUEVE]) assert.ok(q(m, `[data-destino="${d}"]`), `falta el destino ${d}`);
+    assert.ok(q(m, "[data-glosa-cuenta=caja]") && q(m, "[data-glosa-cuenta=bancos]"), "faltan las glosas de las cuentas");
     assert.match(fig.querySelector("figcaption").textContent, /cajón de paso/);
   } finally { m.desmontar(); }
 });
@@ -227,7 +241,7 @@ test("★★★ P0: el cajón con sus rótulos (Caja, Debe, Haber, Bancos, Pago 
 test("★★★ P0, las glosas del cajón: las del paquete, letra por letra, bajo «Caja» y bajo «Bancos»; solo en P0", async () => {
   const g = renglones(seccionDe(PAQ, "Glosas del cajón (P0)"));
   assert.deepEqual(g.map((x) => [x.lugar, x.texto]), [["Bajo «Caja»", A.FIGURA_CAJON.glosaCaja.join(" ")], ["Bajo «Bancos»", A.FIGURA_CAJON.glosaBancos.join(" ")]]);
-  const m = await abrir("dos-cuentas");
+  const m = await abrir("cobra");
   try {
     const caja = q(m, "[data-glosa-cuenta=caja]");
     const bancos = q(m, "[data-glosa-cuenta=bancos]");
@@ -238,13 +252,20 @@ test("★★★ P0, las glosas del cajón: las del paquete, letra por letra, baj
   for (const p of P.pantallas.slice(1)) assert.ok(!p.glosasCuenta, `${p.id} lleva glosas`);
 });
 
-test("★★★ P1 «Cobrar»: el tubo se enciende, 435.000 entra al Debe, «En la caja» va a 435.000 y sale el asiento 1", async () => {
+test("★★★ P0 «cobra» (hilo): mientras pregunta, nada de la respuesta; cada error con SU texto y sin escribir nada; el acierto: el tubo se enciende, 435.000 entra al Debe, «En la caja» va a 435.000 y sale el asiento 1", async () => {
+  const p = pantalla("cobra");
   const m = await abrir("cobra");
   try {
     assert.deepEqual([lineas(m, A.DEBE), saldo(m), vivos(m)], [[], "0", []]);
-    assert.equal(q(m, "[data-asiento]"), null, "el asiento 1 está antes de cobrar");
+    assert.equal(q(m, "[data-asiento]"), null, "el asiento 1 está antes de acertar");
     assert.equal(q(m, "[data-origen] .t4cv-rot").textContent, A.FIGURA_CAJON.rotuloOrigen);
-    tocar(q(m, "[data-accion=cobrar]"));
+    for (const x of Object.values(p.errores)) assert.ok(!q(m, "[data-pieza]").outerHTML.includes(x), `«${x}» está en el DOM antes de responder`);
+    for (const d of [A.HABER, A.NO_SE_MUEVE]) {
+      tocar(q(m, `[data-destino="${d}"]`));
+      assert.equal(visible(q(m, "[data-mensaje]")), p.errores[d], d);
+      assert.deepEqual([lineas(m, A.DEBE), saldo(m)], [[], "0"], `${d}: el error escribe en el cajón`);
+    }
+    tocar(q(m, `[data-destino="${A.DEBE}"]`));
     assert.deepEqual([lineas(m, A.DEBE), saldo(m), vivos(m)], [["435.000"], "435000", ["entrada"]]);
     assert.equal(q(m, "[data-asiento]").dataset.asiento, A.ASIENTO_COBRO.nombre);
   } finally { m.desmontar(); }
@@ -498,7 +519,7 @@ test("★★★ D9 · el cajón de A1 es un cajón: la manija bajo su base en to
     const c = await abrir("cobra");
     try {
       assert.equal(q(c, "[data-cajon]").dataset.abre, "0");
-      tocar(q(c, "[data-accion=cobrar]"));
+      tocar(q(c, `[data-destino="${A.DEBE}"]`));
       await esperar(0);
       assert.equal(q(c, "[data-cajon]").dataset.abre, "1");
       const a = animados.find((x) => x.el.matches("[data-cajon]"));
@@ -518,7 +539,7 @@ test("★★★ D9 · el cajón de A1 es un cajón: la manija bajo su base en to
     animados.length = 0;
     const r = await abrir("cobra");
     try {
-      tocar(q(r, "[data-accion=cobrar]"));
+      tocar(q(r, `[data-destino="${A.DEBE}"]`));
       await esperar(0);
       assert.equal(animados.filter((x) => x.el.matches("[data-cajon]")).length, 0, "con movimiento reducido el cajón se mueve");
     } finally { r.desmontar(); }
@@ -558,9 +579,8 @@ test("★★★ D8 · jugado en el caso B: Taller Ríos cobra 612.000; la consig
   const seguir = () => tocar(q(m, '[data-boton="seguir"]'));
   try {
     assert.equal(q(m, "[data-pieza]").dataset.casoPieza, "2");
-    seguir();
     assert.equal(q(m, "[data-origen] .t4cv-rot").textContent, "Taller Ríos Ltda.");
-    tocar(q(m, "[data-accion=cobrar]"));
+    tocar(q(m, `[data-destino="${A.DEBE}"]`));
     assert.deepEqual([lineas(m, A.DEBE), saldo(m)], [["612.000"], "612000"]);
     seguir();
     tocar(q(m, `[data-destino="${A.DEBE}"]`));
