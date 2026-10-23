@@ -1,4 +1,4 @@
-2026-10-23 12:15 (hora Bogotá)
+2026-10-23 12:56 (hora Bogotá)
 - Chrome (para hablar con los agentes de la célula): bloqueado: la extensión no conecta desde las 12:00; hay que abrir Chrome con la extensión en el equipo de Mateo. Mientras tanto, los arreglos del panel están en el comentario del PR #498
 - Regla i (buscar antes de abrir, skills en vez de prompts maestros) pasada a Baki, Katsumi, Hanayama y Shibukawa: terminado
 - Panel docente: en curso (PR #498 de Baki; Shibukawa: PASA CON CORRECCIONES, 4 arreglos de vista y 4 condiciones, en el comentario del PR; P7 con 0 diferencias. Falta que Baki aplique los arreglos: el Chrome de Mateo se cayó y no puedo llegarle a su sesión; reintento. #473 espera que main vuelva a verde)
