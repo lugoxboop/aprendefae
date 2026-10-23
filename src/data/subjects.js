@@ -577,6 +577,17 @@ export const SUBJECTS = {
           { id: "cu-arma-el-asiento", nombre: "Arma el Asiento", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           /* Maestría */
           { id: "cu-asiento-compuesto", nombre: "El Asiento Compuesto", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
+          /*
+           * Las tres Hacer nuevas del lote T2-2 (Célula C, #471; forma de
+           * Watari, decisiones de L). `pendiente` hasta que corra la 0116: el
+           * camino no las dibuja. OJO: actividadesDeTipo() NO filtra
+           * `pendiente`, así que ya cuentan en la tarjeta partida, en «tema
+           * completo», en el avance del panel docente y en la medalla de
+           * materia (pregunta abierta para L/Erwin en el PR).
+           */
+          { id: "cu-cuadra-por-valor", nombre: "Cuadra por valor", pendiente: true, clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          { id: "cu-del-diario-al-mayor", nombre: "Del diario al mayor", pendiente: true, clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          { id: "cu-las-que-vuelven-a-cero", nombre: "Las que vuelven a cero", pendiente: true, clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
           {
             /*
              * EL DESAFÍO DEL TEMA, el tercero del sitio. Misma estructura y
