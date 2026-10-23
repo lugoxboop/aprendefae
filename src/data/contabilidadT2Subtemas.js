@@ -1,5 +1,3 @@
-import { ACTIVIDADES, DESAFIO } from "./contabilidadActividades.js";
-
 /*
  * ═══════════════════════════════════════════════════════════════════════════
  * LOS SUBTEMAS DE «LAS CUENTAS, EL DEBE Y EL HABER» (T2, `cuentas-debe-haber`)
@@ -9,46 +7,78 @@ import { ACTIVIDADES, DESAFIO } from "./contabilidadActividades.js";
  *
  *   [fijo]   toda la actividad (o toda una etapa, `actividad:etapa`) tiene un
  *            mismo subtema
- *   [regla]  el subtema de cada ítem ES su respuesta —o su dato—, escrito
- *            como un mapeo del dato del banco al nombre del subtema
+ *   [regla]  el subtema de cada ítem ES un dato suyo, escrito como un mapeo
+ *            del dato del banco al nombre del subtema
  *
  * ═══════════ DE DÓNDE SALE CADA NOMBRE ═══════════
  *
- * De ningún sitio nuevo: aquí no hay ni una etiqueta escrita a mano. Las siete
- * de Hacer son el `subtema` de la ficha de cada una (ACTIVIDADES, en
- * contabilidadActividades.js) y las cuatro etapas de «El Ciclo Completo», el
- * `subtema` de cada peso del desafío (DESAFIO.pesos, mismo archivo). Se leen,
- * no se copian: si la ficha cambia un nombre, este archivo cambia con ella.
+ * La lista cerrada de 12 de Near, letra por letra (paquete
+ * orquestador/conocimiento/paquetes/c-t2-1-near-lote.md, §3), con los ids de
+ * las tres Hacer nuevas que fijó L (c-t2-1-decisiones-l.md, §1 y §3): manda la
+ * forma de Watari, así que `cu-las-que-vuelven-a-cero` es [regla] por `clase`
+ * (real o nominal). La prueba compara la lista con el paquete.
  *
- * Hoy los datos no traen subtemas por respuesta, así que no hay ninguna
- * [regla]: inventarlas sería escribir etiquetas que la ficha no tiene.
+ * Ningún campo `subtema` existente se renombra: los de los bancos y los del
+ * desafío quedan como están. Las cuatro etapas usan los mismos nombres que
+ * `DESAFIO.pesos[].subtema` (la prueba lo exige), así que el progreso guardado
+ * no queda huérfano. «Reglas de registro por familia» vive solo aquí (el banco
+ * de cu-cuadro-dinamicas sigue diciendo «Reglas de registro»).
  *
- * ═══════════ ESTADO: BORRADOR HASTA NEAR ═══════════
- *
- * Las etiquetas definitivas las decide Near y todavía no llegan. Lo que falte
- * —una actividad o etapa sin `subtema` en los datos— va en PENDIENTE_NEAR, y
- * la prueba (src/contabilidad/__tests__/t2-subtemas.test.mjs) solo la deja
- * pasar sin etiqueta mientras esté ahí. La lista solo puede encoger: si una
- * deja de faltar, la prueba exige sacarla.
+ * Las tres Hacer nuevas aún no están en el catálogo: van en PROXIMAS, que solo
+ * encoge (cuando una entra al catálogo, la prueba exige sacarla de ahí).
+ * src/repaso/* lo conecta Erwin.
  * ═══════════════════════════════════════════════════════════════════════════
  */
+
+import { DESAFIO } from "./contabilidadActividades.js";
+
+/* La lista cerrada de Near (§3), en su orden. */
+export const LISTA_CERRADA_T2 = [
+  "Estructura de la cuenta T",
+  "Clasificación de cuentas reales",
+  "Clasificación de cuentas nominales",
+  "Reglas de registro por familia",
+  "Reglas de registro aplicadas",
+  "Cálculo del saldo",
+  "Partida doble: igualdad del debe y el haber",
+  "Asiento contable simple",
+  "Asiento compuesto",
+  "Libro diario y asientos contables",
+  "Libro mayor y mayorización",
+  "Construcción del estado de situación financiera",
+];
+const [CUENTA_T, REALES, NOMINALES, POR_FAMILIA, APLICADAS, SALDO, PARTIDA_DOBLE, SIMPLE, COMPUESTO, DIARIO, MAYOR, ESF] = LISTA_CERRADA_T2;
 
 /* La clave de una etapa del desafío, con el id que trae su peso (1 a 4). */
 export const claveDeEtapa = (etapa) => `${DESAFIO.id}:${etapa}`;
 
-/* [fijo] — por actividad, o por `actividad:etapa`. Solo lo que los datos ya nombran. */
-export const SUBTEMA_FIJO = Object.fromEntries([
-  ...ACTIVIDADES.filter((a) => a.subtema).map((a) => [a.id, a.subtema]),
-  ...DESAFIO.pesos.filter((p) => p.subtema).map((p) => [claveDeEtapa(p.id), p.subtema]),
-]);
+/* [fijo] — por actividad, o por `actividad:etapa`. */
+export const SUBTEMA_FIJO = {
+  "cu-izquierda-o-derecha": CUENTA_T,
+  "cu-de-que-familia": REALES,
+  "cu-cuadro-dinamicas": POR_FAMILIA,
+  "cu-debita-o-acredita": APLICADAS,
+  "cu-saldo-de-la-cuenta": SALDO,
+  "cu-arma-el-asiento": SIMPLE,
+  "cu-asiento-compuesto": COMPUESTO,
+  [claveDeEtapa(1)]: DIARIO,
+  [claveDeEtapa(2)]: MAYOR,
+  [claveDeEtapa(3)]: SALDO,
+  [claveDeEtapa(4)]: ESF,
+  /* Hacer nuevas (L, §1) */
+  "cu-cuadra-por-valor": PARTIDA_DOBLE,
+  "cu-del-diario-al-mayor": MAYOR,
+};
 
-/* [regla] — del dato del banco al subtema. Vacío: los datos de T2 no traen ninguna. */
-export const SUBTEMA_REGLA = {};
+/* [regla] — del dato del banco al subtema. Las que vuelven a cero: por `clase` del ítem. */
+export const SUBTEMA_REGLA = {
+  "cu-las-que-vuelven-a-cero": { real: REALES, nominal: NOMINALES },
+};
 
-/*
- * Las actividades y etapas que los datos todavía no etiquetan y esperan a
- * Near. Vacía: hoy las siete de Hacer y las cuatro etapas traen la suya.
- */
+/* Las Hacer nuevas que todavía no están en el catálogo (subjects.js). Solo encoge. */
+export const PROXIMAS = ["cu-cuadra-por-valor", "cu-del-diario-al-mayor", "cu-las-que-vuelven-a-cero"];
+
+/* Lo que espera etiqueta de Near. Vacía: la lista cerrada cubre todo. */
 export const PENDIENTE_NEAR = [];
 
 /** El subtema de una regla, o lanza si el dato no tiene nombre: un subtema vacío no puede pasar en silencio. */
