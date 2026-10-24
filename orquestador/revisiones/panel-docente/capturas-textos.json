@@ -4,9 +4,13 @@
     "13 van muy bien · Ver quiénes"
   ],
   "peorPctALaVista": true,
+  "tocablesBajo44": [],
   "estudiante": {
     "rotulo": "Estudiante",
-    "nombre": "Mateo Castro"
+    "nombre": "Mateo Castro",
+    "alerta": "Urgente · Más de una semana sin actividad",
+    "colorFpCiclo": "rgb(248, 249, 250)",
+    "tocablesBajo44": []
   },
   "errores": []
 }
