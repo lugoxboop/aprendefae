@@ -98,7 +98,7 @@ test("★★★ para cada ítem: la marca correcta y el tipo de error de cada ma
       const r = L.evaluarAct2(item, marca);
       assert.equal(r.ok, tipo === HECHO, `${item.id}/${marca}`);
       assert.equal(r.tipo, tipo, `${item.id}/${marca}`);
-      assert.deepEqual(r.textos, tipo === HECHO ? [item.acierto] : [A2.ERROR_POR_TIPO[tipo], item.acierto]);
+      assert.deepEqual(r.textos, tipo === HECHO ? [item.acierto] : [item.errores?.[tipo] ?? A2.ERROR_POR_TIPO[tipo], item.acierto]);
     }
     assert.equal(item.marcas.filter((m) => m.tipo === HECHO).length, 1, `${item.id}: una sola correcta`);
   }
@@ -433,3 +433,13 @@ for (const [k, mal] of [[0, "nada"], [0, "por-pagar"], [1, "por-cobrar"], [1, "n
     } finally { m.desmontar(); }
   });
 }
+
+test("F2 (línea base de Takamura): la máquina de San Calixto lleva su propio error del cierre", () => {
+  const item = A2.ITEMS_ACT2.find((x) => x.id === "t3a2-maquina-san-calixto");
+  const r = L.evaluarAct2(item, "cierre");
+  assert.equal(r.ok, false);
+  assert.equal(r.textos[0], "El cierre cae el 31, pero el gasto venía causándose desde el 27, con cada día de uso. El cierre solo revisa lo que falta anotar.");
+  /* Los demás ítems con cierre siguen con el error general. */
+  const mps = A2.ITEMS_ACT2.find((x) => x.id === "t3a2-mps");
+  assert.equal(L.evaluarAct2(mps, "cierre").textos[0], A2.ERROR_POR_TIPO[A2.CIERRE]);
+});

@@ -81,7 +81,7 @@ export const PIEZA_LO_QUE_YA_SE_PAGO = {
   id: "t3-a4-lo-que-ya-se-pago",
   numero: 4,
   titulo: "Lo que ya se pagó y no ha pasado",
-  objetivo: "Aquí la plata se mueve primero. El hecho viene después, mes a mes.",
+  objetivo: "Reconoce y anota lo que se pagó o se recibió por anticipado, mes a mes.",
   nombres: [
     { termino: "Diferido", definicion: "Diferido es cuando la plata se mueve antes de que el hecho ocurra." },
     { termino: "Pagado por anticipado", definicion: "Lo que la empresa pagó por anticipado es algo que todavía tiene. Lo va gastando con el tiempo." },

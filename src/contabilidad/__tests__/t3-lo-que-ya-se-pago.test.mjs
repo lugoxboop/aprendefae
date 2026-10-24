@@ -176,7 +176,7 @@ test("★★★ los nombres de cuenta del asiento y del bloque son idénticos", 
 
 test("★★★ el texto de Gen con sus correcciones: cierre nuevo, «por anticipado», pregunta y capa 1", () => {
   const p = P4.PIEZA_LO_QUE_YA_SE_PAGO;
-  assert.equal(p.objetivo, "Aquí la plata se mueve primero. El hecho viene después, mes a mes.");
+  assert.equal(p.objetivo, "Reconoce y anota lo que se pagó o se recibió por anticipado, mes a mes.");
   assert.deepEqual(p.nombres.map((n) => n.termino), ["Diferido", "Pagado por anticipado", "Recibido por anticipado", "Desde ya"]);
   assert.equal(p.nombres[1].definicion, "Lo que la empresa pagó por anticipado es algo que todavía tiene. Lo va gastando con el tiempo.");
   assert.equal(p.nombres[2].definicion, "Lo que la empresa recibió por anticipado es algo que todavía debe. Lo va cumpliendo con el tiempo.");

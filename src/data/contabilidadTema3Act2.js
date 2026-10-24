@@ -71,6 +71,12 @@ export const ITEMS_ACT2 = [
       { id: "pago", rotulo: "Pago, en febrero", tipo: DINERO },
     ],
     queda: "por-pagar",
+    /*
+     * F2 de Takamura (línea base): el error general del cierre dice «se causó
+     * antes de esa fecha», y aquí la máquina también se usó el 31. Este ítem
+     * lleva el suyo (Kamogawa, #506).
+     */
+    errores: { [CIERRE]: "El cierre cae el 31, pero el gasto venía causándose desde el 27, con cada día de uso. El cierre solo revisa lo que falta anotar." },
     acierto: "Cada día de uso iba causando el gasto. Los cinco días son de enero, aunque la plata salga en febrero.",
   },
   {
@@ -211,9 +217,9 @@ export const EJEMPLO_PANADERIA = {
 };
 
 export const PASOS_ACT2 = [
-  /* PENDIENTE DE GEN: los pasos 1 y 3 no llegaron; son las dos frases de la consigna aprobada. */
-  "Lee el hecho.",
+  /* Pasos 1 y 3: F4 de la línea base de Takamura, decididos por Kamogawa (#506). El 2 es el de Levi. */
+  "Ubica las marcas en la línea, de la primera a la última.",
   "Busca el día en que se entregó el bien o se prestó el servicio.",
-  "Toca el día en que se causa.",
+  "Revisa que no sea la fecha del papel, de la plata, del acuerdo ni del cierre.",
 ];
 export const ALT_TUTORIAL_ACT2 = "Ejemplo: la línea tiene tres marcas. Se toca la de la entrega del pan, el 10, y no la del pedido ni la del pago.";

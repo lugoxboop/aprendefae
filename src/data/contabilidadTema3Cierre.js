@@ -25,7 +25,7 @@ export const GASTO = "gasto";
 /* Zona A: las seis cuentas que se vacían, en el orden de Gen. */
 export const CUENTAS_DEL_PERIODO = [
   { cuenta: "Ingresos por servicios", saldo: 14800, tipo: INGRESO },
-  { cuenta: "Gasto arriendos", saldo: 2000, tipo: GASTO },
+  { cuenta: "Gastos arriendos", saldo: 2000, tipo: GASTO },
   { cuenta: "Gasto salarios", saldo: 5100, tipo: GASTO },
   { cuenta: "Gasto materiales de consumo", saldo: 500, tipo: GASTO },
   { cuenta: "Gasto servicios públicos", saldo: 750, tipo: GASTO },
@@ -89,7 +89,7 @@ export const PIEZA_CERRAR_EL_PERIODO = {
    */
   numero: 5,
   titulo: "Cerrar el periodo",
-  objetivo: "Al cerrar el periodo, las cuentas de ingresos y gastos quedan en cero. Lo que dejan es el resultado.",
+  objetivo: "Cierra las cuentas de ingresos y gastos y halla el resultado del periodo.",
   nombres: [
     {
       termino: "Cuentas del periodo",

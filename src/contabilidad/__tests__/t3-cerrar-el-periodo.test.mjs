@@ -86,7 +86,7 @@ test("★★★ por paso: el haber de Ganancias y pérdidas llega a $14.800, el 
   assert.equal(L.ASIENTO_GASTOS.debe.cuenta, "Ganancias y pérdidas");
   assert.equal(L.ASIENTO_GASTOS.debe.monto, 10850);
   assert.equal(L.ASIENTO_GASTOS.haber.partidas.reduce((s, p) => s + p.monto, 0), 10850);
-  assert.deepEqual(L.ASIENTO_GASTOS.haber.partidas.map((p) => p.cuenta), ["Gasto arriendos", "Gasto salarios", "Gasto materiales de consumo", "Gasto servicios públicos", "Gasto alquiler"]);
+  assert.deepEqual(L.ASIENTO_GASTOS.haber.partidas.map((p) => p.cuenta), ["Gastos arriendos", "Gasto salarios", "Gasto materiales de consumo", "Gasto servicios públicos", "Gasto alquiler"]);
 });
 
 test("★★★ capa 3: cualquier subconjunto da el haber y el debe correctos; «Queda» solo con las seis", () => {
@@ -135,7 +135,7 @@ test("★★★ capa 2 de punta a punta: modos, cifras finales escritas con anim
         assert.equal(q(m.caja, "[data-pastilla-cierre]").textContent, "Cierre de enero");
         assert.match(q(m.caja, '[role="group"][aria-label="Asiento"]').textContent, paso === 4
           ? /^Debe: Ingresos por servicios, \$14\.800\. Haber: Ganancias y pérdidas, \$14\.800\.$/
-          : /^Debe: Ganancias y pérdidas, \$10\.850\. Haber: Gasto arriendos, \$2\.000; Gasto salarios, \$5\.100;/);
+          : /^Debe: Ganancias y pérdidas, \$10\.850\. Haber: Gastos arriendos, \$2\.000; Gasto salarios, \$5\.100;/);
       } else {
         const vacias = [...m.caja.querySelectorAll('[data-fila][data-vaciada="si"]')].length;
         assert.equal(vacias, paso >= 5 ? 6 : paso >= 3 ? 1 : 0, `paso ${paso}: filas en $0`);
@@ -172,7 +172,7 @@ test("★★★ capa 3 en pantalla: en cualquier orden, cifras correctas; «Qued
     await clic(fila("Gasto salarios")); await esperar(900);
     assert.deepEqual(gyp(m.caja), { debe: "$2.500", haber: "$14.800" });
     assert.equal(q(m.caja, '[data-fila="Gasto salarios"] [data-saldo-fila]').textContent, "$5.100");
-    for (const c of ["Gasto materiales de consumo", "Gasto arriendos", "Gasto servicios públicos", "Gasto salarios"]) { await clic(fila(c)); }
+    for (const c of ["Gasto materiales de consumo", "Gastos arriendos", "Gasto servicios públicos", "Gasto salarios"]) { await clic(fila(c)); }
     await esperar(900);
     assert.deepEqual(gyp(m.caja), { debe: "$10.850", haber: "$14.800" });
     assert.equal(q(m.caja, "[data-queda]").textContent, "Queda $3.950");
@@ -197,7 +197,7 @@ test("★★★ los textos de Gen, textuales", () => {
   ]);
   assert.equal(D.CIERRE_TEXTO, "Las cuentas de ingresos y gastos quedaron en cero. Febrero empieza limpio y lo de enero quedó junto en Ganancias y pérdidas.");
   const p = D.PIEZA_CERRAR_EL_PERIODO;
-  assert.equal(p.objetivo, "Al cerrar el periodo, las cuentas de ingresos y gastos quedan en cero. Lo que dejan es el resultado.");
+  assert.equal(p.objetivo, "Cierra las cuentas de ingresos y gastos y halla el resultado del periodo.");
   assert.deepEqual(p.nombres.map((n) => n.termino), ["Cuentas del periodo", "Cerrar", "Ganancias y pérdidas", "Desde ya"]);
   assert.equal(p.nombres[0].delLibro, "El libro a veces dice renta; es lo mismo que ingreso.");
   assert.match(p.nombres[1].delLibro, /^«Cerrar una cuenta significa reducir su saldo a cero\. .*» \(p\. 123\)\.$/);

@@ -149,7 +149,7 @@ export const BOTON_OTRA_EMPRESA = "Seguir con otra empresa";
 export const PIEZA_VENDER_NO_ES_COBRAR = {
   id: "t3-a1-vender-no-es-cobrar",
   titulo: "Vender no es cobrar",
-  objetivo: "A veces entra plata y la empresa no vendió nada. Y a veces vende sin que entre un peso.",
+  objetivo: "Distingue un ingreso de la plata que entra a la caja.",
   /* Como en el Tema 1: el término y la frase de Gen completa. */
   nombres: [
     { termino: "Ingreso", definicion: "Ingreso es el valor de lo que la empresa vende de su negocio: sus productos o sus servicios." },

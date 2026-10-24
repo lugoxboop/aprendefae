@@ -80,7 +80,7 @@ export const PIEZA_LO_QUE_YA_PASO = {
   id: "t3-a3-lo-que-ya-paso",
   numero: 3,
   titulo: "Lo que ya pasó y no se ha pagado",
-  objetivo: "El hecho ya ocurrió y la plata no ha llegado. Al cerrar el mes hay que anotarlo igual.",
+  objetivo: "Reconoce y anota lo que ya se causó y aún no se paga ni se cobra.",
   nombres: [
     {
       termino: "Se causa",

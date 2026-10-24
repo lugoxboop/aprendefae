@@ -166,7 +166,7 @@ test("★★★ los textos de Gen, textuales (y los hechos 4 y 5 de la act. 5 fi
   assert.deepEqual(A5.PASOS_ACT5, ["Mira cuánto se pagó o se recibió y por cuántos meses.", "Calcula cuánto le toca a este periodo.", "Pon un nombre en cada cuenta y escribe el valor."]);
   assert.deepEqual(A5.ITEMS_ACT5.map((x) => x.hecho), [
     "Mónica Galindo cierra el 31 de diciembre. Seguro de cinco años por $480.000, comprado el 1 de marzo",
-    "Mónica Galindo cierra el 31 de diciembre. Alquiler de equipos: $1.080.000 por seis meses, desde el 1 de agosto",
+    "Mónica Galindo cierra el 31 de diciembre. Alquiler de equipos: pagó $1.080.000 por seis meses, desde el 1 de agosto",
     "Mónica Galindo cierra el 31 de diciembre. Arriendo recibido por un año a $160.000 al mes, desde el 1 de junio",
     "Mónica Galindo cierra el 31 de diciembre. El 10 de septiembre recibió $830.000 por servicios que prestaría después. Al cierre ya se causaron $386.000 de ese valor.",
     "Servicios del Caribe cierra el 31 de marzo. El 15 de marzo recibió $500.000 por servicios futuros. Al cierre ya se causaron $120.000 de ese valor.",
