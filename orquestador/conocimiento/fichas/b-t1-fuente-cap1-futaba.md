@@ -153,7 +153,7 @@ Leído en la imagen:
 
 - **f1 sigue el Gráfico 2.6.** f1 va de bloque a bloque, se pregunta en cu0-a4 · 8 y su respuesta es «explica», como ya está en lo publicado (P:403). Se quita la nota «Es la misma cifra con otro nombre» de cu0-a4 · 6. El acierto de cu0-a4 · 5 pasa a: «Llega a la foto: el resultado del año cambia cómo queda la empresa.» Con esto f1 deja de ser HUECO.
 - **Las citas P:197 y P:202 se corrigen** con el texto del punto 5. Son citas textuales, y si están mal copiadas son una falla de D1.
-- **El nombre pasa a «Compañía Caleja»** en I:109 y en el rótulo de cu0-a4. El comentario de T:249 dice «las ocho del ejemplo de la ecuación, pp. 36-40».
+- **El nombre pasa a «Compañía Caleja»** en I:109 y en el rótulo de cu0-a1 · 4. El comentario de T:249 dice «las ocho del ejemplo de la ecuación, pp. 36-40».
 - **Punto 6 (la línea de operación hacia el estado de resultados):** queda en HUECO hasta que Mateo mire la p. 66 en el libro físico. Mientras tanto no se cambian los tres textos publicados.
 - **El caso «se quedan los dos igual»** de cu0-a2 sigue en HUECO hasta que llegue la p. 90 del capítulo 3.
 - Lo aplica Kaede en un PR propio y lo audita Shoko.
