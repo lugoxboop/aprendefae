@@ -67,8 +67,12 @@ const montar = () => {
 const tocar = (el) => act(() => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
 const boton = (caja, texto) => [...caja.querySelectorAll("button")].find((b) => b.textContent.includes(texto));
 const mov = (k) => movimientoT1_5(totalesTras(k), TRANSACCIONES_CAP2[k]);
-/* El total elegido para una parte: el correcto, o el de restar donde había que sumar (o al revés). */
-const totalPara = (m, p, bien) => (bien ? m.despues[p] : m.antes[p] - m.signos[p] * m.monto);
+/* El total elegido para una parte: el correcto, o el de restar donde había que sumar (o al revés) si está entre las opciones; si no, el total anterior. */
+const totalPara = (m, p, bien) => {
+  if (bien) return m.despues[p];
+  const alReves = m.antes[p] - m.signos[p] * m.monto;
+  return opcionesTotalT1_5(m, p).includes(alReves) ? alReves : m.antes[p];
+};
 const elegirTotal = (caja, p, v) => tocar(caja.querySelector(`[data-opcion-total="${p}:${v}"]`));
 /* Las dos decisiones del hecho k: cada una bien, o mal a propósito. */
 const decidir = (caja, k, { quieta = true, signos = true } = {}) => {
@@ -273,7 +277,7 @@ test("★★★ el modelo corre también en el error, y el fantasma sale solo en
     decidir(caja, 0);
     tocar(boton(caja, TORRES_T1_5.anotar));
     tocar(boton(caja, TORRES_T1_5.siguiente));
-    /* Hecho 2: entra un computador a crédito (+25.000 activo, +25.000 pasivo). Las dos al revés. */
+    /* Hecho 2: entra un computador a crédito (+25.000 activo, +25.000 pasivo). Las dos mal. */
     decidir(caja, 1, { signos: false });
     tocar(boton(caja, TORRES_T1_5.anotar));
     const real = totalesTras(2);
@@ -281,13 +285,19 @@ test("★★★ el modelo corre también en el error, y el fantasma sale solo en
     assert.equal(totalDe(caja, "derecha"), pesos(real[PASIVO] + real[PATRIMONIO]));
     assert.ok(caja.querySelector('[data-fantasma="izquierda"]'));
     assert.ok(caja.querySelector('[data-fantasma="derecha"]'));
-    /* B: dan igual (las dos bajaron) pero no son las cifras del hecho. */
-    assert.equal(caja.querySelector("[data-texto-retro]").textContent, sinEmoji(ERROR_T1_5.B));
+    /*
+     * Lo que tiene restó (275.000) y lo que debe quedó en el total anterior (0, porque −25.000 ya no es opción):
+     * los lados no dan igual, A, con 25.000 de diferencia.
+     */
+    assert.equal(caja.querySelector("[data-texto-retro]").textContent, sinEmoji(ERROR_T1_5.A.replace("{Z}", pesos(25000))));
   } finally { desmontar(); }
   /* Solo una torre distinta: el fantasma solo ahí. */
   const m = mov(1);
   const r = evaluarTorresT1_5(m, m.quieta, { [ACTIVO]: m.despues[ACTIVO], [PASIVO]: m.antes[PASIVO] - m.monto });
   assert.deepEqual(r.fantasma, { izquierda: false, derecha: true });
+  /* B: los dos al revés en el hecho 4 (salen 10.000 de caja para pagar una deuda) dan igual con otras cifras. */
+  const m4 = mov(3);
+  assert.equal(evaluarTorresT1_5(m4, m4.quieta, { [ACTIVO]: 385000, [PASIVO]: 85000 }).patron, "B");
   assert.equal(r.patron, "A");
   assert.equal(r.texto, ERROR_T1_5.A.replace("{Z}", pesos(50000)));
 });
@@ -373,14 +383,22 @@ test("★★★ la decisión 2 es el total nuevo: anterior más el monto, anteri
   /* Hecho 2: entra un computador a crédito por 25.000; el activo venía de 300.000. */
   const m = mov(1);
   assert.deepEqual(opcionesTotalT1_5(m, ACTIVO), [25000, 275000, 325000]);
-  /* Total anterior en cero: el monto solo ES el total nuevo, así que van dos y no se repite ninguna. */
-  assert.deepEqual(opcionesTotalT1_5(m, PASIVO), [-25000, 25000]);
+  /*
+   * Decisión de Sakuta: la que repite otra o sale negativa se cambia por el total anterior, sin cambio;
+   * si aun así se repite, quedan dos. Hecho 1 (las dos desde cero) y pasivo del 2 y del 3.
+   */
+  assert.deepEqual(opcionesTotalT1_5(mov(0), ACTIVO), [0, 300000]);
+  assert.deepEqual(opcionesTotalT1_5(mov(0), PATRIMONIO), [0, 300000]);
+  assert.deepEqual(opcionesTotalT1_5(m, PASIVO), [0, 25000]);
+  assert.deepEqual(opcionesTotalT1_5(mov(2), PASIVO), [25000, 50000, 75000], "el −25.000 del hecho 3 no se cambió por el total anterior");
   for (let k = 0; k < 8; k += 1) {
     const mk = mov(k);
     for (const p of mk.mueven) {
       const ops = opcionesTotalT1_5(mk, p);
       assert.ok(ops.includes(mk.despues[p]), `hecho ${k + 1}, ${p}: la correcta no está entre las opciones`);
       assert.equal(new Set(ops).size, ops.length);
+      assert.ok(ops.length >= 2 && ops.length <= 3, `hecho ${k + 1}, ${p}: ${ops.length} opciones`);
+      assert.ok(ops.every((v) => v >= 0), `hecho ${k + 1}, ${p}: salió un total negativo`);
       assert.deepEqual(ops, [...ops].sort((a, b) => a - b), "las opciones no van de menor a mayor");
     }
   }

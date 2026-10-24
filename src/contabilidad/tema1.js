@@ -364,14 +364,23 @@ export function movimientoT1_5(antes, hecho) {
  * se mueve, entre tres: el total anterior más el monto, el total anterior
  * menos el monto, y el monto solo (confundir el movimiento con el saldo).
  *
- * Cuando dos de las tres dan la misma cifra (total anterior en cero: el monto
- * solo ES el total nuevo) se deja una sola. Van de menor a mayor, para que la
- * posición no delate la correcta. Las negativas (hecho 3, el pasivo: 25.000 −
- * 50.000) se dejan: es la cifra que da restar donde había que sumar.
+ * Decisión de Sakuta (24-oct) para los hechos en que eso no da tres cifras
+ * distintas y positivas (el 1, y el pasivo del 2 y del 3): la que repite otra
+ * o sale negativa se reemplaza por el total anterior, sin cambio (el error de
+ * creer que esa parte no se movió). Si aun así se repite, quedan dos; nunca
+ * una sola, porque la correcta y el total anterior siempre difieren en el
+ * monto. Van de menor a mayor, para que la posición no delate la correcta.
  */
 export function opcionesTotalT1_5(mov, parte) {
-  const valores = [mov.antes[parte] + mov.monto, mov.antes[parte] - mov.monto, mov.monto];
-  return [...new Set(valores)].sort((a, b) => a - b);
+  const correcta = mov.despues[parte];
+  const sinCambio = mov.antes[parte];
+  const elegidas = [correcta];
+  for (const v of [mov.antes[parte] - mov.signos[parte] * mov.monto, mov.monto]) {
+    const valida = v >= 0 && !elegidas.includes(v);
+    const otra = valida ? v : sinCambio;
+    if (!elegidas.includes(otra)) elegidas.push(otra);
+  }
+  return elegidas.sort((a, b) => a - b);
 }
 
 /*
