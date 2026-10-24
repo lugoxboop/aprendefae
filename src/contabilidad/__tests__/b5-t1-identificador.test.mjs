@@ -14,6 +14,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { ICONO_POR_TEMA } from "../../data/identificadoresDeTema.js";
 import { LibretaYLapiz } from "../identificadores/identificadoresA.jsx";
 import { SUBJECTS } from "../../data/subjects.js";
+import { CSS_IDENTIFICADOR } from "../../components/shared/IdentificadorDeTema.jsx";
 
 const s = renderToStaticMarkup(h(LibretaYLapiz, { size: 64 }));
 
@@ -55,4 +56,16 @@ test("T1-6 · sin letras, sin cifras y sin los colores prohibidos; distinto de l
   const otros = Object.entries(ICONO_POR_TEMA).filter(([k]) => k !== "contabilidad/introduccion-contabilidad").map(([, C]) => renderToStaticMarkup(h(C, { size: 64 })));
   assert.ok(otros.length >= 6);
   assert.ok(otros.every((o) => o !== s));
+});
+
+test("T1-7 · el movimiento (Shoko, §5.4): una vez, 400 ms, solo transform, y con movimiento reducido nada se mueve", () => {
+  const css = CSS_IDENTIFICADOR.replace(/\s+/g, " ");
+  assert.match(css, /\.fae-identificador \[data-mueve\] \{ transition: transform 400ms cubic-bezier\(\.3,\.9,\.4,1\);/);
+  assert.match(css, /:hover \.fae-identificador \[data-mueve\],[^{]*\{ transform: var\(--mueve, none\); \}/);
+  const reducido = css.slice(css.indexOf("@media (prefers-reduced-motion: reduce)"));
+  assert.match(reducido, /\[data-mueve\] \{ transition: none; transform: none; \}/);
+  /* El markup del logito, aquí mismo: lo único que lleva data-mueve es el lápiz, después de la libreta. */
+  const s = renderToStaticMarkup(h(LibretaYLapiz, { size: 64 }));
+  assert.equal((s.match(/data-mueve/g) || []).length, 1);
+  assert.match(s, /<rect x="6" y="8" width="32" height="48" rx="4"><\/rect><path d="M14 22H30M14 32H30M14 42H24"><\/path><g data-mueve/);
 });
