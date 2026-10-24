@@ -40,7 +40,7 @@ const React = await import("react");
 const { createRoot } = await import("react-dom/client");
 const act = React.act ?? (await import("react-dom/test-utils")).act;
 
-const LaEcuacionEnMovimiento = (await import("../../components/mecanicas/libros/tema1/LaEcuacionEnMovimiento.jsx")).default;
+const { default: LaEcuacionEnMovimiento, MS_SUBIR } = await import("../../components/mecanicas/libros/tema1/LaEcuacionEnMovimiento.jsx");
 const { MarcoLibros } = await import("../../components/mecanicas/bloques/marcos.jsx");
 const {
   totalesTras, parteQuieta, enModoCorto, evaluarT1_5, efectoDe,
@@ -584,4 +584,56 @@ test("difícil, 50 FP y los ocho hechos", () => {
   assert.equal(T1_5.dificultad, "dificil");
   assert.equal(T1_5.fpBase, 50);
   assert.equal(T1_5.porPartida, TRANSACCIONES_CAP2.length);
+});
+
+/*
+ * ═══════════ LAS TORRES SE VEN MOVERSE (PR propio, a 320) ═══════════
+ *
+ * Con las torres fuera de la pantalla al anotar, la pieza sube a ellas y solo
+ * entonces las mueve; el foco va a «Siguiente» sin desplazar la página. Con
+ * las torres a la vista, todo pasa en el acto, como siempre.
+ */
+test("★★★ al anotar con las torres fuera de la pantalla: sube a ellas, y se mueven al llegar", async () => {
+  const proto = w.Element.prototype;
+  const rectOriginal = proto.getBoundingClientRect;
+  const subidas = [];
+  proto.getBoundingClientRect = function () {
+    if (this.matches?.("[data-caja-torres]")) return { top: -278, bottom: -34, left: 0, right: 300, width: 300, height: 244 };
+    return rectOriginal.call(this);
+  };
+  proto.scrollIntoView = function (o) { subidas.push(o); };
+  const focoOriginal = w.HTMLElement.prototype.focus;
+  const focos = [];
+  w.HTMLElement.prototype.focus = function (o) { focos.push(o); return focoOriginal.call(this, o); };
+  const { caja, desmontar } = montar();
+  try {
+    const antes = altoDe(caja, ACTIVO);
+    decidir(caja, 0);
+    tocar(boton(caja, TORRES_T1_5.anotar));
+    assert.equal(subidas.length, 1, "no subió a las torres");
+    assert.equal(subidas[0].block, "start");
+    assert.equal(altoDe(caja, ACTIVO), antes, "las torres se movieron antes de estar a la vista");
+    await act(async () => { await new Promise((r) => setTimeout(r, MS_SUBIR + 60)); });
+    assert.notEqual(altoDe(caja, ACTIVO), antes, "las torres no se movieron al llegar");
+    assert.ok(focos.some((o) => o?.preventScroll === true), "el foco a «Siguiente» desplaza la página");
+  } finally {
+    desmontar();
+    proto.getBoundingClientRect = rectOriginal;
+    delete proto.scrollIntoView;
+    w.HTMLElement.prototype.focus = focoOriginal;
+  }
+});
+
+test("★★ con las torres a la vista, anotar las mueve en el acto y no desplaza nada", () => {
+  const proto = w.Element.prototype;
+  const subidas = [];
+  proto.scrollIntoView = function (o) { subidas.push(o); };
+  const { caja, desmontar } = montar();
+  try {
+    const antes = altoDe(caja, ACTIVO);
+    decidir(caja, 0);
+    tocar(boton(caja, TORRES_T1_5.anotar));
+    assert.equal(subidas.length, 0);
+    assert.notEqual(altoDe(caja, ACTIVO), antes);
+  } finally { desmontar(); delete proto.scrollIntoView; }
 });

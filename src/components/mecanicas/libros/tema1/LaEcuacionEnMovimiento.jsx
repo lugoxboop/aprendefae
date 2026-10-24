@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useMovimientoReducido } from "../verbos.jsx";
 import { FAE } from "../../../../theme.js";
 import { pesos, ACTIVO, PASIVO, PATRIMONIO } from "../../../../data/contabilidad.js";
 import {
@@ -62,6 +63,8 @@ const CSS = `
 `;
 
 const ancho = (n) => `${n}px`;
+/* Lo que se espera a que el desplazamiento suave llegue a las torres antes de moverlas. */
+export const MS_SUBIR = 420;
 /* Una cifra con su signo de verdad: un total negativo se lee con «−», no con un guion. */
 const cifra = (v) => (v < 0 ? `−${pesos(-v)}` : pesos(v));
 const parte = (id) => PARTES.find((p) => p.id === id);
@@ -202,6 +205,21 @@ export default function LaEcuacionEnMovimiento({
   const detalle = useRef([]);
   const inicio = useRef(Date.now());
   const botonSeguir = useRef(null);
+  /*
+   * ═══════════ LAS TORRES SE VEN MOVERSE (PR propio, D4) ═══════════
+   *
+   * A 320 «Anotar» queda bajo las partes y los totales: para tocarlo, las
+   * torres ya salieron por arriba (−278 px), y al pasar el foco a «Siguiente»
+   * se iban más (−493). Lo que la pieza enseña —las dos torres yendo al total
+   * nuevo— pasaba fuera de la pantalla. Ahora, al anotar, la pieza sube a las
+   * torres si no se ven, y solo cuando llegó las mueve; el foco va a
+   * «Siguiente» sin desplazar la página.
+   */
+  const reducido = useMovimientoReducido();
+  const cajaTorres = useRef(null);
+  const reloj = useRef(null);
+  const [torresAlDia, setTorresAlDia] = useState(false);
+  useEffect(() => () => clearTimeout(reloj.current), []);
 
   const h = ejemplo ? ejemplo.hecho : TRANSACCIONES_CAP2[i];
   const antes = ejemplo ? ejemplo.antes : totalesTras(i);
@@ -215,7 +233,7 @@ export default function LaEcuacionEnMovimiento({
     if (terminado && !modoDemo) onCompletar?.(pct, Date.now() - inicio.current, detalle.current);
   }, [terminado]);
   useEffect(() => {
-    if (r && !modoDemo) botonSeguir.current?.focus();
+    if (r && !modoDemo) botonSeguir.current?.focus({ preventScroll: true });
   }, [r]);
 
   const anotar = () => {
@@ -234,14 +252,27 @@ export default function LaEcuacionEnMovimiento({
       setPuntos((xs) => [...xs, { id: h.id, quietaOk: nuevo.quietaOk, direccionOk: nuevo.direccionOk }]);
     }
     setR(nuevo);
+    /* ¿Se ven las torres? Si no, se sube a ellas y se mueven al llegar. */
+    const caja = cajaTorres.current?.getBoundingClientRect();
+    const fuera = Boolean(caja) && (caja.top < 0 || caja.bottom > (globalThis.innerHeight ?? Infinity));
+    clearTimeout(reloj.current);
+    if (fuera && !modoDemo) {
+      cajaTorres.current.scrollIntoView?.({ behavior: reducido ? "auto" : "smooth", block: "start" });
+      setTorresAlDia(false);
+      reloj.current = setTimeout(() => setTorresAlDia(true), reducido ? 0 : MS_SUBIR);
+    } else {
+      setTorresAlDia(true);
+    }
   };
 
   const avanzar = () => {
+    clearTimeout(reloj.current); setTorresAlDia(false);
     setR(null); setQuietaElegida(null); setTotales({});
     if (i + 1 < total) setI(i + 1);
     else setTerminado(true);
   };
   const reiniciar = () => {
+    clearTimeout(reloj.current); setTorresAlDia(false);
     setI(0); setR(null); setQuietaElegida(null); setTotales({}); setPuntos([]); setTerminado(false);
     detalle.current = []; inicio.current = Date.now();
   };
@@ -265,7 +296,7 @@ export default function LaEcuacionEnMovimiento({
   }
 
   /* R10: antes de anotar, las torres enseñan el estado anterior; después, el correcto, también en el error. */
-  const enTorres = r ? r.real : antes;
+  const enTorres = r && torresAlDia ? r.real : antes;
   const fantasma = r && !r.ok ? {
     izquierda: r.fantasma.izquierda ? r.elegido[ACTIVO] : null,
     derecha: r.fantasma.derecha ? r.elegido[PASIVO] + r.elegido[PATRIMONIO] : null,
@@ -398,7 +429,9 @@ export default function LaEcuacionEnMovimiento({
             {h.texto}
           </p>
 
-          <Torres t={enTorres} fantasma={fantasma} />
+          <div ref={cajaTorres} data-caja-torres style={{ scrollMarginTop: "12px" }}>
+            <Torres t={enTorres} fantasma={torresAlDia ? fantasma : null} />
+          </div>
           <Leyenda />
 
           <p data-pregunta style={{
