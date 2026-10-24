@@ -87,6 +87,13 @@ const DemandaAgregadaHacerView = lazy(() => import("./components/DemandaAgregada
  * ancho como las de actividad. Queda anotado porque la regla general, leída al
  * pie de la letra, los incluiría.
  */
+/* Las vistas de Contabilidad: llevan la reserva de la banda de la ficha (#349). */
+const VISTAS_CONTABILIDAD = new Set([
+  "contabilidad", "introduccion-contabilidad", "cuentas-debe-haber", "ingresos-gastos-y-caja",
+  "efectivo-caja-menor-bancos", "activos-financieros", "cuentas-por-cobrar",
+  "inventarios-periodico", "inventarios-permanente", "inventarios-descuentos-nic2", "repaso-capitulo-5",
+]);
+
 const VISTAS_CON_TITULO = new Set([
   "macroeconomia", "pensamiento-estrategico", "contabilidad",
   "camino-da", "grifos-da",
@@ -166,7 +173,14 @@ export default function App() {
   const siteFallback = <div style={{ minHeight: "100vh", backgroundColor: FAE.bg }} />;
   const wrap = (node) => (
     <NavigationContext.Provider value={navigation}>
-      {node}
+      {/*
+        * La banda de la ficha de FP (#349). En Contabilidad todo destino de un
+        * desplazamiento automático —scrollIntoView, o un focus() que mueve la
+        * pantalla— aterriza 84 px más abajo, fuera de la ficha. Va por CSS y
+        * no destino por destino porque son casi cien. `display: contents` no
+        * añade caja: el envoltorio no cambia nada del diseño. Macro no entra.
+        */}
+      {VISTAS_CONTABILIDAD.has(view) ? <div className="fae-reserva-ficha" style={{ display: "contents" }}>{node}</div> : node}
       <AccountControl conTitulo={VISTAS_CON_TITULO.has(view)} />
       <AuthDialog />
       {/* Escucha al motor de FP y confirma en pantalla. Se monta una sola vez. */}

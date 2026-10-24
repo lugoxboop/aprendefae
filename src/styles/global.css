@@ -136,3 +136,14 @@ input:focus-visible {
   height: max(100%, 44px);
   transform: translate(-50%, -50%);
 }
+
+/*
+ * LA BANDA DE LA FICHA DE FP (Xeno, 24 oct., #349). En las vistas de
+ * Contabilidad todo lo que se desplaza solo —scrollIntoView, o un focus() que
+ * mueve la pantalla— aterriza debajo de la ficha, no bajo ella. 84 es
+ * FICHA_RESERVA de theme.js: una prueba vigila que los dos coincidan.
+ * scroll-margin no ocupa sitio ni mueve nada: solo cuenta al desplazar.
+ */
+.fae-reserva-ficha * {
+  scroll-margin-top: 84px;
+}
