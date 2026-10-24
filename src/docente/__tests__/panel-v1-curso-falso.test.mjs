@@ -43,18 +43,24 @@ function primeraPantalla(escenario) {
   return { avance: V1.avanceDeClase(porTema, cohorte.length, MATERIA), ...V1.peorActividad(filas), seis };
 }
 
-test("★★★ curso normal: «Actividades hechas» da 26 % y B3, 51 % con 15 que la terminaron (lo que muestran las capturas)", () => {
+/*
+ * Lote 5 de la Célula B (24-oct): T1 suma dos Hacer (H1 y H2), así que el
+ * denominador de «Actividades hechas» crece y la cifra baja: 26 → 25 % en el
+ * curso normal y 26 → 24 % en el grande. B3 no cambia (51 %). Las capturas de
+ * #498 se tomaron con el catálogo de antes; Kaede avisa a la Célula D por issue.
+ */
+test("★★★ curso normal: «Actividades hechas» da 25 % (26 % en las capturas, antes de H1 y H2) y B3, 51 % con 15 que la terminaron", () => {
   const r = primeraPantalla("normal");
-  assert.equal(Math.round(r.avance), 26);
+  assert.equal(Math.round(r.avance), 25);
   assert.equal(r.seis.length, 6);
   assert.ok(r.peor, "no hay peor actividad");
   assert.equal(Math.round(r.peor.cifras.pct), 51);
   assert.equal(r.peor.cifras.terminaron, 15);
 });
 
-test("★★ curso grande: las mismas reglas dan 26 % y 51 % con 36 que la terminaron", () => {
+test("★★ curso grande: las mismas reglas dan 24 % (26 % antes de H1 y H2) y 51 % con 36 que la terminaron", () => {
   const r = primeraPantalla("grande");
-  assert.equal(Math.round(r.avance), 26);
+  assert.equal(Math.round(r.avance), 24);
   assert.equal(Math.round(r.peor.cifras.pct), 51);
   assert.equal(r.peor.cifras.terminaron, 36);
 });

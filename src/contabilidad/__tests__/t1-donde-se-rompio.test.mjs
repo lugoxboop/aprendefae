@@ -575,15 +575,19 @@ test("★★★ T1-8 está en las dos puertas, tercera en el camino, con la mism
   assert.equal(fila.clasificacion.fpBase, T1_8.fpBase);
   assert.ok(JUEGOS.some((j) => j.id === T1_8.id), "T1-8 sale en el camino y no la abre nadie");
 
-  /* El orden visible mientras T1-3 siga retenida: T1-1, T1-2, T1-8, T1-4, T1-5, T1-6, T1-7. */
+  /*
+   * El orden visible mientras T1-3 siga retenida: T1-1, T1-2 (Cimientos) · H2,
+   * T1-8, T1-4, H1 (Aplicación) · T1-5, T1-6 (Análisis) · T1-7 (Maestría). H2 y
+   * H1 entran con el lote 5, en el bloque de su dificultad.
+   */
   const orden = [
-    "t1-desde-donde-preguntan", "t1-que-entro-y-que-salio", "t1-donde-se-rompio",
-    "t1-que-le-pasa-a-cada-uno", "t1-la-ecuacion-en-movimiento", "t1-en-cual-estado-aparece", "t1-la-articulacion",
+    "t1-desde-donde-preguntan", "t1-que-entro-y-que-salio", "t1-quien-pregunta-esto", "t1-donde-se-rompio",
+    "t1-que-le-pasa-a-cada-uno", "t1-un-dia-o-un-ano", "t1-la-ecuacion-en-movimiento", "t1-en-cual-estado-aparece", "t1-la-articulacion",
   ];
   assert.deepEqual(deHacer.map((a) => a.id), orden, "el camino no va en el orden del encargo");
   assert.deepEqual(JUEGOS.map((j) => j.id), orden, "el registro de la vista va en otro orden");
-  /* 260 FP mientras T1-3 siga retenida. */
-  assert.equal(deHacer.reduce((x, a) => x + a.clasificacion.fpBase, 0), 260);
+  /* 260 FP de las siete, más 25 + 25 de H1 y H2 (lote 5), mientras T1-3 siga retenida. */
+  assert.equal(deHacer.reduce((x, a) => x + a.clasificacion.fpBase, 0), 310);
 });
 
 test("★★★ el marco de cada actividad dice su bloque: T1-8 es Aplicación, no Cimientos", async () => {
@@ -593,6 +597,7 @@ test("★★★ el marco de cada actividad dice su bloque: T1-8 es Aplicación, 
     "t1-donde-se-rompio": "APLICACIÓN", "t1-que-le-pasa-a-cada-uno": "APLICACIÓN",
     "t1-la-ecuacion-en-movimiento": "ANÁLISIS", "t1-en-cual-estado-aparece": "ANÁLISIS",
     "t1-la-articulacion": "MAESTRÍA",
+    "t1-quien-pregunta-esto": "APLICACIÓN", "t1-un-dia-o-un-ano": "APLICACIÓN",
   };
   assert.deepEqual(Object.fromEntries(JUEGOS.map((j) => [j.id, rotuloDeBloque(j.id)])), esperado);
 });
