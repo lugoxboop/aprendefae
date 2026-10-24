@@ -1,11 +1,9 @@
-2026-10-23 11:14 (hora Bogotá)
-- Regla «Contabilidad tiene estudiantes: solo se agrega» en nocturno.md y celulas.md: bloqueado: va en el PR #490, falta visto bueno para fusionar
-- Encargo 1 · índice de Contabilidad con cuatro temas visibles (bandera OCULTAR_TEMAS_FUERA_DEL_SEMESTRE; nada borrado, FP y progreso intactos): bloqueado: PR #490 listo y verde, falta visto bueno para fusionar
-- Encargo 2 · motor del Repaso Diario de Contabilidad + migración 0152: bloqueado: PR #490, falta visto bueno; queda oculto hasta que lleguen los pools
-- Encargo 2 · etiquetado de subtemas por célula: en curso — pedido en #477 (B, T1), #478 (C, T2), #479 (E, T3), #480 (D, T4)
-- Encargo 3 · SecuenciaAprender sobre el patrón de Ukyo (#470): bloqueado: PR #491 listo y verde, falta visto bueno; cómo usarlo, en #492 para las cuatro células
-- Regla i (buscar antes de abrir) pasada a Gen, Xeno, Levi y Sai en un solo mensaje cada uno: terminado
-- Capacitación de la Célula A: en curso — espero las confirmaciones de Levi (auditores-v1) y Sai (construccion-v1)
-- Lo compartido (componentes comunes, choques entre células, datos de estudiantes, destrabar generales): en curso
+2026-10-24 14:36 (hora Bogotá)
+- Main rojo desde el 23-oct: encontrado — marcas combinantes literales en scripts/canon.mjs línea 46; reportado a Miku en #503 con el arreglo de una línea
+- Regla «Contabilidad tiene estudiantes», índice de cuatro temas y motor del Repaso Diario (PR #490, rehecho sobre main de hoy, 91 pruebas verdes y guardián sin reproches): bloqueado: CI de main rojo (#503); fusiono en cuanto vuelva a verde
+- SecuenciaAprender (PR #491, rehecho sobre main de hoy): bloqueado: CI de main rojo (#503); fusiono en cuanto vuelva a verde
+- Pools del Repaso Diario por célula: en curso — D ya tiene subtemas en main (#475), C en #482 y E en #481; B sin entregar. A las cuatro les dije en #477-#480 cómo conectarlos al motor sin re-etiquetar
+- Vara nueva de fusión (fusiona cada quien con PASA + CI verde; solo para lo irreversible) en #477-#480 para las células: terminado; a Gen, Xeno, Levi y Sai: bloqueado: hay dos Chrome conectados y falta que Mateo diga cuál es el mío
+- Capacitación de la Célula A: en curso — faltan las confirmaciones de Levi y Sai
 - #349 ficha de FP fija vs. oculta al bajar: bloqueado: espera que Xeno diga si le basta
 - Capa 1 de CuatroCapas (guardas B1 y B2): bloqueado: esperan los recortes de Near
