@@ -32,7 +32,7 @@
 5. PR #40 es el paquete versionado: NO FUSIONAR.
 
 ## Mis agentes y cómo hablarles
-- Kaede, constructor (Claude Code): claude.ai/code/session_01Vh7Swg3dza8wvp3dQbLvGv. Un lote por mensaje, un PR, «sin preguntar lo que se puede deshacer» (R20). Le pido informe de una línea.
+- Kaede, constructor (Claude Code): claude.ai/code/session_01D4JtpNoHqDM288SH6okZpo (desde el 24-oct; la vieja 01Vh7Swg quedó al 78 %, ver traspasos/kaede.md). Un lote por mensaje, un PR, «sin preguntar lo que se puede deshacer» (R20). Le pido informe de una línea.
 - Futaba, contenido: claude.ai/chat/4c4c17ec-5ce8-476a-93b9-256f7b0e5ddf. Lee main ella misma. Le doy archivo:línea, el estándar (≤ 25 palabras, INFLESZ ≥ 65, sin veredicto ni emoji) y le pido la entrega en tabla.
 - Mai, diseño: claude.ai/chat/3e99a458-f712-4924-b070-539e3566ae89 (desde el 24-oct; el chat viejo b702113f quedó pesado, ver traspasos/mai.md). Se rige por el prompt maestro de diseño. Siempre le pregunto dónde y con qué midió.
 - Shoko, auditora: claude.ai/chat/be98df9f-127f-425b-8b51-71f28445ef11. No ve código: le mando hojas de capturas (320 y 375) y le pido una línea por pieza (pieza · nivel · lo que falta). Su veredicto manda.
