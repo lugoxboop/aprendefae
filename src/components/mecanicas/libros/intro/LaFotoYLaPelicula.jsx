@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { FAE } from "../../../../theme.js";
 import {
-  FOTOS, TEXTOS_P3, CIERRE_P3, ALTERNATIVOS_P3,
+  FOTOS, TEXTOS_P3, CIERRE_P3, ROTULO_CIERRE_P3, ALTERNATIVOS_P3,
 } from "../../../../data/contabilidadPiezas234.js";
 import { BOTON_REPETIR, BOTON_SIGUIENTE } from "../../../../data/contabilidadIntro.js";
 import { useMovimientoReducido, SOLO_LECTOR } from "../verbos.jsx";
@@ -99,7 +99,7 @@ export default function LaFotoYLaPelicula() {
       <style>{CSS}</style>
 
       <p style={{ margin: "0 0 9px", fontFamily: SORA, fontSize: "12px", fontWeight: 600, color: "#A8B6C8" }}>
-        {cerrado ? "Las dos fotos y el tramo" : `Paso ${visible} de ${PASOS}`}
+        {cerrado ? ROTULO_CIERRE_P3 : `Paso ${visible} de ${PASOS}`}
       </p>
 
       <div key={`${paso}-${repeticion}`} style={{ display: "flex", flexDirection: "column", gap: "7px" }}>
