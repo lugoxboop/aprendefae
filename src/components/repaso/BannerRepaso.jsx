@@ -197,7 +197,8 @@ export function copiaBloqueo(estado, faltan) {
  */
 export default function BannerRepaso({ actividad, onEmpezar, repaso = null }) {
   const { perfil } = useAuth();
-  const delHook = useRepaso();
+  /* El repaso de ESTA tarjeta: el de Macro o el de Contabilidad, según `actividad`. */
+  const delHook = useRepaso(actividad?.id);
   const [abierto, setAbierto] = useState(false);
 
   const { cargando, error, estado, previa, faltan, racha } = {
@@ -318,7 +319,7 @@ export default function BannerRepaso({ actividad, onEmpezar, repaso = null }) {
               {!error && !cargando && hecho && <YaHecho racha={racha} />}
 
               {!error && !cargando && !hecho && previa && (
-                <Pendiente previa={previa} racha={racha} onEmpezar={onEmpezar} />
+                <Pendiente previa={previa} racha={racha} onEmpezar={onEmpezar} fpBase={actividad.clasificacion?.fpBase ?? REPASO.clasificacion.fpBase} />
               )}
             </div>
           </div>
@@ -330,14 +331,14 @@ export default function BannerRepaso({ actividad, onEmpezar, repaso = null }) {
 
 const LINEA = { margin: 0, fontSize: "14px", lineHeight: 1.6, color: "rgba(248,249,250,0.88)" };
 
-function Pendiente({ previa, racha, onEmpezar }) {
+function Pendiente({ previa, racha, onEmpezar, fpBase = REPASO.clasificacion.fpBase }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "10px", alignItems: "flex-start" }}>
       <p data-temas style={LINEA}>
         Hoy entran: {previa.temas.map(nombreDeTema).join(" · ")}
       </p>
       <p data-cuenta style={LINEA}>
-        {previa.cuantos} ítems · hasta {REPASO.clasificacion.fpBase} FP
+        {previa.cuantos} ítems · hasta {fpBase} FP
       </p>
       {racha === 0 && (
         <p data-empieza-racha style={{ ...LINEA, color: "rgba(248,249,250,0.72)" }}>

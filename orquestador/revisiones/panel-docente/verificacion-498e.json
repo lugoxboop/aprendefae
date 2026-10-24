@@ -1,0 +1,34 @@
+{
+  "normal-375x667": {
+    "V": 667,
+    "pct": {
+      "top": 607,
+      "bottom": 637,
+      "aLaVista": true
+    },
+    "aciertoMedio": {
+      "top": 616,
+      "bottom": 636,
+      "aLaVista": true
+    },
+    "filasB2": 3,
+    "verLos": "Ver los 8",
+    "errores": []
+  },
+  "grande-375x667": {
+    "V": 667,
+    "pct": {
+      "top": 607,
+      "bottom": 637,
+      "aLaVista": true
+    },
+    "aciertoMedio": {
+      "top": 616,
+      "bottom": 636,
+      "aLaVista": true
+    },
+    "filasB2": 3,
+    "verLos": "Ver los 16",
+    "errores": []
+  }
+}

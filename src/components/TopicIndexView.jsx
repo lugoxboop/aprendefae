@@ -103,7 +103,8 @@ export default function TopicIndexView({
           uno. Sale de ACTIVIDADES_TRANSVERSALES por `indice`, así que cada
           materia enseña solo el suyo y una materia sin ninguno no reserva sitio.
         */}
-        {ACTIVIDADES_TRANSVERSALES.filter((a) => a.indice === subjectId).map((a) => (
+        {/* `publicado: false` la deja fuera mientras se construye; el Repaso de Macro no lo lleva y se ve como siempre. */}
+        {ACTIVIDADES_TRANSVERSALES.filter((a) => a.indice === subjectId && a.publicado !== false).map((a) => (
           <div key={a.id} data-encabezado-materia style={{ width: "100%", maxWidth: "760px", margin: "clamp(18px, 3vh, 28px) auto 0" }}>
             {/* La expansión vive dentro del banner; el botón de empezar navega a la partida. */}
             <BannerRepaso actividad={a} onEmpezar={() => onOpenTopic(a.temaId)} />

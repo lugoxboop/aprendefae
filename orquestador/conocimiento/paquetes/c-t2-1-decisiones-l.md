@@ -81,3 +81,20 @@ Entregas: Near `c-t2-3-near-delta.md` (los siete ajustes de Watari y los huecos)
 - **Cuadra por valor E1:** pasa a Caleja cal-4 («Basado en el libro»), para que la Aprender P4·8 no delate la respuesta (C1).
 - **El patrón #470 manda sobre las figuras:** Míralo y Haz; el error tentativo en coral sin cambiar el modelo; un cierre sin acción obligatoria (por eso P3 tiene 9 pantallas); controles neutros; reserva de figura de 220 px o menos a 320 px.
 - **Bancos de las tres Hacer para Misa:** `c-t2-2-near-lote.md` §1 con el delta de `c-t2-3-near-delta.md`. Para la forma, el delta CSS de `c-t2-3-watari-figuras.md`.
+
+---
+
+# Auditoría T2-3 de Mello · decisiones de L (24-oct-2026, 15:45)
+
+Entrega: `c-t2-3-mello-auditoria.md`. #482 y #494 tienen PASA y ya están fusionados (76be9fb y 525e52d). Las Hacer quedan así: Cuadra por valor FALLA, Del diario al mayor FALLA y Las que vuelven a cero PASA.
+
+**Se acepta todo lo que propone Mello:**
+- **Cuadra por valor, forma:** en completar, las columnas se mueven solo al «Comprobar» (C4-1). Lleva una prueba C5 de geometría: el tramo del hueco no cambia con la cifra escrita. En juzgar y encontrar, la fila de sumas y las columnas aparecen después de la decisión. En completar, la suma del lado del hueco dice «?».
+- **Cuadra por valor, banco:** K3 pasa a juzgar como J3 («Cuadra»), así que quedan 2 completar, 3 juzgar y 3 encontrar. E1, E2 y E3 se reemplazan por los de Mello: tres renglones, uno solo malo, que se encuentra por el valor. J1 y J2 toman los textos de Mello, que miden 66,2 y 66,3.
+- **Del diario al mayor:** se aprueba el tercer tipo de ítem, **«revisar»** (el punteo). Se quitan los destino A1, A4, B4 y B5 (C1). Cada caso queda con 3 destino, 2 origen y 2 revisar. La cuadrícula de T se baraja en cada intento (H6). Sigue sin saldo y sin elegir el lado.
+- **Las que vuelven a cero:** el periodo sale de los datos (`mes` y `mesSiguiente`), no del componente.
+
+**Lote T2-4:**
+- **Near:** los retros por línea mala de los nuevos E1, E2 y E3. Los 2 ítems «revisar» por caso, con dos tipos de error distintos: cuenta vecina, cifra traspuesta o lado contrario. Por cada uno, la línea mal pasada, su porqué y el retro por cada línea buena tocada.
+- **Watari:** las líneas de la T compacta como botones de 44 px, para «revisar», medidas a 320 px en la cuadrícula de 2 × 2. Y el ajuste de Cuadra por valor en la forma: las columnas al «Comprobar», y las sumas después de decidir.
+- **Misa:** construye en #499 todo lo que ya está cerrado (Las que vuelven a cero completa, y los cambios de Mello en Cuadra por valor y en Del diario al mayor). «Revisar» lo agrega cuando lleguen el banco de Near y la forma de Watari.

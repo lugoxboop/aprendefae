@@ -312,7 +312,7 @@ test("★★★ D8 · las seis piezas de Aprender tienen su caso B, con las mism
   }
 });
 
-test("★★ el identificador del tema (Hanayama, sistema de Xeno): 64 × 64, trazo de 3 px redondeado y currentColor; un solo elemento en el acento, que se mueve 4 px; sin letras ni círculos; en reposo, el billete a 4 px o más del cajón; todavía fuera del registro", async () => {
+test("★★ el identificador del tema (Hanayama, sistema de Xeno): 64 × 64, trazo de 3 px redondeado y currentColor; un solo elemento en el acento, que se mueve 4 px; sin letras ni círculos; en reposo, el billete a 4 px o más del cajón; ya en el registro, como el de T4 (Ukyo, logitos-temas-conta-v1 §4)", async () => {
   const src = readFileSync(new URL("../identificadores/CajonDePaso.jsx", import.meta.url), "utf8");
   const svg = src.slice(src.indexOf("<svg"), src.indexOf("</svg>"));
   assert.match(svg, /viewBox="0 0 64 64"/);
@@ -325,5 +325,5 @@ test("★★ el identificador del tema (Hanayama, sistema de Xeno): 64 × 64, tr
   const bocaY = 18;
   assert.ok(bocaY - 1.5 - (y + h + 1.5) >= 4, "en reposo, el billete a menos de 4 px del cajón");
   const reg = readFileSync(new URL("../../data/identificadoresDeTema.js", import.meta.url), "utf8");
-  assert.doesNotMatch(reg, /CajonDePaso/, "el identificador entró al registro antes de que el sitio compartido tenga el movimiento y el tamaño");
+  assert.match(reg, /"contabilidad\/efectivo-caja-menor-bancos": CajonDePaso/, "el cajón no está en el registro con la clave de T4");
 });
