@@ -12,10 +12,10 @@
  * 64 × 64, trazo de 3 px redondeado, currentColor; 4 px o más entre trazos en
  * reposo. Sin letras, cifras ni círculos.
  *
- * TODAVÍA NO VA EN EL REGISTRO (src/data/identificadoresDeTema.js): el sitio
- * compartido aún no tiene la regla del movimiento ni el tamaño del sistema, y
- * en el hueco de hoy (34 px) se vería quieto y apretado. Entra cuando quien
- * mantiene lo compartido los ponga.
+ * YA VA EN EL REGISTRO (src/data/identificadoresDeTema.js, 24 oct.): Ukyo lo
+ * adoptó para T4 (prompts/logitos-temas-conta-v1.md, §4), e
+ * IdentificadorDeTema.jsx ya pone la regla `transform: var(--mueve)` y su
+ * versión de movimiento reducido. Se reexporta desde identificadoresA.jsx.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 export function CajonDePaso({ size = 64 }) {
