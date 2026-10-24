@@ -48,6 +48,35 @@ En la práctica:
 - **Borrar o dañar algo de esto es lo irreversible**: no lo decide un general.
   Se escala a Miku, que se lo lleva a Mateo.
 
+## Estilo vivo: lo nuevo entra por materia, y Pensamiento Estratégico no se toca
+
+Orden de Mateo del 24 de octubre de 2026, vía Miku. La animación al entrar, el
+volumen de los controles y las decoraciones animadas van **solo en
+Macroeconomía y Contabilidad**. Pensamiento Estratégico queda como está.
+
+Los componentes son compartidos —`CaminoHacer` lo usa
+`PensamientoSistemicoView`, y los controles de actividad las tres materias—,
+así que nada de esto se escribe «en el componente» a secas. Entra detrás de
+la compuerta de `src/estilo/`:
+
+- `useEstiloVivo()` es `true` solo en Macro y Contabilidad. Lo nuevo se pinta
+  si es `true`; si no, el componente queda exactamente como estaba.
+- `<SoloEstiloVivo>` pinta lo de dentro solo donde la compuerta está abierta.
+- En CSS: `[data-estilo-vivo] .tu-clase { … }`. El atributo solo existe en las
+  pantallas de esas dos materias.
+- La materia la ponen **solo** `FondoMateria` y `TopicIndexView`. Ningún
+  componente la adivina ni la fija, y una prueba
+  (`src/estilo/__tests__/estilo-vivo.test.mjs`) falla si alguien envuelve una
+  pantalla en otra materia o lee la lista por su cuenta.
+- La entrada a la página tiene su sitio (`data-entrada="1"`, `"2"`, `"3"` en el
+  índice) y está **apagada** hasta que Ukyo defina su forma en `ENTRADA`, en
+  `src/estilo/estiloVivo.js`.
+
+Siguen valiendo las reglas de movimiento: una sola curva, solo `transform` y
+`opacity`, nada nuevo en bucle, y con movimiento reducido no se mueve nada.
+Y hay estudiantes en las dos materias: lo nuevo se agrega al lado, no
+reemplaza lo que funciona.
+
 ## La regla del `[SIGO]`
 
 Va al final del turno, en su propia línea, exacta, sin nada después.
