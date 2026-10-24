@@ -34,7 +34,7 @@ import { CSS_A2, CuerpoA2 } from "./t4/A2ElFondoFijo.jsx";
 import { CSS_A3, CuerpoA3 } from "./t4/A3ElArqueo.jsx";
 import { CSS_A4, CuerpoA4 } from "./t4/A4BancosYNotas.jsx";
 import { CSS_A5, CuerpoA5 } from "./t4/A5SanCalixto.jsx";
-import { CasoT4, casoInicial, marcarTerminada } from "./t4/caso.js";
+import { CasoT4, casoInicial } from "./t4/caso.js";
 import EntraOSaleDeCaja from "./t4/EntraOSaleDeCaja.jsx";
 import SeMueveLaCajaMenor from "./t4/SeMueveLaCajaMenor.jsx";
 import ElArqueo from "./t4/ElArqueo.jsx";
@@ -44,6 +44,14 @@ import { H3 } from "../data/contabilidadT4H3.js";
 import { H4 } from "../data/contabilidadT4H4.js";
 import { H7 } from "../data/contabilidadT4H7.js";
 import { H8 } from "../data/contabilidadT4H8.js";
+import SecuenciaAprender from "./secuencia/SecuenciaAprender.jsx";
+import { CSS_SLIDES } from "./t4/slides/comun.jsx";
+import { CSS_SLIDES_A0, piezaSlidesA0 } from "./t4/slides/A0.jsx";
+import { CSS_SLIDES_A1, piezaSlidesA1 } from "./t4/slides/A1.jsx";
+import { CSS_SLIDES_A2, piezaSlidesA2 } from "./t4/slides/A2.jsx";
+import { CSS_SLIDES_A3, piezaSlidesA3 } from "./t4/slides/A3.jsx";
+import { CSS_SLIDES_A4, piezaSlidesA4 } from "./t4/slides/A4.jsx";
+import { CSS_SLIDES_A5, piezaSlidesA5 } from "./t4/slides/A5.jsx";
 
 export { cifra, EntraOSaleDeCaja, SeMueveLaCajaMenor, ElArqueo, ConciliaLaCuenta, SeAsientaONo };
 
@@ -80,6 +88,25 @@ export const PIEZAS_T4 = [
   { numero: PIEZA_SAN_CALIXTO.numero, pieza: PIEZA_SAN_CALIXTO, Pieza: PantallasT4 },
 ].sort((a, b) => a.numero - b.numero);
 
+/*
+ * LOS SLIDES (#488): T4 Aprender va sobre SecuenciaAprender, una pieza tras
+ * otra en el orden de `numero`. `crear(caso)` da la pieza del caso (D8) con
+ * sus figuras. PIEZAS_T4 y PantallasT4 se quedan (no se borra nada), pero la
+ * vista ya no las pinta.
+ */
+export const SLIDES_T4 = [
+  { numero: PIEZA_EL_ACTIVO_CORRIENTE.numero, id: PIEZA_EL_ACTIVO_CORRIENTE.id, crear: piezaSlidesA0, css: CSS_SLIDES_A0 },
+  { numero: PIEZA_LA_CAJA.numero, id: PIEZA_LA_CAJA.id, crear: piezaSlidesA1, css: CSS_SLIDES_A1 },
+  { numero: PIEZA_EL_FONDO_FIJO.numero, id: PIEZA_EL_FONDO_FIJO.id, crear: piezaSlidesA2, css: CSS_SLIDES_A2 },
+  { numero: PIEZA_EL_ARQUEO.numero, id: PIEZA_EL_ARQUEO.id, crear: piezaSlidesA3, css: CSS_SLIDES_A3 },
+  { numero: PIEZA_BANCOS_Y_NOTAS.numero, id: PIEZA_BANCOS_Y_NOTAS.id, crear: piezaSlidesA4, css: CSS_SLIDES_A4 },
+  { numero: PIEZA_SAN_CALIXTO.numero, id: PIEZA_SAN_CALIXTO.id, crear: piezaSlidesA5, css: CSS_SLIDES_A5 },
+].filter((s) => s.crear).sort((a, b) => a.numero - b.numero);
+const CSS_SEC = CSS_SLIDES + SLIDES_T4.map((s) => s.css).join("");
+
+/* La clave de lo guardado en la pestaña lleva el caso de cada pieza (§5.2 de Ukyo: tema/pieza/caso). */
+export const temaIdSlides = (casos) => `${TEMA_T4}/${SLIDES_T4.map((s) => casos[s.id] ?? 1).join("")}`;
+
 /* Lo que se puede abrir desde el camino. Una prueba lo compara con el catálogo. */
 export const JUEGOS_T4 = [
   { id: H1.id, Mecanica: EntraOSaleDeCaja, titulo: H1.nombre },
@@ -98,10 +125,10 @@ const rotuloDeBloque = (actividadId) => {
 export default function ContabilidadT4View({ modo = null, nodoInicial = null, onBack }) {
   const esAprender = modo !== HACER;
   const tema = SUBJECTS[MATERIA].topics.find((t) => t.id === TEMA_T4);
-  const rotulo = `${tema.title.toUpperCase()} · APRENDER`;
   const [nodoAbierto, setNodoAbierto] = useState(nodoInicial ?? null);
   /* D8: el caso de cada pieza de Aprender, elegido al abrir la vista (el 1 la primera vez; al repetir, sorteo). */
   const [casos] = useState(() => Object.fromEntries(PIEZAS_T4.map(({ pieza }) => [pieza.id, casoInicial(pieza.id)])));
+  const [slides] = useState(() => SLIDES_T4.map((s) => s.crear(casos[s.id])));
   const hechas = useCompletadas();
   const { pedirCuenta, usuario } = useAuth();
   const [recompensa, celebrar, celebrando] = useRecompensa();
@@ -164,15 +191,9 @@ export default function ContabilidadT4View({ modo = null, nodoInicial = null, on
           <div className="fae-insignia-actividad"><ActivityBadge tipo={esAprender ? APRENDER : HACER} size="sm" /></div>
 
           {esAprender ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
-              {PIEZAS_T4.map(({ pieza, Pieza }, k) => (
-                <div key={pieza.id}>
-                  <p style={{ fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700, letterSpacing: "0.12em", color: FAE.ambar, margin: "0 0 10px" }}>
-                    PIEZA {k + 1} DE {PIEZAS_T4.length}
-                  </p>
-                  <Pieza pieza={pieza} rotulo={rotulo} caso={casos[pieza.id]} onTerminada={() => marcarTerminada(pieza.id)} />
-                </div>
-              ))}
+            <div className="t4-sec" data-slides-t4>
+              <style>{CSS_SEC}</style>
+              <SecuenciaAprender temaId={temaIdSlides(casos)} piezas={slides} final="tema" onFinal={onBack} />
             </div>
           ) : juego ? (
             <div>
