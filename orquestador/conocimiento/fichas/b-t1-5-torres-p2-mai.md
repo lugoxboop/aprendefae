@@ -1,5 +1,7 @@
 DISEÑO: P2 t1-la-ecuacion-en-movimiento — las dos torres — BLOQUE COMPLETO PARA CÓDIGO
 
+**Ajuste del 24-oct-2026:** la decisión 2 pasa a ser el total nuevo, con tres botones de cifra (Shoko; construido en el #496). Medido en el prototipo, que ya trae esos botones. Captura: `t15_cifras_h6_error_320_media.png`.
+
 De: Mai · 23-oct-2026 · Para Kaede. La peor de las 7 (ver `../auditoria-T1-hacer.md`).
 
 **Prototipo:** `proto-t1-5-torres.html`, con los hechos 1, 2, 4 y 6.
@@ -28,13 +30,13 @@ De: Mai · 23-oct-2026 · Para Kaede. La peor de las 7 (ver `../auditoria-T1-hac
 - **Primer impacto:** dos torres de la misma altura, con un «=» en medio.
 - **Cómo se usa:**
   - decisión 1: tocar la parte que **no** se mueve;
-  - decisión 2: en cada una de las otras dos, «+ $monto» o «− $monto»;
+  - decisión 2: en cada una de las otras dos, **el total nuevo**, entre tres cifras (Shoko, #496);
   - «Anotar».
 - **Lo que se lleva:** tras los 8 hechos, las torres llegan a $465.000 = $115.000 + $350.000.
 
 **Por qué no repite a T1-4:**
 - T1-4 pregunta la dirección de un hecho suelto, con tres barras.
-- Aquí la decisión 2 lleva **el monto**, y las torres **acumulan el recorrido** de cero a $465.000.
+- Aquí la decisión 2 es **el total nuevo**, y las torres **acumulan el recorrido** de cero a $465.000.
 - Es otro modelo (D9) con dos clases de decisión (D4).
 
 **Referencias:** el cuadro de la ecuación del libro (Activo = Pasivo + Patrimonio, hecho por hecho), y Bret Victor: la cifra se ve donde va.
@@ -58,12 +60,17 @@ De: Mai · 23-oct-2026 · Para Kaede. La peor de las 7 (ver `../auditoria-T1-hac
    - en medio, «=» (Sora 16/700, #A8B6C8);
    - a la derecha, una torre de dos tramos: abajo «Lo que debe» (rayado a 135°), arriba «Lo que es de los dueños» (rgba(184,196,212,.14));
    - **sobre cada torre, su total** en monospace con tabular-nums (Inter 12/600): «$325.000»;
-   - **la escala es fija para los 8 hechos [calculado]:** alto = valor · 150 / 475.000 px, donde $475.000 es el total más alto del recorrido (tras el hecho 7);
+   - **la escala es fija para los 8 hechos [calculado]:** alto = valor · 150 / 515.000 px. $515.000 es la cifra más alta que puede salir en pantalla: es una opción del hecho 6, y el fantasma tiene que caber (antes, 475.000: el total más alto del recorrido, tras el hecho 7);
    - **una leyenda debajo,** cada parte con su muestra: «Lo que tiene», «Lo que debe» y «Lo que es de los dueños». Distingue los tramos por forma (relleno, rayado o tenue) y por palabra, no por color.
-5. **La pregunta:** «¿Cuál de las tres NO se mueve con este hecho?». Tras la decisión 1, cambia a «¿Las otras dos suben o bajan?». Reserva 39,2 de alto para que nada salte.
+5. **La pregunta:** «¿Cuál de las tres NO se mueve con este hecho?». Tras la decisión 1, cambia a «¿Cuál es el total nuevo de las otras dos?». Reserva 39,2 de alto para que nada salte.
 6. **Las partes**, en dos columnas alineadas con sus torres: «Lo que tiene» a la izquierda; «Lo que debe» y «Lo que es de los dueños» a la derecha.
    - Cada parte es un botón de 44 de alto como mínimo, con el nombre (Inter 12/600) y debajo, en secundario, «Activo · $325.000».
-   - En las dos que se mueven aparece, tras la decisión 1, un grupo de dos botones de 44: «+ $25.000» y «− $25.000», con la cifra en monospace.
+   - **Debajo de las partes, tras la decisión 1, un grupo por cada parte que se mueve,** a todo el ancho:
+     - rótulo «{parte} · total nuevo» (Inter 12/600, #A8B6C8);
+     - una fila de tres botones iguales (`grid` de 3 columnas, separación 6, alto mínimo 44), con la cifra en monospace 13/600 con tabular-nums y `white-space: nowrap`;
+     - **las tres cifras (Shoko, #496):** el anterior más el monto ✓, el anterior menos el monto y el monto solo. Si una sale negativa o repetida, en su lugar entra «el total anterior, sin cambio»: la cifra arriba y esa frase debajo, en Inter 12, #A8B6C8;
+     - **si dos chocan a la vez** (el hecho 1, con el anterior en $0), queda una sola «sin cambio» y el grupo lleva dos botones. Kaede confirma que el #496 hace lo mismo;
+     - el orden de los botones lo deja Kaede como en el #496.
 7. **«Anotar»:** el botón de avance teal #2A9D8F con texto #06202A, desactivado hasta tener las dos decisiones. Tras anotar pasa a «Siguiente».
 8. **La devolución**, debajo.
 
@@ -73,8 +80,8 @@ De: Mai · 23-oct-2026 · Para Kaede. La peor de las 7 (ver `../auditoria-T1-hac
 |---|---|
 | inicio del hecho | las torres con los totales del hecho anterior; las tres partes en reposo |
 | decisión 1 | la parte tocada queda marcada. Se marca al instante con E4: la correcta, ✓ «Correcto: se queda igual»; si erró, ✕ «No va aquí» en la tocada y ✓ «Iba aquí: se queda igual» en la correcta. **La decisión 2 sigue siempre sobre las dos que de verdad se mueven** (el registro) |
-| decisión 2 | se marcan «+» o «−» en las dos. Las torres **no** se mueven todavía (R10) |
-| «Anotar» | las torres van a los totales correctos. Si lo elegido daba otra altura, queda **el fantasma: el contorno discontinuo coral de la torre que habría salido**, solo en la torre que difiere. Cada grupo marca ✓ «Correcto» o ✕ «No va aquí» con ✓ «Iba aquí: + $25.000». Debajo, la devolución |
+| decisión 2 | se marca una cifra en cada grupo. Las torres **no** se mueven todavía (R10) |
+| «Anotar» | las torres van a los totales correctos. Si lo elegido daba otra altura, queda **el fantasma: el contorno discontinuo coral de la torre que habría salido**, solo en la torre que difiere. Cada grupo marca ✓ «Correcto» o ✕ «No va aquí» con ✓ «Iba aquí: $X», el total correcto. El fantasma usa el total elegido. Debajo, la devolución |
 | devolución | si erró la decisión 1, `ERROR_T1_5.C`. Si erró la 2 y los lados no dan igual, `ERROR_T1_5.A` ({Z} = la diferencia [calculado]). Si dan igual pero con otras cifras, `ERROR_T1_5.B`. Si acertó todo, el acierto de Futaba |
 | «Siguiente» | el hecho siguiente parte de los totales correctos |
 
@@ -107,12 +114,13 @@ De: Mai · 23-oct-2026 · Para Kaede. La peor de las 7 (ver `../auditoria-T1-hac
 | Prototipo: la figura (las torres), desde la cima del Panel | **190,1** | **171,3** |
 | Palabras antes de la figura | **31** (objetivo, fila del contador y hecho 2) | 31 |
 | Contenedor de las torres | 244 | 244 |
-| Panel tras anotar: error A · error C · acierto | 948,3 · 909,3 · 852,8 | 896 · 870 · 833 |
+| Panel tras anotar, con los botones de cifra (hecho 6, error en lo que tiene) | 1.037,1 | 985,8 |
 | Desplazamiento horizontal | ninguno | ninguno |
 
 - **B1 pasa:** la figura está a menos de 280 px, con menos de 40 palabras antes.
 - **Con las decisiones, nada salta:** la pregunta reserva su alto, y las partes quedan en el mismo sitio antes y después [fuente: 557,3 → 557,3].
-- **Lo honesto:** $10.000 mueve 3,2 px de torre [calculado: 10 · 150 / 475]. En los hechos chicos, el cambio lo dice el total de arriba más que la altura.
+- **Los botones de cifra a 320 [fuente, prototipo, los 8 hechos]:** las tres cifras caben en un renglón, sin partirse. La holgura mínima es de **19,4 px** dentro del botón, con «$515.000» (la más larga); a 375 es de 37,7 px. El botón mide 44 de alto, o 72,8 cuando lleva «el total anterior, sin cambio» (58,4 a 375). Sin desplazamiento horizontal.
+- **Lo honesto:** $10.000 mueve 2,9 px de torre [calculado: 10 · 150 / 515]. En los hechos chicos, el cambio lo dice el total de arriba más que la altura.
 
 ## 6 · Movimiento
 
@@ -125,10 +133,10 @@ De: Mai · 23-oct-2026 · Para Kaede. La peor de las 7 (ver `../auditoria-T1-hac
 
 - **Nuevos, para Shoko:**
   - «¿Cuál de las tres NO se mueve con este hecho?»;
-  - «¿Las otras dos suben o bajan?»;
+  - «¿Cuál es el total nuevo de las otras dos?», «{parte} · total nuevo» y «el total anterior, sin cambio» (de Shoko);
   - «Correcto: se queda igual» y «Iba aquí: se queda igual»;
   - «Anotar»;
-  - la consigna: «Lee el hecho. Di cuál no se mueve y hacia dónde van las otras dos.» (reemplaza a «Escribe los tres totales nuevos.»).
+  - la consigna: «Lee el hecho. Di cuál no se mueve y el total nuevo de las otras dos.» (reemplaza a «Escribe los tres totales nuevos.»).
 - **El objetivo** sigue igual. **ME FALTA:** que Futaba confirme la consigna.
 - **Publicados y reusados:** los 8 hechos, los nombres de las partes y su término, y `ERROR_T1_5` A, B y C sin el emoji.
 - **El texto alternativo de las torres** cambia con cada hecho: «Lo que tiene, $325.000; lo que debe, $25.000, más lo que es de los dueños, $300.000: dan $325.000.»
@@ -136,7 +144,7 @@ De: Mai · 23-oct-2026 · Para Kaede. La peor de las 7 (ver `../auditoria-T1-hac
 ## 8 · Accesibilidad
 
 - **Las torres** llevan `role="img"` con el texto alternativo de §7.
-- **Las partes y los «+» / «−»** son botones con `aria-pressed`; cada grupo tiene `aria-label` con el nombre de la parte.
+- **Las partes y las cifras** son botones con `aria-pressed`; cada grupo tiene `aria-label` con el nombre de la parte.
 - **La devolución** va en `aria-live="polite"`.
 - **Nada depende del color:** ✓ y ✕, el fantasma discontinuo y los tramos distintos por forma.
 
@@ -154,7 +162,7 @@ Check y X de lucide, a 16 px y trazo 2,5. Sin emoji.
 | # | Qué | Mi réplica | Si no coincide |
 |---|---|---|---|
 | 1 | Sin `CampoCifra`, sin el pie que compara mientras se escribe, sin reintento ni modo corto | proto | Indispensable |
-| 2 | La escala fija, con $475.000 = 150 px, y los totales de la tabla de §3 | §3 | Indispensable |
+| 2 | La escala fija, con $515.000 = 150 px, y los totales de la tabla de §3 | §3 | Indispensable |
 | 3 | Las torres no se mueven antes de «Anotar» | proto | Indispensable (R10) |
 | 4 | El fantasma solo en la torre que difiere | proto | — |
 | 5 | Veredicto propio con Check y X; `Retro` queda para Erwin | §4 | — |

@@ -19,7 +19,7 @@ import { renderToStaticMarkup } from "react-dom/server";
  */
 import { ICONO_POR_TEMA } from "../../data/identificadoresDeTema.js";
 import IdentificadorDeTema, { CSS_IDENTIFICADOR } from "../../components/shared/IdentificadorDeTema.jsx";
-import { CasilleroDeCuentas } from "../identificadores/casilleroDeCuentas.jsx";
+import { CasilleroDeCuentas } from "../identificadores/identificadoresA.jsx";
 import { CajonDePaso } from "../identificadores/CajonDePaso.jsx";
 import { TituloConReloj, FacturaPorCobrar } from "../identificadores/identificadoresB.jsx";
 import { CajasDelConteo, KardexAlDia, EtiquetaRebajada } from "../identificadores/identificadoresC.jsx";

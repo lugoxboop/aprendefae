@@ -1,12 +1,9 @@
-2026-10-24 14:45 (hora Bogotá)
+2026-10-24 16:29 (hora Bogotá)
 - Tema: T2 cuentas-debe-haber (T5 y T7 ocultos por Erwin, nada borrado). Contabilidad tiene estudiantes: solo se agrega
-- Orden del 24-oct (Mateo no da vistos buenos; L fusiona con el PASA de Mello y CI verde; solo para lo irreversible) y ahorro de tokens: terminado, llegó a Misa, Near, Watari y Mello
-- Lotes T2-1 y T2-2: terminado (paquetes/c-t2-1-* y c-t2-2-*)
-- T2-3 · Near: delta de las slides con los 7 ajustes de Watari y los huecos de nombres: en curso
-- T2-3 · Watari: figuras ajustadas al patrón #470, numeradas sobre la v2 de Near, y bancos validados en sus formas: en curso
-- T2-3 · Mello: auditoría de la forma y de los bancos de las 3 Hacer contra H1-H10: en curso
-- T2-3 · Misa: bancos, pruebas y sondas en las 3 Hacer (#499, borrador) y logito CasilleroDeCuentas en archivo propio: en curso
-- Fusión de #482 (subtemas) y #494 (línea base): bloqueado: CI rojo en main por el entorno de GitHub, lo arregla Miku; se fusionan apenas vuelva a verde
-- Fusión de las 3 Hacer nuevas: bloqueado: espera #500 de Erwin (AGREGADAS_DESPUES y resumen.js), para que nadie pierda «tema completo»
+- #482 (subtemas de T2 para el Repaso Diario) y #494 (línea base de sondas): terminado. Fusionados con el PASA de Mello y CI verde (76be9fb, 525e52d); el Repaso lo conecta Erwin
+- Lotes T2-1, T2-2 y T2-3: terminado (paquetes/c-t2-*). Auditoría de Mello: Las que vuelven a cero PASA; Cuadra por valor y Del diario al mayor FALLA, con correcciones aceptadas
+- T2-4 · Near (retros E1-E3, ítems «revisar») y Watari (forma de Cuadra por valor y «revisar»): terminado (paquetes/c-t2-4-*)
+- T2-5 · Misa: arreglar el rojo de #516 (logito) y construir «revisar» y la forma nueva de Cuadra por valor en #499: en curso
+- Fusión de las 3 Hacer nuevas (#499): bloqueado: espera #500 de Erwin (AGREGADAS_DESPUES y resumen.js), para que nadie pierda «tema completo»
 - Cáscara de las slides de Aprender: bloqueado: SecuenciaAprender es un componente compartido nuevo (#470) y lo construye Erwin
-- Logitos: aviso de choque en #512 (cuatro células en identificadoresA.jsx); la C va en archivo propio
+- T2-5 · Mello: auditoría del delta T2-4 (Near y Watari) y de #516: en curso. Aviso de choque de logitos en #512, sin respuesta

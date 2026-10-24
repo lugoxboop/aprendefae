@@ -1,9 +1,8 @@
-2026-10-24 14:36 (hora Bogotá)
-- Main rojo desde el 23-oct: encontrado — marcas combinantes literales en scripts/canon.mjs línea 46; reportado a Miku en #503 con el arreglo de una línea
-- Regla «Contabilidad tiene estudiantes», índice de cuatro temas y motor del Repaso Diario (PR #490, rehecho sobre main de hoy, 91 pruebas verdes y guardián sin reproches): bloqueado: CI de main rojo (#503); fusiono en cuanto vuelva a verde
-- SecuenciaAprender (PR #491, rehecho sobre main de hoy): bloqueado: CI de main rojo (#503); fusiono en cuanto vuelva a verde
-- Pools del Repaso Diario por célula: en curso — D ya tiene subtemas en main (#475), C en #482 y E en #481; B sin entregar. A las cuatro les dije en #477-#480 cómo conectarlos al motor sin re-etiquetar
-- Vara nueva de fusión (fusiona cada quien con PASA + CI verde; solo para lo irreversible) en #477-#480 para las células: terminado; a Gen, Xeno, Levi y Sai: bloqueado: hay dos Chrome conectados y falta que Mateo diga cuál es el mío
-- Capacitación de la Célula A: en curso — faltan las confirmaciones de Levi y Sai
-- #349 ficha de FP fija vs. oculta al bajar: bloqueado: espera que Xeno diga si le basta
+2026-10-24 16:26 (hora Bogotá)
+- #490 (regla de estudiantes, índice de cuatro temas, motor del Repaso Diario) y #491 (SecuenciaAprender): terminado, fusionados por Miku
+- Uso de SecuenciaAprender explicado a B, C, D y E en #492 (sin copias, faltasDePieza, Pulsos del kit, la página vieja no se borra): terminado
+- #524 alto de figura por pieza: PASA de Levi y CI verde sobre 925df73; bloqueado: espera que Miku lo fusione (lo compartido)
+- Pools del Repaso Diario: en curso — C, D y E con subtemas en main; falta B (recordado en #477); el Repaso sigue oculto hasta tener los cuatro
+- #349 ficha de FP (no ocultarla, reservar 84 px): en curso — encargado a Sai
+- Confirmación de Levi: terminado (traspasado a chat nuevo, sigue como auditor central, ya audita por lote)
 - Capa 1 de CuatroCapas (guardas B1 y B2): bloqueado: esperan los recortes de Near

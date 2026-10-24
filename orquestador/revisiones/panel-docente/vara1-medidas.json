@@ -1,0 +1,1557 @@
+{
+  "fecha": "2026-10-23T16:45:35.845Z",
+  "url": "http://localhost:8099",
+  "estados": {
+    "cero-375x667": {
+      "V": 667,
+      "P1": {
+        "avance": null,
+        "atencion": [],
+        "peor": null
+      },
+      "P2": {
+        "ordenDom": [
+          "b1"
+        ],
+        "listaEnPrimeraPantalla": false
+      },
+      "P4": {
+        "bloques": [
+          "b1"
+        ],
+        "enlacesDeVista": [
+          "estudiantes",
+          "actividades"
+        ]
+      },
+      "P5": [
+        {
+          "cifra": "0",
+          "en": "0"
+        }
+      ],
+      "P6": [
+        {
+          "k": "fondo:rgb(14, 27, 46)",
+          "n": 1
+        },
+        {
+          "k": "relleno:none",
+          "n": 13
+        },
+        {
+          "k": "relleno:rgb(248, 249, 250)",
+          "n": 2
+        },
+        {
+          "k": "relleno:rgb(231, 111, 81)",
+          "n": 1
+        },
+        {
+          "k": "fondo:rgba(248, 249, 250, 0.16)",
+          "n": 1
+        },
+        {
+          "k": "fondo:rgba(248, 249, 250, 0.06)",
+          "n": 3
+        },
+        {
+          "k": "borde:rgba(248, 249, 250, 0.14)",
+          "n": 3
+        },
+        {
+          "k": "texto:rgb(248, 249, 250)",
+          "n": 8
+        },
+        {
+          "k": "texto:rgb(14, 27, 46)",
+          "n": 1
+        },
+        {
+          "k": "fondo:rgb(42, 157, 143)",
+          "n": 1
+        },
+        {
+          "k": "borde:rgb(42, 157, 143)",
+          "n": 1
+        },
+        {
+          "k": "borde:rgba(248, 249, 250, 0.22)",
+          "n": 1
+        },
+        {
+          "k": "borde:rgba(248, 249, 250, 0.15)",
+          "n": 1
+        },
+        {
+          "k": "fondo:rgb(28, 41, 57)",
+          "n": 1
+        },
+        {
+          "k": "borde:rgba(248, 249, 250, 0.08)",
+          "n": 1
+        },
+        {
+          "k": "texto:rgb(168, 182, 200)",
+          "n": 1
+        },
+        {
+          "k": "fondo:rgba(22, 35, 58, 0.97)",
+          "n": 1
+        },
+        {
+          "k": "borde:rgba(248, 249, 250, 0.16)",
+          "n": 1
+        }
+      ],
+      "total": 667,
+      "tocablesChicos": [],
+      "minLetra": 13,
+      "peorContraste": 5.2,
+      "contrasteBajo": [],
+      "nContrasteBajo": 0,
+      "scrollHorizontal": false,
+      "errores": [],
+      "msPeor": null,
+      "rpcs": [
+        "racha_momento",
+        "es_docente",
+        "materias_docente",
+        "panel_estudiantes",
+        "panel_resumen"
+      ]
+    },
+    "cero-1366x768": {
+      "V": 768,
+      "P1": {
+        "avance": null,
+        "atencion": [],
+        "peor": null
+      },
+      "P2": {
+        "ordenDom": [
+          "b1"
+        ],
+        "listaEnPrimeraPantalla": false
+      },
+      "P4": {
+        "bloques": [
+          "b1"
+        ],
+        "enlacesDeVista": [
+          "estudiantes",
+          "actividades"
+        ]
+      },
+      "P5": [
+        {
+          "cifra": "0",
+          "en": "0"
+        }
+      ],
+      "P6": [
+        {
+          "k": "fondo:rgb(14, 27, 46)",
+          "n": 1
+        },
+        {
+          "k": "relleno:none",
+          "n": 13
+        },
+        {
+          "k": "relleno:rgb(248, 249, 250)",
+          "n": 2
+        },
+        {
+          "k": "relleno:rgb(231, 111, 81)",
+          "n": 1
+        },
+        {
+          "k": "fondo:rgba(248, 249, 250, 0.16)",
+          "n": 1
+        },
+        {
+          "k": "fondo:rgba(248, 249, 250, 0.06)",
+          "n": 3
+        },
+        {
+          "k": "borde:rgba(248, 249, 250, 0.14)",
+          "n": 3
+        },
+        {
+          "k": "texto:rgb(248, 249, 250)",
+          "n": 9
+        },
+        {
+          "k": "texto:rgb(14, 27, 46)",
+          "n": 1
+        },
+        {
+          "k": "fondo:rgb(42, 157, 143)",
+          "n": 1
+        },
+        {
+          "k": "borde:rgb(42, 157, 143)",
+          "n": 1
+        },
+        {
+          "k": "borde:rgba(248, 249, 250, 0.22)",
+          "n": 1
+        },
+        {
+          "k": "borde:rgba(248, 249, 250, 0.15)",
+          "n": 1
+        },
+        {
+          "k": "fondo:rgb(28, 41, 57)",
+          "n": 1
+        },
+        {
+          "k": "borde:rgba(248, 249, 250, 0.08)",
+          "n": 1
+        },
+        {
+          "k": "texto:rgb(168, 182, 200)",
+          "n": 1
+        },
+        {
+          "k": "fondo:rgba(22, 35, 58, 0.97)",
+          "n": 2
+        },
+        {
+          "k": "borde:rgba(42, 157, 143, 0.6)",
+          "n": 1
+        },
+        {
+          "k": "borde:rgba(248, 249, 250, 0.16)",
+          "n": 1
+        }
+      ],
+      "total": 768,
+      "tocablesChicos": [],
+      "minLetra": 13,
+      "peorContraste": 5.2,
+      "contrasteBajo": [],
+      "nContrasteBajo": 0,
+      "scrollHorizontal": false,
+      "errores": [],
+      "msPeor": null,
+      "rpcs": [
+        "racha_momento",
+        "es_docente",
+        "materias_docente",
+        "panel_estudiantes",
+        "panel_resumen"
+      ]
+    },
+    "uno-375x667": {
+      "V": 667,
+      "P1": {
+        "avance": {
+          "texto": "42%",
+          "entera": true
+        },
+        "atencion": [
+          {
+            "texto": "Medio Valentina Rojas Practica, pero acierta poco en evaluativas",
+            "entera": true
+          }
+        ],
+        "peor": {
+          "texto": "Con un solo estudiante todavía no hay con quién comparar.",
+          "entera": true,
+          "tarjetaEntera": true
+        }
+      },
+      "P2": {
+        "ordenDom": [
+          "b1",
+          "b2",
+          "b3"
+        ],
+        "listaEnPrimeraPantalla": false
+      },
+      "P4": {
+        "bloques": [
+          "b1",
+          "b2",
+          "b3"
+        ],
+        "enlacesDeVista": [
+          "estudiantes",
+          "actividades"
+        ]
+      },
+      "P5": [
+        {
+          "cifra": "42%",
+          "en": "42%"
+        },
+        {
+          "cifra": "1",
+          "en": "1 de 1 activo esta semana"
+        },
+        {
+          "cifra": "1",
+          "en": "1 de 1 activo esta semana"
+        },
+        {
+          "cifra": "0",
+          "en": "0"
+        }
+      ],
+      "P6": [
+        {
+          "k": "fondo:rgb(14, 27, 46)",
+          "n": 1
+        },
+        {
+          "k": "relleno:none",
+          "n": 15
+        },
+        {
+          "k": "relleno:rgb(248, 249, 250)",
+          "n": 2
+        },
+        {
+          "k": "relleno:rgb(231, 111, 81)",
+          "n": 1
+        },
+        {
+          "k": "fondo:rgba(248, 249, 250, 0.16)",
+          "n": 1
+        },
+        {
+          "k": "fondo:rgba(248, 249, 250, 0.06)",
+          "n": 3
+        },
+        {
+          "k": "borde:rgba(248, 249, 250, 0.14)",
+          "n": 3
+        },
+        {
+          "k": "texto:rgb(248, 249, 250)",
+          "n": 16
+        },
+        {
+          "k": "texto:rgb(14, 27, 46)",
+          "n": 1
+        },
+        {
+          "k": "fondo:rgb(42, 157, 143)",
+          "n": 2
+        },
+        {
+          "k": "borde:rgb(42, 157, 143)",
+          "n": 1
+        },
+        {
+          "k": "borde:rgba(248, 249, 250, 0.22)",
+          "n": 1
+        },
+        {
+          "k": "borde:rgba(248, 249, 250, 0.3)",
+          "n": 1
+        },
+        {
+          "k": "fondo:rgb(28, 41, 57)",
+          "n": 3
+        },
+        {
+          "k": "borde:rgba(248, 249, 250, 0.08)",
+          "n": 4
+        },
+        {
+          "k": "texto:rgb(168, 182, 200)",
+          "n": 3
+        },
+        {
+          "k": "fondo:rgba(248, 249, 250, 0.1)",
+          "n": 1
+        },
+        {
+          "k": "fondo:rgba(248, 249, 250, 0.03)",
+          "n": 1
+        },
+        {
+          "k": "relleno:rgb(233, 196, 106)",
+          "n": 1
+        },
+        {
+          "k": "texto:rgb(233, 196, 106)",
+          "n": 1
+        },
+        {
+          "k": "texto:rgb(63, 166, 154)",
+          "n": 1
+        },
+        {
+          "k": "fondo:rgba(22, 35, 58, 0.97)",
+          "n": 1
+        },
+        {
+          "k": "borde:rgba(248, 249, 250, 0.16)",
+          "n": 1
+        }
+      ],
+      "total": 719,
+      "tocablesChicos": [],
+      "minLetra": 12,
+      "peorContraste": 5,
+      "contrasteBajo": [],
+      "nContrasteBajo": 0,
+      "scrollHorizontal": false,
+      "errores": [],
+      "msPeor": "22",
+      "rpcs": [
+        "racha_momento",
+        "es_docente",
+        "materias_docente",
+        "panel_estudiantes",
+        "panel_resumen",
+        "panel_actividad",
+        "panel_actividad",
+        "panel_actividad",
+        "panel_actividad",
+        "panel_actividad",
+        "panel_actividad"
+      ]
+    },
+    "uno-1366x768": {
+      "V": 768,
+      "P1": {
+        "avance": {
+          "texto": "42%",
+          "entera": true
+        },
+        "atencion": [
+          {
+            "texto": "Medio Valentina Rojas Practica, pero acierta poco en evaluativas",
+            "entera": true
+          }
+        ],
+        "peor": {
+          "texto": "Con un solo estudiante todavía no hay con quién comparar.",
+          "entera": true,
+          "tarjetaEntera": true
+        }
+      },
+      "P2": {
+        "ordenDom": [
+          "b1",
+          "b2",
+          "b3",
+          "b4"
+        ],
+        "listaEnPrimeraPantalla": false
+      },
+      "P4": {
+        "bloques": [
+          "b1",
+          "b2",
+          "b3",
+          "b4"
+        ],
+        "enlacesDeVista": [
+          "estudiantes",
+          "actividades"
+        ]
+      },
+      "P5": [
+        {
+          "cifra": "42%",
+          "en": "42%"
+        },
+        {
+          "cifra": "1",
+          "en": "1 de 1 activo esta semana"
+        },
+        {
+          "cifra": "1",
+          "en": "1 de 1 activo esta semana"
+        },
+        {
+          "cifra": "1840",
+          "en": "1840"
+        },
+        {
+          "cifra": "1",
+          "en": "1"
+        },
+        {
+          "cifra": "3",
+          "en": "Última visita: hace 3 días."
+        },
+        {
+          "cifra": "0",
+          "en": "0"
+        }
+      ],
+      "P6": [
+        {
+          "k": "fondo:rgb(14, 27, 46)",
+          "n": 1
+        },
+        {
+          "k": "relleno:none",
+          "n": 15
+        },
+        {
+          "k": "relleno:rgb(248, 249, 250)",
+          "n": 2
+        },
+        {
+          "k": "relleno:rgb(231, 111, 81)",
+          "n": 1
+        },
+        {
+          "k": "fondo:rgba(248, 249, 250, 0.16)",
+          "n": 1
+        },
+        {
+          "k": "fondo:rgba(248, 249, 250, 0.06)",
+          "n": 3
+        },
+        {
+          "k": "borde:rgba(248, 249, 250, 0.14)",
+          "n": 3
+        },
+        {
+          "k": "texto:rgb(248, 249, 250)",
+          "n": 19
+        },
+        {
+          "k": "texto:rgb(14, 27, 46)",
+          "n": 1
+        },
+        {
+          "k": "fondo:rgb(42, 157, 143)",
+          "n": 2
+        },
+        {
+          "k": "borde:rgb(42, 157, 143)",
+          "n": 1
+        },
+        {
+          "k": "borde:rgba(248, 249, 250, 0.22)",
+          "n": 1
+        },
+        {
+          "k": "borde:rgba(248, 249, 250, 0.3)",
+          "n": 1
+        },
+        {
+          "k": "fondo:rgb(28, 41, 57)",
+          "n": 4
+        },
+        {
+          "k": "borde:rgba(248, 249, 250, 0.08)",
+          "n": 5
+        },
+        {
+          "k": "texto:rgb(168, 182, 200)",
+          "n": 5
+        },
+        {
+          "k": "fondo:rgba(248, 249, 250, 0.1)",
+          "n": 1
+        },
+        {
+          "k": "fondo:rgba(248, 249, 250, 0.03)",
+          "n": 1
+        },
+        {
+          "k": "relleno:rgb(233, 196, 106)",
+          "n": 1
+        },
+        {
+          "k": "texto:rgb(233, 196, 106)",
+          "n": 1
+        },
+        {
+          "k": "texto:rgb(63, 166, 154)",
+          "n": 1
+        },
+        {
+          "k": "fondo:rgba(22, 35, 58, 0.97)",
+          "n": 2
+        },
+        {
+          "k": "borde:rgba(42, 157, 143, 0.6)",
+          "n": 1
+        },
+        {
+          "k": "borde:rgba(248, 249, 250, 0.16)",
+          "n": 1
+        }
+      ],
+      "total": 768,
+      "tocablesChicos": [],
+      "minLetra": 12,
+      "peorContraste": 5,
+      "contrasteBajo": [],
+      "nContrasteBajo": 0,
+      "scrollHorizontal": false,
+      "errores": [],
+      "msPeor": "27",
+      "rpcs": [
+        "racha_momento",
+        "es_docente",
+        "materias_docente",
+        "panel_estudiantes",
+        "panel_resumen",
+        "panel_actividad",
+        "panel_actividad",
+        "panel_actividad",
+        "panel_actividad",
+        "panel_actividad",
+        "panel_actividad"
+      ]
+    },
+    "normal-375x667": {
+      "V": 667,
+      "P1": {
+        "avance": {
+          "texto": "26%",
+          "entera": true
+        },
+        "atencion": [
+          {
+            "texto": "Alto Mateo Castro Más de una semana sin actividad",
+            "entera": true
+          },
+          {
+            "texto": "Alto David Cárdenas Más de una semana sin actividad",
+            "entera": true
+          },
+          {
+            "texto": "Alto Daniela Moreno Más de una semana sin actividad",
+            "entera": true
+          }
+        ],
+        "peor": {
+          "texto": "¿De qué familia es? · Las cuentas, el debe y el haber 51% Acierto medio · 15 la terminaron",
+          "entera": true,
+          "tarjetaEntera": false
+        }
+      },
+      "P2": {
+        "ordenDom": [
+          "b1",
+          "b2",
+          "b3"
+        ],
+        "listaEnPrimeraPantalla": false
+      },
+      "P4": {
+        "bloques": [
+          "b1",
+          "b2",
+          "b3"
+        ],
+        "enlacesDeVista": []
+      },
+      "P5": [
+        {
+          "cifra": "26%",
+          "en": "26%"
+        },
+        {
+          "cifra": "19",
+          "en": "19 de 22 activos esta semana"
+        },
+        {
+          "cifra": "22",
+          "en": "19 de 22 activos esta semana"
+        },
+        {
+          "cifra": "8",
+          "en": "Ver los 8"
+        },
+        {
+          "cifra": "51",
+          "en": "51"
+        },
+        {
+          "cifra": "15",
+          "en": "15"
+        },
+        {
+          "cifra": "0",
+          "en": "0"
+        }
+      ],
+      "P6": [
+        {
+          "k": "fondo:rgb(14, 27, 46)",
+          "n": 1
+        },
+        {
+          "k": "relleno:none",
+          "n": 18
+        },
+        {
+          "k": "relleno:rgb(248, 249, 250)",
+          "n": 5
+        },
+        {
+          "k": "relleno:rgb(231, 111, 81)",
+          "n": 1
+        },
+        {
+          "k": "fondo:rgba(248, 249, 250, 0.16)",
+          "n": 1
+        },
+        {
+          "k": "fondo:rgba(248, 249, 250, 0.06)",
+          "n": 1
+        },
+        {
+          "k": "borde:rgba(248, 249, 250, 0.14)",
+          "n": 1
+        },
+        {
+          "k": "texto:rgb(248, 249, 250)",
+          "n": 22
+        },
+        {
+          "k": "texto:rgb(14, 27, 46)",
+          "n": 1
+        },
+        {
+          "k": "fondo:rgb(42, 157, 143)",
+          "n": 2
+        },
+        {
+          "k": "borde:rgb(42, 157, 143)",
+          "n": 1
+        },
+        {
+          "k": "borde:rgba(248, 249, 250, 0.22)",
+          "n": 1
+        },
+        {
+          "k": "borde:rgba(248, 249, 250, 0.3)",
+          "n": 1
+        },
+        {
+          "k": "fondo:rgb(28, 41, 57)",
+          "n": 3
+        },
+        {
+          "k": "borde:rgba(248, 249, 250, 0.08)",
+          "n": 6
+        },
+        {
+          "k": "texto:rgb(168, 182, 200)",
+          "n": 6
+        },
+        {
+          "k": "fondo:rgba(248, 249, 250, 0.1)",
+          "n": 1
+        },
+        {
+          "k": "fondo:rgba(248, 249, 250, 0.03)",
+          "n": 3
+        },
+        {
+          "k": "texto:rgb(63, 166, 154)",
+          "n": 1
+        },
+        {
+          "k": "fondo:rgba(22, 35, 58, 0.97)",
+          "n": 1
+        },
+        {
+          "k": "borde:rgba(248, 249, 250, 0.16)",
+          "n": 1
+        }
+      ],
+      "total": 829,
+      "tocablesChicos": [],
+      "minLetra": 12,
+      "peorContraste": 5,
+      "contrasteBajo": [],
+      "nContrasteBajo": 0,
+      "scrollHorizontal": false,
+      "errores": [],
+      "msPeor": "24",
+      "rpcs": [
+        "racha_momento",
+        "es_docente",
+        "materias_docente",
+        "panel_estudiantes",
+        "panel_resumen",
+        "panel_actividad",
+        "panel_actividad",
+        "panel_actividad",
+        "panel_actividad",
+        "panel_actividad",
+        "panel_actividad"
+      ]
+    },
+    "normal-1366x768": {
+      "V": 768,
+      "P1": {
+        "avance": {
+          "texto": "26%",
+          "entera": true
+        },
+        "atencion": [
+          {
+            "texto": "Alto Mateo Castro Más de una semana sin actividad",
+            "entera": true
+          },
+          {
+            "texto": "Alto David Cárdenas Más de una semana sin actividad",
+            "entera": true
+          },
+          {
+            "texto": "Alto Daniela Moreno Más de una semana sin actividad",
+            "entera": true
+          }
+        ],
+        "peor": {
+          "texto": "¿De qué familia es? · Las cuentas, el debe y el haber 51% Acierto medio · 15 la terminaron",
+          "entera": true,
+          "tarjetaEntera": true
+        }
+      },
+      "P2": {
+        "ordenDom": [
+          "b1",
+          "b2",
+          "b3",
+          "b4"
+        ],
+        "listaEnPrimeraPantalla": false
+      },
+      "P4": {
+        "bloques": [
+          "b1",
+          "b2",
+          "b3",
+          "b4"
+        ],
+        "enlacesDeVista": [
+          "estudiantes",
+          "actividades"
+        ]
+      },
+      "P5": [
+        {
+          "cifra": "26%",
+          "en": "26%"
+        },
+        {
+          "cifra": "19",
+          "en": "19 de 22 activos esta semana"
+        },
+        {
+          "cifra": "22",
+          "en": "19 de 22 activos esta semana"
+        },
+        {
+          "cifra": "8",
+          "en": "Ver los 8"
+        },
+        {
+          "cifra": "51",
+          "en": "51"
+        },
+        {
+          "cifra": "15",
+          "en": "15"
+        },
+        {
+          "cifra": "1840",
+          "en": "1840"
+        },
+        {
+          "cifra": "4",
+          "en": "4"
+        },
+        {
+          "cifra": "3",
+          "en": "Última visita: hace 3 días."
+        },
+        {
+          "cifra": "0",
+          "en": "0"
+        }
+      ],
+      "P6": [
+        {
+          "k": "fondo:rgb(14, 27, 46)",
+          "n": 1
+        },
+        {
+          "k": "relleno:none",
+          "n": 18
+        },
+        {
+          "k": "relleno:rgb(248, 249, 250)",
+          "n": 5
+        },
+        {
+          "k": "relleno:rgb(231, 111, 81)",
+          "n": 1
+        },
+        {
+          "k": "fondo:rgba(248, 249, 250, 0.16)",
+          "n": 1
+        },
+        {
+          "k": "fondo:rgba(248, 249, 250, 0.06)",
+          "n": 3
+        },
+        {
+          "k": "borde:rgba(248, 249, 250, 0.14)",
+          "n": 3
+        },
+        {
+          "k": "texto:rgb(248, 249, 250)",
+          "n": 27
+        },
+        {
+          "k": "texto:rgb(14, 27, 46)",
+          "n": 1
+        },
+        {
+          "k": "fondo:rgb(42, 157, 143)",
+          "n": 2
+        },
+        {
+          "k": "borde:rgb(42, 157, 143)",
+          "n": 1
+        },
+        {
+          "k": "borde:rgba(248, 249, 250, 0.22)",
+          "n": 1
+        },
+        {
+          "k": "borde:rgba(248, 249, 250, 0.3)",
+          "n": 1
+        },
+        {
+          "k": "fondo:rgb(28, 41, 57)",
+          "n": 4
+        },
+        {
+          "k": "borde:rgba(248, 249, 250, 0.08)",
+          "n": 7
+        },
+        {
+          "k": "texto:rgb(168, 182, 200)",
+          "n": 8
+        },
+        {
+          "k": "fondo:rgba(248, 249, 250, 0.1)",
+          "n": 1
+        },
+        {
+          "k": "fondo:rgba(248, 249, 250, 0.03)",
+          "n": 3
+        },
+        {
+          "k": "texto:rgb(63, 166, 154)",
+          "n": 1
+        },
+        {
+          "k": "fondo:rgba(22, 35, 58, 0.97)",
+          "n": 2
+        },
+        {
+          "k": "borde:rgba(42, 157, 143, 0.6)",
+          "n": 1
+        },
+        {
+          "k": "borde:rgba(248, 249, 250, 0.16)",
+          "n": 1
+        }
+      ],
+      "total": 768,
+      "tocablesChicos": [],
+      "minLetra": 12,
+      "peorContraste": 5,
+      "contrasteBajo": [],
+      "nContrasteBajo": 0,
+      "scrollHorizontal": false,
+      "errores": [],
+      "msPeor": "21",
+      "rpcs": [
+        "racha_momento",
+        "es_docente",
+        "materias_docente",
+        "panel_estudiantes",
+        "panel_resumen",
+        "panel_actividad",
+        "panel_actividad",
+        "panel_actividad",
+        "panel_actividad",
+        "panel_actividad",
+        "panel_actividad"
+      ]
+    },
+    "grande-375x667": {
+      "V": 667,
+      "P1": {
+        "avance": {
+          "texto": "26%",
+          "entera": true
+        },
+        "atencion": [
+          {
+            "texto": "Alto Mateo Castro Más de una semana sin actividad",
+            "entera": true
+          },
+          {
+            "texto": "Alto Camila Suárez Arango Más de una semana sin actividad",
+            "entera": true
+          },
+          {
+            "texto": "Alto Samuel Pardo Arango Más de una semana sin actividad",
+            "entera": true
+          }
+        ],
+        "peor": {
+          "texto": "¿De qué familia es? · Las cuentas, el debe y el haber 51% Acierto medio · 36 la terminaron",
+          "entera": true,
+          "tarjetaEntera": false
+        }
+      },
+      "P2": {
+        "ordenDom": [
+          "b1",
+          "b2",
+          "b3"
+        ],
+        "listaEnPrimeraPantalla": false
+      },
+      "P4": {
+        "bloques": [
+          "b1",
+          "b2",
+          "b3"
+        ],
+        "enlacesDeVista": []
+      },
+      "P5": [
+        {
+          "cifra": "26%",
+          "en": "26%"
+        },
+        {
+          "cifra": "43",
+          "en": "43 de 50 activos esta semana"
+        },
+        {
+          "cifra": "50",
+          "en": "43 de 50 activos esta semana"
+        },
+        {
+          "cifra": "16",
+          "en": "Ver los 16"
+        },
+        {
+          "cifra": "51",
+          "en": "51"
+        },
+        {
+          "cifra": "36",
+          "en": "36"
+        },
+        {
+          "cifra": "0",
+          "en": "0"
+        }
+      ],
+      "P6": [
+        {
+          "k": "fondo:rgb(14, 27, 46)",
+          "n": 1
+        },
+        {
+          "k": "relleno:none",
+          "n": 18
+        },
+        {
+          "k": "relleno:rgb(248, 249, 250)",
+          "n": 5
+        },
+        {
+          "k": "relleno:rgb(231, 111, 81)",
+          "n": 1
+        },
+        {
+          "k": "fondo:rgba(248, 249, 250, 0.16)",
+          "n": 1
+        },
+        {
+          "k": "fondo:rgba(248, 249, 250, 0.06)",
+          "n": 1
+        },
+        {
+          "k": "borde:rgba(248, 249, 250, 0.14)",
+          "n": 1
+        },
+        {
+          "k": "texto:rgb(248, 249, 250)",
+          "n": 22
+        },
+        {
+          "k": "texto:rgb(14, 27, 46)",
+          "n": 1
+        },
+        {
+          "k": "fondo:rgb(42, 157, 143)",
+          "n": 2
+        },
+        {
+          "k": "borde:rgb(42, 157, 143)",
+          "n": 1
+        },
+        {
+          "k": "borde:rgba(248, 249, 250, 0.22)",
+          "n": 1
+        },
+        {
+          "k": "borde:rgba(248, 249, 250, 0.3)",
+          "n": 1
+        },
+        {
+          "k": "fondo:rgb(28, 41, 57)",
+          "n": 3
+        },
+        {
+          "k": "borde:rgba(248, 249, 250, 0.08)",
+          "n": 6
+        },
+        {
+          "k": "texto:rgb(168, 182, 200)",
+          "n": 6
+        },
+        {
+          "k": "fondo:rgba(248, 249, 250, 0.1)",
+          "n": 1
+        },
+        {
+          "k": "fondo:rgba(248, 249, 250, 0.03)",
+          "n": 3
+        },
+        {
+          "k": "texto:rgb(63, 166, 154)",
+          "n": 1
+        },
+        {
+          "k": "fondo:rgba(22, 35, 58, 0.97)",
+          "n": 1
+        },
+        {
+          "k": "borde:rgba(248, 249, 250, 0.16)",
+          "n": 1
+        }
+      ],
+      "total": 829,
+      "tocablesChicos": [],
+      "minLetra": 12,
+      "peorContraste": 5,
+      "contrasteBajo": [],
+      "nContrasteBajo": 0,
+      "scrollHorizontal": false,
+      "errores": [],
+      "msPeor": "20",
+      "rpcs": [
+        "racha_momento",
+        "es_docente",
+        "materias_docente",
+        "panel_estudiantes",
+        "panel_resumen",
+        "panel_actividad",
+        "panel_actividad",
+        "panel_actividad",
+        "panel_actividad",
+        "panel_actividad",
+        "panel_actividad"
+      ]
+    },
+    "grande-1366x768": {
+      "V": 768,
+      "P1": {
+        "avance": {
+          "texto": "26%",
+          "entera": true
+        },
+        "atencion": [
+          {
+            "texto": "Alto Mateo Castro Más de una semana sin actividad",
+            "entera": true
+          },
+          {
+            "texto": "Alto Camila Suárez Arango Más de una semana sin actividad",
+            "entera": true
+          },
+          {
+            "texto": "Alto Samuel Pardo Arango Más de una semana sin actividad",
+            "entera": true
+          }
+        ],
+        "peor": {
+          "texto": "¿De qué familia es? · Las cuentas, el debe y el haber 51% Acierto medio · 36 la terminaron",
+          "entera": true,
+          "tarjetaEntera": true
+        }
+      },
+      "P2": {
+        "ordenDom": [
+          "b1",
+          "b2",
+          "b3",
+          "b4"
+        ],
+        "listaEnPrimeraPantalla": false
+      },
+      "P4": {
+        "bloques": [
+          "b1",
+          "b2",
+          "b3",
+          "b4"
+        ],
+        "enlacesDeVista": [
+          "estudiantes",
+          "actividades"
+        ]
+      },
+      "P5": [
+        {
+          "cifra": "26%",
+          "en": "26%"
+        },
+        {
+          "cifra": "43",
+          "en": "43 de 50 activos esta semana"
+        },
+        {
+          "cifra": "50",
+          "en": "43 de 50 activos esta semana"
+        },
+        {
+          "cifra": "16",
+          "en": "Ver los 16"
+        },
+        {
+          "cifra": "51",
+          "en": "51"
+        },
+        {
+          "cifra": "36",
+          "en": "36"
+        },
+        {
+          "cifra": "1840",
+          "en": "1840"
+        },
+        {
+          "cifra": "4",
+          "en": "4"
+        },
+        {
+          "cifra": "3",
+          "en": "Última visita: hace 3 días."
+        },
+        {
+          "cifra": "0",
+          "en": "0"
+        }
+      ],
+      "P6": [
+        {
+          "k": "fondo:rgb(14, 27, 46)",
+          "n": 1
+        },
+        {
+          "k": "relleno:none",
+          "n": 18
+        },
+        {
+          "k": "relleno:rgb(248, 249, 250)",
+          "n": 5
+        },
+        {
+          "k": "relleno:rgb(231, 111, 81)",
+          "n": 1
+        },
+        {
+          "k": "fondo:rgba(248, 249, 250, 0.16)",
+          "n": 1
+        },
+        {
+          "k": "fondo:rgba(248, 249, 250, 0.06)",
+          "n": 3
+        },
+        {
+          "k": "borde:rgba(248, 249, 250, 0.14)",
+          "n": 3
+        },
+        {
+          "k": "texto:rgb(248, 249, 250)",
+          "n": 27
+        },
+        {
+          "k": "texto:rgb(14, 27, 46)",
+          "n": 1
+        },
+        {
+          "k": "fondo:rgb(42, 157, 143)",
+          "n": 2
+        },
+        {
+          "k": "borde:rgb(42, 157, 143)",
+          "n": 1
+        },
+        {
+          "k": "borde:rgba(248, 249, 250, 0.22)",
+          "n": 1
+        },
+        {
+          "k": "borde:rgba(248, 249, 250, 0.3)",
+          "n": 1
+        },
+        {
+          "k": "fondo:rgb(28, 41, 57)",
+          "n": 4
+        },
+        {
+          "k": "borde:rgba(248, 249, 250, 0.08)",
+          "n": 7
+        },
+        {
+          "k": "texto:rgb(168, 182, 200)",
+          "n": 8
+        },
+        {
+          "k": "fondo:rgba(248, 249, 250, 0.1)",
+          "n": 1
+        },
+        {
+          "k": "fondo:rgba(248, 249, 250, 0.03)",
+          "n": 3
+        },
+        {
+          "k": "texto:rgb(63, 166, 154)",
+          "n": 1
+        },
+        {
+          "k": "fondo:rgba(22, 35, 58, 0.97)",
+          "n": 2
+        },
+        {
+          "k": "borde:rgba(42, 157, 143, 0.6)",
+          "n": 1
+        },
+        {
+          "k": "borde:rgba(248, 249, 250, 0.16)",
+          "n": 1
+        }
+      ],
+      "total": 768,
+      "tocablesChicos": [],
+      "minLetra": 12,
+      "peorContraste": 5,
+      "contrasteBajo": [],
+      "nContrasteBajo": 0,
+      "scrollHorizontal": false,
+      "errores": [],
+      "msPeor": "24",
+      "rpcs": [
+        "racha_momento",
+        "es_docente",
+        "materias_docente",
+        "panel_estudiantes",
+        "panel_resumen",
+        "panel_actividad",
+        "panel_actividad",
+        "panel_actividad",
+        "panel_actividad",
+        "panel_actividad",
+        "panel_actividad"
+      ]
+    },
+    "error-375x667": {
+      "reintentar": true,
+      "errores": []
+    },
+    "cargando-375x667": {
+      "esqueleto": true
+    },
+    "error-1366x768": {
+      "reintentar": true,
+      "errores": []
+    },
+    "cargando-1366x768": {
+      "esqueleto": true
+    }
+  },
+  "vistas": {
+    "temas-375x667": {
+      "tocablesChicos": [],
+      "minLetra": 12,
+      "peorContraste": 5,
+      "contrasteBajo": [],
+      "nContrasteBajo": 0,
+      "scrollHorizontal": false,
+      "alto": 1550
+    },
+    "atencion-375x667": {
+      "tocablesChicos": [],
+      "minLetra": 12,
+      "peorContraste": 4.55,
+      "contrasteBajo": [],
+      "nContrasteBajo": 0,
+      "scrollHorizontal": false,
+      "alto": 2142
+    },
+    "estudiantes-375x667": {
+      "tocablesChicos": [],
+      "minLetra": 12,
+      "peorContraste": 7.15,
+      "contrasteBajo": [],
+      "nContrasteBajo": 0,
+      "scrollHorizontal": false,
+      "alto": 1932
+    },
+    "estudiante-375x667": {
+      "tocablesChicos": [],
+      "minLetra": 12,
+      "peorContraste": 5,
+      "contrasteBajo": [],
+      "nContrasteBajo": 0,
+      "scrollHorizontal": false,
+      "alto": 1067
+    },
+    "actividades-375x667": {
+      "tocablesChicos": [],
+      "minLetra": 12,
+      "peorContraste": 7.15,
+      "contrasteBajo": [],
+      "nContrasteBajo": 0,
+      "scrollHorizontal": false,
+      "filas": 59
+    },
+    "actividad-375x667": {
+      "tocablesChicos": [],
+      "minLetra": 12,
+      "peorContraste": 5.2,
+      "contrasteBajo": [],
+      "nContrasteBajo": 0,
+      "scrollHorizontal": false
+    },
+    "temas-1366x768": {
+      "tocablesChicos": [],
+      "minLetra": 12,
+      "peorContraste": 5,
+      "contrasteBajo": [],
+      "nContrasteBajo": 0,
+      "scrollHorizontal": false,
+      "alto": 1158
+    },
+    "atencion-1366x768": {
+      "tocablesChicos": [],
+      "minLetra": 12,
+      "peorContraste": 4.55,
+      "contrasteBajo": [],
+      "nContrasteBajo": 0,
+      "scrollHorizontal": false,
+      "alto": 1623
+    },
+    "estudiantes-1366x768": {
+      "tocablesChicos": [],
+      "minLetra": 12,
+      "peorContraste": 7.15,
+      "contrasteBajo": [],
+      "nContrasteBajo": 0,
+      "scrollHorizontal": false,
+      "alto": 1875
+    },
+    "estudiante-1366x768": {
+      "tocablesChicos": [],
+      "minLetra": 12,
+      "peorContraste": 5,
+      "contrasteBajo": [],
+      "nContrasteBajo": 0,
+      "scrollHorizontal": false,
+      "alto": 1028
+    },
+    "actividades-1366x768": {
+      "tocablesChicos": [],
+      "minLetra": 12,
+      "peorContraste": 7.15,
+      "contrasteBajo": [],
+      "nContrasteBajo": 0,
+      "scrollHorizontal": false,
+      "filas": 59
+    },
+    "actividad-1366x768": {
+      "tocablesChicos": [],
+      "minLetra": 12,
+      "peorContraste": 5.2,
+      "contrasteBajo": [],
+      "nContrasteBajo": 0,
+      "scrollHorizontal": false
+    }
+  },
+  "p3": {
+    "toques": 2,
+    "llega": true
+  },
+  "p8": {
+    "rpcs": [
+      "racha_momento",
+      "es_docente",
+      "materias_docente",
+      "panel_estudiantes",
+      "panel_resumen",
+      "panel_actividad",
+      "panel_historial",
+      "panel_items",
+      "panel_grupo_actividad"
+    ],
+    "escrituras": [
+      "panel_resumen"
+    ],
+    "errores": []
+  },
+  "b3": {
+    "red-0ms": {
+      "msPeor": 25,
+      "llamadas": 6
+    },
+    "red-150ms": {
+      "msPeor": 170,
+      "llamadas": 6
+    },
+    "red-400ms": {
+      "msPeor": 417,
+      "llamadas": 6
+    }
+  },
+  "anchos320": {
+    "inicio": {
+      "scrollHorizontal": false,
+      "ancho": 320
+    },
+    "estudiantes": {
+      "scrollHorizontal": false,
+      "ancho": 320
+    },
+    "actividades": {
+      "scrollHorizontal": false,
+      "ancho": 320
+    },
+    "atencion": {
+      "scrollHorizontal": false,
+      "ancho": 320
+    }
+  }
+}

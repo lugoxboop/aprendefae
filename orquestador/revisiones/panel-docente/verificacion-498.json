@@ -1,0 +1,428 @@
+{
+  "uno-375x667": {
+    "motivos": [
+      {
+        "texto": "Practica, pero acierta poco en evaluativas",
+        "renglones": 2,
+        "recortado": false
+      }
+    ],
+    "nombresActividad": [],
+    "enlaces": [
+      {
+        "texto": "Ver todas las alertas",
+        "color": "rgb(248, 249, 250)",
+        "subrayado": "underline"
+      },
+      {
+        "texto": "Ver quiénes van muy bien",
+        "color": "rgb(248, 249, 250)",
+        "subrayado": "underline"
+      },
+      {
+        "texto": "Ver todas las actividades",
+        "color": "rgb(248, 249, 250)",
+        "subrayado": "underline"
+      }
+    ],
+    "tituloBajoLaPastilla": false,
+    "tituloRecortado": false,
+    "errores": []
+  },
+  "normal-1366x768": {
+    "motivos": [
+      {
+        "texto": "Más de una semana sin actividad",
+        "renglones": 2,
+        "recortado": false
+      },
+      {
+        "texto": "Más de una semana sin actividad",
+        "renglones": 2,
+        "recortado": false
+      },
+      {
+        "texto": "Más de una semana sin actividad",
+        "renglones": 2,
+        "recortado": false
+      }
+    ],
+    "nombresActividad": [],
+    "enlaces": [
+      {
+        "texto": "Ver los 8",
+        "color": "rgb(248, 249, 250)",
+        "subrayado": "underline"
+      },
+      {
+        "texto": "Ver quiénes van muy bien",
+        "color": "rgb(248, 249, 250)",
+        "subrayado": "underline"
+      },
+      {
+        "texto": "Ver todas las actividades",
+        "color": "rgb(248, 249, 250)",
+        "subrayado": "underline"
+      }
+    ],
+    "tituloBajoLaPastilla": false,
+    "tituloRecortado": false,
+    "errores": []
+  },
+  "grande-320x568": {
+    "motivos": [
+      {
+        "texto": "Más de una semana sin actividad",
+        "renglones": 2,
+        "recortado": false
+      },
+      {
+        "texto": "Más de una semana sin actividad",
+        "renglones": 2,
+        "recortado": false
+      },
+      {
+        "texto": "Más de una semana sin actividad",
+        "renglones": 2,
+        "recortado": false
+      }
+    ],
+    "nombresActividad": [],
+    "enlaces": [
+      {
+        "texto": "Ver los 16",
+        "color": "rgb(248, 249, 250)",
+        "subrayado": "underline"
+      },
+      {
+        "texto": "Ver quiénes van muy bien",
+        "color": "rgb(248, 249, 250)",
+        "subrayado": "underline"
+      },
+      {
+        "texto": "Ver todas las actividades",
+        "color": "rgb(248, 249, 250)",
+        "subrayado": "underline"
+      }
+    ],
+    "tituloBajoLaPastilla": false,
+    "tituloRecortado": true,
+    "errores": []
+  },
+  "vista-actividades-375x667": {
+    "motivos": [],
+    "nombresActividad": [
+      {
+        "texto": "¿De qué familia es?",
+        "renglones": 1,
+        "recortado": false
+      },
+      {
+        "texto": "¿Se mueve la caja menor?",
+        "renglones": 1,
+        "recortado": false
+      },
+      {
+        "texto": "¿Cuándo se causa?",
+        "renglones": 1,
+        "recortado": false
+      },
+      {
+        "texto": "¿Ingreso o cobro?",
+        "renglones": 1,
+        "recortado": false
+      },
+      {
+        "texto": "¿Se asienta o no?",
+        "renglones": 1,
+        "recortado": false
+      },
+      {
+        "texto": "¿Desde Dónde Preguntan?",
+        "renglones": 2,
+        "recortado": false
+      },
+      {
+        "texto": "¿Qué Entró y Qué Salió?",
+        "renglones": 1,
+        "recortado": false
+      },
+      {
+        "texto": "¿Entra o sale de Caja?",
+        "renglones": 1,
+        "recortado": false
+      },
+      {
+        "texto": "El arqueo de caja menor",
+        "renglones": 1,
+        "recortado": false
+      },
+      {
+        "texto": "¿Izquierda o Derecha?",
+        "renglones": 1,
+        "recortado": false
+      },
+      {
+        "texto": "Concilia la cuenta",
+        "renglones": 1,
+        "recortado": false
+      },
+      {
+        "texto": "¿Dónde se Rompió?",
+        "renglones": 1,
+        "recortado": false
+      },
+      {
+        "texto": "¿Qué Le Pasa a Cada Uno?",
+        "renglones": 2,
+        "recortado": false
+      },
+      {
+        "texto": "La Ecuación en Movimiento",
+        "renglones": 2,
+        "recortado": false
+      },
+      {
+        "texto": "¿En Cuál Estado Aparece?",
+        "renglones": 1,
+        "recortado": false
+      },
+      {
+        "texto": "La Articulación",
+        "renglones": 1,
+        "recortado": false
+      },
+      {
+        "texto": "El Cuadro de Dinámicas",
+        "renglones": 1,
+        "recortado": false
+      },
+      {
+        "texto": "¿Debe o Haber?",
+        "renglones": 1,
+        "recortado": false
+      },
+      {
+        "texto": "El Saldo de la Cuenta",
+        "renglones": 1,
+        "recortado": false
+      },
+      {
+        "texto": "Arma el Asiento",
+        "renglones": 1,
+        "recortado": false
+      },
+      {
+        "texto": "El Asiento Compuesto",
+        "renglones": 1,
+        "recortado": false
+      },
+      {
+        "texto": "El Ciclo Completo",
+        "renglones": 1,
+        "recortado": false
+      },
+      {
+        "texto": "Arma el ajuste acumulado",
+        "renglones": 1,
+        "recortado": false
+      },
+      {
+        "texto": "Arma el ajuste diferido",
+        "renglones": 1,
+        "recortado": false
+      },
+      {
+        "texto": "El mismo hecho, dos empresas",
+        "renglones": 2,
+        "recortado": false
+      },
+      {
+        "texto": "¿Qué le toca a este periodo?",
+        "renglones": 2,
+        "recortado": false
+      },
+      {
+        "texto": "El cierre completo",
+        "renglones": 1,
+        "recortado": false
+      },
+      {
+        "texto": "¿Qué renta da este título?",
+        "renglones": 1,
+        "recortado": false
+      },
+      {
+        "texto": "¿Temporal o a largo plazo?",
+        "renglones": 2,
+        "recortado": false
+      },
+      {
+        "texto": "¿Qué revisión falta?",
+        "renglones": 1,
+        "recortado": false
+      },
+      {
+        "texto": "El interés del periodo",
+        "renglones": 1,
+        "recortado": false
+      },
+      {
+        "texto": "¿Ganó o perdió?",
+        "renglones": 1,
+        "recortado": false
+      },
+      {
+        "texto": "¿A qué cuenta va?",
+        "renglones": 1,
+        "recortado": false
+      },
+      {
+        "texto": "El cierre completo de Santa Pacha",
+        "renglones": 2,
+        "recortado": false
+      },
+      {
+        "texto": "¿Clientes o otra cuenta por cobrar?",
+        "renglones": 2,
+        "recortado": false
+      },
+      {
+        "texto": "¿Qué se debita?",
+        "renglones": 1,
+        "recortado": false
+      },
+      {
+        "texto": "La provisión de El Torito",
+        "renglones": 1,
+        "recortado": false
+      },
+      {
+        "texto": "Provisión por edades",
+        "renglones": 1,
+        "recortado": false
+      },
+      {
+        "texto": "Cuando la deuda castigada vuelve",
+        "renglones": 2,
+        "recortado": false
+      },
+      {
+        "texto": "¿Qué cuenta se mueve?",
+        "renglones": 1,
+        "recortado": false
+      },
+      {
+        "texto": "Arma la factura",
+        "renglones": 1,
+        "recortado": false
+      },
+      {
+        "texto": "¿Cuánto vale lo que sobró?",
+        "renglones": 2,
+        "recortado": false
+      },
+      {
+        "texto": "Cierra el mes",
+        "renglones": 1,
+        "recortado": false
+      },
+      {
+        "texto": "¿Costo o gasto?",
+        "renglones": 1,
+        "recortado": false
+      },
+      {
+        "texto": "La devolución en dos libros",
+        "renglones": 2,
+        "recortado": false
+      },
+      {
+        "texto": "¿Qué control falta?",
+        "renglones": 1,
+        "recortado": false
+      },
+      {
+        "texto": "Arma los dos asientos",
+        "renglones": 1,
+        "recortado": false
+      },
+      {
+        "texto": "Llena el kárdex",
+        "renglones": 1,
+        "recortado": false
+      },
+      {
+        "texto": "Flete y devolución",
+        "renglones": 1,
+        "recortado": false
+      },
+      {
+        "texto": "Descuento en la factura",
+        "renglones": 1,
+        "recortado": false
+      },
+      {
+        "texto": "La cadena de descuentos",
+        "renglones": 1,
+        "recortado": false
+      },
+      {
+        "texto": "Pagó a tiempo",
+        "renglones": 1,
+        "recortado": false
+      },
+      {
+        "texto": "Ajuste por conteo",
+        "renglones": 1,
+        "recortado": false
+      },
+      {
+        "texto": "¿Costo o valor neto realizable?",
+        "renglones": 2,
+        "recortado": false
+      },
+      {
+        "texto": "Repaso cruzado",
+        "renglones": 1,
+        "recortado": false
+      },
+      {
+        "texto": "El Toro Negro",
+        "renglones": 1,
+        "recortado": false
+      },
+      {
+        "texto": "Marzo en Comercializadora Mate",
+        "renglones": 2,
+        "recortado": false
+      },
+      {
+        "texto": "Septiembre en Barranquilla",
+        "renglones": 2,
+        "recortado": false
+      },
+      {
+        "texto": "Septiembre en permanente",
+        "renglones": 2,
+        "recortado": false
+      }
+    ],
+    "enlaces": [],
+    "tituloBajoLaPastilla": false,
+    "tituloRecortado": false,
+    "errores": []
+  },
+  "barra-320": {
+    "tituloBajoLaPastilla": false,
+    "tituloRecortado": true
+  },
+  "barra-340": {
+    "tituloBajoLaPastilla": false,
+    "tituloRecortado": true
+  },
+  "barra-359": {
+    "tituloBajoLaPastilla": false,
+    "tituloRecortado": true
+  }
+}

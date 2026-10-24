@@ -1,5 +1,5 @@
 import { supabase } from "../lib/supabase.js";
-import { SUBJECTS, HACER, actividadesDeTipo } from "../data/subjects.js";
+import { SUBJECTS, HACER, actividadesDeTipo, TEMAS_OCULTOS } from "../data/subjects.js";
 
 /*
  * Resumen de semestre.
@@ -29,8 +29,16 @@ function temasCompletos(materiaId, hechas) {
   for (const tema of materia.topics) {
     const necesarias = actividadesDeTipo(tema, HACER).map((a) => a.id);
     if (necesarias.length === 0) continue; // un tema sin juegos no se puede "completar"
+    const completo = necesarias.every((id) => hechas.has(id));
+    /*
+     * Un tema oculto este semestre (TEMAS_OCULTOS) no entra en el total: no se
+     * le puede pedir a nadie un tema que el índice no le ofrece. Pero si el
+     * estudiante ya lo había completado, cuenta en los dos lados: lo que ganó
+     * no se le quita por haberlo escondido después.
+     */
+    if (TEMAS_OCULTOS.has(tema.id) && !completo) continue;
     total += 1;
-    if (necesarias.every((id) => hechas.has(id))) hechos += 1;
+    if (completo) hechos += 1;
   }
   return { hechos, total };
 }

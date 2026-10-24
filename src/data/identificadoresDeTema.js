@@ -27,9 +27,14 @@
 import { TituloConReloj, FacturaPorCobrar } from "../contabilidad/identificadores/identificadoresB.jsx";
 import { CajasDelConteo, KardexAlDia, EtiquetaRebajada } from "../contabilidad/identificadores/identificadoresC.jsx";
 import { MazoDelCapitulo } from "../contabilidad/identificadores/identificadoresE.jsx";
-import { CasilleroDeCuentas } from "../contabilidad/identificadores/casilleroDeCuentas.jsx";
+import { LibretaYLapiz, CasilleroDeCuentas, CalendarioConCinta, CajonDePaso } from "../contabilidad/identificadores/identificadoresA.jsx";
 
 export const ICONO_POR_TEMA = {
+  /* T1-T4 (Ukyo, prompts/logitos-temas-conta-v1.md; los integra la Célula D, 24 oct.). */
+  "contabilidad/introduccion-contabilidad": LibretaYLapiz,
+  "contabilidad/cuentas-debe-haber": CasilleroDeCuentas,
+  "contabilidad/ingresos-gastos-y-caja": CalendarioConCinta,
+  "contabilidad/efectivo-caja-menor-bancos": CajonDePaso,
   /* Célula B (Mai, lote 16). */
   "contabilidad/activos-financieros": TituloConReloj,
   "contabilidad/cuentas-por-cobrar": FacturaPorCobrar,
@@ -39,6 +44,4 @@ export const ICONO_POR_TEMA = {
   "contabilidad/inventarios-descuentos-nic2": EtiquetaRebajada,
   /* Célula E (Itagaki, P2). */
   "contabilidad/repaso-capitulo-5": MazoDelCapitulo,
-  /* Célula C (Misa, #471 T2-3b; dibujo de Ukyo, logitos-temas-conta-v1 §3). */
-  "contabilidad/cuentas-debe-haber": CasilleroDeCuentas,
 };
