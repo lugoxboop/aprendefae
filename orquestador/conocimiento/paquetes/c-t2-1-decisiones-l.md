@@ -122,3 +122,20 @@ Las correcciones de Mello son de una línea o de una celda, y ya vienen escritas
 - **Rv, Rt y Rl:** pierden la primera oración, que repetía lo que ya pinta el cotejo. Los textos son los de Mello.
 
 Con esto Mello aprueba las tres Hacer sin otra vuelta. #499 sigue esperando #500.
+
+---
+
+# Lote T2-7 · Aprender de T2 en SecuenciaAprender (24-oct-2026, 18:20)
+
+`SecuenciaAprender` ya está en main (#491) y su uso se explica en #492. La cáscara de las slides deja de estar bloqueada. Lo que exige el componente y no estaba en nuestro material:
+- **Titular de 10 palabras o menos en cada pantalla** (§3.3). Los cierres de Watari llevaban como titular la pregunta de Near, de más de 10 palabras: la pregunta pasa al apoyo y el titular la resume.
+- **Apoyo de una o dos frases** (25 palabras como objetivo) y **60 palabras por pantalla** como máximo.
+- **`razon`** en cada Haz: por qué «Siguiente» espera.
+- **Alto de figura de 206 px a 320 y de 253 a 375** como tope (Hanayama, #513, que entra con #524). Watari reservó hasta 218 a 320 (con el tope viejo de 220 de #470): P1 213, P3 214, P4 212 y P5 218 se pasan.
+- **Contabilidad tiene estudiantes:** la página vieja no se borra. La secuencia entra al lado, detrás de una bandera del tema, y el cambio se deshace en una línea. CuatroCapas no se toca.
+
+**Reparto:**
+- **Misa:** monta P1 (`cu-a1`) primero, mide las paradas del §12 (cabecera, bloque pegado, ficha de FP, titular más largo) y las deja en el PR. Después monta P2-P5. Usa `faltasDePieza(pieza) → []` en la prueba, y `responderHaz`, `resuelta` y `<Veredicto />` para el Haz. Las figuras salen de `c-t2-3-watari-figuras.md` y los textos, de la v2 de Near más los deltas T2-3. Lo que traigan Near y Watari en T2-7 entra encima.
+- **Near:** el titular de 10 palabras o menos de cada pantalla que se pase, el apoyo de los cierres y la `razon` de cada Haz. Solo el delta.
+- **Watari:** baja las figuras de P1, P3, P4 y P5 a 206 px o menos a 320. Solo el delta.
+- **Mello:** espera lo construido. La verificación final la hace sobre el PR.
