@@ -270,20 +270,19 @@ test("★★★ en modo demo, responder no llama a onCompletar (Tema 2)", () => 
 
 /* ═══════════════════ LOS PENDIENTES DE T1-1 ═══════════════════ */
 
-test("★★ T1-1: «DÓNDE QUEDÓ» con tilde, y los puntos 1 a 4 atenuados en el borde con el texto en #A8B6C8", async () => {
+test("★★ T1-1 (lote 4): las cinco estaciones con el nombre en #A8B6C8, sin opacidad en la fila, y el veredicto escrito tras responder", async () => {
   const { EJEMPLO_T1_1 } = await import("../../../data/asiSeJuegaBloque2.js");
   const { caja, desmontar } = montar(React.createElement(DesdeDondePreguntan, {
-    Marco: MarcoLibros, onCompletar: () => {}, items: [EJEMPLO_T1_1],
+    Marco: MarcoLibros, onCompletar: () => {}, items: [EJEMPLO_T1_1], modoDemo: true,
   }));
   try {
-    for (const n of [1, 2, 3, 4]) {
+    for (const n of [1, 2, 3, 4, 5]) {
       const est = caja.querySelector(`[data-estacion="${n}"]`);
       assert.equal(est.style.opacity, "", `punto ${n}: la fila entera lleva opacidad`);
       assert.equal(est.querySelector("[data-nombre-estacion]").style.color, "rgb(168, 182, 200)", `punto ${n}: el nombre no es #A8B6C8`);
-      assert.equal(est.querySelector("span").style.color, "rgb(168, 182, 200)", `punto ${n}: el número no es #A8B6C8`);
     }
     tocar(caja.querySelector(`[data-zona="${ZONA_FUERA}"]`));
-    assert.equal(caja.querySelector("[data-rotulo-seccion]").textContent, "DÓNDE QUEDÓ");
+    assert.equal(caja.querySelector("[data-renglon]").textContent, "Correcto");
   } finally { desmontar(); }
 });
 

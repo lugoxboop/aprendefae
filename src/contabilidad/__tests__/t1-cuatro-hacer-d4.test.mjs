@@ -6,7 +6,7 @@ import {
   USUARIOS_T1_1, EMPRESAS, TRANSACCIONES_CAP2, PARTES,
 } from "../../data/contabilidadTema1.js";
 import {
-  opcionesSegundaT1_1, correctaSegundaT1_1, porqueSegundaT1_1,
+  opcionesSegundaT1_1, correctaSegundaT1_1, porqueSegundaT1_1, escenaSegundaT1_1,
   opcionesSegundaT1_2, correctaSegundaT1_2, porqueSegundaT1_2,
   opcionesSegundaT1_4, escenaSegundaT1_4, correctaSegundaT1_4, casoDe,
   opcionesSegundaT1_5, correctaSegundaT1_5, escenaSegundaT1_5,
@@ -85,17 +85,19 @@ test("★★★ T1-1: cada usuario tiene su segunda decisión, con escenas disti
     assert.ok(opciones.some((o) => o.id === correcta), `${donde}: la correcta no está entre las opciones`);
     assert.ok(porqueSegundaT1_1(u)?.trim(), `${donde}: sin el por qué del acierto (D6 Medio)`);
     d6(opciones, correcta, donde);
-    d4(opciones, (id) => SEGUNDA_T1_1.escena[id], donde);
+    d4(opciones, (id) => escenaSegundaT1_1(id), donde);
   }
 });
 
-test("★★ T1-1: las tres escenas del anillo también se separan de la apertura", () => {
-  /*
-   * La apertura enciende la estación 5 y deja las otras cuatro en reposo, sin
-   * nada apagado. Si una escena coincidiera con eso, esa elección no se vería.
-   */
-  const vistas = Object.values(SEGUNDA_T1_1.escena).map((e) => e.anillo);
-  assert.deepEqual([...new Set(vistas)].sort(), ["ninguna", "solo-el-informe", "todas"]);
+test("★★★ T1-1: la decisión 2 no se deduce de la 1 (cruza adentro y afuera; Shoko)", () => {
+  /* Para cada zona, hay al menos dos respuestas distintas: saber la zona no da la respuesta. */
+  for (const zona of ["dentro", "fuera"]) {
+    const respuestas = new Set(USUARIOS_T1_1.filter((u) => u.zona === zona).map(correctaSegundaT1_1));
+    assert.ok(respuestas.size >= 2, `${zona}: la decisión 2 se deduce de la zona`);
+  }
+  /* Y «plata» sale de las dos zonas. */
+  const plata = USUARIOS_T1_1.filter((u) => correctaSegundaT1_1(u) === "plata").map((u) => u.zona);
+  assert.deepEqual([...new Set(plata)].sort(), ["dentro", "fuera"]);
 });
 
 /* ───────── T1-2 · clasificación (qué clase) + consecuencia (vender el doble) ───────── */
@@ -176,7 +178,13 @@ test("★★★ las cuatro piezas montan la segunda decisión, y ninguna forkea 
      * segunda decisión que no puntúa y pasó a ser la primera de las dos del
      * juego, con su ítem en el registro. Ya no monta el armazón.
      */
-    if (id === "t1-la-ecuacion-en-movimiento") assert.match(fuente, /data-parte=\{id\}/, `${id}: no está la decisión de la parte quieta`);
+    if (id === "t1-desde-donde-preguntan") {
+      /* Lote 4: rejilla de 2×2 reservada desde el principio, pintada por la pieza. */
+      assert.match(fuente, /data-segunda-decision/, `${id}: no está la segunda decisión`);
+      const linea = fuente.split("\n").find((l) => /onClick=\{\(\) => setSegunda/.test(l));
+      assert.ok(linea, `${id}: la decisión 2 no se puede elegir`);
+      assert.doesNotMatch(linea, /setRespuestas|t\.anotar/, `${id}: la decisión 2 anota puntaje`);
+    } else if (id === "t1-la-ecuacion-en-movimiento") assert.match(fuente, /data-parte=\{id\}/, `${id}: no está la decisión de la parte quieta`);
     /*
      * T1-4 desde el lote 4: los cuatro casos tienen su sitio reservado desde
      * el principio y el nombre queda pegado a las barras, así que la pieza

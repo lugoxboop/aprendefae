@@ -121,7 +121,7 @@ test("★★ el bloque 2 son T1-1, T1-2 y T1-5, con la consigna de cada activida
   assert.ok(ASI_TODAS[T1_5.id].guion.duracion <= 10000, "la demo de T1-5 pasa de 10 s");
   assert.equal(ASI_TODAS[T1_5.id].guion.toques.at(-1).texto, "Anotar", "la demo de T1-5 no termina tocando «Anotar»");
   assert.equal(ASI_TODAS[T1_1.id].alt,
-    "se toca la pregunta del cliente de la panadería y luego la zona AFUERA. La pregunta se ubica con el rótulo «Clientes» y la flecha de vuelta no se enciende.");
+    "se toca la pregunta del cliente de la panadería y luego la zona AFUERA. La pregunta entra a esa zona y la flecha de vuelta no se enciende.");
 });
 
 test("★★★ T1-1: ya no está la pregunta de vacío", () => {
@@ -172,7 +172,7 @@ test("★★ los ejemplos se resuelven con la lógica de verdad, con los acierto
 /* ═══════════════════ PRIMERA VEZ, SEGUNDA VEZ, Y «¿CÓMO SE JUEGA?» ═══════════════════ */
 
 /* Las que ya llevan el encabezado compacto de B. */
-const COMPACTOS = [T1_5.id, T1_2.id];
+const COMPACTOS = [T1_5.id, T1_2.id, T1_1.id];
 
 for (const id of IDS) {
   test(`★★★ ${id}: sale la primera vez, no la segunda, y «¿Cómo se juega?» la trae de vuelta`, () => {
@@ -230,7 +230,9 @@ await esperar(() => caja.querySelector("[data-asj-control]").textContent === "Ve
       if (id === T1_1.id) {
         const asentada = escenario().querySelector(`[data-zona="${ZONA_FUERA}"] [data-asentada]`);
         assert.ok(asentada, "la pregunta no se asentó en AFUERA");
-        assert.equal(asentada.textContent, "Clientes");
+        /* Lote 4: la ficha dice «la pregunta», no quién la hace (así T1-1 no contesta a H2). */
+        assert.equal(asentada.textContent, "la pregunta");
+        assert.equal(escenario().querySelector("[data-anillo]").dataset.vuelta, "tenue");
         assert.equal(escenario().querySelector("[data-anillo]").querySelector("[data-rotulo-trazo]"), null);
         assert.equal(escenario().querySelector("[data-rotulo-trazo]"), null, "se encendió la flecha de vuelta");
         assert.ok(escenario().querySelector('[role="status"]').textContent.includes("Le compra a la panadería, pero no es parte de ella."));

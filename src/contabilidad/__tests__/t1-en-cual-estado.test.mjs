@@ -84,6 +84,13 @@ const seVe = (el, que) => {
 
 /* ═══════════════════ EL BANCO Y SUS TEXTOS ═══════════════════ */
 
+test("★★ ningún acierto de t1-6 pasa de 25 palabras (tope de los Hacer; Shoko, lote C)", () => {
+  for (const [id, t] of Object.entries(ACIERTO_T1_6)) {
+    const n = t.replace(/^✅\s*/u, "").split(/\s+/).filter(Boolean).length;
+    assert.ok(n <= 25, `${id}: ${n} palabras`);
+  }
+});
+
 test("★★ las dieciséis fichas están, sin repetirse, y cada una con su devolución", () => {
   assert.equal(CONCEPTOS.length, 16);
   assert.equal(new Set(CONCEPTOS.map((c) => c.id)).size, 16, "hay dos fichas con el mismo id");
@@ -104,13 +111,14 @@ test("★★ las dieciséis fichas están, sin repetirse, y cada una con su devo
  */
 test("★★★ cada devolución dice el mismo informe y la misma parte que el banco", () => {
   const PARTE = {
-    [ACTIVO]: "en lo que tiene",
-    [PASIVO]: "en lo que debe",
-    [PATRIMONIO]: "en lo de los dueños",
+    /* Lote C de Futaba (24-oct): con los términos del libro, como los destinos. */
+    [ACTIVO]: "en el activo",
+    [PASIVO]: "en el pasivo",
+    [PATRIMONIO]: "en el patrimonio",
   };
   for (const c of CONCEPTOS) {
     const texto = ACIERTO_T1_6[c.id];
-    const diceElPrimero = texto.includes("primer informe");
+    const diceElPrimero = texto.includes("estado de situación financiera");
     const diceElSegundo = texto.includes("estado de resultados");
     assert.notEqual(diceElPrimero, diceElSegundo, `${c.nombre}: la devolución nombra los dos informes o ninguno`);
     assert.equal(diceElPrimero, c.informe === PRIMERO,

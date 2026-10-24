@@ -46,8 +46,9 @@ export const PATRON_A = "A";
 export const PATRON_B = "B";
 
 /**
- * `zona` es dónde la puso el estudiante. El trazo de retorno solo se enciende
- * si acertó Y el usuario es el que cierra el ciclo — nunca en un error.
+ * `zona` es dónde la puso el estudiante. El trazo de retorno se enciende solo
+ * si el usuario es el que cierra el ciclo; desde el lote 4, también tras un
+ * error (el registro): lo que se enseña es lo que de verdad pasa.
  */
 export function evaluarT1_1(usuario, zona) {
   const ok = zona === usuario.zona;
@@ -80,8 +81,12 @@ export function evaluarT1_1(usuario, zona) {
     texto: e.texto,
     escena: e.escena,
     rotulo: e.rotulo ?? null,
-    /* En un error el trazo NUNCA se enciende: no es el criterio de la zona. */
-    enciendeTrazo: false,
+    /*
+     * El registro (lote 4, P2 de Mai): tras responder, el anillo enseña lo
+     * que de verdad pasa con ESTA persona, también en el error. La vuelta se
+     * enciende solo si es quien decide; nunca por haber elegido una zona.
+     */
+    enciendeTrazo: usuario.cierraElCiclo === true,
   };
 }
 
@@ -750,8 +755,12 @@ export const flechaDeItem = (id) => {
 
 /* ───────── T1-1 ───────── */
 
-/** Lo que alcanza a ver depende de si pertenece a la empresa, y de nada más. */
-export const correctaSegundaT1_1 = (usuario) => (usuario.zona === ZONA_DENTRO ? "todo" : "informe");
+/* Lo que tiene en juego sale de quién es, no de la zona: así la 2 no se deduce de la 1. */
+export const correctaSegundaT1_1 = (usuario) => {
+  const id = SEGUNDA_T1_1.enJuego[usuario.id];
+  if (!id) throw new Error(`«${usuario.id}» no tiene qué se juega`);
+  return id;
+};
 
 export function opcionesSegundaT1_1(usuario) {
   const correcta = correctaSegundaT1_1(usuario);
@@ -759,6 +768,9 @@ export function opcionesSegundaT1_1(usuario) {
 }
 
 export const porqueSegundaT1_1 = (usuario) => SEGUNDA_T1_1.porque[correctaSegundaT1_1(usuario)];
+
+/* Lo que la figura enseña tras elegir: la ficha de la pregunta con lo que se juega escrito. */
+export const escenaSegundaT1_1 = (opcion) => ({ enJuego: opcion });
 
 /* ───────── T1-2 ───────── */
 

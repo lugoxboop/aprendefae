@@ -52,7 +52,7 @@ const {
 } = await import("../tema1.js");
 const {
   USUARIOS_T1_1, EMPRESAS, CLASES, ERROR_T1_2, ERROR_T1_1, SIN_INSUMO,
-  ZONA_DENTRO, ZONA_FUERA, T1_1, T1_2, ACIERTO_T1_1, ACIERTO_T1_2, ROTULO_ZONA,
+  ZONA_DENTRO, ZONA_FUERA, T1_1, T1_2, ACIERTO_T1_1, ACIERTO_T1_2, ROTULO_ZONA, SEGUNDA_T1_1,
 } = await import("../../data/contabilidadTema1.js");
 const { USUARIOS } = await import("../../data/contabilidadIntro.js");
 const { barajar } = await import("../../utils/barajar.js");
@@ -102,12 +102,14 @@ test("★★★ pertenecer a la empresa y cerrar el ciclo son DOS señales disti
   assert.equal(evaluarT1_1(admin, ZONA_DENTRO).enciendeTrazo, true);
 });
 
-test("★★★ en un error el trazo NO se enciende nunca, ni con la administración", () => {
+test("★★★ el registro (lote 4): la vuelta se enciende solo con quien decide, también tras un error, y nunca por la zona", () => {
   for (const u of USUARIOS_T1_1) {
     const malaZona = u.zona === ZONA_DENTRO ? ZONA_FUERA : ZONA_DENTRO;
     const r = evaluarT1_1(u, malaZona);
     assert.equal(r.ok, false, u.id);
-    assert.equal(r.enciendeTrazo, false, `${u.id}: el trazo se encendió en un error`);
+    assert.equal(r.enciendeTrazo, u.cierraElCiclo === true, `${u.id}: la vuelta no dice si esta persona decide`);
+    /* Elegir «adentro» no la enciende: un propietario está adentro y no decide. */
+    assert.equal(evaluarT1_1(u, ZONA_DENTRO).enciendeTrazo, u.id === "administradores");
   }
 });
 
@@ -457,13 +459,17 @@ test("★ el panel docente sabe leer las dos", () => {
 
 /* ═══════════════════ EN PANTALLA ═══════════════════ */
 
-test("★★ T1-1: el anillo sale con la estación 5 encendida y el retorno atenuado", () => {
+test("★★ T1-1: el anillo en fila, con los cinco nombres publicados y la vuelta tenue (R10)", () => {
   const { caja, desmontar } = montar(DesdeDondePreguntan);
   const est = [...caja.querySelectorAll("[data-estacion]")];
   assert.equal(est.length, 5);
-  assert.equal(est.filter((e) => e.getAttribute("data-encendida") === "si").length, 1);
-  assert.equal(est[4].getAttribute("data-encendida"), "si", "la encendida tiene que ser la quinta");
-  assert.equal(caja.querySelector("[data-franja]").getAttribute("data-retorno"), "atenuado");
+  assert.deepEqual(est.map((e) => e.textContent), [
+    "Pasa algo en la empresa", "Queda un papel", "Se anota", "Sale un informe", "Los jefes deciden",
+  ]);
+  assert.equal(caja.querySelector("[data-anillo]").dataset.vuelta, "tenue");
+  assert.equal(caja.querySelector("[data-anillo]").getAttribute("aria-label"), "Ciclo de cinco estaciones.");
+  /* Para que T1-1 no conteste a H2, el anillo no nombra a los usuarios. */
+  for (const u of USUARIOS_T1_1) assert.ok(!caja.querySelector("[data-anillo]").textContent.includes(u.nombre));
   desmontar();
 });
 
@@ -472,9 +478,10 @@ test("★★ T1-1: las zonas se distinguen por posición y rótulo, no por color
   const dentro = caja.querySelector('[data-zona="dentro"]');
   const fuera = caja.querySelector('[data-zona="fuera"]');
   assert.ok(dentro && fuera);
-  /* La de dentro toca la franja; la de fuera se separa con un blanco real. */
-  assert.equal(dentro.style.marginLeft, "0px");
-  assert.ok(parseInt(fuera.style.marginLeft, 10) > 0, "la zona de fuera tiene que estar separada");
+  /* La de dentro va pegada a la franja del ciclo; la de fuera, después de un blanco de 14. */
+  const franja = caja.querySelector("[data-franja-ciclo]");
+  assert.equal(franja.nextElementSibling.firstElementChild, dentro, "«Adentro» no está pegada a la franja");
+  assert.equal(dentro.parentElement.style.gap, "14px");
   /* Y las dos llevan su rótulo escrito. */
   assert.ok(dentro.getAttribute("aria-label").includes("DENTRO"));
   assert.ok(fuera.getAttribute("aria-label").includes("FUERA"));
@@ -484,18 +491,46 @@ test("★★ T1-1: las zonas se distinguen por posición y rótulo, no por color
   desmontar();
 });
 
-test("★★★ T1-1: un error no asienta nada y no enciende el trazo", () => {
+test("★★★ T1-1: en el error la pregunta entra igual a su zona correcta, y la tocada queda como fantasma", () => {
   const { caja, desmontar } = montar(DesdeDondePreguntan);
   const id = caja.querySelector("[data-pregunta]").getAttribute("data-pregunta");
   const u = USUARIOS_T1_1.find((x) => x.id === id);
   const mala = u.zona === ZONA_DENTRO ? ZONA_FUERA : ZONA_DENTRO;
 
   tocar(caja.querySelector(`[data-zona="${mala}"]`));
-  assert.equal(Boolean(caja.querySelector("[data-asentada]")), false, "se asentó algo tras un error");
-  assert.equal(caja.querySelector("[data-franja]").getAttribute("data-retorno"), "atenuado");
-  assert.ok(caja.querySelector("[data-fallo]"), "falta el aviso de que volvió a flotar");
-  assert.match(caja.querySelector("[data-fallo]").style.border, CORAL);
+  assert.equal(caja.querySelector("[data-asentada]").closest("[data-zona]").dataset.zona, u.zona, "no entró a la correcta");
+  assert.equal(caja.querySelector(`[data-zona="${mala}"]`).dataset.estado, "fantasma");
+  assert.match(caja.querySelector(`[data-zona="${mala}"]`).style.border, CORAL);
+  assert.equal(caja.querySelector("[data-anillo]").dataset.vuelta, u.cierraElCiclo ? "encendida" : "tenue");
+  assert.equal(caja.querySelector("[data-renglon]").textContent, `Iba aquí: ${ROTULO_ZONA[u.zona]}`);
+  assert.ok([...caja.querySelectorAll("[data-zona]")].every((z) => z.disabled), "hay reintento");
   desmontar();
+});
+
+test("★★★ T1-1: la decisión 2 en 2×2, reservada desde el principio, y no puntúa", () => {
+  let recibido = null;
+  const caja = document.createElement("div");
+  document.body.appendChild(caja);
+  const raiz = createRoot(caja);
+  act(() => raiz.render(React.createElement(DesdeDondePreguntan, { Marco: MarcoLibros, rotulo: "P", titulo: "P", acento: FAE.ambar, onCompletar: (p) => { recibido = p; } })));
+  try {
+    const ops = () => [...caja.querySelectorAll("[data-en-juego-opcion]")];
+    assert.deepEqual(ops().map((b) => b.textContent), ["Plata que ya puso", "Su trabajo", "Algo que piensa hacer", "Su oficio"]);
+    assert.ok(ops().every((b) => b.disabled), "la 2 se responde antes que la 1");
+    for (let k = 0; k < T1_1.porPartida; k++) {
+      const u = USUARIOS_T1_1.find((x) => x.id === caja.querySelector("[data-pregunta]").dataset.pregunta);
+      tocar(caja.querySelector(`[data-zona="${u.zona}"]`));
+      const correcta = SEGUNDA_T1_1.enJuego[u.id];
+      /* Siempre la mala: no tiene que bajar el porcentaje. */
+      const mala = ops().find((b) => b.dataset.enJuegoOpcion !== correcta);
+      tocar(mala);
+      assert.equal(caja.querySelector(`[data-en-juego-opcion="${correcta}"]`).dataset.estado, "acierto");
+      assert.equal(mala.dataset.estado, "fantasma");
+      assert.ok(caja.querySelector("[data-en-juego]"), "lo que se juega no queda escrito en la ficha");
+      tocar([...caja.querySelectorAll("button")].find((b) => /Siguiente pregunta|Ver el resultado/.test(b.textContent)));
+    }
+    assert.equal(recibido, 100, "la decisión 2 cambió el puntaje");
+  } finally { act(() => raiz.unmount()); caja.remove(); }
 });
 
 test("★★★ T1-1: al acertar la pregunta SE ASIENTA, y sigue habiendo dónde verlo", () => {

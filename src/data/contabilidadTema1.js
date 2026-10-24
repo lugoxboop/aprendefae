@@ -107,7 +107,23 @@ export const ERROR_T1_1 = {
 /* El rótulo que acompaña al trazo cuando se enciende. */
 export const ROTULO_DEL_TRAZO = "esta decisión cambia lo que la empresa hace";
 
-export const ALT_T1_1 = "Cinco puntos en columna.";
+/*
+ * Los textos alternativos del anillo en fila (lote 4). Mientras se juega, el
+ * anillo dice qué tiene encendido (P2 de Mai, §5-9; la frase de la vuelta
+ * apagada es mía, para que el lector sepa que no se encendió). Al terminar,
+ * el final de Futaba (lote del 24-oct, §4).
+ */
+export const ALT_T1_1 = "Ciclo de cinco estaciones con las preguntas de las ocho personas en su zona. La vuelta solo se encendió con los administradores.";
+export const ALT_ANILLO_T1_1 = {
+  base: "Ciclo de cinco estaciones.",
+  [ZONA_DENTRO]: "La pregunta está adentro.",
+  [ZONA_FUERA]: "La pregunta está afuera.",
+  vueltaEncendida: "La vuelta está encendida: esta persona decide.",
+  /* ── [ESCRITO POR CLAUDE — PENDIENTE DE FUTABA] ── */
+  vueltaApagada: "La vuelta está apagada.",
+};
+/* El rótulo de la ficha que entra a su zona (P2 de Mai, §10: texto nuevo para Shoko). */
+export const ROTULO_FICHA_T1_1 = "la pregunta";
 
 /* ═══════════════════ T1-2 · ¿QUÉ ENTRÓ Y QUÉ SALIÓ? ═══════════════════ */
 
@@ -610,22 +626,22 @@ export const ERROR_T1_6 = {
 };
 
 export const ACIERTO_T1_6 = {
-  "c6-01": "✅ Va en el primer informe, en lo que tiene. Una patente no se toca, pero es de la empresa y vale.",
+  "c6-01": "✅ Va en el estado de situación financiera, en el activo. Una patente no se toca, pero es de la empresa y vale.",
   "c6-02": "✅ Va en el estado de resultados, en ingresos. No es algo que la empresa tenga: es lo que vendió durante el año.",
-  "c6-03": "✅ Va en el primer informe, en lo que debe. Es plata que le queda debiendo a un proveedor.",
-  "c6-04": "✅ Va en el primer informe, en lo de los dueños. Es una parte de las ganancias que no se repartió.",
-  "c6-05": "✅ Va en el primer informe, en lo que tiene. Es la plata que tiene disponible.",
+  "c6-03": "✅ Va en el estado de situación financiera, en el pasivo. Es plata que le queda debiendo a un proveedor.",
+  "c6-04": "✅ Va en el estado de situación financiera, en el patrimonio. Es una parte de las ganancias que no se repartió.",
+  "c6-05": "✅ Va en el estado de situación financiera, en el activo. Es la plata que tiene disponible.",
   "c6-06": "✅ Va en el estado de resultados, en gastos. Es lo que la empresa gastó durante el año.",
-  "c6-07": "✅ Va en el primer informe, en lo que tiene. Es plata que los clientes le quedaron debiendo.",
-  "c6-08": "✅ Va en el primer informe, en lo que tiene. Son cosas de la empresa que duran años.",
+  "c6-07": "✅ Va en el estado de situación financiera, en el activo. Es plata que los clientes le quedaron debiendo.",
+  "c6-08": "✅ Va en el estado de situación financiera, en el activo. Son cosas de la empresa que duran años.",
   "c6-09": "✅ Va en el estado de resultados, en ingresos. Es lo que obtuvo en el año por algo que no es su negocio de siempre.",
-  "c6-10": "✅ Va en el primer informe, en lo que tiene. Es plata que la empresa puso a producir en otra parte y puede recuperar pronto.",
-  "c6-11": "✅ Va en el primer informe, en lo que debe. Es una deuda con un papel firmado.",
-  "c6-12": "✅ Va en el primer informe, en lo que debe. Es lo que le debe a un banco este año.",
-  "c6-13": "✅ Va en el primer informe, en lo que tiene. Es plata que la empresa puso a producir en otra parte y va a tardar en volver.",
-  "c6-14": "✅ Va en el primer informe, en lo que debe. Es lo que la empresa calcula que va a tener que pagar por arreglos de lo que vendió.",
-  "c6-15": "✅ Va en el primer informe, en lo que debe. Es lo que le debe al Estado y todavía no le ha pagado.",
-  "c6-16": "✅ Va en el primer informe, en lo que debe. Es lo que les debe a sus empleados y todavía no les ha pagado.",
+  "c6-10": "✅ Va en el estado de situación financiera, en el activo. Es plata puesta a producir en otra parte, y se recupera pronto.",
+  "c6-11": "✅ Va en el estado de situación financiera, en el pasivo. Es una deuda con un papel firmado.",
+  "c6-12": "✅ Va en el estado de situación financiera, en el pasivo. Es lo que le debe a un banco este año.",
+  "c6-13": "✅ Va en el estado de situación financiera, en el activo. Es plata puesta a producir en otra parte, y tarda en volver.",
+  "c6-14": "✅ Va en el estado de situación financiera, en el pasivo. Es lo que calcula que va a pagar por arreglos de lo vendido.",
+  "c6-15": "✅ Va en el estado de situación financiera, en el pasivo. Es lo que le debe al Estado y todavía no le ha pagado.",
+  "c6-16": "✅ Va en el estado de situación financiera, en el pasivo. Es lo que les debe a sus empleados y todavía no les ha pagado.",
 };
 
 /*
@@ -950,48 +966,65 @@ export const ALT_T1_8 = {
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-/* ───────── T1-1 · la consecuencia de estar dentro o fuera ─────────
- * Primera decisión: ¿pertenece a la empresa? (clasificación).
- * Segunda: ¿hasta dónde del ciclo alcanza a ver? (consecuencia). No se puede
- * ni formular antes de la primera: lo que se ve depende de dónde se esté. Y
- * la figura es el MISMO anillo de la primera, que se vuelve a encender.
+/* ───────── T1-1 · qué tiene en juego quien pregunta ─────────
+ * Primera decisión: ¿adentro o afuera? (clasificación).
+ * Segunda (Futaba, lote B del 24-oct, §2; la audita Shoko): ¿qué tiene en
+ * juego esta persona cuando lee el informe? La de antes —«¿hasta dónde ve?»—
+ * se deducía de la primera (adentro ve todo, afuera solo el informe). Esta
+ * cruza las dos zonas: «plata», «piensa» y «oficio» salen tanto de adentro
+ * como de afuera (o solo de afuera), y «trabajo» solo de adentro, así que
+ * saber la zona no da la respuesta. Tampoco repite a H2: H2 parte del
+ * propósito y pide quién es; esta parte de quién es y pide qué se juega.
+ *
+ * Sale de los propósitos de pp. 11-12 (contabilidadIntro.js:156-192). Para el
+ * Repaso, la llave sería el id de la opción (Erwin). Los rótulos cortos, para
+ * la rejilla de 2×2, y el acierto de «plata» son los de Shoko (lote C de
+ * Futaba, §1).
  */
 export const SEGUNDA_T1_1 = {
-  pregunta: "Ya sabe desde dónde pregunta. ¿Hasta dónde del ciclo alcanza a ver?",
+  pregunta: "Ya sabes desde dónde pregunta. ¿Qué tiene en juego esta persona cuando lee el informe?",
   opciones: [
     {
-      id: "todo",
-      texto: "El ciclo entero: ve lo que pasa adentro día a día",
-      /* Mal cuando el usuario es externo: confundir interés con acceso. */
-      msg: "Tener interés en la empresa no es tener entrada a ella. Esa persona la mira desde afuera, y de afuera el día a día no se ve: solo se ve lo que la contabilidad publica.",
+      id: "plata",
+      texto: "Plata que ya puso",
+      msg: "Esa persona no ha puesto plata ni ha prestado nada. Lo que lee no es para cuidar algo que ya puso.",
     },
     {
-      id: "informe",
-      texto: "Solo el informe que sale al final",
-      /* Mal cuando el usuario es interno: creer que espera turno como los de afuera. */
-      msg: "Esperar el informe es lo que le toca a quien está afuera. Esa persona es parte de la empresa: no necesita que le publiquen nada para saber qué está pasando adentro.",
+      id: "trabajo",
+      texto: "Su trabajo",
+      msg: "Esa persona no trabaja en la empresa. Lee el informe por otra razón.",
     },
     {
-      id: "nada",
-      texto: "Nada: la empresa no le enseña sus números a nadie",
-      /* Mal siempre: los números no son un secreto, son el producto del ciclo. */
-      msg: "Entonces el ciclo no serviría para nada. La contabilidad existe justamente para que alguien lea esos números: si no salieran de la empresa, las cinco estaciones terminarían en un cajón.",
+      id: "piensa",
+      texto: "Algo que piensa hacer",
+      msg: "Esa persona no está pensando si comprar o meter plata. Lee el informe por otra razón.",
+    },
+    {
+      id: "oficio",
+      texto: "Su oficio",
+      msg: "Esa persona sí se juega algo propio con esta empresa. No la mira solo para sumar cifras o cobrar.",
     },
   ],
-  /* El por qué del acierto, uno por cada opción que puede ser la correcta. */
-  porque: {
-    todo: "Está adentro, y de adentro se ve el ciclo completo: desde que pasa algo hasta que se decide.",
-    informe: "Desde afuera solo se alcanza el informe. Por eso la contabilidad lo publica: es la única ventana que hay.",
+  /* Qué tiene en juego cada usuario: la correcta sale de aquí, no de la zona. */
+  enJuego: {
+    propietarios: "plata", acreedores: "plata",
+    administradores: "trabajo", empleados: "trabajo",
+    clientes: "piensa", inversionistas: "piensa",
+    asociaciones: "oficio", estado: "oficio",
   },
-  /*
-   * Lo que el anillo enseña con cada elección. Ninguna coincide con el estado
-   * de apertura —la estación 5 encendida y las otras cuatro en reposo—, así
-   * que elegir cualquiera de las tres se ve.
-   */
-  escena: {
-    todo: { anillo: "todas" },
-    informe: { anillo: "solo-el-informe" },
-    nada: { anillo: "ninguna" },
+  /* El porqué del acierto, uno por opción. */
+  porque: {
+    plata: "Puso su capital, le prestó o le vendió a crédito, y mira si eso le rinde o si le van a pagar.",
+    trabajo: "Trabaja en la empresa: lee para manejarla o para saber qué puede pedir.",
+    piensa: "Todavía no ha puesto nada: piensa si le compra o si mete plata ahí.",
+    oficio: "Lo lee por su oficio: saca cifras de todo el sector o cobra los impuestos.",
+  },
+  /* La pista del primer error, según la correcta. Con un intento (C2) no sale; queda para el Repaso. */
+  pista: {
+    plata: "¿Esta persona ya puso algo en la empresa, o todavía no?",
+    piensa: "¿Esta persona ya puso algo en la empresa, o todavía no?",
+    trabajo: "¿Lo que lee le importa por su plata, por su trabajo, por algo que piensa hacer o por su oficio?",
+    oficio: "¿Lee para cuidar algo suyo, o porque se lo pide su oficio?",
   },
 };
 
