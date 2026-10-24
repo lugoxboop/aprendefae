@@ -68,11 +68,8 @@ const palabras = (t) => t.trim().split(/\s+/).filter((x) => /[\p{L}\p{N}]/u.test
 
 test("★★ cada pieza tiene las pantallas de la tabla de la ficha, numeradas sin huecos", () => {
   assert.deepEqual(Object.keys(PANTALLAS_T1), IDS);
-  /*
-   * La ficha titula a3 «19 pantallas» y a4 «15», pero sus tablas tienen 18 y 14 filas.
-   * Aquí manda la tabla: es la que dice qué va en cada una. Devuelto a Futaba.
-   */
-  const esperadas = { [I.ID]: 17, [P.ID_P2]: 15, [P.ID_P3]: 18, [P.ID_P4]: 14 };
+  /* La versión 16a85b8 de la ficha: a1 17, a2 15, a3 18 y a4 13 (perdió la parada «¿sale alguna flecha?»). */
+  const esperadas = { [I.ID]: 17, [P.ID_P2]: 15, [P.ID_P3]: 18, [P.ID_P4]: 13 };
   for (const id of IDS) {
     const ps = pantallasDe(id);
     assert.equal(ps.length, esperadas[id], `${id}: ${ps.length} pantallas`);
@@ -90,25 +87,45 @@ test("★★ el patrón: abre prediciendo, tiene al menos una parada o decisión
   }
 });
 
-test("★ la pantalla 18 de a3 es la 1 de a4: un solo texto, no dos copias", () => {
-  assert.equal(pantallasDe(P.ID_P3).at(-1).texto[0], pantallasDe(P.ID_P4)[0].texto[0]);
+test("★ el puente de a3 ya no repite la pregunta de a4 · 1 (Shoko: la pregunta queda solo allá)", () => {
+  assert.notEqual(pantallasDe(P.ID_P3).at(-1).texto[0].texto, pantallasDe(P.ID_P4)[0].texto[0].texto);
 });
 
 test("★★ paradas, decisiones y frases: exactamente una correcta, y la de la frase es la publicada", () => {
   for (const id of IDS) {
     for (const p of pantallasDe(id).filter((x) => ["parada", "elige", "frase"].includes(x.hace))) {
       assert.equal(p.opciones.filter((o) => o.correcta).length, 1, `${id} · ${p.n}: correctas`);
-      if (p.hace === "parada") assert.ok(p.opciones.every((o) => o.devolucion?.texto), `${id} · ${p.n}: falta devolución`);
+      /* Toda mala trae su devolución; la buena puede no traerla si la confirma la pantalla siguiente (a1 · 12). */
+      if (p.hace === "parada") assert.ok(p.opciones.every((o) => o.correcta || o.devolucion?.texto), `${id} · ${p.n}: falta devolución`);
     }
   }
   const pares = [[I.ID, I.OPCIONES], [P.ID_P2, P.OPCIONES_P2], [P.ID_P3, P.OPCIONES_P3], [P.ID_P4, P.OPCIONES_P4]];
   for (const [id, publicadas] of pares) {
     const f = pantallasDe(id).find((p) => p.hace === "frase");
     assert.deepEqual(f.opciones.map((o) => [o.id, o.correcta]), publicadas.map((o) => [o.id, o.correcta]), `${id}: la frase`);
+    /* La 2.ª visita (D8): otra correcta entre las mismas opciones, y una devolución por cada una. */
+    assert.ok(f.segunda, `${id}: la frase no trae 2.ª visita`);
+    assert.notEqual(f.segunda.correcta, publicadas.find((o) => o.correcta).id, `${id}: la 2.ª visita tiene la misma correcta`);
+    assert.deepEqual(Object.keys(f.segunda.devoluciones).sort(), publicadas.map((o) => o.id).sort(), `${id}: faltan devoluciones de la 2.ª visita`);
   }
-  /* a1 · 15: solo el usuario que cierra el ciclo es la correcta. */
-  const elige = pantallasDe(I.ID).find((p) => p.hace === "elige");
-  assert.equal(elige.opciones.find((o) => o.correcta).id, I.USUARIOS.find((u) => u.cierraElCiclo).id);
+  /* a1 · 12: decide el que manda, el usuario que cierra el ciclo; y no se ofrece «Propietarios». */
+  const decide = pantallasDe(I.ID).find((p) => p.n === 12);
+  assert.equal(decide.opciones.find((o) => o.correcta).id, I.USUARIOS.find((u) => u.cierraElCiclo).id);
+  assert.ok(!decide.opciones.some((o) => o.id === "propietarios"));
+});
+
+test("★★ a2 · 12 predice los cuatro casos con los hechos de Caleja, en el orden de la ficha", () => {
+  const p = pantallasDe(P.ID_P2).find((x) => x.n === 12);
+  assert.equal(p.hace, "predice-casos");
+  assert.deepEqual(p.hechos.map((h) => [h.hecho.id, h.caso.id]), [["cal-3", "a"], ["cal-5", "b"], ["cal-4", "c"], ["cal-6", "d"]]);
+  /* Los casos a y b suben; c y d bajan (p. 35): la correcta de cada hecho tiene que decir lo mismo que su caso. */
+  assert.deepEqual(p.hechos.map((h) => h.correcta === "Crecen los dos lados"), p.hechos.map((h) => h.caso.mueve === P.SUBEN));
+});
+
+test("★★ a4 · 11: se clasifican f2 a f5; f1 se ve pero no se pregunta (HUECO, a Miku)", () => {
+  const p = pantallasDe(P.ID_P4).find((x) => x.hace === "clasifica");
+  assert.deepEqual(p.seClasifican, ["f2", "f3", "f4", "f5"]);
+  assert.ok(p.flechas.some((f) => f.id === "f1"));
 });
 
 /* ═══════════════════ 2 · EL ORIGEN DE CADA TEXTO ═══════════════════ */
