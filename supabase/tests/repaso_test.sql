@@ -51,10 +51,11 @@ select set_config('request.jwt.claims',
                   true);
 
 -- ── 1. La marca existe y solo la lleva el Repaso ───────────────────────────
-insert into res select 1, 'renovable_diario solo en repaso-diario', 'repaso-diario',
+-- Desde la 0152 son dos: el de Macro y el de Contabilidad, y ninguna más.
+insert into res select 1, 'renovable_diario solo en los dos Repasos', 'repaso-diario, repaso-diario-contabilidad',
   coalesce((select string_agg(activity_id, ', ' order by activity_id)
               from public.actividad_catalogo where renovable_diario), 'ninguna'),
-  (select coalesce(array_agg(activity_id), '{}') = array['repaso-diario']
+  (select coalesce(array_agg(activity_id order by activity_id), '{}') = array['repaso-diario', 'repaso-diario-contabilidad']
      from public.actividad_catalogo where renovable_diario);
 
 -- ── 2. La fila del catálogo ────────────────────────────────────────────────
@@ -199,6 +200,19 @@ insert into res select 15, 'anon no ejecuta repaso_historial ni repaso_hecho_hoy
   has_function_privilege('anon', 'public.repaso_hecho_hoy()', 'execute')::text,
   not has_function_privilege('anon', 'public.repaso_historial()', 'execute')
   and not has_function_privilege('anon', 'public.repaso_hecho_hoy()', 'execute');
+
+-- ── 16. (0152) La fila del Repaso de Contabilidad: la misma clasificación que el de Macro ──
+insert into res select 16, 'repaso-diario-contabilidad: contabilidad, evaluativa, medio, base 60',
+  'contabilidad/evaluativa/medio/60',
+  coalesce((select subject_id || '/' || modalidad || '/' || dificultad || '/' || fp_base
+              from public.actividad_catalogo where activity_id = 'repaso-diario-contabilidad'), 'sin fila'),
+  coalesce((select subject_id = 'contabilidad' and modalidad = 'evaluativa' and dificultad = 'medio' and fp_base = 60
+              from public.actividad_catalogo where activity_id = 'repaso-diario-contabilidad'), false);
+
+-- ── 17. (0152) anon tampoco llama a la lectura nueva ───────────────────────
+insert into res select 17, 'anon no ejecuta repaso_hecho_hoy_de', 'false',
+  has_function_privilege('anon', 'public.repaso_hecho_hoy_de(text)', 'execute')::text,
+  not has_function_privilege('anon', 'public.repaso_hecho_hoy_de(text)', 'execute');
 
 -- ── Resumen ────────────────────────────────────────────────────────────────
 select

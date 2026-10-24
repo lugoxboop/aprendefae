@@ -4,6 +4,7 @@ import { NIVEL, alertasDe } from "../../docente/alertas.js";
 import { historialDe } from "../../docente/datos.js";
 import { nombreDeActividad } from "../../data/subjects.js";
 import MarcaNivel, { NIVEL_MARCA } from "./MarcaNivel.jsx";
+import { MOTIVO_CORTO } from "../../docente/panelV1.js";
 
 /*
  * ÍTEM 3 — El detalle que se abre DEBAJO de la fila, dentro de la misma fila.
@@ -35,11 +36,12 @@ import MarcaNivel, { NIVEL_MARCA } from "./MarcaNivel.jsx";
  * izquierda —que salen de lo que ya estaba cargado— se siguen viendo.
  */
 
-const rotulo = { margin: "0 0 3px", fontSize: "10px", letterSpacing: "0.07em", color: "rgba(248,249,250,0.45)" };
+const rotulo = { margin: "0 0 3px", fontSize: "12px", letterSpacing: "0.07em", color: "rgba(248,249,250,0.45)" };
 const cifra = { margin: 0, fontFamily: "Sora, sans-serif", fontSize: "17px", fontWeight: 700, fontVariantNumeric: "tabular-nums", color: FAE.text };
 
 const COLOR_NIVEL = {
-  [NIVEL.URGENTE]: FAE.coral,
+  /* Panel v1 (P6): sin coral; el nivel alto lo dicen la forma y la palabra. */
+  [NIVEL.URGENTE]: FAE.text,
   [NIVEL.ATENCION]: FAE.ambar,
   [NIVEL.INFO]: FAE.teal,
 };
@@ -98,7 +100,8 @@ export default function DetalleEstudiante({ e, subjectId, posicion }) {
             <p style={{ margin: 0, fontFamily: "Sora, sans-serif", fontSize: "13px", fontWeight: 600, color: FAE.text }}>
               {/* La palabra del nivel acompaña al color: el tono nunca va solo. */}
               <span style={{ color: COLOR_NIVEL[alerta.nivel] }}>{PALABRA_NIVEL[alerta.nivel]}</span>
-              {" · "}{alerta.titulo}
+              {/* El motivo de textos.md, el mismo de B2 (Shibukawa, #525): una regla, un nombre. alertas.js no cambia. */}
+              {" · "}{MOTIVO_CORTO[alerta.titulo] ?? alerta.titulo}
             </p>
             {alerta.detalle && (
               <p style={{ margin: "3px 0 0", fontSize: "12.5px", lineHeight: 1.5, color: "rgba(248,249,250,0.66)" }}>
@@ -113,7 +116,8 @@ export default function DetalleEstudiante({ e, subjectId, posicion }) {
         {/* ── Cifras clave. En móvil, rejilla 2×2 compacta. ── */}
         <div className="fae-det-cifras">
           <div><p style={rotulo}>FP TOTAL</p><p style={cifra}>{e.fp_total}</p></div>
-          <div><p style={rotulo}>FP ESTE CICLO</p><p style={{ ...cifra, color: FAE.teal }}>{e.fp_ciclo}</p></div>
+          {/* En neutro (Shibukawa, #525): en Contabilidad el teal es el debe. */}
+          <div><p style={rotulo}>FP ESTE CICLO</p><p style={{ ...cifra, color: FAE.text }}>{e.fp_ciclo}</p></div>
           <div>
             <p style={rotulo}>ACIERTO EVALUATIVAS</p>
             <p style={cifra}>
@@ -121,6 +125,26 @@ export default function DetalleEstudiante({ e, subjectId, posicion }) {
                 ? "—"
                 : `${Math.round(Number(e.pct_evaluativa))}%`}
             </p>
+          </div>
+          {/*
+            * Panel v1 (Ukyo §6.2): lo que antes iba en la fila cerrada o solo en
+            * el CSV vive aquí, con las mismas cifras de panel_estudiantes.
+            */}
+          <div>
+            <p style={rotulo}>EVALUATIVAS HECHAS</p>
+            <p style={cifra} data-cifra="n-evaluativas">{Number(e.n_evaluativas ?? 0)}</p>
+          </div>
+          <div>
+            <p style={rotulo}>ACIERTO EXPLORATORIAS</p>
+            <p style={{ ...cifra, color: "rgba(248,249,250,0.75)" }} data-cifra="pct-exploratoria">
+              {e.pct_exploratoria === null || e.pct_exploratoria === undefined || !Number(e.n_exploratorias)
+                ? "—"
+                : `${Math.round(Number(e.pct_exploratoria))}% · ${Number(e.n_exploratorias)}`}
+            </p>
+          </div>
+          <div>
+            <p style={rotulo}>TIEMPO MEDIO</p>
+            <p style={cifra} data-cifra="duracion">{e.duracion_media_ms === null || e.duracion_media_ms === undefined ? "—" : `${Math.round(Number(e.duracion_media_ms) / 1000)} s`}</p>
           </div>
           <div>
             <p style={rotulo}>POSICIÓN</p>
@@ -166,7 +190,7 @@ export default function DetalleEstudiante({ e, subjectId, posicion }) {
                     {nombreDeActividad(h.activity_id) ?? h.activity_id}
                     {/* El "×3" va apagado y pequeño: es un matiz, no una insignia. */}
                     {h.intentos > 1 && (
-                      <span style={{ marginLeft: "6px", fontSize: "10.5px", color: "rgba(248,249,250,0.4)", fontVariantNumeric: "tabular-nums" }}>
+                      <span style={{ marginLeft: "6px", fontSize: "12px", color: "rgba(248,249,250,0.4)", fontVariantNumeric: "tabular-nums" }}>
                         ×{h.intentos}
                       </span>
                     )}
@@ -176,7 +200,7 @@ export default function DetalleEstudiante({ e, subjectId, posicion }) {
                       ? `${h.mejor_fp} FP`
                       : `${Math.round(Number(h.mejor_pct))}%`}
                   </span>
-                  <span style={{ fontSize: "11.5px", color: "rgba(248,249,250,0.45)", whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums" }}>
+                  <span style={{ fontSize: "12px", color: "rgba(248,249,250,0.45)", whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums" }}>
                     {fecha(h.ultimo_intento)}
                   </span>
                 </div>

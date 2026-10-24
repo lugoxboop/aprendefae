@@ -1,14 +1,11 @@
-2026-10-23 15:30 (hora Bogotá)
-- Cambio a T2 cuentas-debe-haber; T5 y T7 quedan ocultos por Erwin, nada borrado. Regla dura: Contabilidad tiene estudiantes; solo se agrega
-- Regla i (buscar antes de abrir, skills): terminado. Llegó a Misa, Near, Watari y Mello
-- Lote T2-1 (hilo de slides, 3 Hacer nuevas, subtemas, línea base): terminado. Entregas y decisiones en orquestador/conocimiento/paquetes/c-t2-1-*
-- Lote T2-3 a Near, Watari y Mello: bloqueado: el Chrome de Mateo sigue desconectado (reintentado de 12:15 a 15:29; dejo de reintentar para no gastar tokens vigilando, reanudo apenas Miku avise en el chat de L; pedido a Mateo vía Miku en #502); el lote está escrito en paquetes/c-t2-1-decisiones-l.md. Misa ya lo tiene en #471: en curso
-- Lote T2-2 · bancos de las 3 Hacer nuevas y slides con S1-S13 (Near) y figura de cada slide (Watari): terminado. Entregas y decisiones en paquetes/c-t2-2-*
-- Lote T2-2 · auditoría de la forma de las 3 Hacer nuevas: en curso (Mello)
-- Subtemas de T2 para el Repaso Diario: bloqueado: #482 listo para fusionar, espera que main vuelva a verde (scripts/canon.mjs:46, ya reportado en #493, #495 y #497)
-- Línea base de las sondas de T2: terminado (#494). Esqueleto de las 3 Hacer, con la 0116 escrita y sin correr: en curso (Misa, en borrador)
-- Cáscara de las slides de Aprender: bloqueado: espera el patrón de Ukyo y el componente compartido de Erwin
-- Logito de T2: bloqueado: espera que Ukyo lo publique
-- Migración del catálogo de las 3 Hacer nuevas: en espera. Correrla en producción es la parada anunciada; irá por issue miku cuando el PR esté listo
-
-- Que nadie pierda «tema completo» ni la medalla con las 3 Hacer nuevas (AGREGADAS_DESPUES y resumen.js, compartidos): bloqueado: pedido a Erwin en #500; las 3 no se fusionan antes
+2026-10-24 17:24 (hora Bogotá)
+- Tema: T2 cuentas-debe-haber (T5 y T7 ocultos por Erwin, nada borrado). Contabilidad tiene estudiantes: solo se agrega
+- #482 (subtemas de T2 para el Repaso Diario) y #494 (línea base de sondas): terminado. Fusionados con el PASA de Mello y CI verde (76be9fb, 525e52d); el Repaso lo conecta Erwin
+- Regla j (una sola pasada): Misa la tiene en #471; a Mello, Near y Watari les llega dentro de su próximo mensaje de lote, para no sumar un turno aparte
+- Lotes T2-1, T2-2 y T2-3: terminado (paquetes/c-t2-*). Auditoría de Mello: Las que vuelven a cero PASA; Cuadra por valor y Del diario al mayor FALLA, con correcciones aceptadas
+- T2-6 · Misa: aplicar en #499 las 3 correcciones de Mello (Iba aquí a 0,7 s, A6 en Bancos, Rv/Rt/Rl cortos) y sacarlo de borrador con CI verde: en curso
+- Lote T2-4 (Near y Watari): terminado (paquetes/c-t2-4-*)
+- Logito de T2 (#516): terminado, fusionado con el PASA de Mello (a5d9ae9); #512 cerrado
+- Fusión de las 3 Hacer nuevas (#499): bloqueado: espera #500 de Erwin (AGREGADAS_DESPUES y resumen.js), para que nadie pierda «tema completo»
+- Cáscara de las slides de Aprender: bloqueado: SecuenciaAprender es un componente compartido nuevo (#470) y lo construye Erwin
+- Auditoría T2-5 de Mello: terminado. Las que vuelven a cero PASA; Cuadra por valor y Del diario al mayor aprobadas con 3 correcciones de una línea (paquetes/c-t2-5-mello-auditoria.md)

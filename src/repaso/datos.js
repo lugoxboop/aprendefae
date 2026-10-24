@@ -1,4 +1,5 @@
 import { supabase } from "../lib/supabase.js";
+import { ID_REPASO } from "./repaso.js";
 
 /*
  * Lo que el Repaso le pregunta al servidor. Dos lecturas, las dos del propio
@@ -24,10 +25,18 @@ export function historialDeFilas(filas) {
   return new Map((filas ?? []).map((f) => [f.clave, { ultimoEn: f.ultimo_en, ultimoOk: f.ultimo_ok, veces: f.veces }]));
 }
 
-/** Si ya hizo el repaso de hoy (día de Bogotá), o null si no se pudo leer. */
-export async function leerHechoHoy() {
+/**
+ * Si ya hizo el repaso de hoy (día de Bogotá), o null si no se pudo leer.
+ *
+ * El de Macro sigue preguntando a repaso_hecho_hoy(), sin argumentos, como
+ * siempre. Cualquier otro pregunta por SU id a repaso_hecho_hoy_de (0152):
+ * hacer el Repaso de Macro no gasta el de Contabilidad, ni al revés.
+ */
+export async function leerHechoHoy(idRepaso = ID_REPASO) {
   if (!supabase) return null;
-  const { data, error } = await supabase.rpc("repaso_hecho_hoy");
+  const { data, error } = idRepaso === ID_REPASO
+    ? await supabase.rpc("repaso_hecho_hoy")
+    : await supabase.rpc("repaso_hecho_hoy_de", { p_activity_id: idRepaso });
   if (error) {
     console.error("[aprendeFAE] No se pudo saber si el Repaso ya se hizo hoy:", error.message);
     return null;

@@ -663,3 +663,36 @@ guardián» y «ni siquiera instaló».
 unos once minutos. Un trabajo que falla en **dos** no corrió las pruebas: se
 cayó antes, o se cayó cargando algo. Esa sola cuenta —cuánto tardó contra
 cuánto debería— orienta la búsqueda antes de abrir nada.
+
+## Convertir un PDF a Markdown antes de dárselo a un agente
+
+Medido por Miku el 24 de octubre de 2026, a petición de Mateo. **No está en uso
+todavía**: se deja escrito para el día que haya que meter material nuevo (los
+estándares de calidad, un capítulo más del libro, una norma).
+
+**Por qué.** Un PDF no se lee como texto. La documentación de Anthropic dice
+que cada página se convierte **en imagen además de extraer su texto**, y las
+dos cosas se envían juntas: de 1.500 a 3.000 tokens por página solo de texto,
+más los tokens de la imagen. La misma página como texto plano cuesta unos 333.
+
+**Lo medido aquí**, con `public/casos/caso_el_proyecto_del_arca.pdf` (9 páginas)
+y `markitdown`: **692 tokens por página** en Markdown. Para un capítulo de 60
+páginas eso son unos 42.000 tokens, frente a los 90.000–180.000 más imágenes
+del PDF tal cual.
+
+**Cómo, sin que nadie pague la lectura.** `markitdown` corre en la terminal y
+escribe a un archivo; quien convierte **nunca carga el PDF en su contexto**. El
+camino barato es: Mateo sube el PDF a Drive → Miku lo baja, lo convierte y
+entrega solo el `.md` al agente que lo usa.
+
+```sh
+pip install "markitdown[pdf]" --break-system-packages
+python3 -c "from markitdown import MarkItDown; open('salida.md','w').write(MarkItDown().convert('entrada.pdf').text_content)"
+```
+
+**El límite, que no es menor.** Markdown tira lo visual. En un libro de
+contabilidad las cuentas T, los asientos y los cuadros de dinámicas son justo
+lo que hay que ver bien, y una tabla aplanada le hace escribir contenido
+equivocado al pedagógico, que cuesta más que los tokens ahorrados. Se convierte
+el texto corrido y se conservan como imagen **solo** las páginas con figuras
+que de verdad haya que mirar.

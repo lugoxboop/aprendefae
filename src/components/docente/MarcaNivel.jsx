@@ -39,7 +39,8 @@ export const NIVEL_MARCA = {
 };
 
 const FORMAS = {
-  [NIVEL_MARCA.URGENTE]: { color: FAE.coral, d: "M6 1 L11.3 10.6 H0.7 Z" },
+  /* Panel v1 (Ukyo, P6): el triángulo de «urgente» en blanco; el peso lo da la forma, no el coral. */
+  [NIVEL_MARCA.URGENTE]: { color: FAE.text, d: "M6 1 L11.3 10.6 H0.7 Z" },
   [NIVEL_MARCA.ATENCION]: { color: FAE.ambar, d: "M6 0.7 L11.3 6 L6 11.3 L0.7 6 Z" },
   [NIVEL_MARCA.INFO]: { color: FAE.teal, circulo: 4.8 },
   [NIVEL_MARCA.DESTACADO]: { color: FAE.teal, d: "M6 0.8 L7.41 4.46 L11.33 4.67 L8.28 7.14 L9.29 10.93 L6 8.8 L2.71 10.93 L3.72 7.14 L0.67 4.67 L4.59 4.46 Z" },

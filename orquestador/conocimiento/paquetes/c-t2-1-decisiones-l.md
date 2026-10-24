@@ -69,3 +69,56 @@ El texto de las slides de Near no cambia. Solo cambian las frases «VE…» que 
 - **Near** aplica los ajustes de Watari y los huecos 1 y 2 sobre su v2. Entrega solo el delta, no el archivo entero.
 - **Watari** renumera sus figuras a la v2 de Near (con la slide 0 de objetivo y las marcas [lee], [toca] y [decide]) y comprueba que los bancos de Near quepan en sus formas: tope de cuentas y renglones, largo de nombres a 320 px.
 - **Mello** termina la auditoría de la forma. Después audita los bancos de `c-t2-2-near-lote.md` §1 contra H1-H10.
+
+---
+
+# Lote T2-3 · decisiones de L (24-oct-2026)
+
+Entregas: Near `c-t2-3-near-delta.md` (los siete ajustes de Watari y los huecos) y Watari `c-t2-3-watari-figuras.md` + `.html` (figuras pasadas al patrón #470, 212 estados de Aprender y 40 de Hacer medidos; los bancos de Near caben en las tres formas).
+
+- **Nombre del anticipo:** queda «Seguros pagados por anticipado». Near ya lo aplicó en VC·6; la pregunta que dejó abierta Watari queda resuelta.
+- **P4·8:** manda el delta de Near. El asiento de tres líneas es ene-04 (1 contra 2, $4.800), no ene-03. La figura de Watari sirve para cualquier número de líneas: Misa la construye con ene-04, y Watari solo cambia la etiqueta en su próximo delta. P4·7 («Simple / Compuesto») sigue con ene-30 y ene-03.
+- **Cuadra por valor E1:** pasa a Caleja cal-4 («Basado en el libro»), para que la Aprender P4·8 no delate la respuesta (C1).
+- **El patrón #470 manda sobre las figuras:** Míralo y Haz; el error tentativo en coral sin cambiar el modelo; un cierre sin acción obligatoria (por eso P3 tiene 9 pantallas); controles neutros; reserva de figura de 220 px o menos a 320 px.
+- **Bancos de las tres Hacer para Misa:** `c-t2-2-near-lote.md` §1 con el delta de `c-t2-3-near-delta.md`. Para la forma, el delta CSS de `c-t2-3-watari-figuras.md`.
+
+---
+
+# Auditoría T2-3 de Mello · decisiones de L (24-oct-2026, 15:45)
+
+Entrega: `c-t2-3-mello-auditoria.md`. #482 y #494 tienen PASA y ya están fusionados (76be9fb y 525e52d). Las Hacer quedan así: Cuadra por valor FALLA, Del diario al mayor FALLA y Las que vuelven a cero PASA.
+
+**Se acepta todo lo que propone Mello:**
+- **Cuadra por valor, forma:** en completar, las columnas se mueven solo al «Comprobar» (C4-1). Lleva una prueba C5 de geometría: el tramo del hueco no cambia con la cifra escrita. En juzgar y encontrar, la fila de sumas y las columnas aparecen después de la decisión. En completar, la suma del lado del hueco dice «?».
+- **Cuadra por valor, banco:** K3 pasa a juzgar como J3 («Cuadra»), así que quedan 2 completar, 3 juzgar y 3 encontrar. E1, E2 y E3 se reemplazan por los de Mello: tres renglones, uno solo malo, que se encuentra por el valor. J1 y J2 toman los textos de Mello, que miden 66,2 y 66,3.
+- **Del diario al mayor:** se aprueba el tercer tipo de ítem, **«revisar»** (el punteo). Se quitan los destino A1, A4, B4 y B5 (C1). Cada caso queda con 3 destino, 2 origen y 2 revisar. La cuadrícula de T se baraja en cada intento (H6). Sigue sin saldo y sin elegir el lado.
+- **Las que vuelven a cero:** el periodo sale de los datos (`mes` y `mesSiguiente`), no del componente.
+
+**Lote T2-4:**
+- **Near:** los retros por línea mala de los nuevos E1, E2 y E3. Los 2 ítems «revisar» por caso, con dos tipos de error distintos: cuenta vecina, cifra traspuesta o lado contrario. Por cada uno, la línea mal pasada, su porqué y el retro por cada línea buena tocada.
+- **Watari:** las líneas de la T compacta como botones de 44 px, para «revisar», medidas a 320 px en la cuadrícula de 2 × 2. Y el ajuste de Cuadra por valor en la forma: las columnas al «Comprobar», y las sumas después de decidir.
+- **Misa:** construye en #499 todo lo que ya está cerrado (Las que vuelven a cero completa, y los cambios de Mello en Cuadra por valor y en Del diario al mayor). «Revisar» lo agrega cuando lleguen el banco de Near y la forma de Watari.
+
+---
+
+# Lote T2-4 · decisiones de L (24-oct-2026, 16:30)
+
+Entregas: Near `c-t2-4-near-delta.md` (retros de los E1-E3 de Mello y los ítems «revisar» de los casos A y B) y Watari `c-t2-4-watari-figuras.md` + `.html` (Cuadra por valor: las columnas se mueven al «Comprobar» y las sumas aparecen después de decidir; «revisar» con líneas de 44 px y cotejo Diario/Mayor; 42 estados medidos).
+
+- **E3, un término, un nombre:** dice «la deuda del computador», igual que cal-2 y J2.
+- **E1 de Cuadra por valor:** manda el de Mello (tres renglones: Cuentas por pagar D · Caja 6.000 D · Bancos 4.000 H). La maqueta de Watari todavía muestra el E1 anterior, de dos renglones; la forma sirve igual.
+- **«Revisar»:** el banco es el de Near (A6, A7, B6 y B7, con las plantillas Rv, Rt y Rl) y la forma, la de Watari (cotejo con «=» y «≠», acierto en neutro porque el error es del libro, y la T sin ser botón). Las cifras van hasta 9.999.
+- **Mello audita** el delta de Near, las figuras de Watari y el logito (#516) antes de fusionar.
+
+---
+
+# Auditoría T2-5 de Mello · decisiones de L (24-oct-2026, 17:25)
+
+Entrega: `c-t2-5-mello-auditoria.md`. #516 (logito) llegó rebasado, con una sola definición, la ficha de 10 y el CI verde, que eran las correcciones mínimas de Mello. **Está fusionado (a5d9ae9).** #512 queda cerrado.
+
+Las correcciones de Mello son de una línea o de una celda, y ya vienen escritas y medidas. Por la regla j, **las aplica Misa directo en #499**, sin otra vuelta por Near ni por Watari:
+- **«Iba aquí» a los 0,7 s del error (H7),** tanto en Cuadra por valor como en «revisar». El orden es: 0 ms la consecuencia, 380 ms la pastilla y el retro, y 380 + 700 ms «Iba aquí» (en «revisar», «Iba en la línea punteada»). Así quedan las constantes de main (`RETARDO_IBA_MS = 700`). Con esto se corrige la frase de `c-t2-4-watari-figuras.md` que decía «la pausa baja a 380 ms».
+- **A6:** la línea mala pasa a ser Bancos · H · 4 ene · 4.000 (antes iba en Flota), con el porqué de Mello. Así A6 y A7 ya no caen en la misma T.
+- **Rv, Rt y Rl:** pierden la primera oración, que repetía lo que ya pinta el cotejo. Los textos son los de Mello.
+
+Con esto Mello aprueba las tres Hacer sin otra vuelta. #499 sigue esperando #500.

@@ -1,5 +1,7 @@
 import { FAE } from "../../theme.js";
 import { NIVEL, REGLAS_SIN_DATOS } from "../../docente/alertas.js";
+import MarcaNivel, { NIVEL_MARCA } from "./MarcaNivel.jsx";
+import { TITULO_SIN_DATOS } from "../../docente/panelV1.js";
 
 /*
  * Las alertas van arriba y ordenadas por urgencia, nunca dentro de la tabla.
@@ -8,9 +10,10 @@ import { NIVEL, REGLAS_SIN_DATOS } from "../../docente/alertas.js";
  */
 
 const ESTILO = {
-  [NIVEL.URGENTE]: { color: FAE.coral, fondo: "rgba(231,111,81,0.12)", borde: "rgba(231,111,81,0.5)", rotulo: "URGENTE" },
-  [NIVEL.ATENCION]: { color: FAE.ambar, fondo: "rgba(233,196,106,0.12)", borde: "rgba(233,196,106,0.5)", rotulo: "ATENCIÓN" },
-  [NIVEL.INFO]: { color: FAE.teal, fondo: "rgba(42,157,143,0.10)", borde: "rgba(42,157,143,0.45)", rotulo: "INFORMATIVO" },
+  /* Panel v1 (Ukyo §4, P6): sin coral; la escala de tres con su palabra (Alto, Medio, Bajo) y la forma de MarcaNivel. */
+  [NIVEL.URGENTE]: { color: FAE.text, fondo: "rgba(248,249,250,0.06)", borde: "rgba(248,249,250,0.45)", rotulo: "RIESGO ALTO", marca: NIVEL_MARCA.URGENTE },
+  [NIVEL.ATENCION]: { color: FAE.ambar, fondo: "rgba(233,196,106,0.08)", borde: "rgba(233,196,106,0.45)", rotulo: "RIESGO MEDIO", marca: NIVEL_MARCA.ATENCION },
+  [NIVEL.INFO]: { color: "#3FA69A", fondo: "rgba(42,157,143,0.08)", borde: "rgba(42,157,143,0.4)", rotulo: "RIESGO BAJO", marca: NIVEL_MARCA.INFO },
 };
 
 function Alerta({ alerta }) {
@@ -31,8 +34,8 @@ function Alerta({ alerta }) {
       {/* Barra de color, no icono: el sitio no usa iconografía de estado. */}
       <span aria-hidden="true" style={{ width: "3px", alignSelf: "stretch", borderRadius: "2px", background: s.color, flexShrink: 0 }} />
       <div style={{ minWidth: 0 }}>
-        <p style={{ margin: 0, fontFamily: "Sora, sans-serif", fontSize: "10.5px", fontWeight: 700, letterSpacing: "0.1em", color: s.color }}>
-          {s.rotulo}
+        <p style={{ margin: 0, display: "flex", alignItems: "center", gap: "6px", fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700, letterSpacing: "0.1em", color: s.color }}>
+          <MarcaNivel nivel={s.marca} tamano={12} />{s.rotulo}
         </p>
         <p style={{ margin: "3px 0 2px", fontFamily: "Sora, sans-serif", fontSize: "14.5px", fontWeight: 600, color: FAE.text }}>
           {e.full_name || e.nickname} · {alerta.titulo}
@@ -81,7 +84,7 @@ export default function BloqueAlertas({ alertas, grupoVacio }) {
           {REGLAS_SIN_DATOS.map((r) => (
             <div key={r.titulo} style={{ padding: "10px 12px", borderRadius: "10px", background: "rgba(248,249,250,0.04)", border: "1px dashed rgba(248,249,250,0.16)" }}>
               <p style={{ margin: 0, fontSize: "13px", fontWeight: 600, color: "rgba(248,249,250,0.8)" }}>
-                {r.titulo} <span style={{ color: ESTILO[r.nivel].color, fontSize: "11px" }}>· {ESTILO[r.nivel].rotulo}</span>
+                {TITULO_SIN_DATOS[r.titulo] ?? r.titulo} <span style={{ color: ESTILO[r.nivel].color, fontSize: "12px" }}>· {ESTILO[r.nivel].rotulo}</span>
               </p>
               <p style={{ margin: "3px 0 0", fontSize: "12px", lineHeight: 1.45, color: "rgba(248,249,250,0.55)" }}>
                 Necesita: {r.necesita}. {r.porque}

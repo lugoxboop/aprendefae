@@ -1,0 +1,421 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<meta charset="utf-8"><title>Dos Hacer, estados nuevos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<style>
+/* Concepto: un pliego técnico para quien construye — reglas arriba, teléfonos reales en medio, procedencia de cada cifra al lado. Tema oscuro único, como el producto. */
+:root {
+  --g-bg: #08111E;      /* fondo del pliego (no es del producto) */
+  --g-panel: #0E1B2E;   /* fondo real de las actividades */
+  --g-ink: #F8F9FA;
+  --g-muted: #A8B6C8;
+  --g-line: #22324A;
+  --g-error: #E76F51;
+  --f-display: "Sora", "Inter", system-ui, sans-serif;
+  --f-body: "Inter", system-ui, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme: dark;
+}
+body { background: var(--g-bg); color: var(--g-ink); font-family: var(--f-body); font-size: 15px; line-height: 1.55; margin: 0; }
+.pliego { max-width: 1120px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 96px; display: grid; gap: 56px; grid-template-columns: minmax(0, 1fr); }
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+h1 { font-size: clamp(28px, 5vw, 44px); line-height: 1.1; }
+h2 { font-size: 24px; line-height: 1.2; }
+h3 { font-size: 17px; line-height: 1.3; }
+p { margin: 0; max-width: 68ch; }
+a { color: var(--g-ink); }
+code, .mono { font-family: var(--f-mono); font-size: 0.86em; }
+.eyebrow { font-family: var(--f-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--g-muted); }
+.sec { display: grid; gap: 20px; grid-template-columns: minmax(0, 1fr); }
+.pliego > *, .visor, .telefonos { min-width: 0; }
+.visor { grid-template-columns: minmax(0, 1fr); }
+.sec > header { display: grid; gap: 8px; border-top: 1px solid var(--g-line); padding-top: 20px; }
+.lead { color: var(--g-muted); font-size: 16px; }
+.cab { display: grid; gap: 14px; }
+.meta { display: flex; flex-wrap: wrap; gap: 8px 20px; color: var(--g-muted); font-size: 13px; }
+.rejilla { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 16px; }
+.regla { border: 1px solid var(--g-line); border-radius: 12px; padding: 16px; display: grid; gap: 6px; align-content: start; }
+.regla b { font-family: var(--f-display); font-size: 15px; }
+.regla p { color: var(--g-muted); font-size: 14px; }
+.tabla-wrap { overflow-x: auto; border: 1px solid var(--g-line); border-radius: 12px; }
+table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 14px; }
+th, td { text-align: left; vertical-align: top; padding: 10px 14px; border-bottom: 1px solid var(--g-line); }
+th { font-family: var(--f-mono); font-weight: 500; font-size: 12px; letter-spacing: .04em; color: var(--g-muted); text-transform: uppercase; background: var(--g-panel); }
+tr:last-child td { border-bottom: 0; }
+td.num { font-variant-numeric: tabular-nums; white-space: nowrap; font-family: var(--f-mono); }
+td .near, li .near { color: var(--g-muted); font-style: italic; }
+.est { font-family: var(--f-mono); font-size: 12px; letter-spacing: .06em; white-space: nowrap; }
+.prov { display: inline-block; font-family: var(--f-mono); font-size: 11px; letter-spacing: .05em; padding: 2px 7px; border-radius: 4px; border: 1px solid var(--g-line); color: var(--g-muted); white-space: nowrap; }
+.prov.m { border-color: #3B7A72; color: #8FD3C9; }
+.prov.e { border-color: #7A5A24; color: #E9C46A; }
+.prov.c { border-color: #4A5E7A; color: #C9D5E4; }
+.prov.d { border-color: #4A5E7A; color: var(--g-muted); }
+.procedencia { border: 1px solid var(--g-line); border-radius: 12px; padding: 16px; font-size: 14px; display: grid; gap: 6px; background: var(--g-panel); }
+.procedencia p { color: var(--g-muted); max-width: none; }
+ul.limpia { margin: 0; padding-left: 18px; display: grid; gap: 6px; max-width: 72ch; }
+ul.limpia li::marker { color: var(--g-muted); }
+
+/* visor de estados */
+.visor { display: grid; gap: 14px; }
+.estados { display: flex; flex-wrap: wrap; gap: 6px; }
+.estados button { font: 500 13px var(--f-mono); letter-spacing: .04em; color: var(--g-muted); background: transparent; border: 1px solid var(--g-line); border-radius: 999px;
+  padding: 0 14px; min-height: 36px; cursor: pointer; }
+.estados button[aria-pressed="true"] { color: var(--g-bg); background: var(--g-ink); border-color: var(--g-ink); }
+.estados button:focus-visible { outline: 2px solid var(--g-ink); outline-offset: 2px; }
+.telefonos { display: flex; gap: 24px; align-items: flex-start; overflow-x: auto; padding-bottom: 8px; }
+.tel { flex: none; display: grid; gap: 8px; }
+.tel-rot { font-family: var(--f-mono); font-size: 12px; color: var(--g-muted); display: flex; justify-content: space-between; gap: 8px; }
+.pantalla { position: relative; padding: 16px 30px; border: 1px solid var(--g-line); border-radius: 18px; overflow: hidden; background: var(--g-panel); }
+.tel[data-w="375"] .pantalla { width: 315px; } /* caja de contenido: 315 + 2 × 30 de relleno = 375 */
+.tel[data-w="320"] .pantalla { width: 260px; } /* 260 + 2 × 30 = 320 */
+.pantalla .bandeja { position: static !important; }
+/* 30 px por lado = 16 de página + 14 del panel: contenido de 315 a 375 y 260 a 320, medido por Misa */
+.lado { display: grid; gap: 12px; align-content: start; min-width: 0; flex: 1 1 280px; max-width: 420px; }
+.lado h3 { font-size: 15px; }
+.lado ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 14px; color: var(--g-ink); }
+.lado .nota { font-size: 13px; color: var(--g-muted); }
+
+/* íconos en la guía */
+.ico-demo { display: flex; gap: 14px; align-items: center; }
+.ico-demo svg { width: 40px; height: 40px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+
+pre { margin: 0; background: var(--g-panel); border: 1px solid var(--g-line); border-radius: 12px; padding: 16px; overflow-x: auto; font: 12.5px/1.55 var(--f-mono); color: #DCE3EC; }
+details { border: 1px solid var(--g-line); border-radius: 12px; padding: 0 16px; }
+details[open] { padding-bottom: 16px; }
+summary { cursor: pointer; padding-block: 14px; font-family: var(--f-display); font-weight: 600; }
+.copiar { font: 500 12px var(--f-mono); background: transparent; color: var(--g-ink); border: 1px solid var(--g-line); border-radius: 6px; padding: 6px 10px; cursor: pointer; justify-self: start; }
+.alerta { border: 1px solid #7A5A24; border-radius: 12px; padding: 14px 16px; display: grid; gap: 4px; font-size: 14px; }
+.alerta b { color: #E9C46A; font-family: var(--f-display); }
+.indice { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; }
+.indice a { color: var(--g-muted); text-decoration: none; border-bottom: 1px solid var(--g-line); }
+.indice a:hover { color: var(--g-ink); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+.mq { --texto:#F8F9FA; --aten:#A8B6C8; --neutro:#B8C4D4; --teal:#2A9D8F; --teal-t:#3FA69A; --ambar:#E9C46A; --coral:#E76F51; --coral-t:#EE8266;
+  background:#1F2D3D; color:var(--texto); font:400 14px/1.45 Inter, system-ui, sans-serif; display:grid; gap:10px; box-sizing:border-box; }
+.mq * { box-sizing:border-box; }
+.mq p { margin:0; }
+.mq .cej { font:700 12px/1.3 Sora, Inter, sans-serif; letter-spacing:.08em; text-transform:uppercase; color:var(--aten); }
+.mq .txt { font-size:15px; }
+.mq .hund { background:rgba(10,20,34,.45); border:1px solid rgba(248,249,250,.12); border-radius:12px; padding:10px 12px; display:grid; gap:8px; }
+.mq .tit { font:600 13px/1.3 Sora, Inter, sans-serif; }
+.mq .num { font-family:"JetBrains Mono", ui-monospace, monospace; font-variant-numeric:tabular-nums; font-weight:600; font-size:13px; white-space:nowrap; }
+.mq .td { color:var(--teal-t); } .mq .th { color:var(--ambar); }
+.mq svg { width:16px; height:16px; flex:none; }
+.mq .pas { display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:999px; font:600 12px/1.2 Inter, sans-serif; white-space:nowrap; }
+.mq .pas.ok { border:1px solid var(--texto); } .mq .pas.mal { border:1px solid var(--coral); color:var(--coral-t); } .mq .pas.iba { border:1px dashed var(--texto); }
+.mq .falla, .mq .cuadra { display:flex; gap:6px; align-items:flex-start; font-size:13px; line-height:1.4; } .mq .falla { color:var(--coral-t); }
+.mq .msg { padding:10px 12px; background:rgba(184,196,212,.12); border-left:3px solid var(--neutro); border-radius:0 10px 10px 0; font-size:14px; }
+.mq .msg.mal { border-left-color:var(--coral); } .mq .msg .pas { margin-right:6px; }
+.mq .seguir { min-height:44px; border-radius:12px; border:0; background:var(--neutro); color:#1D3557; font:600 15px Inter, sans-serif; }
+.mq .seguir[aria-disabled="true"] { background:transparent; border:2px solid rgba(248,249,250,.35); color:var(--aten); }
+.mq .malb { outline:2px solid var(--coral); outline-offset:-2px; }
+/* a */
+.mq .diario { margin:0; padding:0; list-style:none; display:grid; gap:4px; }
+.mq .ren { display:grid; grid-template-columns:3.6em minmax(0,1fr) 3.6em auto; gap:6px; align-items:center; min-height:32px; padding:4px 8px; border-radius:6px; font-size:13px; }
+.mq .ren.hecho { color:var(--aten); } .mq .ren.cur { outline:2px solid var(--texto); outline-offset:-2px; color:var(--texto); }
+.mq .ren.enlazado, .mq .ln.enlazado { background:rgba(184,196,212,.16); }
+.mq .ctas { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:8px; }
+.mq .cta { min-height:88px; display:grid; align-content:start; gap:4px; padding:8px; border-radius:10px; border:1px solid rgba(248,249,250,.35); background:transparent; color:var(--texto); font:inherit; text-align:left; }
+.mq .cta.elegida { border:2px solid var(--texto); padding:7px; } .mq .cta.elegida.malb { border-color:var(--coral); outline:0; }
+.mq .cta-tit { font-weight:600; font-size:13px; }
+.mq .cta-t { display:grid; grid-template-columns:1fr 1fr; border-top:2px solid var(--neutro); min-height:30px; }
+.mq .cta-t > span { display:grid; align-content:start; gap:2px; padding:4px 2px 0; } .mq .cta-t > span:first-child { border-right:2px solid var(--neutro); }
+.mq .ln { font:600 12px/1.25 "JetBrains Mono", monospace; border-radius:4px; padding:1px 2px; }
+.mq .ln.nueva { outline:2px solid var(--texto); } .mq .ln.nueva.malb { outline-color:var(--coral); }
+.mq .ln.fantasma { outline:1px dashed var(--texto); display:grid; gap:2px; justify-items:start; }
+.mq .orden { display:grid; grid-template-columns:1fr 1fr; border:1px solid var(--neutro); border-radius:10px; overflow:hidden; }
+.mq .orden button { min-height:44px; border:0; background:transparent; color:var(--texto); font:600 13px Inter, sans-serif; } .mq .orden .on { background:var(--neutro); color:#1D3557; }
+/* b */
+.mq .lista { margin:0; padding:0; list-style:none; display:grid; gap:4px; }
+.mq .cu { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:4px 8px; min-height:32px; padding:4px 8px; border-radius:6px; font-size:13px; border:1px solid rgba(248,249,250,.12); }
+.mq .cu.cur { outline:2px solid var(--texto); outline-offset:-2px; } .mq .cu.vacio { color:var(--aten); border-style:dashed; } .mq .cu s { color:var(--aten); }
+.mq .cierre { display:grid; gap:4px; padding:8px; border-radius:8px; border:1px dashed var(--neutro); }
+.mq .gyp { display:flex; justify-content:space-between; gap:8px; font-size:13px; padding:2px 4px; } .mq .gyp.tot { border-top:1px solid rgba(248,249,250,.35); padding-top:6px; font-weight:600; } .mq .gyp.vacio { color:var(--aten); }
+.mq .ops { display:grid; gap:8px; }
+.mq .op { min-height:44px; display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:4px 8px; padding:10px 12px; border-radius:12px; border:1px solid rgba(248,249,250,.35); background:transparent; color:var(--texto); font:500 14px Inter, sans-serif; text-align:left; }
+.mq .op.bien, .mq .op.pista { border:2px solid var(--texto); padding:9px 11px; } .mq .op.malb { border:2px solid var(--coral); outline:0; padding:9px 11px; }
+/* c */
+.mq .asiento { width:100%; min-width:0; border-collapse:collapse; font-size:13px; } .mq .asiento td { padding:4px 2px; border-bottom:0; vertical-align:middle; text-align:left; } .mq .asiento td.num { text-align:right; }
+.mq .asiento tr.sum td { border-top:1px solid rgba(248,249,250,.35); font-weight:600; } .mq .hueco { border:1px dashed var(--neutro); border-radius:4px; padding:0 6px; }
+.mq .columnas { position:relative; display:grid; grid-template-columns:1fr 1fr; gap:16px; height:150px; padding:0 8px; border-bottom:2px solid var(--neutro); }
+.mq .col { display:flex; align-items:flex-end; } .mq .pila { width:100%; height:100%; display:flex; flex-direction:column-reverse; gap:2px; }
+.mq .bar { display:grid; place-items:center; border-radius:3px; font:600 12px/1 "JetBrains Mono", monospace; color:#0E1B2E; }
+.mq .col.d .bar { background:var(--teal); } .mq .col.h .bar { background:var(--ambar); }
+.mq .bar.corta { outline:2px solid var(--coral); outline-offset:1px; }
+.mq .nivel { position:absolute; left:0; right:0; border-top:2px dashed var(--neutro); } .mq .nivel.igual { border-top-style:solid; border-top-color:var(--texto); }
+.mq .hueco-barra { position:absolute; right:8px; width:calc(50% - 16px); border:2px dashed var(--coral); border-bottom:0; border-radius:3px 3px 0 0; }
+.mq .conteo { display:grid; grid-template-columns:1fr 1fr; gap:16px; font-size:12px; color:var(--aten); text-align:center; }
+.mq .casilla { display:flex; flex-wrap:wrap; gap:8px; } .mq .casilla input { flex:1 1 120px; min-width:0; min-height:44px; border-radius:10px; border:1px solid rgba(248,249,250,.35); background:rgba(10,20,34,.45); color:var(--texto); font:600 16px "JetBrains Mono", monospace; padding:0 12px; }
+.mq .cmp { min-height:44px; padding:0 14px; border-radius:12px; border:2px solid var(--neutro); background:transparent; color:var(--texto); font:600 14px Inter, sans-serif; } .mq .cmp[aria-disabled="true"] { opacity:.5; }
+.mq .escrito { flex:1 1 100%; min-height:44px; display:flex; flex-wrap:wrap; align-items:center; gap:4px 10px; padding:8px 12px; border-radius:10px; border:2px solid var(--texto); } .mq .escrito.malb { border-color:var(--coral); outline:0; } .mq .escrito.iba { border-style:dashed; }
+.mq .cej2 { font:500 12px Inter, sans-serif; color:var(--aten); }
+.mq .ren.ren2 { grid-template-columns:3.4em minmax(0,1fr) auto; grid-template-areas:"f c c" "f l m"; row-gap:0; }
+.mq .ren2 .f { grid-area:f; align-self:start; } .mq .ren2 .c { grid-area:c; } .mq .ren2 .l { grid-area:l; } .mq .ren2 .m { grid-area:m; }
+.mq .ln { display:grid; } .mq .ln small { font:500 12px/1.2 Inter, sans-serif; color:var(--aten); }
+.mq .asiento { table-layout:fixed; } .mq .asiento td:nth-child(2), .mq .asiento td:nth-child(3) { width:6.3em; } .mq .asiento td:first-child { overflow-wrap:anywhere; }
+/* T2-4 · lo nuevo sobre hacer.css */
+.mq .hecho { font-size:14px; color:var(--aten); }
+.mq .reloj { font:500 12px/1.4 "JetBrains Mono", monospace; color:var(--aten); border:1px dashed rgba(248,249,250,.25); border-radius:8px; padding:6px 8px; }
+/* Cuadra por valor */
+.mq .bar.fijo { height:28px; flex:none; border:2px dashed var(--neutro); background:transparent; color:var(--texto); font:600 13px/1 "JetBrains Mono", monospace; }
+.mq .col.h .bar.tuya { background:var(--ambar); box-shadow:inset 0 0 0 2px var(--texto); }
+.mq .col.h .bar.tuya.mal { box-shadow:none; outline:2px solid var(--coral); outline-offset:1px; }
+.mq .bar.culpa { outline:2px solid var(--texto); outline-offset:1px; }
+.mq .hueco-barra.d { left:8px; right:auto; }
+.mq .columnas.entra .pila .bar { transform-origin:bottom; animation:sube 380ms cubic-bezier(.3,.9,.4,1) both; }
+@keyframes sube { from { transform:scaleY(0); opacity:0; } to { transform:none; opacity:1; } }
+.mq .tucifra { flex:1 1 140px; display:grid; gap:4px; font:500 12px Inter, sans-serif; color:var(--aten); }
+.mq .tucifra input { min-width:0; min-height:44px; border-radius:10px; border:1px solid rgba(248,249,250,.35); background:rgba(10,20,34,.45); color:var(--texto); font:600 16px "JetBrains Mono", monospace; padding:0 12px; }
+.mq .casilla { align-items:end; }
+.mq .escrito > span:first-child { font:500 12px Inter, sans-serif; color:var(--aten); }
+.mq .ops.dos { grid-template-columns:repeat(auto-fit, minmax(110px, 1fr)); }
+.mq .op.elegida { border:2px solid var(--texto); padding:9px 11px; }
+.mq .renbs { display:grid; gap:6px; }
+.mq .renb { min-height:44px; display:grid; grid-template-columns:minmax(0,1fr) auto; grid-template-areas:"c c" "l m" "p p"; gap:2px 8px; align-items:center; padding:6px 10px; border-radius:10px; border:1px solid rgba(248,249,250,.35); background:transparent; color:var(--texto); font:500 13px/1.3 Inter, sans-serif; text-align:left; }
+.mq .renb .c { grid-area:c; } .mq .renb .l { grid-area:l; font-size:12px; } .mq .renb .m { grid-area:m; } .mq .renb .pas { grid-area:p; justify-self:start; }
+.mq .renb.elegida, .mq .renb.bien, .mq .renb.pista { border:2px solid var(--texto); padding:5px 9px; } .mq .renb.pista { border-style:dashed; }
+.mq .renb.malb { border:2px solid var(--coral); outline:0; padding:5px 9px; }
+.mq .sumas-l { display:grid; grid-template-columns:minmax(0,1fr) auto auto; gap:12px; font-size:13px; font-weight:600; border-top:1px solid rgba(248,249,250,.35); padding-top:6px; }
+/* Del diario al mayor · revisar */
+.mq .cta.tr { min-height:0; padding:6px; gap:4px; }
+.mq .cta.tr .cta-t > span { padding:4px 0 0; gap:4px; } .mq .cta.tr .cta-t > span:first-child { padding-right:3px; } .mq .cta.tr .cta-t > span:last-child { padding-left:3px; }
+.mq .lnb { min-height:44px; min-width:0; width:100%; display:grid; align-content:center; justify-items:start; gap:1px; padding:3px 4px; border-radius:6px; border:1px solid rgba(248,249,250,.3); background:transparent; color:var(--texto); text-align:left; }
+.mq .lnb small { font:500 12px/1.15 Inter, sans-serif; color:var(--aten); } .mq .lnb .num { font-size:12px; line-height:1.2; }
+.mq .lnb.bien { border:2px solid var(--texto); padding:2px 3px; background:rgba(184,196,212,.16); }
+.mq .lnb.malb { border:2px solid var(--coral); outline:0; padding:2px 3px; }
+.mq .lnb.pista { border:2px dashed var(--texto); padding:2px 3px; }
+.mq .cotejo { display:grid; gap:2px; padding:8px; border-radius:8px; background:rgba(184,196,212,.10); }
+.mq .cot { display:grid; grid-template-columns:3.6em minmax(0,1fr) 1.2em minmax(0,1fr); gap:4px; align-items:start; font-size:13px; padding:3px 4px; border-radius:6px; overflow-wrap:anywhere; }
+.mq .cot.cab { font-size:12px; color:var(--aten); padding-bottom:0; } .mq .cot .k { font-size:12px; color:var(--aten); } .mq .cot .s { text-align:center; font-weight:700; }
+.mq .cot.distinto { outline:2px solid var(--texto); outline-offset:-2px; font-weight:600; }
+.mq .veredicto-l { display:grid; gap:6px; } .mq .estado-l { display:flex; flex-wrap:wrap; gap:6px; }
+@media (prefers-reduced-motion: reduce) { .mq .columnas.entra .pila .bar { animation:none; } }
+
+/* Cuadra por valor · la columna de cifra mide la cifra más larga; el nombre se parte por palabras y, si una no cabe, con guion */
+.mq .asiento td:nth-child(2), .mq .asiento td:nth-child(3) { width:calc(var(--cifra, 10) * 1ch + 6px); }
+.mq .asiento td:first-child { overflow-wrap:break-word; hyphens:auto; }
+/* Con cifras de millones (más de 8 caracteres) el nombre va en su propia línea y las cifras debajo, en sus columnas */
+.mq .asiento.apilado, .mq .asiento.apilado tbody { display:grid; }
+.mq .asiento.apilado tr { display:grid; grid-template-columns:minmax(0,1fr) calc(var(--cifra) * 1ch + 6px) calc(var(--cifra) * 1ch + 6px); }
+.mq .asiento.apilado td { width:auto !important; } .mq .asiento.apilado td:first-child { grid-column:1 / -1; padding-bottom:0; }
+.mq .asiento.apilado td:nth-child(2) { grid-column:2; } .mq .asiento.apilado td:nth-child(3) { grid-column:3; }
+.mq .asiento.apilado tr.sum td:first-child { grid-column:1; padding-bottom:4px; } .mq .asiento.apilado tr.sum { border-top:1px solid rgba(248,249,250,.35); } .mq .asiento.apilado tr.sum td { border-top:0; }
+
+.marcos { display:flex; flex-wrap:wrap; gap:20px; align-items:flex-start; } .marco { display:grid; gap:6px; max-width:100%; overflow-x:auto; }
+.marco-rot { font:500 12px var(--f-mono); color:var(--g-muted); display:flex; justify-content:space-between; gap:8px; }
+.marco-caja { box-sizing:content-box; padding:16px 31px; background:#1F2D3D; border:1px solid var(--g-line); border-radius:18px; }
+.vivo { display:grid; gap:10px; grid-template-columns:minmax(0,1fr); } .botones { display:flex; flex-wrap:wrap; gap:8px; }
+.botones button { font:500 13px var(--f-mono); color:var(--g-ink); background:transparent; border:1px solid var(--g-line); border-radius:999px; min-height:44px; min-width:44px; padding:0 14px; cursor:pointer; }
+.botones button.on { border:2px solid var(--g-ink); } .botones button:focus-visible { outline:2px solid var(--g-ink); outline-offset:2px; }
+.frase { font-family:var(--f-display); font-size:19px; line-height:1.4; max-width:64ch; }
+.tabla-wrap { overflow-x:auto; } pre.css { overflow-x:auto; font:12px/1.5 var(--f-mono); padding:14px; border:1px solid var(--g-line); border-radius:10px; white-space:pre; }
+</style>
+<main class="pliego">
+  <header class="cab"><span class="eyebrow">Célula C · Lote T2-4 · Delta sobre T2-1 y T2-3 · Watari</span>
+    <h1>Dos Hacer, estados nuevos</h1>
+    <p class="lead">Los dos ajustes de Mello que aceptaste (auditoría T2-3, §1.1 y §1.2) puestos en la forma: en «Cuadra por valor», la figura deja de calcular por el estudiante; en «Del diario al mayor» entra «revisar», el punteo. Solo lo que cambia. «Las que vuelven a cero» no se toca.</p>
+    <div class="meta"><span>v4 · 24 de octubre de 2026</span><span>main 33c0c11a</span><span>sin componente compartido nuevo</span></div>
+  </header>
+  <section class="sec" id="cuadra"><header><span class="eyebrow">1 · Cuadra por valor · cu-cuadra-por-valor</span><h2>Las columnas se mueven al decidir</h2>
+    <p class="frase">El estudiante VE subir las columnas del debe y del haber hasta su valor <b>cuando comprueba o decide</b>, y no mientras teclea. Eso explica que el asiento cuadra por el valor, y deja la cuenta en su cabeza.</p></header>
+    <ul class="limpia marcas"><li><b>Completar: la figura no calcula al teclear.</b> La cifra escrita se ve solo en la casilla «Tu cifra». Antes de «Comprobar», el hueco es un tramo fijo de 28 px, punteado y con «?». Mide lo mismo con cualquier cifra (esa es la prueba de geometría C5 de Mello). No hay línea de nivel, y la suma del haber dice «?».</li><li><b>Comprobar, a los 0 ms.</b> El tramo del hueco pasa a la altura de la cifra con <code>scaleY</code> (380 ms, cubic-bezier(.3,.9,.4,1)). Entran la línea de nivel y la suma, y se marca lo que falta o lo que sobra: tramo punteado en coral más la frase de consecuencia.</li><li><b>A los 380 ms, el veredicto.</b> Llegan la pastilla («Correcto» o «No va aquí»), «Iba aquí» con la cifra correcta, el retro de Near y se libera «Seguir». La pausa baja de 0,7 s a 380 ms, como piden Mello y L.</li><li><b>Juzgar y encontrar: nada a la vista antes de decidir.</b> El asiento llega sin fila de sumas y sin columnas. Al decidir entran juntas: primero la fila de sumas y las columnas (que suben con <code>scaleY</code>, 380 ms), luego la consecuencia y luego el veredicto. En encontrar, los renglones son botones de 44 px. Con el acierto, el tramo culpable queda con borde blanco.</li><li><b>La frase de consecuencia tiene dos formas.</b> «Faltan $X en el {lado}: las dos columnas no llegan a la misma altura.» (la de antes) y, cuando la cifra se pasa, «Sobran $X en el haber: su columna pasa la línea del debe.» X sale del dato.</li><li><b>Corrección mía de T2-3: el nombre ya no se parte letra a letra.</b> La columna fija de 6,3 em con <code>overflow-wrap: anywhere</code> partía «Obligaciones financieras» y «Equipo de computación» por la mitad de la palabra a 320 px. Ahora el ancho de cifra se ajusta a la cifra más larga del asiento (<code>--cifra</code>, en ch). Con cifras de más de 8 caracteres (los millones de K1), el nombre va en su propia línea y las cifras debajo, en sus columnas. Medido: 0 palabras partidas.</li><li><b>E1 sigue el cambio de Near en T2-3.</b> Caleja: Cuentas por pagar $10.000 D · Caja $10.000 D. La columna del haber queda vacía y marca «Faltan $20.000 en el haber».</li></ul>
+    <div class="vivo" data-v="cuadra"><div class="botones tipos" role="group" aria-label="Tipo de ítem"><button type="button" data-t="completar" class="on">Completar · K3</button><button type="button" data-t="juzgar">Juzgar · J2</button><button type="button" data-t="encontrar">Encontrar · E1</button></div><div class="botones estados" role="group" aria-label="Estado"></div><div class="marcos"><div class="marco"><div class="marco-rot"><span>320 px</span><span>contenido 258</span></div><div class="marco-caja"><div class="mq hq" lang="es" style="width:258px"></div></div></div><div class="marco"><div class="marco-rot"><span>375 px</span><span>contenido 313</span></div><div class="marco-caja"><div class="mq hq" lang="es" style="width:313px"></div></div></div></div></div>
+  </section>
+  <section class="sec" id="revisar"><header><span class="eyebrow">2 · Del diario al mayor · tipo nuevo «revisar»</span><h2>El punteo</h2>
+    <p class="frase">El estudiante VE encenderse el renglón del diario y el cotejo campo por campo <b>cuando toca una línea del mayor</b>. Eso explica que el mayor es el diario reordenado, y que lo que no coincide se encuentra cotejando los dos libros, no por el nombre.</p></header>
+    <ul class="limpia marcas"><li><b>Qué ve.</b> Arriba, el diario completo, sin renglón marcado. Debajo, el mayor ya pasado, en la cuadrícula de 2 × 2. Cada línea de las T es un botón de 44 px de alto, con la fecha encima del monto. La T ya no es botón, porque un botón no puede contener otro.</li><li><b>Qué hace al tocar.</b> Se enciende el renglón del diario de donde salió esa línea. Debajo de la cuadrícula aparece el cotejo, con Diario y Mayor lado a lado y tres filas: Cuenta, Lado y Monto. La fila que no coincide lleva «≠» y borde blanco, y las que coinciden llevan «=». El cotejo trae los datos del renglón, así que se lee aunque el diario haya quedado arriba, fuera de la pantalla.</li><li><b>Acierto.</b> Toca la línea mal pasada: el cotejo muestra el único campo distinto y la frase de lo que pasó, en neutro. El error del libro no es del estudiante, así que no va en coral. Los tres tipos de Mello caben en el mismo cotejo: traspuesta (Monto ≠), cuenta vecina (Cuenta ≠) y lado contrario (Lado ≠).</li><li><b>Error.</b> Toca una línea buena: borde coral, el cotejo con los tres «=» y «Esta línea coincide con su renglón en cuenta, lado y monto». Luego viene el veredicto, con «No va aquí», la línea mal pasada punteada y la pastilla «Iba en la línea punteada», que va en la fila de estado porque dentro del botón de 44 px no cabe.</li><li><b>Barajado (H6).</b> El orden de las cuatro T cambia en cada intento. El orden de las líneas dentro de cada T no cambia, porque va por fecha, como en un mayor de verdad.</li><li><b>Lo que no lleva.</b> No hay saldo ni se elige el lado, como decidiste. La consigna es la de Mello.</li><li><b>Datos para Misa.</b> Cada línea del mayor es <code>{ r, cuenta, lado, monto }</code>, donde <code>r</code> es el índice del renglón del diario. Una sola línea por ítem trae un campo distinto de su renglón. El cotejo se calcula comparando y no se escribe a mano. En la línea, la cifra va sin «$»: la T ya es de pesos y así gana ancho.</li></ul>
+    <div class="vivo" data-v="revisar"><div class="botones estados" role="group" aria-label="Estado"></div><div class="marcos"><div class="marco"><div class="marco-rot"><span>320 px</span><span>contenido 258</span></div><div class="marco-caja"><div class="mq hq" lang="es" style="width:258px"></div></div></div><div class="marco"><div class="marco-rot"><span>375 px</span><span>contenido 313</span></div><div class="marco-caja"><div class="mq hq" lang="es" style="width:313px"></div></div></div></div></div>
+    <div class="procedencia"><div><span class="prov m">MEDIDO EN MAQUETA</span></div><p>Cuadrícula de 2 × 2 con el caso A de Near: mide 201 px de alto a 320 y 201 a 375. Con 3 líneas del mismo lado en las cuatro T (el peor caso, a propósito por encima del tope de 7 renglones) mide 393 y 393. El botón de línea más angosto mide 44 px a 320 y 58 a 375: cabe justo. Por eso, <b>regla del banco: en «revisar», cifras de hasta 9.999</b> (5 caracteres sin «$»). Los casos A y B de Near cumplen.</p></div>
+    <div class="tabla-wrap"><table><thead><tr><th>Estado</th><th>Cuadrícula a 320</th><th>a 375</th><th>Pantalla entera a 320</th></tr></thead><tbody><tr><td>Inicio</td><td class='mono'>201</td><td class='mono'>201</td><td class='mono'>701</td></tr><tr><td>Error · toca una línea buena</td><td class='mono'>201</td><td class='mono'>201</td><td class='mono'>1014</td></tr><tr><td>Acierto · cifra traspuesta</td><td class='mono'>201</td><td class='mono'>201</td><td class='mono'>1029</td></tr><tr><td>Acierto · cuenta vecina</td><td class='mono'>201</td><td class='mono'>201</td><td class='mono'>1047</td></tr><tr><td>Acierto · lado contrario</td><td class='mono'>249</td><td class='mono'>249</td><td class='mono'>1039</td></tr><tr><td>Intento 2 · barajado</td><td class='mono'>201</td><td class='mono'>201</td><td class='mono'>701</td></tr><tr><td>Estrés · 3 por lado</td><td class='mono'>393</td><td class='mono'>393</td><td class='mono'>893</td></tr></tbody></table></div>
+  </section>
+  <section class="sec" id="medido"><header><span class="eyebrow">Medido</span><h2>Sonda</h2></header>
+    <div class="procedencia"><div><span class="prov m">MEDIDO EN MAQUETA</span></div><p>42 estados (los 21 de arriba, a 258 y 313 px). La letra más chica mide 12 px. Botones de menos de 44 px: 0. Fuera de caja o desbordados: 0. Palabras partidas por la mitad: 0. El total de problemas es 0.</p></div></section>
+  <section class="sec" id="misa"><header><span class="eyebrow">Para Misa</span><h2>CSS del delta</h2><p class="frase">Se agrega sobre lo de T2-3, con el prefijo <code>.mq</code> de la maqueta: cámbialo por la raíz de la pieza. Componentes que se reusan: <code>CampoCifra</code>, <code>AsientoEnLineas</code> y el renglón de <code>LibroDiario</code>. Nada nuevo para Erwin.</p></header>
+    <pre class="css">/* T2-4 · lo nuevo sobre hacer.css */
+.mq .hecho { font-size:14px; color:var(--aten); }
+.mq .reloj { font:500 12px/1.4 &quot;JetBrains Mono&quot;, monospace; color:var(--aten); border:1px dashed rgba(248,249,250,.25); border-radius:8px; padding:6px 8px; }
+/* Cuadra por valor */
+.mq .bar.fijo { height:28px; flex:none; border:2px dashed var(--neutro); background:transparent; color:var(--texto); font:600 13px/1 &quot;JetBrains Mono&quot;, monospace; }
+.mq .col.h .bar.tuya { background:var(--ambar); box-shadow:inset 0 0 0 2px var(--texto); }
+.mq .col.h .bar.tuya.mal { box-shadow:none; outline:2px solid var(--coral); outline-offset:1px; }
+.mq .bar.culpa { outline:2px solid var(--texto); outline-offset:1px; }
+.mq .hueco-barra.d { left:8px; right:auto; }
+.mq .columnas.entra .pila .bar { transform-origin:bottom; animation:sube 380ms cubic-bezier(.3,.9,.4,1) both; }
+@keyframes sube { from { transform:scaleY(0); opacity:0; } to { transform:none; opacity:1; } }
+.mq .tucifra { flex:1 1 140px; display:grid; gap:4px; font:500 12px Inter, sans-serif; color:var(--aten); }
+.mq .tucifra input { min-width:0; min-height:44px; border-radius:10px; border:1px solid rgba(248,249,250,.35); background:rgba(10,20,34,.45); color:var(--texto); font:600 16px &quot;JetBrains Mono&quot;, monospace; padding:0 12px; }
+.mq .casilla { align-items:end; }
+.mq .escrito &gt; span:first-child { font:500 12px Inter, sans-serif; color:var(--aten); }
+.mq .ops.dos { grid-template-columns:repeat(auto-fit, minmax(110px, 1fr)); }
+.mq .op.elegida { border:2px solid var(--texto); padding:9px 11px; }
+.mq .renbs { display:grid; gap:6px; }
+.mq .renb { min-height:44px; display:grid; grid-template-columns:minmax(0,1fr) auto; grid-template-areas:&quot;c c&quot; &quot;l m&quot; &quot;p p&quot;; gap:2px 8px; align-items:center; padding:6px 10px; border-radius:10px; border:1px solid rgba(248,249,250,.35); background:transparent; color:var(--texto); font:500 13px/1.3 Inter, sans-serif; text-align:left; }
+.mq .renb .c { grid-area:c; } .mq .renb .l { grid-area:l; font-size:12px; } .mq .renb .m { grid-area:m; } .mq .renb .pas { grid-area:p; justify-self:start; }
+.mq .renb.elegida, .mq .renb.bien, .mq .renb.pista { border:2px solid var(--texto); padding:5px 9px; } .mq .renb.pista { border-style:dashed; }
+.mq .renb.malb { border:2px solid var(--coral); outline:0; padding:5px 9px; }
+.mq .sumas-l { display:grid; grid-template-columns:minmax(0,1fr) auto auto; gap:12px; font-size:13px; font-weight:600; border-top:1px solid rgba(248,249,250,.35); padding-top:6px; }
+/* Del diario al mayor · revisar */
+.mq .cta.tr { min-height:0; padding:6px; gap:4px; }
+.mq .cta.tr .cta-t &gt; span { padding:4px 0 0; gap:4px; } .mq .cta.tr .cta-t &gt; span:first-child { padding-right:3px; } .mq .cta.tr .cta-t &gt; span:last-child { padding-left:3px; }
+.mq .lnb { min-height:44px; min-width:0; width:100%; display:grid; align-content:center; justify-items:start; gap:1px; padding:3px 4px; border-radius:6px; border:1px solid rgba(248,249,250,.3); background:transparent; color:var(--texto); text-align:left; }
+.mq .lnb small { font:500 12px/1.15 Inter, sans-serif; color:var(--aten); } .mq .lnb .num { font-size:12px; line-height:1.2; }
+.mq .lnb.bien { border:2px solid var(--texto); padding:2px 3px; background:rgba(184,196,212,.16); }
+.mq .lnb.malb { border:2px solid var(--coral); outline:0; padding:2px 3px; }
+.mq .lnb.pista { border:2px dashed var(--texto); padding:2px 3px; }
+.mq .cotejo { display:grid; gap:2px; padding:8px; border-radius:8px; background:rgba(184,196,212,.10); }
+.mq .cot { display:grid; grid-template-columns:3.6em minmax(0,1fr) 1.2em minmax(0,1fr); gap:4px; align-items:start; font-size:13px; padding:3px 4px; border-radius:6px; overflow-wrap:anywhere; }
+.mq .cot.cab { font-size:12px; color:var(--aten); padding-bottom:0; } .mq .cot .k { font-size:12px; color:var(--aten); } .mq .cot .s { text-align:center; font-weight:700; }
+.mq .cot.distinto { outline:2px solid var(--texto); outline-offset:-2px; font-weight:600; }
+.mq .veredicto-l { display:grid; gap:6px; } .mq .estado-l { display:flex; flex-wrap:wrap; gap:6px; }
+@media (prefers-reduced-motion: reduce) { .mq .columnas.entra .pila .bar { animation:none; } }
+
+/* Cuadra por valor · la columna de cifra mide la cifra más larga; el nombre se parte por palabras y, si una no cabe, con guion */
+.mq .asiento td:nth-child(2), .mq .asiento td:nth-child(3) { width:calc(var(--cifra, 10) * 1ch + 6px); }
+.mq .asiento td:first-child { overflow-wrap:break-word; hyphens:auto; }
+/* Con cifras de millones (más de 8 caracteres) el nombre va en su propia línea y las cifras debajo, en sus columnas */
+.mq .asiento.apilado, .mq .asiento.apilado tbody { display:grid; }
+.mq .asiento.apilado tr { display:grid; grid-template-columns:minmax(0,1fr) calc(var(--cifra) * 1ch + 6px) calc(var(--cifra) * 1ch + 6px); }
+.mq .asiento.apilado td { width:auto !important; } .mq .asiento.apilado td:first-child { grid-column:1 / -1; padding-bottom:0; }
+.mq .asiento.apilado td:nth-child(2) { grid-column:2; } .mq .asiento.apilado td:nth-child(3) { grid-column:3; }
+.mq .asiento.apilado tr.sum td:first-child { grid-column:1; padding-bottom:4px; } .mq .asiento.apilado tr.sum { border-top:1px solid rgba(248,249,250,.35); } .mq .asiento.apilado tr.sum td { border-top:0; }
+</pre></section>
+  <section class="sec" id="noverif"><header><span class="eyebrow">Lo que no verifiqué</span><h2>Pendiente</h2></header><ul class="limpia marcas"><li>Los textos de retro y porqué de «revisar» son marcadores: los escribe Near. Las tres frases de consecuencia del acierto son mías y salen del dato.</li><li>El partido de palabras se midió con las fuentes instaladas en la sonda. En el teléfono, la prueba C5 de Misa lo confirma.</li><li>No lo he visto en un teléfono real.</li></ul></section>
+</main>
+<script>/* T2-4 · Estados nuevos de dos Hacer (Watari, 24-oct). Datos: bancos de Near (c-t2-2-near-lote §1). */
+(function () {
+  const $ = (n) => '$' + n.toLocaleString('es-CO'); const n0 = (n) => n.toLocaleString('es-CO');
+  const X = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
+  const V = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
+  const ok = `<span class="pas ok">${V}Correcto</span>`, mal = `<span class="pas mal">${X}No va aquí</span>`, iba = '<span class="pas iba">Iba aquí</span>';
+  const falla = (t) => `<p class="falla">${X}<span>${t}</span></p>`, cuadra = (t) => `<p class="cuadra">${V}<span>${t}</span></p>`;
+  const msg = (t, m) => `<div class="msg${m ? ' mal' : ''}"><p>${m ? '' : ok}${t}</p></div>`;
+  const reloj = (t) => `<p class="reloj">${t}</p>`;
+  const seguir = (on, txt = 'Seguir') => `<button type="button" class="seguir"${on ? '' : ' aria-disabled="true"'}>${txt}</button>`;
+
+  /* ── Cuadra por valor ─────────────────────────────────────────
+     Columnas: cada renglón es un tramo proporcional a su valor. El hueco, antes de «Comprobar», es un tramo FIJO de 28 px
+     con «?» (mide igual con cualquier cifra: prueba C5 de geometría). Al «Comprobar» el tramo pasa a su altura con scaleY. */
+  function columnas(deb, hab, o = {}) {
+    const td = deb.reduce((t, r) => t + r[1], 0), th = hab.reduce((t, r) => t + (r[1] || 0), 0);
+    const esc = Math.max(td, th) * 1.12; const h = (x) => (100 * x / esc).toFixed(1);
+    const tramo = (r, lado) => { if (r[1] == null) return `<span class="bar fijo">?</span>`;
+      const cls = (o.culpa === r[0] ? ' culpa' : '') + (r[2] ? ' ' + r[2] : '');
+      return `<span class="bar${cls}" style="height:${h(r[1])}%">${r[1] >= esc * 0.22 ? $(r[1]) : ''}</span>`; };
+    const pila = (rs, lado) => `<div class="col ${lado}"><div class="pila">${rs.map((r) => tramo(r, lado)).join('')}</div></div>`;
+    let marca = '';
+    if (o.comprobado && td !== th) { const lo = Math.min(td, th), hi = Math.max(td, th); const lado = td > th ? 'h' : 'd';
+      marca = `<span class="hueco-barra ${lado}" style="bottom:${h(lo)}%;height:${h(hi - lo)}%"></span>`; }
+    const nivel = o.comprobado ? `<span class="nivel${td === th ? ' igual' : ''}" style="bottom:${h(td)}%"></span>` : '';
+    return `<div class="columnas${o.entra ? ' entra' : ''}">${nivel}${pila(deb, 'd')}${pila(hab, 'h')}${marca}</div>
+      <p class="conteo"><span>Debe · ${$(td)}</span><span>Haber · ${o.comprobado ? $(th) : '?'}</span></p>`;
+  }
+  const dif = (deb, hab) => { const td = deb.reduce((t, r) => t + r[1], 0), th = hab.reduce((t, r) => t + r[1], 0);
+    return td > th ? `Faltan ${$(td - th)} en el haber: las dos columnas no llegan a la misma altura.` : `Sobran ${$(th - td)} en el haber: su columna pasa la línea del debe.`; };
+  // ancho de las columnas de cifra = la cifra más larga del asiento (en ch de la monoespaciada), no un fijo para millones
+  const tabla = (filas, sumas) => { const largo = Math.max(...[...filas.flatMap((f) => [f[1], f[2]]), ...(sumas || [])].filter((x) => x && !String(x).includes('<')).map((x) => String(x).length), 4);
+    return `<table class="asiento${largo > 8 ? ' apilado' : ''}" style="--cifra:${largo}"><tbody>${filas.map(([n, d, hb]) => `<tr><td>${n}</td><td class="num td">${d == null ? '' : d}</td><td class="num th">${hb == null ? '' : hb}</td></tr>`).join('')}${sumas ? `<tr class="sum"><td>Sumas</td><td class="num">${sumas[0]}</td><td class="num">${sumas[1]}</td></tr>` : ''}</tbody></table>` };
+
+  // completar · K3 (trampa 3 contra 1) y K1 para el caso que se pasa
+  const K3 = { deb: [['Bancos', 5000], ['Caja', 1000], ['Equipo de computación', 2000]], hueco: 'Acciones', hab: [], ok: 8000 };
+  const K1 = { deb: [['Equipo de computación', 1500000]], hab: [['Caja', 750000]], hueco: 'Cuentas por pagar', ok: 750000 };
+  function completar(est) {
+    const K = est === 'sobra' ? K1 : K3;
+    const v = { inicio: null, tecleado: 5000, consecuencia: 5000, error: 5000, acierto: 8000, sobra: 1500000 }[est];
+    const comprobado = !['inicio', 'tecleado'].includes(est); const veredicto = ['error', 'acierto', 'sobra'].includes(est);
+    const malo = comprobado && v !== K.ok;
+    const hab = [...K.hab, [K.hueco, comprobado ? v : null, comprobado ? (malo ? 'tuya mal' : 'tuya') : '']];
+    const filas = [...K.deb.map(([n, x]) => [n, $(x), null]), ...K.hab.map(([n, x]) => [n, null, $(x)]), [K.hueco, null, comprobado ? $(v) : '<span class="hueco">$?</span>']];
+    const td = K.deb.reduce((t, r) => t + r[1], 0); const th = comprobado ? hab.reduce((t, r) => t + r[1], 0) : null;
+    const casilla = !comprobado
+      ? `<label class="tucifra"><span>Tu cifra</span><input type="text" inputmode="decimal" aria-label="Valor de ${K.hueco}" placeholder="$" value="${v == null ? '' : $(v)}"></label><button type="button" class="cmp"${v == null ? ' aria-disabled="true"' : ''}>Comprobar</button>`
+      : `<p class="escrito${malo && veredicto ? ' malb' : ''}${!malo && veredicto ? ' bien' : ''}"><span>Tu cifra</span><span class="num">${$(v)}</span>${veredicto ? (malo ? mal : ok) : ''}</p>${malo && veredicto ? `<p class="escrito iba"><span>La cifra</span><span class="num">${$(K.ok)}</span>${iba}</p>` : ''}`;
+    return `<p class="cej">Caso 2 de 8 · completar</p><p class="txt">Escribe el valor que hace que el debe y el haber sumen lo mismo.</p>
+      <section class="hund">${tabla(filas, [$(td), th == null ? '?' : $(th)])}
+        ${columnas(K.deb, hab, { comprobado })}
+        ${malo ? falla(dif(K.deb, hab)) : est === 'acierto' ? cuadra('Tres cuentas contra una, y cuadra: lo que se iguala es el valor.') : ''}</section>
+      <div class="casilla">${casilla}</div>
+      ${est === 'consecuencia' ? reloj('0 ms · las columnas se mueven y sale la consecuencia · el veredicto llega a los 380 ms') : ''}
+      ${veredicto ? (malo ? msg('[Retro de Near para el valor escrito.]', true) : msg('[Porqué de Near.]')) : ''}
+      ${seguir(veredicto)}`;
+  }
+  // juzgar · J2 (trampa 2 contra 2 + traspuesto)
+  const J2 = { hecho: 'Caleja compra a crédito un computador por $25.000 y maquinaria por $50.000 con un préstamo bancario.', deb: [['Equipo de computación', 52000], ['Maquinaria', 50000]], hab: [['Cuentas por pagar', 25000], ['Obligaciones financieras', 50000]] };
+  function juzgar(est) {
+    const decidido = est !== 'inicio'; const veredicto = ['error', 'acierto'].includes(est); const eligio = est === 'acierto' ? 'no' : 'si';
+    const filas = [...J2.deb.map(([n, x]) => [n, $(x), null]), ...J2.hab.map(([n, x]) => [n, null, $(x)])];
+    const td = J2.deb.reduce((t, r) => t + r[1], 0), th = J2.hab.reduce((t, r) => t + r[1], 0);
+    const op = (k, txt) => { const el = decidido && eligio === k; const cls = el ? (veredicto ? (k === 'no' ? ' bien' : ' malb') : ' elegida') : (est === 'error' && k === 'no' ? ' pista' : '');
+      return `<button type="button" class="op${cls}">${txt}${el && veredicto ? (k === 'no' ? ok : mal) : ''}${est === 'error' && k === 'no' ? iba : ''}</button>`; };
+    return `<p class="cej">Caso 4 de 8 · juzgar</p><p class="hecho">${J2.hecho}</p><p class="txt">¿Este asiento cuadra?</p>
+      <section class="hund">${tabla(filas, decidido ? [$(td), $(th)] : null)}
+        ${decidido ? columnas(J2.deb, J2.hab, { comprobado: true, entra: true }) + falla(dif(J2.deb, J2.hab)) : ''}</section>
+      <div class="ops dos">${op('si', 'Cuadra')}${op('no', 'No cuadra')}</div>
+      ${est === 'consecuencia' ? reloj('0 ms · entran la fila de sumas y las columnas · el veredicto llega a los 380 ms') : ''}
+      ${veredicto ? (est === 'error' ? msg('[Retro de Near para «Cuadra».]', true) : msg('[Porqué de Near.]')) : ''}
+      ${seguir(veredicto)}`;
+  }
+  // encontrar · E1 de Near T2-3 (lado contrario, Caleja cal-4)
+  const E1 = { hecho: 'Caleja paga $10.000 de Cuentas por pagar con Caja.', ren: [['Cuentas por pagar', 'D', 10000], ['Caja', 'D', 10000]], malo: 1 };
+  function encontrar(est) {
+    const toco = { inicio: null, consecuencia: 0, error: 0, acierto: 1 }[est]; const decidido = toco != null; const veredicto = ['error', 'acierto'].includes(est);
+    const deb = E1.ren.filter((r) => r[1] === 'D').map((r) => [r[0], r[2]]), hab = E1.ren.filter((r) => r[1] === 'H').map((r) => [r[0], r[2]]);
+    const td = deb.reduce((t, r) => t + r[1], 0), th = hab.reduce((t, r) => t + r[1], 0);
+    const btn = (r, i) => { const el = toco === i; const bien = i === E1.malo;
+      const cls = el ? (veredicto ? (bien ? ' bien' : ' malb') : ' elegida') : (est === 'error' && bien ? ' pista' : '');
+      return `<button type="button" class="renb${cls}"><span class="c">${r[0]}</span><b class="l ${r[1] === 'D' ? 'td' : 'th'}">${r[1] === 'D' ? 'Debe' : 'Haber'}</b><b class="m num">${$(r[2])}</b>${el && veredicto ? (bien ? ok : mal) : ''}${est === 'error' && bien ? iba : ''}</button>`; };
+    return `<p class="cej">Caso 7 de 8 · encontrar</p><p class="hecho">${E1.hecho}</p><p class="txt">Toca el renglón que descuadra el asiento.</p>
+      <section class="hund"><div class="renbs">${E1.ren.map(btn).join('')}</div>
+        ${decidido ? `<p class="sumas-l"><span>Sumas</span><b class="num td">${$(td)}</b><b class="num th">${$(th)}</b></p>` + columnas(deb, hab, { comprobado: true, entra: true, culpa: veredicto ? 'Caja' : null }) + falla(dif(deb, hab)) : ''}</section>
+      ${est === 'consecuencia' ? reloj('0 ms · entran las sumas y las columnas · el veredicto llega a los 380 ms') : ''}
+      ${veredicto ? (est === 'error' ? msg('[Retro de Near para Cuentas por pagar.]', true) : msg('[Porqué de Near.]')) : ''}
+      ${seguir(veredicto)}`;
+  }
+
+  /* ── Del diario al mayor · revisar (el punteo) ─────────────────
+     Cada línea del mayor sabe de qué renglón del diario salió (r). Al tocarla se enciende ese renglón y el cotejo compara
+     cuenta, lado y monto. La línea mal pasada trae un solo campo distinto. Sin saldo y sin elegir el lado. */
+  const DIA = [['2 ene', 'Bancos', 'D', 5000], ['2 ene', 'Acciones', 'H', 5000], ['4 ene', 'Flota y equipo de transporte', 'D', 4800], ['4 ene', 'Bancos', 'H', 800], ['4 ene', 'Letras por pagar', 'H', 4000]];
+  const CTAS = ['Bancos', 'Acciones', 'Flota y equipo de transporte', 'Letras por pagar'];
+  // tipos de error de Mello: traspuesta (monto), vecina (cuenta), lado (lado)
+  const MAL = { traspuesta: { r: 2, c: 'Flota y equipo de transporte', l: 'D', m: 8400 }, vecina: { r: 3, c: 'Flota y equipo de transporte', l: 'H', m: 800 }, lado: { r: 3, c: 'Bancos', l: 'D', m: 800 } };
+  function mayorDe(tipo) { const m = MAL[tipo]; return DIA.map((d, r) => (r === m.r ? { r, c: m.c, l: m.l, m: m.m, mal: true } : { r, c: d[1], l: d[2], m: d[3] })); }
+  function estres() { // 3 líneas en el mismo lado de cada T: el peor alto posible con el tope de 7 renglones superado a propósito
+    const L = []; CTAS.forEach((c, i) => [5000, 4800, 9999].forEach((m, j) => L.push({ r: 0, c, l: i % 2 ? 'H' : 'D', m: m - j }))); return L; }
+  function revisar(est) {
+    const tipo = { acierto: 'traspuesta', 'acierto-vecina': 'vecina', 'acierto-lado': 'lado' }[est] || 'traspuesta';
+    const lineas = est === 'estres' ? estres() : mayorDe(tipo);
+    const malaIdx = lineas.findIndex((x) => x.mal);
+    const toco = est.startsWith('acierto') ? malaIdx : est === 'error' ? lineas.findIndex((x) => x.r === 3) : null;
+    const orden = est === 'intento2' ? ['Letras por pagar', 'Flota y equipo de transporte', 'Bancos', 'Acciones'] : CTAS;
+    const lt = toco == null ? null : lineas[toco]; const veredicto = toco != null;
+    const fila = (d, r) => `<li class="ren ren2${lt && lt.r === r ? ' enlazado' : ''}"><span class="f">${d[0]}</span><span class="c">${d[1]}</span><b class="l ${d[2] === 'D' ? 'td' : 'th'}">${d[2] === 'D' ? 'Debe' : 'Haber'}</b><b class="m num">${$(d[3])}</b></li>`;
+    const lnb = (x, i) => { const el = i === toco; const pista = est === 'error' && i === malaIdx;
+      return `<button type="button" class="lnb${el ? (x.mal ? ' bien' : ' malb') : ''}${pista ? ' pista' : ''}" aria-label="${x.c}, ${x.l === 'D' ? 'debe' : 'haber'}, ${n0(x.m)}, ${DIA[x.r][0]}"><small>${DIA[x.r][0]}</small><span class="num">${n0(x.m)}</span></button>`; };
+    const T = (c) => { const mias = lineas.map((x, i) => [x, i]).filter(([x]) => x.c === c);
+      const lado = (L) => mias.filter(([x]) => x.l === L).map(([x, i]) => lnb(x, i)).join('');
+      return `<div class="cta tr"><span class="cta-tit">${c}</span><span class="cta-t"><span>${lado('D')}</span><span>${lado('H')}</span></span></div>`; };
+    let cotejo = '';
+    if (lt) { const d = DIA[lt.r]; const campos = [['Cuenta', d[1], lt.c], ['Lado', d[2] === 'D' ? 'Debe' : 'Haber', lt.l === 'D' ? 'Debe' : 'Haber'], ['Monto', n0(d[3]), n0(lt.m)]];
+      cotejo = `<div class="cotejo" role="table" aria-label="Cotejo del renglón ${d[0]}"><p class="tit">Cotejo · ${d[0]}</p><p class="cot cab" role="row"><span></span><span>Diario</span><span></span><span>Mayor</span></p>${campos.map(([k, a, b]) => `<p class="cot${a !== b ? ' distinto' : ''}" role="row"><span class="k">${k}</span><span class="a">${a}</span><span class="s" aria-label="${a !== b ? 'no coincide' : 'coincide'}">${a !== b ? '≠' : '='}</span><span class="b">${b}</span></p>`).join('')}</div>`; }
+    const pas = lt ? (lt.mal ? ok : mal + ' ' + iba.replace('Iba aquí', 'Iba en la línea punteada')) : '';
+    const conse = !lt ? '' : lt.mal ? cuadra({ traspuesta: 'El diario dice $4.800 y el mayor, $8.400: dos cifras invertidas.', vecina: 'Los $800 del 4 de enero son de Bancos y quedaron en la T de su vecino de asiento.', lado: 'Bancos pagó los $800 del 4 de enero: van al haber, no al debe.' }[tipo])
+      : falla('Esta línea coincide con su renglón en cuenta, lado y monto.');
+    return `<p class="cej">Caso ${est === 'intento2' ? '6' : '6'} de 7 · revisar</p><p class="txt">El mayor ya está pasado. Toca la línea que no coincide con el diario.</p>
+      <section class="hund"><p class="tit">Libro diario · por fecha</p><ol class="diario">${DIA.map(fila).join('')}</ol></section>
+      <section class="hund"><p class="tit">Libro mayor · por cuenta</p><div class="ctas">${orden.map(T).join('')}</div>
+        ${cotejo ? `<div class="veredicto-l">${cotejo}${pas ? `<p class="estado-l">${pas}</p>` : ''}</div>` : ''}${conse}</section>
+      ${est === 'error' ? msg('[Retro de Near para la línea buena tocada.]', true) : lt ? msg('[Porqué de Near para esta línea mal pasada.]') : ''}
+      ${seguir(veredicto)}`;
+  }
+  window.T24 = { completar, juzgar, encontrar, revisar };
+  window.T24E = { completar: ['inicio', 'tecleado', 'consecuencia', 'error', 'acierto', 'sobra'], juzgar: ['inicio', 'consecuencia', 'error', 'acierto'], encontrar: ['inicio', 'consecuencia', 'error', 'acierto'], revisar: ['inicio', 'error', 'acierto', 'acierto-vecina', 'acierto-lado', 'intento2', 'estres'] };
+})();
+
+const NOM = {"inicio": "Inicio", "tecleado": "Cifra escrita, sin comprobar", "consecuencia": "0 ms · consecuencia", "error": "380 ms · error", "acierto": "380 ms · acierto", "sobra": "Error que se pasa (K1)", "acierto-vecina": "Acierto · cuenta vecina", "acierto-lado": "Acierto · lado contrario", "intento2": "Intento 2 · barajado", "estres": "Estrés · 3 por lado"}, NOM_R = {"inicio": "Inicio", "tecleado": "Cifra escrita, sin comprobar", "consecuencia": "0 ms · consecuencia", "error": "Error · toca una línea buena", "acierto": "Acierto · cifra traspuesta", "sobra": "Error que se pasa (K1)", "acierto-vecina": "Acierto · cuenta vecina", "acierto-lado": "Acierto · lado contrario", "intento2": "Intento 2 · barajado", "estres": "Estrés · 3 por lado"};
+document.querySelectorAll('.vivo').forEach((v) => { let t = v.dataset.v === 'cuadra' ? 'completar' : 'revisar', est = 'inicio'; const nn = t === 'revisar' ? NOM_R : NOM;
+  const pintar = () => { v.querySelector('.estados').innerHTML = T24E[t].map((x) => `<button type="button" data-e="${x}" class="${x === est ? 'on' : ''}">${nn[x]}</button>`).join('');
+    v.querySelectorAll('.hq').forEach((m) => { m.innerHTML = T24[t](est); }); };
+  const tp = v.querySelector('.tipos'); if (tp) tp.addEventListener('click', (ev) => { const b = ev.target.closest('[data-t]'); if (!b) return; t = b.dataset.t; est = 'inicio'; tp.querySelectorAll('button').forEach((x) => x.classList.toggle('on', x === b)); pintar(); });
+  v.querySelector('.estados').addEventListener('click', (ev) => { const b = ev.target.closest('[data-e]'); if (!b) return; est = b.dataset.e; pintar(); }); pintar(); });
+</script>
+</body></html>

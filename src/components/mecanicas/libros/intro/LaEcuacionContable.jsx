@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { FAE } from "../../../../theme.js";
 import { NEUTRO } from "../../../../data/contabilidadIntro.js";
 import {
-  TEXTOS_P2, CIERRE_P2, CASOS_P2, ALTERNATIVOS_P2,
+  TEXTOS_P2, CIERRE_P2, ROTULO_CIERRE_P2, CASOS_P2, ALTERNATIVOS_P2,
 } from "../../../../data/contabilidadPiezas234.js";
 import { cambioDelCaso, movimientoDelCaso } from "../../../../contabilidad/aprenderTema1.js";
 import { useMovimientoReducido, SOLO_LECTOR } from "../verbos.jsx";
@@ -80,7 +80,7 @@ export default function LaEcuacionContable() {
       <style>{CSS}</style>
 
       <p style={{ margin: "0 0 9px", fontFamily: SORA, fontSize: "12px", fontWeight: 600, color: "#A8B6C8" }}>
-        {cerrado ? "La regla" : `Paso ${visible} de ${PASOS}`}
+        {cerrado ? ROTULO_CIERRE_P2 : `Paso ${visible} de ${PASOS}`}
       </p>
 
       <div key={`${paso}-${repeticion}-${caso}`} className={reducido ? undefined : "fae-p2-aparece"}>

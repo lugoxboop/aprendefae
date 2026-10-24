@@ -1,10 +1,10 @@
 import { ubicacionDeActividad } from "../data/subjects.js";
 import { barajar, barajadorDe } from "../utils/barajar.js";
 import {
-  ID_REPASO, MATERIAS_DEL_POOL, ITEMS_POR_REPASO, MINIMO_ACTIVIDADES, MINIMO_POOL,
+  ID_REPASO, ITEMS_POR_REPASO, MINIMO_ACTIVIDADES, MINIMO_POOL,
   CUPOS, DIAS_PARA_OLVIDO, topePorMateria,
 } from "./repaso.js";
-import { poolDe } from "./items.js";
+import { REPASO_MACRO, poolDel } from "./repasos.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -37,6 +37,12 @@ import { poolDe } from "./items.js";
  *
  * El orden de presentación es aleatorio: el orden de prioridad decide QUÉ
  * sale, nunca en qué orden.
+ *
+ * ═══════════ CUÁL REPASO ═══════════
+ *
+ * Las funciones que dependen del pool reciben `repaso` (repasos.js) como
+ * último argumento, con el de Macro por defecto. Sin pasarlo, cada una hace
+ * exactamente lo de antes del 23-oct-2026: Macro tiene estudiantes reales.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -58,14 +64,14 @@ export function diasEntre(a, b) {
 }
 
 /** Las actividades completadas que cuentan para el desbloqueo: las de las materias del pool. */
-export function actividadesDelPool(hechas) {
-  return [...hechas].filter((id) => id !== ID_REPASO && MATERIAS_DEL_POOL.includes(ubicacionDeActividad(id)?.temaId));
+export function actividadesDelPool(hechas, repaso = REPASO_MACRO) {
+  return [...hechas].filter((id) => id !== repaso.id && repaso.temas.includes(ubicacionDeActividad(id)?.temaId));
 }
 
 /** Las materias con al menos una actividad completada, en el orden de MATERIAS_DEL_POOL. */
-export function materiasCompletadas(hechas) {
-  const temas = new Set(actividadesDelPool(hechas).map((id) => ubicacionDeActividad(id).temaId));
-  return MATERIAS_DEL_POOL.filter((m) => temas.has(m));
+export function materiasCompletadas(hechas, repaso = REPASO_MACRO) {
+  const temas = new Set(actividadesDelPool(hechas, repaso).map((id) => ubicacionDeActividad(id).temaId));
+  return repaso.temas.filter((m) => temas.has(m));
 }
 
 /** El pool agrupado por clave: [{ clave, materia, variantes }]. */
@@ -90,10 +96,10 @@ export function categoriaDe(entrada, ahora) {
  * En qué punto está el Repaso para este estudiante.
  *   "hecho-hoy" · "pocas-actividades" · "pool-corto" · "listo"
  */
-export function estadoRepaso({ hechas, hechoHoy }) {
+export function estadoRepaso({ hechas, hechoHoy }, repaso = REPASO_MACRO) {
   if (hechoHoy) return "hecho-hoy";
-  if (actividadesDelPool(hechas).length < MINIMO_ACTIVIDADES) return "pocas-actividades";
-  if (unidadesDe(poolDe(hechas)).length < MINIMO_POOL) return "pool-corto";
+  if (actividadesDelPool(hechas, repaso).length < MINIMO_ACTIVIDADES) return "pocas-actividades";
+  if (unidadesDe(poolDel(repaso, hechas)).length < MINIMO_POOL) return "pool-corto";
   return "listo";
 }
 
@@ -183,7 +189,11 @@ export const estabaFallado = (historial, clave) => historial.get(clave)?.ultimoO
  */
 
 /** La semilla del día para un estudiante. Sin sesión, una estable igualmente. */
-export const semillaDelDia = (usuarioId, ahora) => `${usuarioId ?? "invitado"}:${diaBogota(ahora)}`;
+export const semillaDelDia = (usuarioId, ahora, repaso = REPASO_MACRO) =>
+  /* La de Macro se queda como era: cambiarla le cambiaría la mezcla del día a quien ya la vio. */
+  repaso.id === ID_REPASO
+    ? `${usuarioId ?? "invitado"}:${diaBogota(ahora)}`
+    : `${usuarioId ?? "invitado"}:${diaBogota(ahora)}:${repaso.id}`;
 
 /**
  * Qué entraría en el repaso de hoy.
@@ -191,17 +201,17 @@ export const semillaDelDia = (usuarioId, ahora) => `${usuarioId ?? "invitado"}:$
  * @returns {{ items, temas, cuantos, topeRelajado }}
  *   `temas` son los ids de tema de la mezcla, en el orden del pool.
  */
-export function vistaPreviaDelDia({ hechas, historial, ahora = new Date(), usuarioId = null }) {
+export function vistaPreviaDelDia({ hechas, historial, ahora = new Date(), usuarioId = null, repaso = REPASO_MACRO }) {
   const { items, topeRelajado } = seleccionarRepaso({
-    pool: poolDe(hechas),
+    pool: poolDel(repaso, hechas),
     historial,
     ahora,
-    mezclar: barajadorDe(semillaDelDia(usuarioId, ahora)),
+    mezclar: barajadorDe(semillaDelDia(usuarioId, ahora, repaso)),
   });
   const presentes = new Set(items.map((x) => x.materia));
   return {
     items,
-    temas: MATERIAS_DEL_POOL.filter((m) => presentes.has(m)),
+    temas: repaso.temas.filter((m) => presentes.has(m)),
     cuantos: items.length,
     topeRelajado,
   };
@@ -211,6 +221,6 @@ export function vistaPreviaDelDia({ hechas, historial, ahora = new Date(), usuar
  * Cuántas actividades le faltan para desbloquear el Repaso por número.
  * Cero cuando ya no es esa la razón del bloqueo.
  */
-export function faltanActividades(hechas) {
-  return Math.max(0, MINIMO_ACTIVIDADES - actividadesDelPool(hechas).length);
+export function faltanActividades(hechas, repaso = REPASO_MACRO) {
+  return Math.max(0, MINIMO_ACTIVIDADES - actividadesDelPool(hechas, repaso).length);
 }

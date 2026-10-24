@@ -1,10 +1,12 @@
-2026-10-23 12:56 (hora Bogotá)
-- Chrome (para hablar con los agentes de la célula): bloqueado: la extensión no conecta desde las 12:00; hay que abrir Chrome con la extensión en el equipo de Mateo. Mientras tanto, los arreglos del panel están en el comentario del PR #498
-- Regla i (buscar antes de abrir, skills en vez de prompts maestros) pasada a Baki, Katsumi, Hanayama y Shibukawa: terminado
-- Panel docente: en curso (PR #498 de Baki; Shibukawa: PASA CON CORRECCIONES, 4 arreglos de vista y 4 condiciones, en el comentario del PR; P7 con 0 diferencias. Falta que Baki aplique los arreglos: el Chrome de Mateo se cayó y no puedo llegarle a su sesión; reintento. #473 espera que main vuelva a verde)
-- T4 Aprender a tipo presentación: en curso, en segundo plano (hilo de Katsumi y preauditoría de Shibukawa en main; A0, A2 y A4 corregidos por Katsumi y en main; Ukyo respondió la reserva de figura (#470 §16); Hanayama especifica la figura por pieza; Baki retoma #488 cuando el panel esté en PR)
+2026-10-24 17:16 (hora Bogotá)
+- Panel docente v1: terminado (fusionado #498: lo relevante arriba —Mi clase, Necesitan atención, La actividad que más costó—; las cifras son las mismas que las del panel viejo; sin escrituras nuevas ni cambios de esquema; PASA de Shibukawa)
+- Logitos de Contabilidad T1-T4: terminado (fusionado #519, PASA de Shibukawa y prueba a 32 px de Hanayama con su ajuste al cajón; el acento de T5 y T6 lo tiene la Célula B en #523)
+- T4 Aprender a tipo presentación: en curso (Baki construye #488 con el hilo, el diseño de Hanayama y los porqués de C2 de Katsumi, todo en main; depende de SecuenciaAprender #491 de Erwin)
+- Textos que faltaban en el panel y arreglos de la vista del estudiante: terminado (fusionado #525, PASA de Shibukawa y 0 toques bajo 44 px)
+- Ajuste del cajón de T4 a 32 px (patas sin tronco central): terminado (fusionado #528, PASA de Hanayama y Shibukawa)
+- Regla j (leer una vez y exprimir): en curso (Baki, Hanayama y Shibukawa la tienen; Katsumi la recibe con su próximo lote)
+- Vara nueva (sin vistos buenos, fusión con PASA y CI verde) y ahorro de tokens pasados a Baki, Katsumi, Hanayama y Shibukawa: terminado
 - Etiquetado de subtemas de T4 para el Repaso Diario: terminado (#475; aviso a Erwin en #483)
-- Logo de T4: en curso (especificación de Ukyo en #476; se aplica cuando se fusione)
 - T4 «Efectivo, caja menor y bancos» (6 Aprender, 5 Hacer, kit D1/D4/D6 en Avanzado): terminado
 - Capacitación de la célula (enlaces en traspasos/yujiro.md): terminado
 - Pruebas con personas A, B y C (D2, D3, D5, D7, D8, D9): bloqueado: necesitan a Ukyo o a Mateo jugando con estudiantes y equipos reales

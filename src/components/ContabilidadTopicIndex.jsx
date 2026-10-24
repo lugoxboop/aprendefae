@@ -1,5 +1,5 @@
 import { FAE } from "../theme.js";
-import { SUBJECTS } from "../data/subjects.js";
+import { SUBJECTS, temasVisibles } from "../data/subjects.js";
 import TopicIndexView from "./TopicIndexView.jsx";
 import { ContabilidadIcon } from "./SubjectCard.jsx";
 import LibroMayorBackground from "./backgrounds/LibroMayorBackground.jsx";
@@ -33,7 +33,8 @@ export default function ContabilidadTopicIndex({ onOpenTopic }) {
       hoverBg="rgba(233,196,106,0.12)"
       hoverBorder="rgba(233,196,106,0.7)"
       background={<LibroMayorBackground />}
-      topics={subject.topics}
+      /* Solo los temas de este semestre: TEMAS_OCULTOS en subjects.js. */
+      topics={temasVisibles(subject)}
       renderTopicIcon={() => <ContabilidadIcon />}
       sinPildorasAlCerrar
       onOpenTopic={onOpenTopic}
