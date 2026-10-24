@@ -37,6 +37,11 @@ const CORPUS = [
   ...readdirSync(new URL("../../data/", import.meta.url)).filter((f) => /^contabilidadT4(A\d|)\.js$/.test(f)).map((f) => leer(`src/data/${f}`)),
 ].join("\n").replace(/\s+/g, " ");
 
+/* La plantilla de un texto: las cifras y las personas de los dos casos, cambiadas por marcas. */
+const PERSONAS = /\b(Rosa Primorosa|Rosa)\b/g;
+const plantilla = (t) => t.replace(/\s+/g, " ").replace(/\$?\d[\d.,]*/g, "#").replace(PERSONAS, "@");
+const CORPUS_PLANTILLA = plantilla(CORPUS);
+
 /* Todos los textos de una pieza: los strings de `textos`, en hondo (ids y cifras aparte). */
 function textosDe(x, fuera = []) {
   if (typeof x === "string") { if (/\s/.test(x.trim()) || /[.?:]$/.test(x)) fuera.push(x); return fuera; }
@@ -60,7 +65,9 @@ for (const caso of [1, 2]) {
   test(`★ caso ${caso}: cada texto de pantalla está letra por letra en el hilo o en un paquete aprobado`, () => {
     for (const pz of piezas) {
       const sueltos = [...new Set([...pz.pantallas.map((p) => p.titular), ...textosDe(pz.textos)])]
-        .filter((t) => !CORPUS.includes(t.replace(/\s+/g, " ")));
+        .filter((t) => !CORPUS.includes(t.replace(/\s+/g, " ")))
+        /* Caso B: el lote 4 se escribe con la plantilla del caso 1 y las cifras y la persona del caso B (Katsumi). */
+        .filter((t) => caso === 1 || !CORPUS_PLANTILLA.includes(plantilla(t)));
       assert.deepEqual(sueltos, [], `${pz.id}: textos que no están en la fuente`);
     }
   });

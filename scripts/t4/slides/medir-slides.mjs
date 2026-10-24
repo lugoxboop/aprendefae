@@ -13,6 +13,8 @@
  *   lineas   renglones del titular y de la banda visible (alto / 22)
  *   palabras titular + banda visible de antes
  *   fondo    dónde acaba «Siguiente» respecto del alto de la ventana
+ *   tope     B1: dónde empieza el modelo desde el tope de la tarjeta (≤ 280 a 320)
+ *   bajoNav  px de la banda que quedan bajo la navegación fija con la página arriba
  * Y una vez: la cabecera de la vista (hasta el Panel) y el bloque de navegación.
  */
 import { createRequire } from "node:module";
@@ -77,6 +79,8 @@ for (const [w, h] of ANCHOS) {
       const sig = raiz.querySelector("button[data-siguiente]").getBoundingClientRect();
       const texto = (tit?.textContent ?? "") + " " + (viva?.querySelector("[data-antes]")?.innerText ?? "");
       return {
+        /* B1: dónde empieza la figura, desde el tope de la tarjeta (la <section> del Panel); ≤ 280 a 320. */
+        tope: modelo ? Math.round(modelo.getBoundingClientRect().top - (raiz.closest("section") ?? raiz).getBoundingClientRect().top) : null,
         pieza: raiz.dataset.pieza, n: Number(pt.dataset.pantalla), tipo: pt.dataset.tipo,
         modelo: Math.round(alto), banda: banda ? Math.round(banda.getBoundingClientRect().height) : null,
         lineasTitular: tit ? Math.round(tit.getBoundingClientRect().height / 22) : 0,
