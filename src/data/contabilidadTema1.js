@@ -1040,36 +1040,47 @@ export const SEGUNDA_T1_2 = {
   },
 };
 
-/* ───────── T1-4 · la consecuencia sobre la igualdad ─────────
- * Primera decisión: qué le pasa a cada una de las tres partes (clasificación,
- * tres marcas y un envío).
- * Segunda: y entonces, ¿qué le pasó a la IGUALDAD? (consecuencia). No es la
- * misma pregunta en otro formato: la primera mira las partes una por una, la
- * segunda mira los dos lados juntos, y solo se puede responder después de
- * haber mirado las partes. La figura son las mismas tres barras, repintadas
- * con lo que cada opción AFIRMA: quien dice que la igualdad se rompió ve las
- * barras rotas, y lo que ve contradice lo que acabó de ver.
+/* ───────── T1-4 · cuál de los cuatro casos del libro es ─────────
+ * Primera decisión: qué le pasa a cada una de las tres partes (tres marcas y
+ * un envío). Segunda (lote del 24-oct; auditoría de Shoko a las P2): ¿cuál de
+ * los cuatro casos de la p. 35 es este hecho? La de antes —«¿qué le pasó a la
+ * igualdad?»— tenía siempre la misma respuesta, porque la igualdad nunca se
+ * rompe, y dejaba de ser una decisión desde el segundo hecho.
+ *
+ * Los nombres son los de la p. 35, textuales, los mismos que enseña cu0-a2
+ * (CASOS_P2): un solo sitio, y los pone `opcionesSegundaT1_4` (aquí no se
+ * puede importar contabilidadPiezas234.js, que ya importa de este archivo).
+ * Las ids son las del caso que deduce `casoDe` del asiento (deuda o aporte,
+ * sube o baja), así que la correcta no se escribe en ninguna tabla.
+ *
+ * Las devoluciones son de Futaba (lote B del 24-oct, §3): dicen qué es el caso
+ * que marcó y mandan a mirar el hecho, sin decir cuál era. Con un solo
+ * intento (C2) sale la devolución; la pista es para cuando haya reintento.
  */
+/* La letra del caso en la p. 35 (CASOS_P2), por id. */
+export const CASO_DEL_LIBRO_T1_4 = { "deuda-sube": "a", "aporte-sube": "b", "deuda-baja": "c", "aporte-baja": "d" };
+
 export const SEGUNDA_T1_4 = {
-  pregunta: "Lo que tiene = lo que debe + lo de los dueños. Después de este hecho, ¿qué le pasó a esa igualdad?",
+  pregunta: "¿Cuál de los cuatro casos es este hecho?",
   opciones: [
-    { id: "sigue", texto: "Sigue dando igual: los dos lados se movieron para el mismo lado" },
     {
-      id: "balancin",
-      texto: "Se rompió: un lado creció y el otro se achicó",
-      msg: "Eso sería un balancín, y la ecuación no es un balancín: los dos lados pueden subir juntos o bajar juntos. Mire las barras: ninguna fue en contra de la otra.",
+      id: "deuda-sube",
+      msg: "Ese caso es entrar algo y nacer una deuda. Mira si en este hecho hay una deuda, y si algo entró o salió.",
     },
     {
-      id: "un-lado",
-      texto: "Se rompió: se movió un solo lado y el otro se quedó quieto",
-      msg: "Si se moviera un lado solo, los dos totales dejarían de dar lo mismo y la ecuación se habría roto de verdad. Siempre hay dos partes en juego, y una de ellas está al otro lado del signo igual.",
+      id: "aporte-sube",
+      msg: "Ese caso es entrar algo que ponen los dueños. Mira si en este hecho hay un aporte, y si algo entró o salió.",
+    },
+    {
+      id: "deuda-baja",
+      msg: "Ese caso es salir plata para pagar una deuda. Mira si en este hecho se paga algo, y si algo entró o salió.",
+    },
+    {
+      id: "aporte-baja",
+      msg: "Ese caso es salir algo hacia los dueños. Mira si en este hecho les devuelven algo, y si algo entró o salió.",
     },
   ],
-  /* El acierto se redacta con el sentido real del hecho: suben o bajan. */
-  porque: {
-    sube: "Los dos lados subieron a la vez, y por lo mismo. Por eso la igualdad aguanta: no hay nada que compensar.",
-    baja: "Los dos lados bajaron a la vez, y por lo mismo. La igualdad aguanta: lo que se fue de un lado se fue también del otro.",
-  },
+  pista: "¿Lo que tiene subió o bajó? ¿Y del otro lado se movió una deuda o lo de los dueños?",
 };
 
 /* ───────── T1-5 · la clasificación que va ANTES del cálculo ─────────

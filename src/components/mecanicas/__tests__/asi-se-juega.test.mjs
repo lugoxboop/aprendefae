@@ -242,7 +242,7 @@ for (const id of [T1_8.id, T1_7.id, T1_4.id]) {
       assert.ok(ayuda, "no está «¿Cómo se juega?» bajo la consigna");
       assert.ok(ayuda.textContent.includes("¿Cómo se juega?"));
       tocar(ayuda);
-      if ([T1_8.id, T1_7.id].includes(id)) {
+      if ([T1_8.id, T1_7.id, T1_4.id].includes(id)) {
         /* Lote 4, C1: el encabezado compacto de B despliega la consigna bajo «¿Cómo se juega?». */
         assert.equal(dos.caja.querySelector("[data-como-se-juega-panel]").dataset.comoSeJuegaPanel, "abierto");
         assert.equal(dos.caja.querySelector("[data-encabezado] [data-consigna]").textContent, ASI_SE_JUEGA[id].consigna);
@@ -378,7 +378,7 @@ for (const id of [T1_8.id, T1_7.id, T1_4.id]) {
       await esperar(() => caja.querySelector('[role="status"]'));
       const retro = caja.querySelector('[role="status"]');
       /* Lote 4: las piezas de T1 pintan su propio mensaje (C2), con «Correcto.» y sin el emoji del banco. */
-      const LOTE_4 = [T1_8.id, T1_7.id];
+      const LOTE_4 = [T1_8.id, T1_7.id, T1_4.id];
       if (LOTE_4.includes(id)) {
         assert.ok(retro?.textContent.startsWith("Correcto."), "la demo no mostró su acierto");
         assert.ok(!/[\u2705\u274C]/u.test(retro.textContent), "el mensaje trae el emoji del banco");

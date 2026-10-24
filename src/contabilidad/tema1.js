@@ -9,8 +9,9 @@ import {
   ERROR_T1_7, BANCO_T1_7,
   T1_8, PUNTOS_T1_8, SITUACIONES_T1_8, ACIERTO_T1_8, ERROR_T1_8, PREDICCION_T1_8,
   CONTADOR_T1_8, CONTADOR_UNO_T1_8,
-  SEGUNDA_T1_1, SEGUNDA_T1_2, SEGUNDA_T1_4, SEGUNDA_T1_5,
+  SEGUNDA_T1_1, SEGUNDA_T1_2, SEGUNDA_T1_4, SEGUNDA_T1_5, CASO_DEL_LIBRO_T1_4,
 } from "../data/contabilidadTema1.js";
+import { CASOS_P2 } from "../data/contabilidadPiezas234.js";
 import { ACTIVO, PASIVO, PATRIMONIO, tipoDeCuenta, pesos } from "../data/contabilidad.js";
 
 /*
@@ -771,42 +772,24 @@ export const porqueSegundaT1_2 = (empresa) => SEGUNDA_T1_2.porque[correctaSegund
 
 /* ───────── T1-4 ───────── */
 
-/* La igualdad aguanta con cualquier hecho: eso es lo que la actividad enseña. */
-export const CORRECTA_SEGUNDA_T1_4 = "sigue";
+/* La correcta es el caso del hecho, el mismo que deduce `casoDe` del asiento. */
+export const correctaSegundaT1_4 = (transaccion) => casoDe(transaccion);
 
-export const opcionesSegundaT1_4 = () => SEGUNDA_T1_4.opciones;
+/* El nombre del caso, textual de la p. 35: el mismo que enseña cu0-a2. */
+export const nombreDelCasoT1_4 = (id) => CASOS_P2.find((c) => c.id === CASO_DEL_LIBRO_T1_4[id]).nombre;
 
-export function porqueSegundaT1_4(transaccion) {
-  const e = efectoDe(transaccion);
-  return SEGUNDA_T1_4.porque[e[ACTIVO] === SUBE ? "sube" : "baja"];
+/* Las cuatro, en el orden de la p. 35. La correcta va sin mensaje de error. */
+export function opcionesSegundaT1_4(transaccion) {
+  const correcta = transaccion ? correctaSegundaT1_4(transaccion) : null;
+  return SEGUNDA_T1_4.opciones.map((o) => ({ ...o, texto: nombreDelCasoT1_4(o.id), msg: o.id === correcta ? null : o.msg }));
 }
 
-/**
- * Las tres barras repintadas con lo que cada opción AFIRMA. La correcta pinta
- * lo que de verdad pasó y enciende las tres partes —los dos lados a la vez—;
- * el balancín pone la otra parte en contra del activo; «un lado solo» la deja
- * quieta. Los tres retratos se diferencian pareja por pareja: por los altos de
- * las barras y por cuáles quedan resaltadas.
+/*
+ * Lo que la figura enseña tras elegir: el nombre del caso pegado a las barras.
+ * Cada opción deja un rótulo distinto, y las barras se quedan en lo que de
+ * verdad pasó (el registro): ya no se repintan con lo que la opción afirma.
  */
-export function escenaSegundaT1_4(transaccion, opcion) {
-  const real = efectoDe(transaccion);
-  const partes = PARTES.map((p) => p.id);
-  const seMueven = partes.filter((p) => real[p] !== IGUAL);
-  const otra = seMueven.find((p) => p !== ACTIVO);
-  const contrario = (x) => (x === SUBE ? BAJA : SUBE);
-
-  if (opcion === CORRECTA_SEGUNDA_T1_4) {
-    return { barras: { ...real, valores: undefined }, resaltar: partes };
-  }
-  if (opcion === "balancin") {
-    return {
-      barras: { ...real, valores: undefined, [otra]: contrario(real[otra]) },
-      resaltar: seMueven,
-    };
-  }
-  /* «un-lado»: el otro lado ni se entera. */
-  return { barras: { ...real, valores: undefined, [otra]: IGUAL }, resaltar: [ACTIVO] };
-}
+export const escenaSegundaT1_4 = (transaccion, opcion) => ({ caso: opcion });
 
 /* ───────── T1-5 ───────── */
 

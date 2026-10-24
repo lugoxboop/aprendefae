@@ -8,7 +8,7 @@ import {
 import {
   opcionesSegundaT1_1, correctaSegundaT1_1, porqueSegundaT1_1,
   opcionesSegundaT1_2, correctaSegundaT1_2, porqueSegundaT1_2,
-  opcionesSegundaT1_4, escenaSegundaT1_4, porqueSegundaT1_4, CORRECTA_SEGUNDA_T1_4,
+  opcionesSegundaT1_4, escenaSegundaT1_4, correctaSegundaT1_4, casoDe,
   opcionesSegundaT1_5, correctaSegundaT1_5, escenaSegundaT1_5,
 } from "../tema1.js";
 
@@ -122,17 +122,27 @@ test("★★ T1-2: la correcta sale del recuadro de entrada, no de una tabla apa
 
 /* ───────── T1-4 · clasificación (cada parte) + consecuencia (la igualdad) ───────── */
 
-test("★★★ T1-4: cada hecho repinta las tres barras distinto con cada opción", () => {
+test("★★★ T1-4: la decisión 2 son los cuatro casos de la p. 35, y la correcta sale del asiento", () => {
+  /*
+   * Lote del 24-oct (Shoko): la de antes —«¿qué le pasó a la igualdad?»—
+   * tenía siempre la misma respuesta. Ahora la correcta cambia con el hecho:
+   * los ocho caen en los cuatro casos (a: 2, 3, 7; b: 1, 5; c: 4, 8; d: 6).
+   */
+  const LETRA = { "deuda-sube": "a", "aporte-sube": "b", "deuda-baja": "c", "aporte-baja": "d" };
+  const porLetra = {};
   for (const t of TRANSACCIONES_CAP2) {
     const donde = `t1-4/${t.id}`;
-    const opciones = opcionesSegundaT1_4();
-    d6(opciones, CORRECTA_SEGUNDA_T1_4, donde);
+    const opciones = opcionesSegundaT1_4(t);
+    assert.equal(opciones.length, 4, donde);
+    d6(opciones, correctaSegundaT1_4(t), donde);
     d4(opciones, (id) => escenaSegundaT1_4(t, id), donde);
-    assert.ok(porqueSegundaT1_4(t)?.trim(), `${donde}: sin el por qué del acierto`);
-    /* La correcta pinta lo que de verdad pasó, y enciende los dos lados. */
-    const buena = escenaSegundaT1_4(t, CORRECTA_SEGUNDA_T1_4);
-    assert.deepEqual([...buena.resaltar].sort(), PARTES.map((p) => p.id).sort(), `${donde}: la correcta no enciende las tres partes`);
+    assert.equal(correctaSegundaT1_4(t), casoDe(t), `${donde}: la correcta no es el caso del asiento`);
+    (porLetra[LETRA[casoDe(t)]] ??= []).push(t.id);
   }
+  assert.deepEqual(porLetra, {
+    a: ["cal-2", "cal-3", "cal-7"], b: ["cal-1", "cal-5"], c: ["cal-4", "cal-8"], d: ["cal-6"],
+  });
+  assert.equal(SEGUNDA_T1_4.pregunta, "¿Cuál de los cuatro casos es este hecho?");
 });
 
 /* ───────── T1-5 · clasificación (cuál no se mueve) + consecuencia (los totales) ───────── */
@@ -167,7 +177,18 @@ test("★★★ las cuatro piezas montan la segunda decisión, y ninguna forkea 
      * juego, con su ítem en el registro. Ya no monta el armazón.
      */
     if (id === "t1-la-ecuacion-en-movimiento") assert.match(fuente, /data-parte=\{id\}/, `${id}: no está la decisión de la parte quieta`);
-    else assert.match(fuente, /SegundaDecisionT1/, `${id}: no monta la segunda decisión`);
+    /*
+     * T1-4 desde el lote 4: los cuatro casos tienen su sitio reservado desde
+     * el principio y el nombre queda pegado a las barras, así que la pieza
+     * pinta su propia decisión 2 (con las primitivas de b5/Devolucion.jsx).
+     * Lo que se exige es que esté y que no puntúe.
+     */
+    else if (id === "t1-que-le-pasa-a-cada-uno") {
+      assert.match(fuente, /data-segunda-decision/, `${id}: no está la segunda decisión`);
+      assert.match(fuente, /setCaso\(o\.id\)/, `${id}: la decisión 2 no se puede elegir`);
+      const linea = fuente.split("\n").find((l) => /onClick=\{\(\) => setCaso/.test(l));
+      assert.doesNotMatch(linea, /setRespuestas|t\.anotar/, `${id}: la decisión 2 anota puntaje`);
+    } else assert.match(fuente, /SegundaDecisionT1/, `${id}: no monta la segunda decisión`);
     assert.doesNotMatch(fuente, /function Opcion\b/, `${id}: declaró otra Opcion`);
   }
   const armazon = readFileSync("src/components/mecanicas/libros/tema1/segundaDecision.jsx", "utf8");
