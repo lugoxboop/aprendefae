@@ -36,6 +36,34 @@ es una medida.
 
 **No más de 2 o 3 frases visibles antes de que algo cambie o se pueda tocar.**
 
+## Patrones del estándar visual (Ukyo)
+
+Resumen; el detalle y las cifras con su origen están en el archivo que se nombra.
+Búscalo, no lo abras entero: `node scripts/canon.mjs "<palabra>" -f <archivo>`.
+
+**Aprender tipo presentación** (`prompts/aprender-secuencia-v1.md`). Pieza de
+4 a 10 pantallas; fases apertura, desarrollo y cierre sobre las cuatro capas.
+Cuatro tipos de pantalla: Apertura, Míralo, Haz, Cierre; al menos la mitad
+Míralo o Haz. Una idea y máx. 60 palabras por pantalla. Zonas de arriba abajo:
+progreso, cejilla, titular, figura, apoyo, razón, navegación (44 px). Figura
+reservada **por pieza** (la misma en todas sus pantallas), tope 220 px a 320 y
+319 a 375. «Siguiente» da el paso pendiente y luego pasa; «Anterior» no deshace;
+sin deslizar el dedo. Estado guardado con clave `tema/pieza/caso`. Movimiento:
+entrada escalonada 0/80/160 ms, 280 ms, solo transform y opacity; sin parallax;
+con movimiento reducido, sin desplazamientos.
+
+**Panel docente** (`prompts/panel-docente-v1.md`). Primera pantalla = tres
+bloques: avance de la clase, quiénes necesitan atención (máx. 3, nombre y
+motivo), actividad con peor resultado. La lista de estudiantes nunca va primero.
+Riesgo con palabra y forma (▲ ◆ ●), nunca coral; coral solo para error de carga.
+Todo lo demás a uno o dos toques.
+
+**Identificadores de tema** (`prompts/logitos-temas-conta-v1.md`). 64×64, trazo
+de 3 px, un solo elemento en el acento y es el único que se mueve (400 ms, una
+vez, solo con hover/foco/pulsación). **Reserva el objeto antes de dibujar**:
+la tabla de objetos ocupados está en ese archivo. Prueba: los nueve en fila a
+32 px y en gris, sin confundir dos.
+
 ## Antes de entregar
 
 Lista de estados, y si alguno no aplica se escribe "no aplica": vacío · foco ·
