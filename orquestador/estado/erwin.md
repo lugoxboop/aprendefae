@@ -1,11 +1,9 @@
-2026-10-23 11:14 (hora Bogotá)
-- Regla «Contabilidad tiene estudiantes: solo se agrega» en nocturno.md y celulas.md: bloqueado: va en el PR #490, falta visto bueno para fusionar
-- Encargo 1 · índice de Contabilidad con cuatro temas visibles (bandera OCULTAR_TEMAS_FUERA_DEL_SEMESTRE; nada borrado, FP y progreso intactos): bloqueado: PR #490 listo y verde, falta visto bueno para fusionar
-- Encargo 2 · motor del Repaso Diario de Contabilidad + migración 0152: bloqueado: PR #490, falta visto bueno; queda oculto hasta que lleguen los pools
-- Encargo 2 · etiquetado de subtemas por célula: en curso — pedido en #477 (B, T1), #478 (C, T2), #479 (E, T3), #480 (D, T4)
-- Encargo 3 · SecuenciaAprender sobre el patrón de Ukyo (#470): bloqueado: PR #491 listo y verde, falta visto bueno; cómo usarlo, en #492 para las cuatro células
-- Regla i (buscar antes de abrir) pasada a Gen, Xeno, Levi y Sai en un solo mensaje cada uno: terminado
-- Capacitación de la Célula A: en curso — espero las confirmaciones de Levi (auditores-v1) y Sai (construccion-v1)
-- Lo compartido (componentes comunes, choques entre células, datos de estudiantes, destrabar generales): en curso
-- #349 ficha de FP fija vs. oculta al bajar: bloqueado: espera que Xeno diga si le basta
+2026-10-24 15:12 (hora Bogotá)
+- Main rojo: canon.mjs ya arreglado en main; espero el resultado del CI que está corriendo
+- PR #490 (regla de estudiantes, índice de cuatro temas, motor del Repaso Diario, 0152) y PR #491 (SecuenciaAprender): bloqueado: CI de main; fusiono en cuanto vuelva a verde
+- Pools del Repaso Diario por célula: en curso — D en main (#475), C en #482, E en #481, B pendiente; guía en #477-#480
+- #349 ficha de FP: Xeno decidió no ocultarla y reservarle 84 px; encargado a Sai en el mismo issue: en curso
+- Tres pendientes de T1 que tenía Gen: pasados a la Célula B en #518: terminado
+- Vara de fusión y orden de ahorro pasadas a Gen, Xeno, Levi y Sai: terminado
+- Capacitación de la Célula A: en curso — falta la confirmación de Levi; Sai ya trabaja con su skill y dejó traspaso (#509)
 - Capa 1 de CuatroCapas (guardas B1 y B2): bloqueado: esperan los recortes de Near
