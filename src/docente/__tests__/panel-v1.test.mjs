@@ -87,3 +87,14 @@ test("★★★ P8 · el panel nuevo no llama a ninguna escritura que no existie
     assert.doesNotMatch(s, /\.rpc\s*\(|supabase/, `${f} habla con la base sin pasar por datos.js`);
   }
 });
+
+test("★★ los textos del lote 4 de Katsumi (textos.md): «Ver todas las alertas», «{N} van muy bien · Ver quiénes» y el rótulo «Estudiante» sobre el nombre", () => {
+  const leer = (f) => readFileSync(new URL(`../../components/docente/${f}.jsx`, import.meta.url), "utf8");
+  const b2 = leer("AtencionAhora");
+  assert.match(b2, />\s*Ver todas las alertas\s*</);
+  assert.doesNotMatch(b2, /`Ver los \$\{/);
+  assert.match(b2, /\{nDestacados\} van muy bien · Ver quiénes/);
+  const v = leer("VistaEstudiante");
+  assert.match(v, /data-rotulo-estudiante>Estudiante</);
+  assert.doesNotMatch(v, />\s*Mi estudiante\s*</);
+});
