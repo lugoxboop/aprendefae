@@ -1,11 +1,15 @@
-2026-10-24 15:32 (hora Bogotá)
+2026-10-24 17:40 (hora Bogotá)
 - Vara nueva (24-oct): Mateo no da vistos buenos; se fusiona con PASA del auditor y CI verde. Las 6 correcciones de Takamura a contenido aprobado de T3 las decidió Kamogawa (se aplican); deja de haber BLOQUEADO-MATEO: terminado
 - r5 cerrado (r5-1 a r5-5 en Avanzado; tema oculto hasta el próximo semestre): terminado
 - T3 lote 1 (hilo de Aprender, Hacer nuevos, línea base, lenguaje visual), PR #484: terminado (fusionado)
 - T3 lote 2 (fichas de los Hacer nuevos con versión B, segundo caso de P5, P2 de Itagaki, auditoría en diseño de Takamura): terminado. Decisiones: el camino no se reordena; P2 nueva y «Del resultado a la caja» esperan el #468; primero va «¿Gasto o pago?»
 - T3 lote 3 (Takamura auditó el lote 2: N1-N9; Miyata e Itagaki entregaron sus v2): terminado
 - T3 lote 4: «¿Gasto o pago?» v3 con PASA de diseño de Takamura (condiciones C1-C6); paquete e3-t3-gasto-o-pago-v3.md fusionado (#521): terminado
-- T3, construcción (Ippo, #506: logito CalendarioConCinta, 6 correcciones de la línea base y «¿Gasto o pago?» completa sobre el paquete v3): bloqueado: Ippo no responde; su sesión de Claude Code se congela al cargar en Chrome (issue #517 a Miku). El encargo está entero en #506
+- T3, construcción (Ippo, sesión nueva activa; #506): #532 (las 6 correcciones) abierto, devuelto para F3 = «Gasto arriendos» y F5 (citas del mapa); «¿Gasto o pago?» en construcción (el encabezado de Hacer mide 167 px: decidí que ficha + matriz + contadores, 418 px, quepan juntos en la ventana con desplazamiento al hecho; no se toca lo compartido); logito pendiente: en curso
 - T3, sonda medir-t3 (#489) y subtemas del Repaso Diario (#481): terminado (fusionados al volver main a verde)
 - T3, forma de los Aprender en secuencia: bloqueado: el patrón ya está (#470); espera el componente compartido SecuenciaAprender de Erwin
-- Capítulo 4 del libro (pp. 117-176): bloqueado: pedido a Miku en #468; frena la P6, la P2 nueva, «Del resultado a la caja» y las citas marcadas como hueco
+- Capítulo 4 del libro: terminado (Mateo se lo pasó directo a Miyata; #468 cerrado)
+- T3 lote 5: mapa del cap. 4 (Miyata) con PASA con correcciones de Takamura, fusionado (#527): terminado. C2 decidido: «Del resultado a la caja» A usa las cifras de P5 (3.950 → 14.650)
+- T3 lote 6: Miyata entregó P2 nueva, P6 y «Del resultado a la caja» v3 (Takamura lo audita); Itagaki entregó la secuencia de P1, P3, P4 y P5 y la rehace a la figura fija de 150/200 px del patrón; lo que el componente necesita va a Erwin en #534: en curso
+- T3 lote 7 (Miyata): adenda del mapa (C1, C3, C4, C5 verificados a ojo) y textos de las decisiones nuevas de las secuencias: en curso
+- Regla j (leer una vez, exprimir y dejarlo en el repo): pasada a los cuatro agentes: terminado

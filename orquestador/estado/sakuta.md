@@ -1,16 +1,13 @@
-2026-10-24 15:39 (hora Bogotá)
-- Main en verde (cb9a948; mi diagnóstico de canon.mjs:46 entró por el #504): terminado
-- T1 · fondo de los 4 Aprender en secuencia y 2.ª visita (Futaba): terminado, en fichas/b-t1-aprender-secuencia-y-hacer.md; cu0-a2 2.ª visita no pasó (Shoko), Futaba la corrige: en curso
-- T1 · P2 de los 7 Hacer, H1, H2 y anexo (Mai): terminado; auditadas por Shoko en revisiones/b-t1-p2-mai-shoko.md; ajustes a esa auditoría (Mai): en curso
-- Mai traspasada a chat nuevo (el viejo estaba pesado): terminado, traspasos/mai.md; enlace en traspasos/sakuta.md
-- T1 · forma de los 4 Aprender en secuencia, empezando por cu0-a1 (Mai): en curso
-- T1 · lote del 24-oct de Futaba (H1, H2, t1-5 y títulos): terminado, en fichas/b-t1-lote-24oct-futaba.md
-- T1 · textos de las correcciones de Shoko (t1-1 nueva 2.ª decisión, t1-4 cuatro casos, t1-6 Ingresos/Gastos, H1 rótulos fijos, H2 2.ª vuelta) (Futaba): en curso
-- T1 · decisiones mías: H2 se queda como Hacer aparte; f1 de cu0-a4 queda sin preguntar hasta que llegue el libro (#467); lo publicado no se toca
-- T1 · t1-5 construido (Kaede, #496): FALLA de Shoko (devolución C vieja, dos opciones con total $0, falta la devolución del monto); su tabla está en el PR y Kaede la aplica junto con la escala a $515.000: en curso
-- T1 · datos de los Aprender por pantalla (Kaede, #485): CI verde; Shoko compara el archivo contra la ficha 16a85b8 para dar PASA: en curso
-- T1 · logito LibretaYLapiz, 6 Hacer según P2 con las correcciones de Shoko, H1 y H2 (Kaede): en curso; la sesión de Kaede va en 75 % y él mismo pide traspaso: los lotes 4 y 5 van en una sesión nueva
-- T1 · SecuenciaAprender (componente compartido): bloqueado: pregunté a Miku y Erwin quién lo construye; T1 se ofrece como piloto (#514)
-- Lo compartido que falla en los 7 Hacer (Retro con emoji y teal, «era esta», «Siguiente» fijo que tapa a 320): bloqueado: es de Erwin (#487); B lo parchea dentro de cada pieza
-- T1 · D1 (verdad contra el libro): bloqueado: faltan las pp. 1-31 y las páginas del cap. 2 que cita T1 (#467)
-- T6 (oculto hasta el próximo semestre): los dos cambios de texto de Shoko del #458 quedan anotados para retomarlos
+2026-10-24 17:21 (hora Bogotá)
+- T1 · #496 (t1-5, las dos torres): en curso; tercera FALLA de Shoko, solo por la línea «contrario» (texto nuevo y clase propia «otraParte», que decidí yo), en revisiones/b-t1-496-520-lote-c-shoko.md; el empuje a 320 (D4) va en un PR aparte (Kaede)
+- T1 · #520 (logito LibretaYLapiz): en curso; PASA de Shoko sin otra vuelta; lo fusiono en cuanto T1-7 esté en la rama y el CI quede verde (Kaede)
+- T1 · lote 4 (los 6 Hacer publicados) y lote 5 (H1 y H2) (Kaede): en curso; ya tiene en cola la regla j y las correcciones de Shoko (un solo Anotar en t1-4, zonas apiladas en t1-6, rejilla 2×2 en t1-1, tres opciones en t1-5, la leyenda de Mai, excepción a B1 en H2, HUECO en f1)
+- T1 · medición de los 44 titulares, apoyos y rótulos (Mai): terminado, en fichas/b-t1-titulares-medidos-mai.md. Decisión mía: van los 5 rótulos que ella midió, los carriles de a4·3 apilados, 48 px de reserva para la razón y la capa 4 como excepción
+- T1 · la capa 4 no cabe a 320 (146 px de desplazamiento): consultado a Ukyo y Miku en el #514 si es una excepción del patrón; mientras tanto, en B queda como excepción declarada
+- T1 · lote C (Futaba): auditado (revisiones/b-t1-496-520-lote-c-shoko.md); «Ocho leen lo mismo» PASA a falta de la medición de Mai; siete textos cambian con la redacción lista de Shoko, y los toma Kaede; ERROR_P3 con un solo juego, el corto
+- T1 · cómo se reparten los 8 nombres de «Ocho leen lo mismo» a 320 (Mai): en curso
+- T1 · regla j: terminado; la tienen los cuatro (Futaba, Mai, Shoko en su traspaso, Kaede en su cola)
+- T1 · D1, capítulo 2 del libro: BLOQUEADO-MATEO; la lista exacta de lo que falta se la pasé a Miku, y va directo a Futaba
+- T1 · SecuenciaAprender (componente compartido): bloqueado; el #514 sigue sin dueño. T1 está listo para ser el piloto
+- Lo compartido que falla en los 7 Hacer: bloqueado; es de Erwin (#487); B lo parchea dentro de cada pieza
+- T6 (oculto hasta el próximo semestre): los dos cambios de texto de Shoko del #458 quedan anotados

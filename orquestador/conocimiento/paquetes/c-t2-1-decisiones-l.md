@@ -98,3 +98,27 @@ Entrega: `c-t2-3-mello-auditoria.md`. #482 y #494 tienen PASA y ya están fusion
 - **Near:** los retros por línea mala de los nuevos E1, E2 y E3. Los 2 ítems «revisar» por caso, con dos tipos de error distintos: cuenta vecina, cifra traspuesta o lado contrario. Por cada uno, la línea mal pasada, su porqué y el retro por cada línea buena tocada.
 - **Watari:** las líneas de la T compacta como botones de 44 px, para «revisar», medidas a 320 px en la cuadrícula de 2 × 2. Y el ajuste de Cuadra por valor en la forma: las columnas al «Comprobar», y las sumas después de decidir.
 - **Misa:** construye en #499 todo lo que ya está cerrado (Las que vuelven a cero completa, y los cambios de Mello en Cuadra por valor y en Del diario al mayor). «Revisar» lo agrega cuando lleguen el banco de Near y la forma de Watari.
+
+---
+
+# Lote T2-4 · decisiones de L (24-oct-2026, 16:30)
+
+Entregas: Near `c-t2-4-near-delta.md` (retros de los E1-E3 de Mello y los ítems «revisar» de los casos A y B) y Watari `c-t2-4-watari-figuras.md` + `.html` (Cuadra por valor: las columnas se mueven al «Comprobar» y las sumas aparecen después de decidir; «revisar» con líneas de 44 px y cotejo Diario/Mayor; 42 estados medidos).
+
+- **E3, un término, un nombre:** dice «la deuda del computador», igual que cal-2 y J2.
+- **E1 de Cuadra por valor:** manda el de Mello (tres renglones: Cuentas por pagar D · Caja 6.000 D · Bancos 4.000 H). La maqueta de Watari todavía muestra el E1 anterior, de dos renglones; la forma sirve igual.
+- **«Revisar»:** el banco es el de Near (A6, A7, B6 y B7, con las plantillas Rv, Rt y Rl) y la forma, la de Watari (cotejo con «=» y «≠», acierto en neutro porque el error es del libro, y la T sin ser botón). Las cifras van hasta 9.999.
+- **Mello audita** el delta de Near, las figuras de Watari y el logito (#516) antes de fusionar.
+
+---
+
+# Auditoría T2-5 de Mello · decisiones de L (24-oct-2026, 17:25)
+
+Entrega: `c-t2-5-mello-auditoria.md`. #516 (logito) llegó rebasado, con una sola definición, la ficha de 10 y el CI verde, que eran las correcciones mínimas de Mello. **Está fusionado (a5d9ae9).** #512 queda cerrado.
+
+Las correcciones de Mello son de una línea o de una celda, y ya vienen escritas y medidas. Por la regla j, **las aplica Misa directo en #499**, sin otra vuelta por Near ni por Watari:
+- **«Iba aquí» a los 0,7 s del error (H7),** tanto en Cuadra por valor como en «revisar». El orden es: 0 ms la consecuencia, 380 ms la pastilla y el retro, y 380 + 700 ms «Iba aquí» (en «revisar», «Iba en la línea punteada»). Así quedan las constantes de main (`RETARDO_IBA_MS = 700`). Con esto se corrige la frase de `c-t2-4-watari-figuras.md` que decía «la pausa baja a 380 ms».
+- **A6:** la línea mala pasa a ser Bancos · H · 4 ene · 4.000 (antes iba en Flota), con el porqué de Mello. Así A6 y A7 ya no caen en la misma T.
+- **Rv, Rt y Rl:** pierden la primera oración, que repetía lo que ya pinta el cotejo. Los textos son los de Mello.
+
+Con esto Mello aprueba las tres Hacer sin otra vuelta. #499 sigue esperando #500.
