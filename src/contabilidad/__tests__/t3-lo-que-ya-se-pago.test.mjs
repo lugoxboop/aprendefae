@@ -166,7 +166,7 @@ test("★★★ capa 3 montada: el resultado es el mismo en cualquier orden de t
 /* ═══════════ LAS CUENTAS (Levi) Y EL TEXTO (Gen) ═══════════ */
 
 test("★★★ los nombres de cuenta del asiento y del bloque son idénticos", () => {
-  assert.deepEqual(P4.SAN_CALIXTO_P4.asiento, { debe: { cuenta: "Gastos arriendos", monto: 5000 }, haber: { cuenta: "Arriendos pagados por anticipado", monto: 5000 } });
+  assert.deepEqual(P4.SAN_CALIXTO_P4.asiento, { debe: { cuenta: "Gasto arriendos", monto: 5000 }, haber: { cuenta: "Arriendos pagados por anticipado", monto: 5000 } });
   assert.deepEqual(P4.ARRIENDOS_DE_LA_COSTA.asiento, { debe: { cuenta: "Arriendos recibidos por anticipado", monto: 5000 }, haber: { cuenta: "Ingresos por arriendos", monto: 5000 } });
   assert.equal(P4.SAN_CALIXTO_P4.bloque.cuenta, P4.SAN_CALIXTO_P4.asiento.haber.cuenta);
   assert.equal(P4.ARRIENDOS_DE_LA_COSTA.bloque.cuenta, P4.ARRIENDOS_DE_LA_COSTA.asiento.debe.cuenta);
@@ -180,7 +180,7 @@ test("★★★ el texto de Gen con sus correcciones: cierre nuevo, «por antici
   assert.deepEqual(p.nombres.map((n) => n.termino), ["Diferido", "Pagado por anticipado", "Recibido por anticipado", "Desde ya"]);
   assert.equal(p.nombres[1].definicion, "Lo que la empresa pagó por anticipado es algo que todavía tiene. Lo va gastando con el tiempo.");
   assert.equal(p.nombres[2].definicion, "Lo que la empresa recibió por anticipado es algo que todavía debe. Lo va cumpliendo con el tiempo.");
-  assert.match(p.nombres[2].delLibro, /\(p\. 142\).*\(p\. 145\)/);
+  assert.match(p.nombres[2].delLibro, /en la medida que va pasando el tiempo, se van convirtiendo en gastos» \(pp\. 142-143\).*\(p\. 145\)/);
   assert.equal(p.nombres[3].definicion, "En la pieza anterior la plata iba atrás. Aquí va adelante.");
   assert.equal(P4.SEGMENTOS_P4.length, 9);
   assert.equal(L.estadoPasoP4(4).textos[0], "Esos $15.000 son algo que la empresa tiene: tres meses de local pagados por anticipado.");
@@ -223,7 +223,7 @@ test("★★★ capa 2: los diez pasos con sus contadores, su saldo, los asiento
       if (p === 10) {
         assert.equal(m.caja.querySelector("[data-modo]").getAttribute("data-modo"), "espejo");
         assert.deepEqual([...m.caja.querySelectorAll("[data-espejo-empresa] [data-cuenta]")].map((x) => x.textContent),
-          ["Gastos arriendos", "Arriendos pagados por anticipado", "Arriendos recibidos por anticipado", "Ingresos por arriendos"]);
+          ["Gasto arriendos", "Arriendos pagados por anticipado", "Arriendos recibidos por anticipado", "Ingresos por arriendos"]);
         assert.equal(m.caja.querySelector("[data-reproducir]").textContent, "Ver de nuevo");
       }
       const grupo = m.caja.querySelector('[role="group"][aria-describedby]');

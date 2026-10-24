@@ -25,7 +25,7 @@ export const GASTO = "gasto";
 /* Zona A: las seis cuentas que se vacían, en el orden de Gen. */
 export const CUENTAS_DEL_PERIODO = [
   { cuenta: "Ingresos por servicios", saldo: 14800, tipo: INGRESO },
-  { cuenta: "Gastos arriendos", saldo: 2000, tipo: GASTO },
+  { cuenta: "Gasto arriendos", saldo: 2000, tipo: GASTO },
   { cuenta: "Gasto salarios", saldo: 5100, tipo: GASTO },
   { cuenta: "Gasto materiales de consumo", saldo: 500, tipo: GASTO },
   { cuenta: "Gasto servicios públicos", saldo: 750, tipo: GASTO },
@@ -102,7 +102,7 @@ export const PIEZA_CERRAR_EL_PERIODO = {
       termino: "Cerrar",
       definicion: "Cerrar una cuenta es dejarla en cero pasando su saldo a otra parte.",
       /* «Así lo dice el libro» (p. 123). */
-      delLibro: "«Cerrar una cuenta significa reducir su saldo a cero. Cuando se cierran los ingresos y los gastos, realmente lo que hacemos es enfrentar los ingresos con los gastos para determinar la utilidad o la pérdida» (p. 123).",
+      delLibro: "«Cerrar una cuenta significa reducir su saldo a cero. Cuando se cierran los ingresos y los gastos, realmente lo que hacemos es enfrentar los ingresos con los gastos para determinar la utilidad o la pérdida…» (p. 123).",
     },
     { termino: "Ganancias y pérdidas", definicion: "Ganancias y pérdidas es la cuenta donde se juntan los ingresos y los gastos del periodo." },
     /* «Lo que se planta», con el rótulo de las piezas anteriores. */

@@ -45,7 +45,7 @@ export const TIPOS_ACT5 = {
   "Ingresos por arriendos": INGRESO,
   "Servicios recibidos por anticipado": PASIVO,
   "Ingresos por servicios": INGRESO,
-  "Gastos arriendos": GASTO,
+  "Gasto arriendos": GASTO,
   "Arriendos pagados por anticipado": ACTIVO,
 };
 
@@ -131,11 +131,11 @@ export const ITEMS_ACT5 = [
     dado: false,
     reparto: { de: 1, meses: 3, total: 15000 },
     valor: 5000,
-    debe: "Gastos arriendos",
+    debe: "Gasto arriendos",
     haber: "Arriendos pagados por anticipado",
-    anclajes: { "Gastos arriendos": "cierra el 30 de junio", "Arriendos pagados por anticipado": "pagado el 1 de junio" },
+    anclajes: { "Gasto arriendos": "cierra el 30 de junio", "Arriendos pagados por anticipado": "pagado el 1 de junio" },
     acierto: null,
-    pie: "Libro, p. 144",
+    pie: "Libro, pp. 143-144",
   },
   {
     id: "t3a5-arriendo-costa",

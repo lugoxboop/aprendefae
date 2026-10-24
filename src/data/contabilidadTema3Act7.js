@@ -48,7 +48,7 @@ export const CASOS_ACT7 = [
     pie: "Basado en el libro, pp. 121-128 y 140",
     cuentas: [
       ing("Ingresos por servicios", 14800),
-      gas("Gastos arriendos", 2000),
+      gas("Gasto arriendos", 2000),
       gas("Gasto salarios", 5100),
       gas("Gasto materiales de consumo", 500),
       gas("Gasto servicios públicos", 750),
