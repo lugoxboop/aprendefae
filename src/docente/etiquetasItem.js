@@ -829,20 +829,20 @@ Object.assign(REGLAS, {
 
 /* ── Contabilidad T2 · las tres Hacer nuevas del lote T2-2 (Célula C, #471) ── */
 Object.assign(REGLAS, {
-  /* `cpv-k1`…`cpv-e3` (K completar, J juzgar, E encontrar, numerados como en el banco de Near): el tipo de caso y las cuentas del asiento, sin repetir la duplicada. */
+  /* `cpv-k1`…`cpv-e3` (K completar, J juzgar, E encontrar, numerados como en el banco de Near; `cpv-j3` es el K3 de Near, que pasó a juzgar en T2-4): el tipo de caso y las cuentas del asiento, sin repetir. */
   "cu-cuadra-por-valor": (id) => {
     const c = CUADRA_POR_VALOR.casos.find((x) => x.id === id);
     if (!c) return null;
     const tipo = { completar: "Completar", juzgar: "Cuadra o no", encontrar: "Línea que descuadra" }[c.tipo];
     return `${tipo}: ${[...new Set(c.lineas.map((l) => l.cuenta))].join(", ")}`;
   },
-  /* `ddm-<caso>-N`: el renglón del diario que se pregunta. */
+  /* `ddm-<caso>-N`: el renglón del diario que se pregunta. `ddm-<caso>-rN` («revisar», T2-4): el renglón cuya línea llegó mal pasada al mayor. */
   "cu-del-diario-al-mayor": (id) => {
     for (const caso of DEL_DIARIO_AL_MAYOR.casos) {
       const it = caso.items.find((x) => x.id === id);
       if (!it) continue;
       const r = renglonesDeT2(caso)[it.renglon];
-      const que = it.tipo === "destino" ? "A qué cuenta va" : "De qué renglón sale";
+      const que = { destino: "A qué cuenta va", origen: "De qué renglón sale", revisar: "Qué línea del mayor no coincide" }[it.tipo];
       return `${que}: ${r.fecha} · ${r.cuenta} · ${pesosT2(r.monto)}`;
     }
     return null;

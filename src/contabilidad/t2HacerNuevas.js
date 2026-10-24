@@ -1,7 +1,7 @@
 import { DEBE, HABER, pesos } from "../data/contabilidad.js";
 import {
   CUADRA_POR_VALOR, DEL_DIARIO_AL_MAYOR, LAS_QUE_VUELVEN_A_CERO, SUBTEMA_POR_CLASE,
-  VUELVE_A_CERO, PASA_CON_SALDO, PLANTILLAS_DIARIO, PORQUE_DESTINO,
+  VUELVE_A_CERO, PASA_CON_SALDO, PLANTILLAS_DIARIO, PLANTILLAS_REVISAR, PORQUE_DESTINO, COINCIDE_REVISAR,
 } from "../data/contabilidadT2HacerNuevas.js";
 
 /*
@@ -38,13 +38,59 @@ export function sumas(lineas, relleno = 0) {
 export const conteo = (lineas, lado) => lineas.filter((l) => l.lado === lado).length;
 
 /*
- * La frase del desnivel. El lado que falta es el más bajo: «Faltan $700 en el
- * haber: las dos columnas no llegan a la misma altura».
+ * La frase del desnivel, con las dos formas de Watari (c-t2-4-watari-figuras.md §1):
+ *   «Faltan $700 en el haber: las dos columnas no llegan a la misma altura.»
+ *   «Sobran $X en el haber: su columna pasa la línea del debe.»
+ * La segunda, solo cuando la cifra escrita se pasa: `pasado` es el lado del
+ * hueco en completar, y la frase la dice si ese lado es el más alto.
  */
-export function fraseDesnivel({ debe, haber }) {
+const NOMBRE_LADO = { [DEBE]: "el debe", [HABER]: "el haber" };
+export function fraseDesnivel({ debe, haber }, pasado = null) {
   if (debe === haber) return null;
-  const bajo = debe < haber ? "el debe" : "el haber";
-  return `Faltan ${pesos(Math.abs(debe - haber))} en ${bajo}: las dos columnas no llegan a la misma altura.`;
+  const alto = debe > haber ? DEBE : HABER;
+  const dif = pesos(Math.abs(debe - haber));
+  if (pasado === alto) return `Sobran ${dif} en ${NOMBRE_LADO[alto]}: su columna pasa la línea ${alto === DEBE ? "del haber" : "del debe"}.`;
+  return `Faltan ${dif} en ${NOMBRE_LADO[alto === DEBE ? HABER : DEBE]}: las dos columnas no llegan a la misma altura.`;
+}
+
+/*
+ * La figura de las dos columnas (Watari §1), sin pantalla: cada renglón es un
+ * tramo proporcional a su valor sobre una escala de 1,12 × la suma mayor.
+ * Antes de «Comprobar», el hueco es un tramo FIJO (sin altura propia: 28 px
+ * en CSS, con «?») y la escala NO cuenta lo escrito: la figura no calcula al
+ * teclear (prueba C5 de Mello). Comprobado, el hueco toma su cifra, entran la
+ * línea de nivel (a la altura del debe) y la marca de lo que falta o sobra.
+ *   { debe: [tramo], haber: [tramo], nivel: { alto, igual } | null, marca: { lado, desde, alto } | null, sumas }
+ *   tramo = { k, cuenta, monto, alto (en %) | null si es fijo, fijo, tuya }
+ */
+export function figuraCuadra(lineas, { relleno = null, comprobado = false } = {}) {
+  const valor = (l) => (l.monto != null ? l.monto : comprobado ? (relleno ?? 0) : 0);
+  const s = { debe: 0, haber: 0 };
+  lineas.forEach((l) => { s[l.lado] += valor(l); });
+  const esc = Math.max(s.debe, s.haber, 1) * 1.12;
+  const pct = (x) => Math.round((1000 * x) / esc) / 10;
+  const tramos = (lado) => lineas.map((l, k) => ({ l, k })).filter(({ l }) => l.lado === lado).map(({ l, k }) => {
+    const fijo = l.monto == null && !comprobado;
+    return { k, cuenta: l.cuenta, monto: fijo ? null : valor(l), alto: fijo ? null : pct(valor(l)), fijo, tuya: l.monto == null };
+  });
+  const nivel = comprobado ? { alto: pct(s.debe), igual: s.debe === s.haber } : null;
+  let marca = null;
+  if (comprobado && s.debe !== s.haber) {
+    const lo = Math.min(s.debe, s.haber);
+    marca = { lado: s.debe > s.haber ? HABER : DEBE, desde: pct(lo), alto: pct(Math.abs(s.debe - s.haber)) };
+  }
+  return { debe: tramos(DEBE), haber: tramos(HABER), nivel, marca, sumas: s, escala: esc };
+}
+
+/*
+ * El ancho de la columna de cifra (Watari §1): la cifra más larga del asiento,
+ * en caracteres (`--cifra`, en ch). Con más de 8 (los millones) el asiento va
+ * `.apilado`: el nombre en su línea y las cifras debajo.
+ */
+export function anchoCifra(lineas, extras = []) {
+  const largos = [...lineas.map((l) => l.monto), ...extras].filter((x) => x != null).map((x) => pesos(x).length);
+  const cifra = Math.max(4, ...largos);
+  return { cifra, apilado: cifra > 8 };
 }
 
 export function prepararCuadra(barajar = (xs) => xs) {
@@ -65,9 +111,10 @@ export function evaluarCuadra(caso, respuesta) {
     const ok = respuesta === caso.correcta;
     const s = sumas(caso.lineas, respuesta);
     const distractor = caso.distractores?.find((d) => d.valor === respuesta);
+    const ladoHueco = caso.lineas.find((l) => l.monto == null)?.lado ?? null;
     return {
       ok, correcta: caso.correcta, sumas: s,
-      consecuencia: ok ? null : fraseDesnivel(s),
+      consecuencia: ok ? null : fraseDesnivel(s, ladoHueco),
       textos: ok ? [caso.porque] : [distractor?.retro ?? caso.porque],
     };
   }
@@ -120,13 +167,41 @@ export function mayorCon(caso, puestos) {
 /*
  * Un caso por partida. Se alternan por intento (D8): `anterior` es el id del
  * caso de la partida pasada, y se juega el otro. Los destino van en orden de
- * fecha, como en el diario; los origen, al final y barajados (Near).
+ * fecha, como en el diario; los origen, barajados; y los dos «revisar», al
+ * final y en su orden (Near T2-4 §2: el 2 después del 1, y el mayor completo
+ * no delata nada pendiente). La cuadrícula de T se baraja en cada intento
+ * (H6): `orden` va igual en todos los ítems de la tanda.
  */
 export function prepararDiario(barajar = (xs) => xs, anterior = null) {
   const casos = barajar([...DEL_DIARIO_AL_MAYOR.casos]);
   const caso = casos.find((c) => c.id !== anterior) ?? casos[0];
-  const de = (tipo) => caso.items.filter((it) => it.tipo === tipo).map((it) => ({ ...it, caso }));
-  return [...de("destino"), ...barajar(de("origen"))];
+  const orden = barajar(cuentasDe(caso));
+  const de = (tipo) => caso.items.filter((it) => it.tipo === tipo).map((it) => ({ ...it, caso, orden }));
+  return [...de("destino"), ...barajar(de("origen")), ...de("revisar")];
+}
+
+/* Los renglones que el mayor trae ya pasados al empezar: los de origen (Mello §2.2: sin ellos, origen no se juega). */
+export const pasadosDe = (caso) => caso.items.filter((it) => it.tipo === "origen").map((it) => it.renglon);
+
+/*
+ * El mayor de «revisar»: los renglones del caso con la forma de Watari
+ * { r, cuenta, lado, monto }, con la línea mal pasada del ítem en lugar de la
+ * suya. Va por cuenta y, dentro de cada T, por fecha (el orden del diario).
+ */
+export function mayorRevisar(item) {
+  return renglonesDe(item.caso).map((x) => (x.k === item.mal.r ? { ...item.mal } : { r: x.k, cuenta: x.cuenta, lado: x.lado, monto: x.monto }));
+}
+
+/*
+ * El cotejo de una línea del mayor con su renglón del diario. SE CALCULA
+ * comparando, campo por campo; nada se escribe a mano (Watari §2).
+ */
+export function cotejoDe(renglon, linea) {
+  return [
+    ["Cuenta", renglon.cuenta, linea.cuenta],
+    ["Lado", renglon.lado, linea.lado],
+    ["Monto", renglon.monto, linea.monto],
+  ].map(([campo, diario, mayor]) => ({ campo, diario, mayor, igual: diario === mayor }));
 }
 
 const MESES = { Ene: "enero", Feb: "febrero", Mar: "marzo", Abr: "abril", May: "mayo", Jun: "junio",
@@ -146,10 +221,22 @@ export function retroDiario(letra, { cuenta, fecha = "", cuentaDelMayor = "" }) 
 
 /**
  * Califica un ítem. Destino: `respuesta` es el nombre de la cuenta tocada.
- * Origen: el índice del renglón tocado.
+ * Origen: el índice del renglón tocado. Revisar: el `r` de la línea del mayor
+ * tocada (una línea por renglón).
  */
 export function evaluarDiario(item, respuesta) {
   const renglones = renglonesDe(item.caso);
+  if (item.tipo === "revisar") {
+    const linea = mayorRevisar(item).find((x) => x.r === respuesta);
+    const cotejo = linea ? cotejoDe(renglones[linea.r], linea) : [];
+    /* Bien: la que no coincide. Mal: la consecuencia es el cotejo en «=» y la frase de Watari; luego, la plantilla de Near. */
+    const ok = cotejo.length > 0 && cotejo.some((c) => !c.igual);
+    const retro = ok ? null : PLANTILLAS_REVISAR[item.retros?.[respuesta]] ?? null;
+    return {
+      ok, correcta: item.mal.r, cotejo, consecuencia: ok ? null : COINCIDE_REVISAR,
+      textos: ok ? [item.porque] : [retro ?? item.porque],
+    };
+  }
   const r = renglones[item.renglon];
   if (item.tipo === "destino") {
     const ok = respuesta === r.cuenta;

@@ -45,11 +45,12 @@ const CIFRA = { fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, mono
 const CAJA = { padding: "10px 12px", borderRadius: "13px", background: "rgba(10,20,34,0.45)", border: "1px solid rgba(248,249,250,0.12)" };
 const FILA = { display: "flex", justifyContent: "space-between", gap: "10px", alignItems: "baseline", fontSize: "13px", lineHeight: 1.4, padding: "3px 6px", borderRadius: "8px" };
 
-function Utilidad({ valor }) {
+/* El periodo («año») sale de los datos, no de aquí (Mello H2, lote T2-4). */
+function Utilidad({ valor, periodo }) {
   const v = useNumeroQueSube(valor);
   return (
     <p data-utilidad={valor} className="fae-t2n-entra" style={{ ...FILA, margin: "8px 0 0", fontWeight: 700, color: FAE.text, borderTop: "1px solid rgba(248,249,250,0.3)", paddingTop: "8px" }}>
-      <span>= Utilidad del año</span><span style={CIFRA}>{pesos(v)}</span>
+      <span>= Utilidad del {periodo}</span><span style={CIFRA}>{pesos(v)}</span>
     </p>
   );
 }
@@ -157,7 +158,7 @@ export default function LasQueVuelvenACero({
         <div data-cierre style={{ margin: "10px 0" }}>
           <p style={{ ...ROTULO_T2, margin: "0 0 6px" }}>CIERRE · GANANCIAS Y PÉRDIDAS</p>
           <CuentaT cuenta={gyp} compacta />
-          {mesCerrado && <Utilidad valor={utilidadDe(ordenFijo)} />}
+          {mesCerrado && <Utilidad valor={utilidadDe(ordenFijo)} periodo={caso.periodo} />}
         </div>
 
         <div data-mes="despues" style={CAJA}>
