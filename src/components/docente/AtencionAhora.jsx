@@ -43,7 +43,7 @@ export function FilaAtencion({ a, onAbrir }) {
       </span>
       <span style={{ display: "grid", minWidth: 0 }}>
         <span className="pd1-nombre" style={{ fontFamily: "Sora, sans-serif", fontSize: "14px", fontWeight: 600, color: FAE.text }}>{nombre}</span>
-        <span className="pd1-nombre" style={{ fontSize: "13px", color: V1.texto2 }}>{a.motivo}</span>
+        <span className="pd1-dos" style={{ fontSize: "13px", lineHeight: 1.35, color: V1.texto2 }} data-motivo>{a.motivo}</span>
       </span>
       <ChevronRight size={18} aria-hidden="true" color={V1.texto2} />
     </button>
@@ -71,7 +71,7 @@ export default function AtencionAhora({ atencion, nDestacados, singular, onVerTo
         </button>
         {/* Destacados, en una línea (Ukyo §4): sin número, para no sumar cifras a la primera pantalla (P5). */}
         {nDestacados > 0 && (
-          <button type="button" style={{ ...enlaceV1, color: V1.tealTexto, textDecorationColor: `${FAE.teal}66` }} onClick={onVerTodos} data-ver-destacados>
+          <button type="button" style={enlaceV1} onClick={onVerTodos} data-ver-destacados>
             Ver quiénes van muy bien
           </button>
         )}

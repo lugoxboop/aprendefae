@@ -603,7 +603,14 @@ function Marco({ children, onBack }) {
   return (
     <div style={{ minHeight: "100vh", backgroundColor: FAE.bg, fontFamily: "Inter, sans-serif", color: FAE.text }}>
       <div style={{ maxWidth: "1040px", margin: "0 auto", padding: "12px clamp(16px, 4vw, 24px) 64px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
+        {/*
+          * La pastilla de FP (AccountControl, de Erwin) flota arriba a la
+          * derecha. Esta barra le deja su hueco y el título se recorta con
+          * elipsis en vez de pasar por debajo (Shibukawa, #498: a menos de
+          * 360 px la tapaba).
+          */}
+        <style>{`.pd1-barra { padding-right: 112px; } @media (min-width: 720px) { .pd1-barra { padding-right: 0; } }`}</style>
+        <div className="pd1-barra" style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px", minWidth: 0 }}>
           <Logo variant="symbol" size={26} theme="dark" />
           <span aria-hidden="true" style={{ width: "1px", height: "22px", backgroundColor: "rgba(248,249,250,0.16)", margin: "0 4px" }} />
           <button
@@ -614,7 +621,7 @@ function Marco({ children, onBack }) {
           >
             <ChevronLeft size={20} color={FAE.text} />
           </button>
-          <h2 style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "17px", letterSpacing: "-0.02em", margin: 0, lineHeight: 1 }}>
+          <h2 className="pd1-nombre" style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "17px", letterSpacing: "-0.02em", margin: 0, lineHeight: 1.2, minWidth: 0 }}>
             Panel docente
           </h2>
         </div>

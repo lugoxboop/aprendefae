@@ -24,6 +24,8 @@ export const CSS_V1 = `
 .pd1-toque { min-height: 44px; }
 .pd1-foco:focus-visible, .pd1 button:focus-visible, .pd1 input:focus-visible, .pd1 select:focus-visible { outline: 2px solid ${FAE.text}; outline-offset: 2px; }
 .pd1-nombre { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+/* Hasta dos renglones (Shibukawa, #498): el motivo de B2 y el nombre de una actividad no se cortan en uno. */
+.pd1-dos { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; min-width: 0; overflow-wrap: anywhere; }
 @keyframes pd1-pulso { 0%, 100% { opacity: .55; } 50% { opacity: .9; } }
 .pd1-esqueleto { background: rgba(248,249,250,0.06); border-radius: 8px; }
 @media (prefers-reduced-motion: reduce) { .pd1-entrar { animation: none !important; } }
