@@ -1053,6 +1053,49 @@ export function actividadesDeTipo(topic, tipo) {
   );
 }
 
+/*
+ * TEMAS OCULTOS AL ESTUDIANTE. Orden de Mateo del 23 de octubre de 2026.
+ *
+ * Este semestre Contabilidad llega hasta el efectivo (T1 a T4). Los otros seis
+ * temas EXISTEN y siguen existiendo: su código, sus datos, sus filas en el
+ * servidor, el progreso de quien ya entró y el FP que ganó. Lo único que
+ * cambia es que el índice del estudiante no los ofrece.
+ *
+ * Por qué una bandera y no borrar: Contabilidad ya tiene estudiantes activos,
+ * así que vale la regla de Macroeconomía —solo se agrega, nunca se borra—, y
+ * el semestre que viene se vuelve a estos temas. DESHACERLO ES PONER
+ * `OCULTAR_TEMAS_FUERA_DEL_SEMESTRE` EN false: vuelven los diez, en el orden
+ * del libro, sin tocar nada más.
+ *
+ * Qué NO filtra esto, a propósito:
+ *  - SUBJECTS.contabilidad.topics sigue teniendo los diez. Quien lo recorra
+ *    (catálogo contra migraciones, panel docente, ubicación de actividades)
+ *    sigue viendo todo; ocultar es asunto de la vista, no del registro.
+ *  - La ruta directa de un tema oculto sigue abriendo: un estudiante que
+ *    guardó el enlace no pierde el acceso a lo que ya hizo.
+ *  - La medalla de materia completa se sigue midiendo sobre los diez: medirla
+ *    sobre cuatro la regalaría ahora y la quitaría en silencio al volver.
+ */
+export const OCULTAR_TEMAS_FUERA_DEL_SEMESTRE = true;
+
+export const TEMAS_OCULTOS = new Set(
+  OCULTAR_TEMAS_FUERA_DEL_SEMESTRE
+    ? [
+        "activos-financieros",
+        "cuentas-por-cobrar",
+        "inventarios-periodico",
+        "inventarios-permanente",
+        "inventarios-descuentos-nic2",
+        "repaso-capitulo-5",
+      ]
+    : []
+);
+
+/** Los temas de una materia que el estudiante ve en el índice, en su orden. */
+export function temasVisibles(materia) {
+  return (materia?.topics ?? []).filter((t) => !TEMAS_OCULTOS.has(t.id));
+}
+
 /* El desafío de un tema, si tiene. Hoy hay como mucho uno por tema. */
 export function desafioDe(topic) {
   return (topic?.actividades ?? []).find((a) => a.clasificacion?.desafio) ?? null;
@@ -1152,6 +1195,27 @@ export const ACTIVIDADES_TRANSVERSALES = [
     temaId: "repaso-diario",
     indice: "macroeconomia",
     /* Medio fija el tiempo mínimo antes de recortar FP; la base de 60 anula la de Medio. */
+    clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 60, renovableDiario: true },
+  },
+  /*
+   * El Repaso Diario de Contabilidad (orden de Mateo del 23-oct-2026). El
+   * mismo motor y la misma clasificación que el de Macro; su pool son los
+   * cuatro temas del semestre (src/repaso/contabilidad/). Su fila del
+   * servidor es la migración 0152.
+   *
+   * `publicado: false` lo deja fuera del índice mientras el pool se llena:
+   * cada célula entrega el etiquetado de su tema, y un banner que solo dice
+   * «te faltan actividades» porque el pool aún está vacío sería mentirle al
+   * estudiante. Se publica poniéndolo en true cuando la prueba del pool de
+   * Contabilidad diga que los cuatro temas tienen ítems.
+   */
+  {
+    id: "repaso-diario-contabilidad",
+    nombre: "El Repaso Diario",
+    materiaId: "contabilidad",
+    temaId: "repaso-diario-contabilidad",
+    indice: "contabilidad",
+    publicado: false,
     clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 60, renovableDiario: true },
   },
 ];
