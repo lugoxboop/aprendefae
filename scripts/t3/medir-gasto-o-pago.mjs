@@ -10,10 +10,12 @@
  * bien. En cada estado mide:
  *
  *   · ALTOS      el encabezado de Hacer (de la parte de arriba del Panel al
- *                pie de «Hecho n de 6»), la ficha, la matriz y dónde termina
- *                la matriz contada desde el encabezado: tiene que caber en los
- *                512 px útiles de 320 × 568 (C3). Si el encabezado pasa de 80,
- *                lo dice en grande (§9).
+ *                pie de «Hecho n de 6»), la ficha y la matriz. El encabezado
+ *                es compartido y mide 167: Kamogawa decidió en #506 que puede
+ *                quedar fuera de la vista, así que solo se informa.
+ *   · VENTANA    la regla que manda desde entonces: en cada hecho (también
+ *                el 1 tras «Así se juega»), con la vista subida a la ficha,
+ *                ficha + matriz + contadores caben juntos en la ventana.
  *   · ANCHOS     contenedor útil, matriz por dentro, casillas y contadores.
  *   · BARRA      que la página no tenga barra horizontal.
  *   · SALE       que ningún texto propio se salga de su caja.
@@ -46,8 +48,6 @@ if (CAPTURAS) mkdirSync(CAPTURAS, { recursive: true });
 const FUENTES = "/tmp/claude-0/fuentes/";
 const ANCHOS = [320, 375];
 const ALTOS = { 320: 568, 375: 667 };
-const UTILES = 512;
-const TOPE_ENCABEZADO = 80;
 const POR_ID = Object.fromEntries([...BANCO_A, ...BANCO_B].map((h) => [h.id, h]));
 
 /* La casilla que da DOS errores (gasto y plata a la vez): la opuesta en las dos preguntas. */
@@ -58,6 +58,7 @@ await servidor.listen();
 const URL_BASE = `http://127.0.0.1:${servidor.httpServer.address().port}/scripts/t3/harness-t3/index.html#hacer:t3-gasto-o-pago`;
 const navegador = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});
 const fallos = [];
+const compartidos = new Set();
 const filas = [];
 const fuentesReales = existsSync(`${FUENTES}fuentes.css`);
 
@@ -129,7 +130,11 @@ function medir() {
     const c = el.getBoundingClientRect();
     if (!c.width || !c.height) continue;
     const s = getComputedStyle(el);
-    if (parseFloat(s.fontSize) < 11.95) r.letra.push(`${s.fontSize} ${nombre(el)}`);
+    if (parseFloat(s.fontSize) < 11.95) {
+      /* «?» de BotonComoSeJuega y «RESULTADO» del Cierre: compartidos, iguales en todas las Hacer de T3. Se informan aparte. */
+      const compartido = el.closest("[data-como-se-juega]") || el.closest(".fae-cz-entrar");
+      (compartido ? (r.compartido ??= []) : r.letra).push(`${s.fontSize} ${nombre(el)}`);
+    }
     for (const t of propios) {
       const rango = document.createRange();
       rango.selectNodeContents(t);
@@ -173,6 +178,22 @@ function medir() {
   return r;
 }
 
+/*
+ * La regla de Kamogawa (#506, 24-oct) que reemplaza el presupuesto de 512:
+ * en cada hecho, la ficha, la matriz y los contadores caben JUNTOS en la
+ * ventana (sin barra del navegador), con la vista subida a la ficha.
+ */
+function ventana() {
+  const f = document.querySelector("[data-ficha]").getBoundingClientRect();
+  const m = document.querySelector("[data-matriz]").getBoundingClientRect();
+  return { arriba: f.top, abajo: m.bottom, bloque: m.bottom - f.top, alto: innerHeight };
+}
+const enVentana = [];
+const revisarVentana = (etq, v) => {
+  enVentana.push(`| ${etq} | ${v.arriba.toFixed(1)} | ${v.abajo.toFixed(1)} | ${v.bloque.toFixed(1)} | ${v.alto} |`);
+  if (v.arriba < -0.5 || v.abajo > v.alto + 0.5) fallos.push(`${etq}: ficha + matriz NO caben en la ventana (de ${v.arriba.toFixed(1)} a ${v.abajo.toFixed(1)}, ventana ${v.alto})`);
+};
+
 async function partida(ancho, version) {
   const ctx = await contexto(ancho);
   const pagina = await ctx.newPage();
@@ -192,11 +213,11 @@ async function partida(ancho, version) {
     if (r.barra) fallos.push(`${etq} · ${estado}: barra horizontal`);
     for (const x of r.sale) fallos.push(`${etq} · ${estado}: SALE ${x}`);
     for (const x of r.letra) fallos.push(`${etq} · ${estado}: LETRA ${x}`);
+    for (const x of r.compartido ?? []) compartidos.add(`LETRA ${x} (compartido)`);
     for (const x of r.toque) fallos.push(`${etq} · ${estado}: TOQUE ${x}`);
     for (const x of r.contraste) fallos.push(`${etq} · ${estado}: CONTRASTE ${x}`);
     if (r.contrasteContorno !== undefined && r.contrasteContorno < 3) fallos.push(`${etq} · ${estado}: contorno en reposo ${r.contrasteContorno}:1`);
-    if (r.encabezado !== null && r.encabezado > TOPE_ENCABEZADO) fallos.push(`${etq} · ${estado}: ⚠ EL ENCABEZADO MIDE ${r.encabezado.toFixed(1)} px (> ${TOPE_ENCABEZADO}): avisar en #506 (§9)`);
-    if (ancho === 320 && estado !== "resumen" && r.matrizFin > UTILES) fallos.push(`${etq} · ${estado}: la matriz termina en ${r.matrizFin.toFixed(1)} (> ${UTILES} útiles)`);
+    /* El encabezado (167 px, compartido) ya no cuenta para el presupuesto: decidió Kamogawa en #506 que puede quedar fuera de la vista. Se informa en la tabla. */
     return r;
   };
   const captura = async (estado) => {
@@ -210,6 +231,8 @@ async function partida(ancho, version) {
   let pista = 0;
   let menor = Infinity;
   for (let k = 0; k < 6; k++) {
+    await pagina.waitForTimeout(700);
+    revisarVentana(`${etq} · hecho ${k + 1}`, await pagina.evaluate(ventana));
     const id = await pagina.getAttribute("[data-ficha]", "data-ficha");
     const h = POR_ID[id];
     menor = Math.min(menor, h.monto);
@@ -260,7 +283,22 @@ async function reducido(ancho) {
   await ctx.close();
 }
 
+/* El hecho 1 después de «Así se juega»: «Siguiente» muestra la partida y la vista sube a la ficha. */
+async function trasElTutorial(ancho) {
+  const ctx = await contexto(ancho);
+  const pagina = await ctx.newPage();
+  await pagina.emulateMedia({ reducedMotion: "no-preference" });
+  await pagina.goto(URL_BASE);
+  await pagina.waitForSelector("[data-asi-se-juega]");
+  await pagina.evaluate(() => document.fonts.ready);
+  await pagina.locator("[data-asi-se-juega] button", { hasText: /^Siguiente$/ }).first().click();
+  await pagina.waitForTimeout(900);
+  revisarVentana(`${ancho} · hecho 1 tras «Así se juega»`, await pagina.evaluate(ventana));
+  await ctx.close();
+}
+
 for (const ancho of ANCHOS) {
+  await trasElTutorial(ancho);
   for (const version of ["A", "B"]) await partida(ancho, version);
   await reducido(ancho);
 }
@@ -271,5 +309,10 @@ console.log(`fuentes: ${fuentesReales ? "Inter y Sora de @fontsource 5.3.0" : "L
 console.log("| Ancho | Versión | Estado | Encabezado | Ficha | Matriz empieza | Matriz alto | Matriz termina | Útil / matriz por dentro | Casilla | Contadores | Contraste mín. texto | Contorno reposo |");
 console.log("|---|---|---|---|---|---|---|---|---|---|---|---|---|");
 console.log(filas.join("\n"));
-console.log(fallos.length ? `\n${fallos.length} NO CUMPLEN:\n${fallos.join("\n")}` : "\nTodo cumple a 320 y 375 en A y B: sin barra, nada se sale, nada bajo 12 px, toques ≥ 44, texto ≥ 4,5:1, contorno ≥ 3:1, encabezado ≤ 80 y la matriz dentro de los 512 útiles.");
+console.log("\n**En la ventana (regla de Kamogawa, #506):** ficha + matriz + contadores con la vista subida a la ficha.\n");
+console.log("| Dónde | Arriba de la ficha | Abajo de la matriz | Bloque | Ventana |");
+console.log("|---|---|---|---|---|");
+console.log(enVentana.join("\n"));
+if (compartidos.size) console.log(`\nCompartido, no de esta pieza (se informa, no falla):\n${[...compartidos].join("\n")}`);
+console.log(fallos.length ? `\n${fallos.length} NO CUMPLEN:\n${fallos.join("\n")}` : "\nTodo cumple a 320 y 375 en A y B: sin barra, nada se sale, nada bajo 12 px, toques ≥ 44, texto ≥ 4,5:1, contorno ≥ 3:1, y ficha + matriz + contadores dentro de la ventana en cada hecho.");
 process.exit(fallos.length ? 1 : 0);

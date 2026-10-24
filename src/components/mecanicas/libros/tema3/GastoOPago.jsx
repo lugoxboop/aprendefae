@@ -249,11 +249,44 @@ export default function GastoOPago({
     onCompletar?.(pct, Date.now() - t.inicio.current, t.detalle.current);
     version.current = intento.terminar();
   }, [t.terminado]);
-  /* Al pasar de hecho, el foco va a la ficha del hecho (no en el primero, que lo pone el tutorial). */
+  /*
+   * §9, decisión de Kamogawa (#506, 24-oct): el encabezado de Hacer (167 px,
+   * compartido) puede quedar fuera de la vista. En cada hecho la vista sube
+   * para que la ficha quede arriba: ficha + matriz + contadores (418 px)
+   * caben juntos en la ventana. Con movimiento reducido, sin animación.
+   */
+  const subirALaFicha = () => {
+    const el = ficha.current;
+    if (!el || modoDemo) return;
+    el.scrollIntoView?.({ block: "start", behavior: reducido() ? "auto" : "smooth" });
+  };
+  /* Al pasar de hecho, el foco va a la ficha (sin que el foco mueva la vista) y la vista sube a ella. */
   useEffect(() => {
     if (primera.current) { primera.current = false; return; }
-    if (!modoDemo) ficha.current?.focus({ preventScroll: false });
+    if (modoDemo) return;
+    ficha.current?.focus({ preventScroll: true });
+    subirALaFicha();
   }, [t.i]);
+  /*
+   * El hecho 1: la partida se monta escondida debajo de «Así se juega» y se
+   * muestra al tocar «Siguiente», que además pone el foco en la consigna
+   * (JuegoConTutorial, compartido). Cuando la partida se vuelve visible (su
+   * alto pasa de 0), la vista sube a la ficha, un instante después de ese
+   * foco para que no la devuelva a la consigna.
+   */
+  const raiz = useRef(null);
+  useEffect(() => {
+    if (modoDemo || typeof ResizeObserver !== "function" || !raiz.current) return undefined;
+    let visible = false;
+    let reloj = null;
+    const ro = new ResizeObserver(([e]) => {
+      const ahora = e.contentRect.height > 0;
+      if (ahora && !visible && t.i === 0) { clearTimeout(reloj); reloj = setTimeout(subirALaFicha, 60); }
+      visible = ahora;
+    });
+    ro.observe(raiz.current);
+    return () => { ro.disconnect(); clearTimeout(reloj); };
+  }, []);
 
   const tocar = (casilla) => {
     if (!h) return;
@@ -341,7 +374,7 @@ export default function GastoOPago({
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS}</style>
-      <div className="fae-gp" data-gasto-o-pago data-version={jugada} data-estado-partida={toque ? (toque.r.ok ? "bien" : `mal-${fase}`) : "vacio"}>
+      <div ref={raiz} className="fae-gp" data-gasto-o-pago data-version={jugada} data-estado-partida={toque ? (toque.r.ok ? "bien" : `mal-${fase}`) : "vacio"}>
         {!modoDemo && (
           <div data-encabezado-hacer>
             <Encabezado consigna={ACT_GASTO_O_PAGO.consigna} onComoSeJuega={onComoSeJuega} />
