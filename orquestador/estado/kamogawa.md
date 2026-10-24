@@ -1,9 +1,11 @@
-2026-10-23 09:22 (hora Bogotá)
-- Célula E, repaso-capitulo-5: r5-1, r5-2, r5-4 y r5-5 en Avanzado verificable mirando (Takamura, 17-oct), en main y CI verde: terminado
-- Revisión de la célula (orden de Mateo: capacitar, no producir): Ippo, Miyata, Itagaki y Takamura vivos y con su ficha y prompt maestro en el chat: terminado
-- Ippo capacitado con construccion-v1: terminado (confirmó en 5 líneas; sin ramas ni PR abiertos)
-- r5-3, re-auditoría de Takamura a #444 (D4 de la balanza y «Plazo del proveedor»): en curso (capturas de medir-r5-3 a 320 y 375, A y B, enviadas)
-- r5-4, dos detalles de Takamura (ocultar «Iba aquí» con el asiento todo correcto; margen de 16 px del calendario a 320): bloqueado: listo para Ippo; espera la orden de producir
-- Banco C.2, D.1 y D.2: bloqueado: la Célula D ya terminó T4; listo para arrancar, espera la orden de producir
-- Botón «Entrar» a 320, «RESULTADO» del Cierre a 11 px e insignia del cierre de r5-2: bloqueado: es compartido, de Erwin
-- Prueba con personas (D2, D3, D5, D7 y D9 en las cinco piezas): bloqueado: requiere estudiantes reales
+2026-10-24 15:11 (hora Bogotá)
+- Vara nueva (24-oct): Mateo no da vistos buenos; se fusiona con PASA del auditor y CI verde. Las 6 correcciones de Takamura a contenido aprobado de T3 las decidió Kamogawa (se aplican); deja de haber BLOQUEADO-MATEO: terminado
+- r5 cerrado (r5-1 a r5-5 en Avanzado; tema oculto hasta el próximo semestre): terminado
+- T3 lote 1 (hilo de Aprender, Hacer nuevos, línea base, lenguaje visual), PR #484: terminado (fusionado)
+- T3 lote 2 (fichas de los Hacer nuevos con versión B, segundo caso de P5, P2 de Itagaki, auditoría en diseño de Takamura): terminado. Decisiones: el camino no se reordena; P2 nueva y «Del resultado a la caja» esperan el #468; primero va «¿Gasto o pago?»
+- T3 lote 3 (Takamura auditó el lote 2: N1-N9; Miyata e Itagaki entregaron sus v2): terminado
+- T3 lote 4: Miyata e Itagaki entregaron «¿Gasto o pago?» v3 (versión A nueva, «ni gasto ni salida», N2-N9); Takamura da el veredicto final de diseño: en curso
+- T3, construcción (Ippo, #506: logito CalendarioConCinta, 6 correcciones, andamio de «¿Gasto o pago?»): bloqueado: Ippo no responde; su sesión de Claude Code se congela al cargar en Chrome (issue #517 a Miku)
+- T3, sonda medir-t3 (#489) y subtemas del Repaso Diario (#481): bloqueado: listos; rojo solo por main (lo arregla Miku); se fusionan cuando main vuelva a verde
+- T3, forma de los Aprender en secuencia: bloqueado: el patrón ya está (#470); espera el componente compartido SecuenciaAprender de Erwin
+- Capítulo 4 del libro (pp. 117-176): bloqueado: pedido a Miku en #468; frena la P6, la P2 nueva, «Del resultado a la caja» y las citas marcadas como hueco

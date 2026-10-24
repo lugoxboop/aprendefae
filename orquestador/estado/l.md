@@ -1,7 +1,12 @@
-2026-10-23 09:25 (hora Bogotá)
-- Célula C, Contabilidad (T7-1, T7-2, T7-3 y T5 §5.3; 44 de 44 piezas en Avanzado verificable, CI verde, último PR #449): terminado
-- Capacitación de la célula (orden de Mateo, 23-oct): terminado. Misa, Near, Watari y Mello vivos, con su prompt maestro (15-16 oct) y ya capacitados en el protocolo de eficiencia (reglas a-h); Near, Watari y Mello confirmaron, Misa lo está leyendo
-- Misa capacitada con construccion-v1: terminado (prompt completo entregado el 23-oct; se le pidió solo la confirmación de 5 líneas)
-- Prueba con personas de D2, D3, D5, D7, D8 y D9 (Kit de Calidad): bloqueado: requiere estudiantes reales
-- Medir D7 a 320 y 375 px en aprendefae.com: en espera de orden; Chrome ya está activo
-- Trabajo nuevo: ninguno hasta que Miku lo ordene
+2026-10-24 14:45 (hora Bogotá)
+- Tema: T2 cuentas-debe-haber (T5 y T7 ocultos por Erwin, nada borrado). Contabilidad tiene estudiantes: solo se agrega
+- Orden del 24-oct (Mateo no da vistos buenos; L fusiona con el PASA de Mello y CI verde; solo para lo irreversible) y ahorro de tokens: terminado, llegó a Misa, Near, Watari y Mello
+- Lotes T2-1 y T2-2: terminado (paquetes/c-t2-1-* y c-t2-2-*)
+- T2-3 · Near: delta de las slides con los 7 ajustes de Watari y los huecos de nombres: en curso
+- T2-3 · Watari: figuras ajustadas al patrón #470, numeradas sobre la v2 de Near, y bancos validados en sus formas: en curso
+- T2-3 · Mello: auditoría de la forma y de los bancos de las 3 Hacer contra H1-H10: en curso
+- T2-3 · Misa: bancos, pruebas y sondas en las 3 Hacer (#499, borrador) y logito CasilleroDeCuentas en archivo propio: en curso
+- Fusión de #482 (subtemas) y #494 (línea base): bloqueado: CI rojo en main por el entorno de GitHub, lo arregla Miku; se fusionan apenas vuelva a verde
+- Fusión de las 3 Hacer nuevas: bloqueado: espera #500 de Erwin (AGREGADAS_DESPUES y resumen.js), para que nadie pierda «tema completo»
+- Cáscara de las slides de Aprender: bloqueado: SecuenciaAprender es un componente compartido nuevo (#470) y lo construye Erwin
+- Logitos: aviso de choque en #512 (cuatro células en identificadoresA.jsx); la C va en archivo propio

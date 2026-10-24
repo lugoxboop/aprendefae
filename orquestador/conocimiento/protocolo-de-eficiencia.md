@@ -69,3 +69,31 @@ leyendo chats con Chrome: lee el repo.
 - Miku solo abre un chat con Chrome cuando el estado lleva horas sin moverse
   sin estar terminado (señal de que el general se detuvo) o cuando Mateo pide
   algo nuevo.
+
+## i) Buscar antes de abrir, y cargar solo lo propio
+
+Orden de Mateo del 23 de octubre de 2026, vía Miku. El canon pesa 772.000
+tokens: 95.000 de núcleo y 677.000 de material. Lo que un agente mete en su
+contexto no se paga una vez, se vuelve a leer en cada turno que siga, así que
+un archivo abierto de más a las nueve de la mañana se sigue pagando a las seis
+de la tarde.
+
+- **Busca, no abras.** `node scripts/canon.mjs "D4"` devuelve el fragmento con
+  su contexto; `--mapa` dice qué hay y cuánto pesa; `--todo` incluye los
+  paquetes, las fichas y los registros, que quedan fuera por defecto. Ver qué
+  dice D4 pasa de 12.755 tokens a unas decenas. **Abre un archivo entero solo
+  cuando vayas a editarlo**, o cuando la búsqueda no encuentre lo que buscas.
+- **Tu prompt maestro es una skill y se carga sola.** `celula-diseno`,
+  `celula-pedagogico`, `celula-auditoria` y `celula-construccion` traen lo que
+  siempre aplica en unos 760 tokens, con el prompt maestro completo a un paso
+  para cuando de verdad haga falta. No se pegan en el chat: pegarlos enteros
+  cuesta 18.277 tokens que luego se releen turno tras turno.
+- **`CLAUDE.md` se carga solo** en toda sesión del repo y dice dónde está cada
+  cosa. Por eso se mantiene corto: lo paga cada sesión, en cada turno.
+- Para que un agente vea las skills, su clon tiene que estar al día (`git pull`)
+  y registrado como raíz del repo.
+
+Lo que **no** ahorra, y conviene no intentar: escribir en estilo telegrama,
+abreviar o quitar palabras. Las palabras cortadas se parten en más pedazos, no
+en menos, y encima hay que gastar en descifrarlas. Lo que se ahorra no es cómo
+se dice: es cuánto se carga.

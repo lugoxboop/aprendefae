@@ -1,9 +1,9 @@
-2026-10-23 09:08 (hora Bogotá)
-- Célula A (T1, T2, T3, portada, índice del banco, íconos): terminado
-- Lo compartido (componentes comunes, choques entre células, datos de estudiantes, destrabar generales): en curso
-- Capacitación de la Célula A (orden de Mateo, no producir): en curso — Gen y Xeno vivos y con prompt maestro; a Levi se le pegó auditores-v1 completo; a Sai se le mandó construccion-v1. Espero sus confirmaciones
-- Prompt maestro de construcción (no existía para ningún constructor) y enlaces de Gen y Sai en celulas.md: bloqueado: PR #466 abierto, falta visto bueno para fusionar (lo compartido toca a las cinco células)
-- #349 ficha de FP fija vs. oculta al bajar: bloqueado: espera que Xeno diga si le basta; el arreglo de fondo toca Macroeconomía y no va sin Mateo
-- Capa 1 de CuatroCapas (guardas de 60 palabras y figura/interacción): bloqueado: esperan los recortes de Near
-- TODO de Gen (opción correcta más larga que las demás): en curso
-- Acceso a Chrome: terminado
+2026-10-24 15:12 (hora Bogotá)
+- Main rojo: canon.mjs ya arreglado en main; espero el resultado del CI que está corriendo
+- PR #490 (regla de estudiantes, índice de cuatro temas, motor del Repaso Diario, 0152) y PR #491 (SecuenciaAprender): bloqueado: CI de main; fusiono en cuanto vuelva a verde
+- Pools del Repaso Diario por célula: en curso — D en main (#475), C en #482, E en #481, B pendiente; guía en #477-#480
+- #349 ficha de FP: Xeno decidió no ocultarla y reservarle 84 px; encargado a Sai en el mismo issue: en curso
+- Tres pendientes de T1 que tenía Gen: pasados a la Célula B en #518: terminado
+- Vara de fusión y orden de ahorro pasadas a Gen, Xeno, Levi y Sai: terminado
+- Capacitación de la Célula A: en curso — falta la confirmación de Levi; Sai ya trabaja con su skill y dejó traspaso (#509)
+- Capa 1 de CuatroCapas (guardas B1 y B2): bloqueado: esperan los recortes de Near
