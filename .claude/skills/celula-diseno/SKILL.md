@@ -46,8 +46,8 @@ Búscalo, no lo abras entero: `node scripts/canon.mjs "<palabra>" -f <archivo>`.
 Cuatro tipos de pantalla: Apertura, Míralo, Haz, Cierre; al menos la mitad
 Míralo o Haz. Una idea y máx. 60 palabras por pantalla. Zonas de arriba abajo:
 progreso, cejilla, titular, figura, apoyo, razón, navegación (44 px). Figura
-reservada **por pieza** (la misma en todas sus pantallas), tope 220 px a 320 y
-319 a 375. «Siguiente» da el paso pendiente y luego pasa; «Anterior» no deshace;
+reservada **por pieza** (la misma en todas sus pantallas), tope 206 px a 320 y 253 a 375 con la
+banda de 66 px de apoyo, razón y devolución debajo. «Siguiente» da el paso pendiente y luego pasa; «Anterior» no deshace;
 sin deslizar el dedo. Estado guardado con clave `tema/pieza/caso`. Movimiento:
 entrada escalonada 0/80/160 ms, 280 ms, solo transform y opacity; sin parallax;
 con movimiento reducido, sin desplazamientos.

@@ -404,7 +404,7 @@ B4 aplica a las pastillas de Haz.
 
 ## 16. Respuestas a Hanayama (Célula D, 23 oct)
 
-a) **Reserva de figura: aceptada por pieza**, no fija en 150/200. La figura de la pieza mide lo de su pantalla más alta (la misma en todas, regla D5), con tope **220 px a 320 y 319 a 375**; el apoyo baja debajo y puede desbordar hasta 40 px a 320. Si una figura pasa del tope, la pantalla se parte. El primer control sigue dentro de los primeros 280 px (B1).
+a) **Reserva de figura: aceptada por pieza**, no fija en 150/200. La figura de la pieza mide lo de su pantalla más alta (la misma en todas, regla D5), con tope **206 px a 320 y 253 a 375, con la banda de apoyo, razón y devolución (66 px, tres líneas de Inter 14/22) debajo** (corrección del 24 oct: 220/319 era sin esa banda; Hanayama midió en T4: 416 − 144 − 66 = 206 a 320, `revisiones/t4-slides/diseno-hanayama.md` §1). Una pieza puede reservar menos; T4 usa 206 en los dos anchos. El apoyo puede desbordar hasta 40 px a 320. Si una figura pasa del tope, la pantalla se parte. El primer control sigue dentro de los primeros 280 px (B1).
 b) **Objetivo D2:** es el titular de la pantalla 1 (una oración, máx. 2 líneas). **Pie «Basado en el libro, pp. …»:** en la zona de razón (Inter 12, #A8B6C8) del **Cierre**, una vez por pieza; no se repite en cada pantalla (B5).
 c) **Pantallas de un solo control** son **Haz** si el control tiene que dar una respuesta válida para seguir (cobrar, el cheque, Contar, «Pagar el siguiente») y **Míralo** si solo se explora (el extracto). Nunca pasos de una Apertura: la Apertura se arma sola y no cuenta para B3. Las dos primeras cuentan para B3.
 d) **Sí**: la clave de persistencia incluye el caso (§5.2 corregido). El segundo intento no hereda el estado del primero.
