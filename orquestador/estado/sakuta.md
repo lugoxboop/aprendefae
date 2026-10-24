@@ -1,4 +1,4 @@
-2026-10-24 15:27 (hora Bogotá)
+2026-10-24 15:39 (hora Bogotá)
 - Main en verde (cb9a948; mi diagnóstico de canon.mjs:46 entró por el #504): terminado
 - T1 · fondo de los 4 Aprender en secuencia y 2.ª visita (Futaba): terminado, en fichas/b-t1-aprender-secuencia-y-hacer.md; cu0-a2 2.ª visita no pasó (Shoko), Futaba la corrige: en curso
 - T1 · P2 de los 7 Hacer, H1, H2 y anexo (Mai): terminado; auditadas por Shoko en revisiones/b-t1-p2-mai-shoko.md; ajustes a esa auditoría (Mai): en curso
@@ -7,9 +7,9 @@
 - T1 · lote del 24-oct de Futaba (H1, H2, t1-5 y títulos): terminado, en fichas/b-t1-lote-24oct-futaba.md
 - T1 · textos de las correcciones de Shoko (t1-1 nueva 2.ª decisión, t1-4 cuatro casos, t1-6 Ingresos/Gastos, H1 rótulos fijos, H2 2.ª vuelta) (Futaba): en curso
 - T1 · decisiones mías: H2 se queda como Hacer aparte; f1 de cu0-a4 queda sin preguntar hasta que llegue el libro (#467); lo publicado no se toca
-- T1 · t1-5 construido (Kaede, #496): CI verde; capturas a 320/375 enviadas a Shoko; espera su PASA, y Kaede pasa la escala a $515.000
-- T1 · datos de los Aprender por pantalla (Kaede, #485): CI verde, a la ficha 16a85b8; espera el PASA de Shoko
-- T1 · logito LibretaYLapiz, 6 Hacer según P2 con las correcciones de Shoko, H1 y H2 (Kaede): en curso; la sesión de Kaede va en 71 %: la traspaso al cerrar este lote
+- T1 · t1-5 construido (Kaede, #496): FALLA de Shoko (devolución C vieja, dos opciones con total $0, falta la devolución del monto); su tabla está en el PR y Kaede la aplica junto con la escala a $515.000: en curso
+- T1 · datos de los Aprender por pantalla (Kaede, #485): CI verde; Shoko compara el archivo contra la ficha 16a85b8 para dar PASA: en curso
+- T1 · logito LibretaYLapiz, 6 Hacer según P2 con las correcciones de Shoko, H1 y H2 (Kaede): en curso; la sesión de Kaede va en 75 % y él mismo pide traspaso: los lotes 4 y 5 van en una sesión nueva
 - T1 · SecuenciaAprender (componente compartido): bloqueado: pregunté a Miku y Erwin quién lo construye; T1 se ofrece como piloto (#514)
 - Lo compartido que falla en los 7 Hacer (Retro con emoji y teal, «era esta», «Siguiente» fijo que tapa a 320): bloqueado: es de Erwin (#487); B lo parchea dentro de cada pieza
 - T1 · D1 (verdad contra el libro): bloqueado: faltan las pp. 1-31 y las páginas del cap. 2 que cita T1 (#467)
