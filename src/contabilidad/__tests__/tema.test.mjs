@@ -4,6 +4,7 @@ import { readFileSync } from "node:fs";
 
 import { SUBJECTS, HACER, actividadesDeTipo, desafioDe, temasVisibles, TEMAS_OCULTOS, OCULTAR_TEMAS_FUERA_DEL_SEMESTRE } from "../../data/subjects.js";
 import { ACTIVIDADES, DESAFIO, FP_DEL_TEMA } from "../../data/contabilidadActividades.js";
+import { FICHAS_T2_NUEVAS, IDS_T2_NUEVAS } from "../../data/contabilidadT2HacerNuevas.js";
 import { VISTAS, vistaDeTema } from "../../ruta.js";
 
 /*
@@ -22,7 +23,15 @@ import { VISTAS, vistaDeTema } from "../../ruta.js";
  */
 
 const TEMA = SUBJECTS.contabilidad.topics.find((t) => t.id === "cuentas-debe-haber");
-const JUEGOS = actividadesDeTipo(TEMA, HACER);
+const TODOS_LOS_HACER = actividadesDeTipo(TEMA, HACER);
+/*
+ * Lote T2-2 (#471): las tres Hacer nuevas están declaradas `pendiente` hasta
+ * que corra la 0116. Aquí JUEGOS son las siete vivas, las del camino; las
+ * tres nuevas se comprueban aparte contra su ficha (FICHAS_T2_NUEVAS). Al
+ * quitarles `pendiente`, entran a ACTIVIDADES y esta separación se va.
+ */
+const JUEGOS = TODOS_LOS_HACER.filter((a) => !a.pendiente);
+const NUEVAS = TODOS_LOS_HACER.filter((a) => a.pendiente);
 
 test("★ la materia tiene sus cinco temas, en el orden del libro", () => {
   /*
@@ -80,6 +89,15 @@ test("★ el registro dice exactamente lo mismo que la ficha del capítulo", () 
   for (const ficha of ACTIVIDADES) {
     const registrada = JUEGOS.find((a) => a.id === ficha.id);
     assert.ok(registrada, `${ficha.id}: está en la ficha y no en subjects.js`);
+    assert.equal(registrada.nombre, ficha.nombre, `${ficha.id}: nombre`);
+    assert.equal(registrada.clasificacion.dificultad, ficha.dificultad, `${ficha.id}: dificultad`);
+    assert.equal(registrada.clasificacion.fpBase, ficha.fpBase, `${ficha.id}: FP base`);
+  }
+  /* Y las tres pendientes del lote T2-2, contra su propia ficha, en su orden y después de las siete. */
+  assert.deepEqual(NUEVAS.map((a) => a.id), IDS_T2_NUEVAS);
+  assert.deepEqual(TODOS_LOS_HACER.slice(0, 7).map((a) => a.id), ACTIVIDADES.map((a) => a.id));
+  for (const ficha of FICHAS_T2_NUEVAS) {
+    const registrada = NUEVAS.find((a) => a.id === ficha.id);
     assert.equal(registrada.nombre, ficha.nombre, `${ficha.id}: nombre`);
     assert.equal(registrada.clasificacion.dificultad, ficha.dificultad, `${ficha.id}: dificultad`);
     assert.equal(registrada.clasificacion.fpBase, ficha.fpBase, `${ficha.id}: FP base`);
@@ -158,7 +176,7 @@ test("★ ninguna actividad pendiente llega al camino", () => {
    * emitir un ítem que el profesor no sepa leer.
    */
   const desafio = desafioDe(TEMA);
-  const todas = [...JUEGOS, ...(desafio ? [desafio] : [])];
+  const todas = [...TODOS_LOS_HACER, ...(desafio ? [desafio] : [])];
   const pendientes = todas.filter((a) => a.pendiente);
   for (const a of pendientes) {
     assert.ok(!CONSTRUIDAS.includes(a.id), `${a.id}: está marcada pendiente y la vista la dibuja`);
@@ -170,7 +188,8 @@ test("★ ninguna actividad pendiente llega al camino", () => {
    * olvida de actualizar.
    */
   assert.equal(CONSTRUIDAS.length + pendientes.length, todas.length);
-  assert.equal(todas.length, 8, "siete juegos y el desafío");
+  /* Siete juegos, las tres pendientes del lote T2-2 y el desafío. */
+  assert.equal(todas.length, 11, "siete juegos, tres pendientes y el desafío");
 });
 
 test("★ «tema completo» pide las siete, y el desafío no cuenta", () => {
@@ -186,7 +205,8 @@ test("★ «tema completo» pide las siete, y el desafío no cuenta", () => {
    * esa es la regla del Kit — la misma del Comité de NOVA.
    */
   assert.equal(JUEGOS.length, 7);
-  assert.deepEqual(JUEGOS.filter((a) => a.pendiente), [], "una de las siete volvió a quedar pendiente");
+  /* Las únicas pendientes son las tres del lote T2-2. */
+  assert.deepEqual(TODOS_LOS_HACER.filter((a) => a.pendiente).map((a) => a.id), IDS_T2_NUEVAS, "una de las siete volvió a quedar pendiente");
   assert.equal(JUEGOS_DE_LA_VISTA.length, 7, "la vista no dibuja las siete");
   assert.ok(DESAFIO_MONTADO, "la vista no monta el desafío");
 

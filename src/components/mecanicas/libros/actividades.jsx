@@ -14,6 +14,10 @@ import ElAsientoCompuestoMecanica from "./ElAsientoCompuesto.jsx";
 import CuadraONoCuadraMecanica from "./CuadraONoCuadra.jsx";
 import LaMayorizacionMecanica from "./LaMayorizacion.jsx";
 import ElErrorEscondidoMecanica from "./ElErrorEscondido.jsx";
+import CuadraPorValorMecanica from "./t2/CuadraPorValor.jsx";
+import DelDiarioAlMayorMecanica from "./t2/DelDiarioAlMayor.jsx";
+import LasQueVuelvenACeroMecanica from "./t2/LasQueVuelvenACero.jsx";
+import { FICHAS_T2_NUEVAS } from "../../../data/contabilidadT2HacerNuevas.js";
 import { SUBTEMA as SUBTEMA_CUADRO } from "../../../data/contabilidadCuadro.js";
 import { SUBTEMA as SUBTEMA_A4 } from "../../../data/contabilidadDebitaOAcredita.js";
 import { SUBTEMA as SUBTEMA_A5 } from "../../../data/contabilidadSaldo.js";
@@ -163,4 +167,26 @@ export const LaMayorizacion = ({ onCompletar }) => (
 export const ElErrorEscondido = ({ onCompletar }) => (
   <ElErrorEscondidoMecanica Marco={MarcoLibros} acento={A}
     rotulo="MAESTRÍA" titulo={ERROR_ESCONDIDO.subtema} onCompletar={onCompletar} />
+);
+
+/*
+ * ═══════════ T2 · LAS TRES HACER NUEVAS (Célula C, lote T2-2, #471) ═══════════
+ *
+ * La forma es la de Watari y van antes de El Ciclo Completo. Los bancos son
+ * los de Near (lote T2-2, §1; lote T2-3 de Misa); `pendiente: true` en
+ * subjects.js hasta que corra la 0116. Dejan pasar `...resto` como las siete del camino.
+ */
+export const CuadraPorValor = ({ onCompletar, ...resto }) => (
+  <CuadraPorValorMecanica Marco={MarcoLibros} acento={A}
+    rotulo="APLICACIÓN" titulo={FICHAS_T2_NUEVAS[0].subtema} onCompletar={onCompletar} {...resto} />
+);
+
+export const DelDiarioAlMayor = ({ onCompletar, ...resto }) => (
+  <DelDiarioAlMayorMecanica Marco={MarcoLibros} acento={A}
+    rotulo="APLICACIÓN" titulo={FICHAS_T2_NUEVAS[1].subtema} onCompletar={onCompletar} {...resto} />
+);
+
+export const LasQueVuelvenACero = ({ onCompletar, ...resto }) => (
+  <LasQueVuelvenACeroMecanica Marco={MarcoLibros} acento={A}
+    rotulo="CIMIENTOS" titulo="Cuentas reales y nominales" onCompletar={onCompletar} {...resto} />
 );
