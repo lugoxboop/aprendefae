@@ -3,7 +3,7 @@
  * LOS IDENTIFICADORES DE CONTABILIDAD, A LA VISTA (Ukyo,
  * prompts/logitos-temas-conta-v1.md, §5). Mide y deja capturas reducidas:
  *
- *   1. los nueve de Contabilidad en fila, a 32 px y en gris (trazo y acento
+ *   1. los diez de Contabilidad en fila, a 32 px y en gris (trazo y acento
  *      en #8A97A8): `logitos-fila-32-gris.png`, y la misma fila a 64 px en
  *      color, de referencia
  *   2. el índice de Contabilidad a 320 y 375, con la tarjeta real
@@ -73,11 +73,11 @@ const nav = await chromium.launch();
 
 /* 1 · la fila */
 {
-  const ctx = await nav.newContext({ viewport: { width: 9 * 48 + 48, height: 64 }, deviceScaleFactor: 2 });
+  const ctx = await nav.newContext({ viewport: { width: temas.length * 48 + 16, height: 64 }, deviceScaleFactor: 2 });
   const p = await ctx.newPage();
   await p.setContent(fila(32, true));
   await p.screenshot({ path: join(DIR, "logitos-fila-32-gris.png") });
-  await p.setViewportSize({ width: 9 * 80 + 48, height: 96 });
+  await p.setViewportSize({ width: temas.length * 80 + 16, height: 96 });
   await p.setContent(fila(64, false));
   await p.screenshot({ path: join(DIR, "logitos-fila-64-color.png") });
   R.fila = temas.map((t) => t.id);

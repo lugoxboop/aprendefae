@@ -23,7 +23,7 @@ export function CajonDePaso({ size = 64 }) {
     <svg viewBox="0 0 64 64" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
       <rect data-mueve x="26" y="4" width="12" height="7" rx="2" stroke="var(--fae-acento)" fill="var(--fae-acento)" fillOpacity="0.16" style={{ "--mueve": "translateY(4px)" }} />
       <path d="M24 18H14a5 5 0 0 0-5 5v8a5 5 0 0 0 5 5h36a5 5 0 0 0 5-5v-8a5 5 0 0 0-5-5H40" />
-      <path d="M32 25v4" />
+      <path d="M32 22v10" />
       <path d="M32 36v7M16 43h32M16 43v8M48 43v8" />
       <path d="M9 50v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6M41 50v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" />
     </svg>
