@@ -12,7 +12,7 @@ import { renderToStaticMarkup } from "react-dom/server";
  */
 
 import { ICONO_POR_TEMA } from "../../data/identificadoresDeTema.js";
-import { LibretaYLapiz } from "../identificadores/LibretaYLapiz.jsx";
+import { LibretaYLapiz } from "../identificadores/identificadoresA.jsx";
 import { SUBJECTS } from "../../data/subjects.js";
 
 const s = renderToStaticMarkup(h(LibretaYLapiz, { size: 64 }));

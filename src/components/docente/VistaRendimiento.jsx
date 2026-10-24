@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState } from "react";
+import { ChevronDown } from "lucide-react";
 import { FAE } from "../../theme.js";
 import { actividadDe, itemsDe, grupoDeActividad } from "../../docente/datos.js";
 import { BANDAS, bandaDe, CORTE_BAJO } from "../../docente/bandas.js";
@@ -56,12 +57,18 @@ const tarjeta = {
   border: "1px solid rgba(248,249,250,0.12)",
   minWidth: 0,
 };
-const rotulo = { margin: "0 0 6px", fontSize: "11px", letterSpacing: "0.06em", color: "rgba(248,249,250,0.5)" };
+const rotulo = { margin: "0 0 6px", fontSize: "12px", letterSpacing: "0.06em", color: "rgba(248,249,250,0.5)" };
 const cifra = { margin: 0, fontFamily: "Sora, sans-serif", fontSize: "28px", fontWeight: 700, fontVariantNumeric: "tabular-nums", lineHeight: 1 };
-const pie = { margin: "6px 0 0", fontSize: "11.5px", lineHeight: 1.4, color: "rgba(248,249,250,0.55)" };
+const pie = { margin: "6px 0 0", fontSize: "12px", lineHeight: 1.4, color: "rgba(248,249,250,0.55)" };
 const nota = { margin: 0, fontSize: "12.5px", lineHeight: 1.55, color: "rgba(248,249,250,0.58)" };
 
-const COLOR_BANDA = Object.fromEntries(BANDAS.map((b) => [b.id, b.color]));
+/*
+ * Panel v1 (Ukyo, P6): coral solo para un error de carga. La banda baja se
+ * dice con su palabra y en blanco; el ámbar queda como punto medio de la
+ * escala de tres y el teal como lo que va bien. Los cortes siguen siendo los
+ * de bandas.js: solo cambia el color de la vista.
+ */
+const COLOR_BANDA = { alta: FAE.teal, media: FAE.ambar, baja: FAE.text };
 
 /* Milisegundos a algo que se lee. Nunca "204000 ms". */
 function duracion(ms) {
@@ -143,25 +150,30 @@ function explicarFallo(error) {
       "exactamente qué respondió el servidor.",
   };
 }
-/* Una barra de banda. Misma pista y mismo relleno que AVANCE POR TEMA. */
-function BarraBanda({ banda, n, total }) {
-  const pct = total > 0 ? (n / total) * 100 : 0;
+/* Una barra de tres tramos (Alto, Medio, Bajo), cada uno con su palabra, su rango y su número: el color nunca va solo. */
+function BarraTresTramos({ datos, total }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ display: "flex", alignItems: "baseline", gap: "8px", marginBottom: "6px", flexWrap: "wrap" }}>
-          <span style={{ fontFamily: "Sora, sans-serif", fontSize: "13px", fontWeight: 600, color: banda.color }}>
-            {banda.nombre}
-          </span>
-          <span style={{ fontSize: "11.5px", color: "rgba(248,249,250,0.45)" }}>{banda.detalle}</span>
-        </div>
-        <div style={{ height: "6px", borderRadius: "999px", background: "rgba(248,249,250,0.1)", overflow: "hidden" }}>
-          <div style={{ width: `${pct}%`, height: "100%", background: banda.color, borderRadius: "999px", transition: "width 300ms ease" }} />
-        </div>
+    <div data-bandas>
+      <div style={{ display: "flex", height: "10px", borderRadius: "999px", overflow: "hidden", background: "rgba(248,249,250,0.1)" }} aria-hidden="true">
+        {BANDAS.map((b) => {
+          const n = Number(datos[b.campo] ?? 0);
+          return <span key={b.id} style={{ width: `${total > 0 ? (n / total) * 100 : 0}%`, background: COLOR_BANDA[b.id] }} />;
+        })}
       </div>
-      <p style={{ margin: 0, fontFamily: "Sora, sans-serif", fontSize: "13px", fontVariantNumeric: "tabular-nums", color: "rgba(248,249,250,0.7)", whiteSpace: "nowrap" }}>
-        {n} {n === 1 ? "estudiante" : "estudiantes"}
-      </p>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 16px", marginTop: "10px" }}>
+        {BANDAS.map((b) => {
+          const n = Number(datos[b.campo] ?? 0);
+          return (
+            <span key={b.id} data-banda={b.id} style={{ display: "inline-flex", alignItems: "baseline", gap: "6px" }}>
+              <span style={{ fontFamily: "Sora, sans-serif", fontSize: "13px", fontWeight: 600, color: COLOR_BANDA[b.id] }}>{b.nombre}</span>
+              <span style={{ fontSize: "12px", color: "rgba(248,249,250,0.55)" }}>{b.detalle}</span>
+              <span style={{ fontFamily: "Sora, sans-serif", fontSize: "13px", fontVariantNumeric: "tabular-nums", color: FAE.text }} data-cifra-banda={b.id}>
+                {n} {n === 1 ? "estudiante" : "estudiantes"}
+              </span>
+            </span>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -232,13 +244,13 @@ function TablaEstudiantes({ estudiantes, hayGrupo, evaluativa }) {
                 {e.full_name || e.nickname}
                 {/* El ×3 va apagado: es un matiz, no una insignia. */}
                 {intentos > 1 && (
-                  <span style={{ marginLeft: "6px", fontSize: "10.5px", color: "rgba(248,249,250,0.4)", fontVariantNumeric: "tabular-nums" }}>
+                  <span style={{ marginLeft: "6px", fontSize: "12px", color: "rgba(248,249,250,0.4)", fontVariantNumeric: "tabular-nums" }}>
                     ×{intentos}
                   </span>
                 )}
                 </span>
                 {e.es_prueba && (
-                  <span style={{ display: "block", marginTop: "2px", fontSize: "10.5px", color: FAE.ambar }}>
+                  <span style={{ display: "block", marginTop: "2px", fontSize: "12px", color: "#A8B6C8" }}>
                     cuenta de prueba · fuera de los promedios
                   </span>
                 )}
@@ -256,7 +268,7 @@ function TablaEstudiantes({ estudiantes, hayGrupo, evaluativa }) {
                       {pct}%
                     </span>
                     {banda && (
-                      <span style={{ marginLeft: "6px", fontSize: "10.5px", color: COLOR_BANDA[banda] }}>
+                      <span style={{ marginLeft: "6px", fontSize: "12px", color: COLOR_BANDA[banda] }}>
                         {BANDAS.find((b) => b.id === banda).nombre.toLowerCase()}
                       </span>
                     )}
@@ -266,7 +278,7 @@ function TablaEstudiantes({ estudiantes, hayGrupo, evaluativa }) {
                 )}
               </span>
 
-              <span style={{ fontFamily: "Sora, sans-serif", fontSize: "12.5px", fontWeight: 600, fontVariantNumeric: "tabular-nums", color: FAE.teal, whiteSpace: "nowrap" }}>
+              <span style={{ fontFamily: "Sora, sans-serif", fontSize: "12.5px", fontWeight: 600, fontVariantNumeric: "tabular-nums", color: "#3FA69A", whiteSpace: "nowrap" }}>
                 {Number(e.fp_total ?? 0)} FP
               </span>
             </div>
@@ -289,6 +301,7 @@ export default function VistaRendimiento({ subjectId, actividad, nombreMateria }
   const [items, setItems] = useState([]);
   const [delGrupo, setDelGrupo] = useState([]);
   const [error, setError] = useState(null);
+  const [mas, setMas] = useState(false);
 
   useEffect(() => {
     let vivo = true;
@@ -328,7 +341,7 @@ export default function VistaRendimiento({ subjectId, actividad, nombreMateria }
     const { titulo, cuerpo } = explicarFallo(error);
     return (
       <div style={{ ...tarjeta, maxWidth: "62ch" }}>
-        <p style={{ margin: "0 0 5px", fontFamily: "Sora, sans-serif", fontSize: "13.5px", fontWeight: 600, color: FAE.ambar }}>
+        <p style={{ margin: "0 0 5px", fontFamily: "Sora, sans-serif", fontSize: "13.5px", fontWeight: 600, color: FAE.coral }} data-error-carga>
           {titulo}
         </p>
         <p style={nota}>{cuerpo}</p>
@@ -336,7 +349,7 @@ export default function VistaRendimiento({ subjectId, actividad, nombreMateria }
           * El código, en pequeño y siempre. Con una captura de pantalla basta
           * para saber qué pasó, sin pedirle a nadie que abra la consola.
           */}
-        <p style={{ margin: "8px 0 0", fontSize: "11px", color: "rgba(248,249,250,0.4)" }}>
+        <p style={{ margin: "8px 0 0", fontSize: "12px", color: "rgba(248,249,250,0.4)" }}>
           Código: {error.code ?? "sin código"}
           {error.message ? ` · ${error.message}` : ""}
         </p>
@@ -429,8 +442,8 @@ export default function VistaRendimiento({ subjectId, actividad, nombreMateria }
             onClick={() => nav.irA(enlaceAlTema, "hacer")}
             style={{
               display: "inline-flex", alignItems: "center", gap: "6px",
-              marginTop: "8px", padding: 0, background: "transparent", border: "none",
-              cursor: "pointer", color: FAE.teal, fontFamily: "Inter, sans-serif", fontSize: "12.5px",
+              marginTop: "4px", minHeight: "44px", padding: 0, background: "transparent", border: "none",
+              cursor: "pointer", color: "#3FA69A", fontFamily: "Inter, sans-serif", fontSize: "12.5px",
               textDecorationLine: "underline", textUnderlineOffset: "3px",
               textDecorationColor: `${FAE.teal}66`,
             }}
@@ -444,14 +457,14 @@ export default function VistaRendimiento({ subjectId, actividad, nombreMateria }
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))", gap: "12px" }}>
         <div style={tarjeta}>
           <p style={rotulo}>LA TERMINARON</p>
-          <p style={{ ...cifra, color: nadieDelGrupo ? FAE.ambar : FAE.text }}>{finalizacion}</p>
+          <p style={{ ...cifra, color: FAE.text }}>{finalizacion}</p>
           <p style={pie}>
             {hayGrupo
               ? `de ${grupoTotal} de tu grupo`
               : "estudiantes con actividad en la materia — todavía sin grupo armado"}
             {/* El caso del cero se dice con palabras, no solo con el ámbar. */}
             {nadieDelGrupo && (
-              <span style={{ color: FAE.ambar }}> · nadie de tu grupo todavía</span>
+              <span style={{ color: "#A8B6C8" }}> · nadie de tu grupo todavía</span>
             )}
           </p>
         </div>
@@ -479,6 +492,29 @@ export default function VistaRendimiento({ subjectId, actividad, nombreMateria }
           </div>
         )}
 
+      </div>
+
+      {/*
+        * Panel v1 (Ukyo §6.1): Tiempo medio y FP medio siguen siendo las mismas
+        * cifras, a un toque detrás de «Más».
+        */}
+      <button
+        type="button"
+        onClick={() => setMas((v) => !v)}
+        aria-expanded={mas}
+        data-mas-cifras
+        style={{
+          display: "inline-flex", alignItems: "center", gap: "6px", minHeight: "44px", marginTop: "8px",
+          padding: "0 14px", borderRadius: "999px", background: "transparent",
+          border: "1px solid rgba(248,249,250,0.22)", color: FAE.text, cursor: "pointer",
+          fontFamily: "Sora, sans-serif", fontSize: "13px", fontWeight: 600,
+        }}
+      >
+        {mas ? "Menos" : "Más"}
+        <ChevronDown size={16} aria-hidden="true" style={{ transform: mas ? "rotate(180deg)" : "none" }} />
+      </button>
+      {mas && (
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))", gap: "12px", marginTop: "8px" }}>
         <div style={tarjeta}>
           <p style={rotulo}>TIEMPO MEDIO</p>
           <p style={{ ...cifra, color: FAE.text }}>{duracion(datos.duracion_media_ms)}</p>
@@ -487,73 +523,15 @@ export default function VistaRendimiento({ subjectId, actividad, nombreMateria }
 
         <div style={tarjeta}>
           <p style={rotulo}>FP MEDIO</p>
-          <p style={{ ...cifra, color: FAE.teal }}>
+          <p style={{ ...cifra, color: "#3FA69A" }}>
             {datos.fp_medio === null || datos.fp_medio === undefined ? "—" : Math.round(Number(datos.fp_medio))}
           </p>
           <p style={pie}>Por intento registrado</p>
         </div>
-      </div>
-
-      {/* ── La distribución, solo si es evaluativa ── */}
-      {evaluativa && (
-        <div style={{ marginTop: "20px" }}>
-          <p style={{ ...rotulo, marginBottom: "10px" }}>DISTRIBUCIÓN POR BANDAS</p>
-
-          {/*
-            * LA POBLACIÓN DE LAS BARRAS NO ES LA DE LA TABLA, Y SE DICE.
-            *
-            * Las bandas cuentan a todos los que terminaron la actividad en la
-            * materia; la tabla de abajo es del grupo curado. Con un grupo que
-            * no sea toda la cohorte, los dos números no coinciden — y ya pasó
-            * una vez que un número correcto llevara una etiqueta que mentía.
-            *
-            * Aquí ya no hay umbral de celda: se retiró a propósito en la 0024,
-            * porque con la tabla de nombres justo debajo ocultar el recuento no
-            * ocultaba nada. La razón larga está en la migración.
-            */}
-          <p style={{ ...nota, margin: "-4px 0 12px", color: "rgba(248,249,250,0.45)" }}>
-            Sobre {completaron} {completaron === 1 ? "estudiante" : "estudiantes"} que la
-            terminaron en la materia, dentro y fuera de tu grupo.
-          </p>
-
-          {datos.distribucion_visible ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-              {BANDAS.map((b) => (
-                <BarraBanda
-                  key={b.id}
-                  banda={b}
-                  n={Number(datos[b.campo] ?? 0)}
-                  total={completaron}
-                />
-              ))}
-            </div>
-          ) : (
-            <div style={{ ...tarjeta, maxWidth: "62ch" }}>
-              <p style={nota}>
-                Todavía no hay ningún porcentaje que repartir en bandas.
-              </p>
-            </div>
-          )}
-
-          <TablaEstudiantes
-            estudiantes={delGrupo}
-            hayGrupo={hayGrupo}
-            evaluativa={evaluativa}
-          />
         </div>
       )}
 
-      {/*
-        * ── El diagnóstico por pregunta ──
-        *
-        * TRES SALIDAS DISTINTAS, Y CADA UNA DICE LO SUYO:
-        *
-        *   · La actividad no tiene ítems  → la sección NO SE PINTA. Lo declara
-        *     subjects.js, no se deduce de que la lista venga vacía.
-        *   · Hay ítems pero pocos intentos → sección con la razón escrita.
-        *   · Hay diagnóstico               → las filas, y la nota de cobertura
-        *     si el detalle no cubre todos los intentos.
-        */}
+      {/* Panel v1 (Ukyo §6.1): el diagnóstico por pregunta va primero; es lo que se usa para corregir en clase. */}
       {!actividad.sinItems && (
         <div style={{ marginTop: "22px" }}>
           <p style={{ ...rotulo, marginBottom: "10px" }}>DIAGNÓSTICO POR PREGUNTA</p>
@@ -596,7 +574,7 @@ export default function VistaRendimiento({ subjectId, actividad, nombreMateria }
                 * y el panel enseña otra cosa—.
                 */}
               {sinNombrar > 0 && (
-                <p style={{ ...nota, margin: "0 0 10px", color: FAE.ambar }}>
+                <p style={{ ...nota, margin: "0 0 10px", color: "#A8B6C8" }}>
                   {sinNombrar === 1
                     ? "1 de estas preguntas no se pudo nombrar y sale con su id interno."
                     : `${sinNombrar} de estas preguntas no se pudieron nombrar y salen con su id interno.`}
@@ -613,7 +591,7 @@ export default function VistaRendimiento({ subjectId, actividad, nombreMateria }
                    * alerta ámbar del panel. No es una escala nueva.
                    */
                   const grave = pctFallo > 100 - CORTE_BAJO;
-                  const color = grave ? FAE.coral : pctFallo >= 25 ? FAE.ambar : "rgba(248,249,250,0.25)";
+                  const color = grave ? FAE.text : pctFallo >= 25 ? FAE.ambar : "rgba(248,249,250,0.25)";
                   const etiqueta = etiquetaDeItem(actividad.id, it.item_id);
                   return (
                     <div
@@ -629,25 +607,25 @@ export default function VistaRendimiento({ subjectId, actividad, nombreMateria }
                         <p style={{ margin: 0, fontSize: "13px", color: "rgba(248,249,250,0.85)", wordBreak: "break-word" }}>
                           {etiqueta ?? (
                             /* Sin nombre: el id crudo, marcado como lo que es. */
-                            <span style={{ fontFamily: "ui-monospace, monospace", fontSize: "12px", color: FAE.ambar }}>
+                            <span style={{ fontFamily: "ui-monospace, monospace", fontSize: "12px", color: "#A8B6C8" }}>
                               {it.item_id}
                             </span>
                           )}
                         </p>
                         {/* Qué contestaron en su lugar: lo único accionable de aquí. */}
                         {it.respuesta_top && (
-                          <p style={{ margin: "3px 0 0", fontSize: "11.5px", lineHeight: 1.45, color: "rgba(248,249,250,0.5)" }}>
+                          <p style={{ margin: "3px 0 0", fontSize: "12px", lineHeight: 1.45, color: "rgba(248,249,250,0.5)" }}>
                             Se equivocan sobre todo con «{it.respuesta_top}» ({it.respuesta_top_veces}{" "}
                             {Number(it.respuesta_top_veces) === 1 ? "vez" : "veces"})
                           </p>
                         )}
                       </div>
                       <div style={{ textAlign: "right", flexShrink: 0 }}>
-                        <p style={{ margin: 0, fontFamily: "Sora, sans-serif", fontSize: "13px", fontWeight: 600, fontVariantNumeric: "tabular-nums", color: grave ? FAE.coral : FAE.text }}>
+                        <p style={{ margin: 0, fontFamily: "Sora, sans-serif", fontSize: "13px", fontWeight: 600, fontVariantNumeric: "tabular-nums", color: FAE.text }} data-cifra-item={it.item_id}>
                           {Math.round(pctFallo)}%
                         </p>
                         {/* El porcentaje nunca va solo: debajo, los dos números. */}
-                        <p style={{ margin: "2px 0 0", fontSize: "11px", color: "rgba(248,249,250,0.45)", whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums" }}>
+                        <p style={{ margin: "2px 0 0", fontSize: "12px", color: "rgba(248,249,250,0.45)", whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums" }}>
                           {it.fallos} de {it.veces} fallaron
                         </p>
                       </div>
@@ -657,6 +635,35 @@ export default function VistaRendimiento({ subjectId, actividad, nombreMateria }
               </div>
             </>
           )}
+        </div>
+      )}
+      {/*
+        * Panel v1 (Ukyo §6.1): «Distribución por bandas» y «Quién es quién» se
+        * unen: una barra de tres tramos con su palabra y su número, y debajo la
+        * lista. Mismos cortes (bandas.js) y mismos recuentos de panel_actividad.
+        */}
+      {evaluativa && (
+        <div style={{ marginTop: "22px" }}>
+          <p style={{ ...rotulo, marginBottom: "10px" }}>DISTRIBUCIÓN POR BANDAS</p>
+          <p style={{ ...nota, margin: "-4px 0 12px", color: "rgba(248,249,250,0.45)" }}>
+            Sobre {completaron} {completaron === 1 ? "estudiante" : "estudiantes"} que la
+            terminaron en la materia, dentro y fuera de tu grupo.
+          </p>
+          {datos.distribucion_visible ? (
+            <BarraTresTramos datos={datos} total={completaron} />
+          ) : (
+            <div style={{ ...tarjeta, maxWidth: "62ch" }}>
+              <p style={nota}>
+                Todavía no hay ningún porcentaje que repartir en bandas.
+              </p>
+            </div>
+          )}
+
+          <TablaEstudiantes
+            estudiantes={delGrupo}
+            hayGrupo={hayGrupo}
+            evaluativa={evaluativa}
+          />
         </div>
       )}
     </div>

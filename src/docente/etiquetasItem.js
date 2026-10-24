@@ -834,9 +834,12 @@ REGLAS["repaso-diario"] = (id) => {
   const corte = texto.indexOf(":");
   if (corte <= 0) return null;
   const origen = texto.slice(0, corte);
-  if (origen === "repaso-diario" || !REGLAS[origen]) return null;
+  if (origen === "repaso-diario" || origen === "repaso-diario-contabilidad" || !REGLAS[origen]) return null;
   return REGLAS[origen](texto.slice(corte + 1));
 };
+
+/* El de Contabilidad (0152) guarda su detalle igual: la misma lectura. */
+REGLAS["repaso-diario-contabilidad"] = REGLAS["repaso-diario"];
 
 function pareja(memorama, id) {
   const p = MEMORAMAS[memorama].pares.find((x) => x.id === id);
