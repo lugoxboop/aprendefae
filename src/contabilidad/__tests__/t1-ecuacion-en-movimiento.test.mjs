@@ -481,7 +481,7 @@ const casoDeClase = [
   ["contrario", ACTIVO, 275000, "En lo que tiene: ese total va en el sentido contrario. Fíjate si con este hecho esa parte crece o se achica."],
   ["monto", ACTIVO, 25000, "En lo que tiene: pusiste lo que se movió, no con cuánto quedó. Súmalo o réstalo al total que había."],
   /* 325.000 en lo que debe es el total de lo que tiene después del hecho. */
-  ["otraParte", PASIVO, 325000, "En lo que debe: ese es el total de la otra parte, no el de esta."],
+  ["otraParte", PASIVO, 325000, "En lo que debe: ese es el total de otra parte, no el de esta. Mira cuánto tenía esta antes del hecho."],
 ];
 for (const [clase, parte, v, texto] of casoDeClase) {
   test(`★★ decisión 2, clase «${clase}»: hecho 2, ${parte} = ${v}`, () => {
