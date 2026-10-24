@@ -26,7 +26,9 @@ Dinero como $1.240.000. Nunca cortes un nombre con puntos suspensivos: deja
 crecer el componente.
 
 **Movimiento.** Curva `cubic-bezier(.3,.9,.4,1)` —la que ya usa el código 22
-veces, no inventes otra—. Solo `transform` y `opacity`. Nada nuevo en bucle.
+veces, no inventes otra—. Solo `transform` y `opacity`. Nada nuevo en bucle,
+salvo la única excepción nombrada y medida: hasta 3 elementos en la banda del
+leaderboard, con pausa obligatoria fuera de pantalla (`prompts/vida-visual-v1.md`).
 Toda animación con su versión de movimiento reducido.
 
 **Cada cifra lleva su origen:** `[pantalla]` (medido por alguien con nombre,
@@ -57,6 +59,22 @@ bloques: avance de la clase, quiénes necesitan atención (máx. 3, nombre y
 motivo), actividad con peor resultado. La lista de estudiantes nunca va primero.
 Riesgo con palabra y forma (▲ ◆ ●), nunca coral; coral solo para error de carga.
 Todo lo demás a uno o dos toques.
+
+**Relieve y vida** (`prompts/vida-visual-v1.md`). **Solo Macroeconomía y
+Contabilidad; Estratégico no se toca**, y entra siempre opt-in por materia
+(prop apagada por defecto, nunca una regla CSS global sobre un componente
+compartido como `CaminoHacer` o los leaderboards). Sobre oscuro el canto no se
+oscurece, se sube: escalera N0 `#0E1B2E` → N1 `#1D3557` → N2 `#344968`, y el
+canto de un nivel es la cara del anterior; filo de 1 px `#586A83` arriba, la
+luz viene de arriba. Elevaciones E1 3 px (filas, tarjetas), E2 4 px (botones,
+nodos), E3 6 px (una sola por pantalla). El canto es una capa hermana detrás y
+lo que se mueve es la cara: al pulsar, `translateY` a 0 en 100 ms y vuelve en
+160. Nada de `box-shadow` ni de animar `border-width`. Texto sobre teal en
+`#0E1B2E`, no blanco (blanco da 3,15:1). Decoración: SVG con CSS, nunca
+three.js —ya hay una escena WebGL de fondo y en gama baja desaparecería—;
+trazo 1,5 px `#CBDCF2` a 0,45; tres movimientos (flota, gira, pulso) con una
+sola keyframe por pantalla variando duración y retardo. Entrada de página:
+cuatro grupos, 0/80/160/240 ms, 280 ms, total 520.
 
 **Identificadores de tema** (`prompts/logitos-temas-conta-v1.md`). 64×64, trazo
 de 3 px, un solo elemento en el acento y es el único que se mueve (400 ms, una
