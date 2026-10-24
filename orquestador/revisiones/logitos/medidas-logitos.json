@@ -1,0 +1,301 @@
+{
+  "fila": [
+    "introduccion-contabilidad",
+    "cuentas-debe-haber",
+    "ingresos-gastos-y-caja",
+    "efectivo-caja-menor-bancos",
+    "activos-financieros",
+    "cuentas-por-cobrar",
+    "inventarios-periodico",
+    "inventarios-permanente",
+    "inventarios-descuentos-nic2",
+    "repaso-capitulo-5"
+  ],
+  "indice-320": {
+    "identificadores": [
+      {
+        "tema": "Introducción a la contabilidad",
+        "lado": 64,
+        "alto": 64,
+        "trazo": "rgb(203, 220, 242)",
+        "acento": "rgb(233, 196, 106)",
+        "fondo": "rgb(27, 39, 57)",
+        "propio": true,
+        "desborda": false,
+        "contrasteTrazo": 10.79,
+        "contrasteHover": 14.27,
+        "contrasteAcento": 9
+      },
+      {
+        "tema": "Las cuentas, el debe y el haber",
+        "lado": 64,
+        "alto": 64,
+        "trazo": "rgb(203, 220, 242)",
+        "acento": "rgb(233, 196, 106)",
+        "fondo": "rgb(27, 39, 57)",
+        "propio": true,
+        "desborda": false,
+        "contrasteTrazo": 10.79,
+        "contrasteHover": 14.27,
+        "contrasteAcento": 9
+      },
+      {
+        "tema": "Ingresos, gastos y ajustes",
+        "lado": 64,
+        "alto": 64,
+        "trazo": "rgb(203, 220, 242)",
+        "acento": "rgb(233, 196, 106)",
+        "fondo": "rgb(27, 39, 57)",
+        "propio": true,
+        "desborda": false,
+        "contrasteTrazo": 10.79,
+        "contrasteHover": 14.27,
+        "contrasteAcento": 9
+      },
+      {
+        "tema": "Efectivo, caja menor y bancos",
+        "lado": 64,
+        "alto": 64,
+        "trazo": "rgb(203, 220, 242)",
+        "acento": "rgb(233, 196, 106)",
+        "fondo": "rgb(27, 39, 57)",
+        "propio": true,
+        "desborda": false,
+        "contrasteTrazo": 10.79,
+        "contrasteHover": 14.27,
+        "contrasteAcento": 9
+      },
+      {
+        "tema": "Activos financieros temporales",
+        "lado": 64,
+        "alto": 64,
+        "trazo": "rgb(203, 220, 242)",
+        "acento": null,
+        "fondo": "rgb(27, 39, 57)",
+        "propio": true,
+        "desborda": false,
+        "contrasteTrazo": 10.79,
+        "contrasteHover": 14.27,
+        "contrasteAcento": null
+      },
+      {
+        "tema": "Cuentas por cobrar",
+        "lado": 64,
+        "alto": 64,
+        "trazo": "rgb(203, 220, 242)",
+        "acento": null,
+        "fondo": "rgb(27, 39, 57)",
+        "propio": true,
+        "desborda": false,
+        "contrasteTrazo": 10.79,
+        "contrasteHover": 14.27,
+        "contrasteAcento": null
+      },
+      {
+        "tema": "Inventarios I: el sistema periódico",
+        "lado": 64,
+        "alto": 64,
+        "trazo": "rgb(203, 220, 242)",
+        "acento": "rgb(233, 196, 106)",
+        "fondo": "rgb(27, 39, 57)",
+        "propio": true,
+        "desborda": false,
+        "contrasteTrazo": 10.79,
+        "contrasteHover": 14.27,
+        "contrasteAcento": 9
+      },
+      {
+        "tema": "Inventarios II: el sistema permanente",
+        "lado": 64,
+        "alto": 64,
+        "trazo": "rgb(203, 220, 242)",
+        "acento": "rgb(233, 196, 106)",
+        "fondo": "rgb(27, 39, 57)",
+        "propio": true,
+        "desborda": false,
+        "contrasteTrazo": 10.79,
+        "contrasteHover": 14.27,
+        "contrasteAcento": 9
+      },
+      {
+        "tema": "Inventarios III: descuentos, conteo y NI",
+        "lado": 64,
+        "alto": 64,
+        "trazo": "rgb(203, 220, 242)",
+        "acento": "rgb(233, 196, 106)",
+        "fondo": "rgb(27, 39, 57)",
+        "propio": true,
+        "desborda": false,
+        "contrasteTrazo": 10.79,
+        "contrasteHover": 14.27,
+        "contrasteAcento": 9
+      },
+      {
+        "tema": "Repaso del capítulo 5",
+        "lado": 64,
+        "alto": 64,
+        "trazo": "rgb(203, 220, 242)",
+        "acento": "rgb(233, 196, 106)",
+        "fondo": "rgb(27, 39, 57)",
+        "propio": true,
+        "desborda": false,
+        "contrasteTrazo": 10.79,
+        "contrasteHover": 14.27,
+        "contrasteAcento": 9
+      }
+    ],
+    "elementosQueSeMuevenEnHover": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "scrollHorizontal": false,
+    "errores": []
+  },
+  "indice-375": {
+    "identificadores": [
+      {
+        "tema": "Introducción a la contabilidad",
+        "lado": 64,
+        "alto": 64,
+        "trazo": "rgb(203, 220, 242)",
+        "acento": "rgb(233, 196, 106)",
+        "fondo": "rgb(27, 39, 57)",
+        "propio": true,
+        "desborda": false,
+        "contrasteTrazo": 10.79,
+        "contrasteHover": 14.27,
+        "contrasteAcento": 9
+      },
+      {
+        "tema": "Las cuentas, el debe y el haber",
+        "lado": 64,
+        "alto": 64,
+        "trazo": "rgb(203, 220, 242)",
+        "acento": "rgb(233, 196, 106)",
+        "fondo": "rgb(27, 39, 57)",
+        "propio": true,
+        "desborda": false,
+        "contrasteTrazo": 10.79,
+        "contrasteHover": 14.27,
+        "contrasteAcento": 9
+      },
+      {
+        "tema": "Ingresos, gastos y ajustes",
+        "lado": 64,
+        "alto": 64,
+        "trazo": "rgb(203, 220, 242)",
+        "acento": "rgb(233, 196, 106)",
+        "fondo": "rgb(27, 39, 57)",
+        "propio": true,
+        "desborda": false,
+        "contrasteTrazo": 10.79,
+        "contrasteHover": 14.27,
+        "contrasteAcento": 9
+      },
+      {
+        "tema": "Efectivo, caja menor y bancos",
+        "lado": 64,
+        "alto": 64,
+        "trazo": "rgb(203, 220, 242)",
+        "acento": "rgb(233, 196, 106)",
+        "fondo": "rgb(27, 39, 57)",
+        "propio": true,
+        "desborda": false,
+        "contrasteTrazo": 10.79,
+        "contrasteHover": 14.27,
+        "contrasteAcento": 9
+      },
+      {
+        "tema": "Activos financieros temporales",
+        "lado": 64,
+        "alto": 64,
+        "trazo": "rgb(203, 220, 242)",
+        "acento": null,
+        "fondo": "rgb(27, 39, 57)",
+        "propio": true,
+        "desborda": false,
+        "contrasteTrazo": 10.79,
+        "contrasteHover": 14.27,
+        "contrasteAcento": null
+      },
+      {
+        "tema": "Cuentas por cobrar",
+        "lado": 64,
+        "alto": 64,
+        "trazo": "rgb(203, 220, 242)",
+        "acento": null,
+        "fondo": "rgb(27, 39, 57)",
+        "propio": true,
+        "desborda": false,
+        "contrasteTrazo": 10.79,
+        "contrasteHover": 14.27,
+        "contrasteAcento": null
+      },
+      {
+        "tema": "Inventarios I: el sistema periódico",
+        "lado": 64,
+        "alto": 64,
+        "trazo": "rgb(203, 220, 242)",
+        "acento": "rgb(233, 196, 106)",
+        "fondo": "rgb(27, 39, 57)",
+        "propio": true,
+        "desborda": false,
+        "contrasteTrazo": 10.79,
+        "contrasteHover": 14.27,
+        "contrasteAcento": 9
+      },
+      {
+        "tema": "Inventarios II: el sistema permanente",
+        "lado": 64,
+        "alto": 64,
+        "trazo": "rgb(203, 220, 242)",
+        "acento": "rgb(233, 196, 106)",
+        "fondo": "rgb(27, 39, 57)",
+        "propio": true,
+        "desborda": false,
+        "contrasteTrazo": 10.79,
+        "contrasteHover": 14.27,
+        "contrasteAcento": 9
+      },
+      {
+        "tema": "Inventarios III: descuentos, conteo y NI",
+        "lado": 64,
+        "alto": 64,
+        "trazo": "rgb(203, 220, 242)",
+        "acento": "rgb(233, 196, 106)",
+        "fondo": "rgb(27, 39, 57)",
+        "propio": true,
+        "desborda": false,
+        "contrasteTrazo": 10.79,
+        "contrasteHover": 14.27,
+        "contrasteAcento": 9
+      },
+      {
+        "tema": "Repaso del capítulo 5",
+        "lado": 64,
+        "alto": 64,
+        "trazo": "rgb(203, 220, 242)",
+        "acento": "rgb(233, 196, 106)",
+        "fondo": "rgb(27, 39, 57)",
+        "propio": true,
+        "desborda": false,
+        "contrasteTrazo": 10.79,
+        "contrasteHover": 14.27,
+        "contrasteAcento": 9
+      }
+    ],
+    "elementosQueSeMuevenEnHover": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "scrollHorizontal": false,
+    "errores": []
+  },
+  "reducido": {
+    "elementosQueSeMueven": 0
+  }
+}
