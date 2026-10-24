@@ -5,7 +5,7 @@ import {
   TRANSACCIONES_CAP2, T1_4, PARTES, SUBE, BAJA, IGUAL,
   ERROR_A_T1_4, ERROR_B_T1_4, ACIERTO_T1_4,
   T1_5, ERROR_T1_5, DESDE_EL_CORTO, TERCERA_OPCION_T1_5,
-  T1_6, CONCEPTOS, PRIMERO, SEGUNDO, ERROR_T1_6, ACIERTO_T1_6, PESO_INFORME, PESO_SECCION,
+  T1_6, CONCEPTOS, SEGUNDO, ERROR_T1_6, ACIERTO_T1_6, PESO_INFORME, PESO_SECCION,
   ERROR_T1_7, BANCO_T1_7,
   T1_8, PUNTOS_T1_8, SITUACIONES_T1_8, ACIERTO_T1_8, ERROR_T1_8, PREDICCION_T1_8,
   CONTADOR_T1_8, CONTADOR_UNO_T1_8,
@@ -438,15 +438,15 @@ export const sinEmoji = (texto) => (texto ?? "").replace(/^[\u2705\u274C\u2714\u
 /*
  * ═══════════ LOS CUATRO GRUPOS DEL SORTEO ═══════════
  *
- * Diez de dieciséis, y los cuatro destinos posibles tienen que salir: las tres
- * secciones del primer informe y el segundo entero. Sin estratificar, la
+ * Diez de dieciséis, y los cinco destinos posibles tienen que salir: las tres
+ * secciones del primer informe y las dos del segundo (ingresos y gastos). Sin estratificar, la
  * única ficha de patrimonio —Reservas— se queda fuera cuatro de cada diez
  * tandas y la explicación C sobre los dueños no la lee nadie.
  *
  * Es la misma razón que en T1-2 y T1-4: que cada camino de devolución sea
  * alcanzable. No cambia qué se pregunta, solo garantiza que se pregunte.
  */
-export const destinoDe = (c) => (c.informe === PRIMERO ? `${PRIMERO}-${c.seccion}` : SEGUNDO);
+export const destinoDe = (c) => `${c.informe}-${c.seccion}`;
 export const DESTINOS_T1_6 = [...new Set(CONCEPTOS.map(destinoDe))];
 
 export function sortearT1_6(barajar, cuantos = T1_6.porPartida) {
@@ -460,13 +460,12 @@ export function sortearT1_6(barajar, cuantos = T1_6.porPartida) {
 }
 
 /**
- * `marcado` es { informe, seccion }. La sección va a null cuando se marcó el
- * segundo informe, que no se subdivide.
+ * `marcado` es { informe, seccion }: uno de los cinco destinos, con un solo
+ * toque. Los dos informes tienen sección desde el lote del 24-oct.
  */
 export function evaluarT1_6(concepto, marcado) {
   const informeOk = marcado.informe === concepto.informe;
-  const pideSeccion = concepto.informe === PRIMERO;
-  const seccionOk = pideSeccion ? marcado.seccion === concepto.seccion : true;
+  const seccionOk = informeOk && marcado.seccion === concepto.seccion;
   const ok = informeOk && seccionOk;
 
   if (ok) {
@@ -484,17 +483,14 @@ export function evaluarT1_6(concepto, marcado) {
     const patron = concepto.informe === SEGUNDO ? "A" : "B";
     return { ok, texto: ERROR_T1_6[patron], patron, informeOk, seccionOk: false };
   }
-  return { ok, texto: ERROR_T1_6.C, patron: "C", informeOk, seccionOk: false };
+  /* El informe está bien y la sección no: C en el primero; C2 (ingresos ↔ gastos) en el segundo. */
+  const patron = concepto.informe === SEGUNDO ? "C2" : "C";
+  return { ok, texto: ERROR_T1_6[patron], patron, informeOk, seccionOk: false };
 }
 
-/*
- * El informe pesa 60 y la sección 40. Las fichas del segundo informe no tienen
- * sección que acertar, así que valen entero al acertar el informe: dejarlas en
- * 60 sería descontarles una pregunta que no se les hizo.
- */
+/* El informe pesa 60 y la sección 40, en las dieciséis fichas (ver PESO_INFORME). */
 export function valorDeItem(concepto, r) {
   if (!r.informeOk) return 0;
-  if (concepto.informe === SEGUNDO) return 1;
   return PESO_INFORME + (r.seccionOk ? PESO_SECCION : 0);
 }
 

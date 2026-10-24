@@ -21,7 +21,7 @@ import { CALEJA, ACTIVO, PASIVO, PATRIMONIO } from "./contabilidad.js";
 
 export const T1_1 = {
   id: "t1-desde-donde-preguntan",
-  nombre: "¿Desde Dónde Preguntan?",
+  nombre: "¿Desde dónde preguntan?",
   subtema: "Usuarios de la información contable",
   dificultad: "facil",
   fpBase: 10,
@@ -113,14 +113,14 @@ export const ALT_T1_1 = "Cinco puntos en columna.";
 
 export const T1_2 = {
   id: "t1-que-entro-y-que-salio",
-  nombre: "¿Qué Entró y Qué Salió?",
+  nombre: "¿Qué entró y qué salió?",
   subtema: "Clasificación de las empresas según su actividad",
   dificultad: "facil",
   fpBase: 10,
   porPartida: 6,
   objetivo: "Descubre qué hace cada empresa, mirando qué recibe y qué entrega.",
   consigna: "Mira qué entra y qué sale. Luego toca qué clase de empresa es.",
-  pregunta: "¿Qué le pasó adentro a lo que entró?",
+  pregunta: "¿Qué clase de empresa es?",
 };
 
 export const CLASES = [
@@ -287,7 +287,7 @@ export const TRANSACCIONES_CAP2 = [
 
 export const T1_4 = {
   id: "t1-que-le-pasa-a-cada-uno",
-  nombre: "¿Qué Le Pasa a Cada Uno?",
+  nombre: "¿Qué le pasa a cada uno?",
   subtema: "El efecto de cada hecho sobre la ecuación",
   dificultad: "medio",
   fpBase: 25,
@@ -511,14 +511,19 @@ export const ACIERTO_T1_5 = {
 
 export const T1_6 = {
   id: "t1-en-cual-estado-aparece",
-  nombre: "¿En Cuál Estado Aparece?",
+  nombre: "¿En qué estado aparece?",
   subtema: "Qué va en cada estado financiero",
   dificultad: "dificil",
   fpBase: 50,
   porPartida: 10,
   objetivo: "Decide en cuál de los dos informes va cada cosa.",
-  /* La ficha no se toca: solo se lee. La consigna anterior decía lo contrario (Gen, bloques 3-5). */
-  consigna: "Toca el informe donde va la ficha. Si es el de arriba, toca también en qué parte.",
+  /*
+   * ── [ESCRITO POR CLAUDE — PENDIENTE DE FUTABA] ──
+   * Un solo toque sobre cinco destinos (P2 de Mai, ajustes del 24-oct, §3): la
+   * consigna anterior pedía dos toques («si es el de arriba, toca también en
+   * qué parte»), y eso ya no es lo que se hace.
+   */
+  consigna: "Toca dónde va la ficha: el informe y la parte, en un solo toque.",
 };
 
 export const PRIMERO = "primero";
@@ -544,28 +549,44 @@ export const INFORMES = [
     idea: "Lo que la empresa tiene y debe hoy",
     cuando: "a 31 dic",
     termino: "Estado de situación financiera",
+    /* La fecha con que T1-6 rotula el informe (nombre del Aprender, Futaba 24-oct). T1-7 sigue con `cuando`. */
+    fecha: "al 31 de diciembre",
   },
   {
     id: SEGUNDO,
     idea: "Lo que vendió y lo que gastó durante el año",
     cuando: "1 ene – 31 dic",
     termino: "Estado de resultados",
+    fecha: "1 ene – 31 dic",
   },
 ];
 
-/* Las tres secciones del primero. El segundo no se subdivide en esta actividad. */
+/* Las tres secciones del primero. */
 export const SECCIONES_T1_6 = PARTES;
+
+/*
+ * Las dos del segundo (Futaba, lote B del 24-oct, §4; auditoría de Shoko a las
+ * P2): el estado de resultados se parte en ingresos y gastos, y la ficha cae en
+ * uno de cinco destinos con un solo toque. Es dato del banco: la vista no
+ * deduce la sección del nombre del concepto.
+ */
+export const INGRESOS = "ingresos";
+export const GASTOS = "gastos";
+export const SECCIONES_SEGUNDO_T1_6 = [
+  { id: INGRESOS, idea: "Ingresos" },
+  { id: GASTOS, idea: "Gastos" },
+];
 
 export const CONCEPTOS = [
   { id: "c6-01", nombre: "Patentes", informe: PRIMERO, seccion: ACTIVO },
-  { id: "c6-02", nombre: "Ingresos operacionales", informe: SEGUNDO, seccion: null },
+  { id: "c6-02", nombre: "Ingresos operacionales", informe: SEGUNDO, seccion: INGRESOS },
   { id: "c6-03", nombre: "Cuentas por pagar – Proveedores", informe: PRIMERO, seccion: PASIVO },
   { id: "c6-04", nombre: "Reservas", informe: PRIMERO, seccion: PATRIMONIO },
   { id: "c6-05", nombre: "Caja o Bancos", informe: PRIMERO, seccion: ACTIVO },
-  { id: "c6-06", nombre: "Gastos de administración y ventas", informe: SEGUNDO, seccion: null },
+  { id: "c6-06", nombre: "Gastos de administración y ventas", informe: SEGUNDO, seccion: GASTOS },
   { id: "c6-07", nombre: "Cuentas por cobrar – Clientes", informe: PRIMERO, seccion: ACTIVO },
   { id: "c6-08", nombre: "Maquinaria y equipos", informe: PRIMERO, seccion: ACTIVO },
-  { id: "c6-09", nombre: "Ingresos no operacionales", informe: SEGUNDO, seccion: null },
+  { id: "c6-09", nombre: "Ingresos no operacionales", informe: SEGUNDO, seccion: INGRESOS },
   { id: "c6-10", nombre: "Inversiones a corto plazo", informe: PRIMERO, seccion: ACTIVO },
   { id: "c6-11", nombre: "Documentos por pagar a corto plazo", informe: PRIMERO, seccion: PASIVO },
   { id: "c6-12", nombre: "Obligaciones financieras a corto plazo", informe: PRIMERO, seccion: PASIVO },
@@ -582,18 +603,20 @@ export const ERROR_T1_6 = {
   B: "❌ Eso la empresa lo tiene o lo debe, y mañana lo sigue teniendo. El otro informe solo cuenta lo que pasó dentro del año.",
   /* C · el informe está bien y la sección no. */
   C: "❌ El informe es el correcto, eso ya lo tienes. Ahora pregúntate: ¿la empresa lo tiene, lo debe, o es de los dueños?",
+  /* C2 · el informe es el segundo y se cruzaron ingresos y gastos (Futaba, 24-oct). */
+  C2: "El informe es el correcto. Ahora pregúntate: ¿eso entró a la empresa en el año, o es algo que gastó?",
 };
 
 export const ACIERTO_T1_6 = {
   "c6-01": "✅ Va en el primer informe, en lo que tiene. Una patente no se toca, pero es de la empresa y vale.",
-  "c6-02": "✅ Va en el segundo informe. No es algo que la empresa tenga: es lo que vendió durante el año.",
+  "c6-02": "✅ Va en el estado de resultados, en ingresos. No es algo que la empresa tenga: es lo que vendió durante el año.",
   "c6-03": "✅ Va en el primer informe, en lo que debe. Es plata que le queda debiendo a un proveedor.",
   "c6-04": "✅ Va en el primer informe, en lo de los dueños. Es una parte de las ganancias que no se repartió.",
   "c6-05": "✅ Va en el primer informe, en lo que tiene. Es la plata que tiene disponible.",
-  "c6-06": "✅ Va en el segundo informe. Es lo que la empresa gastó durante el año.",
+  "c6-06": "✅ Va en el estado de resultados, en gastos. Es lo que la empresa gastó durante el año.",
   "c6-07": "✅ Va en el primer informe, en lo que tiene. Es plata que los clientes le quedaron debiendo.",
   "c6-08": "✅ Va en el primer informe, en lo que tiene. Son cosas de la empresa que duran años.",
-  "c6-09": "✅ Va en el segundo informe. Es lo que obtuvo en el año por algo que no es su negocio de siempre.",
+  "c6-09": "✅ Va en el estado de resultados, en ingresos. Es lo que obtuvo en el año por algo que no es su negocio de siempre.",
   "c6-10": "✅ Va en el primer informe, en lo que tiene. Es plata que la empresa puso a producir en otra parte y puede recuperar pronto.",
   "c6-11": "✅ Va en el primer informe, en lo que debe. Es una deuda con un papel firmado.",
   "c6-12": "✅ Va en el primer informe, en lo que debe. Es lo que le debe a un banco este año.",
@@ -606,12 +629,11 @@ export const ACIERTO_T1_6 = {
 /*
  * ═══════════ EL PUNTAJE: 60 % EL INFORME, 40 % LA SECCIÓN ═══════════
  *
- * ── [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN: la parte del segundo] ──
- *
- * El reparto 60/40 viene del encargo. Lo que no dice es qué pasa con las tres
- * fichas del segundo informe, que no tienen sección que acertar. Las cuento
- * completas al acertar el informe: no hay nada más que preguntarles, y
- * dejarlas en 60 % penalizaría por una pregunta que no se les hizo.
+ * El reparto 60/40 viene del encargo, y desde el lote del 24-oct vale para
+ * las dieciséis fichas: el segundo informe ya tiene sección (ingresos o
+ * gastos), así que sus tres fichas también se preguntan en dos partes. Antes
+ * valían entero al acertar el informe, porque no había más que preguntarles.
+ * Lo ya jugado no se recalcula.
  */
 export const PESO_INFORME = 0.6;
 export const PESO_SECCION = 0.4;
@@ -622,7 +644,7 @@ export const ALT_T1_6 = "Dos informes.";
 
 export const T1_7 = {
   id: "t1-la-articulacion",
-  nombre: "La Articulación",
+  nombre: "La articulación",
   subtema: "Cómo se articulan los estados financieros",
   dificultad: "experto",
   fpBase: 90,
@@ -765,7 +787,7 @@ export const ALT_T1_7 = "Tres informes. Cinco flechas llegan al informe de lo qu
  */
 export const T1_8 = {
   id: "t1-donde-se-rompio",
-  nombre: "¿Dónde se Rompió?",
+  nombre: "¿Dónde se rompió?",
   subtema: "El ciclo de la información contable",
   dificultad: "medio",
   fpBase: 25,
