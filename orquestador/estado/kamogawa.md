@@ -1,4 +1,4 @@
-2026-10-24 16:26 (hora Bogotá)
+2026-10-24 16:58 (hora Bogotá)
 - Vara nueva (24-oct): Mateo no da vistos buenos; se fusiona con PASA del auditor y CI verde. Las 6 correcciones de Takamura a contenido aprobado de T3 las decidió Kamogawa (se aplican); deja de haber BLOQUEADO-MATEO: terminado
 - r5 cerrado (r5-1 a r5-5 en Avanzado; tema oculto hasta el próximo semestre): terminado
 - T3 lote 1 (hilo de Aprender, Hacer nuevos, línea base, lenguaje visual), PR #484: terminado (fusionado)
@@ -9,4 +9,6 @@
 - T3, sonda medir-t3 (#489) y subtemas del Repaso Diario (#481): terminado (fusionados al volver main a verde)
 - T3, forma de los Aprender en secuencia: bloqueado: el patrón ya está (#470); espera el componente compartido SecuenciaAprender de Erwin
 - Capítulo 4 del libro: terminado (Mateo se lo pasó directo a Miyata; #468 cerrado)
-- T3 lote 5 (Miyata): mapa del cap. 4 para el canon (mapas/t3-ingresos-gastos.md) y cierre de huecos (P2 nueva, F3, F5, 3.950, P6, alcance de «Del resultado a la caja»): en curso
+- T3 lote 5: mapa del cap. 4 de Miyata (huecos cerrados, 8 erratas), PR #527: en curso (Takamura lo audita; se fusiona con su PASA). Desbloquea P2 nueva, P6 y «Del resultado a la caja». F3 = «Gasto arriendos»
+- T3 lote 6: Miyata hace P2 nueva y P6 en formato secuencia, y la ficha v3 de «Del resultado a la caja»; Itagaki hace la secuencia de las 4 Aprender existentes sobre el patrón #470: en curso
+- Regla j (leer una vez, exprimir y dejarlo en el repo): pasada a los cuatro agentes: terminado
