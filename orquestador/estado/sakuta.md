@@ -1,14 +1,17 @@
-2026-10-23 10:52 (hora Bogotá)
-- Cambio de tema (orden de Mateo, 23-oct): B suelta T6 y toma T1 introduccion-contabilidad; vara pasada a los cuatro agentes (solo se agrega, nunca se borra): terminado
-- T1 · fondo de los 4 Aprender en secuencia (Futaba): terminado, en orquestador/conocimiento/fichas/b-t1-aprender-secuencia-y-hacer.md
-- T1 · auditoría de base (Shoko): terminado, en orquestador/conocimiento/revisiones/b-t1-base-shoko.md
-- T1 · subtemas de los 7 Hacer para el Repaso Diario: terminado por B, entregado a Erwin (#474)
-- T1 · Hacer nuevos t1-un-dia-o-un-ano y t1-quien-pregunta-esto (aprobados): en curso (banco: Futaba; diseño: Mai)
-- T1 · textos de los 7 Hacer sin emoji: en curso (Futaba)
-- T1 · rediseño de los 7 Hacer contra el modelo único (Mai): en curso
-- T1 · auditoría de la ficha de Futaba antes de construir (Shoko): en curso
-- T1 · datos de los Aprender por pantalla, prueba de ids publicados y medición de los Hacer (Kaede): en curso
-- T1 · forma de presentación de los Aprender: bloqueado: espera el patrón de Ukyo y el componente de Erwin
-- T1 · logito del tema: bloqueado: espera el diseño de Ukyo
+2026-10-24 14:51 (hora Bogotá)
+- Vara nueva (24-oct: Mateo no da vistos buenos; B fusiona con PASA de Shoko y CI verde) y ahorro de Miku pasados a Kaede, Futaba, Mai y Shoko, junto con su lote: terminado
+- T1 · fondo de los 4 Aprender en secuencia, con la auditoría de Shoko aplicada y las frases de la 2.ª visita (Futaba): terminado, en fichas/b-t1-aprender-secuencia-y-hacer.md (16a85b8)
+- T1 · P2 de los 7 Hacer, H1, H2 y anexo común (Mai): terminado, en fichas/b-t1-hacer-p2-mai.md y b-t1-5-torres-p2-mai.md
+- T1 · H2 (t1-quien-pregunta-esto): vuelve a ser Hacer aparte (decisión mía, en revisiones/b-t1-bancos-y-torres-shoko.md)
+- T1 · auditoría de las P2 de Mai y de la 2.ª visita de Futaba (Shoko): en curso
+- T1 · bancos de H1 y H2 con la tabla de Shoko, aciertos y ejemplo nuevo de t1-5, títulos en minúscula y nombres de informes en T1-6 (Futaba): en curso
+- T1 · ajuste de la P2 de t1-5 a los botones de cifra y forma de los 4 Aprender en secuencia, empezando por cu0-a1 (Mai): en curso
+- T1 · t1-5 con el total nuevo (Kaede, #496): en curso (opciones repetidas o negativas, regla mía); luego capturas para el PASA de Shoko
+- T1 · datos de los Aprender por pantalla (Kaede, #485): en curso, pasando a la ficha corregida
+- T1 · logito LibretaYLapiz en archivo propio (Kaede): en curso
+- T1 · 6 Hacer publicados según las P2 de Mai (un PR por lotes) y H1 y H2 nuevos (Kaede): en curso
+- Fusión de #485 y #496: bloqueado: main en rojo (canon.mjs:46, arreglo de una línea en #504, la fusiona Miku; #505)
+- T1 · SecuenciaAprender (componente compartido): bloqueado: pregunté a Miku y Erwin quién lo construye; T1 se ofrece como piloto (#514)
+- Lo compartido que falla en los 7 Hacer (Retro con emoji y teal, «era esta»): bloqueado: es de Erwin (#487); B lo parchea dentro de cada pieza
 - T1 · D1 (verdad contra el libro): bloqueado: faltan las pp. 1-31 y las páginas del cap. 2 que cita T1 (#467)
-- T6 (oculto hasta el próximo semestre): los dos cambios de texto de Shoko del #458 quedan anotados en su chat para retomarlos
+- T6 (oculto hasta el próximo semestre): los dos cambios de texto de Shoko del #458 quedan anotados para retomarlos

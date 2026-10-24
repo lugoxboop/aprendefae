@@ -128,3 +128,63 @@ Vara para «acción sin decisión»: es acción real si el estudiante elige entr
   - La mecánica «¿por qué lado se mueve la cuenta?» ya va en su 4.º uso o más (A1 p1-p2, A4 p1 y p3, A5 p5): Katsumi tiene que justificarla.
   - A2 p7 debe decir en pantalla «Basado en el libro, p. 182».
   - La parada de Baki sobre el índice de progreso tiene que cerrarse con evidencia antes de fusionar A0 y A1.
+
+## Lote 2 de Katsumi (23 oct): correcciones tras la preauditoría. SUSTITUYE las tablas de A0, A2 p2 y A4 p1 de arriba
+
+### A0 · El activo corriente (4 pantallas; antes eran 6)
+
+| n | La idea | Acción o lectura | Texto en pantalla (palabras · INFLESZ) | Qué ve o toca | Fuente |
+|---|---|---|---|---|---|
+| 1 | Corriente es volverse plata antes de un año; lo fijo no | **Decisión** | Objetivo + **NUEVO** «¿Qué se vuelve plata antes de un año? Marca cada fila.» / con el acierto: «Un activo es corriente si se vuelve plata antes de un año.» + «Los fijos, como el edificio, se usan por años para trabajar: van en el activo no corriente.» (46 · 83,9) | Juego de «cual-cruza» con mercancía, deuda y edificio. Absorbe la antigua p4, cuyo texto se acorta sin cambiar lo que dice | pp. 177-179 |
+| 2 | Entre los corrientes, el efectivo va primero porque ya es plata | **Decisión** | **NUEVO** «Cuatro activos corrientes. ¿Cuál está más cerca de ser plata?» / con el acierto: «El libro empieza por el efectivo, en caja y en bancos: ya era plata. Por eso va primero.» (28 · 90,8) | **NUEVO**: cuatro filas, se toca una (Efectivo en caja y bancos, Inversiones a corto plazo, Cartera, Inventarios). Con el acierto, el año pasa solo y las otras tres se vuelven plata. Funde las antiguas p2 y p3 | p. 178 |
+| 3 | Lo prepagado es corriente porque se consume, no porque se vuelva plata | **Decisión** | **NUEVO** «Arriendo pagado por anticipado, seis meses. ¿Qué le pasa antes de la raya?» / con el acierto: «El Tema 2 añade un caso: también es corriente lo que se consume dentro del año.» (29 · 81,2) | **NUEVO**: tres opciones (Se vuelve plata, Se consume, Sigue igual); al pasar el año, la fila muestra «se consumió» | Tema 2 y p. 178 |
+| 4 | Para qué sirve separarlos (capa 4) | Lectura | Con lo corriente se pagan deudas. / Corriente: se vuelve plata o se consume antes de un año. Los fijos ayudan a producirla. / Siguiente: «La caja». (25 · 86,0) | Figura quieta en el mes 12 | pp. 178-179 |
+
+Devoluciones NUEVO de A0:
+- p2 · Inversiones: «Una inversión todavía hay que venderla para tener la plata.» (66,0)
+- p2 · Cartera: «La cartera es plata que todavía te deben los clientes.» (84,7)
+- p2 · Inventarios: «La mercancía primero se vende y después se cobra.»
+- p3 · Se vuelve plata: «Nadie te devuelve ese arriendo: lo vas usando mes a mes.» (88,2)
+- p3 · Sigue igual: «Cada mes que pasa, ya usaste una parte de ese arriendo.» (82,6)
+
+No se pide ordenar los cuatro corrientes. Que la p. 178 los ordene por cercanía a la plata no está verificado, y los meses de la figura son supuestos; la decisión solo pide cuál va primero, que sí está en el libro.
+
+### A2 p2
+
+| n | La idea | Acción o lectura | Texto en pantalla | Qué ve o toca | Fuente |
+|---|---|---|---|---|---|
+| 2 | El fondo se abre con plata de Bancos | **Decisión** | «El 1 de mayo, Sus Servicios abre el fondo de Rosa Primorosa con un cheque. ¿De qué cuenta sale?» (19 · 89,1) | Fichas Bancos, Caja y Caja menor; con el acierto, el cheque llena el sobre | pp. 181 y 183 |
+
+Devoluciones: acierto, «Bancos baja y Caja menor sube: el fondo queda abierto.» (89,7) · error Caja, «¿Quién paga un cheque: la caja o el banco?» · error Caja menor, «Caja menor es adonde llega la plata. ¿De dónde sale?» (78,5). A2 queda con 71 % de acción real; p3 y p5 son lecturas con botón y no quedan seguidas.
+
+### A4 p1 (pasa a otra mecánica: el cálculo del saldo)
+
+| n | La idea | Acción o lectura | Texto en pantalla | Qué ve o toca | Fuente |
+|---|---|---|---|---|---|
+| 1 | Bancos sube con lo que se consigna y baja con lo que se gira | **Decisión** | Objetivo + «Bancos es la plata de la empresa en el banco.» + «Girar un cheque es firmarlo para que el banco pague con esa plata.» + **NUEVO** «Bancos arranca en cero. Consignas $876.000 y giras un cheque de $398.200. ¿Cuánto queda?» (44 · 87,6) | **NUEVO**: tres saldos (477.800, 1.274.200 y 398.200). Con el acierto, la cuenta anima el debe 876.000, el haber 398.200 y el saldo | Basado en el libro, pp. 186-187 (el «arranca en cero» es construcción y lo dice el texto) |
+
+Devoluciones: error 1.274.200, «Sumaste el cheque, pero con él la plata sale de la cuenta.» (96,2) · error 398.200, «Ese es el cheque. ¿Cuánto queda de lo consignado?». Con este cambio, la mecánica «¿por qué lado se mueve la cuenta?» queda en tres usos.
+
+### Texto literal de las pantallas que llevaban «…»
+
+| Pantalla | Texto | Palabras · INFLESZ |
+|---|---|---|
+| A1 p6 | Toca cada control: se enciende lo que vigila. / Cada control tapa una fuga distinta. / Siguiente: «El fondo fijo». | 18 · 76,2 |
+| A2 p3 | En mayo, Rosa paga con el fondo y guarda cada soporte: la factura o el recibo. | 16 · 81,8 |
+| A2 p5 | Reponer lo gastado es el reembolso. El 31 de mayo, Rosa entrega los soportes y le hacen un cheque. Tócalo. | 20 · 78,7 |
+| A3 p2 | Mueve la plata de la caja. Si la suma pasa del fondo, sobra; si no llega, falta. | 17 · 103,1 |
+| A4 p2 | Con una nota débito, el banco le resta a la cuenta; con una nota crédito, le abona: le suma. | 19 · 79,6 |
+| A4 p5 | ¿Qué ignora la empresa? / Cada libreta anota lo que la otra todavía no sabe. Conciliar es ver qué falta. / Siguiente: «San Calixto». | 22 · 79,6 |
+| A5 p2 | Primero, el lado del banco: lo que la empresa ya anotó y el banco todavía no. | 16 · 81,8 |
+| A5 p3 | Ahora el lado de la empresa: las notas del banco que sus libros todavía no tienen. | 16 · 81,8 |
+| A5 p4 | Lo que importa es dejar Bancos en su valor verdadero: la empresa solo asienta lo que le falta. ¿Y este cheque? | 21 · 86,6 |
+| A5 p6 | Pasa las notas al mayor. / Los dos lados llegan al mismo saldo conciliado; solo se asientan las notas del banco. | 20 · 87,8 |
+
+Resumen: A0 queda en 4 pantallas, 3 decisiones distintas y 75 % de acción real. A2 queda en 7 pantallas, 4 decisiones y 71 %. A4 queda en 5 pantallas, 3 decisiones y 80 %. No hay lecturas seguidas ni nada que CAMBIE SENTIDO.
+
+## Respuestas de Ukyo para los slides de T4 (#470, §16)
+- Reserva de figura por pieza, con tope de 220 px a 320 y de 319 a 375; el apoyo va debajo y puede desbordar hasta 40 px.
+- El objetivo D2 es el titular de la pantalla 1. El pie «Basado en el libro, pp. …» aparece una sola vez, en el Cierre.
+- Una pantalla de un solo control es Haz si exige una respuesta válida y Míralo si solo explora. Todas cuentan para B3.
+- La clave de persistencia es `tema/pieza/caso`.
+- En la célula se adopta C2: al segundo error se muestra lo correcto y se libera «Siguiente».
