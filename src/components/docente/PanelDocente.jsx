@@ -2,17 +2,22 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { FAE } from "../../theme.js";
 import { SUBJECTS, HACER, actividadesDeTipo, desafioDe, ubicacionDeActividad } from "../../data/subjects.js";
 import Logo from "../Logo.jsx";
-import { ChevronLeft } from "lucide-react";
-import { estudiantesDe, marcarEnGrupo, resumenDe } from "../../docente/datos.js";
+import { ChevronLeft, Download } from "lucide-react";
+import { actividadDe, estudiantesDe, marcarEnGrupo, resumenDe } from "../../docente/datos.js";
 import { useAccesoDocente } from "../../docente/useAccesoDocente.js";
-import { alertasDelGrupo, avancePorTema, promedioAciertos } from "../../docente/alertas.js";
+import { alertasDelGrupo, avancePorTema, NIVEL } from "../../docente/alertas.js";
+import { avanceDeClase, cifrasDeActividad, masHechas, necesitanAtencion, peorActividad } from "../../docente/panelV1.js";
 import { destacadosDe } from "../../docente/destacados.js";
 import { csvDelPanel, descargarCsv } from "../../docente/exportar.js";
 import BloqueAlertas from "./BloqueAlertas.jsx";
-import CabeceraResumen from "./CabeceraResumen.jsx";
 import Destacados from "./Destacados.jsx";
-import FilaEstudiante from "./FilaEstudiante.jsx";
-import VistaRendimiento from "./VistaRendimiento.jsx";
+import ResumenClase, { DesdeTuVisita, SelectorMateria } from "./ResumenClase.jsx";
+import AtencionAhora from "./AtencionAhora.jsx";
+import PeorActividad from "./PeorActividad.jsx";
+import ListaEstudiantes from "./ListaEstudiantes.jsx";
+import ListaActividades from "./ListaActividades.jsx";
+import VistaEstudiante from "./VistaEstudiante.jsx";
+import { CSS_V1, V1, tarjetaV1, notaV1, volverV1 } from "./estiloV1.js";
 
 /*
  * Panel docente.
@@ -25,6 +30,16 @@ import VistaRendimiento from "./VistaRendimiento.jsx";
  * que haya entrado —explorar no pide permiso— y "mi grupo" es el curso real,
  * que el docente arma a mano. Las métricas agregadas y las alertas se calculan
  * sobre el grupo; si todavía no lo armó, sobre todos, y el panel lo dice.
+ *
+ * ═══════════ PANEL v1 (Ukyo, prompts/panel-docente-v1.md; Célula D) ═══════════
+ *
+ * La primera pantalla son tres respuestas: cómo va la clase (B1), a quién
+ * mirar (B2) y qué actividad salió peor (B3); desde 1024 px, una línea más con
+ * lo que cambió desde la última visita (B4). Lo demás está a uno o dos toques,
+ * en vistas aparte dentro del mismo marco: las alertas completas, «Mis
+ * estudiantes», el detalle de cada uno y «Actividades». Las cifras son las de
+ * antes, de las mismas funciones; solo cambian de sitio (P7). El rediseño no
+ * agrega escrituras: panel_resumen y grupo_marcar siguen como estaban (P8).
  */
 
 const seccion = { fontFamily: "Sora, sans-serif", fontSize: "13px", fontWeight: 700, letterSpacing: "0.1em", color: "rgba(248,249,250,0.55)", margin: "0 0 12px" };
@@ -55,17 +70,17 @@ export default function PanelDocente({ actividadInicial = null, onBack }) {
   const [materia, setMateria] = useState(null);
   const [estudiantes, setEstudiantes] = useState([]);
   const [cargando, setCargando] = useState(true);
-  const [busqueda, setBusqueda] = useState("");
-  const [soloGrupo, setSoloGrupo] = useState(false);
+  /* Si panel_estudiantes falla: el único sitio con coral (P6), con «Reintentar». */
+  const [errorCarga, setErrorCarga] = useState(null);
+  const [intento, setIntento] = useState(0);
+  /* Qué vista del panel: inicio · atencion · estudiantes · estudiante · actividades. */
+  const [vista, setVista] = useState({ tipo: "inicio" });
+  const [temasAbiertos, setTemasAbiertos] = useState(false);
+  /* panel_actividad por actividad, pedido bajo demanda (B3 y «Actividades»). */
+  const [cifrasAct, setCifrasAct] = useState({});
   /* Del servidor, para el delta de la cabecera. No confundir con `resumen`,
    * que es el agregado de la cohorte y se calcula abajo. */
   const [resumenVisita, setResumenVisita] = useState(null);
-  /*
-   * Qué fila tiene el detalle abierto. UNA SOLA, y vive aquí y no en cada fila:
-   * si cada una guardara su propio estado, abrir la segunda no cerraría la
-   * primera y el panel se llenaría de detalles abiertos.
-   */
-  const [filaAbierta, setFilaAbierta] = useState(null);
 
   /*
    * ═══════════ QUÉ ACTIVIDAD SE ESTÁ MIRANDO ═══════════
@@ -98,9 +113,12 @@ export default function PanelDocente({ actividadInicial = null, onBack }) {
   useEffect(() => {
     if (!materia) return;
     setCargando(true);
-    setFilaAbierta(null);
-    estudiantesDe(materia).then(({ estudiantes }) => {
+    setErrorCarga(null);
+    setCifrasAct({});
+    setVista((v) => (v.tipo === "actividades" ? v : { tipo: "inicio" }));
+    estudiantesDe(materia).then(({ estudiantes, error }) => {
       setEstudiantes(estudiantes);
+      setErrorCarga(error);
       setCargando(false);
     });
     /*
@@ -109,7 +127,7 @@ export default function PanelDocente({ actividadInicial = null, onBack }) {
      * null y la cabecera pinta lo que sabe calcular sola.
      */
     resumenDe(materia).then(({ resumen }) => setResumenVisita(resumen));
-  }, [materia]);
+  }, [materia, intento]);
 
   const grupo = useMemo(() => estudiantes.filter((e) => e.en_mi_grupo), [estudiantes]);
 
@@ -155,13 +173,6 @@ export default function PanelDocente({ actividadInicial = null, onBack }) {
   const conActividad = useMemo(() => estudiantes.filter((e) => !e.es_prueba).length, [estudiantes]);
   const etiquetaCohorte = grupo.length > 0 ? "en tu grupo" : "con actividad en la materia";
   const alertas = useMemo(() => alertasDelGrupo(cohorte), [cohorte]);
-
-  const visibles = useMemo(() => {
-    const q = busqueda.trim().toLowerCase();
-    return estudiantes
-      .filter((e) => (soloGrupo ? e.en_mi_grupo : true))
-      .filter((e) => !q || `${e.full_name ?? ""} ${e.nickname}`.toLowerCase().includes(q));
-  }, [estudiantes, busqueda, soloGrupo]);
 
   const marcar = async (userId, incluir) => {
     /* Optimista: marcar a treinta estudiantes no puede costar treinta esperas. */
@@ -254,35 +265,17 @@ export default function PanelDocente({ actividadInicial = null, onBack }) {
   }, [materia, actividadesMirables, actividadInicial]);
 
   /*
-   * Y se baja hasta la sección, una sola vez. Llegar de un enlace y aterrizar
-   * arriba del todo obligaría a buscar a mano lo que el enlace prometía enseñar.
-   * Solo pasa cuando se llegó con actividad en la URL: abrir el panel a mano
-   * sigue empezando por el resumen, que es lo primero que un docente quiere ver.
+   * Panel v1: llegar con una actividad en la URL abre su rendimiento, en la
+   * vista «Actividades», una sola vez. Antes bajaba hasta la sección; ahora la
+   * sección es una vista aparte. Con un hash escrito a mano, o de otra
+   * materia, no se prometió nada: el panel abre por el resumen.
    */
-  const yaBajo = useRef(false);
+  const yaAbrio = useRef(false);
   useEffect(() => {
-    /*
-     * Solo si la actividad de la URL EXISTE y quedó puesta. Con un hash escrito
-     * a mano —o con una actividad de otra materia— no se prometió nada, así que
-     * tampoco se mueve la página: el panel abre por arriba, como siempre.
-     */
-    if (!actividadInicial || actividadElegida !== actividadInicial) return;
-    if (yaBajo.current || cargando) return;
-    const seccion = document.getElementById("rendimiento-por-actividad");
-    if (!seccion) return;
-    yaBajo.current = true;
-    /*
-     * INSTANTÁNEO, NO SUAVE. El desplazamiento suave lo dibuja el navegador
-     * cuadro a cuadro, y una pestaña que no está al frente no produce cuadros:
-     * el panel abierto en segundo plano se quedaba arriba del todo y el enlace
-     * no cumplía lo que promete. Se comprobó que requestAnimationFrame no llega
-     * a dispararse en ese estado.
-     *
-     * Un salto tampoco desorienta aquí: no es el usuario quien se mueve por la
-     * página, es un enlace que dijo a dónde iba.
-     */
-    seccion.scrollIntoView({ behavior: "auto", block: "start" });
-  }, [actividadInicial, cargando, actividadElegida]);
+    if (!actividadInicial || actividadElegida !== actividadInicial || yaAbrio.current) return;
+    yaAbrio.current = true;
+    setVista({ tipo: "actividades", actividad: actividadInicial });
+  }, [actividadInicial, actividadElegida]);
 
   const elegirActividad = (id) => {
     setActividadElegida(id);
@@ -300,7 +293,9 @@ export default function PanelDocente({ actividadInicial = null, onBack }) {
     for (const e of cohorte) {
       for (const t of avancePorTema(materia, e.actividades ?? [])) {
         if (t.huerfana) continue;
-        const prev = acumulado.get(t.id) ?? { titulo: t.titulo, total: t.total, iniciaron: 0, terminaron: 0 };
+        const prev = acumulado.get(t.id) ?? { titulo: t.titulo, total: t.total, iniciaron: 0, terminaron: 0, hechas: 0 };
+        /* Panel v1: las hechas de toda la cohorte, para «Actividades hechas» en B1. */
+        prev.hechas += t.hechas;
         if (t.hechas > 0) prev.iniciaron += 1;
         if (t.hechas >= t.total) prev.terminaron += 1;
         acumulado.set(t.id, prev);
@@ -308,6 +303,75 @@ export default function PanelDocente({ actividadInicial = null, onBack }) {
     }
     return [...acumulado.entries()].map(([id, v]) => ({ id, ...v }));
   }, [cohorte, materia]);
+
+  /* ═══════════ PANEL v1: lo que resume la primera pantalla ═══════════ */
+
+  /* B1: los activos de la semana, igual que la tarjeta de antes (el del servidor si llegó; si no, el de la cohorte). */
+  const activos = Number(resumenVisita?.estudiantes_activos ?? cohorte.filter((e) => Number(e.fp_ciclo) > 0).length);
+  const avance = useMemo(() => avanceDeClase(porTema, cohorte.length, materia), [porTema, cohorte.length, materia]);
+  /* B2: una fila por estudiante con alerta, la más grave. */
+  const atencion = useMemo(() => necesitanAtencion(cohorte), [cohorte]);
+  const urgentes = alertas.filter((a) => a.nivel === NIVEL.URGENTE).length;
+
+  /* B3 y «Actividades»: las cifras de panel_actividad, con su materia en la clave (un cambio de materia no mezcla respuestas). */
+  const filasActividades = useMemo(
+    () => actividadesMirables.map((a, orden) => ({ ...a, orden, cifras: cifrasDeActividad(cifrasAct[`${materia}:${a.id}`]) })),
+    [actividadesMirables, cifrasAct, materia]
+  );
+  const seis = useMemo(() => masHechas(cohorte, actividadesMirables).map((a) => a.id), [cohorte, actividadesMirables]);
+  const pedidas = useRef(new Set());
+  const pedir = (ids) => {
+    const nuevas = ids.filter((id) => !pedidas.current.has(`${materia}:${id}`));
+    nuevas.forEach((id) => pedidas.current.add(`${materia}:${id}`));
+    const m = materia;
+    return Promise.all(nuevas.map((id) => actividadDe(m, id).then(({ actividad }) => {
+      setCifrasAct((c) => ({ ...c, [`${m}:${id}`]: actividad ?? { completaron: 0 } }));
+    })));
+  };
+  useEffect(() => { pedidas.current = new Set(); }, [materia]);
+  /*
+   * ⛔ Ukyo §12: las 6 llamadas de B3 van en paralelo DESPUÉS del primer
+   * pintado, y se mide cuánto tardan (objetivo < 1,5 s). La medida queda en
+   * data-ms-peor del bloque y en performance, para la sonda.
+   */
+  const [msPeor, setMsPeor] = useState(null);
+  useEffect(() => {
+    if (cargando || errorCarga || !materia) return;
+    setMsPeor(null);
+    if (seis.length === 0) { setMsPeor(0); return; }
+    const t0 = performance.now();
+    let vivo = true;
+    pedir(seis).then(() => { if (vivo) setMsPeor(Math.round(performance.now() - t0)); });
+    return () => { vivo = false; };
+  }, [cargando, errorCarga, materia, seis.join(",")]); // eslint-disable-line react-hooks/exhaustive-deps
+  const estadoPeor = useMemo(() => {
+    const entre = filasActividades.filter((f) => seis.includes(f.id));
+    const cargandoPeor = entre.some((f) => !f.cifras);
+    return { cargando: cargandoPeor, nMirables: actividadesMirables.length, ...peorActividad(entre) };
+  }, [filasActividades, seis, actividadesMirables.length]);
+  /* «Actividades» pide el resto al entrar: de seis en seis, para no lanzar sesenta llamadas a la vez. */
+  const [cargandoTodas, setCargandoTodas] = useState(false);
+  useEffect(() => {
+    if (vista.tipo !== "actividades" || !materia) return;
+    let vivo = true;
+    setCargandoTodas(true);
+    (async () => {
+      const ids = actividadesMirables.map((a) => a.id);
+      for (let i = 0; i < ids.length && vivo; i += 6) await pedir(ids.slice(i, i + 6));
+      if (vivo) setCargandoTodas(false);
+    })();
+    return () => { vivo = false; };
+  }, [vista.tipo, materia, actividadesMirables]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  /* Cambiar de vista vuelve arriba: cada vista empieza por su título. */
+  const ir = (v) => {
+    setVista(v);
+    try { window.scrollTo({ top: 0, behavior: "auto" }); } catch { /* jsdom */ }
+  };
+  const temaDe = (actividadId) => {
+    const t = SUBJECTS[materia]?.topics?.find((x) => (x.actividades ?? []).some((a) => a.id === actividadId));
+    return t?.title ?? null;
+  };
 
   /* ---------------- puertas de acceso ---------------- */
 
@@ -339,317 +403,198 @@ export default function PanelDocente({ actividadInicial = null, onBack }) {
   }
 
   const nombreMateria = SUBJECTS[materia]?.name ?? materia;
+  const sinEstudiantes = !cargando && !errorCarga && estudiantes.length === 0;
+  const singular = cohorte.length === 1;
+  const notaCohorte = `${grupo.length > 0
+    ? `Métricas y alertas sobre tu grupo: ${cohorte.length} de ${conActividad} estudiantes con actividad en la materia.`
+    : `Todavía sin grupo armado — las métricas hablan de los ${conActividad} estudiantes con actividad en la materia.`}${
+    nPrueba === 0 ? "" : nPrueba === 1
+      ? " Hay 1 cuenta de prueba en la lista; no entra en promedios, alertas ni destacados."
+      : ` Hay ${nPrueba} cuentas de prueba en la lista; no entran en promedios, alertas ni destacados.`}`;
+  const estudianteAbierto = vista.tipo === "estudiante" ? estudiantes.find((e) => e.user_id === vista.id) : null;
+
+  let cuerpo;
+  if (cargando) {
+    /* Ukyo §7: esqueleto de los tres bloques, del mismo alto, sin salto. */
+    cuerpo = (
+      <div className="pd1-rejilla" aria-busy="true" aria-label="Cargando…" data-cargando>
+        {[0, 1, 2].map((k) => (
+          <div key={k} style={{ ...tarjetaV1, height: "180px" }}>
+            <div className="pd1-esqueleto" style={{ height: "16px", width: "50%" }} />
+            <div className="pd1-esqueleto" style={{ height: "40px", width: "35%", marginTop: "14px" }} />
+            <div className="pd1-esqueleto" style={{ height: "14px", width: "70%", marginTop: "14px" }} />
+          </div>
+        ))}
+      </div>
+    );
+  } else if (errorCarga) {
+    cuerpo = (
+      <div style={{ ...tarjetaV1, maxWidth: "62ch" }} role="alert" data-error-carga>
+        <p style={{ margin: "0 0 6px", fontFamily: "Sora, sans-serif", fontSize: "15px", fontWeight: 600, color: FAE.coral }}>
+          No se pudo cargar tu clase
+        </p>
+        <p style={notaV1}>Revisa tu conexión y vuelve a intentarlo.</p>
+        <button type="button" style={{ ...volverV1, marginTop: "12px", marginBottom: 0 }} onClick={() => setIntento((n) => n + 1)} data-reintentar>
+          Reintentar
+        </button>
+      </div>
+    );
+  } else if (vista.tipo === "atencion") {
+    cuerpo = (
+      <section data-vista="atencion">
+        <button type="button" style={volverV1} onClick={() => ir({ tipo: "inicio" })} data-volver>‹ Volver al resumen</button>
+        <BloqueAlertas alertas={alertas} grupoVacio={grupo.length === 0} />
+        <Destacados estudiantes={cohorte} />
+        {/* Ukyo §8: lo que quedaba del «Resumen del periodo» que no está en B1. */}
+        <section style={{ ...tarjetaV1, marginBottom: "28px" }} data-resumen-periodo>
+          <p style={{ margin: "0 0 4px", fontSize: "12px", letterSpacing: "0.06em", color: V1.texto2 }}>ACIERTO EXPLORATORIAS</p>
+          <p style={{ margin: 0, fontFamily: "Sora, sans-serif", fontSize: "26px", fontWeight: 700, color: "rgba(248,249,250,0.8)" }} data-cifra="acierto-exploratorias">
+            {resumen.pctExpl === null ? "—" : `${Math.round(resumen.pctExpl)}%`}
+          </p>
+          <p style={{ ...notaV1, marginTop: "4px" }}>
+            {resumen.nExpl === 0 ? "Nadie ha hecho exploratorias aún" : "Se puede reintentar hasta acertar: tiende a 100% y no mide dominio"}
+          </p>
+          <p style={{ margin: "14px 0 4px", fontSize: "12px", letterSpacing: "0.06em", color: V1.texto2 }}>EN RIESGO</p>
+          <p style={{ margin: 0, fontFamily: "Sora, sans-serif", fontSize: "26px", fontWeight: 700, color: FAE.text }} data-cifra="en-riesgo">{urgentes}</p>
+          <p style={{ ...notaV1, marginTop: "4px" }}>Tenían ritmo y llevan más de un ciclo sin entrar (riesgo alto)</p>
+        </section>
+      </section>
+    );
+  } else if (vista.tipo === "estudiantes") {
+    cuerpo = (
+      <ListaEstudiantes
+        estudiantes={estudiantes}
+        atencion={atencion}
+        notaCohorte={notaCohorte}
+        onAbrir={(id) => ir({ tipo: "estudiante", id, desde: "estudiantes" })}
+        onVolver={() => ir({ tipo: "inicio" })}
+      />
+    );
+  } else if (vista.tipo === "estudiante") {
+    const desde = vista.desde ?? "inicio";
+    cuerpo = (
+      <VistaEstudiante
+        e={estudianteAbierto}
+        subjectId={materia}
+        posicion={estudianteAbierto ? posiciones.get(estudianteAbierto.user_id) : null}
+        onMarcar={marcar}
+        textoVolver={desde === "estudiantes" ? "Mis estudiantes" : "Volver al resumen"}
+        onVolver={() => ir({ tipo: desde })}
+      />
+    );
+  } else if (vista.tipo === "actividades") {
+    cuerpo = (
+      <ListaActividades
+        filas={filasActividades}
+        cargando={cargandoTodas}
+        elegida={acceso.materias.includes(materia) ? vista.actividad ?? null : null}
+        subjectId={materia}
+        nombreMateria={nombreMateria}
+        onElegir={(id) => { if (id) elegirActividad(id); ir({ tipo: "actividades", actividad: id }); }}
+        onVolver={() => ir({ tipo: "inicio" })}
+      />
+    );
+  } else {
+    cuerpo = (
+      <>
+        {sinEstudiantes ? (
+          /*
+           * Ukyo §7, 0 estudiantes, con el texto de Katsumi. No hay «código de
+           * curso» (decisión de Yujiro: esa función no existe). Las vistas
+           * aparte, apagadas con su razón.
+           */
+          <section style={{ ...tarjetaV1, maxWidth: "62ch" }} data-bloque="b1" data-vacio>
+            <p style={{ margin: 0, fontSize: "15px", lineHeight: 1.6, color: FAE.text }}>
+              Aún no hay nada que mostrar. Cuando tu clase haga su primera actividad, la verás aquí.
+            </p>
+          </section>
+        ) : (
+          <div className="pd1-rejilla">
+            <ResumenClase
+              avance={avance}
+              activos={activos}
+              nCohorte={cohorte.length}
+              singular={singular}
+              porTema={porTema}
+              pctEval={resumen.pctEval}
+              nEval={resumen.nEval}
+              abierto={temasAbiertos}
+              onAlternar={() => setTemasAbiertos((v) => !v)}
+            />
+            <AtencionAhora
+              atencion={atencion}
+              nDestacados={destacados.length}
+              singular={singular}
+              onVerTodos={() => ir({ tipo: "atencion" })}
+              onAbrir={(id) => ir({ tipo: "estudiante", id, desde: "inicio" })}
+            />
+            <div data-ms-peor={msPeor ?? undefined} style={{ minWidth: 0, display: "grid" }}>
+              <PeorActividad
+                estado={estadoPeor}
+                singular={singular}
+                onAbrir={(id) => { elegirActividad(id); ir({ tipo: "actividades", actividad: id }); }}
+                onVerTodas={() => ir({ tipo: "actividades", actividad: null })}
+              />
+            </div>
+          </div>
+        )}
+        {!sinEstudiantes && <DesdeTuVisita resumen={resumenVisita} temaDe={temaDe} />}
+        <nav aria-label="Vistas del panel" style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "16px" }}>
+          {[
+            { id: "estudiantes", texto: "Mis estudiantes", ir: () => ir({ tipo: "estudiantes" }) },
+            { id: "actividades", texto: "Actividades", ir: () => ir({ tipo: "actividades", actividad: null }) },
+          ].map((x) => (
+            <button key={x.id} type="button" onClick={x.ir} disabled={sinEstudiantes} data-ir={x.id} style={{ ...volverV1, marginBottom: 0, opacity: sinEstudiantes ? 0.55 : 1, cursor: sinEstudiantes ? "default" : "pointer" }}>
+              {x.texto}
+            </button>
+          ))}
+        </nav>
+        {sinEstudiantes && <p style={{ ...notaV1, marginTop: "8px" }} data-razon-apagado>Se abre cuando alguien haga su primera actividad.</p>}
+      </>
+    );
+  }
 
   return (
     <Marco onBack={onBack}>
-      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "16px", flexWrap: "wrap", marginBottom: "6px" }}>
-        <h1 style={{ fontFamily: "Sora, sans-serif", fontSize: "clamp(22px, 3vw, 28px)", fontWeight: 700, letterSpacing: "-0.02em", margin: 0 }}>
-          {nombreMateria}
-        </h1>
-        <button
-          type="button"
-          onClick={() => descargarCsv(csvDelPanel(cohorte, materia), `aprendefae-${materia}-${new Date().toISOString().slice(0, 10)}.csv`)}
-          disabled={cohorte.length === 0}
-          style={{
-            fontFamily: "Sora, sans-serif", fontSize: "13px", fontWeight: 600,
-            padding: "9px 16px", borderRadius: "999px",
-            cursor: cohorte.length === 0 ? "default" : "pointer",
-            background: "transparent",
-            border: `1px solid ${cohorte.length === 0 ? "rgba(248,249,250,0.15)" : "rgba(248,249,250,0.3)"}`,
-            color: cohorte.length === 0 ? "rgba(248,249,250,0.35)" : FAE.text,
-          }}
-        >
-          Exportar informe
-        </button>
-      </div>
-
-      {acceso.materias.length > 1 && (
-        <div style={{ display: "flex", gap: "8px", marginBottom: "18px", flexWrap: "wrap" }}>
-          {acceso.materias.map((m) => (
-            <button
-              key={m}
-              type="button"
-              onClick={() => setMateria(m)}
-              style={{
-                fontFamily: "Sora, sans-serif", fontSize: "12.5px", fontWeight: 600,
-                padding: "7px 14px", borderRadius: "999px", cursor: "pointer",
-                background: m === materia ? FAE.teal : "transparent",
-                border: `1px solid ${m === materia ? FAE.teal : "rgba(248,249,250,0.22)"}`,
-                color: m === materia ? FAE.bg : "rgba(248,249,250,0.7)",
-              }}
-            >
-              {SUBJECTS[m]?.name ?? m}
-            </button>
-          ))}
-        </div>
-      )}
-
-      <p style={{ fontSize: "13.5px", color: "rgba(248,249,250,0.55)", margin: "0 0 24px" }}>
-        {grupo.length > 0
-          ? `Métricas y alertas sobre tu grupo: ${cohorte.length} de ${conActividad} estudiantes con actividad en la materia.`
-          : `Todavía sin grupo armado — las métricas hablan de los ${conActividad} estudiantes con actividad en la materia.`}
-        {nPrueba > 0 && (
-          /*
-           * Se dice en voz alta y no se deja adivinar: un docente que ve una
-           * fila más de las que suman los promedios tiene que poder leer por
-           * qué sin abrir nada.
-           */
-          <>
-            {" "}
-            <span style={{ color: "rgba(248,249,250,0.42)" }}>
-              {nPrueba === 1
-                ? "Hay 1 cuenta de prueba en la lista; no entra en promedios, alertas ni destacados."
-                : `Hay ${nPrueba} cuentas de prueba en la lista; no entran en promedios, alertas ni destacados.`}
-            </span>
-          </>
-        )}
-      </p>
-
-      {cargando ? (
-        <p style={{ color: "rgba(248,249,250,0.6)" }}>Cargando…</p>
-      ) : estudiantes.length === 0 ? (
-        /*
-         * Periodo sin datos. No es un error ni una pantalla rota: al principio
-         * del semestre esto es lo correcto, y decirlo así evita que parezca que
-         * el panel no funciona.
-         */
-        <div style={{ ...tarjeta, maxWidth: "56ch" }}>
-          <p style={{ margin: 0, fontSize: "14.5px", lineHeight: 1.6, color: "rgba(248,249,250,0.7)" }}>
-            Todavía nadie ha registrado actividad en {nombreMateria}. En cuanto tus estudiantes
-            empiecen a completar actividades, aparecerán aquí con su avance.
-          </p>
-        </div>
-      ) : (
-        <>
-          <CabeceraResumen
-            cohorte={cohorte}
-            etiquetaCohorte={etiquetaCohorte}
-            alertas={alertas}
-            resumen={resumenVisita}
-            temaDe={(actividadId) => {
-              /* El tema al que pertenece una actividad, para la frase del delta. */
-              const t = SUBJECTS[materia]?.topics?.find((x) =>
-                (x.actividades ?? []).some((a) => a.id === actividadId)
-              );
-              return t?.title ?? null;
-            }}
-          />
-
-          <BloqueAlertas alertas={alertas} grupoVacio={grupo.length === 0} />
-
-          <Destacados estudiantes={cohorte} />
-
-          <section style={{ marginBottom: "28px" }}>
-            <h2 style={seccion}>RESUMEN DEL PERIODO</h2>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "12px" }}>
-              {/*
-                * LA TARJETA "ESTUDIANTES" SE FUE ARRIBA. Decía exactamente el
-                * mismo número que la primera tarjeta de la cabecera, a media
-                * pantalla de distancia y sin nada que las distinguiera. La de
-                * la cabecera se queda porque va primero, es lo primero que se
-                * lee y lleva su denominador escrito al lado.
-                *
-                * Las tres que quedan aquí no se repiten en ningún otro sitio.
-                */}
-              <Kpi
-                rotulo="ACIERTO EVALUATIVAS"
-                valor={resumen.pctEval === null ? "—" : `${Math.round(resumen.pctEval)}%`}
-                nota={resumen.nEval === 0 ? "Nadie ha hecho evaluativas aún" : `${resumen.nEval} estudiantes · señal fiable de dominio`}
-                color={FAE.text}
-              />
-              <Kpi
-                rotulo="ACIERTO EXPLORATORIAS"
-                valor={resumen.pctExpl === null ? "—" : `${Math.round(resumen.pctExpl)}%`}
-                /* El aviso va pegado al número, no en una nota al pie que nadie lee. */
-                nota={resumen.nExpl === 0 ? "Nadie ha hecho exploratorias aún" : "Se puede reintentar hasta acertar: tiende a 100% y no mide dominio"}
-                color="rgba(248,249,250,0.72)"
-              />
-              <Kpi
-                rotulo="EN RIESGO"
-                valor={alertas.filter((a) => a.nivel === "urgente").length}
-                nota="Tenían ritmo y llevan más de un ciclo sin entrar"
-                color={FAE.coral}
-              />
-            </div>
-          </section>
-
-          <section style={{ marginBottom: "28px" }}>
-            <h2 style={seccion}>AVANCE POR TEMA</h2>
-            <p style={{ fontSize: "12.5px", color: "rgba(248,249,250,0.5)", margin: "-4px 0 12px", maxWidth: "62ch" }}>
-              Cuenta solo las actividades que otorgan FP. El material teórico no deja registro,
-              así que alguien que leyó la teoría sin jugar aparece como no iniciado.
-            </p>
-            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-              {porTema.map((t) => (
-                <div key={t.id} style={{ ...tarjeta, display: "flex", alignItems: "center", gap: "14px" }}>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ margin: "0 0 6px", fontFamily: "Sora, sans-serif", fontSize: "14px", fontWeight: 600 }}>{t.titulo}</p>
-                    <div style={{ height: "6px", borderRadius: "999px", background: "rgba(248,249,250,0.1)", overflow: "hidden" }}>
-                      <div style={{ width: `${cohorte.length ? (t.terminaron / cohorte.length) * 100 : 0}%`, height: "100%", background: FAE.teal, borderRadius: "999px", transition: "width 300ms ease" }} />
-                    </div>
-                  </div>
-                  <p style={{ margin: 0, fontFamily: "Sora, sans-serif", fontSize: "13px", fontVariantNumeric: "tabular-nums", color: "rgba(248,249,250,0.7)", whiteSpace: "nowrap" }}>
-                    {t.terminaron} completo · {t.iniciaron} iniciado
-                  </p>
-                </div>
-              ))}
-            </div>
-          </section>
-
+      <div className="pd1">
+        <style>{CSS_V1}</style>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", marginBottom: "8px" }}>
           {/*
-            * ÍTEM 4 — El rendimiento por actividad, que era el hueco honesto.
-            *
-            * Aquí había una tarjeta diciendo que el diagnóstico por pregunta
-            * llegaría cuando fp_detalle acumulara recorrido. Ya llegó, y con él
-            * las otras cifras de la misma pregunta: finalización, distribución,
-            * tiempo y FP de UNA actividad concreta.
-            *
-            * ═══════════ LA CONDICIÓN ES POR MATERIA, NO SOLO POR SER DOCENTE ═══════════
-            *
-            * Que la cuenta sea docente no basta: hay que estar autorizado en
-            * ESTA materia. El servidor lo comprueba en las dos funciones con su
-            * propio 42501 y no se fía del cliente; esto de aquí es para que la
-            * interfaz no ofrezca lo que el servidor va a rechazar.
+            * Con más de una materia, las pastillas hacen de título (la elegida es
+            * la materia) y el h1 queda para el lector: así el resumen cabe entero
+            * en 667 px (P1). Con una sola, el nombre a la vista.
             */}
-          {acceso.materias.includes(materia) && actividadesMirables.length > 0 && (
-            <section id="rendimiento-por-actividad" style={{ marginBottom: "28px", scrollMarginTop: "16px" }}>
-              <h2 style={seccion}>RENDIMIENTO POR ACTIVIDAD</h2>
-              <p style={{ fontSize: "12.5px", color: "rgba(248,249,250,0.5)", margin: "-4px 0 12px", maxWidth: "62ch" }}>
-                Solo las actividades que otorgan FP: las de material teórico no dejan registro y no
-                tendrían nada que enseñar aquí.
-              </p>
-
-              {/*
-                * El selector va con aria-label y no con una etiqueta oculta:
-                * el panel no tiene ninguna clase de "solo lectores de pantalla"
-                * y meter una hoja de estilos entera para una línea sería peor
-                * que usar el atributo que existe justo para esto.
-                */}
-              <div style={{ marginBottom: "16px" }}>
-                <select
-                  aria-label="Actividad que se está mirando"
-                  value={actividadElegida ?? ""}
-                  onChange={(ev) => elegirActividad(ev.target.value)}
-                  style={{
-                    width: "100%", maxWidth: "420px", padding: "10px 14px", borderRadius: "10px",
-                    background: "rgba(248,249,250,0.06)", border: "1px solid rgba(248,249,250,0.16)",
-                    color: FAE.text, fontFamily: "Inter, sans-serif", fontSize: "14px", outline: "none",
-                    /*
-                     * LA LISTA DESPLEGADA LA PINTA EL SISTEMA, NO ESTA HOJA.
-                     *
-                     * El cuadro cerrado tomaba estos colores, pero al abrirlo el
-                     * navegador dibujaba el menú con el tema CLARO del sistema:
-                     * fondo blanco y encima el texto casi invisible que hereda de
-                     * aquí. Ilegible en un sitio oscuro.
-                     *
-                     * `color-scheme` es lo único que el sistema escucha para
-                     * decidir con qué tema pinta sus propios controles. No es
-                     * decoración: sin él, el color del texto de las opciones y el
-                     * fondo que les pone el sistema los eligen dos capas
-                     * distintas y nadie garantiza que contrasten.
-                     *
-                     * Los `option` llevan además su color explícito porque
-                     * Windows y Linux ignoran color-scheme en el menú abierto de
-                     * un select y usan los del elemento.
-                     */
-                    colorScheme: "dark",
-                  }}
-                >
-                  {[...new Set(actividadesMirables.map((a) => a.tema))].map((tema) => (
-                    <optgroup key={tema} label={tema} style={{ background: FAE.bg, color: "rgba(248,249,250,0.6)" }}>
-                      {actividadesMirables
-                        .filter((a) => a.tema === tema)
-                        .map((a) => (
-                          <option
-                            key={a.id}
-                            value={a.id}
-                            style={{ background: FAE.bg, color: FAE.text }}
-                          >
-                            {a.nombre}
-                          </option>
-                        ))}
-                    </optgroup>
-                  ))}
-                </select>
-              </div>
-
-              {/*
-                * SE BUSCA ANTES DE MONTAR, Y ESTO NO ES DEFENSA GRATUITA.
-                *
-                * Al cambiar de materia, `materia` y `actividadesMirables` se
-                * actualizan en el mismo repintado pero `actividadElegida`
-                * todavía trae la actividad de la materia ANTERIOR: el efecto que
-                * la corrige corre después. En ese hueco el find() devolvía
-                * undefined y la vista reventaba con "Cannot read properties of
-                * undefined (reading 'id')", tumbando el panel entero.
-                *
-                * Salió al probar con las dos materias de Mateo. Sin el guardia,
-                * el primer clic en el selector de materia lo dejaba en blanco.
-                */}
-              {(() => {
-                const actual = actividadesMirables.find((a) => a.id === actividadElegida);
-                if (!actual) return null;
-                return (
-                  <VistaRendimiento
-                    key={`${materia}:${actual.id}`}
-                    subjectId={materia}
-                    nombreMateria={nombreMateria}
-                    actividad={actual}
-                  />
-                );
-              })()}
-            </section>
+          <h1
+            className="pd1-nombre"
+            style={acceso.materias.length > 1 && vista.tipo === "inicio"
+              ? { position: "absolute", width: "1px", height: "1px", overflow: "hidden", clip: "rect(0 0 0 0)", whiteSpace: "nowrap", margin: 0 }
+              : { fontFamily: "Sora, sans-serif", fontSize: "clamp(20px, 3vw, 26px)", fontWeight: 700, letterSpacing: "-0.02em", margin: 0 }}
+          >
+            {nombreMateria}
+          </h1>
+          {vista.tipo === "inicio" && (
+            <SelectorMateria materias={acceso.materias} materia={materia} nombreDe={(m) => SUBJECTS[m]?.name ?? m} onMateria={setMateria} />
           )}
-
-          <section>
-            <h2 style={seccion}>ESTUDIANTES ACTIVOS EN {nombreMateria.toUpperCase()}</h2>
-            <div style={{ display: "flex", gap: "10px", marginBottom: "14px", flexWrap: "wrap" }}>
-              <input
-                type="search"
-                value={busqueda}
-                onChange={(ev) => setBusqueda(ev.target.value)}
-                placeholder="Buscar por nombre o apodo"
-                style={{
-                  flex: 1, minWidth: "220px", padding: "10px 14px", borderRadius: "10px",
-                  background: "rgba(248,249,250,0.06)", border: "1px solid rgba(248,249,250,0.16)",
-                  color: FAE.text, fontFamily: "Inter, sans-serif", fontSize: "14px", outline: "none",
-                }}
-              />
-              <button
-                type="button"
-                onClick={() => setSoloGrupo((v) => !v)}
-                style={{
-                  fontFamily: "Sora, sans-serif", fontSize: "12.5px", fontWeight: 600,
-                  padding: "9px 16px", borderRadius: "10px", cursor: "pointer",
-                  background: soloGrupo ? FAE.teal : "transparent",
-                  border: `1px solid ${soloGrupo ? FAE.teal : "rgba(248,249,250,0.22)"}`,
-                  color: soloGrupo ? FAE.bg : "rgba(248,249,250,0.7)",
-                }}
-              >
-                Solo mi grupo
-              </button>
-            </div>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-              {visibles.map((e) => (
-                <FilaEstudiante
-                  key={e.user_id}
-                  e={e}
-                  subjectId={materia}
-                  onMarcar={marcar}
-                  abierta={filaAbierta === e.user_id}
-                  onAlternar={setFilaAbierta}
-                  destacado={idsDestacados.has(e.user_id)}
-                  posicion={posiciones.get(e.user_id)}
-                />
-              ))}
-              {visibles.length === 0 && (
-                <p style={{ fontSize: "14px", color: "rgba(248,249,250,0.55)" }}>Ningún estudiante coincide con esa búsqueda.</p>
-              )}
-            </div>
-          </section>
-        </>
-      )}
+          {/* Ukyo §8: «Exportar informe», botón de ícono de 44 × 44 con su nombre para el lector. */}
+          <button
+            type="button"
+            aria-label="Exportar informe"
+            title="Exportar informe"
+            data-exportar
+            onClick={() => descargarCsv(csvDelPanel(cohorte, materia), `aprendefae-${materia}-${new Date().toISOString().slice(0, 10)}.csv`)}
+            disabled={cohorte.length === 0}
+            style={{
+              flexShrink: 0, width: "44px", height: "44px", display: "inline-flex", alignItems: "center", justifyContent: "center",
+              borderRadius: "999px", background: "transparent", cursor: cohorte.length === 0 ? "default" : "pointer",
+              border: `1px solid ${cohorte.length === 0 ? "rgba(248,249,250,0.15)" : "rgba(248,249,250,0.3)"}`,
+              opacity: cohorte.length === 0 ? 0.5 : 1,
+            }}
+          >
+            <Download size={18} color={FAE.text} aria-hidden="true" />
+          </button>
+        </div>
+        {cuerpo}
+      </div>
     </Marco>
   );
 }
@@ -657,19 +602,26 @@ export default function PanelDocente({ actividadInicial = null, onBack }) {
 function Marco({ children, onBack }) {
   return (
     <div style={{ minHeight: "100vh", backgroundColor: FAE.bg, fontFamily: "Inter, sans-serif", color: FAE.text }}>
-      <div style={{ maxWidth: "1040px", margin: "0 auto", padding: "clamp(18px, 3vh, 30px) 24px 64px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "26px" }}>
+      <div style={{ maxWidth: "1040px", margin: "0 auto", padding: "12px clamp(16px, 4vw, 24px) 64px" }}>
+        {/*
+          * La pastilla de FP (AccountControl, de Erwin) flota arriba a la
+          * derecha. Esta barra le deja su hueco y el título se recorta con
+          * elipsis en vez de pasar por debajo (Shibukawa, #498: a menos de
+          * 360 px la tapaba).
+          */}
+        <style>{`.pd1-barra { padding-right: 112px; } @media (min-width: 720px) { .pd1-barra { padding-right: 0; } }`}</style>
+        <div className="pd1-barra" style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px", minWidth: 0 }}>
           <Logo variant="symbol" size={26} theme="dark" />
           <span aria-hidden="true" style={{ width: "1px", height: "22px", backgroundColor: "rgba(248,249,250,0.16)", margin: "0 4px" }} />
           <button
             type="button"
             onClick={onBack}
             aria-label="Volver"
-            style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "8px", borderRadius: "999px", background: "rgba(248,249,250,0.06)", border: "1px solid rgba(248,249,250,0.14)", cursor: "pointer" }}
+            style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "44px", height: "44px", padding: 0, borderRadius: "999px", background: "rgba(248,249,250,0.06)", border: "1px solid rgba(248,249,250,0.14)", cursor: "pointer" }}
           >
             <ChevronLeft size={20} color={FAE.text} />
           </button>
-          <h2 style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "17px", letterSpacing: "-0.02em", margin: 0, lineHeight: 1 }}>
+          <h2 className="pd1-nombre" style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "17px", letterSpacing: "-0.02em", margin: 0, lineHeight: 1.2, minWidth: 0 }}>
             Panel docente
           </h2>
         </div>

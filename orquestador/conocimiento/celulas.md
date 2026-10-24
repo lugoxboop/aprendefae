@@ -9,6 +9,31 @@ procedencia: decidido
 > Decidido el 13 de octubre de 2026 por Mateo. Reparto de temas acordado con
 > Levi sobre el inventario de fuentes verificado por Gen.
 
+## CONTABILIDAD YA TIENE ESTUDIANTES: solo se agrega, nunca se borra
+
+**Orden de Mateo del 23 de octubre de 2026, vía Miku. Va antes que cualquier
+otra regla de este documento.**
+
+Contabilidad dejó de ser terreno libre. Desde hoy vale para ella **la misma
+regla que para Macroeconomía**: solo se agrega. Nunca se borra lo existente
+—una actividad, una pieza, un tema, una fila del servidor, un id— ni los datos
+que un estudiante ya dejó en él: progreso, intentos, FP ganado.
+
+En la práctica:
+
+- **Cambiar no es borrar y volver a escribir.** Una pieza publicada que se
+  rehace entra como pieza nueva o detrás de una bandera; la vieja se conserva
+  hasta que Mateo diga otra cosa.
+- **Ocultar sí, borrar no.** Lo que no se ve este semestre se esconde con una
+  bandera que se deshace en una línea (ver `TEMAS_OCULTOS` en
+  `src/data/subjects.js`), y su código, sus datos y su FP se quedan.
+- **Las migraciones de Contabilidad solo agregan.** Ningún `DELETE`, ningún
+  `DROP` y ningún `UPDATE` que cambie FP, intentos o progreso ya registrados.
+- **Un id publicado no se renombra.** Renombrarlo es borrar el viejo para el
+  servidor y dejar huérfano lo que el estudiante hizo con él.
+- **Borrar o dañar algo de esto es lo irreversible**: no lo decide un general.
+  Se escala a Miku, que se lo lleva a Mateo.
+
 ## El alcance de Contabilidad es FINITO
 
 El curso del profesor cubre **los capítulos 1 a 5 y nada más**. No hay capítulos
@@ -268,7 +293,7 @@ y sin los enlaces no había forma de hablar con ningún general.
 | **Yujiro** | general, Célula D | `https://claude.ai/chat/1b446339-13ab-43c3-9115-04fe08a52fe2` |
 | **Kamogawa** | general, Célula E | `https://claude.ai/chat/e5697857-7523-47a8-8288-6c5df421034c` |
 | **Xeno** | diseño | `https://claude.ai/chat/d88c6a04-b9ba-414f-b2f3-df63c0abc0c3` |
-| **Levi** | calidad, Célula A | `https://claude.ai/chat/edb72638-0dbe-8888-bc1e-544b11270f84` |
+| **Levi** | calidad, Célula A y auditor central | `https://claude.ai/chat/e14fb739-cad6-4f22-b3e8-8844f7b38d0c` (desde el 24-oct; el chat anterior, `edb72638…`, quedó retirado) |
 | **Gen** | contenido, Célula A | `https://claude.ai/chat/2e83efc3-0a60-477a-8625-7a0eb36e871e` |
 | **Sai** | construcción, Célula A | `https://claude.ai/code/session_01HTfZSXunqjEHrG95ZZSLoB` (Sai 4.0 es la vigente; la sesión «Sai 2.0» es vieja, no se le escribe) |
 | **Mello** | auditor jefe | sin enlace: se busca en `https://claude.ai/recents` |

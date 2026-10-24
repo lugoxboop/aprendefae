@@ -79,6 +79,14 @@ const RUTAS = [
     { n: id, p: ["Contabilidad", "Activos financieros temporales", "Los juegos que dan FP"], juego: { id, tipo } })),
   ...[["b5-t6-a1", "opciones"], ["b5-t6-a2", "mesa"], ["b5-t6-a3", "mesa"], ["b5-t6-a4", "opciones"], ["b5-t6-a5", "opciones"], ["b5-t6-a6", "opciones"]]
     .map(([id, tipo]) => ({ n: id, p: ["Contabilidad", "Cuentas por cobrar", "Los juegos que dan FP"], juego: { id, tipo } })),
+  /*
+   * Célula B desde el cambio de tema: los siete juegos de T1. Ninguno usa cajones ni mesa, así que
+   * el recorrido «opciones» llega a «así se juega» y a la primera pantalla, y lo que no alcanza
+   * (fallo, acierto) lo dice como «no se alcanzó». SOLO=t1- mide solo estos.
+   */
+  ...["t1-desde-donde-preguntan", "t1-que-entro-y-que-salio", "t1-donde-se-rompio", "t1-que-le-pasa-a-cada-uno",
+    "t1-la-ecuacion-en-movimiento", "t1-en-cual-estado-aparece", "t1-la-articulacion"]
+    .map((id) => ({ n: id, p: ["Contabilidad", "Introducción a la contabilidad", "Los juegos que dan FP"], juego: { id, tipo: "opciones" } })),
 ];
 
 /* Lo que mide una pantalla: el texto propio bajo el piso, los desbordes y el scroll horizontal. */

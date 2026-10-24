@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 
-import { SUBJECTS, HACER, actividadesDeTipo, desafioDe } from "../../data/subjects.js";
+import { SUBJECTS, HACER, actividadesDeTipo, desafioDe, temasVisibles, TEMAS_OCULTOS, OCULTAR_TEMAS_FUERA_DEL_SEMESTRE } from "../../data/subjects.js";
 import { ACTIVIDADES, DESAFIO, FP_DEL_TEMA } from "../../data/contabilidadActividades.js";
 import { FICHAS_T2_NUEVAS, IDS_T2_NUEVAS } from "../../data/contabilidadT2HacerNuevas.js";
 import { VISTAS, vistaDeTema } from "../../ruta.js";
@@ -50,6 +50,38 @@ test("★ la materia tiene sus cinco temas, en el orden del libro", () => {
   assert.deepEqual(ids, ["introduccion-contabilidad", "cuentas-debe-haber", "ingresos-gastos-y-caja", "efectivo-caja-menor-bancos", "activos-financieros", "cuentas-por-cobrar", "inventarios-periodico", "inventarios-permanente", "inventarios-descuentos-nic2", "repaso-capitulo-5"]);
   assert.ok(TEMA, "no está «cuentas-debe-haber»");
   assert.equal(TEMA.title, "Las cuentas, el debe y el haber");
+});
+
+test("★ el índice del estudiante muestra solo los cuatro temas del semestre", () => {
+  /*
+   * Orden de Mateo del 23-oct-2026: este semestre se ve hasta T4. Los otros
+   * seis se OCULTAN, no se borran: la prueba de arriba sigue exigiendo los
+   * diez en el registro, y esta exige cuáles ve el estudiante y en qué orden.
+   * Las dos juntas son lo que impide que «ocultar» se convierta en «borrar».
+   */
+  assert.equal(OCULTAR_TEMAS_FUERA_DEL_SEMESTRE, true,
+    "la bandera se apagó: si fue a propósito (nuevo semestre), cambia también esta prueba");
+  assert.deepEqual(temasVisibles(SUBJECTS.contabilidad).map((t) => t.id),
+    ["introduccion-contabilidad", "cuentas-debe-haber", "ingresos-gastos-y-caja", "efectivo-caja-menor-bancos"]);
+  assert.deepEqual([...TEMAS_OCULTOS],
+    ["activos-financieros", "cuentas-por-cobrar", "inventarios-periodico", "inventarios-permanente", "inventarios-descuentos-nic2", "repaso-capitulo-5"]);
+  /* Ocultar no deja tema huérfano: cada oculto sigue registrado y con su vista. */
+  for (const id of TEMAS_OCULTOS) {
+    assert.ok(SUBJECTS.contabilidad.topics.some((t) => t.id === id), `${id}: está oculto pero ya no está registrado`);
+    assert.ok(vistaDeTema(id), `${id}: está oculto y perdió su ruta; quien tenga el enlace no podría volver`);
+  }
+  /* Y la bandera no se escapa a otras materias: Macroeconomía ve todo lo suyo. */
+  for (const m of Object.values(SUBJECTS)) {
+    if (m.id === "contabilidad") continue;
+    assert.equal(temasVisibles(m).length, m.topics.length, `${m.id}: un tema se ocultó fuera de Contabilidad`);
+  }
+});
+
+test("★ el índice de Contabilidad pinta temasVisibles, no la lista completa", () => {
+  /* Sin esto, la bandera podría estar bien y el índice seguir mostrando los diez. */
+  const fuente = readFileSync(new URL("../../components/ContabilidadTopicIndex.jsx", import.meta.url), "utf8");
+  assert.match(fuente, /topics=\{temasVisibles\(subject\)\}/);
+  assert.doesNotMatch(fuente, /topics=\{subject\.topics\}/);
 });
 
 test("★ el registro dice exactamente lo mismo que la ficha del capítulo", () => {

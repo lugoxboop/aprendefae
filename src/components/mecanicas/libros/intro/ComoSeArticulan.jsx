@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { FAE } from "../../../../theme.js";
 import {
-  TEXTOS_P4, CIERRE_P4, FLECHAS_P4, ALTERNATIVOS_P4,
+  TEXTOS_P4, CIERRE_P4, ROTULO_CIERRE_P4, FLECHAS_P4, ALTERNATIVOS_P4,
 } from "../../../../data/contabilidadPiezas234.js";
 import { informeQueRecibeP4 } from "../../../../contabilidad/aprenderTema1.js";
 import { BOTON_REPETIR, BOTON_SIGUIENTE } from "../../../../data/contabilidadIntro.js";
@@ -79,7 +79,7 @@ export default function ComoSeArticulan() {
       <style>{CSS_P4}</style>
 
       <p style={{ margin: "0 0 9px", fontFamily: SORA, fontSize: "12px", fontWeight: 600, color: "#A8B6C8" }}>
-        {cerrado ? "Las cinco a la vez" : `Paso ${visible} de ${PASOS}`}
+        {cerrado ? ROTULO_CIERRE_P4 : `Paso ${visible} de ${PASOS}`}
       </p>
 
       <div key={`${paso}-${repeticion}`} className={reducido ? undefined : "fae-p4-traza"}>

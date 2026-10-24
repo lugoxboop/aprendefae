@@ -8,6 +8,7 @@ import { useAuth } from "../../auth/AuthProvider.jsx";
 import { registrarActividadCompletada } from "../../fp/registrarActividad.js";
 import { ACTIVIDADES_TRANSVERSALES, HACER } from "../../data/subjects.js";
 import { ID_REPASO, MENSAJES } from "../../repaso/repaso.js";
+import { repasoDe } from "../../repaso/repasos.js";
 import { useRepaso } from "../../repaso/useRepaso.js";
 import PartidaRepaso from "./PartidaRepaso.jsx";
 
@@ -41,25 +42,34 @@ import PartidaRepaso from "./PartidaRepaso.jsx";
 
 export const REPASO = ACTIVIDADES_TRANSVERSALES.find((a) => a.id === ID_REPASO);
 
+/* Los nombres de las materias, para el «Volver a …» de la cabecera. */
+const NOMBRE_MATERIA = { macroeconomia: "Macroeconomía", contabilidad: "Contabilidad" };
+
 const MENSAJE_DE_ESTADO = {
   "pocas-actividades": MENSAJES.pocasActividades,
   "pool-corto": MENSAJES.poolCorto,
   "hecho-hoy": MENSAJES.hechoHoy,
 };
 
-export default function RepasoView({ onBack }) {
+/*
+ * `idRepaso`: cuál de los repasos. Sin pasarlo, el de Macro, exactamente como
+ * antes; el de Contabilidad entra por su propia ruta (App.jsx).
+ */
+export default function RepasoView({ onBack, idRepaso = ID_REPASO }) {
   const { pedirCuenta } = useAuth();
   const [recompensa, celebrar] = useRecompensa();
-  const { cargando, error, datos, estado, previa, marcarHechoHoy } = useRepaso();
+  const REPASO = ACTIVIDADES_TRANSVERSALES.find((a) => a.id === idRepaso);
+  const { materiaId } = repasoDe(idRepaso);
+  const { cargando, error, datos, estado, previa, marcarHechoHoy } = useRepaso(idRepaso);
 
   const terminar = async (pct, ms, detalle) => {
-    celebrar(REPASO.clasificacion.dificultad, ID_REPASO);
+    celebrar(REPASO.clasificacion.dificultad, idRepaso);
     /* Hecho hoy desde ya: el mensaje de «vuelve mañana» no espera a la red. */
     marcarHechoHoy();
     const resultado = await registrarActividadCompletada(REPASO.clasificacion, {
       materiaId: REPASO.materiaId,
       temaId: REPASO.temaId,
-      actividadId: ID_REPASO,
+      actividadId: idRepaso,
       porcentajeAciertos: pct,
       duracionMs: ms,
       detalle,
@@ -76,14 +86,14 @@ export default function RepasoView({ onBack }) {
   const jugando = !cargando && !error && estado === "listo" && previa;
 
   return (
-    <FondoMateria materiaId="macroeconomia">
+    <FondoMateria materiaId={materiaId}>
       {recompensa}
       <div style={{ minHeight: "100vh", backgroundColor: "transparent", fontFamily: "Inter, sans-serif", color: FAE.text, backgroundImage: "radial-gradient(circle at 50% -10%, rgba(42,157,143,0.14), transparent 55%)" }}>
         <div style={{ maxWidth: "720px", margin: "0 auto", padding: "clamp(18px, 3vh, 30px) 16px 56px" }}>
           <div className="fae-cabecera-titulo" style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "22px" }}>
             <span className="fae-cabecera-marca"><Logo variant="symbol" size={26} theme="dark" /></span>
             <span aria-hidden="true" className="fae-cabecera-marca" style={{ width: "1px", height: "22px", backgroundColor: "rgba(248,249,250,0.16)", margin: "0 4px" }} />
-            <button type="button" onClick={onBack} aria-label="Volver a Macroeconomía" style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "8px", borderRadius: "999px", background: "rgba(248,249,250,0.06)", border: "1px solid rgba(248,249,250,0.14)", cursor: "pointer" }}>
+            <button type="button" onClick={onBack} aria-label={`Volver a ${NOMBRE_MATERIA[materiaId] ?? "la materia"}`} style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "8px", borderRadius: "999px", background: "rgba(248,249,250,0.06)", border: "1px solid rgba(248,249,250,0.14)", cursor: "pointer" }}>
               <ChevronLeft size={20} color={FAE.text} />
             </button>
             <h1 style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "17px", letterSpacing: "-0.02em", margin: 0, lineHeight: 1 }}>{REPASO.nombre}</h1>
