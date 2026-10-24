@@ -29,21 +29,29 @@
   hubieran pasado las pruebas, una sonda que no pinta lo que mide, un build
   verde con la aplicación caída. ¿Esto midió lo que dice medir?
 
-## Pendientes
-- **La contradicción de Xeno (#349).** Él dejó la ficha de FP fija a propósito;
-  yo la hice desaparecer al bajar, porque tapaba 75 textos a 320 en una sola
-  pieza y bloqueaba D7 de la Célula B. De tres juegos medidos, dos no se
-  desplazan; el tercero sí, y ahí el contador queda escondido estando abajo.
-  **Xeno decide si le basta.** El arreglo de fondo —sacar la banda del área que
-  se desplaza— toca las 23 vistas y Macroeconomía va dentro: no sin Mateo.
-- **La capa 1 de CuatroCapas.** Sus dos guardas están en «modo informe»
-  (`# TODO`): «ninguna pantalla pasa de 60 palabras visibles» y «toda pantalla
-  tiene figura o interacción, con 40 palabras antes». No fallan CI, así que
-  **no avisan**: esperan los recortes de Near. Hay un tercer TODO de Gen: una
-  opción correcta de 13 palabras contra 11 de las otras, y el largo delata.
-- **Macroeconomía tiene estudiantes reales**; no se toca sin Mateo.
-  `CuatroCapas.jsx` lo comparte Política Monetaria, así que lo que entre ahí
-  entra **opt-in**, pieza por pieza, o rompe una materia en uso.
+## Pendientes (24-oct, 14:50)
+- **Vara de fusión, 24-oct:** Mateo no da vistos buenos. Cada quien fusiona con
+  PASA de su auditor y CI verde; Miku fusiona lo compartido. Solo para lo
+  irreversible (datos de estudiantes, tumbar la plataforma).
+- **Main rojo desde el 23-oct** por la línea 46 de `scripts/canon.mjs`: marcas
+  combinantes literales que tumba `sin-caracteres-de-control.test.mjs`. Lo tiene
+  Miku (#503); el arreglo está en el #485 de la Célula B.
+- **PR #490** (regla «Contabilidad tiene estudiantes», índice con 4 temas por la
+  bandera `OCULTAR_TEMAS_FUERA_DEL_SEMESTRE`, motor del Repaso Diario de
+  Contabilidad y migración 0152) y **PR #491** (`SecuenciaAprender`, sobre el
+  patrón de Ukyo #470): rehechos sobre main del 24-oct, verdes en local. Se
+  fusionan cuando main vuelva a verde.
+- **Pools del Repaso de Contabilidad:** el motor espera `src/repaso/contabilidad/t1..t4.js`.
+  D tiene subtemas en main (#475), C en #482, E en #481, B nada aún. En
+  #477-#480 está cómo conectarlos sin re-etiquetar. El Repaso sigue
+  `publicado: false` hasta que los cuatro temas tengan ítems.
+- **Célula A:** faltan la confirmación de Levi (auditores-v1) y la sección 6 de
+  Sai (celula-construccion). Xeno debe el sí o no de #349.
+- **La capa 1 de CuatroCapas:** las guardas B1 y B2 siguen en modo informe
+  esperando los recortes de Near; el TODO de Gen (opción de 13 palabras) igual.
+- **Macroeconomía y Contabilidad tienen estudiantes reales**: solo se agrega.
+  `CuatroCapas.jsx` no se toca; lo nuevo entra opt-in.
+- **Chrome:** el mío es el Browser 1. El 2 es de Mateo; no entrar.
 
 ## Mis agentes y cómo hablarles
 Gen (contenido), Xeno (diseño), Levi (auditoría), Sai (construcción); enlaces
