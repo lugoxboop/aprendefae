@@ -453,19 +453,21 @@ export const TORRES_T1_5 = {
   preguntaDireccion: "¿Cuál es el total nuevo de las otras dos?",
   /* El rótulo de cada grupo de cifras: «{parte} · total nuevo». */
   totalNuevo: "[PARTE] · total nuevo",
-  /* Debajo de la cifra cuando la opción es el total de antes (decisión de Sakuta para las repetidas o negativas). */
+  /* Debajo de la cifra del total de antes, y solo después de «Anotar» y si fue la elegida (Shoko: antes de responder delataba la opción). */
   sinCambio: "el total anterior, sin cambio",
   /* Futaba, b-t1-lote-24oct-futaba.md §3. La pista es del 1.er error; con un solo intento por decisión, va en «¿Cómo se juega?». */
   pistaTotal: "Parte del total que ya tenía esa parte. ¿Le sumas o le restas lo de este hecho?",
   /* La devolución de la decisión 2 según lo que marcó (no da la cifra: la pastilla ya dice «Iba aquí: …»). */
   /*
-   * «monto» y «sinCambio» son de la auditoría de Shoko al #496 (24-oct), que
-   * reemplazan los de Futaba; «contrario» sigue siendo el de Futaba.
+   * «monto» y «sinCambio» son de la auditoría de Shoko al #496 (24-oct, la
+   * segunda), que reemplazan los de Futaba y nombran la parte: {PARTE}.
+   * «contrario» es el de Futaba con la misma entrada «En {PARTE}:», para que
+   * ninguna línea quede sin decir de qué parte habla (lo que pidió Shoko).
    */
   devolucionTotal: {
-    contrario: "Ese total va para el otro lado. Fíjate si con este hecho esa parte crece o se achica.",
-    monto: "Pusiste lo que se movió, no con cuánto quedó. Súmalo o réstalo al total que había.",
-    sinCambio: "Esa parte sí se mueve con este hecho. Su total ya no es el de antes.",
+    contrario: "En {PARTE}: ese total va para el otro lado. Fíjate si con este hecho esa parte crece o se achica.",
+    monto: "En {PARTE}: pusiste lo que se movió, no con cuánto quedó. Súmalo o réstalo al total que había.",
+    sinCambio: "En {PARTE}: el total ya no es el de antes.",
   },
   /*
    * La C de las torres (Shoko, #496): la de ERROR_T1_5 hablaba de mover la

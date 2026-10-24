@@ -225,6 +225,9 @@ test("★★ el modo corto empieza en el quinto hecho, ni antes ni después", ()
   }
 });
 
+/* La línea de la decisión 2 nombra la parte (Shoko, 2.ª auditoría al #496). */
+const linea = (clase, parte) => TORRES_T1_5.devolucionTotal[clase].replace("{PARTE}", parte);
+
 /* ═══════════════════ LAS DOS TORRES (P2 de Mai) ═══════════════════ */
 
 test("★★★ ya no hay casillas de cifra, ni pie que compara mientras se escribe, ni historial", () => {
@@ -294,7 +297,7 @@ test("★★★ el modelo corre también en el error, y el fantasma sale solo en
      */
     const retro = caja.querySelector("[data-texto-retro]").textContent;
     assert.ok(retro.startsWith(sinEmoji(ERROR_T1_5.A.replace("{Z}", pesos(25000)))), retro);
-    assert.ok(retro.includes(TORRES_T1_5.devolucionTotal.contrario) && retro.includes(TORRES_T1_5.devolucionTotal.sinCambio), retro);
+    assert.ok(retro.includes(linea("contrario", "lo que tiene")) && retro.includes(linea("sinCambio", "lo que debe")), retro);
   } finally { desmontar(); }
   /* Solo una torre distinta: el fantasma solo ahí. */
   const m = mov(1);
@@ -429,19 +432,24 @@ test("★★★ la decisión 2 es el total nuevo: anterior más el monto, anteri
 test("★★★ hecho 1 con tres botones (Shoko), «sin cambio» rotulado, y la devolución de Shoko según lo marcado", () => {
   const { caja, desmontar } = montar();
   try {
-    /* Hecho 1: los dos grupos con tres botones; el de $0 lleva el rótulo «sin cambio». */
+    /* Hecho 1: los dos grupos con tres botones; el de $0 dice «$0» solo, sin rótulo que lo delate (Shoko). */
     tocar(caja.querySelector(`[data-parte="${mov(0).quieta}"]`));
     for (const p of mov(0).mueven) {
       assert.equal(caja.querySelectorAll(`[data-totales="${p}"] button`).length, 3, `hecho 1, ${p}: no son tres botones`);
-      assert.equal(caja.querySelector(`[data-opcion-total="${p}:0"] [data-rotulo-sin-cambio]`).textContent, TORRES_T1_5.sinCambio);
+      assert.equal(caja.querySelector(`[data-opcion-total="${p}:0"]`).textContent, "$0");
     }
     /* Marca «sin cambio» en lo que tiene: la línea de la decisión 2 lo dice, y solo esa. */
     elegirTotal(caja, ACTIVO, 0);
     elegirTotal(caja, mov(0).mueven[1], 300000);
+    assert.equal(caja.querySelectorAll("[data-rotulo-sin-cambio]").length, 0, "el rótulo salió antes de anotar");
     tocar(boton(caja, TORRES_T1_5.anotar));
+    /* Tras anotar, el rótulo sale solo en la opción que eligió, no en el $0 del otro grupo. */
+    const rotulos = [...caja.querySelectorAll("[data-rotulo-sin-cambio]")];
+    assert.deepEqual(rotulos.map((r) => r.closest("[data-opcion-total]").dataset.opcionTotal), [`${ACTIVO}:0`]);
+    assert.equal(rotulos[0].textContent, TORRES_T1_5.sinCambio);
     const retro = caja.querySelector("[data-texto-retro]").textContent;
-    assert.ok(retro.endsWith(TORRES_T1_5.devolucionTotal.sinCambio), retro);
-    assert.ok(!retro.includes(TORRES_T1_5.devolucionTotal.monto));
+    assert.ok(retro.endsWith(linea("sinCambio", "lo que tiene")), retro);
+    assert.ok(!retro.includes("pusiste lo que se movió"));
   } finally { desmontar(); }
   /* Si falla las dos: la C y, debajo, la línea de la decisión 2 (Shoko). */
   const dos = montar();
@@ -452,7 +460,7 @@ test("★★★ hecho 1 con tres botones (Shoko), «sin cambio» rotulado, y la 
     elegirTotal(dos.caja, PATRIMONIO, 300000);
     tocar(boton(dos.caja, TORRES_T1_5.anotar));
     const retro = dos.caja.querySelector("[data-texto-retro]").textContent;
-    assert.ok(retro.startsWith("Lo que tiene sí se mueve con este hecho.") && retro.endsWith(TORRES_T1_5.devolucionTotal.monto), retro);
+    assert.ok(retro.startsWith("Lo que tiene sí se mueve con este hecho.") && retro.endsWith(linea("monto", "lo que tiene")), retro);
   } finally { dos.desmontar(); }
   /* Las tres clases de la decisión 2, hecho 2 (lo que tiene, de 300.000 a 325.000). */
   const m = mov(1);

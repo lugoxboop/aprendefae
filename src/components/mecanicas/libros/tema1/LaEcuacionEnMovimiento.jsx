@@ -292,7 +292,8 @@ export default function LaEcuacionEnMovimiento({
     r.quietaOk
       ? sinEmoji(r.texto)
       : TORRES_T1_5.errorQuieta.replace("{ELEGIDA}", parte(quietaElegida).idea).replace("{CORRECTA}", minuscula(parte(mov.quieta).idea)),
-    ...new Set(mov.mueven.filter((p) => !r.totalesOk[p]).map((p) => TORRES_T1_5.devolucionTotal[claseDeTotalT1_5(mov, p, totales[p])])),
+    ...mov.mueven.filter((p) => !r.totalesOk[p])
+      .map((p) => TORRES_T1_5.devolucionTotal[claseDeTotalT1_5(mov, p, totales[p])].replace("{PARTE}", minuscula(parte(p).idea))),
   ].join(" ") : null;
 
   /* El acierto de cada hecho es de Futaba (24-oct); el ejemplo de «Así se juega» trae el suyo. */
@@ -344,13 +345,13 @@ export default function LaEcuacionEnMovimiento({
         <div role="group" aria-label={p.idea} data-totales={id} style={{ display: "grid", gridTemplateColumns: `repeat(${ops.length}, minmax(0, 1fr))`, gap: "6px" }}>
           {ops.map((v) => {
             const m = marcaTotal(id, v);
-            const sinCambio = claseDeTotalT1_5(mov, id, v) === "sinCambio";
+            /* El rótulo «sin cambio» solo tras anotar y en la que eligió (Shoko): antes, era la única con rótulo y se descartaba sin pensar. */
+            const sinCambio = Boolean(r) && totales[id] === v && claseDeTotalT1_5(mov, id, v) === "sinCambio";
             return (
               <button
                 key={v}
                 type="button"
                 data-opcion-total={`${id}:${v}`}
-                data-sin-cambio={sinCambio ? "si" : undefined}
                 aria-pressed={totales[id] === v}
                 disabled={Boolean(r)}
                 onClick={() => setTotales((x) => ({ ...x, [id]: v }))}
