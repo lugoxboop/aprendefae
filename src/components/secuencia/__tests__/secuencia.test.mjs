@@ -26,7 +26,7 @@ const React = await import("react");
 const { createRoot } = await import("react-dom/client");
 const act = React.act ?? (await import("react-dom/test-utils")).act;
 const S = await import("../secuencia.js");
-const { default: SecuenciaAprender, BOTON_NAV } = await import("../SecuenciaAprender.jsx");
+const { default: SecuenciaAprender, BOTON_NAV, altoFiguraDe } = await import("../SecuenciaAprender.jsx");
 
 /* ─────────────── una pieza de juguete con la forma de la especificación ─────────────── */
 
@@ -204,4 +204,10 @@ test("★ el movimiento usa una sola curva, solo transform y opacity, y nada en 
     assert.ok(!/(width|height|top|left|margin|filter|box-shadow)\s*:/.test(prop[1]), `un keyframe anima algo que no es transform u opacity: ${prop[0].slice(0, 60)}`);
   }
   assert.match(estilos, /prefers-reduced-motion: reduce/);
+});
+
+test("★ el alto de la figura es por pieza, con los de la v1 por defecto y el tope de #513", () => {
+  assert.deepEqual(altoFiguraDe({}), { a320: 150, a375: 200 });
+  assert.deepEqual(altoFiguraDe({ altoFigura: { a320: 180 } }), { a320: 180, a375: 200 });
+  assert.deepEqual(altoFiguraDe({ altoFigura: { a320: 400, a375: 400 } }), { a320: 206, a375: 253 }, "pasó del tope");
 });
