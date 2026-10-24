@@ -69,3 +69,15 @@ El texto de las slides de Near no cambia. Solo cambian las frases «VE…» que 
 - **Near** aplica los ajustes de Watari y los huecos 1 y 2 sobre su v2. Entrega solo el delta, no el archivo entero.
 - **Watari** renumera sus figuras a la v2 de Near (con la slide 0 de objetivo y las marcas [lee], [toca] y [decide]) y comprueba que los bancos de Near quepan en sus formas: tope de cuentas y renglones, largo de nombres a 320 px.
 - **Mello** termina la auditoría de la forma. Después audita los bancos de `c-t2-2-near-lote.md` §1 contra H1-H10.
+
+---
+
+# Lote T2-3 · decisiones de L (24-oct-2026)
+
+Entregas: Near `c-t2-3-near-delta.md` (los siete ajustes de Watari y los huecos) y Watari `c-t2-3-watari-figuras.md` + `.html` (figuras pasadas al patrón #470, 212 estados de Aprender y 40 de Hacer medidos; los bancos de Near caben en las tres formas).
+
+- **Nombre del anticipo:** queda «Seguros pagados por anticipado». Near ya lo aplicó en VC·6; la pregunta que dejó abierta Watari queda resuelta.
+- **P4·8:** manda el delta de Near. El asiento de tres líneas es ene-04 (1 contra 2, $4.800), no ene-03. La figura de Watari sirve para cualquier número de líneas: Misa la construye con ene-04, y Watari solo cambia la etiqueta en su próximo delta. P4·7 («Simple / Compuesto») sigue con ene-30 y ene-03.
+- **Cuadra por valor E1:** pasa a Caleja cal-4 («Basado en el libro»), para que la Aprender P4·8 no delate la respuesta (C1).
+- **El patrón #470 manda sobre las figuras:** Míralo y Haz; el error tentativo en coral sin cambiar el modelo; un cierre sin acción obligatoria (por eso P3 tiene 9 pantallas); controles neutros; reserva de figura de 220 px o menos a 320 px.
+- **Bancos de las tres Hacer para Misa:** `c-t2-2-near-lote.md` §1 con el delta de `c-t2-3-near-delta.md`. Para la forma, el delta CSS de `c-t2-3-watari-figuras.md`.
