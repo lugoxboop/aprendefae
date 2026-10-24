@@ -37,7 +37,9 @@ import {
  *
  * ═══════════ UN ENVÍO, Y EL REGISTRO ═══════════
  *
- * «Ver qué pasó» cierra la decisión 1 (un intento). Las barras van a lo
+ * Un solo «Anotar» cierra las dos decisiones (Shoko): las barras se mueven
+ * DESPUÉS, como en t1-5, para que el caso no se lea en la pantalla antes de
+ * elegirlo. Un intento. Las barras van a lo
  * CORRECTO, se acierte o no, y la que el estudiante movió mal deja su
  * fantasma —contorno coral discontinuo— a la altura que habría tomado. La
  * barra quieta da UN pulso de opacidad (1 → ,6 → 1, 480 ms) y no cambia de
@@ -45,9 +47,9 @@ import {
  *
  * ═══════════ LA DECISIÓN 2: CUÁL DE LOS CUATRO CASOS ═══════════
  *
- * Los cuatro nombres de la p. 35, en columna. Están desde el principio con su
- * sitio (C3), apagados hasta que se responde la 1. Al elegir, el nombre del
- * caso queda pegado a las barras en un renglón reservado de 34 px. La línea
+ * Los cuatro nombres de la p. 35, en columna, bajo las barras y antes de
+ * «Anotar»: se eligen con las barras quietas. Tras anotar, el caso correcto
+ * queda pegado a las barras en un renglón reservado (42 px, medido). La línea
  * «=» ya no se marca: la igualdad nunca se rompe, así que no distinguía nada.
  * No puntúa (está escrito en los datos por qué).
  *
@@ -74,6 +76,8 @@ const ALTO = { reposo: 44, [SUBE]: 62, [BAJA]: 26, [IGUAL]: 44 };
  * activo y en patrimonio», en dos renglones— pide 41. Va en 42.
  */
 export const ALTO_RENGLON_CASO = 42;
+/* Lo que se espera a que el desplazamiento suave llegue a las barras (el mismo de t1-5). */
+export const MS_SUBIR_T1_4 = 420;
 
 const palabraDe = (id) => CONTROLES.find((c) => c.id === id)?.palabra ?? "";
 const signoDe = (id) => CONTROLES.find((c) => c.id === id)?.signo ?? "";
@@ -173,11 +177,21 @@ export default function QueLePasaACadaUno({
   const [respuestas, setRespuestas] = useState([]);
   const [caso, setCaso] = useState(null);
   const zonaBoton = useRef(null);
+  /*
+   * Como en t1-5 (#531): «Anotar» queda bajo los cuatro casos, a 855 px a 320,
+   * y las barras a 248. Al anotar, si no se ven, la pieza sube a ellas y las
+   * mueve al llegar; el foco va a «Siguiente» sin desplazar la página.
+   */
+  const cajaBarras = useRef(null);
+  const reloj = useRef(null);
+  const [barrasAlDia, setBarrasAlDia] = useState(false);
+  useEffect(() => () => clearTimeout(reloj.current), []);
 
   const h = t.items[t.i];
   const cuantas = t.items.length;
   const pct = puntuar(respuestas, cuantas);
-  const completo = PARTES.every((p) => marcado[p.id]);
+  /* Las tres marcas y, en la partida, el caso: las dos decisiones se cierran con un solo «Anotar». */
+  const completo = PARTES.every((p) => marcado[p.id]) && (modoDemo || caso !== null);
   const correctaCaso = correctaSegundaT1_4(h);
   const opcionesCaso = opcionesSegundaT1_4(h);
 
@@ -185,23 +199,36 @@ export default function QueLePasaACadaUno({
     if (t.terminado && !modoDemo) onCompletar?.(pct, Date.now() - t.inicio.current, t.detalle.current);
   }, [t.terminado]);
   useEffect(() => {
-    if (r && !modoDemo && caso) zonaBoton.current?.focus();
-  }, [r, caso]);
+    if (r && !modoDemo) zonaBoton.current?.focus({ preventScroll: true });
+  }, [r]);
 
   const enviar = () => {
     if (!completo || r) return;
     const nuevo = evaluarT1_4(h, marcado);
     t.anotar(h.id, nuevo.ok, nuevo.ok ? null : PARTES.map((p) => `${p.id}:${marcado[p.id]}`).join(" "));
     setRespuestas((xs) => [...xs, { id: h.id, primeroOk: nuevo.ok }]);
+    /* La decisión 2 no puntúa: solo se pinta. */
     setR(nuevo);
+    const caja = cajaBarras.current?.getBoundingClientRect();
+    const fuera = Boolean(caja) && (caja.top < 0 || caja.bottom > (globalThis.innerHeight ?? Infinity));
+    clearTimeout(reloj.current);
+    if (fuera && !modoDemo) {
+      cajaBarras.current.scrollIntoView?.({ behavior: reducido ? "auto" : "smooth", block: "start" });
+      setBarrasAlDia(false);
+      reloj.current = setTimeout(() => setBarrasAlDia(true), reducido ? 0 : MS_SUBIR_T1_4);
+    } else {
+      setBarrasAlDia(true);
+    }
   };
 
   const avanzar = () => {
+    clearTimeout(reloj.current); setBarrasAlDia(false);
     setR(null); setMarcado({}); setCaso(null);
     if (t.i + 1 < cuantas) t.setI(t.i + 1);
     else t.setTerminado(true);
   };
   const reiniciar = () => {
+    clearTimeout(reloj.current); setBarrasAlDia(false);
     t.reiniciar(); setR(null); setRespuestas([]); setMarcado({}); setCaso(null);
   };
 
@@ -219,8 +246,8 @@ export default function QueLePasaACadaUno({
   }
 
   /* El registro: tras enviar, lo que de verdad pasó; y el fantasma donde lo marcado difiere. */
-  const revelado = r ? r.real : null;
-  const fantasmaDe = (id) => (r && !r.ok && marcado[id] !== r.real[id] && ALTO[marcado[id]] !== ALTO[r.real[id]] ? marcado[id] : null);
+  const revelado = r && barrasAlDia ? r.real : null;
+  const fantasmaDe = (id) => (revelado && !r.ok && marcado[id] !== r.real[id] && ALTO[marcado[id]] !== ALTO[r.real[id]] ? marcado[id] : null);
   const opcionCaso = opcionesCaso.find((o) => o.id === caso) ?? null;
   const casoOk = caso === correctaCaso;
 
@@ -246,7 +273,7 @@ export default function QueLePasaACadaUno({
             {h.texto}
           </p>
 
-          <div data-escenario>
+          <div data-escenario ref={cajaBarras} style={{ scrollMarginTop: "12px" }}>
             {/* Las barras con sus controles debajo, alineados por arriba: todas parten del mismo suelo. */}
             <div data-barras style={{ display: "flex", gap: "6px", alignItems: "flex-start" }}>
               {PARTES.map((p) => (
@@ -269,7 +296,7 @@ export default function QueLePasaACadaUno({
                 El caso que ES, siempre (el registro): «Correcto: …» o «Iba
                 aquí: …». El elegido por error queda como fantasma en su botón.
               */}
-              {caso && (
+              {r && caso && (
                 <span data-caso-elegido={caso} data-caso-correcto={correctaCaso}>
                   <Pastilla marca={casoOk ? CORRECTA : REVELADA} valor={nombreDelCasoT1_4(correctaCaso)} envuelve />
                 </span>
@@ -278,30 +305,22 @@ export default function QueLePasaACadaUno({
           </div>
         </div>
 
-        {!r && (
-          <Avance onClick={enviar} deshabilitado={!completo}>
-            {completo ? "Ver qué pasó" : "Marca las tres"}
-          </Avance>
-        )}
-
-        <RegionViva>
-          {r && <Mensaje ok={r.ok} texto={sinEmoji(r.texto)} />}
-        </RegionViva>
-
         {/*
           ═══════ LA DECISIÓN 2 (D4) ═══════
-          Su sitio está desde el principio; se activa al responder la 1, se
-          acierte o no. En la demo de «Así se juega» no sale.
+          Se toma ANTES de anotar, con las barras quietas (Shoko): si las barras
+          ya mostraran lo correcto, el caso se leería en la pantalla. Un solo
+          «Anotar» cierra las dos; después se mueven las barras y salen los dos
+          veredictos. En la demo de «Así se juega» no sale.
         */}
         {!modoDemo && (
-          <div data-segunda-decision data-activa={r && !caso ? "si" : "no"} style={{ marginTop: "14px" }}>
-            <p style={{ margin: "0 0 8px", fontFamily: SORA, fontSize: "14px", fontWeight: 600, lineHeight: 1.35, color: r ? FAE.text : SECUNDARIO }}>
+          <div data-segunda-decision data-activa={!r ? "si" : "no"} style={{ marginTop: "14px" }}>
+            <p style={{ margin: "0 0 8px", fontFamily: SORA, fontSize: "14px", fontWeight: 600, lineHeight: 1.35, color: FAE.text }}>
               {SEGUNDA_T1_4.pregunta}
             </p>
             <div role="group" aria-label={SEGUNDA_T1_4.pregunta} style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
               {opcionesCaso.map((o) => {
                 const elegida = caso === o.id;
-                const estado = !caso ? REPOSO : o.id === correctaCaso ? ACIERTO : elegida ? FANTASMA : REPOSO;
+                const estado = !r ? REPOSO : o.id === correctaCaso ? ACIERTO : elegida ? FANTASMA : REPOSO;
                 return (
                   <button
                     key={o.id}
@@ -309,30 +328,40 @@ export default function QueLePasaACadaUno({
                     data-caso={o.id}
                     data-estado={estado}
                     aria-pressed={elegida}
-                    disabled={!r || Boolean(caso)}
+                    disabled={Boolean(r)}
                     onClick={() => setCaso(o.id)}
                     style={{
                       minHeight: "44px", padding: "6px 10px", borderRadius: "10px", boxSizing: "border-box", textAlign: "left",
                       display: "flex", alignItems: "center", gap: "6px",
-                      cursor: r && !caso ? "pointer" : "default",
-                      color: r ? FAE.text : SECUNDARIO, fontFamily: INTER, fontSize: "13px", lineHeight: 1.3,
+                      cursor: r ? "default" : "pointer",
+                      color: FAE.text, fontFamily: INTER, fontSize: "13px", lineHeight: 1.3,
                       ...estiloC2(estado),
+                      /* Antes de anotar, lo elegido con el contorno de 2 px, sin relleno (como los controles). */
+                      ...(!r && elegida ? { border: `2px solid ${FAE.text}`, background: "rgba(184,196,212,0.14)", boxShadow: "none" } : {}),
                     }}
                   >
-                    {caso && o.id === correctaCaso && <IconoCheck />}
-                    {caso && elegida && o.id !== correctaCaso && <IconoX />}
+                    {r && o.id === correctaCaso && <IconoCheck />}
+                    {r && elegida && o.id !== correctaCaso && <IconoX />}
                     <span>{o.texto}</span>
                   </button>
                 );
               })}
             </div>
-            <RegionViva>
-              {caso && <Mensaje ok={casoOk} texto={casoOk ? null : opcionCaso?.msg ?? null} />}
-            </RegionViva>
           </div>
         )}
 
-        {r && !modoDemo && caso && (
+        {!r && (
+          <Avance onClick={enviar} deshabilitado={!completo}>
+            {completo ? "Anotar" : modoDemo ? "Marca las tres" : "Marca las tres y el caso"}
+          </Avance>
+        )}
+
+        <RegionViva>
+          {r && <Mensaje ok={r.ok} texto={sinEmoji(r.texto)} />}
+          {r && caso && <Mensaje ok={casoOk} texto={casoOk ? null : opcionCaso?.msg ?? null} />}
+        </RegionViva>
+
+        {r && !modoDemo && (
           <Avance onClick={avanzar} refBoton={zonaBoton}>
             {t.i + 1 === cuantas ? "Ver el resultado" : "Siguiente hecho"}
           </Avance>

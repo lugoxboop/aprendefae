@@ -70,6 +70,11 @@ const montar = () => {
 const tocar = (el) => act(() => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
 const hechoEnPantalla = (caja) => caja.querySelector("[data-hecho]").getAttribute("data-hecho");
 const marcar = (caja, parte, control) => tocar(caja.querySelector(`[data-control="${parte}-${control}"]`));
+/* Un solo «Anotar» para las dos decisiones (lote 4, Shoko): si no se eligió caso, se elige el primero. */
+const anotar = (caja) => {
+  if (!caja.querySelector('[data-caso][aria-pressed="true"]')) tocar(caja.querySelector("[data-caso]"));
+  tocar([...caja.querySelectorAll("button")].find((b) => b.textContent === "Anotar"));
+};
 
 /* ═══════════════════ LAS OCHO TRANSACCIONES ═══════════════════ */
 
@@ -340,17 +345,18 @@ test("★★ las tres partes salen con su idea y con su término del libro", () 
   } finally { desmontar(); }
 });
 
-test("★★ no se puede enviar hasta marcar las tres", () => {
+test("★★ no se puede anotar hasta marcar las tres y elegir el caso (un solo «Anotar», Shoko)", () => {
   const { caja, desmontar } = montar();
   try {
-    const boton = () => [...caja.querySelectorAll("button")].find((b) => /Marca las tres|Ver qué pasó/.test(b.textContent));
-    assert.equal(boton().disabled, true, "se puede enviar sin marcar nada");
+    const boton = () => [...caja.querySelectorAll("button")].find((b) => /^Marca las tres|^Anotar$/.test(b.textContent));
+    assert.equal(boton().disabled, true, "se puede anotar sin marcar nada");
     marcar(caja, PARTES[0].id, SUBE);
-    assert.equal(boton().disabled, true, "se puede enviar con una sola marcada");
     marcar(caja, PARTES[1].id, SUBE);
-    assert.equal(boton().disabled, true, "se puede enviar con dos marcadas");
     marcar(caja, PARTES[2].id, IGUAL);
-    assert.equal(boton().disabled, false, "con las tres marcadas sigue sin poder enviarse");
+    assert.equal(boton().disabled, true, "se puede anotar sin elegir el caso");
+    tocar(caja.querySelector("[data-caso]"));
+    assert.equal(boton().disabled, false, "con las tres y el caso sigue sin poder anotarse");
+    assert.equal(boton().textContent, "Anotar");
   } finally { desmontar(); }
 });
 
@@ -370,7 +376,7 @@ test("★★★ al revelar, la barra que no se mueve conserva su alto y late", (
     const altoAntes = caja.querySelector(`[data-barra="${quieta}"]`).getAttribute("data-alto");
 
     for (const p of PARTES) marcar(caja, p.id, e[p.id]);
-    tocar([...caja.querySelectorAll("button")].find((b) => b.textContent.includes("Ver qué pasó")));
+    anotar(caja);
 
     const barra = caja.querySelector(`[data-barra="${quieta}"]`);
     assert.equal(barra.getAttribute("data-alto"), altoAntes, "la barra quieta cambió de alto");
@@ -393,7 +399,7 @@ test("★★★ un intento: al fallar, las barras van a lo correcto y la mal mov
     const e = efectoDe(t);
     const marcado = balancin(t, false);
     for (const p of PARTES) marcar(caja, p.id, marcado[p.id]);
-    tocar([...caja.querySelectorAll("button")].find((b) => b.textContent.includes("Ver qué pasó")));
+    anotar(caja);
 
     for (const p of PARTES) {
       assert.equal(caja.querySelector(`[data-parte="${p.id}"]`).dataset.revelado, e[p.id], `${p.id}: la barra no fue a lo correcto`);
@@ -410,7 +416,7 @@ test("★★★ un intento: al fallar, las barras van a lo correcto y la mal mov
   } finally { desmontar(); }
 });
 
-test("★★★ la decisión 2: los cuatro casos de la p. 35, reservados desde el principio, y el nombre pegado a las barras", () => {
+test("★★★ la decisión 2: los cuatro casos de la p. 35, con las barras quietas hasta «Anotar», y el caso pegado a las barras", () => {
   for (const acertar of [true, false]) {
     const { caja, desmontar } = montar();
     try {
@@ -421,14 +427,16 @@ test("★★★ la decisión 2: los cuatro casos de la p. 35, reservados desde e
         "Aumento en activo y en pasivo", "Aumento en activo y en patrimonio",
         "Disminución en activo y en pasivo", "Disminución en activo y en patrimonio",
       ]);
-      assert.ok(casos().every((b) => b.disabled), "la decisión 2 se puede responder antes de la 1");
-      assert.equal(caja.querySelector("[data-renglon-caso]").textContent, "");
+      /* Se elige antes de anotar, con las barras quietas: si se movieran antes, el caso se leería en la pantalla. */
+      assert.ok(casos().every((b) => !b.disabled), "la decisión 2 no se puede tomar antes de anotar");
       for (const p of PARTES) marcar(caja, p.id, e[p.id]);
-      tocar([...caja.querySelectorAll("button")].find((b) => b.textContent.includes("Ver qué pasó")));
-      assert.ok(casos().every((b) => !b.disabled), "la decisión 2 no se abre tras la 1");
       const bueno = casoDe(t);
       const elegido = acertar ? bueno : casos().map((b) => b.dataset.caso).find((x) => x !== bueno);
       tocar(caja.querySelector(`[data-caso="${elegido}"]`));
+      assert.equal(caja.querySelectorAll("[data-parte][data-revelado]").length, 0, "las barras se movieron antes de anotar");
+      assert.equal(caja.querySelector("[data-renglon-caso]").textContent, "", "el caso se veredicta antes de anotar");
+      anotar(caja);
+      assert.equal(caja.querySelectorAll("[data-parte][data-revelado]").length, 3, "las barras no se movieron al anotar");
       const renglon = caja.querySelector("[data-renglon-caso]");
       assert.equal(renglon.querySelector("[data-caso-elegido]").dataset.casoElegido, elegido);
       assert.equal(caja.querySelector(`[data-caso="${bueno}"]`).dataset.estado, "acierto");
@@ -480,7 +488,7 @@ test("★★ el coral solo aparece cuando hay error", () => {
       "hay coral en pantalla sin que nadie se haya equivocado");
     const t = TRANSACCIONES_CAP2.find((x) => x.id === hechoEnPantalla(caja));
     for (const p of PARTES) marcar(caja, p.id, balancin(t, false)[p.id]);
-    tocar([...caja.querySelectorAll("button")].find((b) => b.textContent.includes("Ver qué pasó")));
+    anotar(caja);
     assert.ok(CORAL.test(caja.querySelector("[data-contenido]").innerHTML), "el error no se marca en coral");
   } finally { desmontar(); }
 });
@@ -521,4 +529,31 @@ test("dificultad media y 25 FP, seis hechos por partida", () => {
   assert.equal(T1_4.dificultad, "medio");
   assert.equal(T1_4.fpBase, 25);
   assert.equal(T1_4.porPartida, 6);
+});
+
+test("★★ al anotar con las barras fuera de la pantalla: sube a ellas y se mueven al llegar (como t1-5)", async () => {
+  const { MS_SUBIR_T1_4 } = await import("../../components/mecanicas/libros/tema1/QueLePasaACadaUno.jsx");
+  const proto = w.Element.prototype;
+  const rectOriginal = proto.getBoundingClientRect;
+  const subidas = [];
+  proto.getBoundingClientRect = function () {
+    if (this.matches?.("[data-escenario]")) return { top: -154, bottom: 180, left: 0, right: 300, width: 300, height: 334 };
+    return rectOriginal.call(this);
+  };
+  proto.scrollIntoView = function (o) { subidas.push(o); };
+  const { caja, desmontar } = montar();
+  try {
+    const t = TRANSACCIONES_CAP2.find((x) => x.id === hechoEnPantalla(caja));
+    const e = efectoDe(t);
+    for (const p of PARTES) marcar(caja, p.id, e[p.id]);
+    anotar(caja);
+    assert.equal(subidas.length, 1, "no subió a las barras");
+    assert.equal(caja.querySelectorAll("[data-parte][data-revelado]").length, 0, "las barras se movieron antes de estar a la vista");
+    await act(async () => { await new Promise((r) => setTimeout(r, MS_SUBIR_T1_4 + 60)); });
+    assert.equal(caja.querySelectorAll("[data-parte][data-revelado]").length, 3);
+  } finally {
+    desmontar();
+    proto.getBoundingClientRect = rectOriginal;
+    delete proto.scrollIntoView;
+  }
 });

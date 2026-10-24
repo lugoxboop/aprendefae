@@ -481,7 +481,8 @@ test("★★ T1-4 real: el «·» antes de revelar y «Marca las tres» apagado 
     const puntos = [...caja.querySelectorAll('[data-signo="sin"]')];
     assert.equal(puntos.length, 3);
     for (const x of puntos) assert.equal(x.style.color, "rgb(168, 182, 200)");
-    const marca = boton(caja, "Marca las tres");
+    /* Lote 4: en la partida el botón pide también el caso (un solo «Anotar»). */
+    const marca = boton(caja, "Marca las tres y el caso");
     assert.equal(marca.disabled, true);
     assert.equal(marca.style.color, "rgb(168, 182, 200)");
   } finally { desmontar(); }
@@ -572,7 +573,7 @@ test("★★★ en modo demo, terminar el ítem no llama a onCompletar ni ofrece
     tocar(caja.querySelector('[data-control="activo-sube"]'));
     tocar(caja.querySelector('[data-control="pasivo-sube"]'));
     tocar(caja.querySelector('[data-control="patrimonio-igual"]'));
-    tocar(boton(caja, "Ver qué pasó"));
+    tocar(boton(caja, "Anotar"));
     assert.equal(boton(caja, "Ver el resultado"), undefined);
     assert.equal(boton(caja, "Siguiente hecho"), undefined);
     assert.equal(llamadas, 0);

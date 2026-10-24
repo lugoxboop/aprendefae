@@ -106,12 +106,12 @@ function Destino({ d, cuenta, estado, marca, activo, onTocar }) {
 
 function CabezaDeInforme({ inf }) {
   return (
-    <div data-cabeza-informe={inf.id} style={{ margin: "0 0 6px" }}>
+    <div data-cabeza-informe={inf.id} style={{ margin: "0 0 6px", display: "flex", flexWrap: "wrap", alignItems: "baseline", gap: "0 8px" }}>
       <p data-termino-informe={inf.termino} style={{ margin: 0, fontFamily: SORA, fontSize: "12px", fontWeight: 700, lineHeight: 1.3, color: FAE.text }}>
         {inf.termino}
       </p>
       {/* La fecha es el criterio de la actividad: un día exacto contra todo un periodo. */}
-      <p data-linea="cuando" style={{ margin: "1px 0 0", fontFamily: INTER, fontSize: "12px", lineHeight: 1.3, color: SECUNDARIO }}>
+      <p data-linea="cuando" style={{ margin: 0, fontFamily: INTER, fontSize: "12px", lineHeight: 1.3, color: SECUNDARIO }}>
         {inf.fecha}
       </p>
     </div>
@@ -229,7 +229,14 @@ export default function EnCualEstadoAparece({
               {c.nombre}
             </p>
 
-            <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)", gap: "8px", alignItems: "start" }}>
+            {/*
+              Las dos zonas una debajo de la otra, cada una con su título a todo
+              lo ancho (Shoko): en dos columnas «Estado de situación financiera»
+              se partía en tres renglones y empujaba el primer destino. En la
+              foto los tres destinos van en columna (en fila, «Patrimonio» no
+              cabe a 320); en la película, los dos en fila.
+            */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
               <div data-informe={PRIMERO} role="group" aria-label={`${FOTO.termino}, ${FOTO.fecha}`}>
                 <CabezaDeInforme inf={FOTO} />
                 <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
@@ -243,7 +250,7 @@ export default function EnCualEstadoAparece({
                   height: "6px", margin: "0 0 6px", borderRadius: "3px",
                   background: "repeating-linear-gradient(90deg, rgba(184,196,212,.55) 0 6px, transparent 6px 12px)",
                 }} />
-                <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)", gap: "6px" }}>
                   {DESTINOS_EN_PANTALLA.filter((d) => d.informe === SEGUNDO).map(destino)}
                 </div>
               </div>

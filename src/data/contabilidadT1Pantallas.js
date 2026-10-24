@@ -475,12 +475,12 @@ const A4 = [
     texto: [nuevo("Toca una flecha. ¿Repite la misma cifra o solo explica una línea de la foto?")],
     opciones: ["Repite la cifra", "Explica una línea"].map(nuevo),
     flechas: FLECHAS_P4, modo: MODO_FLECHA,
-    /* f1 es HUECO (contradicción con P:403, se escala a Miku): se ve, no se pregunta. */
+    /* f1 es HUECO hasta el capítulo 2 (Gráfico 2.6; contradicción con P:403, #467): se ve, no se pregunta. */
     seClasifican: ["f2", "f3", "f4", "f5"],
     /* La que viaja (MODO_FLECHA.viaja) es la que repite; las demás explican. */
     devolucionRepiteMarcadaExplica: nuevo("Esta sí repite: el saldo final de efectivo es el mismo número que el efectivo de la foto."),
     devolucionExplicaMarcadaRepite: nuevo("Esta no repite ninguna cifra. Solo explica una línea de la foto."),
-    fuente: "Nuevo, de P:399-408 (MODO_FLECHA). f1: HUECO, se escala a Miku",
+    fuente: "Nuevo, de P:399-408 (MODO_FLECHA). f1: HUECO hasta el capítulo 2 (Gráfico 2.6)",
   },
   {
     n: 12, idea: "En una frase", ve: "Las 4 opciones", hace: "frase",

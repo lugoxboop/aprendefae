@@ -322,10 +322,11 @@ export default function DesdeDondePreguntan({
                     disabled={!r || Boolean(segunda)}
                     onClick={() => setSegunda(o.id)}
                     style={{
-                      minHeight: "44px", padding: "6px 8px", borderRadius: "10px", boxSizing: "border-box",
+                      /* La rejilla cabe en los 96 px de Mai (Shoko): 44 + 6 + 44, con dos renglones de 12/1,2 dentro de 44. */
+                      height: "44px", padding: "3px 8px", borderRadius: "10px", boxSizing: "border-box",
                       display: "flex", alignItems: "center", gap: "5px", textAlign: "left",
                       cursor: r && !segunda ? "pointer" : "default",
-                      color: r ? FAE.text : SECUNDARIO, fontFamily: INTER, fontSize: "13px", lineHeight: 1.25,
+                      color: r ? FAE.text : SECUNDARIO, fontFamily: INTER, fontSize: "12px", lineHeight: 1.2,
                       ...estiloC2(estado),
                     }}
                   >
