@@ -161,7 +161,13 @@ const PIEZAS = {
 test("★★★ las cuatro piezas montan la segunda decisión, y ninguna forkea la `Opcion` compartida", () => {
   for (const [id, ruta] of Object.entries(PIEZAS)) {
     const fuente = readFileSync(ruta, "utf8");
-    assert.match(fuente, /SegundaDecisionT1/, `${id}: no monta la segunda decisión`);
+    /*
+     * T1-5 con las dos torres (P2 de Mai): «cuál no se mueve» dejó de ser una
+     * segunda decisión que no puntúa y pasó a ser la primera de las dos del
+     * juego, con su ítem en el registro. Ya no monta el armazón.
+     */
+    if (id === "t1-la-ecuacion-en-movimiento") assert.match(fuente, /data-parte=\{id\}/, `${id}: no está la decisión de la parte quieta`);
+    else assert.match(fuente, /SegundaDecisionT1/, `${id}: no monta la segunda decisión`);
     assert.doesNotMatch(fuente, /function Opcion\b/, `${id}: declaró otra Opcion`);
   }
   const armazon = readFileSync("src/components/mecanicas/libros/tema1/segundaDecision.jsx", "utf8");
