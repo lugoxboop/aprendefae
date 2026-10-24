@@ -41,6 +41,8 @@ Queda la lista cerrada de 12 de Near, con los ids de la tabla de arriba. El mód
 
 Las tres Hacer necesitan su fila en el catálogo de FP del servidor. La migración solo agrega filas y va en el rango de la Célula C (desde la 0116). Correrla en producción no lo decide la célula: cuando el PR esté listo, va por issue `miku` a Erwin y a Mateo. Es la única parada del plan.
 
+**Actualización del 24-oct (orden de Mateo vía Miku): Mateo ya no da vistos buenos.** La 0116 solo agrega filas y no espera a nadie. Las migraciones son de Erwin, así que él la corre cuando se fusione el PR. La parada real que queda es otra: las tres Hacer no se fusionan antes de que Erwin cierre #500 (`AGREGADAS_DESPUES` y `resumen.js`), porque sin eso los estudiantes que ya completaron T2 perderían «tema completo», y eso sí es irreversible para ellos. L fusiona lo de la célula cuando Mello dé PASA y el CI esté verde.
+
 ---
 
 # Lote T2-2 · decisiones de L (23-oct-2026, 12:00)
