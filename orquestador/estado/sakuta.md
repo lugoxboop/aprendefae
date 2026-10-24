@@ -1,4 +1,4 @@
-2026-10-24 16:22 (hora Bogotá)
+2026-10-24 16:28 (hora Bogotá)
 - T1 · #485 (datos de los 4 Aprender por pantalla): terminado, fusionado (1cd987d) con el PASA de Shoko y el CI en verde
 - T1 · #496 (t1-5, las dos torres): en curso; segunda FALLA de Shoko por dos detalles (la opción $0 sin rótulo y la parte nombrada en la línea de la decisión 2); su tabla está en el PR y Kaede la aplica
 - T1 · #520 (logito LibretaYLapiz): en curso; PASA en lo que se ve, y para fusionar faltan la fila de los 9 íconos a 32 px en gris, la prueba de movimiento y la salida de contraste.mjs (Kaede)
@@ -7,9 +7,9 @@
 - T1 · P2 ajustadas a Shoko y forma de los 4 Aprender en secuencia (Mai): terminado, en fichas/b-t1-p2-ajustes-shoko-mai.md y b-t1-aprender-secuencia-forma-mai.md
 - T1 · decisión mía: apruebo el corte de Mai; cu0-a1 queda con 10 pantallas y «Ocho leen lo mismo» pasa a ser una pieza nueva (id lo pone Kaede); H2 se queda aparte; f1 sin preguntar hasta el #467
 - T1 · correcciones de Shoko (t1-1 nueva 2.ª decisión, cu0-a2 2.ª visita, t1-4, t1-6, H1, H2 2.ª vuelta) (Futaba): terminado, en fichas/b-t1-lote-24oct-b-futaba.md
-- T1 · titulares, apoyos y rótulos de la secuencia que pide Mai (Futaba): en curso
+- T1 · titulares, apoyos y rótulos de la secuencia que pide Mai (Futaba): terminado, en fichas/b-t1-aprender-titulares-futaba.md; Mai los mide
 - T1 · auditoría antes de construir del lote B de Futaba, las P2 ajustadas y la forma en secuencia (Shoko): en curso
 - T1 · SecuenciaAprender (componente compartido): bloqueado: sin respuesta en el #514 sobre quién lo construye; T1 está listo para ser el piloto
 - Lo compartido que falla en los 7 Hacer (Retro con emoji y teal, «era esta», «Siguiente» fijo que tapa a 320): bloqueado: es de Erwin (#487); B lo parchea dentro de cada pieza
-- T1 · D1 (verdad contra el libro): bloqueado: faltan las pp. 1-31 y las páginas del cap. 2 que cita T1 (#467)
+- T1 · D1 (verdad contra el libro): en curso; Mateo le pasó el cap. 1 directo a Futaba (#467 cerrado) y ella lo deja en fichas/b-t1-fuente-cap1-futaba.md, con f1 de cu0-a4 y la lista exacta de lo que falta del cap. 2 (hoy: p. 35, Gráfico 2.2, Gráfico 2.6 y el caso Caleja)
 - T6 (oculto hasta el próximo semestre): los dos cambios de texto de Shoko del #458 quedan anotados para retomarlos
