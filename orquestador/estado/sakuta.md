@@ -1,10 +1,10 @@
-2026-10-24 17:12 (hora Bogotá)
-- T1 · #496 (t1-5, las dos torres): en curso; Shoko da PASA sobre 7c2296d y solo pidió la captura de la línea «contrario», que ya tiene; lo fusiono en cuanto confirme. El empuje de las torres a 320 al anotar (D4) va en un PR aparte (Kaede)
-- T1 · #520 (logito LibretaYLapiz): en curso; PASA de Shoko, las tres condiciones cerradas; falta subir a la rama la prueba T1-7 de movimiento y que el CI la corra (Kaede)
+2026-10-24 17:21 (hora Bogotá)
+- T1 · #496 (t1-5, las dos torres): en curso; tercera FALLA de Shoko, solo por la línea «contrario» (texto nuevo y clase propia «otraParte», que decidí yo), en revisiones/b-t1-496-520-lote-c-shoko.md; el empuje a 320 (D4) va en un PR aparte (Kaede)
+- T1 · #520 (logito LibretaYLapiz): en curso; PASA de Shoko sin otra vuelta; lo fusiono en cuanto T1-7 esté en la rama y el CI quede verde (Kaede)
 - T1 · lote 4 (los 6 Hacer publicados) y lote 5 (H1 y H2) (Kaede): en curso; ya tiene en cola la regla j y las correcciones de Shoko (un solo Anotar en t1-4, zonas apiladas en t1-6, rejilla 2×2 en t1-1, tres opciones en t1-5, la leyenda de Mai, excepción a B1 en H2, HUECO en f1)
 - T1 · medición de los 44 titulares, apoyos y rótulos (Mai): terminado, en fichas/b-t1-titulares-medidos-mai.md. Decisión mía: van los 5 rótulos que ella midió, los carriles de a4·3 apilados, 48 px de reserva para la razón y la capa 4 como excepción
 - T1 · la capa 4 no cabe a 320 (146 px de desplazamiento): consultado a Ukyo y Miku en el #514 si es una excepción del patrón; mientras tanto, en B queda como excepción declarada
-- T1 · lote C (los textos de Shoko aplicados, 30 recortes, «Ocho leen lo mismo» en dos pasos mezclados) (Futaba): terminado, en fichas/b-t1-lote-24oct-c-futaba.md; lo está auditando Shoko
+- T1 · lote C (Futaba): auditado (revisiones/b-t1-496-520-lote-c-shoko.md); «Ocho leen lo mismo» PASA a falta de la medición de Mai; siete textos cambian con la redacción lista de Shoko, y los toma Kaede; ERROR_P3 con un solo juego, el corto
 - T1 · cómo se reparten los 8 nombres de «Ocho leen lo mismo» a 320 (Mai): en curso
 - T1 · regla j: terminado; la tienen los cuatro (Futaba, Mai, Shoko en su traspaso, Kaede en su cola)
 - T1 · D1, capítulo 2 del libro: BLOQUEADO-MATEO; la lista exacta de lo que falta se la pasé a Miku, y va directo a Futaba
