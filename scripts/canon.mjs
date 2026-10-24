@@ -43,7 +43,7 @@ const esMaterial = (f) => MATERIAL.test(f) || /registro-cifras/.test(f);
 const plano = (s) =>
   s
     .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
+    .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase();
 
 /* Un término corto como "D4" o "T7" cae dentro de cualquier URL o id y devuelve
