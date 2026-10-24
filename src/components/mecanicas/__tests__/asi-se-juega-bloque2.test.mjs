@@ -133,10 +133,14 @@ test("★★★ T1-1: ya no está la pregunta de vacío", () => {
   } finally { desmontar(); }
 });
 
-test("★★ T1-2: la pregunta de vacío se queda", () => {
+test("★★ T1-2: la pregunta se queda, en neutro y sin mayúsculas (lote 4: el ámbar es solo del haber)", () => {
   const { caja, desmontar } = montar(React.createElement(QueEntroYQueSalio, { Marco: MarcoLibros, onCompletar: () => {} }));
   try {
-    assert.equal(caja.querySelector("[data-rotulo-seccion]").textContent, T1_2.pregunta.toUpperCase());
+    const p = caja.querySelector("[data-pregunta-clase]");
+    assert.equal(p.textContent, "¿Qué clase de empresa es?");
+    assert.equal(p.textContent, T1_2.pregunta);
+    assert.equal(p.style.color, "rgb(248, 249, 250)");
+    assert.equal(p.style.fontSize, "14px");
   } finally { desmontar(); }
 });
 
@@ -167,6 +171,9 @@ test("★★ los ejemplos se resuelven con la lógica de verdad, con los acierto
 
 /* ═══════════════════ PRIMERA VEZ, SEGUNDA VEZ, Y «¿CÓMO SE JUEGA?» ═══════════════════ */
 
+/* Las que ya llevan el encabezado compacto de B. */
+const COMPACTOS = [T1_5.id, T1_2.id];
+
 for (const id of IDS) {
   test(`★★★ ${id}: sale la primera vez, no la segunda, y «¿Cómo se juega?» la trae de vuelta`, () => {
     w.localStorage.clear();
@@ -181,13 +188,13 @@ for (const id of IDS) {
       const ayuda = dos.caja.querySelector("[data-encabezado] [data-como-se-juega]");
       assert.ok(ayuda, "no está «¿Cómo se juega?» bajo la consigna");
       tocar(ayuda);
-      if (id === T1_5.id) {
+      if (COMPACTOS.includes(id)) {
         /*
-         * T1-5 con las torres usa el encabezado compacto de B (P2 de Mai, §2):
-         * «¿Cómo se juega?» despliega la consigna, como en los Hacer de la célula.
+         * T1-5 con las torres y las del lote 4 usan el encabezado compacto de B
+         * (C1): «¿Cómo se juega?» despliega la consigna, como en los Hacer de la célula.
          */
         assert.equal(dos.caja.querySelector("[data-como-se-juega-panel]").dataset.comoSeJuegaPanel, "abierto");
-        assert.equal(dos.caja.querySelector("[data-consigna]").textContent, TORRES_T1_5.consigna);
+        assert.equal(dos.caja.querySelector("[data-consigna]").textContent, id === T1_5.id ? TORRES_T1_5.consigna : ASI_TODAS[id].consigna);
       } else {
         assert.ok(dos.caja.querySelector(`[data-asi-se-juega="${id}"]`), "«¿Cómo se juega?» no la abrió");
       }
@@ -232,8 +239,11 @@ await esperar(() => caja.querySelector("[data-asj-control]").textContent === "Ve
         assert.equal(escenario().querySelector("[data-empresa]").textContent, "Una panadería");
         assert.equal(escenario().querySelectorAll("[data-clase]").length, CLASES.length, "no están las cinco clases");
         assert.equal(escenario().querySelector('[data-clase="industrial"]').dataset.marcada, "si");
-        assert.equal(escenario().querySelector('[data-clase="industrial"]').textContent, "Industrial o de manufactura");
+        assert.equal(escenario().querySelector('[data-clase="industrial"] span').textContent, "Industrial o de manufactura");
+        assert.equal(escenario().querySelector('[data-clase="industrial"] [data-pastilla]').dataset.pastilla, "correcta");
         assert.ok(escenario().querySelector('[role="status"]').textContent.includes("Entró harina. Salió pan."));
+        /* El registro: tras responder, la flecha dice qué le pasó. */
+        assert.ok(escenario().querySelector("[data-trazo]"), "la flecha no dice qué le pasó");
       }
       if (id === T1_5.id) {
         /* La mano tocó la parte quieta, los dos totales nuevos y «Anotar»: las dos torres subieron a $687.000. */

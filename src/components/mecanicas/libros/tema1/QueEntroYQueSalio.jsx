@@ -3,33 +3,41 @@ import { barajar } from "../../../../utils/barajar.js";
 import { FAE } from "../../../../theme.js";
 import { NEUTRO, NAVY_DEL_CHIP } from "../../../../data/contabilidadIntro.js";
 import {
-  T1_2, CLASES, ROTULO_ENTRA, ROTULO_SALE, ALT_T1_2, ESCENA_ERROR, SEGUNDA_T1_2,
+  T1_2, CLASES, EMPRESAS, ROTULO_ENTRA, ROTULO_SALE, ALT_T1_2, ESCENA_ERROR, SEGUNDA_T1_2,
 } from "../../../../data/contabilidadTema1.js";
 import {
-  sortearT1_2, evaluarT1_2, puntuar, pesoDeCadaItem, sinObjeto,
+  sortearT1_2, evaluarT1_2, puntuar, pesoDeCadaItem, sinObjeto, sinEmoji,
   opcionesSegundaT1_2, correctaSegundaT1_2, porqueSegundaT1_2,
 } from "../../../../contabilidad/tema1.js";
 import SegundaDecisionT1 from "./segundaDecision.jsx";
-import { Retro, Pulsos, Cierre } from "../../corazon/juego.jsx";
+import { Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
-import { Responder, useTanda } from "../piezas.jsx";
-import { useMovimientoReducido, SOLO_LECTOR } from "../verbos.jsx";
-import { Encabezado } from "./encabezado.jsx";
+import { useTanda } from "../piezas.jsx";
+import { SOLO_LECTOR } from "../verbos.jsx";
+import EncabezadoCompacto from "../b5/EncabezadoCompacto.jsx";
+import {
+  Pastilla, Mensaje, RegionViva, IconoX, CORRECTA, TACHADA, REVELADA, CSS_B5H, CLASE_B5H,
+} from "../b5/Devolucion.jsx";
+import {
+  INTER, REPOSO, ACIERTO, FANTASMA, estiloC2, contadorDe, Avance, CSS_REGISTRO, CLASE_ENTRA,
+} from "./registro.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
  * T1-2 · ¿QUÉ ENTRÓ Y QUÉ SALIÓ?
  *
- * Dos recuadros —lo que entra y lo que sale— y cinco clases. La pregunta no es
- * «¿qué vende esta empresa?» sino «¿qué le pasó adentro a lo que entró?», que
- * es el criterio del libro y el que separa una comercial de una industrial.
+ * Dos recuadros —lo que entra y lo que sale— y cinco clases. Lo que decide la
+ * clase es qué le pasó adentro a lo que entró: el criterio del libro, el que
+ * separa una comercial de una industrial.
  *
- * ═══════════ EL TRAZO ES LA PISTA, Y LLEGA DESPUÉS ═══════════
+ * ═══════════ LA FLECHA DICE QUÉ LE PASÓ, TAMBIÉN CUANDO SE FALLA ═══════════
  *
- * Entre los dos recuadros aparece la relación escrita —«lo mismo»,
+ * Entre los dos recuadros va la relación escrita —«lo mismo»,
  * «transformado», «criado», «extraído», «no hay objeto»— y eso ES la
- * respuesta con otras palabras. Solo se dibuja al acertar: enseñarla antes
- * sería contestar la pregunta.
+ * respuesta con otras palabras: antes de responder la flecha va vacía (R10).
+ * Desde el lote 4 (P2 de Mai) se dibuja SIEMPRE tras responder, con la
+ * relación correcta, y si se falló, al lado va la de la clase elegida,
+ * tachada: así se ven las dos, la que es y la que eligió. Un intento.
  *
  * ═══════════ Y EL RECUADRO DE ENTRADA NUNCA VA VACÍO ═══════════
  *
@@ -40,23 +48,15 @@ import { Encabezado } from "./encabezado.jsx";
  */
 
 const CSS = `
-@keyframes fae-t12-marca { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: none; } }
-.fae-t12-marca { animation: fae-t12-marca 300ms ease-out both; }
-@keyframes fae-t12-rebota {
-  0% { transform: translateX(0); } 30% { transform: translateX(-5px); }
-  60% { transform: translateX(4px); } 100% { transform: translateX(0); }
-}
-.fae-t12-rebota { animation: fae-t12-rebota 400ms ease-out 1; }
-@keyframes fae-t12-trazo { from { opacity: 0; } to { opacity: 1; } }
-.fae-t12-trazo { animation: fae-t12-trazo 400ms ease-out both; }
 @keyframes fae-t12-late { 0%, 100% { background: transparent; } 50% { background: rgba(184,196,212,0.22); } }
-.fae-t12-late { animation: fae-t12-late 900ms ease-in-out 1; }
+.fae-t12-late { animation: fae-t12-late 480ms cubic-bezier(.3,.9,.4,1) 1; }
 @media (prefers-reduced-motion: reduce) {
-  .fae-t12-marca, .fae-t12-rebota, .fae-t12-trazo, .fae-t12-late {
-    animation: none !important; opacity: 1 !important; transform: none !important;
-  }
+  .fae-t12-late { animation: none !important; }
 }
 `;
+
+/* El renglón de la flecha reserva dos líneas de 16 px (P2 de Mai: 32). */
+export const ALTO_RELACION = 32;
 
 const SORA = "Sora, sans-serif";
 
@@ -76,12 +76,14 @@ function Recuadro({ rotulo, texto, marcado, late, vacio, atenuado = false }) {
         opacity: atenuado ? 0.4 : 1,
         padding: "9px 10px", borderRadius: "11px",
         background: "rgba(10,20,34,0.45)",
-        border: `${marcado ? 2 : 1}px solid ${marcado ? NEUTRO : "rgba(248,249,250,0.14)"}`,
+        /* C2, sin salto: siempre 2 px; en reposo el contorno de 1 px va pintado por dentro. */
+        border: `2px solid ${marcado ? NEUTRO : "transparent"}`,
+        boxShadow: marcado ? "none" : "inset 0 0 0 1px rgba(248,249,250,0.14)",
       }}
     >
       <p style={{
-        margin: "0 0 4px", fontFamily: SORA, fontSize: "9px", fontWeight: 700,
-        letterSpacing: "0.14em", color: "rgba(248,249,250,0.5)",
+        margin: "0 0 4px", fontFamily: SORA, fontSize: "12px", fontWeight: 700,
+        letterSpacing: "0.1em", color: "#A8B6C8",
       }}>
         {rotulo}
       </p>
@@ -97,79 +99,64 @@ function Recuadro({ rotulo, texto, marcado, late, vacio, atenuado = false }) {
 }
 
 /*
+ * La relación de cada clase, sacada del banco: la de las empresas de esa
+ * clase («criado o cultivado» en la agropecuaria). Es lo que se tacha como
+ * fantasma cuando el estudiante elige esa clase y no era.
+ */
+export const RELACION_DE_CLASE = Object.fromEntries(CLASES.map((c) => {
+  const rels = [...new Set(EMPRESAS.filter((x) => x.clase === c.id).map((x) => x.relacion.toLowerCase()))];
+  return [c.id, rels.join(" o ")];
+}));
+
+/*
  * ═══════════ EL MODO DEMO DE «ASÍ SE JUEGA» ═══════════
  *
- * Es este mismo componente, no una copia dibujada: `items` le da el ejemplo
- * desde afuera en vez de sortearlo del banco, y `modoDemo` le quita lo que no
- * es la zona de juego —el encabezado, el avance, el botón de seguir— y le
- * corta la salida: no llama a `onCompletar`, así que no hay FP, ni intentos,
- * ni progreso. Cómo se juega no cambia en nada; eso es lo que se enseña.
+ * Es este mismo componente: `items` le da el ejemplo desde afuera y `modoDemo`
+ * le quita el encabezado, la segunda decisión y el avance, y no llama a
+ * `onCompletar`.
  */
 export default function QueEntroYQueSalio({
-  Marco, rotulo, titulo, acento, onCompletar, items = null, modoDemo = false, onComoSeJuega = null,
+  Marco, rotulo, titulo, acento, onCompletar, items = null, modoDemo = false,
 }) {
-  const reducido = useMovimientoReducido();
   const t = useTanda(() => items ?? sortearT1_2(barajar));
 
   const [r, setR] = useState(null);
-  const [intento, setIntento] = useState(0);
   const [respuestas, setRespuestas] = useState([]);
   const [marcada, setMarcada] = useState(null);
-  const [rebotando, setRebotando] = useState(null);
   /* La segunda decisión (D4): su escena para los dos recuadros. No puntúa. */
   const [escenaSegunda, setEscenaSegunda] = useState(null);
   const [segundaHecha, setSegundaHecha] = useState(false);
-  const reloj = useRef(null);
   const zonaBoton = useRef(null);
 
   const e = t.items[t.i];
   const cuantas = t.items.length;
   const pct = puntuar(respuestas, cuantas);
-  const esperandoReintento = Boolean(r && !r.ok && intento === 1);
-  const puedeResponder = !r || esperandoReintento;
 
   useEffect(() => {
     if (t.terminado && !modoDemo) onCompletar?.(pct, Date.now() - t.inicio.current, t.detalle.current);
   }, [t.terminado]);
-  useEffect(() => () => clearTimeout(reloj.current), []);
   useEffect(() => {
-    if (r && !esperandoReintento && !modoDemo && segundaHecha) zonaBoton.current?.querySelector("button")?.focus();
-  }, [r, esperandoReintento, segundaHecha]);
+    if (r && !modoDemo && segundaHecha) zonaBoton.current?.focus();
+  }, [r, segundaHecha]);
 
+  /* Un intento: tocar la clase es responder. */
   const responder = (clase) => {
-    if (r && !esperandoReintento) return;
+    if (r) return;
     const nuevo = evaluarT1_2(e, clase);
-
-    if (!nuevo.ok) {
-      /* La clase se desmarca: no queda ninguna elección falsa en pantalla. */
-      setMarcada(null);
-      setRebotando(clase);
-      clearTimeout(reloj.current);
-      reloj.current = setTimeout(() => setRebotando(null), 420);
-    } else {
-      setMarcada(clase);
-    }
-
-    if (intento === 0) {
-      t.anotar(e.id, nuevo.ok, nuevo.ok ? null : clase);
-      if (!nuevo.ok) { setR({ ...nuevo, primero: true }); setIntento(1); return; }
-      setRespuestas((xs) => [...xs, { id: e.id, primeroOk: true }]);
-      setR({ ...nuevo, primero: true });
-      return;
-    }
-    setRespuestas((xs) => [...xs, { id: e.id, primeroOk: false, segundoOk: nuevo.ok }]);
-    setIntento(2);
-    setR({ ...nuevo, primero: false });
+    setMarcada(clase);
+    t.anotar(e.id, nuevo.ok, nuevo.ok ? null : clase);
+    setRespuestas((xs) => [...xs, { id: e.id, primeroOk: nuevo.ok }]);
+    setR(nuevo);
   };
 
   const avanzar = () => {
-    setR(null); setIntento(0); setMarcada(null); setRebotando(null);
+    setR(null); setMarcada(null);
     setEscenaSegunda(null); setSegundaHecha(false);
     if (t.i + 1 < cuantas) t.setI(t.i + 1);
     else t.setTerminado(true);
   };
   const reiniciar = () => {
-    t.reiniciar(); setR(null); setIntento(0); setRespuestas([]); setMarcada(null); setRebotando(null);
+    t.reiniciar(); setR(null); setRespuestas([]); setMarcada(null);
     setEscenaSegunda(null); setSegundaHecha(false);
   };
 
@@ -177,7 +164,6 @@ export default function QueEntroYQueSalio({
     const bien = respuestas.filter((x) => x.primeroOk).length;
     return (
       <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
-        <style>{CSS}</style>
         <Cierre pct={Math.round(pct)} onReiniciar={reiniciar} textoReiniciar="Otra tanda">
           <p style={TEXTO_CIERRE}>
             {bien} de {cuantas} al primer intento. Cada empresa valía {pesoDeCadaItem(cuantas).toFixed(2)} %.
@@ -187,169 +173,178 @@ export default function QueEntroYQueSalio({
     );
   }
 
-  const acertado = r?.ok === true;
   /*
    * En el error E se resalta el objeto que SÍ existe; en el G, el recuadro de
    * entrada que dice «sin insumo físico». Los demás resaltan los dos a la vez.
+   * Con la segunda decisión, manda ella.
    */
   const escena = r && !r.ok ? ESCENA_ERROR[r.clave] ?? "los-dos" : null;
-  /*
-   * Mientras no haya segunda decisión, los recuadros se marcan como siempre.
-   * Cuando la hay, manda ella: cada opción deja los dos recuadros y la flecha
-   * en un retrato distinto de los otros dos, pareja por pareja.
-   */
   const esc = escenaSegunda;
-  const marcaEntra = esc ? esc.entra === "marcado" : acertado || escena === "los-dos" || escena === "entra-vacio";
-  const marcaSale = esc ? esc.sale === "marcado" : acertado || escena === "los-dos" || escena === "objeto";
+  const marcaEntra = esc ? esc.entra === "marcado" : Boolean(r?.ok) || escena === "los-dos" || escena === "entra-vacio";
+  const marcaSale = esc ? esc.sale === "marcado" : Boolean(r?.ok) || escena === "los-dos" || escena === "objeto";
   const trazoCortado = esc?.trazo === "cortado";
   const trazoTenue = esc?.trazo === "vacio";
 
+  const estadoDe = (id) => {
+    if (!r) return REPOSO;
+    if (id === e.clase) return ACIERTO;
+    if (id === marcada) return FANTASMA;
+    return REPOSO;
+  };
+  const marcaDe = (id) => {
+    if (!r) return null;
+    if (id === e.clase) return r.ok ? CORRECTA : REVELADA;
+    if (id === marcada) return TACHADA;
+    return null;
+  };
+
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
-      <style>{CSS}</style>
-      {!modoDemo && (
-        <>
-          <Encabezado objetivo={T1_2.objetivo} consigna={T1_2.consigna} onComoSeJuega={onComoSeJuega} />
-          <div style={{ marginBottom: "12px" }}>
-            <Pulsos total={cuantas} hechos={t.i + (r && !esperandoReintento ? 1 : 0)} enCurso={t.i + 1} etiqueta="Empresa" />
-          </div>
-        </>
-      )}
+      <style>{CSS}{CSS_B5H}{CSS_REGISTRO}</style>
+      <div className={CLASE_B5H} data-t12>
+        {!modoDemo && (
+          <EncabezadoCompacto
+            objetivo={T1_2.objetivo}
+            contador={contadorDe("Empresa", t.i + 1, cuantas)}
+            consigna={T1_2.consigna}
+          />
+        )}
 
-      {/*
-        ═══════ AQUÍ DENTRO NO ENTRA EL VOCABULARIO DEL TEMA 2 ═══════
-        Esta marca no es decorativa: delimita el CONTENIDO de la actividad
-        frente a los rótulos del marco. El teal y el ámbar siguen valiendo en
-        la interfaz —encabezados, botones, navegación— y no pueden aparecer
-        aquí dentro, donde todavía no significan debe ni haber. Hay una prueba
-        que mira exactamente dentro de esta caja.
-      */}
-      <div data-contenido>
-      <p data-empresa={e.id} style={{
-        margin: "0 0 11px", fontFamily: SORA, fontSize: "14px", fontWeight: 700, color: FAE.text,
-      }}>
-        {e.empresa}
-      </p>
+        {/*
+          ═══════ AQUÍ DENTRO NO ENTRA EL VOCABULARIO DEL TEMA 2 ═══════
+          Ni teal ni ámbar: todavía no significan debe ni haber. Hay una prueba
+          que mira exactamente dentro de esta caja.
+        */}
+        <div data-contenido>
+          <p data-empresa={e.id} style={{
+            margin: "0 0 11px", fontFamily: SORA, fontSize: "14px", fontWeight: 700, color: FAE.text,
+          }}>
+            {e.empresa}
+          </p>
 
-      {/* Apilados: son secuenciales, y el trazo va entre los dos. */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-        <Recuadro
-          rotulo={ROTULO_ENTRA}
-          texto={e.entra}
-          marcado={marcaEntra}
-          late={escena === "entra-vacio"}
-          vacio={sinObjeto(e)}
-          atenuado={esc?.entra === "atenuado"}
-        />
+          {/* Apilados: son secuenciales, y la flecha con su relación va entre los dos. */}
+          <div data-escenario style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+            <Recuadro
+              rotulo={ROTULO_ENTRA}
+              texto={e.entra}
+              marcado={marcaEntra}
+              late={escena === "entra-vacio"}
+              vacio={sinObjeto(e)}
+              atenuado={esc?.entra === "atenuado"}
+            />
 
-        <div style={{ minHeight: "26px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          {acertado ? (
-            <span data-trazo={e.relacion} data-trazo-estado={esc?.trazo ?? undefined} className="fae-t12-trazo" style={{
-              padding: "2px 8px", borderRadius: "7px", background: NEUTRO, color: NAVY_DEL_CHIP,
-              fontFamily: SORA, fontSize: "10.5px", fontWeight: 700,
-              /* «No tiene que ver» se dibuja: la flecha queda tachada. */
-              opacity: trazoTenue ? 0.35 : 1,
-              textDecoration: trazoCortado ? "line-through" : "none",
-              outline: trazoCortado ? `2px solid ${FAE.coral}` : "none",
+            {/*
+              La flecha. Antes de responder va vacía (R10: la relación es la
+              respuesta con otras palabras). Después, SIEMPRE la relación
+              correcta —el registro—, y si erró, al lado la de la clase que
+              eligió, tachada y en coral discontinuo. El renglón reserva dos
+              líneas: la escena no crece al responder.
+            */}
+            <div data-flecha style={{
+              minHeight: `${ALTO_RELACION}px`, display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "center", gap: "4px 8px",
             }}>
-              ↓ {e.relacion.toLowerCase()}
-            </span>
-          ) : (
-            <span aria-hidden="true" style={{ color: "rgba(248,249,250,0.3)", fontSize: "14px" }}>↓</span>
-          )}
+              {r ? (
+                <>
+                  <span data-trazo={e.relacion} data-trazo-estado={esc?.trazo ?? undefined} className={CLASE_ENTRA} style={{
+                    padding: "2px 8px", borderRadius: "7px", background: NEUTRO, color: NAVY_DEL_CHIP,
+                    fontFamily: INTER, fontSize: "12px", fontWeight: 600, lineHeight: "16px",
+                    opacity: trazoTenue ? 0.35 : 1,
+                    textDecoration: trazoCortado ? "line-through" : "none",
+                    outline: trazoCortado ? `2px solid ${FAE.coral}` : "none",
+                  }}>
+                    ↓ {e.relacion.toLowerCase()}
+                  </span>
+                  {!r.ok && (
+                    <span data-trazo-fantasma={marcada} className={CLASE_ENTRA} style={{
+                      display: "inline-flex", alignItems: "center", gap: "4px",
+                      padding: "1px 7px", borderRadius: "7px", border: `2px dashed ${FAE.coral}`,
+                      color: FAE.text, fontFamily: INTER, fontSize: "12px", fontWeight: 600, lineHeight: "16px",
+                    }}>
+                      <IconoX />
+                      <s>{RELACION_DE_CLASE[marcada]}</s>
+                    </span>
+                  )}
+                </>
+              ) : (
+                <span aria-hidden="true" style={{ color: "rgba(248,249,250,0.3)", fontSize: "14px" }}>↓</span>
+              )}
+            </div>
+
+            <Recuadro
+              rotulo={ROTULO_SALE}
+              texto={e.sale}
+              marcado={marcaSale}
+              late={escena === "objeto"}
+              vacio={false}
+              atenuado={esc?.sale === "atenuado"}
+            />
+          </div>
+
+          {/* La pregunta, en neutro y sin mayúsculas: el ámbar es solo del haber (Shoko). */}
+          <p data-pregunta-clase style={{
+            margin: "14px 0 8px", fontFamily: SORA, fontSize: "14px", fontWeight: 600, lineHeight: 1.35, color: FAE.text,
+          }}>
+            {T1_2.pregunta}
+          </p>
+
+          <div role="group" aria-label={T1_2.pregunta} style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+            {CLASES.map((c) => {
+              const m = marcaDe(c.id);
+              return (
+                <button
+                  key={c.id}
+                  type="button"
+                  data-clase={c.id}
+                  data-marcada={marcada === c.id ? "si" : "no"}
+                  data-estado={estadoDe(c.id)}
+                  aria-pressed={marcada === c.id}
+                  disabled={Boolean(r)}
+                  onClick={r ? undefined : () => responder(c.id)}
+                  style={{
+                    display: "flex", alignItems: "center", justifyContent: "space-between", gap: "6px",
+                    textAlign: "left", minHeight: "44px", padding: "5px 9px", borderRadius: "10px", boxSizing: "border-box",
+                    cursor: r ? "default" : "pointer", color: FAE.text,
+                    fontFamily: INTER, fontSize: "13px", lineHeight: 1.25,
+                    ...estiloC2(estadoDe(c.id)),
+                  }}
+                >
+                  <span style={{ minWidth: 0 }}>{c.nombre}</span>
+                  {m && <Pastilla marca={m} />}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        <Recuadro
-          rotulo={ROTULO_SALE}
-          texto={e.sale}
-          marcado={marcaSale}
-          late={escena === "objeto"}
-          vacio={false}
-          atenuado={esc?.sale === "atenuado"}
-        />
-      </div>
+        <RegionViva>
+          {r && <Mensaje ok={r.ok} texto={sinEmoji(r.texto)} />}
+        </RegionViva>
 
-      {/* Rótulo de sección: es interfaz de marca, no contenido de la actividad. */}
-      <p data-rotulo-seccion style={{
-        margin: "14px 0 8px", fontFamily: SORA, fontSize: "10.5px",
-        fontWeight: 700, letterSpacing: "0.16em", color: acento,
-      }}>
-        {esperandoReintento ? "INTÉNTALO OTRA VEZ" : T1_2.pregunta.toUpperCase()}
-      </p>
+        {/*
+          ═══════ LA SEGUNDA DECISIÓN (D4) ═══════
+          La primera clasifica la empresa; esta pregunta la CONSECUENCIA de esa
+          clase. Sale tras la primera, se acierte o no. En la demo no sale.
+        */}
+        {r && !modoDemo && (
+          <SegundaDecisionT1
+            pregunta={SEGUNDA_T1_2.pregunta}
+            opciones={opcionesSegundaT1_2(e)}
+            correcta={correctaSegundaT1_2(e)}
+            porque={porqueSegundaT1_2(e)}
+            escenaDe={(id) => SEGUNDA_T1_2.escena[id]}
+            onPintar={setEscenaSegunda}
+            onResuelta={() => setSegundaHecha(true)}
+          />
+        )}
 
-      <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-        {CLASES.map((c) => {
-          const esta = marcada === c.id;
-          const rebota = rebotando === c.id;
-          return (
-            <button
-              key={c.id}
-              type="button"
-              data-clase={c.id}
-              data-marcada={esta ? "si" : "no"}
-              disabled={!puedeResponder}
-              onClick={puedeResponder ? () => responder(c.id) : undefined}
-              className={rebota ? "fae-t12-rebota" : esta ? "fae-t12-marca" : undefined}
-              style={{
-                textAlign: "left", padding: "9px 11px", borderRadius: "10px",
-                cursor: puedeResponder ? "pointer" : "default",
-                background: esta ? "rgba(184,196,212,0.12)" : "rgba(10,20,34,0.4)",
-                border: rebota
-                  ? `1px dashed ${FAE.coral}`
-                  : `${esta ? 2 : 1}px solid ${esta ? NEUTRO : "rgba(248,249,250,0.16)"}`,
-                color: FAE.text, fontSize: "12.5px",
-                opacity: !puedeResponder && !esta ? 0.5 : 1,
-              }}
-            >
-              {c.nombre}
-            </button>
-          );
-        })}
-      </div>
-
-      {esperandoReintento && (
-        <p data-fallo style={{
-          margin: "9px 0 0", padding: "7px 10px", borderRadius: "10px",
-          fontSize: "12px", textAlign: "center", color: "rgba(248,249,250,0.75)",
-          border: `1px dashed ${FAE.coral}`,
-        }}>
-          Ninguna clase quedó marcada.
-        </p>
-      )}
-
-      </div>
-
-      {r && <Retro texto={r.texto} />}
-
-      {/*
-        ═══════ LA SEGUNDA DECISIÓN (D4) ═══════
-
-        La primera clasifica la empresa; esta pregunta la CONSECUENCIA de esa
-        clase: si quiere vender el doble, qué tiene que pasar con lo que entra.
-        La respuesta sale de la clase y no del enunciado, y cada opción deja
-        los dos recuadros de arriba en un estado distinto.
-      */}
-      {r && !esperandoReintento && !modoDemo && (
-        <SegundaDecisionT1
-          pregunta={SEGUNDA_T1_2.pregunta}
-          opciones={opcionesSegundaT1_2(e)}
-          correcta={correctaSegundaT1_2(e)}
-          porque={porqueSegundaT1_2(e)}
-          escenaDe={(id) => SEGUNDA_T1_2.escena[id]}
-          onPintar={setEscenaSegunda}
-          onResuelta={() => setSegundaHecha(true)}
-        />
-      )}
-
-      {r && !esperandoReintento && !modoDemo && segundaHecha && (
-        <div ref={zonaBoton}>
-          <Responder onClick={avanzar}>
+        {r && !modoDemo && segundaHecha && (
+          <Avance onClick={avanzar} refBoton={zonaBoton}>
             {t.i + 1 === cuantas ? "Ver el resultado" : "Siguiente empresa"}
-          </Responder>
-        </div>
-      )}
+          </Avance>
+        )}
 
-      {!modoDemo && <p style={SOLO_LECTOR}>{ALT_T1_2}</p>}
+        {!modoDemo && <p style={SOLO_LECTOR}>{ALT_T1_2}</p>}
+      </div>
     </Marco>
   );
 }

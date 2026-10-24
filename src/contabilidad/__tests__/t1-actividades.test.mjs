@@ -42,7 +42,7 @@ const { createRoot } = await import("react-dom/client");
 const act = React.act ?? (await import("react-dom/test-utils")).act;
 
 const DesdeDondePreguntan = (await import("../../components/mecanicas/libros/tema1/DesdeDondePreguntan.jsx")).default;
-const QueEntroYQueSalio = (await import("../../components/mecanicas/libros/tema1/QueEntroYQueSalio.jsx")).default;
+const { default: QueEntroYQueSalio, RELACION_DE_CLASE } = await import("../../components/mecanicas/libros/tema1/QueEntroYQueSalio.jsx");
 const { MarcoLibros } = await import("../../components/mecanicas/bloques/marcos.jsx");
 const {
   INTERNOS, EXTERNOS, sortearT1_1, evaluarT1_1, sortearT1_2, evaluarT1_2,
@@ -332,6 +332,9 @@ test("★★ el objetivo y la consigna están, y se quedan toda la partida", () 
       visible(enc(), "el encabezado");
       assert.equal(visible(caja.querySelector("[data-objetivo]"), "el objetivo").textContent,
         a.objetivo, `${a.id}: objetivo`);
+      /* Lote 4, C1: con el encabezado compacto la consigna va plegada bajo «¿Cómo se juega?». */
+      const compacto = Boolean(caja.querySelector("[data-encabezado-compacto]"));
+      if (compacto) tocar(caja.querySelector("[data-como-se-juega]"));
       assert.equal(visible(caja.querySelector("[data-consigna]"), "la consigna").textContent,
         a.consigna, `${a.id}: consigna`);
 
@@ -513,21 +516,33 @@ test("★★★ T1-1: al acertar la pregunta SE ASIENTA, y sigue habiendo dónde
   desmontar();
 });
 
-test("★★ T1-2: el trazo con la relación solo aparece al acertar", () => {
-  const { caja, desmontar } = montar(QueEntroYQueSalio);
-  const id = caja.querySelector("[data-empresa]").getAttribute("data-empresa");
-  const e = EMPRESAS.find((x) => x.id === id);
-  assert.equal(Boolean(caja.querySelector("[data-trazo]")), false, "el trazo estaba antes de responder");
-
-  const otra = CLASES_IDS.find((c) => c !== e.clase);
-  tocar(caja.querySelector(`[data-clase="${otra}"]`));
-  assert.equal(Boolean(caja.querySelector("[data-trazo]")), false, "el fallo enseñó el trazo");
-  assert.equal(caja.querySelectorAll('[data-clase][data-marcada="si"]').length, 0,
-    "quedó una clase marcada tras un error");
-
-  tocar(caja.querySelector(`[data-clase="${e.clase}"]`));
-  assert.equal(caja.querySelector("[data-trazo]").getAttribute("data-trazo"), e.relacion);
-  desmontar();
+test("★★★ T1-2: la flecha va vacía antes de responder y con la relación correcta después, también en el error", () => {
+  for (const acertar of [true, false]) {
+    const { caja, desmontar } = montar(QueEntroYQueSalio);
+    try {
+      const id = caja.querySelector("[data-empresa]").getAttribute("data-empresa");
+      const e = EMPRESAS.find((x) => x.id === id);
+      assert.equal(caja.querySelector("[data-trazo]"), null, "el trazo estaba antes de responder (R10)");
+      const otra = CLASES_IDS.find((c) => c !== e.clase && RELACION_DE_CLASE[c] !== e.relacion.toLowerCase());
+      tocar(caja.querySelector(`[data-clase="${acertar ? e.clase : otra}"]`));
+      assert.equal(caja.querySelector("[data-trazo]").getAttribute("data-trazo"), e.relacion, "la flecha no lleva la relación correcta");
+      const fantasma = caja.querySelector("[data-trazo-fantasma]");
+      if (acertar) {
+        assert.equal(fantasma, null);
+        assert.equal(caja.querySelector(`[data-clase="${e.clase}"] [data-pastilla]`).dataset.pastilla, "correcta");
+      } else {
+        /* La de la clase elegida, tachada y en coral discontinuo: se ven las dos. */
+        assert.equal(fantasma.dataset.trazoFantasma, otra);
+        assert.equal(fantasma.querySelector("s").textContent, RELACION_DE_CLASE[otra]);
+        assert.match(fantasma.style.border, /dashed/);
+        assert.equal(caja.querySelector(`[data-clase="${otra}"]`).dataset.estado, "fantasma");
+        assert.equal(caja.querySelector(`[data-clase="${e.clase}"]`).dataset.estado, "acierto");
+        assert.equal(caja.querySelector(`[data-clase="${e.clase}"] [data-pastilla]`).dataset.pastilla, "revelada");
+      }
+      /* Un intento: las clases se cierran. */
+      assert.ok([...caja.querySelectorAll("[data-clase]")].every((b) => b.disabled));
+    } finally { desmontar(); }
+  }
 });
 
 test("★★ T1-2: el recuadro de entrada nunca se dibuja vacío", () => {
