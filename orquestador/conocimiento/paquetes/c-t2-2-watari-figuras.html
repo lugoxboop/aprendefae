@@ -1,0 +1,445 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<meta charset="utf-8"><title>Figuras de T2 en slides</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<style>
+/* Concepto: un pliego técnico para quien construye — reglas arriba, teléfonos reales en medio, procedencia de cada cifra al lado. Tema oscuro único, como el producto. */
+:root {
+  --g-bg: #08111E;      /* fondo del pliego (no es del producto) */
+  --g-panel: #0E1B2E;   /* fondo real de las actividades */
+  --g-ink: #F8F9FA;
+  --g-muted: #A8B6C8;
+  --g-line: #22324A;
+  --g-error: #E76F51;
+  --f-display: "Sora", "Inter", system-ui, sans-serif;
+  --f-body: "Inter", system-ui, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme: dark;
+}
+body { background: var(--g-bg); color: var(--g-ink); font-family: var(--f-body); font-size: 15px; line-height: 1.55; margin: 0; }
+.pliego { max-width: 1120px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 96px; display: grid; gap: 56px; grid-template-columns: minmax(0, 1fr); }
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+h1 { font-size: clamp(28px, 5vw, 44px); line-height: 1.1; }
+h2 { font-size: 24px; line-height: 1.2; }
+h3 { font-size: 17px; line-height: 1.3; }
+p { margin: 0; max-width: 68ch; }
+a { color: var(--g-ink); }
+code, .mono { font-family: var(--f-mono); font-size: 0.86em; }
+.eyebrow { font-family: var(--f-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--g-muted); }
+.sec { display: grid; gap: 20px; grid-template-columns: minmax(0, 1fr); }
+.pliego > *, .visor, .telefonos { min-width: 0; }
+.visor { grid-template-columns: minmax(0, 1fr); }
+.sec > header { display: grid; gap: 8px; border-top: 1px solid var(--g-line); padding-top: 20px; }
+.lead { color: var(--g-muted); font-size: 16px; }
+.cab { display: grid; gap: 14px; }
+.meta { display: flex; flex-wrap: wrap; gap: 8px 20px; color: var(--g-muted); font-size: 13px; }
+.rejilla { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 16px; }
+.regla { border: 1px solid var(--g-line); border-radius: 12px; padding: 16px; display: grid; gap: 6px; align-content: start; }
+.regla b { font-family: var(--f-display); font-size: 15px; }
+.regla p { color: var(--g-muted); font-size: 14px; }
+.tabla-wrap { overflow-x: auto; border: 1px solid var(--g-line); border-radius: 12px; }
+table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 14px; }
+th, td { text-align: left; vertical-align: top; padding: 10px 14px; border-bottom: 1px solid var(--g-line); }
+th { font-family: var(--f-mono); font-weight: 500; font-size: 12px; letter-spacing: .04em; color: var(--g-muted); text-transform: uppercase; background: var(--g-panel); }
+tr:last-child td { border-bottom: 0; }
+td.num { font-variant-numeric: tabular-nums; white-space: nowrap; font-family: var(--f-mono); }
+td .near, li .near { color: var(--g-muted); font-style: italic; }
+.est { font-family: var(--f-mono); font-size: 12px; letter-spacing: .06em; white-space: nowrap; }
+.prov { display: inline-block; font-family: var(--f-mono); font-size: 11px; letter-spacing: .05em; padding: 2px 7px; border-radius: 4px; border: 1px solid var(--g-line); color: var(--g-muted); white-space: nowrap; }
+.prov.m { border-color: #3B7A72; color: #8FD3C9; }
+.prov.e { border-color: #7A5A24; color: #E9C46A; }
+.prov.c { border-color: #4A5E7A; color: #C9D5E4; }
+.prov.d { border-color: #4A5E7A; color: var(--g-muted); }
+.procedencia { border: 1px solid var(--g-line); border-radius: 12px; padding: 16px; font-size: 14px; display: grid; gap: 6px; background: var(--g-panel); }
+.procedencia p { color: var(--g-muted); max-width: none; }
+ul.limpia { margin: 0; padding-left: 18px; display: grid; gap: 6px; max-width: 72ch; }
+ul.limpia li::marker { color: var(--g-muted); }
+
+/* visor de estados */
+.visor { display: grid; gap: 14px; }
+.estados { display: flex; flex-wrap: wrap; gap: 6px; }
+.estados button { font: 500 13px var(--f-mono); letter-spacing: .04em; color: var(--g-muted); background: transparent; border: 1px solid var(--g-line); border-radius: 999px;
+  padding: 0 14px; min-height: 36px; cursor: pointer; }
+.estados button[aria-pressed="true"] { color: var(--g-bg); background: var(--g-ink); border-color: var(--g-ink); }
+.estados button:focus-visible { outline: 2px solid var(--g-ink); outline-offset: 2px; }
+.telefonos { display: flex; gap: 24px; align-items: flex-start; overflow-x: auto; padding-bottom: 8px; }
+.tel { flex: none; display: grid; gap: 8px; }
+.tel-rot { font-family: var(--f-mono); font-size: 12px; color: var(--g-muted); display: flex; justify-content: space-between; gap: 8px; }
+.pantalla { position: relative; padding: 16px 30px; border: 1px solid var(--g-line); border-radius: 18px; overflow: hidden; background: var(--g-panel); }
+.tel[data-w="375"] .pantalla { width: 315px; } /* caja de contenido: 315 + 2 × 30 de relleno = 375 */
+.tel[data-w="320"] .pantalla { width: 260px; } /* 260 + 2 × 30 = 320 */
+.pantalla .bandeja { position: static !important; }
+/* 30 px por lado = 16 de página + 14 del panel: contenido de 315 a 375 y 260 a 320, medido por Misa */
+.lado { display: grid; gap: 12px; align-content: start; min-width: 0; flex: 1 1 280px; max-width: 420px; }
+.lado h3 { font-size: 15px; }
+.lado ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 14px; color: var(--g-ink); }
+.lado .nota { font-size: 13px; color: var(--g-muted); }
+
+/* íconos en la guía */
+.ico-demo { display: flex; gap: 14px; align-items: center; }
+.ico-demo svg { width: 40px; height: 40px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+
+pre { margin: 0; background: var(--g-panel); border: 1px solid var(--g-line); border-radius: 12px; padding: 16px; overflow-x: auto; font: 12.5px/1.55 var(--f-mono); color: #DCE3EC; }
+details { border: 1px solid var(--g-line); border-radius: 12px; padding: 0 16px; }
+details[open] { padding-bottom: 16px; }
+summary { cursor: pointer; padding-block: 14px; font-family: var(--f-display); font-weight: 600; }
+.copiar { font: 500 12px var(--f-mono); background: transparent; color: var(--g-ink); border: 1px solid var(--g-line); border-radius: 6px; padding: 6px 10px; cursor: pointer; justify-self: start; }
+.alerta { border: 1px solid #7A5A24; border-radius: 12px; padding: 14px 16px; display: grid; gap: 4px; font-size: 14px; }
+.alerta b { color: #E9C46A; font-family: var(--f-display); }
+.indice { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; }
+.indice a { color: var(--g-muted); text-decoration: none; border-bottom: 1px solid var(--g-line); }
+.indice a:hover { color: var(--g-ink); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+.mq { --texto:#F8F9FA; --aten:#A8B6C8; --neutro:#B8C4D4; --teal:#2A9D8F; --teal-t:#3FA69A; --ambar:#E9C46A; --coral:#E76F51; --coral-t:#EE8266;
+  background:#1F2D3D; color:var(--texto); font:400 14px/1.45 Inter, system-ui, sans-serif; display:grid; gap:10px; box-sizing:border-box; }
+.mq * { box-sizing:border-box; }
+.mq p { margin:0; }
+.mq .cej { font:700 12px/1.3 Sora, Inter, sans-serif; letter-spacing:.08em; text-transform:uppercase; color:var(--aten); }
+.mq .txt { font-size:15px; }
+.mq .hund { background:rgba(10,20,34,.45); border:1px solid rgba(248,249,250,.12); border-radius:12px; padding:10px 12px; display:grid; gap:8px; }
+.mq .tit { font:600 13px/1.3 Sora, Inter, sans-serif; }
+.mq .num { font-family:"JetBrains Mono", ui-monospace, monospace; font-variant-numeric:tabular-nums; font-weight:600; font-size:13px; white-space:nowrap; }
+.mq .td { color:var(--teal-t); } .mq .th { color:var(--ambar); }
+.mq svg { width:16px; height:16px; flex:none; }
+.mq .pas { display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:999px; font:600 12px/1.2 Inter, sans-serif; white-space:nowrap; }
+.mq .pas.ok { border:1px solid var(--texto); } .mq .pas.mal { border:1px solid var(--coral); color:var(--coral-t); } .mq .pas.iba { border:1px dashed var(--texto); }
+.mq .falla, .mq .cuadra { display:flex; gap:6px; align-items:flex-start; font-size:13px; line-height:1.4; } .mq .falla { color:var(--coral-t); }
+.mq .msg { padding:10px 12px; background:rgba(184,196,212,.12); border-left:3px solid var(--neutro); border-radius:0 10px 10px 0; font-size:14px; }
+.mq .msg.mal { border-left-color:var(--coral); } .mq .msg .pas { margin-right:6px; }
+.mq .seguir { min-height:44px; border-radius:12px; border:0; background:var(--neutro); color:#1D3557; font:600 15px Inter, sans-serif; }
+.mq .seguir[aria-disabled="true"] { background:transparent; border:2px solid rgba(248,249,250,.35); color:var(--aten); }
+.mq .malb { outline:2px solid var(--coral); outline-offset:-2px; }
+/* a */
+.mq .diario { margin:0; padding:0; list-style:none; display:grid; gap:4px; }
+.mq .ren { display:grid; grid-template-columns:3.6em minmax(0,1fr) 3.6em auto; gap:6px; align-items:center; min-height:32px; padding:4px 8px; border-radius:6px; font-size:13px; }
+.mq .ren.hecho { color:var(--aten); } .mq .ren.cur { outline:2px solid var(--texto); outline-offset:-2px; color:var(--texto); }
+.mq .ren.enlazado, .mq .ln.enlazado { background:rgba(184,196,212,.16); }
+.mq .ctas { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:8px; }
+.mq .cta { min-height:88px; display:grid; align-content:start; gap:4px; padding:8px; border-radius:10px; border:1px solid rgba(248,249,250,.35); background:transparent; color:var(--texto); font:inherit; text-align:left; }
+.mq .cta.elegida { border:2px solid var(--texto); padding:7px; } .mq .cta.elegida.malb { border-color:var(--coral); outline:0; }
+.mq .cta-tit { font-weight:600; font-size:13px; }
+.mq .cta-t { display:grid; grid-template-columns:1fr 1fr; border-top:2px solid var(--neutro); min-height:30px; }
+.mq .cta-t > span { display:grid; align-content:start; gap:2px; padding:4px 2px 0; } .mq .cta-t > span:first-child { border-right:2px solid var(--neutro); }
+.mq .ln { font:600 12px/1.25 "JetBrains Mono", monospace; border-radius:4px; padding:1px 2px; }
+.mq .ln.nueva { outline:2px solid var(--texto); } .mq .ln.nueva.malb { outline-color:var(--coral); }
+.mq .ln.fantasma { outline:1px dashed var(--texto); display:grid; gap:2px; justify-items:start; }
+.mq .orden { display:grid; grid-template-columns:1fr 1fr; border:1px solid var(--neutro); border-radius:10px; overflow:hidden; }
+.mq .orden button { min-height:44px; border:0; background:transparent; color:var(--texto); font:600 13px Inter, sans-serif; } .mq .orden .on { background:var(--neutro); color:#1D3557; }
+/* b */
+.mq .lista { margin:0; padding:0; list-style:none; display:grid; gap:4px; }
+.mq .cu { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:4px 8px; min-height:32px; padding:4px 8px; border-radius:6px; font-size:13px; border:1px solid rgba(248,249,250,.12); }
+.mq .cu.cur { outline:2px solid var(--texto); outline-offset:-2px; } .mq .cu.vacio { color:var(--aten); border-style:dashed; } .mq .cu s { color:var(--aten); }
+.mq .cierre { display:grid; gap:4px; padding:8px; border-radius:8px; border:1px dashed var(--neutro); }
+.mq .gyp { display:flex; justify-content:space-between; gap:8px; font-size:13px; padding:2px 4px; } .mq .gyp.tot { border-top:1px solid rgba(248,249,250,.35); padding-top:6px; font-weight:600; } .mq .gyp.vacio { color:var(--aten); }
+.mq .ops { display:grid; gap:8px; }
+.mq .op { min-height:44px; display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:4px 8px; padding:10px 12px; border-radius:12px; border:1px solid rgba(248,249,250,.35); background:transparent; color:var(--texto); font:500 14px Inter, sans-serif; text-align:left; }
+.mq .op.bien, .mq .op.pista { border:2px solid var(--texto); padding:9px 11px; } .mq .op.malb { border:2px solid var(--coral); outline:0; padding:9px 11px; }
+/* c */
+.mq .asiento { width:100%; min-width:0; border-collapse:collapse; font-size:13px; } .mq .asiento td { padding:4px 2px; border-bottom:0; vertical-align:middle; text-align:left; } .mq .asiento td.num { text-align:right; }
+.mq .asiento tr.sum td { border-top:1px solid rgba(248,249,250,.35); font-weight:600; } .mq .hueco { border:1px dashed var(--neutro); border-radius:4px; padding:0 6px; }
+.mq .columnas { position:relative; display:grid; grid-template-columns:1fr 1fr; gap:16px; height:150px; padding:0 8px; border-bottom:2px solid var(--neutro); }
+.mq .col { display:flex; align-items:flex-end; } .mq .pila { width:100%; height:100%; display:flex; flex-direction:column-reverse; gap:2px; }
+.mq .bar { display:grid; place-items:center; border-radius:3px; font:600 12px/1 "JetBrains Mono", monospace; color:#0E1B2E; }
+.mq .col.d .bar { background:var(--teal); } .mq .col.h .bar { background:var(--ambar); }
+.mq .bar.corta { outline:2px solid var(--coral); outline-offset:1px; }
+.mq .nivel { position:absolute; left:0; right:0; border-top:2px dashed var(--neutro); } .mq .nivel.igual { border-top-style:solid; border-top-color:var(--texto); }
+.mq .hueco-barra { position:absolute; right:8px; width:calc(50% - 16px); border:2px dashed var(--coral); border-bottom:0; border-radius:3px 3px 0 0; }
+.mq .conteo { display:grid; grid-template-columns:1fr 1fr; gap:16px; font-size:12px; color:var(--aten); text-align:center; }
+.mq .casilla { display:flex; flex-wrap:wrap; gap:8px; } .mq .casilla input { flex:1 1 120px; min-width:0; min-height:44px; border-radius:10px; border:1px solid rgba(248,249,250,.35); background:rgba(10,20,34,.45); color:var(--texto); font:600 16px "JetBrains Mono", monospace; padding:0 12px; }
+.mq .cmp { min-height:44px; padding:0 14px; border-radius:12px; border:2px solid var(--neutro); background:transparent; color:var(--texto); font:600 14px Inter, sans-serif; } .mq .cmp[aria-disabled="true"] { opacity:.5; }
+.mq .escrito { flex:1 1 100%; min-height:44px; display:flex; flex-wrap:wrap; align-items:center; gap:4px 10px; padding:8px 12px; border-radius:10px; border:2px solid var(--texto); } .mq .escrito.malb { border-color:var(--coral); outline:0; } .mq .escrito.iba { border-style:dashed; }
+/* T2-2 · objetos de las Aprender */
+.mq .slide-tit { font:600 17px/1.3 Sora, Inter, sans-serif; }
+.mq .ficha { display:inline-flex; align-items:center; min-height:28px; padding:2px 8px; border-radius:6px; background:rgba(184,196,212,.16); border:1px solid rgba(248,249,250,.35); font:600 13px "JetBrains Mono", monospace; }
+.mq .ficha.sale { border-style:dashed; }
+.mq .fichero { display:flex; flex-wrap:wrap; gap:6px; min-height:0; }
+.mq .tt { display:grid; gap:4px; padding:10px 12px; border-radius:12px; background:rgba(10,20,34,.45); border:1px solid rgba(248,249,250,.12); }
+.mq .tt.tenue { opacity:.6; } .mq .tt.chica .tt-cuerpo { min-height:44px; }
+.mq .tt-tit { font:600 14px/1.3 Sora, Inter, sans-serif; display:flex; flex-wrap:wrap; gap:4px 8px; align-items:baseline; } .mq .tt-tit small { font:500 12px Inter, sans-serif; color:var(--aten); }
+.mq .tt-cuerpo { display:grid; grid-template-columns:1fr 1fr; grid-template-rows:auto 1fr; border-top:2px solid var(--neutro); min-height:72px; }
+.mq .tt-cuerpo .rot { font:700 12px/1.2 Inter, sans-serif; letter-spacing:.06em; padding:4px 6px; min-height:22px; }
+.mq .rot.d { color:var(--teal-t); border-right:2px solid var(--neutro); } .mq .rot.h { color:var(--ambar); }
+.mq .tt-cuerpo .lado { display:flex; flex-direction:column; align-items:flex-start; gap:4px; padding:4px 6px; } .mq .tt-cuerpo .lado.d { border-right:2px solid var(--neutro); }
+.mq .tt-cuerpo.sin-raya .rot.d, .mq .tt-cuerpo.sin-raya .lado.d { border-right-color:transparent; }
+.mq .tt-sumas, .mq .tt-saldo { display:grid; grid-template-columns:1fr 1fr; border-top:1px solid rgba(248,249,250,.35); padding:4px 6px; gap:6px; min-height:28px; }
+.mq .tt-saldo { border-top:0; }
+.mq .saldo { display:inline-flex; min-height:28px; align-items:center; padding:2px 8px; border-radius:6px; border:2px solid var(--texto); font:600 13px "JetBrains Mono", monospace; white-space:nowrap; }
+.mq .saldo.flota { border-style:dashed; }
+.mq .pista-d .lado.d, .mq .pista-b { outline:2px solid var(--texto); outline-offset:-2px; }
+.mq .nota-fig { font-size:12px; color:var(--aten); }
+.mq .boton { justify-self:start; min-height:44px; padding:0 16px; border-radius:12px; border:0; background:var(--teal); color:#F8F9FA; font:600 14px Sora, Inter, sans-serif; }
+.mq .selector { display:grid; grid-template-columns:1fr 1fr; border:1px solid var(--neutro); border-radius:10px; overflow:hidden; }
+.mq .selector button { min-height:44px; padding:6px 8px; border:0; background:transparent; color:var(--texto); font:600 13px/1.25 Inter, sans-serif; } .mq .selector .on { background:var(--neutro); color:#1D3557; }
+.mq .calendario { display:flex; align-items:center; gap:8px; font:600 13px Inter, sans-serif; color:var(--aten); } .mq .calendario .on { color:var(--texto); border-bottom:2px solid var(--texto); }
+.mq .cajones { display:grid; grid-template-columns:repeat(auto-fit, minmax(76px, 1fr)); gap:8px; }
+.mq .cajon { display:grid; gap:6px; align-content:start; padding:8px; border-radius:8px 8px 4px 4px; border:1px solid rgba(248,249,250,.35); border-bottom-width:4px; min-height:96px; }
+.mq .cajon-tit { font:600 12px/1.25 Inter, sans-serif; }
+.mq .cajon-dentro { display:flex; flex-wrap:wrap; gap:3px; } .mq .cajon-dentro i { width:16px; height:10px; border-radius:2px; background:var(--neutro); }
+.mq .cajon.vacio .cajon-dentro { color:var(--aten); } .mq .cero { font:600 13px "JetBrains Mono", monospace; }
+.mq .cajon-rot { font-size:12px; color:var(--aten); }
+.mq .tarjetas { display:grid; gap:8px; }
+.mq .tarjeta { min-height:44px; display:grid; gap:4px; padding:10px 12px; border-radius:10px; border:1px solid rgba(248,249,250,.35); background:transparent; color:var(--texto); font:600 14px Inter, sans-serif; text-align:left; }
+.mq .tarjeta.abierta { border:2px solid var(--texto); font-weight:400; } .mq .tarjeta .def { font-size:13px; } .mq .tarjeta small { font-size:12px; color:var(--aten); }
+.mq .pila-cuentas { display:flex; flex-wrap:wrap; gap:6px; }
+.mq .chip { min-height:44px; display:inline-flex; align-items:center; padding:4px 10px; border-radius:10px; border:1px solid rgba(248,249,250,.35); background:transparent; color:var(--texto); font:500 13px Inter, sans-serif; }
+.mq span.chip { min-height:32px; justify-self:start; }
+.mq .dos-cajas { display:grid; grid-template-columns:1fr 1fr; gap:8px; } .mq .caja-grande { display:grid; gap:6px; align-content:start; min-height:96px; padding:8px; border-radius:10px; border:1px dashed var(--neutro); }
+.mq .mesa { display:grid; gap:8px; } .mq .mesa-casos { display:grid; grid-template-columns:1fr 1fr; gap:8px; } .mq .mesa.cuatro { grid-template-columns:1fr 1fr; }
+.mq .caso { display:grid; gap:4px; align-content:start; padding:8px; border-radius:10px; background:rgba(10,20,34,.45); border:1px solid rgba(248,249,250,.12); }
+.mq .medidor { display:flex; flex-wrap:wrap; gap:2px 6px; align-items:center; } .mq .medidor .sube::after { content:" ▲"; } .mq .medidor .baja::after { content:" ▼"; }
+.mq .patrimonio { font-size:13px; color:var(--aten); }
+.mq .ecuacion { display:grid; grid-template-columns:1fr auto 1fr; gap:6px; align-items:stretch; } .mq .igual { align-self:center; font:600 18px Sora, sans-serif; }
+.mq .casa { display:grid; gap:4px; align-content:start; padding:8px; border-radius:10px; border:1px dashed var(--neutro); min-height:110px; } .mq .casa small { font-size:12px; color:var(--aten); }
+.mq .balanza { position:relative; padding-bottom:14px; } .mq .balanza .pie { position:absolute; left:50%; bottom:0; width:2px; height:14px; background:var(--neutro); }
+.mq .balanza { padding-top:20px; } .mq .barra { position:absolute; top:8px; left:12%; width:76%; height:3px; background:var(--neutro); border-radius:2px; transition:transform .45s cubic-bezier(.3,.9,.4,1); }
+.mq .viga { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:8px; padding:12px 0; } .mq .platillo { transition:transform .45s cubic-bezier(.3,.9,.4,1); }
+.mq .platillo { display:grid; gap:4px; align-content:start; min-height:96px; padding:8px; border-radius:10px; border:1px solid rgba(248,249,250,.35); }
+.mq .platillo.d .cajon-tit { color:var(--teal-t); } .mq .platillo.h .cajon-tit { color:var(--ambar); }
+.mq .nom { display:flex; flex-wrap:wrap; justify-content:space-between; gap:2px 6px; padding:3px 6px; border-radius:6px; background:rgba(184,196,212,.14); font-size:12px; line-height:1.3; } .mq .nom .num { font-size:12px; }
+.mq .nom.flota { border:1px dashed var(--texto); } .mq .total { justify-self:end; font-size:13px; }
+.mq .detalle { display:grid; gap:4px; padding:8px 10px; border-radius:10px; background:rgba(10,20,34,.45); } .mq .detalle p { display:flex; justify-content:space-between; gap:8px; font-size:13px; }
+.mq .detalle .corrida span { padding-left:18px; } .mq .explica { color:var(--aten); font-size:12px; }
+.mq .ren.marca { outline:2px solid var(--texto); outline-offset:-2px; } .mq .ren.cur { outline:2px dashed var(--texto); outline-offset:-2px; }
+.mq .tt.mini .tt-cuerpo { min-height:44px; }
+.mq .ctas .tt { padding:8px; }
+.mq .entra { animation:cae .4s cubic-bezier(.3,.9,.4,1) both; } @keyframes cae { from { opacity:0; transform:translateY(-10px); } }
+@media (prefers-reduced-motion: reduce) { .mq *, .mq *::before { animation:none !important; transition:none !important; } }
+.mq .reg { display:flex; flex-wrap:wrap; align-items:center; gap:4px 6px; } .mq .rot-d { color:var(--teal-t); font:700 12px Inter, sans-serif; } .mq .rot-h { color:var(--ambar); font:700 12px Inter, sans-serif; }
+.mq .mesa-casos { grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
+
+.marcos { display:flex; flex-wrap:wrap; gap:20px; align-items:flex-start; } .marco { display:grid; gap:6px; max-width:100%; overflow-x:auto; }
+.marco-rot { font:500 12px var(--f-mono); color:var(--g-muted); display:flex; justify-content:space-between; gap:8px; }
+.marco-caja { box-sizing:content-box; padding:16px 31px; background:#1F2D3D; border:1px solid var(--g-line); border-radius:18px; }
+.vivo { display:grid; gap:10px; grid-template-columns:minmax(0,1fr); } .botones { display:flex; flex-wrap:wrap; gap:8px; }
+.botones button { font:500 13px var(--f-mono); color:var(--g-ink); background:transparent; border:1px solid var(--g-line); border-radius:999px; min-height:44px; min-width:44px; padding:0 14px; cursor:pointer; }
+.botones button.on { border:2px solid var(--g-ink); } .botones button:focus-visible { outline:2px solid var(--g-ink); outline-offset:2px; }
+.frase { font-family:var(--f-display); font-size:19px; line-height:1.4; max-width:64ch; }
+.norman { display:grid; gap:8px; } .norman p { margin:0; max-width:76ch; line-height:1.5; } .norman b { font-family:var(--f-mono); font-size:12px; letter-spacing:.04em; text-transform:uppercase; color:var(--g-muted); margin-right:8px; }
+.mq .slide-txt { font-size:15px; line-height:1.45; }
+</style>
+<main class="pliego">
+  <header class="cab"><span class="eyebrow">Célula C · Lote T2-2 · La figura de cada slide de las 5 Aprender de T2 · Para Near, Misa, Ukyo y Erwin · Watari</span>
+    <h1>Figuras de T2 en slides</h1>
+    <p class="lead">Lo que va dentro de cada slide: el objeto propio de cada pieza (S8 de Mello) y su estado en cada pantalla, sobre los «VE ___ cuando ___» de Near. La cáscara (navegación, contador «Pantalla n de N», transición y volver atrás) es de Ukyo y Erwin y aquí no se dibuja. Cada pieza abre con una slide de objetivo.</p>
+    <div class="meta"><span>v1 · 23 de octubre de 2026</span><span>main d13d09b5</span><span>skill celula-diseno · Kit · S1-S13 de Mello · regla C4</span></div>
+    <div class="alerta"><b>Para Near, en una línea</b><span>Los textos de las maquetas son los tuyos, leídos de c-t2-1-near-lote.md. Al final hay siete ajustes que te propongo: los cambios de texto son mínimos y casi todos tocan solo tu «VE».</span></div>
+    <div class="alerta"><b>Para Erwin y Ukyo, en una línea</b><span>No pido ningún componente compartido nuevo. Las cinco usan <code>CuentaT</code>, <code>Balanza</code> sin cambios, los verbos y el renglón del diario. La figura de cada slide va dentro de vuestra cáscara, sin tocarla.</span></div>
+  </header>
+  <section class="sec" id="reglas"><header><span class="eyebrow">Lo común a las cinco</span><h2>Reglas de figura</h2></header>
+    <ul class="limpia marcas">
+      <li><b>Cuatro tipos de slide.</b> En <b>lectura</b>, la figura cambia sola al entrar, una vez, y con movimiento reducido ya aparece en su estado final. En <b>exploración</b>, el estudiante toca y la figura responde, sin calificar. En <b>predicción</b>, elige, la figura pinta su elección y la slide siguiente la confirma; no hay veredicto. En <b>decisión</b> va la escalera C2: primero se pinta la consecuencia y después el veredicto (regla C4). Al primer error, la pista; al segundo, la devolución con su porqué y la correcta con borde blanco de 2 px. Nunca «Iba aquí».</li>
+      <li><b>Nada avanza solo</b>. Las animaciones van en una sola vez, con transform y opacity y la curva cubic-bezier(.3,.9,.4,1). Al volver atrás, la slide aparece en su estado final, sin repetir la animación.</li>
+      <li><b>Color (S12).</b> Teal solo para DEBE y para el botón de acción. Ámbar solo para HABER. Los títulos de las slides y los rótulos de las figuras van en neutro. El acierto es neutro, con ✓ y «Correcto». El coral es solo para el error, y siempre acompañado de un ✕ y una frase.</li>
+      <li><b>Arrastrar o tocar.</b> Todo lo que se arrastra también se puede tocar: primero la ficha y luego el destino, con <code>useArrastre</code>. Cada destino mide 44 px o más.</li>
+      <li><b>Las cifras</b> salen de contabilidad.js (S10). En las maquetas, lo que va entre corchetes lo pone Near o sale de los datos.</li>
+      <li><b>Diferencia con las Hacer (D9).</b> Los cajones de A2 no son la línea del cierre de «Las que vuelven a cero». La T de Bancos con su renglón viajero (A4) no es la cuadrícula de cuentas de «Del diario al mayor». La balanza con nombres (A3) no son las columnas por valor de «Cuadra por valor».</li>
+    </ul></section>
+  
+  <section class="sec" id="a1"><header><span class="eyebrow">Pieza 1 de 5 · cu-a1-anatomia-de-una-cuenta · 8 slides</span><h2>De qué está hecha una cuenta</h2><p class="frase">Objeto propio: <b>El saldo que cae del lado mayor</b>.</p></header>
+    <div class="vivo" data-k="a1"><div class="botones slides" role="group" aria-label="Slide"><button type="button" data-i="0" class=on>1</button><button type="button" data-i="1">2</button><button type="button" data-i="2">3</button><button type="button" data-i="3">4</button><button type="button" data-i="4">5</button><button type="button" data-i="5">6</button><button type="button" data-i="6">7</button><button type="button" data-i="7">8</button></div>
+      <div class="botones estados" role="group" aria-label="Estado"></div>
+      <div class="marcos"><div class="marco"><div class="marco-rot"><span>320 px</span><span>contenido 258</span></div><div class="marco-caja"><div class="mq" style="width:258px"></div></div></div>
+        <div class="marco"><div class="marco-rot"><span>375 px</span><span>contenido 313</span></div><div class="marco-caja"><div class="mq" style="width:313px"></div></div></div></div></div>
+    <div class="procedencia"><div><span class="prov m">MEDIDO EN MAQUETA</span></div><p>Medí 32 estados de figura a 258 y 313 px (el contenido a 320 y 375). La letra más chica mide 12 px. No hay botones de menos de 44 px (0) ni nada que se salga de su caja (0). La figura más alta mide 356 px. Decisiones con escalera: 2. Predicciones (se pintan y no se califican): 1.</p></div>
+    <div class="tabla-wrap"><table><thead><tr><th>Slide</th><th>Título</th><th>Tipo</th><th>Qué se mueve y qué toca</th><th>Estados</th></tr></thead><tbody><tr><td class='mono'>1 · objetivo</td><td>Objetivo</td><td>objetivo</td><td>La figura en reposo, sin respuesta a la vista.</td><td class='mono'>reposo</td></tr><tr><td class='mono'>2 · Near 1</td><td>¿De qué lado?</td><td>predicción</td><td>Arrastra o toca cada ficha y luego toca un lado. No se califica: la siguiente pantalla lo explica.</td><td class='mono'>antes · despues</td></tr><tr><td class='mono'>3 · Near 2</td><td>Una raya, dos lados</td><td>lectura</td><td>La raya baja y parte la hoja (transform: scaleY de 0 a 1). Con movimiento reducido, ya está puesta.</td><td class='mono'>despues</td></tr><tr><td class='mono'>4 · Near 3</td><td>Debe y haber</td><td>exploración</td><td>Toca cada lado y aparece su nombre. Los rótulos del lado van en teal y en ámbar; el título de la slide, en neutro.</td><td class='mono'>antes · despues</td></tr><tr><td class='mono'>5 · Near 4</td><td>Movimientos</td><td>exploración</td><td>Toca «Sumar»: cada total cuenta hacia arriba (useNumeroQueSube).</td><td class='mono'>antes · despues</td></tr><tr><td class='mono'>6 · Near 5</td><td>El saldo</td><td>decisión</td><td>Toca el lado donde va el saldo. La ficha del saldo cae en ese lado, bajo la raya de las sumas, antes del veredicto (regla C4).</td><td class='mono'>antes · error1 · error2 · bien</td></tr><tr><td class='mono'>7 · Near 6</td><td>Lado no es juicio</td><td>exploración</td><td>Selector de dos cuentas reales (no califica): Caja y Documentos por pagar. Cambia la cuenta y su familia, no la etiqueta de la misma T.</td><td class='mono'>antes · despues</td></tr><tr><td class='mono'>8 · cierre</td><td>En una frase</td><td>decisión</td><td>La pregunta de cierre de Near, con la misma T en pequeño: $50 en el debe y $30 en el haber. Al acertar, el saldo de $20 cae en el debe.</td><td class='mono'>antes · bien</td></tr></tbody></table></div>
+    <div class="norman"><p><b>El error</b> Slide 6 «El saldo»: el saldo cae en el haber con borde coral y la frase «Así el saldo quedaría del lado de $150, el movimiento menor». Al primer error, la pista de Near; al segundo, la devolución con su porqué y el lado del debe con borde blanco de 2 px. El cierre sigue la misma escalera.</p></div>
+    <h3>Reutiliza</h3><ul class="limpia marcas"><li><code>CuentaT</code> (mecanicas/libros/piezas.jsx), con sus rótulos y el ▲ apagado.</li><li><code>useNumeroQueSube</code> para las sumas y <code>Ficha</code> y <code>useArrastre</code> (verbos.jsx) para arrastrar o tocar, con su camino accesible.</li><li>La escalera C2 y la regla C4 del módulo de la célula: <code>t7/aprenderC3.jsx</code> y <code>t7/decisionC4.jsx</code>.</li></ul>
+  </section>
+  <section class="sec" id="a2"><header><span class="eyebrow">Pieza 2 de 5 · cu-a2-dos-familias · 6 slides</span><h2>Las dos familias de cuentas</h2><p class="frase">Objeto propio: <b>Los cajones que se vacían el 31 de diciembre</b>.</p></header>
+    <div class="vivo" data-k="a2"><div class="botones slides" role="group" aria-label="Slide"><button type="button" data-i="0" class=on>1</button><button type="button" data-i="1">2</button><button type="button" data-i="2">3</button><button type="button" data-i="3">4</button><button type="button" data-i="4">5</button><button type="button" data-i="5">6</button></div>
+      <div class="botones estados" role="group" aria-label="Estado"></div>
+      <div class="marcos"><div class="marco"><div class="marco-rot"><span>320 px</span><span>contenido 258</span></div><div class="marco-caja"><div class="mq" style="width:258px"></div></div></div>
+        <div class="marco"><div class="marco-rot"><span>375 px</span><span>contenido 313</span></div><div class="marco-caja"><div class="mq" style="width:313px"></div></div></div></div></div>
+    <div class="procedencia"><div><span class="prov m">MEDIDO EN MAQUETA</span></div><p>Medí 26 estados de figura a 258 y 313 px (el contenido a 320 y 375). La letra más chica mide 12 px. No hay botones de menos de 44 px (0) ni nada que se salga de su caja (0). La figura más alta mide 350 px. Decisiones con escalera: 1. Predicciones (se pintan y no se califican): 1.</p></div>
+    <div class="tabla-wrap"><table><thead><tr><th>Slide</th><th>Título</th><th>Tipo</th><th>Qué se mueve y qué toca</th><th>Estados</th></tr></thead><tbody><tr><td class='mono'>1 · objetivo</td><td>Objetivo</td><td>objetivo</td><td>La figura en reposo, sin respuesta a la vista.</td><td class='mono'>reposo</td></tr><tr><td class='mono'>2 · Near 1</td><td>El día después</td><td>predicción</td><td>Toca la cuenta que crees que sigue y luego «Pasar al 1 de enero». El calendario avanza y cada cajón hace lo que hace: no se califica.</td><td class='mono'>antes · despues</td></tr><tr><td class='mono'>3 · Near 2</td><td>Las reales</td><td>exploración</td><td>Toca «Avanzar»: los tres cajones cruzan al año nuevo con su contenido (translateX).</td><td class='mono'>antes · despues</td></tr><tr><td class='mono'>4 · Near 3</td><td>Las nominales</td><td>exploración</td><td>Toca «Avanzar»: el contenido sale de cada cajón (opacity y translateY) y queda $0. Gastos de operación va lleno de fichas: tener mucho movimiento no lo salva del cierre (confusión de S9).</td><td class='mono'>antes · despues</td></tr><tr><td class='mono'>5 · Near 4</td><td>Tres nominales</td><td>exploración</td><td>Las tres tarjetas se voltean (rotateY) y muestran la definición textual y su ejemplo. No hay muro: una tarjeta abierta a la vez.</td><td class='mono'>antes · despues</td></tr><tr><td class='mono'>6 · Near 5</td><td>Una sola pregunta</td><td>decisión</td><td>Clasifica seis cuentas en dos cajones grandes, «Sigue» y «Vuelve a cero». La que cae mal se queda en el cajón elegido y se ve qué le pasaría el 1 de enero (regla C4).</td><td class='mono'>antes · error1 · error2 · bien</td></tr></tbody></table></div>
+    <div class="norman"><p><b>El error</b> Slide 6 «Una sola pregunta»: la cuenta mal clasificada se queda en el cajón elegido y dice qué le pasaría el 1 de enero («Así, el 1 de enero Bancos diría $0, y el dinero sigue en el banco»). Primero la pista y después la devolución, con el cajón correcto en borde blanco.</p></div>
+    <h3>Reutiliza</h3><ul class="limpia marcas"><li><code>Ficha</code> y <code>useArrastre</code> (verbos.jsx) para soltar las seis cuentas.</li><li>El cajón es la figura propia de la pieza: vive en la célula y no es compartido.</li><li>La escalera C2 de <code>t7/aprenderC3.jsx</code>.</li></ul>
+  </section>
+  <section class="sec" id="a5"><header><span class="eyebrow">Pieza 3 de 5 · cu-a5-debe-y-haber · 8 slides</span><h2>El debe y el haber</h2><p class="frase">Objeto propio: <b>La mesa de dos casos</b>.</p></header>
+    <div class="vivo" data-k="a5"><div class="botones slides" role="group" aria-label="Slide"><button type="button" data-i="0" class=on>1</button><button type="button" data-i="1">2</button><button type="button" data-i="2">3</button><button type="button" data-i="3">4</button><button type="button" data-i="4">5</button><button type="button" data-i="5">6</button><button type="button" data-i="6">7</button><button type="button" data-i="7">8</button></div>
+      <div class="botones estados" role="group" aria-label="Estado"></div>
+      <div class="marcos"><div class="marco"><div class="marco-rot"><span>320 px</span><span>contenido 258</span></div><div class="marco-caja"><div class="mq" style="width:258px"></div></div></div>
+        <div class="marco"><div class="marco-rot"><span>375 px</span><span>contenido 313</span></div><div class="marco-caja"><div class="mq" style="width:313px"></div></div></div></div></div>
+    <div class="procedencia"><div><span class="prov m">MEDIDO EN MAQUETA</span></div><p>Medí 34 estados de figura a 258 y 313 px (el contenido a 320 y 375). La letra más chica mide 12 px. No hay botones de menos de 44 px (0) ni nada que se salga de su caja (0). La figura más alta mide 429 px. Decisiones con escalera: 2. Predicciones (se pintan y no se califican): 1.</p></div>
+    <div class="tabla-wrap"><table><thead><tr><th>Slide</th><th>Título</th><th>Tipo</th><th>Qué se mueve y qué toca</th><th>Estados</th></tr></thead><tbody><tr><td class='mono'>1 · objetivo</td><td>Objetivo</td><td>objetivo</td><td>La figura en reposo, sin respuesta a la vista.</td><td class='mono'>reposo</td></tr><tr><td class='mono'>2 · Near 1</td><td>Mismo lado, mismo monto</td><td>predicción</td><td>Elige «Sí, igual» o «No». La elección queda marcada y la respuesta llega en la pantalla siguiente (no se califica aquí).</td><td class='mono'>antes · despues</td></tr><tr><td class='mono'>3 · Near 2</td><td>Efectos opuestos</td><td>exploración</td><td>Toca «Registrar»: cada saldo cuenta hacia su valor nuevo. Uno sube y el otro baja con la misma ficha.</td><td class='mono'>antes · despues</td></tr><tr><td class='mono'>4 · Near 3</td><td>Dónde vive cada cuenta</td><td>decisión</td><td>Arrastra o toca Maquinaria y Aportes sociales y luego su casa en la ecuación. La que cae en la casa equivocada se queda allí y muestra la regla de esa casa.</td><td class='mono'>antes · error1 · error2 · bien</td></tr><tr><td class='mono'>5 · Near 4</td><td>La trampa</td><td>exploración</td><td>Toca «Registrar el pagaré»: los dos saldos suben a la vez. Es la confusión de S9 «débito siempre suma», puesta al revés.</td><td class='mono'>antes · despues</td></tr><tr><td class='mono'>6 · Near 5</td><td>Gastos e ingresos</td><td>exploración</td><td>Suelta una ficha en Gastos de operación y otra en Ingresos por servicios. Debajo de la mesa, el patrimonio baja con una y sube con la otra.</td><td class='mono'>antes · despues</td></tr><tr><td class='mono'>7 · Near 6</td><td>Prueba tú</td><td>exploración libre</td><td>Mesa de cuatro cuentas con sus saldos en cifras, que se mueven en vivo. No califica. Con $100 frente a $400.000, una barra no se vería: por eso aquí van cifras y no barras.</td><td class='mono'>antes</td></tr><tr><td class='mono'>8 · cierre</td><td>En una frase</td><td>decisión</td><td>Las tres opciones de Near (a, b, c), que difieren en una palabra. La mesa de dos casos queda arriba, en pequeño.</td><td class='mono'>antes · error1 · bien</td></tr></tbody></table></div>
+    <div class="norman"><p><b>El error</b> Slide 4 «Dónde vive cada cuenta»: la cuenta cae en la casa equivocada y aparece la regla de esa casa como consecuencia. Primero la pista y después la devolución de Near («Confundiste dónde vive con dónde se anota»), con la casa correcta en borde blanco. El cierre usa las tres opciones de Near, con su retro.</p></div>
+    <h3>Reutiliza</h3><ul class="limpia marcas"><li><code>useNumeroQueSube</code> para los saldos que suben y bajan.</li><li><code>Ficha</code> y <code>useArrastre</code> para la mesa de «Prueba tú».</li><li>La escalera C2 de <code>t7/aprenderC3.jsx</code>.</li></ul>
+  </section>
+  <section class="sec" id="a3"><header><span class="eyebrow">Pieza 4 de 5 · cu-a3-partida-doble · 7 slides</span><h2>La partida doble y las dos reglas</h2><p class="frase">Objeto propio: <b>La balanza de totales con nombres</b>.</p></header>
+    <div class="vivo" data-k="a3"><div class="botones slides" role="group" aria-label="Slide"><button type="button" data-i="0" class=on>1</button><button type="button" data-i="1">2</button><button type="button" data-i="2">3</button><button type="button" data-i="3">4</button><button type="button" data-i="4">5</button><button type="button" data-i="5">6</button><button type="button" data-i="6">7</button></div>
+      <div class="botones estados" role="group" aria-label="Estado"></div>
+      <div class="marcos"><div class="marco"><div class="marco-rot"><span>320 px</span><span>contenido 258</span></div><div class="marco-caja"><div class="mq" style="width:258px"></div></div></div>
+        <div class="marco"><div class="marco-rot"><span>375 px</span><span>contenido 313</span></div><div class="marco-caja"><div class="mq" style="width:313px"></div></div></div></div></div>
+    <div class="procedencia"><div><span class="prov m">MEDIDO EN MAQUETA</span></div><p>Medí 30 estados de figura a 258 y 313 px (el contenido a 320 y 375). La letra más chica mide 12 px. No hay botones de menos de 44 px (0) ni nada que se salga de su caja (0). La figura más alta mide 310 px. Decisiones con escalera: 4. Predicciones (se pintan y no se califican): 1.</p></div>
+    <div class="tabla-wrap"><table><thead><tr><th>Slide</th><th>Título</th><th>Tipo</th><th>Qué se mueve y qué toca</th><th>Estados</th></tr></thead><tbody><tr><td class='mono'>1 · objetivo</td><td>Objetivo</td><td>objetivo</td><td>La figura en reposo, sin respuesta a la vista.</td><td class='mono'>reposo</td></tr><tr><td class='mono'>2 · Near 1</td><td>Una sola línea</td><td>predicción</td><td>Toca «Anotar solo el equipo»: Equipo de computación entra al platillo del activo con su nombre y su cifra, y la balanza se inclina.</td><td class='mono'>antes · despues</td></tr><tr><td class='mono'>3 · Near 2</td><td>Partida doble</td><td>lectura</td><td>La segunda línea aparece junto a la balanza, todavía fuera de ella: es la que el estudiante va a mover en la pantalla siguiente.</td><td class='mono'>despues</td></tr><tr><td class='mono'>4 · Near 3</td><td>La balanza</td><td>decisión</td><td>Arrastra o toca Cuentas por pagar y luego un platillo. Si cae en el del activo, la balanza se inclina más (regla C4) y aparece la pista.</td><td class='mono'>antes · error1 · bien</td></tr><tr><td class='mono'>5 · Near 4</td><td>Primera regla</td><td>decisión</td><td>Los platillos pasan a ser grupos: «crece por el debe» y «crece por el haber». Suelta Activos, Gastos y Costos. Cada familia queda escrita en su platillo.</td><td class='mono'>antes · bien</td></tr><tr><td class='mono'>6 · Near 5</td><td>Segunda regla</td><td>decisión</td><td>Suelta Pasivos, Patrimonio e Ingresos. La que cae mal se queda en el platillo elegido con borde coral y su consecuencia escrita. No rebota (Near pedía rebote; ver ajustes).</td><td class='mono'>antes · error1 · error2 · bien</td></tr><tr><td class='mono'>7 · Near 6</td><td>Simple o compuesto</td><td>decisión</td><td>Arma el asiento de ene-03: cada línea cae en su platillo con su nombre y su cifra, y el total de cada lado cuenta hacia arriba. Al terminar, hay dos nombres de un lado y dos del otro, con la balanza nivelada por los totales.</td><td class='mono'>antes · bien</td></tr></tbody></table></div>
+    <div class="norman"><p><b>El error</b> Slides 4, 6 y 7: la línea o la familia que cae mal se queda en el platillo elegido, con borde coral, y la balanza muestra el desnivel o la frase de lo que implicaría. Primero la pista y después la devolución, con el platillo correcto en borde blanco. Nada rebota.</p></div>
+    <h3>Reutiliza</h3><ul class="limpia marcas"><li><code>Balanza</code> (verbos.jsx) <b>sin cambios</b>: <code>izquierda</code> y <code>derecha</code> reciben la lista de nombres con su cifra, e <code>inclinacion</code> la mueve.</li><li><code>Ficha</code> y <code>useArrastre</code> para soltar líneas y familias en un platillo.</li><li>La escalera C2 de <code>t7/aprenderC3.jsx</code>.</li></ul>
+  </section>
+  <section class="sec" id="a4"><header><span class="eyebrow">Pieza 5 de 5 · cu-a4-diario-y-mayor · 7 slides</span><h2>Del diario al mayor</h2><p class="frase">Objeto propio: <b>El renglón que viaja del diario a su T</b>.</p></header>
+    <div class="vivo" data-k="a4"><div class="botones slides" role="group" aria-label="Slide"><button type="button" data-i="0" class=on>1</button><button type="button" data-i="1">2</button><button type="button" data-i="2">3</button><button type="button" data-i="3">4</button><button type="button" data-i="4">5</button><button type="button" data-i="5">6</button><button type="button" data-i="6">7</button></div>
+      <div class="botones estados" role="group" aria-label="Estado"></div>
+      <div class="marcos"><div class="marco"><div class="marco-rot"><span>320 px</span><span>contenido 258</span></div><div class="marco-caja"><div class="mq" style="width:258px"></div></div></div>
+        <div class="marco"><div class="marco-rot"><span>375 px</span><span>contenido 313</span></div><div class="marco-caja"><div class="mq" style="width:313px"></div></div></div></div></div>
+    <div class="procedencia"><div><span class="prov m">MEDIDO EN MAQUETA</span></div><p>Medí 30 estados de figura a 258 y 313 px (el contenido a 320 y 375). La letra más chica mide 12 px. No hay botones de menos de 44 px (0) ni nada que se salga de su caja (0). La figura más alta mide 367 px. Decisiones con escalera: 2. Predicciones (se pintan y no se califican): 0.</p></div>
+    <div class="tabla-wrap"><table><thead><tr><th>Slide</th><th>Título</th><th>Tipo</th><th>Qué se mueve y qué toca</th><th>Estados</th></tr></thead><tbody><tr><td class='mono'>1 · objetivo</td><td>Objetivo</td><td>objetivo</td><td>La figura en reposo, sin respuesta a la vista.</td><td class='mono'>reposo</td></tr><tr><td class='mono'>2 · Near 1</td><td>¿Por fecha o por cuenta?</td><td>decisión</td><td>Elige un orden y los nueve hechos se ordenan así. Por fecha, los renglones de Bancos quedan dispersos y se marcan (consecuencia). Por cuenta, quedan juntos.</td><td class='mono'>antes · error1 · bien</td></tr><tr><td class='mono'>3 · Near 2</td><td>El diario</td><td>exploración</td><td>Toca «Siguiente»: entra una fila del diario, en orden de fecha (4 filas de diarioDeEjemplo). Cada toque, una fila. Nada avanza solo.</td><td class='mono'>antes · despues</td></tr><tr><td class='mono'>4 · Near 3</td><td>Cómo se escribe</td><td>exploración</td><td>Toca el asiento del 1 de julio: la cuenta del haber se corre a la derecha (translateX) y aparece la explicación corta.</td><td class='mono'>antes · despues</td></tr><tr><td class='mono'>5 · Near 4</td><td>El mayor</td><td>lectura</td><td>Toca «Ver mayor»: el mismo enero se reparte en cuentas T (2 por fila a 320 px).</td><td class='mono'>despues</td></tr><tr><td class='mono'>6 · Near 5</td><td>Mayorizar</td><td>decisión</td><td>Arrastra o toca un renglón de Bancos y luego un lado de la T. El renglón viaja con su fecha. Si cae del otro lado, se queda allí con borde coral y el saldo de Bancos cambia.</td><td class='mono'>antes · error1 · error2 · bien</td></tr><tr><td class='mono'>7 · Near 6</td><td>Dos preguntas</td><td>exploración</td><td>Toca ene-03 en el diario y se ilumina también en el mayor (y al revés). A 320 y 375 px los dos libros van uno encima del otro, no uno al lado del otro.</td><td class='mono'>antes · despues</td></tr></tbody></table></div>
+    <div class="norman"><p><b>El error</b> Slides 2 y 6: el orden elegido o el lado elegido se pintan. Por fecha, los renglones de Bancos quedan repartidos. En el lado contrario, el renglón queda en el haber con borde coral y Bancos cambia. Primero la pista y después la devolución, con el lado correcto en borde blanco.</p></div>
+    <h3>Reutiliza</h3><ul class="limpia marcas"><li>El renglón de <code>b5/LibroDiario.jsx</code>, abierto.</li><li><code>CuentaT</code> para Bancos y para las cuentas del mayor.</li><li><code>FichaEnVuelo</code> (verbos.jsx) para el renglón que viaja.</li><li>La escalera C2 de <code>t7/aprenderC3.jsx</code>.</li></ul>
+  </section>
+  <section class="sec" id="ajustes"><header><span class="eyebrow">Para Near</span><h2>Lo que no se puede pintar como está, y lo que propongo</h2></header><ul class="limpia marcas"><li><b>A1 · slide 6 (Near 5).</b> Near escribe «si lo suelta en el haber, la T se inclina y no lo acepta». Inclinarse es de la balanza de A3, y rechazar la ficha va contra la regla C4. <b>Propongo</b>: el saldo cae en el lado elegido, se pinta la consecuencia y sigue la escalera C2. El texto de la slide no cambia.</li><li><b>A1 · slide 7 (Near 6).</b> Poner la etiqueta «Pasivo» a la misma Caja sería un caso inventado: un pasivo con saldo en el debe por $1.350 (choca con S10). <b>Propongo</b>: un selector entre dos cuentas reales, Caja (activo, saldo en el debe) y Documentos por pagar $500 (pasivo, saldo en el haber, cu6-pagaré, p. 89, la misma que usa A5). El texto de Near sirve sin cambios.</li><li><b>A3 · slide 6 (Near 5).</b> Near pide que una familia mal puesta «rebote al centro». <b>Propongo</b>: que se quede en el platillo elegido, con su consecuencia escrita y la escalera C2 (regla C4, S4 de Mello).</li><li><b>A3 · slide 7 (Near 6).</b> S9 pide «tres cuentas que cuadran por totales», y ene-03 de Lavado tiene 2 contra 2. <b>Propongo</b> a Near un asiento de tres o más líneas de los datos de Lavado, o un segundo estado con uno así. La figura sirve para cualquier número de líneas: los nombres se apilan en su platillo.</li><li><b>A4 · slides 5 y 7 (Near 4 y 6).</b> «Uno junto al otro» no cabe a 320 px. Los dos libros van <b>uno encima del otro</b>, con el enlace iluminado en los dos. Solo cambia la frase del «VE»; el texto de la slide no.</li><li><b>A5 · slide 7 (Near 6).</b> Una ficha de $100 frente a $400.000 no se vería en una barra. En «Prueba tú» los saldos van en cifras que se mueven en vivo, no en barras. El texto no cambia.</li><li><b>Las 5 · slide de objetivo.</b> Near no la traía y la pide S1. Dejo una oración [W] por pieza, que Near reescribe.</li></ul></section>
+  <section class="sec" id="noverif"><header><span class="eyebrow">Lo que no verifiqué</span><h2>Pendiente</h2></header>
+    <ul class="limpia marcas"><li>Las maquetas muestran la figura y sus estados, no la cáscara. Las palabras por slide (S2 y S3) se cuentan cuando la cáscara exista. Los textos de Near, con la figura, ya dejan una acción antes de 60 palabras en las cinco piezas.</li>
+      <li>El movimiento y el volver atrás se miden en el componente de Erwin, no aquí.</li><li>No lo he visto en un teléfono real.</li></ul></section>
+</main>
+<script>/* T2-2 · La figura de cada slide de las 5 Aprender de T2 (Watari, 23-oct). Maqueta de forma: la cáscara (navegación,
+   contador, transición) es de Ukyo y Erwin y aquí no se dibuja. Textos: los de Near (c-t2-1-near-lote.md §1);
+   [W] = propuesta mía para Near. Cifras: las de Near, que salen de contabilidad.js. */
+(function () {
+  const $ = (n) => '$' + n.toLocaleString('es-CO');
+  const X = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
+  const V = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
+  const ok = `<span class="pas ok">${V}Correcto</span>`;
+  const falla = (t) => `<p class="falla">${X}<span>${t}</span></p>`, cuadra = (t) => `<p class="cuadra">${V}<span>${t}</span></p>`;
+  const msg = (t, tipo) => `<div class="msg${tipo === 'mal' ? ' mal' : ''}"><p>${tipo === 'ok' ? ok : ''}${t}</p></div>`;
+  const ficha = (v, cls = '') => `<span class="ficha ${cls}">${$(v)}</span>`;
+  const T = (nombre, debe, haber, o = {}) => `<div class="tt${o.cls ? ' ' + o.cls : ''}"><p class="tt-tit">${nombre}${o.sub ? `<small>${o.sub}</small>` : ''}</p>
+    <div class="tt-cuerpo${o.sinRaya ? ' sin-raya' : ''}">${o.rotulos === false ? '' : `<span class="rot d">${o.sinNombre ? '' : 'DEBE'}</span><span class="rot h">${o.sinNombre ? '' : 'HABER'}</span>`}
+    <div class="lado d">${debe}</div><div class="lado h">${haber}</div></div>${o.pie || ''}</div>`;
+  const ops = (lista, est) => `<div class="ops">${lista.map(([t, e]) => `<button type="button" class="op${e === 'mal' ? ' malb' : e === 'bien' ? ' bien' : e === 'pista' ? ' pista' : ''}">${t}${e === 'mal' ? `<span class="pas mal">${X}No va aquí</span>` : e === 'bien' ? ok : ''}</button>`).join('')}</div>`;
+  const P = {};
+
+  // ═══ A1 · De qué está hecha una cuenta · objeto: el saldo que cae del lado mayor
+  P.a1 = { titulo: 'De qué está hecha una cuenta', id: 'cu-a1-anatomia-de-una-cuenta', objeto: 'El saldo que cae del lado mayor', slides: [
+    { t: 'Objetivo', txt: '[W para Near] Al terminar, sabrás leer una cuenta T: sus dos lados, sus movimientos y de qué lado queda su saldo.', est: ['reposo'],
+      fig: () => T('Caja', '', '', { pie: '<p class="nota-fig">La cuenta que vas a armar.</p>', cls: 'tenue' }) },
+    { t: '¿De qué lado?', near: 1, tipo: 'predicción', est: ['antes', 'despues'], accion: 'Arrastra o toca cada ficha y luego toca un lado. No se califica: la siguiente pantalla lo explica.',
+      fig: (e) => `<div class="fichero">${e === 'antes' ? ficha(1000) + ficha(500) + ficha(150, 'sale') : ''}</div>` + T('Caja', e === 'despues' ? ficha(1000, 'entra') + ficha(500, 'entra') : '', e === 'despues' ? ficha(150, 'sale entra') : '', { sinRaya: true, sinNombre: true }) },
+    { t: 'Una raya, dos lados', near: 2, tipo: 'lectura', est: ['despues'], accion: 'La raya baja y parte la hoja (transform: scaleY de 0 a 1). Con movimiento reducido, ya está puesta.',
+      fig: () => T('Caja', ficha(1000) + ficha(500), ficha(150, 'sale'), { sinNombre: true, cls: 'raya-nueva' }) },
+    { t: 'Debe y haber', near: 3, tipo: 'exploración', est: ['antes', 'despues'], accion: 'Toca cada lado y aparece su nombre. Los rótulos del lado van en teal y en ámbar; el título de la slide, en neutro.',
+      fig: (e) => T('Caja', ficha(1000) + ficha(500), ficha(150, 'sale'), { sinNombre: e === 'antes' }) },
+    { t: 'Movimientos', near: 4, tipo: 'exploración', est: ['antes', 'despues'], accion: 'Toca «Sumar»: cada total cuenta hacia arriba (useNumeroQueSube).',
+      fig: (e) => T('Caja', ficha(1000) + ficha(500), ficha(150, 'sale'), { pie: `<div class="tt-sumas"><span class="num td">${e === 'despues' ? $(1500) : '—'}</span><span class="num th">${e === 'despues' ? $(150) : '—'}</span></div>${e === 'antes' ? '<button type="button" class="boton">Sumar</button>' : ''}` }) },
+    { t: 'El saldo', near: 5, tipo: 'decisión', est: ['antes', 'error1', 'error2', 'bien'], accion: 'Toca el lado donde va el saldo. La ficha del saldo cae en ese lado, bajo la raya de las sumas, antes del veredicto (regla C4).',
+      fig: (e) => { const enH = e === 'error1' || e === 'error2'; const s = `<span class="saldo${enH ? ' malb' : ''} entra">Saldo ${$(1350)}</span>`;
+        return `<div class="fichero">${e === 'antes' ? '<span class="saldo flota">Saldo $1.350</span>' : ''}</div>` + T('Caja', ficha(1000) + ficha(500), ficha(150, 'sale'), { cls: e === 'error2' ? 'pista-d' : '', pie: `<div class="tt-sumas"><span class="num td">${$(1500)}</span><span class="num th">${$(150)}</span></div><div class="tt-saldo"><span>${e === 'bien' ? s : ''}</span><span>${enH ? s : ''}</span></div>` })
+          + (enH ? falla('Así el saldo quedaría del lado de $150, el movimiento menor.') : e === 'bien' ? cuadra('Cae del lado del movimiento mayor: $1.500 contra $150.') : '')
+          + (e === 'error1' ? msg('[Pista de Near. Nombra la confusión de S9: «el saldo va del lado del último valor».]', 'mal') : e === 'error2' ? msg('[Devolución de Near con su porqué.] La correcta queda con borde blanco de 2 px.', 'mal') : e === 'bien' ? msg('[Acierto de Near.]', 'ok') : ''); } },
+    { t: 'Lado no es juicio', near: 6, tipo: 'exploración', est: ['antes', 'despues'], accion: 'Selector de dos cuentas reales (no califica): Caja y Documentos por pagar. Cambia la cuenta y su familia, no la etiqueta de la misma T.',
+      fig: (e) => `<div class="selector"><button type="button" class="${e === 'antes' ? 'on' : ''}">Caja · activo</button><button type="button" class="${e === 'despues' ? 'on' : ''}">Documentos por pagar · pasivo</button></div>`
+        + (e === 'antes' ? T('Caja', ficha(1000) + ficha(500), ficha(150, 'sale'), { pie: '<div class="tt-saldo"><span><span class="saldo">Saldo $1.350</span></span><span></span></div><p class="nota-fig">Activo con saldo en el debe: lo que la empresa tiene.</p>' })
+          : T('Documentos por pagar', '', ficha(500), { pie: '<div class="tt-saldo"><span></span><span><span class="saldo">Saldo $500</span></span></div><p class="nota-fig">Pasivo con saldo en el haber: lo que la empresa debe.</p>' })) },
+    { t: 'En una frase', near: 'cierre', tipo: 'decisión', est: ['antes', 'bien'], accion: 'La pregunta de cierre de Near, con la misma T en pequeño: $50 en el debe y $30 en el haber. Al acertar, el saldo de $20 cae en el debe.',
+      fig: (e) => T('La cuenta', ficha(50), ficha(30, 'sale'), { cls: 'chica', pie: `<div class="tt-saldo"><span>${e === 'bien' ? '<span class="saldo entra">Saldo $20</span>' : ''}</span><span></span></div>` }) },
+  ] };
+
+  // ═══ A2 · Las dos familias · objeto: los cajones que se vacían el 31 de diciembre
+  const cajon = (n, est, o = {}) => `<div class="cajon${est === 'vacio' ? ' vacio' : ''}${o.mal ? ' malb' : ''}${o.pista ? ' pista-b' : ''}"><span class="cajon-tit">${n}</span><span class="cajon-dentro">${est === 'vacio' ? '<span class="cero">$0</span>' : '<i></i>'.repeat(o.mucho ? 7 : 3)}</span>${o.rot ? `<span class="cajon-rot">${o.rot}</span>` : ''}</div>`;
+  const fecha = (f, on) => `<div class="calendario"><span class="${on ? '' : 'on'}">31 dic</span><span class="flecha">→</span><span class="${on ? 'on' : ''}">1 ene</span></div>`;
+  P.a2 = { titulo: 'Las dos familias de cuentas', id: 'cu-a2-dos-familias', objeto: 'Los cajones que se vacían el 31 de diciembre', slides: [
+    { t: 'Objetivo', txt: '[W para Near] Al terminar, sabrás distinguir las cuentas reales de las nominales con una sola pregunta: ¿el saldo sigue después del cierre?', est: ['reposo'],
+      fig: () => fecha('', false) + `<div class="cajones">${cajon('Caja', 'lleno')}${cajon('Ingresos por servicios', 'lleno')}</div>` },
+    { t: 'El día después', near: 1, tipo: 'predicción', est: ['antes', 'despues'], accion: 'Toca la cuenta que crees que sigue y luego «Pasar al 1 de enero». El calendario avanza y cada cajón hace lo que hace: no se califica.',
+      fig: (e) => fecha('', e === 'despues') + `<div class="cajones">${cajon('Caja', 'lleno')}${cajon('Ingresos por servicios', e === 'despues' ? 'vacio' : 'lleno')}</div>` + (e === 'antes' ? '<button type="button" class="boton">Pasar al 1 de enero</button>' : '') },
+    { t: 'Las reales', near: 2, tipo: 'exploración', est: ['antes', 'despues'], accion: 'Toca «Avanzar»: los tres cajones cruzan al año nuevo con su contenido (translateX).',
+      fig: (e) => fecha('', e === 'despues') + `<div class="cajones">${['Caja', 'Cuentas por pagar', 'Aportes sociales'].map((c) => cajon(c, 'lleno', { rot: e === 'despues' ? 'sigue' : '' })).join('')}</div>` },
+    { t: 'Las nominales', near: 3, tipo: 'exploración', est: ['antes', 'despues'], accion: 'Toca «Avanzar»: el contenido sale de cada cajón (opacity y translateY) y queda $0. Gastos de operación va lleno de fichas: tener mucho movimiento no lo salva del cierre (confusión de S9).',
+      fig: (e) => fecha('', e === 'despues') + `<div class="cajones">${cajon('Ingresos por servicios', e === 'despues' ? 'vacio' : 'lleno')}${cajon('Gastos de operación', e === 'despues' ? 'vacio' : 'lleno', { mucho: true })}${cajon('Costo de ventas', e === 'despues' ? 'vacio' : 'lleno')}</div>` },
+    { t: 'Tres nominales', near: 4, tipo: 'exploración', est: ['antes', 'despues'], accion: 'Las tres tarjetas se voltean (rotateY) y muestran la definición textual y su ejemplo. No hay muro: una tarjeta abierta a la vez.',
+      fig: (e) => `<div class="tarjetas">${[['Ingresos', '«los valores que recibe una empresa por la venta de bienes o servicios»'], ['Gastos', '«los desembolsos necesarios para generar los ingresos»'], ['Costos', '«desembolsos capitalizables»']].map(([n, d], i) => `<button type="button" class="tarjeta${e === 'despues' && i === 1 ? ' abierta' : ''}">${e === 'despues' && i === 1 ? `<span class="def">${d}</span><small>Ejemplo: salarios, arriendos</small>` : `<span>${n}</span>`}</button>`).join('')}</div>` },
+    { t: 'Una sola pregunta', near: 5, tipo: 'decisión', est: ['antes', 'error1', 'error2', 'bien'], accion: 'Clasifica seis cuentas en dos cajones grandes, «Sigue» y «Vuelve a cero». La que cae mal se queda en el cajón elegido y se ve qué le pasaría el 1 de enero (regla C4).',
+      fig: (e) => { const mal = e === 'error1' || e === 'error2';
+        return `<div class="pila-cuentas">${e === 'antes' ? ['Bancos', 'Maquinaria', 'Obligaciones financieras', 'Ingresos por servicios', 'Gastos de operación', 'Costo de ventas'].map((c) => `<button type="button" class="chip">${c}</button>`).join('') : ''}</div>
+          <div class="dos-cajas"><div class="caja-grande${e === 'error2' ? ' pista-b' : ''}"><span class="cajon-tit">Sigue</span>${e !== 'antes' ? '<span class="chip quieto">Maquinaria</span>' : ''}${e === 'bien' || e === 'error2' ? '' : ''}</div>
+          <div class="caja-grande${mal ? ' malb' : ''}"><span class="cajon-tit">Vuelve a cero</span>${mal ? '<span class="chip malb">Bancos · $0 el 1 de enero</span>' : ''}${e === 'bien' ? '<span class="chip">Costo de ventas</span>' : ''}</div></div>`
+          + (mal ? falla('Así, el 1 de enero Bancos diría $0, y el dinero sigue en el banco.') : e === 'bien' ? cuadra('Su saldo no sigue: vuelve a cero en el cierre.') : '')
+          + (e === 'error1' ? msg('[Pista de Near: «¿el saldo sigue después del cierre?»]', 'mal') : e === 'error2' ? msg('[Devolución de Near.] El cajón correcto, «Sigue», queda con borde blanco.', 'mal') : e === 'bien' ? msg('[Acierto de Near. El caso de Costo de ventas nombra la confusión gasto contra costo.]', 'ok') : ''); } },
+  ] };
+
+  // ═══ A5 · El debe y el haber · objeto: la mesa de dos casos
+  const mesa = (c1, c2, extra = '') => `<div class="mesa"><div class="mesa-casos">${c1}${c2}</div>${extra}</div>`;
+  const caso = (n, fam, de, a, o = {}) => `<div class="caso${o.cls ? ' ' + o.cls : ''}"><p class="tt-tit">${n}<small>${fam}</small></p><div class="medidor"><span class="num">${$(de)}</span>${a != null ? `<span class="flecha">→</span><span class="num${a > de ? ' sube' : ' baja'}">${$(a)}</span>` : ''}</div>${o.debe ? `<p class="reg"><span class="rot-d">DEBE</span>${o.debe}</p>` : ''}${o.haber ? `<p class="reg"><span class="rot-h">HABER</span>${o.haber}</p>` : ''}${o.pie || ''}</div>`;
+  P.a5 = { titulo: 'El debe y el haber', id: 'cu-a5-debe-y-haber', objeto: 'La mesa de dos casos', slides: [
+    { t: 'Objetivo', txt: '[W para Near] Al terminar, sabrás por qué un mismo registro en el debe hace subir una cuenta y bajar otra.', est: ['reposo'],
+      fig: () => mesa(caso('Maquinaria', 'activo', 0, null, { debe: ficha(50000) }), caso('Aportes sociales', 'patrimonio', 400000, null, { debe: ficha(50000) })) },
+    { t: 'Mismo lado, mismo monto', near: 1, tipo: 'predicción', est: ['antes', 'despues'], accion: 'Elige «Sí, igual» o «No». La elección queda marcada y la respuesta llega en la pantalla siguiente (no se califica aquí).',
+      fig: (e) => mesa(caso('Maquinaria', 'activo', 0, null, { debe: ficha(50000) }), caso('Aportes sociales', 'patrimonio', 400000, null, { debe: ficha(50000) })) + `<div class="selector"><button type="button" class="${e === 'despues' ? 'on' : ''}">Sí, igual</button><button type="button">No</button></div>` },
+    { t: 'Efectos opuestos', near: 2, tipo: 'exploración', est: ['antes', 'despues'], accion: 'Toca «Registrar»: cada saldo cuenta hacia su valor nuevo. Uno sube y el otro baja con la misma ficha.',
+      fig: (e) => mesa(caso('Maquinaria', 'activo', 0, e === 'despues' ? 50000 : null, { debe: ficha(50000) }), caso('Aportes sociales', 'patrimonio', 400000, e === 'despues' ? 350000 : null, { debe: ficha(50000) })) + (e === 'antes' ? '<button type="button" class="boton">Registrar</button>' : '') },
+    { t: 'Dónde vive cada cuenta', near: 3, tipo: 'decisión', est: ['antes', 'error1', 'error2', 'bien'], accion: 'Arrastra o toca Maquinaria y Aportes sociales y luego su casa en la ecuación. La que cae en la casa equivocada se queda allí y muestra la regla de esa casa.',
+      fig: (e) => { const mal = e === 'error1' || e === 'error2';
+        return `<div class="ecuacion"><div class="casa${e === 'error2' ? ' pista-b' : ''}"><span class="cajon-tit">Activo · izquierda</span><small>crece por el debe</small>${e === 'bien' ? '<span class="chip">Maquinaria</span>' : ''}</div><span class="igual">=</span>
+          <div class="casa${mal ? ' malb' : ''}"><span class="cajon-tit">Pasivo + Patrimonio · derecha</span><small>crece por el haber</small>${mal ? '<span class="chip malb">Maquinaria</span>' : ''}${e === 'bien' ? '<span class="chip">Aportes sociales</span>' : ''}</div></div>`
+          + (mal ? falla('Así Maquinaria crecería por el haber, y su registro de $50.000 en el debe la habría hecho bajar.') : e === 'bien' ? cuadra('Cada una crece por el lado de su casa.') : '')
+          + (e === 'error1' ? msg('[Pista de Near.]', 'mal') : e === 'error2' ? msg('[Devolución de Near: «Confundiste dónde vive con dónde se anota».] La casa correcta, con borde blanco.', 'mal') : e === 'bien' ? msg('[Acierto de Near.]', 'ok') : ''); } },
+    { t: 'La trampa', near: 4, tipo: 'exploración', est: ['antes', 'despues'], accion: 'Toca «Registrar el pagaré»: los dos saldos suben a la vez. Es la confusión de S9 «débito siempre suma», puesta al revés.',
+      fig: (e) => mesa(caso('Caja', 'activo', 1000, e === 'despues' ? 1500 : null), caso('Documentos por pagar', 'pasivo', 0, e === 'despues' ? 500 : null)) },
+    { t: 'Gastos e ingresos', near: 5, tipo: 'exploración', est: ['antes', 'despues'], accion: 'Suelta una ficha en Gastos de operación y otra en Ingresos por servicios. Debajo de la mesa, el patrimonio baja con una y sube con la otra.',
+      fig: (e) => mesa(caso('Gastos de operación', 'nominal', 0, e === 'despues' ? 100 : null, { debe: e === 'despues' ? ficha(100, 'entra') : '' }), caso('Ingresos por servicios', 'nominal', 0, e === 'despues' ? 100 : null, { debe: '', haber: e === 'despues' ? ficha(100, 'entra') : '' }), `<p class="patrimonio">Patrimonio: ${e === 'despues' ? 'baja con el gasto y sube con el ingreso' : 'sin cambios'}</p>`) },
+    { t: 'Prueba tú', near: 6, tipo: 'exploración libre', est: ['antes'], accion: 'Mesa de cuatro cuentas con sus saldos en cifras, que se mueven en vivo. No califica. Con $100 frente a $400.000, una barra no se vería: por eso aquí van cifras y no barras.',
+      fig: () => `<div class="fichero">${ficha(100) + ficha(500) + ficha(1000)}</div><div class="mesa cuatro">${[['Caja', 1500], ['Aportes sociales', 400000], ['Gastos de operación', 0], ['Ingresos por servicios', 0]].map(([n, s]) => `<div class="caso"><p class="tt-tit">${n}</p><p class="num">${$(s)}</p></div>`).join('')}</div>` },
+    { t: 'En una frase', near: 'cierre', tipo: 'decisión', est: ['antes', 'error1', 'bien'], accion: 'Las tres opciones de Near (a, b, c), que difieren en una palabra. La mesa de dos casos queda arriba, en pequeño.',
+      fig: (e) => mesa(caso('Maquinaria', 'activo', 0, 50000), caso('Aportes sociales', 'patrimonio', 400000, 350000)) + ops([['Porque Maquinaria vive a la derecha.', e === 'error1' ? 'mal' : ''], ['Porque Maquinaria vive a la izquierda.', e === 'bien' ? 'bien' : ''], ['Porque Maquinaria vive en el haber.', '']]) + (e === 'error1' ? msg('Confundiste dónde vive con dónde se anota. El activo vive a la izquierda.', 'mal') : '') },
+  ] };
+
+  // ═══ A3 · La partida doble · objeto: la balanza de totales con nombres
+  // Reutiliza Balanza (verbos.jsx) sin cambios: los platillos bajan y suben con translateY y la viga gira poco, dentro de su caja.
+  const balanza = (inc, izq, der, o = {}) => `<div class="balanza"><i class="barra" style="transform:rotate(${inc * 5}deg)"></i><div class="viga"><div class="platillo d${o.malI ? ' malb' : ''}${o.pistaI ? ' pista-b' : ''}" style="transform:translateY(${inc * 10}px)"><span class="cajon-tit">${o.ti || 'Activo'}</span>${izq}</div><div class="platillo h${o.malD ? ' malb' : ''}" style="transform:translateY(${-inc * 10}px)"><span class="cajon-tit">${o.td || 'Pasivo + Patrimonio'}</span>${der}</div></div><i class="pie"></i></div>`;
+  const nom = (n, v, cls = '') => `<span class="nom ${cls}"><span>${n}</span>${v != null ? `<b class="num">${$(v)}</b>` : ''}</span>`;
+  P.a3 = { titulo: 'La partida doble y las dos reglas', id: 'cu-a3-partida-doble', objeto: 'La balanza de totales con nombres', slides: [
+    { t: 'Objetivo', txt: '[W para Near] Al terminar, sabrás por qué todo registro va dos veces y por qué lado crece cada familia de cuentas.', est: ['reposo'], fig: () => balanza(0, '', '') },
+    { t: 'Una sola línea', near: 1, tipo: 'predicción', est: ['antes', 'despues'], accion: 'Toca «Anotar solo el equipo»: Equipo de computación entra al platillo del activo con su nombre y su cifra, y la balanza se inclina.',
+      fig: (e) => balanza(e === 'despues' ? 1 : 0, e === 'despues' ? nom('Equipo de computación', 25000, 'entra') : '', '') },
+    { t: 'Partida doble', near: 2, tipo: 'lectura', est: ['despues'], accion: 'La segunda línea aparece junto a la balanza, todavía fuera de ella: es la que el estudiante va a mover en la pantalla siguiente.',
+      fig: () => balanza(1, nom('Equipo de computación', 25000), '') + `<div class="fichero">${nom('Cuentas por pagar', 25000, 'flota')}</div>` },
+    { t: 'La balanza', near: 3, tipo: 'decisión', est: ['antes', 'error1', 'bien'], accion: 'Arrastra o toca Cuentas por pagar y luego un platillo. Si cae en el del activo, la balanza se inclina más (regla C4) y aparece la pista.',
+      fig: (e) => (e === 'antes' ? `<div class="fichero">${nom('Cuentas por pagar', 25000, 'flota')}</div>` : '') + balanza(e === 'bien' ? 0 : e === 'error1' ? 1.6 : 1, nom('Equipo de computación', 25000) + (e === 'error1' ? nom('Cuentas por pagar', 25000, 'malb') : ''), e === 'bien' ? nom('Cuentas por pagar', 25000, 'entra') : '', { malI: e === 'error1' })
+        + (e === 'error1' ? falla('Así el activo pesa $50.000 y el otro lado, $0: la balanza se inclina más.') + msg('[Pista de Near.]', 'mal') : e === 'bien' ? cuadra('$25.000 contra $25.000: nivelada.') + msg('[Acierto de Near.]', 'ok') : '') },
+    { t: 'Primera regla', near: 4, tipo: 'decisión', est: ['antes', 'bien'], accion: 'Los platillos pasan a ser grupos: «crece por el debe» y «crece por el haber». Suelta Activos, Gastos y Costos. Cada familia queda escrita en su platillo.',
+      fig: (e) => balanza(0, e === 'bien' ? nom('Activos') + nom('Gastos') + nom('Costos', null, 'entra') : '', '', { ti: 'Crece por el debe', td: 'Crece por el haber' }) },
+    { t: 'Segunda regla', near: 5, tipo: 'decisión', est: ['antes', 'error1', 'error2', 'bien'], accion: 'Suelta Pasivos, Patrimonio e Ingresos. La que cae mal se queda en el platillo elegido con borde coral y su consecuencia escrita. No rebota (Near pedía rebote; ver ajustes).',
+      fig: (e) => { const mal = e === 'error1' || e === 'error2';
+        return balanza(0, nom('Activos') + nom('Gastos') + nom('Costos') + (mal ? nom('Ingresos', null, 'malb') : ''), nom('Pasivos') + nom('Patrimonio') + (e === 'bien' ? nom('Ingresos', null, 'entra') : ''), { ti: 'Crece por el debe', td: 'Crece por el haber', malI: mal })
+          + (mal ? falla('Así una venta, que sube el patrimonio, se anotaría como si lo bajara.') : '') + (e === 'error1' ? msg('[Pista de Near.]', 'mal') : e === 'error2' ? msg('[Devolución de Near.] El platillo correcto, con borde blanco.', 'mal') : e === 'bien' ? msg('[Acierto de Near.]', 'ok') : ''); } },
+    { t: 'Simple o compuesto', near: 6, tipo: 'decisión', est: ['antes', 'bien'], accion: 'Arma el asiento de ene-03: cada línea cae en su platillo con su nombre y su cifra, y el total de cada lado cuenta hacia arriba. Al terminar, hay dos nombres de un lado y dos del otro, con la balanza nivelada por los totales.',
+      fig: (e) => balanza(0, nom('[Cuenta 1 del debe]', null) + nom('[Cuenta 2 del debe]', null) + `<span class="total num">${e === 'bien' ? '$10.000' : '$?'}</span>`, nom('[Cuenta 1 del haber]', null) + nom('[Cuenta 2 del haber]', null) + `<span class="total num">${e === 'bien' ? '$10.000' : '$?'}</span>`, { ti: 'Debe', td: 'Haber' }) + '<p class="nota-fig">Las cuentas y las cifras de cada línea salen de ene-03 de Lavado, en contabilidad.js.</p>' },
+  ] };
+
+  // ═══ A4 · Del diario al mayor · objeto: el renglón que viaja del diario a su T
+  const reng = (f, c, l, v, cls = '') => `<li class="ren ${cls}"><span>${f}</span><span>${c}</span><b class="${l === 'D' ? 'td' : 'th'}">${l === 'D' ? 'Debe' : 'Haber'}</b><b class="num">${v == null ? '…' : $(v)}</b></li>`;
+  const DIA = [['ene-02', 'Bancos', 'D', 5000], ['ene-03', 'Bancos', 'H', 2000], ['ene-07', 'Bancos', 'H', 800]];
+  P.a4 = { titulo: 'Del diario al mayor', id: 'cu-a4-diario-y-mayor', objeto: 'El renglón que viaja del diario a su T', slides: [
+    { t: 'Objetivo', txt: '[W para Near] Al terminar, sabrás pasar los valores del diario al mayor sin cambiarles el lado, y qué responde cada libro.', est: ['reposo'],
+      fig: () => `<ol class="diario">${DIA.map((r) => reng(...r)).join('')}</ol>` + T('Bancos', '', '', { cls: 'tenue' }) },
+    { t: '¿Por fecha o por cuenta?', near: 1, tipo: 'decisión', est: ['antes', 'error1', 'bien'], accion: 'Elige un orden y los nueve hechos se ordenan así. Por fecha, los renglones de Bancos quedan dispersos y se marcan (consecuencia). Por cuenta, quedan juntos.',
+      fig: (e) => `<div class="selector"><button type="button" class="${e === 'error1' ? 'on' : ''}">Por fecha</button><button type="button" class="${e === 'bien' ? 'on' : ''}">Por cuenta</button></div>`
+        + `<ol class="diario">${e === 'bien' ? DIA.map((r) => reng(...r, 'marca')).join('') + reng('ene-02', '[otra cuenta]', 'H', null) : [DIA[0], ['ene-02', '[otra cuenta]', 'H', null], DIA[1], ['ene-05', '[otra cuenta]', 'D', null], DIA[2]].map((r) => reng(...r, r[1] === 'Bancos' && e === 'error1' ? 'marca' : '')).join('')}</ol>`
+        + (e === 'error1' ? falla('Así Bancos queda repartido: hay que buscar sus renglones entre los demás.') + msg('[Pista de Near.]', 'mal') : e === 'bien' ? cuadra('Bancos queda junto: se lee de una vez.') + msg('[Acierto de Near.]', 'ok') : '') },
+    { t: 'El diario', near: 2, tipo: 'exploración', est: ['antes', 'despues'], accion: 'Toca «Siguiente»: entra una fila del diario, en orden de fecha (4 filas de diarioDeEjemplo). Cada toque, una fila. Nada avanza solo.',
+      fig: (e) => `<ol class="diario">${reng('[1.ª fila]', '…', 'D', null)}${e === 'despues' ? reng('[2.ª fila]', '…', 'H', null, 'entra') : ''}</ol><button type="button" class="boton">Siguiente</button>` },
+    { t: 'Cómo se escribe', near: 3, tipo: 'exploración', est: ['antes', 'despues'], accion: 'Toca el asiento del 1 de julio: la cuenta del haber se corre a la derecha (translateX) y aparece la explicación corta.',
+      fig: (e) => `<div class="detalle"><p><span>Caja</span><b class="num td">$2.000</b></p><p class="${e === 'despues' ? 'corrida' : ''}"><span>Aportes sociales</span><b class="num th">$2.000</b></p>${e === 'despues' ? '<p class="explica">[Explicación corta del libro]</p>' : ''}</div>` },
+    { t: 'El mayor', near: 4, tipo: 'lectura', est: ['despues'], accion: 'Toca «Ver mayor»: el mismo enero se reparte en cuentas T (2 por fila a 320 px).',
+      fig: () => `<div class="ctas">${['Bancos', 'Caja', '[cuenta]', '[cuenta]'].map((c) => T(c, '', '', { cls: 'mini' })).join('')}</div>` },
+    { t: 'Mayorizar', near: 5, tipo: 'decisión', est: ['antes', 'error1', 'error2', 'bien'], accion: 'Arrastra o toca un renglón de Bancos y luego un lado de la T. El renglón viaja con su fecha. Si cae del otro lado, se queda allí con borde coral y el saldo de Bancos cambia.',
+      fig: (e) => { const mal = e === 'error1' || e === 'error2';
+        return `<ol class="diario">${DIA.map((r, i) => reng(...r, i === 0 && e !== 'antes' ? 'hecho' : i === 0 ? 'cur' : '')).join('')}</ol>`
+          + T('Bancos', e === 'bien' ? `<span class="ln entra">ene-02 · ${$(5000)}</span>` : '', mal ? `<span class="ln malb">ene-02 · ${$(5000)}</span>` : '', { cls: e === 'error2' ? 'pista-d' : '' })
+          + (mal ? falla('Así Bancos tendría $5.000 en el haber, y el diario lo anotó en el debe.') : e === 'bien' ? cuadra('El mismo lado del diario.') : '')
+          + (e === 'error1' ? msg('[Pista de Near. Nombra la confusión de S9: «mayorizar cambia la columna».]', 'mal') : e === 'error2' ? msg('[Devolución de Near.] El lado correcto, con borde blanco.', 'mal') : e === 'bien' ? msg('[Acierto de Near.]', 'ok') : ''); } },
+    { t: 'Dos preguntas', near: 6, tipo: 'exploración', est: ['antes', 'despues'], accion: 'Toca ene-03 en el diario y se ilumina también en el mayor (y al revés). A 320 y 375 px los dos libros van uno encima del otro, no uno al lado del otro.',
+      fig: (e) => `<ol class="diario">${DIA.map((r, i) => reng(...r, e === 'despues' && i === 1 ? 'enlazado' : '')).join('')}</ol>` + T('Bancos', `<span class="ln">ene-02 · ${$(5000)}</span>`, `<span class="ln${e === 'despues' ? ' enlazado' : ''}">ene-03 · ${$(2000)}</span><span class="ln">ene-07 · ${$(800)}</span>`) },
+  ] };
+  window.T22 = P;
+})();
+
+const TX = {"a1": [{"tit": "Objetivo", "txt": "[W para Near] Al terminar, sabrás leer una cuenta T: sus dos lados, sus movimientos y de qué lado queda su saldo.", "est": ["reposo"]}, {"tit": "¿De qué lado?", "txt": "Esta es la cuenta Caja del ejemplo del libro. Entraron $1.000 y $500, y salieron $150. ¿De qué lado pondrías lo que entra?", "est": ["antes", "despues"]}, {"tit": "Una raya, dos lados", "txt": "Cuenta: «un sistema de registro organizado, de los aumentos o disminuciones que sufre un concepto como consecuencia de las operaciones que realiza un negocio». + La raya parte la cuenta en dos. Así se ve cada movimiento por separado: lo que suma de un lado y lo que resta del otro.", "est": ["despues"]}, {"tit": "Debe y haber", "txt": "El lado izquierdo se llama debe y el derecho, haber. Son nombres de lugar, como izquierda y derecha. No dicen si algo sube o baja.", "est": ["antes", "despues"]}, {"tit": "Movimientos", "txt": "Suma cada lado por separado. En Caja, el debe suma $1.500 y el haber, $150. Cada suma es el movimiento de ese lado.", "est": ["antes", "despues"]}, {"tit": "El saldo", "txt": "El saldo es la diferencia entre los dos movimientos: $1.350. Va del lado del movimiento mayor. ¿Dónde lo pones?", "est": ["antes", "error1", "error2", "bien"]}, {"tit": "Lado no es juicio", "txt": "Que el saldo quede en el debe no dice si es bueno o malo. Dice de qué lado pesó más la cuenta. Lo que significa depende del tipo de cuenta.", "est": ["antes", "despues"]}, {"tit": "En una frase", "txt": "Una cuenta tiene $50 en el debe y $30 en el haber. ¿Cuánto es el saldo y de qué lado va?", "est": ["antes", "bien"]}], "a2": [{"tit": "Objetivo", "txt": "[W para Near] Al terminar, sabrás distinguir las cuentas reales de las nominales con una sola pregunta: ¿el saldo sigue después del cierre?", "est": ["reposo"]}, {"tit": "El día después", "txt": "Llega el cierre del año. ¿Cuál de estas dos cuentas sigue con su saldo al día siguiente: Caja o Ingresos por servicios?", "est": ["antes", "despues"]}, {"tit": "Las reales", "txt": "Las cuentas reales, o de balance, muestran lo que la empresa tiene, sus deudas y lo que es de los socios: activo, pasivo y patrimonio. Su saldo pasa de un año al otro.", "est": ["antes", "despues"]}, {"tit": "Las nominales", "txt": "Las cuentas nominales, o de resultados, nacen de lo que pasa en el periodo: ingresos, gastos y costos. Al cierre vuelven a cero. Por eso también se llaman transitorias.", "est": ["antes", "despues"]}, {"tit": "Tres nominales", "txt": "Toca cada tarjeta para ver un ejemplo del tema.  Ingresos: «los valores que recibe una empresa por la venta de bienes o servicios». Gastos: «los desembolsos necesarios para generar los ingresos» (salarios, arriendos). Costos: «desembolsos capitalizables» (costo de ventas).", "est": ["antes", "despues"]}, {"tit": "Una sola pregunta", "txt": "La pregunta que decide la familia es una sola: ¿el saldo sigue después del cierre? Si sigue, la cuenta es real. Si vuelve a cero, es nominal. Ordena estas seis.", "est": ["antes", "error1", "error2", "bien"]}], "a5": [{"tit": "Objetivo", "txt": "[W para Near] Al terminar, sabrás por qué un mismo registro en el debe hace subir una cuenta y bajar otra.", "est": ["reposo"]}, {"tit": "Mismo lado, mismo monto", "txt": "El 5 de mayo, Caleja hace dos registros de $50.000, los dos en el debe: uno en Maquinaria y otro en Aportes sociales. ¿Las dos cuentas reaccionan igual?", "est": ["antes", "despues"]}, {"tit": "Efectos opuestos", "txt": "Maquinaria pasa de $0 a $50.000. Aportes sociales baja de $400.000 a $350.000. El mismo monto y el mismo lado tienen efectos opuestos.", "est": ["antes", "despues"]}, {"tit": "Dónde vive cada cuenta", "txt": "Cada cuenta crece por el lado en que vive dentro de la ecuación. El activo vive a la izquierda y crece por el debe. El pasivo y el patrimonio viven a la derecha y crecen por el haber.", "est": ["antes", "error1", "error2", "bien"]}, {"tit": "La trampa", "txt": "Ojo con una trampa. Con un préstamo de $500, la Caja pasa de $1.000 a $1.500 y nace una deuda de $500. Los dos lados de la ecuación suben juntos.", "est": ["antes", "despues"]}, {"tit": "Gastos e ingresos", "txt": "Gastos e ingresos mueven el patrimonio. Un gasto lo baja, y por eso va al debe. Un ingreso lo sube, y va al haber. Suelta una ficha en cada uno.", "est": ["antes", "despues"]}, {"tit": "Prueba tú", "txt": "Ahora prueba tú. Suelta fichas de $100, $500 y $1.000 en cualquier lado de estas cuatro cuentas y mira qué pasa con cada saldo.", "est": ["antes"]}, {"tit": "En una frase", "txt": "Los dos registros eran de $50.000 en el debe. ¿Por qué Maquinaria subió y Aportes sociales bajó?", "est": ["antes", "error1", "bien"]}], "a3": [{"tit": "Objetivo", "txt": "[W para Near] Al terminar, sabrás por qué todo registro va dos veces y por qué lado crece cada familia de cuentas.", "est": ["reposo"]}, {"tit": "Una sola línea", "txt": "Caleja compra un equipo a crédito, por $25.000. Si solo anotas el equipo, ¿los dos lados de la ecuación quedan iguales?", "est": ["antes", "despues"]}, {"tit": "Partida doble", "txt": "Por eso el equipo no basta. Mira la regla que da nombre a esta pieza:  Partida doble: «cualquier transacción siempre se debe registrar dos veces, una vez en el debe de una cuenta y otra vez en el haber de otra cuenta».", "est": ["despues"]}, {"tit": "La balanza", "txt": "Activos = Pasivos + Patrimonio. El equipo sube el activo y la deuda con el proveedor sube el pasivo. Con los dos registros, la balanza vuelve a nivel.", "est": ["antes", "error1", "bien"]}, {"tit": "Primera regla", "txt": "Primera regla: activos, gastos y costos aumentan por el debe y disminuyen por el haber. Su saldo suele quedar en el debe.", "est": ["antes", "bien"]}, {"tit": "Segunda regla", "txt": "Segunda regla: pasivos, patrimonio e ingresos aumentan por el haber y disminuyen por el debe. Su saldo suele quedar en el haber. Lleva cada familia a su grupo.", "est": ["antes", "error1", "error2", "bien"]}, {"tit": "Simple o compuesto", "txt": "Un asiento simple toca dos cuentas, y uno compuesto, más de dos. En los dos, la suma del debe tiene que ser igual a la del haber.", "est": ["antes", "bien"]}], "a4": [{"tit": "Objetivo", "txt": "[W para Near] Al terminar, sabrás pasar los valores del diario al mayor sin cambiarles el lado, y qué responde cada libro.", "est": ["reposo"]}, {"tit": "¿Por fecha o por cuenta?", "txt": "Lavado de Autos Mateo anotó nueve hechos en enero. Quieres saber cuánto quedó en Bancos. ¿Qué te sirve más: verlos por fecha o agrupados por cuenta?", "est": ["antes", "error1", "bien"]}, {"tit": "El diario", "txt": "El libro diario anota cada hecho en orden de fecha, apenas ocurre. Por eso se le llama libro de registro de asientos originales. Sus columnas son fecha, detalle, debe y haber.", "est": ["antes", "despues"]}, {"tit": "Cómo se escribe", "txt": "En el detalle va primero la cuenta del debe. Debajo, un poco a la derecha, va la del haber, con una explicación corta.", "est": ["antes", "despues"]}, {"tit": "El mayor", "txt": "Después del diario viene el mayor. Allí cada cuenta tiene su propia T y junta todo lo que le pasó en el mes.  Libro mayor: «el más importante en cualquier contabilidad».", "est": ["despues"]}, {"tit": "Mayorizar", "txt": "Mayorizar es pasar cada valor del diario a su cuenta del mayor: lo del debe al debe y lo del haber al haber. No se calcula nada nuevo. Lleva estos tres valores a Bancos.", "est": ["antes", "error1", "error2", "bien"]}, {"tit": "Dos preguntas", "txt": "El diario responde qué pasó el 3 de enero. El mayor responde cómo quedó Bancos. Son los mismos datos, ordenados de dos formas.", "est": ["antes", "despues"]}]};
+const NOM = { reposo: 'Reposo', antes: 'Antes', despues: 'Después', error1: '1.er error: pista', error2: '2.º error: devolución', bien: 'Acierto' };
+document.querySelectorAll('.vivo').forEach((v) => { const k = v.dataset.k; let i = 0, est = null;
+  const pintar = () => { const s = T22[k].slides[i]; const tx = TX[k][i]; est = s.est.includes(est) ? est : s.est[0];
+    v.querySelector('.estados').innerHTML = s.est.map((x) => `<button type="button" data-e="${x}" class="${x === est ? 'on' : ''}">${NOM[x]}</button>`).join('');
+    v.querySelectorAll('.mq').forEach((m) => { m.innerHTML = `<p class="cej">Pantalla ${i + 1} de ${T22[k].slides.length}</p><p class="slide-tit">${tx.tit}</p><p class="slide-txt">${tx.txt}</p>` + s.fig(est); }); };
+  v.querySelector('.slides').addEventListener('click', (ev) => { const b = ev.target.closest('[data-i]'); if (!b) return; i = +b.dataset.i; est = null; v.querySelectorAll('.slides button').forEach((x) => x.classList.toggle('on', x === b)); pintar(); });
+  v.querySelector('.estados').addEventListener('click', (ev) => { const b = ev.target.closest('[data-e]'); if (!b) return; est = b.dataset.e; pintar(); });
+  pintar(); });
+</script>
+</body></html>
