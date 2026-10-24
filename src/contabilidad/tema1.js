@@ -392,13 +392,19 @@ export function opcionesTotalT1_5(mov, parte) {
   return elegidas.sort((a, b) => a - b);
 }
 
-/* Qué clase de cifra es una opción de la decisión 2: la correcta, el sentido contrario, el monto solo o el total de antes. */
+/*
+ * Qué clase de cifra es una opción de la decisión 2: la correcta, el total de
+ * antes, el sentido contrario, el monto solo, o el total de OTRA parte después
+ * del hecho (Shoko, #496: $325.000 en lo que debe, en el hecho 2, es lo que
+ * tiene; no es «el sentido contrario», y una clase no puede cubrir dos errores).
+ */
 export function claseDeTotalT1_5(mov, parte, v) {
   if (v === mov.despues[parte]) return "correcta";
   if (v === mov.antes[parte]) return "sinCambio";
   if (v === mov.antes[parte] - mov.signos[parte] * mov.monto) return "contrario";
   if (v === mov.monto) return "monto";
-  /* La tercera de Shoko para el $0: el hecho 1 (lo de un socio) confunde como el monto; el 2 (la otra torre), como el contrario. */
+  if (Object.entries(mov.despues).some(([otra, total]) => otra !== parte && total === v)) return "otraParte";
+  /* La tercera de Shoko para el $0 en el hecho 1 (lo de un socio) confunde como el monto. */
   return v < mov.despues[parte] ? "monto" : "contrario";
 }
 

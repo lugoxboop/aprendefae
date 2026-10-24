@@ -462,9 +462,40 @@ test("★★★ hecho 1 con tres botones (Shoko), «sin cambio» rotulado, y la 
     const retro = dos.caja.querySelector("[data-texto-retro]").textContent;
     assert.ok(retro.startsWith("Lo que tiene sí se mueve con este hecho.") && retro.endsWith(linea("monto", "lo que tiene")), retro);
   } finally { dos.desmontar(); }
-  /* Las tres clases de la decisión 2, hecho 2 (lo que tiene, de 300.000 a 325.000). */
+  /* Las clases de la decisión 2, hecho 2 (lo que tiene, de 300.000 a 325.000). */
   const m = mov(1);
   assert.deepEqual([325000, 275000, 25000, 300000].map((v) => claseDeTotalT1_5(m, ACTIVO, v)), ["correcta", "contrario", "monto", "sinCambio"]);
+});
+
+/*
+ * ═══════════ UNA PRUEBA POR CLASE (Shoko, #496) ═══════════
+ *
+ * Cada cifra equivocada cae en la clase que dice su error, y su línea dice
+ * eso y nada más. Hecho 2: lo que tiene va de 300.000 a 325.000 y lo que
+ * debe, de 0 a 25.000.
+ */
+const casoDeClase = [
+  ["correcta", ACTIVO, 325000, null],
+  ["sinCambio", ACTIVO, 300000, "En lo que tiene: el total ya no es el de antes."],
+  /* 275.000 = 300.000 − 25.000: restó en vez de sumar. Ninguna parte totaliza eso. */
+  ["contrario", ACTIVO, 275000, "En lo que tiene: ese total va en el sentido contrario. Fíjate si con este hecho esa parte crece o se achica."],
+  ["monto", ACTIVO, 25000, "En lo que tiene: pusiste lo que se movió, no con cuánto quedó. Súmalo o réstalo al total que había."],
+  /* 325.000 en lo que debe es el total de lo que tiene después del hecho. */
+  ["otraParte", PASIVO, 325000, "En lo que debe: ese es el total de la otra parte, no el de esta."],
+];
+for (const [clase, parte, v, texto] of casoDeClase) {
+  test(`★★ decisión 2, clase «${clase}»: hecho 2, ${parte} = ${v}`, () => {
+    const m = mov(1);
+    assert.equal(claseDeTotalT1_5(m, parte, v), clase);
+    if (texto) assert.equal(linea(clase, parte === ACTIVO ? "lo que tiene" : "lo que debe"), texto);
+  });
+}
+
+test("★★ la tercera del banco en el hecho 2 ($325.000 en lo que debe) sale entre las opciones y es «otraParte», no «contrario»", () => {
+  const m = mov(1);
+  assert.ok(opcionesTotalT1_5(m, PASIVO).includes(325000));
+  assert.notEqual(claseDeTotalT1_5(m, PASIVO, 325000), "contrario");
+  assert.ok(!TORRES_T1_5.devolucionTotal.contrario.includes("otro lado"), "volvió «para el otro lado»");
 });
 
 test("★★ la pregunta 1 lleva el «no» en negrilla, no en mayúsculas", () => {

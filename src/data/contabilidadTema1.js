@@ -465,7 +465,9 @@ export const TORRES_T1_5 = {
    * ninguna línea quede sin decir de qué parte habla (lo que pidió Shoko).
    */
   devolucionTotal: {
-    contrario: "En {PARTE}: ese total va para el otro lado. Fíjate si con este hecho esa parte crece o se achica.",
+    contrario: "En {PARTE}: ese total va en el sentido contrario. Fíjate si con este hecho esa parte crece o se achica.",
+    /* Shoko, #496: la cifra elegida es el total de otra parte después del hecho. */
+    otraParte: "En {PARTE}: ese es el total de la otra parte, no el de esta.",
     monto: "En {PARTE}: pusiste lo que se movió, no con cuánto quedó. Súmalo o réstalo al total que había.",
     sinCambio: "En {PARTE}: el total ya no es el de antes.",
   },
