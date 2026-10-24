@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { barajar } from "../../../../utils/barajar.js";
 import { DEBE, HABER, COLOR_LADO, pesos } from "../../../../data/contabilidad.js";
-import { CONSIGNA_T2_NUEVAS } from "../../../../data/contabilidadT2HacerNuevas.js";
+import { CONSIGNAS_CUADRA, OBJETIVO_T2_NUEVAS } from "../../../../data/contabilidadT2HacerNuevas.js";
 import {
   CUADRA, NO_CUADRA, conteo, evaluarCuadra, prepararCuadra, puntuar, sumas,
 } from "../../../../contabilidad/t2HacerNuevas.js";
@@ -12,7 +12,7 @@ import { Encabezado } from "../tema1/encabezado.jsx";
 import { CuentaDeValor, EstilosDeVerbos, SOLO_LECTOR } from "../verbos.jsx";
 import { Devolucion, Eleccion, OpcionC } from "../t7/hacerT7.jsx";
 import { Pastilla, REVELADA, botonDeAvance, COMPROBAR_B } from "../b5/Devolucion.jsx";
-import { CSS_T2_NUEVAS, Consecuencia, ROTULO_T2 } from "./comunT2.jsx";
+import { CSS_T2_NUEVAS, Consecuencia, Hecho, Pie, ROTULO_T2 } from "./comunT2.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -23,13 +23,15 @@ import { CSS_T2_NUEVAS, Consecuencia, ROTULO_T2 } from "./comunT2.jsx";
  * tipos de caso, un intento cada uno:
  *   completar  falta un monto; la columna crece con cada número que se escribe
  *   juzgar     «Cuadra» o «No cuadra»
- *   encontrar  las líneas son botones; se toca la que descuadra
+ *   encontrar  las líneas son botones; se toca la que descuadra (en el
+ *              duplicado se acepta cualquiera de las dos repetidas)
  *
  * Debajo de las columnas, el nivel (sólido si cuadran, discontinuo si no) y
  * los conteos «3 cuentas · $1.000». En juzgar y encontrar las columnas y las
  * sumas salen al responder: antes, la altura sería la respuesta.
  *
- * ESQUELETO EN BORRADOR: el banco es de muestra (contabilidadT2HacerNuevas.js).
+ * El banco es el de Near (lote T2-2, §1.1): 8 casos. En juzgar y encontrar
+ * el hecho va arriba, para que se resuelva solo con lo que dice (H3).
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -118,7 +120,7 @@ export default function CuadraPorValor({
   const estadoLinea = (k) => {
     if (!r) return null;
     if (k === elegida) return r.ok ? "correcta" : "incorrecta";
-    if (k === r.correcta) return "revelada";
+    if (r.correcta.includes(k)) return "revelada";
     return null;
   };
 
@@ -129,7 +131,7 @@ export default function CuadraPorValor({
       <div data-t2-cuadra={caso.tipo} data-caso={caso.id}>
         {!modoDemo && (
           <>
-            <Encabezado consigna={CONSIGNA_T2_NUEVAS["cu-cuadra-por-valor"]} onComoSeJuega={onComoSeJuega} />
+            <Encabezado objetivo={OBJETIVO_T2_NUEVAS["cu-cuadra-por-valor"]} consigna={CONSIGNAS_CUADRA[caso.tipo]} onComoSeJuega={onComoSeJuega} />
             <div style={{ marginBottom: "12px" }}>
               <Pulsos total={cuantos} hechos={t.i + (r ? 1 : 0)} enCurso={t.i + 1} etiqueta="Caso" />
             </div>
@@ -138,7 +140,6 @@ export default function CuadraPorValor({
 
         {caso.tipo === "completar" && (
           <>
-            <p style={ROTULO_T2}>¿POR CUÁNTO VA {caso.lineas[falta].cuenta.toUpperCase()}?</p>
             <AsientoEnLineas lineas={lineaVisible.filter((_, k) => k !== falta)} />
             <p style={{ ...ROTULO_T2, margin: "10px 0 6px", color: COLOR_LADO[caso.lineas[falta].lado] }}>
               {caso.lineas[falta].lado === DEBE ? "DEBE" : "HABER"} · {caso.lineas[falta].cuenta}
@@ -157,12 +158,12 @@ export default function CuadraPorValor({
 
         {caso.tipo === "juzgar" && (
           <>
-            <p style={ROTULO_T2}>¿CUADRA ESTE ASIENTO?</p>
+            <Hecho texto={caso.hecho} />
             <AsientoEnLineas lineas={lineaVisible} totales={Boolean(r)} />
             <div style={{ marginTop: "12px" }}>
               <Eleccion
                 opciones={[{ valor: CUADRA, texto: "Cuadra" }, { valor: NO_CUADRA, texto: "No cuadra" }]}
-                r={r} elegida={elegida} onElegir={responder} etiqueta="¿Cuadra este asiento?"
+                r={r} elegida={elegida} onElegir={responder} etiqueta={CONSIGNAS_CUADRA.juzgar}
               />
             </div>
           </>
@@ -170,7 +171,7 @@ export default function CuadraPorValor({
 
         {caso.tipo === "encontrar" && (
           <>
-            <p style={ROTULO_T2}>TOCA LA LÍNEA QUE DESCUADRA EL ASIENTO</p>
+            <Hecho texto={caso.hecho} />
             <div role="group" aria-label="Las líneas del asiento" style={{ display: "grid", gap: "8px" }}>
               {caso.lineas.map((l, k) => (
                 <span key={k} data-linea={k} style={{ display: "contents" }}>
@@ -191,6 +192,7 @@ export default function CuadraPorValor({
 
         <Consecuencia texto={r?.consecuencia} error={r ? !r.ok : true} />
         <Devolucion r={r} />
+        <Pie texto={caso.pie} />
         {r && (
           <p style={SOLO_LECTOR}>
             Debe {pesos(r.sumas.debe)}, haber {pesos(r.sumas.haber)}.

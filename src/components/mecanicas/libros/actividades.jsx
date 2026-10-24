@@ -172,9 +172,9 @@ export const ElErrorEscondido = ({ onCompletar }) => (
 /*
  * ═══════════ T2 · LAS TRES HACER NUEVAS (Célula C, lote T2-2, #471) ═══════════
  *
- * La forma es la de Watari y van antes de El Ciclo Completo. Esqueleto en
- * borrador con bancos de muestra; `pendiente: true` en subjects.js hasta que
- * corra la 0116. Dejan pasar `...resto` como las siete del camino.
+ * La forma es la de Watari y van antes de El Ciclo Completo. Los bancos son
+ * los de Near (lote T2-2, §1; lote T2-3 de Misa); `pendiente: true` en
+ * subjects.js hasta que corra la 0116. Dejan pasar `...resto` como las siete del camino.
  */
 export const CuadraPorValor = ({ onCompletar, ...resto }) => (
   <CuadraPorValorMecanica Marco={MarcoLibros} acento={A}

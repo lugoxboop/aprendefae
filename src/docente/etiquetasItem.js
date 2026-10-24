@@ -829,12 +829,12 @@ Object.assign(REGLAS, {
 
 /* ── Contabilidad T2 · las tres Hacer nuevas del lote T2-2 (Célula C, #471) ── */
 Object.assign(REGLAS, {
-  /* `cpv-NN`: el tipo de caso y las cuentas del asiento. */
+  /* `cpv-k1`…`cpv-e3` (K completar, J juzgar, E encontrar, numerados como en el banco de Near): el tipo de caso y las cuentas del asiento, sin repetir la duplicada. */
   "cu-cuadra-por-valor": (id) => {
     const c = CUADRA_POR_VALOR.casos.find((x) => x.id === id);
     if (!c) return null;
     const tipo = { completar: "Completar", juzgar: "Cuadra o no", encontrar: "Línea que descuadra" }[c.tipo];
-    return `${tipo}: ${c.lineas.map((l) => l.cuenta).join(", ")}`;
+    return `${tipo}: ${[...new Set(c.lineas.map((l) => l.cuenta))].join(", ")}`;
   },
   /* `ddm-<caso>-N`: el renglón del diario que se pregunta. */
   "cu-del-diario-al-mayor": (id) => {

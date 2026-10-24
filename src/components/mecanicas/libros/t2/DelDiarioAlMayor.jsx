@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { barajar } from "../../../../utils/barajar.js";
 import { FAE } from "../../../../theme.js";
 import { DEBE, COLOR_LADO, pesos } from "../../../../data/contabilidad.js";
-import { CONSIGNA_T2_NUEVAS } from "../../../../data/contabilidadT2HacerNuevas.js";
+import { CONSIGNAS_DIARIO, OBJETIVO_T2_NUEVAS } from "../../../../data/contabilidadT2HacerNuevas.js";
 import {
   cuentasDe, evaluarDiario, mayorCon, prepararDiario, puntuar, renglonesDe,
 } from "../../../../contabilidad/t2HacerNuevas.js";
@@ -33,7 +33,10 @@ import { CSS_T2_NUEVAS, Consecuencia, ROTULO_T2 } from "./comunT2.jsx";
  * / Por cuenta», que reordena los mismos renglones y no califica.
  *
  * El saldo queda fuera: lo practica «El saldo de la cuenta» (decisión de L).
- * ESQUELETO EN BORRADOR: el banco es de muestra (contabilidadT2HacerNuevas.js).
+ * El banco es el de Near (lote T2-2, §1.2): dos casos de 7 renglones (5
+ * destino y 2 origen) que se alternan por intento. Al responder el último, el
+ * cierre del caso («El diario suma… El mayor suma lo mismo») se lee sin
+ * calificar: es la comprobación final que pide Mello.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -59,7 +62,13 @@ function Renglon({ r, marcado, enlazado }) {
 export default function DelDiarioAlMayor({
   Marco, rotulo, titulo, acento, onCompletar, items = null, modoDemo = false, onComoSeJuega = null,
 }) {
-  const t = useTanda(() => items ?? prepararDiario(barajar));
+  /* Los dos casos se alternan por intento (D8): «Otra tanda» juega el otro. */
+  const anterior = useRef(null);
+  const t = useTanda(() => {
+    const xs = items ?? prepararDiario(barajar, anterior.current);
+    anterior.current = xs[0]?.caso.id ?? null;
+    return xs;
+  });
   const [puestos, setPuestos] = useState([]);
   const [elegida, setElegida] = useState(null);
   const [r, setR] = useState(null);
@@ -73,6 +82,7 @@ export default function DelDiarioAlMayor({
   const caso = item.caso;
   const renglones = renglonesDe(caso);
   const marcado = renglones[item.renglon];
+  const ultimo = t.i + 1 === cuantos;
 
   useEffect(() => {
     if (t.terminado && !modoDemo) onCompletar?.(puntuar(bien, cuantos), Date.now() - t.inicio.current, t.detalle.current);
@@ -144,16 +154,12 @@ export default function DelDiarioAlMayor({
       <div data-t2-diario={item.tipo} data-item={item.id}>
         {!modoDemo && (
           <>
-            <Encabezado consigna={CONSIGNA_T2_NUEVAS["cu-del-diario-al-mayor"]} onComoSeJuega={onComoSeJuega} />
+            <Encabezado objetivo={OBJETIVO_T2_NUEVAS["cu-del-diario-al-mayor"]} consigna={CONSIGNAS_DIARIO[item.tipo]} onComoSeJuega={onComoSeJuega} />
             <div style={{ marginBottom: "12px" }}>
               <Pulsos total={cuantos} hechos={t.i + (r ? 1 : 0)} enCurso={t.i + 1} etiqueta="Renglón" />
             </div>
           </>
         )}
-
-        <p style={{ ...ROTULO_T2, marginTop: 0 }}>
-          {item.tipo === "destino" ? "¿A QUÉ CUENTA DEL MAYOR VA EL RENGLÓN MARCADO?" : "¿DE QUÉ RENGLÓN DEL DIARIO SALE LA LÍNEA ENCENDIDA?"}
-        </p>
 
         <div data-libro="diario" style={{ padding: "10px 12px", borderRadius: "13px", background: "rgba(10,20,34,0.45)", border: "1px solid rgba(248,249,250,0.12)" }}>
           <p style={{ ...ROTULO_T2, margin: "0 0 8px" }}>LIBRO DIARIO · {vista === "fecha" ? "POR FECHA" : "POR CUENTA"}</p>
@@ -222,7 +228,7 @@ export default function DelDiarioAlMayor({
         </div>
 
         <Consecuencia texto={r?.consecuencia} />
-        <Devolucion r={r} />
+        <Devolucion r={r && (ultimo && caso.cierre ? { ...r, textos: [...r.textos, caso.cierre] } : r)} />
       </div>
       {r && !modoDemo && (
         <div ref={zonaBoton}>

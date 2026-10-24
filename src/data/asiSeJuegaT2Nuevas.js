@@ -12,7 +12,9 @@ const COMPROBAR_B = "Comprobar";
  * banco), no se puede tocar y no guarda nada.
  *
  * [ESCRITO POR CLAUDE, NO POR LA FICHA] PENDIENTE_DE_REVISION — muestra hasta el banco de Near (lote T2-2)
- * Pasos, alt y ejemplos son de muestra; los textos definitivos son de Near.
+ * Pasos, alt y ejemplos son de muestra: el lote T2-2 de Near no trae los
+ * textos de «Así se juega». La consigna de cada uno sí es la de Near (la del
+ * tipo que juega la demo). Lote T2-3: pasados de mes a año, como el banco.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -81,7 +83,7 @@ const ASI_DIARIO = {
 };
 
 export const EJEMPLO_CERO = [
-  { id: "demo-lvc-ventas", nombre: "Ingresos por ventas", clase: "nominal", familia: "ingreso", saldo: 300, porque: "Es un ingreso: mide el mes y vuelve a cero." },
+  { id: "demo-lvc-ventas", nombre: "Ingresos por ventas", clase: "nominal", familia: "ingreso", saldo: 300, porque: "Es un ingreso: mide el año y vuelve a cero." },
   { id: "demo-lvc-caja", nombre: "Caja", clase: "real", familia: "activo", saldo: 600, porque: "Caja es lo que hay: sigue con su saldo." },
 ];
 
@@ -90,11 +92,11 @@ const ASI_CERO = {
   titulo: nombreDe("cu-las-que-vuelven-a-cero"),
   consigna: CONSIGNA_T2_NUEVAS["cu-las-que-vuelven-a-cero"],
   pasos: [
-    "Mira la cuenta marcada y su saldo del mes.",
-    "Elige si vuelve a cero en el cierre o pasa al mes siguiente con su saldo.",
+    "Mira la cuenta marcada y su saldo del año.",
+    "Elige si vuelve a cero en el cierre o pasa al año siguiente con su saldo.",
     "Las que vuelven a cero caen en Ganancias y pérdidas.",
   ],
-  alt: "Ingresos por ventas, con $300 en marzo, vuelve a cero en el cierre: cae en Ganancias y pérdidas y abril empieza en $0.",
+  alt: "Ingresos por ventas, con $300 en 20X1, vuelve a cero en el cierre: cae en Ganancias y pérdidas y 20X2 empieza en $0.",
   demo: { items: EJEMPLO_CERO },
   guion: {
     duracion: 6000,

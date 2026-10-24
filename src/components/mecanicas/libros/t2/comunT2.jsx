@@ -42,3 +42,19 @@ export const ROTULO_T2 = {
   margin: "14px 0 8px", fontFamily: "Sora, sans-serif", fontSize: "12px",
   fontWeight: 700, letterSpacing: "0.12em", color: "rgba(248,249,250,0.7)",
 };
+
+/* El hecho que se lee antes del asiento (Near, H3): con él solo se resuelve. */
+export function Hecho({ texto }) {
+  if (!texto) return null;
+  return (
+    <p data-hecho style={{ margin: "0 0 10px", fontSize: "14px", lineHeight: 1.45, color: FAE.text }}>{texto}</p>
+  );
+}
+
+/* El pie de fuente (H2): «Basado en el libro…». */
+export function Pie({ texto }) {
+  if (!texto) return null;
+  return (
+    <p data-pie style={{ margin: "10px 0 0", fontSize: "12px", lineHeight: 1.4, color: "rgba(248,249,250,0.7)" }}>{texto}</p>
+  );
+}

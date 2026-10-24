@@ -3,7 +3,7 @@ import { barajar } from "../../../../utils/barajar.js";
 import { FAE } from "../../../../theme.js";
 import { pesos } from "../../../../data/contabilidad.js";
 import {
-  CONSIGNA_T2_NUEVAS, LAS_QUE_VUELVEN_A_CERO,
+  LAS_QUE_VUELVEN_A_CERO, OBJETIVO_T2_NUEVAS, OPCIONES_CERO, ROTULO_CERO, consignaCero,
 } from "../../../../data/contabilidadT2HacerNuevas.js";
 import {
   PASA_CON_SALDO, VUELVE_A_CERO, destinoCorrecto, evaluarCero, prepararCero, puntuar, utilidadDe,
@@ -22,20 +22,22 @@ import { CSS_T2_NUEVAS, Consecuencia, ROTULO_T2 } from "./comunT2.jsx";
  * T2 · 10.º HACER · LAS QUE VUELVEN A CERO (cu-las-que-vuelven-a-cero).
  * Célula C, lote T2-2. El último Hacer antes de «El Ciclo Completo».
  *
- * La línea del cierre, vertical para que quepa a 320 px: arriba el mes con sus
+ * La línea del cierre, vertical para que quepa a 320 px: arriba el año con sus
  * saldos, en medio la caja de Ganancias y pérdidas (CuentaT compacta), abajo
- * el mes siguiente. Binaria (OpcionC, por Eleccion): «Vuelve a cero en el
- * cierre» o «Pasa a {mes siguiente} con su saldo». La familia se nombra en el
- * retro, no en una segunda pregunta (L).
+ * el año siguiente. Binaria (OpcionC, por Eleccion): «Vuelve a cero en el
+ * cierre» o «Pasa al año siguiente con su saldo». La familia se nombra en el
+ * retro, no en una segunda pregunta (L). Cierre de año y no de mes: decisión
+ * de Near que L aceptó (T2-2, hueco 4).
  *
  * Cada ítem lleva su `clase` (real / nominal): de ahí sale su subtema del
  * Repaso Diario (SUBTEMA_POR_CLASE).
  *
- * El error se queda a la vista en el mes siguiente: una real en $0 o una
- * nominal con el saldo del mes que cerró, con borde coral. Al clasificar la
- * última, el mes se cierra entero y la caja suma «= Utilidad del mes».
+ * El error se queda a la vista en el año siguiente: una real en $0 o una
+ * nominal con el saldo del año que cerró, con borde coral. Al clasificar la
+ * última, el año se cierra entero y la caja suma «= Utilidad del año».
  *
- * ESQUELETO EN BORRADOR: el banco es de muestra (contabilidadT2HacerNuevas.js).
+ * El banco es el de Near (lote T2-2, §1.3): 8 cuentas, «Escenario simulado»
+ * en la ceja de cada pantalla.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -47,7 +49,7 @@ function Utilidad({ valor }) {
   const v = useNumeroQueSube(valor);
   return (
     <p data-utilidad={valor} className="fae-t2n-entra" style={{ ...FILA, margin: "8px 0 0", fontWeight: 700, color: FAE.text, borderTop: "1px solid rgba(248,249,250,0.3)", paddingTop: "8px" }}>
-      <span>= Utilidad del mes</span><span style={CIFRA}>{pesos(v)}</span>
+      <span>= Utilidad del año</span><span style={CIFRA}>{pesos(v)}</span>
     </p>
   );
 }
@@ -75,7 +77,7 @@ export default function LasQueVuelvenACero({
 
   const responder = (eleccion) => {
     if (r) return;
-    const nuevo = evaluarCero(cuenta, eleccion, caso);
+    const nuevo = evaluarCero(cuenta, eleccion);
     t.anotar(cuenta.id, nuevo.ok, eleccion);
     if (nuevo.ok) setBien((n) => n + 1);
     setElegida(eleccion);
@@ -117,7 +119,7 @@ export default function LasQueVuelvenACero({
   /* En el orden del caso, que no delata nada; en la demo, el del ejemplo. */
   const ordenFijo = items ?? caso.cuentas;
 
-  const enAbril = (c) => {
+  const enSiguiente = (c) => {
     if (!cruzadas.includes(c)) return null;
     return destinoVisto(c) === VUELVE_A_CERO ? 0 : c.saldo;
   };
@@ -128,15 +130,15 @@ export default function LasQueVuelvenACero({
       <div data-t2-cero data-item={cuenta.id} data-clase={cuenta.clase}>
         {!modoDemo && (
           <>
-            <Encabezado consigna={CONSIGNA_T2_NUEVAS["cu-las-que-vuelven-a-cero"]} onComoSeJuega={onComoSeJuega} />
+            <Encabezado objetivo={OBJETIVO_T2_NUEVAS["cu-las-que-vuelven-a-cero"]} consigna={consignaCero(cuenta)} onComoSeJuega={onComoSeJuega} />
             <div style={{ marginBottom: "12px" }}>
               <Pulsos total={cuantas} hechos={t.i + (r ? 1 : 0)} enCurso={t.i + 1} etiqueta="Cuenta" />
             </div>
           </>
         )}
 
-        <p style={{ ...ROTULO_T2, marginTop: 0 }}>
-          {mesCerrado ? "EL MES QUEDA CERRADO." : `LLEGA EL CIERRE DE ${caso.mes.toUpperCase()}. ¿QUÉ PASA CON ${cuenta.nombre.toUpperCase()}?`}
+        <p data-ceja style={{ ...ROTULO_T2, marginTop: 0 }}>
+          {ROTULO_CERO}
         </p>
 
         <div data-mes="antes" style={CAJA}>
@@ -161,7 +163,7 @@ export default function LasQueVuelvenACero({
         <div data-mes="despues" style={CAJA}>
           <p style={{ ...ROTULO_T2, margin: "0 0 6px" }}>1 DE {caso.mesSiguiente.toUpperCase()} · DESPUÉS DEL CIERRE</p>
           {ordenFijo.map((c) => {
-            const v = enAbril(c);
+            const v = enSiguiente(c);
             const malo = r && !r.ok && c.id === cuenta.id;
             return (
               <p key={c.id} data-cuenta-siguiente={c.id} data-valor={v ?? ""} className={v != null ? "fae-t2n-entra" : undefined} style={{
@@ -178,15 +180,15 @@ export default function LasQueVuelvenACero({
           })}
         </div>
 
-        {/* Siguen a la vista al cerrar el mes: el veredicto de la última también se lee. */}
+        {/* Siguen a la vista al cerrar el año: el veredicto de la última también se lee. */}
         {(
           <div style={{ marginTop: "12px" }}>
             <Eleccion
               opciones={[
-                { valor: VUELVE_A_CERO, texto: "Vuelve a cero en el cierre" },
-                { valor: PASA_CON_SALDO, texto: `Pasa a ${caso.mesSiguiente} con su saldo` },
+                { valor: VUELVE_A_CERO, texto: OPCIONES_CERO[VUELVE_A_CERO] },
+                { valor: PASA_CON_SALDO, texto: OPCIONES_CERO[PASA_CON_SALDO] },
               ]}
-              r={r} elegida={elegida} onElegir={responder} etiqueta={`¿Qué pasa con ${cuenta.nombre}?`}
+              r={r} elegida={elegida} onElegir={responder} etiqueta={consignaCero(cuenta)}
             />
           </div>
         )}

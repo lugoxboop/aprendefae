@@ -1,7 +1,7 @@
 import { DEBE, HABER, pesos } from "../data/contabilidad.js";
 import {
   CUADRA_POR_VALOR, DEL_DIARIO_AL_MAYOR, LAS_QUE_VUELVEN_A_CERO, SUBTEMA_POR_CLASE,
-  VUELVE_A_CERO, PASA_CON_SALDO,
+  VUELVE_A_CERO, PASA_CON_SALDO, PLANTILLAS_DIARIO, PORQUE_DESTINO,
 } from "../data/contabilidadT2HacerNuevas.js";
 
 /*
@@ -12,12 +12,12 @@ import {
  * ítem, en el estándar único: cada ítem vale lo mismo y el puntaje es
  * aciertos / ítems × 100.
  *
- * Las frases de consecuencia («Faltan $700 en el haber…», «Así, Mercancías
- * tendría dos movimientos…») salen de los datos del caso y no del banco:
- * dicen lo que pasaría, y eso se calcula. Son la regla C4 de Watari —primero
- * la consecuencia, después el veredicto—.
- * [ESCRITO POR CLAUDE, NO POR LA FICHA] PENDIENTE_DE_REVISION — las plantillas
- * de esas frases son de Claude sobre los ejemplos de Watari; las revisa Near.
+ * La única frase de consecuencia calculada es la del desnivel de «Cuadra por
+ * valor» («Faltan $X en el {lado}: …»), que es la de Watari y sale del dato
+ * (Near, §1.1). En «Del diario al mayor» y «Las que vuelven a cero» la
+ * consecuencia la pinta el objeto (la ficha en la cuenta mala, la fila del año
+ * siguiente con borde coral) y el texto es el retro de Near, que ya dice lo
+ * que pasaría. Regla C4 de Watari: primero la consecuencia, después el veredicto.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -81,7 +81,8 @@ export function evaluarCuadra(caso, respuesta) {
       textos: ok ? [caso.porque] : [caso.retroMala, caso.porque],
     };
   }
-  const ok = respuesta === caso.linea;
+  /* `linea` es la lista de las que se aceptan: en el duplicado (E2), cualquiera de las dos. */
+  const ok = caso.linea.includes(respuesta);
   return {
     ok, correcta: caso.linea, sumas: sumas(caso.lineas),
     consecuencia: fraseDesnivel(sumas(caso.lineas)),
@@ -116,9 +117,31 @@ export function mayorCon(caso, puestos) {
   return mayor;
 }
 
-export function prepararDiario(barajar = (xs) => xs) {
-  const [caso] = barajar([...DEL_DIARIO_AL_MAYOR.casos]);
-  return caso.items.map((it) => ({ ...it, caso }));
+/*
+ * Un caso por partida. Se alternan por intento (D8): `anterior` es el id del
+ * caso de la partida pasada, y se juega el otro. Los destino van en orden de
+ * fecha, como en el diario; los origen, al final y barajados (Near).
+ */
+export function prepararDiario(barajar = (xs) => xs, anterior = null) {
+  const casos = barajar([...DEL_DIARIO_AL_MAYOR.casos]);
+  const caso = casos.find((c) => c.id !== anterior) ?? casos[0];
+  const de = (tipo) => caso.items.filter((it) => it.tipo === tipo).map((it) => ({ ...it, caso }));
+  return [...de("destino"), ...barajar(de("origen"))];
+}
+
+const MESES = { Ene: "enero", Feb: "febrero", Mar: "marzo", Abr: "abril", May: "mayo", Jun: "junio",
+  Jul: "julio", Ago: "agosto", Sep: "septiembre", Oct: "octubre", Nov: "noviembre", Dic: "diciembre" };
+/** «Ene 8» → «8 de enero», como lo escribe Near en sus retros. */
+export function fechaLarga(fecha) {
+  const [mes, dia] = fecha.split(" ");
+  return MESES[mes] ? `${dia} de ${MESES[mes]}` : fecha;
+}
+
+/** Pone los nombres en la plantilla de Near. */
+export function retroDiario(letra, { cuenta, fecha = "", cuentaDelMayor = "" }) {
+  const plantilla = PLANTILLAS_DIARIO[letra];
+  if (!plantilla) return null;
+  return plantilla.replaceAll("{cuenta del mayor}", cuentaDelMayor).replaceAll("{cuenta}", cuenta).replaceAll("{fecha}", fecha);
 }
 
 /**
@@ -130,26 +153,15 @@ export function evaluarDiario(item, respuesta) {
   const r = renglones[item.renglon];
   if (item.tipo === "destino") {
     const ok = respuesta === r.cuenta;
-    /*
-     * Lo que pasaría, dicho con los datos del renglón. Watari lo ejemplifica
-     * con el conteo («tendría dos movimientos y el diario solo le da uno»),
-     * pero el conteo no siempre cambia —una cuenta con un solo renglón que
-     * recibe otro ajeno—; el renglón ajeno sí, siempre.
-     */
-    return {
-      ok, correcta: r.cuenta,
-      consecuencia: ok ? null : `Así, ${respuesta} recibiría los ${pesos(r.monto)} del ${r.fecha}, y en el diario ese renglón es de ${r.cuenta}.`,
-      textos: ok ? [item.porque] : [item.retros?.[respuesta] ?? item.porque],
-    };
+    const retro = ok ? null : retroDiario(item.retros?.[respuesta], { cuenta: respuesta });
+    return { ok, correcta: r.cuenta, consecuencia: null, textos: ok ? [PORQUE_DESTINO] : [retro ?? PORQUE_DESTINO] };
   }
   const ok = respuesta === item.renglon;
   const tocado = renglones[respuesta];
-  const difiere = tocado && (tocado.cuenta !== r.cuenta ? "su cuenta" : tocado.monto !== r.monto ? "su monto" : "su lado");
-  return {
-    ok, correcta: item.renglon,
-    consecuencia: ok || !tocado ? null : `Ese renglón no es esa línea del mayor: no coincide ${difiere}.`,
-    textos: ok ? [item.porque] : [item.retros?.[respuesta] ?? item.porque],
-  };
+  const retro = ok || !tocado ? null : retroDiario(item.retros?.[respuesta], {
+    cuenta: tocado.cuenta, fecha: fechaLarga(tocado.fecha), cuentaDelMayor: r.cuenta,
+  });
+  return { ok, correcta: item.renglon, consecuencia: null, textos: ok ? [item.porque] : [retro ?? item.porque] };
 }
 
 /* ═══════════════════════ 10.º · LAS QUE VUELVEN A CERO ═══════════════════════ */
@@ -163,16 +175,14 @@ export function prepararCero(barajar = (xs) => xs) {
   return barajar([...LAS_QUE_VUELVEN_A_CERO.caso.cuentas]);
 }
 
-export function evaluarCero(cuenta, eleccion, { mesSiguiente } = LAS_QUE_VUELVEN_A_CERO.caso) {
+/* Cada cuenta trae el retro de la única opción mala que tiene (Near). */
+export function evaluarCero(cuenta, eleccion) {
   const correcta = destinoCorrecto(cuenta);
   const ok = eleccion === correcta;
-  const consecuencia = ok ? null : eleccion === VUELVE_A_CERO
-    ? `Así, en ${mesSiguiente} ${cuenta.nombre} diría $0, y su saldo de ${pesos(cuenta.saldo)} sigue ahí.`
-    : `Así, ${mesSiguiente} empezaría con ${pesos(cuenta.saldo)} de ${cuenta.nombre} que son del mes que cerró.`;
-  return { ok, correcta, consecuencia, textos: [cuenta.porque] };
+  return { ok, correcta, consecuencia: null, textos: [ok ? cuenta.porque : cuenta.retroMala] };
 }
 
-/** La utilidad del mes con las nominales que ya cruzaron: ingresos − gastos − costos. */
+/** La utilidad del año con las nominales que ya cruzaron: ingresos − gastos − costos. */
 export function utilidadDe(cuentas) {
   return cuentas.filter((c) => c.clase === "nominal")
     .reduce((s, c) => s + (c.familia === "ingreso" ? c.saldo : -c.saldo), 0);
