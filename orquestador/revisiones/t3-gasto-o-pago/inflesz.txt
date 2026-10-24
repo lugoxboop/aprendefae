@@ -1,0 +1,98 @@
+ 95,5   15 p ·  25 s · 2 f  cumple (≥ 65)
+       Lee el hecho. Toca la casilla que dice si hubo gasto y si salió plata.
+ 66,0   10 p ·  21 s · 1 f  cumple (≥ 65)
+       Pregúntate si la empresa ya consumió algo para poder vender.
+ 80,2    9 p ·  17 s · 1 f  no aplica (menos de 10 palabras)
+       Pregúntate si ese día salió plata de la caja.
+ 82,0    8 p ·  15 s · 1 f  no aplica (menos de 10 palabras)
+       Toca la casilla donde caen tus dos respuestas.
+ 89,8   16 p ·  28 s · 2 f  cumple (≥ 65)
+       Gastar es consumir; pagar es sacar plata. Unas veces pasan el mismo día y otras no.
+ 66,2   13 p ·  28 s · 2 f  cumple (≥ 65)
+       Escenario simulado. Le pagó a la asistente $450.000 por su trabajo de mayo.
+ 90,1   13 p ·  23 s · 2 f  cumple (≥ 65)
+       La asistente ya trabajó y se le pagó. Hubo gasto y salió plata.
+ 70,8    9 p ·  19 s · 2 f  no aplica (menos de 10 palabras)
+       Escenario simulado. Pagó $180.000 de la luz de mayo.
+106,7   17 p ·  25 s · 2 f  cumple (≥ 65)
+       Ya usó la luz del mes y la pagó. Hubo gasto y salió plata el mismo día.
+ 71,0   12 p ·  25 s · 2 f  cumple (≥ 65)
+       Escenario simulado. Usó y pagó $150.000 de champú y tintes en mayo.
+103,8   15 p ·  23 s · 2 f  cumple (≥ 65)
+       El champú y los tintes se usaron con los clientes. Hay gasto y hay salida.
+ 68,3   13 p ·  28 s · 3 f  cumple (≥ 65)
+       Escenario simulado. Le hicieron un arreglo en mayo. Lo paga en junio: $200.000.
+102,2   12 p ·  19 s · 2 f  cumple (≥ 65)
+       El arreglo ya se hizo: hay gasto. La plata sale en junio.
+ 67,9   12 p ·  26 s · 3 f  cumple (≥ 65)
+       Escenario simulado. Usó el internet de mayo. Lo paga en junio: $160.000.
+ 99,7   13 p ·  21 s · 2 f  cumple (≥ 65)
+       Ya usó el internet del mes: hay gasto. La factura se paga después.
+ 57,0    9 p ·  21 s · 2 f  no aplica (menos de 10 palabras)
+       Escenario simulado. Compró y pagó un secador de $500.000.
+ 81,4   12 p ·  23 s · 2 f  cumple (≥ 65)
+       Salió plata, pero el secador sigue en el salón. Todavía lo tiene.
+ 84,1   14 p ·  26 s · 2 f  cumple (≥ 65)
+       Escenario simulado. Pagó en mayo los $220.000 de la luz que usó en abril.
+ 95,5   15 p ·  25 s · 2 f  cumple (≥ 65)
+       Salió plata, pero esa luz se usó en abril. En mayo solo paga la deuda.
+ 71,0   12 p ·  25 s · 2 f  cumple (≥ 65)
+       Escenario simulado. Compró a crédito $350.000 de champú que va a vender.
+ 89,8   16 p ·  28 s · 2 f  cumple (≥ 65)
+       No salió plata y el champú sigue en el estante. Por ahora solo nació una deuda.
+ 50,0    9 p ·  22 s · 2 f  no aplica (menos de 10 palabras)
+       Escenario simulado. Le pagó $600.000 al ayudante por abril.
+ 90,1   13 p ·  23 s · 2 f  cumple (≥ 65)
+       El ayudante ya trabajó y se le pagó. Hubo gasto y salió plata.
+ 70,8    9 p ·  19 s · 2 f  no aplica (menos de 10 palabras)
+       Escenario simulado. Pagó $250.000 de la luz de abril.
+106,7   17 p ·  25 s · 2 f  cumple (≥ 65)
+       Ya usó la luz del mes y la pagó. Hubo gasto y salió plata el mismo día.
+ 65,9   12 p ·  26 s · 2 f  cumple (≥ 65)
+       Escenario simulado. Usó $150.000 de grasa y cinta, que pagó ese día.
+ 91,3   15 p ·  26 s · 2 f  cumple (≥ 65)
+       La grasa y la cinta se usaron en las reparaciones. Hay gasto y hay salida.
+ 67,9   12 p ·  26 s · 3 f  cumple (≥ 65)
+       Escenario simulado. Usó un compresor en abril. Lo paga en mayo: $300.000.
+ 93,7   11 p ·  19 s · 2 f  cumple (≥ 65)
+       Ya consumió el compresor: hay gasto. La plata sale en mayo.
+ 65,9   12 p ·  26 s · 2 f  cumple (≥ 65)
+       Escenario simulado. Pagó de contado $600.000 de repuestos que va a vender.
+ 80,5   13 p ·  25 s · 2 f  cumple (≥ 65)
+       Salió plata, pero los repuestos siguen en el estante. Todavía no es gasto.
+ 75,7   13 p ·  26 s · 2 f  cumple (≥ 65)
+       Escenario simulado. Pagó en abril los $190.000 del agua que usó en marzo.
+ 91,3   15 p ·  26 s · 2 f  cumple (≥ 65)
+       Salió plata, pero esa agua se usó en marzo. En abril solo paga la deuda.
+ 65,9   12 p ·  26 s · 2 f  cumple (≥ 65)
+       Escenario simulado. Le pagó al banco $500.000 de la deuda, sin intereses.
+ 93,0   14 p ·  24 s · 2 f  cumple (≥ 65)
+       Salió plata, pero no consumió nada. Solo bajó lo que le debe al banco.
+ 65,9   12 p ·  26 s · 2 f  cumple (≥ 65)
+       Escenario simulado. Compró a crédito $400.000 de repuestos que va a vender.
+ 88,6   14 p ·  25 s · 2 f  cumple (≥ 65)
+       No salió plata y los repuestos siguen en el estante. Solo nació una deuda.
+ 89,1   19 p ·  33 s · 2 f  cumple (≥ 65)
+       Sí hubo gasto: la empresa ya consumió algo para vender. Que la plata no haya salido no lo borra.
+ 89,8   16 p ·  28 s · 2 f  cumple (≥ 65)
+       Sí hubo gasto: lo que pagó ya se consumió. Pagar y consumir pasaron el mismo día.
+ 84,1   14 p ·  26 s · 2 f  cumple (≥ 65)
+       Aquí no hubo gasto. Lo que compró todavía lo tiene: no lo ha consumido.
+ 79,7   14 p ·  27 s · 2 f  cumple (≥ 65)
+       Aquí no hubo gasto. Pagó una deuda: el gasto se anotó cuando se consumió.
+ 85,9   16 p ·  29 s · 2 f  cumple (≥ 65)
+       Aquí no hubo gasto. Devolver un préstamo no es consumir: solo baja lo que se debe.
+ 83,0   15 p ·  28 s · 2 f  cumple (≥ 65)
+       No ha salido plata. La empresa consumió y quedó debiendo: la caja se mueve después.
+ 87,2   15 p ·  27 s · 2 f  cumple (≥ 65)
+       No ha salido plata: la compra fue a crédito. Por ahora solo nació una deuda.
+ 97,6    8 p ·  13 s · 1 f  no aplica (menos de 10 palabras)
+       Sí salió plata: el hecho dice que pagó.
+ 82,0   14 p ·  27 s · 3 f  cumple (≥ 65)
+       Escenario simulado. Ya usó la harina del mes. La paga el otro mes: $300.000.
+ 99,0   19 p ·  30 s · 2 f  cumple (≥ 65)
+       La harina ya se usó: hay gasto. La plata sale el otro mes, así que hoy no hubo salida.
+ 65,9    6 p ·  13 s · 1 f  no aplica (menos de 10 palabras)
+       Punteado: así quedaba con tu toque
+
+48 textos, 0 por debajo de 65.
