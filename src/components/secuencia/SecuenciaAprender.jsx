@@ -165,13 +165,21 @@ export function Veredicto({ estado, pista, porque }) {
  * Es el mismo en todas las pantallas de la pieza (D5: la figura no cambia de
  * alto al avanzar). Sin decirlo, 150 y 200, los de la especificación v1. Con
  * tope: 206 a 320 y 253 a 375, que es lo que cabe con la banda de apoyo
- * debajo (medido por Hanayama en T4, #513). Pedir más no rompe: se recorta al tope.
+ * debajo (medido por Hanayama en T4, #513). Pedir más no rompe: se recorta al
+ * tope, y en desarrollo lo avisa la consola. «a375» es el alto A 375 px de ancho.
  */
 export const TOPE_FIGURA = { a320: 206, a375: 253 };
 export const ALTO_FIGURA = { a320: 150, a375: 200 };
 export function altoFiguraDe(pieza) {
   const pedido = pieza?.altoFigura ?? {};
-  const de = (k) => Math.min(Math.max(0, Number(pedido[k]) || ALTO_FIGURA[k]), TOPE_FIGURA[k]);
+  const de = (k) => {
+    const quiere = Math.max(0, Number(pedido[k]) || ALTO_FIGURA[k]);
+    /* El recorte no es silencioso (pedido de Levi): en desarrollo se avisa por consola. */
+    if (quiere > TOPE_FIGURA[k] && import.meta.env?.DEV) {
+      console.warn(`[SecuenciaAprender] ${pieza?.id}: la figura pide ${quiere} px (${k}) y el tope es ${TOPE_FIGURA[k]}; se recorta.`);
+    }
+    return Math.min(quiere, TOPE_FIGURA[k]);
+  };
   return { a320: de("a320"), a375: de("a375") };
 }
 
