@@ -21,6 +21,7 @@ import { readFileSync } from "node:fs";
 const { SUBJECTS, HACER, actividadesDeTipo, desafioDe } = await import("../../data/subjects.js");
 const S = await import("../../data/contabilidadT2Subtemas.js");
 const B = await import("../bancos.js");
+const N = await import("../../data/contabilidadT2HacerNuevas.js");
 const { DESAFIO: DESAFIO_DATOS } = await import("../../data/contabilidadActividades.js");
 const PAQUETE = readFileSync(new URL("../../../orquestador/conocimiento/paquetes/c-t2-1-near-lote.md", import.meta.url), "utf8");
 
@@ -46,13 +47,15 @@ const RESPUESTAS = {
   "cu-de-que-familia": B.BANCO_DE_QUE_FAMILIA.items.map((i) => i.respuesta),
   "cu-cuadro-dinamicas": B.BANCO_CUADRO_DINAMICAS.items.map((i) => i.respuesta),
   "cu-debita-o-acredita": B.BANCO_DEBITA_O_ACREDITA.items.map((i) => i.respuesta),
+  /* Las que vuelven a cero: la regla va por la `clase` de cada cuenta del banco. */
+  "cu-las-que-vuelven-a-cero": N.LAS_QUE_VUELVEN_A_CERO.caso.cuentas.map((c) => c.clase),
 };
 /* Las que vuelven a cero: mientras su banco no exista, las dos clases que fija L (§1); cuando exista, las de sus ítems. */
 const CLASES = ["real", "nominal"];
 const respuestasDe = (actividad) => RESPUESTAS[actividad] ?? (actividad === "cu-las-que-vuelven-a-cero" && S.PROXIMAS.includes(actividad) ? CLASES : undefined);
 
-test("el catálogo da 7 Hacer y un desafío de 4 etapas (si cambia, esta prueba se revisa a la vez)", () => {
-  assert.equal(HACERES.filter((id) => !S.PROXIMAS.includes(id)).length, 7);
+test("el catálogo da 10 Hacer (las 7 y las 3 nuevas) y un desafío de 4 etapas (si cambia, esta prueba se revisa a la vez)", () => {
+  assert.equal(HACERES.filter((id) => !S.PROXIMAS.includes(id)).length, 10);
   assert.equal(DESAFIO?.id, "ciclo-completo");
   assert.equal(ETAPAS.length, 4);
 });

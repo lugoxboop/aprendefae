@@ -76,7 +76,7 @@ export const SUBTEMA_REGLA = {
 };
 
 /* Las Hacer nuevas que todavía no están en el catálogo (subjects.js). Solo encoge. */
-export const PROXIMAS = ["cu-cuadra-por-valor", "cu-del-diario-al-mayor", "cu-las-que-vuelven-a-cero"];
+export const PROXIMAS = [];
 
 /* Lo que espera etiqueta de Near. Vacía: la lista cerrada cubre todo. */
 export const PENDIENTE_NEAR = [];
