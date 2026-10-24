@@ -16,6 +16,8 @@ export default function VistaEstudiante({ e, subjectId, posicion, onMarcar, onVo
       <button type="button" style={volverV1} onClick={onVolver} data-volver>‹ {textoVolver}</button>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", flexWrap: "wrap", marginBottom: "6px" }}>
         <div style={{ minWidth: 0 }}>
+          {/* Katsumi (lote 4): el rótulo «Estudiante» y debajo su nombre; no «Mi estudiante», que sugiere uno solo. */}
+          <p style={{ margin: 0, fontSize: "12px", letterSpacing: "0.06em", color: V1.texto2 }} data-rotulo-estudiante>Estudiante</p>
           <h2 id="pd1-est" className="pd1-nombre" title={nombre} style={{ ...tituloBloque, fontSize: "18px", margin: 0 }}>{nombre}</h2>
           <p style={{ margin: "2px 0 0", fontSize: "13px", color: V1.texto2 }}>
             {e.full_name ? `${e.nickname} · ` : ""}última vez {hace(e.dias_inactivo)}

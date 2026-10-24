@@ -91,9 +91,9 @@ const ESTILOS = `
 .fae-sec-nav { transition: transform 160ms ${CURVA}; }
 .fae-sec-nav:active:not([aria-disabled="true"]) { transform: scale(.97); transition-duration: 100ms; }
 .fae-sec-titular:focus-visible, .fae-sec-nav:focus-visible { outline: 2px solid #F8F9FA; outline-offset: 2px; }
-.fae-sec-figura { height: var(--fae-sec-alto-figura, 150px); }
-@media (min-width: 375px) and (min-height: 640px) { .fae-sec-raiz { --fae-sec-alto-figura: 200px; } }
-@media (min-width: 760px) { .fae-sec-raiz { --fae-sec-alto-figura: 320px; max-width: 860px; margin: 0 auto; } }
+.fae-sec-figura { height: var(--fae-sec-alto-320, 150px); }
+@media (min-width: 375px) and (min-height: 640px) { .fae-sec-figura { height: var(--fae-sec-alto-375, 200px); } }
+@media (min-width: 760px) { .fae-sec-figura { height: 320px; } .fae-sec-raiz { max-width: 860px; margin: 0 auto; } }
 @media (prefers-reduced-motion: reduce) {
   .fae-sec-g, .fae-sec--sale, .${CLASE_PASO}, .fae-sec--cierre .fae-sec-figura-viva { animation: none !important; }
   .fae-sec-nav { transition: none; }
@@ -158,6 +158,29 @@ export function Veredicto({ estado, pista, porque }) {
       )}
     </div>
   );
+}
+
+/*
+ * El alto reservado de la figura, por pieza (`pieza.altoFigura = { a320, a375 }`).
+ * Es el mismo en todas las pantallas de la pieza (D5: la figura no cambia de
+ * alto al avanzar). Sin decirlo, 150 y 200, los de la especificación v1. Con
+ * tope: 206 a 320 y 253 a 375, que es lo que cabe con la banda de apoyo
+ * debajo (medido por Hanayama en T4, #513). Pedir más no rompe: se recorta al
+ * tope, y en desarrollo lo avisa la consola. «a375» es el alto A 375 px de ancho.
+ */
+export const TOPE_FIGURA = { a320: 206, a375: 253 };
+export const ALTO_FIGURA = { a320: 150, a375: 200 };
+export function altoFiguraDe(pieza) {
+  const pedido = pieza?.altoFigura ?? {};
+  const de = (k) => {
+    const quiere = Math.max(0, Number(pedido[k]) || ALTO_FIGURA[k]);
+    /* El recorte no es silencioso (pedido de Levi): en desarrollo se avisa por consola. */
+    if (quiere > TOPE_FIGURA[k] && import.meta.env?.DEV) {
+      console.warn(`[SecuenciaAprender] ${pieza?.id}: la figura pide ${quiere} px (${k}) y el tope es ${TOPE_FIGURA[k]}; se recorta.`);
+    }
+    return Math.min(quiere, TOPE_FIGURA[k]);
+  };
+  return { a320: de("a320"), a375: de("a375") };
 }
 
 export default function SecuenciaAprender({ temaId, piezas, final = "tema", onFinal }) {
@@ -319,7 +342,13 @@ export default function SecuenciaAprender({ temaId, piezas, final = "tema", onFi
 
   return (
     <Panel style={{ position: "relative" }}>
-      <div className="fae-sec-raiz" data-secuencia={temaId} data-pieza={pieza.id} ref={zona}>
+      <div
+        className="fae-sec-raiz"
+        data-secuencia={temaId}
+        data-pieza={pieza.id}
+        ref={zona}
+        style={{ "--fae-sec-alto-320": `${altoFiguraDe(pieza).a320}px`, "--fae-sec-alto-375": `${altoFiguraDe(pieza).a375}px` }}
+      >
         <style>{ESTILOS}</style>
 
         {piezas.length > 1 && (

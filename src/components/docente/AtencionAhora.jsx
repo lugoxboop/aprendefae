@@ -11,8 +11,9 @@ import { V1, tarjetaV1, tituloBloque, notaV1, enlaceV1 } from "./estiloV1.js";
  * ● Bajo) y el motivo en seis palabras o menos. Sin coral (P6): el nivel alto
  * lo carga la forma, en blanco; el ámbar es el punto medio de la escala.
  *
- * Al pie, «Ver los N» (el panel completo de alertas, con lo que no se mide) y
- * la línea de Destacados, que dejó de ser un bloque propio.
+ * Al pie, «Ver todas las alertas» (el panel completo, con lo que no se mide)
+ * y la línea de Destacados, que dejó de ser un bloque propio. Textos de
+ * Katsumi (lote 4, textos.md): «Ver los N» no decía de qué eran los N.
  */
 
 export const TOPE_ATENCION = 3;
@@ -57,7 +58,8 @@ export default function AtencionAhora({ atencion, nDestacados, singular, onVerTo
       <h2 id="pd1-b2" style={tituloBloque}>Necesitan atención</h2>
       {visibles.length > 0 ? (
         <div style={{ display: "grid", gap: "8px" }}>
-          {visibles.map((a) => <FilaAtencion key={a.estudiante.user_id} a={a} onAbrir={onAbrir} />)}
+          {/* Por debajo de 400 px, dos filas (corrección de Shibukawa, #498 e): la tercera queda en «Ver todas las alertas». */}
+          {visibles.map((a, i) => <div key={a.estudiante.user_id} className={i === 2 ? "pd1-tercera" : undefined}><FilaAtencion a={a} onAbrir={onAbrir} /></div>)}
         </div>
       ) : (
         /* Sin ícono de riesgo (decisión de Yujiro): ● Bajo es siempre un aviso, nunca «todo bien». */
@@ -67,12 +69,12 @@ export default function AtencionAhora({ atencion, nDestacados, singular, onVerTo
       )}
       <div style={{ display: "flex", flexWrap: "wrap", gap: "0 16px", marginTop: "4px" }}>
         <button type="button" style={enlaceV1} onClick={onVerTodos} data-ver-atencion>
-          {atencion.length > TOPE_ATENCION ? `Ver los ${atencion.length}` : "Ver todas las alertas"}
+          Ver todas las alertas
         </button>
-        {/* Destacados, en una línea (Ukyo §4): sin número, para no sumar cifras a la primera pantalla (P5). */}
+        {/* Destacados, en una línea (Ukyo §4), con el texto de Katsumi (lote 4): el número es el de destacados.js. */}
         {nDestacados > 0 && (
           <button type="button" style={enlaceV1} onClick={onVerTodos} data-ver-destacados>
-            Ver quiénes van muy bien
+            {nDestacados} van muy bien · Ver quiénes
           </button>
         )}
       </div>
