@@ -1,6 +1,7 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { FAE } from "../../theme.js";
 import { Panel } from "../mecanicas/salaDeControl/marco.jsx";
+import { Pulsos } from "../mecanicas/corazon/juego.jsx";
 import {
   FASES, LITERAL, estadoInicial, guardadoValido, pantallaActual, pasosDados, pasosTotales,
   queHaceSiguiente, literalSiguiente, avanzar, puedeRetroceder, retroceder, cambiarFigura,
@@ -72,8 +73,6 @@ const ESTILOS = `
 @keyframes fae-sec-entra { from { opacity: 0; transform: translateX(var(--fae-sec-dx, 0)); } to { opacity: 1; transform: none; } }
 @keyframes fae-sec-sale { from { opacity: 1; } to { opacity: 0; } }
 @keyframes fae-sec-pulso { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
-@keyframes fae-sec-nodo { from { transform: scale(.6); } to { transform: scale(1); } }
-@keyframes fae-sec-trazo { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 @keyframes fae-sec-paso-entra { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 .fae-sec-g { animation: fae-sec-entra 280ms ${CURVA} both; }
 .fae-sec-g1 { --fae-sec-dx: 16px; animation-delay: 0ms; }
@@ -89,8 +88,6 @@ const ESTILOS = `
 .fae-sec--animando .fae-sec-g { will-change: transform, opacity; }
 .fae-sec--sale { animation: fae-sec-sale 120ms ${CURVA} both; }
 .${CLASE_PASO} { animation: fae-sec-paso-entra 240ms ${CURVA} both; }
-.fae-sec-nodo-nuevo { animation: fae-sec-nodo 240ms ${CURVA} both; }
-.fae-sec-trazo-nuevo { transform-origin: left center; animation: fae-sec-trazo 200ms ${CURVA} both; }
 .fae-sec-nav { transition: transform 160ms ${CURVA}; }
 .fae-sec-nav:active:not([aria-disabled="true"]) { transform: scale(.97); transition-duration: 100ms; }
 .fae-sec-titular:focus-visible, .fae-sec-nav:focus-visible { outline: 2px solid #F8F9FA; outline-offset: 2px; }
@@ -98,7 +95,7 @@ const ESTILOS = `
 @media (min-width: 375px) and (min-height: 640px) { .fae-sec-raiz { --fae-sec-alto-figura: 200px; } }
 @media (min-width: 760px) { .fae-sec-raiz { --fae-sec-alto-figura: 320px; max-width: 860px; margin: 0 auto; } }
 @media (prefers-reduced-motion: reduce) {
-  .fae-sec-g, .fae-sec--sale, .${CLASE_PASO}, .fae-sec-nodo-nuevo, .fae-sec-trazo-nuevo, .fae-sec--cierre .fae-sec-figura-viva { animation: none !important; }
+  .fae-sec-g, .fae-sec--sale, .${CLASE_PASO}, .fae-sec--cierre .fae-sec-figura-viva { animation: none !important; }
   .fae-sec-nav { transition: none; }
 }
 `;
@@ -129,40 +126,11 @@ function guardar(temaId, estado) {
   }
 }
 
-/* El nodo de los Pulsos: la forma dice el estado. Solo de lectura: no se toca (§7). */
-function Nodo({ estado, nuevo }) {
-  const lado = estado === "actual" ? 12 : 8;
-  return (
-    <span aria-hidden="true" className={nuevo ? "fae-sec-nodo-nuevo" : undefined} style={{
-      display: "block", flex: "0 0 auto", width: `${lado}px`, height: `${lado}px`, borderRadius: "50%", boxSizing: "border-box",
-      ...(estado === "sin-ver"
-        ? { background: "transparent", border: `1.5px solid ${FAE.node}` }
-        : { background: FAE.node }),
-      ...(estado === "actual" ? { boxShadow: `0 0 0 2px ${FAE.bg}, 0 0 0 3.5px ${FAE.node}` } : {}),
-    }} />
-  );
-}
-
-function Pulsos({ total, actual, maxVisto }) {
-  return (
-    <div aria-hidden="true" data-pulsos style={{ display: "flex", alignItems: "center", flex: "1 1 auto", minWidth: 0, maxWidth: "258px" }}>
-      {Array.from({ length: total }, (_, k) => {
-        const estado = k === actual ? "actual" : k <= maxVisto ? "visto" : "sin-ver";
-        return (
-          <span key={k} style={{ display: "flex", alignItems: "center", flex: k === 0 ? "0 0 auto" : "1 1 0", minWidth: 0 }}>
-            {k > 0 && (
-              <span className={k === maxVisto && k === actual ? "fae-sec-trazo-nuevo" : undefined} style={{
-                display: "block", flex: "1 1 auto", height: "1.5px", minWidth: "4px", margin: "0 3px",
-                background: k <= maxVisto ? FAE.node : "rgba(203,220,242,0.35)",
-              }} />
-            )}
-            <Nodo estado={estado} nuevo={k === maxVisto && k === actual && k > 0} />
-          </span>
-        );
-      })}
-    </div>
-  );
-}
+/*
+ * Los Pulsos son los del kit, de corazon/juego.jsx, y no una copia: la prueba
+ * de opcion-avance.test.mjs prohíbe que una pantalla lleve su propio avance,
+ * para que el contador sea uno solo en todo el sitio (FAE.node, sin teal).
+ */
 
 /**
  * La pastilla de veredicto de un Haz calificado (§9): «Correcto» en blanco o
@@ -195,8 +163,6 @@ export function Veredicto({ estado, pista, porque }) {
 export default function SecuenciaAprender({ temaId, piezas, final = "tema", onFinal }) {
   const id = useId();
   const [estado, setEstado] = useState(() => leerGuardado(temaId, piezas) ?? estadoInicial(piezas));
-  /* Hasta qué pantalla llegó en cada pieza: dice qué nodos van rellenos. */
-  const [maximos, setMaximos] = useState(() => ({}));
   const [direccion, setDireccion] = useState(null); // null al montar · "adelante" · "atras"
   const [saliendo, setSaliendo] = useState(false);
   const [animando, setAnimando] = useState(false);
@@ -221,11 +187,7 @@ export default function SecuenciaAprender({ temaId, piezas, final = "tema", onFi
   const totalPasos = pasosTotales(pantalla);
   const accion = queHaceSiguiente(estado, piezas);
   const espera = accion === "espera";
-  const maxVisto = Math.max(maximos[pieza.id] ?? 0, estado.s);
 
-  useEffect(() => {
-    setMaximos((m) => ((m[pieza.id] ?? -1) >= estado.s ? m : { ...m, [pieza.id]: estado.s }));
-  }, [pieza.id, estado.s]);
 
   /* La apertura arma su figura UNA vez al llegar (§8.3): la figura recibe primeraVez. */
   const primeraVez = !primeras.has(clave) && direccion !== "atras";
@@ -366,11 +328,8 @@ export default function SecuenciaAprender({ temaId, piezas, final = "tema", onFi
           </p>
         )}
 
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", minHeight: "28px" }}>
-          <p id={`${id}-contador`} data-contador style={{ margin: 0, flex: "0 0 auto", fontFamily: "Inter, sans-serif", fontSize: "12px", lineHeight: "16px", color: SECUNDARIO }}>
-            Pantalla {estado.s + 1} de {total}
-          </p>
-          <Pulsos total={total} actual={estado.s} maxVisto={maxVisto} />
+        <div id={`${id}-contador`} data-contador style={{ display: "flex", alignItems: "center", minHeight: "28px" }}>
+          <Pulsos total={total} hechos={estado.s} enCurso={estado.s + 1} etiqueta="Pantalla" />
         </div>
 
         <div className="fae-sec-zona">
