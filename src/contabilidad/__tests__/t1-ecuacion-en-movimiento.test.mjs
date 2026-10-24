@@ -585,3 +585,22 @@ test("difícil, 50 FP y los ocho hechos", () => {
   assert.equal(T1_5.fpBase, 50);
   assert.equal(T1_5.porPartida, TRANSACCIONES_CAP2.length);
 });
+
+test("★★ la muestra de la leyenda es la de Mai: 24×8, plana, sin borde propio, con el tratamiento de su tramo y 7 px hasta la palabra", () => {
+  const { caja, desmontar } = montar();
+  try {
+    const m = (id) => caja.querySelector(`[data-muestra="${id}"]`);
+    for (const id of [ACTIVO, PASIVO, PATRIMONIO]) {
+      assert.equal(m(id).style.width, "24px");
+      assert.equal(m(id).style.height, "8px");
+      assert.ok(["0", "0px"].includes(m(id).style.borderRadius), `${id}: redondeada`);
+      assert.equal(m(id).parentElement.style.gap, "7px");
+    }
+    assert.match(m(ACTIVO).style.background, /rgba\(184, 196, 212, 0\.3\)/);
+    assert.match(m(ACTIVO).style.boxShadow, /2px/);
+    assert.match(m(PASIVO).style.background, /repeating-linear-gradient\(135deg/);
+    assert.equal(m(PASIVO).style.boxShadow, "");
+    assert.match(m(PATRIMONIO).style.background, /rgba\(184, 196, 212, 0\.14\)/);
+    assert.equal(m(PATRIMONIO).style.boxShadow, "", "lo de los dueños va sin contorno");
+  } finally { desmontar(); }
+});

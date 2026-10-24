@@ -96,7 +96,6 @@ function Tramo({ valor, sobre = 0, estilo, dato }) {
 const RELLENO_TIENE = { background: "rgba(184,196,212,.30)", outline: `2px solid ${TEXTO_B}`, outlineOffset: "-2px" };
 const RAYADO_DEBE = { background: `repeating-linear-gradient(135deg, rgba(184,196,212,.55) 0 2px, transparent 2px 7px)`, outline: `1px solid ${NEUTRO_B}`, outlineOffset: "-1px" };
 const TENUE_DUENOS = { background: "rgba(184,196,212,.14)", outline: `1px solid ${NEUTRO_B}`, outlineOffset: "-1px" };
-const MUESTRA = { [ACTIVO]: RELLENO_TIENE, [PASIVO]: RAYADO_DEBE, [PATRIMONIO]: TENUE_DUENOS };
 
 /* La torre que habría salido con lo elegido: contorno coral discontinuo, solo si difiere. */
 function Fantasma({ valor, dato }) {
@@ -146,12 +145,24 @@ function Torres({ t, fantasma }) {
   );
 }
 
+/*
+ * La muestra de la leyenda (Mai; decisión de Sakuta tras Shoko, 24-oct): un
+ * rectángulo plano de 24×8, sin redondear y sin borde propio —el cuadrado de
+ * 14 con borde se leía como casilla de verificación—, con el tratamiento de
+ * su tramo y 7 px de hueco hasta la palabra.
+ */
+export const MUESTRA_LEYENDA = {
+  [ACTIVO]: { background: "rgba(184,196,212,.30)", boxShadow: `inset 0 0 0 2px ${TEXTO_B}` },
+  [PASIVO]: { background: "repeating-linear-gradient(135deg, rgba(184,196,212,.55) 0 2px, transparent 2px 6px)" },
+  [PATRIMONIO]: { background: "rgba(184,196,212,.14)" },
+};
+
 function Leyenda() {
   return (
     <ul data-leyenda style={{ margin: "8px 0 0", padding: 0, listStyle: "none", display: "flex", flexWrap: "wrap", gap: "4px 14px" }}>
       {PARTES.map((p) => (
-        <li key={p.id} style={{ display: "flex", alignItems: "center", gap: "6px", fontFamily: INTER, fontSize: "12px", color: SECUNDARIO }}>
-          <span aria-hidden="true" style={{ width: "14px", height: "14px", borderRadius: "2px", ...MUESTRA[p.id] }} />
+        <li key={p.id} style={{ display: "flex", alignItems: "center", gap: "7px", fontFamily: INTER, fontSize: "12px", color: SECUNDARIO }}>
+          <span data-muestra={p.id} aria-hidden="true" style={{ flex: "none", width: "24px", height: "8px", borderRadius: 0, border: "none", ...MUESTRA_LEYENDA[p.id] }} />
           {p.idea}
         </li>
       ))}
