@@ -458,11 +458,21 @@ export const TORRES_T1_5 = {
   /* Futaba, b-t1-lote-24oct-futaba.md §3. La pista es del 1.er error; con un solo intento por decisión, va en «¿Cómo se juega?». */
   pistaTotal: "Parte del total que ya tenía esa parte. ¿Le sumas o le restas lo de este hecho?",
   /* La devolución de la decisión 2 según lo que marcó (no da la cifra: la pastilla ya dice «Iba aquí: …»). */
+  /*
+   * «monto» y «sinCambio» son de la auditoría de Shoko al #496 (24-oct), que
+   * reemplazan los de Futaba; «contrario» sigue siendo el de Futaba.
+   */
   devolucionTotal: {
     contrario: "Ese total va para el otro lado. Fíjate si con este hecho esa parte crece o se achica.",
-    monto: "Ese es solo lo que movió este hecho. El total también guarda lo que ya había antes.",
-    sinCambio: "Esa parte sí se mueve con este hecho, así que su total no puede quedar como antes.",
+    monto: "Pusiste lo que se movió, no con cuánto quedó. Súmalo o réstalo al total que había.",
+    sinCambio: "Esa parte sí se mueve con este hecho. Su total ya no es el de antes.",
   },
+  /*
+   * La C de las torres (Shoko, #496): la de ERROR_T1_5 hablaba de mover la
+   * parte quieta, que en este diseño el estudiante no hace. {ELEGIDA} y
+   * {CORRECTA} son las ideas de las partes.
+   */
+  errorQuieta: "{ELEGIDA} sí se mueve con este hecho. La que se queda igual es {CORRECTA}.",
   /* «Correcto: se queda igual» e «Iba aquí: se queda igual»: lo que se pega a la palabra de la pastilla. */
   quedaIgual: "se queda igual",
   anotar: "Anotar",
@@ -471,6 +481,16 @@ export const TORRES_T1_5 = {
   contador: "Hecho [n] de [N]",
   /* Lo que se lee sin ver las torres (§7). [X], [Y], [Z]: los tres totales; [T], el de cada lado. */
   alt: "Lo que tiene, [X]; lo que debe, [Y], más lo que es de los dueños, [Z]: dan [T].",
+};
+
+/*
+ * La tercera opción cuando el total anterior es $0 (Shoko, #496): con solo dos,
+ * se acertaba la mitad de las veces al azar. Hecho 1: lo de un solo socio.
+ * Hecho 2, lo que debe: el total de la otra torre.
+ */
+export const TERCERA_OPCION_T1_5 = {
+  "cal-1": { [ACTIVO]: 100000, [PATRIMONIO]: 100000 },
+  "cal-2": { [PASIVO]: 325000 },
 };
 
 /* El acierto de cada hecho (Futaba, 24-oct). El del hecho 8 cierra el mes; el cierre de la partida sigue con ACIERTO_T1_5_FINAL. */

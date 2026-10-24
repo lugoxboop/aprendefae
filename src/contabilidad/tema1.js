@@ -4,7 +4,7 @@ import {
   CLAVE_MARCO_SERVICIOS, CLAVE_ERA_SERVICIOS, SIN_INSUMO, T1_1, T1_2,
   TRANSACCIONES_CAP2, T1_4, PARTES, SUBE, BAJA, IGUAL,
   ERROR_A_T1_4, ERROR_B_T1_4, ACIERTO_T1_4,
-  T1_5, ERROR_T1_5, DESDE_EL_CORTO,
+  T1_5, ERROR_T1_5, DESDE_EL_CORTO, TERCERA_OPCION_T1_5,
   T1_6, CONCEPTOS, PRIMERO, SEGUNDO, ERROR_T1_6, ACIERTO_T1_6, PESO_INFORME, PESO_SECCION,
   ERROR_T1_7, BANCO_T1_7,
   T1_8, PUNTOS_T1_8, SITUACIONES_T1_8, ACIERTO_T1_8, ERROR_T1_8, PREDICCION_T1_8,
@@ -358,7 +358,7 @@ export function movimientoT1_5(antes, hecho) {
   const delta = (p) => despues[p] - antes[p];
   const monto = Math.abs(delta(mueven[0]));
   if (Math.abs(delta(mueven[1])) !== monto) throw new Error(`el hecho ${hecho.id} no mueve sus dos partes por el mismo valor`);
-  return { antes, despues, quieta, mueven, monto, signos: Object.fromEntries(mueven.map((p) => [p, Math.sign(delta(p))])) };
+  return { hecho, antes, despues, quieta, mueven, monto, signos: Object.fromEntries(mueven.map((p) => [p, Math.sign(delta(p))])) };
 }
 
 /*
@@ -385,6 +385,9 @@ export function opcionesTotalT1_5(mov, parte) {
     const otra = valida ? v : sinCambio;
     if (!elegidas.includes(otra)) elegidas.push(otra);
   }
+  /* Shoko (#496): nunca menos de tres. La tercera, cuando el anterior es $0, la dice el banco. */
+  const tercera = TERCERA_OPCION_T1_5[mov.hecho?.id]?.[parte];
+  if (elegidas.length < 3 && tercera !== undefined && !elegidas.includes(tercera)) elegidas.push(tercera);
   return elegidas.sort((a, b) => a - b);
 }
 
@@ -393,7 +396,9 @@ export function claseDeTotalT1_5(mov, parte, v) {
   if (v === mov.despues[parte]) return "correcta";
   if (v === mov.antes[parte]) return "sinCambio";
   if (v === mov.antes[parte] - mov.signos[parte] * mov.monto) return "contrario";
-  return "monto";
+  if (v === mov.monto) return "monto";
+  /* La tercera de Shoko para el $0: el hecho 1 (lo de un socio) confunde como el monto; el 2 (la otra torre), como el contrario. */
+  return v < mov.despues[parte] ? "monto" : "contrario";
 }
 
 /*

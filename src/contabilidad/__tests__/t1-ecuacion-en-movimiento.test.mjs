@@ -290,9 +290,11 @@ test("★★★ el modelo corre también en el error, y el fantasma sale solo en
     assert.ok(caja.querySelector('[data-fantasma="derecha"]'));
     /*
      * Lo que tiene restó (275.000) y lo que debe quedó en el total anterior (0, porque −25.000 ya no es opción):
-     * los lados no dan igual, A, con 25.000 de diferencia.
+     * los lados no dan igual, A, con 25.000 de diferencia; y debajo, la línea de cada parte de la decisión 2.
      */
-    assert.equal(caja.querySelector("[data-texto-retro]").textContent, sinEmoji(ERROR_T1_5.A.replace("{Z}", pesos(25000))));
+    const retro = caja.querySelector("[data-texto-retro]").textContent;
+    assert.ok(retro.startsWith(sinEmoji(ERROR_T1_5.A.replace("{Z}", pesos(25000)))), retro);
+    assert.ok(retro.includes(TORRES_T1_5.devolucionTotal.contrario) && retro.includes(TORRES_T1_5.devolucionTotal.sinCambio), retro);
   } finally { desmontar(); }
   /* Solo una torre distinta: el fantasma solo ahí. */
   const m = mov(1);
@@ -321,7 +323,8 @@ test("★★★ la primera decisión se marca al instante, y la segunda va siemp
       "la segunda decisión no va sobre las dos que se mueven");
     for (const p of m.mueven) elegirTotal(caja, p, m.despues[p]);
     tocar(boton(caja, TORRES_T1_5.anotar));
-    assert.equal(caja.querySelector("[data-texto-retro]").textContent, sinEmoji(ERROR_T1_5.C));
+    /* La C de Shoko: nombra la que eligió y la que de verdad se queda igual. */
+    assert.equal(caja.querySelector("[data-texto-retro]").textContent, "Lo que tiene sí se mueve con este hecho. La que se queda igual es lo que debe.");
   } finally { desmontar(); }
   /* Acertada, la pastilla dice «Correcto: se queda igual». */
   const dos = montar();
@@ -388,12 +391,12 @@ test("★★★ la decisión 2 es el total nuevo: anterior más el monto, anteri
   const m = mov(1);
   assert.deepEqual(opcionesTotalT1_5(m, ACTIVO), [25000, 275000, 325000]);
   /*
-   * Decisión de Sakuta: la que repite otra o sale negativa se cambia por el total anterior, sin cambio;
-   * si aun así se repite, quedan dos. Hecho 1 (las dos desde cero) y pasivo del 2 y del 3.
+   * La que repite otra o sale negativa se cambia por el total anterior, sin cambio (Sakuta); y nunca
+   * menos de tres (Shoko, #496): cuando el anterior es $0, la tercera es la de la tabla de Shoko.
    */
-  assert.deepEqual(opcionesTotalT1_5(mov(0), ACTIVO), [0, 300000]);
-  assert.deepEqual(opcionesTotalT1_5(mov(0), PATRIMONIO), [0, 300000]);
-  assert.deepEqual(opcionesTotalT1_5(m, PASIVO), [0, 25000]);
+  assert.deepEqual(opcionesTotalT1_5(mov(0), ACTIVO), [0, 100000, 300000]);
+  assert.deepEqual(opcionesTotalT1_5(mov(0), PATRIMONIO), [0, 100000, 300000]);
+  assert.deepEqual(opcionesTotalT1_5(m, PASIVO), [0, 25000, 325000]);
   assert.deepEqual(opcionesTotalT1_5(mov(2), PASIVO), [25000, 50000, 75000], "el −25.000 del hecho 3 no se cambió por el total anterior");
   for (let k = 0; k < 8; k += 1) {
     const mk = mov(k);
@@ -401,7 +404,7 @@ test("★★★ la decisión 2 es el total nuevo: anterior más el monto, anteri
       const ops = opcionesTotalT1_5(mk, p);
       assert.ok(ops.includes(mk.despues[p]), `hecho ${k + 1}, ${p}: la correcta no está entre las opciones`);
       assert.equal(new Set(ops).size, ops.length);
-      assert.ok(ops.length >= 2 && ops.length <= 3, `hecho ${k + 1}, ${p}: ${ops.length} opciones`);
+      assert.equal(ops.length, 3, `hecho ${k + 1}, ${p}: ${ops.length} opciones`);
       assert.ok(ops.every((v) => v >= 0), `hecho ${k + 1}, ${p}: salió un total negativo`);
       assert.deepEqual(ops, [...ops].sort((a, b) => a - b), "las opciones no van de menor a mayor");
     }
@@ -423,22 +426,34 @@ test("★★★ la decisión 2 es el total nuevo: anterior más el monto, anteri
   } finally { desmontar(); }
 });
 
-test("★★★ «el total anterior, sin cambio» y la devolución de Futaba según lo marcado; en el hecho 1 solo dos botones", () => {
+test("★★★ hecho 1 con tres botones (Shoko), «sin cambio» rotulado, y la devolución de Shoko según lo marcado", () => {
   const { caja, desmontar } = montar();
   try {
-    /* Hecho 1: los dos grupos con dos botones; el de $0 lleva el rótulo «sin cambio». */
+    /* Hecho 1: los dos grupos con tres botones; el de $0 lleva el rótulo «sin cambio». */
     tocar(caja.querySelector(`[data-parte="${mov(0).quieta}"]`));
     for (const p of mov(0).mueven) {
-      assert.equal(caja.querySelectorAll(`[data-totales="${p}"] button`).length, 2, `hecho 1, ${p}: no son dos botones`);
+      assert.equal(caja.querySelectorAll(`[data-totales="${p}"] button`).length, 3, `hecho 1, ${p}: no son tres botones`);
       assert.equal(caja.querySelector(`[data-opcion-total="${p}:0"] [data-rotulo-sin-cambio]`).textContent, TORRES_T1_5.sinCambio);
     }
-    /* Marca «sin cambio» en lo que tiene: la devolución lo dice. */
+    /* Marca «sin cambio» en lo que tiene: la línea de la decisión 2 lo dice, y solo esa. */
     elegirTotal(caja, ACTIVO, 0);
     elegirTotal(caja, mov(0).mueven[1], 300000);
     tocar(boton(caja, TORRES_T1_5.anotar));
-    assert.equal(caja.querySelector(`[data-devolucion-total="${ACTIVO}"]`).textContent, TORRES_T1_5.devolucionTotal.sinCambio);
-    assert.equal(caja.querySelector(`[data-devolucion-total="${mov(0).mueven[1]}"]`), null, "salió devolución en la parte acertada");
+    const retro = caja.querySelector("[data-texto-retro]").textContent;
+    assert.ok(retro.endsWith(TORRES_T1_5.devolucionTotal.sinCambio), retro);
+    assert.ok(!retro.includes(TORRES_T1_5.devolucionTotal.monto));
   } finally { desmontar(); }
+  /* Si falla las dos: la C y, debajo, la línea de la decisión 2 (Shoko). */
+  const dos = montar();
+  try {
+    const m0 = mov(0);
+    tocar(dos.caja.querySelector(`[data-parte="${m0.mueven[0]}"]`));
+    elegirTotal(dos.caja, ACTIVO, 100000);
+    elegirTotal(dos.caja, PATRIMONIO, 300000);
+    tocar(boton(dos.caja, TORRES_T1_5.anotar));
+    const retro = dos.caja.querySelector("[data-texto-retro]").textContent;
+    assert.ok(retro.startsWith("Lo que tiene sí se mueve con este hecho.") && retro.endsWith(TORRES_T1_5.devolucionTotal.monto), retro);
+  } finally { dos.desmontar(); }
   /* Las tres clases de la decisión 2, hecho 2 (lo que tiene, de 300.000 a 325.000). */
   const m = mov(1);
   assert.deepEqual([325000, 275000, 25000, 300000].map((v) => claseDeTotalT1_5(m, ACTIVO, v)), ["correcta", "contrario", "monto", "sinCambio"]);

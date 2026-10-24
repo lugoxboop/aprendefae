@@ -65,6 +65,7 @@ const ancho = (n) => `${n}px`;
 /* Una cifra con su signo de verdad: un total negativo se lee con «−», no con un guion. */
 const cifra = (v) => (v < 0 ? `−${pesos(-v)}` : pesos(v));
 const parte = (id) => PARTES.find((p) => p.id === id);
+const minuscula = (t) => t.charAt(0).toLowerCase() + t.slice(1);
 /* La pregunta con una palabra en negrilla (el «no» de Shoko, que antes iba en mayúsculas). */
 function conNegrilla(texto, palabra) {
   const k = texto.indexOf(` ${palabra} `);
@@ -282,6 +283,18 @@ export default function LaEcuacionEnMovimiento({
     return correcto ? REVELADA : null;
   };
 
+  /*
+   * La devolución del error (auditoría de Shoko al #496): si falló la parte
+   * quieta, la C nueva nombra las dos partes; si no, A o B. Debajo, una línea
+   * por cada parte de la decisión 2 que falló, según la cifra que marcó.
+   */
+  const textoError = r && !r.ok ? [
+    r.quietaOk
+      ? sinEmoji(r.texto)
+      : TORRES_T1_5.errorQuieta.replace("{ELEGIDA}", parte(quietaElegida).idea).replace("{CORRECTA}", minuscula(parte(mov.quieta).idea)),
+    ...new Set(mov.mueven.filter((p) => !r.totalesOk[p]).map((p) => TORRES_T1_5.devolucionTotal[claseDeTotalT1_5(mov, p, totales[p])])),
+  ].join(" ") : null;
+
   /* El acierto de cada hecho es de Futaba (24-oct); el ejemplo de «Así se juega» trae el suyo. */
   const textoAcierto = ejemplo ? ejemplo.acierto ?? null : ACIERTO_T1_5[h.id] ?? null;
 
@@ -323,8 +336,6 @@ export default function LaEcuacionEnMovimiento({
   const renderTotales = (id) => {
     const p = parte(id);
     const ops = opcionesTotalT1_5(mov, id);
-    const marcada = totales[id];
-    const fallo = r && marcada !== undefined && marcada !== mov.despues[id];
     return (
       <div key={id} data-grupo-total={id} style={{ marginTop: "12px" }}>
         <p style={{ margin: "0 0 6px", fontFamily: INTER, fontSize: "12px", fontWeight: 600, color: SECUNDARIO }}>
@@ -361,11 +372,6 @@ export default function LaEcuacionEnMovimiento({
             );
           })}
         </div>
-        {fallo && (
-          <p data-devolucion-total={id} style={{ margin: "6px 0 0", fontFamily: INTER, fontSize: "13px", lineHeight: 1.45, color: TEXTO_B }}>
-            {TORRES_T1_5.devolucionTotal[claseDeTotalT1_5(mov, id, marcada)]}
-          </p>
-        )}
       </div>
     );
   };
@@ -412,7 +418,7 @@ export default function LaEcuacionEnMovimiento({
         </div>
 
         <RegionViva>
-          {r && <Mensaje ok={r.ok} texto={r.ok ? textoAcierto : sinEmoji(r.texto)} />}
+          {r && <Mensaje ok={r.ok} texto={r.ok ? textoAcierto : textoError} />}
         </RegionViva>
 
         {!r && <Avance onClick={anotar} deshabilitado={!listo}>{TORRES_T1_5.anotar}</Avance>}
