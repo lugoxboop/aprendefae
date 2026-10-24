@@ -42,7 +42,7 @@ export const PALABRA_RIESGO = { [NIVEL.URGENTE]: "Alto", [NIVEL.ATENCION]: "Medi
 /*
  * El motivo en seis palabras o menos (textos de Katsumi, orquestador/
  * revisiones/panel-docente/textos.md): dice solo lo que la regla comprueba,
- * sin cifras. El detalle con su número sigue en «Ver los N» (el texto de
+ * sin cifras. El detalle con su número sigue en «Ver todas las alertas» (el texto de
  * alertas.js, sin cambios).
  */
 export const MOTIVO_CORTO = {
@@ -51,7 +51,7 @@ export const MOTIVO_CORTO = {
   "Respuestas rápidas y con poco acierto": "Responde rápido y acierta poco",
 };
 
-/* «Ver los N»: el título corto de la regla que todavía no se calcula (Katsumi). */
+/* «Ver todas las alertas»: el título corto de la regla que todavía no se calcula (Katsumi). */
 export const TITULO_SIN_DATOS = { "Abandono repetido a mitad de actividad": "Abandono a mitad: aún sin datos" };
 
 /*
