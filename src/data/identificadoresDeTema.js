@@ -27,8 +27,11 @@
 import { TituloConReloj, FacturaPorCobrar } from "../contabilidad/identificadores/identificadoresB.jsx";
 import { CajasDelConteo, KardexAlDia, EtiquetaRebajada } from "../contabilidad/identificadores/identificadoresC.jsx";
 import { MazoDelCapitulo } from "../contabilidad/identificadores/identificadoresE.jsx";
+import { LibretaYLapiz } from "../contabilidad/identificadores/LibretaYLapiz.jsx";
 
 export const ICONO_POR_TEMA = {
+  /* Célula B desde el 23-oct (T1; Ukyo, logitos-temas-conta-v1). */
+  "contabilidad/introduccion-contabilidad": LibretaYLapiz,
   /* Célula B (Mai, lote 16). */
   "contabilidad/activos-financieros": TituloConReloj,
   "contabilidad/cuentas-por-cobrar": FacturaPorCobrar,
