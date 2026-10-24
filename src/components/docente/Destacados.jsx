@@ -114,7 +114,7 @@ export default function Destacados({ estudiantes }) {
                   style={{
                     padding: "3px 9px", borderRadius: "999px",
                     background: `${FAE.teal}1f`, border: `1px solid ${FAE.teal}55`,
-                    color: FAE.teal, fontFamily: "Sora, sans-serif", fontSize: "10.5px", fontWeight: 700,
+                    color: "#3FA69A", fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700,
                     letterSpacing: "0.03em", whiteSpace: "nowrap",
                   }}
                   title={detalleMotivo(m, e)}
@@ -123,7 +123,7 @@ export default function Destacados({ estudiantes }) {
                 </span>
               ))}
             </div>
-            <p style={{ margin: "8px 0 0", fontSize: "11.5px", lineHeight: 1.45, color: "rgba(248,249,250,0.6)" }}>
+            <p style={{ margin: "8px 0 0", fontSize: "12px", lineHeight: 1.45, color: "rgba(248,249,250,0.6)" }}>
               {motivos.map((m) => detalleMotivo(m, e)).join(" · ")}
             </p>
           </div>
@@ -136,8 +136,8 @@ export default function Destacados({ estudiantes }) {
           onClick={() => setExpandido(true)}
           style={{
             marginTop: "10px", fontFamily: "Sora, sans-serif", fontSize: "12.5px", fontWeight: 600,
-            padding: "7px 14px", borderRadius: "999px", cursor: "pointer",
-            background: "transparent", border: `1px solid ${FAE.teal}55`, color: FAE.teal,
+            minHeight: "44px", padding: "0 14px", borderRadius: "999px", cursor: "pointer",
+            background: "transparent", border: `1px solid ${FAE.teal}55`, color: "#3FA69A",
           }}
         >
           Ver los {ocultos} restantes
@@ -149,7 +149,7 @@ export default function Destacados({ estudiantes }) {
           onClick={() => setExpandido(false)}
           style={{
             marginTop: "10px", fontFamily: "Sora, sans-serif", fontSize: "12.5px", fontWeight: 600,
-            padding: "7px 14px", borderRadius: "999px", cursor: "pointer",
+            minHeight: "44px", padding: "0 14px", borderRadius: "999px", cursor: "pointer",
             background: "transparent", border: "1px solid rgba(248,249,250,0.25)", color: "rgba(248,249,250,0.7)",
           }}
         >
@@ -164,7 +164,7 @@ function Titulo() {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: "9px", margin: "0 0 12px" }}>
       <span style={{ width: "3px", height: "16px", borderRadius: "2px", background: FAE.teal, flexShrink: 0 }} />
-      <h2 style={{ fontFamily: "Sora, sans-serif", fontSize: "13px", fontWeight: 700, letterSpacing: "0.1em", color: FAE.teal, margin: 0 }}>
+      <h2 style={{ fontFamily: "Sora, sans-serif", fontSize: "13px", fontWeight: 700, letterSpacing: "0.1em", color: "#3FA69A", margin: 0 }}>
         DESTACADOS
       </h2>
     </div>
