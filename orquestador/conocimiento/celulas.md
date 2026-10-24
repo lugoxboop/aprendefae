@@ -293,7 +293,7 @@ y sin los enlaces no había forma de hablar con ningún general.
 | **Yujiro** | general, Célula D | `https://claude.ai/chat/1b446339-13ab-43c3-9115-04fe08a52fe2` |
 | **Kamogawa** | general, Célula E | `https://claude.ai/chat/e5697857-7523-47a8-8288-6c5df421034c` |
 | **Xeno** | diseño | `https://claude.ai/chat/d88c6a04-b9ba-414f-b2f3-df63c0abc0c3` |
-| **Levi** | calidad, Célula A | `https://claude.ai/chat/edb72638-0dbe-8888-bc1e-544b11270f84` |
+| **Levi** | calidad, Célula A y auditor central | `https://claude.ai/chat/e14fb739-cad6-4f22-b3e8-8844f7b38d0c` (desde el 24-oct; el chat anterior, `edb72638…`, quedó retirado) |
 | **Gen** | contenido, Célula A | `https://claude.ai/chat/2e83efc3-0a60-477a-8625-7a0eb36e871e` |
 | **Sai** | construcción, Célula A | `https://claude.ai/code/session_01HTfZSXunqjEHrG95ZZSLoB` (Sai 4.0 es la vigente; la sesión «Sai 2.0» es vieja, no se le escribe) |
 | **Mello** | auditor jefe | sin enlace: se busca en `https://claude.ai/recents` |
