@@ -96,26 +96,31 @@ const ASI_T1_2 = {
 /* ═══════════════════ T1-5 · LA ECUACIÓN EN MOVIMIENTO ═══════════════════ */
 
 export const EJEMPLO_T1_5 = {
+  /*
+   * Futaba, 24-oct: un aporte en plata con cifras construidas que no salen
+   * del libro (el horno a crédito era el mismo ejemplo de t1-4). El id es
+   * interno, no de estudiante.
+   */
   hecho: {
-    id: "demo-horno-200000",
-    texto: "La panadería compró un horno a crédito por $200.000.",
-    asiento: { debe: [["Maquinaria", 200000]], haber: [["Cuentas por pagar", 200000]] },
+    id: "demo-aporte-187000",
+    texto: "Escenario simulado. A la panadería le entran $187.000 en plata de sus dueños.",
+    asiento: { debe: [["Caja", 187000]], haber: [["Aportes sociales", 187000]] },
   },
   /* De dónde parte: el recorrido de verdad parte de cero, el ejemplo no. */
   antes: { [ACTIVO]: 500000, [PASIVO]: 0, [PATRIMONIO]: 500000 },
+  acierto: "Entró plata de los dueños. Lo que tiene y lo de los dueños suben a $687.000, y lo que debe no se mueve.",
 };
 
 /*
  * Lo que se escribía antes de las torres. Queda exportado (ESCRITO_EJEMPLO_T1_5)
- * porque es el estado al que llega el ejemplo: $700.000 = $200.000 + $500.000.
+ * porque es el estado al que llega el ejemplo: $687.000 = $0 + $687.000.
  */
-const ESCRITO_T1_5 = { [ACTIVO]: 700000, [PASIVO]: 200000, [PATRIMONIO]: 500000 };
+const ESCRITO_T1_5 = { [ACTIVO]: 687000, [PASIVO]: 0, [PATRIMONIO]: 687000 };
 
 /*
  * Con las torres (P2 de Mai, decisión 2 de Shoko): la mano toca la parte
  * quieta, el total nuevo de las otras dos y «Anotar». Los pasos y el
- * alternativo son nuevos, PARA SHOKO. El ejemplo sigue siendo el horno a
- * crédito: Shoko pidió cambiarlo (es el mismo de t1-4) y lo escribe Futaba.
+ * alternativo son nuevos, PARA SHOKO; el ejemplo es el aporte de Futaba.
  */
 const ASI_T1_5 = {
   actividadId: T1_5.id,
@@ -127,15 +132,16 @@ const ASI_T1_5 = {
     "En las otras dos, elige con cuánto quedan. Luego toca Anotar.",
   ],
   /* La pantalla le antepone «Ejemplo: ». */
-  alt: "la panadería compró un horno a crédito por $200.000. Al empezar tenía $500.000, debía $0 y lo de los dueños era $500.000. Se toca «Lo que es de los dueños», que no se mueve. En «Lo que tiene» se elige $700.000 y en «Lo que debe», $200.000, y se toca «Anotar». Las dos torres suben a $700.000.",
+  /* Futaba, 24-oct. */
+  alt: "Escenario simulado. La panadería tiene $500.000 y no debe nada. Lo de los dueños es $500.000. Ellos ponen $187.000 en plata.",
   demo: { ejemplo: EJEMPLO_T1_5 },
   guion: {
     /* La parte quieta, los dos totales nuevos y «Anotar»: las torres suben juntas. 9,5 s, como antes. */
     duracion: 9500,
     toques: [
-      { ms: 1500, en: `[data-parte="${PATRIMONIO}"]` },
-      { ms: 3500, en: `[data-opcion-total="${ACTIVO}:700000"]` },
-      { ms: 5000, en: `[data-opcion-total="${PASIVO}:200000"]` },
+      { ms: 1500, en: `[data-parte="${PASIVO}"]` },
+      { ms: 3500, en: `[data-opcion-total="${ACTIVO}:687000"]` },
+      { ms: 5000, en: `[data-opcion-total="${PATRIMONIO}:687000"]` },
       { ms: 6500, en: "[data-torres]", senala: true },
       { ms: 7800, texto: TORRES_T1_5.anotar },
     ],

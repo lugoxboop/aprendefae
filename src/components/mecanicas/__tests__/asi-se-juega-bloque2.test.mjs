@@ -117,7 +117,7 @@ test("★★ el bloque 2 son T1-1, T1-2 y T1-5, con la consigna de cada activida
     "Lee el hecho de la panadería.", "Toca la parte que no se mueve.", "En las otras dos, elige con cuánto quedan. Luego toca Anotar.",
   ]);
   assert.equal(ASI_TODAS[T1_5.id].alt,
-    "la panadería compró un horno a crédito por $200.000. Al empezar tenía $500.000, debía $0 y lo de los dueños era $500.000. Se toca «Lo que es de los dueños», que no se mueve. En «Lo que tiene» se elige $700.000 y en «Lo que debe», $200.000, y se toca «Anotar». Las dos torres suben a $700.000.");
+    "Escenario simulado. La panadería tiene $500.000 y no debe nada. Lo de los dueños es $500.000. Ellos ponen $187.000 en plata.");
   assert.ok(ASI_TODAS[T1_5.id].guion.duracion <= 10000, "la demo de T1-5 pasa de 10 s");
   assert.equal(ASI_TODAS[T1_5.id].guion.toques.at(-1).texto, "Anotar", "la demo de T1-5 no termina tocando «Anotar»");
   assert.equal(ASI_TODAS[T1_1.id].alt,
@@ -157,12 +157,12 @@ test("★★ los ejemplos se resuelven con la lógica de verdad, con los acierto
   const t2 = evaluarT1_2(EJEMPLO_T1_2, "industrial");
   assert.equal(t2.ok, true);
   assert.equal(t2.texto, "✅ Industrial. Entró harina. Salió pan. No es lo mismo: adentro lo cambiaron.");
-  const t5 = evaluarT1_5(0, { activo: 700000, pasivo: 200000, patrimonio: 500000 }, EJEMPLO_T1_5);
+  const t5 = evaluarT1_5(0, { activo: 687000, pasivo: 0, patrimonio: 687000 }, EJEMPLO_T1_5);
   assert.equal(t5.ok, true);
   /* Y la lógica sigue viendo sus errores con el ejemplo: mover la parte quieta es C. */
-  assert.equal(evaluarT1_5(0, { activo: 700000, pasivo: 0, patrimonio: 700000 }, EJEMPLO_T1_5).patron, "C");
+  assert.equal(evaluarT1_5(0, { activo: 687000, pasivo: 187000, patrimonio: 500000 }, EJEMPLO_T1_5).patron, "C");
   /* Sin ejemplo, el primer hecho del recorrido sigue partiendo de cero. */
-  assert.notEqual(evaluarT1_5(0, { activo: 700000, pasivo: 200000, patrimonio: 500000 }).ok, true);
+  assert.notEqual(evaluarT1_5(0, { activo: 687000, pasivo: 0, patrimonio: 687000 }).ok, true);
 });
 
 /* ═══════════════════ PRIMERA VEZ, SEGUNDA VEZ, Y «¿CÓMO SE JUEGA?» ═══════════════════ */
@@ -236,11 +236,12 @@ await esperar(() => caja.querySelector("[data-asj-control]").textContent === "Ve
         assert.ok(escenario().querySelector('[role="status"]').textContent.includes("Entró harina. Salió pan."));
       }
       if (id === T1_5.id) {
-        /* La mano tocó la parte quieta, los dos totales nuevos y «Anotar»: las dos torres subieron a $700.000. */
-        assert.equal(escenario().querySelector('[data-parte="patrimonio"] [data-pastilla]').dataset.pastilla, "correcta");
-        assert.equal(escenario().querySelector('[data-opcion-total="activo:700000"] [data-pastilla]').dataset.pastilla, "correcta");
-        assert.equal(escenario().querySelector('[data-total="izquierda"]').textContent, "$700.000");
-        assert.equal(escenario().querySelector('[data-total="derecha"]').textContent, "$700.000");
+        /* La mano tocó la parte quieta, los dos totales nuevos y «Anotar»: las dos torres subieron a $687.000. */
+        assert.equal(escenario().querySelector('[data-parte="pasivo"] [data-pastilla]').dataset.pastilla, "correcta");
+        assert.equal(escenario().querySelector('[data-opcion-total="activo:687000"] [data-pastilla]').dataset.pastilla, "correcta");
+        assert.equal(escenario().querySelector('[data-total="izquierda"]').textContent, "$687.000");
+        assert.equal(escenario().querySelector('[data-total="derecha"]').textContent, "$687.000");
+        assert.ok(escenario().querySelector("[data-texto-retro]").textContent.includes("suben a $687.000"), "falta el acierto de Futaba");
         assert.equal(escenario().querySelector('[data-mensaje]').dataset.mensaje, "acierto");
         assert.equal(escenario().querySelectorAll("input").length, 0, "T1-5 ya no tiene casillas");
       }
@@ -266,8 +267,8 @@ test("★★★ en modo demo, responder no llama a onCompletar en ninguna de las
 test("★★ «Pausar» también para la mano de T1-5 entre toque y toque, y «Seguir» la retoma", async () => {
   const { caja, desmontar } = montar(pantalla(T1_5.id, { escala: 1 }));
   try {
-    const marcada = () => caja.querySelector('[data-asj-escenario] [data-parte="patrimonio"] [data-pastilla]');
-    const signo = () => caja.querySelector('[data-asj-escenario] [data-opcion-total="activo:700000"]').getAttribute("aria-pressed");
+    const marcada = () => caja.querySelector('[data-asj-escenario] [data-parte="pasivo"] [data-pastilla]');
+    const signo = () => caja.querySelector('[data-asj-escenario] [data-opcion-total="activo:687000"]').getAttribute("aria-pressed");
     /* Tras el primer toque (la parte quieta) y antes del segundo (el total de lo que tiene). */
     await esperar(() => marcada(), 4000);
     tocar(caja.querySelector("[data-asj-control]"));

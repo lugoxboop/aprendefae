@@ -44,10 +44,10 @@ const LaEcuacionEnMovimiento = (await import("../../components/mecanicas/libros/
 const { MarcoLibros } = await import("../../components/mecanicas/bloques/marcos.jsx");
 const {
   totalesTras, parteQuieta, enModoCorto, evaluarT1_5, efectoDe,
-  movimientoT1_5, evaluarTorresT1_5, opcionesTotalT1_5, altoDeTorre, sinEmoji, hechoDeItem,
+  movimientoT1_5, evaluarTorresT1_5, opcionesTotalT1_5, claseDeTotalT1_5, altoDeTorre, sinEmoji, hechoDeItem,
 } = await import("../tema1.js");
 const {
-  TRANSACCIONES_CAP2, T1_5, PARTES, ERROR_T1_5, DESDE_EL_CORTO, TORRES_T1_5, ACIERTO_T1_5_FINAL,
+  TRANSACCIONES_CAP2, T1_5, PARTES, ERROR_T1_5, DESDE_EL_CORTO, TORRES_T1_5, ACIERTO_T1_5_FINAL, ACIERTO_T1_5,
 } = await import("../../data/contabilidadTema1.js");
 const { ACTIVO, PASIVO, PATRIMONIO, pesos } = await import("../../data/contabilidad.js");
 const { FAE } = await import("../../theme.js");
@@ -237,11 +237,14 @@ test("★★★ ya no hay casillas de cifra, ni pie que compara mientras se escr
   } finally { desmontar(); }
 });
 
-test("★★★ la escala es fija: $475.000 miden 150 px en los ocho hechos", () => {
-  assert.equal(altoDeTorre(475000), 150);
+test("★★★ la escala es fija: $515.000 miden 150 px en los ocho hechos (Mai, 24-oct: el fantasma tiene que caber)", () => {
+  assert.equal(altoDeTorre(515000), 150);
   assert.equal(altoDeTorre(0), 0);
-  /* Lo honesto de la ficha: $10.000 mueven 3,2 px. */
-  assert.equal(altoDeTorre(10000).toFixed(1), "3.2");
+  /* Lo honesto de la ficha: $10.000 mueven 2,9 px. */
+  assert.equal(altoDeTorre(10000).toFixed(1), "2.9");
+  /* La cifra más alta que puede salir en pantalla, una opción del hecho 6, cabe en la escala. */
+  const todas = TRANSACCIONES_CAP2.flatMap((_, k) => mov(k).mueven.flatMap((p) => opcionesTotalT1_5(mov(k), p)));
+  assert.equal(Math.max(...todas), 515000);
 });
 
 test("★★★ cada hecho mueve dos partes por el mismo monto y deja una quieta, y las torres siguen la tabla de Mai", () => {
@@ -353,7 +356,8 @@ test("★★★ los ocho hechos en orden, un solo intento, y el registro guarda 
       decidir(caja, k, { quieta: k !== 2 });
       tocar(boton(caja, TORRES_T1_5.anotar));
       assert.equal(boton(caja, TORRES_T1_5.anotar), undefined, "quedó un reintento");
-      if (k === 7) assert.equal(caja.querySelector("[data-texto-retro]").textContent, sinEmoji(ACIERTO_T1_5_FINAL));
+      /* El acierto de cada hecho es el de Futaba (24-oct). */
+      if (k !== 2) assert.equal(caja.querySelector("[data-texto-retro]").textContent, ACIERTO_T1_5[TRANSACCIONES_CAP2[k].id]);
       tocar(boton(caja, k === 7 ? TORRES_T1_5.verResultado : TORRES_T1_5.siguiente));
     }
     assert.ok(caja.querySelector("[data-final]").textContent.includes(pesos(465000)));
@@ -417,6 +421,27 @@ test("★★★ la decisión 2 es el total nuevo: anterior más el monto, anteri
     assert.equal(iba.textContent, "Iba aquí: $325.000");
     assert.equal(caja.querySelector(`[data-opcion-total="${ACTIVO}:25000"] [data-pastilla]`).dataset.pastilla, "tachada");
   } finally { desmontar(); }
+});
+
+test("★★★ «el total anterior, sin cambio» y la devolución de Futaba según lo marcado; en el hecho 1 solo dos botones", () => {
+  const { caja, desmontar } = montar();
+  try {
+    /* Hecho 1: los dos grupos con dos botones; el de $0 lleva el rótulo «sin cambio». */
+    tocar(caja.querySelector(`[data-parte="${mov(0).quieta}"]`));
+    for (const p of mov(0).mueven) {
+      assert.equal(caja.querySelectorAll(`[data-totales="${p}"] button`).length, 2, `hecho 1, ${p}: no son dos botones`);
+      assert.equal(caja.querySelector(`[data-opcion-total="${p}:0"] [data-rotulo-sin-cambio]`).textContent, TORRES_T1_5.sinCambio);
+    }
+    /* Marca «sin cambio» en lo que tiene: la devolución lo dice. */
+    elegirTotal(caja, ACTIVO, 0);
+    elegirTotal(caja, mov(0).mueven[1], 300000);
+    tocar(boton(caja, TORRES_T1_5.anotar));
+    assert.equal(caja.querySelector(`[data-devolucion-total="${ACTIVO}"]`).textContent, TORRES_T1_5.devolucionTotal.sinCambio);
+    assert.equal(caja.querySelector(`[data-devolucion-total="${mov(0).mueven[1]}"]`), null, "salió devolución en la parte acertada");
+  } finally { desmontar(); }
+  /* Las tres clases de la decisión 2, hecho 2 (lo que tiene, de 300.000 a 325.000). */
+  const m = mov(1);
+  assert.deepEqual([325000, 275000, 25000, 300000].map((v) => claseDeTotalT1_5(m, ACTIVO, v)), ["correcta", "contrario", "monto", "sinCambio"]);
 });
 
 test("★★ la pregunta 1 lleva el «no» en negrilla, no en mayúsculas", () => {

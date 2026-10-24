@@ -367,7 +367,7 @@ export const ALT_T1_4 = `Tres barras: ${enLista(PARTES.map((p) => p.idea))}.`;
 
 export const T1_5 = {
   id: "t1-la-ecuacion-en-movimiento",
-  nombre: "La Ecuación en Movimiento",
+  nombre: "La ecuación en movimiento",
   subtema: "La ecuación contable, hecho por hecho",
   dificultad: "dificil",
   fpBase: 50,
@@ -397,7 +397,8 @@ export const DESDE_EL_CORTO = 5;
 export const ERROR_T1_5 = {
   A: "❌ Los dos lados no dan igual. Faltan {Z} de un lado. Vuelve al hecho: lo que entró tiene que venir de algún lado.",
   C: "❌ Esa parte no cambia con este hecho. Tiene que quedar igual que antes. Si la mueves, se pierde el rastro de lo de atrás.",
-  B: "❌ Los dos lados dan igual, pero los números no son los de este hecho. Que dé igual no basta. Revisa cuánto entró o salió.",
+  /* Futaba, 24-oct (tabla sin emoji de Shoko): «Fíjate» en vez de «Revisa». */
+  B: "❌ Los dos lados dan igual, pero los números no son los de este hecho. Que dé igual no basta. Fíjate cuánto entró o salió.",
 };
 
 /*
@@ -444,11 +445,24 @@ export const ALT_T1_5 = `Tres casillas para escribir: ${enLista(PARTES.map((p) =
  * «Correcto.» y el 8 lleva ACIERTO_T1_5_FINAL sin el emoji (§0).
  */
 export const TORRES_T1_5 = {
-  consigna: "Lee el hecho. Di cuál no se mueve y con cuánto quedan las otras dos.",
+  /* Textos del 24-oct (P2 de Mai, con los de Shoko; ficha b-t1-5-torres-p2-mai.md §7). */
+  consigna: "Lee el hecho. Di cuál no se mueve y el total nuevo de las otras dos.",
   /* El «no» va en negrilla, no en mayúsculas (Shoko): la vista resalta la palabra `negrillaQuieta`. */
   preguntaQuieta: "¿Cuál de las tres no se mueve con este hecho?",
   negrillaQuieta: "no",
-  preguntaDireccion: "¿Con cuánto queda cada una de las otras dos?",
+  preguntaDireccion: "¿Cuál es el total nuevo de las otras dos?",
+  /* El rótulo de cada grupo de cifras: «{parte} · total nuevo». */
+  totalNuevo: "[PARTE] · total nuevo",
+  /* Debajo de la cifra cuando la opción es el total de antes (decisión de Sakuta para las repetidas o negativas). */
+  sinCambio: "el total anterior, sin cambio",
+  /* Futaba, b-t1-lote-24oct-futaba.md §3. La pista es del 1.er error; con un solo intento por decisión, va en «¿Cómo se juega?». */
+  pistaTotal: "Parte del total que ya tenía esa parte. ¿Le sumas o le restas lo de este hecho?",
+  /* La devolución de la decisión 2 según lo que marcó (no da la cifra: la pastilla ya dice «Iba aquí: …»). */
+  devolucionTotal: {
+    contrario: "Ese total va para el otro lado. Fíjate si con este hecho esa parte crece o se achica.",
+    monto: "Ese es solo lo que movió este hecho. El total también guarda lo que ya había antes.",
+    sinCambio: "Esa parte sí se mueve con este hecho, así que su total no puede quedar como antes.",
+  },
   /* «Correcto: se queda igual» e «Iba aquí: se queda igual»: lo que se pega a la palabra de la pastilla. */
   quedaIgual: "se queda igual",
   anotar: "Anotar",
@@ -457,6 +471,18 @@ export const TORRES_T1_5 = {
   contador: "Hecho [n] de [N]",
   /* Lo que se lee sin ver las torres (§7). [X], [Y], [Z]: los tres totales; [T], el de cada lado. */
   alt: "Lo que tiene, [X]; lo que debe, [Y], más lo que es de los dueños, [Z]: dan [T].",
+};
+
+/* El acierto de cada hecho (Futaba, 24-oct). El del hecho 8 cierra el mes; el cierre de la partida sigue con ACIERTO_T1_5_FINAL. */
+export const ACIERTO_T1_5 = {
+  "cal-1": "Entró plata de los socios. Lo que tiene y lo de los dueños quedan en $300.000, y la empresa todavía no debe nada.",
+  "cal-2": "Entró un computador y nació una deuda por lo mismo. Lo que tiene sube a $325.000 y lo que debe, a $25.000.",
+  "cal-3": "Entró una máquina con plata del banco. Lo que tiene llega a $375.000 y lo que debe, a $75.000.",
+  "cal-4": "Salió plata para pagar parte del computador. Lo que tiene baja a $365.000 y lo que debe, a $65.000.",
+  "cal-5": "Un socio nuevo trajo un local. Lo que tiene sube a $465.000 y lo de los dueños, a $400.000.",
+  "cal-6": "Le devolvieron plata a un socio. Lo que tiene baja a $415.000 y lo de los dueños, a $350.000.",
+  "cal-7": "Entró mercancía y nació una deuda con el proveedor. Lo que tiene sube a $475.000 y lo que debe, a $125.000.",
+  "cal-8": "Salió plata para pagar parte del préstamo. Lo que tiene baja a $465.000 y lo que debe, a $115.000.",
 };
 
 /* ═══════════════════ T1-6 · ¿EN CUÁL ESTADO APARECE? ═══════════════════ */

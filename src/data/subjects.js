@@ -546,7 +546,7 @@ export const SUBJECTS = {
           { id: "t1-que-entro-y-que-salio", nombre: "¿Qué Entró y Qué Salió?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
           { id: "t1-donde-se-rompio", nombre: "¿Dónde se Rompió?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           { id: "t1-que-le-pasa-a-cada-uno", nombre: "¿Qué Le Pasa a Cada Uno?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
-          { id: "t1-la-ecuacion-en-movimiento", nombre: "La Ecuación en Movimiento", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
+          { id: "t1-la-ecuacion-en-movimiento", nombre: "La ecuación en movimiento", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           { id: "t1-en-cual-estado-aparece", nombre: "¿En Cuál Estado Aparece?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           { id: "t1-la-articulacion", nombre: "La Articulación", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
         ],

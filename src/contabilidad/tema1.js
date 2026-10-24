@@ -340,8 +340,13 @@ export function evaluarT1_5(indice, escrito, ejemplo = null) {
  * una se califica por su lado y el registro guarda las dos.
  */
 
-/* El total más alto del recorrido (tras el hecho 7). La escala es fija para los 8: este valor mide 150 px. */
-export const TOPE_TORRES_T1_5 = 475000;
+/*
+ * La escala es fija para los 8 hechos: este valor mide 150 px. Es $515.000,
+ * la cifra más alta que puede salir en pantalla (una opción del hecho 6),
+ * para que el fantasma quepa (Mai, 24-oct; antes 475.000, el total más alto
+ * del recorrido).
+ */
+export const TOPE_TORRES_T1_5 = 515000;
 export const ALTO_TORRE_T1_5 = 150;
 export const altoDeTorre = (valor) => (Math.max(0, valor) * ALTO_TORRE_T1_5) / TOPE_TORRES_T1_5;
 
@@ -381,6 +386,14 @@ export function opcionesTotalT1_5(mov, parte) {
     if (!elegidas.includes(otra)) elegidas.push(otra);
   }
   return elegidas.sort((a, b) => a - b);
+}
+
+/* Qué clase de cifra es una opción de la decisión 2: la correcta, el sentido contrario, el monto solo o el total de antes. */
+export function claseDeTotalT1_5(mov, parte, v) {
+  if (v === mov.despues[parte]) return "correcta";
+  if (v === mov.antes[parte]) return "sinCambio";
+  if (v === mov.antes[parte] - mov.signos[parte] * mov.monto) return "contrario";
+  return "monto";
 }
 
 /*

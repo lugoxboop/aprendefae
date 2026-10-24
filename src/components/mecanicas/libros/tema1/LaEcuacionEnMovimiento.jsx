@@ -2,10 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import { FAE } from "../../../../theme.js";
 import { pesos, ACTIVO, PASIVO, PATRIMONIO } from "../../../../data/contabilidad.js";
 import {
-  T1_5, PARTES, TRANSACCIONES_CAP2, ACIERTO_T1_5_FINAL, TORRES_T1_5,
+  T1_5, PARTES, TRANSACCIONES_CAP2, ACIERTO_T1_5_FINAL, ACIERTO_T1_5, TORRES_T1_5,
 } from "../../../../data/contabilidadTema1.js";
 import {
-  totalesTras, movimientoT1_5, evaluarTorresT1_5, opcionesTotalT1_5, altoDeTorre, ALTO_TORRE_T1_5, sinEmoji, pesoDeCadaItem,
+  totalesTras, movimientoT1_5, evaluarTorresT1_5, opcionesTotalT1_5, claseDeTotalT1_5, altoDeTorre, ALTO_TORRE_T1_5, sinEmoji, pesoDeCadaItem,
 } from "../../../../contabilidad/tema1.js";
 import { Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
@@ -282,14 +282,13 @@ export default function LaEcuacionEnMovimiento({
     return correcto ? REVELADA : null;
   };
 
-  const ultimoHecho = !ejemplo && i + 1 === total;
-  const textoAcierto = ultimoHecho ? sinEmoji(ACIERTO_T1_5_FINAL) : null;
+  /* El acierto de cada hecho es de Futaba (24-oct); el ejemplo de «Así se juega» trae el suyo. */
+  const textoAcierto = ejemplo ? ejemplo.acierto ?? null : ACIERTO_T1_5[h.id] ?? null;
 
   /* Una función y no un componente: definido aquí dentro, React lo volvería a montar en cada render y perdería el foco. */
   const renderParte = (id) => {
     const p = parte(id);
     const marca = marcaQuieta(id);
-    const muestraTotales = quietaElegida !== null && mov.mueven.includes(id);
     return (
       <div key={id} data-casilla={id} style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
         <button
@@ -310,32 +309,62 @@ export default function LaEcuacionEnMovimiento({
           </span>
           {marca && <Pastilla marca={marca} valor={TORRES_T1_5.quedaIgual} envuelve />}
         </button>
-        {muestraTotales && (
-          /* Tres cifras (o dos, si se repiten), una debajo de otra: a 320 la columna mide unos 140 px. */
-          <div role="group" aria-label={p.idea} data-totales={id} style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-            {opcionesTotalT1_5(mov, id).map((v) => {
-              const m = marcaTotal(id, v);
-              return (
-                <button
-                  key={v}
-                  type="button"
-                  data-opcion-total={`${id}:${v}`}
-                  aria-pressed={totales[id] === v}
-                  disabled={Boolean(r)}
-                  onClick={() => setTotales((x) => ({ ...x, [id]: v }))}
-                  style={{
-                    width: "100%", minHeight: "44px", padding: "6px 8px", borderRadius: "12px",
-                    display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "4px",
-                    fontFamily: INTER, fontSize: "13px", fontWeight: 600, color: TEXTO_B, cursor: r ? "default" : "pointer",
-                    ...CIFRA, ...bordeDe({ elegido: !r && totales[id] === v, marca: m }),
-                  }}
-                >
-                  {cifra(v)}
-                  {m && <Pastilla marca={m} valor={m === REVELADA ? cifra(v) : null} envuelve />}
-                </button>
-              );
-            })}
-          </div>
+      </div>
+    );
+  };
+
+  /*
+   * La decisión 2 (P2 de Mai, 24-oct): debajo de las partes, un grupo por
+   * cada parte que se mueve, a todo el ancho, con su rótulo y las cifras en
+   * una fila de botones iguales. La que es el total de antes lleva debajo
+   * «el total anterior, sin cambio». Tras anotar, si erró esa parte, la
+   * devolución de Futaba según lo que marcó.
+   */
+  const renderTotales = (id) => {
+    const p = parte(id);
+    const ops = opcionesTotalT1_5(mov, id);
+    const marcada = totales[id];
+    const fallo = r && marcada !== undefined && marcada !== mov.despues[id];
+    return (
+      <div key={id} data-grupo-total={id} style={{ marginTop: "12px" }}>
+        <p style={{ margin: "0 0 6px", fontFamily: INTER, fontSize: "12px", fontWeight: 600, color: SECUNDARIO }}>
+          {TORRES_T1_5.totalNuevo.replace("[PARTE]", p.idea)}
+        </p>
+        <div role="group" aria-label={p.idea} data-totales={id} style={{ display: "grid", gridTemplateColumns: `repeat(${ops.length}, minmax(0, 1fr))`, gap: "6px" }}>
+          {ops.map((v) => {
+            const m = marcaTotal(id, v);
+            const sinCambio = claseDeTotalT1_5(mov, id, v) === "sinCambio";
+            return (
+              <button
+                key={v}
+                type="button"
+                data-opcion-total={`${id}:${v}`}
+                data-sin-cambio={sinCambio ? "si" : undefined}
+                aria-pressed={totales[id] === v}
+                disabled={Boolean(r)}
+                onClick={() => setTotales((x) => ({ ...x, [id]: v }))}
+                style={{
+                  minWidth: 0, minHeight: "44px", padding: "6px 4px", borderRadius: "12px",
+                  display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "4px",
+                  fontFamily: INTER, fontSize: "13px", fontWeight: 600, color: TEXTO_B, cursor: r ? "default" : "pointer",
+                  ...bordeDe({ elegido: !r && totales[id] === v, marca: m }),
+                }}
+              >
+                <span style={{ ...CIFRA, whiteSpace: "nowrap" }}>{cifra(v)}</span>
+                {sinCambio && (
+                  <span data-rotulo-sin-cambio style={{ fontSize: "12px", fontWeight: 400, lineHeight: 1.3, color: SECUNDARIO, textAlign: "center" }}>
+                    {TORRES_T1_5.sinCambio}
+                  </span>
+                )}
+                {m && <Pastilla marca={m} valor={m === REVELADA ? cifra(v) : null} envuelve />}
+              </button>
+            );
+          })}
+        </div>
+        {fallo && (
+          <p data-devolucion-total={id} style={{ margin: "6px 0 0", fontFamily: INTER, fontSize: "13px", lineHeight: 1.45, color: TEXTO_B }}>
+            {TORRES_T1_5.devolucionTotal[claseDeTotalT1_5(mov, id, marcada)]}
+          </p>
         )}
       </div>
     );
@@ -379,6 +408,7 @@ export default function LaEcuacionEnMovimiento({
               {renderParte(PATRIMONIO)}
             </div>
           </div>
+          {quietaElegida !== null && mov.mueven.map(renderTotales)}
         </div>
 
         <RegionViva>
