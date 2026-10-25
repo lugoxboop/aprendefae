@@ -24,7 +24,18 @@
  *   CONTROL  la secuencia de T4 y el índice de Pensamiento Estratégico, para
  *            confirmar que el contenedor compartido no cambió.
  *
- *   node scripts/t3/medir-secuencias.mjs [--c6] [--capturas <carpeta>] [--json <archivo>]
+ *   PREVIAS  (P2 y P6, #578) la cabecera real de la vista hasta el Panel y
+ *            hasta la figura, y el ancho de las cifras más largas en Inter
+ *            tabular, con la comprobación de que Inter está cargada.
+ *
+ *   P2-7, P6-7 y P6-9 (delta v3, #586): lo que ocupa de verdad lo que va en
+ *            la figura (la rejilla de P2-7; la lista unida, con la marca en
+ *            P6-9), contra la reserva de 150/200. ⛔ Si P6-9 pasa de 150, para.
+ *
+ *   node scripts/t3/medir-secuencias.mjs [--c6 | --previas] [--solo <expresión>] [--capturas <carpeta>] [--json <archivo>]
+ *
+ * --solo mide solo las pantallas cuyo «pieza/pantalla» casa con la expresión
+ * (y se salta C6, las tarjetas, las previas y el control).
  *
  * Las fuentes de Google no se alcanzan desde la caja de medida: si existe
  * FUENTES_NPM (una carpeta con @fontsource/sora e @fontsource/inter), la
@@ -233,8 +244,49 @@ function medirPantalla() {
       }
     }
     if (b.scrollWidth > b.clientWidth + 1) partidas.push(`desborda: «${b.textContent.trim()}» (${b.scrollWidth} px de texto en ${b.clientWidth} px de botón)`);
+    /* El contenido de un botón que pasa de su alto (un rótulo de dos renglones que se parte en tres) también es un corte. */
+    const dentro = [...b.querySelectorAll("*")].map((x) => x.getBoundingClientRect()).filter((x) => x.width && x.height);
+    if (dentro.some((x) => x.bottom > r.bottom + 0.5 || x.top < r.top - 0.5 || x.right > r.right + 0.5)) partidas.push(`se sale del botón: «${b.textContent.trim()}»`);
+    for (const x of b.querySelectorAll("span")) {
+      if ([...x.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim()) && getComputedStyle(x).whiteSpace === "nowrap" && x.scrollWidth > b.clientWidth + 1) partidas.push(`renglón más ancho que el botón: «${x.textContent.trim()}»`);
+    }
   }
   const nav = document.querySelector("[data-navegacion]")?.getBoundingClientRect();
+  /* Lo que va en la figura entera (P6-7 y P6-9) o la rejilla del modelo (P2-7): de lo alto del modelo a su borde de abajo. */
+  const ocupaEl = fig.querySelector("[data-figura-entera] > *, [data-rejilla-p2-7]");
+  const ocupa = ocupaEl && modelo ? Math.round((ocupaEl.getBoundingClientRect().bottom - modelo.top) * 10) / 10 : null;
+  const marcaEl = fig.querySelector("[data-marca-escenario]");
+  const listaEl = fig.querySelector("[data-lista-unida]");
+  const opcionesAlto = [...fig.querySelectorAll(".t3s2-op, [data-rejilla-p2-7] button")].map((b) => Math.round(b.getBoundingClientRect().height * 10) / 10);
+  const filaLectura = fig.querySelector("[data-fila-lectura]");
+  const lecturaVisible = Boolean(filaLectura?.querySelector("[data-lectura]")?.textContent.trim());
+  const puente = fig.querySelector("[data-puente]");
+  const lineaDatos = fig.querySelector("[data-linea-datos]");
+  /*
+   * P2 y P6 (#578): la pastilla no toca nada del modelo (condición 5 de #572),
+   * la razón no se ve mientras se ve la pista (Itagaki, lote 15) y el ancho
+   * natural de cada renglón rótulo · cifra contra el ancho del modelo.
+   */
+  const pastillaP2 = fig.querySelector("[data-pastilla], .t3s-pastilla");
+  let pastillaTapa = null;
+  if (pastillaP2) {
+    const p = pastillaP2.getBoundingClientRect();
+    pastillaTapa = 0;
+    for (const el of fig.querySelectorAll("[data-modelo] *")) {
+      if (el === pastillaP2 || pastillaP2.contains(el) || el.contains(pastillaP2)) continue;
+      const r = el.getBoundingClientRect();
+      if (!r.width || !r.height || getComputedStyle(el).visibility === "hidden") continue;
+      if (r.left < p.right && r.right > p.left && r.top < p.bottom && r.bottom > p.top) pastillaTapa += 1;
+    }
+  }
+  const razonEl = document.querySelector("[data-razon]");
+  const conPista = Boolean(fig.querySelector('[data-texto="pista"]'));
+  const razonVisible = Boolean(razonEl && razonEl.textContent.trim() && getComputedStyle(razonEl).visibility !== "hidden");
+  const renglones = [...fig.querySelectorAll("[data-renglon], .t3s2-fila")].map((f) => {
+    const hijos = [...f.children];
+    const natural = hijos.reduce((s, h) => { const r = document.createRange(); r.selectNodeContents(h); return s + r.getBoundingClientRect().width; }, 0) + 8 * Math.max(0, hijos.length - 1);
+    return { texto: f.textContent, natural: Math.round(natural), caja: Math.round(f.getBoundingClientRect().width) };
+  });
   /*
    * Condición 5 de #572: la pastilla nunca se monta sobre el modelo. Se cruza
    * su caja con la de cada cosa pintada del modelo: cada palabra (por rango de
@@ -294,6 +346,15 @@ function medirPantalla() {
   /* La cabecera: del borde de arriba de la página a la figura. */
   const figura = raiz.querySelector(".fae-sec-figura")?.getBoundingClientRect();
   return {
+    ocupa,
+    marca: marcaEl ? Math.round(marcaEl.getBoundingClientRect().height * 10) / 10 : null,
+    lista: listaEl ? Math.round(listaEl.getBoundingClientRect().height * 10) / 10 : null,
+    opcionesAlto,
+    filaLectura: filaLectura ? { alto: Math.round(filaLectura.getBoundingClientRect().height * 10) / 10, lectura: lecturaVisible, texto: filaLectura.querySelector("[data-lectura]")?.textContent ?? "", puente: puente ? getComputedStyle(puente).visibility === "visible" : null, puenteTexto: puente?.textContent ?? "" } : null,
+    lineaDatos: lineaDatos ? lineaDatos.textContent : null,
+    pastillaTapa,
+    razonConPista: conPista && razonVisible,
+    renglonMax: renglones.reduce((m, r) => (r.natural > (m?.natural ?? 0) ? r : m), null),
     pastilla: pastilla ? pastilla.textContent : null,
     pastillaEn: pastilla ? (pastilla.closest("[data-control]") ? "control" : "zona") : null,
     sobreModelo,
@@ -348,6 +409,33 @@ const CAPTURAS_DE = {
   "t3-a5-cerrar-el-periodo/ingresos/acierto": "p5-4-ingresos-acierto",
   "t3-a5-cerrar-el-periodo/saldo/acierto": "p5-6-saldo",
   "t3-a5-cerrar-el-periodo/cierre/cierre": "p5-10-cierre",
+  /* P2-7, P6-7 y P6-9 (#586, delta v3): sin responder, pista y acierto. */
+  "t3-a2-el-mes-de-san-calixto/separan/sin-responder": "p2-7-separan-sin-responder",
+  "t3-a2-el-mes-de-san-calixto/separan/pista": "p2-7-separan-pista",
+  "t3-a2-el-mes-de-san-calixto/separan/acierto": "p2-7-separan-acierto",
+  "t3-a6-lo-que-deja-el-periodo/por-pagar/sin-responder": "p6-7-por-pagar-sin-responder",
+  "t3-a6-lo-que-deja-el-periodo/por-pagar/pista-caja": "p6-7-por-pagar-pista",
+  "t3-a6-lo-que-deja-el-periodo/por-pagar/acierto": "p6-7-por-pagar-acierto",
+  "t3-a6-lo-que-deja-el-periodo/acacias/sin-responder": "p6-9-acacias-sin-responder",
+  "t3-a6-lo-que-deja-el-periodo/acacias/pista-utilidad": "p6-9-acacias-pista",
+  "t3-a6-lo-que-deja-el-periodo/acacias/acierto": "p6-9-acacias-acierto",
+  /* P2 y P6 (#578): una pantalla de cada tipo, más P2-2 con la razón y con la pista. */
+  "t3-a2-el-mes-de-san-calixto/apertura/apertura": "p2-1-apertura",
+  "t3-a2-el-mes-de-san-calixto/cobrados/sin-responder": "p2-2-haz-razon",
+  "t3-a2-el-mes-de-san-calixto/cobrados/pista": "p2-2-haz-pista",
+  "t3-a2-el-mes-de-san-calixto/haber/factura-jcc": "p2-3-miralo",
+  "t3-a2-el-mes-de-san-calixto/asiento/sin-responder": "p2-4-asiento-monto",
+  "t3-a2-el-mes-de-san-calixto/gastos/sin-responder": "p2-5-haz-botones",
+  "t3-a2-el-mes-de-san-calixto/utilidad/acierto": "p2-6-haz-campo",
+  "t3-a2-el-mes-de-san-calixto/cierre/paso-2": "p2-8-cierre",
+  "t3-a6-lo-que-deja-el-periodo/apertura/paso-1-objetivo": "p6-1-apertura",
+  "t3-a6-lo-que-deja-el-periodo/separar/pista": "p6-2-haz-ubicar",
+  "t3-a6-lo-que-deja-el-periodo/antes/sin-responder": "p6-3-haz-pila",
+  "t3-a6-lo-que-deja-el-periodo/impuesto/acierto": "p6-4-haz-pila-destapada",
+  "t3-a6-lo-que-deja-el-periodo/estado/tramo-2": "p6-5-miralo",
+  "t3-a6-lo-que-deja-el-periodo/reparte/paso-2": "p6-6-asiento-monto",
+  "t3-a6-lo-que-deja-el-periodo/a-su-estado/acierto": "p6-8-haz-zonas",
+  "t3-a6-lo-que-deja-el-periodo/cierre/paso-2": "p6-10-cierre",
 };
 
 /*
@@ -448,23 +536,62 @@ async function medirControl() {
   return out;
 }
 
+/* ═══════════ PREVIAS DE P2 Y P6 (#578): la cabecera real y las cifras en Inter tabular ═══════════ */
+async function medirPrevias() {
+  const out = { cabecera: [], cifras: [] };
+  for (const ancho of ANCHOS) {
+    const ctx = await contexto(ancho, 2);
+    /* La cabecera de la vista: del borde de arriba de la página al Panel de la secuencia, y hasta la figura. */
+    const { pg } = await abrir(ctx, "secuencia", { buscar: "?t3=secuencia" });
+    const c = await pg.evaluate(() => {
+      const raiz = document.querySelector("[data-secuencia]");
+      const panel = raiz?.closest("section");
+      const fig = document.querySelector(".fae-sec-figura");
+      const nav = document.querySelector("[data-navegacion]");
+      const y = (el) => (el ? Math.round(el.getBoundingClientRect().top + scrollY) : null);
+      const sora = [...document.fonts].some((x) => x.family === "Sora" && String(x.weight) === "700" && x.status === "loaded");
+      return { panel: y(panel), raiz: y(raiz), figura: y(fig), navegacion: nav ? Math.round(nav.getBoundingClientRect().height) : null, sora };
+    });
+    out.cabecera.push({ ancho, ...c });
+    await pg.close();
+    const { pg: p2 } = await abrir(ctx, "cifras");
+    /* Que la letra medida sea Inter de verdad, y no la de respaldo (desconfía del falso verde). */
+    out.fuentes = await p2.evaluate(() => ["400 12px Inter", "600 12px Inter", "600 14px Inter"].map((f) => `${f}: ${document.fonts.check(f) && [...document.fonts].some((x) => f.includes(x.family) && String(x.weight) === f.split(" ")[0] && x.status === "loaded") ? "cargada" : "NO"}`));
+    out.cifras.push(...(await p2.$$eval("[data-cifra]", (els) => els.map((el) => ({ texto: el.textContent, px: el.dataset.px, peso: el.dataset.peso, ancho: Number(el.getBoundingClientRect().width.toFixed(1)) })))).map((x) => ({ anchoVentana: ancho, ...x })));
+    await p2.close();
+    await ctx.close();
+  }
+  return out;
+}
+
 /* ═══════════ SALIDA ═══════════ */
 if (!CSS_FUENTES) console.warn("⚠ Sin FUENTES_NPM: Sora e Inter no se cargan y la medida usa la letra de respaldo.");
-const c6 = SOLO ? { pasa: null, veredictos: [] } : await medirC6();
+const c6 = SOLO ? null : await medirC6();
+if (c6) {
 console.log(`\n## C6 · marca de 10 px a 320: ${c6.pasa ? "SE DISTINGUE" : "NO SE DISTINGUE"}\n`);
 console.log("| escala | pista | marca | pintada | contraste con el fondo | esquina | relleno se lee | forma se lee |");
 console.log("|---|---|---|---|---|---|---|---|");
 for (const v of c6.veredictos) console.log(`| ${v.escala}× | ${v.actual} | ${v.tipo} | ${v.pintadoAncho}×${v.pintadoAlto} | ${v.contrasteFondo}:1 | ${v.contrasteEsquina}:1 | ${v.rellenoSeLee ? "sí" : "NO"} | ${v.formaSeLee ? "sí" : "NO"} |`);
+}
 
 const tarjetas = SOLO ? [] : await medirTarjetas();
-console.log("\n## Tarjeta de cita\n");
+if (!SOLO) console.log("\n## Tarjeta de cita\n");
 console.log("| ancho | cita | ancho útil | líneas | alto con relleno | reserva | cabe |");
 console.log("|---|---|---|---|---|---|---|");
 for (const t of tarjetas) console.log(`| ${t.ancho} | ${t.id} | ${t.util.toFixed(0)} | ${t.lineas} | ${t.alto} | ${t.reserva} | ${t.cabe ? "sí" : "**NO**"} |`);
 
+const previas = SOLO ? null : await medirPrevias();
+if (previas) {
+console.log("\n## Previas de P2 y P6\n");
+console.log(`Fuentes: ${previas.fuentes.join(" · ")}\n`);
+for (const c of previas.cabecera) console.log(`- ${c.ancho}: cabecera hasta el Panel ${c.panel} px · hasta la figura ${c.figura} px · bloque de navegación ${c.navegacion} px · Sora 700 ${c.sora ? "cargada" : "NO"}`);
+console.log("\n| ventana | cifra | Inter tabular | ancho |\n|---|---|---|---|");
+for (const x of previas.cifras.filter((y) => y.anchoVentana === 320)) console.log(`| 320 | ${x.texto} | ${x.px}/${x.peso} | ${x.ancho} |`);
+}
+
 let encaje = null;
 let control = null;
-if (!SOLO_C6) {
+if (!SOLO_C6 && !process.argv.includes("--previas")) {
   if (SOLO) console.log(`(solo ${SOLO})`);
   encaje = await medirEncaje();
   control = SOLO ? [] : await medirControl();
@@ -473,6 +600,23 @@ if (!SOLO_C6) {
   console.log("|---|---|---|---|---|---|---|---|---|---|---|---|---|---|");
   for (const f of encaje) {
     console.log(`| ${f.ancho} | ${f.pieza.replace(/^t3-a\d-/, "")} | ${f.n} | ${f.pantalla} | ${f.estado} | ${f.figuraFija ?? "—"} | ${f.lineasApoyo ?? "—"} | ${f.desborde ?? "—"} | ${f.titularLineas ?? "—"} | ${f.chicas?.length ?? "—"} | ${f.chicos?.length ? f.chicos.join("; ") : 0} | ${f.partidas?.length ? f.partidas.join("; ") : 0} | ${f.barra ? "SÍ" : "no"} | ${f.errores.length || f.falta || 0} |`);
+  }
+  /* P2 y P6: la pastilla, la razón con la pista y los renglones. */
+  const nuevas = encaje.filter((f) => /^t3-a[26]-/.test(f.pieza));
+  console.log("\n## P2 y P6: pastilla, razón y renglones\n");
+  console.log("| ancho | pieza | n | estado | pastilla tapa | razón con pista | renglón más ancho (natural / caja) |");
+  console.log("|---|---|---|---|---|---|---|");
+  for (const f of nuevas) console.log(`| ${f.ancho} | ${f.pieza.replace(/^t3-a\d-/, "")} | ${f.n} | ${f.estado} | ${f.pastillaTapa ?? "—"} | ${f.razonConPista ? "**SÍ**" : "no"} | ${f.renglonMax ? `${f.renglonMax.natural} / ${f.renglonMax.caja} «${f.renglonMax.texto}»` : "—"} |`);
+  /* P2-7, P6-7 y P6-9 (#586): lo que ocupa la figura, contra la reserva. */
+  const delta = encaje.filter((f) => /a2-.*\/separan$|a6-.*\/(por-pagar|acacias)$/.test(`${f.pieza}/${f.pantalla}`));
+  if (delta.length) {
+    console.log("\n## P2-7, P6-7 y P6-9: lo que ocupa la figura\n");
+    console.log("| ancho | pantalla | estado | ocupa / reserva | marca | lista | opciones | fila de control (alto · lectura · puente) | línea de datos | apoyo: líneas · desborde |");
+    console.log("|---|---|---|---|---|---|---|---|---|---|");
+    for (const f of delta) {
+      const fl = f.filaLectura;
+      console.log(`| ${f.ancho} | ${f.n} ${f.pantalla} | ${f.estado} | ${f.ocupa ?? "—"} / ${f.figuraFija ?? "—"}${f.ocupa > f.figuraFija ? " **SE PASA**" : ""} | ${f.marca ?? "—"} | ${f.lista ?? "—"} | ${f.opcionesAlto?.join(" · ") || "—"} | ${fl ? `${fl.alto} · ${fl.lectura ? `«${fl.texto}»` : "NO"} · ${fl.puente ? `«${fl.puenteTexto}»` : "vacío"}` : "—"} | ${f.lineaDatos ? `«${f.lineaDatos}»` : "—"} | ${f.lineasApoyo} · ${f.desborde} |`);
+    }
   }
   console.log("\n## Pastilla sobre el modelo (condición 5)\n");
   const tapan = encaje.filter((f) => f.sobreModelo?.length);
@@ -488,7 +632,7 @@ if (!SOLO_C6) {
   console.log("\n## Control\n");
   for (const c of control) console.log(`- ${c.ancho} · ${c.nombre}: barra ${c.barra ? "SÍ" : "no"}, SecuenciaAprender ${c.secuencia ? "sí" : "no"}, figura ${c.figura ?? "—"} px, errores ${c.errores.length}`);
 }
-if (JSON_SALIDA) writeFileSync(JSON_SALIDA, JSON.stringify({ c6, tarjetas, encaje, control }, null, 2));
+if (JSON_SALIDA) writeFileSync(JSON_SALIDA, JSON.stringify({ c6, tarjetas, previas, encaje, control }, null, 2));
 
 await navegador.close();
 await servidor.close();

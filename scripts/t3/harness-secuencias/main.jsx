@@ -4,6 +4,7 @@
  *
  *   #c6           una pista compacta con las cuatro marcas de 10 px (C6)
  *   #tarjetas     las cuatro citas en la tarjeta de cita, con el ancho de la figura
+ *   #cifras       las cifras más largas de P2 y P6, en Inter tabular (#578)
  *   #secuencia    la vista del tema con la bandera encendida (?t3=secuencia)
  *   #publicada    la vista del tema tal como la ven hoy los estudiantes
  *   #pe           el índice de Pensamiento Estratégico (control: no cambió)
@@ -71,8 +72,21 @@ function Tarjetas() {
   );
 }
 
+/* Las cifras más largas de P2 y P6, en Inter tabular (el sitio no carga ninguna mono; lote 16). */
+const CIFRAS_P2P6 = ["$5.935.000", "$1.958.550", "$3.976.450", "$6.020.000", "$8.620.000", "$14.650", "$14.800", "$6.450"];
+function Cifras2() {
+  return (
+    <div style={{ padding: "16px", display: "grid", gap: "8px", justifyItems: "start", color: "#F8F9FA" }}>
+      {[[12, 400], [12, 600], [14, 600]].flatMap(([px, peso]) => CIFRAS_P2P6.map((c) => (
+        <span key={`${px}-${peso}-${c}`} data-cifra data-px={px} data-peso={peso} style={{ font: `${peso} ${px}px/1 "Inter", sans-serif`, fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap" }}>{c}</span>
+      )))}
+    </div>
+  );
+}
+
 let vista;
 if (modo === "c6") vista = <C6 />;
+else if (modo === "cifras") vista = <Cifras2 />;
 else if (modo === "tarjetas") vista = <Tarjetas />;
 else if (modo === "pe") {
   const { default: EstrategiaTopicIndex } = await import("../../../src/components/EstrategiaTopicIndex.jsx");
