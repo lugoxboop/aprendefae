@@ -26,7 +26,9 @@ Dinero como $1.240.000. Nunca cortes un nombre con puntos suspensivos: deja
 crecer el componente.
 
 **Movimiento.** Curva `cubic-bezier(.3,.9,.4,1)` —la que ya usa el código 22
-veces, no inventes otra—. Solo `transform` y `opacity`. Nada nuevo en bucle.
+veces, no inventes otra—. Solo `transform` y `opacity`. Nada nuevo en bucle,
+salvo la única excepción nombrada y medida: hasta 3 elementos en la banda del
+leaderboard, con pausa obligatoria fuera de pantalla (`prompts/vida-visual-v1.md`).
 Toda animación con su versión de movimiento reducido.
 
 **Cada cifra lleva su origen:** `[pantalla]` (medido por alguien con nombre,
@@ -57,6 +59,46 @@ bloques: avance de la clase, quiénes necesitan atención (máx. 3, nombre y
 motivo), actividad con peor resultado. La lista de estudiantes nunca va primero.
 Riesgo con palabra y forma (▲ ◆ ●), nunca coral; coral solo para error de carga.
 Todo lo demás a uno o dos toques.
+
+**Relieve y vida** (`prompts/vida-visual-v1.md`). **Las tres materias, un solo
+cambio**: no hay opt-in por materia y ser compartido ya no frena nada. A cambio
+hay más superficie que romper, así que se **añade, nunca se reemplaza**, no se
+toca ningún valor existente de `theme.js`, y toda pieza se mira **también en una
+pantalla de Pensamiento Estratégico** antes del PASA. Sobre oscuro el canto no se
+oscurece, se sube: escalera N0 `#0E1B2E` → N1 `#1D3557` → N2 `#344968`, y el
+canto de un nivel es la cara del anterior; filo de 1 px `#586A83` arriba, la
+luz viene de arriba. **El telón no es plano**: en Estratégico la madera del
+ajedrez lo sube por encima de la cara (p50 0,0389 contra 0,0350 del canto) y el
+relieve se invierte, así que el canto se juzga **contra su cara** (≥1,25:1), todo
+bloque lleva contorno de 1 px `rgba(248,249,250,.18)` y donde `node
+scripts/vida/sonda-telon.mjs` diga EXIGE PLACA va placa opaca N1 detrás del grupo.
+Ninguna superficie en `rgba`. Elevaciones E1 3 px (filas, tarjetas), E2 4 px (botones,
+nodos), E3 6 px (una sola por pantalla). El canto es una capa hermana detrás y
+lo que se mueve es la cara: al pulsar, `translateY` a 0 en 100 ms y vuelve en
+160. Nada de `box-shadow` ni de animar `border-width`. Texto sobre teal en
+`#0E1B2E`, no blanco (blanco da 3,15:1). Decoración: SVG con CSS, nunca
+three.js —ya hay una escena WebGL de fondo y en gama baja desaparecería—;
+trazo 1,5 px `#CBDCF2` a 0,45; tres movimientos (flota, gira, pulso) con una
+sola keyframe por pantalla variando duración y retardo. Entrada de página:
+cuatro grupos, 0/80/160/240 ms, 280 ms, total 520.
+
+**El camino de actividades** (`prompts/vida-visual-v1.md` §4.3). Es el único
+sitio donde entra volumen ahora mismo; lo construye Erwin en `CaminoHacer.jsx`,
+compartido por las tres materias. **Nodo:** círculo, cara N2 `#344968` sobre
+canto N1 `#1D3557`, E2 **4 px**, contorno de 1 px `rgba(248,249,250,.18)`; el
+canto es un segundo círculo detrás, desplazado 4 px abajo, nunca una sombra.
+**Nodo actual:** E3 **6 px**, uno solo por pantalla. **Nodo hecho:** la marca va
+**dentro** de la cara, en trazo `#0E1B2E` sobre cara teal `#2A9D8F` con canto
+`#1D6B61`; nunca un candado, ningún nodo se bloquea jamás. **Al pulsar:** la
+cara baja `translateY(4px)` en 100 ms y vuelve en 160 con la curva de la casa;
+el canto no se mueve. Reserva siempre los 4 px en el contenedor, también en los
+nodos E1, para que el camino no se descoloque al cambiar de estado. **Las
+líneas:** sin canto —una línea no tiene volumen—, 1 px más claras que el canto
+del nodo (`#3D516F`) en el tramo ya hecho y `#1D3557` en el que falta; el
+grosor no cambia. **Sobre el ajedrez:** el camino de Estratégico se ve sobre
+madera clara, así que antes de fusionar se corre `node
+scripts/vida/sonda-telon.mjs` en una pantalla de camino de esa materia y, si
+dice EXIGE PLACA, el camino lleva su panel opaco N1 detrás.
 
 **Identificadores de tema** (`prompts/logitos-temas-conta-v1.md`). 64×64, trazo
 de 3 px, un solo elemento en el acento y es el único que se mueve (400 ms, una
