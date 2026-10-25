@@ -15,9 +15,10 @@ import {
   TEXTO_PASO_1, CIERRE, AVISO_CAMBIO, PIEZA_VENDER_NO_ES_COBRAR,
 } from "../../../../../data/contabilidadTema3.js";
 import {
-  TITULARES_P1, OPC_PREDICE, PREDICE_CORRECTA, errorPredice, PISTAS, RAZON_HAZ_T3,
+  TITULARES_P1, OPC_PREDICE, PREDICE_CORRECTA, errorPredice, PISTAS, RAZON_HAZ_T3, RAZONES_HAZ_T3,
 } from "../../../../../data/t3SecuenciasTextos.js";
 import { hazResuelto, mostrarCorrecto, responderHaz } from "../../../../secuencia/secuencia.js";
+import { contadores, estadoPaso, PASOS as PASOS_CAPA_2 } from "../../../../../contabilidad/dosLineas.js";
 import {
   Figura, PistaCompacta, Cifras, Botones, HAZ_T3, elegir, zonaHaz, verDe, ALTO_FIGURA_T3,
 } from "./base.jsx";
@@ -26,25 +27,49 @@ import {
 
 const xDe = (i, n) => `${((i + 0.5) / n) * 100}%`;
 
-/** Las marcas y los contadores de una empresa hasta el hecho `hasta` (incluido si `conActual`). */
+/*
+ * Las marcas y los contadores de una empresa hasta el hecho `hasta` (incluido
+ * si `conActual`). Condición 1 de #572: los contadores salen de los hechos
+ * publicados de P1 (contabilidadTema3.js) con la misma suma que usa la pieza
+ * publicada (`contadores` de contabilidad/dosLineas.js), acumulados hecho por
+ * hecho: antes de responder, lo de los hechos anteriores; al responder, se
+ * suma el del hecho actual. Sin cifras propias ni de prueba.
+ */
 export function modeloP1(empresa, hasta, conActual) {
   const n = empresa.hechos.length;
   const marcas = { [RESULTADOS]: [], [CAJA]: [] };
-  const suma = { ingreso: 0, gasto: 0, entrada: 0, salida: 0 };
+  const vistas = [];
   empresa.hechos.forEach((h, i) => {
     if (i > hasta || (i === hasta && !conActual)) return;
     const actual = i === hasta;
     h.marcas.forEach((m) => {
       const def = MARCAS[m.tipo];
       marcas[def.pista].push({ forma: def.forma, llena: def.llena, x: xDe(i, n), actual, nueva: actual });
-      suma[m.tipo] += m.monto;
+      vistas.push(m);
     });
   });
-  return { marcas, suma };
+  return { marcas, suma: contadores(vistas) };
 }
 
-function DosLineasCompactas({ empresa, hasta = -1, conActual = false, rotulos = [true, true] }) {
-  const { marcas, suma } = modeloP1(empresa, hasta, conActual);
+/*
+ * El Cierre es el paso 6 de la Capa 2 publicada («Mírelo funcionar», San
+ * Calixto): las cuatro marcas en blanco y los contadores de los cuatro hechos
+ * (estadoPaso de dosLineas.js). CIERRE habla de esa empresa: la caja subió
+ * más de lo que vendió. Antes iba Compañía Cualquiera, y su «Salió $100.000»
+ * no es de ningún hecho de San Calixto.
+ */
+export function modeloCierreP1() {
+  const e = estadoPaso(PASOS_CAPA_2);
+  const marcas = { [RESULTADOS]: [], [CAJA]: [] };
+  for (const m of e.marcas) {
+    const def = MARCAS[m.tipo];
+    marcas[def.pista].push({ forma: def.forma, llena: def.llena, x: xDe(m.columna, e.columnas), actual: true, nueva: false });
+  }
+  return { marcas, suma: e.contadores };
+}
+
+function DosLineasCompactas({ empresa, hasta = -1, conActual = false, rotulos = [true, true], cierre = false }) {
+  const { marcas, suma } = cierre ? modeloCierreP1() : modeloP1(empresa, hasta, conActual);
   const pista = (p, k) => (
     <PistaCompacta
       key={p}
@@ -106,6 +131,8 @@ function pantallaHecho(empresa, indice, { aviso = false } = {}) {
         ver={verDe(e)}
         modelo={<DosLineasCompactas empresa={empresa} hasta={indice} conActual={hazResuelto(e)} />}
         control={<Botones nombre="¿Qué línea se mueve?" opciones={OPC_PREDICE} estado={e} correcta={correcta} onElegir={(id) => setEstado((x) => elegir(x, id, correcta))} />}
+        resuelta={hazResuelto(e)}
+        recogido={<Botones nombre="¿Qué línea se mueve?" opciones={OPC_PREDICE} estado={e} correcta={correcta} onElegir={(id) => setEstado((x) => elegir(x, id, correcta))} recoger />}
         zona={zonaDe(e)}
       />
     );
@@ -196,6 +223,8 @@ function FiguraNombres({ estado, setEstado }) {
     <Figura
       data-pantalla-t3="p1-nombres"
       ver={ver}
+      resuelta={nombresResueltos(e)}
+      recogido={null}
       modelo={(
         <div style={{ display: "grid", rowGap: "4px" }}>
           <div style={{ display: "flex", gap: "8px" }}>
@@ -256,11 +285,10 @@ function FiguraApertura({ paso }) {
 }
 
 function FiguraCierre() {
-  const ultimo = COMPANIA_CUALQUIERA.hechos.length - 1;
   return (
     <Figura
       data-pantalla-t3="p1-cierre"
-      modelo={<DosLineasCompactas empresa={COMPANIA_CUALQUIERA} hasta={ultimo} conActual />}
+      modelo={<DosLineasCompactas empresa={SAN_CALIXTO} cierre />}
       zona={[{ texto: CIERRE, fuerte: true }]}
     />
   );
@@ -280,7 +308,7 @@ export const SECUENCIA_P1 = {
     ...SAN_CALIXTO.hechos.map((_, i) => pantallaHecho(SAN_CALIXTO, i)),
     {
       id: "nombres", tipo: "haz", titular: TITULARES_P1.nombres, Figura: FiguraNombres, nombreFigura: "Las cuatro marcas, cada una esperando su nombre",
-      estadoInicial: NOMBRES_INICIAL, resuelta: nombresResueltos, razon: RAZON_HAZ_T3, zonaDe: zonaNombres, medir: medirNombres(),
+      estadoInicial: NOMBRES_INICIAL, resuelta: nombresResueltos, razon: RAZONES_HAZ_T3.ubicar, zonaDe: zonaNombres, medir: medirNombres(),
     },
     pantallaHecho(COMPANIA_CUALQUIERA, 0, { aviso: true }),
     pantallaHecho(COMPANIA_CUALQUIERA, 1),

@@ -15,8 +15,9 @@
  * El nombre del archivo no empieza por contabilidadTema3: así no entra en la
  * salvaguarda de t3-arma-el-ajuste.test.mjs, que recorre esos archivos.
  *
- * ⛔ Lo que todavía no llega queda en null, sin inventar: la razón de
- * «Siguiente» en un Haz (D11).
+ * Lo de la v5 (lote 15): las razones del «Siguiente» (D11) y Las Acacias.
+ * ⛔ Lo que todavía no llega no se inventa: la consigna de las pantallas de
+ * Las Acacias (se pidió en el PR).
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -292,6 +293,49 @@ export const CUENTAS_ASIENTO_P4_COSTA = asiento(
   ],
 );
 
-/* ═══════════ LO QUE FALTA (no se inventa) ═══════════ */
-/* D11: la razón visible por la que «Siguiente» espera en un Haz. Ningún texto de Miyata la trae todavía. */
-export const RAZON_HAZ_T3 = null;
+/*
+ * ═══════════ D11: POR QUÉ «SIGUIENTE» ESPERA EN UN HAZ (textos v5 §2) ═══════════
+ *
+ * Miyata, lote 15 (e3-t3-secuencias-textos-v5.md, PR #578). Se montan contra
+ * la columna «Cuándo se ve», por tipo de decisión, no contra los números.
+ * RAZON_HAZ_T3 es la genérica (opción única) y deja de ser null.
+ */
+export const RAZONES_HAZ_T3 = {
+  eleccion: "Cuando respondas, se abre «Siguiente».",
+  asiento: "Cuando pongas las dos cuentas, se abre «Siguiente».",
+  ubicar: "Quedan fichas por ubicar.",
+  cifra: "Cuando escribas la cifra, se abre «Siguiente».",
+  corte: "Cuando pongas el corte, se abre «Siguiente».",
+  ordenar: "Cuando ordenes los dos pasos, se abre «Siguiente».",
+};
+export const RAZON_HAZ_T3 = RAZONES_HAZ_T3.eleccion;
+
+/*
+ * ═══════════ LAS ACACIAS: CUENTAS Y SALDOS (textos v5 §1) ═══════════
+ *
+ * No sale del libro: es un escenario simulado de Miyata (lote 2, ajustado en
+ * el lote 4 y en el 15). Por eso su primer renglón es «Escenario simulado».
+ * Ingresos 3.200.000 − gastos 3.300.000 = pérdida de 100.000, en el debe.
+ */
+export const ESCENARIO_SIMULADO = "Escenario simulado";
+export const LAS_ACACIAS = {
+  nombre: "Floristería Las Acacias",
+  periodo: "cierre de febrero",
+  ingresos: [
+    { cuenta: "Ingresos por servicios", saldo: 3000000 },
+    { cuenta: "Ingresos varios", saldo: 200000 },
+  ],
+  gastos: [
+    { cuenta: "Gasto salarios", saldo: 2100000 },
+    { cuenta: "Gasto servicios públicos", saldo: 450000 },
+    { cuenta: "Gasto mantenimiento", saldo: 380000 },
+    { cuenta: "Gasto papelería", saldo: 120000 },
+    { cuenta: "Gasto materiales e insumos", saldo: 250000 },
+  ],
+  /* Las que no se vacían: van en las dos pantallas como candidatas que no pasan. */
+  siguen: [
+    { cuenta: "Caja", saldo: 900000 },
+    { cuenta: "Cuentas por cobrar – clientes", saldo: 600000 },
+    { cuenta: "Aportes sociales", saldo: 1600000 },
+  ],
+};
