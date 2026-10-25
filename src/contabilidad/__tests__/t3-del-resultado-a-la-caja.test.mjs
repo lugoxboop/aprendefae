@@ -333,7 +333,11 @@ test("★★★ mal: coral, «No va aquí», «Iba aquí: …» a los 0,7 s, el 
     const puente = m.caja.querySelector("[data-puente]");
     assert.ok(puente.querySelector("[data-punteado]"));
     assert.equal(puente.querySelector("[data-cifra-suya]").textContent, "$19.650");
+    assert.equal(puente.querySelectorAll("[data-leyenda]").length, 1);
+    assert.equal(puente.querySelector("[data-leyenda]").dataset.leyenda, "punteado");
     assert.equal(puente.querySelector("[data-leyenda]").textContent, "Punteado: así quedaba con tus respuestas");
+    /* Kamogawa, #557: la ficha que no mueve la caja, sumada, lleva su renglón tenue. */
+    assert.deepEqual([...puente.querySelectorAll("[data-renglon-tenue]")].map((x) => x.textContent), ["Equipo aportado+$5.000 (tu respuesta)"]);
     assert.equal(puente.getAttribute("aria-label"), "De $3.950 a la caja $14.650; con tus respuestas daba $19.650");
     /* El puente se arma solo en el navegador (IntersectionObserver); un toque lo deja en el estado final. */
     await tocar(puente);
@@ -351,8 +355,93 @@ test("★★★ A7: si la caja de sus respuestas es negativa, no hay punteado; q
     assert.equal(puente.querySelector("[data-punteado]"), null);
     assert.equal(puente.querySelector("[data-cifra-suya]").textContent, "−$350");
     assert.equal(puente.getAttribute("aria-label"), "De $3.950 a la caja $14.650; con tus respuestas daba −$350");
+    /* Kamogawa, #557: la frase va pegada a la cifra; nada promete una línea. */
+    assert.equal(puente.querySelectorAll("[data-leyenda]").length, 1);
+    assert.equal(puente.querySelector("[data-leyenda]").dataset.leyenda, "negativa");
+    assert.equal(puente.querySelector("[data-leyenda]").textContent, "Con tus respuestas, la caja daba −$350");
+    assert.doesNotMatch(puente.textContent, /Punteado/);
     /* Con movimiento reducido, «Iba aquí» llega al instante. */
     assert.ok(m.caja.querySelector(`[data-renglon-lista="${a1}"] [data-iba]`));
+  } finally { m.desmontar(); }
+});
+
+/* ═══════════ LA LEYENDA, EN SUS TRES CASOS (Kamogawa, #557) ═══════════ */
+
+test("★★★ leyendaDe: punteado si falló con caja ≥ 0, negativa si < 0, ninguna si cuadra (bien o con errores)", () => {
+  const [a1, a2, , a4] = CASO_A.fichas.map((f) => f.id);
+  const suya = (caso, c) => L.cajaDe(caso, respuestasDe(caso, c));
+  assert.equal(L.leyendaDe(CASO_A, suya(CASO_A, {})), null);
+  assert.equal(L.leyendaDe(CASO_A, suya(CASO_A, { [a2]: SUMA })), "punteado");
+  assert.equal(L.leyendaDe(CASO_A, suya(CASO_A, { [a1]: NO_MUEVE })), "negativa");
+  assert.equal(L.leyendaDe(CASO_A, suya(CASO_A, { [a2]: SUMA, [a4]: RESTA })), null);
+  const [b1] = CASO_B.fichas.map((f) => f.id);
+  assert.equal(suya(CASO_B, { [b1]: RESTA }), -3200000);
+  assert.equal(L.leyendaDe(CASO_B, suya(CASO_B, { [b1]: RESTA })), "negativa");
+  assert.equal(L.leyendaDe(CASO_B, CASO_B.caja), null);
+});
+
+test("★★★ renglonesDelPuente con respuestas: renglón tenue solo para la ficha que no mueve y el estudiante movió", () => {
+  const [, a2] = CASO_A.fichas.map((f) => f.id);
+  assert.equal(L.renglonesDelPuente(CASO_A, "Caja al cierre", respuestasDe(CASO_A)).filter((f) => f.tenue).length, 0);
+  assert.deepEqual(L.renglonesDelPuente(CASO_A, "Caja al cierre", respuestasDe(CASO_A, { [a2]: RESTA })).filter((f) => f.tenue),
+    [{ id: a2, nombre: "Equipo aportado", signo: -1, monto: 5000, tenue: true }]);
+  /* La cascada correcta no cambia: el tenue no tiene tramo. */
+  const sin = L.renglonesDelPuente(CASO_A, "Caja al cierre");
+  const con = L.renglonesDelPuente(CASO_A, "Caja al cierre", respuestasDe(CASO_A, { [a2]: SUMA })).filter((f) => !f.tenue);
+  assert.deepEqual(con, sin);
+  const b6 = CASO_B.fichas[5].id;
+  assert.deepEqual(L.renglonesDelPuente(CASO_B, "Caja al cierre", respuestasDe(CASO_B, { [b6]: SUMA })).filter((f) => f.tenue).map((f) => f.nombre),
+    ["Equipo comprado a crédito"]);
+});
+
+test("★★★ cuadra con errores (A: Equipo en Suma y Alquiler en Resta): sin punteado, sin cifra y sin leyenda; el renglón tenue sí", async () => {
+  const m = await montar({ version: "A" });
+  try {
+    const [, a2, , a4] = CASO_A.fichas.map((f) => f.id);
+    await jugar(m.caja, CASO_A, { [a2]: SUMA, [a4]: RESTA });
+    await tocar(m.caja.querySelector("[data-comprobar]"));
+    assert.equal(estado(m.caja), "mal");
+    assert.equal(textos(m.caja)[0], D.ERROR_CUADRA_CON_ERRORES);
+    const puente = m.caja.querySelector("[data-puente]");
+    assert.equal(puente.querySelector("[data-punteado]"), null);
+    assert.equal(puente.querySelector("[data-cifra-suya]"), null);
+    assert.equal(puente.querySelector("[data-leyenda]"), null);
+    assert.equal(puente.querySelector("[data-renglon-tenue]").textContent, "Equipo aportado+$5.000 (tu respuesta)");
+  } finally { m.desmontar(); }
+});
+
+test("★★★ cuadra con errores en B (tres mal): sin leyenda; caja negativa en B: «Con tus respuestas, la caja daba −$3.200.000»", async () => {
+  const ids = CASO_B.fichas.map((f) => f.id);
+  /* El primer caso que cuadra con tres mal, buscado entre todas las respuestas. */
+  let cambios = null;
+  const prueba = (k, c) => {
+    if (cambios) return;
+    if (k === ids.length) {
+      const e = L.evaluarResultadoCaja(CASO_B, respuestasDe(CASO_B, c));
+      if (e.cuadra && e.mal.length === 3) cambios = { ...c };
+      return;
+    }
+    for (const x of [SUMA, RESTA, NO_MUEVE]) prueba(k + 1, { ...c, [ids[k]]: x });
+  };
+  prueba(0, {});
+  assert.ok(cambios);
+  let m = await montar({ version: "B" });
+  try {
+    await jugar(m.caja, CASO_B, cambios);
+    await tocar(m.caja.querySelector("[data-comprobar]"));
+    const puente = m.caja.querySelector("[data-puente]");
+    assert.equal(puente.querySelector("[data-punteado]"), null);
+    assert.equal(puente.querySelector("[data-cifra-suya]"), null);
+    assert.equal(puente.querySelector("[data-leyenda]"), null);
+  } finally { m.desmontar(); }
+  m = await montar({ version: "B" });
+  try {
+    await jugar(m.caja, CASO_B, { [ids[0]]: RESTA });
+    await tocar(m.caja.querySelector("[data-comprobar]"));
+    const puente = m.caja.querySelector("[data-puente]");
+    assert.equal(puente.querySelector("[data-punteado]"), null);
+    assert.equal(puente.querySelector("[data-leyenda]").dataset.leyenda, "negativa");
+    assert.equal(puente.querySelector("[data-leyenda]").textContent, "Con tus respuestas, la caja daba −$3.200.000");
   } finally { m.desmontar(); }
 });
 

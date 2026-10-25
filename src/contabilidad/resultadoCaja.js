@@ -1,6 +1,6 @@
 import {
   CASOS_RESULTADO_CAJA, CASO_A, CASO_B, ELECCIONES, signoDe, rotuloDe,
-  VARIOS_ERRORES, ERROR_CUADRA_CON_ERRORES,
+  VARIOS_ERRORES, ERROR_CUADRA_CON_ERRORES, NO_MUEVE,
 } from "../data/contabilidadTema3ResultadoCaja.js";
 
 /*
@@ -66,20 +66,38 @@ export const escalaDe = (caso) => caso.fichas.reduce((s, f) => s + f.monto, caso
 /*
  * Los renglones del puente, con la cascada correcta. Cada uno:
  * { id, nombre, signo, monto, desde, hasta, lleno }. Las fichas que no mueven
- * la caja no dibujan renglón.
+ * la caja no dibujan tramo. Si se pasan las respuestas y el estudiante sumó o
+ * restó una de ellas, va en su lugar un renglón tenue, sin tramo:
+ * { id, nombre, signo, monto, tenue: true } (Kamogawa, #557). Con eso se
+ * sigue en pantalla la distancia entre la caja correcta y la suya.
  */
-export function renglonesDelPuente(caso, rotuloCaja) {
+export function renglonesDelPuente(caso, rotuloCaja, respuestas = null) {
   const filas = [{ id: "utilidad", nombre: caso.rotuloUtilidad, signo: 1, monto: caso.utilidad, desde: 0, hasta: caso.utilidad, lleno: true }];
   let va = caso.utilidad;
   for (const f of caso.fichas) {
     const signo = signoDe(f.va);
-    if (!signo) continue;
+    if (!signo) {
+      const suyo = f.va === NO_MUEVE && respuestas ? signoDe(respuestas[f.id]) : 0;
+      if (suyo) filas.push({ id: f.id, nombre: f.nombre, signo: suyo, monto: f.monto, tenue: true });
+      continue;
+    }
     const nuevo = va + signo * f.monto;
     filas.push({ id: f.id, nombre: f.nombre, signo, monto: f.monto, desde: Math.min(va, nuevo), hasta: Math.max(va, nuevo), lleno: signo > 0 });
     va = nuevo;
   }
   filas.push({ id: "caja", nombre: rotuloCaja, signo: 1, monto: va, desde: 0, hasta: va, lleno: true });
   return filas;
+}
+
+/*
+ * Qué leyenda lleva el puente (Kamogawa, #557):
+ *   · "punteado": falló y su caja es positiva o cero; hay punteado;
+ *   · "negativa": su caja es negativa; no hay punteado, solo la frase con la cifra (A7);
+ *   · null: todo bien, o cuadra con errores: no hay punteado ni cifra.
+ */
+export function leyendaDe(caso, suya) {
+  if (suya === caso.caja) return null;
+  return suya < 0 ? "negativa" : "punteado";
 }
 
 /* La cifra con el punto de miles del libro: «$14.650»; con signo, «+$15.000», «−$6.800». */

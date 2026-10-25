@@ -49,6 +49,10 @@ export const signoDe = (id) => ELECCIONES.find((e) => e.id === id)?.signo ?? 0;
 export const VARIOS_ERRORES = "Y hay más fichas por revisar.";
 export const ROTULO_CAJA_CIERRE = "Caja al cierre";
 export const LEYENDA_PUNTEADO = "Punteado: así quedaba con tus respuestas";
+/* Kamogawa, #557: en caja negativa no hay punteado; la frase va pegada a la cifra. */
+export const LEYENDA_NEGATIVA = "Con tus respuestas, la caja daba";
+/* Kamogawa, #557: la ficha que no mueve la caja, si el estudiante la sumó o la restó. */
+export const TU_RESPUESTA = "(tu respuesta)";
 export const ERROR_CUADRA_CON_ERRORES = "Llegaste a la caja correcta, pero con dos fichas mal puestas: sus errores se cancelaron.";
 
 /* Textos fijos de interfaz (Itagaki, §7 y §8; A1). */

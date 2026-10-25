@@ -1,10 +1,10 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
-  ACT_RESULTADO_CAJA, ELECCIONES, rotuloDe, ROTULO_CAJA_CIERRE, LEYENDA_PUNTEADO,
+  ACT_RESULTADO_CAJA, ELECCIONES, rotuloDe, ROTULO_CAJA_CIERRE, LEYENDA_PUNTEADO, LEYENDA_NEGATIVA, TU_RESPUESTA,
   INTERFAZ_RESULTADO_CAJA as UI, CIERRE_RESULTADO_CAJA, ALT_RESULTADO_CAJA,
 } from "../../../../data/contabilidadTema3ResultadoCaja.js";
 import {
-  casoDe, evaluarResultadoCaja, puntuarResultadoCaja, escalaDe, renglonesDelPuente, pesos, conSigno,
+  casoDe, evaluarResultadoCaja, puntuarResultadoCaja, escalaDe, renglonesDelPuente, leyendaDe, pesos, conSigno,
 } from "../../../../contabilidad/resultadoCaja.js";
 import { Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
@@ -39,7 +39,10 @@ import {
  * «No va aquí» y, a los 0,7 s, «Iba aquí: …»), el mensaje y el puente: una
  * cascada de la utilidad a la caja al cierre. Si falló, el punteado marca
  * adónde lo llevaban sus respuestas; si eso es negativo, no hay punteado y
- * queda solo la cifra con su signo (A7). Después, «Ver mi resumen» (A1: sin
+ * queda solo la frase «Con tus respuestas, la caja daba −$X» (A7). Si
+ * cuadra con errores, no hay punteado ni leyenda. Una ficha que no mueve la
+ * caja y el estudiante sumó o restó lleva un renglón tenue (Kamogawa, #557).
+ * Después, «Ver mi resumen» (A1: sin
  * «Siguiente caso»). Sin reintento.
  *
  * ═══════════ VERSIONES (A1) ═══════════
@@ -69,7 +72,7 @@ const CSS = `
 .fae-rdc-pliega { animation: fae-rdc-pliega ${PLIEGA_MS}ms ${CURVA} both; transform-origin: top center; }
 @keyframes fae-rdc-crece { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 @keyframes fae-rdc-aparece { from { opacity: 0; } to { opacity: 1; } }
-.fae-rdc-puente[data-armando="si"] [data-renglon] { animation: fae-rdc-aparece ${RENGLON_MS}ms ${CURVA} both; animation-delay: calc(var(--k) * ${DESFASE_MS}ms); }
+.fae-rdc-puente[data-armando="si"] [data-renglon], .fae-rdc-puente[data-armando="si"] [data-renglon-tenue] { animation: fae-rdc-aparece ${RENGLON_MS}ms ${CURVA} both; animation-delay: calc(var(--k) * ${DESFASE_MS}ms); }
 .fae-rdc-puente[data-armando="si"] [data-tramo] { transform-origin: left center; animation: fae-rdc-crece ${RENGLON_MS}ms ${CURVA} both; animation-delay: calc(var(--k) * ${DESFASE_MS}ms); }
 .fae-rdc-puente[data-armando="si"] [data-punteado], .fae-rdc-puente[data-armando="si"] [data-cifra-suya] { animation: fae-rdc-aparece 200ms ${CURVA} both; animation-delay: var(--tras); }
 .fae-rdc-puente[data-armando="no"] * { animation: none !important; }
@@ -180,11 +183,12 @@ function Renglon({ ficha, elegida, estado, revelada, onTocar, nuevo }) {
 }
 
 /* ═══════════ EL PUENTE (§8.3) ═══════════ */
-export function Puente({ caso, suya, armar = true }) {
-  const filas = renglonesDelPuente(caso, ROTULO_CAJA_CIERRE);
+export function Puente({ caso, suya, respuestas = null, armar = true }) {
+  const filas = renglonesDelPuente(caso, ROTULO_CAJA_CIERRE, respuestas);
   const escala = escalaDe(caso);
-  const fallo = suya !== caso.caja;
-  const negativa = suya < 0;
+  const leyenda = leyendaDe(caso, suya);
+  const fallo = leyenda === "punteado";
+  const negativa = leyenda === "negativa";
   const caja = useRef(null);
   const [ancho, setAncho] = useState(0);
   const [armando, setArmando] = useState(false);
@@ -221,6 +225,17 @@ export function Puente({ caso, suya, armar = true }) {
       style={{ boxSizing: "border-box", marginTop: "16px", padding: "12px", borderRadius: "12px", background: C.panel, border: BORDE_SUP, visibility: visto ? "visible" : "hidden" }}
     >
       {filas.map((f, k) => {
+        /* El renglón tenue: la ficha que no mueve la caja, con lo que le puso el estudiante. Sin tramo. */
+        if (f.tenue) {
+          return (
+            <div key={f.id} data-renglon-tenue={f.id} style={{ "--k": k, minHeight: "30px", boxSizing: "border-box" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "8px", minHeight: "16px" }}>
+                <span style={{ minWidth: 0, fontFamily: INTER, fontSize: "12px", lineHeight: "16px", fontWeight: 600, color: C.apagado }}>{f.nombre}</span>
+                <span data-cifra-tenue style={{ ...CIFRA, flex: "none", fontSize: "12px", lineHeight: "16px", color: C.apagado }}>{conSigno(f.signo, f.monto)} {TU_RESPUESTA}</span>
+              </div>
+            </div>
+          );
+        }
         const pxAncho = parte(f.hasta - f.desde) * ancho;
         const esCaja = f.id === "caja";
         const cifra = f.id === "utilidad" || esCaja ? pesos(f.monto) : conSigno(f.signo, f.monto);
@@ -250,23 +265,30 @@ export function Puente({ caso, suya, armar = true }) {
           </div>
         );
       })}
-      {/* La cifra de sus respuestas, bajo el final del punteado; si es negativa, sola y a la izquierda (A7). */}
+      {/* La cifra de sus respuestas, bajo el final del punteado, y su leyenda. Solo si hay punteado. */}
       {fallo && (
         <p style={{ position: "relative", margin: 0, height: "16px" }}>
           <span data-cifra-suya style={{
             "--tras": tras, ...CIFRA, position: "absolute", top: 0, whiteSpace: "nowrap", fontSize: "12px", lineHeight: "16px", color: C.atenuado,
-            ...(negativa || parte(suya) * ancho < 72 ? { left: 0 } : { left: `${parte(suya) * 100}%`, transform: "translateX(-100%)" }),
+            ...(parte(suya) * ancho < 72 ? { left: 0 } : { left: `${parte(suya) * 100}%`, transform: "translateX(-100%)" }),
           }}>
             {pesos(suya)}
           </span>
         </p>
       )}
-      {/* Solo si falló: con todo bien no hay punteado que explicar, y el hueco de la leyenda quedaba vacío. */}
       {fallo && (
-        <p data-leyenda style={{ margin: 0, minHeight: "16px", fontFamily: INTER, fontSize: "12px", lineHeight: "16px", color: C.apagado }}>
+        <p data-leyenda="punteado" style={{ margin: 0, minHeight: "16px", fontFamily: INTER, fontSize: "12px", lineHeight: "16px", color: C.apagado }}>
           {LEYENDA_PUNTEADO}
         </p>
       )}
+      {/* A7 (Kamogawa, #557): caja negativa, sin punteado; la frase va pegada a la cifra, con su signo. */}
+      {negativa && (
+        <p data-leyenda="negativa" style={{ margin: 0, minHeight: "16px", fontFamily: INTER, fontSize: "12px", lineHeight: "16px", color: C.apagado }}>
+          {LEYENDA_NEGATIVA}{" "}
+          <span data-cifra-suya style={{ "--tras": tras, ...CIFRA, whiteSpace: "nowrap", fontSize: "12px", lineHeight: "16px", fontWeight: 700, color: C.atenuado }}>{pesos(suya)}</span>
+        </p>
+      )}
+      {/* Cuadra con errores: ni punteado ni cifra, así que no hay leyenda; lo dice ERROR_CUADRA_CON_ERRORES. */}
     </div>
   );
 }
@@ -408,7 +430,7 @@ export default function ResultadoCaja({
         <style>{CSS}</style>
         <div ref={raiz} className="fae-rdc" data-resultado-caja data-version={caso.version} data-estado-partida="resumen">
           {/* §9: encima del resumen, el puente del caso jugado y CIERRE_RESULTADO_CAJA. */}
-          <Puente caso={caso} suya={r?.suya ?? caso.caja} armar={false} />
+          <Puente caso={caso} suya={r?.suya ?? caso.caja} respuestas={respuestas} armar={false} />
           <p data-cierre-texto style={{ margin: "16px 0 0", fontFamily: INTER, fontSize: "15px", lineHeight: "22px", color: C.texto }}>
             {CIERRE_RESULTADO_CAJA}
           </p>
@@ -469,7 +491,7 @@ export default function ResultadoCaja({
         )}
 
         <Mensaje r={r} />
-        {r && !modoDemo && <Puente caso={caso} suya={r.suya} />}
+        {r && !modoDemo && <Puente caso={caso} suya={r.suya} respuestas={respuestas} />}
         {r && !modoDemo && (
           <Responder onClick={avanzar} etiqueta={UI.verMiResumen} datos={{ "data-siguiente": true }}>{UI.verMiResumen}</Responder>
         )}
