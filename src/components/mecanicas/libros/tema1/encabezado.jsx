@@ -1,5 +1,6 @@
 import { FAE } from "../../../../theme.js";
 import { NEUTRO, NAVY_DEL_CHIP } from "../../../../data/contabilidadIntro.js";
+import { Volumen, FAMILIAS } from "../../../../estilo/volumen.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -58,17 +59,24 @@ const SORA = "Sora, sans-serif";
  * botón: sin él, el texto del botón se vería 6 px metido hacia dentro. No
  * desborda la pantalla; lo que se come es relleno del contenedor.
  */
+/*
+ * VOLUMEN (#560): cara N2 sobre canto N1 de 4 px, y se hunde al pulsar. El
+ * texto pasa de rgba(248,249,250,0.6) a #F8F9FA: sobre la cara N2 el 60 % da
+ * 4,31:1 y no llega a 4,5; el blanco da 8,67:1. Los márgenes, el negativo
+ * incluido, pasan al envoltorio: siguen alineando la palabra con la consigna.
+ */
 export function BotonComoSeJuega({ onClick }) {
   return (
+    <Volumen canto={FAMILIAS.n2.canto} radio="10px" estilo={{ display: "inline-block", margin: "2px 0 -8px -6px" }}>
     <button
       type="button"
       data-como-se-juega
       onClick={onClick}
       style={{
         display: "inline-flex", alignItems: "center", gap: "7px",
-        minHeight: "40px", minWidth: "40px", margin: "2px 0 -8px -6px", padding: "0 6px",
-        background: "transparent", border: "none", borderRadius: "10px", cursor: "pointer",
-        color: "rgba(248,249,250,0.6)", fontFamily: "Inter, sans-serif", fontSize: "12px",
+        minHeight: "40px", minWidth: "40px", padding: "0 6px",
+        background: FAMILIAS.n2.cara, border: "none", borderRadius: "10px", cursor: "pointer",
+        color: FAE.text, fontFamily: "Inter, sans-serif", fontSize: "12px",
       }}
     >
       <span aria-hidden="true" style={{
@@ -80,6 +88,7 @@ export function BotonComoSeJuega({ onClick }) {
       </span>
       ¿Cómo se juega?
     </button>
+    </Volumen>
   );
 }
 

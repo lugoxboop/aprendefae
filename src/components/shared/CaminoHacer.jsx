@@ -4,6 +4,7 @@ import { iconoDe } from "./iconosActividad.jsx";
 import PreviaActividad from "./previas/PreviaActividad.jsx";
 import { bloquesDe } from "../../hacer/bloques.js";
 import { registrarApertura } from "./contenidoNuevo.jsx";
+import { useEstiloVolumen, FAMILIAS, ELEVACION, CLASE_SVG, CLASE_CARA } from "../../estilo/volumen.jsx";
 
 /*
  * Camino de actividades para la mitad "Hacer" de cualquier tema.
@@ -581,10 +582,12 @@ function alLado({ x, y }, radio, alto, anchoTotal = ANCHO) {
 
 /* Un nodo del camino. Lo usan las dos formas: la de siempre y la de bloques. */
 function NodoSvg({ nodo, x, y, m, numero, sugerido, resaltado, marcas, onAbrir, tono = null, bloqueId, prefijo = "" }) {
+  useEstiloVolumen();
   const Icono = iconoDe(nodo.id);
   const lado = Math.round(m.radio * 1.1);
   return (
     <g
+      className={CLASE_SVG}
       data-nodo={nodo.id}
       data-bloque-de={bloqueId}
       {...alPulsar(onAbrir, nodo.id)}
@@ -606,11 +609,19 @@ function NodoSvg({ nodo, x, y, m, numero, sugerido, resaltado, marcas, onAbrir, 
         <circle className="fae-ch-aqui" cx={x} cy={y} r={m.radio + 12} fill="none" stroke={FAE.teal} strokeWidth="3" />
       )}
 
+      {/*
+        * VOLUMEN (#560): el canto es un círculo hermano DETRÁS de la cara,
+        * corrido 4 px hacia abajo (N1 bajo la cara N2; #1D6B61 bajo la teal de
+        * hecha). Todo lo de la cara va en un grupo que se hunde 4 px al pulsar
+        * y lo tapa; los aros de sugerido y «estás aquí» se quedan quietos.
+        */}
+      <circle data-canto cx={x} cy={y + ELEVACION} r={m.radio} fill={nodo.completada ? FAMILIAS.teal.canto : FAMILIAS.n2.canto} pointerEvents="none" />
+      <g className={CLASE_CARA}>
       <circle
         cx={x}
         cy={y}
         r={m.radio}
-        fill={nodo.completada ? FAE.teal : "rgba(14,27,46,0.85)"}
+        fill={nodo.completada ? FAE.teal : FAMILIAS.n2.cara}
         stroke={nodo.completada ? FAE.teal : tono?.nodo ?? "rgba(248,249,250,0.45)"}
         strokeWidth={tono ? 2.5 : 2}
         style={tono?.brillo && !nodo.completada ? { filter: tono.brillo } : undefined}
@@ -658,6 +669,7 @@ function NodoSvg({ nodo, x, y, m, numero, sugerido, resaltado, marcas, onAbrir, 
           {numero}
         </text>
       )}
+      </g>
     </g>
   );
 }

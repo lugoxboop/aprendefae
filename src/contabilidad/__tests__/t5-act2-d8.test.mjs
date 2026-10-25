@@ -117,7 +117,13 @@ test("★★★ D8: la partida real, sin inyectar nada, baraja: el orden varía 
 /* ═══════════ SIN `mezclar`: LO DE MAIN ═══════════ */
 
 /* La huella del recorrido de T5 Act2 y T6 Act2 (Célula B) sin `mezclar`, tomada con el código de main (efa2501e). */
-const HUELLA_MAIN_MESA = "054334106b15c1d803dd95bfa277e3da510da05c4e45ed8b0b30724fa64ae57c";
+/*
+ * Rehecha el 25-oct por el volumen de #560: `Responder` va dentro de su
+ * envoltorio con canto. Comprobado antes de cambiarla: quitando SOLO ese
+ * envoltorio (y devolviendo su margin-top al botón), el recorrido da
+ * exactamente la huella anterior, 054334106b15…
+ */
+const HUELLA_MAIN_MESA = "020ee3839c08902e08452e9ce8b92d05dd25a616c08a9af233184567f29b82a9";
 test("★★★ sin la prop `mezclar`, CierreConMesa pinta exactamente lo de main (T5 Act2 y T6 Act2, paso a paso)", async () => {
   assert.equal(await recorridoMesa(), HUELLA_MAIN_MESA);
   await con(h(CierreConDiario, { ...MARCO, onCompletar: () => {}, mezclar: null }), async (caja) => {

@@ -1,5 +1,6 @@
 import { FAE } from "../../theme.js";
 import { APRENDER, HACER, ETIQUETAS } from "../../data/subjects.js";
+import { N1 } from "../../estilo/volumen.jsx";
 
 /*
  * Insignia de tipo de actividad.
@@ -26,8 +27,17 @@ import { APRENDER, HACER, ETIQUETAS } from "../../data/subjects.js";
  * color: es cuánta tinta hay.
  */
 
+/*
+ * VOLUMEN (#560): superficie elevada, sin canto y sin hundido (informa, no se
+ * pulsa). Se AÑADE donde no había cara: «Aprender» pasa de transparente a la
+ * cara N1, y conserva su contorno al 55 %, que es el que lo distingue de
+ * «Hacer» y es más fuerte que la silueta del 18 %. «Hacer» se queda con su
+ * cara clara publicada: es la píldora que pidió Mateo, la ven estudiantes de
+ * Macro, y aquí se añade, no se reemplaza. Lleno contra contorno sigue en pie.
+ * No cambia de alto.
+ */
 const ESTILOS = {
-  [APRENDER]: { color: FAE.node, background: "transparent", border: "rgba(203,220,242,0.55)" },
+  [APRENDER]: { color: FAE.node, background: N1, border: "rgba(203,220,242,0.55)" },
   [HACER]: { color: FAE.bg, background: FAE.node, border: FAE.node },
 };
 

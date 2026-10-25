@@ -170,7 +170,8 @@ test("★★★ en el camino: el ícono va con el color del rótulo, el ✓ de h
         assert.equal(svg.querySelector("[fill]:not(svg)"), null, "una pieza lleva relleno");
         assert.equal(g.querySelector("text"), null, `${nodo.id}: el número sigue debajo del ícono`);
         /* El ✓ de hecha, igual que hoy en los nodos con ícono. */
-        if (nodo.completada) assert.ok(g.querySelector(":scope > g[aria-hidden='true'] > path"), `${nodo.id}: falta el ✓`);
+        /* Desde el volumen (#560) la cara del nodo —círculo, ícono y ✓— va en su grupo, que se hunde al pulsar. */
+        if (nodo.completada) assert.ok(g.querySelector(":scope > .fae-vol-cara > g[aria-hidden='true'] > path"), `${nodo.id}: falta el ✓`);
       }
     } finally { con.desmontar(); }
   }
