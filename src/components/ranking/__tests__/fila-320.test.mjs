@@ -52,13 +52,28 @@ async function montar(elemento) {
   document.body.appendChild(caja);
   const raiz = createRoot(caja);
   await act(async () => { raiz.render(elemento); });
-  await act(async () => { await new Promise((r) => setTimeout(r, 0)); });
   return { caja, fin: () => act(async () => { raiz.unmount(); }) };
+}
+
+/*
+ * La consulta y los ánimos son asíncronos. Con la suite entera corriendo a la
+ * vez un solo tick no alcanzaba y la prueba fallaba sin que nada estuviera
+ * mal (se vio una vez en local). Se espera a que aparezca lo que se busca, con
+ * un tope, en vez de suponer cuántos ticks hacen falta.
+ */
+async function esperar(condicion, ms = 5000) {
+  const hasta = Date.now() + ms;
+  while (!condicion()) {
+    if (Date.now() > hasta) return false;
+    await act(async () => { await new Promise((r) => setTimeout(r, 10)); });
+  }
+  return true;
 }
 
 test("★ el apodo tiene su línea propia, entera, y nunca se corta con «…»", async () => {
   const m = await montar(h(AuthContext.Provider, { value: auth }, h(RankingFP, { subjectId: "contabilidad", pedir: async () => ({ data: FILAS, error: null }) })));
   try {
+    await esperar(() => m.caja.querySelectorAll("[data-apodo]").length === FILAS.length);
     const apodos = [...m.caja.querySelectorAll("[data-apodo]")];
     assert.equal(apodos.length, FILAS.length, "no se pintó un apodo por fila");
     for (const a of apodos) {
