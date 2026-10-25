@@ -1,4 +1,5 @@
 import { test } from "node:test";
+import { ACTIVO as ACTIVO_, PASIVO as PASIVO_, PATRIMONIO as PATRIMONIO_ } from "../../data/contabilidad.js";
 import assert from "node:assert/strict";
 import { JSDOM, VirtualConsole } from "jsdom";
 
@@ -41,13 +42,13 @@ const React = await import("react");
 const { createRoot } = await import("react-dom/client");
 const act = React.act ?? (await import("react-dom/test-utils")).act;
 
-const EnCualEstadoAparece = (await import("../../components/mecanicas/libros/tema1/EnCualEstadoAparece.jsx")).default;
+const { default: EnCualEstadoAparece, DESTINOS_EN_PANTALLA } = await import("../../components/mecanicas/libros/tema1/EnCualEstadoAparece.jsx");
 const { MarcoLibros } = await import("../../components/mecanicas/bloques/marcos.jsx");
 const {
   sortearT1_6, evaluarT1_6, valorDeItem, puntuarT1_6, destinoDe, DESTINOS_T1_6,
 } = await import("../tema1.js");
 const {
-  T1_6, CONCEPTOS, INFORMES, SECCIONES_T1_6, PRIMERO, SEGUNDO,
+  T1_6, CONCEPTOS, INFORMES, SECCIONES_T1_6, SECCIONES_SEGUNDO_T1_6, PRIMERO, SEGUNDO, INGRESOS, GASTOS,
   ERROR_T1_6, ACIERTO_T1_6, PESO_INFORME, PESO_SECCION,
 } = await import("../../data/contabilidadTema1.js");
 const { ACTIVO, PASIVO, PATRIMONIO } = await import("../../data/contabilidad.js");
@@ -84,6 +85,13 @@ const seVe = (el, que) => {
 
 /* ═══════════════════ EL BANCO Y SUS TEXTOS ═══════════════════ */
 
+test("★★ ningún acierto de t1-6 pasa de 25 palabras (tope de los Hacer; Shoko, lote C)", () => {
+  for (const [id, t] of Object.entries(ACIERTO_T1_6)) {
+    const n = t.replace(/^✅\s*/u, "").split(/\s+/).filter(Boolean).length;
+    assert.ok(n <= 25, `${id}: ${n} palabras`);
+  }
+});
+
 test("★★ las dieciséis fichas están, sin repetirse, y cada una con su devolución", () => {
   assert.equal(CONCEPTOS.length, 16);
   assert.equal(new Set(CONCEPTOS.map((c) => c.id)).size, 16, "hay dos fichas con el mismo id");
@@ -104,14 +112,15 @@ test("★★ las dieciséis fichas están, sin repetirse, y cada una con su devo
  */
 test("★★★ cada devolución dice el mismo informe y la misma parte que el banco", () => {
   const PARTE = {
-    [ACTIVO]: "en lo que tiene",
-    [PASIVO]: "en lo que debe",
-    [PATRIMONIO]: "en lo de los dueños",
+    /* Lote C de Futaba (24-oct): con los términos del libro, como los destinos. */
+    [ACTIVO]: "en el activo",
+    [PASIVO]: "en el pasivo",
+    [PATRIMONIO]: "en el patrimonio",
   };
   for (const c of CONCEPTOS) {
     const texto = ACIERTO_T1_6[c.id];
-    const diceElPrimero = texto.includes("primer informe");
-    const diceElSegundo = texto.includes("segundo informe");
+    const diceElPrimero = texto.includes("estado de situación financiera");
+    const diceElSegundo = texto.includes("estado de resultados");
     assert.notEqual(diceElPrimero, diceElSegundo, `${c.nombre}: la devolución nombra los dos informes o ninguno`);
     assert.equal(diceElPrimero, c.informe === PRIMERO,
       `${c.nombre}: el banco dice «${c.informe}» y el texto dice otra cosa`);
@@ -125,7 +134,10 @@ test("★★★ cada devolución dice el mismo informe y la misma parte que el b
         assert.ok(!texto.includes(frase), `${c.nombre}: la devolución nombra también «${frase}»`);
       }
     } else {
-      assert.equal(c.seccion, null, `${c.nombre}: una ficha del segundo informe trae sección`);
+      /* Lote del 24-oct: el segundo se parte en ingresos y gastos, y el texto lo dice. */
+      const FRASE = { [INGRESOS]: "en ingresos", [GASTOS]: "en gastos" };
+      assert.ok(FRASE[c.seccion], `${c.nombre}: una ficha del segundo informe sin ingresos ni gastos`);
+      assert.ok(texto.includes(FRASE[c.seccion]), `${c.nombre}: el banco dice «${c.seccion}» y el texto no`);
     }
   }
 });
@@ -155,14 +167,14 @@ test("★★★ «lo que ganó y gastó» no se usa en ninguna parte del sitio",
 
 /* ═══════════════════ EL SORTEO ═══════════════════ */
 
-test("★★ diez de dieciséis, y los cuatro destinos salen siempre", () => {
-  assert.equal(DESTINOS_T1_6.length, 4, `hay ${DESTINOS_T1_6.length} destinos, no cuatro`);
+test("★★ diez de dieciséis, y los cinco destinos salen siempre", () => {
+  assert.equal(DESTINOS_T1_6.length, 5, `hay ${DESTINOS_T1_6.length} destinos, no cinco`);
   for (let i = 0; i < 300; i += 1) {
     const tanda = sortearT1_6(barajar);
     assert.equal(tanda.length, 10);
     assert.equal(new Set(tanda.map((c) => c.id)).size, 10, "una ficha salió dos veces");
     const destinos = new Set(tanda.map(destinoDe));
-    assert.equal(destinos.size, 4, `faltó un destino: ${[...destinos].join(", ")}`);
+    assert.equal(destinos.size, 5, `faltó un destino: ${[...destinos].join(", ")}`);
   }
 });
 
@@ -187,10 +199,10 @@ test("★★ Reservas es la única del patrimonio, y por eso entra siempre", () 
  * Lo que se comprueba es lo que de verdad importa: que en la primera posición
  * pueda salir cualquiera de los cuatro destinos.
  */
-test("★★ en la primera posición puede salir cualquiera de los cuatro destinos", () => {
+test("★★ en la primera posición puede salir cualquiera de los cinco destinos", () => {
   const primeros = new Set();
-  for (let i = 0; i < 300; i += 1) primeros.add(destinoDe(sortearT1_6(barajar)[0]));
-  assert.equal(primeros.size, 4,
+  for (let i = 0; i < 400; i += 1) primeros.add(destinoDe(sortearT1_6(barajar)[0]));
+  assert.equal(primeros.size, 5,
     `la primera ficha sale siempre de ${[...primeros].join(", ")}: el sorteo no baraja después de estratificar`);
 });
 
@@ -207,7 +219,7 @@ test("★★★ A y B no son la misma equivocación al revés: la elige dónde i
   assert.ok(a.texto.includes("pasó durante el año"), "la A dejó de hablar de lo que pasó en el año");
 
   /* Iba en el primero y lo puso en el segundo → B. */
-  const b = evaluarT1_6(delPrimero, { informe: SEGUNDO, seccion: null });
+  const b = evaluarT1_6(delPrimero, { informe: SEGUNDO, seccion: INGRESOS });
   assert.equal(b.patron, "B");
   assert.equal(b.texto, ERROR_T1_6.B);
   assert.ok(b.texto.includes("mañana lo sigue teniendo"), "la B dejó de hablar de lo que se conserva");
@@ -240,9 +252,15 @@ test("★★ si a una ficha le falta su devolución, evaluar se cae", () => {
     /no tiene devolución/, "sirvió un texto de repuesto en vez de avisar");
 });
 
-test("★★ una ficha del segundo informe no pide sección para acertar", () => {
+test("★★★ en el segundo, cruzar ingresos y gastos es C2, y reconoce el informe", () => {
   for (const c of CONCEPTOS.filter((x) => x.informe === SEGUNDO)) {
-    assert.equal(evaluarT1_6(c, { informe: SEGUNDO, seccion: null }).ok, true, `${c.nombre}`);
+    const otra = c.seccion === INGRESOS ? GASTOS : INGRESOS;
+    const r = evaluarT1_6(c, { informe: SEGUNDO, seccion: otra });
+    assert.equal(r.patron, "C2", c.nombre);
+    assert.equal(r.informeOk, true);
+    /* El texto es el de su destino (Futaba, lote E); el patrón sigue siendo C2. */
+    assert.notEqual(r.texto, ERROR_T1_6.C2);
+    assert.ok(r.texto.startsWith("El informe es el correcto"));
   }
 });
 
@@ -255,12 +273,14 @@ test("★★★ el informe pesa 60 y la parte 40", () => {
 
   assert.equal(valorDeItem(c, evaluarT1_6(c, { informe: c.informe, seccion: c.seccion })), 1);
   assert.equal(valorDeItem(c, evaluarT1_6(c, { informe: PRIMERO, seccion: otra })), PESO_INFORME);
-  assert.equal(valorDeItem(c, evaluarT1_6(c, { informe: SEGUNDO, seccion: null })), 0,
-    "fallar el informe da puntos por la parte, que ni siquiera se preguntó");
+  assert.equal(valorDeItem(c, evaluarT1_6(c, { informe: SEGUNDO, seccion: INGRESOS })), 0,
+    "fallar el informe da puntos por la parte");
 
-  /* Las del segundo informe valen entero: no tienen parte que acertar. */
+  /* Desde el lote del 24-oct las del segundo también tienen parte: 60 / 40 igual. */
   const s = CONCEPTOS.find((x) => x.informe === SEGUNDO);
-  assert.equal(valorDeItem(s, evaluarT1_6(s, { informe: SEGUNDO, seccion: null })), 1);
+  const cruzada = s.seccion === INGRESOS ? GASTOS : INGRESOS;
+  assert.equal(valorDeItem(s, evaluarT1_6(s, { informe: SEGUNDO, seccion: s.seccion })), 1);
+  assert.equal(valorDeItem(s, evaluarT1_6(s, { informe: SEGUNDO, seccion: cruzada })), PESO_INFORME);
   assert.equal(valorDeItem(s, evaluarT1_6(s, { informe: PRIMERO, seccion: ACTIVO })), 0);
 });
 
@@ -271,95 +291,85 @@ test("★★ el puntaje suma los valores, no los aciertos", () => {
   assert.equal(puntuarT1_6([], 0), 0);
 });
 
-/* ═══════════════════ LAS PESTAÑAS EN PANTALLA ═══════════════════ */
+/* ═══════════════════ LOS CINCO DESTINOS EN PANTALLA (lote 4) ═══════════════════ */
 
-test("★★★ cada pestaña lleva dos líneas: la idea y cuándo", () => {
+const tocarDestino = (caja, informe, seccion) => tocar(caja.querySelector(`[data-destino="${informe}-${seccion}"]`));
+const destinosEnPantalla = (caja) => [...caja.querySelectorAll("[data-destino]")];
+
+test("★★★ cada informe lleva su término del libro y su fecha, en dos nodos que se ven", () => {
   const { caja, desmontar } = montar();
   try {
     for (const inf of INFORMES) {
       const p = caja.querySelector(`[data-informe="${inf.id}"]`);
-      assert.ok(p, `falta la pestaña de ${inf.id}`);
-
-      const idea = seVe(p.querySelector('[data-linea="idea"]'), `${inf.id}: la idea`);
-      const cuando = seVe(p.querySelector('[data-linea="cuando"]'), `${inf.id}: la franja de tiempo`);
-      assert.ok(inf.idea.length > 3 && inf.cuando.length > 3, `${inf.id}: una de las dos se quedó vacía`);
-      assert.equal(idea.textContent, inf.idea, `${inf.id}: la idea no es la del archivo`);
-      assert.equal(cuando.textContent, inf.cuando, `${inf.id}: la franja de tiempo no es la del archivo`);
-      /* Y son dos nodos distintos, no una cadena pegada. */
-      assert.notEqual(idea, cuando);
+      assert.ok(p, `falta el informe ${inf.id}`);
+      const termino = seVe(p.querySelector(`[data-termino-informe="${inf.termino}"]`), `${inf.id}: el término`);
+      const cuando = seVe(p.querySelector('[data-linea="cuando"]'), `${inf.id}: la fecha`);
+      assert.equal(termino.textContent, inf.termino);
+      assert.equal(cuando.textContent, inf.fecha);
+      assert.notEqual(termino, cuando);
     }
-    /* Las dos franjas de tiempo son distintas: ahí está el criterio. */
-    assert.notEqual(INFORMES[0].cuando, INFORMES[1].cuando,
-      "los dos informes cubren el mismo tiempo y la pregunta deja de tener criterio");
+    /* Un día exacto contra todo un periodo: ahí está el criterio. */
+    assert.notEqual(INFORMES[0].fecha, INFORMES[1].fecha);
+    assert.equal(INFORMES[0].fecha, "al 31 de diciembre");
+    /* La película lleva su franja del tiempo; la foto no. */
+    assert.ok(caja.querySelector(`[data-informe="${SEGUNDO}"] [data-franja]`));
+    assert.equal(caja.querySelector(`[data-informe="${PRIMERO}"] [data-franja]`), null);
   } finally { desmontar(); }
 });
 
-test("★★★ el término del libro sale dentro de la pestaña, como rótulo aparte", () => {
+test("★★★ cinco destinos desde el principio: tres en la foto y dos en la película", () => {
   const { caja, desmontar } = montar();
   try {
-    for (const inf of INFORMES) {
-      tocar(caja.querySelector(`[data-informe="${inf.id}"]`));
-      const rotulo = seVe(caja.querySelector(`[data-termino-informe="${inf.termino}"]`),
-        `${inf.id}: el término del libro`);
-      assert.equal(rotulo.textContent, inf.termino, `${inf.id}: el rótulo trae algo más`);
-      /* Y no está metido dentro de la idea. */
-      assert.ok(!inf.idea.includes(inf.termino), `${inf.id}: el término está dentro de la frase de la idea`);
-    }
-  } finally { desmontar(); }
-});
-
-test("★★★ las tres partes solo aparecen dentro del primer informe", () => {
-  const { caja, desmontar } = montar();
-  try {
-    assert.equal(caja.querySelectorAll("[data-seccion]").length, 0, "las partes salen sin haber elegido informe");
-
-    tocar(caja.querySelector(`[data-informe="${SEGUNDO}"]`));
-    assert.equal(caja.querySelectorAll("[data-seccion]").length, 0,
-      "el segundo informe ofrece partes que no tiene");
-    assert.ok(caja.querySelector("[data-sin-secciones]"), "no se dice que ahí no hay parte que elegir");
-
-    tocar(caja.querySelector(`[data-informe="${PRIMERO}"]`));
-    assert.equal(caja.querySelectorAll("[data-seccion]").length, 3, "el primer informe no ofrece sus tres partes");
+    const d = destinosEnPantalla(caja);
+    assert.equal(d.length, 5);
+    assert.deepEqual(d.map((x) => x.dataset.destino),
+      [...SECCIONES_T1_6.map((s) => `${PRIMERO}-${s.id}`), ...SECCIONES_SEGUNDO_T1_6.map((s) => `${SEGUNDO}-${s.id}`)]);
+    assert.equal(caja.querySelectorAll(`[data-informe="${PRIMERO}"] [data-destino]`).length, 3);
+    assert.equal(caja.querySelectorAll(`[data-informe="${SEGUNDO}"] [data-destino]`).length, 2);
     for (const s of SECCIONES_T1_6) {
-      const b = caja.querySelector(`[data-seccion="${s.id}"]`);
-      assert.ok(b.textContent.includes(s.idea), `${s.id}: falta la idea simple`);
-      assert.ok(b.querySelector(`[data-termino="${s.termino}"]`), `${s.id}: el término no es un rótulo propio`);
+      assert.ok(caja.querySelector(`[data-destino="${PRIMERO}-${s.id}"]`).textContent.includes(s.termino));
     }
+    /* Cada destino se lee con su nombre y su cuenta: «Activo, 0 fichas». */
+    assert.equal(caja.querySelector(`[data-destino="${PRIMERO}-${ACTIVO}"]`).getAttribute("aria-label"), "Activo, 0 fichas");
+    /* No hay botón de colocar: tocar es responder. */
+    assert.ok(![...caja.querySelectorAll("button")].some((b) => /Colocar la ficha/.test(b.textContent)));
   } finally { desmontar(); }
 });
 
-test("★★ cambiar de informe borra la parte elegida del otro", () => {
-  const { caja, desmontar } = montar();
-  try {
-    tocar(caja.querySelector(`[data-informe="${PRIMERO}"]`));
-    tocar(caja.querySelector(`[data-seccion="${PASIVO}"]`));
-    assert.equal(caja.querySelector(`[data-seccion="${PASIVO}"]`).dataset.marcada, "si");
-    tocar(caja.querySelector(`[data-informe="${SEGUNDO}"]`));
-    tocar(caja.querySelector(`[data-informe="${PRIMERO}"]`));
-    assert.equal(caja.querySelector(`[data-seccion="${PASIVO}"]`).dataset.marcada, "no",
-      "la parte del otro informe se quedó marcada");
-  } finally { desmontar(); }
+test("★★★ un toque responde: el correcto sube su cuenta y se resalta, se acierte o no", () => {
+  for (const acertar of [true, false]) {
+    const { caja, desmontar } = montar();
+    try {
+      const c = fichaEnPantalla(caja);
+      const otro = DESTINOS_EN_PANTALLA.find((d) => !(d.informe === c.informe && d.seccion === c.seccion));
+      const elegido = acertar ? { informe: c.informe, seccion: c.seccion } : otro;
+      tocarDestino(caja, elegido.informe, elegido.seccion);
+      const bueno = caja.querySelector(`[data-destino="${c.informe}-${c.seccion}"]`);
+      assert.equal(bueno.dataset.estado, "acierto", "el destino correcto no se resalta");
+      assert.equal(bueno.querySelector("[data-cuenta]").textContent, "1", "la cuenta del correcto no subió");
+      assert.ok(destinosEnPantalla(caja).every((b) => b.disabled), "un segundo toque sigue abierto: hay reintento");
+      if (!acertar) {
+        const malo = caja.querySelector(`[data-destino="${otro.informe}-${otro.seccion}"]`);
+        assert.equal(malo.dataset.estado, "fantasma");
+        assert.equal(malo.querySelector("[data-cuenta]").textContent, "0", "la cuenta subió en el destino equivocado");
+        assert.match(caja.querySelector("[data-renglon]").textContent, /Iba aquí: /);
+      } else {
+        assert.match(caja.querySelector("[data-entro]").textContent, /^Entró: /);
+      }
+      /* La devolución, sin el emoji del banco. */
+      assert.doesNotMatch(caja.querySelector("[data-devolucion]").textContent, /[\u2705\u274C]/u);
+    } finally { desmontar(); }
+  }
 });
 
-test("★★ no se coloca la ficha sin elegir parte en el primer informe", () => {
+test("★★ C2: el reposo ya es un borde de 2 px, así que responder no cambia el ancho", () => {
   const { caja, desmontar } = montar();
   try {
-    const boton = () => [...caja.querySelectorAll("button")]
-      .find((b) => /Colocar la ficha|Elige en qué parte|Elige un informe/.test(b.textContent));
-    assert.equal(boton().disabled, true, "se puede colocar sin elegir nada");
-    tocar(caja.querySelector(`[data-informe="${PRIMERO}"]`));
-    assert.equal(boton().disabled, true, "se puede colocar en el primer informe sin decir en qué parte");
-    tocar(caja.querySelector(`[data-seccion="${ACTIVO}"]`));
-    assert.equal(boton().disabled, false);
-  } finally { desmontar(); }
-});
-
-test("★★ con el segundo informe basta elegir el informe", () => {
-  const { caja, desmontar } = montar();
-  try {
-    tocar(caja.querySelector(`[data-informe="${SEGUNDO}"]`));
-    const b = [...caja.querySelectorAll("button")].find((x) => x.textContent.includes("Colocar la ficha"));
-    assert.ok(b && !b.disabled, "el segundo informe pide una parte que no tiene");
+    const anchoBorde = () => destinosEnPantalla(caja).map((b) => b.style.borderWidth || b.style.border.split(" ")[0]);
+    assert.ok(anchoBorde().every((x) => x === "2px"), anchoBorde().join(","));
+    const c = fichaEnPantalla(caja);
+    tocarDestino(caja, c.informe, c.seccion);
+    assert.ok(anchoBorde().every((x) => x === "2px"), anchoBorde().join(","));
   } finally { desmontar(); }
 });
 
@@ -368,9 +378,7 @@ test("★★ con el segundo informe basta elegir el informe", () => {
 test("★★★ nada del Tema 2 entra en el contenido", () => {
   const { caja, desmontar } = montar();
   try {
-    tocar(caja.querySelector(`[data-informe="${PRIMERO}"]`));
     const copia = caja.querySelector("[data-contenido]").cloneNode(true);
-    for (const rot of copia.querySelectorAll("[data-rotulo-seccion]")) rot.remove();
     assert.ok(copia.querySelectorAll("*").length > 5);
     assert.ok(!copia.textContent.includes("▲"), "se coló el ▲");
     const TEAL = /#52C4B0|#2a9d8f|rgba?\(\s*82,\s*196,\s*176|rgba?\(\s*42,\s*157,\s*143/i;
@@ -387,10 +395,8 @@ test("★★ el coral solo sale al fallar", () => {
   try {
     assert.ok(!CORAL.test(caja.querySelector("[data-contenido]").innerHTML), "hay coral de salida");
     const c = fichaEnPantalla(caja);
-    const otro = c.informe === PRIMERO ? SEGUNDO : PRIMERO;
-    tocar(caja.querySelector(`[data-informe="${otro}"]`));
-    if (otro === PRIMERO) tocar(caja.querySelector(`[data-seccion="${ACTIVO}"]`));
-    tocar([...caja.querySelectorAll("button")].find((b) => b.textContent.includes("Colocar la ficha")));
+    const otro = DESTINOS_EN_PANTALLA.find((d) => d.informe !== c.informe);
+    tocarDestino(caja, otro.informe, otro.seccion);
     assert.ok(CORAL.test(caja.querySelector("[data-contenido]").innerHTML), "fallar no se marca en coral");
   } finally { desmontar(); }
 });
@@ -419,4 +425,21 @@ test("difícil, 50 FP y diez fichas por tanda", () => {
   assert.equal(T1_6.dificultad, "dificil");
   assert.equal(T1_6.fpBase, 50);
   assert.equal(T1_6.porPartida, 10);
+});
+
+/* Futaba, lote E (D6 de Shoko): con el informe bien y la parte mal, la devolución es la del destino correcto, y dice por qué. */
+test("★★★ t1-6: el error de parte trae la devolución de su destino, una por cada uno de los cinco", async () => {
+  const T1 = await import("../../data/contabilidadTema1.js");
+  const L = await import("../tema1.js");
+  const destinos = new Set();
+  for (const c of T1.CONCEPTOS) {
+    const otra = (c.informe === T1.PRIMERO ? [ACTIVO_, PASIVO_, PATRIMONIO_] : [T1.INGRESOS, T1.GASTOS]).find((x) => x !== c.seccion);
+    const r = L.evaluarT1_6(c, { informe: c.informe, seccion: otra });
+    const esperado = T1.DEVOLUCION_POR_DESTINO_T1_6[`${c.informe}:${c.seccion}`];
+    assert.ok(esperado, `${c.id}: su destino no tiene devolución`);
+    assert.equal(r.texto, esperado, c.id);
+    assert.ok(r.texto.split(/\s+/).length <= 25, `${c.id}: pasa de 25 palabras`);
+    destinos.add(r.texto);
+  }
+  assert.equal(destinos.size, 5);
 });
