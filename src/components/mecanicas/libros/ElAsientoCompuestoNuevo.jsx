@@ -18,6 +18,9 @@ import { Encabezado } from "./tema1/encabezado.jsx";
 import { CONSIGNA_TEMA2 } from "../../../data/contabilidadConsignas.js";
 import { EstilosDeVerbos, useNumeroQueSube, useMovimientoReducido, SOLO_LECTOR } from "./verbos.jsx";
 import { TONO_ROTULO } from "./debeHaber/piezasDebeHaber.jsx";
+/* Todo lo que se toca mide al menos esto, a lo alto y a lo ancho (Ukyo #585,
+ * lote T2-12). Se gana con alto y relleno, nunca con letra: la letra no cambia. */
+export const TOQUE_MINIMO = 44;
 import { partirPorFrases } from "./ElAsientoSimple.jsx";
 
 /*
@@ -129,7 +132,7 @@ function CuentaEnLaMesa({
           data-devolver={puesta.cuenta}
           onClick={() => onQuitar(indice)}
           style={{
-            display: "block", width: "100%", marginTop: "4px", padding: "3px",
+            display: "block", width: "100%", minHeight: `${TOQUE_MINIMO}px`, marginTop: "8px", padding: "3px",
             background: "none", border: "none", cursor: "pointer",
             color: "rgba(248,249,250,0.45)", fontFamily: SORA, fontSize: "9.5px",
           }}
@@ -398,9 +401,9 @@ export default function ElAsientoCompuestoNuevo({
           }}>
             {ROTULO_ESTANTE}
           </p>
-          <div data-estante style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+          <div data-estante style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
             {enEstante.map((c) => (
-              <div key={c} style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+              <div key={c} style={{ display: "flex", gap: "8px", alignItems: "center" }}>
                 <span style={{ flex: 1, minWidth: 0, fontSize: "11.5px", color: FAE.text }}>{c}</span>
                 {[DEBE, HABER].map((lado) => (
                   <button
@@ -409,7 +412,8 @@ export default function ElAsientoCompuestoNuevo({
                     data-sacar={`${c}:${lado}`}
                     onClick={() => sacar(c, lado)}
                     style={{
-                      flex: "none", padding: "5px 9px", borderRadius: "8px", cursor: "pointer",
+                      flex: "none", minHeight: `${TOQUE_MINIMO}px`, minWidth: `${TOQUE_MINIMO}px`,
+                      padding: "5px 9px", borderRadius: "8px", cursor: "pointer",
                       background: `${COLOR_LADO[lado]}14`, border: `1px solid ${COLOR_LADO[lado]}66`,
                       color: TONO_ROTULO[lado], fontFamily: SORA, fontSize: "9.5px", fontWeight: 700,
                       letterSpacing: "0.08em",

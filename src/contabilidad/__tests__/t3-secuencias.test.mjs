@@ -51,24 +51,30 @@ const TITULARES_DEL_PAQUETE = [
 
 const textoDe = (zona) => zona.filter((z) => z.texto).map((z) => z.texto).join(" ");
 
-test("★ cuatro piezas, 9 + 8 + 10 + 10 = 37 pantallas, con los ids de las piezas publicadas", () => {
-  assert.deepEqual(PIEZAS_SECUENCIA_T3.map((p) => p.id), ["t3-a1-vender-no-es-cobrar", "t3-a3-lo-que-ya-paso", "t3-a4-lo-que-ya-se-pago", "t3-a5-cerrar-el-periodo"]);
-  assert.deepEqual(PIEZAS_SECUENCIA_T3.map((p) => p.pantallas.length), [9, 8, 10, 10]);
+/* Las cuatro piezas de #572. P2 y P6 (#578) se prueban en t3-secuencias-p2-p6.test.mjs. */
+const PUBLICADAS = ["t3-a1-vender-no-es-cobrar", "t3-a3-lo-que-ya-paso", "t3-a4-lo-que-ya-se-pago", "t3-a5-cerrar-el-periodo"];
+const CUATRO = PUBLICADAS.map((id) => PIEZAS_SECUENCIA_T3.find((p) => p.id === id));
+
+test("★ las cuatro piezas publicadas, 9 + 8 + 10 + 10 = 37 pantallas, en su orden y con sus ids", () => {
+  assert.ok(CUATRO.every(Boolean));
+  const orden = PIEZAS_SECUENCIA_T3.map((p) => p.id).filter((id) => PUBLICADAS.includes(id));
+  assert.deepEqual(orden, PUBLICADAS, "P2 y P6 se insertan sin reordenar las publicadas");
+  assert.deepEqual(CUATRO.map((p) => p.pantallas.length), [9, 8, 10, 10]);
 });
 
 test("★ los titulares son los de la tabla de correspondencia (§4), en su orden", () => {
-  PIEZAS_SECUENCIA_T3.forEach((p, k) => assert.deepEqual(p.pantallas.map((s) => s.titular), TITULARES_DEL_PAQUETE[k], p.id));
+  CUATRO.forEach((p, k) => assert.deepEqual(p.pantallas.map((s) => s.titular), TITULARES_DEL_PAQUETE[k], p.id));
 });
 
 test("★ la forma: cero faltas, ya con la razón de «Siguiente» (D11, textos v5 §2)", () => {
-  for (const p of PIEZAS_SECUENCIA_T3) assert.deepEqual(faltasDePieza(p), [], p.id);
+  for (const p of CUATRO) assert.deepEqual(faltasDePieza(p), [], p.id);
 });
 
-test("★ D11: cada Haz lleva la razón de su tipo de decisión (v5 §2, columna «Cuándo se ve»), literal", () => {
+test("★ D11: cada Haz lleva la razón de su tipo de decisión (v5 §2; «ubicar» del delta v3, lote 16), literal", () => {
   assert.deepEqual(T.RAZONES_HAZ_T3, {
     eleccion: "Cuando respondas, se abre «Siguiente».",
     asiento: "Cuando pongas las dos cuentas, se abre «Siguiente».",
-    ubicar: "Quedan fichas por ubicar.",
+    ubicar: "Cuando ubiques todas las fichas, se abre «Siguiente».",
     cifra: "Cuando escribas la cifra, se abre «Siguiente».",
     corte: "Cuando pongas el corte, se abre «Siguiente».",
     ordenar: "Cuando ordenes los dos pasos, se abre «Siguiente».",
@@ -85,7 +91,7 @@ test("★ D11: cada Haz lleva la razón de su tipo de decisión (v5 §2, columna
     "t3-a5-cerrar-el-periodo/saldo": R.cifra,
     "t3-a5-cerrar-el-periodo/acacias-ingresos": R.ubicar, "t3-a5-cerrar-el-periodo/acacias-gastos": R.ubicar,
   };
-  for (const p of PIEZAS_SECUENCIA_T3) {
+  for (const p of CUATRO) {
     for (const s of p.pantallas.filter((x) => x.tipo === "haz")) {
       assert.equal(s.razon, tipo[`${p.id}/${s.id}`] ?? R.eleccion, `${p.id}/${s.id}`);
     }
@@ -194,7 +200,7 @@ test("★ el asiento: la casilla activa recibe la cuenta; al revés, pista y lue
   assert.equal(z(e), "D");
 });
 
-test("★ Las Acacias (v5 §1): sus cuentas y saldos, «Escenario simulado» primero; ⛔ la consigna sigue pendiente", () => {
+test("★ Las Acacias (v5 §1): sus cuentas y saldos, «Escenario simulado» primero; con los textos v6 ya no queda nada pendiente", () => {
   const A = T.LAS_ACACIAS;
   const suma = (l) => l.reduce((t, c) => t + c.saldo, 0);
   assert.equal(suma(A.ingresos), 3200000);
@@ -202,7 +208,7 @@ test("★ Las Acacias (v5 §1): sus cuentas y saldos, «Escenario simulado» pri
   assert.equal(suma(A.siguen.filter((c) => c.cuenta !== "Aportes sociales")), 1500000, "lo que no se vacía cuadra: 1.600.000 − 100.000");
   assert.deepEqual(A.gastos.map((c) => c.cuenta), ["Gasto salarios", "Gasto servicios públicos", "Gasto mantenimiento", "Gasto papelería", "Gasto materiales e insumos"]);
   assert.equal(T.ESCENARIO_SIMULADO, "Escenario simulado");
-  const p5 = PIEZAS_SECUENCIA_T3[3];
+  const p5 = CUATRO[3];
   for (const id of ["acacias-ingresos", "acacias-gastos", "perdida"]) {
     const s = p5.pantallas.find((x) => x.id === id);
     for (const m of s.medir) {
@@ -212,11 +218,9 @@ test("★ Las Acacias (v5 §1): sus cuentas y saldos, «Escenario simulado» pri
     /* Se resuelve con sus datos: ya no está armada y esperando. */
     assert.equal(s.resuelta(s.medir.find((m) => m.nombre === "acierto").estado), true, id);
   }
-  /* ⛔ No se inventa: la consigna no está en ningún archivo, y queda marcada como pendiente. */
+  /* Las consignas llegaron en la v6 (lote 18): ninguna pantalla de las seis piezas queda pendiente. */
   const pendientes = PIEZAS_SECUENCIA_T3.flatMap((p) => p.pantallas.filter((s) => s.pendiente).map((s) => `${p.id}/${s.id}`));
-  assert.deepEqual(pendientes, [
-    "t3-a5-cerrar-el-periodo/acacias-ingresos", "t3-a5-cerrar-el-periodo/acacias-gastos", "t3-a5-cerrar-el-periodo/perdida",
-  ]);
+  assert.deepEqual(pendientes, []);
 });
 
 test("★ condición 1: los contadores de P1 salen de los hechos publicados, acumulados hecho por hecho", async () => {
@@ -256,7 +260,7 @@ test("★ Repaso: las 4 «En una frase» con su texto literal, ítems nuevos, si
     ["t3-a4-lo-que-ya-se-pago", PREGUNTA_FINAL_P4, OPCIONES_FINAL_P4, "Ajuste diferido"],
     ["t3-a5-cerrar-el-periodo", PREGUNTA_FINAL_CIERRE, OPCIONES_FINAL_CIERRE, "Cierre del periodo"],
   ];
-  assert.equal(ITEMS_T3.length, 4);
+  /* P2-8 y P6-10 se suman cuando P2 y P6 entren al catálogo (t3-encendido-2.test.mjs). */
   casos.forEach(([act, pregunta, opciones, subtema], k) => {
     const x = ITEMS_T3[k];
     assert.equal(x.clave, `${act}:en-una-frase`);

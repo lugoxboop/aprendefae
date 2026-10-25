@@ -1,10 +1,11 @@
-2026-10-25 04:39 (hora Bogotá)
+2026-10-25 07:10 (hora Bogotá)
+- Orden de ahorro de Miku (25-oct 07:08) pasada a Baki, Katsumi, Hanayama y Shibukawa: terminado. Célula de vuelta a T4 y panel docente, sin animaciones; esperando encargo
 - Panel docente v1: terminado (fusionado #498: lo relevante arriba —Mi clase, Necesitan atención, La actividad que más costó—; las cifras son las mismas que las del panel viejo; sin escrituras nuevas ni cambios de esquema; PASA de Shibukawa)
 - Logitos de Contabilidad T1-T4: terminado (fusionado #519, PASA de Shibukawa y prueba a 32 px de Hanayama con su ajuste al cajón; el acento de T5 y T6 lo tiene la Célula B en #523)
 - T4 Aprender a tipo presentación: terminado (fusionado #488, 6885ab8, y la misma deuda de foco en A3ElArqueo.jsx en #561, 5bd4db1; los dos con PASA de Shibukawa y CI verde)
-- Decoración animada de las tablas de posiciones: terminado en Contabilidad, Macro y el perfil (fusionado #565, 202ab88, PASA de Shibukawa y CI verde). En Estratégico queda apagada hasta la placa de Ukyo (#545); cuando #545 se fusione, Baki quita la línea de decoracionTablas.js y Shibukawa audita Estratégico dentro de la placa
-- Fae con una sola pose («saluda»), por decisión de Ukyo en #567: terminado (fusionado #577, e0b1875, PASA de Shibukawa y CI verde)
-- T4 frente a los cambios de Erwin en SecuenciaAprender (#564, #575, #590): en curso (T4 ya está en producción sobre el componente; Baki recorre A0-A5 en esas ramas a 320 y 375 y deja los números en #590; le pedí a Erwin que espere ese comentario antes de fusionar; si hace falta arreglo, va en el carril de T4)
+- Decoración animada de las tablas: PARADA por orden de Miku (la quitó de main; el componente queda en src/components/decoracion/ sin usar). No se rehace
+- T4 frente a los cambios de Erwin en SecuenciaAprender (#564, #575, #590): terminado (medido por Baki en las 36 pantallas, a 320×568, 320×667 y 375×667: igual que main, con el clic en «Siguiente» 72 de 72, una sola devolución y 0 px montados; números en #590; no hace falta arreglo; la sonda queda en la rama feat/conta-d4-secuencia-compat, scripts/t4/slides/compat-secuencia.mjs)
+- Alcance de B1 (#603): decidido y escrito en enganche.md (db99e55). La marca data-figura en T4 queda cancelada (no se pidió)
 - Hallazgo de la célula: RankingFP a 320 px no muestra ningún nombre (el botón de ánimo deja el apodo en 0 px), en las tres materias: reportado a Erwin como urgente en #556; no lo tocamos, es compartido
 - Textos que faltaban en el panel y arreglos de la vista del estudiante: terminado (fusionado #525, PASA de Shibukawa y 0 toques bajo 44 px)
 - Ajuste del cajón de T4 a 32 px (patas sin tronco central): terminado (fusionado #528, PASA de Hanayama y Shibukawa)

@@ -241,6 +241,31 @@ const CSS_RESALTADO = `
 @media (prefers-reduced-motion: reduce) { .fae-ch-aqui, .fae-ch-aqui-caja { animation: none !important; } }
 `;
 
+/*
+ * EL VOLUMEN DEL NODO (Mateo, 25-oct: «la UI se ve muy plana»).
+ *
+ * El truco es el de Duolingo y no lleva sombra: un disco gemelo CUATRO PÍXELES
+ * MÁS ABAJO, del mismo color pero oscurecido. Sobre nuestro fondo oscuro una
+ * sombra negra no se vería, y un `filter: drop-shadow` sobre decenas de nodos
+ * cuesta en gama baja; un círculo de más no cuesta nada.
+ *
+ * Al pulsar, la cara baja esos 4 px y se come su propia base: el dedo siente
+ * que hundió una ficha. Solo se mueve `transform`, como manda el canon, y con
+ * movimiento reducido el nodo deja de hundirse pero conserva el relieve.
+ */
+/* Los dos tonos de la base: el teal de hecha y el azul del pendiente, oscurecidos. */
+const BASE_HECHA = "#1C6B61";
+const BASE_PENDIENTE = "rgba(5,11,20,0.95)";
+const ALTURA_NODO = 4;
+const CSS_VOLUMEN = `
+.fae-ch-cara { transition: transform 90ms cubic-bezier(.3,.9,.4,1); }
+[data-nodo]:active .fae-ch-cara, [data-nodo][data-hundido] .fae-ch-cara { transform: translateY(${ALTURA_NODO}px); }
+@media (prefers-reduced-motion: reduce) {
+  .fae-ch-cara { transition: none; }
+  [data-nodo]:active .fae-ch-cara { transform: none; }
+}
+`;
+
 /* --------------------------------- el texto --------------------------------- */
 
 /*
@@ -351,6 +376,7 @@ export default function CaminoHacer({ nodos = [], onAbrir, vacio, especial = nul
     return (
       <div ref={caja}>
         <style>{CSS_CAMINO}</style>
+        <style>{CSS_VOLUMEN}</style>
         {especial && <style>{CSS_ESPECIAL}</style>}
         {resaltado && <style>{CSS_RESALTADO}</style>}
         <CaminoPorBloques {...comunes} especial={especial} />
@@ -361,6 +387,7 @@ export default function CaminoHacer({ nodos = [], onAbrir, vacio, especial = nul
   return (
     <div ref={caja}>
       <style>{CSS_CAMINO}</style>
+      <style>{CSS_VOLUMEN}</style>
       {especial && <style>{CSS_ESPECIAL}</style>}
       {resaltado && <style>{CSS_RESALTADO}</style>}
 
@@ -606,7 +633,20 @@ function NodoSvg({ nodo, x, y, m, numero, sugerido, resaltado, marcas, onAbrir, 
         <circle className="fae-ch-aqui" cx={x} cy={y} r={m.radio + 12} fill="none" stroke={FAE.teal} strokeWidth="3" />
       )}
 
+      {/*
+        La base del relieve: el mismo disco, 4 px más abajo y oscurecido. Va
+        ANTES que la cara para quedar debajo, y no recibe el toque.
+      */}
       <circle
+        cx={x}
+        cy={y + ALTURA_NODO}
+        r={m.radio}
+        fill={nodo.completada ? BASE_HECHA : BASE_PENDIENTE}
+        pointerEvents="none"
+      />
+
+      <circle
+        className="fae-ch-cara"
         cx={x}
         cy={y}
         r={m.radio}

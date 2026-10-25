@@ -14,6 +14,7 @@ import { Responder, useTanda } from "../piezas.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";
 import { Encabezado } from "../tema1/encabezado.jsx";
 import { useSegunda, OpcionSegunda, MensajeSegunda, mostrarTramo, pastillasTocadas } from "./segundaDecision.jsx";
+import { Relieve, CSS_RELIEVE, N0, N1, N2, SECUNDARIO_N2, CORAL_SOBRE_N2 } from "./relieve.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -53,10 +54,8 @@ const FORMA_FILA = {
 
 const CSS = `
 .fae-a2-fila { -webkit-tap-highlight-color: transparent; }
-.fae-a2-fila:not([aria-disabled="true"]):active { background: rgba(184,196,212,0.18) !important; }
 .fae-a2-fila:focus-visible, .fae-a2-hecho:focus-visible { outline: 2px solid ${COLOR.neutro}; outline-offset: 2px; }
 @keyframes fae-a2-fundido { from { opacity: 0; } to { opacity: 1; } }
-@keyframes fae-a2-relleno { from { background-color: rgba(184,196,212,0); } }
 @media (prefers-reduced-motion: reduce) { .fae-a2 * { animation: none !important; transition: none !important; } }
 `;
 
@@ -67,10 +66,11 @@ function Visto({ color }) {
     </svg>
   );
 }
+/* Sobre la cara N2 la X va en el coral de texto (#F4A592, el de MismoHecho): el coral pleno da menos de 3:1 contra N2. */
 function Equis() {
   return (
     <svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" style={{ flex: "none" }}>
-      <path d="M5 5 L13 13 M13 5 L5 13" fill="none" stroke={CORAL} strokeWidth="2.2" strokeLinecap="round" />
+      <path d="M5 5 L13 13 M13 5 L5 13" fill="none" stroke={CORAL_SOBRE_N2} strokeWidth="2.2" strokeLinecap="round" />
     </svg>
   );
 }
@@ -82,15 +82,22 @@ function Fila({ marca, estado, onTocar }) {
   const contestado = estado !== "reposo";
   const esCorrecta = estado === "correcta";
   const esEquivocada = estado === "equivocada";
-  const fondo = esCorrecta ? COLOR.neutro : esEquivocada ? "rgba(231,111,81,0.14)" : "transparent";
-  const borde = esCorrecta ? COLOR.neutro : esEquivocada ? CORAL : COLOR.quieto;
-  const texto = esCorrecta ? COLOR.navy : estado === "atenuada" ? COLOR.apagado : COLOR.blanco;
+  /*
+   * Volumen (#4): en reposo y atenuada, N1 en E1 (canto N0); la correcta y la
+   * equivocada, N2 + filo en E2 (canto N1). El acierto y el error no cambian
+   * la elevación: cambian el borde (2 px #F8F9FA o coral).
+   */
+  const arriba = esCorrecta || esEquivocada;
+  const fondo = arriba ? N2 : N1;
+  const borde = esCorrecta ? COLOR.blanco : esEquivocada ? CORAL : "transparent";
+  const texto = estado === "atenuada" ? COLOR.apagado : COLOR.blanco;
   const nombre = esCorrecta ? `${marca.rotulo}, correcta` : esEquivocada ? `${marca.rotulo}, equivocada` : marca.rotulo;
 
   return (
+    <Relieve e={arriba ? 4 : 3} canto={arriba ? N1 : N0} filo={arriba} radio="14px">
     <button
       type="button"
-      className="fae-a2-fila"
+      className="fae-a2-fila fae-rel-cara"
       data-marca={marca.id}
       data-estado={estado}
       aria-label={nombre}
@@ -112,8 +119,6 @@ function Fila({ marca, estado, onTocar }) {
         cursor: contestado ? "default" : "pointer", touchAction: "manipulation",
         background: fondo, border: `2px solid ${borde}`, color: texto,
         fontFamily: INTER, fontSize: "15px", fontWeight: 600, lineHeight: 1.35,
-        animation: esCorrecta ? "fae-a2-relleno 200ms ease-out both" : undefined,
-        transition: "color 200ms ease, border-color 200ms ease",
       }}
     >
       {/* El nodo, sobre el riel: un círculo de 16 px con anillo de 2,5 px. */}
@@ -126,14 +131,15 @@ function Fila({ marca, estado, onTocar }) {
       <span style={{ flex: "1 1 auto", minWidth: 0 }}>
         <span data-rotulo-marca style={{ display: "block" }}>{marca.rotulo}</span>
         {esCorrecta && (
-          <span data-se-causa style={{ display: "block", marginTop: "2px", fontSize: "12.5px", fontWeight: 700, color: COLOR.navy }}>
+          <span data-se-causa style={{ display: "block", marginTop: "2px", fontSize: "12.5px", fontWeight: 700, color: SECUNDARIO_N2 }}>
             {SE_CAUSA_AQUI}
           </span>
         )}
       </span>
-      {esCorrecta && <Visto color={COLOR.navy} />}
+      {esCorrecta && <Visto color={COLOR.blanco} />}
       {esEquivocada && <Equis />}
     </button>
+    </Relieve>
   );
 }
 
@@ -243,6 +249,7 @@ export default function CuandoSeCausa({
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS}</style>
+      <style>{CSS_RELIEVE}</style>
       <div className="fae-a2" data-act2>
         {!modoDemo && (
           <>

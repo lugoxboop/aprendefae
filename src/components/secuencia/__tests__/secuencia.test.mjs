@@ -322,3 +322,25 @@ test("★ #536: la devolución ocupa la banda del apoyo al responder, fuera de l
   assert.equal(m.q("[data-razon]").textContent, "Basado en el libro, p. 42");
   await act(async () => { m.raiz.unmount(); });
 });
+
+test("★ #614: al calificar un Haz la vista baja a la banda; antes de responder, no", async () => {
+  sessionStorage.clear();
+  window.innerWidth = 320;
+  const llamadas = [];
+  const original = w.HTMLElement.prototype.scrollIntoView;
+  w.HTMLElement.prototype.scrollIntoView = function (o) { if (this.matches?.("[data-banda]")) llamadas.push(o); };
+  try {
+    const m = await montar({ temaId: "banda", piezas: [pieza("p1")] });
+    for (let k = 0; k < 4; k++) await m.clic("[data-siguiente]");
+    assert.equal(m.q("[data-tipo]").getAttribute("data-tipo"), "haz");
+    assert.equal(llamadas.length, 0, "bajó antes de responder");
+    await m.clic("[data-opcion='mal']");
+    assert.equal(llamadas.length, 1, "al calificar no bajó a la banda");
+    assert.equal(llamadas[0].block, "nearest");
+    await m.clic("[data-opcion='bien']");
+    assert.equal(llamadas.length, 2);
+    await act(async () => { m.raiz.unmount(); });
+  } finally {
+    w.HTMLElement.prototype.scrollIntoView = original;
+  }
+});

@@ -46,7 +46,7 @@ import { SOLO_LECTOR } from "./verbos.jsx";
  * ═══════════ MOVIMIENTO REDUCIDO: TRES CUADROS ═══════════
  *
  * Sin animación, la demo son tres cuadros fijos —inicio, gesto, resultado—
- * que se pasan con «Siguiente cuadro». En el del gesto la mano se queda quieta
+ * que se pasan con «Ver el cuadro 2» y «Ver el cuadro 3». En el del gesto la mano se queda quieta
  * sobre el punto tocado. «Siguiente» está activo desde el primer cuadro.
  * ═══════════════════════════════════════════════════════════════════════════
  */
@@ -370,7 +370,12 @@ export default function AsiSeJuega({ asi, Mecanica, onSiguiente, escala = 1, tit
   let control;
   if (reducido) {
     control = cuadro < 3
-      ? { texto: "Siguiente cuadro", accion: siguienteCuadro }
+      /*
+       * #542 (Takamura): «Siguiente cuadro» quedaba al lado de «Siguiente» y
+       * los dos empezaban igual; el que pasa de cuadro dice ahora a cuál va.
+       * «Siguiente» no cambia: es el de Mateo.
+       */
+      ? { texto: `Ver el cuadro ${cuadro + 1}`, accion: siguienteCuadro }
       : { texto: "Ver de nuevo", accion: deNuevoCuadros };
   } else if (terminada) {
     control = { texto: "Ver de nuevo", accion: deNuevo };

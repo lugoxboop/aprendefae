@@ -20,6 +20,9 @@ import {
   useMovimientoReducido, SOLO_LECTOR, UMBRAL_ARRASTRE,
 } from "./verbos.jsx";
 import { TONO_ROTULO } from "./debeHaber/piezasDebeHaber.jsx";
+/* Todo lo que se toca mide al menos esto, a lo alto y a lo ancho (Ukyo #585,
+ * lote T2-12). Se gana con alto y relleno, nunca con letra: la letra no cambia. */
+export const TOQUE_MINIMO = 44;
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -56,7 +59,13 @@ import { TONO_ROTULO } from "./debeHaber/piezasDebeHaber.jsx";
  */
 
 /* Alto de una fila y hueco que se abre entre los dos bloques al agrupar. */
-const PASO = 38;
+/*
+ * 48 y no 38: la casilla del debe es un control cuando hay una ficha tomada,
+ * y un control mide al menos 44 de alto (Ukyo #585, lote T2-12). La fila
+ * deja 4 px de aire, que entre casillas de filas vecinas nunca son dos
+ * controles a la vez: solo la fila activa se puede tocar.
+ */
+const PASO = 48;
 const SEPARACION = 16;
 
 const CSS = `
@@ -235,7 +244,7 @@ function Celda({
       onClick={onClick}
       className={rebotando ? "fae-a3-rebota" : undefined}
       aria-label={`Casilla del ${lado === DEBE ? COLUMNAS.debe.toLowerCase() : COLUMNAS.haber.toLowerCase()}`}
-      style={{ ...base, cursor: "pointer" }}
+      style={{ ...base, minHeight: `${TOQUE_MINIMO}px`, cursor: "pointer" }}
     >
       {cuerpo}
     </button>
@@ -536,7 +545,8 @@ export default function CuadroDeDinamicas({
                 </p>
               ) : <div style={{ height: "14px" }} />}
               <div
-                style={{ display: "flex", gap: "10px" }}
+                /* 12 y no 10: la ficha tomada crece un 4 % y no debe quedar a menos de 8 de la otra. */
+                style={{ display: "flex", gap: "12px" }}
                 onKeyDown={(e) => {
                   if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
                   e.preventDefault();
@@ -550,7 +560,7 @@ export default function CuadroDeDinamicas({
                   <div key={s} className={rebotando ? undefined : "fae-a3-pulso"} style={{ flex: "1 1 0" }}>
                     <Ficha
                       valor={1}
-                      alto={40}
+                      alto={TOQUE_MINIMO}
                       lado={s === MAS ? DEBE : HABER}
                       texto={s}
                       color="rgba(248,249,250,0.5)"

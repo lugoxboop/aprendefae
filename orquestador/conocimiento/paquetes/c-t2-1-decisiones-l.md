@@ -216,3 +216,20 @@ Ukyo (#585) barrió las 82 Hacer a 320 con el banco de #583. Seis de las diez co
 - **`cu-asiento-compuesto`:** si a 320 deja de caber con 44 px, no se recorta contenido; Misa trae el alto medido y L decide con Watari.
 - **Lo compartido no se toca:** si una pastilla sale de `piezas.jsx` o `verbos.jsx`, va por issue `miku` a Erwin.
 - **Evidencia:** cifras del banco antes y después en el PR, una prueba por pieza que mire el alto, y auditoría de Mello con esas cifras. `t3-cierre-completo` es de la Célula E.
+
+---
+
+# Lotes T2-12 y T2-13 · decisiones de L (25-oct-2026, 06:50)
+
+**T2-12, fusionado (#595, ea8ce53).** Mello dio PASA en su chat: las seis `cu-` miden ≥ 44 × 44 a 320 y 375, con ≥ 8 px entre blancos y la misma letra. En `cu-asiento-compuesto`, la mesa calificada, la devolución y «Siguiente asiento» caben juntas en 320×568 (D10). Como tiene el repo en solo lectura, L copió el veredicto en #595. «¿Cómo se juega?» (40 px) es de lo compartido y queda para Erwin.
+
+**T2-13, la condición de encendido (#599 sobre #590).** Misa midió figura + banda con la devolución de #590: 298-320 px a 320 y 296-320 a 375, contra 206/253. Ningún estado con error cabe.
+- **Por qué no se puede cumplir:** el 206/253 de Hanayama (#513) era para la figura sola, con una banda de 66 px. La devolución completa (consecuencia, Veredicto y pista o porqué) mide 81-112.
+- **Lo que vale para encender:** el criterio del canon que esa cifra protegía, §4 de `prompts/aprender-secuencia-v1.md` más E2/D10. Con la banda real y el texto más largo de cada Haz:
+  - a 375×667, la pantalla no desplaza;
+  - a 320×568, desplaza como mucho 40 px, y lo que queda fuera es banda o apoyo, nunca la figura ni su primer control;
+  - al responder, el control tocado y la banda se ven juntos.
+- **Antecedente:** Watari lo midió en c-t2-7, sin #590: a 375 no desplaza y a 320 desplaza de 7 a 38 px.
+- **Se avisó a Erwin y Levi en #590.** Es reversible: si Levi encuentra un caso que el criterio deja pasar, va a la tabla.
+- **P2·7:** su `altoFigura` sube al alto medido del estado más alto (200 a 320, 185 a 375), con la regla de c-t2-7. No hace falta Watari.
+- **Si un estado pasa de 40 px a 320:** no se recorta. L lo resuelve con Near, dejando la consecuencia en una línea.
