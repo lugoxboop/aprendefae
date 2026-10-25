@@ -40,7 +40,7 @@
  */
 
 /* ⚑ LA BANDERA. false = producción ve la página vieja, igual que en main. */
-export const T2_APRENDER_EN_SECUENCIA = false;
+export const T2_APRENDER_EN_SECUENCIA = true;
 
 /* El tope de #513/#524: 206 a 320 y 253 a 375. */
 export const TOPE_ALTO_FIGURA = { a320: 206, a375: 253 };
