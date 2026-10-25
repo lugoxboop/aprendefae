@@ -29,7 +29,11 @@ export const PIEZAS = {
   torre: { archivo: "11-torre.svg", elementos: [["path", { d: "M12 9h3v3h3.5V9h3v3H25V9h3v8H12Z M14 17L15.5 30H24.5L26 17 M11 30h18v4H11Z" }]] },
 };
 
-/* Fae (10), tres poses estáticas: sin bucle y sin entrada animada al cambiar de pose. */
+/*
+ * Fae (10), estática y sin bucle. Desde el 25-oct va siempre con «saluda»
+ * (poses.js; Ukyo #567). «celebra» y «mira» quedan aquí como reserva de
+ * Hanayama, sin uso, igual que sus .svg en piezas/.
+ */
 const CUERPO_FAE = [["circle", { cx: 20, cy: 10, r: 6 }], ["rect", { x: 14, y: 19, width: 12, height: 16, rx: 6 }]];
 export const FAE_POSES = {
   saluda: { archivo: "10-fae-saluda.svg", elementos: [...CUERPO_FAE, ["path", { d: "M18 9.5h.01 M22 9.5h.01 M26 23L31 15 M14 24L10 29" }]] },

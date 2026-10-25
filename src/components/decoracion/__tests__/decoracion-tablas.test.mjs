@@ -185,18 +185,23 @@ test("★ las vistas pasan la decoración en las tres materias y en el perfil", 
   assert.match(readFileSync(new URL("../../PerfilView.jsx", import.meta.url), "utf8"), /decoracion=\{decoracionDe\("general"\)\}/);
 });
 
-test("★ las poses de Fae por estado (§2)", () => {
-  assert.deepEqual(estadoRanking({ session: null }), { fae: "saluda", quieta: false });
-  assert.deepEqual(estadoRanking({ session: {}, cargando: true, filas: null }), { fae: null, quieta: true });
-  assert.deepEqual(estadoRanking({ session: {}, error: "x", filas: null }), { fae: null, quieta: true });
-  assert.deepEqual(estadoRanking({ session: {}, filas: [] }), { fae: "mira", quieta: false });
-  assert.deepEqual(estadoRanking({ session: {}, filas: [fila(1, "a")] }), { fae: "saluda", quieta: false });
-  assert.deepEqual(estadoRanking({ session: {}, filas: [fila(3, "a", true)] }), { fae: "celebra", quieta: false });
-  assert.deepEqual(estadoRanking({ session: {}, filas: [fila(127, "a", true)] }), { fae: "mira", quieta: false });
-  assert.deepEqual(estadoLiga({ session: null }), { fae: "saluda", quieta: false });
-  assert.deepEqual(estadoLiga({ session: {}, filas: [] }), { fae: "saluda", quieta: false });
-  assert.deepEqual(estadoLiga({ session: {}, filas: [1], enPodio: true }), { fae: "celebra", quieta: false });
-  assert.deepEqual(estadoLiga({ session: {}, filas: [1], enPodio: false }), { fae: "mira", quieta: false });
-  assert.deepEqual(estadoLiga({ session: {}, filas: [1], enPodio: true, transicion: "reparto" }), { fae: "mira", quieta: false });
+test("★ Fae, una sola pose: «saluda» siempre que va; nunca en la carga, el error ni el ranking bajo la liga (Ukyo #567)", async () => {
+  for (const e of [{ session: null }, { session: {}, filas: [] }, { session: {}, filas: [fila(1, "a")] }, { session: {}, filas: [fila(3, "a", true)] }, { session: {}, filas: [fila(127, "a", true)] }]) {
+    assert.deepEqual(estadoRanking(e), { fae: "saluda", quieta: false }, JSON.stringify(e));
+  }
+  for (const e of [{ session: {}, cargando: true, filas: null }, { session: {}, error: "x", filas: null }]) {
+    assert.deepEqual(estadoRanking(e), { fae: null, quieta: true });
+  }
+  for (const e of [{ session: null }, { session: {}, filas: [] }, { session: {}, filas: [1], enPodio: true }, { session: {}, filas: [1], enPodio: false }, { session: {}, filas: [1], enPodio: true, transicion: "reparto" }]) {
+    assert.deepEqual(estadoLiga(e), { fae: "saluda", quieta: false }, JSON.stringify(e));
+  }
   assert.deepEqual(estadoLiga({ session: {}, cargando: true }), { fae: null, quieta: true });
+  assert.deepEqual(estadoLiga({ session: {}, error: "x" }), { fae: null, quieta: true });
+  /* Montadas: la tabla con datos (tú en el top 3 y fuera de él) dibuja «saluda»; bajo una liga, sin Fae. */
+  for (const filas of [[fila(1, "yo", true), fila(2, "b")], FILAS]) {
+    const m = await montar(h(RankingFP, { subjectId: "contabilidad", titulo: "R", pedir: async () => ({ data: filas, error: null }), decoracion: directa("contabilidad") }));
+    try { assert.deepEqual([...m.caja.querySelectorAll("[data-fae]")].map((x) => x.dataset.fae), ["saluda"]); } finally { m.desmontar(); }
+  }
+  const bajo = await montar(h(RankingFP, { subjectId: "contabilidad", titulo: "R", pedir, decoracion: directa("contabilidad", { bucle: false, fae: false }) }));
+  try { assert.equal(bajo.caja.querySelectorAll("[data-fae]").length, 0); } finally { bajo.desmontar(); }
 });
