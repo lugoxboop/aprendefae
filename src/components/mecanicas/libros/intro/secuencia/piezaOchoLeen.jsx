@@ -5,10 +5,8 @@ import { OCHO_SEC, deFicha } from "../../../../../data/contabilidadT1Secuencia.j
 import { BALANCE } from "../../../../../contabilidad/recorridoDeUnHecho.js";
 import { pesos } from "../../../../../data/contabilidad.js";
 import {
-  MarcoFigura, Escenario, Nota, SORA, INTER, SECUNDARIO, NAVY,
-  PARADA_INICIAL, paradaResuelta, responderParada, estadoEnParada, DevolucionParada,
+  MarcoFigura, Escenario, Nota, SORA, INTER, SECUNDARIO, NAVY, paradaResuelta, figuraFrase,
 } from "./figurasT1.jsx";
-import { estiloC2 } from "../../tema1/registro.jsx";
 import { pick } from "./piezaRecorrido.jsx";
 
 /*
@@ -22,9 +20,9 @@ import { pick } from "./piezaRecorrido.jsx";
  *
  * La frase final es la capa 4 publicada, con la op1 de la auditoría de base.
  * ⛔ Excepción declarada (Mai, medidas §4): las cuatro frases no caben con la
- * reserva de la pieza a 320. Mientras `SecuenciaAprender` no deje cambiar el
- * alto de una pantalla (#558), la lista de frases se desplaza DENTRO de la
- * figura.
+ * reserva de la pieza a 320. Provisional hasta #558: la figura es una franja
+ * de 44 px y las cuatro frases van enteras debajo, en flujo; se desplaza la
+ * pantalla, no la lista (auditoría de Shoko del #559). Ver FiguraFrase.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -77,34 +75,9 @@ const figuraCuatro = (ids) => function FiguraCuatro({ estado, setEstado }) {
   );
 };
 
-/* La capa 4: las cuatro frases publicadas, apiladas (no en fila: son frases). */
-const FRASE = deFicha(ID, 16);
-function FiguraFrase({ estado, setEstado }) {
-  const e = estado ?? PARADA_INICIAL;
-  const correcta = FRASE.opciones.find((o) => o.correcta).id;
-  const estadoDe = estadoEnParada(e, correcta);
-  const resuelta = paradaResuelta(e);
-  const devolucion = (id) => FRASE.opciones.find((o) => o.id === id)?.devolucion?.texto ?? null;
-  const ultima = e.elegidas?.[e.elegidas.length - 1];
-  return (
-    <MarcoFigura>
-      <div data-escenario data-desplaza style={{ flex: 1, minHeight: 0, overflowY: "auto", display: "flex", flexDirection: "column", gap: "6px" }}>
-        {FRASE.opciones.map((o) => (
-          <button key={o.id} type="button" data-frase={o.id} data-estado={estadoDe(o.id)} aria-disabled={resuelta || undefined}
-            onClick={() => !resuelta && setEstado(responderParada(e, o.id, correcta))}
-            style={{
-              minHeight: "44px", padding: "6px 10px", borderRadius: "10px", boxSizing: "border-box", textAlign: "left",
-              fontFamily: INTER, fontSize: "13px", lineHeight: "18px", color: FAE.text, cursor: resuelta ? "default" : "pointer",
-              ...estiloC2(estadoDe(o.id)),
-            }}>
-            {o.texto.texto}
-          </button>
-        ))}
-        <DevolucionParada estado={e} pista={devolucion(ultima)} porqueDe={devolucion} acierto={devolucion(correcta)} />
-      </div>
-    </MarcoFigura>
-  );
-}
+/* La capa 4 (excepción de Mai §4, en figurasT1.jsx): la franja lleva el informe, el modelo en su estado final. */
+export const FICHA_FRASE_OCHO = deFicha(ID, 16);
+const FiguraFrase = figuraFrase(FICHA_FRASE_OCHO, InformeChip);
 
 /* El puente: el informe del paso cuatro, partido en sus dos lados. */
 function FiguraPuente() {

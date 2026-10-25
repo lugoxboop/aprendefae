@@ -180,3 +180,32 @@ test("★★ la secuencia monta las dos piezas y dice «Pieza 1 de 2»", () => {
     assert.equal(caja.querySelector("h2").textContent, A1_SEC.pantallas.prediccion.titular);
   } finally { act(() => raiz.unmount()); caja.remove(); }
 });
+
+/* ═══════════ LA CAPA 4: FRANJA DE 44 Y LAS CUATRO FRASES EN FLUJO (Mai §4; Shoko, #559) ═══════════ */
+const FIG = await import("../figurasT1.jsx");
+
+function capa4SinRecorte(Figura, ficha, nombre) {
+  const m = montar(Figura);
+  try {
+    const raiz = m.caja.querySelector("[data-capa4]");
+    assert.ok(raiz, `${nombre}: la figura no lleva data-capa4`);
+    assert.match(m.caja.querySelector("style").textContent + [...m.caja.querySelectorAll("style")].map((s) => s.textContent).join(""), /:has\(\[data-capa4\]\)\s*\{\s*height:\s*auto !important/);
+    assert.equal(m.caja.querySelector("[data-franja]").style.height, "44px");
+    assert.equal(m.caja.querySelectorAll("[data-frase]").length, ficha.opciones.length);
+    for (const el of m.caja.querySelectorAll("[data-capa4], [data-capa4] *")) {
+      assert.ok(!/auto|scroll|hidden/.test(el.style.overflowY || "") || el.hasAttribute("data-franja"), `${nombre}: algo recorta o desplaza dentro de la figura`);
+    }
+    assert.deepEqual(FIG.sinDevolucion(ficha), [], `${nombre}: opciones sin devolución en la ficha`);
+    /* C2: 1.er error, la devolución de lo tocado; 2.º, la correcta encendida. */
+    const malas = ficha.opciones.filter((o) => !o.correcta);
+    tocar(m.caja.querySelector(`[data-frase="${malas[0].id}"]`));
+    assert.ok(m.caja.querySelector('[data-mensaje="error"]').textContent.includes(malas[0].devolucion.texto));
+    tocar(m.caja.querySelector(`[data-frase="${malas[1].id}"]`));
+    assert.equal(m.caja.querySelector(`[data-frase="${ficha.opciones.find((o) => o.correcta).id}"]`).dataset.estado, "acierto");
+  } finally { m.desmontar(); }
+}
+
+test("★★★ capa 4 de «Ocho leen lo mismo»: franja de 44, cuatro frases enteras, nada se desplaza dentro de la figura", async () => {
+  const { FICHA_FRASE_OCHO } = await import("../piezaOchoLeen.jsx");
+  capa4SinRecorte(pantalla(PIEZA_OCHO_LEEN, "frase").Figura, FICHA_FRASE_OCHO, "ocho");
+});
