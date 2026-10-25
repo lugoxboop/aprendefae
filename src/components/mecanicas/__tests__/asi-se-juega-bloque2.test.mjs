@@ -49,7 +49,7 @@ const {
 } = await import("../../../data/asiSeJuegaBloque2.js");
 const { ASI_SE_JUEGA: ASI_TODAS } = await import("../../../data/asiSeJuega.js");
 const {
-  T1_1, T1_2, T1_5, USUARIOS_T1_1, EMPRESAS, TRANSACCIONES_CAP2, ROTULO_ZONA, ZONA_FUERA, ZONA_DENTRO, CLASES,
+  T1_1, T1_2, T1_5, TORRES_T1_5, USUARIOS_T1_1, EMPRESAS, TRANSACCIONES_CAP2, ROTULO_ZONA, ZONA_FUERA, ZONA_DENTRO, CLASES,
 } = await import("../../../data/contabilidadTema1.js");
 const { evaluarT1_1, evaluarT1_2, evaluarT1_5 } = await import("../../../contabilidad/tema1.js");
 
@@ -94,9 +94,11 @@ const tutorial = (id, usuarioId = "u-prueba") => React.createElement(JuegoConTut
 test("★★ el bloque 2 son T1-1, T1-2 y T1-5, con la consigna de cada actividad y sus tres pasos", () => {
   assert.deepEqual(Object.keys(ASI_SE_JUEGA_BLOQUE2).sort(), [...IDS].sort());
   for (const id of IDS) assert.equal(ASI_TODAS[id], ASI_SE_JUEGA_BLOQUE2[id], `${id} no está en el índice`);
+  /* T1-5 con las torres lleva la consigna nueva de la P2 de Mai (TORRES_T1_5), que es la que pinta la actividad. */
+  const consigna = { [T1_1.id]: T1_1.consigna, [T1_2.id]: T1_2.consigna, [T1_5.id]: TORRES_T1_5.consigna };
   const datos = { [T1_1.id]: T1_1, [T1_2.id]: T1_2, [T1_5.id]: T1_5 };
   for (const id of IDS) {
-    assert.equal(ASI_TODAS[id].consigna, datos[id].consigna, `${id}: la consigna no es la de la actividad`);
+    assert.equal(ASI_TODAS[id].consigna, consigna[id], `${id}: la consigna no es la de la actividad`);
     assert.equal(ASI_TODAS[id].titulo, datos[id].nombre);
   }
   assert.equal(T1_1.consigna, "Lee la pregunta. Luego toca si esa persona está adentro o afuera de la empresa.");
@@ -112,10 +114,10 @@ test("★★ el bloque 2 son T1-1, T1-2 y T1-5, con la consigna de cada activida
     "Mira el cuadro de lo que entra.", "Mira el cuadro de lo que sale.", "Toca la clase de empresa que es.",
   ]);
   assert.deepEqual(ASI_TODAS[T1_5.id].pasos, [
-    "Lee el hecho de la panadería.", "Escribe los tres totales, aunque alguno no cambie.", "Toca Anotar.",
+    "Lee el hecho de la panadería.", "Toca la parte que no se mueve.", "En las otras dos, elige con cuánto quedan. Luego toca Anotar.",
   ]);
   assert.equal(ASI_TODAS[T1_5.id].alt,
-    "la panadería compró un horno a crédito por $200.000. Al empezar tenía $500.000, debía $0 y lo de los dueños era $500.000. Se escriben $700.000 en «Lo que tiene», $200.000 en «Lo que debe» y $500.000 en «Lo que es de los dueños», y se toca «Anotar». El pie dice: «Los dos lados dan igual: $700.000.»");
+    "Escenario simulado. La panadería tiene $500.000 y no debe nada. Lo de los dueños es $500.000. Ellos ponen $187.000 en plata.");
   assert.ok(ASI_TODAS[T1_5.id].guion.duracion <= 10000, "la demo de T1-5 pasa de 10 s");
   assert.equal(ASI_TODAS[T1_5.id].guion.toques.at(-1).texto, "Anotar", "la demo de T1-5 no termina tocando «Anotar»");
   assert.equal(ASI_TODAS[T1_1.id].alt,
@@ -155,12 +157,12 @@ test("★★ los ejemplos se resuelven con la lógica de verdad, con los acierto
   const t2 = evaluarT1_2(EJEMPLO_T1_2, "industrial");
   assert.equal(t2.ok, true);
   assert.equal(t2.texto, "✅ Industrial. Entró harina. Salió pan. No es lo mismo: adentro lo cambiaron.");
-  const t5 = evaluarT1_5(0, { activo: 700000, pasivo: 200000, patrimonio: 500000 }, EJEMPLO_T1_5);
+  const t5 = evaluarT1_5(0, { activo: 687000, pasivo: 0, patrimonio: 687000 }, EJEMPLO_T1_5);
   assert.equal(t5.ok, true);
   /* Y la lógica sigue viendo sus errores con el ejemplo: mover la parte quieta es C. */
-  assert.equal(evaluarT1_5(0, { activo: 700000, pasivo: 0, patrimonio: 700000 }, EJEMPLO_T1_5).patron, "C");
+  assert.equal(evaluarT1_5(0, { activo: 687000, pasivo: 187000, patrimonio: 500000 }, EJEMPLO_T1_5).patron, "C");
   /* Sin ejemplo, el primer hecho del recorrido sigue partiendo de cero. */
-  assert.notEqual(evaluarT1_5(0, { activo: 700000, pasivo: 200000, patrimonio: 500000 }).ok, true);
+  assert.notEqual(evaluarT1_5(0, { activo: 687000, pasivo: 0, patrimonio: 687000 }).ok, true);
 });
 
 /* ═══════════════════ PRIMERA VEZ, SEGUNDA VEZ, Y «¿CÓMO SE JUEGA?» ═══════════════════ */
@@ -179,7 +181,16 @@ for (const id of IDS) {
       const ayuda = dos.caja.querySelector("[data-encabezado] [data-como-se-juega]");
       assert.ok(ayuda, "no está «¿Cómo se juega?» bajo la consigna");
       tocar(ayuda);
-      assert.ok(dos.caja.querySelector(`[data-asi-se-juega="${id}"]`), "«¿Cómo se juega?» no la abrió");
+      if (id === T1_5.id) {
+        /*
+         * T1-5 con las torres usa el encabezado compacto de B (P2 de Mai, §2):
+         * «¿Cómo se juega?» despliega la consigna, como en los Hacer de la célula.
+         */
+        assert.equal(dos.caja.querySelector("[data-como-se-juega-panel]").dataset.comoSeJuegaPanel, "abierto");
+        assert.equal(dos.caja.querySelector("[data-consigna]").textContent, TORRES_T1_5.consigna);
+      } else {
+        assert.ok(dos.caja.querySelector(`[data-asi-se-juega="${id}"]`), "«¿Cómo se juega?» no la abrió");
+      }
     } finally { dos.desmontar(); }
   });
 }
@@ -225,15 +236,14 @@ await esperar(() => caja.querySelector("[data-asj-control]").textContent === "Ve
         assert.ok(escenario().querySelector('[role="status"]').textContent.includes("Entró harina. Salió pan."));
       }
       if (id === T1_5.id) {
-        const valor = (p) => escenario().querySelector(`[data-casilla="${p}"] input`).value;
-        assert.deepEqual([valor("activo"), valor("pasivo"), valor("patrimonio")], ["700.000", "200.000", "500.000"]);
-        assert.equal(escenario().querySelector("[data-pie]").dataset.cuadra, "si");
-        assert.equal(escenario().querySelector("[data-veredicto]").textContent, "Los dos lados dan igual: $700.000.");
-        assert.equal(escenario().querySelector('[data-fila-historial="inicio"]').textContent, "Al empezar: $500.000 = $0 + $500.000");
-        /* Tocó «Anotar»: la fila nueva está en «Lo que llevas». */
-        assert.equal(escenario().querySelector(`[data-fila-historial="${EJEMPLO_T1_5.hecho.id}"]`)?.textContent,
-          "Hecho 1: $700.000 = $200.000 + $500.000");
-        assert.equal(escenario().querySelector("[data-barra]"), null, "T1-5 no tiene barras");
+        /* La mano tocó la parte quieta, los dos totales nuevos y «Anotar»: las dos torres subieron a $687.000. */
+        assert.equal(escenario().querySelector('[data-parte="pasivo"] [data-pastilla]').dataset.pastilla, "correcta");
+        assert.equal(escenario().querySelector('[data-opcion-total="activo:687000"] [data-pastilla]').dataset.pastilla, "correcta");
+        assert.equal(escenario().querySelector('[data-total="izquierda"]').textContent, "$687.000");
+        assert.equal(escenario().querySelector('[data-total="derecha"]').textContent, "$687.000");
+        assert.ok(escenario().querySelector("[data-texto-retro]").textContent.includes("suben a $687.000"), "falta el acierto de Futaba");
+        assert.equal(escenario().querySelector('[data-mensaje]').dataset.mensaje, "acierto");
+        assert.equal(escenario().querySelectorAll("input").length, 0, "T1-5 ya no tiene casillas");
       }
     } finally {
       desmontar();
@@ -254,16 +264,17 @@ test("★★★ en modo demo, responder no llama a onCompletar en ninguna de las
   assert.equal(llamadas, 0);
 });
 
-test("★★ «Pausar» también para la escritura de T1-5, tecla por tecla, y «Seguir» la retoma", async () => {
+test("★★ «Pausar» también para la mano de T1-5 entre toque y toque, y «Seguir» la retoma", async () => {
   const { caja, desmontar } = montar(pantalla(T1_5.id, { escala: 1 }));
   try {
-    const campo = () => caja.querySelector('[data-asj-escenario] [data-casilla="activo"] input');
-    await esperar(() => campo().value.length > 0 && campo().value.length < 7, 4000);
+    const marcada = () => caja.querySelector('[data-asj-escenario] [data-parte="pasivo"] [data-pastilla]');
+    const signo = () => caja.querySelector('[data-asj-escenario] [data-opcion-total="activo:687000"]').getAttribute("aria-pressed");
+    /* Tras el primer toque (la parte quieta) y antes del segundo (el total de lo que tiene). */
+    await esperar(() => marcada(), 4000);
     tocar(caja.querySelector("[data-asj-control]"));
-    const quieto = campo().value;
-    await act(async () => { await new Promise((r) => setTimeout(r, 600)); });
-    assert.equal(campo().value, quieto, "en pausa siguió escribiendo");
+    await act(async () => { await new Promise((r) => setTimeout(r, 2500)); });
+    assert.equal(signo(), "false", "en pausa la mano siguió tocando");
     tocar(caja.querySelector("[data-asj-control]"));
-    await esperar(() => campo().value === "700.000", 3000);
+    await esperar(() => signo() === "true", 4000);
   } finally { desmontar(); }
 });
