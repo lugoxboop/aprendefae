@@ -283,3 +283,42 @@ test("★ #558: Pulsos opcionales, pieza en la misma fila, razón de 48 en lo qu
   assert.equal(m.q("[data-anterior]").style.minWidth, "96px");
   await act(async () => { m.raiz.unmount(); });
 });
+
+test("★ #536: la devolución ocupa la banda del apoyo al responder, fuera de la figura; el cierre pinta su razón", async () => {
+  sessionStorage.clear();
+  const devolucion = (estado) => ({
+    consecuencia: estado.ok ? "La cuenta queda cuadrada." : "La cuenta no cuadra.",
+    pista: "Mira qué lado aumenta.",
+    porque: "El activo aumenta por el debe.",
+  });
+  const pz = { id: "d1", pantallas: [
+    pantalla("a", "apertura"),
+    pantalla("h", "haz", { estadoInicial: S.HAZ_INICIAL, resuelta: S.hazResuelto, razon: "Elige una opción.", apoyo: "Antes de responder.", devolucion }),
+    pantalla("m", "miralo"),
+    pantalla("c", "cierre", { razon: "Basado en el libro, p. 42" }),
+  ] };
+  const m = await montar({ temaId: "devolucion", piezas: [pz] });
+  await m.clic("[data-siguiente]");
+  /* Antes de responder: el apoyo, y ninguna devolución. */
+  assert.equal(m.q("[data-apoyo]").textContent, "Antes de responder.");
+  assert.equal(m.q("[data-devolucion]"), null);
+  await m.clic("[data-opcion='mal']");
+  /* Primer error: la banda pasa a la devolución, con la pista; el apoyo se va (un solo dueño). */
+  const banda = m.q("[data-devolucion]");
+  assert.ok(banda, "la cáscara no pintó la devolución");
+  assert.equal(banda.closest("figure"), null, "la devolución quedó dentro de la figura");
+  assert.equal(m.q("[data-apoyo]"), null, "el apoyo y la devolución comparten la banda a la vez");
+  assert.equal(m.q("[data-consecuencia]").textContent, "La cuenta no cuadra.");
+  assert.equal(banda.querySelector("[data-mensaje]").dataset.mensaje, "error");
+  assert.match(banda.textContent, /Mira qué lado aumenta\./);
+  assert.equal(m.q("figure [data-mensaje]"), null, "hay un segundo veredicto dentro de la figura");
+  /* Segundo error: el porqué. */
+  await m.clic("[data-opcion='mal']");
+  assert.match(m.q("[data-devolucion]").textContent, /El activo aumenta por el debe\./);
+  await m.clic("[data-siguiente]");
+  await m.clic("[data-siguiente]");
+  /* El cierre nunca espera, y aun así su razón (el pie de fuente) se ve. */
+  assert.equal(m.q("[data-tipo]").getAttribute("data-tipo"), "cierre");
+  assert.equal(m.q("[data-razon]").textContent, "Basado en el libro, p. 42");
+  await act(async () => { m.raiz.unmount(); });
+});

@@ -329,13 +329,31 @@ export default function SecuenciaAprender({ temaId, piezas, final = "tema", onFi
   };
   const primeraPantalla = !puedeRetroceder(estado);
   const textoSiguiente = literalSiguiente(estado, piezas, final);
+  /*
+   * La razón. En un cierre, que nunca espera, la zona es la del pie de fuente
+   * (§16 b del contrato): `pie`, o la `razon` del cierre (#536, Mello: antes
+   * solo se pintaba esperando, así que el pie de los cierres no salía en
+   * ninguna célula).
+   */
   const razon = espera
     ? pantalla.razon
     : totalPasos > 0 && dados < totalPasos
       ? `Paso ${dados + 1} de ${totalPasos}`
-      : pantalla.pie ?? null;
+      : pantalla.pie ?? (pantalla.tipo === "cierre" ? pantalla.razon ?? null : null);
   /* El apoyo puede ser uno por paso (#558, cambio 6 de Mai): una sola zona que cambia al dar el paso. */
-  const apoyo = Array.isArray(pantalla.apoyo) ? pantalla.apoyo[Math.min(dados, pantalla.apoyo.length - 1)] : pantalla.apoyo;
+  const apoyoDelPaso = Array.isArray(pantalla.apoyo) ? pantalla.apoyo[Math.min(dados, pantalla.apoyo.length - 1)] : pantalla.apoyo;
+  /*
+   * LA BANDA BAJO LA FIGURA TIENE UN SOLO DUEÑO A LA VEZ (#536, Watari; la
+   * cuenta de Hanayama en #513 §1-§2): el apoyo antes de responder y la
+   * devolución después. Una pantalla que declara `devolucion(estado)` recibe
+   * aquí, en el sitio del apoyo y fuera de la figura, la línea de consecuencia
+   * y el Veredicto pintado por la cáscara. Así la figura mide solo su modelo y
+   * sus controles, y `altoFigura` no tiene que sumar la devolución.
+   */
+  const devolucion = typeof pantalla.devolucion === "function" && propsFigura.estado?.ultimo
+    ? pantalla.devolucion(propsFigura.estado) ?? null
+    : null;
+  const apoyo = devolucion ? null : apoyoDelPaso;
   /* Lo que bloquea (un Haz, o una apertura que predice) reserva 48 px de razón: la pista de 20 palabras son 3 renglones a 320 (#558). */
   const reservaRazon = pantalla.tipo === "haz" || typeof pantalla.resuelta === "function" ? "48px" : "16px";
   /* El alto de la figura: el de la pantalla si lo declara, si no el de la pieza. Mismo tope. */
@@ -432,6 +450,16 @@ export default function SecuenciaAprender({ temaId, piezas, final = "tema", onFi
             )}
 
             <div className={g(3)}>
+              {devolucion && (
+                <div data-devolucion style={{ margin: "12px 0 0" }}>
+                  {devolucion.consecuencia && (
+                    <p data-consecuencia style={{ margin: 0, fontFamily: "Inter, sans-serif", fontSize: "14px", lineHeight: "22px", color: "#F8F9FA" }}>
+                      {devolucion.consecuencia}
+                    </p>
+                  )}
+                  <Veredicto estado={propsFigura.estado} pista={devolucion.pista} porque={devolucion.porque} />
+                </div>
+              )}
               {apoyo && (
                 <p data-apoyo style={{ margin: "12px 0 0", fontFamily: "Inter, sans-serif", fontSize: "14px", lineHeight: "22px", color: "rgba(248,249,250,0.8)" }}>
                   {apoyo}
