@@ -19,15 +19,24 @@ import Avatar, { TAMANOS } from "../avatar/Avatar.jsx";
  * un acento de marca en los tres primeros.
  */
 
+/*
+ * «Semestre» y no «De semestre» (#556): a 320 las tres pestañas medían 262 px
+ * en un hueco de 238 y «De semestre» se partía en dos renglones. El periodo es
+ * el mismo; solo cambia la palabra que no cabía.
+ */
 const PERIODOS = [
   { id: "diario", etiqueta: "Diario" },
   { id: "semanal", etiqueta: "Semanal" },
-  { id: "semestre", etiqueta: "De semestre" },
+  { id: "semestre", etiqueta: "Semestre" },
 ];
 
-/* Acento decreciente para el podio; del cuarto en adelante, número a secas. */
+/*
+ * Acento decreciente para el podio; del cuarto en adelante, número a secas.
+ * El primero va en ámbar, no en coral (#546): coral es SOLO error en el kit, y
+ * aquí marcaba al que va ganando. El oro es la lectura universal de un podio.
+ */
 const ACENTO_PODIO = [
-  { fondo: "rgba(231,111,81,0.18)", borde: FAE.coral, texto: FAE.coral },
+  { fondo: "rgba(233,196,106,0.18)", borde: FAE.ambar, texto: FAE.ambar },
   { fondo: "rgba(42,157,143,0.18)", borde: FAE.teal, texto: FAE.teal },
   { fondo: "rgba(42,157,143,0.10)", borde: "rgba(42,157,143,0.5)", texto: "rgba(42,157,143,0.85)" },
 ];
@@ -59,14 +68,30 @@ function Posicion({ n }) {
   );
 }
 
+/*
+ * ═══════════ LA FILA (#556 y #546) ═══════════
+ *
+ * Antes iba todo en una sola línea: puesto, avatar, apodo, botón de ánimo y FP.
+ * A 320 px el botón dejaba el apodo en 0 px de ancho —el ranking enseñaba
+ * puestos sin nombres— y a 375 lo cortaba con «…». Un nombre es lo que
+ * identifica a la persona en su fila: no se corta.
+ *
+ * Ahora la fila tiene dos renglones dentro de su columna de texto:
+ *   1. el apodo, con todo el ancho que queda tras el puesto y el avatar, y que
+ *      puede partirse en dos renglones antes que cortarse;
+ *   2. el ánimo a la izquierda y los FP a la derecha.
+ * Así el ancho del apodo ya no depende de cuánto mida el botón ni la cifra.
+ */
 function Fila({ entrada, destacada, animo }) {
+  const conAnimo = !destacada && animo;
   return (
     <div
+      data-fila-ranking
       style={{
         display: "flex",
         alignItems: "center",
-        gap: "12px",
-        padding: "10px 12px",
+        gap: "10px",
+        padding: "8px 10px",
         borderRadius: "12px",
         background: destacada ? "rgba(42,157,143,0.10)" : "transparent",
         border: destacada ? `1px solid ${FAE.teal}` : "1px solid transparent",
@@ -79,37 +104,40 @@ function Fila({ entrada, destacada, animo }) {
         lo hace el generador: aquí solo se dice el tamaño.
       */}
       <Avatar perfil={entrada} tamano={TAMANOS.ranking} style={{ flexShrink: 0 }} />
-      <span
-        style={{
-          flex: 1,
-          minWidth: 0,
-          fontSize: "14.5px",
-          color: FAE.text,
-          fontWeight: destacada ? 600 : 400,
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-        }}
-      >
-        {entrada.nickname}
-        {destacada && <span style={{ color: FAE.teal, fontWeight: 400 }}> · tú</span>}
-      </span>
-      {/* Nunca en la fila propia: no se puede dar ánimo a uno mismo. */}
-      {!destacada && animo && (
-        <BotonAnimo apodo={entrada.nickname} recibidos={animo.recibidos} yaLeDi={animo.yaLeDi} />
-      )}
-      <span
-        style={{
-          fontFamily: "Sora, sans-serif",
-          fontSize: "13.5px",
-          fontWeight: 600,
-          fontVariantNumeric: "tabular-nums",
-          color: destacada ? FAE.text : "rgba(248,249,250,0.75)",
-          whiteSpace: "nowrap",
-        }}
-      >
-        {entrada.fp} FP
-      </span>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <span
+          data-apodo
+          style={{
+            display: "block",
+            fontSize: "14.5px",
+            lineHeight: 1.3,
+            color: FAE.text,
+            fontWeight: destacada ? 600 : 400,
+            /* Se parte antes que cortarse; nunca «…». */
+            overflowWrap: "anywhere",
+          }}
+        >
+          {entrada.nickname}
+          {destacada && <span style={{ color: FAE.teal, fontWeight: 400 }}> · tú</span>}
+        </span>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: conAnimo ? "space-between" : "flex-end", gap: "8px", marginTop: "2px" }}>
+          {/* Nunca en la fila propia: no se puede dar ánimo a uno mismo. */}
+          {conAnimo && <BotonAnimo apodo={entrada.nickname} recibidos={animo.recibidos} yaLeDi={animo.yaLeDi} />}
+          <span
+            data-fp
+            style={{
+              fontFamily: "Sora, sans-serif",
+              fontSize: "13.5px",
+              fontWeight: 600,
+              fontVariantNumeric: "tabular-nums",
+              color: destacada ? FAE.text : "rgba(248,249,250,0.75)",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {entrada.fp} FP
+          </span>
+        </div>
+      </div>
     </div>
   );
 }
@@ -177,7 +205,8 @@ export default function RankingFP({ subjectId = null, titulo = "Ranking", nota, 
         role="group"
         aria-label="Periodo del ranking"
         style={{
-          display: "inline-flex", gap: "4px", padding: "4px", borderRadius: "999px",
+          /* Cabe a 320 (#556): las tres pestañas reparten el ancho y ninguna se parte. */
+          display: "flex", gap: "4px", padding: "4px", borderRadius: "999px", maxWidth: "100%", boxSizing: "border-box",
           background: "rgba(248,249,250,0.05)", border: "1px solid rgba(248,249,250,0.12)",
           marginBottom: "16px",
         }}
@@ -192,7 +221,8 @@ export default function RankingFP({ subjectId = null, titulo = "Ranking", nota, 
               aria-pressed={activo}
               style={{
                 fontFamily: "Sora, sans-serif", fontSize: "12.5px", fontWeight: 600,
-                padding: "7px 15px", borderRadius: "999px", border: "none", cursor: "pointer",
+                padding: "7px 10px", borderRadius: "999px", border: "none", cursor: "pointer",
+                flex: "1 1 auto", whiteSpace: "nowrap",
                 /*
                  * 44 px, y la medida que lo destapó: a 375 estos tres medían
                  * 33 de alto. A 320 daban 52 y parecían bien, pero era porque
