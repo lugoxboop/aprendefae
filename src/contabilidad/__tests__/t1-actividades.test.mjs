@@ -532,6 +532,8 @@ test("★★★ T1-1: la decisión 2 en 2×2, reservada desde el principio, y no
       assert.equal(caja.querySelector(`[data-en-juego-opcion="${correcta}"]`).dataset.estado, "acierto");
       assert.equal(mala.dataset.estado, "fantasma");
       assert.ok(caja.querySelector("[data-en-juego]"), "lo que se juega no queda escrito en la ficha");
+      /* Con la mala elegida, el chip dice la correcta, no la errada (Shoko, #535 b). */
+      assert.equal(caja.querySelector("[data-en-juego]").dataset.enJuego, correcta);
       tocar([...caja.querySelectorAll("button")].find((b) => /Siguiente pregunta|Ver el resultado/.test(b.textContent)));
     }
     assert.equal(recibido, 100, "la decisión 2 cambió el puntaje");

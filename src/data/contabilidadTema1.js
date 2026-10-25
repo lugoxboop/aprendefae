@@ -626,6 +626,18 @@ export const ERROR_T1_6 = {
   C2: "El informe es el correcto. Ahora pregúntate: ¿eso entró a la empresa en el año, o es algo que gastó?",
 };
 
+/*
+ * ═══════════ EL SITIO DE LA DEVOLUCIÓN POR FAMILIA (Shoko, #535 b) ═══════════
+ *
+ * La C de arriba sirve igual para las dieciséis fichas y no dice por qué: es
+ * el mensaje genérico contra el que advierte el Kit. Futaba escribe una
+ * devolución por familia de ficha (lote E). Cuando llegue va aquí, con la
+ * llave `familia` → patrón («C» o «C2») → texto, y cada ficha de CONCEPTOS
+ * lleva su `familia`. Mientras una ficha no tenga la suya, sale la de
+ * ERROR_T1_6 de siempre (evaluarT1_6). No cambia el puntaje.
+ */
+export const DEVOLUCION_POR_FAMILIA_T1_6 = {};
+
 export const ACIERTO_T1_6 = {
   "c6-01": "✅ Va en el estado de situación financiera, en el activo. Una patente no se toca, pero es de la empresa y vale.",
   "c6-02": "✅ Va en el estado de resultados, en ingresos. No es algo que la empresa tenga: es lo que vendió durante el año.",
@@ -696,16 +708,18 @@ export const INFORMES_T1_7 = [
  */
 export const LINEAS = [
   /* El informe al que llegan todas. No sale ninguna flecha de aquí. */
+  /*
+   * Gráfico 2.6 (p. 66): la flecha del estado de resultados llega a la llave de
+   * activos y pasivos, no a una línea. Esta pieza es esa llave. El id se
+   * conserva desde la versión con «Utilidad del ejercicio» (Futaba, ficha del
+   * capítulo 1, §10). Va arriba del bloque, como rótulo de la llave que abarca
+   * las demás líneas, y se toca como cualquier otra.
+   */
+  { id: "l-utilidad-balance", informe: PRIMERO, nombre: "Activos y pasivos, en bloque", llave: true },
   { id: "l-caja", informe: PRIMERO, nombre: "Efectivo" },
   { id: "l-cobrar-pagar", informe: PRIMERO, nombre: "Cuentas por cobrar y cuentas por pagar" },
   { id: "l-propiedad", informe: PRIMERO, nombre: "Propiedad, planta y equipo" },
   { id: "l-aportes", informe: PRIMERO, nombre: "Aportes de los dueños" },
-  /*
-   * Adaptación del Gráfico 2.6: el libro agrupa la utilidad dentro del
-   * patrimonio. Aquí va como línea propia porque es el destino de la conexión 1
-   * (f1, desde «Utilidad neta»), y por eso se puede tocar como cualquier otra.
-   */
-  { id: "l-utilidad-balance", informe: PRIMERO, nombre: "Utilidad del ejercicio" },
   /* Lo que vendió y lo que gastó durante el año. */
   { id: "l-utilidad-neta", informe: SEGUNDO, nombre: "Utilidad neta" },
   /* De dónde entró y salió la plata. */
@@ -738,7 +752,8 @@ export const ERROR_T1_7 = {
 };
 
 export const ACIERTO_T1_7 = {
-  f1: "✅ El informe de lo que vendió y gastó le pasa su resultado al otro. Lo que la empresa ganó o perdió cambia cómo queda al final.",
+  /* Futaba, ficha del capítulo 1, §10: f1 llega en bloque (Gráfico 2.6, p. 66). El ✅ lo quita sinEmoji al pintar, como en las otras cuatro. */
+  f1: "✅ Lo que vendió y gastó en el año llega en bloque: cambia cómo quedan los activos y los pasivos.",
   f2: "✅ La plata que queda al final es la misma que aparece en el otro informe. No son dos cifras parecidas: es la misma.",
   f3: "✅ El movimiento del día a día explica lo que le deben y lo que debe. Lo que cobró y lo que pagó deja rastro ahí.",
   f4: "✅ Lo que compró o vendió de sus cosas grandes explica esa línea.",
