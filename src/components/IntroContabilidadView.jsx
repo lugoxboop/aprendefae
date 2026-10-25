@@ -22,6 +22,9 @@ import LaEcuacionEnMovimiento from "./mecanicas/libros/tema1/LaEcuacionEnMovimie
 import EnCualEstadoAparece from "./mecanicas/libros/tema1/EnCualEstadoAparece.jsx";
 import LaArticulacion from "./mecanicas/libros/tema1/LaArticulacion.jsx";
 import DondeSeRompio from "./mecanicas/libros/tema1/DondeSeRompio.jsx";
+import UnDiaOUnAno from "./mecanicas/libros/tema1/UnDiaOUnAno.jsx";
+import QuienPreguntaEsto from "./mecanicas/libros/tema1/QuienPreguntaEsto.jsx";
+import { H1, H2 } from "../data/contabilidadT1Hacer2.js";
 import { T1_1, T1_2, T1_4, T1_5, T1_6, T1_7, T1_8 } from "../data/contabilidadTema1.js";
 import CuatroCapas from "./mecanicas/maquinas/CuatroCapas.jsx";
 import { PIEZAS_INTRO } from "../data/contabilidadPiezas234.js";
@@ -73,9 +76,16 @@ export const TITULO = "Introducción a la contabilidad";
 export const JUEGOS = [
   { id: T1_1.id, Mecanica: DesdeDondePreguntan, titulo: T1_1.subtema },
   { id: T1_2.id, Mecanica: QueEntroYQueSalio, titulo: T1_2.subtema },
+  /*
+   * Lote 5: H2 y H1 son de dificultad media, así que van en Aplicación, que es
+   * de donde el camino saca su bloque. H2 lo abre (después de las dos de
+   * Cimientos: pregunta quién, tras «desde dónde»); H1 va tras T1-4.
+   */
+  { id: H2.id, Mecanica: QuienPreguntaEsto, titulo: H2.subtema },
   /* T1-8 va tercera: practica la pieza 1, así que no esperó a las otras tres. */
   { id: T1_8.id, Mecanica: DondeSeRompio, titulo: T1_8.subtema },
   { id: T1_4.id, Mecanica: QueLePasaACadaUno, titulo: T1_4.subtema },
+  { id: H1.id, Mecanica: UnDiaOUnAno, titulo: H1.subtema },
   { id: T1_5.id, Mecanica: LaEcuacionEnMovimiento, titulo: T1_5.subtema },
   { id: T1_6.id, Mecanica: EnCualEstadoAparece, titulo: T1_6.subtema },
   { id: T1_7.id, Mecanica: LaArticulacion, titulo: T1_7.subtema },

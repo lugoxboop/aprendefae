@@ -282,7 +282,13 @@ test("★★ solo las que tienen «Así se juega» llevan «¿Cómo se juega?»:
     try {
       const tiene = Boolean(ASI_TODAS[j.id]);
       assert.equal(Boolean(caja.querySelector("[data-asi-se-juega]")), tiene, `${j.id}`);
-      assert.equal(Boolean(caja.querySelector("[data-como-se-juega]")), tiene, `${j.id}`);
+      /*
+       * Con el encabezado compacto de B (lote 4 y 5), «¿Cómo se juega?» no lleva
+       * a la demo: despliega la consigna, así que está aunque no haya demo.
+       */
+      if (!caja.querySelector("[data-encabezado-compacto]")) {
+        assert.equal(Boolean(caja.querySelector("[data-como-se-juega]")), tiene, `${j.id}`);
+      }
     } finally { desmontar(); }
   }
 });
