@@ -23,6 +23,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "../../src/styles/global.css";
+import { AuthContext } from "../../src/auth/AuthProvider.jsx";
 import { MarcoLibros } from "../../src/components/mecanicas/bloques/marcos.jsx";
 import { FAE } from "../../src/theme.js";
 
@@ -37,6 +38,17 @@ window.__CATALOGO = [...CATALOGO.entries()].map(([id, j]) => ({ id, vista: j.vis
 
 const { default: JuegoConTutorial } = await import("../../src/components/mecanicas/libros/JuegoConTutorial.jsx")
   .catch(() => ({ default: null }));
+
+/*
+ * Cuatro piezas usan `useAuth` y reventaban aquí con «debe usarse dentro de
+ * <AuthProvider>». No es un fallo suyo: era del banco. Se les da una sesión de
+ * mentira, como hace el banco del ranking.
+ */
+const SESION_FALSA = {
+  session: { user: { id: "u-banco" } },
+  perfil: { nickname: "Banco", avatar_shape: "nucleo", avatar_palette: "marea", avatar_level: 2 },
+  pedirCuenta: () => {},
+};
 
 const [id, consulta = ""] = decodeURIComponent(location.hash.slice(1)).split("?");
 const juego = CATALOGO.get(id);
@@ -57,6 +69,7 @@ if (!juego) {
   const Pieza = juego.Mecanica;
   raiz.render(
     <StrictMode>
+      <AuthContext.Provider value={SESION_FALSA}>
       <div data-pieza={id} style={{ padding: "16px" }}>
         {/*
           Marco, rotulo y acento los pone la vista real; sin ellos la mecánica
@@ -69,6 +82,7 @@ if (!juego) {
           <Pieza Marco={MarcoLibros} rotulo="BANCO" titulo={juego.titulo ?? id} acento={FAE.teal} onCompletar={() => {}} />
         )}
       </div>
+      </AuthContext.Provider>
     </StrictMode>
   );
 }

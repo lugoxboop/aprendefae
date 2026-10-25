@@ -37,6 +37,7 @@ const args = process.argv.slice(2);
 const sueltos = args.filter((a, i) => !a.startsWith("--") && !(args[i - 1] === "--ancho"));
 const id = sueltos[0] ?? "";
 const lista = args.includes("--lista");
+const todas = args.includes("--todas");
 const foto = args.includes("--foto");
 const iAncho = args.findIndex((a) => a === "--ancho" || a.startsWith("--ancho="));
 const unAncho = iAncho < 0 ? NaN : Number(args[iAncho].includes("=") ? args[iAncho].split("=")[1] : args[iAncho + 1]);
@@ -64,7 +65,7 @@ const BANCO = `http://127.0.0.1:${servidor.httpServer.address().port}/scripts/ba
 
 const navegador = await chromium.launch();
 
-if (lista || !id) {
+if (lista || (!id && !todas)) {
   const pg = await (await navegador.newContext({ viewport: { width: 375, height: 667 } })).newPage();
   await pg.goto(BANCO, { waitUntil: "networkidle" });
   const catalogo = await pg.evaluate(() => window.__CATALOGO ?? []);
@@ -78,13 +79,22 @@ const medir = () => {
   const raiz = document.querySelector("[data-pieza]") ?? document.body;
   const visible = (e) => e.getBoundingClientRect().width > 0 && e.getBoundingClientRect().height > 0;
   const toque = [...raiz.querySelectorAll('button, [role="button"], a[href], input, select')]
-    .filter(visible)
+    .filter((e) => visible(e) && !e.disabled && getComputedStyle(e).pointerEvents !== "none")
     .map((e) => ({ q: (e.textContent || e.getAttribute("aria-label") || e.tagName).trim().slice(0, 26), h: Math.round(e.getBoundingClientRect().height), w: Math.round(e.getBoundingClientRect().width) }))
     .filter((t) => t.h < 44);
+  /*
+   * El filtro lo paga quien mide, no quien arregla (herramientas.md). Fuera:
+   *   · lo que está `aria-hidden`, que no es texto que nadie lea;
+   *   · lo que no tiene ni una letra ni un dígito —▲ ↑ · — y son glifos, no texto;
+   *   · 10,5 px exacto, que es la excepción de cejilla que el canon ya tiene.
+   * Sin esto el banco denuncia flechas de 10 px y hace perder la tarde.
+   */
+  const oculto = (e) => e.closest('[aria-hidden="true"]') !== null;
   const chico = [...raiz.querySelectorAll("*")]
-    .filter((e) => e.children.length === 0 && e.textContent.trim() && visible(e))
+    .filter((e) => e.children.length === 0 && e.textContent.trim() && visible(e) && !oculto(e))
+    .filter((e) => /[\p{L}\p{N}]/u.test(e.textContent))
     .map((e) => ({ q: e.textContent.trim().slice(0, 26), px: parseFloat(getComputedStyle(e).fontSize) }))
-    .filter((t) => t.px < 12);
+    .filter((t) => t.px < 12 && t.px !== 10.5);
   const cortados = [...raiz.querySelectorAll("*")]
     .filter((e) => getComputedStyle(e).textOverflow === "ellipsis" && e.scrollWidth > e.clientWidth + 1)
     .map((e) => e.textContent.trim().slice(0, 26));
@@ -94,6 +104,44 @@ const medir = () => {
     toque, chico, cortados,
   };
 };
+
+/* `--todas`: todo el catálogo de una pasada, con un solo vite y un solo Chromium. */
+if (todas) {
+  const [w, h] = ANCHOS[0];
+  const ctx = await navegador.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: 1 });
+  const pg0 = await ctx.newPage();
+  await pg0.goto(BANCO, { waitUntil: "networkidle" });
+  const catalogo = await pg0.evaluate(() => window.__CATALOGO ?? []);
+  await pg0.close();
+  console.log(`${catalogo.length} piezas a ${w} px. Solo se imprime lo que tiene algo.\n`);
+  let limpias = 0;
+  for (const j of catalogo) {
+    const pg = await ctx.newPage();
+    const fallos = [];
+    pg.on("pageerror", (e) => fallos.push(String(e).slice(0, 120)));
+    try {
+      await pg.goto(`${BANCO}#${encodeURIComponent(j.id)}`, { waitUntil: "networkidle", timeout: 20000 });
+      await pg.waitForTimeout(700);
+      await pg.evaluate(() => document.fonts.ready);
+      const r = await pg.evaluate(medir);
+      const avisos = [];
+      if (r.alto === 0) avisos.push("NO PINTA NADA");
+      if (r.desborde) avisos.push("desborde horizontal");
+      for (const t of r.toque) avisos.push(`toque ${t.h}px «${t.q}»`);
+      for (const t of r.chico) avisos.push(`texto ${t.px}px «${t.q}»`);
+      if (r.cortados.length) avisos.push(`cortados: ${r.cortados.join(", ")}`);
+      if (fallos.length) avisos.push(`error: ${fallos[0]}`);
+      if (avisos.length) console.log(`${j.id.padEnd(32)} ${String(r.alto).padStart(4)} px · ${avisos.join(" · ")}`);
+      else limpias++;
+    } catch (e) {
+      console.log(`${j.id.padEnd(32)}    — · no se pudo abrir: ${String(e).slice(0, 80)}`);
+    }
+    await pg.close();
+  }
+  console.log(`\nSin reproches: ${limpias} de ${catalogo.length}.`);
+  await navegador.close(); await servidor.close();
+  process.exit(0);
+}
 
 for (const [w, h] of ANCHOS) {
   const ctx = await navegador.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: 1 });
