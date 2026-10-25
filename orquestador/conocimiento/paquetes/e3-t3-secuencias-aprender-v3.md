@@ -26,6 +26,7 @@
 | D2 | Las 5 cuentas de P5-2 son las de Miyata. Entra Alquiler por pagar en lugar de Gasto salarios. | Takamura |
 | D3 | La pista del primer error reemplaza al apoyo. En el intento siguiente la pista se retira y vuelve el apoyo. Después de un error: un reintento y luego el estado correcto. | Takamura |
 | C4 | **Ippo monta contra la columna «Pantalla» / «Texto clave»** de la tabla de correspondencia (§4), no contra el número de Miyata ni contra el de Itagaki. | Takamura |
+| C7 | **Las claves de las cuentas candidatas se nombran por contenido** (`CUENTAS_ASIENTO_P3_SANCALIXTO`, `_P3_SANMIGUEL`, `_P4_JUNIO`, `_P4_COSTA`), sin número, porque `CUENTAS_P4_6` y `OPC_P4_6` apuntaban a pantallas distintas. En `e3-t3-secuencias-textos-v3.md` §1 conservan el nombre viejo: es el mismo contenido. | Takamura (lote 13) |
 | C6 | ⛔ **Antes de montar, Ippo mide a 320 una pista compacta con la marca de 10 px.** Si no se distingue, la marca sube a 12, cada pista a 30 y el reparto de la figura se recalcula. Si pasa eso, para y avisa en el PR. | Itagaki y Takamura |
 | P5-2 | Como máximo 5 pasos, porque `MAX_PASOS = 5`. | Kamogawa |
 
@@ -60,7 +61,7 @@
 2. En la fila de control, ‹ › recorre las cuentas candidatas.
 3. Tocar el centro pone esa cuenta en la casilla activa.
 4. Las candidatas son CUENTAS_{pantalla}, 4 por asiento como máximo, todas con nombre publicado.
-5. **Las candidatas son CUENTAS_P3_5, CUENTAS_P3_7, CUENTAS_P4_6 y CUENTAS_P4_9**, con su error por cuenta y uno de «al revés» por par. Están en `e3-t3-secuencias-textos-v3.md` §1.
+5. **Las candidatas son CUENTAS_ASIENTO_P3_SANCALIXTO, CUENTAS_ASIENTO_P3_SANMIGUEL, CUENTAS_ASIENTO_P4_JUNIO y CUENTAS_ASIENTO_P4_COSTA**, con su error por cuenta y uno de «al revés» por par. Están en `e3-t3-secuencias-textos-v3.md` §1.
 
 ## 2 · P1, P3 y P4: la secuencia (v2 de Itagaki, con la v3 aplicada)
 
@@ -99,9 +100,9 @@
 | 2 | Haz | ¿Cuántos días? | Sin marcas mientras elige. **Al acertar, caen las 5 marcas de gasto sobre el 27, 28, 29, 30 y 31** (200 ms cada una, con 80 ms de desfase), y el gasto llega a $2.500. Con el segundo error caen igual, ya en el estado correcto. | 3 botones · OPC_P3_1 |
 | 3 | Haz | ¿La caja se mueve? | La caja queda quieta y aparece «Se causa» | 2 botones · OPC_SI_NO |
 | 4 | Haz | Pon el corte | Aparecen «Cierre del mes» y el corchete «Retardo» | ‹ › |
-| 5 | Haz | Asiento de San Calixto | Aparece «Ajuste» | O1 compacto en el modelo · ‹ cuenta › con CUENTAS_P3_5 |
+| 5 | Haz | Asiento de San Calixto | Aparece «Ajuste» | O1 compacto en el modelo · ‹ cuenta › con CUENTAS_ASIENTO_P3_SANCALIXTO |
 | 6 | Haz | ¿Ingreso o gasto para San Miguel? | El modelo cambia a la otra empresa | 2 botones · OPC_P3_5 |
-| 7 | Haz, **4 pasos** | Su asiento, y luego las citas | Aparece «Acumulado». Las citas de las pp. 139 y 141 (unos 330 caracteres) van en el apoyo, en 3 pasos de 4 líneas o menos, después de SEGMENTOS_P3[7]. | O1 compacto · ‹ cuenta › con CUENTAS_P3_7 |
+| 7 | Haz, **3 pasos** | Su asiento, y luego las citas | Aparece «Acumulado». **Pasos 2 y 3: una cita por paso, en la tarjeta de cita** (ver «Citas del libro» en §3): la de la p. 139 y luego la de la p. 141. | O1 compacto · ‹ cuenta › con CUENTAS_ASIENTO_P3_SANMIGUEL |
 | 8 | Cierre | — | CIERRE_P3 | vacía |
 
 Todos los textos de P3 caben en 4 líneas ✓.
@@ -123,10 +124,10 @@ Todos los textos de P3 caben en 4 líneas ✓.
 | 3 | Haz | ¿Ya hubo gasto? | Arriba queda quieta | OPC_SI_NO |
 | 4 | Haz | ¿Tiene, debe o gasto? | Aparecen el bloque y «Pagado por anticipado» | 3 botones · OPC_P4_3 |
 | 5 | Haz | El corte de junio | Una ficha se consume | ‹ › |
-| 6 | Haz | Arma el asiento | — | O1 compacto (en esta pantalla reemplaza a las pistas) · ‹ cuenta › con CUENTAS_P4_6 |
+| 6 | Haz | Arma el asiento | — | O1 compacto (en esta pantalla reemplaza a las pistas) · ‹ cuenta › con CUENTAS_ASIENTO_P4_JUNIO |
 | 7 | Haz | ¿Cuánto queda? | **El bloque queda tapado hasta que responde (E8)**; luego aparece «$10.000» | 3 botones · OPC_P4_6 |
-| 8 | Haz, **3 pasos** | La otra empresa: ¿tiene o debe? Después, las citas | Bloque con contorno y «Recibido por anticipado». Las citas de las pp. 142-143 y 145 (unos 250 caracteres) van en el apoyo, en 2 pasos, después de SEGMENTOS_P4[7]. | 2 botones · OPC_P4_7 |
-| 9 | Haz | Su asiento | — | O1 compacto · ‹ cuenta › con CUENTAS_P4_9 |
+| 8 | Haz, **3 pasos** | La otra empresa: ¿tiene o debe? Después, las citas | Bloque con contorno y «Recibido por anticipado». **Pasos 2 y 3: una cita por paso, en la tarjeta de cita:** la de la p. 142 y luego la de la p. 145 (páginas del literal publicado en `delLibro`). | 2 botones · OPC_P4_7 |
+| 9 | Haz | Su asiento | — | O1 compacto · ‹ cuenta › con CUENTAS_ASIENTO_P4_COSTA |
 | 10 | Cierre, **2 pasos** | — | CIERRE_P4 (152 caracteres, 5 líneas a 320), partido por frase | vacía |
 
 ## 3 · P5 «Cerrar el periodo» · v4 de Itagaki · 10 pantallas · PASA con condiciones (lote 12)
@@ -143,7 +144,7 @@ Frente a la v3 cambian tres cosas:
 | 1 | 1 (SEGMENTOS_CIERRE[0]) **+ su n9** | Apertura | — | Las cuentas se reparten solas en dos montones. **Paso 1:** «Cuentas del periodo» entra como rótulo sobre «Se vacían». **Paso 2: «Desde ya»** («Las cuentas de lo que la empresa tiene y debe no se cierran…», 96 caracteres, 3 líneas) **entra como rótulo sobre «No se vacían»**. | Dos zonas de 125 × 98 · vacía | 2 |
 | 2 | 2 | Haz | Separa las 5 de Miyata, una por paso («Paso n de 5»). **Las otras 6 ya están puestas** desde la Apertura, como fichas de 20 × 20 en #B8C4D4. | La ficha cae en su zona | La cuenta en curso (44) y las zonas de 125 × 48 a 320 y 152 × 48 a 375, con 5 fichas por fila y 2 filas · 2 botones «Se vacía» / «No se vacía» | 5 |
 | 3 | 3 | Haz | Ordena «Ajustes» y «Cierre» | La flecha del diagrama | El diagrama (60) · 2 fichas | 1 |
-| 4 | 4, ingresos **+ su n8** | Haz | ‹ cuenta ›: pasa el ingreso | El saldo entra a la T y la cuenta queda en $0. **Paso 2:** «Cerrar» entra como rótulo (Inter 12/700, #F8F9FA) sobre la cuenta del centro del control, que ya muestra $0, y la definición va al apoyo (2 líneas). **Pasos 3 y 4:** la cita de la p. 123. **Cómo va queda pendiente** (ver abajo). | T compacta (88) · ‹ cuenta ›: tocar el centro pasa la cuenta. Si se vacía una que no: «No va aquí» y la pista. | 4 |
+| 4 | 4, ingresos **+ su n8** | Haz | ‹ cuenta ›: pasa el ingreso | El saldo entra a la T y la cuenta queda en $0. **Paso 2:** «Cerrar» entra como rótulo (Inter 12/700, #F8F9FA) sobre la cuenta del centro del control, que ya muestra $0, y la definición va al apoyo (2 líneas). **Paso 3:** la cita de la p. 123, solo la primera oración (ver abajo). | T compacta (88) · ‹ cuenta ›: tocar el centro pasa la cuenta. Si se vacía una que no: «No va aquí» y la pista. | 3 |
 | 5 | 4, gastos (**titular nuevo**) | Haz | ‹ cuenta ›: pasa cada gasto | Cada saldo entra a la T y su cuenta queda en $0 | T compacta · ‹ cuenta › | 1 |
 | 6 | 5 | Haz | Escribe el saldo | **El corchete y la cifra quedan tapados hasta que responde**; luego aparece «Utilidad $3.950». **«Ganancias y pérdidas» entra como rótulo sobre la T.** | O4 compacto (86) · campo de r5 | 1 |
 | 7 | 6, ingresos | Haz | Las Acacias: pasa el ingreso | Igual que la 4 | T compacta · ‹ › | 1 |
@@ -151,14 +152,27 @@ Frente a la v3 cambian tres cosas:
 | 9 | 7 | Haz | ¿Utilidad o pérdida? | «Pérdida $100.000»: un corchete de 7,1 px [calculado], por encima de los 4 de E11 | O4 compacto · OPC_P5_6 | 1 |
 | 10 | 10 (CIERRE_TEXTO); la pregunta «En una frase» pasa al Repaso Diario | Cierre | — | La T final, con la frase | La T final · vacía | 1 |
 
-**La cita de la p. 123 · pendiente.** Takamura no aceptó el corte por cláusula (lote 12): cada paso reemplaza al anterior, así que el estudiante nunca vería la frase completa. Las salidas que acepta, en este orden:
-1. La cita entera visible de una vez, repartida entre el modelo y el apoyo en un solo paso.
-2. Solo la primera oración: «Cerrar una cuenta significa reducir su saldo a cero.» Esta la decide Miyata.
-3. Por frase completa, solo si la segunda oración cabe en 4 líneas con su atribución, medido y no calculado.
+**La cita de la p. 123 · decidida (Miyata, opción a).** Va solo la primera oración, en el apoyo de P5-4, paso 3:
+> «Cerrar una cuenta significa reducir su saldo a cero.» (p. 123)
 
-No se agrega una pantalla nueva. **Ippo no monta la cita hasta que Kamogawa lo anote aquí.**
+Es una oración completa, así que la cita no queda cortada ni lleva «…». La segunda oración, la de enfrentar ingresos con gastos, el estudiante la hace en las pantallas siguientes. P5-4 queda en 3 pasos.
 
-**Las citas de «Acumulado» (P3-7) y «Recibido por anticipado» (P4-8) · pendiente.** Itagaki entrega los cortes literales, siempre por frase completa. Si alguno parte una frase, se corrige en el mismo lote.
+**Citas del libro en P3-7 y P4-8 · tarjeta de cita (Itagaki, lote 12; Takamura la revisa en el lote 14).** Por frase completa, las citas de «Acumulado» no caben en el apoyo (6 y 5 líneas a 320). Por eso, **durante los pasos de cita, la cita va en la figura**:
+- Es una tarjeta del mismo alto que la reserva (150 / 200), con fondo #1C2939 y una raya izquierda de 3 px #B8C4D4.
+- Relleno de 8. Texto en Inter 14/20, #F8F9FA (13,98:1), con la atribución en la misma línea.
+- Ancho útil: 258 − 3 − 16 = 239 px, unos 30 caracteres por línea.
+- En esos pasos el apoyo solo dice «Así lo dice el libro». En el último paso de cita, la figura vuelve al modelo.
+- Se aplica igual en P4-8, aunque ahí las citas caben en el apoyo, para que las citas del libro estén siempre en el mismo sitio.
+- ⛔ **Ippo mide a 320 la tarjeta de la p. 139: 6 líneas, unos 136 px. Si pasa de 150, para y avisa.**
+
+| Pantalla | Paso | Cita literal (de `delLibro` en main) | Car. | Líneas en la tarjeta a 320 |
+|---|---|---|---|---|
+| P3-7 | 2 | «Son aquellos gastos que ya han sido causados, pero que al cierre del periodo contable todavía no han sido cancelados porque tienen un compromiso de pago futuro» (p. 139). | 171 | 6 (unos 136 px) |
+| P3-7 | 3 | «Son aquellos ingresos que ya han sido devengados, pero que al cierre del periodo contable todavía no se ha recibido el pago de los mismos» (p. 141). | 149 | 5 (unos 116 px) |
+| P4-8 | 2 | «Los gastos diferidos son activos que, en la medida va pasando el tiempo, se van convirtiendo en gastos» (p. 142). | 114 | 4 |
+| P4-8 | 3 | «Los ingresos diferidos son pasivos que, en la medida que va pasando el tiempo, se van convirtiendo en ingresos» (p. 145). | 122 | 5 |
+
+**OPC_PREDICE:** «Ingresos / y gastos» cabe en un botón de 80 a 13/16: cada línea mide unos 54 px de 64 útiles [calculado, Itagaki]. Miyata confirma que quitar «Ninguna» no le quita nada a P1, porque en ninguno de sus seis hechos deja de moverse una línea. Si algún día P1 suma un hecho que no mueva nada, como una compra a crédito, «Ninguna» vuelve con su error (E-PRED-6).
 
 **Titulares retirados (Takamura, lote 12):** «Cerrar es dejar en cero» y «Lo que la empresa tiene y debe sigue». Su contenido se conserva como rótulos dentro de P5-4 y P5-1.
 
