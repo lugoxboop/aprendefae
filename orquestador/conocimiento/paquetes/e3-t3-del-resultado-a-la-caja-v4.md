@@ -7,8 +7,8 @@
 ## 0 · Condiciones de Takamura (ya integradas en el resto del paquete)
 
 - **A1 · Versiones:** A en los intentos impares, B en los pares (`useIntento`). **No hay «Caso n de 2»:** cada partida juega un solo caso, y el contador es «Paso n de N».
-- **A2 · Tarjetas de B:** son **6** (5 mueven la caja y 1 no). Con m = 5, el puente mide 210 px.
-- **A3 · Nombre largo de B:** «Arriendo abril–junio, por anticipado» (35 caracteres; el tope es 36).
+- **A2 · Tarjetas de B:** son **6** (5 mueven la caja y 1 no). Con m = 5, el puente mide 250 px: 12 + 7 × 30 + 16 + 12 (el 210 que decía antes era solo 7 × 30; lo corrigió Takamura en #557).
+- **A3 · Nombre largo de B:** «Arriendo abril–junio, por anticipado» (36 caracteres, justo en el tope de 36; lo corrigió Takamura en #557).
 - **A4 · Textos que faltaban:**
   - TEXTO_CASO_A = «San Calixto abrió el 2 de enero. Este es su primer mes.»
   - ROTULO_CAJA_CIERRE = «Caja al cierre».

@@ -19,6 +19,8 @@ import IngresoOCobro from "./mecanicas/libros/tema3/IngresoOCobro.jsx";
 import { ACT1_T3 } from "../data/contabilidadTema3Act1.js";
 import GastoOPago from "./mecanicas/libros/tema3/GastoOPago.jsx";
 import { ACT_GASTO_O_PAGO } from "../data/contabilidadTema3GastoOPago.js";
+import ResultadoCaja from "./mecanicas/libros/tema3/ResultadoCaja.jsx";
+import { ACT_RESULTADO_CAJA } from "../data/contabilidadTema3ResultadoCaja.js";
 import CuandoSeCausa from "./mecanicas/libros/tema3/CuandoSeCausa.jsx";
 import { ACT2_T3 } from "../data/contabilidadTema3Act2.js";
 import { ArmaElAjusteAcumulado, ArmaElAjusteDiferido } from "./mecanicas/libros/tema3/ArmaElAjuste.jsx";
@@ -36,6 +38,9 @@ import { PIEZA_LO_QUE_YA_PASO } from "../data/contabilidadTema3Pieza3.js";
 import { PIEZA_LO_QUE_YA_SE_PAGO } from "../data/contabilidadTema3Pieza4.js";
 import { PIEZA_CERRAR_EL_PERIODO } from "../data/contabilidadTema3Cierre.js";
 import { ESCENAS_TEMA3 } from "./mecanicas/libros/tema3/escenasTema3.jsx";
+import SecuenciaAprender from "./secuencia/SecuenciaAprender.jsx";
+import { PIEZAS_SECUENCIA_T3, TEMA_SECUENCIA_T3 } from "./mecanicas/libros/tema3/secuencia/index.js";
+import { secuenciaT3Activa } from "../data/banderasT3.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -74,6 +79,8 @@ export const JUEGOS = [
   { id: ACT5_T3.id, Mecanica: ArmaElAjusteDiferido, titulo: ACT5_T3.nombre },
   { id: ACT3_T3.id, Mecanica: MismoHecho, titulo: ACT3_T3.nombre },
   { id: ACT6_T3.id, Mecanica: QueLeToca, titulo: ACT6_T3.nombre },
+  /* «Del resultado a la caja» (paquete e3-t3-del-resultado-a-la-caja-v4), detrás de «Cerrar el periodo». */
+  { id: ACT_RESULTADO_CAJA.id, Mecanica: ResultadoCaja, titulo: ACT_RESULTADO_CAJA.nombre },
   { id: ACT7_T3.id, Mecanica: ElCierreCompleto, titulo: ACT7_T3.nombre },
 ];
 
@@ -134,7 +141,12 @@ export default function ContabilidadTema3View({ modo = null, nodoInicial = null,
           {recompensa}
           <div className="fae-insignia-actividad"><ActivityBadge tipo={esAprender ? APRENDER : HACER} size="sm" /></div>
 
-          {esAprender ? (
+          {esAprender && secuenciaT3Activa() ? (
+            /* Detrás de la bandera (banderasT3.js): las cuatro piezas en SecuenciaAprender, sin tocarlo. */
+            <div className="t3-sec" data-secuencia-t3>
+              <SecuenciaAprender temaId={TEMA_SECUENCIA_T3} piezas={PIEZAS_SECUENCIA_T3} final="tema" onFinal={onBack} />
+            </div>
+          ) : esAprender ? (
             <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
               {PIEZAS.map(({ pieza }, k) => {
                 const { Capa2, Exploracion, Capa4 } = ESCENAS_TEMA3[pieza.id];

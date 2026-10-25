@@ -112,7 +112,8 @@ test("★★ las catorce actividades tienen «Así se juega»", () => {
   /* Y b5-t6-a4 y b5-t6-a6 (Célula B, los Hacer nuevos de T6; b5-t6-a7 se retiró en el lote 4 y b5-t6-a5 se fundió en a2 en el 6b). */
   /* Y los Hacer de T4 (Célula D): H1, H3, H4, H7 y H8 (H2, H5 y H6 salieron con el corte de calidad). */
   /* Y «¿Gasto o pago?» del Tema 3 (Célula E, #506). */
-  assert.equal(Object.keys(ASI_TODAS).length, 37);
+  /* Y «Del resultado a la caja» del Tema 3 (Célula E, #555). */
+  assert.equal(Object.keys(ASI_TODAS).length, 38);
 });
 
 test("★★ consignas: T1-6 cambia (la ficha no se toca) y las siete del Tema 2 son nuevas", () => {

@@ -188,3 +188,14 @@ Los números de ejercicio se leyeron donde el OCR los trae (3, 5, 6 y 11); los d
 | E-T3-12 | 134 | El asiento de cierre de Ganancias y pérdidas dice «5.395.000». | 5.935.000 (1.958.550 + 3.976.450), como en el mayor y en el estado de resultados. | sí |
 
 Para P6 con Lavalimpio, ninguna de estas erratas cambia una cifra que use la pieza: usa las del estado de resultados de la p. 135, que cuadran.
+
+# Adenda 2 · Nombres de cuentas con dos grafías o sin libro (Kamogawa, 25-oct-2026)
+
+> Viene de `paquetes/e3-t3-secuencias-textos-v4.md` §3 y §4 (Miyata, lote 13; lo verificó a ojo en el PDF). Takamura lo revisa en el lote 14.
+
+- **Excepción a la regla 3.9 («un término, un solo nombre»).** El libro usa dos nombres para el derecho de cobro, uno en cada situación:
+  - **«Cuentas por cobrar – clientes»** cuando se le factura a un cliente durante el mes (pp. 122-123). Se usa en P2, P5-2 y «Del resultado a la caja».
+  - **«Servicios por cobrar»** cuando se ajusta un ingreso acumulado al cierre (p. 142). Se usa en P3 (San Miguel), Act3 y Act4.
+
+  No se unifican: cada nombre va donde lo usa la página citada.
+- **«Arriendos por pagar» y «Arriendos por cobrar» son nombres de la plataforma**, no del libro: no aparecen en las pp. 143-146. Ya están publicados en Act3 (par «El arriendo», `contabilidadTema3Act3.js`) como señuelos del otro tipo de ajuste, y se arman igual que «Alquiler por pagar» (p. 140). P4 los usa con ese mismo papel.

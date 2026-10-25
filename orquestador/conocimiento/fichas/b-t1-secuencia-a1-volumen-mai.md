@@ -26,7 +26,7 @@ canto del §3), con ese bloque ocupando su sitio en el flujo. Lo demás sale de 
 | 8 | cu0-a1 · pantalla 10 | «Basado en el libro, p. 6» va dentro de la figura | Va en la zona de razón, que es su sitio, una sola vez por pieza (§16b del patrón) |
 | 9 | Las dos piezas · botón de avance | «Siguiente pieza» se parte en dos renglones | El literal mide **110,7 px** y el botón da **124,5**: lo que lo parte es el relleno lateral. Dentro de `SecuenciaAprender`, «Anterior» toma su ancho (mínimo 96 px, 44 de alto) y el de avance toma el resto (~168), con `white-space: nowrap`. Sirve igual para «Ir a Hacer» (67,2) y «Volver al tema» (101,1). **No se toca el `BOTON_NAV` del componente compartido** |
 | 10 | Pieza 2 · pantalla 4 · botón | «Volver al tema» | **«Siguiente pieza»:** no es la última pieza del tema, y el apoyo de esa misma pantalla ya dice «En la siguiente pieza vas a ver…» |
-| 11 | Pieza 2 · pantalla 3 (la frase) | Sin figura; la cuarta frase queda detrás de la barra | **Confirmo lo construido y corrijo mi §4:** la pantalla de capa 4 **no lleva figura**, ni siquiera la franja de 44 que yo había puesto. Medido: **102 px de desplazamiento a 320** (con la franja eran 146) y ninguno a 375. Sigue siendo la excepción declarada del patrón: esta pantalla se desplaza, y lo que cae bajo el pliegue son las frases 3 y 4 |
+| 11 | Pieza 2 · pantalla 3 (la frase) | Sin figura; la cuarta frase queda detrás de la barra | **Confirmo lo construido y corrijo mi §4:** la pantalla de capa 4 **no lleva figura**, ni siquiera la franja de 44 que yo había puesto. Medido: **102 px de desplazamiento a 320** (con la franja eran 146) y ninguno a 375. **Corregido en el §5:** quitando además el apoyo y la reserva de la razón, esta pantalla deja de desplazarse y la excepción desaparece |
 | 12 | cu0-a1 · cejillas de fase | La fase **retrocede**: la 6 dice «Ahora pruebe usted» y la 7 y la 8 vuelven a «Mírelo funcionar» | La cejilla no retrocede: **3 a 8 «Mírelo funcionar», 9 «Ahora pruebe usted», 10 «En una frase»**. Los literales son los del componente compartido y no se tocan; lo que cambia es cuál le toca a cada pantalla |
 | 13 | Pieza 2 · pantallas 1 y 2 | La pregunta del lector y la consigna se pintan **las dos** | Cabe hoy (las preguntas más largas del banco miden dos renglones), pero comparten zona: **la pregunta sustituye a la consigna** al tocar a una persona, y no se suma. Si Futaba alarga alguna, con las dos a la vez se pasa |
 
@@ -82,7 +82,7 @@ la réplica, a 320×568, con el desplazamiento real ya descontado el bloque pega
 | Parada con rótulos de un renglón (a1 · 1) | 660 | **668** | **27** | ✓ |
 | Parada con rótulos de dos renglones (a1 · 6 y a1 · 9) | 670 | **678** | **37** | ✓ |
 | Pieza 2 · Míralo con la mesa 2 × 2 | 628 | **632** | **0** | ✓ |
-| Pieza 2 · la frase (la excepción declarada) | 739 | **759** | 118 | excepción |
+| Pieza 2 · la frase | 739 | **759** | 118 → **0** con los tres cambios del §5 | ✓ |
 
 A 375×667 ninguna se desplaza. **El caso más justo son las dos paradas de rótulo largo: 37 de los
 40.** Si alguien añade algo a esas pantallas, se mide antes.
@@ -141,3 +141,83 @@ lo pones a todo, la pantalla crece y las dos paradas de rótulo largo se pasan d
 cara de 44 con el bloque en 48**, el **contorno de silueta en todos los bloques**, el hundido con
 `translateY` **en vez** del `scale`, y la trama quieta del contenedor. La placa no va en
 Contabilidad.
+
+---
+
+## 5 · Las cuatro pantallas de capa 4 (25-oct): no hace falta ninguna excepción
+
+Shoko midió, con la franja de 44 y las cuatro frases en flujo: 177 · 177 · 129 · 155 a 320. Con
+ese mismo montaje mi réplica da **123 · 140 · 118 · 101** —mido con el bloque pegado ocupando su
+sitio y con el canto del §3, y ahí está la diferencia—. Da igual de qué cifra se parta: **con tres
+cambios las cuatro bajan del tope**, y la excepción que yo mismo había declarado en mi §4 deja de
+hacer falta.
+
+### 5.1 Los tres cambios
+
+1. **Fuera la franja de 44** (ya iba en el cambio 11 del §1): **−56 px** con su margen.
+2. **Fuera el apoyo.** En las cuatro pantallas dice lo mismo que la razón —«Elige la frase que
+   mejor lo dice» contra «Elige una frase para seguir»—: **−34 px**.
+3. **La razón no reserva en esta pantalla.** Corrijo mi propia regla del §3.1 de
+   `fichas/b-t1-titulares-medidos-mai.md`: los 48 px reservados existían para que nada saltara al
+   aparecer la pista, pero **la razón es la última zona antes del bloque pegado**. Al crecer no
+   mueve nada de lo que el estudiante está mirando —empuja hacia abajo, y el bloque pegado es
+   `sticky` y se queda donde está—: **−32 px**.
+
+**La corrección 3 vale también para las paradas de cu0-a1,** donde la razón también es la última
+zona: las dos de rótulo largo pasan de 37 a **5 px** de desplazamiento [calculado sobre la medida
+de §3.2], y la de rótulo corto, de 27 a 0. Es margen que estaba de más.
+
+### 5.2 Lo que queda, medido
+
+| Pieza | Hoy (franja + apoyo + reserva) | Con los tres cambios | A 375×667 |
+|---|---|---|---|
+| «Ocho leen lo mismo» | 123 | **0** (620 px de documento) | 0 |
+| cu0-a2 | 140 | **18** (659) | 0 |
+| cu0-a3 | 118 | **0** (610) | 0 |
+| cu0-a4 | 101 | **0** (620) | 0 |
+
+**Ninguna excepción y ningún texto recortado.** El tope son 40 y la peor —cu0-a2, que tiene la
+frase más larga— queda en 18.
+
+### 5.3 Lo que compra cada cambio, sobre cu0-a2 que es la peor
+
+| Montaje | Documento a 320 | Desplazamiento |
+|---|---|---|
+| Franja, apoyo y reserva | 781 | 140 |
+| Sin franja | 725 | 84 |
+| Sin franja ni apoyo | 691 | 50 |
+| **Sin franja, sin apoyo y sin reserva** | **659** | **18** |
+
+Los tres hacen falta: ninguno por su cuenta baja de 40.
+
+### 5.4 Las frases van a 13 px
+
+Medido en cu0-a2: a **14 px** el bloque de frases pasa de 267 a 285 y el desplazamiento de 18 a
+**36** —cabe, pero deja 4 px de margen—. **A 13 quedan 22.** Y 13 es el piso de lo interactivo del
+estándar, así que por ahí no se baja más.
+
+### 5.5 La marca de la correcta tras el segundo error
+
+**Sí lleva marca propia, y de paso arregla un choque que trajo #545:** el relleno navy `#1D3557`
+con el que hoy se marca «elegida» **es ahora el color del canto**, así que como relleno ya no
+significa nada.
+
+| Estado | Cómo se ve |
+|---|---|
+| Elegida | contorno de 2 px `#F8F9FA` sobre la cara N2, **sin relleno navy** |
+| Elegida y mal | contorno coral de 2 px **discontinuo** y pastilla ✕ «No va aquí» (literal publicado) |
+| La correcta, al segundo error | contorno de 2 px `#F8F9FA` **continuo** y pastilla **✓ «Era esta»** |
+
+- «Era esta» es literal nuevo: en Aprender no se usa «Iba aquí» —eso es de Hacer— y «Correcto»
+  diría que el estudiante acertó cuando no lo hizo. **El texto lo confirman Futaba y Shoko; la
+  forma es esta se llame como se llame.**
+- Las dos se distinguen **sin color**: discontinuo contra continuo, ✕ contra ✓ y dos palabras
+  distintas.
+- En ese momento se libera «Siguiente» (C2), y la razón pasa a llevar el porqué de la opción que
+  el estudiante marcó.
+
+### 5.6 Para Kaede
+
+En las cuatro pantallas de capa 4: sin figura, sin apoyo, frases a 13 px y la razón **sin**
+reserva de 48 (basta un renglón, y crece cuando aparece la pista). La reserva de la razón tampoco
+va en las paradas de cu0-a1. Y los tres estados de §5.5, que reemplazan al relleno navy.
