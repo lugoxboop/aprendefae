@@ -44,7 +44,7 @@ Búscalo, no lo abras entero: `node scripts/canon.mjs "<palabra>" -f <archivo>`.
 **Aprender tipo presentación** (`prompts/aprender-secuencia-v1.md`). Pieza de
 4 a 10 pantallas; fases apertura, desarrollo y cierre sobre las cuatro capas.
 Cuatro tipos de pantalla: Apertura, Míralo, Haz, Cierre; al menos la mitad
-Míralo o Haz. Una idea y máx. 60 palabras por pantalla. Zonas de arriba abajo:
+Míralo o Haz. Una idea y máx. 60 palabras por pantalla. Titular: 10 palabras, guía de 46 caracteres y la prueba es que quepa en 2 renglones a 320 con su texto real (el tope de 54 era un supuesto y se cayó). Zonas de arriba abajo:
 progreso, cejilla, titular, figura, apoyo, razón, navegación (44 px). Figura
 reservada **por pieza** (la misma en todas sus pantallas), tope 206 px a 320 y 253 a 375 con la
 banda de 66 px de apoyo, razón y devolución debajo. «Siguiente» da el paso pendiente y luego pasa; «Anterior» no deshace;

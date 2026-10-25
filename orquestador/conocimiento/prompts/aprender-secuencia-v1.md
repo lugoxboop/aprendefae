@@ -100,8 +100,29 @@ son los publicados: «Correcto» / «No va aquí».
 
 ### 3.3 Una pantalla = una idea
 
-Titular de máximo 10 palabras y 54 caracteres [supuesto: 258 px ÷ ≈9,4 px por carácter de
-Sora 700 a 17 px × 2 líneas; parada de medición §12]. Apoyo de máximo 25 palabras (objetivo) y
+Titular de **máximo 10 palabras**, y la longitud **se mide, no se cuenta**: tiene que caber en
+**2 renglones a 320 px** con su texto real. El tope de 54 caracteres era `[supuesto]` y la parada
+de medición la cerró Misa en T2 P1: un titular de 54 salía en 3 renglones.
+
+Lo que medí al revisarlo (Sora 700 a 17 px, `line-height` 22, `letter-spacing` −0,01em, Chromium
+con la fuente de producción) dice que **el número que fallaba no era el 54, era el 258**:
+
+| Ancho útil del titular | Caben en 2 renglones hasta |
+|---|---|
+| 200 px | 48 caracteres |
+| 212-224 px | 50 |
+| 236 px | 52 |
+| 248 px o más | 54 |
+
+Y dentro de cada ancho **la misma longitud cambia de renglón según las palabras**: a 212 px hay
+titulares de 50 que entran y otros de 50 que no, porque una palabra larga no se parte. Por eso un
+tope de caracteres no es el instrumento: es una guía.
+
+- **La guía:** 46 caracteres. Por debajo de eso no hace falta medir a ningún ancho de los de la tabla.
+- **La prueba:** entre 46 y 54, se mide con el texto real a 320. Tres renglones, se corta.
+- ⛔ **Parada abierta para quien tenga el componente a mano:** el ancho útil real del titular en
+  `SecuenciaAprender` a 320 px, que la tabla convierte en el tope exacto. La medida de Misa sugiere
+  que está en torno a 230, no en 258. Apoyo de máximo 25 palabras (objetivo) y
 60 en toda la pantalla (tope B2). Lo que no cabe va en otra pantalla o lo dice la figura.
 
 ### 3.4 Prueba del hilo
