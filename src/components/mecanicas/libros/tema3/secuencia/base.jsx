@@ -71,7 +71,10 @@ export const CSS_T3S = `
 .t3s-t[data-fuerte] { color: ${C.texto}; }
 .t3s-paso { margin: 0; font: 400 12px/16px "Inter", sans-serif; color: ${C.apagado}; }
 .t3s-rot { margin: 0; font: 700 12px/16px "Inter", sans-serif; color: ${C.texto}; }
-.t3s-pastilla { position: absolute; top: 0; right: 0; z-index: 3; display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 0 8px; border-radius: 999px; border: 2px solid ${C.texto}; color: ${C.texto}; background: ${C.fondo}; font: 600 12px/16px "Inter", sans-serif; white-space: nowrap; }
+.t3s-fila-pastilla { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 22px; margin-top: -6px; }
+.t3s-fila-pastilla > p { min-width: 0; }
+.t3s-control > .t3s-pastilla { align-self: center; }
+.t3s-pastilla { flex: none; margin-left: auto; display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 0 8px; border-radius: 999px; border: 2px solid ${C.texto}; color: ${C.texto}; background: ${C.fondo}; font: 600 12px/16px "Inter", sans-serif; white-space: nowrap; }
 .t3s-pastilla[data-ver="mal"] { border-color: ${C.error}; color: ${C.error}; }
 .t3s-ctl { appearance: none; flex: 1 1 0; min-width: 0; height: 44px; border-radius: 8px; border: 1px solid ${C.quieto}; background: transparent; color: ${C.texto}; font: 600 13px/16px "Inter", sans-serif; cursor: pointer; padding: 0 4px; text-align: center; hyphens: manual; overflow-wrap: normal; word-break: keep-all; }
 .t3s-ctl[data-ver] { border-width: 2px; border-color: ${C.texto}; }
@@ -96,32 +99,75 @@ export const CSS_T3S = `
 /* ═══════════ EL MARCO DE LA FIGURA ═══════════ */
 
 /**
- * modelo   lo que se dibuja (alto fijo)
- * control  la fila de control (44, reservada aunque vaya vacía)
- * zona     [{ texto, fuerte?, rotulo?, paso? }]: el apoyo, la pista o el porqué
- * ver      "bien" | "mal" | null: la pastilla de la esquina del modelo
+ * modelo    lo que se dibuja (alto fijo)
+ * control   la fila de control (44, reservada aunque vaya vacía)
+ * zona      [{ texto, fuerte?, rotulo?, paso?, pie? }]: el apoyo, la pista o el porqué
+ * ver       "bien" | "mal" | null: la pastilla
+ * resuelta  si la pantalla ya quedó resuelta (todo el Haz, no una ficha)
+ * recogido  la fila de control recogida a lo elegido, para cuando se acierta
  */
-export function Figura({ modelo = null, control = null, zona = [], ver = null, ...datos }) {
+/*
+ * ═══════════ LA PASTILLA (condición 5 de #572) ═══════════
+ *
+ * Ya no va en la esquina del modelo, donde tapaba cifras, días, casillas y
+ * carriles (medido en main: 55 de 85 estados con pastilla a 320 y 47 a 375).
+ * Nunca se monta sobre el modelo. Va en uno de dos sitios, sin mover nada:
+ *
+ *   · Al acertar la pantalla entera, en la fila de control: la fila se recoge
+ *     a lo elegido (ya no hay nada más que tocar) y la pastilla va a su
+ *     derecha. No cuesta alto: con la cabecera real, los textos de después de
+ *     4 líneas no dejan sitio debajo en las pantallas de titular de 2 líneas
+ *     (condición 6, medido).
+ *   · En lo demás (un error, dos errores, una ficha o una casilla bien puesta
+ *     con el Haz abierto), en la primera fila de la zona del apoyo, a la
+ *     derecha. Si esa fila empieza con un renglón corto (paso o pie), lo
+ *     comparte. Sube 6 px dentro del margen de 12 que la separa de la fila de
+ *     control (quedan 6 de aire): la fila cuesta 18 px y no 24.
+ */
+function Pastilla({ ver }) {
+  return (
+    <span className="t3s-pastilla" data-ver={ver} data-mensaje={ver === "bien" ? "acierto" : "error"} role="status">
+      <span aria-hidden="true">{ver === "bien" ? "✓" : "✕"}</span>
+      {ver === "bien" ? "Correcto" : "No va aquí"}
+    </span>
+  );
+}
+
+const bloqueZona = (z, k) => (
+  z.paso ? <p key={k} className="t3s-paso" data-paso-zona>{z.paso}</p>
+    : z.pie ? <p key={k} className="t3s-paso" data-pie>{z.pie}</p>
+      : z.rotulo ? <p key={k} className="t3s-rot" data-rotulo-zona>{z.rotulo}</p>
+        : <p key={k} className="t3s-t" data-fuerte={z.fuerte ? "" : undefined} data-texto={z.tipo ?? "apoyo"}>{z.texto}</p>
+);
+
+export function Figura({ modelo = null, control = null, zona = [], ver = null, resuelta = false, recogido = undefined, ...datos }) {
+  const bloques = zona.filter(Boolean);
+  const enControl = ver === "bien" && resuelta && recogido !== undefined;
+  const enZona = ver && !enControl;
+  /* Un renglón corto al frente (paso, pie): comparte fila con la pastilla. */
+  const comparte = enZona && bloques.length && (bloques[0].paso || bloques[0].pie);
   return (
     <div className="t3s" {...datos}>
       <style>{CSS_T3S}</style>
       <div className="t3s-modelo" data-modelo>
         {modelo}
-        {ver && (
-          <span className="t3s-pastilla" data-ver={ver} data-mensaje={ver === "bien" ? "acierto" : "error"} role="status">
-            <span aria-hidden="true">{ver === "bien" ? "✓" : "✕"}</span>
-            {ver === "bien" ? "Correcto" : "No va aquí"}
-          </span>
-        )}
       </div>
-      <div className="t3s-control" data-control>{control}</div>
+      <div className="t3s-control" data-control data-recogida={enControl ? "" : undefined}>
+        {enControl ? (
+          <>
+            <div style={{ display: "flex", gap: "8px", flex: "1 1 0", minWidth: 0 }}>{recogido}</div>
+            <Pastilla ver={ver} />
+          </>
+        ) : control}
+      </div>
       <div className="t3s-zona" data-zona aria-live="polite">
-        {zona.filter(Boolean).map((z, k) => (
-          z.paso ? <p key={k} className="t3s-paso" data-paso-zona>{z.paso}</p>
-            : z.pie ? <p key={k} className="t3s-paso" data-pie>{z.pie}</p>
-            : z.rotulo ? <p key={k} className="t3s-rot" data-rotulo-zona>{z.rotulo}</p>
-              : <p key={k} className="t3s-t" data-fuerte={z.fuerte ? "" : undefined} data-texto={z.tipo ?? "apoyo"}>{z.texto}</p>
-        ))}
+        {enZona && (
+          <div className="t3s-fila-pastilla" data-fila-pastilla>
+            {comparte ? bloqueZona(bloques[0], "f") : null}
+            <Pastilla ver={ver} />
+          </div>
+        )}
+        {(comparte ? bloques.slice(1) : bloques).map(bloqueZona)}
       </div>
     </div>
   );
@@ -173,12 +219,16 @@ export function verBoton(estado, id, correcta) {
   return e.ok ? "bien" : "mal";
 }
 
-/** Los botones de elección de la fila de control: 2 de 125, 3 de 80 o 4 de 58 a 320. */
-export function Botones({ opciones, estado, correcta, onElegir, nombre }) {
+/**
+ * Los botones de elección de la fila de control: 2 de 125, 3 de 80 o 4 de 58 a 320.
+ * `recoger`: solo el botón acertado (la fila recogida, con la pastilla al lado).
+ */
+export function Botones({ opciones, estado, correcta, onElegir, nombre, recoger = false }) {
   const resuelto = hazResuelto(estado);
+  const lista = recoger ? opciones.filter((o) => o.id === correcta) : opciones;
   return (
     <div role="group" aria-label={nombre} style={{ display: "flex", gap: "8px", flex: "1 1 0", minWidth: 0 }}>
-      {opciones.map((o) => {
+      {lista.map((o) => {
         const ver = verBoton(estado, o.id, correcta);
         return (
           <button
@@ -203,8 +253,16 @@ export function Botones({ opciones, estado, correcta, onElegir, nombre }) {
  * El control ‹ › (44 + centro + 44). `valores` es la lista de posiciones;
  * `rotulo(v)` lo que dice el centro. Tocar el centro confirma.
  */
-export function ControlFlechas({ valores, indice, onMover, onConfirmar, rotulo, nombre, apagado = false, ver = null }) {
+export function ControlFlechas({ valores, indice, onMover, onConfirmar, rotulo, nombre, apagado = false, ver = null, soloCentro = false }) {
   const i = Math.max(0, Math.min(valores.length - 1, indice));
+  /* La fila recogida (al acertar): solo el centro, con lo que quedó puesto. */
+  if (soloCentro) {
+    return (
+      <div role="group" aria-label={nombre} style={{ display: "flex", gap: "8px", flex: "1 1 0", minWidth: 0 }}>
+        <button type="button" className="t3s-ctl" data-centro data-ver="bien" aria-disabled="true">{rotulo(valores[i])}</button>
+      </div>
+    );
+  }
   return (
     <div role="group" aria-label={nombre} style={{ display: "flex", gap: "8px", flex: "1 1 0", minWidth: 0 }}>
       <button type="button" className="t3s-ctl" data-flecha="antes" aria-label="Anterior posición" aria-disabled={apagado || i === 0 ? "true" : undefined} onClick={apagado || i === 0 ? undefined : () => onMover(i - 1)}>‹</button>
@@ -397,8 +455,12 @@ export function Asiento({ estado, setEstado, candidatas, monto, encima = null })
   const lista = enOrden(candidatas);
   const u = e.ultimo;
   const ver = u ? (u.ok ? "bien" : mostrarCorrecto(e.lados[u.lado]) ? null : "mal") : null;
+  const resuelta = asientoResuelto(candidatas)(e);
   return {
     ver,
+    resuelta,
+    /* Al acertar, la fila se recoge: las dos cuentas ya están en sus casillas, solo queda la pastilla. */
+    recogido: null,
     modelo: (
       <div style={{ display: "grid", rowGap: "4px" }}>
         <div className="t3s-cifras" style={{ display: "flex", justifyContent: "space-between" }}>
