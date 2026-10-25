@@ -1,0 +1,310 @@
+{
+ "bucle": {
+  "320 v:n10:conta": {
+   "bandas": 1,
+   "bandasEnBucle": 1,
+   "enBucle": 3,
+   "enBucleALaVista": 3,
+   "corriendo": 3,
+   "pausadas": 0,
+   "animaciones": 3,
+   "propiedades": [
+    "transform"
+   ],
+   "willChange": [
+    "auto"
+   ],
+   "fae": 1
+  },
+  "320 v:n10:macro": {
+   "bandas": 1,
+   "bandasEnBucle": 1,
+   "enBucle": 3,
+   "enBucleALaVista": 3,
+   "corriendo": 3,
+   "pausadas": 0,
+   "animaciones": 3,
+   "propiedades": [
+    "transform"
+   ],
+   "willChange": [
+    "auto"
+   ],
+   "fae": 1
+  },
+  "320 v:n10:est": {
+   "bandas": 0,
+   "bandasEnBucle": 0,
+   "enBucle": 0,
+   "enBucleALaVista": 0,
+   "corriendo": 0,
+   "pausadas": 0,
+   "animaciones": 0,
+   "propiedades": [],
+   "willChange": [],
+   "fae": 0
+  },
+  "320 p:n10:est": {
+   "bandas": 0,
+   "bandasEnBucle": 0,
+   "enBucle": 0,
+   "enBucleALaVista": 0,
+   "corriendo": 0,
+   "pausadas": 0,
+   "animaciones": 0,
+   "propiedades": [],
+   "willChange": [],
+   "fae": 0
+  },
+  "320 r:n10:general": {
+   "bandas": 1,
+   "bandasEnBucle": 1,
+   "enBucle": 3,
+   "enBucleALaVista": 3,
+   "corriendo": 3,
+   "pausadas": 0,
+   "animaciones": 3,
+   "propiedades": [
+    "transform"
+   ],
+   "willChange": [
+    "auto"
+   ],
+   "fae": 1
+  },
+  "375 v:n10:conta": {
+   "bandas": 1,
+   "bandasEnBucle": 1,
+   "enBucle": 3,
+   "enBucleALaVista": 3,
+   "corriendo": 3,
+   "pausadas": 0,
+   "animaciones": 3,
+   "propiedades": [
+    "transform"
+   ],
+   "willChange": [
+    "auto"
+   ],
+   "fae": 1
+  },
+  "375 v:n10:macro": {
+   "bandas": 1,
+   "bandasEnBucle": 1,
+   "enBucle": 3,
+   "enBucleALaVista": 3,
+   "corriendo": 3,
+   "pausadas": 0,
+   "animaciones": 3,
+   "propiedades": [
+    "transform"
+   ],
+   "willChange": [
+    "auto"
+   ],
+   "fae": 1
+  },
+  "375 v:n10:est": {
+   "bandas": 0,
+   "bandasEnBucle": 0,
+   "enBucle": 0,
+   "enBucleALaVista": 0,
+   "corriendo": 0,
+   "pausadas": 0,
+   "animaciones": 0,
+   "propiedades": [],
+   "willChange": [],
+   "fae": 0
+  },
+  "375 p:n10:est": {
+   "bandas": 0,
+   "bandasEnBucle": 0,
+   "enBucle": 0,
+   "enBucleALaVista": 0,
+   "corriendo": 0,
+   "pausadas": 0,
+   "animaciones": 0,
+   "propiedades": [],
+   "willChange": [],
+   "fae": 0
+  },
+  "375 r:n10:general": {
+   "bandas": 1,
+   "bandasEnBucle": 1,
+   "enBucle": 3,
+   "enBucleALaVista": 3,
+   "corriendo": 3,
+   "pausadas": 0,
+   "animaciones": 3,
+   "propiedades": [
+    "transform"
+   ],
+   "willChange": [
+    "auto"
+   ],
+   "fae": 1
+  }
+ },
+ "pausa": {
+  "alMontar": {
+   "bandas": 1,
+   "bandasEnBucle": 1,
+   "enBucle": 3,
+   "enBucleALaVista": 3,
+   "corriendo": 3,
+   "pausadas": 0,
+   "animaciones": 3,
+   "propiedades": [
+    "transform"
+   ],
+   "willChange": [
+    "auto"
+   ],
+   "fae": 1
+  },
+  "fueraDePantalla": {
+   "bandas": 1,
+   "bandasEnBucle": 1,
+   "enBucle": 3,
+   "enBucleALaVista": 0,
+   "corriendo": 0,
+   "pausadas": 3,
+   "animaciones": 3,
+   "propiedades": [
+    "transform"
+   ],
+   "willChange": [
+    "auto"
+   ],
+   "fae": 1
+  },
+  "deVuelta": {
+   "bandas": 1,
+   "bandasEnBucle": 1,
+   "enBucle": 3,
+   "enBucleALaVista": 3,
+   "corriendo": 3,
+   "pausadas": 0,
+   "animaciones": 3,
+   "propiedades": [
+    "transform"
+   ],
+   "willChange": [
+    "auto"
+   ],
+   "fae": 1
+  },
+  "pestanaOculta": {
+   "bandas": 1,
+   "bandasEnBucle": 1,
+   "enBucle": 3,
+   "enBucleALaVista": 3,
+   "corriendo": 0,
+   "pausadas": 3,
+   "animaciones": 3,
+   "propiedades": [
+    "transform"
+   ],
+   "willChange": [
+    "auto"
+   ],
+   "fae": 1
+  },
+  "pestanaVisible": {
+   "bandas": 1,
+   "bandasEnBucle": 1,
+   "enBucle": 3,
+   "enBucleALaVista": 3,
+   "corriendo": 3,
+   "pausadas": 0,
+   "animaciones": 3,
+   "propiedades": [
+    "transform"
+   ],
+   "willChange": [
+    "auto"
+   ],
+   "fae": 1
+  }
+ },
+ "quieta": {
+  "movimientoReducido": {
+   "bandas": 1,
+   "bandasEnBucle": 0,
+   "enBucle": 0,
+   "enBucleALaVista": 0,
+   "corriendo": 0,
+   "pausadas": 0,
+   "animaciones": 0,
+   "propiedades": [],
+   "willChange": [
+    "auto"
+   ],
+   "fae": 1
+  },
+  "gamaBaja": {
+   "bandas": 1,
+   "bandasEnBucle": 0,
+   "enBucle": 0,
+   "enBucleALaVista": 0,
+   "corriendo": 0,
+   "pausadas": 0,
+   "animaciones": 0,
+   "propiedades": [],
+   "willChange": [
+    "auto"
+   ],
+   "fae": 1
+  }
+ },
+ "cpu": {
+  "x6": {
+   "sinBanda": [
+    6,
+    4,
+    5
+   ],
+   "conBanda": [
+    68,
+    53,
+    64
+   ],
+   "estiloConBanda": [
+    13,
+    12,
+    18
+   ],
+   "extraMediana": 59,
+   "porcentaje": 1.5
+  },
+  "x10": {
+   "sinBanda": [
+    6,
+    7,
+    9
+   ],
+   "conBanda": [
+    90,
+    114,
+    115
+   ],
+   "estiloConBanda": [
+    17,
+    29,
+    29
+   ],
+   "extraMediana": 107,
+   "porcentaje": 2.7
+  }
+ },
+ "capturas": [
+  "conta-indice-320",
+  "macro-indice-320",
+  "est-indice-320",
+  "general-perfil-320",
+  "conta-indice-375",
+  "macro-indice-375",
+  "est-indice-375",
+  "general-perfil-375"
+ ]
+}

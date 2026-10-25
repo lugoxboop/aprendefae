@@ -18,7 +18,8 @@ import { existsSync, readFileSync, mkdirSync } from "node:fs";
 import { resolve } from "node:path";
 const RAIZ = resolve(import.meta.dirname, "../..");
 const require = createRequire(import.meta.url);
-const { chromium } = require(process.env.PLAYWRIGHT_MODULE ?? "/opt/node-tools/node_modules/playwright");
+let pw; try { pw = require(process.env.PLAYWRIGHT_MODULE ?? "playwright"); } catch { pw = require("/opt/node-tools/node_modules/playwright"); }
+const { chromium } = pw;
 const FUENTES = resolve(RAIZ, "scripts/t4/sonda-enganche/.sonda-fuentes");
 const hayFuentes = existsSync(`${FUENTES}/fontsource-inter-5.3.0`);
 const sustituto = { name: "animos-de-mentira", enforce: "pre", load(id) { if (id.endsWith("/src/social/animo.js")) return "export async function estadoDeAnimos(a){return Object.fromEntries((a??[]).map((n,i)=>[n,{recibidos:i%3===0?12:i,yaLeDi:i%2===0}]));}\nexport async function darAnimo(){return {ok:true};}\nexport async function animosRecibidos(){return [];}"; } };
@@ -32,6 +33,10 @@ const ruta = (pg) => pg.route("**/*", (route) => {
   if (hayFuentes && u.includes("fonts.googleapis.com")) { let css = ""; for (const [fam, ws] of [["Sora", [300, 400, 600, 700, 800]], ["Inter", [400, 500, 600, 700]]]) for (const w of ws) css += `@font-face{font-family:'${fam}';font-weight:${w};src:url(/__f/${fam}/${w}.woff2) format('woff2');}\n`; return route.fulfill({ status: 200, contentType: "text/css", body: css }); }
   return route.continue();
 });
+/*
+ * BANDA=1: las tablas montan su banda de verdad (`decoracion`, ?banda=1 en el banco),
+ * no un bloque de relleno. Solo si una tabla no la trae se inserta el de relleno.
+ */
 const BANDA = Boolean(process.env.BANDA);
 const medir = () => {
   const r = (e) => { if (!e) return null; const b = e.getBoundingClientRect(); return [Math.round(b.left), Math.round(b.top + scrollY), Math.round(b.width), Math.round(b.height)]; };
@@ -56,9 +61,9 @@ for (const [w, hh] of [[320, 568], [375, 667]]) {
   const ctx = await nav.newContext({ viewport: { width: w, height: hh }, deviceScaleFactor: 1 });
   const pg = await ctx.newPage(); await ruta(pg);
   for (const c of CASOS) {
-    await pg.goto(`${BANCO}#${c}`); await pg.reload(); await pg.waitForSelector("[data-columna] > *", { timeout: 120000 }); await pg.waitForTimeout(600);
+    await pg.goto(`${BANCO}${BANDA ? "?banda=1" : ""}#${c}`); await pg.reload(); await pg.waitForSelector("[data-columna] > *", { timeout: 120000 }); await pg.waitForTimeout(600);
     await pg.evaluate(() => document.fonts.ready);
-    if (BANDA) await pg.evaluate(() => { for (const T of document.querySelectorAll("[data-columna] > *")) { const cab = T.tagName === "SECTION" ? T.querySelector("header") : T.children[0]; const b = document.createElement("div"); b.dataset.banda = ""; b.style.cssText = `height:${innerWidth < 375 ? 56 : 72}px;margin-bottom:14px`; cab.after(b); } });
+    if (BANDA) await pg.evaluate(() => { for (const T of document.querySelectorAll("[data-columna] > *")) { if (T.querySelector("[data-banda]")) continue; const cab = T.tagName === "SECTION" ? T.querySelector("header") : T.children[0]; const b = document.createElement("div"); b.dataset.banda = ""; b.style.cssText = `height:${innerWidth < 375 ? 56 : 72}px;margin-bottom:14px`; cab.after(b); } });
     out.push({ ancho: w, alto: hh, caso: c, tablas: await pg.evaluate(medir) });
   }
   await ctx.close();
