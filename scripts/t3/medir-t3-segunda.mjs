@@ -102,6 +102,9 @@ for (const ancho of [320, 375]) {
       await pg.waitForSelector("[data-opcion-segunda]");
       /* 0,7 s para «Iba aquí» y la devolución, y lo que tarde el desplazamiento suave. */
       if (toque) { await pg.click(`[data-opcion-segunda="${toque}"]`); await pg.waitForTimeout(1600); }
+      /* El ratón fuera de las opciones: con el volumen (#4), el hover sube la cara 2 px con transform, y esto mide el sitio, no el hover. */
+      await pg.mouse.move(1, 1);
+      await pg.waitForTimeout(250);
       const m = await medir(pg);
       if (!toque) base = m.cajas;
       const quieto = JSON.stringify(m.cajas) === JSON.stringify(base);

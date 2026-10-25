@@ -1,4 +1,4 @@
-2026-10-25 02:41 (hora Bogotá)
+2026-10-25 07:11 (hora Bogotá)
 - T1 · #496 (t1-5, las dos torres): terminado, fusionado (233c635) con el PASA de Shoko y el CI en verde
 - T1 · #520 (logito LibretaYLapiz): terminado, fusionado (047f3b7) con el PASA de Shoko y el CI en verde
 - T1 · #531 (t1-5, lo que se ve después de «Anotar»): terminado, fusionado (ad898f9) con el PASA de Shoko y el CI en verde
@@ -8,14 +8,13 @@
 - T1 · «Utilidad del ejercicio» en t1-7: terminado; Futaba lo resolvió (§10 de la ficha de fuente): la pieza pasa a «Activos y pasivos, en bloque» con el mismo id; lo aplica Kaede en el #535
 - Shoko traspasada a un chat nuevo (6c926eca); el 02dc9984 quedó pesado, con 19 subidas; traspasos/shoko.md está al día
 - T1 · capítulo 2 (D1): terminado; Futaba lo dejó en fichas/b-t1-fuente-cap1-futaba.md; mis decisiones están en el §9 y las aplica el #551
-- T1 · Gráfico 2.6, la línea de operación hacia el estado de resultados: BLOQUEADO-MATEO; tiene que mirar la p. 66 en el libro físico. Si la línea llega, cambian tres textos publicados
-- T1 · el caso «se quedan los dos igual» de cu0-a2: BLOQUEADO-MATEO; falta la p. 90 del capítulo 3
 - T1 · los textos pendientes del #535 (Futaba): terminado, en fichas/b-t1-lote-24oct-d-futaba.md
 - T1 · «Ocho leen lo mismo»: terminado, en 2×2 (fichas/b-t1-titulares-medidos-mai.md §7), con PASA de Shoko
 - T1 · los 5 Aprender en secuencia (#559): terminado, fusionado (657f70d) con el PASA de Shoko (Medio, el tope lo pone la prueba con un estudiante ajeno), detrás de la bandera ?aprender=secuencia
 - T1 · la secuencia encendida por defecto para los estudiantes (#584): terminado, fusionado (e5cac91) con el PASA de Shoko y el CI en verde, ya publicado; ?aprender=capas devuelve las cuatro capas; no toca datos de estudiantes (verificado con prueba)
-- T1 · subir de Medio a Avanzado: BLOQUEADO-MATEO; hace falta que un estudiante ajeno a la clase haga las cinco piezas de punta a punta (D2, D3 y D9)
+- En espera, sin frenar nada (Miku, 25-oct): la p. 66 del Gráfico 2.6, la p. 90 del capítulo 3 y un estudiante ajeno que haga las cinco piezas (para subir de Medio)
 - T1 · los tres arreglos del componente compartido (pulsos, barra superpuesta, ancho de «Siguiente pieza») (#558): bloqueado; es de Erwin, y Kaede le preparó el PR
-- Regla nueva de Miku: el volumen y la decoración de Ukyo (#545) van en cada pieza que toque Mai. Ojo: la skill celula-diseno de main todavía no trae #545, así que le pasé a Mai el texto del issue
+- El volumen y las animaciones pasan enteros a Erwin (Miku, 25-oct); retiré el lote de Mai
+- Regla de ahorro de Miku pasada a los cuatro agentes; sin lotes abiertos salvo el #575 (para Erwin)
 - Lo compartido que falla en los 7 Hacer: bloqueado; es de Erwin (#487)
 - T6 (oculto hasta el próximo semestre): los dos cambios de texto de Shoko del #458 quedan anotados

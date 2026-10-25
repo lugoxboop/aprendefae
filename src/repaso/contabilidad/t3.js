@@ -1,6 +1,8 @@
 import { itemDeRepaso, subtemaFijo, retro } from "./forma.js";
 import { FASES } from "../../components/secuencia/secuencia.js";
-import { SUBTEMA_FIJO_T3 } from "../../data/subtemasContabilidadT3.js";
+import { SUBTEMA_FIJO_T3, SUBTEMA_APRENDER_T3 } from "../../data/subtemasContabilidadT3.js";
+import { ubicacionDeActividad } from "../../data/subjects.js";
+import { PIEZA_P2, PREGUNTA_FINAL_P2, OPCIONES_FINAL_P2, PIEZA_P6, PREGUNTA_FINAL_P6, OPCIONES_FINAL_P6 } from "../../data/t3SecuenciasTextosP2P6.js";
 import { PIEZA_VENDER_NO_ES_COBRAR, PREGUNTA_FINAL, OPCIONES_FINAL } from "../../data/contabilidadTema3.js";
 import { PIEZA_LO_QUE_YA_PASO, PREGUNTA_FINAL_P3, OPCIONES_FINAL_P3 } from "../../data/contabilidadTema3Pieza3.js";
 import { PIEZA_LO_QUE_YA_SE_PAGO, PREGUNTA_FINAL_P4, OPCIONES_FINAL_P4 } from "../../data/contabilidadTema3Pieza4.js";
@@ -34,10 +36,10 @@ import { PIEZA_CERRAR_EL_PERIODO, PREGUNTA_FINAL_CIERRE, OPCIONES_FINAL_CIERRE }
  * como hecha hoy, así que estos cuatro no le salen a nadie hasta que Erwin
  * cablee cómo cuenta Aprender (anotado en el PR).
  */
-const enUnaFrase = (pieza, pregunta, opciones, actividadDelSubtema) => {
+const enUnaFrase = (pieza, pregunta, opciones, actividadDelSubtema, subtema = SUBTEMA_FIJO_T3[actividadDelSubtema]) => {
   const correcta = opciones.find((o) => o.correcta);
   return itemDeRepaso(pieza.id, "en-una-frase", {
-    subtema: subtemaFijo(SUBTEMA_FIJO_T3[actividadDelSubtema], pieza.id),
+    subtema: subtemaFijo(subtema, pieza.id),
     rotulo: FASES.cierre.toUpperCase(),
     enunciado: pregunta,
     opciones: opciones.map((o) => ({ id: o.id, texto: o.texto })),
@@ -46,11 +48,31 @@ const enUnaFrase = (pieza, pregunta, opciones, actividadDelSubtema) => {
   });
 };
 
+/*
+ * ═══════════ P2-8 Y P6-10: DOS «EN UNA FRASE» MÁS (textos v6 §4) ═══════════
+ *
+ *   P2-8  «¿Qué cambia la utilidad del mes?» ...... Resultado y caja
+ *   P6-10 «¿Qué es la utilidad del ejercicio?» .... Impuesto y utilidad neta
+ *
+ * Son ítems nuevos (`<pieza>:en-una-frase`), y ningún id cambia. Pero un ítem
+ * del pool tiene que ser de una actividad del catálogo (itemDeRepaso lo exige),
+ * y P2 y P6 todavía no están en subjects.js: entran con la bandera, en la
+ * vista y en el catálogo a la vez («las dos puertas»). Hasta entonces quedan
+ * aquí, listos, y ITEMS_T3 los suma solo cuando el catálogo ya los conoce.
+ * Así encender la bandera no exige tocar este archivo.
+ */
+export const EN_UNA_FRASE_P2_P6 = [
+  { pieza: PIEZA_P2, pregunta: PREGUNTA_FINAL_P2, opciones: OPCIONES_FINAL_P2, subtema: SUBTEMA_APRENDER_T3[PIEZA_P2.id] },
+  { pieza: PIEZA_P6, pregunta: PREGUNTA_FINAL_P6, opciones: OPCIONES_FINAL_P6, subtema: SUBTEMA_APRENDER_T3[PIEZA_P6.id] },
+];
+export const itemEnUnaFrase = ({ pieza, pregunta, opciones, subtema }) => enUnaFrase(pieza, pregunta, opciones, null, subtema);
+
 export const ITEMS_T3 = [
   enUnaFrase(PIEZA_VENDER_NO_ES_COBRAR, PREGUNTA_FINAL, OPCIONES_FINAL, "t3-ingreso-o-cobro"),
   enUnaFrase(PIEZA_LO_QUE_YA_PASO, PREGUNTA_FINAL_P3, OPCIONES_FINAL_P3, "t3-cuando-se-causa"),
   enUnaFrase(PIEZA_LO_QUE_YA_SE_PAGO, PREGUNTA_FINAL_P4, OPCIONES_FINAL_P4, "t3-ajuste-diferido"),
   enUnaFrase(PIEZA_CERRAR_EL_PERIODO, PREGUNTA_FINAL_CIERRE, OPCIONES_FINAL_CIERRE, "t3-cierre-completo"),
+  ...EN_UNA_FRASE_P2_P6.filter((x) => ubicacionDeActividad(x.pieza.id)).map(itemEnUnaFrase),
 ];
 
 /*

@@ -1,0 +1,177 @@
+# T3 · segundo encendido: medidas (2026-10-25 05:46)
+
+Sonda de cabecera real (`medir-cabecera-real.mjs`, dist en el 8099, sesión fingida, Sora e Inter de producción), solo las pantallas que cambian. 165 estados: todos caben.
+
+| ancho | pantalla | estado | cabecera | titular | figura | zona | nav fija | nav alto | holgura zona→nav | cuenta flotante | barra | errores |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 320 | vender-no-es-cobrar/nombres | sin-responder | 226 | 192 | 150 | 0 | no | 56 | 40 | 267,14 39×38 | no | 0 |
+| 320 | vender-no-es-cobrar/nombres | pista | 226 | 192 | 150 | 68 | no | 56 | 40 | 267,14 39×38 | no | 0 |
+| 320 | vender-no-es-cobrar/nombres | definicion-mas-larga | 226 | 192 | 150 | 90 | no | 56 | 40 | 267,14 39×38 | no | 0 |
+| 320 | vender-no-es-cobrar/nombres | todas | 226 | 192 | 150 | 22 | no | 56 | 24 | 267,14 39×38 | no | 0 |
+| 320 | vender-no-es-cobrar/inventario | sin-responder | 248 | 192 | 150 | 90 | sí | 68 | 0 | 267,14 39×38 | no | 0 |
+| 320 | el-mes-de-san-calixto/apertura | apertura | 248 | 192 | 150 | 66 | no | 56 | 24 | 267,14 39×38 | no | 0 |
+| 320 | el-mes-de-san-calixto/cobrados | sin-responder | 248 | 192 | 150 | 44 | no | 56 | 40 | 267,14 39×38 | no | 0 |
+| 320 | el-mes-de-san-calixto/cobrados | uno-cobrado | 248 | 192 | 150 | 66 | sí | 68 | 24 | 267,14 39×38 | no | 0 |
+| 320 | el-mes-de-san-calixto/cobrados | pista | 248 | 192 | 150 | 66 | sí | 68 | 24 | 267,14 39×38 | no | 0 |
+| 320 | el-mes-de-san-calixto/cobrados | pista-retirada | 248 | 192 | 150 | 66 | sí | 68 | 24 | 267,14 39×38 | no | 0 |
+| 320 | el-mes-de-san-calixto/cobrados | acierto | 248 | 192 | 150 | 66 | no | 56 | 24 | 267,14 39×38 | no | 0 |
+| 320 | el-mes-de-san-calixto/cobrados | dos-errores | 248 | 192 | 150 | 66 | no | 56 | 24 | 267,14 39×38 | no | 0 |
+| 320 | el-mes-de-san-calixto/haber | sin-tocar | 226 | 192 | 150 | 66 | no | 56 | 24 | 267,14 39×38 | no | 0 |
+| 320 | el-mes-de-san-calixto/haber | factura-jcc | 226 | 192 | 150 | 66 | no | 56 | 24 | 267,14 39×38 | no | 0 |
+| 320 | el-mes-de-san-calixto/haber | factura-mps | 226 | 192 | 150 | 66 | no | 56 | 24 | 267,14 39×38 | no | 0 |
+| 320 | el-mes-de-san-calixto/asiento | sin-responder | 248 | 192 | 150 | 44 | no | 56 | 40 | 267,14 39×38 | no | 0 |
+| 320 | el-mes-de-san-calixto/asiento | casilla-activa | 248 | 192 | 150 | 44 | no | 56 | 40 | 267,14 39×38 | no | 0 |
+| 320 | el-mes-de-san-calixto/asiento | acierto | 248 | 192 | 150 | 66 | no | 56 | 24 | 267,14 39×38 | no | 0 |
+| 320 | el-mes-de-san-calixto/asiento | al-reves-pista | 248 | 192 | 150 | 66 | sí | 68 | 24 | 267,14 39×38 | no | 0 |
+| 320 | el-mes-de-san-calixto/asiento | al-reves-dos-errores | 248 | 192 | 150 | 66 | sí | 68 | 24 | 267,14 39×38 | no | 0 |
+| 320 | el-mes-de-san-calixto/asiento | dos-errores-Cuentas por cobrar – clientes | 248 | 192 | 150 | 66 | sí | 68 | 24 | 267,14 39×38 | no | 0 |
+| 320 | el-mes-de-san-calixto/asiento | dos-errores-Aportes sociales | 248 | 192 | 150 | 66 | sí | 68 | 24 | 267,14 39×38 | no | 0 |
+| 320 | el-mes-de-san-calixto/asiento | centro-mas-largo | 248 | 192 | 150 | 44 | no | 56 | 40 | 267,14 39×38 | no | 0 |
+| 320 | el-mes-de-san-calixto/gastos | sin-responder | 248 | 192 | 150 | 44 | no | 56 | 24 | 267,14 39×38 | no | 0 |
+| 320 | el-mes-de-san-calixto/gastos | acierto | 248 | 192 | 150 | 66 | no | 56 | 24 | 267,14 39×38 | no | 0 |
+| 320 | el-mes-de-san-calixto/gastos | pista-gasto | 248 | 192 | 150 | 66 | no | 56 | 24 | 267,14 39×38 | no | 0 |
+| 320 | el-mes-de-san-calixto/gastos | dos-errores-gasto | 248 | 192 | 150 | 44 | no | 56 | 24 | 267,14 39×38 | no | 0 |
+| 320 | el-mes-de-san-calixto/gastos | pista-caja | 248 | 192 | 150 | 66 | no | 56 | 24 | 267,14 39×38 | no | 0 |
+| 320 | el-mes-de-san-calixto/gastos | dos-errores-caja | 248 | 192 | 150 | 44 | no | 56 | 24 | 267,14 39×38 | no | 0 |
+| 320 | el-mes-de-san-calixto/utilidad | sin-responder | 248 | 192 | 150 | 44 | no | 56 | 40 | 267,14 39×38 | no | 0 |
+| 320 | el-mes-de-san-calixto/utilidad | escribiendo | 248 | 192 | 150 | 44 | no | 56 | 40 | 267,14 39×38 | no | 0 |
+| 320 | el-mes-de-san-calixto/utilidad | pista-23150 | 248 | 192 | 150 | 66 | sí | 68 | 24 | 267,14 39×38 | no | 0 |
+| 320 | el-mes-de-san-calixto/utilidad | pista-14800 | 248 | 192 | 150 | 66 | sí | 68 | 24 | 267,14 39×38 | no | 0 |
+| 320 | el-mes-de-san-calixto/utilidad | acierto | 248 | 192 | 150 | 66 | no | 56 | 24 | 267,14 39×38 | no | 0 |
+| 320 | el-mes-de-san-calixto/utilidad | dos-errores-23150 | 248 | 192 | 150 | 44 | no | 56 | 24 | 267,14 39×38 | no | 0 |
+| 320 | el-mes-de-san-calixto/utilidad | dos-errores-14800 | 248 | 192 | 150 | 44 | no | 56 | 24 | 267,14 39×38 | no | 0 |
+| 320 | cerrar-el-periodo/separar | sin-responder | 248 | 192 | 150 | 16 | no | 56 | 40 | 267,14 39×38 | no | 0 |
+| 320 | cerrar-el-periodo/separar | pista | 248 | 192 | 150 | 68 | no | 56 | 40 | 267,14 39×38 | no | 0 |
+| 320 | cerrar-el-periodo/separar | dos-errores-paso-5 | 248 | 192 | 150 | 66 | no | 56 | 24 | 267,14 39×38 | no | 0 |
+| 320 | cerrar-el-periodo/separar | lista-se-vacian | 248 | 192 | 150 | 66 | no | 56 | 24 | 267,14 39×38 | no | 0 |
+| 320 | cerrar-el-periodo/separar | lista-no-se-vacian | 248 | 192 | 150 | 44 | no | 56 | 24 | 267,14 39×38 | no | 0 |
+| 320 | cerrar-el-periodo/ingresos | sin-responder | 248 | 192 | 150 | 66 | sí | 68 | 24 | 267,14 39×38 | no | 0 |
+| 320 | cerrar-el-periodo/ingresos | pista | 248 | 192 | 150 | 68 | no | 56 | 40 | 267,14 39×38 | no | 0 |
+| 320 | cerrar-el-periodo/ingresos | acierto | 248 | 192 | 150 | 66 | no | 56 | 24 | 267,14 39×38 | no | 0 |
+| 320 | cerrar-el-periodo/ingresos | dos-errores | 248 | 192 | 150 | 66 | no | 56 | 24 | 267,14 39×38 | no | 0 |
+| 320 | cerrar-el-periodo/ingresos | centro-mas-largo | 248 | 192 | 150 | 66 | sí | 68 | 24 | 267,14 39×38 | no | 0 |
+| 320 | cerrar-el-periodo/gastos | sin-responder | 226 | 192 | 150 | 66 | no | 56 | 40 | 267,14 39×38 | no | 0 |
+| 320 | cerrar-el-periodo/gastos | pista | 226 | 192 | 150 | 68 | no | 56 | 40 | 267,14 39×38 | no | 0 |
+| 320 | cerrar-el-periodo/gastos | acierto | 226 | 192 | 150 | 66 | no | 56 | 24 | 267,14 39×38 | no | 0 |
+| 320 | cerrar-el-periodo/gastos | dos-errores | 226 | 192 | 150 | 66 | no | 56 | 24 | 267,14 39×38 | no | 0 |
+| 320 | cerrar-el-periodo/gastos | centro-mas-largo | 226 | 192 | 150 | 66 | no | 56 | 40 | 267,14 39×38 | no | 0 |
+| 320 | cerrar-el-periodo/acacias-ingresos | sin-responder | 248 | 192 | 150 | 84 | sí | 68 | 6 | 267,14 39×38 | no | 0 |
+| 320 | cerrar-el-periodo/acacias-ingresos | pista | 248 | 192 | 150 | 68 | no | 56 | 40 | 267,14 39×38 | no | 0 |
+| 320 | cerrar-el-periodo/acacias-ingresos | acierto | 248 | 192 | 150 | 16 | no | 56 | 24 | 267,14 39×38 | no | 0 |
+| 320 | cerrar-el-periodo/acacias-ingresos | dos-errores | 248 | 192 | 150 | 84 | sí | 68 | 6 | 267,14 39×38 | no | 0 |
+| 320 | cerrar-el-periodo/acacias-ingresos | centro-mas-largo | 248 | 192 | 150 | 84 | sí | 68 | 6 | 267,14 39×38 | no | 0 |
+| 320 | cerrar-el-periodo/acacias-gastos | sin-responder | 248 | 192 | 150 | 62 | no | 56 | 40 | 267,14 39×38 | no | 0 |
+| 320 | cerrar-el-periodo/acacias-gastos | pista | 248 | 192 | 150 | 68 | no | 56 | 40 | 267,14 39×38 | no | 0 |
+| 320 | cerrar-el-periodo/acacias-gastos | acierto | 248 | 192 | 150 | 16 | no | 56 | 24 | 267,14 39×38 | no | 0 |
+| 320 | cerrar-el-periodo/acacias-gastos | dos-errores | 248 | 192 | 150 | 84 | sí | 68 | 6 | 267,14 39×38 | no | 0 |
+| 320 | cerrar-el-periodo/acacias-gastos | centro-mas-largo | 248 | 192 | 150 | 62 | no | 56 | 40 | 267,14 39×38 | no | 0 |
+| 320 | cerrar-el-periodo/perdida | sin-responder | 248 | 192 | 150 | 58 | no | 56 | 24 | 267,14 39×38 | no | 0 |
+| 320 | cerrar-el-periodo/perdida | acierto | 248 | 192 | 150 | 84 | sí | 68 | 6 | 267,14 39×38 | no | 0 |
+| 320 | cerrar-el-periodo/perdida | pista-utilidad | 248 | 192 | 150 | 86 | sí | 68 | 10 | 267,14 39×38 | no | 0 |
+| 320 | cerrar-el-periodo/perdida | dos-errores-utilidad | 248 | 192 | 150 | 90 | sí | 68 | 6 | 267,14 39×38 | no | 0 |
+| 320 | cerrar-el-periodo/perdida | pista-nada | 248 | 192 | 150 | 86 | sí | 68 | 10 | 267,14 39×38 | no | 0 |
+| 320 | cerrar-el-periodo/perdida | dos-errores-nada | 248 | 192 | 150 | 90 | sí | 68 | 6 | 267,14 39×38 | no | 0 |
+| 320 | lo-que-deja-el-periodo/apertura | paso-1-objetivo | 248 | 192 | 150 | 44 | no | 56 | 24 | 267,14 39×38 | no | 0 |
+| 320 | lo-que-deja-el-periodo/apertura | sin-responder | 248 | 192 | 150 | 88 | sí | 68 | 2 | 267,14 39×38 | no | 0 |
+| 320 | lo-que-deja-el-periodo/apertura | acierto | 248 | 192 | 150 | 44 | no | 56 | 24 | 267,14 39×38 | no | 0 |
+| 320 | lo-que-deja-el-periodo/apertura | pista-si | 248 | 192 | 150 | 66 | no | 56 | 24 | 267,14 39×38 | no | 0 |
+| 320 | lo-que-deja-el-periodo/apertura | dos-errores-si | 248 | 192 | 150 | 44 | no | 56 | 24 | 267,14 39×38 | no | 0 |
+| 320 | lo-que-deja-el-periodo/separar | sin-responder | 226 | 192 | 150 | 84 | no | 56 | 40 | 267,14 39×38 | no | 0 |
+| 320 | lo-que-deja-el-periodo/separar | pista | 226 | 192 | 150 | 84 | no | 56 | 40 | 267,14 39×38 | no | 0 |
+| 320 | lo-que-deja-el-periodo/separar | dos-errores-operacion | 226 | 192 | 150 | 62 | no | 56 | 40 | 267,14 39×38 | no | 0 |
+| 320 | lo-que-deja-el-periodo/separar | dos-errores-interes | 226 | 192 | 150 | 66 | no | 56 | 24 | 267,14 39×38 | no | 0 |
+| 320 | lo-que-deja-el-periodo/separar | paso-5 | 226 | 192 | 150 | 84 | no | 56 | 40 | 267,14 39×38 | no | 0 |
+| 320 | lo-que-deja-el-periodo/separar | acierto | 226 | 192 | 150 | 66 | no | 56 | 24 | 267,14 39×38 | no | 0 |
+| 320 | lo-que-deja-el-periodo/a-su-estado | sin-responder | 226 | 192 | 150 | 62 | no | 56 | 40 | 267,14 39×38 | no | 0 |
+| 320 | lo-que-deja-el-periodo/a-su-estado | pista | 226 | 192 | 150 | 84 | no | 56 | 40 | 267,14 39×38 | no | 0 |
+| 320 | lo-que-deja-el-periodo/a-su-estado | dos-errores-utilidad | 226 | 192 | 150 | 84 | no | 56 | 40 | 267,14 39×38 | no | 0 |
+| 320 | lo-que-deja-el-periodo/a-su-estado | dos-errores-impuesto | 226 | 192 | 150 | 44 | no | 56 | 24 | 267,14 39×38 | no | 0 |
+| 320 | lo-que-deja-el-periodo/a-su-estado | acierto | 226 | 192 | 150 | 88 | no | 56 | 24 | 267,14 39×38 | no | 0 |
+| 375 | vender-no-es-cobrar/nombres | sin-responder | 228 | 194 | 200 | 0 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | vender-no-es-cobrar/nombres | pista | 228 | 194 | 200 | 68 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | vender-no-es-cobrar/nombres | definicion-mas-larga | 228 | 194 | 200 | 68 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | vender-no-es-cobrar/nombres | todas | 228 | 194 | 200 | 22 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | el-mes-de-san-calixto/apertura | apertura | 228 | 194 | 200 | 66 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | el-mes-de-san-calixto/cobrados | sin-responder | 250 | 194 | 200 | 44 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | el-mes-de-san-calixto/cobrados | uno-cobrado | 250 | 194 | 200 | 44 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | el-mes-de-san-calixto/cobrados | pista | 250 | 194 | 200 | 44 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | el-mes-de-san-calixto/cobrados | pista-retirada | 250 | 194 | 200 | 44 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | el-mes-de-san-calixto/cobrados | acierto | 250 | 194 | 200 | 44 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | el-mes-de-san-calixto/cobrados | dos-errores | 250 | 194 | 200 | 44 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | el-mes-de-san-calixto/haber | sin-tocar | 228 | 194 | 200 | 66 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | el-mes-de-san-calixto/haber | factura-jcc | 228 | 194 | 200 | 66 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | el-mes-de-san-calixto/haber | factura-mps | 228 | 194 | 200 | 66 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | el-mes-de-san-calixto/asiento | sin-responder | 228 | 194 | 200 | 44 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | el-mes-de-san-calixto/asiento | casilla-activa | 228 | 194 | 200 | 44 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | el-mes-de-san-calixto/asiento | acierto | 228 | 194 | 200 | 44 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | el-mes-de-san-calixto/asiento | al-reves-pista | 228 | 194 | 200 | 44 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | el-mes-de-san-calixto/asiento | al-reves-dos-errores | 228 | 194 | 200 | 44 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | el-mes-de-san-calixto/asiento | dos-errores-Cuentas por cobrar – clientes | 228 | 194 | 200 | 44 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | el-mes-de-san-calixto/asiento | dos-errores-Aportes sociales | 228 | 194 | 200 | 44 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | el-mes-de-san-calixto/asiento | centro-mas-largo | 228 | 194 | 200 | 44 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | el-mes-de-san-calixto/gastos | sin-responder | 228 | 194 | 200 | 44 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | el-mes-de-san-calixto/gastos | acierto | 228 | 194 | 200 | 44 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | el-mes-de-san-calixto/gastos | pista-gasto | 228 | 194 | 200 | 44 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | el-mes-de-san-calixto/gastos | dos-errores-gasto | 228 | 194 | 200 | 44 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | el-mes-de-san-calixto/gastos | pista-caja | 228 | 194 | 200 | 44 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | el-mes-de-san-calixto/gastos | dos-errores-caja | 228 | 194 | 200 | 44 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | el-mes-de-san-calixto/utilidad | sin-responder | 228 | 194 | 200 | 44 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | el-mes-de-san-calixto/utilidad | escribiendo | 228 | 194 | 200 | 44 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | el-mes-de-san-calixto/utilidad | pista-23150 | 228 | 194 | 200 | 44 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | el-mes-de-san-calixto/utilidad | pista-14800 | 228 | 194 | 200 | 44 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | el-mes-de-san-calixto/utilidad | acierto | 228 | 194 | 200 | 66 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | el-mes-de-san-calixto/utilidad | dos-errores-23150 | 228 | 194 | 200 | 44 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | el-mes-de-san-calixto/utilidad | dos-errores-14800 | 228 | 194 | 200 | 44 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | cerrar-el-periodo/separar | sin-responder | 228 | 194 | 200 | 16 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | cerrar-el-periodo/separar | pista | 228 | 194 | 200 | 68 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | cerrar-el-periodo/separar | dos-errores-paso-5 | 228 | 194 | 200 | 44 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | cerrar-el-periodo/separar | lista-se-vacian | 228 | 194 | 200 | 66 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | cerrar-el-periodo/separar | lista-no-se-vacian | 228 | 194 | 200 | 44 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | cerrar-el-periodo/ingresos | sin-responder | 250 | 194 | 200 | 44 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | cerrar-el-periodo/ingresos | pista | 250 | 194 | 200 | 68 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | cerrar-el-periodo/ingresos | acierto | 250 | 194 | 200 | 66 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | cerrar-el-periodo/ingresos | dos-errores | 250 | 194 | 200 | 66 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | cerrar-el-periodo/ingresos | centro-mas-largo | 250 | 194 | 200 | 44 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | cerrar-el-periodo/gastos | sin-responder | 228 | 194 | 200 | 66 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | cerrar-el-periodo/gastos | pista | 228 | 194 | 200 | 68 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | cerrar-el-periodo/gastos | acierto | 228 | 194 | 200 | 66 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | cerrar-el-periodo/gastos | dos-errores | 228 | 194 | 200 | 66 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | cerrar-el-periodo/gastos | centro-mas-largo | 228 | 194 | 200 | 66 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | cerrar-el-periodo/acacias-ingresos | sin-responder | 228 | 194 | 200 | 84 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | cerrar-el-periodo/acacias-ingresos | pista | 228 | 194 | 200 | 68 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | cerrar-el-periodo/acacias-ingresos | acierto | 228 | 194 | 200 | 16 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | cerrar-el-periodo/acacias-ingresos | dos-errores | 228 | 194 | 200 | 62 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | cerrar-el-periodo/acacias-ingresos | centro-mas-largo | 228 | 194 | 200 | 84 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | cerrar-el-periodo/acacias-gastos | sin-responder | 228 | 194 | 200 | 62 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | cerrar-el-periodo/acacias-gastos | pista | 228 | 194 | 200 | 68 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | cerrar-el-periodo/acacias-gastos | acierto | 228 | 194 | 200 | 16 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | cerrar-el-periodo/acacias-gastos | dos-errores | 228 | 194 | 200 | 62 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | cerrar-el-periodo/acacias-gastos | centro-mas-largo | 228 | 194 | 200 | 62 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | cerrar-el-periodo/perdida | sin-responder | 250 | 194 | 200 | 58 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | cerrar-el-periodo/perdida | acierto | 250 | 194 | 200 | 84 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | cerrar-el-periodo/perdida | pista-utilidad | 250 | 194 | 200 | 86 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | cerrar-el-periodo/perdida | dos-errores-utilidad | 250 | 194 | 200 | 68 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | cerrar-el-periodo/perdida | pista-nada | 250 | 194 | 200 | 86 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | cerrar-el-periodo/perdida | dos-errores-nada | 250 | 194 | 200 | 90 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | lo-que-deja-el-periodo/apertura | paso-1-objetivo | 250 | 194 | 200 | 44 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | lo-que-deja-el-periodo/apertura | sin-responder | 250 | 194 | 200 | 66 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | lo-que-deja-el-periodo/apertura | acierto | 250 | 194 | 200 | 44 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | lo-que-deja-el-periodo/apertura | pista-si | 250 | 194 | 200 | 44 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | lo-que-deja-el-periodo/apertura | dos-errores-si | 250 | 194 | 200 | 44 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | lo-que-deja-el-periodo/separar | sin-responder | 228 | 194 | 200 | 62 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | lo-que-deja-el-periodo/separar | pista | 228 | 194 | 200 | 62 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | lo-que-deja-el-periodo/separar | dos-errores-operacion | 228 | 194 | 200 | 62 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | lo-que-deja-el-periodo/separar | dos-errores-interes | 228 | 194 | 200 | 66 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | lo-que-deja-el-periodo/separar | paso-5 | 228 | 194 | 200 | 84 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | lo-que-deja-el-periodo/separar | acierto | 228 | 194 | 200 | 66 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | lo-que-deja-el-periodo/a-su-estado | sin-responder | 228 | 194 | 200 | 62 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | lo-que-deja-el-periodo/a-su-estado | pista | 228 | 194 | 200 | 84 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | lo-que-deja-el-periodo/a-su-estado | dos-errores-utilidad | 228 | 194 | 200 | 84 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | lo-que-deja-el-periodo/a-su-estado | dos-errores-impuesto | 228 | 194 | 200 | 44 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+| 375 | lo-que-deja-el-periodo/a-su-estado | acierto | 228 | 194 | 200 | 66 | no | 56 | 24 | 322,16 39×38 | no | 0 |
+
+Todo cabe: el fondo de la zona queda por encima de la barra en cada estado medido.
+
+## Umbrales vigilados
+
+- P1-7 inventario · sin-responder · 320: holgura 0 px (mínimo 0) → vigilado, pasa

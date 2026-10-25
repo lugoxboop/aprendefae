@@ -74,6 +74,30 @@ Medido en aprendefae.com, con marcos de 320 y 375 px dentro del propio sitio:
 **B1, B2 y B5 se comprueban con pruebas automáticas**, no a ojo. Una barra que
 depende de que alguien se acuerde de mirarla es la misma que ya falló.
 
+### Alcance de B1 (Yujiro, Célula D, 25 oct 2026, por #603)
+
+Ukyo midió el catálogo entero (110 piezas) y preguntó si B1 vale solo para
+Aprender o también para Hacer. Decisión, reversible:
+
+- **B1 vale para Aprender y para Hacer.** B2 sigue siendo solo de Aprender, como
+  dice su texto. Razón: el estudiante del teléfono es el mismo en las dos. En
+  Hacer, 258 palabras y 1.674 px antes de poder tocar algo (el peor caso de
+  #603) es el mismo muro que originó la barra en el T4.
+- **Desde dónde se cuenta.** En Hacer, los 280 px y las 40 palabras se cuentan
+  desde el tope de la tarjeta de la ronda, sin «Así se juega». La cabecera
+  compartida de Hacer (título, contador, píldora de FP) no cuenta, porque es
+  igual en todas las piezas.
+- **Qué es figura.** La figura de cada pieza se marca con `data-figura`, que
+  también puede ir en una tabla de cuentas o en una ficha del hecho, si eso es lo
+  que el estudiante mira para decidir. Lo que no lleva `data-figura` es
+  enunciado. Así B1 se mide de una pasada en todo el catálogo
+  (`node scripts/banco.mjs --todas --b1 --ancho 320`) y no con un selector
+  distinto en cada célula.
+- **Qué obliga hoy.** B1 bloquea las piezas nuevas y las que se tocan. Las que ya
+  están publicadas y lo incumplen no bloquean nada: entran a un programa por
+  lotes que empieza por las de mayor arranque (la lista de #603). Lo reparte
+  Miku entre las células dueñas.
+
 ## Cómo se revisa
 
 En la página publicada, o en el build servido en local con Playwright y el

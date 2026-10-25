@@ -10,8 +10,8 @@
  *
  * Las Acacias (pantallas 7, 8 y 9): cuentas y saldos de los textos v5 §1 de
  * Miyata, un escenario simulado que lleva «Escenario simulado» como primer
- * renglón. ⛔ Su consigna no está en ningún archivo: se pidió en el PR y no se
- * inventa (la zona lleva solo la marca hasta que llegue).
+ * renglón. Sus textos (consignas, errores de separación, pregunta y acierto)
+ * son los de la v6 (lote 18), en TEXTOS_ACACIAS y ERRORES_ACACIAS.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 import {
@@ -22,7 +22,7 @@ import {
 import { PIEZA_VENDER_NO_ES_COBRAR } from "../../../../../data/contabilidadTema3.js";
 import {
   TITULARES_P5, OPC_P5_2, OPC_P5_6, ERROR_P5_3, ERRORES_P5_6, PISTAS, PASOS_P5_2, YA_PUESTAS_P5_2, RAZON_HAZ_T3, RAZONES_HAZ_T3,
-  LAS_ACACIAS, ESCENARIO_SIMULADO,
+  LAS_ACACIAS, ESCENARIO_SIMULADO, TEXTOS_ACACIAS, ERRORES_ACACIAS,
 } from "../../../../../data/t3SecuenciasTextos.js";
 import { hazResuelto, mostrarCorrecto, responderHaz } from "../../../../secuencia/secuencia.js";
 import {
@@ -199,10 +199,11 @@ export function pasar(estado, objetivo, cuenta) {
   return { ...e, ...r, eleccion: cuenta, pasadas: mostrarCorrecto(r) ? objetivo.map((c) => c.cuenta) : e.pasadas };
 }
 
-function pantallaPasar({ id, titular, objetivo, antes, despues, previas = [], siguen = SIGUEN, encima = [], nombreFigura = null }) {
+function pantallaPasar({ id, titular, objetivo, antes, despues, previas = [], siguen = SIGUEN, encima = [], nombreFigura = null, errores = {} }) {
   const candidatas = [...objetivo.map((c) => c.cuenta), ...siguen];
   /* `encima`: lo que va siempre primero en la zona (Las Acacias: «Escenario simulado»). */
-  const zonaDe = (estado) => [...encima, ...zonaHaz(estado, { antes, despues, pista: PISTAS.p5.pasar, porque: () => null })];
+  /* `errores`: el porqué por cuenta que no se vacía (Las Acacias, v6 §2); San Calixto no lo trae. */
+  const zonaDe = (estado) => [...encima, ...zonaHaz(estado, { antes, despues, pista: PISTAS.p5.pasar, porque: (el) => errores[el] ?? null })];
   function F({ estado, setEstado }) {
     const e = estado ?? PASAR_INICIAL;
     const listo = hazResuelto(e);
@@ -297,15 +298,27 @@ export const ACACIAS_TOTAL_INGRESOS = suma(ACACIAS_INGRESOS);
 export const ACACIAS_TOTAL_GASTOS = suma(ACACIAS_GASTOS);
 /* El primer renglón de las tres pantallas: no sale del libro. */
 const MARCA_ESCENARIO = { pie: ESCENARIO_SIMULADO };
-/* ⛔ Lo que falta y no se inventa: la consigna (pedida en el PR a Kamogawa). */
-const FALTA_CONSIGNA = "La consigna de las pantallas de Las Acacias (lote 4 de Miyata, nunca entró en un archivo)";
 const NOMBRE_FIGURA_ACACIAS = `La cuenta ${GANANCIAS_Y_PERDIDAS} en T y las cuentas de ${LAS_ACACIAS.nombre}`;
 
 /* P5-9 · ¿Utilidad o pérdida? El O4 con los totales de Las Acacias; el resultado se destapa al responder. */
 function pantallaPerdida() {
   const correcta = "perdida";
   const resultado = OPC_P5_6.find((o) => o.id === correcta).texto;
-  const zonaDe = (estado) => [MARCA_ESCENARIO, ...zonaHaz(estado, { antes: [], despues: [], pista: PISTAS.p5.acacias, porque: (el) => ERRORES_P5_6[el] ?? null })];
+  /*
+   * La pregunta y el acierto de la v6 §3. El pie de la p. 123 acompaña a la
+   * pregunta mientras está abierta (sin responder y con la pista), al final de
+   * la zona. Resuelta, no cabe: con la cabecera real a 320, el acierto y el
+   * porqué (3 renglones) más el pie dejan la zona 12 px bajo la barra fija, y
+   * junto a la marca se parte en dos renglones (−10). Medido en el PR.
+   */
+  const zonaDe = (estado) => {
+    const abierta = !hazResuelto(estado ?? HAZ_T3) && !mostrarCorrecto(estado ?? HAZ_T3);
+    return [
+      MARCA_ESCENARIO,
+      ...zonaHaz(estado, { antes: [{ texto: TEXTOS_ACACIAS.pregunta }], despues: [{ texto: TEXTOS_ACACIAS.acierto }], pista: PISTAS.p5.acacias, porque: (el) => ERRORES_P5_6[el] ?? null }),
+      ...(abierta ? [{ pie: TEXTOS_ACACIAS.pie }] : []),
+    ];
+  };
   function F({ estado, setEstado }) {
     const e = estado ?? HAZ_T3;
     return (
@@ -322,7 +335,7 @@ function pantallaPerdida() {
   }
   return {
     id: "perdida", tipo: "haz", titular: TITULARES_P5.perdida, Figura: F, nombreFigura: `${GANANCIAS_Y_PERDIDAS} de ${LAS_ACACIAS.nombre}: ingresos y gastos en barras`,
-    estadoInicial: HAZ_T3, resuelta: hazResuelto, razon: RAZON_HAZ_T3, zonaDe, pendiente: FALTA_CONSIGNA,
+    estadoInicial: HAZ_T3, resuelta: hazResuelto, razon: RAZON_HAZ_T3, zonaDe,
     opciones: OPC_P5_6, errores: ERRORES_P5_6, pista: PISTAS.p5.acacias,
     medir: medirEleccion(OPC_P5_6, correcta),
   };
@@ -391,16 +404,16 @@ export const SECUENCIA_P5 = {
     {
       ...pantallaPasar({
         id: "acacias-ingresos", titular: TITULARES_P5.acaciasIngresos, objetivo: ACACIAS_INGRESOS, siguen: ACACIAS_SIGUEN,
-        encima: [MARCA_ESCENARIO], antes: [], despues: [], nombreFigura: NOMBRE_FIGURA_ACACIAS,
+        encima: [MARCA_ESCENARIO], antes: [{ texto: TEXTOS_ACACIAS.consignaIngresos }], despues: [], nombreFigura: NOMBRE_FIGURA_ACACIAS,
+        errores: ERRORES_ACACIAS,
       }),
-      pendiente: FALTA_CONSIGNA,
     },
     {
       ...pantallaPasar({
         id: "acacias-gastos", titular: TITULARES_P5.acaciasGastos, objetivo: ACACIAS_GASTOS, previas: ACACIAS_INGRESOS, siguen: ACACIAS_SIGUEN,
-        encima: [MARCA_ESCENARIO], antes: [], despues: [], nombreFigura: NOMBRE_FIGURA_ACACIAS,
+        encima: [MARCA_ESCENARIO], antes: [{ texto: TEXTOS_ACACIAS.consignaGastos }], despues: [], nombreFigura: NOMBRE_FIGURA_ACACIAS,
+        errores: ERRORES_ACACIAS,
       }),
-      pendiente: FALTA_CONSIGNA,
     },
     pantallaPerdida(),
     {

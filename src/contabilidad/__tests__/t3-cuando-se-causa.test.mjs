@@ -209,7 +209,8 @@ test("★★★ los 8 px entre filas no responden: las filas van separadas por u
   const item = A2.ITEMS_ACT2[5];
   const m = await montar({ items: [item] });
   try {
-    const grupo = fila(m.caja, "cotizacion").parentElement;
+    /* Volumen (#4): la fila va dentro de su bloque con canto; el hueco de 8 px está entre bloques. */
+    const grupo = fila(m.caja, "cotizacion").closest(".fae-rel").parentElement;
     assert.equal(grupo.style.rowGap, "8px");
     assert.notEqual(grupo.tagName, "BUTTON");
     await tocar(grupo);
@@ -353,9 +354,11 @@ test("★★★ al acertar el día: la línea cede a la pregunta y tres filas; l
     for (const o of ops) {
       assert.equal(o.style.minHeight, "56px");
       assert.equal(o.style.width, "100%");
-      assert.equal(o.style.border, "1px solid rgba(248, 249, 250, 0.35)");
-      assert.equal(o.style.background, "transparent");
-      assert.equal(o.querySelector("[data-hueco-pastilla]").style.height, "20px");
+      /* Volumen (#4): en reposo, cara N1 en E1; el contorno plano lo reemplaza la silueta del bloque. */
+      assert.equal(o.style.border, "1px solid transparent");
+      assert.equal(o.closest(".fae-rel").getAttribute("data-elevacion"), "1");
+      assert.equal(o.style.background, "rgb(29, 53, 87)");
+      assert.equal(o.closest("[data-bloque-segunda]").querySelector("[data-hueco-pastilla]").style.height, "20px");
     }
     assert.equal(panel(m.caja), null, "la devolución no sale antes de la segunda decisión");
     assert.equal(avance(m.caja), undefined);
@@ -381,8 +384,8 @@ test("★★★ segunda bien: 2 px #F8F9FA y «Correcto» con Check; después la
     assert.equal(o.getAttribute("data-estado"), "bien");
     assert.equal(o.style.border, "2px solid rgb(248, 249, 250)");
     assert.equal(o.style.padding, "13px");
-    assert.equal(o.querySelector("[data-pastilla]").textContent, "Correcto");
-    assert.ok(o.querySelector("[data-pastilla] svg"));
+    assert.equal(o.closest("[data-bloque-segunda]").querySelector("[data-pastilla]").textContent, "Correcto");
+    assert.ok(o.closest("[data-bloque-segunda]").querySelector("[data-pastilla] svg"));
     assert.equal(o.getAttribute("aria-label"), "Por pagar, correcto");
     assert.equal(mensaje(m.caja).getAttribute("data-mensaje-segunda"), "acierto");
     assert.equal(mensaje(m.caja).style.borderLeft, "3px solid rgb(184, 196, 212)");
@@ -409,7 +412,7 @@ for (const [k, mal] of [[0, "nada"], [0, "por-pagar"], [1, "por-cobrar"], [1, "n
       const o = opcion(m.caja, mal);
       assert.equal(o.getAttribute("data-estado"), "mal");
       assert.equal(o.style.border, "2px solid rgb(231, 111, 81)");
-      assert.equal(o.querySelector("[data-pastilla]").textContent, "No va aquí");
+      assert.equal(o.closest("[data-bloque-segunda]").querySelector("[data-pastilla]").textContent, "No va aquí");
       const bloque = mensaje(m.caja);
       assert.equal(bloque.getAttribute("data-mensaje-segunda"), "error");
       assert.deepEqual(textosMensaje(m.caja), [`Incorrecto: ${A2.ERRORES_SEGUNDA_ACT2[item.queda][mal]}`]);
@@ -422,7 +425,7 @@ for (const [k, mal] of [[0, "nada"], [0, "por-pagar"], [1, "por-cobrar"], [1, "n
       const c = opcion(m.caja, item.queda);
       assert.equal(c.getAttribute("data-estado"), "era");
       assert.equal(c.style.border, "2px solid rgb(248, 249, 250)");
-      assert.equal(c.querySelector("[data-pastilla]").textContent, "Iba aquí");
+      assert.equal(c.closest("[data-bloque-segunda]").querySelector("[data-pastilla]").textContent, "Iba aquí");
       assert.equal(m.caja.querySelectorAll("[data-mensaje-segunda]").length, 1, "un solo bloque");
       assert.deepEqual(textosMensaje(m.caja), [`Incorrecto: ${A2.ERRORES_SEGUNDA_ACT2[item.queda][mal]}`, item.acierto], "el error y después la devolución, en el mismo bloque");
       assert.equal(panel(m.caja), null);
