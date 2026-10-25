@@ -254,9 +254,11 @@ test("★★★ al acertar el grupo 3: las pestañas ceden a la pregunta y tres 
     assert.deepEqual(ops.map((o) => o.textContent), ["Un aporte", "Una deuda", "Un activo vendido"]);
     for (const o of ops) {
       assert.equal(o.style.width, "100%");
-      assert.equal(o.style.border, "1px solid rgba(248, 249, 250, 0.35)");
-      assert.equal(o.style.background, "transparent");
-      assert.equal(o.querySelector("[data-hueco-pastilla]").style.height, "20px");
+      /* Volumen (#4): en reposo, cara N1 en E1; el contorno plano lo reemplaza la silueta del bloque. */
+      assert.equal(o.style.border, "1px solid transparent");
+      assert.equal(o.closest(".fae-rel").getAttribute("data-elevacion"), "1");
+      assert.equal(o.style.background, "rgb(29, 53, 87)");
+      assert.equal(o.closest("[data-bloque-segunda]").querySelector("[data-hueco-pastilla]").style.height, "20px");
     }
     assert.equal(retro(m.caja), "");
     assert.equal(boton(m.caja, "Colocar la ficha"), undefined, "un toque califica: sin «Colocar la ficha»");
@@ -276,8 +278,8 @@ test("★★★ segunda bien: «Correcto» con Check y 2 px #F8F9FA; después la
     assert.equal(o.getAttribute("data-estado"), "bien");
     assert.equal(o.style.border, "2px solid rgb(248, 249, 250)");
     assert.equal(o.style.padding, "8px 10px");
-    assert.equal(o.querySelector("[data-pastilla]").textContent, "Correcto");
-    assert.ok(o.querySelector("[data-pastilla] svg"));
+    assert.equal(o.closest("[data-bloque-segunda]").querySelector("[data-pastilla]").textContent, "Correcto");
+    assert.ok(o.closest("[data-bloque-segunda]").querySelector("[data-pastilla] svg"));
     assert.equal(mensaje(m.caja).getAttribute("data-mensaje-segunda"), "acierto");
     assert.equal(mensaje(m.caja).style.borderLeft, "3px solid rgb(184, 196, 212)");
     assert.equal(mensaje(m.caja).style.background, "rgba(184, 196, 212, 0.12)");
@@ -304,7 +306,7 @@ for (const [k, mal] of [[0, "deuda"], [0, "activo"], [1, "aporte"], [2, "aporte"
       const o = opcion(m.caja, mal);
       assert.equal(o.getAttribute("data-estado"), "mal");
       assert.equal(o.style.border, "2px solid rgb(231, 111, 81)");
-      assert.equal(o.querySelector("[data-pastilla]").textContent, "No va aquí");
+      assert.equal(o.closest("[data-bloque-segunda]").querySelector("[data-pastilla]").textContent, "No va aquí");
       const bloque = mensaje(m.caja);
       assert.equal(bloque.getAttribute("data-mensaje-segunda"), "error");
       assert.deepEqual(textosMensaje(m.caja), [`Incorrecto: ${A1.ERRORES_SEGUNDA_ACT1_T3[x.queEs][mal]}`]);
@@ -317,7 +319,7 @@ for (const [k, mal] of [[0, "deuda"], [0, "activo"], [1, "aporte"], [2, "aporte"
       const c = opcion(m.caja, x.queEs);
       assert.equal(c.getAttribute("data-estado"), "era");
       assert.equal(c.style.border, "2px solid rgb(248, 249, 250)");
-      assert.equal(c.querySelector("[data-pastilla]").textContent, "Iba aquí");
+      assert.equal(c.closest("[data-bloque-segunda]").querySelector("[data-pastilla]").textContent, "Iba aquí");
       assert.equal(m.caja.querySelectorAll("[data-mensaje-segunda]").length, 1, "un solo bloque");
       assert.deepEqual(textosMensaje(m.caja), [`Incorrecto: ${A1.ERRORES_SEGUNDA_ACT1_T3[x.queEs][mal]}`, x.acierto], "el error y después la devolución, en el mismo bloque");
       assert.equal(retro(m.caja), "");

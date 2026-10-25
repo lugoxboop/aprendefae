@@ -17,6 +17,9 @@ import {
   CuentaDeValor, Ficha, FichaEnVuelo, EstilosDeVerbos, useArrastre,
   useMovimientoReducido, SOLO_LECTOR,
 } from "./verbos.jsx";
+/* Todo lo que se toca mide al menos esto, a lo alto y a lo ancho (Ukyo #585,
+ * lote T2-12). Se gana con alto y relleno, nunca con letra: la letra no cambia. */
+export const TOQUE_MINIMO = 44;
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -348,6 +351,7 @@ export default function DebitaOAcredita({
                     <div className={rebotando ? "fae-a4-rebota" : "fae-a4-pulso"} style={{ width: "120px" }}>
                       <Ficha
                         valor={valorFicha}
+                        alto={TOQUE_MINIMO}
                         lado={DEBE}
                         color="rgba(248,249,250,0.5)"
                         tomada={arrastre.tomada != null}
