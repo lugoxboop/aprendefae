@@ -104,6 +104,15 @@ export const SLIDES_T4 = [
 ].filter((s) => s.crear).sort((a, b) => a.numero - b.numero);
 const CSS_SEC = CSS_SLIDES + SLIDES_T4.map((s) => s.css).join("");
 
+/*
+ * Para el banco común (scripts/banco.mjs, #583): las piezas de los slides en
+ * el caso 1, las mismas que pinta la vista, con su CSS. El banco monta
+ * SecuenciaAprender sin el envoltorio `.t4-sec`, así que la regla del alto de
+ * la figura va también por la clave del tema.
+ */
+export const PIEZAS_T4_SLIDES = SLIDES_T4.map((s) => ({ ...s.crear(1), altoFigura: ALTO_FIGURA_T4 }));
+export const CSS_T4_SLIDES = `${CSS_SEC}[data-secuencia^="${TEMA_T4}"] .fae-sec-figura { height: auto; }`;
+
 /* La clave de lo guardado en la pestaña lleva el caso de cada pieza (§5.2 de Ukyo: tema/pieza/caso). */
 export const temaIdSlides = (casos) => `${TEMA_T4}/${SLIDES_T4.map((s) => casos[s.id] ?? 1).join("")}`;
 
