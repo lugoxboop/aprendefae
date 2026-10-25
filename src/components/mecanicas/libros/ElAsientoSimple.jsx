@@ -20,6 +20,9 @@ import {
   useMovimientoReducido, SOLO_LECTOR,
 } from "./verbos.jsx";
 import { TONO_ROTULO } from "./debeHaber/piezasDebeHaber.jsx";
+/* Todo lo que se toca mide al menos esto, a lo alto y a lo ancho (Ukyo #585,
+ * lote T2-12). Se gana con alto y relleno, nunca con letra: la letra no cambia. */
+export const TOQUE_MINIMO = 44;
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -192,7 +195,8 @@ function CuentaT({
             lineHeight: 1.2, color: FAE.text, textAlign: "center",
             /* Hasta dos líneas, nunca abreviado: el nombre exacto se aprende. */
             display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical",
-            overflow: "hidden", minHeight: "28px",
+            /* El mismo alto que el hueco «sin nombre», para que la T no salte al nombrarla. */
+            overflow: "hidden", minHeight: `${TOQUE_MINIMO}px`,
           }}>
             {cuenta}
           </p>
@@ -205,7 +209,7 @@ function CuentaT({
             onClick={destinoNombre ? () => onTocar(`nombre:${indice}`) : undefined}
             aria-label={`Poner un nombre en la cuenta ${indice + 1}`}
             style={{
-              display: "block", width: "100%", margin: "0 0 7px", minHeight: "28px",
+              display: "block", width: "100%", margin: "0 0 7px", minHeight: `${TOQUE_MINIMO}px`,
               borderRadius: "8px", background: tomada != null ? "rgba(184,196,212,0.13)" : "transparent",
               border: `1px dashed ${tomada != null ? NEUTRO : "rgba(248,249,250,0.22)"}`,
               color: TEXTO_ATENUADO, fontFamily: SORA, fontSize: "10.5px",
@@ -527,7 +531,7 @@ export default function ElAsientoSimple({
                       type="button"
                       onClick={() => setFilas((xs) => xs.map((x, k) => (k === i ? { ...x, lado: null } : x)))}
                       style={{
-                        flex: "1 1 0", padding: "11px 8px", borderRadius: "9px", cursor: "pointer",
+                        flex: "1 1 0", minHeight: `${TOQUE_MINIMO}px`, padding: "11px 8px", borderRadius: "9px", cursor: "pointer",
                         background: "transparent", border: "1px dashed rgba(248,249,250,0.22)",
                         color: "rgba(248,249,250,0.5)", fontFamily: SORA, fontSize: "11px",
                       }}
@@ -539,7 +543,7 @@ export default function ElAsientoSimple({
                     <div key={i} data-ficha-valor={i} className={arrastre.tomada ? undefined : "fae-a6-pulso"} style={{ flex: "1 1 0" }}>
                       <Ficha
                         valor={a.valor}
-                        alto={38}
+                        alto={TOQUE_MINIMO}
                         lado={DEBE}
                         color="rgba(248,249,250,0.5)"
                         tomada={arrastre.tomada === `valor:${i}`}
@@ -552,7 +556,7 @@ export default function ElAsientoSimple({
               </div>
             )
             : (
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "7px" }}>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
                 {actual.banco.map((c) => {
                   const puesta = filas.some((f) => f.cuenta === c);
                   return (
@@ -560,6 +564,7 @@ export default function ElAsientoSimple({
                       key={c}
                       valor={0}
                       texto={c}
+                      alto={TOQUE_MINIMO}
                       lado={DEBE}
                       color="rgba(248,249,250,0.5)"
                       tomada={arrastre.tomada === c}

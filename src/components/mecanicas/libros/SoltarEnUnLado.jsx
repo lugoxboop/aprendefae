@@ -22,6 +22,9 @@ import {
  * visual que allí quedó establecido, no uno parecido.
  */
 import { TONO_ROTULO, MarcadorDeSaldo } from "./debeHaber/piezasDebeHaber.jsx";
+/* Todo lo que se toca mide al menos esto, a lo alto y a lo ancho (Ukyo #585,
+ * lote T2-12). Se gana con alto y relleno, nunca con letra: la letra no cambia. */
+export const TOQUE_MINIMO = 44;
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -343,6 +346,7 @@ export default function SoltarEnUnLado({
           >
             <Ficha
               valor={valor}
+              alto={TOQUE_MINIMO}
               lado={DEBE}
               color="rgba(248,249,250,0.55)"
               tomada={arrastre.tomada === valor}
