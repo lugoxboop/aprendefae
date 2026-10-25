@@ -1,6 +1,6 @@
 import { FileText } from "lucide-react";
 import { FAE } from "../../../../../theme.js";
-import { ID, USUARIOS, PREGUNTA_FINAL, VACIO_CAPA_3 } from "../../../../../data/contabilidadIntro.js";
+import { ID, USUARIOS, VACIO_CAPA_3 } from "../../../../../data/contabilidadIntro.js";
 import { OCHO_SEC, deFicha } from "../../../../../data/contabilidadT1Secuencia.js";
 import { BALANCE } from "../../../../../contabilidad/recorridoDeUnHecho.js";
 import { pesos } from "../../../../../data/contabilidad.js";
@@ -110,7 +110,7 @@ export const PIEZA_OCHO_LEEN = conFases({
     { id: "paso-1", tipo: "apertura", ...pick({ ...T.paso1, apoyo: null }), Figura: figuraCuatro(T.paso1.personas) },
     { id: "paso-2", tipo: "miralo", ...pick({ ...T.paso2, apoyo: null }), Figura: figuraCuatro(T.paso2.personas) },
     {
-      id: "frase", tipo: "haz", ...pick({ ...T.frase, apoyo: PREGUNTA_FINAL }), resuelta: paradaResuelta, Figura: FiguraFrase,
+      id: "frase", tipo: "haz", ...pick({ ...T.frase, apoyo: null }), resuelta: paradaResuelta, Figura: FiguraFrase,
     },
     { id: "puente", tipo: "cierre", ...pick(T.puente), Figura: FiguraPuente },
   ],

@@ -358,7 +358,7 @@ export const PIEZA_ARTICULAN = conFases({
       id: "clasifica", tipo: "haz", ...sinApoyo(T.clasifica), pasos: N_FLECHAS - 1,
       rotulosPaso: CLASIFICA.seClasifican.slice(1).map(textoFlecha), resuelta: itemsResueltos(N_FLECHAS), Figura: FiguraClasifica,
     },
-    { id: "frase", tipo: "haz", ...pick(T.frase), resuelta: paradaResuelta, Figura: figuraFrase(FICHA_FRASE_A4) },
+    { id: "frase", tipo: "haz", ...sinApoyo(T.frase), resuelta: paradaResuelta, Figura: figuraFrase(FICHA_FRASE_A4) },
     /* El último cierre del tema: «Ir a Hacer» lo pinta la vista (`final`), que hoy dice «tema» (pendiente de Erwin y Miku). */
     { id: "cierre", tipo: "cierre", ...pick(T.cierre), Figura: FiguraCierre },
   ],

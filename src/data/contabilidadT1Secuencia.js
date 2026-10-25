@@ -38,8 +38,29 @@ import { CALEJA, ACTIVO, PASIVO, PATRIMONIO, mayorConSaldos, tipoDeCuenta } from
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-/* La pantalla `n` de la ficha de Futaba de una pieza (las pistas y devoluciones auditadas). */
-export const deFicha = (pieza, n) => pantallasDe(pieza).find((p) => p.n === n) ?? null;
+/*
+ * Las devoluciones que un lote posterior de Futaba cambió y que la secuencia
+ * ya usa. La ficha (contabilidadT1Pantallas.js) no es de la célula de código
+ * de la secuencia: aquí se pisa la devolución, sin tocar la ficha, hasta que
+ * Futaba la cambie allí (y entonces esta lista se vacía).
+ *
+ *   cu0-a2 · 14 (la frase, a2 · 9 de la secuencia), opción p2o4 «Porque el
+ *   contador ajusta las cifras…»: lote H (b-t1-lote-24oct-h-futaba.md, p. 35).
+ */
+export const DEVOLUCIONES_POSTERIORES = {
+  [ID_P2]: { 14: { p2o4: "Nadie fuerza las cifras: dan igual porque cada hecho mueve los dos lados a la vez." } },
+};
+
+/* La pantalla `n` de la ficha de Futaba de una pieza (las pistas y devoluciones auditadas), con las devoluciones posteriores. */
+export function deFicha(pieza, n) {
+  const p = pantallasDe(pieza).find((x) => x.n === n) ?? null;
+  const nuevas = DEVOLUCIONES_POSTERIORES[pieza]?.[n];
+  if (!p || !nuevas || !p.opciones) return p;
+  return {
+    ...p,
+    opciones: p.opciones.map((o) => (nuevas[o.id] ? { ...o, devolucion: { ...o.devolucion, texto: nuevas[o.id], origen: "nuevo" } } : o)),
+  };
+}
 
 export const ID_OCHO_LEEN = "cu0-a1b-ocho-leen-lo-mismo";
 
@@ -59,8 +80,8 @@ export const A1_SEC = {
     },
     verbos: {
       titular: "Anotar es uno de siete verbos",
-      /* Lote G de Futaba. */
-      apoyo: "Toca lo que el sistema permite hacer con los hechos. Son siete verbos; registrar es anotar.",
+      /* Lote H de Futaba (b-t1-lote-24oct-h-futaba.md; antes, el del lote G). */
+      apoyo: "Toca los siete verbos. No son los cinco pasos, aunque registrar es anotar: el paso 3.",
       nombreFigura: "La definición del libro, con siete verbos para tocar y un contador.",
     },
     adentroAfuera: {

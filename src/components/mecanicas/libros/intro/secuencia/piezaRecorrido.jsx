@@ -9,7 +9,7 @@ import { FormaHecho } from "../formas.jsx";
 import { SIN_DATO } from "../../../../../data/contabilidadIntro.js";
 import {
   MarcoFigura, Riel, Escenario, Nota, Fila, SORA, INTER, SECUNDARIO, NAVY,
-  PARADA_INICIAL, paradaResuelta, responderParada, estadoEnParada, DevolucionParada, CANTO, N2, SILUETA, conFases,
+  PARADA_INICIAL, paradaResuelta, responderParada, estadoEnParada, DevolucionParada, CANTO, N2, SILUETA, conFases, eraEstaDe,
 } from "./figurasT1.jsx";
 
 /*
@@ -276,6 +276,7 @@ const figuraParada = ({ ficha, rotulos, encendidos, duda, Arriba }) => function 
           onElegir={(id) => setEstado(responderParada(e, id, correcta))}
           activa={!resuelta}
           data="data-parada"
+          eraEsta={eraEstaDe(e, correcta)}
         />
         <DevolucionParada
           estado={e}

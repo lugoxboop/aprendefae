@@ -161,7 +161,7 @@ export function Nota({ children, ...resto }) {
  * tercera nacía detrás del bloque pegado. Rótulos cortos, de dos renglones
  * como mucho.
  */
-export function Fila({ opciones, estadoDe = () => REPOSO, onElegir, activa = true, data = "data-opcion" }) {
+export function Fila({ opciones, estadoDe = () => REPOSO, onElegir, activa = true, data = "data-opcion", eraEsta = null }) {
   return (
     <div role="group" style={{ display: "grid", gridTemplateColumns: `repeat(${opciones.length}, minmax(0, 1fr))`, gap: "6px" }}>
       {opciones.map((o) => {
@@ -179,9 +179,10 @@ export function Fila({ opciones, estadoDe = () => REPOSO, onElegir, activa = tru
               minWidth: 0, minHeight: "44px", padding: "4px 6px", borderRadius: "10px", boxSizing: "border-box",
               fontFamily: INTER, fontSize: "13px", fontWeight: 600, lineHeight: "16px", color: FAE.text,
               cursor: activa ? "pointer" : "default", overflowWrap: "anywhere",
-              ...estiloBoton(estado),
+              ...estiloBoton(estado), position: "relative",
             }}
           >
+            {o.id === eraEsta && <EraEsta />}
             {o.texto}
           </button>
         );
@@ -225,6 +226,30 @@ export function estadoEnParada(estado, correcta) {
  * aquí» en coral, nunca teal ni ámbar) y debajo la pista o el porqué, en
  * Inter 13/18. Lleva `data-mensaje` para la sonda de enganche.
  */
+/*
+ * ═══════════ LA MARCA DE LA CORRECTA AL SEGUNDO ERROR (Mai, volumen §5.5) ═══════════
+ * Contorno blanco continuo (estiloBoton ACIERTO, sin relleno navy: ese es
+ * ahora el color del canto) y la pastilla ✓ «Era esta», que se distingue sin
+ * color de la elegida mal (coral discontinuo y ✕ «No va aquí»). Va colgada
+ * del borde de abajo de la opción (sobre su canto), para no cambiarle el alto
+ * ni salirse del escenario por arriba. «Era esta» es
+ * literal nuevo de Mai: lo confirman Futaba y Shoko.
+ */
+export const ERA_ESTA = "Era esta";
+export function EraEsta() {
+  return (
+    <span data-era-esta style={{
+      position: "absolute", bottom: "-11px", left: "50%", transform: "translateX(-50%)", zIndex: 1, display: "inline-flex", alignItems: "center", gap: "4px",
+      padding: "0 6px", borderRadius: "999px", border: `2px solid ${FAE.text}`, background: "#0E1B2E", color: FAE.text,
+      fontFamily: INTER, fontSize: "12px", fontWeight: 600, lineHeight: "14px", whiteSpace: "nowrap", pointerEvents: "none",
+    }}>
+      <span aria-hidden="true">✓</span>{ERA_ESTA}
+    </span>
+  );
+}
+/* El id de la correcta cuando toca enseñarla (dos errores y ningún acierto), o null. */
+export const eraEstaDe = (estado, correcta) => (mostrarCorrecto(estado ?? PARADA_INICIAL) ? correcta : null);
+
 export function DevolucionParada({ estado, pista, porqueDe, acierto = null, chica = false }) {
   const e = estado ?? PARADA_INICIAL;
   if (!e.ultimo) return null;
@@ -267,6 +292,7 @@ export function ParadaModelo({ estado, setEstado, opciones, correcta, pista, por
           onElegir={(id) => setEstado(responderParada(e, id, correcta))}
           activa={!resuelta}
           data="data-parada"
+          eraEsta={eraEstaDe(e, correcta)}
         />
         <div style={{ flex: 1, minHeight: 0, display: "flex", gap: "8px" }}>
           {modelo && <div data-modelo style={{ flex: `0 0 ${anchoModelo}px`, minWidth: 0 }}>{modelo}</div>}
@@ -345,8 +371,9 @@ export function FiguraFrase({ ficha, estado, setEstado }) {
           style={{
             flex: "none", minHeight: "44px", padding: "6px 10px", borderRadius: "10px", boxSizing: "border-box", textAlign: "left",
             fontFamily: INTER, fontSize: "13px", lineHeight: "18px", color: FAE.text, cursor: resuelta ? "default" : "pointer",
-            ...estiloBoton(estadoDe(o.id)),
+            ...estiloBoton(estadoDe(o.id)), position: "relative",
           }}>
+          {o.id === eraEstaDe(e, correcta) && <EraEsta />}
           {o.texto.texto}
         </button>
       ))}

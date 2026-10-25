@@ -224,7 +224,6 @@ test("★★★ lote G: el balance sale del mayor cortado en dos transacciones, 
   assert.equal(b.cuentas.reduce((t, c) => t + (c.seccion === "activo" ? c.valor : 0), 0), b.activos);
   assert.equal(BALANCE.activos, 415000, "las actividades que usan las seis transacciones no cambian");
   assert.equal(D.A1_SEC.pantallas.prediccion.respuesta, "Del hecho a la decisión hay cinco pasos, y anotar es el tercero.");
-  assert.equal(D.A1_SEC.pantallas.verbos.apoyo, "Toca lo que el sistema permite hacer con los hechos. Son siete verbos; registrar es anotar.");
   assert.equal(D.A1_SEC.pantallas.informe.apoyo, "La nota se juntó con las demás en un informe. Tu computador ya es una de sus líneas.");
 });
 
@@ -447,10 +446,11 @@ test("★★★ cu0-a4 · la capa 4: sin figura y las cuatro frases en flujo, to
 /* ═══════════ LA REVISIÓN DE MAI (fichas/b-t1-secuencia-a1-volumen-mai.md) EN LAS CINCO PIEZAS ═══════════ */
 const ORDEN_FASE = Object.values(S.FASES);
 
-test("★★★ volumen §1 · 4: ninguna pantalla de parada lleva apoyo (las predicciones y los Haz que no son la capa 4)", () => {
+test("★★★ volumen §1 · 4: ninguna pantalla de parada ni de capa 4 lleva apoyo", () => {
   for (const p of PIEZAS_T1_SECUENCIA) {
     for (const pt of p.pantallas) {
-      const parada = (pt.tipo === "haz" && pt.id !== "frase") || pt.id === "prediccion";
+      /* Las capas 4 tampoco (Mai, volumen §5.1: repetían la razón). */
+      const parada = pt.tipo === "haz" || pt.id === "prediccion";
       if (parada) assert.equal(pt.apoyo, undefined, `${p.id}/${pt.id}`);
     }
   }
@@ -489,4 +489,38 @@ test("★★ volumen §3: lo que se pulsa lleva canto; las opciones de parada, l
     const m = montar(pantalla(pz, id).Figura);
     try { for (const b of m.caja.querySelectorAll(sel)) assert.ok(b.classList.contains("fae-t1s-canto"), `${id} ${sel}`); } finally { m.desmontar(); }
   }
+});
+
+/* ═══════════ VOLUMEN §5.5 · «ERA ESTA» Y EL LOTE H ═══════════ */
+test("★★★ volumen §5.5: al 2.º error la correcta lleva contorno blanco continuo y ✓ «Era esta»; la elegida, coral discontinuo", () => {
+  const casos = [
+    [pantalla(PIEZA_RECORRIDO, "parada-papel"), "[data-parada]", ["guarda", "estado"], "anota"],
+    [pantalla(PIEZA_FOTO_PELICULA, "parada"), "[data-parada]", ["igual", "no-hay"], "distinta"],
+    [pantalla(PIEZA_ECUACION, "frase"), "[data-frase]", ["p2o2", "p2o3"], "p2o1"],
+  ];
+  for (const [pt, sel, malas, buena] of casos) {
+    const m = montar(pt.Figura);
+    try {
+      const q = (id) => m.caja.querySelector(`${sel.slice(0, -1)}="${id}"]`);
+      tocar(q(malas[0]));
+      assert.equal(m.caja.querySelector("[data-era-esta]"), null, `${pt.id}: «Era esta» no sale al 1.er error`);
+      tocar(q(malas[1]));
+      assert.equal(q(buena).querySelector("[data-era-esta]").textContent, "✓Era esta");
+      assert.equal(q(buena).style.borderStyle || q(buena).style.border.split(" ")[1], "solid");
+      assert.match(q(malas[1]).style.border, /dashed/);
+      assert.equal(m.caja.querySelectorAll("[data-era-esta]").length, 1);
+    } finally { m.desmontar(); }
+  }
+  /* Un acierto no lleva «Era esta»: lleva «Correcto». */
+  const m = montar(pantalla(PIEZA_FOTO_PELICULA, "parada").Figura);
+  try { tocar(m.caja.querySelector('[data-parada="distinta"]')); assert.equal(m.caja.querySelector("[data-era-esta]"), null); } finally { m.desmontar(); }
+});
+
+test("★★ lote H de Futaba: el apoyo de cu0-a1 · 2 y la devolución de p2o4 en cu0-a2 · 9, literales", () => {
+  assert.equal(pantalla(PIEZA_RECORRIDO, "verbos").apoyo, "Toca los siete verbos. No son los cinco pasos, aunque registrar es anotar: el paso 3.");
+  const m = montar(pantalla(PIEZA_ECUACION, "frase").Figura);
+  try {
+    tocar(m.caja.querySelector('[data-frase="p2o4"]'));
+    assert.ok(m.caja.querySelector('[data-mensaje="error"]').textContent.includes("Nadie fuerza las cifras: dan igual porque cada hecho mueve los dos lados a la vez."));
+  } finally { m.desmontar(); }
 });

@@ -336,7 +336,7 @@ export const PIEZA_FOTO_PELICULA = conFases({
       id: "prueba", tipo: "haz", ...sinApoyo(T.prueba), pasos: N_PREGUNTAS - 1,
       rotulosPaso: PREGUNTAS_P3.slice(1).map((q) => q.texto), resuelta: itemsResueltos(N_PREGUNTAS), Figura: FiguraPrueba,
     },
-    { id: "frase", tipo: "haz", ...pick(T.frase), resuelta: paradaResuelta, Figura: figuraFrase(FICHA_FRASE_A3) },
+    { id: "frase", tipo: "haz", ...sinApoyo(T.frase), resuelta: paradaResuelta, Figura: figuraFrase(FICHA_FRASE_A3) },
     { id: "puente", tipo: "cierre", ...pick(T.puente), Figura: FiguraPuente },
   ],
 });

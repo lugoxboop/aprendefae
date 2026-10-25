@@ -358,7 +358,7 @@ export const PIEZA_ECUACION = conFases({
       rotulosPaso: CASOS.hechos.slice(1).map((h) => h.hecho.texto), resuelta: itemsResueltos(N_CASOS), Figura: FiguraCasos,
     },
     { id: "regla", tipo: "miralo", ...pick(T.regla), Figura: FiguraRegla },
-    { id: "frase", tipo: "haz", ...pick(T.frase), resuelta: paradaResuelta, Figura: figuraFrase(FICHA_FRASE_A2) },
+    { id: "frase", tipo: "haz", ...sinApoyo(T.frase), resuelta: paradaResuelta, Figura: figuraFrase(FICHA_FRASE_A2) },
     { id: "puente", tipo: "cierre", ...pick(T.puente), Figura: FiguraPuente },
   ],
 });
