@@ -222,6 +222,11 @@ export default function SecuenciaAprender({ temaId, piezas, final = "tema", onFi
    * Llegar al cierre de una pieza la deja como hecha (#576, 0153): es lo que
    * permite que el Repaso enseñe sus ítems. Sin FP; si la pieza no es una
    * actividad del catálogo o no hay sesión, no se registra nada.
+   *
+   * AL LLEGAR AL CIERRE, NUNCA AL ABRIR LA PIEZA (Levi en #600). Moverlo al
+   * montaje contaría como hecho algo que el estudiante no hizo y ensuciaría su
+   * historial sin que nadie lo notara. La prueba «#576: llegar al cierre…»
+   * falla si se registra antes del cierre.
    */
   useEffect(() => {
     if (pantalla.tipo === "cierre") registrar?.(pieza.id);

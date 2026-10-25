@@ -21,8 +21,12 @@
 -- la materia. Lo peor que puede hacer un id inventado es añadirse una fila a
 -- sí mismo que no corresponde a ningún ítem: no cambia nada a nadie más.
 --
--- Se deshace con: drop function registrar_aprender, aprender_hechas; drop
--- table aprender_hecho.
+-- CÓMO SE DESHACE: supabase/reversiones/0153_aprender_hecho_deshacer.sql,
+-- que copia las filas antes de quitar las dos funciones y la tabla, y trae su
+-- consulta de comprobación.
+--
+-- CÓMO COMPROBAR QUE PASÓ: la consulta del final devuelve true, true, true y
+-- el número de piezas vistas (0 al aplicarla).
 --
 -- GUARDIAN: cambio de esquema a proposito
 -- ---------------------------------------------------------------------------
@@ -79,3 +83,11 @@ revoke all on function public.registrar_aprender(text, text) from public, anon;
 revoke all on function public.aprender_hechas() from public, anon;
 grant execute on function public.registrar_aprender(text, text) to authenticated;
 grant execute on function public.aprender_hechas() to authenticated;
+
+-- ---------------------------------------------------------------------------
+-- Comprobación: tabla con RLS forzada, las dos funciones, y cuántas filas hay.
+-- ---------------------------------------------------------------------------
+select (select relrowsecurity and relforcerowsecurity from pg_class where oid = 'public.aprender_hecho'::regclass) as rls_forzada,
+       exists (select 1 from pg_proc where proname = 'registrar_aprender')                                   as hay_registrar,
+       exists (select 1 from pg_proc where proname = 'aprender_hechas')                                      as hay_lectura,
+       (select count(*) from public.aprender_hecho)                                                          as piezas_vistas;
