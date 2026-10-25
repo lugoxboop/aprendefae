@@ -1,7 +1,6 @@
 import { lazy, Suspense } from "react";
 import { FAE } from "../../theme.js";
 import BackgroundVeil from "./BackgroundVeil.jsx";
-import { ProveedorMateria, atributosDeMateria, EstilosEntrada } from "../../estilo/EstiloVivo.jsx";
 
 /*
  * Fondo animado de la materia, para las páginas de actividad.
@@ -56,16 +55,8 @@ export default function FondoMateria({ materiaId, children }) {
    * en Y no hay nada que recortar, y recortarlo volvería a romper el sticky.
    */
 
-  /*
-   * La materia se pone aquí para todo lo de dentro (estilo/EstiloVivo.jsx):
-   * así un componente compartido sabe, sin una prop, si está en una materia
-   * con estilo vivo. En Pensamiento Estratégico la compuerta queda cerrada y
-   * esta pantalla se pinta exactamente como antes.
-   */
   return (
-    <ProveedorMateria materiaId={materiaId}>
-    <EstilosEntrada />
-    <div {...atributosDeMateria(materiaId)} style={{ position: "relative", minHeight: "100vh", backgroundColor: FAE.bg, overflowX: "clip" }}>
+    <div style={{ position: "relative", minHeight: "100vh", backgroundColor: FAE.bg, overflowX: "clip" }}>
       {Fondo && (
         /* Sin fallback: el fondo puede llegar tarde, el contenido no espera. */
         <Suspense fallback={null}>
@@ -85,6 +76,5 @@ export default function FondoMateria({ materiaId, children }) {
       )}
       <div style={{ position: "relative", zIndex: 2 }}>{children}</div>
     </div>
-    </ProveedorMateria>
   );
 }

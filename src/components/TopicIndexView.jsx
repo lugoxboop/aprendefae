@@ -9,7 +9,7 @@ import Logo from "./Logo.jsx";
 import RankingFP from "./ranking/RankingFP.jsx";
 import LigaBoard from "./ligas/LigaBoard.jsx";
 import BannerRepaso from "./repaso/BannerRepaso.jsx";
-import { ProveedorMateria, atributosDeMateria, EstilosEntrada } from "../estilo/EstiloVivo.jsx";
+import EstilosEntrada from "../estilo/EstilosEntrada.jsx";
 import { marcaDeTema } from "./shared/contenidoNuevo.jsx";
 import IdentificadorDeTema, { CSS_IDENTIFICADOR } from "./shared/IdentificadorDeTema.jsx";
 
@@ -45,18 +45,16 @@ export default function TopicIndexView({
   const [abierta, setAbierta] = useState(null);
 
   /*
-   * La materia se pone aquí para todo el índice (estilo/EstiloVivo.jsx). La
-   * entrada a la página marca tres grupos —cabecera, lo transversal, la
-   * rejilla—; solo se mueven donde la compuerta está abierta y Ukyo encendió
-   * la entrada. En Pensamiento Estratégico el índice queda como estaba.
+   * La entrada a la página (estilo/entrada.js) marca tres grupos —cabecera,
+   * lo transversal, la rejilla— con data-entrada. Solo se mueven cuando Ukyo
+   * encienda la entrada; hasta entonces el índice se abre como siempre.
    */
   return (
-    <ProveedorMateria materiaId={subjectId}>
+    <>
       {/* Una vez por página, no una por tarjeta: el movimiento y sus colores. */}
       <style>{CSS_IDENTIFICADOR}</style>
       <EstilosEntrada />
     <div
-      {...atributosDeMateria(subjectId)}
       style={{
         position: "relative",
         minHeight: "100vh",
@@ -247,6 +245,6 @@ export default function TopicIndexView({
         </div>
       </div>
     </div>
-    </ProveedorMateria>
+    </>
   );
 }
