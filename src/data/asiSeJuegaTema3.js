@@ -4,6 +4,7 @@ import { ACT5_T3, EJEMPLO_ACT5, PASOS_ACT5, ALT_TUTORIAL_ACT5 } from "./contabil
 import { ACT7_T3, EJEMPLO_ACT7, PASOS_ACT7, ALT_TUTORIAL_ACT7 } from "./contabilidadTema3Act7.js";
 import { ACT6_T3, EJEMPLO_PANADERIA_ACT6, PASOS_ACT6, ALT_TUTORIAL_ACT6 } from "./contabilidadTema3Act6.js";
 import { ACT3_T3, EJEMPLO_ACT3, PASOS_ACT3, ALT_TUTORIAL_ACT3 } from "./contabilidadTema3Act3.js";
+import { ACT_RESULTADO_CAJA, EJEMPLO_RESULTADO_CAJA, PASOS_RESULTADO_CAJA, ALT_TUTORIAL_RESULTADO_CAJA } from "./contabilidadTema3ResultadoCaja.js";
 import { ACT_GASTO_O_PAGO, EJEMPLO_GASTO_O_PAGO, PASOS_GASTO_O_PAGO, ALT_TUTORIAL_GASTO_O_PAGO } from "./contabilidadTema3GastoOPago.js";
 
 /*
@@ -30,6 +31,24 @@ const ASI_GASTO_O_PAGO = {
   guion: {
     duracion: 7000,
     toques: [{ ms: 2500, en: '[data-casilla="gasto"]' }],
+  },
+  cuadros: { gesto: 1 },
+};
+
+/*
+ * «Del resultado a la caja»: la panadería de Miyata (§6). Una sola ficha,
+ * cuentas por cobrar; la mano toca «Resta» y sale la resolución.
+ */
+const ASI_RESULTADO_CAJA = {
+  actividadId: ACT_RESULTADO_CAJA.id,
+  titulo: ACT_RESULTADO_CAJA.nombre,
+  consigna: ACT_RESULTADO_CAJA.consigna,
+  pasos: PASOS_RESULTADO_CAJA,
+  alt: ALT_TUTORIAL_RESULTADO_CAJA.replace(/^Ejemplo: /, ""),
+  demo: { caso: EJEMPLO_RESULTADO_CAJA },
+  guion: {
+    duracion: 7000,
+    toques: [{ ms: 2500, en: '[data-eleccion="resta"]' }],
   },
   cuadros: { gesto: 1 },
 };
@@ -191,4 +210,4 @@ const ASI_MISMO_HECHO = {
   cuadros: { gesto: 2 },
 };
 
-export const ASI_SE_JUEGA_TEMA3 = Object.fromEntries([ASI_GASTO_O_PAGO, ASI_CUANDO_SE_CAUSA, ASI_AJUSTE_ACUMULADO, ASI_AJUSTE_DIFERIDO, ASI_MISMO_HECHO, ASI_QUE_LE_TOCA, ASI_CIERRE_COMPLETO].map((a) => [a.actividadId, a]));
+export const ASI_SE_JUEGA_TEMA3 = Object.fromEntries([ASI_GASTO_O_PAGO, ASI_CUANDO_SE_CAUSA, ASI_AJUSTE_ACUMULADO, ASI_AJUSTE_DIFERIDO, ASI_MISMO_HECHO, ASI_QUE_LE_TOCA, ASI_RESULTADO_CAJA, ASI_CIERRE_COMPLETO].map((a) => [a.actividadId, a]));

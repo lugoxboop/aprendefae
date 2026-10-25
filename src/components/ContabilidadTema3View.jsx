@@ -19,6 +19,8 @@ import IngresoOCobro from "./mecanicas/libros/tema3/IngresoOCobro.jsx";
 import { ACT1_T3 } from "../data/contabilidadTema3Act1.js";
 import GastoOPago from "./mecanicas/libros/tema3/GastoOPago.jsx";
 import { ACT_GASTO_O_PAGO } from "../data/contabilidadTema3GastoOPago.js";
+import ResultadoCaja from "./mecanicas/libros/tema3/ResultadoCaja.jsx";
+import { ACT_RESULTADO_CAJA } from "../data/contabilidadTema3ResultadoCaja.js";
 import CuandoSeCausa from "./mecanicas/libros/tema3/CuandoSeCausa.jsx";
 import { ACT2_T3 } from "../data/contabilidadTema3Act2.js";
 import { ArmaElAjusteAcumulado, ArmaElAjusteDiferido } from "./mecanicas/libros/tema3/ArmaElAjuste.jsx";
@@ -74,6 +76,8 @@ export const JUEGOS = [
   { id: ACT5_T3.id, Mecanica: ArmaElAjusteDiferido, titulo: ACT5_T3.nombre },
   { id: ACT3_T3.id, Mecanica: MismoHecho, titulo: ACT3_T3.nombre },
   { id: ACT6_T3.id, Mecanica: QueLeToca, titulo: ACT6_T3.nombre },
+  /* «Del resultado a la caja» (paquete e3-t3-del-resultado-a-la-caja-v4), detrás de «Cerrar el periodo». */
+  { id: ACT_RESULTADO_CAJA.id, Mecanica: ResultadoCaja, titulo: ACT_RESULTADO_CAJA.nombre },
   { id: ACT7_T3.id, Mecanica: ElCierreCompleto, titulo: ACT7_T3.nombre },
 ];
 

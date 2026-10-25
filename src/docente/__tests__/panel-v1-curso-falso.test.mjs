@@ -49,6 +49,8 @@ function primeraPantalla(escenario) {
  * #506) y los dos Hacer de T1 (H1 y H2, Célula B, lote 5) quedan, medidos,
  * 24,39 % en el curso normal y 23,66 % en el grande: 24 y 24 (eran 26 en las
  * capturas de #498). B3 no cambia (51 %). Aviso a la Célula D en #540.
+ * Con «Del resultado a la caja» (Célula E, #557) quedan, medidos, 24,01 % en
+ * el normal y 23,28 % en el grande: 24 y 23.
  */
 test("★★★ curso normal: «Actividades hechas» da 24 % (26 % en las capturas, antes de «¿Gasto o pago?», H1 y H2) y B3, 51 % con 15 que la terminaron", () => {
   const r = primeraPantalla("normal");
@@ -59,9 +61,9 @@ test("★★★ curso normal: «Actividades hechas» da 24 % (26 % en las captur
   assert.equal(r.peor.cifras.terminaron, 15);
 });
 
-test("★★ curso grande: las mismas reglas dan 24 % (26 % antes de las tres Hacer nuevas) y 51 % con 36 que la terminaron", () => {
+test("★★ curso grande: las mismas reglas dan 23 % (26 % antes de las cuatro Hacer nuevas) y 51 % con 36 que la terminaron", () => {
   const r = primeraPantalla("grande");
-  assert.equal(Math.round(r.avance), 24);
+  assert.equal(Math.round(r.avance), 23);
   assert.equal(Math.round(r.peor.cifras.pct), 51);
   assert.equal(r.peor.cifras.terminaron, 36);
 });
