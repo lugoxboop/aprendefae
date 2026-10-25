@@ -5,12 +5,13 @@ import {
   TRANSACCIONES_CAP2, T1_4, PARTES, SUBE, BAJA, IGUAL,
   ERROR_A_T1_4, ERROR_B_T1_4, ACIERTO_T1_4,
   T1_5, ERROR_T1_5, DESDE_EL_CORTO, TERCERA_OPCION_T1_5,
-  T1_6, CONCEPTOS, PRIMERO, SEGUNDO, ERROR_T1_6, ACIERTO_T1_6, PESO_INFORME, PESO_SECCION,
+  T1_6, CONCEPTOS, SEGUNDO, ERROR_T1_6, DEVOLUCION_POR_DESTINO_T1_6, ACIERTO_T1_6, PESO_INFORME, PESO_SECCION,
   ERROR_T1_7, BANCO_T1_7,
   T1_8, PUNTOS_T1_8, SITUACIONES_T1_8, ACIERTO_T1_8, ERROR_T1_8, PREDICCION_T1_8,
   CONTADOR_T1_8, CONTADOR_UNO_T1_8,
-  SEGUNDA_T1_1, SEGUNDA_T1_2, SEGUNDA_T1_4, SEGUNDA_T1_5,
+  SEGUNDA_T1_1, SEGUNDA_T1_2, SEGUNDA_T1_4, SEGUNDA_T1_5, CASO_DEL_LIBRO_T1_4,
 } from "../data/contabilidadTema1.js";
+import { CASOS_P2 } from "../data/contabilidadPiezas234.js";
 import { ACTIVO, PASIVO, PATRIMONIO, tipoDeCuenta, pesos } from "../data/contabilidad.js";
 
 /*
@@ -45,8 +46,9 @@ export const PATRON_A = "A";
 export const PATRON_B = "B";
 
 /**
- * `zona` es dónde la puso el estudiante. El trazo de retorno solo se enciende
- * si acertó Y el usuario es el que cierra el ciclo — nunca en un error.
+ * `zona` es dónde la puso el estudiante. El trazo de retorno se enciende solo
+ * si el usuario es el que cierra el ciclo; desde el lote 4, también tras un
+ * error (el registro): lo que se enseña es lo que de verdad pasa.
  */
 export function evaluarT1_1(usuario, zona) {
   const ok = zona === usuario.zona;
@@ -79,8 +81,12 @@ export function evaluarT1_1(usuario, zona) {
     texto: e.texto,
     escena: e.escena,
     rotulo: e.rotulo ?? null,
-    /* En un error el trazo NUNCA se enciende: no es el criterio de la zona. */
-    enciendeTrazo: false,
+    /*
+     * El registro (lote 4, P2 de Mai): tras responder, el anillo enseña lo
+     * que de verdad pasa con ESTA persona, también en el error. La vuelta se
+     * enciende solo si es quien decide; nunca por haber elegido una zona.
+     */
+    enciendeTrazo: usuario.cierraElCiclo === true,
   };
 }
 
@@ -444,15 +450,15 @@ export const sinEmoji = (texto) => (texto ?? "").replace(/^[\u2705\u274C\u2714\u
 /*
  * ═══════════ LOS CUATRO GRUPOS DEL SORTEO ═══════════
  *
- * Diez de dieciséis, y los cuatro destinos posibles tienen que salir: las tres
- * secciones del primer informe y el segundo entero. Sin estratificar, la
+ * Diez de dieciséis, y los cinco destinos posibles tienen que salir: las tres
+ * secciones del primer informe y las dos del segundo (ingresos y gastos). Sin estratificar, la
  * única ficha de patrimonio —Reservas— se queda fuera cuatro de cada diez
  * tandas y la explicación C sobre los dueños no la lee nadie.
  *
  * Es la misma razón que en T1-2 y T1-4: que cada camino de devolución sea
  * alcanzable. No cambia qué se pregunta, solo garantiza que se pregunte.
  */
-export const destinoDe = (c) => (c.informe === PRIMERO ? `${PRIMERO}-${c.seccion}` : SEGUNDO);
+export const destinoDe = (c) => `${c.informe}-${c.seccion}`;
 export const DESTINOS_T1_6 = [...new Set(CONCEPTOS.map(destinoDe))];
 
 export function sortearT1_6(barajar, cuantos = T1_6.porPartida) {
@@ -466,13 +472,12 @@ export function sortearT1_6(barajar, cuantos = T1_6.porPartida) {
 }
 
 /**
- * `marcado` es { informe, seccion }. La sección va a null cuando se marcó el
- * segundo informe, que no se subdivide.
+ * `marcado` es { informe, seccion }: uno de los cinco destinos, con un solo
+ * toque. Los dos informes tienen sección desde el lote del 24-oct.
  */
 export function evaluarT1_6(concepto, marcado) {
   const informeOk = marcado.informe === concepto.informe;
-  const pideSeccion = concepto.informe === PRIMERO;
-  const seccionOk = pideSeccion ? marcado.seccion === concepto.seccion : true;
+  const seccionOk = informeOk && marcado.seccion === concepto.seccion;
   const ok = informeOk && seccionOk;
 
   if (ok) {
@@ -490,17 +495,16 @@ export function evaluarT1_6(concepto, marcado) {
     const patron = concepto.informe === SEGUNDO ? "A" : "B";
     return { ok, texto: ERROR_T1_6[patron], patron, informeOk, seccionOk: false };
   }
-  return { ok, texto: ERROR_T1_6.C, patron: "C", informeOk, seccionOk: false };
+  /* El informe está bien y la sección no: C en el primero; C2 (ingresos ↔ gastos) en el segundo. */
+  const patron = concepto.informe === SEGUNDO ? "C2" : "C";
+  /* La de su destino correcto (Futaba, lote E); el ejemplo de «Así se juega», que no es del banco, cae en la de siempre. */
+  const deDestino = DEVOLUCION_POR_DESTINO_T1_6[`${concepto.informe}:${concepto.seccion}`] ?? null;
+  return { ok, texto: deDestino ?? ERROR_T1_6[patron], patron, informeOk, seccionOk: false };
 }
 
-/*
- * El informe pesa 60 y la sección 40. Las fichas del segundo informe no tienen
- * sección que acertar, así que valen entero al acertar el informe: dejarlas en
- * 60 sería descontarles una pregunta que no se les hizo.
- */
+/* El informe pesa 60 y la sección 40, en las dieciséis fichas (ver PESO_INFORME). */
 export function valorDeItem(concepto, r) {
   if (!r.informeOk) return 0;
-  if (concepto.informe === SEGUNDO) return 1;
   return PESO_INFORME + (r.seccionOk ? PESO_SECCION : 0);
 }
 
@@ -753,8 +757,12 @@ export const flechaDeItem = (id) => {
 
 /* ───────── T1-1 ───────── */
 
-/** Lo que alcanza a ver depende de si pertenece a la empresa, y de nada más. */
-export const correctaSegundaT1_1 = (usuario) => (usuario.zona === ZONA_DENTRO ? "todo" : "informe");
+/* Lo que tiene en juego sale de quién es, no de la zona: así la 2 no se deduce de la 1. */
+export const correctaSegundaT1_1 = (usuario) => {
+  const id = SEGUNDA_T1_1.enJuego[usuario.id];
+  if (!id) throw new Error(`«${usuario.id}» no tiene qué se juega`);
+  return id;
+};
 
 export function opcionesSegundaT1_1(usuario) {
   const correcta = correctaSegundaT1_1(usuario);
@@ -762,6 +770,9 @@ export function opcionesSegundaT1_1(usuario) {
 }
 
 export const porqueSegundaT1_1 = (usuario) => SEGUNDA_T1_1.porque[correctaSegundaT1_1(usuario)];
+
+/* Lo que la figura enseña tras elegir: la ficha de la pregunta con lo que se juega escrito. */
+export const escenaSegundaT1_1 = (opcion) => ({ enJuego: opcion });
 
 /* ───────── T1-2 ───────── */
 
@@ -781,42 +792,24 @@ export const porqueSegundaT1_2 = (empresa) => SEGUNDA_T1_2.porque[correctaSegund
 
 /* ───────── T1-4 ───────── */
 
-/* La igualdad aguanta con cualquier hecho: eso es lo que la actividad enseña. */
-export const CORRECTA_SEGUNDA_T1_4 = "sigue";
+/* La correcta es el caso del hecho, el mismo que deduce `casoDe` del asiento. */
+export const correctaSegundaT1_4 = (transaccion) => casoDe(transaccion);
 
-export const opcionesSegundaT1_4 = () => SEGUNDA_T1_4.opciones;
+/* El nombre del caso, textual de la p. 35: el mismo que enseña cu0-a2. */
+export const nombreDelCasoT1_4 = (id) => CASOS_P2.find((c) => c.id === CASO_DEL_LIBRO_T1_4[id]).nombre;
 
-export function porqueSegundaT1_4(transaccion) {
-  const e = efectoDe(transaccion);
-  return SEGUNDA_T1_4.porque[e[ACTIVO] === SUBE ? "sube" : "baja"];
+/* Las cuatro, en el orden de la p. 35. La correcta va sin mensaje de error. */
+export function opcionesSegundaT1_4(transaccion) {
+  const correcta = transaccion ? correctaSegundaT1_4(transaccion) : null;
+  return SEGUNDA_T1_4.opciones.map((o) => ({ ...o, texto: nombreDelCasoT1_4(o.id), msg: o.id === correcta ? null : o.msg }));
 }
 
-/**
- * Las tres barras repintadas con lo que cada opción AFIRMA. La correcta pinta
- * lo que de verdad pasó y enciende las tres partes —los dos lados a la vez—;
- * el balancín pone la otra parte en contra del activo; «un lado solo» la deja
- * quieta. Los tres retratos se diferencian pareja por pareja: por los altos de
- * las barras y por cuáles quedan resaltadas.
+/*
+ * Lo que la figura enseña tras elegir: el nombre del caso pegado a las barras.
+ * Cada opción deja un rótulo distinto, y las barras se quedan en lo que de
+ * verdad pasó (el registro): ya no se repintan con lo que la opción afirma.
  */
-export function escenaSegundaT1_4(transaccion, opcion) {
-  const real = efectoDe(transaccion);
-  const partes = PARTES.map((p) => p.id);
-  const seMueven = partes.filter((p) => real[p] !== IGUAL);
-  const otra = seMueven.find((p) => p !== ACTIVO);
-  const contrario = (x) => (x === SUBE ? BAJA : SUBE);
-
-  if (opcion === CORRECTA_SEGUNDA_T1_4) {
-    return { barras: { ...real, valores: undefined }, resaltar: partes };
-  }
-  if (opcion === "balancin") {
-    return {
-      barras: { ...real, valores: undefined, [otra]: contrario(real[otra]) },
-      resaltar: seMueven,
-    };
-  }
-  /* «un-lado»: el otro lado ni se entera. */
-  return { barras: { ...real, valores: undefined, [otra]: IGUAL }, resaltar: [ACTIVO] };
-}
+export const escenaSegundaT1_4 = (transaccion, opcion) => ({ caso: opcion });
 
 /* ───────── T1-5 ───────── */
 

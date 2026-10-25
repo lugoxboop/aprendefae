@@ -45,7 +45,11 @@ const ASI_T1_1 = {
     `Toca ${ROTULO_ZONA[ZONA_DENTRO]} o ${ROTULO_ZONA[ZONA_FUERA]}.`,
   ],
   /* La pantalla le antepone «Ejemplo: ». */
-  alt: `se toca la pregunta del cliente de la panadería y luego la zona ${ROTULO_ZONA[ZONA_FUERA]}. La pregunta se ubica con el rótulo «${EJEMPLO_T1_1.nombre}» y la flecha de vuelta no se enciende.`,
+  /*
+   * Futaba (lote D, §2): no nombra a quien pregunta (así T1-1 no le contesta a
+   * H2) y cuenta lo que se ve: la mano no toca la pregunta, solo la zona.
+   */
+  alt: `se lee la pregunta de la panadería y se toca ${ROTULO_ZONA[ZONA_FUERA]}. La ficha «la pregunta» entra ahí y la vuelta sigue tenue.`,
   demo: { items: [EJEMPLO_T1_1] },
   guion: {
     /* 7 s. La mano no toca la pregunta: solo AFUERA. */
