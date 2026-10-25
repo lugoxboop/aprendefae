@@ -11,10 +11,11 @@ const COMPROBAR_B = "Comprobar";
  * un ejemplo que llega desde afuera (ids `demo-…`, que no están en ningún
  * banco), no se puede tocar y no guarda nada.
  *
+ * La consigna de cada uno es el «Así se juega» de Near (delta T2-9), letra
+ * por letra.
  * [ESCRITO POR CLAUDE, NO POR LA FICHA] PENDIENTE_DE_REVISION — muestra hasta el banco de Near (lote T2-2)
- * Pasos, alt y ejemplos son de muestra: el lote T2-2 de Near no trae los
- * textos de «Así se juega». La consigna de cada uno sí es la de Near (la del
- * tipo que juega la demo). Lote T2-3: pasados de mes a año, como el banco.
+ * Solo pasos, alt y ejemplos: Near no los trae (ni en T2-2 ni en T2-9).
+ * Lote T2-3: pasados de mes a año, como el banco.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 

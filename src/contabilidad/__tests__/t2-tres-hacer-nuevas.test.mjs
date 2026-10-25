@@ -115,6 +115,20 @@ const MELLO5 = readFileSync("orquestador/conocimiento/paquetes/c-t2-5-mello-audi
 const M5_22 = MELLO5.slice(MELLO5.indexOf("## 2 ·"), MELLO5.indexOf("## 3 ·"));
 /* Near, delta T2-3 §2: los textos nuevos de VC·6 (Seguros pagados por anticipado). */
 const DELTA3 = readFileSync("orquestador/conocimiento/paquetes/c-t2-3-near-delta.md", "utf8");
+/* Lote T2-10: la auditoría T2-9 de Mello (§4.1, E3) y el delta T2-9 de Near (textos que faltaban). */
+const MELLO9 = readFileSync("orquestador/conocimiento/paquetes/c-t2-9-mello-auditoria.md", "utf8");
+const M9_41 = MELLO9.slice(MELLO9.indexOf("## 4 ·"), MELLO9.indexOf("2. **«Las que vuelven a cero»"));
+const citaTras = (texto, rotulo) => texto.slice(texto.indexOf(rotulo)).match(/«([^»]*)»/)[1];
+const DELTA9 = readFileSync("orquestador/conocimiento/paquetes/c-t2-9-near-delta.md", "utf8");
+/* Near T2-10 §2: VC·1, VC·3 y VC·7, que cambian de cuenta con los mismos saldos (Mello T2-9 §4.2). */
+const NEAR10 = readFileSync("orquestador/conocimiento/paquetes/c-t2-10-near-textos.md", "utf8");
+const N10_2 = NEAR10.slice(NEAR10.indexOf("## 2 ·"));
+const vc10 = (k, campo) => {
+  const f = N10_2.split("\n").filter((l) => l.startsWith(`| VC·${k} | ${campo} |`));
+  assert.equal(f.length, 1, `Near T2-10: no hay una sola fila VC·${k} ${campo}`);
+  return celdas(f[0])[2];
+};
+const DE_NEAR10 = new Set([1, 3, 7]);
 const vc6 = (campo) => celdas(DELTA3.split("\n").find((l) => l.startsWith(`| VC·6 | ${campo}`)))[3].replace(/ \(\d+ · [\d,]+\)$/, "");
 
 test("★★★ letra por letra: los tres bancos son los de Near (§1.1, §1.2, §1.3), en las dos direcciones", () => {
@@ -217,6 +231,16 @@ test("★★★ letra por letra: los tres bancos son los de Near (§1.1, §1.2, 
   const retiradosVC = new Set();
   D.LAS_QUE_VUELVEN_A_CERO.caso.cuentas.forEach((c, k) => {
     const f = fila(S13, String(k + 1));
+    if (DE_NEAR10.has(k + 1)) {
+      /* VC·1, VC·3 y VC·7: Near T2-10 §2, letra por letra; el saldo y la clase, los de §1.3. Lo de §1.3 queda retirado. */
+      assert.equal(`${c.nombre} · ${c.clase} · ${pesos(c.saldo)}`, vc10(k + 1, "nombre"), `${c.id}: nombre, clase o saldo de Near T2-10`);
+      assert.ok(f.includes(`| ${c.clase} | ${pesos(c.saldo)} |`), `${c.id}: el saldo cambió respecto a §1.3`);
+      assert.equal(c.porque, vc10(k + 1, "porqué"), `${c.id}: porqué de Near T2-10`);
+      assert.equal(c.retroMala, vc10(k + 1, "retro si la pasa"), `${c.id}: retro de Near T2-10`);
+      for (const x of citas(f)) retiradosVC.add(x);
+      usados.add(c.porque); usados.add(c.retroMala);
+      return;
+    }
     assert.ok(f.includes(`| ${NOMBRE_DE_NEAR[c.nombre] ?? c.nombre} | ${c.clase} | ${pesos(c.saldo)} |`), `${c.id}: nombre, clase o saldo`);
     assert.ok(f.includes(`| ${L.destinoCorrecto(c) === D.VUELVE_A_CERO ? "Vuelve a cero" : "Pasa"} |`), `${c.id}: la correcta`);
     if (NOMBRE_DE_NEAR[c.nombre]) {
@@ -267,7 +291,7 @@ test("★★★ letra por letra: Cuadra por valor con Mello (§2.1) y el delta d
   /* E1-E3: hecho, renglones, línea mala y porqué, en la fila de Mello. */
   const filaMello = (k) => M21.split("\n").map((l) => l.trim()).find((l) => l.startsWith(`| E${k} ·`));
   const porqueMello = (k) => decisionL(M21.split("\n").find((l) => l.startsWith(`   - Porqué sugerido para E${k}:`)).match(/«([^»]*)»/)[1]);
-  for (const k of [1, 2, 3]) {
+  for (const k of [1, 2]) { /* E3 pasó a Mello T2-9 §4.1: ver la prueba del lote T2-10. */
     const c = caso(`cpv-e${k}`);
     const f = decisionL(filaMello(k));
     assert.equal(c.lineas.length, 3, `E${k}: tres renglones`);
@@ -279,6 +303,8 @@ test("★★★ letra por letra: Cuadra por valor con Mello (§2.1) y el delta d
     assert.equal(celdas(f)[3], c.lineas[c.linea[0]].cuenta, `E${k}: la línea mala`);
     assert.equal(c.porque, porqueMello(k), `E${k}: el porqué no es el de Mello`);
   }
+  /* E3, aunque cambió de cifras (T2-10), sigue siendo el traspuesto de Mello T2-3: la línea mala es la deuda. */
+  assert.equal(celdas(decisionL(filaMello(3)))[3], caso("cpv-e3").lineas[caso("cpv-e3").linea[0]].cuenta);
   /* L, lote T2-4: E3 dice «del computador», en el hecho y en el porqué. */
   assert.match(caso("cpv-e3").hecho, /la deuda del computador\.$/);
   for (const c of D.CUADRA_POR_VALOR.casos) assert.doesNotMatch(JSON.stringify(c), /computadora/, `${c.id}: «computadora»`);
@@ -290,6 +316,8 @@ test("★★★ letra por letra: Cuadra por valor con Mello (§2.1) y el delta d
     if (/^E\d/.test(it)) item = it.slice(0, 2);
     const c = caso(`cpv-${item.toLowerCase()}`);
     const [, cuenta, monto, ld] = lineaBuena.match(/^(.+) ([\d.]+) ([DH])$/);
+    /* E3 · Bancos: el cheque y su retro son de Mello T2-9 §4.1 (lote T2-10); se coteja en la prueba de ese lote. */
+    if (item === "E3" && cuenta === "Bancos") { vistos.push(`${c.id}:2`); continue; }
     const k = c.lineas.findIndex((l) => l.cuenta === cuenta && miles(l.monto) === monto && (l.lado === "debe" ? "D" : "H") === ld);
     assert.ok(k >= 0, `${item}: ${lineaBuena} no es una línea del caso`);
     assert.ok(!c.linea.includes(k), `${item}: ${lineaBuena} es la mala`);
@@ -342,6 +370,104 @@ test("★★★ letra por letra: «revisar» es el delta de Near T2-4 §2 (A6, A
       assert.equal(cand.length, 1, `${it.fila}: «${e}» no señala un solo renglón`);
       assert.equal(it.retros[cand[0].k], letra, `${it.fila}: r${cand[0].k + 1} no lleva ${letra}`);
       assert.equal(letra, LETRA_DE[it.error], `${it.fila}: la plantilla no es la de su tipo de error`);
+    }
+  }
+});
+
+/* ═══════════════════════ LOTE T2-10 · MELLO T2-9 §4.1 Y EL DELTA T2-9 DE NEAR, LETRA POR LETRA ═══════════════════════ */
+
+test("★★★ letra por letra: E3 es el de Mello T2-9 §4.1 (cheque de $760)", () => {
+  const e3 = D.CUADRA_POR_VALOR.casos.find((c) => c.id === "cpv-e3");
+  assert.equal(e3.hecho, citaTras(M9_41, "- hecho:"), "E3: el hecho no es el de Mello T2-9");
+  const mostrado = M9_41.split("\n").find((l) => l.trim().startsWith("- se muestra:")).replace(/^\s*- se muestra: /, "").replace(/;$/, "").replaceAll("**", "");
+  assert.equal(mostrado, e3.lineas.map((l) => `${l.cuenta} ${miles(l.monto)} ${l.lado === "debe" ? "D" : "H"}`).join(" · "), "E3: los renglones no son los de Mello T2-9");
+  assert.equal(e3.porque, citaTras(M9_41, "- porqué:"), "E3: el porqué no es el de Mello T2-9");
+  const bancos = e3.lineas.findIndex((l) => l.cuenta === "Bancos");
+  assert.equal(e3.retros[bancos], citaTras(M9_41, "- retro de Bancos:"), "E3: el retro de Bancos no es el de Mello T2-9");
+  /* El retro de Hipoteca sigue siendo el de Near T2-4 §1. */
+  assert.equal(e3.retros[1], celdas(N1.split("\n").find((l) => l.startsWith("| E3 · traspuesto |")))[2]);
+});
+
+test("★★★ letra por letra: el delta T2-9 de Near (origen, acierto de «revisar», J3, pies y «Así se juega»), en las dos direcciones", () => {
+  const filas = DELTA9.split("\n").filter((l) => l.startsWith("| ") && !l.startsWith("| ítem") && !l.startsWith("|---"));
+  const seccion = (titulo) => DELTA9.slice(DELTA9.indexOf(`## ${titulo}`)).split("\n## ")[0];
+  const filasDe = (titulo) => seccion(titulo).split("\n").filter((l) => filas.includes(l)).map(celdas);
+  const usadas = new Set();
+  const texto = (c) => c.replace(/^«|»$/g, "");
+  const ver = (fila, valor, donde) => { assert.equal(texto(fila[2]), valor, `${donde}: no es el de Near T2-9`); usadas.add(fila.join("|")); };
+  const deActividad = (titulo, id) => {
+    const fs = filasDe(titulo);
+    ver(fs.find((f) => f[0] === "la actividad" && f[1] === "pie de fuente"), D.PIE_T2_NUEVAS[id], `${id} pie`);
+    ver(fs.find((f) => f[0] === "la actividad" && f[1] === "Así se juega"), D.CONSIGNA_T2_NUEVAS[id], `${id} «Así se juega»`);
+    assert.equal(ASI_SE_JUEGA[id].consigna, D.CONSIGNA_T2_NUEVAS[id]);
+    return fs;
+  };
+
+  /* Del diario al mayor: los cuatro porqués de origen, cada uno con SU renglón, y el acierto de «revisar». */
+  const fd = deActividad("Del diario al mayor", "cu-del-diario-al-mayor");
+  const origen = D.DEL_DIARIO_AL_MAYOR.casos.flatMap((caso) => caso.items.filter((i) => i.tipo === "origen").map((it) => ({ ...it, caso })));
+  assert.equal(origen.length, 4);
+  for (const it of origen) {
+    const r = L.renglonesDe(it.caso)[it.renglon];
+    const clave = `${r.cuenta} · ${r.lado} · ${r.fecha.split(" ")[1]} ene · ${pesos(r.monto)} → renglón ${it.renglon + 1}`;
+    const f = fd.filter((x) => x[1] === "porqué" && x[0].startsWith(`${it.caso.id.at(-1).toUpperCase()}·o`) && x[0].includes(`(${clave})`));
+    assert.equal(f.length, 1, `${it.id}: no hay una sola fila de Near para ${clave}`);
+    ver(f[0], it.porque, `${it.id} porqué`);
+  }
+  ver(fd.find((f) => f[0] === "revisar (los 4)"), D.ACIERTO_REVISAR, "acierto de «revisar»");
+
+  /* Cuadra por valor: J3 (hecho, asiento y fuente del ítem) y el pie de los demás casos. */
+  const fc = deActividad("Cuadra por valor", "cu-cuadra-por-valor");
+  const j3 = D.CUADRA_POR_VALOR.casos.find((c) => c.id === "cpv-j3");
+  ver(fc.find((f) => f[0].startsWith("J3") && f[1] === "hecho"), j3.hecho, "J3 hecho");
+  const asiento = fc.find((f) => f[0] === "J3" && f[1] === "asiento");
+  const lado = (ld) => j3.lineas.filter((l) => l.lado === ld).map((l) => `${l.cuenta} ${miles(l.monto)}`).join(" + ");
+  ver(asiento, `${lado("debe")} / ${lado("haber")}`, "J3 asiento");
+  ver(fc.find((f) => f[0] === "J3" && f[1] === "fuente del ítem"), j3.pie, "J3 fuente");
+  for (const c of D.CUADRA_POR_VALOR.casos) if (c !== j3) assert.equal(c.pie, D.PIE_T2_NUEVAS["cu-cuadra-por-valor"], `${c.id}: pie`);
+
+  /* Las que vuelven a cero: el pie y «Así se juega». */
+  deActividad("Las que vuelven a cero", "cu-las-que-vuelven-a-cero");
+
+  /* Y al revés: ninguna fila de Near se quedó fuera. */
+  for (const f of filas) assert.ok(usadas.has(celdas(f).join("|")), `fila de Near T2-9 que no está en los datos:\n  ${f}`);
+});
+
+test("★★★ letra por letra: VC·1, VC·3 y VC·7 son los de Near T2-10 §2, ya no se repiten con P2 y la utilidad sigue en $10.500", () => {
+  const cuentas = D.LAS_QUE_VUELVEN_A_CERO.caso.cuentas;
+  /* Las tres que P2 ya clasificaba (Mello T2-9 §4.2) no están. */
+  for (const n of ["Ingresos por servicios", "Gastos de operación", "Costo de ventas"]) assert.ok(!cuentas.some((c) => c.nombre === n), `${n} sigue: se repite con P2`);
+  /* Cada fila de Near T2-10 §2 está en los datos: nombre, porqué, retro y la consigna con el nombre de VC·7. */
+  const filas10 = N10_2.split("\n").filter((l) => l.startsWith("| VC·"));
+  assert.equal(filas10.length, 10);
+  for (const l of filas10) {
+    const [it, campo, texto] = celdas(l);
+    const c = cuentas[Number(it.slice(3)) - 1];
+    const dato = { nombre: `${c.nombre} · ${c.clase} · ${pesos(c.saldo)}`, "porqué": c.porque, "retro si la pasa": c.retroMala, "consigna con este nombre": D.consignaCero(c) }[campo];
+    assert.equal(dato, texto, `Near T2-10 ${it} ${campo}`);
+  }
+  /* Los saldos de §1.3 no cambian, así que la utilidad tampoco. */
+  assert.deepEqual([1, 3, 7].map((k) => cuentas[k - 1].saldo), [12000, 5000, 4500]);
+  assert.equal(L.utilidadDe(cuentas), 10500);
+});
+
+test("★★★ C5 · el tramo fijo de 28 px: ninguna otra regla de .bar le gana en especificidad", async () => {
+  const { CSS_T2_DELTA, CSS_T2_NUEVAS } = await import("../../components/mecanicas/libros/t2/comunT2.jsx");
+  const css = `${CSS_T2_NUEVAS}\n${CSS_T2_DELTA}`.replace(/\/\*[\s\S]*?\*\//g, "").replace(/@keyframes[^{]*\{(?:[^{}]*\{[^}]*\})*[^}]*\}/g, "");
+  const reglas = [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map((m) => ({ sel: m[1].trim(), cuerpo: m[2] }));
+  /* Especificidad (a, b, c) de un selector sin :not() ni ids: clases y atributos, y elementos. */
+  const esp = (s) => [0, (s.match(/\.[\w-]+|\[[^\]]*\]|:(?!:)[\w-]+/g) ?? []).length, (s.replace(/\.[\w-]+|\[[^\]]*\]|:+[\w-]+/g, " ").match(/(^|[\s>+~])[a-z][\w-]*/gi) ?? []).length];
+  const mayor = (a, b) => a[1] !== b[1] ? a[1] > b[1] : a[2] > b[2];
+  const fijo = reglas.flatMap((r) => r.sel.split(",").map((s) => s.trim()).filter((s) => /\.bar\.fijo$/.test(s)).map((s) => ({ s, r })));
+  assert.equal(fijo.length, 1, "una sola regla para el tramo fijo");
+  assert.match(fijo[0].r.cuerpo, /height:\s*28px/);
+  const espFijo = esp(fijo[0].s);
+  const PISA = /(^|;)\s*(height|flex|border|background|color|font)\b/;
+  for (const r of reglas) {
+    if (r === fijo[0].r || !PISA.test(r.cuerpo)) continue;
+    for (const s of r.sel.split(",").map((x) => x.trim())) {
+      if (!/\.bar\b(?![\w-])/.test(s.split(/\s+/).at(-1))) continue;
+      assert.ok(mayor(espFijo, esp(s)), `«${s}» (${esp(s)}) le gana o empata con el tramo fijo (${espFijo})`);
     }
   }
 });
@@ -425,14 +551,22 @@ test("★★★ Cuadra por valor: las trampas de Watari y los cuatro errores de 
     assert.ok(c.lineas.length >= 3, `${c.id}: menos de 3 renglones`);
     assert.equal(c.linea.length, 1, `${c.id}: más de una línea aceptada`);
   }
-  /* E3: Hipoteca y Bancos coinciden con el hecho; a la deuda le toca 650 − 400 = 250 y dice 520. */
+  /* E3 (Mello T2-9): Hipoteca y Bancos coinciden con el hecho; a la deuda le toca 760 − 400 = 360 y dice 630. */
   const e3 = caso("cpv-e3");
   const leToca = e3.lineas[2].monto - e3.lineas[1].monto;
   const digitos = (n) => String(n).split("").sort().join("");
-  assert.equal(leToca, 250); assert.notEqual(e3.lineas[0].monto, leToca);
+  assert.equal(leToca, 360); assert.notEqual(e3.lineas[0].monto, leToca);
   assert.equal(digitos(e3.lineas[0].monto), digitos(leToca), "E3: no son las mismas cifras invertidas");
-  /* Juzgar y encontrar traen el hecho arriba (H3); completar no lo necesita. J3 va sin hecho: Mello no lo da (abierto para Near). */
-  for (const c of D.CUADRA_POR_VALOR.casos) assert.equal(Boolean(c.hecho), c.tipo !== "completar" && c.id !== "cpv-j3", `${c.id}: hecho`);
+  /* Juzgar y encontrar traen el hecho arriba (H3); completar no lo necesita. J3 ya lo trae (Near T2-9). */
+  for (const c of D.CUADRA_POR_VALOR.casos) assert.equal(Boolean(c.hecho), c.tipo !== "completar", `${c.id}: hecho`);
+  /* C1 (Mello T2-9 §4.1): E3 no repite el pago de $250 (P1·6) ni deja la resta a la vista: solo 630 → 360 explica la diferencia de 270. */
+  assert.ok(!JSON.stringify(e3).includes("250"));
+  const candidatos = e3.lineas.map((l, k) => k).filter((k) => {
+    const otros = e3.lineas.filter((_, j) => j !== k);
+    const leTocaria = otros.find((l) => l.lado === "haber") ? otros.filter((l) => l.lado === "haber").reduce((a, l) => a + l.monto, 0) - otros.filter((l) => l.lado === "debe").reduce((a, l) => a + l.monto, 0) : null;
+    return leTocaria > 0 && digitos(leTocaria) === digitos(e3.lineas[k].monto) && leTocaria !== e3.lineas[k].monto;
+  });
+  assert.deepEqual(candidatos, e3.linea, "E3: el traspuesto no es único");
 });
 
 test("★★★ Del diario al mayor: tope de Watari, 3 destino, 2 origen y 2 revisar, y cada opción mala da su plantilla de Near con el nombre puesto", () => {
@@ -572,12 +706,11 @@ test("★★★ Las que vuelven a cero: binaria, cada cuenta con su porqué y el
     assert.equal(L.destinoCorrecto(de(nombre)), D.PASA_CON_SALDO);
   }
   assert.match(de("Caja").porque, /Cobrar no es un ingreso: es Caja/);
-  /* «Costo de ventas», como en T2, y nominal. */
-  assert.equal(de("Costo de ventas").clase, "nominal");
-  assert.ok(!cuentas.some((c) => /mercanc[ií]a vendida/i.test(c.nombre)));
-  /* 2 ingresos, 1 gasto, 1 costo, 4 reales con un pasivo (Near). */
+  /* Near T2-10: sale Costo de ventas, y con él el choque con «Costo de mercancía vendida». */
+  assert.ok(!cuentas.some((c) => /costo|mercanc[ií]a vendida/i.test(c.nombre)));
+  /* 2 ingresos, 2 gastos, 4 reales con un pasivo (Near §1.3 con T2-10). */
   const cuantas = (f) => cuentas.filter((c) => c.familia === f).length;
-  assert.deepEqual([cuantas("ingreso"), cuantas("gasto"), cuantas("costo"), cuentas.filter((c) => c.clase === "real").length, cuantas("pasivo")], [2, 1, 1, 4, 1]);
+  assert.deepEqual([cuantas("ingreso"), cuantas("gasto"), cuantas("costo"), cuentas.filter((c) => c.clase === "real").length, cuantas("pasivo")], [2, 2, 0, 4, 1]);
   /* La utilidad del texto final sale de los datos. */
   assert.equal(L.utilidadDe(cuentas), 10500);
   assert.ok(D.LAS_QUE_VUELVEN_A_CERO.textoFinal.includes(pesos(L.utilidadDe(cuentas))));
@@ -654,7 +787,7 @@ test("★★★ Cuadra por valor jugada: tres tipos, un intento, la figura no ca
   /* La consecuencia va ANTES que el veredicto (C4). */
   const orden = [...caja.querySelectorAll("[data-consecuencia], [data-retro]")].map((n) => (n.hasAttribute("data-retro") ? "retro" : "consecuencia"));
   assert.deepEqual(orden, ["consecuencia", "retro"]);
-  assert.equal(caja.querySelector("[data-pie]").textContent, "Basado en el libro");
+  assert.equal(caja.querySelector("[data-pie]").textContent, D.PIE_T2_NUEVAS["cu-cuadra-por-valor"]);
   siguiente(caja);
 
   /* K2, BIEN: 500 para Bancos. Sin millones, el asiento no se apila. */
@@ -690,8 +823,9 @@ test("★★★ Cuadra por valor jugada: tres tipos, un intento, la figura no ca
   assert.match(caja.querySelector("[data-consecuencia]").textContent, /Faltan \$27\.000 en el haber/);
   assert.deepEqual(textosRetro(caja), [caso("cpv-j2").retroMala, caso("cpv-j2").porque]);
   siguiente(caja);
-  /* J3, MAL: «No cuadra» a un 3 contra 1 que sí cuadra. Nivel igual y sin consecuencia de desnivel. */
-  assert.equal(caja.querySelector("[data-hecho]"), null, "J3 va sin hecho hasta que Near lo dé");
+  /* J3, MAL: «No cuadra» a un 3 contra 1 que sí cuadra. Nivel igual y sin consecuencia de desnivel. Hecho y pie, los de Near T2-9. */
+  assert.equal(caja.querySelector("[data-hecho]").textContent, caso("cpv-j3").hecho);
+  assert.equal(caja.querySelector("[data-pie]").textContent, caso("cpv-j3").pie);
   clic(caja.querySelector('[data-opcion="no-cuadra"] button'));
   assert.equal(caja.querySelector('[data-opcion="no-cuadra"] button').dataset.estado, "incorrecta");
   await esperar(RETARDO_IBA_MS + 20);
@@ -893,6 +1027,10 @@ test("★★★ Del diario al mayor jugada: destino, origen y revisar; el mayor 
     [["Cuenta", "true"], ["Lado", "true"], ["Monto", "false"]]);
   assert.equal(caja.querySelector('[data-campo="Monto"]').textContent, "Monto4.800≠8.400");
   assert.equal(caja.querySelector("[data-consecuencia]"), null, "el error es del libro: nada en coral");
+  /* El acierto de Near (T2-9), en neutro y con el cotejo, antes del veredicto. */
+  assert.equal(caja.querySelector("[data-acierto-revisar]").textContent, D.ACIERTO_REVISAR);
+  assert.ok(!caja.querySelector("[data-acierto-revisar]").classList.contains("falla"));
+  assert.equal(caja.querySelector("[data-pie]").textContent, D.PIE_T2_NUEVAS["cu-del-diario-al-mayor"]);
   assert.equal(caja.querySelector("[data-estado-revisar] [data-pastilla]").dataset.pastilla, "correcta");
   assert.deepEqual(textosRetro(caja), [caso.items.find((i) => i.id === "ddm-a-r2").porque, caso.cierre]);
   siguiente(caja);
@@ -976,11 +1114,12 @@ test("★★★ Las que vuelven a cero jugada: binaria, ceja de escenario, el er
     ["Clasificación de cuentas nominales", "Clasificación de cuentas reales"]);
   const { caja, llamadas, desmontar } = montar(LasQueVuelvenACero, { items });
 
-  /* Ingresos por servicios (nominal) pasada con su saldo: 20X2 la muestra con $12.000 y borde coral. */
+  /* Ingresos por intereses (nominal) pasada con su saldo: 20X2 la muestra con $12.000 y borde coral. */
   const primera = items[0];
   assert.equal(caja.querySelector("[data-t2-cero]").dataset.clase, "nominal");
   assert.equal(caja.querySelector("[data-ceja]").textContent, "Escenario simulado");
-  assert.equal(caja.querySelector("[data-consigna]").textContent, "Llega el cierre de 20X1. ¿Qué pasa con Ingresos por servicios?");
+  assert.equal(caja.querySelector("[data-pie]").textContent, D.PIE_T2_NUEVAS["cu-las-que-vuelven-a-cero"]);
+  assert.equal(caja.querySelector("[data-consigna]").textContent, "Llega el cierre de 20X1. ¿Qué pasa con Ingresos por intereses?");
   assert.equal(caja.querySelector('[data-opcion="cero"] button').textContent.includes("Vuelve a cero en el cierre"), true);
   assert.equal(caja.querySelector('[data-opcion="pasa"] button').textContent.includes("Pasa al año siguiente con su saldo"), true);
   clic(caja.querySelector('[data-opcion="pasa"] button'));
@@ -1012,7 +1151,7 @@ test("★★★ Las que vuelven a cero jugada: binaria, ceja de escenario, el er
 
   const [pct, , detalle] = llamadas[0];
   assert.equal(pct, (100 * 7) / 8);
-  assert.deepEqual(detalle[0], { item: "lvc-ingresos-servicios", ok: false, intentos: 1, respuesta: "pasa", orden: 1 });
+  assert.deepEqual(detalle[0], { item: "lvc-ingresos-intereses", ok: false, intentos: 1, respuesta: "pasa", orden: 1 });
   assert.deepEqual(detalle.map((d) => d.item), D.LAS_QUE_VUELVEN_A_CERO.caso.cuentas.map((c) => c.id));
   for (const d of detalle) assert.ok(etiquetaDeItem("cu-las-que-vuelven-a-cero", d.item), `${d.item} sin etiqueta docente`);
   desmontar();
@@ -1032,15 +1171,18 @@ test("★★ «Así se juega»: modoDemo con el ejemplo de afuera, sin consigna,
     assert.equal(caja.querySelector("[data-encabezado]"), null, `${id}: la demo enseña la consigna`);
     assert.equal(boton(caja, "Siguiente"), undefined);
     assert.equal(llamadas.length, 0);
+    /* El pie es de la partida, no de la demo (los ejemplos son de la panadería). */
+    if (id !== "cu-cuadra-por-valor") assert.equal(caja.querySelector("[data-pie]"), null, `${id}: pie en la demo`);
     desmontar();
   }
 });
 
 test("★★ lo que no es de Near sigue marcado, en comentario y nunca en pantalla; lo de Near ya no lleva marca", () => {
   const datos = readFileSync("src/data/contabilidadT2HacerNuevas.js", "utf8");
-  /* Tres marcas: la consigna de «Así se juega» de 1.3, los pies de fuente y el porqué de origen. */
-  assert.equal(datos.split(MARCA).length - 1, 3, "las marcas de muestra de los datos no son las tres que quedan");
-  assert.ok(readFileSync("src/data/asiSeJuegaT2Nuevas.js", "utf8").includes(MARCA), "«Así se juega» es de muestra y perdió su marca");
+  /* Lote T2-10: Near ya dio la consigna de «Así se juega», los pies y el porqué de origen; en los datos no queda marca. */
+  assert.equal(datos.split(MARCA).length - 1, 0, "quedó una marca de muestra donde ya hay texto de Near");
+  /* En «Así se juega» siguen de muestra los pasos, el alt y los ejemplos (Near no los trae): una marca. */
+  assert.equal(readFileSync("src/data/asiSeJuegaT2Nuevas.js", "utf8").split(MARCA).length - 1, 1, "«Así se juega»: pasos, alt y ejemplos son de muestra y perdieron su marca");
   assert.ok(!readFileSync("src/contabilidad/t2HacerNuevas.js", "utf8").includes(MARCA), "la lógica ya no lleva texto de muestra");
   const textos = JSON.stringify([D.CUADRA_POR_VALOR, D.DEL_DIARIO_AL_MAYOR.casos.map((c) => c.items), D.LAS_QUE_VUELVEN_A_CERO, D.CONSIGNA_T2_NUEVAS, ASI_SE_JUEGA["cu-cuadra-por-valor"]]);
   assert.ok(!textos.includes("PENDIENTE_DE_REVISION") && !textos.includes("ESCRITO POR CLAUDE"));

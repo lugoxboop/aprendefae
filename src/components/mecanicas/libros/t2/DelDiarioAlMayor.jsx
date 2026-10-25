@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { barajar } from "../../../../utils/barajar.js";
 import { FAE } from "../../../../theme.js";
 import { DEBE, COLOR_LADO, pesos } from "../../../../data/contabilidad.js";
-import { CONSIGNAS_DIARIO, IBA_REVISAR, OBJETIVO_T2_NUEVAS } from "../../../../data/contabilidadT2HacerNuevas.js";
+import { ACIERTO_REVISAR, CONSIGNAS_DIARIO, IBA_REVISAR, OBJETIVO_T2_NUEVAS, PIE_T2_NUEVAS } from "../../../../data/contabilidadT2HacerNuevas.js";
 import {
   cuentasDe, evaluarDiario, mayorCon, mayorRevisar, pasadosDe, prepararDiario, puntuar, renglonesDe,
 } from "../../../../contabilidad/t2HacerNuevas.js";
@@ -14,7 +14,7 @@ import { RETARDO_IBA_MS } from "../tema3/segundaDecision.jsx";
 import { Devolucion, OpcionC } from "../t7/hacerT7.jsx";
 import { CORAL_B, IconoX, Pastilla, REVELADA, TACHADA, botonDeAvance } from "../b5/Devolucion.jsx";
 import {
-  CSS_T2_NUEVAS, CSS_T2_DELTA, Consecuencia, PAUSA_VEREDICTO_MS, RAIZ_T2, ROTULO_T2, movimientoReducido,
+  CSS_T2_NUEVAS, CSS_T2_DELTA, Consecuencia, PAUSA_VEREDICTO_MS, Pie, RAIZ_T2, ROTULO_T2, movimientoReducido,
 } from "./comunT2.jsx";
 
 /*
@@ -136,6 +136,8 @@ function MayorRevisar({ item, orden, r, elegida, veredicto, revelar, onTocar }) 
       {tocada && (
         <div className="veredicto-l" style={{ marginTop: "10px" }}>
           <Cotejo fecha={renglones[tocada.r].fecha} filas={r.cotejo} />
+          {/* El acierto, con el cotejo y en neutro: el error es del libro, no del estudiante (Watari T2-4 §2; texto de Near T2-9). */}
+          {r.ok && <p className="cuadra" data-acierto-revisar>{ACIERTO_REVISAR}</p>}
           {veredicto && (
             <p className="estado-l" data-estado-revisar>
               <Pastilla marca={r.ok ? "correcta" : TACHADA} />
@@ -340,6 +342,7 @@ export default function DelDiarioAlMayor({
 
         {!revisar && <Consecuencia texto={r?.consecuencia} />}
         <Devolucion r={veredicto ? (ultimo && caso.cierre ? { ...r, textos: [...r.textos, caso.cierre] } : r) : null} />
+        {!modoDemo && <Pie texto={PIE_T2_NUEVAS["cu-del-diario-al-mayor"]} />}
       </div>
       {veredicto && !modoDemo && (
         <div ref={zonaBoton}>

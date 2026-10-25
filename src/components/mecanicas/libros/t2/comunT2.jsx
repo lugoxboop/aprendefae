@@ -68,8 +68,9 @@ export const CSS_T2_DELTA = `
 /* T2-4 · lo nuevo sobre hacer.css */
 .fae-t2n .reloj { font:500 12px/1.4 "JetBrains Mono", monospace; color:var(--aten); border:1px dashed rgba(248,249,250,.25); border-radius:8px; padding:6px 8px; }
 /* Cuadra por valor */
-/* [Misa] Con «.col» delante: «.col.h .bar» (4 clases) le ganaba y pintaba el «?» sobre ámbar (medido 1,59:1). En la maqueta pasa igual. */
-.fae-t2n .col .bar.fijo { height:28px; flex:none; border:2px dashed var(--neutro); background:transparent; color:var(--texto); font:600 13px/1 "JetBrains Mono", monospace; }
+/* [Misa] Con «.col» delante: «.col.h .bar» (4 clases) le ganaba y pintaba el «?» sobre ámbar (medido 1,59:1). En la maqueta pasa igual.
+   Lote T2-10 (L): con «.columnas» y «.pila» delante (6 clases), ninguna otra regla de .bar le gana al tramo fijo de 28 px; la prueba C5 lo vigila. */
+.fae-t2n .columnas .col .pila .bar.fijo { height:28px; flex:none; border:2px dashed var(--neutro); background:transparent; color:var(--texto); font:600 13px/1 "JetBrains Mono", monospace; }
 .fae-t2n .col.h .bar.tuya, .fae-t2n .col.d .bar.tuya { box-shadow:inset 0 0 0 2px var(--texto); }
 .fae-t2n .col .bar.tuya.mal { box-shadow:none; outline:2px solid var(--coral); outline-offset:1px; }
 .fae-t2n .bar.culpa { outline:2px solid var(--texto); outline-offset:1px; }

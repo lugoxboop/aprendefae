@@ -16,15 +16,18 @@ import { COMPUESTAS_SUELTAS } from "./contabilidadActividades.js";
  * LOS BANCOS SON LOS DE NEAR (c-t2-2-near-lote.md §1), LETRA POR LETRA. Lo
  * comprueba t2-tres-hacer-nuevas.test.mjs leyendo el paquete. Encima van la
  * auditoría de Mello (c-t2-3-mello-auditoria.md §2) y el delta de Near T2-4
- * (c-t2-4-near-delta.md): también letra por letra, con su prueba. Lo único que
- * no es de Near lleva la marca de muestra en comentario, nunca en pantalla:
- *   - el porqué de los ítems de origen de «Del diario al mayor» (Near no lo trae);
- *   - el pie de fuente de cada caso de «Cuadra por valor» (Near da la fuente, no la frase);
- *   - la consigna de «Las que vuelven a cero» en «Así se juega» (la de Near lleva {cuenta}).
+ * (c-t2-4-near-delta.md): también letra por letra, con su prueba. Lote T2-10
+ * (L, «Auditoría T2-9»): E3 de Mello T2-9 §4.1 y los textos del delta de Near
+ * T2-9 (porqué de origen, acierto de «revisar», J3, pies y «Así se juega»),
+ * también letra por letra. Ya no queda texto de muestra en este archivo.
+ * Y VC·1, VC·3 y VC·7 de «Las que vuelven a cero», que se repetían con P2
+ * (Mello T2-9 §4.2): nombres, porqués y retros de Near T2-10 (c-t2-10-near-
+ * textos.md §2), con los mismos saldos.
  *
  * Las tres van `pendiente: true` en subjects.js hasta que corra la 0116.
  * ═══════════════════════════════════════════════════════════════════════════
  */
+
 
 export const IDS_T2_NUEVAS = ["cu-cuadra-por-valor", "cu-del-diario-al-mayor", "cu-las-que-vuelven-a-cero"];
 
@@ -66,17 +69,18 @@ export const CONSIGNAS_DIARIO = {
 export const CONSIGNA_CERO = "Llega el cierre de 20X1. ¿Qué pasa con {cuenta}?";
 export const consignaCero = (cuenta) => CONSIGNA_CERO.replace("{cuenta}", cuenta.nombre);
 
-/*
- * La consigna que enseña «Así se juega», una por Hacer: la del primer tipo,
- * que es el que juega la demo.
- * [ESCRITO POR CLAUDE, NO POR LA FICHA] PENDIENTE_DE_REVISION — muestra hasta el banco de Near (lote T2-2)
- * Solo la de «Las que vuelven a cero»: la de Near lleva {cuenta} y la demo no
- * tiene una sola cuenta, así que aquí dice «cada cuenta».
- */
+/* La consigna que enseña «Así se juega», una por Hacer: la de Near, delta T2-9. */
 export const CONSIGNA_T2_NUEVAS = {
-  "cu-cuadra-por-valor": CONSIGNAS_CUADRA.completar,
-  "cu-del-diario-al-mayor": CONSIGNAS_DIARIO.destino,
-  "cu-las-que-vuelven-a-cero": CONSIGNA_CERO.replace("{cuenta}", "cada cuenta"),
+  "cu-cuadra-por-valor": "Completa el valor que falta, di si el asiento cuadra o toca el renglón que lo descuadra. Mira los totales, no cuántas cuentas hay.",
+  "cu-del-diario-al-mayor": "Lleva cada renglón a su cuenta del mayor, busca de dónde salió cada línea y encuentra la que está mal pasada. El lado se copia del diario.",
+  "cu-las-que-vuelven-a-cero": "Llega el cierre del año. Decide si cada cuenta vuelve a cero o pasa al año siguiente con su saldo.",
+};
+
+/* El pie de fuente de cada Hacer (H2): Near, delta T2-9. */
+export const PIE_T2_NUEVAS = {
+  "cu-cuadra-por-valor": "Basado en el libro: casos de Lavado de Autos Mateo (pp. 98-101) y de Caleja. Los errores están puestos a propósito.",
+  "cu-del-diario-al-mayor": "Basado en el libro: Lavado de Autos Mateo, pp. 98-101. Los errores del mayor están puestos a propósito.",
+  "cu-las-que-vuelven-a-cero": "Basado en el libro: las cuentas son del libro y los saldos, simulados.",
 };
 
 /* ═══════════════════════ 8.º · CUADRA POR VALOR ═══════════════════════ */
@@ -92,14 +96,8 @@ const conHueco = (lineas, cuenta) => lineas.map((l) => (l.cuenta === cuenta ? { 
 const D = (cuenta, monto) => ({ cuenta, lado: DEBE, monto });
 const H = (cuenta, monto) => ({ cuenta, lado: HABER, monto });
 
-/*
- * [ESCRITO POR CLAUDE, NO POR LA FICHA] PENDIENTE_DE_REVISION — muestra hasta el banco de Near (lote T2-2)
- * Solo los pies de fuente (H2). Near da la fuente de cada caso (Lavado, pp.
- * 98-101; cu10 y Caleja, «Basado en el libro», decisión 1 de L en T2-2) pero
- * no la frase del pie; esta copia el formato de T7 («Basado en el libro, p. N»).
- */
-const PIE_LAVADO = "Basado en el libro, pp. 98-101";
-const PIE_LIBRO = "Basado en el libro";
+/* El pie de la actividad (Near T2-9); J3 lleva su propia fuente, porque no tiene error puesto. */
+const PIE_CUADRA = PIE_T2_NUEVAS["cu-cuadra-por-valor"];
 
 /*
  * El banco de Near, §1.1, con la auditoría de Mello (c-t2-3-mello-auditoria.md
@@ -125,7 +123,7 @@ export const CUADRA_POR_VALOR = {
   porPartida: 8,
   casos: [
     {
-      id: "cpv-k1", tipo: "completar", fuente: "cu10-computador-mitad", pie: PIE_LIBRO,
+      id: "cpv-k1", tipo: "completar", fuente: "cu10-computador-mitad", pie: PIE_CUADRA,
       lineas: conHueco(lineasDe(suelta("cu10-computador-mitad")), "Cuentas por pagar"),
       correcta: 750000,
       distractores: [
@@ -135,7 +133,7 @@ export const CUADRA_POR_VALOR = {
       porque: "El debe suma $1.500.000. En el haber ya hay $750.000 de Caja, así que la deuda es $750.000.",
     },
     {
-      id: "cpv-k2", tipo: "completar", fuente: "lavado:ene-12", pie: PIE_LAVADO,
+      id: "cpv-k2", tipo: "completar", fuente: "lavado:ene-12", pie: PIE_CUADRA,
       lineas: conHueco(lineasDe(deLavado("ene-12")), "Bancos"),
       correcta: 500,
       distractores: [
@@ -146,7 +144,7 @@ export const CUADRA_POR_VALOR = {
     },
     {
       /* Omitido: falta la línea de Caja de cu10-socio-vehiculo. El hecho es el de Mello. */
-      id: "cpv-j1", tipo: "juzgar", fuente: "cu10-socio-vehiculo (omitido)", pie: PIE_LIBRO,
+      id: "cpv-j1", tipo: "juzgar", fuente: "cu10-socio-vehiculo (omitido)", pie: PIE_CUADRA,
       hecho: "Entra un socio nuevo. Aporta un vehículo de $2.000.000 y $1.000.000 en efectivo.",
       lineas: [D("Flota y equipo de transporte", 2000000), H("Aportes sociales", 3000000)],
       cuadra: false,
@@ -155,7 +153,7 @@ export const CUADRA_POR_VALOR = {
     },
     {
       /* 2 contra 2 + traspuesto. Caleja cal-2 y cal-3 en un asiento; lo construido es el 52.000. El hecho es el de Mello. */
-      id: "cpv-j2", tipo: "juzgar", fuente: "caleja:cal-2+cal-3 (traspuesto)", pie: PIE_LIBRO,
+      id: "cpv-j2", tipo: "juzgar", fuente: "caleja:cal-2+cal-3 (traspuesto)", pie: PIE_CUADRA,
       hecho: "Caleja compra un computador de $25.000 a crédito. También compra maquinaria de $50.000 con un préstamo del banco.",
       lineas: [D("Equipo de computación", 52000), D("Maquinaria", 50000), H("Cuentas por pagar", 25000), H("Obligaciones financieras", 50000)],
       cuadra: false,
@@ -166,10 +164,12 @@ export const CUADRA_POR_VALOR = {
       /*
        * Trampa 3 contra 1 que SÍ cuadra: era K3 (Mello §2.1-1). Une los aportes
        * de Lavado del 2 y del 25 de enero; el Equipo de computación es construido.
-       * retroMala es el retro de «No cuadra» de Mello. ABIERTO para Near: Mello
-       * no da hecho para J3 (va sin hecho) y el porqué es el de K3, letra por letra.
+       * retroMala es el retro de «No cuadra» de Mello y el porqué, el de K3. El
+       * hecho y la fuente del ítem (su pie) son los de Near, delta T2-9.
        */
-      id: "cpv-j3", tipo: "juzgar", fuente: "lavado:ene-02+ene-25 (construido; era K3)", pie: PIE_LIBRO,
+      id: "cpv-j3", tipo: "juzgar", fuente: "lavado:ene-02+ene-25 (construido; era K3)",
+      pie: "Basado en el libro: une los aportes de Lavado del 2 y del 25 de enero. El aporte del computador es construido.",
+      hecho: "Los socios aportan $5.000 al banco, $1.000 en caja y un computador de $2.000.",
       lineas: [D("Bancos", 5000), D("Caja", 1000), D("Equipo de computación", 2000), H("Acciones", 8000)],
       cuadra: true,
       porque: "Tres cuentas contra una, y cuadra. El debe suma $8.000, así que Acciones es $8.000.",
@@ -177,7 +177,7 @@ export const CUADRA_POR_VALOR = {
     },
     {
       /* Lado contrario (Mello): Caja en el debe. Base cal-4; Bancos es construido. */
-      id: "cpv-e1", tipo: "encontrar", fuente: "caleja:cal-4 (lado contrario; Bancos construido)", pie: PIE_LIBRO,
+      id: "cpv-e1", tipo: "encontrar", fuente: "caleja:cal-4 (lado contrario; Bancos construido)", pie: PIE_CUADRA,
       hecho: "Caleja abona $10.000 a la deuda del computador. Paga $6.000 en efectivo y $4.000 con un cheque.",
       lineas: [D("Cuentas por pagar", 10000), D("Caja", 6000), H("Bancos", 4000)],
       linea: [1],
@@ -189,7 +189,7 @@ export const CUADRA_POR_VALOR = {
     },
     {
       /* Renglón de más (Mello): Caja sobra; el aporte es el local. */
-      id: "cpv-e2", tipo: "encontrar", fuente: "caleja:cal-5 (renglón de más)", pie: PIE_LIBRO,
+      id: "cpv-e2", tipo: "encontrar", fuente: "caleja:cal-5 (renglón de más)", pie: PIE_CUADRA,
       hecho: "Los socios aportan un local comercial de $100.000.",
       lineas: [D("Local comercial", 100000), D("Caja", 100000), H("Aportes sociales", 100000)],
       linea: [1],
@@ -200,15 +200,20 @@ export const CUADRA_POR_VALOR = {
       },
     },
     {
-      /* Traspuesto (Mello): 250 escrito 520. Base ene-18 + ene-30. */
-      id: "cpv-e3", tipo: "encontrar", fuente: "lavado:ene-18+ene-30 (traspuesto)", pie: PIE_LIBRO,
-      hecho: "Con un cheque de $650 abona $400 a la hipoteca y el resto a la deuda del computador.",
-      lineas: [D("Cuentas por pagar", 520), D("Hipoteca por pagar", 400), H("Bancos", 650)],
+      /*
+       * Traspuesto (Mello): 360 escrito 630. Mello T2-9 §4.1 (lote T2-10): el
+       * cheque pasa de $650 a $760, porque el Aprender ya mostraba el pago de
+       * $250 (P1·6); hecho, renglones, porqué y retro de Bancos son los suyos.
+       * El retro de Hipoteca sigue siendo el de Near (T2-4 §1).
+       */
+      id: "cpv-e3", tipo: "encontrar", fuente: "lavado:ene-18+ene-30 (traspuesto; cheque de Mello T2-9)", pie: PIE_CUADRA,
+      hecho: "Con un cheque de $760 abona $400 a la hipoteca y el resto a la deuda del computador.",
+      lineas: [D("Cuentas por pagar", 630), D("Hipoteca por pagar", 400), H("Bancos", 760)],
       linea: [0],
-      porque: "La deuda del computador recibe lo que queda del cheque: $250. Aquí dice $520, y la diferencia de $270 se divide por 9.",
+      porque: "La deuda del computador recibe lo que queda del cheque: $360. Aquí dice $630, y la diferencia de $270 se divide por 9.",
       retros: {
         1: "Hipoteca coincide: el hecho dice $400. Resta, y mira cuánto le toca al otro abono.",
-        2: "Viste que no cuadra y culpaste al total. El cheque fue de $650, y eso dice Bancos. Revisa los abonos.",
+        2: "Viste que no cuadra y culpaste al total. El cheque fue de $760, y eso dice Bancos. Revisa los abonos.",
       },
     },
   ],
@@ -259,6 +264,8 @@ export const PLANTILLAS_REVISAR = {
 };
 /* La frase del error en «revisar» (Watari, c-t2-4-watari-figuras.md §2): la consecuencia de tocar una línea buena. */
 export const COINCIDE_REVISAR = "Esta línea coincide con su renglón en cuenta, lado y monto.";
+/* La frase del acierto en «revisar», en neutro (Watari T2-4 §2; texto de Near, delta T2-9). */
+export const ACIERTO_REVISAR = "Encontraste el error del mayor. Esa línea no coincide con su renglón del diario.";
 /* La pastilla del veredicto en «revisar», en la fila de estado (Watari §2). */
 export const IBA_REVISAR = "Iba en la línea punteada";
 
@@ -290,10 +297,8 @@ const MUEBLES = "Muebles y enseres";
  *            `fila` es el ítem de Near (A6…B7): los ids de «revisar» no reusan
  *            ddm-a-6/7, que ya son de origen.
  * Orden de juego: destino por fecha, origen barajados y los dos revisar al final, 1 y 2.
- *
- * [ESCRITO POR CLAUDE, NO POR LA FICHA] PENDIENTE_DE_REVISION — muestra hasta el banco de Near (lote T2-2)
- * Solo el `porque` de los ítems de origen: Near da el porqué de destino («uno
- * para todos») y no trae el de origen.
+ * El `porque` de los cuatro de origen es el de Near, delta T2-9 (A·o1, A·o2,
+ * B·o1 y B·o2): cada uno nombra la trampa del renglón que se parece.
  */
 export const DEL_DIARIO_AL_MAYOR = {
   subtema: FICHAS_T2_NUEVAS[1].subtema,
@@ -308,9 +313,9 @@ export const DEL_DIARIO_AL_MAYOR = {
         { id: "ddm-a-3", tipo: "destino", renglon: 2, retros: { Bancos: "A", [LETRAS]: "A", Acciones: "B" } },
         { id: "ddm-a-5", tipo: "destino", renglon: 4, retros: { [FLOTA]: "A", Bancos: "A", Acciones: "B" } },
         { id: "ddm-a-6", tipo: "origen", renglon: 3, retros: { 0: "oA", 2: "oB", 4: "oB", 1: "oD" },
-          porque: "Los $800 del haber de Bancos son el pago del vehículo, el 4 de enero." },
+          porque: "La línea es de Bancos, del 4 de enero, con $800 en el haber. Solo el renglón del pago desde Bancos dice eso." },
         { id: "ddm-a-7", tipo: "origen", renglon: 0, retros: { 1: "oC", 3: "oA", 2: "oD", 4: "oD" },
-          porque: "Los $5.000 del debe de Bancos son el depósito del 2 de enero." },
+          porque: "La línea es de Bancos, del 2 de enero, con $5.000 en el debe. Es el aporte que entró al banco, no las Acciones del mismo día." },
         /* A6 es el de Mello (auditoría T2-5 §2.2, lote T2-6): los $4.000 caen en el haber de Bancos, no en Flota, para que A6 y A7 no caigan en la misma T (D5). */
         { id: "ddm-a-r1", fila: "A6", tipo: "revisar", error: "cuenta vecina", renglon: 4,
           mal: { r: 4, cuenta: "Bancos", lado: HABER, monto: 4000 },
@@ -332,9 +337,9 @@ export const DEL_DIARIO_AL_MAYOR = {
         { id: "ddm-b-2", tipo: "destino", renglon: 1, retros: { [EQUIPO]: "A", [MUEBLES]: "B", Bancos: "B" } },
         { id: "ddm-b-3", tipo: "destino", renglon: 2, retros: { Bancos: "A", [CXP]: "A", [EQUIPO]: "B" } },
         { id: "ddm-b-6", tipo: "origen", renglon: 4, retros: { 1: "oA", 0: "oC", 2: "oB", 3: "oB" },
-          porque: "Los $2.000 de Cuentas por pagar del 12 de enero son el saldo de los muebles." },
+          porque: "La línea es de Cuentas por pagar, del 12 de enero. El renglón del 8 tiene la misma cuenta y la misma cifra, pero otra fecha." },
         { id: "ddm-b-7", tipo: "origen", renglon: 3, retros: { 2: "oB", 4: "oB", 0: "oD", 1: "oD" },
-          porque: "Los $500 del haber de Bancos son el pago de los muebles, el 12 de enero." },
+          porque: "La línea es de Bancos, del 12 de enero, con $500 en el haber. Es el pago de los muebles, no los muebles mismos." },
         { id: "ddm-b-r1", fila: "B6", tipo: "revisar", error: "lado contrario", renglon: 3,
           mal: { r: 3, cuenta: "Bancos", lado: DEBE, monto: 500 },
           porque: "En el diario, los $500 de Bancos están en el haber, porque el banco pagó. En el mayor quedaron en el debe.",
@@ -362,11 +367,14 @@ export const ROTULO_CERO = "Escenario simulado";
 
 /*
  * El banco de Near, §1.3: cierre de año, no de mes (decisión de Near que L
- * aceptó). 8 cuentas: 2 ingresos, 1 gasto, 1 costo y 4 reales con un pasivo.
+ * aceptó). 8 cuentas: 2 ingresos, 2 gastos y 4 reales con un pasivo.
+ * Lote T2-10 (Mello T2-9 §4.2, C1 con P2): VC·1, VC·3 y VC·7 son las de Near
+ * T2-10 §2, con los mismos saldos; VC·7 deja de ser Costo de ventas (era el
+ * único costo) y pasa a gasto. La utilidad sigue en $10.500.
  * Cada cuenta lleva su porqué y solo el retro de la opción mala que le toca
  * (`retroMala`); la familia se nombra en el retro.
  * Trampas: Cuentas por cobrar y Documentos por pagar (Near); lo pagado por
- * anticipado es activo y un cobro es Caja (Mello). «Costo de ventas», como en T2.
+ * anticipado es activo y un cobro es Caja (Mello).
  */
 export const LAS_QUE_VUELVEN_A_CERO = {
   subtema: FICHAS_T2_NUEVAS[2].subtema,
@@ -379,15 +387,15 @@ export const LAS_QUE_VUELVEN_A_CERO = {
     /* El periodo de la caja de utilidad («= Utilidad del año»): sale de aquí, no del componente (Mello H2). */
     periodo: "año",
     cuentas: [
-      { id: "lvc-ingresos-servicios", nombre: "Ingresos por servicios", clase: "nominal", familia: "ingreso", saldo: 12000,
-        porque: "Es un ingreso: mide lo que la empresa ganó en el año. Al cierre, su saldo pasa a Ganancias y pérdidas.",
-        retroMala: "Así, 20X2 empezaría con ingresos que hizo 20X1. Es un ingreso, y se cierra." },
+      { id: "lvc-ingresos-intereses", nombre: "Ingresos por intereses", clase: "nominal", familia: "ingreso", saldo: 12000,
+        porque: "Es un ingreso: mide los intereses que la empresa ganó en el año. Al cierre, su saldo pasa a Ganancias y pérdidas.",
+        retroMala: "Así, 20X2 empezaría con intereses que se ganaron en 20X1. Es un ingreso, y se cierra." },
       { id: "lvc-cuentas-por-cobrar", nombre: "Cuentas por cobrar", clase: "real", familia: "activo", saldo: 3000,
         porque: "Es lo que los clientes te deben. Esa plata sigue por cobrar el 1 de enero.",
         retroMala: "Así, los clientes dejarían de deberte el 1 de enero. Es un activo, y su saldo pasa." },
-      { id: "lvc-gastos-operacion", nombre: "Gastos de operación", clase: "nominal", familia: "gasto", saldo: 5000,
-        porque: "Es un gasto del año. Se cierra aunque haya tenido muchos movimientos.",
-        retroMala: "Que se mueva mucho no la deja abierta. Es un gasto: mide el año y vuelve a cero." },
+      { id: "lvc-gastos-arriendo", nombre: "Gastos por arriendo", clase: "nominal", familia: "gasto", saldo: 5000,
+        porque: "Es un gasto del año. Se paga cada mes y aun así se cierra, porque mide el año.",
+        retroMala: "Pagarlo cada mes no lo deja abierto. Es un gasto: mide el año y vuelve a cero." },
       { id: "lvc-documentos-por-pagar", nombre: "Documentos por pagar", clase: "real", familia: "pasivo", saldo: 2500,
         porque: "Es una deuda firmada. La deuda no se borra con el cierre: sigue en 20X2.",
         retroMala: "Así, la deuda desaparecería con el cierre. Es un pasivo, y su saldo pasa." },
@@ -401,14 +409,14 @@ export const LAS_QUE_VUELVEN_A_CERO = {
       { id: "lvc-seguros-anticipado", nombre: "Seguros pagados por anticipado", clase: "real", familia: "activo", saldo: 1200,
         porque: "Es un activo: un seguro que ya pagaste y que te cubre en 20X2. Sigue el 1 de enero.",
         retroMala: "Así, perderías un seguro que ya pagaste y que aún te cubre. Es un activo, no un gasto." },
-      { id: "lvc-costo-ventas", nombre: "Costo de ventas", clase: "nominal", familia: "costo", saldo: 4500,
-        porque: "Es un costo: lo que costó lo que se vendió en el año. Se cierra como los gastos.",
-        retroMala: "Así, 20X2 cargaría con lo que costó vender en 20X1. Es un costo, y se cierra." },
+      { id: "lvc-gasto-venta-fletes", nombre: "Gasto de venta – fletes", clase: "nominal", familia: "gasto", saldo: 4500,
+        porque: "Es un gasto: lo que costó llevar lo vendido en el año. Se cierra como los demás gastos.",
+        retroMala: "Así, 20X2 cargaría con los fletes de lo que se vendió en 20X1. Es un gasto, y se cierra." },
       { id: "lvc-caja", nombre: "Caja", clase: "real", familia: "activo", saldo: 6000,
         porque: "Es el dinero que hay en la caja, también el que cobraste. Cobrar no es un ingreso: es Caja, y su saldo pasa.",
         retroMala: "Así, en 20X2 Caja diría $0, y el dinero sigue ahí. Lo cobrado es Caja, no un ingreso." },
     ],
   },
-  /* El puente con el desafío (Near). Ingresos $20.000 − gastos y costos $9.500 = $10.500. */
+  /* El puente con el desafío (Near). Ingresos $20.000 − gastos $9.500 = $10.500. */
   textoFinal: "El cierre deja la utilidad del año, $10.500, lista para pasar al patrimonio. Con eso empieza El Ciclo Completo.",
 };

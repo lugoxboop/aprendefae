@@ -3,7 +3,7 @@ import { barajar } from "../../../../utils/barajar.js";
 import { FAE } from "../../../../theme.js";
 import { pesos } from "../../../../data/contabilidad.js";
 import {
-  LAS_QUE_VUELVEN_A_CERO, OBJETIVO_T2_NUEVAS, OPCIONES_CERO, ROTULO_CERO, consignaCero,
+  LAS_QUE_VUELVEN_A_CERO, OBJETIVO_T2_NUEVAS, OPCIONES_CERO, PIE_T2_NUEVAS, ROTULO_CERO, consignaCero,
 } from "../../../../data/contabilidadT2HacerNuevas.js";
 import {
   PASA_CON_SALDO, VUELVE_A_CERO, destinoCorrecto, evaluarCero, prepararCero, puntuar, utilidadDe,
@@ -15,7 +15,7 @@ import { Encabezado } from "../tema1/encabezado.jsx";
 import { useNumeroQueSube } from "../verbos.jsx";
 import { Devolucion, Eleccion } from "../t7/hacerT7.jsx";
 import { CORAL_B, Pastilla, TACHADA, botonDeAvance } from "../b5/Devolucion.jsx";
-import { CSS_T2_NUEVAS, Consecuencia, ROTULO_T2 } from "./comunT2.jsx";
+import { CSS_T2_NUEVAS, Consecuencia, Pie, ROTULO_T2 } from "./comunT2.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -196,6 +196,7 @@ export default function LasQueVuelvenACero({
 
         <Consecuencia texto={r?.consecuencia} />
         <Devolucion r={r && (mesCerrado ? { ...r, textos: [...r.textos, LAS_QUE_VUELVEN_A_CERO.textoFinal] } : r)} />
+        {!modoDemo && <Pie texto={PIE_T2_NUEVAS["cu-las-que-vuelven-a-cero"]} />}
       </div>
       {r && !modoDemo && (
         <div ref={zonaBoton}>
