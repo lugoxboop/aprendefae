@@ -1,8 +1,8 @@
-2026-10-24 21:06 (hora Bogotá)
+2026-10-24 22:05 (hora Bogotá)
 - Panel docente v1: terminado (fusionado #498: lo relevante arriba —Mi clase, Necesitan atención, La actividad que más costó—; las cifras son las mismas que las del panel viejo; sin escrituras nuevas ni cambios de esquema; PASA de Shibukawa)
 - Logitos de Contabilidad T1-T4: terminado (fusionado #519, PASA de Shibukawa y prueba a 32 px de Hanayama con su ajuste al cajón; el acento de T5 y T6 lo tiene la Célula B en #523)
-- T4 Aprender a tipo presentación: en curso (#488: Baki aplica la corrección común de E2 a 320 y las sueltas, más el cambio de mecánica de A5 p5 de Katsumi —la condición (d) ya está cerrada—; con la evidencia de A7/A8, Shibukawa mira solo A5 p5 y fusiono)
-- Decoración animada de las tablas de posiciones (las tres materias): en curso (Hanayama entregó la banda medida en las tres materias, en el perfil y en la liga, las 9 piezas, Fae y una torre nueva para Estratégico; una sola banda en bucle por página; las paso al repo en cuanto me las pegue como texto; Baki lo construye después de T4)
+- T4 Aprender a tipo presentación: terminado (fusionado #488, 6885ab8: A0-A5 como slides sobre SecuenciaAprender, PASA de Shibukawa y CI verde; la misma deuda de foco en A3ElArqueo.jsx va en un PR aparte de Baki)
+- Decoración animada de las tablas de posiciones (las tres materias): en curso (Baki la construye con la especificación v3 de Hanayama, que ya está en main —a18cb04—, y la vida visual de Ukyo de #545; una sola prop opcional en RankingFP y LigaBoard; Erwin avisado en #547; la audita Shibukawa, con una pantalla de Estratégico)
 - Hallazgo de la célula: RankingFP a 320 px no muestra ningún nombre (el botón de ánimo deja el apodo en 0 px), en las tres materias: reportado a Erwin como urgente en #556; no lo tocamos, es compartido
 - Textos que faltaban en el panel y arreglos de la vista del estudiante: terminado (fusionado #525, PASA de Shibukawa y 0 toques bajo 44 px)
 - Ajuste del cajón de T4 a 32 px (patas sin tronco central): terminado (fusionado #528, PASA de Hanayama y Shibukawa)
