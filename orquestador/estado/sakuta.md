@@ -1,9 +1,9 @@
-2026-10-24 22:37 (hora Bogotá)
+2026-10-24 22:51 (hora Bogotá)
 - T1 · #496 (t1-5, las dos torres): terminado, fusionado (233c635) con el PASA de Shoko y el CI en verde
 - T1 · #520 (logito LibretaYLapiz): terminado, fusionado (047f3b7) con el PASA de Shoko y el CI en verde
 - T1 · #531 (t1-5, lo que se ve después de «Anotar»): terminado, fusionado (ad898f9) con el PASA de Shoko y el CI en verde
-- T1 · #535 (lote 4): en curso; tercera vuelta de Shoko (revisiones/b-t1-531-535-c-shoko.md): PASA en t1-1, t1-2, t1-4 y t1-6; faltan la banda de t1-8 sin ✕ y t1-7. Decisión mía en t1-7: la pieza se llama «Estado de situación financiera» (mismo id), con el acierto nuevo de f1 (Kaede)
-- T1 · #539 (lote 5: H1 y H2): en curso; Kaede pone los textos del lote F de Futaba (fichas/b-t1-lote-24oct-f-futaba.md)
+- T1 · #535 (lote 4): en curso; Kaede corrigió t1-8 y t1-7 (b043a96, CI verde); las capturas de la cuarta vuelta ya están con Shoko
+- T1 · #539 (lote 5): en curso; H1 tiene PASA; a H2 le falta que la reserva no crezca al responder (Kaede). Los cuatro encendidos están bien: se lo expliqué a Shoko
 - T1 · #551 (lo decidido del capítulo 2): terminado, fusionado (e5707a0) con el PASA de Shoko y el CI en verde
 - T1 · «Utilidad del ejercicio» en t1-7: terminado; Futaba lo resolvió (§10 de la ficha de fuente): la pieza pasa a «Activos y pasivos, en bloque» con el mismo id; lo aplica Kaede en el #535
 - Shoko traspasada a un chat nuevo (6c926eca); el 02dc9984 quedó pesado, con 19 subidas; traspasos/shoko.md está al día
@@ -12,7 +12,7 @@
 - T1 · el caso «se quedan los dos igual» de cu0-a2: BLOQUEADO-MATEO; falta la p. 90 del capítulo 3
 - T1 · los textos pendientes del #535 (Futaba): terminado, en fichas/b-t1-lote-24oct-d-futaba.md
 - T1 · «Ocho leen lo mismo»: terminado, en 2×2 (fichas/b-t1-titulares-medidos-mai.md §7), con PASA de Shoko
-- T1 · los 5 Aprender en secuencia (lote 6) (Kaede): en curso; el #559 (cu0-a1 y «Ocho leen lo mismo», detrás de la bandera ?aprender=secuencia) tiene el CI verde; capturas sacadas; Mai lo revisa contra su forma con el volumen de #545
+- T1 · los 5 Aprender en secuencia (lote 6) (Kaede): en curso; #559 (cu0-a1 y «Ocho leen lo mismo»): FALLA de Shoko (revisiones/b-t1-559-shoko.md); las paradas quedaron cerradas; faltan la capa 4 de «Ocho leen» sin recortar y con un porqué por frase (Kaede) y los textos de cu0-a1 · 1, 2 y 8, con el balance que no cuadra (Futaba, lote G)
 - Regla nueva de Miku: el volumen y la decoración de Ukyo (#545) van en cada pieza que toque Mai; ya se lo pasé
 - Lo compartido que falla en los 7 Hacer: bloqueado; es de Erwin (#487)
 - T6 (oculto hasta el próximo semestre): los dos cambios de texto de Shoko del #458 quedan anotados
