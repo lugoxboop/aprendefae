@@ -5,7 +5,7 @@ import BotonAnimo from "../social/BotonAnimo.jsx";
 import { estadoDeAnimos } from "../../social/animo.js";
 import { useAuth } from "../../auth/AuthProvider.jsx";
 import Avatar, { TAMANOS } from "../avatar/Avatar.jsx";
-import { TARJETA_TABLA } from "./tarjeta.js";
+import { TARJETA_TABLA, ATENUADO_TABLA } from "./tarjeta.js";
 import BandaDecoracion from "../decoracion/BandaDecoracion.jsx";
 import { estadoRanking } from "../decoracion/poses.js";
 
@@ -40,8 +40,9 @@ const PERIODOS = [
  */
 const ACENTO_PODIO = [
   { fondo: "rgba(233,196,106,0.18)", borde: FAE.ambar, texto: FAE.ambar },
-  { fondo: "rgba(42,157,143,0.18)", borde: FAE.teal, texto: FAE.teal },
-  { fondo: "rgba(42,157,143,0.10)", borde: "rgba(42,157,143,0.5)", texto: "rgba(42,157,143,0.85)" },
+  /* El número del 2.º y el 3.º en neutro: el teal como texto no llega a 4,5:1 (#573). El color lo lleva el contorno. */
+  { fondo: "rgba(42,157,143,0.18)", borde: FAE.teal, texto: FAE.text },
+  { fondo: "rgba(42,157,143,0.10)", borde: "rgba(42,157,143,0.5)", texto: FAE.node },
 ];
 
 function Posicion({ n }) {
@@ -121,7 +122,7 @@ function Fila({ entrada, destacada, animo }) {
           }}
         >
           {entrada.nickname}
-          {destacada && <span style={{ color: FAE.teal, fontWeight: 400 }}> · tú</span>}
+          {destacada && <span style={{ color: ATENUADO_TABLA, fontWeight: 400 }}> · tú</span>}
         </span>
         <div style={{ display: "flex", alignItems: "center", justifyContent: conAnimo ? "space-between" : "flex-end", gap: "8px", marginTop: "2px" }}>
           {/* Nunca en la fila propia: no se puede dar ánimo a uno mismo. */}
@@ -276,7 +277,7 @@ export default function RankingFP({ subjectId = null, titulo = "Ranking", nota, 
           </button>
         </div>
       ) : estado.cargando ? (
-        <p style={{ fontSize: "14px", color: "rgba(248,249,250,0.5)", margin: 0 }}>Cargando…</p>
+        <p style={{ fontSize: "14px", color: ATENUADO_TABLA, margin: 0 }}>Cargando…</p>
       ) : estado.error ? (
         <p style={{ fontSize: "14px", lineHeight: 1.55, color: FAE.coral, margin: 0 }}>
           No se pudo cargar el ranking: {estado.error}
@@ -304,7 +305,7 @@ export default function RankingFP({ subjectId = null, titulo = "Ranking", nota, 
           )}
 
           {!propia && perfil && (
-            <p style={{ fontSize: "13px", lineHeight: 1.5, color: "rgba(248,249,250,0.5)", margin: "10px 2px 0" }}>
+            <p style={{ fontSize: "13px", lineHeight: 1.5, color: ATENUADO_TABLA, margin: "10px 2px 0" }}>
               Todavía no tienes FP en este periodo, así que no apareces en la tabla.
             </p>
           )}

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { TARJETA_TABLA } from "../ranking/tarjeta.js";
+import { TARJETA_TABLA, ATENUADO_TABLA } from "../ranking/tarjeta.js";
 import { FAE } from "../../theme.js";
 import { useAuth } from "../../auth/AuthProvider.jsx";
 import { tableroDe, contextoDe, repartir, tieneLigas } from "../../ligas/ligas.js";
@@ -54,7 +54,8 @@ function Puesto({ n, destacado }) {
         fontSize: "12.5px",
         fontWeight: 700,
         fontVariantNumeric: "tabular-nums",
-        color: destacado ? FAE.bg : FAE.teal,
+        /* Neutro: el teal como texto daba 3,1:1 sobre la tarjeta (#573). */
+        color: destacado ? FAE.bg : FAE.text,
         background: destacado ? FAE.teal : "rgba(42,157,143,0.14)",
         border: `1px solid ${FAE.teal}`,
       }}
@@ -132,7 +133,7 @@ export default function LigaBoard({ subjectId, cargarTablero = tableroDe, cargar
       })()}
 
       {estado.cargando ? (
-        <p style={{ fontSize: "13.5px", color: "rgba(248,249,250,0.5)", margin: 0 }}>Cargando…</p>
+        <p style={{ fontSize: "13.5px", color: ATENUADO_TABLA, margin: 0 }}>Cargando…</p>
       ) : !session ? (
         <>
           <p style={{ fontSize: "13.5px", lineHeight: 1.55, color: "rgba(248,249,250,0.62)", margin: "0 0 12px" }}>
@@ -195,7 +196,7 @@ export default function LigaBoard({ subjectId, cargarTablero = tableroDe, cargar
                     {f.nickname}{f.es_tuyo ? " · tú" : ""}
                   </span>
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px", marginTop: "2px" }}>
-                    <span data-fp style={{ fontFamily: "Sora, sans-serif", fontSize: "13.5px", fontWeight: 700, fontVariantNumeric: "tabular-nums", color: FAE.teal, whiteSpace: "nowrap" }}>
+                    <span data-fp style={{ fontFamily: "Sora, sans-serif", fontSize: "13.5px", fontWeight: 700, fontVariantNumeric: "tabular-nums", color: FAE.text, whiteSpace: "nowrap" }}>
                       {f.fp} FP
                     </span>
                     {/* Nunca en la fila propia. */}
@@ -210,7 +211,7 @@ export default function LigaBoard({ subjectId, cargarTablero = tableroDe, cargar
 
           {/* De los demás, solo cuántos son. Ni nombres ni puestos. */}
           {restantes > 0 && podio.length > 0 && (
-            <p style={{ fontSize: "12.5px", color: "rgba(248,249,250,0.45)", margin: "12px 0 0" }}>
+            <p style={{ fontSize: "12.5px", color: ATENUADO_TABLA, margin: "12px 0 0" }}>
               y {restantes} estudiante{restantes === 1 ? "" : "s"} más compitiendo esta semana
             </p>
           )}
@@ -226,9 +227,9 @@ export default function LigaBoard({ subjectId, cargarTablero = tableroDe, cargar
                 Estás en el puesto{" "}
                 <strong style={{ fontFamily: "Sora, sans-serif", color: FAE.text }}>#{tuya.posicion}</strong>{" "}
                 de {tamLiga} en tu liga esta semana, con{" "}
-                <strong style={{ fontFamily: "Sora, sans-serif", color: FAE.teal }}>{tuya.fp} FP</strong>.
+                <strong style={{ fontFamily: "Sora, sans-serif", color: FAE.text }}>{tuya.fp} FP</strong>.
               </p>
-              <p style={{ fontSize: "12px", color: "rgba(248,249,250,0.4)", margin: "6px 0 0" }}>
+              <p style={{ fontSize: "12px", color: ATENUADO_TABLA, margin: "6px 0 0" }}>
                 Solo tú ves esta línea.
               </p>
             </div>

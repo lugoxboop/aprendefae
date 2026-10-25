@@ -811,7 +811,8 @@ function ConSesion({ usuarioId, perfil, cerrarSesion, conTitulo = false, arriba 
                 <p
                   style={{
                     fontFamily: "Sora, sans-serif", fontSize: "14px", fontWeight: 600, color: FAE.text,
-                    margin: "0 0 3px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+                    /* El apodo nunca se corta con «…» (#546, inventario de #573): se parte. */
+                    margin: "0 0 3px", overflowWrap: "anywhere",
                   }}
                 >
                   {etiqueta}

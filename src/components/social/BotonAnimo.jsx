@@ -89,21 +89,27 @@ export default function BotonAnimo({ apodo, recibidos = 0, yaLeDi = false, onDad
           gap: "5px",
           padding: "4px 9px",
           borderRadius: "999px",
-          border: `1px solid ${yaEsta ? "rgba(231,111,81,0.5)" : "rgba(248,249,250,0.16)"}`,
-          background: yaEsta ? "rgba(231,111,81,0.16)" : "rgba(248,249,250,0.05)",
+          /*
+           * #573: coral es SOLO error (Xeno §3.6) y aquí decía «ya le diste
+           * ánimo»; pasa al ámbar. Y la cifra, a 12 px y en neutros que
+           * pasan 4,5:1 sobre la tarjeta (el coral de 11,5 daba 3,34).
+           */
+          border: `1px solid ${yaEsta ? "rgba(233,196,106,0.55)" : "rgba(248,249,250,0.16)"}`,
+          background: yaEsta ? "rgba(233,196,106,0.14)" : "rgba(248,249,250,0.05)",
           /* El destello: un pulso corto al registrarse, sin insignias ni medallas. */
           transform: destellando ? "scale(1.18)" : "scale(1)",
-          transition: "transform 200ms cubic-bezier(.34,1.56,.64,1), background 200ms ease, border-color 200ms ease",
+          /* Solo transform, con la curva única del kit. */
+          transition: "transform 200ms cubic-bezier(.3,.9,.4,1)",
         }}
       >
-        <Destello relleno={yaEsta || destellando ? FAE.coral : "rgba(248,249,250,0.45)"} />
+        <Destello relleno={yaEsta || destellando ? FAE.ambar : "#A8B6C8"} />
         <span
           style={{
             fontFamily: "Sora, sans-serif",
-            fontSize: "11.5px",
+            fontSize: "12px",
             fontWeight: 700,
             fontVariantNumeric: "tabular-nums",
-            color: yaEsta ? FAE.coral : "rgba(248,249,250,0.6)",
+            color: yaEsta ? FAE.ambar : "#A8B6C8",
           }}
         >
           {cuenta}

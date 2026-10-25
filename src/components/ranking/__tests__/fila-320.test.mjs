@@ -142,11 +142,31 @@ test("★ #570: en el podio de la liga el apodo también tiene su línea propia 
 });
 
 test("★ #571: las dos tablas usan la misma tarjeta, y es opaca", () => {
-  assert.equal(TARJETA_TABLA.background, FAE.navy, "la tarjeta dejó de ser el navy opaco");
+  /* #1C2939 y no el navy: el navy no es superficie y con él el teal de las cifras daba 2,78:1 (#573). */
+  assert.equal(TARJETA_TABLA.background, "#1C2939", "la tarjeta dejó de ser la superficie opaca #1C2939");
   assert.doesNotMatch(String(TARJETA_TABLA.background), /rgba\(/, "la tarjeta volvió a ser transparente");
   for (const archivo of ["../RankingFP.jsx", "../../ligas/LigaBoard.jsx"]) {
     const fuente = readFileSync(new URL(archivo, import.meta.url), "utf8");
     assert.match(fuente, /\.\.\.TARJETA_TABLA/, `${archivo} no usa la tarjeta compartida`);
     assert.doesNotMatch(fuente, /background: "rgba\(248,249,250,0\.04\)"/, `${archivo} volvió al 4 %`);
+  }
+});
+
+/*
+ * #573 (Levi: «opaco no es legible»): medido con scripts/ranking/medir.mjs, el
+ * texto de las dos tablas pasa 4,5:1 (mínimo 4,63 a 320 y 375). Lo que lo
+ * rompía eran colores de texto concretos; aquí no pueden volver: ni teal como
+ * color de TEXTO ni blanco por debajo del 50 %. El coral queda solo para el
+ * error (4,76:1 a 14 px sobre la tarjeta).
+ */
+test("★ #573: ningún texto de las tablas en teal ni en blanco tenue", () => {
+  for (const archivo of ["../RankingFP.jsx", "../../ligas/LigaBoard.jsx", "../../ligas/CabeceraLiga.jsx", "../../social/BotonAnimo.jsx"]) {
+    const fuente = readFileSync(new URL(archivo, import.meta.url), "utf8");
+    const colores = [...fuente.matchAll(/(?<![a-zA-Z])color: ([^,}\n]+)/g)].map((x) => x[1].trim());
+    for (const c of colores) {
+      assert.doesNotMatch(c, /FAE\.teal\b/, `${archivo}: texto en ${c}`);
+      const alfa = c.match(/rgba\(248,\s*249,\s*250,\s*(0?\.\d+)\)/);
+      if (alfa) assert.ok(Number(alfa[1]) >= 0.5, `${archivo}: texto blanco al ${alfa[1]}`);
+    }
   }
 });
