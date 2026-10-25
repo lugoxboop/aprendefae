@@ -51,10 +51,18 @@ export async function leerHechoHoy(idRepaso = ID_REPASO) {
  */
 export async function leerHechas() {
   if (!supabase) return null;
-  const { data, error } = await supabase.rpc("actividades_hechas");
-  if (error) {
-    console.error("[aprendeFAE] No se pudo leer lo ya completado:", error.message);
+  const [fp, aprender] = await Promise.all([supabase.rpc("actividades_hechas"), supabase.rpc("aprender_hechas")]);
+  if (fp.error) {
+    console.error("[aprendeFAE] No se pudo leer lo ya completado:", fp.error.message);
     return null;
   }
-  return new Set((data ?? []).map((f) => f.activity_id));
+  const hechas = new Set((fp.data ?? []).map((f) => f.activity_id));
+  /*
+   * Y las piezas de Aprender que llegaron a su cierre (0153, #576): no dan
+   * FP, así que no están en actividades_hechas(). Si esta lectura falla, el
+   * Repaso sigue con lo de FP, como antes: no se pierde nada que ya hubiera.
+   */
+  if (aprender.error) console.error("[aprendeFAE] No se pudo leer lo visto en Aprender:", aprender.error.message);
+  else for (const f of aprender.data ?? []) hechas.add(f.activity_id);
+  return hechas;
 }
