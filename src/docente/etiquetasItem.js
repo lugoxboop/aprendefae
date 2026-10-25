@@ -102,6 +102,7 @@ import { unidadDeR5_5 } from "../data/repasoCap5PermanenteJuego.js";
 import {
   preguntaDeUsuario, empresaDeItem, hechoDeItem, conceptoDeItem, flechaDeItem, situacionDeItem,
 } from "../contabilidad/tema1.js";
+import { preguntaH1, fichaH2, enunciadoH2 } from "../contabilidad/tema1Hacer2.js";
 
 /* El nombre de cada caso, para desambiguar cuentas que se llaman igual. */
 const EMPRESAS = { lavado: LAVADO_DE_AUTOS.empresa, caleja: CALEJA.empresa };
@@ -603,6 +604,9 @@ Object.assign(REGLAS, {
   "t1-la-ecuacion-en-movimiento": (id) => hechoDeItem(id),
   "t1-en-cual-estado-aparece": (id) => conceptoDeItem(id),
   "t1-la-articulacion": (id) => flechaDeItem(id),
+  /* Lote 5 (Célula B): la pregunta de H1 y el propósito de H2, dichos en palabras. */
+  "t1-un-dia-o-un-ano": (id) => preguntaH1(id)?.texto ?? null,
+  "t1-quien-pregunta-esto": (id) => { const f = fichaH2(id); return f ? enunciadoH2(f) : null; },
 
   /*
    * Tema 3 · act. 1. El ítem es el hecho, con su empresa delante: dos hechos
