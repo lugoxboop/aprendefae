@@ -99,9 +99,16 @@ const medir = () => {
     .filter((e) => /[\p{L}\p{N}]/u.test(e.textContent))
     .map((e) => ({ q: e.textContent.trim().slice(0, 26), px: parseFloat(getComputedStyle(e).fontSize) }))
     .filter((t) => t.px < 12 && t.px !== 10.5);
+  /*
+   * Ojo con el filtro de hojas: un `span` con un hijo dentro sigue siendo
+   * texto, y por mirar solo hojas se me escapó el nombre de actividad cortado
+   * del panel docente, que pedía 348 px y tenía 232. Aquí entra todo lo que
+   * recorta con «…», tenga hijos o no, salvo lo oculto para lectores.
+   */
   const cortados = [...raiz.querySelectorAll("*")]
     .filter((e) => getComputedStyle(e).textOverflow === "ellipsis" && e.scrollWidth > e.clientWidth + 1)
-    .map((e) => e.textContent.trim().slice(0, 26));
+    .filter((e) => e.clientWidth > 2 && !oculto(e))
+    .map((e) => `${e.textContent.trim().slice(0, 26)} (pide ${e.scrollWidth}, tiene ${e.clientWidth})`);
   return {
     alto: Math.round(raiz.getBoundingClientRect().height),
     desborde: document.documentElement.scrollWidth > innerWidth,
