@@ -103,7 +103,7 @@ for (const [w, h] of ANCHOS) {
     const antes = await medir();
     if (CAPTURAS && antes.n === 1) {
       mkdirSync(CAPTURAS, { recursive: true });
-      await pagina.screenshot({ path: `${CAPTURAS}/${antes.pieza}-p1-${w}.png`, fullPage: true });
+      await pagina.screenshot({ path: `${CAPTURAS}/${antes.pieza}-p1-${w}.png` });
     }
     let despues = antes;
     for (let k = 0; k < 24 && despues.espera === "espera"; k++) {
