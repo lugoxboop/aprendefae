@@ -236,3 +236,50 @@ test("★ #549: el mensaje va fuera de la figura y lee su mismo estado; la figur
   assert.match(estilos, /\.fae-sec-figura \{ min-height:/, "la figura volvió a alto fijo: se sale y tapa «Siguiente»");
   assert.doesNotMatch(estilos, /\.fae-sec-figura \{ height:/);
 });
+
+test("★ #558: Pulsos opcionales, pieza en la misma fila, razón de 48 en lo que bloquea, apoyo por paso, pie y apertura que predice", async () => {
+  sessionStorage.clear();
+  const pz = (id) => ({ id, sinPulsos: true, pantallas: [
+    pantalla("a", "apertura", { estadoInicial: S.HAZ_INICIAL, resuelta: S.hazResuelto, razon: "Predice primero.", pasos: 0 }),
+    pantalla("m", "miralo", { pasos: 2, apoyo: ["Primero esto.", "Luego esto.", "Y al final esto."] }),
+    pantalla("h", "haz", { estadoInicial: S.HAZ_INICIAL, resuelta: S.hazResuelto, razon: "Elige una opción." }),
+    pantalla("c", "cierre", { pie: "Basado en el libro, p. 6", altoFigura: { a320: 180, a375: 999 } }),
+  ] });
+  const piezas = [pz("t1a"), pz("t1b")];
+  assert.deepEqual(S.faltasDePieza(piezas[0]), []);
+  assert.ok(S.faltasDePieza({ ...piezas[0], pantallas: piezas[0].pantallas.map((p) => (p.tipo === "apertura" ? { ...p, razon: undefined } : p)) })
+    .some((f) => /apertura que bloquea/.test(f)));
+
+  const m = await montar({ temaId: "t1", piezas });
+  /* Sin Pulsos, pero el contador sigue para el lector, y la pieza va en la misma fila. */
+  assert.equal(m.q("[data-avance]"), null, "pintó los Pulsos aunque la pieza los omite");
+  assert.match(m.q("[data-contador]").textContent, /Pantalla 1 de 4/);
+  assert.equal(m.q("[data-contador]").parentElement, m.q("[data-contador-pieza]").parentElement, "«Pieza k de N» no va en la fila del contador");
+  /* La apertura que predice bloquea, con su razón y la reserva de 48. */
+  assert.equal(m.q("[data-siguiente]").getAttribute("aria-disabled"), "true");
+  assert.equal(m.q("[data-razon]").textContent, "Predice primero.");
+  assert.equal(m.q("[data-razon]").style.minHeight, "48px");
+  await m.clic("[data-opcion='bien']");
+  await m.clic("[data-siguiente]");
+  /* El apoyo cambia con el paso. */
+  assert.equal(m.q("[data-apoyo]").textContent, "Primero esto.");
+  assert.equal(m.q("[data-razon]").style.minHeight, "16px");
+  await m.clic("[data-siguiente]");
+  assert.equal(m.q("[data-apoyo]").textContent, "Luego esto.");
+  await m.clic("[data-siguiente]");
+  await m.clic("[data-siguiente]");
+  await m.clic("[data-opcion='bien']");
+  await m.clic("[data-siguiente]");
+  /* El cierre: el pie en la zona de razón y su propio alto de figura, con el mismo tope. */
+  assert.equal(m.q("[data-tipo]").getAttribute("data-tipo"), "cierre");
+  assert.equal(m.q("[data-razon]").textContent, "Basado en el libro, p. 6");
+  const raiz = m.q(".fae-sec-raiz");
+  assert.equal(raiz.style.getPropertyValue("--fae-sec-alto-320"), "180px");
+  assert.equal(raiz.style.getPropertyValue("--fae-sec-alto-375"), "253px", "el alto por pantalla se saltó el tope");
+  /* La navegación va pegada en el flujo, y el botón de avance no se parte. */
+  const nav = m.q("[data-navegacion]");
+  assert.equal(nav.style.position, "sticky");
+  assert.equal(m.q("[data-siguiente]").style.whiteSpace, "nowrap");
+  assert.equal(m.q("[data-anterior]").style.minWidth, "96px");
+  await act(async () => { m.raiz.unmount(); });
+});
