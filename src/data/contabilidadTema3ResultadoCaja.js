@@ -54,6 +54,13 @@ export const LEYENDA_NEGATIVA = "Con tus respuestas, la caja daba";
 /* Kamogawa, #557: la ficha que no mueve la caja, si el estudiante la sumó o la restó. */
 export const TU_RESPUESTA = "(tu respuesta)";
 export const ERROR_CUADRA_CON_ERRORES = "Llegaste a la caja correcta, pero con dos fichas mal puestas: sus errores se cancelaron.";
+/*
+ * Kamogawa, #557: A6 también sale en B, que cuadra con tres y con cuatro
+ * fichas mal. El número va en palabras; con dos es ERROR_CUADRA_CON_ERRORES.
+ */
+const EN_PALABRAS = { 2: "dos", 3: "tres", 4: "cuatro", 5: "cinco", 6: "seis" };
+export const errorCuadraConErrores = (n) =>
+  `Llegaste a la caja correcta, pero con ${EN_PALABRAS[n] ?? n} fichas mal puestas: sus errores se cancelaron.`;
 
 /* Textos fijos de interfaz (Itagaki, §7 y §8; A1). */
 export const INTERFAZ_RESULTADO_CAJA = {

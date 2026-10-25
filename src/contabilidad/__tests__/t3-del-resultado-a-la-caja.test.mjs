@@ -189,22 +189,32 @@ test("★★★ A6: en A, Equipo en «Suma» y Alquiler en «Resta» llegan a la
   assert.equal(r.cuadra, true);
   assert.deepEqual(r.textos, [D.ERROR_CUADRA_CON_ERRORES, CASO_A.fichas[1].error, CASO_A.fichas[3].error]);
   /*
-   * El texto dice «dos». Recorridas las 3⁴ y 3⁶ respuestas: en A es el único
-   * caso que cuadra con errores; en B cuadran dos, con 3 y 4 fichas mal, y
-   * ahí no sale (diría «dos» sin serlo).
+   * Kamogawa, #557: A6 lleva el número en palabras. Recorridas las 3⁴ y 3⁶
+   * respuestas: en A cuadra con errores un solo caso, con dos fichas mal; en
+   * B, dos casos, con tres y con cuatro. En todos, A6 abre el mensaje, siguen
+   * los errores de las dos primeras fichas mal y, si hay más de dos, la cola.
    */
   const cuadran = (caso) => {
     const ids = caso.fichas.map((f) => f.id);
     const salen = [];
     const rec = (k, resp) => {
-      if (k === ids.length) { const e = L.evaluarResultadoCaja(caso, resp); if (e.cuadra) salen.push([e.mal.length, e.textos.includes(D.ERROR_CUADRA_CON_ERRORES)]); return; }
+      if (k === ids.length) {
+        const e = L.evaluarResultadoCaja(caso, resp);
+        if (!e.cuadra) return;
+        const errores = caso.fichas.filter((f) => e.mal.includes(f.id)).slice(0, 2).map((f) => f.error);
+        assert.deepEqual(e.textos, [D.errorCuadraConErrores(e.mal.length), ...errores, ...(e.mal.length > 2 ? [D.VARIOS_ERRORES] : [])]);
+        salen.push([e.mal.length, e.textos[0]]);
+        return;
+      }
       for (const o of [SUMA, RESTA, NO_MUEVE]) rec(k + 1, { ...resp, [ids[k]]: o });
     };
     rec(0, {});
     return salen.sort();
   };
-  assert.deepEqual(cuadran(CASO_A), [[2, true]]);
-  assert.deepEqual(cuadran(CASO_B), [[3, false], [4, false]]);
+  const a6 = (n) => `Llegaste a la caja correcta, pero con ${n} fichas mal puestas: sus errores se cancelaron.`;
+  assert.deepEqual(cuadran(CASO_A), [[2, a6("dos")]]);
+  assert.deepEqual(cuadran(CASO_B), [[3, a6("tres")], [4, a6("cuatro")]]);
+  assert.equal(D.errorCuadraConErrores(2), D.ERROR_CUADRA_CON_ERRORES);
 });
 
 /* ═══════════ EL PUENTE ═══════════ */
@@ -410,7 +420,7 @@ test("★★★ cuadra con errores (A: Equipo en Suma y Alquiler en Resta): sin 
   } finally { m.desmontar(); }
 });
 
-test("★★★ cuadra con errores en B (tres mal): sin leyenda; caja negativa en B: «Con tus respuestas, la caja daba −$3.200.000»", async () => {
+test("★★★ cuadra con errores en B (tres mal): A6 con «tres» y sin leyenda; caja negativa en B: «Con tus respuestas, la caja daba −$3.200.000»", async () => {
   const ids = CASO_B.fichas.map((f) => f.id);
   /* El primer caso que cuadra con tres mal, buscado entre todas las respuestas. */
   let cambios = null;
@@ -433,6 +443,9 @@ test("★★★ cuadra con errores en B (tres mal): sin leyenda; caja negativa e
     assert.equal(puente.querySelector("[data-punteado]"), null);
     assert.equal(puente.querySelector("[data-cifra-suya]"), null);
     assert.equal(puente.querySelector("[data-leyenda]"), null);
+    /* Kamogawa, #557: A6 sale también en B, con «tres». */
+    assert.equal(textos(m.caja)[0], "Llegaste a la caja correcta, pero con tres fichas mal puestas: sus errores se cancelaron.");
+    assert.equal(textos(m.caja).at(-1), D.VARIOS_ERRORES);
   } finally { m.desmontar(); }
   m = await montar({ version: "B" });
   try {

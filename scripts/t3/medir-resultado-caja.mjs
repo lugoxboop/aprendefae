@@ -117,6 +117,7 @@ function medir() {
   r.pista = document.querySelector("[data-puente] [data-pista]")?.getBoundingClientRect().width ?? null;
   r.punteado = document.querySelector("[data-puente] [data-punteado]")?.getBoundingClientRect().width ?? null;
   r.cifraSuya = document.querySelector("[data-puente] [data-cifra-suya]")?.textContent ?? null;
+  r.devolucion = [...document.querySelectorAll("[data-parrafo-devolucion]")].map((p) => p.textContent.replace(/^(Correcto|Incorrecto)\. /, ""));
   r.leyendas = [...document.querySelectorAll("[data-puente] [data-leyenda]")].map((x) => ({ tipo: x.dataset.leyenda, texto: x.textContent, alto: x.getBoundingClientRect().height }));
   r.tenues = [...document.querySelectorAll("[data-puente] [data-renglon-tenue]")].map((x) => {
     const [nombre, cifra] = x.querySelectorAll("span");
@@ -176,6 +177,7 @@ function medir() {
     }
     const k = contraste(rgba(s.color), fondoDe(el));
     minimo = Math.min(minimo, k);
+    if (el.closest("[data-renglon-tenue]")) r.contrasteTenue = Math.min(r.contrasteTenue ?? Infinity, Math.round(k * 100) / 100);
     if (k < 4.5) r.contraste.push(`${k.toFixed(2)}:1 ${nombre(el)}`);
   }
   r.contrasteMinTexto = Math.round(minimo * 100) / 100;
@@ -312,7 +314,8 @@ async function partida(ancho, version, nombre) {
   const tenuesVistos = r.tenues.map(({ nombre: n, cifra }) => ({ nombre: n, cifra }));
   if (JSON.stringify(tenuesVistos) !== JSON.stringify(tenuesEsperados)) fallos.push(`${etq}: TENUE ${JSON.stringify(tenuesVistos)}, se esperaba ${JSON.stringify(tenuesEsperados)}`);
   for (const x of r.tenues) if (!x.cifraEnUnRenglon) fallos.push(`${etq}: el monto del renglón tenue se parte`);
-  filas.push(`|  |  | ↳ leyenda: ${r.leyendas.length ? r.leyendas.map((l) => `«${l.texto}» (${l.alto.toFixed(1)} px)`).join(", ") : "ninguna"}; renglón tenue: ${r.tenues.length ? r.tenues.map((x) => `«${x.nombre} ${x.cifra}» (${x.alto.toFixed(1)} px, nombre en ${x.lineasNombre} l., cifra en ${x.lineasCifra} l.)`).join(", ") : "ninguno"} |`);
+  filas.push(`|  |  | ↳ leyenda: ${r.leyendas.length ? r.leyendas.map((l) => `«${l.texto}» (${l.alto.toFixed(1)} px)`).join(", ") : "ninguna"}; renglón tenue: ${r.tenues.length ? r.tenues.map((x) => `«${x.nombre} ${x.cifra}» (${x.alto.toFixed(1)} px, nombre en ${x.lineasNombre} l., cifra en ${x.lineasCifra} l.)`).join(", ") + `, contraste ${r.contrasteTenue}:1` : "ninguno"}; devolución: ${r.devolucion?.[0] ?? "—"} |`);
+  if (r.tenues.length && !(r.contrasteTenue >= 4.5)) fallos.push(`${etq}: el renglón tenue baja de 4,5:1 (${r.contrasteTenue}:1)`);
   if (conCapturas) {
     await pagina.evaluate(() => scrollTo(0, 0));
     await captura({ bien: "bien", mal: "mal", negativa: "mal-negativa", cuadra: "mal-cuadra" }[nombre]);

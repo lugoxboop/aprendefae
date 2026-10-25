@@ -1,6 +1,6 @@
 # «Del resultado a la caja» · medidas (Chromium, Inter y Sora de @fontsource 5.3.0)
 
-Salida de `node --import ./scripts/cargador-jsx.mjs scripts/t3/medir-resultado-caja.mjs orquestador/revisiones/t3-del-resultado-a-la-caja`, 2026-10-24 22:09 (Bogotá), con las correcciones de Kamogawa en #557 (la leyenda en sus tres casos y el renglón tenue). Las alturas van en px; «desde el Panel» es desde la parte de arriba del Panel de la actividad.
+Salida de `node --import ./scripts/cargador-jsx.mjs scripts/t3/medir-resultado-caja.mjs orquestador/revisiones/t3-del-resultado-a-la-caja`, 2026-10-24 23:10 (Bogotá), con las correcciones de Kamogawa en #557: la leyenda en sus tres casos, el renglón tenue (con su contraste medido) y A6 con el número en palabras («dos» en A, «tres» en B). Las alturas van en px; «desde el Panel» es desde la parte de arriba del Panel de la actividad.
 
 fuentes: Inter y Sora de @fontsource 5.3.0
 | Ancho | Versión | Estado | Encabezado | Ficha del caso | Ranura (desde el Panel) | Tarjeta | Útil / tarjeta por dentro | Botones | Renglones | Puente | Tramo menor | Contraste mín. texto | Contorno reposo |
@@ -11,33 +11,33 @@ fuentes: Inter y Sora de @fontsource 5.3.0
 | 320 | A | todas, con «Comprobar» | 137.3 | 144.0 | 309.3–421.3 | — (— l.) | 258 / — | — | 44 44 44 44 | — | — | 5.06 | — |
 | 320 | A | bien | 137.3 | 144.0 | — | — (— l.) | 258 / — | — | 52 52 52 52 | 176.0 | 17.4 | 5.06 | — |
 |  |  | ↳ bien: pista 232.0 px, punteado ninguno, cifra de sus respuestas —, renglones 52 52 52 52 |
-|  |  | ↳ leyenda: ninguna; renglón tenue: ninguno |
+|  |  | ↳ leyenda: ninguna; renglón tenue: ninguno; devolución: Los $3.950 de utilidad, más el aporte y lo que se debe, menos lo que falta cobrar, dan los $14.650 de la caja. |
 | 320 | A | resumen | — | — | — | — (— l.) | 258 / — | — | — | 176.0 | 17.4 | 4.63 | — |
 | 320 | A | mal (punteado) | 137.3 | 144.0 | — | — (— l.) | 258 / — | — | 52 80 52 52 | 256.0 | 17.4 | 5.06 | — |
 |  |  | ↳ mal: pista 232.0 px, punteado 137.1 px, cifra de sus respuestas $19.650, renglones 52 80 52 52 |
-|  |  | ↳ leyenda: «Punteado: así quedaba con tus respuestas» (32.0 px); renglón tenue: «Equipo aportado +$5.000 (tu respuesta)» (32.0 px, nombre en 1 l., cifra en 2 l.) |
+|  |  | ↳ leyenda: «Punteado: así quedaba con tus respuestas» (32.0 px); renglón tenue: «Equipo aportado +$5.000 (tu respuesta)» (32.0 px, nombre en 1 l., cifra en 2 l.), contraste 7.15:1; devolución: El equipo entró a la empresa, pero no es plata. La caja no lo ve. |
 | 320 | A | mal (caja negativa, A7) | 137.3 | 144.0 | — | — (— l.) | 258 / — | — | 60 52 52 52 | 192.0 | 17.4 | 5.06 | — |
 |  |  | ↳ negativa: pista 232.0 px, punteado ninguno, cifra de sus respuestas −$350, renglones 60 52 52 52 |
-|  |  | ↳ leyenda: «Con tus respuestas, la caja daba −$350» (16.0 px); renglón tenue: ninguno |
+|  |  | ↳ leyenda: «Con tus respuestas, la caja daba −$350» (16.0 px); renglón tenue: ninguno; devolución: Los socios metieron plata a la caja, y un aporte no es ingreso. Por eso la caja tiene más que la utilidad. |
 | 320 | A | mal (cuadra con errores, A6) | 137.3 | 144.0 | — | — (— l.) | 258 / — | — | 52 80 52 60 | 208.0 | 17.4 | 5.06 | — |
 |  |  | ↳ cuadra: pista 232.0 px, punteado ninguno, cifra de sus respuestas —, renglones 52 80 52 60 |
-|  |  | ↳ leyenda: ninguna; renglón tenue: «Equipo aportado +$5.000 (tu respuesta)» (32.0 px, nombre en 1 l., cifra en 2 l.) |
+|  |  | ↳ leyenda: ninguna; renglón tenue: «Equipo aportado +$5.000 (tu respuesta)» (32.0 px, nombre en 1 l., cifra en 2 l.), contraste 7.15:1; devolución: Llegaste a la caja correcta, pero con dos fichas mal puestas: sus errores se cancelaron. |
 | 320 | B | vacío | 137.3 | 146.0 | 311.3–423.3 | 92.0 (1 l.) | 258 / 234 | 72.7×44 · 72.7×44 · 72.7×44 | — | — | — | 6.99 | 3.01 |
 | 320 | B | a mitad | 137.3 | 146.0 | 311.3–441.3 | 110.0 (2 l.) | 258 / 234 | 72.7×44 · 72.7×44 · 72.7×44 | 44 44 | — | — | 6.99 | 3.01 |
 | 320 | B | todas, con «Comprobar» | 137.3 | 146.0 | 311.3–423.3 | — (— l.) | 258 / — | — | 46 44 44 46 44 44 | — | — | 5.06 | — |
 | 320 | B | bien | 137.3 | 146.0 | — | — (— l.) | 258 / — | — | 52 52 68 52 52 68 | 284.0 | 10.5 | 5.06 | — |
 |  |  | ↳ bien: pista 232.0 px, punteado ninguno, cifra de sus respuestas —, renglones 52 52 68 52 52 68 |
-|  |  | ↳ leyenda: ninguna; renglón tenue: ninguno |
+|  |  | ↳ leyenda: ninguna; renglón tenue: ninguno; devolución: Escenario simulado. Los $1.541.000 de utilidad, más el impuesto que se debe, el aporte y el préstamo, menos el anticipo y lo que falta cobrar, dan los $6.800.000 de la caja. |
 | 320 | B | resumen | — | — | — | — (— l.) | 258 / — | — | — | 284.0 | 10.5 | 4.63 | — |
 | 320 | B | mal (punteado) | 137.3 | 146.0 | — | — (— l.) | 258 / — | — | 52 52 76 52 52 80 | 364.0 | 10.5 | 5.06 | — |
 |  |  | ↳ mal: pista 232.0 px, punteado 165.7 px, cifra de sus respuestas $9.500.000, renglones 52 52 76 52 52 80 |
-|  |  | ↳ leyenda: «Punteado: así quedaba con tus respuestas» (32.0 px); renglón tenue: «Equipo comprado a crédito +$1.500.000 (tu respuesta)» (32.0 px, nombre en 2 l., cifra en 2 l.) |
+|  |  | ↳ leyenda: «Punteado: así quedaba con tus respuestas» (32.0 px); renglón tenue: «Equipo comprado a crédito +$1.500.000 (tu respuesta)» (32.0 px, nombre en 2 l., cifra en 2 l.), contraste 7.15:1; devolución: Salió plata por un arriendo que aún no se usa. No bajó la utilidad, pero sí la caja. |
 | 320 | B | mal (caja negativa, A7) | 137.3 | 146.0 | — | — (— l.) | 258 / — | — | 60 52 68 52 52 68 | 316.0 | 10.5 | 5.06 | — |
 |  |  | ↳ negativa: pista 232.0 px, punteado ninguno, cifra de sus respuestas −$3.200.000, renglones 60 52 68 52 52 68 |
-|  |  | ↳ leyenda: «Con tus respuestas, la caja daba −$3.200.000» (32.0 px); renglón tenue: ninguno |
+|  |  | ↳ leyenda: «Con tus respuestas, la caja daba −$3.200.000» (32.0 px); renglón tenue: ninguno; devolución: Los socios metieron plata a la caja este mes, y un aporte no es ingreso. La caja tiene más por eso. |
 | 320 | B | mal (cuadra con errores, A6) | 137.3 | 146.0 | — | — (— l.) | 258 / — | — | 60 52 76 60 52 68 | 284.0 | 10.5 | 5.06 | — |
 |  |  | ↳ cuadra: pista 232.0 px, punteado ninguno, cifra de sus respuestas —, renglones 60 52 76 60 52 68 |
-|  |  | ↳ leyenda: ninguna; renglón tenue: ninguno |
+|  |  | ↳ leyenda: ninguna; renglón tenue: ninguno; devolución: Llegaste a la caja correcta, pero con tres fichas mal puestas: sus errores se cancelaron. |
 |  |  | movimiento reducido a 320, a los 80 ms de «Comprobar»: puente visible, opacidad mínima 1, punteado sí, «Iba aquí» 1 |
 |  |  | «Así se juega» a 375: la demo puso la ficha en Resta y mostró la resolución |
 | 375 | A | vacío | 137.3 | 128.0 | 293.3–405.3 | 92.0 (1 l.) | 313 / 289 | 91.0×44 · 91.0×44 · 91.0×44 | — | — | — | 6.99 | 3.01 |
@@ -45,33 +45,33 @@ fuentes: Inter y Sora de @fontsource 5.3.0
 | 375 | A | todas, con «Comprobar» | 137.3 | 128.0 | 293.3–405.3 | — (— l.) | 313 / — | — | 44 44 44 44 | — | — | 5.06 | — |
 | 375 | A | bien | 137.3 | 128.0 | — | — (— l.) | 313 / — | — | 52 52 52 52 | 176.0 | 21.6 | 5.06 | — |
 |  |  | ↳ bien: pista 287.0 px, punteado ninguno, cifra de sus respuestas —, renglones 52 52 52 52 |
-|  |  | ↳ leyenda: ninguna; renglón tenue: ninguno |
+|  |  | ↳ leyenda: ninguna; renglón tenue: ninguno; devolución: Los $3.950 de utilidad, más el aporte y lo que se debe, menos lo que falta cobrar, dan los $14.650 de la caja. |
 | 375 | A | resumen | — | — | — | — (— l.) | 313 / — | — | — | 176.0 | 21.6 | 4.63 | — |
 | 375 | A | mal (punteado) | 137.3 | 128.0 | — | — (— l.) | 313 / — | — | 52 60 52 52 | 240.0 | 21.6 | 5.06 | — |
 |  |  | ↳ mal: pista 287.0 px, punteado 169.6 px, cifra de sus respuestas $19.650, renglones 52 60 52 52 |
-|  |  | ↳ leyenda: «Punteado: así quedaba con tus respuestas» (16.0 px); renglón tenue: «Equipo aportado +$5.000 (tu respuesta)» (32.0 px, nombre en 1 l., cifra en 2 l.) |
+|  |  | ↳ leyenda: «Punteado: así quedaba con tus respuestas» (16.0 px); renglón tenue: «Equipo aportado +$5.000 (tu respuesta)» (32.0 px, nombre en 1 l., cifra en 2 l.), contraste 7.15:1; devolución: El equipo entró a la empresa, pero no es plata. La caja no lo ve. |
 | 375 | A | mal (caja negativa, A7) | 137.3 | 128.0 | — | — (— l.) | 313 / — | — | 60 52 52 52 | 192.0 | 21.6 | 5.06 | — |
 |  |  | ↳ negativa: pista 287.0 px, punteado ninguno, cifra de sus respuestas −$350, renglones 60 52 52 52 |
-|  |  | ↳ leyenda: «Con tus respuestas, la caja daba −$350» (16.0 px); renglón tenue: ninguno |
+|  |  | ↳ leyenda: «Con tus respuestas, la caja daba −$350» (16.0 px); renglón tenue: ninguno; devolución: Los socios metieron plata a la caja, y un aporte no es ingreso. Por eso la caja tiene más que la utilidad. |
 | 375 | A | mal (cuadra con errores, A6) | 137.3 | 128.0 | — | — (— l.) | 313 / — | — | 52 60 52 60 | 208.0 | 21.6 | 5.06 | — |
 |  |  | ↳ cuadra: pista 287.0 px, punteado ninguno, cifra de sus respuestas —, renglones 52 60 52 60 |
-|  |  | ↳ leyenda: ninguna; renglón tenue: «Equipo aportado +$5.000 (tu respuesta)» (32.0 px, nombre en 1 l., cifra en 2 l.) |
+|  |  | ↳ leyenda: ninguna; renglón tenue: «Equipo aportado +$5.000 (tu respuesta)» (32.0 px, nombre en 1 l., cifra en 2 l.), contraste 7.15:1; devolución: Llegaste a la caja correcta, pero con dos fichas mal puestas: sus errores se cancelaron. |
 | 375 | B | vacío | 137.3 | 128.0 | 293.3–405.3 | 92.0 (1 l.) | 313 / 289 | 91.0×44 · 91.0×44 · 91.0×44 | — | — | — | 6.99 | 3.01 |
 | 375 | B | a mitad | 137.3 | 128.0 | 293.3–423.3 | 110.0 (2 l.) | 313 / 289 | 91.0×44 · 91.0×44 · 91.0×44 | 44 44 | — | — | 6.99 | 3.01 |
 | 375 | B | todas, con «Comprobar» | 137.3 | 128.0 | 293.3–405.3 | — (— l.) | 313 / — | — | 44 44 44 44 44 44 | — | — | 5.06 | — |
 | 375 | B | bien | 137.3 | 128.0 | — | — (— l.) | 313 / — | — | 52 52 52 52 52 52 | 236.0 | 12.9 | 5.06 | — |
 |  |  | ↳ bien: pista 287.0 px, punteado ninguno, cifra de sus respuestas —, renglones 52 52 52 52 52 52 |
-|  |  | ↳ leyenda: ninguna; renglón tenue: ninguno |
+|  |  | ↳ leyenda: ninguna; renglón tenue: ninguno; devolución: Escenario simulado. Los $1.541.000 de utilidad, más el impuesto que se debe, el aporte y el préstamo, menos el anticipo y lo que falta cobrar, dan los $6.800.000 de la caja. |
 | 375 | B | resumen | — | — | — | — (— l.) | 313 / — | — | — | 236.0 | 12.9 | 4.63 | — |
 | 375 | B | mal (punteado) | 137.3 | 128.0 | — | — (— l.) | 313 / — | — | 52 52 60 52 52 60 | 300.0 | 12.9 | 5.06 | — |
 |  |  | ↳ mal: pista 287.0 px, punteado 205.0 px, cifra de sus respuestas $9.500.000, renglones 52 52 60 52 52 60 |
-|  |  | ↳ leyenda: «Punteado: así quedaba con tus respuestas» (16.0 px); renglón tenue: «Equipo comprado a crédito +$1.500.000 (tu respuesta)» (32.0 px, nombre en 1 l., cifra en 2 l.) |
+|  |  | ↳ leyenda: «Punteado: así quedaba con tus respuestas» (16.0 px); renglón tenue: «Equipo comprado a crédito +$1.500.000 (tu respuesta)» (32.0 px, nombre en 1 l., cifra en 2 l.), contraste 7.15:1; devolución: Salió plata por un arriendo que aún no se usa. No bajó la utilidad, pero sí la caja. |
 | 375 | B | mal (caja negativa, A7) | 137.3 | 128.0 | — | — (— l.) | 313 / — | — | 60 52 52 52 52 52 | 252.0 | 12.9 | 5.06 | — |
 |  |  | ↳ negativa: pista 287.0 px, punteado ninguno, cifra de sus respuestas −$3.200.000, renglones 60 52 52 52 52 52 |
-|  |  | ↳ leyenda: «Con tus respuestas, la caja daba −$3.200.000» (16.0 px); renglón tenue: ninguno |
+|  |  | ↳ leyenda: «Con tus respuestas, la caja daba −$3.200.000» (16.0 px); renglón tenue: ninguno; devolución: Los socios metieron plata a la caja este mes, y un aporte no es ingreso. La caja tiene más por eso. |
 | 375 | B | mal (cuadra con errores, A6) | 137.3 | 128.0 | — | — (— l.) | 313 / — | — | 60 52 60 60 52 52 | 236.0 | 12.9 | 5.06 | — |
 |  |  | ↳ cuadra: pista 287.0 px, punteado ninguno, cifra de sus respuestas —, renglones 60 52 60 60 52 52 |
-|  |  | ↳ leyenda: ninguna; renglón tenue: ninguno |
+|  |  | ↳ leyenda: ninguna; renglón tenue: ninguno; devolución: Llegaste a la caja correcta, pero con tres fichas mal puestas: sus errores se cancelaron. |
 |  |  | movimiento reducido a 375, a los 80 ms de «Comprobar»: puente visible, opacidad mínima 1, punteado sí, «Iba aquí» 1 |
 
 **§10, PARADA · «No mueve la caja» en cada tarjeta:**
@@ -214,7 +214,7 @@ Todo cumple a 320 y 375 en A y B: la ranura entera en la ventana en cada paso, �
 
 ## Pensamiento Estratégico (etiquetasItem.js y subjects.js son compartidos)
 
-Salida de `node --import ./scripts/cargador-jsx.mjs scripts/t3/capturas-pe-resultado-caja.mjs`, 2026-10-24 22:09 (Bogotá), sobre `dist` con Supabase falso, servido en el 8099, con la sesión fingida.
+Salida de `node --import ./scripts/cargador-jsx.mjs scripts/t3/capturas-pe-resultado-caja.mjs`, 2026-10-24 21:57 (Bogotá), sobre `dist` con Supabase falso, servido en el 8099, con la sesión fingida.
 
 | Ancho | Captura | Lo que se ve | | | | |
 |---|---|---|---|---|---|---|
