@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Check, X } from "lucide-react";
 import { FAE } from "../../../../theme.js";
 import { SOLO_LECTOR } from "../verbos.jsx";
-import { Relieve, CSS_RELIEVE, N0, N1, N2 } from "./relieve.jsx";
+import { Relieve, N0, N1, N2 } from "./relieve.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -104,11 +104,11 @@ export function OpcionSegunda({ opcion, estado, palabras, onTocar, forma, evento
    * La pastilla sale de la tarjeta (regla 6: nunca sobre una cara N2) y va
    * en la superficie, 4 px por debajo del bloque, en un hueco que está
    * siempre reservado: las opciones no se mueven al salir la pastilla.
+   * La hoja de estilos del relieve (CSS_RELIEVE) la pone la pieza que la usa.
    */
   const tocada = estado === "bien" || estado === "mal";
   return (
     <div data-bloque-segunda={opcion.id}>
-    <style>{CSS_RELIEVE}</style>
     <Relieve e={tocada ? 4 : 3} canto={tocada ? N1 : N0} filo={tocada} radio={forma.radio}>
     <button
       type="button"
@@ -121,7 +121,8 @@ export function OpcionSegunda({ opcion, estado, palabras, onTocar, forma, evento
       onClick={() => { if ((antesDeTocar && !antesDeTocar()) || contestado) return; onTocar(opcion.id); }}
       style={{
         display: "block", width: "100%", boxSizing: "border-box", textAlign: "left",
-        minHeight: forma.altoMinimo, padding: `${py - (ancho - 1)}px ${px - (ancho - 1)}px`,
+        /* Sin la pastilla dentro, la cara sola tiene que dar los 44 de toque. */
+        minHeight: forma.altoMinimo ?? "44px", padding: `${py - (ancho - 1)}px ${px - (ancho - 1)}px`,
         borderRadius: forma.radio, background: tocada ? N2 : N1,
         border: `${ancho}px solid ${ancho === 1 ? "transparent" : color}`,
         color: estado === "apagada" ? "rgba(248,249,250,0.6)" : FAE.text,
