@@ -33,8 +33,9 @@
  *
  * Con carpeta, guarda las capturas a media escala (deviceScaleFactor 1) de
  * vacío, a mitad, bien, mal (punteado), mal con caja negativa, mal que cuadra
- * con errores y resumen, en A y B y en los dos anchos; y el puente solo, con
- * el renglón tenue, de la partida «mal» (resultado-caja-<v>-<ancho>-tenue). Sale con 1 si algo no cumple.
+ * con errores (y en B, también con cuatro: mal-cuadra4) y resumen, en A y B y
+ * en los dos anchos; y el puente solo, con el renglón tenue, de la partida «mal»
+ * (resultado-caja-<v>-<ancho>-tenue). Sale con 1 si algo no cumple.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 import { createServer } from "vite";

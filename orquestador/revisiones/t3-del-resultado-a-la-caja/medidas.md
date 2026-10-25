@@ -1,6 +1,10 @@
 # «Del resultado a la caja» · medidas (Chromium, Inter y Sora de @fontsource 5.3.0)
 
-Salida de `node --import ./scripts/cargador-jsx.mjs scripts/t3/medir-resultado-caja.mjs orquestador/revisiones/t3-del-resultado-a-la-caja`, 2026-10-24 22:09 (Bogotá), con las correcciones de Kamogawa en #557 (la leyenda en sus tres casos y el renglón tenue). Las alturas van en px; «desde el Panel» es desde la parte de arriba del Panel de la actividad.
+Salida de `node --import ./scripts/cargador-jsx.mjs scripts/t3/medir-resultado-caja.mjs orquestador/revisiones/t3-del-resultado-a-la-caja`, 2026-10-24 23:19 (Bogotá), con `origin/main` fusionada y el segundo comentario de Kamogawa en #557 (A6 con el número en palabras, también en B; el contraste del renglón tenue). Las alturas van en px; «desde el Panel» es desde la parte de arriba del Panel de la actividad.
+
+**El renglón tenue, medido:** `C.apagado` (#A8B6C8, rgb 168, 182, 200) sobre el Panel del puente (#1C2939, rgb 28, 41, 57) da **7,15:1** en los 24 textos medidos (nombre, monto y «(tu respuesta)», en A y B, a 320 y 375). Pasa de 4,5:1, así que el tono se queda; además «(tu respuesta)» lo distingue sin depender del color. La tabla completa va al final de la salida.
+
+**A6, medido en pantalla:** «dos» en A (Equipo en Suma y Alquiler en Resta), «tres» en B (partida `cuadra`) y «cuatro» en B (partida `cuadra4`), a 320 y 375. Son las únicas tres respuestas que cuadran con errores (recorridas las 3⁴ y 3⁶).
 
 fuentes: Inter y Sora de @fontsource 5.3.0
 | Ancho | Versión | Estado | Encabezado | Ficha del caso | Ranura (desde el Panel) | Tarjeta | Útil / tarjeta por dentro | Botones | Renglones | Puente | Tramo menor | Contraste mín. texto | Contorno reposo |
@@ -21,6 +25,7 @@ fuentes: Inter y Sora de @fontsource 5.3.0
 |  |  | ↳ leyenda: «Con tus respuestas, la caja daba −$350» (16.0 px); renglón tenue: ninguno |
 | 320 | A | mal (cuadra con errores, A6) | 137.3 | 144.0 | — | — (— l.) | 258 / — | — | 52 80 52 60 | 208.0 | 17.4 | 5.06 | — |
 |  |  | ↳ cuadra: pista 232.0 px, punteado ninguno, cifra de sus respuestas —, renglones 52 80 52 60 |
+|  |  | ↳ A6 con 2 mal: «Llegaste a la caja correcta, pero con dos fichas mal puestas: sus errores se cancelaron.» |
 |  |  | ↳ leyenda: ninguna; renglón tenue: «Equipo aportado +$5.000 (tu respuesta)» (32.0 px, nombre en 1 l., cifra en 2 l.) |
 | 320 | B | vacío | 137.3 | 146.0 | 311.3–423.3 | 92.0 (1 l.) | 258 / 234 | 72.7×44 · 72.7×44 · 72.7×44 | — | — | — | 6.99 | 3.01 |
 | 320 | B | a mitad | 137.3 | 146.0 | 311.3–441.3 | 110.0 (2 l.) | 258 / 234 | 72.7×44 · 72.7×44 · 72.7×44 | 44 44 | — | — | 6.99 | 3.01 |
@@ -37,7 +42,12 @@ fuentes: Inter y Sora de @fontsource 5.3.0
 |  |  | ↳ leyenda: «Con tus respuestas, la caja daba −$3.200.000» (32.0 px); renglón tenue: ninguno |
 | 320 | B | mal (cuadra con errores, A6) | 137.3 | 146.0 | — | — (— l.) | 258 / — | — | 60 52 76 60 52 68 | 284.0 | 10.5 | 5.06 | — |
 |  |  | ↳ cuadra: pista 232.0 px, punteado ninguno, cifra de sus respuestas —, renglones 60 52 76 60 52 68 |
+|  |  | ↳ A6 con 3 mal: «Llegaste a la caja correcta, pero con tres fichas mal puestas: sus errores se cancelaron.» |
 |  |  | ↳ leyenda: ninguna; renglón tenue: ninguno |
+| 320 | B | mal (cuadra con cuatro errores, A6) | 137.3 | 146.0 | — | — (— l.) | 258 / — | — | 52 60 92 76 52 80 | 316.0 | 10.5 | 5.06 | — |
+|  |  | ↳ cuadra4: pista 232.0 px, punteado ninguno, cifra de sus respuestas —, renglones 52 60 92 76 52 80 |
+|  |  | ↳ A6 con 4 mal: «Llegaste a la caja correcta, pero con cuatro fichas mal puestas: sus errores se cancelaron.» |
+|  |  | ↳ leyenda: ninguna; renglón tenue: «Equipo comprado a crédito +$1.500.000 (tu respuesta)» (32.0 px, nombre en 2 l., cifra en 2 l.) |
 |  |  | movimiento reducido a 320, a los 80 ms de «Comprobar»: puente visible, opacidad mínima 1, punteado sí, «Iba aquí» 1 |
 |  |  | «Así se juega» a 375: la demo puso la ficha en Resta y mostró la resolución |
 | 375 | A | vacío | 137.3 | 128.0 | 293.3–405.3 | 92.0 (1 l.) | 313 / 289 | 91.0×44 · 91.0×44 · 91.0×44 | — | — | — | 6.99 | 3.01 |
@@ -55,6 +65,7 @@ fuentes: Inter y Sora de @fontsource 5.3.0
 |  |  | ↳ leyenda: «Con tus respuestas, la caja daba −$350» (16.0 px); renglón tenue: ninguno |
 | 375 | A | mal (cuadra con errores, A6) | 137.3 | 128.0 | — | — (— l.) | 313 / — | — | 52 60 52 60 | 208.0 | 21.6 | 5.06 | — |
 |  |  | ↳ cuadra: pista 287.0 px, punteado ninguno, cifra de sus respuestas —, renglones 52 60 52 60 |
+|  |  | ↳ A6 con 2 mal: «Llegaste a la caja correcta, pero con dos fichas mal puestas: sus errores se cancelaron.» |
 |  |  | ↳ leyenda: ninguna; renglón tenue: «Equipo aportado +$5.000 (tu respuesta)» (32.0 px, nombre en 1 l., cifra en 2 l.) |
 | 375 | B | vacío | 137.3 | 128.0 | 293.3–405.3 | 92.0 (1 l.) | 313 / 289 | 91.0×44 · 91.0×44 · 91.0×44 | — | — | — | 6.99 | 3.01 |
 | 375 | B | a mitad | 137.3 | 128.0 | 293.3–423.3 | 110.0 (2 l.) | 313 / 289 | 91.0×44 · 91.0×44 · 91.0×44 | 44 44 | — | — | 6.99 | 3.01 |
@@ -71,7 +82,12 @@ fuentes: Inter y Sora de @fontsource 5.3.0
 |  |  | ↳ leyenda: «Con tus respuestas, la caja daba −$3.200.000» (16.0 px); renglón tenue: ninguno |
 | 375 | B | mal (cuadra con errores, A6) | 137.3 | 128.0 | — | — (— l.) | 313 / — | — | 60 52 60 60 52 52 | 236.0 | 12.9 | 5.06 | — |
 |  |  | ↳ cuadra: pista 287.0 px, punteado ninguno, cifra de sus respuestas —, renglones 60 52 60 60 52 52 |
+|  |  | ↳ A6 con 3 mal: «Llegaste a la caja correcta, pero con tres fichas mal puestas: sus errores se cancelaron.» |
 |  |  | ↳ leyenda: ninguna; renglón tenue: ninguno |
+| 375 | B | mal (cuadra con cuatro errores, A6) | 137.3 | 128.0 | — | — (— l.) | 313 / — | — | 52 60 76 76 52 60 | 268.0 | 12.9 | 5.06 | — |
+|  |  | ↳ cuadra4: pista 287.0 px, punteado ninguno, cifra de sus respuestas —, renglones 52 60 76 76 52 60 |
+|  |  | ↳ A6 con 4 mal: «Llegaste a la caja correcta, pero con cuatro fichas mal puestas: sus errores se cancelaron.» |
+|  |  | ↳ leyenda: ninguna; renglón tenue: «Equipo comprado a crédito +$1.500.000 (tu respuesta)» (32.0 px, nombre en 1 l., cifra en 2 l.) |
 |  |  | movimiento reducido a 375, a los 80 ms de «Comprobar»: puente visible, opacidad mínima 1, punteado sí, «Iba aquí» 1 |
 
 **§10, PARADA · «No mueve la caja» en cada tarjeta:**
@@ -154,6 +170,13 @@ fuentes: Inter y Sora de @fontsource 5.3.0
 | 320 · B · cuadra | Paso 5 de 6 | 384.8 | 514.8 | 130.0 | 568 |
 | 320 · B · cuadra | Paso 6 de 6 | 384.8 | 514.8 | 130.0 | 568 |
 | 320 · B · cuadra | Comprobar | 384.8 | 496.8 | 112.0 | 568 |
+| 320 · B · cuadra4 | Paso 1 de 6 | 384.8 | 496.8 | 112.0 | 568 |
+| 320 · B · cuadra4 | Paso 2 de 6 | 384.8 | 496.8 | 112.0 | 568 |
+| 320 · B · cuadra4 | Paso 3 de 6 | 384.8 | 514.8 | 130.0 | 568 |
+| 320 · B · cuadra4 | Paso 4 de 6 | 384.8 | 514.8 | 130.0 | 568 |
+| 320 · B · cuadra4 | Paso 5 de 6 | 384.8 | 514.8 | 130.0 | 568 |
+| 320 · B · cuadra4 | Paso 6 de 6 | 384.8 | 514.8 | 130.0 | 568 |
+| 320 · B · cuadra4 | Comprobar | 384.8 | 496.8 | 112.0 | 568 |
 | 375 · A · paso 1 tras «Así se juega» | Paso 1 de 4 | 451.8 | 563.8 | 112.0 | 667 |
 | 375 · A · bien | Paso 1 de 4 | 451.8 | 563.8 | 112.0 | 667 |
 | 375 · A · bien | Paso 2 de 4 | 451.8 | 563.8 | 112.0 | 667 |
@@ -205,6 +228,42 @@ fuentes: Inter y Sora de @fontsource 5.3.0
 | 375 · B · cuadra | Paso 5 de 6 | 452.8 | 582.8 | 130.0 | 667 |
 | 375 · B · cuadra | Paso 6 de 6 | 452.8 | 582.8 | 130.0 | 667 |
 | 375 · B · cuadra | Comprobar | 452.8 | 564.8 | 112.0 | 667 |
+| 375 · B · cuadra4 | Paso 1 de 6 | 452.8 | 564.8 | 112.0 | 667 |
+| 375 · B · cuadra4 | Paso 2 de 6 | 452.8 | 564.8 | 112.0 | 667 |
+| 375 · B · cuadra4 | Paso 3 de 6 | 452.8 | 582.8 | 130.0 | 667 |
+| 375 · B · cuadra4 | Paso 4 de 6 | 452.8 | 582.8 | 130.0 | 667 |
+| 375 · B · cuadra4 | Paso 5 de 6 | 452.8 | 582.8 | 130.0 | 667 |
+| 375 · B · cuadra4 | Paso 6 de 6 | 452.8 | 582.8 | 130.0 | 667 |
+| 375 · B · cuadra4 | Comprobar | 452.8 | 564.8 | 112.0 | 667 |
+
+**El renglón tenue · contraste medido** (cada texto suyo contra su fondo efectivo; mínimo 4,5:1):
+
+| Ancho | Versión | Partida | Texto | Color | Fondo | Contraste |
+|---|---|---|---|---|---|---|
+| 320 | A | mal | «Equipo aportado» | rgb(168, 182, 200) | rgb(28, 41, 57) | 7.15:1 |
+| 320 | A | mal | «+$5.000» | rgb(168, 182, 200) | rgb(28, 41, 57) | 7.15:1 |
+| 320 | A | mal | «(tu respuesta)» | rgb(168, 182, 200) | rgb(28, 41, 57) | 7.15:1 |
+| 320 | A | cuadra | «Equipo aportado» | rgb(168, 182, 200) | rgb(28, 41, 57) | 7.15:1 |
+| 320 | A | cuadra | «+$5.000» | rgb(168, 182, 200) | rgb(28, 41, 57) | 7.15:1 |
+| 320 | A | cuadra | «(tu respuesta)» | rgb(168, 182, 200) | rgb(28, 41, 57) | 7.15:1 |
+| 320 | B | mal | «Equipo comprado a crédito» | rgb(168, 182, 200) | rgb(28, 41, 57) | 7.15:1 |
+| 320 | B | mal | «+$1.500.000» | rgb(168, 182, 200) | rgb(28, 41, 57) | 7.15:1 |
+| 320 | B | mal | «(tu respuesta)» | rgb(168, 182, 200) | rgb(28, 41, 57) | 7.15:1 |
+| 320 | B | cuadra4 | «Equipo comprado a crédito» | rgb(168, 182, 200) | rgb(28, 41, 57) | 7.15:1 |
+| 320 | B | cuadra4 | «+$1.500.000» | rgb(168, 182, 200) | rgb(28, 41, 57) | 7.15:1 |
+| 320 | B | cuadra4 | «(tu respuesta)» | rgb(168, 182, 200) | rgb(28, 41, 57) | 7.15:1 |
+| 375 | A | mal | «Equipo aportado» | rgb(168, 182, 200) | rgb(28, 41, 57) | 7.15:1 |
+| 375 | A | mal | «+$5.000» | rgb(168, 182, 200) | rgb(28, 41, 57) | 7.15:1 |
+| 375 | A | mal | «(tu respuesta)» | rgb(168, 182, 200) | rgb(28, 41, 57) | 7.15:1 |
+| 375 | A | cuadra | «Equipo aportado» | rgb(168, 182, 200) | rgb(28, 41, 57) | 7.15:1 |
+| 375 | A | cuadra | «+$5.000» | rgb(168, 182, 200) | rgb(28, 41, 57) | 7.15:1 |
+| 375 | A | cuadra | «(tu respuesta)» | rgb(168, 182, 200) | rgb(28, 41, 57) | 7.15:1 |
+| 375 | B | mal | «Equipo comprado a crédito» | rgb(168, 182, 200) | rgb(28, 41, 57) | 7.15:1 |
+| 375 | B | mal | «+$1.500.000» | rgb(168, 182, 200) | rgb(28, 41, 57) | 7.15:1 |
+| 375 | B | mal | «(tu respuesta)» | rgb(168, 182, 200) | rgb(28, 41, 57) | 7.15:1 |
+| 375 | B | cuadra4 | «Equipo comprado a crédito» | rgb(168, 182, 200) | rgb(28, 41, 57) | 7.15:1 |
+| 375 | B | cuadra4 | «+$1.500.000» | rgb(168, 182, 200) | rgb(28, 41, 57) | 7.15:1 |
+| 375 | B | cuadra4 | «(tu respuesta)» | rgb(168, 182, 200) | rgb(28, 41, 57) | 7.15:1 |
 
 Compartido, no de esta pieza (se informa, no falla):
 LETRA 11.5px span «?» (compartido)
@@ -214,7 +273,7 @@ Todo cumple a 320 y 375 en A y B: la ranura entera en la ventana en cada paso, �
 
 ## Pensamiento Estratégico (etiquetasItem.js y subjects.js son compartidos)
 
-Salida de `node --import ./scripts/cargador-jsx.mjs scripts/t3/capturas-pe-resultado-caja.mjs`, 2026-10-24 22:09 (Bogotá), sobre `dist` con Supabase falso, servido en el 8099, con la sesión fingida.
+Salida de `node --import ./scripts/cargador-jsx.mjs scripts/t3/capturas-pe-resultado-caja.mjs http://localhost:8099 orquestador/revisiones/t3-del-resultado-a-la-caja`, 2026-10-24 23:18 (Bogotá), con `origin/main` fusionada, sobre `dist` con Supabase falso, servido en el 8099, con la sesión fingida.
 
 | Ancho | Captura | Lo que se ve | | | | |
 |---|---|---|---|---|---|---|
