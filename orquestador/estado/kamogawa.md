@@ -1,4 +1,4 @@
-2026-10-25 04:40 (hora Bogotá)
+2026-10-25 06:13 (hora Bogotá)
 - Vara nueva (24-oct): Mateo no da vistos buenos; se fusiona con PASA del auditor y CI verde. Las 6 correcciones de Takamura a contenido aprobado de T3 las decidió Kamogawa (se aplican); deja de haber BLOQUEADO-MATEO: terminado
 - r5 cerrado (r5-1 a r5-5 en Avanzado; tema oculto hasta el próximo semestre): terminado
 - T3 lote 1 (hilo de Aprender, Hacer nuevos, línea base, lenguaje visual), PR #484: terminado (fusionado)
@@ -13,8 +13,8 @@
 - Capítulo 4 del libro: terminado (Mateo se lo pasó directo a Miyata; #468 cerrado)
 - T3 lote 5: mapa del cap. 4 (Miyata) con PASA con correcciones de Takamura, fusionado (#527): terminado. C2 decidido: «Del resultado a la caja» A usa las cifras de P5 (3.950 → 14.650)
 - T3 lote 6: Takamura auditó el contenido: P2 PASA con condiciones, «Del resultado a la caja» v3 PASA con condiciones, P6 NO PASA hasta C5. Itagaki entregó la secuencia v2 a 150/200 px (en auditoría). Lo que el componente necesita está en #534 para Erwin: terminado
-- P2 y P6 en secuencia: #586 con PASA de Takamura (lote 19) para fusionar con la bandera apagada; choca con main desde #587 y lo pone al día una sesión de Ippo. Esa misma sesión aplica luego las condiciones de encendido restantes (Las Acacias v6, la utilidad tapada en P2, el bloque tapado visible, la D11 de ubicar, el umbral de P1-7 y el Repaso de P2-8/P6-10): en curso
+- P2 y P6 en secuencia: #586 fusionado con PASA de Takamura (lote 19), con la bandera apagada. Las condiciones de encendido que faltan las aplica Ippo en feat/conta-e3-encendido-2: en curso
 - T3 secuencias: la v2 de Itagaki cumple en diseño (D5, D4, E8). Decidí S3: las preguntas «En una frase» pasan al Repaso Diario. P5-2 queda en 5 pasos (MAX_PASOS). Itagaki hace la v3 y Miyata los textos (37 titulares, opciones y pistas): en curso
 - Regla j (leer una vez, exprimir y dejarlo en el repo): pasada a los cuatro agentes: terminado
 
-- Volumen en las TRES materias: forma de los 5 controles propios con PASA con condiciones (lote 18, #592). Ippo construye (#5, #7 y #8 ya; #3 y #4 si caben con la cabecera real de Hacer). Los 5 compartidos son de Erwin (#560): en curso
+- Volumen en las TRES materias: Ippo construyó #5, #7, #8 (H6) y #4 en #601 (CI verde, sin tocar lo de Erwin, PE sin cambios); Takamura lo audita en el lote 20. Itagaki resuelve dos paradas: la pastilla de la matriz de GP (#3) y el estante de H7, que además tiene toques de 40 y letra de 10 ya publicados: en curso
