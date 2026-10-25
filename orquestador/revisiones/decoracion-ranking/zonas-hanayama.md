@@ -132,11 +132,13 @@ Medido con tu apodo de 20 caracteres (170 px de texto):
 - En el ranking, la caja de tu apodo mide **47-56 px a 320** y **102-111 a 375**.
 - En la liga, todos los apodos del podio salen cortados también a 375 (3 de 3).
 
-Fae, a 28 px como mínimo, le quitaría a tu nombre la mitad de lo que le queda. **Decisión** (reversible, se la cuento a Ukyo): Fae va en el extremo derecho de la banda, y **su pose dice dónde estás tú** (§2).
+Fae, a 28 px como mínimo, le quitaría a tu nombre la mitad de lo que le queda. **Decisión** (reversible, ratificada por Ukyo en #567): Fae va en el extremo derecho de la banda.
+
+> **Corrección del 25-oct (Ukyo en #567; pose elegida por Hanayama).** Fae **no codifica dónde estás tú**: la banda es `aria-hidden`, así que lo que dijera su pose no le llegaría al lector de pantalla. Además, las tres poses se distinguen solo un 15-33 % entre sí. Por eso Fae lleva **una sola pose, «saluda», en todas las tablas y todos los estados**. Es la única que no dice nada de tu resultado: «celebra» felicitaría también al último, y «mira» se lee como espera o como desatención. Además tiene la silueta más clara. `10-fae-celebra.svg` y `10-fae-mira.svg` quedan en `piezas/` como reserva, sin uso.
 
 ## 2. Qué lleva cada estado
 
-| Tabla y estado | ¿Banda? | Piezas | Fae |
+| Tabla y estado | ¿Banda? | Piezas | Fae (siempre «saluda» desde el 25-oct; la columna queda de historia) |
 |---|---|---|---|
 | Ranking · sin sesión | sí | 3 | saluda |
 | Ranking · 0 jugadores | **sí** | 3 | mira |
@@ -153,7 +155,7 @@ Fae, a 28 px como mínimo, le quitaría a tu nombre la mitad de lo que le queda.
 
 - **Con 0 jugadores hay banda**: es el estado que más se siente muerto, y cabe (294 a 320).
 - **Con el error no va Fae**: una cara contenta pegada a «No se pudo cargar el ranking» sería un mensaje equivocado.
-- **Fae cambia de pose sin animar.**
+- **Fae no cambia de pose** (corrección del 25-oct, §1.5): es «saluda» siempre que va. Sigue sin ir en el error ni en el ranking que va debajo de una liga.
 - **Al cambiar de pestaña** la banda no se vuelve a montar: no hay entrada nueva.
 
 ## 3. Las piezas de cada tabla
