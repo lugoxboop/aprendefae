@@ -39,6 +39,8 @@ const ARCHIVOS = [
   ...enCarpeta("src/components/shared/"),
   "src/components/mecanicas/libros/piezas.jsx",
   "src/components/mecanicas/corazon/juego.jsx",
+  /* Vive en tema1/ pero la usan B, C, D y E: es el encabezado de Hacer de todos (#542). */
+  "src/components/mecanicas/libros/tema1/encabezado.jsx",
 ];
 
 /* Los mismos patrones que usa la Célula C, a propósito: dos guardias que
@@ -61,8 +63,8 @@ const CEJILLAS = {
     razon: "«EL ASIENTO CORRECTO» y demás rótulos de AsientoEnLineas: etiquetan el asiento que está justo debajo y se entiende sin ellos.",
   },
   "src/components/mecanicas/corazon/juego.jsx": {
-    cuantas: 2,
-    razon: "«RESULTADO» sobre el número de 28 px del cierre, y el rótulo opcional de la tarjeta de resultado. Los dos etiquetan algo que ya se lee solo.",
+    cuantas: 1,
+    razon: "El rótulo opcional de la tarjeta de resultado: etiqueta algo que ya se lee solo. «RESULTADO» subió a 12 px en #542.",
   },
 };
 

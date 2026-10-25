@@ -381,13 +381,19 @@ function RecuadroDeResultado({ pct, children, onReiniciar, textoReiniciar = "Jug
       className="fae-cz-entrar"
       style={{
         marginTop: "18px", padding: "16px 18px", borderRadius: "16px",
-        background: "rgba(42,157,143,0.09)", border: `1px solid ${FAE.teal}55`,
+        /*
+         * #542 (Takamura): el resultado es NEUTRO (B4). El teal decía «bien»
+         * también a un 17 %; la cifra va en blanco sobre tarjeta neutra, igual
+         * que en la pantalla de resumen. Y «RESULTADO» sube a 12 px: el piso de
+         * kit.md, que la cejilla de 11 ya no necesita.
+         */
+        background: "rgba(248,249,250,0.05)", border: "1px solid rgba(248,249,250,0.14)",
       }}
     >
-      <p style={{ margin: "0 0 4px", fontFamily: "Sora, sans-serif", fontSize: "11px", fontWeight: 700, letterSpacing: "0.14em", color: "rgba(248,249,250,0.5)" }}>
+      <p data-rotulo-resultado style={{ margin: "0 0 4px", fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700, letterSpacing: "0.12em", color: "rgba(248,249,250,0.62)" }}>
         RESULTADO
       </p>
-      <p style={{ margin: "0 0 8px", fontFamily: "Sora, sans-serif", fontSize: "28px", fontWeight: 700, color: FAE.teal, lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>
+      <p data-cifra-resultado style={{ margin: "0 0 8px", fontFamily: "Sora, sans-serif", fontSize: "28px", fontWeight: 700, color: FAE.text, lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>
         {pct}%
       </p>
       {children}

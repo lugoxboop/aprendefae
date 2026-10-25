@@ -66,14 +66,15 @@ export function BotonComoSeJuega({ onClick }) {
       onClick={onClick}
       style={{
         display: "inline-flex", alignItems: "center", gap: "7px",
-        minHeight: "40px", minWidth: "40px", margin: "2px 0 -8px -6px", padding: "0 6px",
+        /* 44 px de toque (kit.md); los márgenes negativos lo dejan ocupar lo mismo que antes. */
+        minHeight: "44px", minWidth: "44px", margin: "0 0 -10px -6px", padding: "0 6px",
         background: "transparent", border: "none", borderRadius: "10px", cursor: "pointer",
         color: "rgba(248,249,250,0.6)", fontFamily: "Inter, sans-serif", fontSize: "12px",
       }}
     >
       <span aria-hidden="true" style={{
         flex: "none", width: "18px", height: "18px", borderRadius: "999px",
-        background: NEUTRO, color: NAVY_DEL_CHIP, fontFamily: SORA, fontSize: "11.5px",
+        background: NEUTRO, color: NAVY_DEL_CHIP, fontFamily: SORA, fontSize: "12px",
         fontWeight: 700, lineHeight: "18px", textAlign: "center",
       }}>
         ?

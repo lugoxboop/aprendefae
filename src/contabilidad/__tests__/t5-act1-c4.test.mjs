@@ -187,8 +187,12 @@ test("★★★ C4-1: no hay cifra que escribir, así que nada se califica antes
 
 /* ═══════════ 4 · SIN `c4`, FICHASUNNIVEL COMO EN MAIN ═══════════ */
 
-/* La huella del recorrido de T6 Act1 (Célula B) y T5 Act1 sin C4, tomada con el código de main (efa2501e). */
-const HUELLA_MAIN_FICHAS = "282aa1d5b5d99401991c0d8228c439bbc5bec8acf03310a082b8d5118f037932";
+/*
+ * La huella del recorrido de T6 Act1 (Célula B) y T5 Act1 sin C4, tomada con el código de main (efa2501e).
+ * Retomada por Erwin en #580: el cierre compartido (cifra neutra, «RESULTADO» a 12 px) y el «¿Cómo se juega?»
+ * de 44 px cambian el marcado de TODAS las piezas, con o sin C4. FichasUnNivel no se tocó.
+ */
+const HUELLA_MAIN_FICHAS = "a4f3cc5d463bb365898e23fa767f8a8b1b0d392030674ed231042c5d5db5f6f4";
 test("★★★ sin la prop `c4`, FichasUnNivel pinta exactamente lo de main (T6 Act1 y T5 Act1, paso a paso)", async () => {
   assert.equal(await recorridoFichas(), HUELLA_MAIN_FICHAS);
 });
