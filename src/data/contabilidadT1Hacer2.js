@@ -35,6 +35,14 @@ export const H1 = {
   consigna: "Lee la pregunta de cada persona. Toca el informe que la responde.",
 };
 
+/*
+ * El acierto que nombra el estado financiero (Shoko, #539 b: la pieza se llama
+ * «Qué tiempo mira cada estado financiero» y nunca lo nombraba). Uno por
+ * respuesta, `{FECHA}` es la de la foto. Lo escribe Futaba (lote F); mientras
+ * una respuesta no tenga el suyo, sale el acierto de cada pregunta.
+ */
+export const ACIERTO_INFORME_H1 = {};
+
 /* Los tres rótulos, fijos para todas las preguntas (Shoko; ajustes de Mai §5). */
 export const RESPUESTAS_H1 = [
   { id: FOTO, texto: "Una foto" },
@@ -115,6 +123,8 @@ export const H2 = {
   objetivo: "Lee para qué usa el informe cada persona y di quién es.",
   consigna: "Lee para qué usa alguien el informe. Elige quién es.",
   rotuloMesa: "Los ocho lectores",
+  /* Por qué cuatro asientos van atenuados en cada ficha: lo escribe Futaba (lote F; Shoko, #539 b). Vacío, no se pinta. */
+  rotuloAtenuados: null,
 };
 
 /* Los ocho asientos, en el orden de los usuarios y siempre en el mismo lugar: si cambiaran, la posición sería una pista. */

@@ -130,3 +130,19 @@ test("H1 y H2 tienen id, objetivo y consigna", () => {
   assert.equal(H1.id, "t1-un-dia-o-un-ano");
   assert.equal(H2.id, "t1-quien-pregunta-esto");
 });
+
+test("★★ H1: el acierto que nombra el estado financiero tiene su sitio (lote F de Futaba); sin él, el de la pregunta", async () => {
+  const D = await import("../../data/contabilidadT1Hacer2.js");
+  const q = PREGUNTAS_H1.find((x) => x.respuesta === FOTO && x.foto === "diciembre");
+  assert.equal(evaluarH1(q, FOTO).texto, q.acierto);
+  D.ACIERTO_INFORME_H1[FOTO] = "Correcto. Es una foto al {FECHA}.";
+  try {
+    assert.equal(evaluarH1(q, FOTO).texto, "Correcto. Es una foto al 31 de diciembre.");
+  } finally { delete D.ACIERTO_INFORME_H1[FOTO]; }
+});
+
+test("★★ H2: la reserva bajo la mesa es fija, de 48 px (Shoko, #539 b), y el rótulo de los atenuados tiene su sitio", async () => {
+  const { ALTO_RESERVA_H2 } = await import("../../components/mecanicas/libros/tema1/QuienPreguntaEsto.jsx");
+  assert.equal(ALTO_RESERVA_H2, 48);
+  assert.ok("rotuloAtenuados" in H2);
+});
