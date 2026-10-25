@@ -1,6 +1,6 @@
 import { ID } from "./contabilidadIntro.js";
 import { pantallasDe } from "./contabilidadT1Pantallas.js";
-import { ID_P2 } from "./contabilidadPiezas234.js";
+import { ID_P2, ID_P3 } from "./contabilidadPiezas234.js";
 import { CALEJA, ACTIVO, PASIVO, PATRIMONIO, mayorConSaldos, tipoDeCuenta } from "./contabilidad.js";
 
 /*
@@ -269,6 +269,81 @@ export const A2_SEC = {
       titular: "La torre es una foto de un día",
       apoyo: "En la siguiente pieza vas a ver qué pasa entre dos fotos.",
       nombreFigura: "La torre leída por los dos lados, con un reloj que marca un día.",
+    },
+  },
+};
+
+/* ═══════════════════ cu0-a3 · LA FOTO Y LA PELÍCULA (10) ═══════════════════ */
+/*
+ * Rótulos de la prueba (a3 · 8): «La película: todo el año» → «La película» y
+ * «Comparar las dos fotos» → «Las dos fotos» (Mai, medidas §2); «Una foto» queda.
+ * Los errores de la prueba salen de evaluarP3 (ERROR_P3), sin reescribir.
+ */
+export const A3_SEC = {
+  id: ID_P3,
+  pantallas: {
+    prediccion: {
+      titular: "¿Basta con mirar un solo día?",
+      apoyo: "Te piden saber cómo le fue a una empresa en el año.",
+      opciones: ["Sí, basta", "No basta"],
+      nombreFigura: "Una foto de la empresa y dos respuestas para elegir.",
+    },
+    informes: {
+      titular: "Dos informes, dos tiempos",
+      apoyo: "Uno muestra un día exacto. El otro, todo un periodo. Toca cada uno.",
+      pasos: [
+        "El estado de situación financiera muestra qué tiene, qué debe y qué es de los dueños un día.",
+        "El estado de resultados muestra qué vendió y qué gastó durante todo un periodo.",
+      ],
+      nombreFigura: "Dos informes para tocar.",
+    },
+    apodos: {
+      titular: "A uno le decimos foto; al otro, película",
+      apoyo: "Una foto es de un instante. Una película dura un rato.",
+      paso: "Hay más informes: el de la plata, el de los cambios de los dueños y las notas.",
+      rotulos: { foto: "La foto", pelicula: "La película" },
+      nombreFigura: "Una cámara y una cinta para tocar.",
+    },
+    enero: {
+      titular: "El 1 de enero se toma una foto",
+      apoyo: "Aquí está un año entero de la empresa. La foto muestra qué tenía y qué debía ese día.",
+      toca: "Toca la línea", /* CLAUDE */
+      nombreFigura: "La línea de un año, todavía sin fotos.",
+    },
+    parada: {
+      titular: "¿La foto del final será igual?",
+      apoyo: "Llega el 31 de diciembre. ¿Crees que la nueva foto se parece a la del 1 de enero?",
+      rotulos: { distinta: "Distinta", igual: "Igual", "no-hay": "No hay otra foto" },
+      razon: "Elige cómo crees que será la foto.",
+      nombreFigura: "La foto del 1 de enero, el año y el hueco de la segunda foto.",
+    },
+    diciembre: {
+      titular: "Entre las dos fotos pasó todo el año",
+      apoyo: "El 31 de diciembre se toma otra foto. La película cuenta lo que vendió y gastó en medio.",
+      nombreFigura: "La línea del año con la foto del 1 de enero; el tramo y el hueco del final, para tocar.",
+    },
+    cambio: {
+      titular: "Lo de en medio explica el cambio",
+      apoyo: "Las dos fotos son el mismo informe. Lo de en medio explica por qué la segunda es distinta.",
+      nombreFigura: "Las dos fotos y el tramo, para recorrer tocando.",
+    },
+    prueba: {
+      titular: "¿Qué informe responde?",
+      apoyo: "Lee la pregunta. Toca el informe que la responde.",
+      rotulos: { foto: "Una foto", pelicula: "La película", comparar: "Las dos fotos" },
+      razon: "Responde las cinco preguntas para seguir.",
+      nombreFigura: "Una pregunta, tres respuestas y la línea del año.",
+    },
+    frase: {
+      titular: "¿En qué se diferencian?",
+      apoyo: "Elige la frase que mejor lo dice.",
+      razon: "Elige una frase para seguir.",
+      nombreFigura: "Cuatro frases para elegir.",
+    },
+    puente: {
+      titular: "Falta un informe más",
+      apoyo: "Ya tienes la foto y la película. Ahora vas a ver cómo se pasan cifras.",
+      nombreFigura: "La foto, la película y una tercera tarjeta que se enciende.",
     },
   },
 };

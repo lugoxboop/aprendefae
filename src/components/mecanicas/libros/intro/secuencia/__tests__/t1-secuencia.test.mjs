@@ -303,3 +303,61 @@ test("★★★ cu0-a2 · los cuatro casos: un hecho por paso, un ítem saltado 
 test("★★★ cu0-a2 · la capa 4: franja de 44 y las cuatro frases en flujo, todas con su devolución", () => {
   capa4SinRecorte(pantalla(PIEZA_ECUACION, "frase").Figura, FICHA_FRASE_A2, "cu0-a2");
 });
+
+/* ═══════════ cu0-a3 · LA FOTO Y LA PELÍCULA ═══════════ */
+const { PIEZA_FOTO_PELICULA, FICHA_FRASE_A3 } = await import("../piezaFotoPelicula.jsx");
+const { ID_P3, PREGUNTAS_P3 } = await import("../../../../../../data/contabilidadPiezas234.js");
+const { evaluarP3 } = await import("../../../../../../contabilidad/aprenderTema1.js");
+
+test("★★★ cu0-a3: id publicado, diez pantallas, forma de la secuencia", () => {
+  assert.equal(PIEZA_FOTO_PELICULA.id, ID_P3);
+  assert.equal(PIEZA_FOTO_PELICULA.pantallas.length, 10);
+  assert.deepEqual(S.faltasDePieza(PIEZA_FOTO_PELICULA), []);
+});
+
+test("★★ cu0-a3 · las dos fotos miden lo mismo: el hueco del 31 de diciembre es del tamaño de la foto", () => {
+  const m = montar(pantalla(PIEZA_FOTO_PELICULA, "enero").Figura);
+  try {
+    const [a, b] = [...m.caja.querySelectorAll("[data-foto-sec]")];
+    assert.equal(a.style.height, b.style.height);
+    tocar(m.caja.querySelector("[data-banda]"));
+    assert.equal(m.caja.querySelector('[data-foto-sec="enero"]').dataset.hueco, undefined, "al tocar la línea se toma la foto");
+  } finally { m.desmontar(); }
+});
+
+test("★★★ cu0-a3 · parada (C2): pista al 1.er error; al 2.º «Distinta» encendida y la foto del final aparece", () => {
+  const pt = pantalla(PIEZA_FOTO_PELICULA, "parada");
+  const m = montar(pt.Figura);
+  try {
+    assert.equal(m.caja.querySelector('[data-foto-sec="diciembre"]').dataset.hueco, "si");
+    tocar(m.caja.querySelector('[data-parada="igual"]'));
+    assert.ok(m.caja.querySelector('[data-mensaje="error"]').textContent.includes("¿Pasó algo en la empresa entre enero y diciembre?"));
+    tocar(m.caja.querySelector('[data-parada="no-hay"]'));
+    assert.equal(m.caja.querySelector('[data-parada="distinta"]').dataset.estado, "acierto");
+    assert.equal(pt.resuelta(m.estado), true);
+    assert.equal(m.caja.querySelector('[data-foto-sec="diciembre"]').dataset.hueco, undefined);
+  } finally { m.desmontar(); }
+});
+
+test("★★★ cu0-a3 · la prueba: cinco preguntas, una por paso, rótulos medidos de Mai y los errores de evaluarP3 tal cual", () => {
+  const pt = pantalla(PIEZA_FOTO_PELICULA, "prueba");
+  assert.equal(pt.pasos, PREGUNTAS_P3.length - 1);
+  let estado = null;
+  PREGUNTAS_P3.forEach((q, k) => {
+    const m = montar(pt.Figura, { paso: k, estado });
+    try {
+      assert.equal(m.caja.querySelector("[data-pregunta]").dataset.pregunta, q.id);
+      assert.deepEqual([...m.caja.querySelectorAll("[data-parada]")].map((b) => b.textContent), ["Una foto", "La película", "Las dos fotos"]);
+      const mala = ["foto", "pelicula", "comparar"].find((id) => id !== q.respuesta);
+      tocar(m.caja.querySelector(`[data-parada="${mala}"]`));
+      assert.ok(m.caja.querySelector('[data-mensaje="error"]').textContent.includes(evaluarP3(q, mala).texto), q.id);
+      tocar(m.caja.querySelector(`[data-parada="${q.respuesta}"]`));
+      estado = m.estado;
+    } finally { m.desmontar(); }
+    assert.equal(pt.resuelta(estado), k === PREGUNTAS_P3.length - 1);
+  });
+});
+
+test("★★★ cu0-a3 · la capa 4: franja de 44 y las cuatro frases en flujo, todas con su devolución", () => {
+  capa4SinRecorte(pantalla(PIEZA_FOTO_PELICULA, "frase").Figura, FICHA_FRASE_A3, "cu0-a3");
+});
