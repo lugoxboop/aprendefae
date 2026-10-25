@@ -1,105 +1,57 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { JSDOM, VirtualConsole } from "jsdom";
+import * as V from "../volumen.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
- * EL VOLUMEN DE LOS CINCO CONTROLES COMPARTIDOS (#560; forma de Ukyo).
+ * EL VOLUMEN DEL CAMINO DE HACER (#560; forma de Ukyo).
  *
- *   ·  el canto es una capa hermana DETRÁS: ni border-bottom ni box-shadow
- *   ·  el hundido: translateY(4px), 100 ms de bajada y 160 de vuelta, una curva,
- *      solo transform, nada en bucle; con movimiento reducido, sin transición
- *   ·  donde hay canto no hay scale(.97); lo quieto conserva su gesto
- *   ·  los cinco usan la misma pieza, con los valores de la tabla
+ *   ·  nodo: cara N2 #344968 sobre canto N1 #1D3557 corrido 4 px; hecho, teal
+ *      sobre #1D6B61; la cara se hunde al pulsar y el canto no se mueve
+ *   ·  líneas: canto corrido 4 px detrás y cara opaca encima
+ *   ·  hundido: translateY(4px), 100/160 ms, una curva, solo transform, sin bucle
+ *   ·  el canto nunca es borde ni sombra
+ *   ·  placa N1 detrás del camino donde la sonda la exige (Estratégico)
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-const dom = new JSDOM("<!doctype html><html><head></head><body></body></html>", { url: "http://localhost/", virtualConsole: new VirtualConsole() });
-const w = dom.window;
-for (const [k, v] of Object.entries({ window: w, document: w.document, navigator: w.navigator, HTMLElement: w.HTMLElement, Element: w.Element, Node: w.Node })) {
-  Object.defineProperty(globalThis, k, { value: v, configurable: true, writable: true });
-}
-globalThis.IS_REACT_ACT_ENVIRONMENT = true;
-const React = await import("react");
-const { createRoot } = await import("react-dom/client");
-const { act } = React;
-const V = await import("../volumen.jsx");
-const { Responder } = await import("../../components/mecanicas/libros/piezas.jsx");
 const leer = (ruta) => readFileSync(new URL(ruta, import.meta.url), "utf8");
+const camino = leer("../../components/shared/CaminoHacer.jsx");
 
-async function montar(elemento) {
-  const caja = document.createElement("div");
-  document.body.appendChild(caja);
-  const raiz = createRoot(caja);
-  await act(async () => { raiz.render(elemento); });
-  return { caja, desmontar: () => act(async () => { raiz.unmount(); }) };
-}
-
-test("★★★ los valores son los de Ukyo: caras, cantos, 4 px, 100/160 ms, una curva", () => {
-  assert.deepEqual(V.FAMILIAS, {
-    n2: { cara: "#344968", canto: "#1D3557" },
-    teal: { cara: "#2A9D8F", canto: "#1D6B61" },
-    clara: { cara: "#B8C4D4", canto: "#8C9BB0" },
-  });
+test("★★★ los valores son los de Ukyo: cara N2, canto N1, teal sobre #1D6B61, 4 px, 100/160 ms", () => {
+  assert.deepEqual(V.FAMILIAS, { n2: { cara: "#344968", canto: "#1D3557" }, teal: { cara: "#2A9D8F", canto: "#1D6B61" } });
   assert.equal(V.ELEVACION, 4);
-  assert.equal(V.SILUETA, "rgba(248,249,250,.18)");
-  assert.equal(V.SUPERFICIE.background, "#1D3557");
-  assert.match(V.CSS_VOLUMEN, /:active:not\(\[data-vol-quieto\]\) \.fae-vol-cara \{ transform: translateY\(4px\); transition-duration: 100ms; \}/);
+  assert.match(V.CSS_VOLUMEN, /\.fae-vol-svg:active \.fae-vol-cara \{ transform: translateY\(4px\); transition-duration: 100ms; \}/);
   assert.match(V.CSS_VOLUMEN, /\.fae-vol-cara \{ transition: transform 160ms cubic-bezier\(\.3,\.9,\.4,1\); \}/);
   assert.match(V.CSS_VOLUMEN, /prefers-reduced-motion: reduce\) \{ \.fae-vol-cara \{ transition: none; \} \}/);
 });
 
 test("★★★ solo transform, nada en bucle, y el canto nunca es borde ni sombra", () => {
-  const fuente = leer("../volumen.jsx").replace(/\/\*[\s\S]*?\*\//g, "");
   assert.doesNotMatch(V.CSS_VOLUMEN, /animation|infinite|box-shadow|border-bottom/);
-  assert.doesNotMatch(fuente, /boxShadow|borderBottom/);
   for (const [, propiedad] of V.CSS_VOLUMEN.matchAll(/transition:\s*([a-z-]+)/g)) assert.ok(["transform", "none"].includes(propiedad), propiedad);
 });
 
-test("★★★ Responder: el canto es una capa hermana DETRÁS de la cara, teal #1D6B61, y se hunde", async () => {
-  const m = await montar(React.createElement(Responder, { onClick() {} }, "Comprobar"));
-  const envoltorio = m.caja.firstElementChild;
-  assert.equal(envoltorio.className, "fae-vol");
-  const [canto, cara] = envoltorio.children;
-  assert.equal(canto.className, "fae-vol-canto", "el canto va primero: detrás");
-  assert.equal(canto.getAttribute("aria-hidden"), "true");
-  assert.equal(canto.style.background, "rgb(29, 107, 97)");
-  assert.equal(cara.tagName, "BUTTON");
-  assert.equal(cara.className, "fae-vol-cara");
-  assert.equal(cara.style.color, "rgb(6, 32, 42)", "el texto sigue en #06202A (Erwin)");
-  assert.equal(envoltorio.hasAttribute("data-vol-quieto"), false);
-  assert.ok(document.getElementById("fae-volumen"), "la hoja se inyecta una vez");
-  await m.desmontar();
+test("★★★ el nodo: canto hermano detrás, corrido 4 px, y la cara entera en el grupo que se hunde", () => {
+  assert.match(camino, /<g\s+className=\{CLASE_SVG\}\s+data-nodo=\{nodo\.id\}/);
+  assert.match(camino, /<circle data-canto cx=\{x\} cy=\{y \+ ELEVACION\} r=\{m\.radio\} fill=\{nodo\.completada \? FAMILIAS\.teal\.canto : FAMILIAS\.n2\.canto\}/);
+  assert.match(camino, /<g className=\{CLASE_CARA\}>\s*<circle\s+cx=\{x\}\s+cy=\{y\}\s+r=\{m\.radio\}\s+fill=\{nodo\.completada \? FAE\.teal : FAMILIAS\.n2\.cara\}/);
+  assert.ok(camino.indexOf("<circle data-canto") < camino.indexOf("<g className={CLASE_CARA}>"), "el canto va antes: detrás");
 });
 
-test("★★ Responder deshabilitado: reserva el alto, sin canto y sin hundido", async () => {
-  const m = await montar(React.createElement(Responder, { deshabilitado: true }, "Comprobar"));
-  const envoltorio = m.caja.firstElementChild;
-  assert.ok(envoltorio.hasAttribute("data-vol-quieto"));
-  assert.equal(envoltorio.firstElementChild.style.background, "transparent");
-  assert.equal(envoltorio.lastElementChild.className, "", "lo quieto no lleva la clase de cara");
-  await m.desmontar();
-  assert.equal(document.querySelectorAll("#fae-volumen").length, 1);
+test("★★★ las líneas llevan cuerpo: canto corrido 4 px ANTES y cara opaca después, en las dos formas del camino", () => {
+  const cantos = [...camino.matchAll(/<path data-canto-linea [^>]*transform=\{`translate\(0 \$\{ELEVACION\}\)`\}/g)];
+  assert.equal(cantos.length, 3, "línea simple, tramo teal y línea por bloques");
+  assert.match(camino, /<path d=\{d\} fill="none" stroke=\{FAMILIAS\.n2\.cara\}/);
+  assert.match(camino, /<path data-linea d=\{trazo\(puntos\)\} fill="none" stroke=\{FAMILIAS\.n2\.cara\}/);
+  assert.doesNotMatch(camino, /stroke="rgba\(248,249,250,0\.22\)"/, "ninguna línea en rgba: la cara es opaca");
 });
 
-test("★★★ los cinco usan la pieza compartida, con los valores de su fila", () => {
-  const camino = leer("../../components/shared/CaminoHacer.jsx");
-  assert.match(camino, /<circle data-canto cx=\{x\} cy=\{y \+ ELEVACION\}/);
-  assert.match(camino, /fill=\{nodo\.completada \? FAE\.teal : FAMILIAS\.n2\.cara\}/);
-  assert.match(camino, /<g className=\{CLASE_CARA\}>/);
-  const piezas = leer("../../components/mecanicas/libros/piezas.jsx");
-  assert.match(piezas, /<Volumen canto=\{deshabilitado \? "transparent" : FAMILIAS\.teal\.canto\}/);
-  const encabezado = leer("../../components/mecanicas/libros/tema1/encabezado.jsx");
-  assert.match(encabezado, /<Volumen canto=\{FAMILIAS\.n2\.canto\} radio="10px"/);
-  assert.match(encabezado, /background: FAMILIAS\.n2\.cara/);
-  const secuencia = leer("../../components/secuencia/SecuenciaAprender.jsx");
-  assert.match(secuencia, /<Volumen canto=\{espera \? "transparent" : FAMILIAS\.clara\.canto\} quieto=\{espera\}/);
-  assert.match(secuencia, /\.fae-sec-nav:active:not\(\[aria-disabled="true"\]\):not\(\.fae-vol-cara\) \{ transform: scale\(\.97\)/, "donde hay canto no va el scale");
-  assert.match(leer("../../components/mecanicas/corazon/juego.jsx"), /\.\.\.SUPERFICIE_PULSOS \}\}/);
-  assert.match(leer("../../components/shared/ActivityBadge.jsx"), /\[APRENDER\]: \{ color: FAE\.node, background: N1,/);
-});
-
-test("★★ el «Siguiente» de AsiSeJuega es el mismo Responder: hereda la cara teal (Erwin)", () => {
-  assert.match(leer("../../components/mecanicas/libros/AsiSeJuega.jsx"), /<Responder onClick=\{onSiguiente\}>Siguiente<\/Responder>/);
+test("★★ la placa: N1 opaca, silueta y 16 px; la piden las tres vistas de Estratégico y nadie más", () => {
+  assert.match(camino, /const PLACA = \{ background: FAMILIAS\.n2\.canto, outline: `1px solid \$\{SILUETA\}`, outlineOffset: "-1px", borderRadius: "16px"/);
+  const vistas = ["PensamientoSistemicoView", "PorterView", "IcebergView"];
+  for (const v of vistas) assert.match(leer(`../../components/${v}.jsx`), /<CaminoHacer[\s\S]{0,160}?\bplaca\b/, v);
+  for (const v of ["PoliticaMonetariaView", "PoliticaFiscalView", "PoliticaEconomicaView", "DemandaAgregadaHacerView", "IntroContabilidadView", "CuentasDebeHaberView"]) {
+    assert.doesNotMatch(leer(`../../components/${v}.jsx`), /<CaminoHacer[^>]*\bplaca\b/, v);
+  }
 });

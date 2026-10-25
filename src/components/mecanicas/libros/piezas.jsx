@@ -3,7 +3,6 @@ import { FAE } from "../../../theme.js";
 import { DEBE, HABER, COLOR_LADO, pesos } from "../../../data/contabilidad.js";
 import { TEXTO_ATENUADO } from "../../../data/contabilidadIntro.js";
 import { MarcaVeredicto } from "./marcaVeredicto.jsx";
-import { Volumen, FAMILIAS } from "../../../estilo/volumen.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -358,30 +357,22 @@ export function ElegirLado({ elegido, correcto = null, onElegir, deshabilitado =
  * lo tenue lo pone el fondo. Antes iba al 35 % y medía 2,6:1. `colorApagado`
  * queda para quien necesite otro.
  */
-/*
- * VOLUMEN (#560): cara teal sobre canto #1D6B61 de 4 px, y se hunde al
- * pulsar. El texto sigue en #06202A, oscuro (Erwin): el blanco sobre teal no
- * llega a 4,5:1. Deshabilitado no se hunde y el canto no se pinta, pero el
- * alto se reserva igual, para que habilitarlo no mueva nada.
- */
 export function Responder({ children, onClick, deshabilitado = false, colorApagado = TEXTO_ATENUADO }) {
   return (
-    <Volumen canto={deshabilitado ? "transparent" : FAMILIAS.teal.canto} quieto={deshabilitado} estilo={{ marginTop: "14px" }}>
-      <button
-        type="button"
-        onClick={onClick}
-        disabled={deshabilitado}
-        style={{
-          width: "100%", padding: "13px 18px", borderRadius: "999px",
-          cursor: deshabilitado ? "default" : "pointer",
-          background: deshabilitado ? "rgba(248,249,250,0.07)" : FAE.teal,
-          border: "none", color: deshabilitado ? colorApagado : "#06202A",
-          fontFamily: "Sora, sans-serif", fontSize: "14px", fontWeight: 700,
-        }}
-      >
-        {children}
-      </button>
-    </Volumen>
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={deshabilitado}
+      style={{
+        marginTop: "14px", width: "100%", padding: "13px 18px", borderRadius: "999px",
+        cursor: deshabilitado ? "default" : "pointer",
+        background: deshabilitado ? "rgba(248,249,250,0.07)" : FAE.teal,
+        border: "none", color: deshabilitado ? colorApagado : "#06202A",
+        fontFamily: "Sora, sans-serif", fontSize: "14px", fontWeight: 700,
+      }}
+    >
+      {children}
+    </button>
   );
 }
 

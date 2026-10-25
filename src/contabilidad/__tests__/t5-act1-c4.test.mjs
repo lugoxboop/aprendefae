@@ -188,13 +188,7 @@ test("★★★ C4-1: no hay cifra que escribir, así que nada se califica antes
 /* ═══════════ 4 · SIN `c4`, FICHASUNNIVEL COMO EN MAIN ═══════════ */
 
 /* La huella del recorrido de T6 Act1 (Célula B) y T5 Act1 sin C4, tomada con el código de main (efa2501e). */
-/*
- * Rehecha el 25-oct por el volumen de #560: `Responder` va dentro de su
- * envoltorio con canto. Comprobado antes de cambiarla: quitando SOLO ese
- * envoltorio (y devolviendo su margin-top al botón), el recorrido da
- * exactamente la huella anterior, 282aa1d5b5d9…
- */
-const HUELLA_MAIN_FICHAS = "91c7c2846d6b39e0b9d6f3ad17304ef2b1ad4fbc7339cf4fffa1112e4d785eb6";
+const HUELLA_MAIN_FICHAS = "282aa1d5b5d99401991c0d8228c439bbc5bec8acf03310a082b8d5118f037932";
 test("★★★ sin la prop `c4`, FichasUnNivel pinta exactamente lo de main (T6 Act1 y T5 Act1, paso a paso)", async () => {
   assert.equal(await recorridoFichas(), HUELLA_MAIN_FICHAS);
 });

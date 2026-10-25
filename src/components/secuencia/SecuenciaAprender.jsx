@@ -7,7 +7,6 @@ import {
   queHaceSiguiente, literalSiguiente, avanzar, puedeRetroceder, retroceder, cambiarFigura,
   claveDe, mostrarCorrecto,
 } from "./secuencia.js";
-import { Volumen, FAMILIAS } from "../../estilo/volumen.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -90,8 +89,7 @@ const ESTILOS = `
 .fae-sec--sale { animation: fae-sec-sale 120ms ${CURVA} both; }
 .${CLASE_PASO} { animation: fae-sec-paso-entra 240ms ${CURVA} both; }
 .fae-sec-nav { transition: transform 160ms ${CURVA}; }
-/* Con canto (#560) el gesto es el hundido de estilo/volumen.jsx, no el scale: nunca los dos. */
-.fae-sec-nav:active:not([aria-disabled="true"]):not(.fae-vol-cara) { transform: scale(.97); transition-duration: 100ms; }
+.fae-sec-nav:active:not([aria-disabled="true"]) { transform: scale(.97); transition-duration: 100ms; }
 .fae-sec-titular:focus-visible, .fae-sec-nav:focus-visible { outline: 2px solid #F8F9FA; outline-offset: 2px; }
 .fae-sec-figura { height: var(--fae-sec-alto-320, 150px); }
 @media (min-width: 375px) and (min-height: 640px) { .fae-sec-figura { height: var(--fae-sec-alto-375, 200px); } }
@@ -435,8 +433,6 @@ export default function SecuenciaAprender({ temaId, piezas, final = "tema", onFi
             } : {}),
           }}
         >
-          {/* VOLUMEN (#560): «Anterior» no tiene cara, así que no lleva canto; reserva el alto para que los dos midan igual. */}
-          <Volumen canto="transparent" quieto estilo={{ flex: "1 1 0", minWidth: 0 }}>
           <button
             type="button"
             className="fae-sec-nav"
@@ -444,13 +440,10 @@ export default function SecuenciaAprender({ temaId, piezas, final = "tema", onFi
             aria-disabled={primeraPantalla ? "true" : undefined}
             aria-describedby={primeraPantalla ? `${id}-contador` : undefined}
             onClick={anterior}
-            style={{ ...BOTON_NAV, ...(primeraPantalla ? NAV_DESACTIVADO : NAV_ANTERIOR), width: "100%" }}
+            style={{ ...BOTON_NAV, ...(primeraPantalla ? NAV_DESACTIVADO : NAV_ANTERIOR) }}
           >
             {LITERAL.anterior}
           </button>
-          </Volumen>
-          {/* «Siguiente», cara clara #B8C4D4: canto #8C9BB0 y se hunde. En espera no se pulsa: ni canto ni hundido. */}
-          <Volumen canto={espera ? "transparent" : FAMILIAS.clara.canto} quieto={espera} estilo={{ flex: "1 1 0", minWidth: 0 }}>
           <button
             type="button"
             className="fae-sec-nav"
@@ -458,11 +451,10 @@ export default function SecuenciaAprender({ temaId, piezas, final = "tema", onFi
             aria-disabled={espera ? "true" : undefined}
             aria-describedby={espera ? `${id}-razon` : undefined}
             onClick={siguiente}
-            style={{ ...BOTON_NAV, ...(espera ? NAV_DESACTIVADO : NAV_SIGUIENTE), width: "100%" }}
+            style={{ ...BOTON_NAV, ...(espera ? NAV_DESACTIVADO : NAV_SIGUIENTE) }}
           >
             {textoSiguiente}
           </button>
-          </Volumen>
         </div>
       </div>
     </Panel>

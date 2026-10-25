@@ -2,7 +2,6 @@ import { FAE } from "../../../theme.js";
 import { CierreConResumen } from "../../shared/PantallaResumen.jsx";
 import { CSS_CORAZON } from "./circulatorio.jsx";
 import { CARD_SHELL } from "../../SubjectCard.jsx";
-import { SUPERFICIE } from "../../../estilo/volumen.jsx";
 
 /* El borde de las tarjetas del sitio, el mismo de CARD_SHELL. */
 const BORDE_TARJETA = CARD_SHELL.border.replace(/^1px solid /, "");
@@ -275,16 +274,6 @@ export const MAXIMO_NODOS = 14;
  * tampoco estaba bien en Macro—, y una prop obligaría a tocar todas las
  * llamadas de Contabilidad para arreglar algo que se arregla en un sitio.
  */
-/*
- * VOLUMEN (#560): el avance va en una SUPERFICIE ELEVADA —cara N1 y contorno
- * de silueta de 1 px—, sin canto y sin hundido: es un contador, no se pulsa.
- * La tabla de Ukyo pide «3 px» de elevación sin canto; sin canto, sin
- * box-shadow y sin border-bottom no hay con qué dibujarlos, así que no se
- * añade alto por eso (anotado en el PR). El relleno es el mínimo para que la
- * cara se lea como pastilla: crece 10 px de alto.
- */
-const SUPERFICIE_PULSOS = { ...SUPERFICIE, padding: "4px 10px", borderRadius: "999px", boxSizing: "border-box" };
-
 export function Pulsos({ total, hechos, etiqueta = "Avance", enCurso = null, cuenta = false }) {
   const numero = cuenta ? hechos : Math.max(1, Math.min(enCurso ?? hechos + 1, total));
   const actual = hechos < total ? hechos : null;
@@ -294,7 +283,7 @@ export function Pulsos({ total, hechos, etiqueta = "Avance", enCurso = null, cue
   if (total > MAXIMO_NODOS) {
     const llevado = total > 0 ? Math.min(hechos, total) / total : 0;
     return (
-      <div data-avance data-barra style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: 0, ...SUPERFICIE_PULSOS }}>
+      <div data-avance data-barra style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: 0 }}>
         <div
           role="progressbar"
           aria-label={etiqueta}
@@ -323,7 +312,7 @@ export function Pulsos({ total, hechos, etiqueta = "Avance", enCurso = null, cue
   }
 
   return (
-    <div data-avance style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: 0, ...SUPERFICIE_PULSOS }}>
+    <div data-avance style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: 0 }}>
       <div
         role="progressbar"
         aria-label={etiqueta}
