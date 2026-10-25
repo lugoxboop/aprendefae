@@ -423,9 +423,12 @@ test("★★★ la decisión 2 es el total nuevo: anterior más el monto, anteri
     elegirTotal(caja, ACTIVO, 25000);
     elegirTotal(caja, PASIVO, 25000);
     tocar(boton(caja, TORRES_T1_5.anotar));
-    const iba = caja.querySelector(`[data-opcion-total="${ACTIVO}:325000"] [data-pastilla]`);
-    assert.equal(iba.textContent, "Iba aquí: $325.000");
-    assert.equal(caja.querySelector(`[data-opcion-total="${ACTIVO}:25000"] [data-pastilla]`).dataset.pastilla, "tachada");
+    /* Tras anotar, las casillas se pliegan en un renglón por parte (Mai, «después de anotar»): ✕ lo elegido, ✓ lo que iba. */
+    const renglon = caja.querySelector(`[data-plegado="${ACTIVO}"]`);
+    assert.equal(renglon.querySelector("[data-elegido]").textContent, "$25.000");
+    assert.equal(renglon.querySelector("[data-correcto]").textContent, "$325.000");
+    assert.match(renglon.textContent, /^tiene/);
+    assert.equal(caja.querySelectorAll("[data-opcion-total]").length, 0, "las filas de cifra siguen a tamaño táctil tras anotar");
   } finally { desmontar(); }
 });
 
@@ -443,10 +446,9 @@ test("★★★ hecho 1 con tres botones (Shoko), «sin cambio» rotulado, y la 
     elegirTotal(caja, mov(0).mueven[1], 300000);
     assert.equal(caja.querySelectorAll("[data-rotulo-sin-cambio]").length, 0, "el rótulo salió antes de anotar");
     tocar(boton(caja, TORRES_T1_5.anotar));
-    /* Tras anotar, el rótulo sale solo en la opción que eligió, no en el $0 del otro grupo. */
-    const rotulos = [...caja.querySelectorAll("[data-rotulo-sin-cambio]")];
-    assert.deepEqual(rotulos.map((r) => r.closest("[data-opcion-total]").dataset.opcionTotal), [`${ACTIVO}:0`]);
-    assert.equal(rotulos[0].textContent, TORRES_T1_5.sinCambio);
+    /* Tras anotar se pliega: lo que tiene, ✕ $0 ✓ $100.000; la otra parte, bien, sin ✕. */
+    assert.equal(caja.querySelector(`[data-plegado="${ACTIVO}"] [data-elegido]`).textContent, "$0");
+    assert.equal(caja.querySelector(`[data-plegado="${mov(0).mueven[1]}"] [data-elegido]`), null);
     const retro = caja.querySelector("[data-texto-retro]").textContent;
     assert.ok(retro.endsWith(linea("sinCambio", "lo que tiene")), retro);
     assert.ok(!retro.includes("pusiste lo que se movió"));
@@ -613,18 +615,24 @@ test("★★★ al anotar con las torres fuera de la pantalla: sube a ellas, y s
     assert.equal(subidas.length, 1, "no subió a las torres");
     assert.equal(subidas[0].block, "start");
     assert.equal(altoDe(caja, ACTIVO), antes, "las torres se movieron antes de estar a la vista");
-    /* Mientras sube, ni devolución ni foco: el foco no cae en un botón que no se ve. */
-    assert.equal(caja.querySelector("[data-bloque-devolucion]").style.position, "");
+    /* Mientras sube, ni devolución ni foco: el foco no cae en algo que no se ve. */
+    assert.equal(caja.querySelector("[data-veredicto]").style.visibility, "hidden");
     assert.equal(focos.length, 0, "el foco se fue antes de terminar la subida");
     await act(async () => { await new Promise((r) => setTimeout(r, MS_SUBIR + 60)); });
     assert.notEqual(altoDe(caja, ACTIVO), antes, "las torres no se movieron al llegar");
-    assert.ok(focos.some((o) => o?.preventScroll === true), "el foco a «Siguiente» desplaza la página");
-    /* La devolución queda fija sobre «Siguiente», en el bloque pegado de abajo (Sakuta, #531). */
+    assert.ok(focos.some((o) => o?.preventScroll === true), "el foco al veredicto desplaza la página");
+    /*
+     * Mai («después de anotar»): la devolución va en el flujo, nada fijo, y el
+     * foco al veredicto; las casillas se pliegan en un renglón por parte; la
+     * reserva de las torres es de 176 y la leyenda va arriba de ellas.
+     */
     const bloque = caja.querySelector("[data-bloque-devolucion]");
-    assert.equal(bloque.style.position, "sticky");
-    assert.equal(bloque.style.bottom, "0px");
-    assert.ok(bloque.querySelector("[data-avance]"), "«Siguiente» no está en el bloque pegado");
-    assert.ok(bloque.textContent.trim().length > 20, "la devolución no está en el bloque pegado");
+    assert.equal(bloque.style.position, "");
+    assert.equal(w.document.activeElement, caja.querySelector("[data-veredicto]"));
+    assert.ok(bloque.querySelector("[data-avance]"), "«Siguiente» no está debajo de la devolución");
+    assert.equal(caja.querySelectorAll("[data-plegado]").length, 2, "no se plegaron las dos partes que se mueven");
+    assert.equal(caja.querySelector("[data-torres]").style.height, "176px");
+    assert.ok(caja.querySelector("[data-leyenda]").compareDocumentPosition(caja.querySelector("[data-torres]")) & 4, "la leyenda no va arriba de las torres");
   } finally {
     desmontar();
     proto.getBoundingClientRect = rectOriginal;
