@@ -72,3 +72,16 @@ Si el estudiante elige mal, Act3 muestra su error de tipo C: «Esa cuenta no se 
 Cambiar uno por el otro le quitaría fidelidad a la página citada. Además, «Servicios por cobrar» ya está publicada en P3, Act3 y Act4, que tienen estudiantes.
 
 **La excepción a la regla 3.9** («un término, un solo nombre») queda escrita en el mapa del capítulo 4 (`mapas/t3-ingresos-gastos.md`, adenda 2), para que el próximo auditor no la marque como choque.
+
+## 5 · Titular nuevo de P2-8 (lote 14)
+
+| Pantalla | Titular | Pal. | Car. |
+|---|---|---|---|
+| P2-8 · Cierre | Lo que cambia la utilidad, y lo que no | 9 | 38 |
+
+- Reemplaza a «Al 31 todavía falta algo» (v2), que repetía casi literal la primera frase del enlace aprobado del apoyo. Lo pidieron Itagaki y Takamura.
+- Resume la primera parte del apoyo («Vender y consumir…») sin adelantar el enlace a P3.
+
+**Pendiente para P2 y P6 (Takamura, lote 14):**
+- La pista de P6-4 dice la respuesta, porque nombra la base («de la utilidad antes de impuestos»). Miyata la reescribe para que señale sin nombrar la cifra.
+- En P2-2, la pista y la razón del «Siguiente» no pueden verse al mismo tiempo en pantalla. Lo resuelve Itagaki.
