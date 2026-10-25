@@ -14,6 +14,7 @@ import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Responder, useTanda } from "../piezas.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";
 import { Encabezado } from "../tema1/encabezado.jsx";
+import { Relieve, CSS_RELIEVE, N2, SECUNDARIO_N2 } from "./relieve.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -103,9 +104,12 @@ function BotonPaso({ etiqueta, rotulo, deshabilitado, onPaso, datos }) {
   const parar = () => { clearTimeout(reloj.current); clearInterval(reloj.current); reloj.current = null; };
   useEffect(() => parar, []);
   useEffect(() => { if (deshabilitado) parar(); }, [deshabilitado]);
+  /* Volumen (#8): botón secundario N2 + filo, E2, con la forma de BotonComoSeJuega; deshabilitado, plano (E0). */
   return (
+    <Relieve e={4} filo plano={deshabilitado} radio="999px" style={{ flex: "1 1 0", minWidth: 0 }}>
     <button
       type="button"
+      className="fae-rel-cara"
       data-paso-corte={datos}
       aria-label={rotulo}
       disabled={deshabilitado}
@@ -124,14 +128,15 @@ function BotonPaso({ etiqueta, rotulo, deshabilitado, onPaso, datos }) {
         onPaso();
       }}
       style={{
-        flex: "1 1 0", minWidth: 0, height: "44px", borderRadius: "999px", touchAction: "manipulation",
+        display: "block", width: "100%", height: "44px", borderRadius: "999px", touchAction: "manipulation",
         cursor: deshabilitado ? "default" : "pointer", fontFamily: SORA, fontSize: "14px", fontWeight: 600,
-        background: "transparent", border: `2px solid ${deshabilitado ? COLOR.quieto : COLOR.neutro}`,
-        color: deshabilitado ? COLOR.apagado : COLOR.blanco,
+        background: N2, border: "2px solid transparent",
+        color: deshabilitado ? SECUNDARIO_N2 : COLOR.blanco,
       }}
     >
       {etiqueta}
     </button>
+    </Relieve>
   );
 }
 
@@ -433,6 +438,7 @@ export default function QueLeToca({
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS}</style>
+      <style>{CSS_RELIEVE}</style>
       <div className="fae-a6" data-act6>
         {!modoDemo && (
           <>

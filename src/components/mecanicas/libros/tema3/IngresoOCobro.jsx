@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { barajar } from "../../../../utils/barajar.js";
 import { FAE } from "../../../../theme.js";
-import { NEUTRO, NAVY_DEL_CHIP, TEXTO_ATENUADO } from "../../../../data/contabilidadIntro.js";
+import { NEUTRO, TEXTO_ATENUADO } from "../../../../data/contabilidadIntro.js";
 import { ACT1_T3, GRUPOS, ALT_ACT1_T3, SEGUNDA_ACT1_T3, MARCA_ACT1_T3 } from "../../../../data/contabilidadTema3Act1.js";
 import {
   sortearAct1T3, evaluarAct1T3, puntuarAct1T3, pesoDeCadaHecho, tieneSegunda, evaluarSegundaAct1T3,
@@ -12,6 +12,7 @@ import { Responder, useTanda } from "../piezas.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";
 import { Encabezado } from "../tema1/encabezado.jsx";
 import { useSegunda, OpcionSegunda, MensajeSegunda, mostrarTramo, pastillasTocadas } from "./segundaDecision.jsx";
+import { Relieve, CSS_RELIEVE, N0, N1, N2, SECUNDARIO_N2 } from "./relieve.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -166,6 +167,7 @@ export default function IngresoOCobro({
     return (
       <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
         <style>{CSS}</style>
+      <style>{CSS_RELIEVE}</style>
         <Cierre pct={Math.round(pct)} onReiniciar={reiniciar} textoReiniciar="Otra tanda">
           <p style={TEXTO_CIERRE}>
             {bien} de {cuantas} al primer intento. Cada hecho valía {pesoDeCadaHecho(cuantas).toFixed(2)} %.
@@ -178,6 +180,7 @@ export default function IngresoOCobro({
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS}</style>
+      <style>{CSS_RELIEVE}</style>
       {!modoDemo && (
         <>
           <Encabezado consigna={ACT1_T3.consigna} onComoSeJuega={onComoSeJuega} />
@@ -235,10 +238,12 @@ export default function IngresoOCobro({
           {GRUPOS.map((g) => {
             const activa = grupo === g.id;
             const tenue = !puedeResponder && !activa;
+            /* Volumen (#4): en reposo N1 en E1 (canto N0); el elegido, N2 + filo en E2 (canto N1). El contorno plano se quita: lo pone la silueta. */
             return (
+              <Relieve key={g.id} e={activa ? 4 : 3} canto={activa ? N1 : N0} filo={activa} radio="10px">
               <button
-                key={g.id}
                 type="button"
+                className="fae-rel-cara"
                 data-grupo={g.id}
                 data-elegido={activa ? "si" : "no"}
                 aria-pressed={activa}
@@ -248,16 +253,16 @@ export default function IngresoOCobro({
                   display: "block", textAlign: "left", width: "100%", boxSizing: "border-box",
                   padding: "9px 11px", borderRadius: "10px",
                   cursor: puedeResponder ? "pointer" : "default",
-                  background: activa ? NEUTRO : tenue ? "rgba(10,20,34,0.2)" : "rgba(10,20,34,0.4)",
+                  background: activa ? N2 : N1,
                   borderStyle: "solid",
                   borderWidth: activa ? "2px" : "1px",
-                  borderColor: activa ? NEUTRO : tenue ? "rgba(248,249,250,0.08)" : "rgba(248,249,250,0.16)",
-                  color: activa ? NAVY_DEL_CHIP : tenue ? TEXTO_ATENUADO : FAE.text,
+                  borderColor: activa ? NEUTRO : "transparent",
+                  color: tenue ? TEXTO_ATENUADO : FAE.text,
                 }}
               >
                 <span data-numero style={{
                   display: "block", fontSize: "10.5px", letterSpacing: "0.06em",
-                  color: activa ? NAVY_DEL_CHIP : TEXTO_ATENUADO,
+                  color: activa ? SECUNDARIO_N2 : TEXTO_ATENUADO,
                 }}>
                   Grupo {g.numero}
                 </span>
@@ -267,6 +272,7 @@ export default function IngresoOCobro({
                   {g.rotulo}
                 </span>
               </button>
+              </Relieve>
             );
           })}
         </div>}
