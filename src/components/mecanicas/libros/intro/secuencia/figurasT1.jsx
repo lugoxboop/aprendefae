@@ -2,7 +2,7 @@ import { FAE } from "../../../../../theme.js";
 import { HAZ_INICIAL, responderHaz, hazResuelto, mostrarCorrecto } from "../../../../secuencia/secuencia.js";
 import { SORA, INTER, SECUNDARIO, NAVY, RIEL, HUNDIDO, REPOSO, ACIERTO, FANTASMA, estiloC2, CURVA } from "../../tema1/registro.jsx";
 
-export { estiloC2 };
+export { estiloC2, HUNDIDO as HUNDIDO_T1 };
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════

@@ -361,3 +361,84 @@ test("★★★ cu0-a3 · la prueba: cinco preguntas, una por paso, rótulos med
 test("★★★ cu0-a3 · la capa 4: franja de 44 y las cuatro frases en flujo, todas con su devolución", () => {
   capa4SinRecorte(pantalla(PIEZA_FOTO_PELICULA, "frase").Figura, FICHA_FRASE_A3, "cu0-a3");
 });
+
+/* ═══════════ cu0-a4 · CÓMO SE ARTICULAN ═══════════ */
+const { PIEZA_ARTICULAN, FICHA_FRASE_A4 } = await import("../piezaArticulan.jsx");
+const { ID_P4, MODO_FLECHA } = await import("../../../../../../data/contabilidadPiezas234.js");
+
+test("★★★ cu0-a4: id publicado, diez pantallas, forma de la secuencia, y es el último cierre del tema", () => {
+  assert.equal(PIEZA_ARTICULAN.id, ID_P4);
+  assert.equal(PIEZA_ARTICULAN.pantallas.length, 10);
+  assert.deepEqual(S.faltasDePieza(PIEZA_ARTICULAN), []);
+  assert.equal(PIEZAS_T1_SECUENCIA.at(-1), PIEZA_ARTICULAN);
+  assert.equal(PIEZA_ARTICULAN.pantallas.at(-1).tipo, "cierre");
+});
+
+test("★★★ T1 en secuencia: las cinco piezas en su orden, cada una con su id", () => {
+  assert.deepEqual(PIEZAS_T1_SECUENCIA.map((p) => p.id), [ID, OCHO_SEC.id, ID_P2, ID_P3, ID_P4]);
+});
+
+test("★★★ cu0-a4 · R10: la predicción enseña los tres informes sin ninguna flecha", () => {
+  const m = montar(pantalla(PIEZA_ARTICULAN, "prediccion").Figura);
+  try {
+    assert.equal(m.caja.querySelectorAll("[data-informe-mapa]").length, 3);
+    assert.equal(m.caja.querySelectorAll("[data-trazo]").length, 0);
+  } finally { m.desmontar(); }
+});
+
+test("★★ cu0-a4 · los tres carriles van apilados en bandas de 44 a todo el ancho (Mai, medidas §2)", () => {
+  const m = montar(pantalla(PIEZA_ARTICULAN, "motivos").Figura);
+  try {
+    const carriles = [...m.caja.querySelectorAll("[data-carril]")];
+    assert.deepEqual(carriles.map((c) => c.textContent), ["Operación", "Inversión", "Financiación"]);
+    for (const c of carriles) { assert.equal(c.style.height, "44px"); assert.equal(c.style.width, "100%"); }
+    tocar(carriles[0]);
+    assert.match(m.caja.querySelector('[data-carril="operacion"]').textContent, /el día a día/);
+  } finally { m.desmontar(); }
+});
+
+test("★★★ cu0-a4 · parada (C2): pista al 1.er error; al 2.º «A la foto» encendida", () => {
+  const pt = pantalla(PIEZA_ARTICULAN, "parada");
+  const m = montar(pt.Figura);
+  try {
+    tocar(m.caja.querySelector('[data-parada="plata"]'));
+    assert.ok(m.caja.querySelector('[data-mensaje="error"]').textContent.includes("¿Cuál de los tres guarda cómo quedó la empresa?"));
+    tocar(m.caja.querySelector('[data-parada="ninguno"]'));
+    assert.equal(m.caja.querySelector('[data-parada="foto"]').dataset.estado, "acierto");
+    assert.equal(pt.resuelta(m.estado), true);
+  } finally { m.desmontar(); }
+});
+
+test("★★ cu0-a4 · la llave se llama «Activos y pasivos, en bloque» y la nota «Es la misma cifra con otro nombre» ya no existe", () => {
+  const m = montar(pantalla(PIEZA_ARTICULAN, "dos-flechas").Figura);
+  try {
+    assert.match(m.caja.querySelector('[data-flecha-sec="f1"]').textContent, /Utilidad neta → Activos y pasivos, en bloque/);
+    tocar(m.caja.querySelector('[data-flecha-sec="f1"]'));
+    tocar(m.caja.querySelector('[data-flecha-sec="f2"]'));
+    assert.doesNotMatch(m.caja.textContent, /misma cifra con otro nombre/);
+    assert.equal(m.caja.querySelector('[data-flecha-sec="f2"] [data-marca]').textContent, "la misma cifra");
+  } finally { m.desmontar(); }
+});
+
+test("★★★ cu0-a4 · clasifica: las cinco flechas (f1 también, explica), una por paso; solo f2 repite", () => {
+  const pt = pantalla(PIEZA_ARTICULAN, "clasifica");
+  assert.equal(pt.pasos, 4);
+  let estado = null;
+  ["f1", "f2", "f3", "f4", "f5"].forEach((f, k) => {
+    const m = montar(pt.Figura, { paso: k, estado });
+    try {
+      assert.ok(m.caja.querySelector(`[data-flecha-sec="${f}"]`), f);
+      const buena = MODO_FLECHA[f].viaja ? "repite" : "explica";
+      const mala = buena === "repite" ? "explica" : "repite";
+      tocar(m.caja.querySelector(`[data-parada="${mala}"]`));
+      assert.equal(m.caja.querySelector('[data-mensaje="error"]').textContent.includes(buena === "repite" ? "Esta sí repite" : "Esta no repite"), true, f);
+      tocar(m.caja.querySelector(`[data-parada="${buena}"]`));
+      estado = m.estado;
+    } finally { m.desmontar(); }
+  });
+  assert.equal(pt.resuelta(estado), true);
+});
+
+test("★★★ cu0-a4 · la capa 4: franja de 44 y las cuatro frases en flujo, todas con su devolución", () => {
+  capa4SinRecorte(pantalla(PIEZA_ARTICULAN, "frase").Figura, FICHA_FRASE_A4, "cu0-a4");
+});

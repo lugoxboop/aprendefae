@@ -1,6 +1,6 @@
 import { ID } from "./contabilidadIntro.js";
 import { pantallasDe } from "./contabilidadT1Pantallas.js";
-import { ID_P2, ID_P3 } from "./contabilidadPiezas234.js";
+import { ID_P2, ID_P3, ID_P4 } from "./contabilidadPiezas234.js";
 import { CALEJA, ACTIVO, PASIVO, PATRIMONIO, mayorConSaldos, tipoDeCuenta } from "./contabilidad.js";
 
 /*
@@ -344,6 +344,82 @@ export const A3_SEC = {
       titular: "Falta un informe más",
       apoyo: "Ya tienes la foto y la película. Ahora vas a ver cómo se pasan cifras.",
       nombreFigura: "La foto, la película y una tercera tarjeta que se enciende.",
+    },
+  },
+};
+
+/* ═══════════════════ cu0-a4 · CÓMO SE ARTICULAN (10) ═══════════════════ */
+/*
+ * Decisiones posteriores a las fichas, que mandan: f1 SÍ se pregunta en la
+ * pantalla 8 (seClasifican f1-f5; explica), la nota «Es la misma cifra con
+ * otro nombre» ya no existe, y la línea de la llave se llama como en LINEAS.
+ * Los carriles de a4 · 3 van apilados en bandas de 44 (Mai, medidas §2).
+ */
+export const A4_SEC = {
+  id: ID_P4,
+  pantallas: {
+    prediccion: {
+      titular: "¿Los informes se pasan cifras?",
+      apoyo: "Ya tienes la foto y la película. ¿Crees que cada informe va por su lado?",
+      opciones: ["Van por su lado", "Se pasan cifras"],
+      nombreFigura: "Tres informes separados y dos respuestas para elegir.",
+    },
+    flujos: {
+      titular: "De dónde entró y a dónde se fue la plata",
+      apoyo: "El estado de flujos de efectivo muestra de dónde entró y a dónde se fue la plata.",
+      toca: "Toca el informe", /* CLAUDE */
+      nombreFigura: "El tercer informe para tocar, y la cita del libro.",
+    },
+    motivos: {
+      titular: "La plata se mueve por tres motivos",
+      apoyo: "El día a día, comprar o vender cosas grandes, y conseguir o devolver dinero.",
+      carriles: [
+        { id: "operacion", rotulo: "Operación", idea: "el día a día" },
+        { id: "inversion", rotulo: "Inversión", idea: "comprar o vender cosas grandes" },
+        { id: "financiacion", rotulo: "Financiación", idea: "conseguir o devolver dinero" },
+      ],
+      nombreFigura: "Tres carriles por donde se mueve la plata, para tocar.",
+    },
+    articula: {
+      titular: "Un informe repite o explica a otro",
+      apoyo: "A veces repite una cifra de otro; a veces solo la explica. Eso es articularse.",
+      nombreFigura: "Dos informes y una flecha para tocar.",
+    },
+    parada: {
+      titular: "¿A dónde llega la utilidad del año?",
+      apoyo: "Lo que vendió y gastó en el año, ¿a qué informe crees que llega?",
+      rotulos: { foto: "A la foto", plata: "Al de la plata", ninguno: "A ninguno" },
+      razon: "Elige a dónde crees que llega.",
+      nombreFigura: "La utilidad neta resaltada, todavía sin flecha, y tres respuestas.",
+    },
+    dosFlechas: {
+      titular: "Dos flechas llegan a la foto",
+      apoyo: "Lo que vendió y gastó cambia cómo queda la foto. Y la plata del final es la misma.",
+      nombreFigura: "Dos flechas para tocar.",
+    },
+    cincoFlechas: {
+      titular: "Las cinco flechas llegan a la foto",
+      apoyo: "Cada motivo por el que se movió la plata explica una línea de la foto.",
+      paso: "Los otros dos cuentan qué pasó en el año; la foto guarda cómo quedó.",
+      nombreFigura: "Tres flechas más, para tocar.",
+    },
+    clasifica: {
+      titular: "¿Repite la cifra o la explica?",
+      apoyo: "Toca una flecha. ¿Repite la misma cifra o solo explica una línea de la foto?",
+      rotulos: { repite: "Repite la cifra", explica: "Explica una línea" },
+      razon: "Clasifica las cinco flechas para seguir.",
+      nombreFigura: "Una flecha entre dos informes y dos respuestas.",
+    },
+    frase: {
+      titular: "¿Cómo se relacionan los tres?",
+      apoyo: "Elige la frase que mejor lo dice.",
+      razon: "Elige una frase para seguir.",
+      nombreFigura: "Cuatro frases para elegir.",
+    },
+    cierre: {
+      titular: "Ya tienes el mapa del tema",
+      apoyo: "Ciclo, ecuación y tres informes. En el tema 2 vas a ver cómo se anota cada hecho.",
+      nombreFigura: "Las cuatro figuras del tema en miniatura: el ciclo, la torre, las fotos y las flechas.",
     },
   },
 };
