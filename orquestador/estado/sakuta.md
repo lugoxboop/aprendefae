@@ -1,14 +1,18 @@
-2026-10-24 18:09 (hora Bogotá)
-- T1 · #496 (t1-5, las dos torres): en curso; PASA de Shoko condicionado al texto nuevo de «otraParte», que sube Kaede; lo fusiono en cuanto el CI esté verde
+2026-10-24 20:07 (hora Bogotá)
+- T1 · #496 (t1-5, las dos torres): terminado, fusionado (233c635) con el PASA de Shoko y el CI en verde
 - T1 · #520 (logito LibretaYLapiz): terminado, fusionado (047f3b7) con el PASA de Shoko y el CI en verde
-- T1 · lote 4 (los 6 Hacer publicados) y lote 5 (H1 y H2) (Kaede): en curso; ya tiene en cola la regla j y las correcciones de Shoko (un solo Anotar en t1-4, zonas apiladas en t1-6, rejilla 2×2 en t1-1, tres opciones en t1-5, la leyenda de Mai, excepción a B1 en H2, HUECO en f1)
-- T1 · medición de los 44 titulares, apoyos y rótulos (Mai): terminado, en fichas/b-t1-titulares-medidos-mai.md. Decisión mía: van los 5 rótulos que ella midió, los carriles de a4·3 apilados, 48 px de reserva para la razón y la capa 4 como excepción
-- T1 · la capa 4 no cabe a 320 (146 px de desplazamiento): consultado a Ukyo y Miku en el #514 si es una excepción del patrón; mientras tanto, en B queda como excepción declarada
-- T1 · lote C (Futaba): auditado (revisiones/b-t1-496-520-lote-c-shoko.md); «Ocho leen lo mismo» PASA a falta de la medición de Mai; siete textos cambian con la redacción lista de Shoko, y los toma Kaede; ERROR_P3 con un solo juego, el corto
-- T1 · «Ocho leen lo mismo» a 320 (Mai): terminado, en 2×2 (fichas/b-t1-titulares-medidos-mai.md §7), con PASA de Shoko
-- T1 · regla j: terminado; la tienen los cuatro (Futaba, Mai, Shoko en su traspaso, Kaede en su cola)
-- T1 · D1, capítulo 2 del libro: BLOQUEADO-MATEO; la lista exacta de lo que falta se la pasé a Miku, y va directo a Futaba
-- T1 · SecuenciaAprender (componente compartido): bloqueado; el #514 sigue sin dueño. T1 está listo para ser el piloto
-- Lo compartido que falla en los 7 Hacer: bloqueado; es de Erwin (#487); B lo parchea dentro de cada pieza
+- T1 · #531 (las torres se ven moverse al anotar): en curso; Kaede corrigió en cf56ee5 (torres, devolución y «Siguiente» caben en la ventana de 320×568); la captura ya está con Shoko
+- T1 · #535 (lote 4): en curso; FALLA de Shoko en t1-1, t1-2, t1-4, t1-6, t1-7 y t1-8 (revisiones/b-t1-531-535-shoko.md); Kaede corrige con eso y con el lote D de Futaba (fichas/b-t1-lote-24oct-d-futaba.md)
+- T1 · #539 (lote 5: H1 y H2): en curso; FALLA de Shoko (el apoyo de H1, la rejilla de H2 que se sale a 320 y la reserva de H2), en revisiones/b-t1-551-539-shoko.md (Kaede)
+- T1 · #551 (lo decidido del capítulo 2): terminado, fusionado (e5707a0) con el PASA de Shoko y el CI en verde
+- T1 · «Utilidad del ejercicio» en t1-7 frente al Gráfico 2.6: riesgo que abrió Shoko; lo resuelve Futaba en el §10 de la ficha de fuente
+- Shoko traspasada a un chat nuevo (6c926eca); el 02dc9984 quedó pesado, con 19 subidas; traspasos/shoko.md está al día
+- T1 · capítulo 2 (D1): terminado; Futaba lo dejó en fichas/b-t1-fuente-cap1-futaba.md; mis decisiones están en el §9 y las aplica el #551
+- T1 · Gráfico 2.6, la línea de operación hacia el estado de resultados: BLOQUEADO-MATEO; tiene que mirar la p. 66 en el libro físico. Si la línea llega, cambian tres textos publicados
+- T1 · el caso «se quedan los dos igual» de cu0-a2: BLOQUEADO-MATEO; falta la p. 90 del capítulo 3
+- T1 · los textos pendientes del #535 (Futaba): terminado, en fichas/b-t1-lote-24oct-d-futaba.md
+- T1 · «Ocho leen lo mismo»: terminado, en 2×2 (fichas/b-t1-titulares-medidos-mai.md §7), con PASA de Shoko
+- T1 · la capa 4 como excepción del patrón: preguntado a Ukyo y Miku en el #514, sin respuesta
+- T1 · SecuenciaAprender (componente compartido): bloqueado; el #514 sigue sin dueño
+- Lo compartido que falla en los 7 Hacer: bloqueado; es de Erwin (#487)
 - T6 (oculto hasta el próximo semestre): los dos cambios de texto de Shoko del #458 quedan anotados
-- Kaede va en el 67 % de contexto: cuando pase del 75 % la traspaso a una sesión nueva

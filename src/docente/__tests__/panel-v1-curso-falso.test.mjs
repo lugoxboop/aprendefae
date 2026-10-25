@@ -54,7 +54,12 @@ test("★★★ curso normal: «Actividades hechas» da 26 % y B3, 51 % con 15 q
 
 test("★★ curso grande: las mismas reglas dan 26 % y 51 % con 36 que la terminaron", () => {
   const r = primeraPantalla("grande");
-  assert.equal(Math.round(r.avance), 26);
+  /*
+   * 25 y no 26 desde «¿Gasto o pago?» (Célula E, #506): una Hacer más en T3
+   * sube el total de Contabilidad y el curso falso no la juega. Medido: 25,72 %
+   * en main y 25,24 % con ella. El «normal» pasa de 26,47 a 25,98 y sigue en 26.
+   */
+  assert.equal(Math.round(r.avance), 25);
   assert.equal(Math.round(r.peor.cifras.pct), 51);
   assert.equal(r.peor.cifras.terminaron, 36);
 });

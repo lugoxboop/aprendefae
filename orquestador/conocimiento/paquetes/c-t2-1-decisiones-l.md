@@ -139,3 +139,18 @@ Con esto Mello aprueba las tres Hacer sin otra vuelta. #499 sigue esperando #500
 - **Near:** el titular de 10 palabras o menos de cada pantalla que se pase, el apoyo de los cierres y la `razon` de cada Haz. Solo el delta.
 - **Watari:** baja las figuras de P1, P3, P4 y P5 a 206 px o menos a 320. Solo el delta.
 - **Mello:** espera lo construido. La verificación final la hace sobre el PR.
+
+---
+
+# Entregas T2-7 · decisiones de L (24-oct-2026, 19:15)
+
+Entregas:
+- Near, `c-t2-7-near-delta.md`: titular de 10 palabras o menos, apoyo y razón para las 44 pantallas, y cuatro pares nuevos de pista y devolución. Ninguna pantalla pasa de 60 palabras.
+- Watari, `c-t2-7-watari-figuras.md` + `.html`: `altoFigura` medido por pieza (P1 183, P2 171/158, P3 180/173, P4 181/178, P5 197), todas por debajo de 206. La pastilla sale de la figura y las frases de consecuencia caben en una línea.
+- Misa, #548 en borrador: P1 montada, con las paradas del §12 medidas (cabecera de 105/107, bloque de 68 y titular de 54 caracteres en 3 renglones a 320).
+
+Decisiones:
+- **P4·8 y P4·9 van con ene-04** (1 contra 2, $4.800), como se decidió en T2-3. La maqueta de Watari todavía dice ene-03, y manda la decisión. P4·7 sigue con ene-30 y ene-03.
+- **`<Veredicto />` no va dentro de la figura** mientras Erwin no dé una zona para la devolución (#536 de Watari y el issue `miku` de Misa). Hasta entonces la secuencia queda detrás de la bandera apagada. Se puede fusionar con la bandera apagada, porque es reversible y ningún estudiante la ve.
+- **El porqué de P3·4 al segundo error** debe bajar a 16 palabras o menos (hoy ocupa 4 renglones a 320). Va para Near en su próximo lote.
+- **Mello verifica las cinco piezas juntas**, cuando Misa haya montado todo, para gastar un solo turno de auditoría.
