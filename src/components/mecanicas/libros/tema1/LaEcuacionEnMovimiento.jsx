@@ -1,4 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useMovimientoReducido } from "../verbos.jsx";
+import { Check, X } from "lucide-react";
 import { FAE } from "../../../../theme.js";
 import { pesos, ACTIVO, PASIVO, PATRIMONIO } from "../../../../data/contabilidad.js";
 import {
@@ -62,6 +64,16 @@ const CSS = `
 `;
 
 const ancho = (n) => `${n}px`;
+/* Lo que se espera a que el desplazamiento suave llegue a las torres antes de moverlas. */
+export const MS_SUBIR = 420;
+
+/*
+ * La reserva de las torres (Mai, «después de anotar», §2): 176 y fija. 150 de
+ * la torre más alta que permite la escala, 20 de los totales, 2 de la base y
+ * 4 de aire. La base queda en el mismo sitio en los ocho hechos, antes y
+ * después de anotar.
+ */
+export const ALTO_RESERVA_TORRES = 176;
 /* Una cifra con su signo de verdad: un total negativo se lee con «−», no con un guion. */
 const cifra = (v) => (v < 0 ? `−${pesos(-v)}` : pesos(v));
 const parte = (id) => PARTES.find((p) => p.id === id);
@@ -120,7 +132,7 @@ function Torres({ t, fantasma }) {
   );
   return (
     <div data-torres role="img" aria-label={alt} style={{
-      height: "244px", boxSizing: "border-box", padding: "14px 16px 0", borderRadius: "12px",
+      height: `${ALTO_RESERVA_TORRES}px`, boxSizing: "border-box", padding: "4px 16px 0", borderRadius: "12px",
       background: "rgba(10,20,34,0.45)", border: "1px solid rgba(248,249,250,0.12)",
       display: "grid", gridTemplateColumns: "1fr 28px 1fr", alignItems: "end",
     }}>
@@ -140,7 +152,6 @@ function Torres({ t, fantasma }) {
           {fantasma?.derecha != null && <Fantasma valor={fantasma.derecha} dato="derecha" />}
         </div>
       </div>
-      <div style={{ gridColumn: "1 / -1", height: "14px" }} />
     </div>
   );
 }
@@ -159,7 +170,7 @@ export const MUESTRA_LEYENDA = {
 
 function Leyenda() {
   return (
-    <ul data-leyenda style={{ margin: "8px 0 0", padding: 0, listStyle: "none", display: "flex", flexWrap: "wrap", gap: "4px 14px" }}>
+    <ul data-leyenda style={{ margin: "0 0 10px", padding: 0, listStyle: "none", display: "flex", flexWrap: "wrap", gap: "4px 14px" }}>
       {PARTES.map((p) => (
         <li key={p.id} style={{ display: "flex", alignItems: "center", gap: "7px", fontFamily: INTER, fontSize: "12px", color: SECUNDARIO }}>
           <span data-muestra={p.id} aria-hidden="true" style={{ flex: "none", width: "24px", height: "8px", borderRadius: 0, border: "none", ...MUESTRA_LEYENDA[p.id] }} />
@@ -213,6 +224,40 @@ export default function LaEcuacionEnMovimiento({
   const detalle = useRef([]);
   const inicio = useRef(Date.now());
   const botonSeguir = useRef(null);
+  /*
+   * ═══════════ LAS TORRES SE VEN MOVERSE (PR propio, D4) ═══════════
+   *
+   * A 320 «Anotar» queda bajo las partes y los totales: para tocarlo, las
+   * torres ya salieron por arriba (−278 px), y al pasar el foco a «Siguiente»
+   * se iban más (−493). Lo que la pieza enseña —las dos torres yendo al total
+   * nuevo— pasaba fuera de la pantalla. Ahora, al anotar, la pieza sube a las
+   * torres si no se ven, y solo cuando llegó las mueve; el foco va a
+   * «Siguiente» sin desplazar la página.
+   */
+  const reducido = useMovimientoReducido();
+  const cajaTorres = useRef(null);
+  const reloj = useRef(null);
+  const [torresAlDia, setTorresAlDia] = useState(false);
+  const [subir, setSubir] = useState(0);
+  /*
+   * Se sube a la cima de las torres (Mai, «después de anotar», §2.4): debajo
+   * quedan los renglones plegados, la devolución y «Siguiente», y los cuatro
+   * caben en la ventana. Si ya estaban arriba, se mueven en el acto. Va
+   * después de pintar, con las casillas ya plegadas: medir antes da un
+   * destino que deja de existir.
+   */
+  useLayoutEffect(() => {
+    if (!subir) return;
+    const caja = cajaTorres.current?.getBoundingClientRect();
+    const fuera = Boolean(caja) && (caja.top < 0 || caja.top > 40);
+    if (fuera && !modoDemo) {
+      cajaTorres.current.scrollIntoView?.({ behavior: reducido ? "auto" : "smooth", block: "start" });
+      reloj.current = setTimeout(() => setTorresAlDia(true), reducido ? 0 : MS_SUBIR);
+    } else {
+      setTorresAlDia(true);
+    }
+  }, [subir]);
+  useEffect(() => () => clearTimeout(reloj.current), []);
 
   const h = ejemplo ? ejemplo.hecho : TRANSACCIONES_CAP2[i];
   const antes = ejemplo ? ejemplo.antes : totalesTras(i);
@@ -225,9 +270,11 @@ export default function LaEcuacionEnMovimiento({
   useEffect(() => {
     if (terminado && !modoDemo) onCompletar?.(pct, Date.now() - inicio.current, detalle.current);
   }, [terminado]);
+  /* Al terminar la subida, el foco va al veredicto (Mai, «después de anotar», §2.4), sin desplazar la página. */
+  const veredicto = useRef(null);
   useEffect(() => {
-    if (r && !modoDemo) botonSeguir.current?.focus();
-  }, [r]);
+    if (r && torresAlDia && !modoDemo) veredicto.current?.focus({ preventScroll: true });
+  }, [r, torresAlDia]);
 
   const anotar = () => {
     if (!listo || r) return;
@@ -245,14 +292,20 @@ export default function LaEcuacionEnMovimiento({
       setPuntos((xs) => [...xs, { id: h.id, quietaOk: nuevo.quietaOk, direccionOk: nuevo.direccionOk }]);
     }
     setR(nuevo);
+    /* La subida a las torres se hace después de pintar (useLayoutEffect de abajo): las casillas ya se plegaron. */
+    clearTimeout(reloj.current);
+    setTorresAlDia(false);
+    setSubir((x) => x + 1);
   };
 
   const avanzar = () => {
+    clearTimeout(reloj.current); setTorresAlDia(false);
     setR(null); setQuietaElegida(null); setTotales({});
     if (i + 1 < total) setI(i + 1);
     else setTerminado(true);
   };
   const reiniciar = () => {
+    clearTimeout(reloj.current); setTorresAlDia(false);
     setI(0); setR(null); setQuietaElegida(null); setTotales({}); setPuntos([]); setTerminado(false);
     detalle.current = []; inicio.current = Date.now();
   };
@@ -276,7 +329,7 @@ export default function LaEcuacionEnMovimiento({
   }
 
   /* R10: antes de anotar, las torres enseñan el estado anterior; después, el correcto, también en el error. */
-  const enTorres = r ? r.real : antes;
+  const enTorres = r && torresAlDia ? r.real : antes;
   const fantasma = r && !r.ok ? {
     izquierda: r.fantasma.izquierda ? r.elegido[ACTIVO] : null,
     derecha: r.fantasma.derecha ? r.elegido[PASIVO] + r.elegido[PATRIMONIO] : null,
@@ -309,6 +362,38 @@ export default function LaEcuacionEnMovimiento({
 
   /* El acierto de cada hecho es de Futaba (24-oct); el ejemplo de «Así se juega» trae el suyo. */
   const textoAcierto = ejemplo ? ejemplo.acierto ?? null : ACIERTO_T1_5[h.id] ?? null;
+
+  /*
+   * ═══════════ DESPUÉS DE ANOTAR: LAS CASILLAS SE PLIEGAN (Mai, §2.1) ═══════════
+   * Ya no hay nada que tocar (un intento), así que la pregunta y las filas de
+   * cifra se pliegan en un renglón por cada parte que se mueve, sin relleno
+   * táctil y a todo el ancho: «tiene ✕ $275.000 ✓ $325.000», con el
+   * vocabulario de C2. La parte que se queda igual la nombra la primera frase
+   * de la devolución. El aria-label lleva el nombre publicado de la parte.
+   */
+  const Renglon = ({ dato, palabra, nombre, elegido, correcto, formato = (x) => x }) => {
+    const ok = elegido === correcto;
+    const cifra = { fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace", fontVariantNumeric: "tabular-nums" };
+    return (
+      <p data-plegado={dato} aria-label={`${nombre}: ${ok ? `bien, ${formato(correcto)}` : `pusiste ${formato(elegido)}; iba ${formato(correcto)}`}`} style={{
+        margin: "0 -12px", padding: "5px 12px", minHeight: "27px", boxSizing: "border-box", display: "flex", alignItems: "center", gap: "7px",
+        flexWrap: "nowrap", whiteSpace: "nowrap", fontFamily: INTER, fontSize: "13px", lineHeight: "17px", color: TEXTO_B,
+      }}>
+        <span style={{ minWidth: "48px", color: SECUNDARIO }}>{palabra}</span>
+        {!ok && <span data-elegido style={{ display: "inline-flex", alignItems: "center", gap: "3px", color: CORAL_B }}><X aria-hidden="true" size={14} strokeWidth={2.5} /><span style={{ ...cifra, textDecoration: "line-through" }}>{formato(elegido)}</span></span>}
+        <span data-correcto style={{ display: "inline-flex", alignItems: "center", gap: "3px" }}><Check aria-hidden="true" size={14} strokeWidth={2.5} /><span style={cifra}>{formato(correcto)}</span></span>
+      </p>
+    );
+  };
+  const PALABRA = { [ACTIVO]: "tiene", [PASIVO]: "debe", [PATRIMONIO]: "dueños" };
+  const Plegados = () => (
+    <div data-plegados style={{ marginTop: "10px", display: "flex", flexDirection: "column", gap: "6px" }}>
+      {mov.mueven.map((id) => (
+        <Renglon key={id} dato={id} palabra={PALABRA[id]} nombre={parte(id).idea}
+          elegido={totales[id]} correcto={mov.despues[id]} formato={pesos} />
+      ))}
+    </div>
+  );
 
   /* Una función y no un componente: definido aquí dentro, React lo volvería a montar en cada render y perdería el foco. */
   const renderParte = (id) => {
@@ -409,9 +494,14 @@ export default function LaEcuacionEnMovimiento({
             {h.texto}
           </p>
 
-          <Torres t={enTorres} fantasma={fantasma} />
+          {/* La leyenda, arriba de las torres (Mai): se lee antes de mirarlas y no entra en la ventana que se compara. */}
           <Leyenda />
+          <div ref={cajaTorres} data-caja-torres style={{ scrollMarginTop: "12px" }}>
+            <Torres t={enTorres} fantasma={torresAlDia ? fantasma : null} />
+          </div>
 
+          {/* En la demo de «Así se juega» no se pliega: enseña las casillas, y ahí no hay ventana que cuidar. */}
+          {r && !modoDemo ? <Plegados /> : (<>
           <p data-pregunta style={{
             margin: "14px 0 8px", minHeight: "39.2px", fontFamily: INTER, fontSize: "14px", fontWeight: 600, lineHeight: 1.4, color: TEXTO_B,
           }}>
@@ -427,18 +517,32 @@ export default function LaEcuacionEnMovimiento({
             </div>
           </div>
           {quietaElegida !== null && mov.mueven.map(renderTotales)}
+          </>)}
         </div>
 
-        <RegionViva>
-          {r && <Mensaje ok={r.ok} texto={r.ok ? textoAcierto : textoError} />}
-        </RegionViva>
+        {/* La devolución en el flujo, debajo de los renglones plegados, y «Siguiente» debajo de ella: nada fijo ni encima de nada (Mai). */}
+        <div data-bloque-devolucion>
+          <RegionViva>
+            {/*
+              Su sitio está desde que se anota (C3): si la devolución entrara a
+              los 420 ms, la página sería más corta al subir y no llegaría a la
+              cima de las torres. Se ve, y recibe el foco, al terminar la subida.
+            */}
+            {r && (
+              <div ref={veredicto} tabIndex={-1} data-veredicto={torresAlDia ? "visible" : "reservado"}
+                aria-hidden={!torresAlDia || undefined} style={{ outline: "none", visibility: torresAlDia ? "visible" : "hidden" }}>
+                <Mensaje ok={r.ok} texto={r.ok ? textoAcierto : textoError} />
+              </div>
+            )}
+          </RegionViva>
 
-        {!r && <Avance onClick={anotar} deshabilitado={!listo}>{TORRES_T1_5.anotar}</Avance>}
-        {r && !modoDemo && (
-          <Avance onClick={avanzar} refBoton={botonSeguir}>
-            {i + 1 === total ? TORRES_T1_5.verResultado : TORRES_T1_5.siguiente}
-          </Avance>
-        )}
+          {!r && <Avance onClick={anotar} deshabilitado={!listo}>{TORRES_T1_5.anotar}</Avance>}
+          {r && !modoDemo && (
+            <Avance onClick={avanzar} refBoton={botonSeguir}>
+              {i + 1 === total ? TORRES_T1_5.verResultado : TORRES_T1_5.siguiente}
+            </Avance>
+          )}
+        </div>
       </div>
     </Marco>
   );

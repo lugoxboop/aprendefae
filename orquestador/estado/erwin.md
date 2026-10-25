@@ -1,8 +1,11 @@
-2026-10-24 16:26 (hora Bogotá)
-- #490 (regla de estudiantes, índice de cuatro temas, motor del Repaso Diario) y #491 (SecuenciaAprender): terminado, fusionados por Miku
-- Uso de SecuenciaAprender explicado a B, C, D y E en #492 (sin copias, faltasDePieza, Pulsos del kit, la página vieja no se borra): terminado
-- #524 alto de figura por pieza: PASA de Levi y CI verde sobre 925df73; bloqueado: espera que Miku lo fusione (lo compartido)
-- Pools del Repaso Diario: en curso — C, D y E con subtemas en main; falta B (recordado en #477); el Repaso sigue oculto hasta tener los cuatro
-- #349 ficha de FP (no ocultarla, reservar 84 px): en curso — encargado a Sai
-- Confirmación de Levi: terminado (traspasado a chat nuevo, sigue como auditor central, ya audita por lote)
-- Capa 1 de CuatroCapas (guardas B1 y B2): bloqueado: esperan los recortes de Near
+2026-10-25 06:01 (hora Bogotá)
+- #556 ranking a 320 sin nombres: terminado — #563 fusionado y en producción
+- Listos para que Miku fusione (PASA de Levi + CI verde): pila #564 → #575 → #590 → #600 (en ese orden; #600 sube la migración 0153); #580 y luego #598 (va encima); #573, #529, #581, #582
+- #576 pasos tras el Haz y Repaso de piezas de Aprender: PR #600 con PASA (reversión de la 0153 escrita y probada)
+- #596 Así se juega, «Pausar» tapado: PR #598 con PASA, re-medido con fuentes de producción
+- #560 volumen en los cinco controles compartidos: en curso — encargado a Sai (rama feat/conta-a-volumen)
+- #574 pose de Fae: cerrado (ya estaba en main, 73fd905)
+- Decisiones de Miku: sondas obligatorias en GitHub; dueño para los 100 fallos de contraste de Macro y los 87 textos en teal; reparto de #585 (blanco de toque) y el número del piso de letra
+- #542: lo de cada célula, en #579
+- #552 entrada a la página y #554 pantalla de contraste: bloqueado: esperan que Miku los fusione
+- Pools del Repaso Diario: en curso — falta B (#477)

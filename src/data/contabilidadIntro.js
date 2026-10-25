@@ -106,7 +106,7 @@ export const ESTACIONES = [
 
 /* ═══════════════════ CAPA 2 · LOS CINCO SEGMENTOS ═══════════════════ */
 
-export const EL_HECHO = "Comercializadora Caleja compra un computador por $25.000. No lo paga: queda debiéndolo.";
+export const EL_HECHO = "Compañía Caleja compra un computador por $25.000. No lo paga: queda debiéndolo.";
 
 /*
  * ═══════════ LA FACTURA, Y EL GUION QUE NO ES UN DESCUIDO ═══════════

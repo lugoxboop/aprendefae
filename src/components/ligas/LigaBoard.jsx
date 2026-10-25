@@ -6,6 +6,8 @@ import CabeceraLiga from "./CabeceraLiga.jsx";
 import BotonAnimo from "../social/BotonAnimo.jsx";
 import { estadoDeAnimos } from "../../social/animo.js";
 import Avatar, { TAMANOS } from "../avatar/Avatar.jsx";
+import BandaDecoracion from "../decoracion/BandaDecoracion.jsx";
+import { estadoLiga } from "../decoracion/poses.js";
 
 /*
  * Tablero de liga de una materia.
@@ -74,7 +76,8 @@ const SIN_CONTEXTO = {
 };
 
 /* Las dos consultas, inyectables por la misma razón que en RankingFP. */
-export default function LigaBoard({ subjectId, cargarTablero = tableroDe, cargarContexto = contextoDe }) {
+/* `decoracion` (opcional, #547): la banda de vida-visual-v1, después de la cabecera. Sin ella, nada cambia. */
+export default function LigaBoard({ subjectId, cargarTablero = tableroDe, cargarContexto = contextoDe, decoracion = null }) {
   const { session, pedirCuenta } = useAuth();
   const [estado, setEstado] = useState({ cargando: true, filas: [], error: null });
   const [contexto, setContexto] = useState(SIN_CONTEXTO);
@@ -122,6 +125,10 @@ export default function LigaBoard({ subjectId, cargarTablero = tableroDe, cargar
         activosReparto={contexto.activosReparto}
         tamLiga={liga ? tamLiga : 0}
       />
+      {decoracion && (() => {
+        const { fae, quieta } = estadoLiga({ session, ...estado, enPodio, transicion: contexto.transicion });
+        return <BandaDecoracion piezas={decoracion.piezas} bucle={decoracion.bucle && !quieta} fae={decoracion.fae ? fae : null} />;
+      })()}
 
       {estado.cargando ? (
         <p style={{ fontSize: "13.5px", color: "rgba(248,249,250,0.5)", margin: 0 }}>Cargando…</p>

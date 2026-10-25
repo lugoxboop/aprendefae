@@ -168,17 +168,29 @@ for (const [nombre, tutorial, mitad, id] of [["T1-8 (con su cascada)", tutorialT
       if (tutorial === tutorialT1_8) {
         assert.equal(partida.querySelectorAll('[data-apagado="si"]').length, 0, "la partida trae puntos apagados de la demo");
         assert.equal(partida.querySelector('[data-elegida="si"]'), null, "la partida trae una elección de la demo");
-        assert.equal(partida.querySelector("[data-contador]"), null);
+        assert.equal(partida.querySelector("[data-cuenta-apagados]").textContent, "", "la partida trae el contador de la demo");
+        assert.equal(partida.querySelector("[data-marca]"), null, "la partida trae una marca de la demo");
       } else {
         assert.equal(partida.querySelector("input").value, "", "la casilla trae la cifra que escribió la demo");
         assert.equal(partida.querySelector('[role="status"]'), null, "la partida trae una devolución de la demo");
       }
       /* El foco, en la consigna de la actividad. */
       assert.ok(partida.contains(document.activeElement), "el foco no quedó en la actividad");
-      assert.ok(document.activeElement.matches("[data-consigna]"), `el foco quedó en ${document.activeElement.tagName}`);
-      /* «¿Cómo se juega?» la sigue reabriendo. */
-      tocar(partida.querySelector("[data-como-se-juega]"));
-      assert.ok(caja.querySelector("[data-asi-se-juega]"), "«¿Cómo se juega?» ya no la reabre");
+      if (tutorial === tutorialT1_8) {
+        /*
+         * Lote 4, C1: T1-8 lleva el encabezado compacto de B, con la consigna
+         * plegada. El foco va al título de la actividad, y «¿Cómo se juega?»
+         * despliega la consigna en vez de reabrir la demo (como t1-5, #496).
+         */
+        assert.ok(document.activeElement.matches("h1, h2, h3"), `el foco quedó en ${document.activeElement.tagName}`);
+        tocar(partida.querySelector("[data-como-se-juega]"));
+        assert.equal(partida.querySelector("[data-como-se-juega-panel]").dataset.comoSeJuegaPanel, "abierto");
+      } else {
+        assert.ok(document.activeElement.matches("[data-consigna]"), `el foco quedó en ${document.activeElement.tagName}`);
+        /* «¿Cómo se juega?» la sigue reabriendo. */
+        tocar(partida.querySelector("[data-como-se-juega]"));
+        assert.ok(caja.querySelector("[data-asi-se-juega]"), "«¿Cómo se juega?» ya no la reabre");
+      }
     } finally { mirando = false; desmontar(); }
     assert.equal(llamadasARed.length, 0, "la demo llamó a la red");
   });

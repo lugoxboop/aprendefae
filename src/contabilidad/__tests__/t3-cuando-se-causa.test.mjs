@@ -98,7 +98,7 @@ test("★★★ para cada ítem: la marca correcta y el tipo de error de cada ma
       const r = L.evaluarAct2(item, marca);
       assert.equal(r.ok, tipo === HECHO, `${item.id}/${marca}`);
       assert.equal(r.tipo, tipo, `${item.id}/${marca}`);
-      assert.deepEqual(r.textos, tipo === HECHO ? [item.acierto] : [A2.ERROR_POR_TIPO[tipo], item.acierto]);
+      assert.deepEqual(r.textos, tipo === HECHO ? [item.acierto] : [item.errores?.[tipo] ?? A2.ERROR_POR_TIPO[tipo], item.acierto]);
     }
     assert.equal(item.marcas.filter((m) => m.tipo === HECHO).length, 1, `${item.id}: una sola correcta`);
   }
@@ -279,7 +279,8 @@ test("★★ va después de la pieza 3 en el camino del Tema 3, y tiene regla do
   const ids = tema.actividades.map((a) => a.id);
   assert.ok(ids.indexOf("t3-cuando-se-causa") > ids.indexOf("t3-a3-lo-que-ya-paso"));
   assert.equal(tema.actividades.find((a) => a.id === "t3-cuando-se-causa").clasificacion.tipo, HACER);
-  assert.deepEqual(JUEGOS.map((j) => j.id).slice(0, 2), ["t3-ingreso-o-cobro", "t3-cuando-se-causa"]);
+  /* «¿Gasto o pago?» va entre las dos desde el #506. */
+  assert.deepEqual(JUEGOS.map((j) => j.id).slice(0, 3), ["t3-ingreso-o-cobro", "t3-gasto-o-pago", "t3-cuando-se-causa"]);
   assert.equal(REGLAS["t3-cuando-se-causa"]("t3a2-jcc"), "San Calixto · Cotizó el 4 y le pidieron el trabajo el 6. Prestó el servicio a JCC el 8 y facturó el 12.");
   /* El ítem retirado en el #439 se sigue leyendo en el panel docente, pero ya no sale en la partida (Yujiro). */
   assert.equal(REGLAS["t3-cuando-se-causa"]("t3a2-pago-60-dias"), "Una empresa de servicios · Cotiza y acuerda el trabajo. Presta el servicio. Le pagan 60 días después.");
@@ -433,3 +434,13 @@ for (const [k, mal] of [[0, "nada"], [0, "por-pagar"], [1, "por-cobrar"], [1, "n
     } finally { m.desmontar(); }
   });
 }
+
+test("F2 (línea base de Takamura): la máquina de San Calixto lleva su propio error del cierre", () => {
+  const item = A2.ITEMS_ACT2.find((x) => x.id === "t3a2-maquina-san-calixto");
+  const r = L.evaluarAct2(item, "cierre");
+  assert.equal(r.ok, false);
+  assert.equal(r.textos[0], "El cierre no causa el gasto: solo revisa lo que falta anotar. El gasto lo causó el uso de la máquina.");
+  /* Los demás ítems con cierre siguen con el error general. */
+  const mps = A2.ITEMS_ACT2.find((x) => x.id === "t3a2-mps");
+  assert.equal(L.evaluarAct2(mps, "cierre").textos[0], A2.ERROR_POR_TIPO[A2.CIERRE]);
+});
