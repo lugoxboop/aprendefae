@@ -116,7 +116,7 @@ Los textos son de Miyata. Donde falta uno, va un hueco con nombre (§5).
 - **O4 mini** (resultado): alto 86.
 - Sus medidas completas están en el paquete #562.
 
-**Lo que no es de Aprender:** no hay «Comprobar», ni «Iba aquí», ni hojas sobre la pantalla. Las cuentas se eligen con ‹ cuenta ›: al tocar el centro, la cuenta queda puesta.
+**Lo que no es de Aprender:** no hay «Comprobar», **salvo en los campos de cifra** (P2-6, P5-6, P6-3 y P6-4: un campo no se puede calificar al toque; Takamura, lote 19). Tampoco hay «Iba aquí» ni hojas sobre la pantalla. Las cuentas se eligen con ‹ cuenta ›: al tocar el centro, la cuenta queda puesta.
 
 ## 2 · P2 «El mes de San Calixto» · 8 pantallas, 6 con acción
 
