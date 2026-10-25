@@ -9,7 +9,8 @@
 >
 > **Estado:**
 > - P1, P3 y P4 tienen **PASA con condiciones** de Takamura (lote 10). Sus condiciones se resolvieron en este paquete.
-> - **La v4 de P5 y los titulares nuevos los revisa Takamura en el lote 12.**
+> - La v4 de P5 y los titulares nuevos tienen **PASA con condiciones** (lote 12). Quedan dos cosas: los cortes literales de las citas (§3, de Itagaki) y la cita de la p. 123 (de Miyata).
+> - Las cuentas candidatas de los cuatro asientos están en `e3-t3-secuencias-textos-v3.md` §1 (Takamura las revisa en el lote 13).
 > - Ippo puede montar P1, P3 y P4 ya. P5 la monta igual, pero no se fusiona sin el PASA de esa revisión.
 >
 > **Reglas del montaje:**
@@ -59,7 +60,7 @@
 2. En la fila de control, ‹ › recorre las cuentas candidatas.
 3. Tocar el centro pone esa cuenta en la casilla activa.
 4. Las candidatas son CUENTAS_{pantalla}, 4 por asiento como máximo, todas con nombre publicado.
-5. **Falta texto de Miyata: CUENTAS_P3_5, CUENTAS_P3_7, CUENTAS_P4_6 y CUENTAS_P4_9, con su error por cuenta.** Ya se le pidieron. Mientras llegan, Ippo deja la estructura lista y no inventa cuentas.
+5. **Las candidatas son CUENTAS_P3_5, CUENTAS_P3_7, CUENTAS_P4_6 y CUENTAS_P4_9**, con su error por cuenta y uno de «al revés» por par. Están en `e3-t3-secuencias-textos-v3.md` §1.
 
 ## 2 · P1, P3 y P4: la secuencia (v2 de Itagaki, con la v3 aplicada)
 
@@ -79,7 +80,7 @@
 | 8 | Haz | Computador | Solo «Entró» | OPC_PREDICE | 94 → 3 ✓ |
 | 9 | Cierre | — | CIERRE, pegado al modelo final | vacía | 102 → 4 ✓ |
 
-**Ojo con OPC_PREDICE:** el diseño habla de 3 botones, pero Miyata trae 4 opciones («Ingresos y gastos», «Caja», «Las dos», «Ninguna»). Son **4 botones de 58 × 44**, y todos deben caber a 320 sin cortar palabra. Si «Ingresos y gastos» no cabe en 2 líneas de 58, Ippo para y avisa en el PR.
+**OPC_PREDICE va en 3 botones de 80 × 44 (decisión de Kamogawa, lote 12):** «Ingresos y gastos», que se parte en dos líneas («Ingresos / y gastos»), «Caja» y «Las dos». **«Ninguna» sale**, junto con su error («Algo sí se movió…»). Takamura comprobó que «Ingresos y gastos» tiene 17 caracteres y no cabe en 58 px. Ninguno de los seis hechos tiene «Ninguna» como respuesta correcta, y una rejilla de 2 × 2 taparía los contadores. **Ippo mide a 320 que «Ingresos / y gastos» quepa en 2 líneas de 80 sin cortar palabra.**
 
 ### P3 «Lo que ya pasó y no se ha pagado» · 8 pantallas
 
@@ -128,9 +129,9 @@ Todos los textos de P3 caben en 4 líneas ✓.
 | 9 | Haz | Su asiento | — | O1 compacto · ‹ cuenta › con CUENTAS_P4_9 |
 | 10 | Cierre, **2 pasos** | — | CIERRE_P4 (152 caracteres, 5 líneas a 320), partido por frase | vacía |
 
-## 3 · P5 «Cerrar el periodo» · v4 de Itagaki · 10 pantallas · *la revisa Takamura en el lote 12*
+## 3 · P5 «Cerrar el periodo» · v4 de Itagaki · 10 pantallas · PASA con condiciones (lote 12)
 
-El reparto de la figura es el de §1. **La columna «Pantalla de Miyata» de esta tabla usa la numeración del lote 3.** Para montar vale la de §4, que usa la de los textos v1.
+El reparto de la figura es el de §1. La columna «Pantalla de Miyata» usa la numeración de los textos v1, igual que §4.
 
 Frente a la v3 cambian tres cosas:
 - dónde van «Cerrar» con su cita y «Desde ya»;
@@ -139,22 +140,27 @@ Frente a la v3 cambian tres cosas:
 
 | Itagaki n | Pantalla de Miyata | Tipo | Toque | Consecuencia | Modelo · control | Pasos |
 |---|---|---|---|---|---|---|
-| 1 | — (texto aprobado SEGMENTOS_CIERRE[0]) **+ su n9** | Apertura | — | Las cuentas se reparten solas en dos montones. **Paso 1:** «Cuentas del periodo» entra como rótulo sobre «Se vacían». **Paso 2: «Desde ya»** («Las cuentas de lo que la empresa tiene y debe no se cierran…», 96 caracteres, 3 líneas) **entra como rótulo sobre «No se vacían»**. | Dos zonas de 125 × 98 · vacía | 2 |
-| 2 | 1 | Haz | Separa las 5 de Miyata, una por paso («Paso n de 5»). **Las otras 6 ya están puestas** desde la Apertura, como fichas de 20 × 20 en #B8C4D4. | La ficha cae en su zona | La cuenta en curso (44) y las zonas de 125 × 48 a 320 y 152 × 48 a 375, con 5 fichas por fila y 2 filas · 2 botones «Se vacía» / «No se vacía» | 5 |
-| 3 | 2 | Haz | Ordena «Ajustes» y «Cierre» | La flecha del diagrama | El diagrama (60) · 2 fichas | 1 |
-| 4 | 3, ingresos **+ su n8** | Haz | ‹ cuenta ›: pasa el ingreso | El saldo entra a la T y la cuenta queda en $0. **Paso 2:** «Cerrar» entra como rótulo (Inter 12/700, #F8F9FA) sobre la cuenta del centro del control, que ya muestra $0, y la definición va al apoyo (2 líneas). **Pasos 3 y 4:** la cita de la p. 123, en el apoyo, partida en la coma. | T compacta (88) · ‹ cuenta ›: tocar el centro pasa la cuenta. Si se vacía una que no: «No va aquí» y la pista. | 4 |
-| 5 | 3, gastos (**titular nuevo**) | Haz | ‹ cuenta ›: pasa cada gasto | Cada saldo entra a la T y su cuenta queda en $0 | T compacta · ‹ cuenta › | 1 |
-| 6 | 4 | Haz | Escribe el saldo | **El corchete y la cifra quedan tapados hasta que responde**; luego aparece «Utilidad $3.950». **«Ganancias y pérdidas» entra como rótulo sobre la T.** | O4 compacto (86) · campo de r5 | 1 |
-| 7 | 5, ingresos | Haz | Las Acacias: pasa el ingreso | Igual que la 4 | T compacta · ‹ › | 1 |
-| 8 | 5, gastos (**titular nuevo**) | Haz | Las Acacias: pasa los gastos | Igual que la 5 | T compacta · ‹ › | 1 |
-| 9 | 6 | Haz | ¿Utilidad o pérdida? | «Pérdida $100.000»: un corchete de 7,1 px [calculado], por encima de los 4 de E11 | O4 compacto · OPC_P5_6 | 1 |
-| 10 | — (CIERRE_TEXTO). Su 7 («En una frase») pasa al Repaso Diario | Cierre | — | La T final, con la frase | La T final · vacía | 1 |
+| 1 | 1 (SEGMENTOS_CIERRE[0]) **+ su n9** | Apertura | — | Las cuentas se reparten solas en dos montones. **Paso 1:** «Cuentas del periodo» entra como rótulo sobre «Se vacían». **Paso 2: «Desde ya»** («Las cuentas de lo que la empresa tiene y debe no se cierran…», 96 caracteres, 3 líneas) **entra como rótulo sobre «No se vacían»**. | Dos zonas de 125 × 98 · vacía | 2 |
+| 2 | 2 | Haz | Separa las 5 de Miyata, una por paso («Paso n de 5»). **Las otras 6 ya están puestas** desde la Apertura, como fichas de 20 × 20 en #B8C4D4. | La ficha cae en su zona | La cuenta en curso (44) y las zonas de 125 × 48 a 320 y 152 × 48 a 375, con 5 fichas por fila y 2 filas · 2 botones «Se vacía» / «No se vacía» | 5 |
+| 3 | 3 | Haz | Ordena «Ajustes» y «Cierre» | La flecha del diagrama | El diagrama (60) · 2 fichas | 1 |
+| 4 | 4, ingresos **+ su n8** | Haz | ‹ cuenta ›: pasa el ingreso | El saldo entra a la T y la cuenta queda en $0. **Paso 2:** «Cerrar» entra como rótulo (Inter 12/700, #F8F9FA) sobre la cuenta del centro del control, que ya muestra $0, y la definición va al apoyo (2 líneas). **Pasos 3 y 4:** la cita de la p. 123. **Cómo va queda pendiente** (ver abajo). | T compacta (88) · ‹ cuenta ›: tocar el centro pasa la cuenta. Si se vacía una que no: «No va aquí» y la pista. | 4 |
+| 5 | 4, gastos (**titular nuevo**) | Haz | ‹ cuenta ›: pasa cada gasto | Cada saldo entra a la T y su cuenta queda en $0 | T compacta · ‹ cuenta › | 1 |
+| 6 | 5 | Haz | Escribe el saldo | **El corchete y la cifra quedan tapados hasta que responde**; luego aparece «Utilidad $3.950». **«Ganancias y pérdidas» entra como rótulo sobre la T.** | O4 compacto (86) · campo de r5 | 1 |
+| 7 | 6, ingresos | Haz | Las Acacias: pasa el ingreso | Igual que la 4 | T compacta · ‹ › | 1 |
+| 8 | 6, gastos (**titular nuevo**) | Haz | Las Acacias: pasa los gastos | Igual que la 5 | T compacta · ‹ › | 1 |
+| 9 | 7 | Haz | ¿Utilidad o pérdida? | «Pérdida $100.000»: un corchete de 7,1 px [calculado], por encima de los 4 de E11 | O4 compacto · OPC_P5_6 | 1 |
+| 10 | 10 (CIERRE_TEXTO); la pregunta «En una frase» pasa al Repaso Diario | Cierre | — | La T final, con la frase | La T final · vacía | 1 |
 
-**La cita de la p. 123, partida en la coma sin cambiar ninguna palabra:**
-- Paso 3: «Cerrar una cuenta significa reducir su saldo a cero. Cuando se cierran los ingresos y los gastos,» (unos 100 caracteres, 4 líneas).
-- Paso 4: «realmente lo que hacemos es enfrentar los ingresos con los gastos para determinar la utilidad o la pérdida» (p. 123) (unos 115 caracteres, 4 líneas).
-- Es el mismo corte por cláusula que ya pasó en «Acumulado».
-- Si Takamura solo acepta cortes por frase completa, la cita va a la figura en esos dos pasos.
+**La cita de la p. 123 · pendiente.** Takamura no aceptó el corte por cláusula (lote 12): cada paso reemplaza al anterior, así que el estudiante nunca vería la frase completa. Las salidas que acepta, en este orden:
+1. La cita entera visible de una vez, repartida entre el modelo y el apoyo en un solo paso.
+2. Solo la primera oración: «Cerrar una cuenta significa reducir su saldo a cero.» Esta la decide Miyata.
+3. Por frase completa, solo si la segunda oración cabe en 4 líneas con su atribución, medido y no calculado.
+
+No se agrega una pantalla nueva. **Ippo no monta la cita hasta que Kamogawa lo anote aquí.**
+
+**Las citas de «Acumulado» (P3-7) y «Recibido por anticipado» (P4-8) · pendiente.** Itagaki entrega los cortes literales, siempre por frase completa. Si alguno parte una frase, se corrige en el mismo lote.
+
+**Titulares retirados (Takamura, lote 12):** «Cerrar es dejar en cero» y «Lo que la empresa tiene y debe sigue». Su contenido se conserva como rótulos dentro de P5-4 y P5-1.
 
 **El nombre de las fichas ya puestas en P5-2.** Una ficha de 20 × 20 no puede ser un control, porque el mínimo es 44. **El control es la zona:**
 - Cada zona («Se vacían» y «No se vacían») mide 125 × 48 a 320 y es un botón con la etiqueta «Ver las cuentas de {zona}».
