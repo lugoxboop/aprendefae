@@ -51,18 +51,24 @@ const TITULARES_DEL_PAQUETE = [
 
 const textoDe = (zona) => zona.filter((z) => z.texto).map((z) => z.texto).join(" ");
 
-test("★ cuatro piezas, 9 + 8 + 10 + 10 = 37 pantallas, con los ids de las piezas publicadas", () => {
-  assert.deepEqual(PIEZAS_SECUENCIA_T3.map((p) => p.id), ["t3-a1-vender-no-es-cobrar", "t3-a3-lo-que-ya-paso", "t3-a4-lo-que-ya-se-pago", "t3-a5-cerrar-el-periodo"]);
-  assert.deepEqual(PIEZAS_SECUENCIA_T3.map((p) => p.pantallas.length), [9, 8, 10, 10]);
+/* Las cuatro piezas de #572. P2 y P6 (#578) se prueban en t3-secuencias-p2-p6.test.mjs. */
+const PUBLICADAS = ["t3-a1-vender-no-es-cobrar", "t3-a3-lo-que-ya-paso", "t3-a4-lo-que-ya-se-pago", "t3-a5-cerrar-el-periodo"];
+const CUATRO = PUBLICADAS.map((id) => PIEZAS_SECUENCIA_T3.find((p) => p.id === id));
+
+test("★ las cuatro piezas publicadas, 9 + 8 + 10 + 10 = 37 pantallas, en su orden y con sus ids", () => {
+  assert.ok(CUATRO.every(Boolean));
+  const orden = PIEZAS_SECUENCIA_T3.map((p) => p.id).filter((id) => PUBLICADAS.includes(id));
+  assert.deepEqual(orden, PUBLICADAS, "P2 y P6 se insertan sin reordenar las publicadas");
+  assert.deepEqual(CUATRO.map((p) => p.pantallas.length), [9, 8, 10, 10]);
 });
 
 test("★ los titulares son los de la tabla de correspondencia (§4), en su orden", () => {
-  PIEZAS_SECUENCIA_T3.forEach((p, k) => assert.deepEqual(p.pantallas.map((s) => s.titular), TITULARES_DEL_PAQUETE[k], p.id));
+  CUATRO.forEach((p, k) => assert.deepEqual(p.pantallas.map((s) => s.titular), TITULARES_DEL_PAQUETE[k], p.id));
 });
 
 test("★ la forma: lo único que falta es la razón de «Siguiente» (D11), que Miyata no ha entregado", () => {
   assert.equal(T.RAZON_HAZ_T3, null, "si ya llegó la razón, esta prueba tiene que pedir cero faltas");
-  for (const p of PIEZAS_SECUENCIA_T3) {
+  for (const p of CUATRO) {
     const otras = faltasDePieza(p).filter((f) => !/razón por la que «Siguiente» espera/.test(f));
     assert.deepEqual(otras, [], p.id);
   }
@@ -163,7 +169,7 @@ test("★ el asiento: la casilla activa recibe la cuenta; al revés, pista y lue
 });
 
 test("⛔ no se inventa: Las Acacias no tiene datos y sus tres pantallas quedan esperando", () => {
-  const pendientes = PIEZAS_SECUENCIA_T3.flatMap((p) => p.pantallas.filter((s) => s.pendiente).map((s) => `${p.id}/${s.id}`));
+  const pendientes = CUATRO.flatMap((p) => p.pantallas.filter((s) => s.pendiente).map((s) => `${p.id}/${s.id}`));
   assert.deepEqual(pendientes, [
     "t3-a5-cerrar-el-periodo/acacias-ingresos", "t3-a5-cerrar-el-periodo/acacias-gastos", "t3-a5-cerrar-el-periodo/perdida",
   ]);
