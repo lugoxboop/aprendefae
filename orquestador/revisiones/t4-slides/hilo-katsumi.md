@@ -188,3 +188,40 @@ Resumen: A0 queda en 4 pantallas, 3 decisiones distintas y 75 % de acción real.
 - Una pantalla de un solo control es Haz si exige una respuesta válida y Míralo si solo explora. Todas cuentan para B3.
 - La clave de persistencia es `tema/pieza/caso`.
 - En la célula se adopta C2: al segundo error se muestra lo correcto y se libera «Siguiente».
+
+## Lote 4 de Katsumi (24 oct): el «porqué» del segundo error (C2), la razón de «Pagar» y el Cierre de A4
+
+Las cifras son las del caso 1. En el caso B se cambian por las suyas con las mismas plantillas, y «Rosa» pasa a ser la persona del caso B. En los juegos de varias tarjetas (A0 p1, A1 p4, A4 p3 y p4, A5 p2, p3 y p5), el porqué sale para la tarjeta que falló dos veces, y esa tarjeta pasa sola a su lugar. Por eso cada texto enuncia la regla general.
+
+| Pieza | Pantalla | Porqué del segundo error | Palabras · INFLESZ |
+|---|---|---|---|
+| A0 | p1 | Corriente es lo que se vuelve plata antes de la raya. Lo que tarda años en pagarse, o dura años, cruza. | 21 · 95,5 |
+| A0 | p2 | El efectivo, en caja y en bancos, ya es plata. Los otros tres todavía tienen que venderse o cobrarse. | 19 · 85,9 |
+| A0 | p3 | Se consume. El arriendo no vuelve como plata: la empresa lo va usando mes a mes, y en seis meses se acaba. | 22 · 93,9 |
+| A1 | p1 | Va al debe de Caja. Cobrar de contado mete plata en la caja, y lo que entra a Caja va por el debe. | 23 · 103,2 |
+| A1 | p2 | Va al haber de Caja. Consignar saca la plata de la caja y la lleva al banco: Caja baja y Bancos sube. | 22 · 96,7 |
+| A1 | p4 | El cheque que le dan entra a la caja, por el debe. El cheque propio lo paga el banco: Caja no se mueve. | 23 · 105,9 |
+| A1 | p5 | Separar funciones. Si quien cobra también anota, puede quedarse plata sin anotarla, y al contar, caja y libro cuadran. | 19 · 72,7 |
+| A2 | p1 | Sigue igual. Al pagar salen billetes, pero entra un soporte por el mismo valor, y la suma sigue dando el fondo. | 21 · 86,6 |
+| A2 | p2 | Sale de Bancos. Un cheque lo paga el banco: la plata llega a Caja menor y el fondo queda abierto. | 20 · 94,0 |
+| A2 | p4 | Quedan $21.900: el fondo es de $500.000 y ya salieron $478.100 en gastos. | 13 · 78,8 |
+| A2 | p6 | Gastos generales al debe y Bancos al haber: el gasto va al debe y la plata sale del banco. Caja menor no se mueve. | 24 · sin medir (Baki lo mide) |
+| A3 | p1 | Cuadra. Soportes por $478.100 más $21.900 en caja dan $500.000, justo el fondo. | 13 · 80,5 |
+| A3 | p3 | Sobra. $478.100 más $24.000 dan $502.100: la suma pasa del fondo por $2.100. | 13 · 80,5 |
+| A3 | p4 | Sale por $476.000. Los $2.100 que sobran ya están en la caja, así que el cheque repone lo gastado menos eso. | 21 · 86,6 |
+| A3 | p5 | Al haber de Ingresos no operacionales – sobrante de caja menor. Es un ingreso, y un ingreso sube por el haber. | 20 · 78,5 |
+| A3 | p6 | Sale por $484.800. El cheque repone lo gastado y también los $6.700 que faltan en la caja. | 17 · 88,4 |
+| A3 | p7 | Al debe de Cuentas por cobrar – empleados. Rosa le queda debiendo a la empresa, y una cuenta por cobrar sube por el debe. | 23 · 87,0 |
+| A4 | p1 | Quedan $477.800. Consignar $876.000 sube Bancos y girar el cheque de $398.200 la baja. | 14 · 75,2 |
+| A4 | p3 | Bancos sube con lo que pone plata en la cuenta y baja con lo que la saca. | 17 · 101,9 |
+| A4 | p4 | Lo anota primero quien lo hace: la empresa, sus cheques, depósitos y errores; el banco, sus notas y sus errores. | 20 · 71,6 |
+| A4 | p5 | Caso 1: La nota débito. El banco ya la cobró, pero la empresa se entera cuando llega el extracto. · Caso B: La nota crédito. El banco ya la abonó, pero la empresa se entera cuando llega el extracto. | 17 · 84,7 / 17 · 81,1 |
+| A5 | p1 | Ninguno todavía. Al extracto le falta lo que la empresa anotó, y a los libros, las notas del banco. | 19 · 85,9 |
+| A5 | p2 | Los cheques sin cobrar van a Menos, porque el banco aún no los paga. La consignación sin abonar va a Más. | 21 · 98,4 |
+| A5 | p3 | Las notas crédito van a Más, porque el banco abonó. Las notas débito van a Menos, porque el banco cobró. | 20 · 90,9 |
+| A5 | p4 | No se asienta. La empresa lo anotó al girarlo, y asentarlo otra vez lo dejaría doble en sus libros. | 19 · 79,3 |
+| A5 | p5 | Si la plata entró a la cuenta, Bancos va al debe. Si salió, va al haber. | 16 · 109,3 |
+
+**A1 p3, la razón de la salida «Pagar»** (va en la banda): «Pagar también saca plata por el haber. Pero el libro pide consignar cada día lo que se recibe y limita los pagos en efectivo.» (24 · 80,6). Fuente: p. 180 y los controles 2 y 3 de las pp. 179-180, ya incluidos en el paquete aprobado de H2. El texto no dice que esté prohibido pagar con esa plata, porque el libro no lo dice: solo lo limita.
+
+**A4 sigue sin pantalla de Cierre.** La p5 ya cierra con su frase al acertar. Una pantalla extra solo de lectura sobraría (criterio A5 de la Vara 2) y bajaría el porcentaje de acción de la pieza.

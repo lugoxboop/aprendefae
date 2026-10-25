@@ -19,6 +19,7 @@ export const CSS_V1 = `
 .pd1-entrar { animation: pd1-entrar 280ms ${V1.curva} both; }
 .pd1-rejilla { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
 @media (min-width: 900px) { .pd1-rejilla { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; } }
+@media (max-width: 399px) { .pd1-tercera { display: none; } }
 .pd1-b4 { display: none; }
 @media (min-width: 1024px) { .pd1-b4 { display: block; } }
 .pd1-toque { min-height: 44px; }
