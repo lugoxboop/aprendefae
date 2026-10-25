@@ -74,10 +74,12 @@ test("★ P2: la lectura y las barras salen de los hechos publicados de enero", 
   /* La lectura de cada etapa. */
   const de = (etapa, o) => P2.lecturaP2(etapa, o).map(([, m, t]) => (t ? "tapada" : m));
   assert.deepEqual(de("apertura"), [15000, 0]);
-  assert.deepEqual(de("cobrados", { cobradoHasta: 0 }), [15000, 14800]);
-  assert.deepEqual(de("cobrados", { cobradoHasta: 5000 }), [20000, 14800]);
-  assert.deepEqual(de("anotados"), [23000, 14800]);
-  assert.deepEqual(de("gastos", { gastosPagados: false, utilidadTapada: true }), [23000, "tapada"]);
+  /* La utilidad va tapada de P2-2 a P2-6 (Takamura, lote 19): $14.800 son los ingresos, no la utilidad. */
+  assert.deepEqual(de("cobrados", { cobradoHasta: 0 }), [15000, "tapada"]);
+  assert.deepEqual(de("cobrados", { cobradoHasta: 5000 }), [20000, "tapada"]);
+  assert.deepEqual(de("anotados"), [23000, "tapada"]);
+  assert.deepEqual(de("gastos", { gastosPagados: false }), [23000, "tapada"]);
+  assert.deepEqual(de("gastos", { utilidadTapada: false }), [14650, 6450], "P2-6 la destapa al responder");
   assert.deepEqual(de("final"), [14650, 6450]);
 });
 

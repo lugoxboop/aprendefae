@@ -70,11 +70,11 @@ test("★ la forma: cero faltas, ya con la razón de «Siguiente» (D11, textos 
   for (const p of CUATRO) assert.deepEqual(faltasDePieza(p), [], p.id);
 });
 
-test("★ D11: cada Haz lleva la razón de su tipo de decisión (v5 §2, columna «Cuándo se ve»), literal", () => {
+test("★ D11: cada Haz lleva la razón de su tipo de decisión (v5 §2; «ubicar» del delta v3, lote 16), literal", () => {
   assert.deepEqual(T.RAZONES_HAZ_T3, {
     eleccion: "Cuando respondas, se abre «Siguiente».",
     asiento: "Cuando pongas las dos cuentas, se abre «Siguiente».",
-    ubicar: "Quedan fichas por ubicar.",
+    ubicar: "Cuando ubiques todas las fichas, se abre «Siguiente».",
     cifra: "Cuando escribas la cifra, se abre «Siguiente».",
     corte: "Cuando pongas el corte, se abre «Siguiente».",
     ordenar: "Cuando ordenes los dos pasos, se abre «Siguiente».",
@@ -200,7 +200,7 @@ test("★ el asiento: la casilla activa recibe la cuenta; al revés, pista y lue
   assert.equal(z(e), "D");
 });
 
-test("★ Las Acacias (v5 §1): sus cuentas y saldos, «Escenario simulado» primero; ⛔ la consigna sigue pendiente", () => {
+test("★ Las Acacias (v5 §1): sus cuentas y saldos, «Escenario simulado» primero; con los textos v6 ya no queda nada pendiente", () => {
   const A = T.LAS_ACACIAS;
   const suma = (l) => l.reduce((t, c) => t + c.saldo, 0);
   assert.equal(suma(A.ingresos), 3200000);
@@ -218,11 +218,9 @@ test("★ Las Acacias (v5 §1): sus cuentas y saldos, «Escenario simulado» pri
     /* Se resuelve con sus datos: ya no está armada y esperando. */
     assert.equal(s.resuelta(s.medir.find((m) => m.nombre === "acierto").estado), true, id);
   }
-  /* ⛔ No se inventa: la consigna no está en ningún archivo, y queda marcada como pendiente. */
+  /* Las consignas llegaron en la v6 (lote 18): ninguna pantalla de las seis piezas queda pendiente. */
   const pendientes = PIEZAS_SECUENCIA_T3.flatMap((p) => p.pantallas.filter((s) => s.pendiente).map((s) => `${p.id}/${s.id}`));
-  assert.deepEqual(pendientes, [
-    "t3-a5-cerrar-el-periodo/acacias-ingresos", "t3-a5-cerrar-el-periodo/acacias-gastos", "t3-a5-cerrar-el-periodo/perdida",
-  ]);
+  assert.deepEqual(pendientes, []);
 });
 
 test("★ condición 1: los contadores de P1 salen de los hechos publicados, acumulados hecho por hecho", async () => {
@@ -262,7 +260,7 @@ test("★ Repaso: las 4 «En una frase» con su texto literal, ítems nuevos, si
     ["t3-a4-lo-que-ya-se-pago", PREGUNTA_FINAL_P4, OPCIONES_FINAL_P4, "Ajuste diferido"],
     ["t3-a5-cerrar-el-periodo", PREGUNTA_FINAL_CIERRE, OPCIONES_FINAL_CIERRE, "Cierre del periodo"],
   ];
-  assert.equal(ITEMS_T3.length, 4);
+  /* P2-8 y P6-10 se suman cuando P2 y P6 entren al catálogo (t3-encendido-2.test.mjs). */
   casos.forEach(([act, pregunta, opciones, subtema], k) => {
     const x = ITEMS_T3[k];
     assert.equal(x.clave, `${act}:en-una-frase`);

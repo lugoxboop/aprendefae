@@ -21,7 +21,9 @@
  * «la caja sube $3.000» se ve en el asiento (Caja al debe por $3.000).
  *
  * Modelo: objeto (72) + 4 + lectura (16) = 92 de 98, igual en las 8.
- * La utilidad de la lectura va tapada en P2-5 y P2-6 hasta responder la 6 (E8).
+ * La utilidad de la lectura va tapada desde P2-2 hasta que se responde P2-6
+ * (E8; Takamura, lote 19: en P2-2 a P2-4 mostraba $14.800, que son los
+ * ingresos, no la utilidad). En P2-1 queda en $0.
  *
  * P2-7 va con el delta v3 §2 (PASA de Takamura, lote 17): las 4 opciones en
  * la rejilla de 2 × 2 ocupan el modelo (96) y la línea de lectura pasa a la
@@ -63,11 +65,13 @@ const UTILIDAD = PIEZA_VENDER_NO_ES_COBRAR.nombres.find((n) => n.termino === "Ut
 const CAJA = "Caja";
 
 /** La lectura de cada pantalla, desde los hechos que ya ocurrieron. */
-export function lecturaP2(etapa, { cobradoHasta = COBRADO, gastosPagados = true, utilidadTapada = false } = {}) {
+export function lecturaP2(etapa, { cobradoHasta = COBRADO, gastosPagados = true, utilidadTapada } = {}) {
   const tras = { apertura: 0, cobrados: 1, anotados: 2, gastos: 3, final: 4 }[etapa];
   const caja = CAJA_INICIAL + (tras >= 1 ? cobradoHasta : 0) - (tras >= 3 && gastosPagados ? GASTOS : 0);
   const utilidad = (tras >= 1 ? INGRESOS : 0) - (tras >= 3 && gastosPagados ? GASTOS : 0);
-  return [[CAJA, caja], [UTILIDAD, utilidad, utilidadTapada]];
+  /* Tapada de P2-2 a P2-5 siempre; P2-6 la destapa al responder (lo pasa explícito). */
+  const tapada = utilidadTapada ?? (tras >= 1 && tras <= 3);
+  return [[CAJA, caja], [UTILIDAD, utilidad, tapada]];
 }
 
 const nombreFigura = "San Calixto en enero: el objeto de la pantalla y la línea de caja y utilidad";

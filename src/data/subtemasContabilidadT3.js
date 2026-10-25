@@ -76,7 +76,8 @@ export const valoresDeRegla = (actividad) => {
  * Los nombres de Miyata (paquete e3-t3-miyata-v1, sección C; Kamogawa en
  * #469). Dos condiciones de Kamogawa:
  *   · «Impuesto y utilidad neta» no se publica en el Repaso hasta que exista
- *     su pieza (Takamura): no está aquí;
+ *     su pieza (Takamura). Ya existe (P6, #578): la v6 §4 lo da a la «En una
+ *     frase» de P6-10 (SUBTEMA_APRENDER_T3, abajo);
  *   · los dos Hacer nuevos (t3-gasto-o-pago → «Gasto y pago»,
  *     t3-del-resultado-a-la-caja → «Resultado y caja») no se declaran hasta
  *     que se construyan. Los dos ya están: «¿Gasto o pago?» (#506) y «Del
@@ -92,6 +93,17 @@ const CIERRE = "Cierre del periodo";
 const GASTO_Y_PAGO = "Gasto y pago";
 /* Ya construida: su subtema [fijo] del paquete e3-t3-del-resultado-a-la-caja-v4, §1. */
 const RESULTADO_Y_CAJA = "Resultado y caja";
+
+const IMPUESTO_Y_UTILIDAD_NETA = "Impuesto y utilidad neta";
+
+/*
+ * [fijo] de las «En una frase» de P2 y P6 (textos v6 §4). Van aparte de
+ * SUBTEMA_FIJO_T3, que es de las Hacer: estas son piezas de Aprender.
+ */
+export const SUBTEMA_APRENDER_T3 = {
+  "t3-a2-el-mes-de-san-calixto": RESULTADO_Y_CAJA,
+  "t3-a6-lo-que-deja-el-periodo": IMPUESTO_Y_UTILIDAD_NETA,
+};
 
 /* [fijo] — toda la actividad tiene un mismo subtema. */
 export const SUBTEMA_FIJO_T3 = {
