@@ -5,11 +5,16 @@ import Hero from "./Hero.jsx";
 import SubjectCard, { MacroIcon, EstrategiaIcon, ContabilidadIcon } from "./SubjectCard.jsx";
 import Logo from "./Logo.jsx";
 import Footer from "./shared/Footer.jsx";
+import { useEntradaApp, CSS_ENTRADA_APP } from "../estilo/entradaApp.js";
 
 /* Pantalla de entrada: degradado en malla + titular rotativo + las dos materias. */
 export default function HomeScreen({ onSelectSubject }) {
+  /* La entrada estilo landing (src/estilo/entradaApp.js): solo la primera vez de la visita. */
+  const entra = useEntradaApp();
   return (
     <div
+      data-inicio
+      className={entra ? "fae-app-entra" : undefined}
       style={{
         position: "relative",
         minHeight: "100vh",
@@ -19,6 +24,8 @@ export default function HomeScreen({ onSelectSubject }) {
         overflow: "hidden",
       }}
     >
+      {entra && <style>{CSS_ENTRADA_APP}</style>}
+      <div className="fae-app-fondo" aria-hidden="true" style={{ position: "absolute", inset: 0 }}>
       <MeshGradientBackground />
       {/*
         * Velo por defecto, sin subirle el centro. Medido sobre el ciclo completo,
@@ -27,6 +34,7 @@ export default function HomeScreen({ onSelectSubject }) {
         * extra, y bajarla deja ver el color, que es de lo que va este fondo.
         */}
       <BackgroundVeil />
+      </div>
 
       <div
         style={{
@@ -39,7 +47,7 @@ export default function HomeScreen({ onSelectSubject }) {
         }}
       >
         {/* Marca de identidad, deliberadamente por debajo del titular y las tarjetas. */}
-        <Logo variant="full" size={30} theme="dark" />
+        <div className="fae-app-marca"><Logo variant="full" size={30} theme="dark" /></div>
 
         <div
           style={{
@@ -52,9 +60,10 @@ export default function HomeScreen({ onSelectSubject }) {
             padding: "clamp(20px, 5vh, 56px) 0 clamp(16px, 4vh, 40px)",
           }}
         >
-          <Hero />
+          <div className="fae-app-titular" style={{ display: "flex", justifyContent: "center", width: "100%" }}><Hero /></div>
 
           <div
+            className="fae-app-materias"
             style={{
               display: "grid",
               gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
@@ -93,7 +102,7 @@ export default function HomeScreen({ onSelectSubject }) {
           </div>
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
+        <div className="fae-app-pie" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
           <span style={{ fontSize: "12.5px", color: "#A8B6C8", whiteSpace: "nowrap" }}>
             Entrar no pide registro.
           </span>
