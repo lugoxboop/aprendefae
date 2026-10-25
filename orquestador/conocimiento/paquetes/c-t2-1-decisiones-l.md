@@ -109,3 +109,48 @@ Entregas: Near `c-t2-4-near-delta.md` (retros de los E1-E3 de Mello y los ítems
 - **E1 de Cuadra por valor:** manda el de Mello (tres renglones: Cuentas por pagar D · Caja 6.000 D · Bancos 4.000 H). La maqueta de Watari todavía muestra el E1 anterior, de dos renglones; la forma sirve igual.
 - **«Revisar»:** el banco es el de Near (A6, A7, B6 y B7, con las plantillas Rv, Rt y Rl) y la forma, la de Watari (cotejo con «=» y «≠», acierto en neutro porque el error es del libro, y la T sin ser botón). Las cifras van hasta 9.999.
 - **Mello audita** el delta de Near, las figuras de Watari y el logito (#516) antes de fusionar.
+
+---
+
+# Auditoría T2-5 de Mello · decisiones de L (24-oct-2026, 17:25)
+
+Entrega: `c-t2-5-mello-auditoria.md`. #516 (logito) llegó rebasado, con una sola definición, la ficha de 10 y el CI verde, que eran las correcciones mínimas de Mello. **Está fusionado (a5d9ae9).** #512 queda cerrado.
+
+Las correcciones de Mello son de una línea o de una celda, y ya vienen escritas y medidas. Por la regla j, **las aplica Misa directo en #499**, sin otra vuelta por Near ni por Watari:
+- **«Iba aquí» a los 0,7 s del error (H7),** tanto en Cuadra por valor como en «revisar». El orden es: 0 ms la consecuencia, 380 ms la pastilla y el retro, y 380 + 700 ms «Iba aquí» (en «revisar», «Iba en la línea punteada»). Así quedan las constantes de main (`RETARDO_IBA_MS = 700`). Con esto se corrige la frase de `c-t2-4-watari-figuras.md` que decía «la pausa baja a 380 ms».
+- **A6:** la línea mala pasa a ser Bancos · H · 4 ene · 4.000 (antes iba en Flota), con el porqué de Mello. Así A6 y A7 ya no caen en la misma T.
+- **Rv, Rt y Rl:** pierden la primera oración, que repetía lo que ya pinta el cotejo. Los textos son los de Mello.
+
+Con esto Mello aprueba las tres Hacer sin otra vuelta. #499 sigue esperando #500.
+
+---
+
+# Lote T2-7 · Aprender de T2 en SecuenciaAprender (24-oct-2026, 18:20)
+
+`SecuenciaAprender` ya está en main (#491) y su uso se explica en #492. La cáscara de las slides deja de estar bloqueada. Lo que exige el componente y no estaba en nuestro material:
+- **Titular de 10 palabras o menos en cada pantalla** (§3.3). Los cierres de Watari llevaban como titular la pregunta de Near, de más de 10 palabras: la pregunta pasa al apoyo y el titular la resume.
+- **Apoyo de una o dos frases** (25 palabras como objetivo) y **60 palabras por pantalla** como máximo.
+- **`razon`** en cada Haz: por qué «Siguiente» espera.
+- **Alto de figura de 206 px a 320 y de 253 a 375** como tope (Hanayama, #513, que entra con #524). Watari reservó hasta 218 a 320 (con el tope viejo de 220 de #470): P1 213, P3 214, P4 212 y P5 218 se pasan.
+- **Contabilidad tiene estudiantes:** la página vieja no se borra. La secuencia entra al lado, detrás de una bandera del tema, y el cambio se deshace en una línea. CuatroCapas no se toca.
+
+**Reparto:**
+- **Misa:** monta P1 (`cu-a1`) primero, mide las paradas del §12 (cabecera, bloque pegado, ficha de FP, titular más largo) y las deja en el PR. Después monta P2-P5. Usa `faltasDePieza(pieza) → []` en la prueba, y `responderHaz`, `resuelta` y `<Veredicto />` para el Haz. Las figuras salen de `c-t2-3-watari-figuras.md` y los textos, de la v2 de Near más los deltas T2-3. Lo que traigan Near y Watari en T2-7 entra encima.
+- **Near:** el titular de 10 palabras o menos de cada pantalla que se pase, el apoyo de los cierres y la `razon` de cada Haz. Solo el delta.
+- **Watari:** baja las figuras de P1, P3, P4 y P5 a 206 px o menos a 320. Solo el delta.
+- **Mello:** espera lo construido. La verificación final la hace sobre el PR.
+
+---
+
+# Entregas T2-7 · decisiones de L (24-oct-2026, 19:15)
+
+Entregas:
+- Near, `c-t2-7-near-delta.md`: titular de 10 palabras o menos, apoyo y razón para las 44 pantallas, y cuatro pares nuevos de pista y devolución. Ninguna pantalla pasa de 60 palabras.
+- Watari, `c-t2-7-watari-figuras.md` + `.html`: `altoFigura` medido por pieza (P1 183, P2 171/158, P3 180/173, P4 181/178, P5 197), todas por debajo de 206. La pastilla sale de la figura y las frases de consecuencia caben en una línea.
+- Misa, #548 en borrador: P1 montada, con las paradas del §12 medidas (cabecera de 105/107, bloque de 68 y titular de 54 caracteres en 3 renglones a 320).
+
+Decisiones:
+- **P4·8 y P4·9 van con ene-04** (1 contra 2, $4.800), como se decidió en T2-3. La maqueta de Watari todavía dice ene-03, y manda la decisión. P4·7 sigue con ene-30 y ene-03.
+- **`<Veredicto />` no va dentro de la figura** mientras Erwin no dé una zona para la devolución (#536 de Watari y el issue `miku` de Misa). Hasta entonces la secuencia queda detrás de la bandera apagada. Se puede fusionar con la bandera apagada, porque es reversible y ningún estudiante la ve.
+- **El porqué de P3·4 al segundo error** debe bajar a 16 palabras o menos (hoy ocupa 4 renglones a 320). Va para Near en su próximo lote.
+- **Mello verifica las cinco piezas juntas**, cuando Misa haya montado todo, para gastar un solo turno de auditoría.

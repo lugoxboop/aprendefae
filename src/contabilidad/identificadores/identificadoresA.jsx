@@ -43,7 +43,8 @@ export function CasilleroDeCuentas({ size = 64 }) {
     <svg {...SVG} width={size} height={size}>
       <rect x="8" y="10" width="48" height="44" rx="5" />
       <path d="M32 10V54M8 32H56" />
-      <rect data-mueve x="38" y="18" width="12" height="7" rx="2" {...ACENTO} style={{ "--mueve": "translateY(-3px)" }} />
+      {/* Ficha de 10 y no de 12 (mismo centro): con 12 quedaban 3 px hasta la división y el marco, y el sistema pide 4 o más (§3: «se ajusta el dibujo, no el sistema»; Misa, #516). */}
+      <rect data-mueve x="39" y="18" width="10" height="7" rx="2" {...ACENTO} style={{ "--mueve": "translateY(-3px)" }} />
     </svg>
   );
 }
