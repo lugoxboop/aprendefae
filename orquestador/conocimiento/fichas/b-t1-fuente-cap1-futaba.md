@@ -157,3 +157,34 @@ Leído en la imagen:
 - **Punto 6 (la línea de operación hacia el estado de resultados):** queda en HUECO hasta que Mateo mire la p. 66 en el libro físico. Mientras tanto no se cambian los tres textos publicados.
 - **El caso «se quedan los dos igual»** de cu0-a2 sigue en HUECO hasta que llegue la p. 90 del capítulo 3.
 - Lo aplica Kaede en un PR propio y lo audita Shoko.
+
+## 10 · t1-7 y la línea «Utilidad del ejercicio» (pregunta de Shoko, 24-oct)
+
+**Respuesta: la línea sale como «Utilidad del ejercicio» y en su lugar entra la pieza que dibuja el libro: el bloque de activos y pasivos. f1 se queda, con el mismo id, y ahora llega a ese bloque.**
+
+**Por qué no se queda con el respaldo de la p. 61:**
+- La p. 61 dice que la utilidad del ejercicio del patrimonio corresponde a la utilidad del año. Es cierto, pero es un dato del estado de cambios en el patrimonio, no de la articulación.
+- El Gráfico 2.6 (p. 66), que es la fuente de t1-7, no tiene esa línea. Su flecha va de la llave del estado de resultados a la llave de **activos y pasivos**.
+- Si t1-7 conserva un destino línea a línea con la misma cifra, le enseña a f1 como «repite». Eso contradice lo que ya decidimos y fusionamos en cu0-a4 (f1 «explica», de bloque a bloque). El estudiante aprendería una cosa en Aprender y la contraria en Hacer.
+
+**Por qué no borrar la pieza:**
+- Si sale sin reemplazo, f1 se queda sin destino, y t1-7 perdería la única flecha que viene del estado de resultados.
+- La forma más barata y fiel es **cambiar el nombre de la misma pieza** y no tocar su id (`l-utilidad-balance`). Así:
+  - no se rompe ningún registro ni la llave `f1` del Repaso;
+  - las pruebas que buscan la pieza por id siguen sirviendo.
+  - El nombre que se pinta sale de `lineaPorId(...).nombre`, así que las pruebas de t1-la-articulacion que lo leen se actualizan solas.
+
+| Dónde | Hoy | Pegar |
+|---|---|---|
+| `LINEAS`, la pieza `l-utilidad-balance` (contabilidadTema1.js, en pr535 ≈ :703) | `nombre: "Utilidad del ejercicio"` | `nombre: "Activos y pasivos, en bloque"` (el id no cambia) |
+| El comentario de esa pieza (≈ :698-702) | «Adaptación del Gráfico 2.6: el libro agrupa la utilidad dentro del patrimonio…» | «Gráfico 2.6 (p. 66): la flecha del estado de resultados llega a la llave de activos y pasivos, no a una línea. Esta pieza es esa llave. El id se conserva desde la versión con "Utilidad del ejercicio".» |
+| Dónde va la pieza en la figura (Kaede y Mai) | Una línea más, al final del patrimonio | **Arriba del bloque del estado de situación financiera**, como rótulo de la llave que abarca activos y pasivos, y no dentro del patrimonio. Se sigue tocando como cualquier otra pieza |
+| `ACIERTO_T1_7.f1` (≈ :735; ya sin emoji, por la tabla del lote sin emoji) | El informe de lo que vendió y gastó le pasa su resultado al otro. Lo que la empresa ganó o perdió cambia cómo queda al final. | Lo que vendió y gastó en el año llega en bloque: cambia cómo quedan los activos y los pasivos. (86,2; 19 palabras) |
+| El hilo de la pieza (t1-la-articulacion.test.mjs:282 lo compone con los nombres) | «Utilidad neta → Utilidad del ejercicio» | «Utilidad neta → Activos y pasivos, en bloque» (sale solo del nombre) |
+
+**Lo que esto arrastra, y que hay que mirar:**
+- **cu0-a4 comparte `LINEAS`** (`LINEAS_P4 = LINEAS`). La figura de cu0-a4 también pasa a mostrar «Activos y pasivos, en bloque». Eso es justo lo que dibuja el libro y lo que dice f1 desde el #551, así que no hay que cambiar ningún texto de cu0-a4.
+- **El ejemplo de «Así se juega» de t1-7** usa las dos hojas de la panadería y la pieza `demo-f1` («Total vendido» → «Ventas de la semana 1»), no esta pieza. No cambia.
+- **La prueba de asi-se-juega.test.mjs:160-164** busca `l-utilidad-balance` por id. Como el id se conserva, sigue pasando.
+- **«Utilidad del ejercicio» no desaparece de T1:** sigue siendo un concepto real del libro (pp. 61 y 78). Si algún día se agrega a t1-6, va en el patrimonio. No hace falta ahora.
+- **Queda abierto el punto 6:** si Mateo confirma en la p. 66 que la línea de operación también llega a ingresos y gastos, t1-7 tendrá que decidir qué hace con esa conexión. Esa decisión no depende de esta.

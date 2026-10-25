@@ -17,6 +17,8 @@ import { bloqueDeDificultad } from "../hacer/bloques.js";
 import JuegoConTutorial from "./mecanicas/libros/JuegoConTutorial.jsx";
 import IngresoOCobro from "./mecanicas/libros/tema3/IngresoOCobro.jsx";
 import { ACT1_T3 } from "../data/contabilidadTema3Act1.js";
+import GastoOPago from "./mecanicas/libros/tema3/GastoOPago.jsx";
+import { ACT_GASTO_O_PAGO } from "../data/contabilidadTema3GastoOPago.js";
 import CuandoSeCausa from "./mecanicas/libros/tema3/CuandoSeCausa.jsx";
 import { ACT2_T3 } from "../data/contabilidadTema3Act2.js";
 import { ArmaElAjusteAcumulado, ArmaElAjusteDiferido } from "./mecanicas/libros/tema3/ArmaElAjuste.jsx";
@@ -65,6 +67,8 @@ const PUBLICADAS = PIEZAS.length;
 /* Lo que se puede abrir desde el camino. Una prueba lo compara con el catálogo. */
 export const JUEGOS = [
   { id: ACT1_T3.id, Mecanica: IngresoOCobro, titulo: ACT1_T3.nombre },
+  /* «¿Gasto o pago?» (paquete e3-t3-gasto-o-pago-v3), detrás de «¿Ingreso o cobro?». */
+  { id: ACT_GASTO_O_PAGO.id, Mecanica: GastoOPago, titulo: ACT_GASTO_O_PAGO.nombre },
   { id: ACT2_T3.id, Mecanica: CuandoSeCausa, titulo: ACT2_T3.nombre },
   { id: ACT4_T3.id, Mecanica: ArmaElAjusteAcumulado, titulo: ACT4_T3.nombre },
   { id: ACT5_T3.id, Mecanica: ArmaElAjusteDiferido, titulo: ACT5_T3.nombre },

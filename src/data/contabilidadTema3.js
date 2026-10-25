@@ -105,7 +105,7 @@ export const COMPANIA_CUALQUIERA = {
       id: "inventario",
       titulo: "Compra inventario por $100.000 y lo paga de contado",
       fecha: null,
-      fuente: "Libro, p. 130",
+      fuente: "Libro, pp. 129-130",
       marcas: [{ tipo: "salida", monto: 100000 }],
       texto: "Compró mercancía y la pagó el mismo día. Salió plata, pero todavía no la ha consumido. No hay gasto.",
     },
@@ -113,7 +113,7 @@ export const COMPANIA_CUALQUIERA = {
       id: "computador",
       titulo: "Vende un computador por $15.000 de contado, a su mismo valor",
       fecha: null,
-      fuente: "Libro, p. 130",
+      fuente: "Libro, pp. 129-130",
       marcas: [{ tipo: "entrada", monto: 15000 }],
       texto: "No vende computadores: entregó uno y recibió su mismo valor en plata. El patrimonio no cambió.",
     },
@@ -149,7 +149,7 @@ export const BOTON_OTRA_EMPRESA = "Seguir con otra empresa";
 export const PIEZA_VENDER_NO_ES_COBRAR = {
   id: "t3-a1-vender-no-es-cobrar",
   titulo: "Vender no es cobrar",
-  objetivo: "A veces entra plata y la empresa no vendió nada. Y a veces vende sin que entre un peso.",
+  objetivo: "Distingue un ingreso de la plata que entra a la caja.",
   /* Como en el Tema 1: el término y la frase de Gen completa. */
   nombres: [
     { termino: "Ingreso", definicion: "Ingreso es el valor de lo que la empresa vende de su negocio: sus productos o sus servicios." },
@@ -187,6 +187,6 @@ export const OPCIONES_FINAL = [
     id: "aporte",
     texto: "Lo que los dueños ponen para que la empresa arranque.",
     correcta: false,
-    feedback: "No. Eso es un aporte. El libro lo dice claro: los aportes nunca son un ingreso, aunque suban el patrimonio.",
+    feedback: "No. Eso es un aporte. El libro lo dice claro (p. 119): los aportes nunca son un ingreso, aunque suban el patrimonio.",
   },
 ];
