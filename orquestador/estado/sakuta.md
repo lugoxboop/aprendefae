@@ -1,9 +1,9 @@
-2026-10-24 21:48 (hora Bogotá)
+2026-10-24 22:37 (hora Bogotá)
 - T1 · #496 (t1-5, las dos torres): terminado, fusionado (233c635) con el PASA de Shoko y el CI en verde
 - T1 · #520 (logito LibretaYLapiz): terminado, fusionado (047f3b7) con el PASA de Shoko y el CI en verde
-- T1 · #531 (t1-5, lo que se ve después de «Anotar»): en curso; Mai lo resolvió (fichas/b-t1-5-despues-de-anotar-mai.md: cabe en 524 de 568 px con las casillas plegadas en un renglón por parte); lo construye Kaede
-- T1 · #535 (lote 4): en curso; Kaede corrige con la segunda auditoría de Shoko (revisiones/b-t1-535-b-shoko.md) y con las 5 devoluciones de t1-6 de Futaba (fichas/b-t1-lote-24oct-e-futaba.md). t1-4 se queda con un solo «Anotar» (Shoko lo retiró) y solo cambia el chip
-- T1 · #539 (lote 5: H1 y H2): en curso; segunda FALLA de Shoko (revisiones/b-t1-539-b-shoko.md): el acierto de H1 tiene que nombrar el informe, H2 necesita un rótulo para las cuatro personas atenuadas, y la reserva de H2 vuelve a 48 px. Los textos los escribe Futaba (lote F) y el resto Kaede
+- T1 · #531 (t1-5, lo que se ve después de «Anotar»): terminado, fusionado (ad898f9) con el PASA de Shoko y el CI en verde
+- T1 · #535 (lote 4): en curso; tercera vuelta de Shoko (revisiones/b-t1-531-535-c-shoko.md): PASA en t1-1, t1-2, t1-4 y t1-6; faltan la banda de t1-8 sin ✕ y t1-7. Decisión mía en t1-7: la pieza se llama «Estado de situación financiera» (mismo id), con el acierto nuevo de f1 (Kaede)
+- T1 · #539 (lote 5: H1 y H2): en curso; Kaede pone los textos del lote F de Futaba (fichas/b-t1-lote-24oct-f-futaba.md)
 - T1 · #551 (lo decidido del capítulo 2): terminado, fusionado (e5707a0) con el PASA de Shoko y el CI en verde
 - T1 · «Utilidad del ejercicio» en t1-7: terminado; Futaba lo resolvió (§10 de la ficha de fuente): la pieza pasa a «Activos y pasivos, en bloque» con el mismo id; lo aplica Kaede en el #535
 - Shoko traspasada a un chat nuevo (6c926eca); el 02dc9984 quedó pesado, con 19 subidas; traspasos/shoko.md está al día
@@ -12,6 +12,7 @@
 - T1 · el caso «se quedan los dos igual» de cu0-a2: BLOQUEADO-MATEO; falta la p. 90 del capítulo 3
 - T1 · los textos pendientes del #535 (Futaba): terminado, en fichas/b-t1-lote-24oct-d-futaba.md
 - T1 · «Ocho leen lo mismo»: terminado, en 2×2 (fichas/b-t1-titulares-medidos-mai.md §7), con PASA de Shoko
-- T1 · los 5 Aprender en secuencia (lote 6) (Kaede): en curso; SecuenciaAprender ya está en main (#491 y #524, de Erwin) y Miku cerró el #514
+- T1 · los 5 Aprender en secuencia (lote 6) (Kaede): en curso; el #559 (cu0-a1 y «Ocho leen lo mismo», detrás de la bandera ?aprender=secuencia) tiene el CI verde; capturas sacadas; Mai lo revisa contra su forma con el volumen de #545
+- Regla nueva de Miku: el volumen y la decoración de Ukyo (#545) van en cada pieza que toque Mai; ya se lo pasé
 - Lo compartido que falla en los 7 Hacer: bloqueado; es de Erwin (#487)
 - T6 (oculto hasta el próximo semestre): los dos cambios de texto de Shoko del #458 quedan anotados
