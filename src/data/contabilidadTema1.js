@@ -119,8 +119,8 @@ export const ALT_ANILLO_T1_1 = {
   [ZONA_DENTRO]: "La pregunta está adentro.",
   [ZONA_FUERA]: "La pregunta está afuera.",
   vueltaEncendida: "La vuelta está encendida: esta persona decide.",
-  /* ── [ESCRITO POR CLAUDE — PENDIENTE DE FUTABA] ── */
-  vueltaApagada: "La vuelta está apagada.",
+  /* Futaba (lote D, §3): «tenue» y no «apagada», porque la vuelta siempre se ve. */
+  vueltaApagada: "La vuelta está tenue: esta persona no decide qué hace la empresa.",
 };
 /* El rótulo de la ficha que entra a su zona (P2 de Mai, §10: texto nuevo para Shoko). */
 export const ROTULO_FICHA_T1_1 = "la pregunta";
@@ -534,14 +534,10 @@ export const T1_6 = {
   dificultad: "dificil",
   fpBase: 50,
   porPartida: 10,
-  objetivo: "Decide en cuál de los dos informes va cada cosa.",
-  /*
-   * ── [ESCRITO POR CLAUDE — PENDIENTE DE FUTABA] ──
-   * Un solo toque sobre cinco destinos (P2 de Mai, ajustes del 24-oct, §3): la
-   * consigna anterior pedía dos toques («si es el de arriba, toca también en
-   * qué parte»), y eso ya no es lo que se hace.
-   */
-  consigna: "Toca dónde va la ficha: el informe y la parte, en un solo toque.",
+  /* El apoyo, de Shoko (#535): promete la decisión que de verdad hay, el informe y la parte. */
+  objetivo: "Decide en cuál de los dos informes va cada cosa, y en qué parte de ese informe.",
+  /* Un solo toque sobre cinco destinos (P2 de Mai, ajustes del 24-oct, §3). Texto de Futaba (lote D, §1). */
+  consigna: "Lee la ficha. Toca a cuál de los cinco va: activo, pasivo, patrimonio, ingresos o gastos.",
 };
 
 export const PRIMERO = "primero";
@@ -1043,7 +1039,7 @@ export const SEGUNDA_T1_2 = {
       id: "doblar",
       texto: "Tiene que entrar el doble: sin más de eso no hay más que vender",
       /* Mal cuando no hay insumo: doblar algo que no existe. */
-      msg: "Mire el recuadro ENTRA: dice sin insumo físico. No hay ninguna cosa que doblar ahí, porque no entra ninguna cosa. Lo que esta empresa duplica es su trabajo, no su materia.",
+      msg: "Mira el recuadro ENTRA: dice sin insumo físico. Ahí no entra ninguna cosa que doblar. Esta empresa duplica su trabajo, no su materia.",
     },
     {
       id: "sin-insumo",
@@ -1095,23 +1091,32 @@ export const SEGUNDA_T1_2 = {
 /* La letra del caso en la p. 35 (CASOS_P2), por id. */
 export const CASO_DEL_LIBRO_T1_4 = { "deuda-sube": "a", "aporte-sube": "b", "deuda-baja": "c", "aporte-baja": "d" };
 
+/*
+ * El acierto, uno por caso (Futaba, lote D §4; reemplaza al único de Shoko,
+ * que solo servía para el pago de deuda). Lleva el nombre completo del libro,
+ * pp. 35-36; los rótulos de las opciones siguen cortos.
+ */
 export const SEGUNDA_T1_4 = {
   pregunta: "¿Cuál de los cuatro casos es este hecho?",
   opciones: [
     {
       id: "deuda-sube",
+      acierto: "Aumento en el activo y aumento en el pasivo: entró algo y nació una deuda por lo mismo.",
       msg: "Ese caso es entrar algo y nacer una deuda. Mira si en este hecho hay una deuda, y si algo entró o salió.",
     },
     {
       id: "aporte-sube",
+      acierto: "Aumento en el activo y aumento en el patrimonio: entró algo que pusieron los dueños.",
       msg: "Ese caso es entrar algo que ponen los dueños. Mira si en este hecho hay un aporte, y si algo entró o salió.",
     },
     {
       id: "deuda-baja",
+      acierto: "Disminución en el activo y disminución en el pasivo: salió plata y con ella se pagó una deuda.",
       msg: "Ese caso es salir plata para pagar una deuda. Mira si en este hecho se paga algo, y si algo entró o salió.",
     },
     {
       id: "aporte-baja",
+      acierto: "Disminución en el activo y disminución en el patrimonio: salió algo de la empresa hacia los dueños.",
       msg: "Ese caso es salir algo hacia los dueños. Mira si en este hecho les devuelven algo, y si algo entró o salió.",
     },
   ],

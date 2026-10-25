@@ -9,14 +9,13 @@ import {
   sortearT1_2, evaluarT1_2, puntuar, pesoDeCadaItem, sinObjeto, sinEmoji,
   opcionesSegundaT1_2, correctaSegundaT1_2, porqueSegundaT1_2,
 } from "../../../../contabilidad/tema1.js";
-import SegundaDecisionT1 from "./segundaDecision.jsx";
 import { Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { useTanda } from "../piezas.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";
 import EncabezadoCompacto from "../b5/EncabezadoCompacto.jsx";
 import {
-  Pastilla, Mensaje, RegionViva, IconoX, CORRECTA, TACHADA, REVELADA, CSS_B5H, CLASE_B5H,
+  Pastilla, Mensaje, RegionViva, IconoCheck, IconoX, CORRECTA, TACHADA, REVELADA, CSS_B5H, CLASE_B5H, RETRASO_REVELA_MS,
 } from "../b5/Devolucion.jsx";
 import {
   INTER, REPOSO, ACIERTO, FANTASMA, estiloC2, contadorDe, Avance, CSS_REGISTRO, CLASE_ENTRA,
@@ -107,6 +106,73 @@ export const RELACION_DE_CLASE = Object.fromEntries(CLASES.map((c) => {
   const rels = [...new Set(EMPRESAS.filter((x) => x.clase === c.id).map((x) => x.relacion.toLowerCase()))];
   return [c.id, rels.join(" o ")];
 }));
+
+/*
+ * ═══════════ LA SEGUNDA DECISIÓN DE T1-2 ═══════════
+ * Con las primitivas del registro y no con `SegundaDecisionT1`, para que el
+ * error se vea igual en las dos decisiones de la pieza: el contorno coral
+ * discontinuo (Shoko, #535; el mismo de las otras cinco). `SegundaDecisionT1`
+ * se queda como está: la usa también el Tema 3.
+ *
+ * Igual que aquella: la figura se mueve con lo elegido y, si fue un error,
+ * vuelve a lo que de verdad pasa cuando sale «Iba aquí». No puntúa.
+ */
+function SegundaT1_2({ opciones, correcta, porque, onPintar, onResuelta }) {
+  const [elegida, setElegida] = useState(null);
+  const reloj = useRef(null);
+  useEffect(() => () => clearTimeout(reloj.current), []);
+  const fin = elegida !== null;
+  const ok = fin && elegida === correcta;
+  const mala = fin && !ok ? opciones.find((o) => o.id === elegida) : null;
+
+  const elegir = (id) => {
+    if (fin) return;
+    setElegida(id);
+    onPintar(SEGUNDA_T1_2.escena[id]);
+    if (id !== correcta) {
+      clearTimeout(reloj.current);
+      reloj.current = setTimeout(() => onPintar(SEGUNDA_T1_2.escena[correcta]), RETRASO_REVELA_MS);
+    }
+    onResuelta(id === correcta);
+  };
+
+  return (
+    <div data-segunda-decision style={{ marginTop: "14px" }}>
+      <p data-pregunta-segunda style={{ margin: "0 0 8px", fontFamily: SORA, fontSize: "14px", fontWeight: 600, lineHeight: 1.35, color: FAE.text }}>
+        {SEGUNDA_T1_2.pregunta}
+      </p>
+      <div role="group" aria-label={SEGUNDA_T1_2.pregunta} style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+        {opciones.map((o) => {
+          const estado = !fin ? REPOSO : o.id === correcta ? ACIERTO : o.id === elegida ? FANTASMA : REPOSO;
+          return (
+            <button
+              key={o.id}
+              type="button"
+              data-opcion-segunda={o.id}
+              data-estado={estado}
+              aria-pressed={elegida === o.id}
+              disabled={fin}
+              onClick={() => elegir(o.id)}
+              style={{
+                minHeight: "44px", padding: "6px 10px", borderRadius: "10px", boxSizing: "border-box", textAlign: "left",
+                display: "flex", alignItems: "center", gap: "6px", cursor: fin ? "default" : "pointer",
+                color: FAE.text, fontFamily: INTER, fontSize: "13px", lineHeight: 1.3,
+                ...estiloC2(estado),
+              }}
+            >
+              {fin && o.id === correcta && <IconoCheck />}
+              {fin && o.id === elegida && o.id !== correcta && <IconoX />}
+              <span>{o.texto}</span>
+            </button>
+          );
+        })}
+      </div>
+      <RegionViva>
+        {fin && <Mensaje ok={ok} texto={ok ? porque : mala?.msg ?? null} />}
+      </RegionViva>
+    </div>
+  );
+}
 
 /*
  * ═══════════ EL MODO DEMO DE «ASÍ SE JUEGA» ═══════════
@@ -326,12 +392,11 @@ export default function QueEntroYQueSalio({
           clase. Sale tras la primera, se acierte o no. En la demo no sale.
         */}
         {r && !modoDemo && (
-          <SegundaDecisionT1
-            pregunta={SEGUNDA_T1_2.pregunta}
+          <SegundaT1_2
+            key={e.id}
             opciones={opcionesSegundaT1_2(e)}
             correcta={correctaSegundaT1_2(e)}
             porque={porqueSegundaT1_2(e)}
-            escenaDe={(id) => SEGUNDA_T1_2.escena[id]}
             onPintar={setEscenaSegunda}
             onResuelta={() => setSegundaHecha(true)}
           />

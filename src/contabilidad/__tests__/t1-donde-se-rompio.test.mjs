@@ -397,6 +397,25 @@ test("★★★ los dos cierres de la predicción, y ninguno dice el número", a
   }
 });
 
+/* Shoko, #535: el cierre no le dice «Correcto.» a quien falló la segunda, y la cuenta va debajo de las opciones. */
+test("★★★ si la predicción falló, el cierre no abre con «Correcto.»; la cuenta va debajo de las opciones", async () => {
+  for (const acierta of [true, false]) {
+    const { caja, desmontar } = montar();
+    try {
+      const s = actual(caja);
+      const bien = noAlcanzados(s.rompe);
+      await resolver(caja, acierta ? bien : PREDICCION_T1_8.opciones.find((x) => x !== bien));
+      const mensajes = [...caja.querySelectorAll("[data-mensaje]")].map((m) => m.dataset.mensaje);
+      assert.deepEqual(mensajes, [acierta ? "acierto" : "cierre"]);
+      assert.equal(/Correcto/.test(caja.querySelector("[data-region-retro]").textContent), acierta);
+      const opciones = caja.querySelector("[data-prediccion] [role=group]");
+      const cuenta = caja.querySelector("[data-cuenta-apagados]");
+      assert.ok(caja.querySelector("[data-prediccion]").contains(cuenta), "la cuenta no está con la predicción");
+      assert.ok(opciones.compareDocumentPosition(cuenta) & 4, "la cuenta queda encima de las opciones");
+    } finally { desmontar(); }
+  }
+});
+
 test("★★★ el punto 5: se apaga solo el 5, la flecha apagada y «pero no cambió nada»", async () => {
   const { caja, desmontar } = montar();
   try {

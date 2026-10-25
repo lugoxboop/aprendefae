@@ -517,9 +517,14 @@ test("★★★ T1-1: la decisión 2 en 2×2, reservada desde el principio, y no
     const ops = () => [...caja.querySelectorAll("[data-en-juego-opcion]")];
     assert.deepEqual(ops().map((b) => b.textContent), ["Plata que ya puso", "Su trabajo", "Algo que piensa hacer", "Su oficio"]);
     assert.ok(ops().every((b) => b.disabled), "la 2 se responde antes que la 1");
+    /* Reservada sí; a la vista no (Shoko, #535): la pregunta presupone la respuesta de la 1. */
+    const sitio = caja.querySelector("[data-segunda-decision]");
+    assert.equal(sitio.style.visibility, "hidden", "la decisión 2 se lee antes de responder la 1");
+    assert.equal(sitio.getAttribute("aria-hidden"), "true");
     for (let k = 0; k < T1_1.porPartida; k++) {
       const u = USUARIOS_T1_1.find((x) => x.id === caja.querySelector("[data-pregunta]").dataset.pregunta);
       tocar(caja.querySelector(`[data-zona="${u.zona}"]`));
+      assert.equal(caja.querySelector("[data-segunda-decision]").style.visibility, "visible", "respondida la 1, la 2 no aparece");
       const correcta = SEGUNDA_T1_1.enJuego[u.id];
       /* Siempre la mala: no tiene que bajar el porcentaje. */
       const mala = ops().find((b) => b.dataset.enJuegoOpcion !== correcta);

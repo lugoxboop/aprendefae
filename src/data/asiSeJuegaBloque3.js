@@ -41,20 +41,21 @@ export const EJEMPLO_T1_6 = {
   nombre: "Horno industrial",
   informe: PRIMERO,
   seccion: ACTIVO,
-  acierto: "✅ Va en el primer informe, en lo que tiene. El horno es de la panadería y le dura años.",
+  /* Futaba (lote D, §1): habla igual que los aciertos de t1-6 del lote C. */
+  acierto: "Va en el estado de situación financiera, en el activo. El horno es de la panadería y le dura años.",
 };
 
 const ASI_T1_6 = {
   actividadId: T1_6.id,
   titulo: T1_6.nombre,
   consigna: T1_6.consigna,
-  /* ── [ESCRITO POR CLAUDE — PENDIENTE DE FUTABA]: los pasos y el alt, al gesto de un toque (lote 4). ── */
+  /* Los pasos y el alt, al gesto de un toque: Futaba (lote D, §1). */
   pasos: [
     "Lee la ficha de arriba.",
-    "Toca dónde va: el informe y la parte, en un solo toque.",
+    "Toca su destino, uno de los cinco, en un solo toque.",
     "Mira cómo sube la cuenta de ese destino.",
   ],
-  alt: "la ficha «Horno industrial» cae en «Activo», en el estado de situación financiera, y su cuenta sube a 1.",
+  alt: "se toca «Activo», en el estado de situación financiera. La ficha «Horno industrial» cae ahí y la cuenta de ese destino sube a 1.",
   demo: { items: [EJEMPLO_T1_6] },
   guion: {
     duracion: 6000,

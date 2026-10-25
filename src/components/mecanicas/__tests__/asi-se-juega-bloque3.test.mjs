@@ -116,7 +116,7 @@ test("★★ las catorce actividades tienen «Así se juega»", () => {
 
 test("★★ consignas: T1-6 cambia (la ficha no se toca) y las siete del Tema 2 son nuevas", () => {
   /* Lote 4: un toque sobre cinco destinos (P2 de Mai, ajustes del 24-oct). */
-  assert.equal(T1_6.consigna, "Toca dónde va la ficha: el informe y la parte, en un solo toque.");
+  assert.equal(T1_6.consigna, "Lee la ficha. Toca a cuál de los cinco va: activo, pasivo, patrimonio, ingresos o gastos.");
   assert.deepEqual(CONSIGNA_TEMA2, {
     "cu-izquierda-o-derecha": "Lee si la cuenta sube o baja. Lleva la ficha al lado que corresponde.",
     "cu-de-que-familia": "Arrastra cada cuenta a su familia.",
@@ -138,7 +138,7 @@ test("★★ consignas: T1-6 cambia (la ficha no se toca) y las siete del Tema 2
 
 test("★★ los pasos de Gen, palabra por palabra", () => {
   const pasos = Object.fromEntries(IDS.map((id) => [id, ASI_TODAS[id].pasos]));
-  assert.deepEqual(pasos[T1_6.id], ["Lee la ficha de arriba.", "Toca dónde va: el informe y la parte, en un solo toque.", "Mira cómo sube la cuenta de ese destino."]);
+  assert.deepEqual(pasos[T1_6.id], ["Lee la ficha de arriba.", "Toca su destino, uno de los cinco, en un solo toque.", "Mira cómo sube la cuenta de ese destino."]);
   assert.deepEqual(pasos["cu-izquierda-o-derecha"], ["Lee si esa cuenta sube o baja.", "Arrastra la ficha al debe o al haber.", "El ▲ marca el lado por donde esa cuenta crece."]);
   assert.deepEqual(pasos["cu-de-que-familia"], ["Lee el nombre de la cuenta.", "Pregúntate: ¿la empresa la tiene, la debe o es lo que la empresa les reconoce a los socios?", "Arrastra la cuenta a esa familia."]);
   assert.deepEqual(pasos["cu-cuadro-dinamicas"], ["Piensa si esa familia crece por el debe o por el haber.", "Toca + o − y queda puesto en la casilla del debe.", "La casilla del haber se llena sola, con el signo contrario."]);
@@ -216,7 +216,7 @@ test("★★ en el Tema 2 la pantalla no repite el nombre que ya está encima (q
 /* ═══════════════════ LA DEMO NO GUARDA NADA, Y TERMINA DONDE DEBE ═══════════════════ */
 
 const ACIERTO = {
-  [T1_6.id]: "Va en el primer informe, en lo que tiene. El horno es de la panadería y le dura años.",
+  [T1_6.id]: "Va en el estado de situación financiera, en el activo. El horno es de la panadería y le dura años.",
   "cu-izquierda-o-derecha": "Debe. Muebles y enseres es un activo, y los activos crecen por la izquierda.",
   "cu-de-que-familia": "Activo. La maquinaria es algo que la panadería tiene.",
   "cu-cuadro-dinamicas": "Los activos crecen por el debe. Es la fila base: de aquí salen las demás.",

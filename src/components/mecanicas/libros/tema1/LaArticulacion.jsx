@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { FAE } from "../../../../theme.js";
 import { NEUTRO, NAVY_DEL_CHIP } from "../../../../data/contabilidadIntro.js";
 import {
@@ -53,11 +53,14 @@ import {
 /* Lo que duran los dos hilos en pantalla. */
 export const MS_HILO = 1200;
 /*
- * El sitio de los dos hilos y de «Iba aquí»: medido a 320 con el peor caso
- * (Cuentas por cobrar y cuentas por pagar → Actividades de operación, al
- * revés): 149,8 px. A 375, 133,8. Así el escenario no crece al responder.
+ * El sitio de los dos hilos y de «Iba aquí» se ajusta a cada flecha (Shoko,
+ * #535): reservar el peor caso (149,8 px a 320) dejaba unos 200 px vacíos
+ * entre el último bloque y la devolución. Ahora la zona toma el alto de lo
+ * que esta flecha dibuja en el momento de responder —que es cuando aparece la
+ * devolución debajo, así que nada de lo que ya estaba a la vista se mueve— y
+ * lo guarda cuando los hilos se van: la devolución no sube a los 1.200 ms.
+ * Antes de responder no hay nada debajo de la zona que pueda saltar.
  */
-export const ALTO_ZONA_HILO = 150;
 
 const CSS = `
 @keyframes fae-t17-hilo { 0% { opacity: 0; } 20% { opacity: 1; } 80% { opacity: 1; } 100% { opacity: 0; } }
@@ -196,6 +199,12 @@ export default function LaArticulacion({
   const [inverso, setInverso] = useState(null);
   const reloj = useRef(null);
   const zonaBoton = useRef(null);
+  const zonaHilo = useRef(null);
+  /* El alto de la zona con los hilos de esta flecha, para guardarlo cuando se vayan. */
+  const [altoZona, setAltoZona] = useState(0);
+  useLayoutEffect(() => {
+    if (hilo && zonaHilo.current) setAltoZona(zonaHilo.current.getBoundingClientRect().height);
+  }, [hilo?.sello]);
 
   const cuantas = t.items.length;
   const pct = puntuar(respuestas, cuantas);
@@ -230,12 +239,12 @@ export default function LaArticulacion({
 
   const avanzar = () => {
     clearTimeout(reloj.current);
-    setR(null); setDesde(null); setHilo(null);
+    setR(null); setDesde(null); setHilo(null); setAltoZona(0);
     if (t.i + 1 < cuantas) t.setI(t.i + 1);
     else t.setTerminado(true);
   };
   const reiniciar = () => {
-    t.reiniciar(); setR(null); setRespuestas([]);
+    t.reiniciar(); setR(null); setRespuestas([]); setAltoZona(0);
     setDesde(null); setHilo(null); setLlegadas([]); setDibujadas([]); setInverso(null);
   };
 
@@ -395,8 +404,8 @@ export default function LaArticulacion({
               ))}
             </div>
 
-            {/* Los hilos y el veredicto, en un sitio reservado: nada salta al responder. */}
-            <div data-zona-hilo style={{ minHeight: `${ALTO_ZONA_HILO}px`, marginTop: "9px", display: "flex", flexDirection: "column", gap: "6px" }}>
+            {/* Los hilos y el veredicto: su alto es el de esta flecha y se guarda cuando los hilos se van. */}
+            <div ref={zonaHilo} data-zona-hilo style={{ minHeight: `${altoZona}px`, marginTop: "9px", display: "flex", flexDirection: "column", gap: "6px" }}>
               {hilo && <Hilo desde={hilo.buena.desde} hasta={hilo.buena.hasta} b={b} fijo={modoDemo} sello={hilo.sello} />}
               {hilo && !r?.ok && <Hilo desde={hilo.tocado.desde} hasta={hilo.tocado.hasta} b={b} fantasma fijo={modoDemo} sello={`${hilo.sello}f`} />}
               {r && !r.ok && (

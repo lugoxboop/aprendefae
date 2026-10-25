@@ -121,7 +121,7 @@ test("★★ el bloque 2 son T1-1, T1-2 y T1-5, con la consigna de cada activida
   assert.ok(ASI_TODAS[T1_5.id].guion.duracion <= 10000, "la demo de T1-5 pasa de 10 s");
   assert.equal(ASI_TODAS[T1_5.id].guion.toques.at(-1).texto, "Anotar", "la demo de T1-5 no termina tocando «Anotar»");
   assert.equal(ASI_TODAS[T1_1.id].alt,
-    "se toca la pregunta del cliente de la panadería y luego la zona AFUERA. La pregunta entra a esa zona y la flecha de vuelta no se enciende.");
+    "se lee la pregunta de la panadería y se toca AFUERA. La ficha «la pregunta» entra ahí y la vuelta sigue tenue.");
 });
 
 test("★★★ T1-1: ya no está la pregunta de vacío", () => {
