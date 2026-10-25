@@ -236,3 +236,25 @@ test("★ #549: el mensaje va fuera de la figura y lee su mismo estado; la figur
   assert.match(estilos, /\.fae-sec-figura \{ min-height:/, "la figura volvió a alto fijo: se sale y tapa «Siguiente»");
   assert.doesNotMatch(estilos, /\.fae-sec-figura \{ height:/);
 });
+
+test("★ #614: al calificar un Haz la vista baja a la banda; antes de responder, no", async () => {
+  sessionStorage.clear();
+  window.innerWidth = 320;
+  const llamadas = [];
+  const original = w.HTMLElement.prototype.scrollIntoView;
+  w.HTMLElement.prototype.scrollIntoView = function (o) { if (this.matches?.("[data-banda]")) llamadas.push(o); };
+  try {
+    const m = await montar({ temaId: "banda", piezas: [pieza("p1")] });
+    for (let k = 0; k < 4; k++) await m.clic("[data-siguiente]");
+    assert.equal(m.q("[data-tipo]").getAttribute("data-tipo"), "haz");
+    assert.equal(llamadas.length, 0, "bajó antes de responder");
+    await m.clic("[data-opcion='mal']");
+    assert.equal(llamadas.length, 1, "al calificar no bajó a la banda");
+    assert.equal(llamadas[0].block, "nearest");
+    await m.clic("[data-opcion='bien']");
+    assert.equal(llamadas.length, 2);
+    await act(async () => { m.raiz.unmount(); });
+  } finally {
+    w.HTMLElement.prototype.scrollIntoView = original;
+  }
+});

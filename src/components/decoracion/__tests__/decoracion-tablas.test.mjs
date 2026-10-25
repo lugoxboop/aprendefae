@@ -178,10 +178,16 @@ test("★ cuando vuelva (con la placa): liga y ranking juntos, una sola banda en
   } finally { m.desmontar(); }
 });
 
-test("★ las vistas pasan la decoración en las tres materias y en el perfil", () => {
+/*
+ * Orden de Mateo del 25-oct (d576e39): el índice de cada materia deja la liga
+ * y el ranking SIN decoración —el ranking estaba bien—; el perfil la conserva.
+ * Volver a encenderla en el índice es pasar otra vez la prop y cambiar esta
+ * prueba con la orden que lo pida.
+ */
+test("★ el índice de las materias va sin decoración (orden del 25-oct); el perfil la conserva", () => {
   const indice = readFileSync(new URL("../../TopicIndexView.jsx", import.meta.url), "utf8");
-  assert.match(indice, /<LigaBoard subjectId=\{subjectId\} decoracion=\{decoracionDe\(subjectId\)\} \/>/);
-  assert.match(indice, /decoracion=\{decoracionDe\(subjectId, \{ bucle: !tieneLigas\(subjectId\), fae: !tieneLigas\(subjectId\) \}\)\}/);
+  assert.match(indice, /<LigaBoard subjectId=\{subjectId\} \/>/);
+  assert.doesNotMatch(indice, /decoracion=\{/, "el índice volvió a pasar decoración a las tablas");
   assert.match(readFileSync(new URL("../../PerfilView.jsx", import.meta.url), "utf8"), /decoracion=\{decoracionDe\("general"\)\}/);
 });
 
