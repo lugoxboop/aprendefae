@@ -1,4 +1,4 @@
-import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { FAE } from "../../theme.js";
 import { Panel } from "../mecanicas/salaDeControl/marco.jsx";
 import { Pulsos } from "../mecanicas/corazon/juego.jsx";
@@ -91,9 +91,14 @@ const ESTILOS = `
 .fae-sec-nav { transition: transform 160ms ${CURVA}; }
 .fae-sec-nav:active:not([aria-disabled="true"]) { transform: scale(.97); transition-duration: 100ms; }
 .fae-sec-titular:focus-visible, .fae-sec-nav:focus-visible { outline: 2px solid #F8F9FA; outline-offset: 2px; }
-.fae-sec-figura { height: var(--fae-sec-alto-320, 150px); }
-@media (min-width: 375px) and (min-height: 640px) { .fae-sec-figura { height: var(--fae-sec-alto-375, 200px); } }
-@media (min-width: 760px) { .fae-sec-figura { height: 320px; } .fae-sec-raiz { max-width: 860px; margin: 0 auto; } }
+/*
+ * min-height y no height (#549): el hueco reservado es el mismo en todas las
+ * pantallas de la pieza (D5), pero si la figura de verdad mide más, empuja lo
+ * de abajo en vez de taparlo. Antes se salía de su caja y tapaba «Siguiente».
+ */
+.fae-sec-figura { min-height: var(--fae-sec-alto-320, 150px); }
+@media (min-width: 375px) and (min-height: 640px) { .fae-sec-figura { min-height: var(--fae-sec-alto-375, 200px); } }
+@media (min-width: 760px) { .fae-sec-figura { min-height: 320px; } .fae-sec-raiz { max-width: 860px; margin: 0 auto; } }
 @media (prefers-reduced-motion: reduce) {
   .fae-sec-g, .fae-sec--sale, .${CLASE_PASO}, .fae-sec--cierre .fae-sec-figura-viva { animation: none !important; }
   .fae-sec-nav { transition: none; }
@@ -191,10 +196,9 @@ export default function SecuenciaAprender({ temaId, piezas, final = "tema", onFi
   const [animando, setAnimando] = useState(false);
   const [anuncio, setAnuncio] = useState("");
   const [primeras, setPrimeras] = useState(() => new Set());
-  const [fijo, setFijo] = useState(null);
   const titular = useRef(null);
+  const figuraViva = useRef(null);
   const zona = useRef(null);
-  const hueco = useRef(null);
   const bloque = useRef(null);
   const cambio = useRef(false);
   const pendiente = useRef(null);
@@ -289,46 +293,71 @@ export default function SecuenciaAprender({ temaId, piezas, final = "tema", onFi
     if (e.key === "ArrowLeft") { e.preventDefault(); anterior(); }
   };
 
-  /* El bloque pegado, fijo por script (modo B de MaquinaPegada): FondoMateria tiene overflow hidden y sticky no pega. */
-  useLayoutEffect(() => {
-    let cuadro = null;
-    const calcular = () => {
-      cuadro = null;
-      const h = hueco.current; const z = zona.current; const b = bloque.current;
-      if (!h || !z || !b || typeof window === "undefined") return;
-      const alto = b.getBoundingClientRect().height;
-      const sitio = h.getBoundingClientRect().top;
-      const caja = z.getBoundingClientRect();
-      const va = sitio + alto > window.innerHeight && caja.top + alto < window.innerHeight;
-      setFijo((antes) => {
-        if (!va) return antes === null ? antes : null;
-        const nuevo = { left: caja.left + 1, width: caja.width - 2, alto };
-        return antes && ["left", "width", "alto"].every((k) => Math.abs(antes[k] - nuevo[k]) < 0.5) ? antes : nuevo;
-      });
-    };
-    const pedir = () => { if (cuadro === null) cuadro = requestAnimationFrame(calcular); };
-    calcular();
-    window.addEventListener("scroll", pedir, { passive: true });
-    window.addEventListener("resize", pedir);
-    const ro = typeof ResizeObserver !== "undefined" && zona.current ? new ResizeObserver(pedir) : null;
-    ro?.observe(zona.current);
-    return () => {
-      window.removeEventListener("scroll", pedir);
-      window.removeEventListener("resize", pedir);
-      ro?.disconnect();
-      if (cuadro !== null) cancelAnimationFrame(cuadro);
-    };
-  }, []);
+  /*
+   * El bloque pegado va con position: sticky y OCUPA SU SITIO en el flujo
+   * (#558, cambio 5 de Mai). Antes iba fijo por script y tapaba los últimos 69
+   * px del contenido. FondoMateria ya usa overflow-x: clip (no hidden), así que
+   * sticky vuelve a pegar a la ventana.
+   */
 
   const Figura = pantalla.Figura;
+  const Mensaje = pantalla.Mensaje ?? null;
   const setFigura = (valor) => setEstado((e) => cambiarFigura(e, piezas, valor));
+  /*
+   * Si la figura mide más que su hueco, en desarrollo se avisa: ya no tapa
+   * nada (empuja), pero la pantalla deja de caber y eso lo tiene que ver quien
+   * la diseña, no descubrirlo el estudiante.
+   */
+  useEffect(() => {
+    if (!import.meta.env?.DEV) return;
+    const viva = figuraViva.current;
+    const figura = viva?.parentElement;
+    if (!viva || !figura || typeof getComputedStyle !== "function") return;
+    const reserva = parseFloat(getComputedStyle(figura).minHeight) || 0;
+    const mide = viva.scrollHeight;
+    if (reserva && mide > reserva + 1) {
+      console.warn(`[SecuenciaAprender] ${pieza.id} · pantalla ${estado.s + 1}: la figura mide ${mide} px y su hueco ${reserva}; empuja lo de abajo. Pide más altoFigura (tope 206/253) o mueve el mensaje a pantalla.Mensaje.`);
+    }
+  });
+
+  const propsFigura = {
+    estado: estado.estados[clave],
+    setEstado: setFigura,
+    paso: dados,
+    primeraVez,
+    reducido: conMovimientoReducido(),
+  };
   const primeraPantalla = !puedeRetroceder(estado);
   const textoSiguiente = literalSiguiente(estado, piezas, final);
+  /*
+   * La razón. En un cierre, que nunca espera, la zona es la del pie de fuente
+   * (§16 b del contrato): `pie`, o la `razon` del cierre (#536, Mello: antes
+   * solo se pintaba esperando, así que el pie de los cierres no salía en
+   * ninguna célula).
+   */
   const razon = espera
     ? pantalla.razon
     : totalPasos > 0 && dados < totalPasos
       ? `Paso ${dados + 1} de ${totalPasos}`
-      : null;
+      : pantalla.pie ?? (pantalla.tipo === "cierre" ? pantalla.razon ?? null : null);
+  /* El apoyo puede ser uno por paso (#558, cambio 6 de Mai): una sola zona que cambia al dar el paso. */
+  const apoyoDelPaso = Array.isArray(pantalla.apoyo) ? pantalla.apoyo[Math.min(dados, pantalla.apoyo.length - 1)] : pantalla.apoyo;
+  /*
+   * LA BANDA BAJO LA FIGURA TIENE UN SOLO DUEÑO A LA VEZ (#536, Watari; la
+   * cuenta de Hanayama en #513 §1-§2): el apoyo antes de responder y la
+   * devolución después. Una pantalla que declara `devolucion(estado)` recibe
+   * aquí, en el sitio del apoyo y fuera de la figura, la línea de consecuencia
+   * y el Veredicto pintado por la cáscara. Así la figura mide solo su modelo y
+   * sus controles, y `altoFigura` no tiene que sumar la devolución.
+   */
+  const devolucion = typeof pantalla.devolucion === "function" && propsFigura.estado?.ultimo
+    ? pantalla.devolucion(propsFigura.estado) ?? null
+    : null;
+  const apoyo = devolucion ? null : apoyoDelPaso;
+  /* Lo que bloquea (un Haz, o una apertura que predice) reserva 48 px de razón: la pista de 20 palabras son 3 renglones a 320 (#558). */
+  const reservaRazon = pantalla.tipo === "haz" || typeof pantalla.resuelta === "function" ? "48px" : "16px";
+  /* El alto de la figura: el de la pantalla si lo declara, si no el de la pieza. Mismo tope. */
+  const alto = altoFiguraDe(pantalla.altoFigura ? { id: `${pieza.id}/${pantalla.id}`, altoFigura: pantalla.altoFigura } : pieza);
 
   const clases = [
     "fae-sec-pantalla",
@@ -347,18 +376,30 @@ export default function SecuenciaAprender({ temaId, piezas, final = "tema", onFi
         data-secuencia={temaId}
         data-pieza={pieza.id}
         ref={zona}
-        style={{ "--fae-sec-alto-320": `${altoFiguraDe(pieza).a320}px`, "--fae-sec-alto-375": `${altoFiguraDe(pieza).a375}px` }}
+        style={{ "--fae-sec-alto-320": `${alto.a320}px`, "--fae-sec-alto-375": `${alto.a375}px` }}
       >
         <style>{ESTILOS}</style>
 
-        {piezas.length > 1 && (
-          <p data-contador-pieza style={{ margin: "0 0 4px", fontFamily: "Inter, sans-serif", fontSize: "12px", lineHeight: "16px", color: SECUNDARIO }}>
-            Pieza {estado.p + 1} de {piezas.length}
-          </p>
-        )}
-
-        <div id={`${id}-contador`} data-contador style={{ display: "flex", alignItems: "center", minHeight: "28px" }}>
-          <Pulsos total={total} hechos={estado.s} enCurso={estado.s + 1} etiqueta="Pantalla" />
+        {/*
+          Una sola fila: los Pulsos (o, si la pieza los omite, el contador solo
+          para el lector) y «Pieza k de N» a la derecha (#558, Mai §1.2: ahorra
+          el renglón de 20 px que llevaba aparte).
+        */}
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", minHeight: "28px" }}>
+          <div id={`${id}-contador`} data-contador style={{ display: "flex", alignItems: "center", flex: "1 1 auto", minWidth: 0 }}>
+            {pieza.sinPulsos ? (
+              <span style={{ position: "absolute", width: "1px", height: "1px", overflow: "hidden", clip: "rect(0 0 0 0)", whiteSpace: "nowrap" }}>
+                Pantalla {estado.s + 1} de {total}
+              </span>
+            ) : (
+              <Pulsos total={total} hechos={estado.s} enCurso={estado.s + 1} etiqueta="Pantalla" />
+            )}
+          </div>
+          {piezas.length > 1 && (
+            <p data-contador-pieza style={{ margin: 0, flex: "0 0 auto", fontFamily: "Inter, sans-serif", fontSize: "12px", lineHeight: "16px", color: SECUNDARIO, whiteSpace: "nowrap" }}>
+              Pieza {estado.p + 1} de {piezas.length}
+            </p>
+          )}
         </div>
 
         <div className="fae-sec-zona">
@@ -391,24 +432,40 @@ export default function SecuenciaAprender({ temaId, piezas, final = "tema", onFi
               aria-label={pantalla.nombreFigura}
               style={{ margin: "12px 0 0", position: "relative" }}
             >
-              <div className="fae-sec-figura-viva" style={{ width: "100%", height: "100%" }}>
-                <Figura
-                  estado={estado.estados[clave]}
-                  setEstado={setFigura}
-                  paso={dados}
-                  primeraVez={primeraVez}
-                  reducido={conMovimientoReducido()}
-                />
+              <div ref={figuraViva} className="fae-sec-figura-viva" style={{ width: "100%", height: "100%" }}>
+                <Figura {...propsFigura} />
               </div>
             </figure>
 
+            {/*
+              LA ZONA DE MENSAJE (#549), fuera de la figura: el veredicto, la
+              pista y la consecuencia de un Haz. Crece con lo que diga sin mover
+              el hueco de la figura, que es el que fija D5. Opcional: la pantalla
+              que no la necesita no la declara.
+            */}
+            {Mensaje && (
+              <div data-mensaje-zona style={{ marginTop: "8px" }}>
+                <Mensaje {...propsFigura} />
+              </div>
+            )}
+
             <div className={g(3)}>
-              {pantalla.apoyo && (
+              {devolucion && (
+                <div data-devolucion style={{ margin: "12px 0 0" }}>
+                  {devolucion.consecuencia && (
+                    <p data-consecuencia style={{ margin: 0, fontFamily: "Inter, sans-serif", fontSize: "14px", lineHeight: "22px", color: "#F8F9FA" }}>
+                      {devolucion.consecuencia}
+                    </p>
+                  )}
+                  <Veredicto estado={propsFigura.estado} pista={devolucion.pista} porque={devolucion.porque} />
+                </div>
+              )}
+              {apoyo && (
                 <p data-apoyo style={{ margin: "12px 0 0", fontFamily: "Inter, sans-serif", fontSize: "14px", lineHeight: "22px", color: "rgba(248,249,250,0.8)" }}>
-                  {pantalla.apoyo}
+                  {apoyo}
                 </p>
               )}
-              <p id={`${id}-razon`} data-razon style={{ margin: "8px 0 0", minHeight: "16px", fontFamily: "Inter, sans-serif", fontSize: "12px", lineHeight: "16px", color: SECUNDARIO }}>
+              <p id={`${id}-razon`} data-razon style={{ margin: "8px 0 0", minHeight: reservaRazon, fontFamily: "Inter, sans-serif", fontSize: "12px", lineHeight: "16px", color: SECUNDARIO }}>
                 {razon ?? ""}
               </p>
             </div>
@@ -420,17 +477,13 @@ export default function SecuenciaAprender({ temaId, piezas, final = "tema", onFi
           {anuncio}
         </p>
 
-        <div ref={hueco} style={{ height: fijo ? `${fijo.alto}px` : 0 }} />
         <div
           ref={bloque}
           data-navegacion
           style={{
-            display: "flex", gap: "12px", padding: "12px 0 0",
-            ...(fijo ? {
-              position: "fixed", bottom: 0, left: `${fijo.left}px`, width: `${fijo.width}px`, zIndex: 20,
-              padding: "12px clamp(14px, 2.2vw, 20px)", boxSizing: "border-box",
-              background: "linear-gradient(180deg, rgba(14,27,46,0.92), #0E1B2E)",
-            } : {}),
+            display: "flex", gap: "12px", padding: "12px 0",
+            position: "sticky", bottom: 0, zIndex: 20,
+            background: "linear-gradient(180deg, rgba(14,27,46,0), #0E1B2E 30%)",
           }}
         >
           <button
@@ -440,7 +493,8 @@ export default function SecuenciaAprender({ temaId, piezas, final = "tema", onFi
             aria-disabled={primeraPantalla ? "true" : undefined}
             aria-describedby={primeraPantalla ? `${id}-contador` : undefined}
             onClick={anterior}
-            style={{ ...BOTON_NAV, ...(primeraPantalla ? NAV_DESACTIVADO : NAV_ANTERIOR) }}
+            /* «Anterior» toma su ancho (mín. 96); el de avance, el resto (#558, cambio 9). BOTON_NAV no se toca. */
+            style={{ ...BOTON_NAV, flex: "0 0 auto", minWidth: "96px", padding: "0 16px", ...(primeraPantalla ? NAV_DESACTIVADO : NAV_ANTERIOR) }}
           >
             {LITERAL.anterior}
           </button>
@@ -451,7 +505,8 @@ export default function SecuenciaAprender({ temaId, piezas, final = "tema", onFi
             aria-disabled={espera ? "true" : undefined}
             aria-describedby={espera ? `${id}-razon` : undefined}
             onClick={siguiente}
-            style={{ ...BOTON_NAV, ...(espera ? NAV_DESACTIVADO : NAV_SIGUIENTE) }}
+            /* Sin partirse: «Siguiente pieza» medía 110,7 px en un botón de 124,5 y se partía. */
+            style={{ ...BOTON_NAV, flex: "1 1 auto", whiteSpace: "nowrap", padding: "0 12px", ...(espera ? NAV_DESACTIVADO : NAV_SIGUIENTE) }}
           >
             {textoSiguiente}
           </button>
