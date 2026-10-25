@@ -48,6 +48,9 @@ const { PIEZAS, FAE_POSES } = await import("../piezas.jsx");
 const { estadoRanking, estadoLiga } = await import("../poses.js");
 const { PIEZAS_POR_TABLA, decoracionDe } = await import("../../../data/decoracionTablas.js");
 
+/* La decoración tal cual la recibirían las tablas, sin pasar por decoracionDe (que hoy apaga Estratégico). */
+const directa = (clave, { bucle = true, fae = true } = {}) => ({ piezas: PIEZAS_POR_TABLA[clave], bucle, fae });
+
 const fila = (posicion, nickname, es_tuyo = false) => ({ posicion, nickname, fp: 1000 - posicion, es_tuyo, avatar_shape: null, avatar_palette: null, avatar_level: 1 });
 const FILAS = Array.from({ length: 10 }, (_, i) => fila(i + 1, `est_${i + 1}`, i === 5));
 const pedir = async () => ({ data: FILAS, error: null });
@@ -69,7 +72,7 @@ async function montar(arbol, session = { user: { id: "u" } }) {
 test("★ sin `decoracion`, las dos tablas pintan lo de antes; con ella, lo mismo más la banda", async () => {
   for (const [Tabla, props] of [[RankingFP, { subjectId: "contabilidad", titulo: "Ranking", nota: "Solo esta materia", pedir }], [LigaBoard, { subjectId: "pensamiento-estrategico", cargarTablero, cargarContexto }]]) {
     const sin = await montar(h(Tabla, props));
-    const con = await montar(h(Tabla, { ...props, decoracion: decoracionDe(props.subjectId) }));
+    const con = await montar(h(Tabla, { ...props, decoracion: directa(props.subjectId) }));
     try {
       assert.equal(sin.caja.querySelector("[data-banda]"), null, "sin la prop apareció una banda");
       const banda = con.caja.querySelector("[data-banda]");
@@ -145,11 +148,26 @@ test("★ con movimiento reducido, pose de reposo quieta (shouldRenderStatic)", 
   } finally { m.desmontar(); w.matchMedia = antes; globalThis.matchMedia = antes; }
 });
 
-test("★ índice de Estratégico: una sola banda en bucle y una sola Fae (en la liga)", async () => {
+test("★ índice de Estratégico: sin decoración hasta la placa de #545 (Shibukawa: 2,55:1 sobre el tablero)", async () => {
   const sid = "pensamiento-estrategico";
+  assert.equal(decoracionDe(sid), null);
+  assert.equal(decoracionDe(sid, { bucle: false, fae: false }), null);
+  /* La torre sigue en el perfil, que tiene fondo liso. */
+  assert.ok(decoracionDe("general").piezas.includes("torre"));
   const m = await montar(h("div", null,
     h(LigaBoard, { subjectId: sid, cargarTablero, cargarContexto, decoracion: decoracionDe(sid) }),
     h(RankingFP, { subjectId: sid, titulo: "R", pedir, decoracion: decoracionDe(sid, { bucle: false, fae: false }) })));
+  try {
+    assert.equal(m.caja.querySelectorAll("[data-banda]").length, 0);
+    assert.equal(m.caja.querySelectorAll("[data-fae]").length, 0);
+  } finally { m.desmontar(); }
+});
+
+test("★ cuando vuelva (con la placa): liga y ranking juntos, una sola banda en bucle y una sola Fae (en la liga)", async () => {
+  const sid = "pensamiento-estrategico";
+  const m = await montar(h("div", null,
+    h(LigaBoard, { subjectId: sid, cargarTablero, cargarContexto, decoracion: directa(sid) }),
+    h(RankingFP, { subjectId: sid, titulo: "R", pedir, decoracion: directa(sid, { bucle: false, fae: false }) })));
   try {
     const bandas = [...m.caja.querySelectorAll("[data-banda]")];
     assert.equal(bandas.length, 2);

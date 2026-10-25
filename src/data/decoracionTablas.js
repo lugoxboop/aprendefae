@@ -13,4 +13,5 @@ export const PIEZAS_POR_TABLA = {
 
 /* La decoración de una tabla: `decoracion = { piezas, bucle, fae }`, la única entrada de RankingFP y LigaBoard. */
 export const decoracionDe = (clave, { bucle = true, fae = true } = {}) =>
-  ({ piezas: PIEZAS_POR_TABLA[clave] ?? PIEZAS_POR_TABLA.general, bucle, fae });
+  clave === "pensamiento-estrategico" ? null /* hasta la placa de #545 (vida-visual §7) */
+  : ({ piezas: PIEZAS_POR_TABLA[clave] ?? PIEZAS_POR_TABLA.general, bucle, fae });

@@ -33,36 +33,28 @@
    "fae": 1
   },
   "320 v:n10:est": {
-   "bandas": 2,
-   "bandasEnBucle": 1,
-   "enBucle": 3,
-   "enBucleALaVista": 3,
-   "corriendo": 3,
+   "bandas": 0,
+   "bandasEnBucle": 0,
+   "enBucle": 0,
+   "enBucleALaVista": 0,
+   "corriendo": 0,
    "pausadas": 0,
-   "animaciones": 3,
-   "propiedades": [
-    "transform"
-   ],
-   "willChange": [
-    "auto"
-   ],
-   "fae": 1
+   "animaciones": 0,
+   "propiedades": [],
+   "willChange": [],
+   "fae": 0
   },
   "320 p:n10:est": {
-   "bandas": 2,
-   "bandasEnBucle": 1,
-   "enBucle": 3,
-   "enBucleALaVista": 3,
-   "corriendo": 3,
+   "bandas": 0,
+   "bandasEnBucle": 0,
+   "enBucle": 0,
+   "enBucleALaVista": 0,
+   "corriendo": 0,
    "pausadas": 0,
-   "animaciones": 3,
-   "propiedades": [
-    "transform"
-   ],
-   "willChange": [
-    "auto"
-   ],
-   "fae": 1
+   "animaciones": 0,
+   "propiedades": [],
+   "willChange": [],
+   "fae": 0
   },
   "320 r:n10:general": {
    "bandas": 1,
@@ -113,36 +105,28 @@
    "fae": 1
   },
   "375 v:n10:est": {
-   "bandas": 2,
-   "bandasEnBucle": 1,
-   "enBucle": 3,
-   "enBucleALaVista": 3,
-   "corriendo": 3,
+   "bandas": 0,
+   "bandasEnBucle": 0,
+   "enBucle": 0,
+   "enBucleALaVista": 0,
+   "corriendo": 0,
    "pausadas": 0,
-   "animaciones": 3,
-   "propiedades": [
-    "transform"
-   ],
-   "willChange": [
-    "auto"
-   ],
-   "fae": 1
+   "animaciones": 0,
+   "propiedades": [],
+   "willChange": [],
+   "fae": 0
   },
   "375 p:n10:est": {
-   "bandas": 2,
-   "bandasEnBucle": 1,
-   "enBucle": 3,
-   "enBucleALaVista": 3,
-   "corriendo": 3,
+   "bandas": 0,
+   "bandasEnBucle": 0,
+   "enBucle": 0,
+   "enBucleALaVista": 0,
+   "corriendo": 0,
    "pausadas": 0,
-   "animaciones": 3,
-   "propiedades": [
-    "transform"
-   ],
-   "willChange": [
-    "auto"
-   ],
-   "fae": 1
+   "animaciones": 0,
+   "propiedades": [],
+   "willChange": [],
+   "fae": 0
   },
   "375 r:n10:general": {
    "bandas": 1,
@@ -276,41 +260,41 @@
  "cpu": {
   "x6": {
    "sinBanda": [
-    2,
-    1,
-    2
-   ],
-   "conBanda": [
-    35,
-    34,
-    29
-   ],
-   "estiloConBanda": [
-    7,
-    5,
-    7
-   ],
-   "extraMediana": 32,
-   "porcentaje": 0.8
-  },
-  "x10": {
-   "sinBanda": [
-    5,
+    6,
     4,
     5
    ],
    "conBanda": [
+    68,
     53,
-    70,
-    61
+    64
    ],
    "estiloConBanda": [
-    6,
-    10,
-    8
+    13,
+    12,
+    18
    ],
-   "extraMediana": 56,
-   "porcentaje": 1.4
+   "extraMediana": 59,
+   "porcentaje": 1.5
+  },
+  "x10": {
+   "sinBanda": [
+    6,
+    7,
+    9
+   ],
+   "conBanda": [
+    90,
+    114,
+    115
+   ],
+   "estiloConBanda": [
+    17,
+    29,
+    29
+   ],
+   "extraMediana": 107,
+   "porcentaje": 2.7
   }
  },
  "capturas": [

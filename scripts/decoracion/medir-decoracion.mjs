@@ -13,7 +13,7 @@
  *   2. lo que se anima: solo transform; will-change en auto
  *   3. pausa fuera de pantalla y con la pestaña oculta
  *   4. pose quieta con movimiento reducido y en gama baja
- *   5. la parada de CPU (§11.6): el índice de Estratégico con y sin banda, a
+ *   5. la parada de CPU (§11.6): el ranking de Contabilidad con y sin banda, a
  *      CPU ×6 y ×10, 320×640 y dPR 2, 4 s, tres pasadas; tope +15 % a ×6
  *   6. capturas a 320 y 375 de los índices de las tres materias y del ranking
  *      del perfil, con la banda a la vista
@@ -72,7 +72,8 @@ async function abrir({ caso, banda = true, w = 320, h = 568, dpr = 1, reducido =
   const pg = await ctx.newPage();
   await ruta(pg);
   await pg.goto(`${BANCO}${banda ? "?banda=1" : ""}#${caso}`);
-  await pg.waitForSelector(banda ? "[data-banda]" : "[data-columna] > *, h3", { timeout: 120000 });
+  await pg.waitForSelector("[data-columna] > *, h3", { timeout: 120000 });
+  if (banda && !caso.endsWith(":est")) await pg.waitForSelector("[data-banda]", { timeout: 120000 });
   await pg.evaluate(() => document.fonts.ready);
   await pg.waitForTimeout(500);
   return { ctx, pg };
@@ -104,7 +105,8 @@ const salida = { bucle: {}, pausa: {}, quieta: {}, cpu: {}, capturas: [] };
 for (const [w, h] of [[320, 568], [375, 667]]) {
   for (const caso of ["v:n10:conta", "v:n10:macro", "v:n10:est", "p:n10:est", "r:n10:general"]) {
     const { ctx, pg } = await abrir({ caso, w, h });
-    await pg.evaluate(() => document.querySelector("[data-banda]").scrollIntoView({ block: "center" }));
+    /* Estratégico va sin banda hasta la placa de #545: se mira a sus tablas. */
+    await pg.evaluate(() => (document.querySelector("[data-banda]") ?? document.querySelector("h3"))?.scrollIntoView({ block: "center" }));
     await pg.waitForTimeout(400);
     salida.bucle[`${w} ${caso}`] = await estadoPiezas(pg);
     if (CAPTURAS && caso !== "p:n10:est") {
@@ -140,10 +142,10 @@ for (const [k, o] of [["movimientoReducido", { reducido: true }], ["gamaBaja", {
   await ctx.close();
 }
 
-/* 5: CPU. El índice de Estratégico (las dos tablas) con y sin banda. */
+/* 5: CPU. El ranking de Contabilidad con y sin banda (Estratégico va sin banda hasta la placa de #545). */
 const DUR = 4000;
 async function cpu(banda, freno) {
-  const { ctx, pg } = await abrir({ caso: "p:n10:est", banda, w: 320, h: 640, dpr: 2 });
+  const { ctx, pg } = await abrir({ caso: "r:n10:conta", banda, w: 320, h: 640, dpr: 2 });
   const cdp = await ctx.newCDPSession(pg);
   await cdp.send("Performance.enable");
   await cdp.send("Emulation.setCPUThrottlingRate", { rate: freno });
