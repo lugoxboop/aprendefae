@@ -9,6 +9,7 @@ import Logo from "./Logo.jsx";
 import RankingFP from "./ranking/RankingFP.jsx";
 import LigaBoard from "./ligas/LigaBoard.jsx";
 import BannerRepaso from "./repaso/BannerRepaso.jsx";
+import EstilosEntrada from "../estilo/EstilosEntrada.jsx";
 import { marcaDeTema } from "./shared/contenidoNuevo.jsx";
 import IdentificadorDeTema, { CSS_IDENTIFICADOR } from "./shared/IdentificadorDeTema.jsx";
 
@@ -43,10 +44,16 @@ export default function TopicIndexView({
    */
   const [abierta, setAbierta] = useState(null);
 
+  /*
+   * La entrada a la página (estilo/entrada.js) marca tres grupos —cabecera,
+   * lo transversal, la rejilla— con data-entrada. Solo se mueven cuando Ukyo
+   * encienda la entrada; hasta entonces el índice se abre como siempre.
+   */
   return (
     <>
       {/* Una vez por página, no una por tarjeta: el movimiento y sus colores. */}
       <style>{CSS_IDENTIFICADOR}</style>
+      <EstilosEntrada />
     <div
       style={{
         position: "relative",
@@ -80,7 +87,7 @@ export default function TopicIndexView({
           forma de ir al inicio. Lo demás de la regla —sin divisor, pastilla
           compacta, título que trunca el último— sí se aplica.
         */}
-        <div className="fae-cabecera-titulo fae-sin-volver" style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+        <div data-entrada="1" className="fae-cabecera-titulo fae-sin-volver" style={{ display: "flex", alignItems: "center", gap: "14px" }}>
           <span className="fae-cabecera-marca"><Logo variant="symbol" size={28} theme="dark" /></span>
           <h1
             style={{
@@ -105,13 +112,14 @@ export default function TopicIndexView({
         */}
         {/* `publicado: false` la deja fuera mientras se construye; el Repaso de Macro no lo lleva y se ve como siempre. */}
         {ACTIVIDADES_TRANSVERSALES.filter((a) => a.indice === subjectId && a.publicado !== false).map((a) => (
-          <div key={a.id} data-encabezado-materia style={{ width: "100%", maxWidth: "760px", margin: "clamp(18px, 3vh, 28px) auto 0" }}>
+          <div key={a.id} data-entrada="2" data-encabezado-materia style={{ width: "100%", maxWidth: "760px", margin: "clamp(18px, 3vh, 28px) auto 0" }}>
             {/* La expansión vive dentro del banner; el botón de empezar navega a la partida. */}
             <BannerRepaso actividad={a} onEmpezar={() => onOpenTopic(a.temaId)} />
           </div>
         ))}
 
         <div
+          data-entrada="3"
           style={{
             flex: 1,
             display: "flex",
