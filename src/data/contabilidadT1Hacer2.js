@@ -30,7 +30,8 @@ export const H1 = {
   dificultad: "medio",
   fpBase: 25,
   porPartida: 5,
-  objetivo: "Decide qué informe responde cada pregunta: un día, un año o el cambio entre dos días.",
+  /* El apoyo de Shoko (#539, D3): le dice al estudiante cómo leer la figura. */
+  objetivo: "Decide qué informe responde: una foto es un día, la franja del medio es todo el año.",
   consigna: "Lee la pregunta de cada persona. Toca el informe que la responde.",
 };
 
@@ -203,5 +204,3 @@ export const PAREJAS_H2 = [
   { par: ["asociaciones", "estado"], porque: "Los dos miran desde afuera. La asociación saca cifras de todo el sector; el Estado cobra impuestos y controla." },
 ];
 
-/* Alto reservado bajo la mesa para las preguntas de los dos lectores (Mai: 124; se mide en el PR). */
-export const ALTO_PREGUNTAS_H2 = 124;

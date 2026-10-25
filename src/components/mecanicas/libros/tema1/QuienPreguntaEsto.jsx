@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { User } from "lucide-react";
 import { barajar } from "../../../../utils/barajar.js";
 import { FAE } from "../../../../theme.js";
-import { H2, ASIENTOS_H2, ALTO_PREGUNTAS_H2 } from "../../../../data/contabilidadT1Hacer2.js";
+import { H2, ASIENTOS_H2 } from "../../../../data/contabilidadT1Hacer2.js";
 import { sortearH2, evaluarH2, enunciadoH2, asientoH2 } from "../../../../contabilidad/tema1Hacer2.js";
 import { puntuar, pesoDeCadaItem } from "../../../../contabilidad/tema1.js";
 import { Cierre } from "../../corazon/juego.jsx";
@@ -25,13 +25,13 @@ import {
  *
  * Arriba, el propósito con que alguien lee el informe: la cita del libro, pp.
  * 11-12 (en la segunda vuelta, contado como un caso). Debajo, la mesa: ocho
- * asientos en dos columnas, siempre en el mismo lugar y en el mismo orden
+ * asientos en una columna, siempre en el mismo lugar y en el mismo orden
  * —si cambiaran, la posición sería una pista—. En cada ficha solo cuatro
  * están activos, los de las opciones de Futaba; los otros cuatro, atenuados
  * (no es un error: nada de coral ni tachado).
  *
  * Un intento. El asiento correcto se enciende; si erró, el tocado queda como
- * fantasma. Debajo, en un sitio reservado, las preguntas en palabras de los
+ * fantasma. Debajo de la mesa, al responder, las preguntas en palabras de los
  * dos lectores —la del que eligió y la del que era—, o solo la del correcto
  * si acertó. R10: antes de responder no hay ninguna pregunta en pantalla:
  * son la pista.
@@ -151,7 +151,8 @@ export default function QuienPreguntaEsto({
               {enunciadoH2(f, vuelta)}
             </p>
 
-            <div role="group" aria-label={H2.rotuloMesa} data-mesa style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px" }}>
+            {/* Una sola columna (Shoko, #539): a 320, dos columnas cortaban «El Estado y las autoridades fiscales» y «Acreedores y proveedores». */}
+            <div role="group" aria-label={H2.rotuloMesa} data-mesa style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr)", gap: "6px" }}>
               {ASIENTOS_H2.map((a) => {
                 const activo = f.opciones.includes(a.id);
                 const estado = estadoDe(a.id);
@@ -168,7 +169,7 @@ export default function QuienPreguntaEsto({
                     onClick={() => responder(a.id)}
                     aria-label={a.nombre}
                     style={{
-                      minHeight: "50px", padding: "4px 8px", borderRadius: "10px", boxSizing: "border-box",
+                      minHeight: "44px", padding: "4px 10px", borderRadius: "10px", boxSizing: "border-box",
                       display: "flex", alignItems: "center", gap: "6px", textAlign: "left",
                       cursor: tocable ? "pointer" : "default", color: FAE.text,
                       fontFamily: INTER, fontSize: "12px", fontWeight: 600, lineHeight: 1.25,
@@ -186,10 +187,17 @@ export default function QuienPreguntaEsto({
               })}
             </div>
 
-            {/* Las preguntas de los lectores: su sitio está desde el principio (C3), y solo se llenan tras responder (R10). */}
-            <div data-renglon-preguntas style={{ minHeight: `${ALTO_PREGUNTAS_H2}px`, marginTop: "10px" }}>
-              {r && <Preguntas ficha={f} marcado={marcado} ok={r.ok} />}
-            </div>
+            {/*
+              Las preguntas de los lectores, solo tras responder (R10). Sin reserva
+              fija (Shoko, #539): la de 124 px, la del par más largo, dejaba un
+              hueco grande a 320. Aparecen en el mismo momento que la devolución,
+              debajo de la mesa, así que nada de lo que ya estaba a la vista se mueve.
+            */}
+            {r && (
+              <div data-renglon-preguntas style={{ marginTop: "10px" }}>
+                <Preguntas ficha={f} marcado={marcado} ok={r.ok} />
+              </div>
+            )}
           </div>
         </div>
 
