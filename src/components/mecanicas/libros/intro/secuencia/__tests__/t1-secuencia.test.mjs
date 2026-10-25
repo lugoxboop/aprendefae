@@ -169,14 +169,14 @@ test("★★ la bandera: sin ?aprender=secuencia, el estudiante sigue viendo las
   assert.equal(secuenciaActiva("?aprender=secuencia"), true);
 });
 
-test("★★ la secuencia monta las dos piezas y dice «Pieza 1 de 2»", () => {
+test("★★ la secuencia monta las piezas y dice «Pieza 1 de N»", () => {
   sessionStorage.clear();
   const caja = document.createElement("div");
   document.body.appendChild(caja);
   const raiz = createRoot(caja);
   act(() => raiz.render(h(SecuenciaAprender, { temaId: "introduccion-contabilidad", piezas: PIEZAS_T1_SECUENCIA, final: "tema" })));
   try {
-    assert.match(caja.querySelector("[data-contador-pieza]").textContent, /Pieza 1 de 2/);
+    assert.equal(caja.querySelector("[data-contador-pieza]").textContent, `Pieza 1 de ${PIEZAS_T1_SECUENCIA.length}`);
     assert.equal(caja.querySelector("h2").textContent, A1_SEC.pantallas.prediccion.titular);
   } finally { act(() => raiz.unmount()); caja.remove(); }
 });
@@ -229,4 +229,81 @@ test("★★ lote G de Futaba: sin valores, cu0-a1 sigue igual; con valores, ree
     assert.equal(n.caja.querySelectorAll("[data-linea]").length, 3);
     assert.equal(n.caja.querySelector("[data-pie-balance]").textContent, "y 4 líneas más");
   } finally { m.desmontar(); n.desmontar(); }
+});
+
+/* ═══════════ cu0-a2 · LA ECUACIÓN CONTABLE ═══════════ */
+const { PIEZA_ECUACION, FICHA_FRASE_A2 } = await import("../piezaEcuacion.jsx");
+const { A2_SEC } = await import("../../../../../../data/contabilidadT1Secuencia.js");
+const { ID_P2 } = await import("../../../../../../data/contabilidadPiezas234.js");
+
+test("★★★ cu0-a2: id publicado, diez pantallas, forma de la secuencia", () => {
+  assert.equal(PIEZA_ECUACION.id, ID_P2);
+  assert.equal(PIEZA_ECUACION.pantallas.length, 10);
+  assert.deepEqual(S.faltasDePieza(PIEZA_ECUACION), []);
+  assert.ok(PIEZAS_T1_SECUENCIA.includes(PIEZA_ECUACION));
+});
+
+test("★★★ cu0-a2 · R10: la torre de la predicción va sin tramos; el corte entra como respuesta", () => {
+  const m = montar(pantalla(PIEZA_ECUACION, "prediccion").Figura);
+  try {
+    assert.equal(m.caja.querySelectorAll("[data-tramo]").length, 0, "el corte de tramos contesta la predicción");
+    assert.equal(m.caja.querySelectorAll("[data-torre] [data-bloque]").length, 3);
+    tocar(m.caja.querySelector('[data-prediccion="Solo otros"]'));
+    assert.equal(m.caja.querySelectorAll("[data-tramo]").length, 2);
+    assert.ok(m.caja.querySelector("[data-respuesta-prediccion]").textContent.startsWith("Una parte la pusieron otros"));
+  } finally { m.desmontar(); }
+});
+
+test("★★ cu0-a2 · «Van al revés» en las paradas 6 y 7 (Mai, medidas §2)", () => {
+  for (const id of ["parada", "casos"]) {
+    const m = montar(pantalla(PIEZA_ECUACION, id).Figura);
+    try {
+      const textos = [...m.caja.querySelectorAll("[data-parada]")].map((b) => b.textContent);
+      assert.ok(textos.includes("Van al revés"), id);
+      assert.ok(!textos.some((t) => /Uno sube/.test(t)), id);
+      for (const t of textos) assert.ok(t.length <= 20, `${id}: «${t}»`);
+    } finally { m.desmontar(); }
+  }
+});
+
+test("★★★ cu0-a2 · parada (C2): pista al 1.er error; al 2.º se enciende «Crecen los dos» y el bloque entra en la torre", () => {
+  const pt = pantalla(PIEZA_ECUACION, "parada");
+  const m = montar(pt.Figura);
+  try {
+    assert.ok(m.caja.querySelector('[data-bloque="espera"]'));
+    tocar(m.caja.querySelector('[data-parada="no-cambia"]'));
+    assert.ok(m.caja.querySelector('[data-mensaje="error"]').textContent.includes("¿Lo nuevo hace la torre más alta o más baja?"));
+    assert.equal(pt.resuelta(m.estado), false);
+    tocar(m.caja.querySelector('[data-parada="uno-baja"]'));
+    assert.equal(m.caja.querySelector('[data-parada="crecen"]').dataset.estado, "acierto");
+    assert.equal(pt.resuelta(m.estado), true);
+    assert.equal(m.caja.querySelector('[data-bloque="espera"]'), null);
+  } finally { m.desmontar(); }
+});
+
+test("★★★ cu0-a2 · los cuatro casos: un hecho por paso, un ítem saltado vuelve antes, y solo con los cuatro queda resuelta", () => {
+  const pt = pantalla(PIEZA_ECUACION, "casos");
+  assert.equal(pt.pasos, 3);
+  const a = montar(pt.Figura, { paso: 1 });
+  try {
+    assert.equal(a.caja.querySelector("[data-hecho]").dataset.hecho, "cal-3", "el caso a sin responder vuelve antes que el b");
+    tocar(a.caja.querySelector('[data-parada="crecen"]'));
+    assert.equal(a.caja.querySelector("[data-hecho]").dataset.hecho, "cal-5", "resuelto el saltado, vuelve el del paso");
+    assert.equal(pt.resuelta(a.estado), false);
+  } finally { a.desmontar(); }
+  let estado = null;
+  for (const [k, id] of [[0, "crecen"], [1, "crecen"], [2, "bajan"], [3, "bajan"]]) {
+    const m = montar(pt.Figura, { paso: k, estado });
+    try {
+      tocar(m.caja.querySelector(`[data-parada="${id}"]`)); estado = m.estado;
+      if (k === 0) assert.equal(m.caja.querySelector("[data-caso]").textContent, "Aumento en activo y en pasivo", "al responder aparece el nombre del caso");
+    } finally { m.desmontar(); }
+  }
+  assert.equal(pt.resuelta(estado), true);
+  const f = montar(pt.Figura, { paso: 3, estado });
+  try { assert.ok(f.caja.querySelector("[data-al-final]").textContent.includes("suben o bajan juntos")); } finally { f.desmontar(); }
+});
+
+test("★★★ cu0-a2 · la capa 4: franja de 44 y las cuatro frases en flujo, todas con su devolución", () => {
+  capa4SinRecorte(pantalla(PIEZA_ECUACION, "frase").Figura, FICHA_FRASE_A2, "cu0-a2");
 });

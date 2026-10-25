@@ -75,11 +75,11 @@ export function Riel({ nodos = true, encendidos = 0, duda = null, vuelta = "tenu
  * sin fondo ni relleno, cuando la forma trae su propia tarjeta (la factura
  * llena los 144 de Mai) o cuando el ancho hace falta entero (la rejilla 2×2).
  */
-export function Escenario({ children, centrado = false, plano = false }) {
+export function Escenario({ children, centrado = false, plano = false, gap = 8 }) {
   return (
     <div data-escenario style={{
       ...(plano ? {} : HUNDIDO), flex: 1, minHeight: 0, boxSizing: "border-box", padding: plano ? 0 : "6px 8px",
-      display: "flex", flexDirection: "column", gap: "8px", justifyContent: centrado ? "center" : "flex-start",
+      display: "flex", flexDirection: "column", gap: `${gap}px`, justifyContent: centrado ? "center" : "flex-start",
       overflow: "hidden",
     }}>
       {children}
@@ -185,12 +185,12 @@ export function DevolucionParada({ estado, pista, porqueDe, acierto = null, chic
   return (
     <div data-devolucion-parada data-mensaje={ok ? "acierto" : "error"} role="status">
       <span style={{
-        display: "inline-flex", alignItems: "center", gap: "6px", padding: "2px 9px", borderRadius: "999px",
-        border: `2px solid ${color}`, color, fontFamily: INTER, fontSize: "13px", fontWeight: 600, lineHeight: "18px",
+        display: "inline-flex", alignItems: "center", gap: "6px", padding: chica ? "1px 8px" : "2px 9px", borderRadius: "999px",
+        border: `2px solid ${color}`, color, fontFamily: INTER, fontSize: chica ? "12px" : "13px", fontWeight: 600, lineHeight: chica ? "16px" : "18px",
       }}>
         <span aria-hidden="true">{ok ? "✓" : "✕"}</span>{ok ? "Correcto" : "No va aquí"}
       </span>
-      {texto && <p style={{ margin: "4px 0 0", fontFamily: INTER, fontSize: chica ? "12px" : "13px", lineHeight: chica ? "16px" : "18px", color: "rgba(248,249,250,0.85)" }}>{texto}</p>}
+      {texto && <p style={{ margin: chica ? "2px 0 0" : "4px 0 0", fontFamily: INTER, fontSize: chica ? "12px" : "13px", lineHeight: chica ? "16px" : "18px", color: "rgba(248,249,250,0.85)" }}>{texto}</p>}
     </div>
   );
 }
@@ -209,7 +209,7 @@ export function ParadaModelo({ estado, setEstado, opciones, correcta, pista, por
   const resuelta = paradaResuelta(e);
   return (
     <MarcoFigura>
-      <Escenario plano>
+      <Escenario plano gap={6}>
         {arriba}
         <Fila
           opciones={opciones}

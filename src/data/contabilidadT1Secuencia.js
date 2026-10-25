@@ -1,5 +1,6 @@
 import { ID } from "./contabilidadIntro.js";
 import { pantallasDe } from "./contabilidadT1Pantallas.js";
+import { ID_P2 } from "./contabilidadPiezas234.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -28,6 +29,11 @@ import { pantallasDe } from "./contabilidadT1Pantallas.js";
  * `razon` de cada Haz (por qué «Siguiente» espera, D11), el `nombreFigura`
  * (nombre accesible del <figure>, sin la respuesta: D9) y la invitación
  * «Toca la ficha». Todo lo demás es de Futaba o publicado.
+ *
+ * En cu0-a2, cu0-a3 y cu0-a4 (lote 6, segunda tanda) van escritos por Kaede,
+ * además, los textos marcados `/* CLAUDE *\/` al lado: los rótulos de los
+ * botones que se tocan en los Míralo (las fichas dicen qué se toca, no cómo se
+ * llama el botón) y las invitaciones «Toca la línea» y «Toca el informe».
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -190,5 +196,88 @@ export const OCHO_SEC = {
   corto: {
     propietarios: "Propietarios", acreedores: "Acreedores", empleados: "Empleados", asociaciones: "Asociaciones",
     clientes: "Clientes", administradores: "Administradores", inversionistas: "Inversionistas", estado: "El Estado",
+  },
+};
+
+/* ═══════════════════ cu0-a2 · LA ECUACIÓN CONTABLE (10) ═══════════════════ */
+/*
+ * Titulares, apoyos, rótulos y pasos: Futaba (b-t1-aprender-titulares-futaba.md),
+ * con «Uno sube, otro baja» → «Van al revés» en a2 · 6 y a2 · 7 (Mai, medidas §2).
+ * Las respuestas, pistas y devoluciones salen de la ficha (deFicha(ID_P2, n)).
+ */
+export const A2_SEC = {
+  id: ID_P2,
+  pantallas: {
+    prediccion: {
+      titular: "¿Quién puso todo esto?",
+      apoyo: "Esta torre es todo lo que tiene una empresa. ¿Quién crees que la puso?",
+      opciones: ["Solo los dueños", "Solo otros", "Dueños y otros"],
+      nombreFigura: "Una torre de tres bloques, sin rótulos, y tres respuestas para elegir.",
+    },
+    nombres: {
+      titular: "Tres nombres para la misma torre",
+      apoyo: "Toca cada tramo: lo que tiene, lo que debe y lo de los dueños.",
+      /* CLAUDE: los rótulos de los tres botones, tomados del apoyo de Futaba. */
+      rotulos: { activo: "Lo que tiene", pasivo: "Lo que debe", patrimonio: "Lo de los dueños" },
+      nombreFigura: "La torre y tres partes de ella para tocar.",
+    },
+    ecuacion: {
+      titular: "La ecuación contable",
+      apoyo: "Lo que tiene es igual a lo que debe más lo de los dueños: la ecuación contable.",
+      nombreFigura: "La ecuación con sus tres nombres para tocar, y la torre.",
+    },
+    dosLados: {
+      titular: "Un lado dice qué hay; el otro, de dónde salió",
+      apoyo: "A eso le vamos a decir los dos lados. Toca cada uno.",
+      /* CLAUDE: lo que dice cada lado de la torre antes de tocarlo. */
+      rotulos: { izquierda: "Lado izquierdo", derecha: "Lado derecho" },
+      nombreFigura: "La torre con sus dos lados para tocar, y la cita del libro.",
+    },
+    dosVeces: {
+      titular: "La misma torre, contada dos veces",
+      apoyo: "Léela por la izquierda, luego por la derecha. Las dos lecturas llegan a la misma altura.",
+      /* Los tres pasos de Futaba: los dos primeros los da el toque de cada lectura; el tercero, «Siguiente». */
+      pasos: [
+        "Ahora léela por la izquierda. Cada bloque dice qué cosa es. Eso es el activo.",
+        "Por la derecha, cada tramo dice quién lo puso: otros, o los dueños.",
+        "Misma torre, misma altura. Son las mismas cosas contadas dos veces.",
+      ],
+      rotulos: { izquierda: "Por la izquierda", derecha: "Por la derecha" }, /* CLAUDE */
+      nombreFigura: "La torre con sus dos lecturas para tocar.",
+    },
+    parada: {
+      titular: "Compra algo y lo queda debiendo",
+      apoyo: "La empresa compra algo nuevo y lo queda debiendo. ¿Qué crees que le pasa a la torre?",
+      rotulos: { crecen: "Crecen los dos", "uno-baja": "Van al revés", "no-cambia": "No cambia" },
+      /* El tramo nuevo de la derecha, como lo nombra la ficha (a2 · 11, `ve`). */
+      vendedor: "del vendedor",
+      razon: "Elige qué crees que le pasa a la torre.",
+      nombreFigura: "La torre con un bloque nuevo esperando encima.",
+    },
+    casos: {
+      titular: "Cuatro hechos, cuatro casos",
+      apoyo: "Lee cada hecho. ¿Qué crees que le pasa a la torre?",
+      rotulos: { crecen: "Crecen los dos", bajan: "Bajan los dos", "al-reves": "Van al revés" },
+      razon: "Responde los cuatro hechos para seguir.",
+      nombreFigura: "Un hecho de la empresa, tres respuestas y la torre.",
+    },
+    regla: {
+      titular: "Suben juntos, bajan juntos o quedan igual",
+      apoyo: "Nunca vas a ver que uno suba y el otro baje.",
+      /* CLAUDE: las tres flechas de Mai (↑↑ ↓↓ ==), con las palabras del titular de Futaba. */
+      rotulos: { suben: "↑↑ Suben juntos", bajan: "↓↓ Bajan juntos", igual: "= = Quedan igual" },
+      nombreFigura: "La torre y tres movimientos para tocar.",
+    },
+    frase: {
+      titular: "¿Por qué los dos lados dan igual?",
+      apoyo: "Elige la frase que mejor lo explica.",
+      razon: "Elige una frase para seguir.",
+      nombreFigura: "Cuatro frases para elegir.",
+    },
+    puente: {
+      titular: "La torre es una foto de un día",
+      apoyo: "En la siguiente pieza vas a ver qué pasa entre dos fotos.",
+      nombreFigura: "La torre leída por los dos lados, con un reloj que marca un día.",
+    },
   },
 };
