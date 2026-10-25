@@ -306,6 +306,34 @@ tres vistas de Estratégico. Antes de fusionar su relieve hay que correr
 `scripts/vida/sonda-telon.mjs` sobre una pantalla de camino de esa materia; si
 dice EXIGE PLACA, el camino necesita su panel opaco y eso es trabajo aparte.
 
+### 4.3 El camino de actividades, que es donde va el volumen
+
+Es el único encargo de volumen vivo (Mateo, 25-oct). Lo construye Erwin en
+`CaminoHacer.jsx`, que es de las tres materias.
+
+| Parte | Cara | Canto | Elevación |
+|---|---|---|---|
+| Nodo | N2 `#344968` | N1 `#1D3557` | 4 px |
+| Nodo actual | N2 | N1 | 6 px, **uno por pantalla** |
+| Nodo hecho | teal `#2A9D8F` | `#1D6B61` | 4 px |
+| Línea hecha | `#3D516F` | — | sin canto |
+| Línea pendiente | `#1D3557` | — | sin canto |
+
+- **El canto de un nodo es un segundo círculo detrás**, desplazado 4 px abajo.
+  No es una sombra ni un borde. Contorno de silueta de 1 px en los dos.
+- **La marca de hecho va dentro de la cara**, en trazo `#0E1B2E` sobre el teal.
+  **Nunca un candado:** ningún nodo se bloquea jamás, y el relieve cambia cómo
+  se ve, no si se puede pulsar.
+- **Al pulsar:** la cara baja `translateY(4px)` en 100 ms, vuelve en 160 con
+  `cubic-bezier(.3,.9,.4,1)`, y el canto se queda quieto.
+- **El contenedor reserva los 4 px siempre**, también donde el nodo esté en E1:
+  si no, el camino se descoloca al pasar un nodo a hecho.
+- **Las líneas no llevan canto** —una línea no tiene volumen— y su grosor no
+  cambia entre hecha y pendiente: lo que cambia es el color.
+- **Sobre el ajedrez:** el camino de Estratégico cae sobre madera clara. Antes
+  de fusionar, `node scripts/vida/sonda-telon.mjs` en una pantalla de camino de
+  esa materia; si dice EXIGE PLACA, el camino lleva panel opaco N1 detrás (§2.4).
+
 ### 4.2 Una palabra que no puede significar dos cosas
 
 **Placa** es, y solo es, el **panel opaco que va detrás de un grupo** para que

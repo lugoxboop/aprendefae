@@ -82,6 +82,24 @@ trazo 1,5 px `#CBDCF2` a 0,45; tres movimientos (flota, gira, pulso) con una
 sola keyframe por pantalla variando duración y retardo. Entrada de página:
 cuatro grupos, 0/80/160/240 ms, 280 ms, total 520.
 
+**El camino de actividades** (`prompts/vida-visual-v1.md` §4.3). Es el único
+sitio donde entra volumen ahora mismo; lo construye Erwin en `CaminoHacer.jsx`,
+compartido por las tres materias. **Nodo:** círculo, cara N2 `#344968` sobre
+canto N1 `#1D3557`, E2 **4 px**, contorno de 1 px `rgba(248,249,250,.18)`; el
+canto es un segundo círculo detrás, desplazado 4 px abajo, nunca una sombra.
+**Nodo actual:** E3 **6 px**, uno solo por pantalla. **Nodo hecho:** la marca va
+**dentro** de la cara, en trazo `#0E1B2E` sobre cara teal `#2A9D8F` con canto
+`#1D6B61`; nunca un candado, ningún nodo se bloquea jamás. **Al pulsar:** la
+cara baja `translateY(4px)` en 100 ms y vuelve en 160 con la curva de la casa;
+el canto no se mueve. Reserva siempre los 4 px en el contenedor, también en los
+nodos E1, para que el camino no se descoloque al cambiar de estado. **Las
+líneas:** sin canto —una línea no tiene volumen—, 1 px más claras que el canto
+del nodo (`#3D516F`) en el tramo ya hecho y `#1D3557` en el que falta; el
+grosor no cambia. **Sobre el ajedrez:** el camino de Estratégico se ve sobre
+madera clara, así que antes de fusionar se corre `node
+scripts/vida/sonda-telon.mjs` en una pantalla de camino de esa materia y, si
+dice EXIGE PLACA, el camino lleva su panel opaco N1 detrás.
+
 **Identificadores de tema** (`prompts/logitos-temas-conta-v1.md`). 64×64, trazo
 de 3 px, un solo elemento en el acento y es el único que se mueve (400 ms, una
 vez, solo con hover/foco/pulsación). **Reserva el objeto antes de dibujar**:
