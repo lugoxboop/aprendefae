@@ -142,8 +142,8 @@ export const P2_TEXTOS = {
     apoyo: "Toca cada tarjeta para ver un ejemplo del tema. Ingresos: «los valores que recibe una empresa por la venta de bienes o servicios». Gastos: «los desembolsos necesarios para generar los ingresos». Costos: «desembolsos capitalizables».",
     /* Los ejemplos de cada tarjeta, de la columna VE de Near v2 (P2·5). */
     tarjetas: [
-      /* PENDIENTE_DE_NEAR: la v2 no trae el ejemplo de Ingresos (solo «salarios y arriendos» y «costo de ventas»). */
-      { nombre: "Ingresos", definicion: "los valores que recibe una empresa por la venta de bienes o servicios", ejemplo: null },
+      /* Near T2-8 (c-t2-8-near-textos.md): el ejemplo de Ingresos. */
+      { nombre: "Ingresos", definicion: "los valores que recibe una empresa por la venta de bienes o servicios", ejemplo: "ingresos por servicios, como lavar un auto en Lavado de Autos Mateo" },
       { nombre: "Gastos", definicion: "los desembolsos necesarios para generar los ingresos", ejemplo: "salarios y arriendos" },
       { nombre: "Costos", definicion: "desembolsos capitalizables", ejemplo: "costo de ventas" },
     ],
@@ -221,7 +221,8 @@ export const P3_TEXTOS = {
     opciones: ["Sí, ganó $500", "No, nació una deuda"],
     razon: "Elige si la empresa ganó o no.",
     pista: "Pista: mira qué más aparece cuando entra el préstamo.",
-    porque: "Viste entrar plata y pensaste en ganancia. Nace una deuda de $500: los dos lados de la ecuación suben juntos.",
+    /* Near T2-8: reemplaza la devolución de la v2, de 20 palabras. */
+    porque: "Entrar plata no es ganar. Nace una deuda de $500, y los dos lados suben.",
     consecuencia: "Así habría un ingreso que nadie ganó.",
   },
   gastosIngresos: {
@@ -240,8 +241,8 @@ export const P3_TEXTOS = {
     /* Near v2: «Porque Maquinaria vive a la derecha» / «…a la izquierda» / «…en el haber». La b es la buena. */
     opciones: ["Porque Maquinaria vive a la derecha", "Porque Maquinaria vive a la izquierda", "Porque Maquinaria vive en el haber"],
     correcta: 1,
-    /* PENDIENTE_DE_NEAR: la v2 trae la devolución de la a y la c, pero no la pista del primer error. */
-    pista: null,
+    /* Near T2-8: la pista del primer error. */
+    pista: "Pista: mira en qué lado de la ecuación vive Maquinaria.",
     porque: "Confundiste dónde vive con dónde se anota. El activo vive a la izquierda.",
   },
   cierre: {
@@ -385,7 +386,4 @@ export const P5_TEXTOS = {
  * Lo que falta, con quién lo debe. La prueba lo nombra en rojo mientras esta
  * lista no esté vacía; cada entrada se borra cuando su texto llega.
  */
-export const PENDIENTES_T2 = [
-  { de: "Near", marcador: "PENDIENTE_DE_NEAR", donde: "P2·5 Tres nominales", que: "el ejemplo de la tarjeta Ingresos (la v2 da «salarios y arriendos» y «costo de ventas»)" },
-  { de: "Near", marcador: "PENDIENTE_DE_NEAR", donde: "P3·7 ¿Por qué Maquinaria subió…?", que: "la pista del primer error (la v2 trae solo la devolución de la a y la c; T2-7 §6 no la añade)" },
-];
+export const PENDIENTES_T2 = [];

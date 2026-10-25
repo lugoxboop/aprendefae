@@ -56,9 +56,16 @@ const leer = (n) => readFileSync(`orquestador/conocimiento/paquetes/${n}`, "utf8
 const NEAR2 = leer("c-t2-2-near-lote.md");
 const NEAR3 = leer("c-t2-3-near-delta.md");
 const NEAR7 = leer("c-t2-7-near-delta.md");
+const NEAR8 = leer("c-t2-8-near-textos.md");
 const WATARI3 = leer("c-t2-3-watari-figuras.md");
 const WATARI7 = leer("c-t2-7-watari-figuras.md");
-const TODO_NEAR = [NEAR2, NEAR3, NEAR7].join("\n");
+const TODO_NEAR = [NEAR2, NEAR3, NEAR7, NEAR8].join("\n");
+/* Near T2-8: la tabla de tres textos, por pantalla (columna «texto», letra por letra). */
+const TEXTO_NEAR8 = (pantalla) => {
+  const fila = NEAR8.split("\n").find((l) => l.startsWith(`| ${pantalla} |`));
+  assert.ok(fila, `no encontré ${pantalla} en c-t2-8-near-textos.md`);
+  return fila.split(" | ")[2].trim();
+};
 
 const IDS = ["cu-a1-anatomia-de-una-cuenta", "cu-a2-dos-familias", "cu-a5-debe-y-haber", "cu-a3-partida-doble", "cu-a4-diario-y-mayor"];
 const tramo = (texto, desde, hasta) => {
@@ -382,6 +389,23 @@ test("✖ PENDIENTE_DE_WATARI: lo que la figura medida todavía no resuelve", ()
   assert.deepEqual(D.PENDIENTES_T2.filter((p) => p.de === "Watari").map((p) => `${p.donde}: ${p.que}`), [], "Falta de Watari");
 });
 
+test("★ los tres textos de Near T2-8, letra por letra contra c-t2-8-near-textos.md", () => {
+  /* P3·7: la pista del primer error, en la pieza jugada (no solo en el dato). */
+  const porQue = PIEZAS_SECUENCIA_T2[2].pantallas.find((x) => x.id === "por-que");
+  const pistaP37 = porQue.devolucion({ ...S.HAZ_INICIAL, eleccion: porQue.opciones[0] }).pista;
+  assert.equal(pistaP37, TEXTO_NEAR8("P3·7"), "P3·7: la pista del primer error");
+  assert.equal(D.P3_TEXTOS.porQue.pista, TEXTO_NEAR8("P3·7"));
+  /* P2·5: el ejemplo de la tarjeta Ingresos (versión larga, decisión de L medida a 320). */
+  const ingresos = D.P2_TEXTOS.tresNominales.tarjetas.find((t) => t.nombre === "Ingresos");
+  assert.equal(ingresos.ejemplo, TEXTO_NEAR8("P2·5"), "P2·5: el ejemplo de Ingresos");
+  /* P3·4: el porqué del segundo error, en la pieza jugada. */
+  const trampa = PIEZAS_SECUENCIA_T2[2].pantallas.find((x) => x.id === "la-trampa");
+  assert.equal(PIEZAS_SECUENCIA_T2[2].pantallas.indexOf(trampa), 4, "la trampa es P3·4");
+  const mala = trampa.opciones.find((o) => o !== trampa.buena);
+  assert.equal(trampa.devolucion({ ...S.HAZ_INICIAL, eleccion: mala }).porque, TEXTO_NEAR8("P3·4"), "P3·4: el porqué del 2.º error");
+  assert.equal(D.P3_TEXTOS.trampa.porque, TEXTO_NEAR8("P3·4"));
+});
+
 test("✖ PENDIENTE_DE_NEAR: lo que los paquetes todavía no traen", () => {
   const deNear = D.PENDIENTES_T2.filter((p) => p.de === "Near");
   /* Y lo que se ve en la pieza mientras tanto: P3·7 sin pista, P2·5 sin el ejemplo de Ingresos. */
@@ -389,4 +413,7 @@ test("✖ PENDIENTE_DE_NEAR: lo que los paquetes todavía no traen", () => {
   const sinPista = porQue.devolucion({ ...S.HAZ_INICIAL, eleccion: porQue.opciones[0] }).pista === null;
   const sinEjemplo = D.P2_TEXTOS.tresNominales.tarjetas.some((t) => !t.ejemplo);
   assert.deepEqual(deNear.map((p) => `${p.donde}: ${p.que}`), [], `Falta de Near${sinPista ? " — P3·7 juega sin pista al primer error" : ""}${sinEjemplo ? " — P2·5 abre Ingresos sin ejemplo" : ""}`);
+  /* Vaciar la lista no basta: lo que se ve en la pieza tiene que haber llegado. */
+  assert.equal(sinPista, false, "P3·7 juega sin pista al primer error");
+  assert.equal(sinEjemplo, false, "P2·5 abre Ingresos sin ejemplo");
 });
