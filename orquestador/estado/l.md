@@ -1,11 +1,10 @@
-2026-10-24 17:24 (hora Bogotá)
+2026-10-24 23:40 (hora Bogotá)
 - Tema: T2 cuentas-debe-haber (T5 y T7 ocultos por Erwin, nada borrado). Contabilidad tiene estudiantes: solo se agrega
-- #482 (subtemas de T2 para el Repaso Diario) y #494 (línea base de sondas): terminado. Fusionados con el PASA de Mello y CI verde (76be9fb, 525e52d); el Repaso lo conecta Erwin
-- Regla j (una sola pasada): Misa la tiene en #471; a Mello, Near y Watari les llega dentro de su próximo mensaje de lote, para no sumar un turno aparte
-- Lotes T2-1, T2-2 y T2-3: terminado (paquetes/c-t2-*). Auditoría de Mello: Las que vuelven a cero PASA; Cuadra por valor y Del diario al mayor FALLA, con correcciones aceptadas
-- T2-6 · Misa: aplicar en #499 las 3 correcciones de Mello (Iba aquí a 0,7 s, A6 en Bancos, Rv/Rt/Rl cortos) y sacarlo de borrador con CI verde: en curso
-- Lote T2-4 (Near y Watari): terminado (paquetes/c-t2-4-*)
-- Logito de T2 (#516): terminado, fusionado con el PASA de Mello (a5d9ae9); #512 cerrado
-- Fusión de las 3 Hacer nuevas (#499): bloqueado: espera #500 de Erwin (AGREGADAS_DESPUES y resumen.js), para que nadie pierda «tema completo»
-- Cáscara de las slides de Aprender: bloqueado: SecuenciaAprender es un componente compartido nuevo (#470) y lo construye Erwin
-- Auditoría T2-5 de Mello: terminado. Las que vuelven a cero PASA; Cuadra por valor y Del diario al mayor aprobadas con 3 correcciones de una línea (paquetes/c-t2-5-mello-auditoria.md)
+- Regla j: terminado, llegó a Misa (#471), Near y Watari; a Mello le llega con su próximo lote
+- #482 (subtemas para el Repaso), #494 (línea base) y #516 (logito CasilleroDeCuentas): terminado, fusionados con el PASA de Mello y CI verde
+- Las 3 Hacer nuevas (#499): construidas y aprobadas por Mello, con sus 3 correcciones ya aplicadas (a4ffbd8). Bloqueado: el CI no puede quedar verde ni fusionarse hasta #500 de Erwin (AGREGADAS_DESPUES, resumen.js y avance del panel docente), para que nadie pierda «tema completo»
+- T2-10 · Near: páginas del pie de cada pieza y 3 cuentas de reemplazo en Las que vuelven a cero (C1 con P2): en curso. Su delta T2-9 entra tal cual en #499
+- Aprender de T2 en SecuenciaAprender (#548, bandera apagada): verificación final de Mello hecha (paquetes/c-t2-9-mello-auditoria.md). FALLA por dos lotes comunes (barajar y pie de página) y correcciones de una línea; en curso, Misa las aplica (T2-10) y Mello confirma sobre el delta
+- Recortes de Near para CuatroCapas que esperaba Erwin: no se entregan este semestre (eran de T7 y T5, ocultos); avisado en #492
+
+- Encender la bandera de las slides: bloqueado: SecuenciaAprender no tiene zona para la devolución (#536 de Watari, issue miku de Misa), es de Erwin

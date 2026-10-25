@@ -62,6 +62,7 @@ const MODULOS = {
   "contabilidadTema3Cierre.js": await import("../../data/contabilidadTema3Cierre.js"),
   "contabilidadTema3Act7.js": await import("../../data/contabilidadTema3Act7.js"),
   "contabilidadTema3Act3.js": await import("../../data/contabilidadTema3Act3.js"),
+  "contabilidadTema3GastoOPago.js": await import("../../data/contabilidadTema3GastoOPago.js"),
 };
 function await_(m) {
   assert.ok(MODULOS[m], `falta importar ${m} en la salvaguarda`);
@@ -115,7 +116,7 @@ const TABLA_5 = [
   ["Mónica Galindo", "31 de diciembre", 1120000, false, "Arriendos recibidos por anticipado", "Ingresos por arriendos", "Basado en el libro, p. 173"],
   ["Mónica Galindo", "31 de diciembre", 386000, true, "Servicios recibidos por anticipado", "Ingresos por servicios", "Basado en el libro, p. 173"],
   ["Servicios del Caribe", "31 de marzo", 120000, true, "Servicios recibidos por anticipado", "Ingresos por servicios", "Basado en el libro, p. 172"],
-  ["San Calixto", "30 de junio", 5000, false, "Gastos arriendos", "Arriendos pagados por anticipado", "Libro, p. 144"],
+  ["San Calixto", "30 de junio", 5000, false, "Gasto arriendos", "Arriendos pagados por anticipado", "Basado en el libro, pp. 143-144"],
   ["Arriendos de la Costa", "30 de junio", 5000, false, "Arriendos recibidos por anticipado", "Ingresos por arriendos", "Libro, p. 146"],
 ];
 
@@ -166,7 +167,7 @@ test("★★★ los textos de Gen, textuales (y los hechos 4 y 5 de la act. 5 fi
   assert.deepEqual(A5.PASOS_ACT5, ["Mira cuánto se pagó o se recibió y por cuántos meses.", "Calcula cuánto le toca a este periodo.", "Pon un nombre en cada cuenta y escribe el valor."]);
   assert.deepEqual(A5.ITEMS_ACT5.map((x) => x.hecho), [
     "Mónica Galindo cierra el 31 de diciembre. Seguro de cinco años por $480.000, comprado el 1 de marzo",
-    "Mónica Galindo cierra el 31 de diciembre. Alquiler de equipos: $1.080.000 por seis meses, desde el 1 de agosto",
+    "Mónica Galindo cierra el 31 de diciembre. Alquiler de equipos: pagó $1.080.000 por seis meses, desde el 1 de agosto",
     "Mónica Galindo cierra el 31 de diciembre. Arriendo recibido por un año a $160.000 al mes, desde el 1 de junio",
     "Mónica Galindo cierra el 31 de diciembre. El 10 de septiembre recibió $830.000 por servicios que prestaría después. Al cierre ya se causaron $386.000 de ese valor.",
     "Servicios del Caribe cierra el 31 de marzo. El 15 de marzo recibió $500.000 por servicios futuros. Al cierre ya se causaron $120.000 de ese valor.",
@@ -423,7 +424,8 @@ test("★★ en el camino: la 4 detrás de «¿Cuándo se causa?» y la 5 delant
   assert.ok(i("t3-ajuste-diferido") < i("t3-que-le-toca"));
   const hacer = tema.actividades.filter((a) => a.clasificacion.tipo === HACER).map((a) => a.id);
   /* La act. 3, «El mismo hecho, dos empresas», entró entre la 5 y «¿Qué le toca…?» (Levi). */
-  assert.deepEqual(hacer.slice(0, 6), ["t3-ingreso-o-cobro", "t3-cuando-se-causa", "t3-ajuste-acumulado", "t3-ajuste-diferido", "t3-mismo-hecho", "t3-que-le-toca"]);
+  /* «¿Gasto o pago?» entró detrás de «¿Ingreso o cobro?» (#506). */
+  assert.deepEqual(hacer.slice(0, 7), ["t3-ingreso-o-cobro", "t3-gasto-o-pago", "t3-cuando-se-causa", "t3-ajuste-acumulado", "t3-ajuste-diferido", "t3-mismo-hecho", "t3-que-le-toca"]);
   assert.deepEqual(tema.actividades[i("t3-ajuste-acumulado")].clasificacion, { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 });
   assert.deepEqual(tema.actividades[i("t3-ajuste-diferido")].clasificacion, { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 });
   assert.deepEqual(JUEGOS.map((j) => j.id), hacer);

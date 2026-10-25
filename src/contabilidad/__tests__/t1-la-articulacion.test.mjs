@@ -43,7 +43,7 @@ const React = await import("react");
 const { createRoot } = await import("react-dom/client");
 const act = React.act ?? (await import("react-dom/test-utils")).act;
 
-const LaArticulacion = (await import("../../components/mecanicas/libros/tema1/LaArticulacion.jsx")).default;
+const { default: LaArticulacion, MS_HILO, flechaParaEnsenar } = await import("../../components/mecanicas/libros/tema1/LaArticulacion.jsx");
 const { MarcoLibros } = await import("../../components/mecanicas/bloques/marcos.jsx");
 const {
   evaluarT1_7, lineaPorId, lineasDe, informeQueRecibe, flechaEntre, aciertoDeFlecha,
@@ -209,6 +209,9 @@ test("★★ sin recuadro de vacío: la consigna de arriba dice qué tocar, y to
     assert.equal(caja.querySelectorAll("[data-vacio]").length, 0, "volvió el recuadro de vacío");
     assert.ok(!caja.textContent.includes("¿De dónde sale cada cifra?"), "volvió la pregunta del vacío");
     assert.equal(T1_7.pregunta, undefined);
+    /* C1: la consigna va plegada bajo «¿Cómo se juega?», y el contador dice la flecha. */
+    assert.equal(caja.querySelector("[data-encabezado] [data-contador]").textContent, "Flecha 1 de 5");
+    tocar(caja.querySelector("[data-encabezado] [data-como-se-juega]"));
     assert.equal(caja.querySelector("[data-encabezado] [data-consigna]").textContent,
       "Toca la línea de donde sale la flecha. Luego toca la línea a donde llega.");
     clic(caja, FLECHAS[0].desde);
@@ -264,6 +267,81 @@ test("★★★ las cinco flechas juntas solo se ven al final", () => {
     assert.ok(/cinco flechas/i.test(cierre), "el cierre dejó de decir que son cinco");
     assert.ok(/mismo informe/i.test(cierre), "el cierre dejó de decir que todas llegan al mismo");
   } finally { desmontar(); }
+});
+
+/* ═══════════════════ LOTE 4: UN INTENTO, EL REGISTRO Y LA MARCA DE LLEGADA ═══════════════════ */
+
+const esperar = (ms) => act(async () => { await new Promise((r) => setTimeout(r, ms)); });
+
+test("★★★ fallar dibuja el hilo correcto y el del estudiante como fantasma, y no hay reintento", async () => {
+  const { caja, desmontar } = montar();
+  try {
+    /* Utilidad neta → Efectivo: no se pasan nada (A). La correcta que sale de su origen es f1. */
+    clic(caja, "l-utilidad-neta");
+    clic(caja, "l-caja");
+    assert.equal(caja.querySelector("[data-hilo]").textContent, `${lineaPorId("l-utilidad-neta").nombre} → ${lineaPorId("l-utilidad-balance").nombre}`);
+    const fantasma = caja.querySelector("[data-hilo-fantasma]");
+    assert.equal(fantasma.textContent, `${lineaPorId("l-utilidad-neta").nombre} → ${lineaPorId("l-caja").nombre}`);
+    assert.match(fantasma.style.border, /dashed/);
+    assert.equal(fantasma.style.textDecoration, "line-through");
+    assert.equal(caja.querySelector('[data-linea="l-caja"]').dataset.estado, "fantasma");
+    assert.equal(caja.querySelector('[data-linea="l-utilidad-balance"]').dataset.estado, "acierto");
+    /* ✓ en los dos extremos de la correcta, ✕ en lo tocado que no era (Shoko, #535 b). */
+    const marca = (id) => caja.querySelector(`[data-linea="${id}"] [data-icono]`)?.dataset.icono ?? null;
+    assert.equal(marca("l-utilidad-neta"), "visto");
+    assert.equal(marca("l-utilidad-balance"), "visto");
+    assert.equal(marca("l-caja"), "tache");
+    assert.ok([...caja.querySelectorAll("[data-linea]")].every((b) => b.disabled), "se puede volver a intentar");
+    assert.ok(!caja.querySelector("[data-devolucion]").textContent.includes("❌"));
+    /* Los hilos se quedan hasta la flecha siguiente: la correcta completa, sin banda vacía; la llegada, en el destino correcto. */
+    await esperar(MS_HILO + 60);
+    assert.equal(caja.querySelectorAll("[data-hilo]").length, 1, "la flecha correcta se fue");
+    assert.equal(caja.querySelectorAll("[data-hilo-fantasma]").length, 1);
+    assert.equal(caja.querySelector('[data-linea="l-utilidad-balance"]').dataset.llegada, "si");
+    assert.equal(caja.querySelector('[data-linea="l-caja"]').dataset.llegada, undefined);
+  } finally { desmontar(); }
+});
+
+test("★★★ la marca de llegada se acumula flecha a flecha y todas caen en el mismo informe", () => {
+  const { caja, desmontar } = montar();
+  try {
+    for (const [k, f] of FLECHAS.slice(0, 4).entries()) {
+      clic(caja, f.desde);
+      clic(caja, f.hasta);
+      tocar(boton(caja, "Siguiente flecha"));
+      const marcadas = [...caja.querySelectorAll('[data-linea][data-llegada="si"]')].map((x) => x.dataset.linea);
+      assert.equal(marcadas.length, k + 1);
+      assert.ok(marcadas.every((id) => lineaPorId(id).informe === informeQueRecibe()));
+    }
+    /* La marca no dice de dónde vino: los orígenes no se marcan. */
+    for (const f of FLECHAS) assert.equal(caja.querySelector(`[data-linea="${f.desde}"]`).dataset.llegada, undefined);
+  } finally { desmontar(); }
+});
+
+test("★★ un intento: fallar una de cinco deja el 80 %", () => {
+  let recibido = null;
+  const caja = document.createElement("div");
+  document.body.appendChild(caja);
+  const raiz = createRoot(caja);
+  act(() => raiz.render(React.createElement(LaArticulacion, {
+    Marco: MarcoLibros, rotulo: "P", titulo: "P", acento: FAE.ambar, onCompletar: (pct) => { recibido = pct; },
+  })));
+  try {
+    clic(caja, "l-utilidad-neta"); clic(caja, "l-caja");
+    tocar(boton(caja, "Siguiente flecha"));
+    for (const [k, f] of FLECHAS.slice(1).entries()) {
+      clic(caja, f.desde); clic(caja, f.hasta);
+      tocar(boton(caja, k + 2 === FLECHAS.length ? "Ver el resultado" : "Siguiente flecha"));
+    }
+    assert.equal(recibido, 80);
+  } finally { act(() => raiz.unmount()); caja.remove(); }
+});
+
+test("★★ la flecha que se enseña en el error: la de su origen, luego la de su destino, sin repetir las dibujadas", () => {
+  assert.equal(flechaParaEnsenar("l-utilidad-neta", "l-caja", []).id, "f1");
+  assert.equal(flechaParaEnsenar("l-caja", "l-propiedad", []).id, "f4");
+  /* Al revés: f2 va de saldo final a efectivo. */
+  assert.equal(flechaParaEnsenar("l-caja", "l-saldo-final", []).id, "f2");
 });
 
 /* ═══════════════════ EL MODO INVERSO ═══════════════════ */

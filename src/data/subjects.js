@@ -542,13 +542,13 @@ export const SUBJECTS = {
            * La T1-3 no existe: está retenida por revisión del profesor. Por
            * eso el tema suma 260 FP y no 285.
            */
-          { id: "t1-desde-donde-preguntan", nombre: "¿Desde Dónde Preguntan?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
-          { id: "t1-que-entro-y-que-salio", nombre: "¿Qué Entró y Qué Salió?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
-          { id: "t1-donde-se-rompio", nombre: "¿Dónde se Rompió?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
-          { id: "t1-que-le-pasa-a-cada-uno", nombre: "¿Qué Le Pasa a Cada Uno?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
-          { id: "t1-la-ecuacion-en-movimiento", nombre: "La Ecuación en Movimiento", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
-          { id: "t1-en-cual-estado-aparece", nombre: "¿En Cuál Estado Aparece?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
-          { id: "t1-la-articulacion", nombre: "La Articulación", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
+          { id: "t1-desde-donde-preguntan", nombre: "¿Desde dónde preguntan?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
+          { id: "t1-que-entro-y-que-salio", nombre: "¿Qué entró y qué salió?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
+          { id: "t1-donde-se-rompio", nombre: "¿Dónde se rompió?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          { id: "t1-que-le-pasa-a-cada-uno", nombre: "¿Qué le pasa a cada uno?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          { id: "t1-la-ecuacion-en-movimiento", nombre: "La ecuación en movimiento", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
+          { id: "t1-en-cual-estado-aparece", nombre: "¿En qué estado aparece?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
+          { id: "t1-la-articulacion", nombre: "La articulación", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
         ],
       },
       {
@@ -615,6 +615,8 @@ export const SUBJECTS = {
           { id: "t3-a1-vender-no-es-cobrar", nombre: "Vender no es cobrar", clasificacion: { tipo: APRENDER } },
           /* Actividad 1 de Hacer, después de la pieza 1 (Levi). */
           { id: "t3-ingreso-o-cobro", nombre: "¿Ingreso o cobro?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
+          /* «¿Gasto o pago?», justo detrás de «¿Ingreso o cobro?» (paquete e3-t3-gasto-o-pago-v3, §1). Medio · 25 FP. Migración 0256. */
+          { id: "t3-gasto-o-pago", nombre: "¿Gasto o pago?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           /* La pieza 3; la 2 todavía no existe y su lugar queda libre. */
           { id: "t3-a3-lo-que-ya-paso", nombre: "Lo que ya pasó y no se ha pagado", clasificacion: { tipo: APRENDER } },
           /* La pieza 4, después de la 3 en Aprender. */

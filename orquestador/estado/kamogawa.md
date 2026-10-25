@@ -1,14 +1,20 @@
-2026-10-24 16:58 (hora Bogotá)
+2026-10-24 23:03 (hora Bogotá)
 - Vara nueva (24-oct): Mateo no da vistos buenos; se fusiona con PASA del auditor y CI verde. Las 6 correcciones de Takamura a contenido aprobado de T3 las decidió Kamogawa (se aplican); deja de haber BLOQUEADO-MATEO: terminado
 - r5 cerrado (r5-1 a r5-5 en Avanzado; tema oculto hasta el próximo semestre): terminado
 - T3 lote 1 (hilo de Aprender, Hacer nuevos, línea base, lenguaje visual), PR #484: terminado (fusionado)
 - T3 lote 2 (fichas de los Hacer nuevos con versión B, segundo caso de P5, P2 de Itagaki, auditoría en diseño de Takamura): terminado. Decisiones: el camino no se reordena; P2 nueva y «Del resultado a la caja» esperan el #468; primero va «¿Gasto o pago?»
 - T3 lote 3 (Takamura auditó el lote 2: N1-N9; Miyata e Itagaki entregaron sus v2): terminado
 - T3 lote 4: «¿Gasto o pago?» v3 con PASA de diseño de Takamura (condiciones C1-C6); paquete e3-t3-gasto-o-pago-v3.md fusionado (#521): terminado
-- T3, construcción (Ippo, sesión NUEVA de Claude Code programada para las 16:29; encargo en #506: logito, 6 correcciones y «¿Gasto o pago?» completa): en curso. La sesión vieja quedó congelada (#517)
+- T3 «¿Gasto o pago?» (#533): PASA de Takamura (Avanzado) y fusionada: terminado
+- T3, 6 correcciones de la línea base (#532): PASA con correcciones de Takamura (F2, pies pp. 143-144, captura de P1); Ippo las aplica en una sesión nueva y se fusiona sin otra vuelta: en curso
+- T3 «Del resultado a la caja»: paquete v4 con PASA de diseño (A1-A7) fusionado (#553); Ippo la construyó en #557; lote 10 de Takamura: aritmética, ventana y marca del error pasan. Faltan la leyenda del punteado sin punteado (decidí: la leyenda sale solo si hay punteado), la captura de «cuadra con errores» y 2 de PE. Takamura cerró A1-A8 y sumó 2 condiciones (A6 también en B; renglón tenue ≥4,5:1). Ippo ya empujó la leyenda y el renglón tenue (7d1c827, CI verde); una segunda sesión aplica las 2 condiciones. Con las capturas, Takamura da PASA en el mismo turno: en curso
 - T3, sonda medir-t3 (#489) y subtemas del Repaso Diario (#481): terminado (fusionados al volver main a verde)
-- T3, forma de los Aprender en secuencia: bloqueado: el patrón ya está (#470); espera el componente compartido SecuenciaAprender de Erwin
+- T3, Aprender en SecuenciaAprender: P1/P3/P4/P5 con PASA con condiciones de Takamura (D1: 60 palabras por paso visible; vuelve a 37 pantallas). Paquete consolidado en #562: PASA con condiciones en el lote 12 (decidí OPC_PREDICE en 3 botones, sin «Ninguna»). Faltan los cortes de las citas por frase completa (Itagaki) y la cita de la p. 123 (Miyata). Las CUENTAS_* y P6 están en el lote 13 de Takamura. Ippo monta en una sesión nueva (feat/conta-e3-secuencias-aprender); las CUENTAS_* ya llegaron (textos v3). Antes: Takamura auditaba la secuencia v3 de Itagaki y los textos de Miyata. La sonda de encaje (#550) tiene PASA con condiciones: que informe sin bloquear y que cuente como la secuencia; Ippo la ajusta: en curso
 - Capítulo 4 del libro: terminado (Mateo se lo pasó directo a Miyata; #468 cerrado)
-- T3 lote 5: mapa del cap. 4 de Miyata (huecos cerrados, 8 erratas), PR #527: en curso (Takamura lo audita; se fusiona con su PASA). Desbloquea P2 nueva, P6 y «Del resultado a la caja». F3 = «Gasto arriendos»
-- T3 lote 6: Miyata hace P2 nueva y P6 en formato secuencia, y la ficha v3 de «Del resultado a la caja»; Itagaki hace la secuencia de las 4 Aprender existentes sobre el patrón #470: en curso
+- T3 lote 5: mapa del cap. 4 (Miyata) con PASA con correcciones de Takamura, fusionado (#527): terminado. C2 decidido: «Del resultado a la caja» A usa las cifras de P5 (3.950 → 14.650)
+- T3 lote 6: Takamura auditó el contenido: P2 PASA con condiciones, «Del resultado a la caja» v3 PASA con condiciones, P6 NO PASA hasta C5. Itagaki entregó la secuencia v2 a 150/200 px (en auditoría). Lo que el componente necesita está en #534 para Erwin: terminado
+- T3 P2 nueva: PASA. P6 v2: PASA con condiciones (P6-10 pasa al Repaso Diario). Forma de P2/P6: PASA con condiciones (lote 11). Itagaki corrige P2-7, las opciones que tapan el modelo y P2-8; Miyata escribe CIERRE_P6 y el objetivo de P6-1: en curso
+- T3 secuencias: la v2 de Itagaki cumple en diseño (D5, D4, E8). Decidí S3: las preguntas «En una frase» pasan al Repaso Diario. P5-2 queda en 5 pasos (MAX_PASOS). Itagaki hace la v3 y Miyata los textos (37 titulares, opciones y pistas): en curso
 - Regla j (leer una vez, exprimir y dejarlo en el repo): pasada a los cuatro agentes: terminado
+
+- Encargo nuevo (Mateo vía Miku, 24-oct): volumen de los controles de actividad en las TRES materias (Macro, Contabilidad y Pensamiento Estratégico; se cae el opt-in, se añade sin reemplazar). inventario de controles de Ippo fusionado (#544); Itagaki cruza el inventario con su lista y la deja en 10 controles como máximo; la forma espera el lenguaje de volumen de Ukyo; la lista de los 10 controles de Itagaki está en revisiones/volumen/e-prioridad.md; los 5 compartidos se le piden a Erwin en #560; Takamura comprobará también una pantalla de PE antes de cada PASA: en curso

@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40" fill="none" stroke="#CBDCF2" stroke-opacity="0.45" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+  <!-- 4 · Moneda de canto · Macro · gira (scaleX 1 → .12 → 1); sin raya adentro: con ella se leía «1» o el botón de encendido -->
+  <circle cx="20" cy="20" r="14"/><circle cx="20" cy="20" r="10"/>
+</svg>

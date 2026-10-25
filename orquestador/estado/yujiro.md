@@ -1,10 +1,12 @@
-2026-10-24 17:16 (hora Bogotá)
+2026-10-24 22:05 (hora Bogotá)
 - Panel docente v1: terminado (fusionado #498: lo relevante arriba —Mi clase, Necesitan atención, La actividad que más costó—; las cifras son las mismas que las del panel viejo; sin escrituras nuevas ni cambios de esquema; PASA de Shibukawa)
 - Logitos de Contabilidad T1-T4: terminado (fusionado #519, PASA de Shibukawa y prueba a 32 px de Hanayama con su ajuste al cajón; el acento de T5 y T6 lo tiene la Célula B en #523)
-- T4 Aprender a tipo presentación: en curso (Baki construye #488 con el hilo, el diseño de Hanayama y los porqués de C2 de Katsumi, todo en main; depende de SecuenciaAprender #491 de Erwin)
+- T4 Aprender a tipo presentación: terminado (fusionado #488, 6885ab8: A0-A5 como slides sobre SecuenciaAprender, PASA de Shibukawa y CI verde; la misma deuda de foco en A3ElArqueo.jsx va en un PR aparte de Baki)
+- Decoración animada de las tablas de posiciones (las tres materias): en curso (Baki la construye con la especificación v3 de Hanayama, que ya está en main —a18cb04—, y la vida visual de Ukyo de #545; una sola prop opcional en RankingFP y LigaBoard; Erwin avisado en #547; la audita Shibukawa, con una pantalla de Estratégico)
+- Hallazgo de la célula: RankingFP a 320 px no muestra ningún nombre (el botón de ánimo deja el apodo en 0 px), en las tres materias: reportado a Erwin como urgente en #556; no lo tocamos, es compartido
 - Textos que faltaban en el panel y arreglos de la vista del estudiante: terminado (fusionado #525, PASA de Shibukawa y 0 toques bajo 44 px)
 - Ajuste del cajón de T4 a 32 px (patas sin tronco central): terminado (fusionado #528, PASA de Hanayama y Shibukawa)
-- Regla j (leer una vez y exprimir): en curso (Baki, Hanayama y Shibukawa la tienen; Katsumi la recibe con su próximo lote)
+- Regla j (leer una vez y exprimir) pasada a Baki, Katsumi, Hanayama y Shibukawa: terminado
 - Vara nueva (sin vistos buenos, fusión con PASA y CI verde) y ahorro de tokens pasados a Baki, Katsumi, Hanayama y Shibukawa: terminado
 - Etiquetado de subtemas de T4 para el Repaso Diario: terminado (#475; aviso a Erwin en #483)
 - T4 «Efectivo, caja menor y bancos» (6 Aprender, 5 Hacer, kit D1/D4/D6 en Avanzado): terminado

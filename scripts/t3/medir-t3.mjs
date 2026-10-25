@@ -50,6 +50,7 @@ import { ACT4_T3 } from "../../src/data/contabilidadTema3Act4.js";
 import { ACT5_T3 } from "../../src/data/contabilidadTema3Act5.js";
 import { ACT6_T3 } from "../../src/data/contabilidadTema3Act6.js";
 import { ACT7_T3 } from "../../src/data/contabilidadTema3Act7.js";
+import { ACT_GASTO_O_PAGO } from "../../src/data/contabilidadTema3GastoOPago.js";
 
 const RAIZ = resolve(import.meta.dirname, "../..");
 const require = createRequire(import.meta.url);
@@ -67,7 +68,7 @@ const ESPERA = 900;
 /* Las 4 piezas de Aprender (por su posición en la vista) y los 7 juegos de Hacer. */
 const PIEZAS = [
   ...[0, 1, 2, 3].map((k) => ({ id: `aprender-${k + 1}`, nombre: `Aprender · pieza ${k + 1}`, hash: "aprender", k })),
-  ...[ACT1_T3, ACT2_T3, ACT3_T3, ACT4_T3, ACT5_T3, ACT6_T3, ACT7_T3].map((a) => ({ id: a.id, nombre: `Hacer · ${a.nombre}`, hash: `hacer:${a.id}` })),
+  ...[ACT1_T3, ACT_GASTO_O_PAGO, ACT2_T3, ACT3_T3, ACT4_T3, ACT5_T3, ACT6_T3, ACT7_T3].map((a) => ({ id: a.id, nombre: `Hacer · ${a.nombre}`, hash: `hacer:${a.id}` })),
 ];
 
 const servidor = await createServer({ root: RAIZ, logLevel: "error", server: { port: 0, host: "127.0.0.1" } });

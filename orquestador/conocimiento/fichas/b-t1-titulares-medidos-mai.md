@@ -118,3 +118,68 @@ ninguna medida de este archivo; es de Shoko.
 Los cinco rótulos de §2 se construyen con el texto de la última columna —menos los carriles de
 a4·3, que no cambian de texto sino de disposición—; la zona de razón reserva 48 px en toda
 pantalla Haz; y la pantalla de capa 4 lleva figura de 44 y se desplaza.
+
+---
+
+## 7 · La pieza nueva «Ocho leen lo mismo»: cómo van las cuatro personas de cada paso
+
+Medido el 24-oct en la misma réplica y con el mismo método de §0. Nombres sin tocar, los que me
+pasó Sakuta: paso 1, Propietarios · Acreedores · Empleados · Asociaciones; paso 2, Clientes ·
+Administradores · Inversionistas · El Estado.
+
+### 7.1 Las tres disposiciones, medidas a 320 y a 375
+
+| Disposición | Columna a 320 | Caja de texto | Qué pasa | Bloque |
+|---|---|---|---|---|
+| **Fila de cuatro** | 58,5 | **34,5** | **No sirve:** «Administradores» mide **103,8 px**, tres veces la caja. O se sale del botón o estira la columna y mete desplazamiento horizontal | — |
+| **Apilada** | 258 | 234 | Todos los nombres caben en un renglón, pero el bloque es de **200 px**: la figura se iría a 256 y la pantalla se desplazaría **63 px**, con tope de 40 | 200 |
+| **2 × 2** ✓ | **125** (152,5 a 375) | 101 con relleno de 10 · **105 con relleno de 8** | Cabe. Celda de **44 px** con los nombres cortos | **96** |
+
+**Decido 2 × 2**, con celdas de 125 × 44 a 320 y 152,5 × 44 a 375, hueco de 8 y **relleno lateral
+de 8 px en vez de 10**: con 10, «Administradores» (103,8) se mete 2,8 px en el relleno —no se
+corta, le quedan 8,6 px hasta el borde, pero el aire deja de ser el del resto del sitio—; con 8 la
+caja es de 105 y el nombre entra limpio. Los demás nombres sobran de espacio.
+
+### 7.2 Por qué cabe sin tocar el marco
+
+La figura de esta pieza es **el informe (44) + 12 + la rejilla de cuatro** = **152 px**, dentro de
+la reserva estándar de **184** que ya tienen las otras cuatro piezas. La pantalla mide 628 a 320 y
+**no se desplaza** [fuente, réplica].
+
+**La `pregunta` del lector que se toca sale en la zona de apoyo, no dentro de la figura.** Las tres
+preguntas más largas del banco (I:153-194) miden **dos renglones (44 px)** a los dos anchos, y el
+apoyo ya reserva tres. Así la consecuencia queda entre lo que el estudiante tocó y «Siguiente»
+(E2) y la figura no cambia de alto.
+
+### 7.3 Si alguien prefiere los nombres publicados
+
+Medido también con los `nombre` completos de I:153-194 («Propietarios o accionistas»,
+«Acreedores y proveedores», «Inversionistas potenciales», «El Estado y las autoridades
+fiscales»), por si Shoko quiere que el Aprender y H2 digan lo mismo:
+
+| | Paso 1 | Paso 2 |
+|---|---|---|
+| Celda más alta a 320 | 54 (dos renglones) | **71** (tres renglones) |
+| Bloque a 320 | 106 | **123** |
+| Bloque a 375 | 106 | 106 |
+
+Con los publicados la figura llega a **179 px** en el paso 2 y **sigue cabiendo en los 184**: la
+pantalla tampoco se desplaza. O sea que **los dos juegos de nombres funcionan** y la decisión es
+de contenido, no de forma. No hace falta volver a medir.
+
+### 7.4 Lo decidido en otras piezas, para no contradecirlo (y lo que corrige de mis archivos)
+
+- **t1-5: siempre tres opciones de cifra.** Deja sin efecto el §7.1 de
+  `fichas/b-t1-p2-ajustes-shoko-mai.md`: no hay grupos de dos botones, así que el ancho del botón
+  no cambia y **Kaede construye un solo ancho**, el de la P2 original.
+- **t1-4: un solo «Anotar», y las barras se mueven después.** Corrige el §4 de ese mismo archivo:
+  las barras y el rótulo del caso **no se mueven al marcar**, sino al pulsar «Anotar», como en
+  t1-5. Lo demás de ese §4 —los cuatro casos reservados, los 224 px a 320, la línea «=» que deja
+  de marcarse— sigue igual.
+- **t1-6: las dos zonas una debajo de la otra, con el título a todo lo ancho.** Corrige el §3 de
+  ese archivo: con el título en una sola línea a 258 px ya no son dos columnas de 119, así que
+  **la medida de 305,8 del primer destino deja de valer** y hay que tomarla otra vez sobre la
+  disposición nueva. La tomo cuando Kaede la tenga armada.
+- **La secuencia dice «Pieza k de 5»**, no «de 4»: corrige la fila de progreso de
+  `fichas/b-t1-aprender-secuencia-forma-mai.md` §2. No cambia ninguna medida: sigue siendo un
+  renglón de 16 px.

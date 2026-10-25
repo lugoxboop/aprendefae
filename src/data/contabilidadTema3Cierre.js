@@ -89,7 +89,7 @@ export const PIEZA_CERRAR_EL_PERIODO = {
    */
   numero: 5,
   titulo: "Cerrar el periodo",
-  objetivo: "Al cerrar el periodo, las cuentas de ingresos y gastos quedan en cero. Lo que dejan es el resultado.",
+  objetivo: "Cierra las cuentas de ingresos y gastos y halla el resultado del periodo.",
   nombres: [
     {
       termino: "Cuentas del periodo",
@@ -102,7 +102,7 @@ export const PIEZA_CERRAR_EL_PERIODO = {
       termino: "Cerrar",
       definicion: "Cerrar una cuenta es dejarla en cero pasando su saldo a otra parte.",
       /* «Así lo dice el libro» (p. 123). */
-      delLibro: "«Cerrar una cuenta significa reducir su saldo a cero. Cuando se cierran los ingresos y los gastos, realmente lo que hacemos es enfrentar los ingresos con los gastos para determinar la utilidad o la pérdida» (p. 123).",
+      delLibro: "«Cerrar una cuenta significa reducir su saldo a cero. Cuando se cierran los ingresos y los gastos, realmente lo que hacemos es enfrentar los ingresos con los gastos para determinar la utilidad o la pérdida…» (p. 123).",
     },
     { termino: "Ganancias y pérdidas", definicion: "Ganancias y pérdidas es la cuenta donde se juntan los ingresos y los gastos del periodo." },
     /* «Lo que se planta», con el rótulo de las piezas anteriores. */

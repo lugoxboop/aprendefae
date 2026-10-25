@@ -122,3 +122,78 @@ Las correcciones de Mello son de una línea o de una celda, y ya vienen escritas
 - **Rv, Rt y Rl:** pierden la primera oración, que repetía lo que ya pinta el cotejo. Los textos son los de Mello.
 
 Con esto Mello aprueba las tres Hacer sin otra vuelta. #499 sigue esperando #500.
+
+---
+
+# Lote T2-7 · Aprender de T2 en SecuenciaAprender (24-oct-2026, 18:20)
+
+`SecuenciaAprender` ya está en main (#491) y su uso se explica en #492. La cáscara de las slides deja de estar bloqueada. Lo que exige el componente y no estaba en nuestro material:
+- **Titular de 10 palabras o menos en cada pantalla** (§3.3). Los cierres de Watari llevaban como titular la pregunta de Near, de más de 10 palabras: la pregunta pasa al apoyo y el titular la resume.
+- **Apoyo de una o dos frases** (25 palabras como objetivo) y **60 palabras por pantalla** como máximo.
+- **`razon`** en cada Haz: por qué «Siguiente» espera.
+- **Alto de figura de 206 px a 320 y de 253 a 375** como tope (Hanayama, #513, que entra con #524). Watari reservó hasta 218 a 320 (con el tope viejo de 220 de #470): P1 213, P3 214, P4 212 y P5 218 se pasan.
+- **Contabilidad tiene estudiantes:** la página vieja no se borra. La secuencia entra al lado, detrás de una bandera del tema, y el cambio se deshace en una línea. CuatroCapas no se toca.
+
+**Reparto:**
+- **Misa:** monta P1 (`cu-a1`) primero, mide las paradas del §12 (cabecera, bloque pegado, ficha de FP, titular más largo) y las deja en el PR. Después monta P2-P5. Usa `faltasDePieza(pieza) → []` en la prueba, y `responderHaz`, `resuelta` y `<Veredicto />` para el Haz. Las figuras salen de `c-t2-3-watari-figuras.md` y los textos, de la v2 de Near más los deltas T2-3. Lo que traigan Near y Watari en T2-7 entra encima.
+- **Near:** el titular de 10 palabras o menos de cada pantalla que se pase, el apoyo de los cierres y la `razon` de cada Haz. Solo el delta.
+- **Watari:** baja las figuras de P1, P3, P4 y P5 a 206 px o menos a 320. Solo el delta.
+- **Mello:** espera lo construido. La verificación final la hace sobre el PR.
+
+---
+
+# Entregas T2-7 · decisiones de L (24-oct-2026, 19:15)
+
+Entregas:
+- Near, `c-t2-7-near-delta.md`: titular de 10 palabras o menos, apoyo y razón para las 44 pantallas, y cuatro pares nuevos de pista y devolución. Ninguna pantalla pasa de 60 palabras.
+- Watari, `c-t2-7-watari-figuras.md` + `.html`: `altoFigura` medido por pieza (P1 183, P2 171/158, P3 180/173, P4 181/178, P5 197), todas por debajo de 206. La pastilla sale de la figura y las frases de consecuencia caben en una línea.
+- Misa, #548 en borrador: P1 montada, con las paradas del §12 medidas (cabecera de 105/107, bloque de 68 y titular de 54 caracteres en 3 renglones a 320).
+
+Decisiones:
+- **P4·8 y P4·9 van con ene-04** (1 contra 2, $4.800), como se decidió en T2-3. La maqueta de Watari todavía dice ene-03, y manda la decisión. P4·7 sigue con ene-30 y ene-03.
+- **`<Veredicto />` no va dentro de la figura** mientras Erwin no dé una zona para la devolución (#536 de Watari y el issue `miku` de Misa). Hasta entonces la secuencia queda detrás de la bandera apagada. Se puede fusionar con la bandera apagada, porque es reversible y ningún estudiante la ve.
+- **El porqué de P3·4 al segundo error** debe bajar a 16 palabras o menos (hoy ocupa 4 renglones a 320). Va para Near en su próximo lote.
+- **Mello verifica las cinco piezas juntas**, cuando Misa haya montado todo, para gastar un solo turno de auditoría.
+
+---
+
+# #548 con las cinco piezas · decisiones de L (24-oct-2026, 21:20)
+
+Misa montó las cinco piezas (4e817f3) con la bandera apagada, y `faltasDePieza` da `[]`. Quedan tres rojos honestos:
+- **P1·6, el selector de 231 px contra 183:** **no lleva selector.** La figura de P1·6 es la de Watari en T2-3: la T de Cuentas por pagar de Lavado, con «Sube» y «Baja». El selector entre Caja y Documentos por pagar era el ajuste A1·7 de T2-2, y la figura de T2-3 lo reemplazó; con el selector, el VE de Near para P1·6 sobra. Así se respeta el alto medido de 183.
+- **P3·7, la pista del primer error, y P2·5, el ejemplo de Ingresos:** los escribe Near (lote T2-8). En el mismo lote, Near acorta el porqué de P3·4 a 16 palabras o menos.
+
+---
+
+# #548 listo y traspaso de Misa · decisiones de L (24-oct-2026, 23:05)
+
+- **#548:** el CI está verde (41ae301) y salió de borrador con la bandera apagada. Mello hace la verificación final (lote T2-9).
+- **Traspaso de Misa:** fusionado (#568, `orquestador/traspasos/misa.md`).
+- **Pendientes de Near para #499** (lote T2-9): el porqué de los 4 ítems de origen, la frase de acierto de «revisar», el hecho de J3, el pie de fuente y el «Así se juega» de las tres.
+- **Pendientes de Watari que deja Misa:** los decide L, sin otra vuelta.
+  - **Pausa de 0,7 s con movimiento reducido:** se mantiene. Es tiempo de lectura, no movimiento: con movimiento reducido no hay animación, pero «Iba aquí» llega igual a los 0,7 s del error.
+  - **Especificidad de `.bar.fijo`:** es técnica y la resuelve Misa en el código. Lo que importa es que el tramo fijo de 28 px no lo pise otra regla. La prueba C5 de geometría lo vigila.
+
+---
+
+# Auditoría T2-9 de Mello y delta T2-9 de Near · decisiones de L (24-oct-2026, 23:45)
+
+Entregas:
+- Mello, `c-t2-9-mello-auditoria.md`: verificación final de #548. Las cinco piezas FALLAN por dos faltas comunes y algunas de una línea, con los textos ya medidos. Gancho, hilo, S9, D3, S11, S12 y S13 pasan, y la medida sale limpia.
+- Near, `c-t2-9-near-delta.md`: los cinco textos que faltaban en #499.
+
+**Se acepta todo lo de Mello.** En #548 (Misa, lote T2-10):
+- **Lote A, barajar:** un solo ayudante en `secuenciaComun.jsx`, que baraja una vez y guarda el orden en el estado. Aplica en P1·6, P2·4, P2·6, P2·7 (las seis cuentas), P3·4, P3·7, P4·6, P4·8 y P5·6. No se baraja lo que enseña el orden: el debe y el haber, las casas y los platillos, los cajones «Sigue» y «Vuelve a cero», y las predicciones. Lleva su prueba de barajado.
+- **Lote B, pie de página:** «Basado en el libro, pp. …» en la `razon` del cierre de cada pieza. Near confirma las páginas de cada una.
+- **P1:** las cifras de Caja salen de `DE_QUE_ESTA_HECHA.ejemplo`, y las del cierre ($50 y $30) pasan a `contabilidadT2Secuencia.js`.
+- **P3:** el porqué de «vive a la derecha», con el texto de Mello. El préstamo sale de `cu6-pagare` y del saldo inicial de Caja. P3·3 pierde su primera oración (queda en 33 palabras).
+- **P4:** las palabras se parten por palabra, no por letra (`overflow-wrap: break-word`, `hyphens: auto`, `lang="es"`). El control «Partida doble» pasa a «Aplicar la regla».
+- **P5·5:** se quita la orden repetida del apoyo (queda en 36 palabras).
+- Se quitan los comentarios `PENDIENTE_DE_REVISION` de los controles que ya pasaron.
+
+En #499 (C1 entre Aprender y Hacer):
+- **Cuadra por valor E3:** el cheque pasa a $760, con Cuentas por pagar 630 D, Hipoteca 400 D y Bancos 760 H. El porqué y el retro de Bancos son los de Mello.
+- **Las que vuelven a cero:** VC·1, VC·3 y VC·7 se repiten con P2. Se cambian por nominales que no estén en P2 (Mello propone Ingresos por intereses y Gastos por arriendo, más un segundo gasto en lugar de Costo de ventas), con los mismos saldos para que la utilidad siga en $10.500. Near escribe los nombres, los porqués y los retros.
+- **Textos de `c-t2-9-near-delta.md`:** entran tal cual (porqué de origen, acierto de «revisar», J3, pies de fuente y «Así se juega»).
+
+**Para Erwin, no es falla de la célula:** los nombres de fase de SecuenciaAprender («Mírelo funcionar», «Ahora pruebe usted») están en «usted», y el contenido va en «tú». Se avisa en #492.

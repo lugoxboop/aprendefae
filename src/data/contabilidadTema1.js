@@ -21,7 +21,7 @@ import { CALEJA, ACTIVO, PASIVO, PATRIMONIO } from "./contabilidad.js";
 
 export const T1_1 = {
   id: "t1-desde-donde-preguntan",
-  nombre: "¿Desde Dónde Preguntan?",
+  nombre: "¿Desde dónde preguntan?",
   subtema: "Usuarios de la información contable",
   dificultad: "facil",
   fpBase: 10,
@@ -107,20 +107,36 @@ export const ERROR_T1_1 = {
 /* El rótulo que acompaña al trazo cuando se enciende. */
 export const ROTULO_DEL_TRAZO = "esta decisión cambia lo que la empresa hace";
 
-export const ALT_T1_1 = "Cinco puntos en columna.";
+/*
+ * Los textos alternativos del anillo en fila (lote 4). Mientras se juega, el
+ * anillo dice qué tiene encendido (P2 de Mai, §5-9; la frase de la vuelta
+ * apagada es mía, para que el lector sepa que no se encendió). Al terminar,
+ * el final de Futaba (lote del 24-oct, §4).
+ */
+export const ALT_T1_1 = "Ciclo de cinco estaciones con las preguntas de las ocho personas en su zona. La vuelta solo se encendió con los administradores.";
+export const ALT_ANILLO_T1_1 = {
+  base: "Ciclo de cinco estaciones.",
+  [ZONA_DENTRO]: "La pregunta está adentro.",
+  [ZONA_FUERA]: "La pregunta está afuera.",
+  vueltaEncendida: "La vuelta está encendida: esta persona decide.",
+  /* Futaba (lote D, §3): «tenue» y no «apagada», porque la vuelta siempre se ve. */
+  vueltaApagada: "La vuelta está tenue: esta persona no decide qué hace la empresa.",
+};
+/* El rótulo de la ficha que entra a su zona (P2 de Mai, §10: texto nuevo para Shoko). */
+export const ROTULO_FICHA_T1_1 = "la pregunta";
 
 /* ═══════════════════ T1-2 · ¿QUÉ ENTRÓ Y QUÉ SALIÓ? ═══════════════════ */
 
 export const T1_2 = {
   id: "t1-que-entro-y-que-salio",
-  nombre: "¿Qué Entró y Qué Salió?",
+  nombre: "¿Qué entró y qué salió?",
   subtema: "Clasificación de las empresas según su actividad",
   dificultad: "facil",
   fpBase: 10,
   porPartida: 6,
   objetivo: "Descubre qué hace cada empresa, mirando qué recibe y qué entrega.",
   consigna: "Mira qué entra y qué sale. Luego toca qué clase de empresa es.",
-  pregunta: "¿Qué le pasó adentro a lo que entró?",
+  pregunta: "¿Qué clase de empresa es?",
 };
 
 export const CLASES = [
@@ -246,7 +262,7 @@ export const ROTULO_SALE = "SALE";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
- * EL CASO DE CALEJA DEL CAPÍTULO 2 — las ocho transacciones.
+ * EL CASO DE CALEJA — las ocho del ejemplo de la ecuación, pp. 36-40.
  *
  * ═══════════ POR QUÉ HAY DOS LISTAS Y NO UNA ═══════════
  *
@@ -268,6 +284,11 @@ export const ROTULO_SALE = "SALE";
  * con estas dos, la ecuación cierra en 465.000 = 465.000, que es la cifra que
  * el capítulo 2 pide. Hay una prueba que lo verifica. Lo que falta confirmar
  * contra el libro es cómo están redactadas y de cuánto es cada una.
+ *
+ * Futaba (24-oct, capítulo 2): los ocho totales coinciden con el libro
+ * (300.000 → … → 465.000) y la 7 está en la p. 39 tal como va aquí. El libro
+ * no le pone nombre a esta empresa: «Compañía Caleja Ltda.» es la del flujo de
+ * efectivo (pp. 62-63), que comparte las seis primeras.
  */
 export const TRANSACCIONES_CAP2 = [
   ...CALEJA.transacciones,
@@ -287,7 +308,7 @@ export const TRANSACCIONES_CAP2 = [
 
 export const T1_4 = {
   id: "t1-que-le-pasa-a-cada-uno",
-  nombre: "¿Qué Le Pasa a Cada Uno?",
+  nombre: "¿Qué le pasa a cada uno?",
   subtema: "El efecto de cada hecho sobre la ecuación",
   dificultad: "medio",
   fpBase: 25,
@@ -367,7 +388,7 @@ export const ALT_T1_4 = `Tres barras: ${enLista(PARTES.map((p) => p.idea))}.`;
 
 export const T1_5 = {
   id: "t1-la-ecuacion-en-movimiento",
-  nombre: "La Ecuación en Movimiento",
+  nombre: "La ecuación en movimiento",
   subtema: "La ecuación contable, hecho por hecho",
   dificultad: "dificil",
   fpBase: 50,
@@ -397,7 +418,8 @@ export const DESDE_EL_CORTO = 5;
 export const ERROR_T1_5 = {
   A: "❌ Los dos lados no dan igual. Faltan {Z} de un lado. Vuelve al hecho: lo que entró tiene que venir de algún lado.",
   C: "❌ Esa parte no cambia con este hecho. Tiene que quedar igual que antes. Si la mueves, se pierde el rastro de lo de atrás.",
-  B: "❌ Los dos lados dan igual, pero los números no son los de este hecho. Que dé igual no basta. Revisa cuánto entró o salió.",
+  /* Futaba, 24-oct (tabla sin emoji de Shoko): «Fíjate» en vez de «Revisa». */
+  B: "❌ Los dos lados dan igual, pero los números no son los de este hecho. Que dé igual no basta. Fíjate cuánto entró o salió.",
 };
 
 /*
@@ -429,18 +451,98 @@ export const ACIERTO_T1_5_FINAL = "✅ Y ahí está el mes completo. Lo que tien
 
 export const ALT_T1_5 = `Tres casillas para escribir: ${enLista(PARTES.map((p) => p.idea))}.`;
 
+/*
+ * ═══════════ T1-5 CON LAS DOS TORRES (P2 de Mai, 23-oct) ═══════════
+ *
+ * Los textos nuevos de la P2 (orquestador/conocimiento/fichas/
+ * b-t1-5-torres-p2-mai.md, §7), con las correcciones de la auditoría de
+ * Shoko (revisiones/b-t1-bancos-y-torres-shoko.md). PARA SHOKO. Lo publicado de arriba no se
+ * toca: los 8 hechos, PARTES y ERROR_T1_5 se reusan tal cual (la vista les
+ * quita el emoji al pintarlos), y `T1_5.consigna` se queda como estaba
+ * aunque la vista ya no la muestre.
+ *
+ * La consigna nueva está pendiente de que Futaba la confirme (§7). El
+ * acierto por hecho también: hasta que llegue, los hechos 1 a 7 dicen solo
+ * «Correcto.» y el 8 lleva ACIERTO_T1_5_FINAL sin el emoji (§0).
+ */
+export const TORRES_T1_5 = {
+  /* Textos del 24-oct (P2 de Mai, con los de Shoko; ficha b-t1-5-torres-p2-mai.md §7). */
+  consigna: "Lee el hecho. Di cuál no se mueve y el total nuevo de las otras dos.",
+  /* El «no» va en negrilla, no en mayúsculas (Shoko): la vista resalta la palabra `negrillaQuieta`. */
+  preguntaQuieta: "¿Cuál de las tres no se mueve con este hecho?",
+  negrillaQuieta: "no",
+  preguntaDireccion: "¿Cuál es el total nuevo de las otras dos?",
+  /* El rótulo de cada grupo de cifras: «{parte} · total nuevo». */
+  totalNuevo: "[PARTE] · total nuevo",
+  /* Debajo de la cifra del total de antes, y solo después de «Anotar» y si fue la elegida (Shoko: antes de responder delataba la opción). */
+  sinCambio: "el total anterior, sin cambio",
+  /* Futaba, b-t1-lote-24oct-futaba.md §3. La pista es del 1.er error; con un solo intento por decisión, va en «¿Cómo se juega?». */
+  pistaTotal: "Parte del total que ya tenía esa parte. ¿Le sumas o le restas lo de este hecho?",
+  /* La devolución de la decisión 2 según lo que marcó (no da la cifra: la pastilla ya dice «Iba aquí: …»). */
+  /*
+   * «monto» y «sinCambio» son de la auditoría de Shoko al #496 (24-oct, la
+   * segunda), que reemplazan los de Futaba y nombran la parte: {PARTE}.
+   * «contrario» es el de Futaba con la misma entrada «En {PARTE}:», para que
+   * ninguna línea quede sin decir de qué parte habla (lo que pidió Shoko).
+   */
+  devolucionTotal: {
+    contrario: "En {PARTE}: ese total va en el sentido contrario. Fíjate si con este hecho esa parte crece o se achica.",
+    /* Shoko, #496: la cifra elegida es el total de otra parte después del hecho. */
+    otraParte: "En {PARTE}: ese es el total de otra parte, no el de esta. Mira cuánto tenía esta antes del hecho.",
+    monto: "En {PARTE}: pusiste lo que se movió, no con cuánto quedó. Súmalo o réstalo al total que había.",
+    sinCambio: "En {PARTE}: el total ya no es el de antes.",
+  },
+  /*
+   * La C de las torres (Shoko, #496): la de ERROR_T1_5 hablaba de mover la
+   * parte quieta, que en este diseño el estudiante no hace. {ELEGIDA} y
+   * {CORRECTA} son las ideas de las partes.
+   */
+  errorQuieta: "{ELEGIDA} sí se mueve con este hecho. La que se queda igual es {CORRECTA}.",
+  /* «Correcto: se queda igual» e «Iba aquí: se queda igual»: lo que se pega a la palabra de la pastilla. */
+  quedaIgual: "se queda igual",
+  anotar: "Anotar",
+  siguiente: "Siguiente",
+  verResultado: "Ver el resultado",
+  contador: "Hecho [n] de [N]",
+  /* Lo que se lee sin ver las torres (§7). [X], [Y], [Z]: los tres totales; [T], el de cada lado. */
+  alt: "Lo que tiene, [X]; lo que debe, [Y], más lo que es de los dueños, [Z]: dan [T].",
+};
+
+/*
+ * La tercera opción cuando el total anterior es $0 (Shoko, #496): con solo dos,
+ * se acertaba la mitad de las veces al azar. Hecho 1: lo de un solo socio.
+ * Hecho 2, lo que debe: el total de la otra torre.
+ */
+export const TERCERA_OPCION_T1_5 = {
+  "cal-1": { [ACTIVO]: 100000, [PATRIMONIO]: 100000 },
+  "cal-2": { [PASIVO]: 325000 },
+};
+
+/* El acierto de cada hecho (Futaba, 24-oct). El del hecho 8 cierra el mes; el cierre de la partida sigue con ACIERTO_T1_5_FINAL. */
+export const ACIERTO_T1_5 = {
+  "cal-1": "Entró plata de los socios. Lo que tiene y lo de los dueños quedan en $300.000, y la empresa todavía no debe nada.",
+  "cal-2": "Entró un computador y nació una deuda por lo mismo. Lo que tiene sube a $325.000 y lo que debe, a $25.000.",
+  "cal-3": "Entró una máquina con plata del banco. Lo que tiene llega a $375.000 y lo que debe, a $75.000.",
+  "cal-4": "Salió plata para pagar parte del computador. Lo que tiene baja a $365.000 y lo que debe, a $65.000.",
+  "cal-5": "Un socio nuevo trajo un local. Lo que tiene sube a $465.000 y lo de los dueños, a $400.000.",
+  "cal-6": "Le devolvieron plata a un socio. Lo que tiene baja a $415.000 y lo de los dueños, a $350.000.",
+  "cal-7": "Entró mercancía y nació una deuda con el proveedor. Lo que tiene sube a $475.000 y lo que debe, a $125.000.",
+  "cal-8": "Salió plata para pagar parte del préstamo. Lo que tiene baja a $465.000 y lo que debe, a $115.000.",
+};
+
 /* ═══════════════════ T1-6 · ¿EN CUÁL ESTADO APARECE? ═══════════════════ */
 
 export const T1_6 = {
   id: "t1-en-cual-estado-aparece",
-  nombre: "¿En Cuál Estado Aparece?",
+  nombre: "¿En qué estado aparece?",
   subtema: "Qué va en cada estado financiero",
   dificultad: "dificil",
   fpBase: 50,
   porPartida: 10,
-  objetivo: "Decide en cuál de los dos informes va cada cosa.",
-  /* La ficha no se toca: solo se lee. La consigna anterior decía lo contrario (Gen, bloques 3-5). */
-  consigna: "Toca el informe donde va la ficha. Si es el de arriba, toca también en qué parte.",
+  /* El apoyo, de Shoko (#535): promete la decisión que de verdad hay, el informe y la parte. */
+  objetivo: "Decide en cuál de los dos informes va cada cosa, y en qué parte de ese informe.",
+  /* Un solo toque sobre cinco destinos (P2 de Mai, ajustes del 24-oct, §3). Texto de Futaba (lote D, §1). */
+  consigna: "Lee la ficha. Toca a cuál de los cinco va: activo, pasivo, patrimonio, ingresos o gastos.",
 };
 
 export const PRIMERO = "primero";
@@ -466,28 +568,44 @@ export const INFORMES = [
     idea: "Lo que la empresa tiene y debe hoy",
     cuando: "a 31 dic",
     termino: "Estado de situación financiera",
+    /* La fecha con que T1-6 rotula el informe (nombre del Aprender, Futaba 24-oct). T1-7 sigue con `cuando`. */
+    fecha: "al 31 de diciembre",
   },
   {
     id: SEGUNDO,
     idea: "Lo que vendió y lo que gastó durante el año",
     cuando: "1 ene – 31 dic",
     termino: "Estado de resultados",
+    fecha: "1 ene – 31 dic",
   },
 ];
 
-/* Las tres secciones del primero. El segundo no se subdivide en esta actividad. */
+/* Las tres secciones del primero. */
 export const SECCIONES_T1_6 = PARTES;
+
+/*
+ * Las dos del segundo (Futaba, lote B del 24-oct, §4; auditoría de Shoko a las
+ * P2): el estado de resultados se parte en ingresos y gastos, y la ficha cae en
+ * uno de cinco destinos con un solo toque. Es dato del banco: la vista no
+ * deduce la sección del nombre del concepto.
+ */
+export const INGRESOS = "ingresos";
+export const GASTOS = "gastos";
+export const SECCIONES_SEGUNDO_T1_6 = [
+  { id: INGRESOS, idea: "Ingresos" },
+  { id: GASTOS, idea: "Gastos" },
+];
 
 export const CONCEPTOS = [
   { id: "c6-01", nombre: "Patentes", informe: PRIMERO, seccion: ACTIVO },
-  { id: "c6-02", nombre: "Ingresos operacionales", informe: SEGUNDO, seccion: null },
+  { id: "c6-02", nombre: "Ingresos operacionales", informe: SEGUNDO, seccion: INGRESOS },
   { id: "c6-03", nombre: "Cuentas por pagar – Proveedores", informe: PRIMERO, seccion: PASIVO },
   { id: "c6-04", nombre: "Reservas", informe: PRIMERO, seccion: PATRIMONIO },
   { id: "c6-05", nombre: "Caja o Bancos", informe: PRIMERO, seccion: ACTIVO },
-  { id: "c6-06", nombre: "Gastos de administración y ventas", informe: SEGUNDO, seccion: null },
+  { id: "c6-06", nombre: "Gastos de administración y ventas", informe: SEGUNDO, seccion: GASTOS },
   { id: "c6-07", nombre: "Cuentas por cobrar – Clientes", informe: PRIMERO, seccion: ACTIVO },
   { id: "c6-08", nombre: "Maquinaria y equipos", informe: PRIMERO, seccion: ACTIVO },
-  { id: "c6-09", nombre: "Ingresos no operacionales", informe: SEGUNDO, seccion: null },
+  { id: "c6-09", nombre: "Ingresos no operacionales", informe: SEGUNDO, seccion: INGRESOS },
   { id: "c6-10", nombre: "Inversiones a corto plazo", informe: PRIMERO, seccion: ACTIVO },
   { id: "c6-11", nombre: "Documentos por pagar a corto plazo", informe: PRIMERO, seccion: PASIVO },
   { id: "c6-12", nombre: "Obligaciones financieras a corto plazo", informe: PRIMERO, seccion: PASIVO },
@@ -504,36 +622,54 @@ export const ERROR_T1_6 = {
   B: "❌ Eso la empresa lo tiene o lo debe, y mañana lo sigue teniendo. El otro informe solo cuenta lo que pasó dentro del año.",
   /* C · el informe está bien y la sección no. */
   C: "❌ El informe es el correcto, eso ya lo tienes. Ahora pregúntate: ¿la empresa lo tiene, lo debe, o es de los dueños?",
+  /* C2 · el informe es el segundo y se cruzaron ingresos y gastos (Futaba, 24-oct). */
+  C2: "El informe es el correcto. Ahora pregúntate: ¿eso entró a la empresa en el año, o es algo que gastó?",
+};
+
+/*
+ * ═══════════ LA DEVOLUCIÓN POR DESTINO (Futaba, lote E; D6 de Shoko) ═══════════
+ *
+ * Reemplaza la C única de arriba, que servía igual para las dieciséis fichas y
+ * no decía por qué. Sale cuando el informe está bien y la parte no, según el
+ * destino CORRECTO de la ficha (la llave informe:seccion): dice por qué va ahí
+ * y por qué no en lo demás de ese informe, así que vale marque lo que marque.
+ * Respaldo: pp. 34, 52-53 y 54 (ficha de fuente, punto 5). A y B no cambian.
+ */
+export const DEVOLUCION_POR_DESTINO_T1_6 = {
+  [`${PRIMERO}:${ACTIVO}`]: "El informe es el correcto. Esto es de la empresa, algo que tiene: es activo. No es una deuda ni de los dueños.",
+  [`${PRIMERO}:${PASIVO}`]: "El informe es el correcto. Esto la empresa se lo debe a otro: es pasivo. No lo tiene ni es de los dueños.",
+  [`${PRIMERO}:${PATRIMONIO}`]: "El informe es el correcto. Esto les toca a los dueños: es patrimonio. No es algo que la empresa tenga ni deba.",
+  [`${SEGUNDO}:${INGRESOS}`]: "El informe es el correcto. Esto lo recibió la empresa en el año: es ingreso. Un gasto es lo que se le fue.",
+  [`${SEGUNDO}:${GASTOS}`]: "El informe es el correcto. Esto se le fue a la empresa en el año: es gasto. Un ingreso es lo que recibió.",
 };
 
 export const ACIERTO_T1_6 = {
-  "c6-01": "✅ Va en el primer informe, en lo que tiene. Una patente no se toca, pero es de la empresa y vale.",
-  "c6-02": "✅ Va en el segundo informe. No es algo que la empresa tenga: es lo que vendió durante el año.",
-  "c6-03": "✅ Va en el primer informe, en lo que debe. Es plata que le queda debiendo a un proveedor.",
-  "c6-04": "✅ Va en el primer informe, en lo de los dueños. Es una parte de las ganancias que no se repartió.",
-  "c6-05": "✅ Va en el primer informe, en lo que tiene. Es la plata que tiene disponible.",
-  "c6-06": "✅ Va en el segundo informe. Es lo que la empresa gastó durante el año.",
-  "c6-07": "✅ Va en el primer informe, en lo que tiene. Es plata que los clientes le quedaron debiendo.",
-  "c6-08": "✅ Va en el primer informe, en lo que tiene. Son cosas de la empresa que duran años.",
-  "c6-09": "✅ Va en el segundo informe. Es lo que obtuvo en el año por algo que no es su negocio de siempre.",
-  "c6-10": "✅ Va en el primer informe, en lo que tiene. Es plata que la empresa puso a producir en otra parte y puede recuperar pronto.",
-  "c6-11": "✅ Va en el primer informe, en lo que debe. Es una deuda con un papel firmado.",
-  "c6-12": "✅ Va en el primer informe, en lo que debe. Es lo que le debe a un banco este año.",
-  "c6-13": "✅ Va en el primer informe, en lo que tiene. Es plata que la empresa puso a producir en otra parte y va a tardar en volver.",
-  "c6-14": "✅ Va en el primer informe, en lo que debe. Es lo que la empresa calcula que va a tener que pagar por arreglos de lo que vendió.",
-  "c6-15": "✅ Va en el primer informe, en lo que debe. Es lo que le debe al Estado y todavía no le ha pagado.",
-  "c6-16": "✅ Va en el primer informe, en lo que debe. Es lo que les debe a sus empleados y todavía no les ha pagado.",
+  "c6-01": "✅ Va en el estado de situación financiera, en el activo. Una patente no se toca, pero es de la empresa y vale.",
+  "c6-02": "✅ Va en el estado de resultados, en ingresos. No es algo que la empresa tenga: es lo que vendió durante el año.",
+  "c6-03": "✅ Va en el estado de situación financiera, en el pasivo. Es plata que le queda debiendo a un proveedor.",
+  "c6-04": "✅ Va en el estado de situación financiera, en el patrimonio. Es una parte de las ganancias que no se repartió.",
+  "c6-05": "✅ Va en el estado de situación financiera, en el activo. Es la plata que tiene disponible.",
+  "c6-06": "✅ Va en el estado de resultados, en gastos. Es lo que la empresa gastó durante el año.",
+  "c6-07": "✅ Va en el estado de situación financiera, en el activo. Es plata que los clientes le quedaron debiendo.",
+  "c6-08": "✅ Va en el estado de situación financiera, en el activo. Son cosas de la empresa que duran años.",
+  "c6-09": "✅ Va en el estado de resultados, en ingresos. Es lo que obtuvo en el año por algo que no es su negocio de siempre.",
+  "c6-10": "✅ Va en el estado de situación financiera, en el activo. Es plata puesta a producir en otra parte, y se recupera pronto.",
+  "c6-11": "✅ Va en el estado de situación financiera, en el pasivo. Es una deuda con un papel firmado.",
+  "c6-12": "✅ Va en el estado de situación financiera, en el pasivo. Es lo que le debe a un banco este año.",
+  "c6-13": "✅ Va en el estado de situación financiera, en el activo. Es plata puesta a producir en otra parte, y tarda en volver.",
+  "c6-14": "✅ Va en el estado de situación financiera, en el pasivo. Es lo que calcula que va a pagar por arreglos de lo vendido.",
+  "c6-15": "✅ Va en el estado de situación financiera, en el pasivo. Es lo que le debe al Estado y todavía no le ha pagado.",
+  "c6-16": "✅ Va en el estado de situación financiera, en el pasivo. Es lo que les debe a sus empleados y todavía no les ha pagado.",
 };
 
 /*
  * ═══════════ EL PUNTAJE: 60 % EL INFORME, 40 % LA SECCIÓN ═══════════
  *
- * ── [ESCRITO POR CLAUDE — PENDIENTE DE REVISIÓN: la parte del segundo] ──
- *
- * El reparto 60/40 viene del encargo. Lo que no dice es qué pasa con las tres
- * fichas del segundo informe, que no tienen sección que acertar. Las cuento
- * completas al acertar el informe: no hay nada más que preguntarles, y
- * dejarlas en 60 % penalizaría por una pregunta que no se les hizo.
+ * El reparto 60/40 viene del encargo, y desde el lote del 24-oct vale para
+ * las dieciséis fichas: el segundo informe ya tiene sección (ingresos o
+ * gastos), así que sus tres fichas también se preguntan en dos partes. Antes
+ * valían entero al acertar el informe, porque no había más que preguntarles.
+ * Lo ya jugado no se recalcula.
  */
 export const PESO_INFORME = 0.6;
 export const PESO_SECCION = 0.4;
@@ -544,7 +680,7 @@ export const ALT_T1_6 = "Dos informes.";
 
 export const T1_7 = {
   id: "t1-la-articulacion",
-  nombre: "La Articulación",
+  nombre: "La articulación",
   subtema: "Cómo se articulan los estados financieros",
   dificultad: "experto",
   fpBase: 90,
@@ -577,16 +713,21 @@ export const INFORMES_T1_7 = [
  */
 export const LINEAS = [
   /* El informe al que llegan todas. No sale ninguna flecha de aquí. */
+  /*
+   * Gráfico 2.6 (p. 66): la flecha del estado de resultados llega en bloque al
+   * estado de situación financiera, no a una línea. Esta pieza es ese bloque
+   * entero —lo que tiene, lo que debe y lo que es de los dueños—: por eso no
+   * dice «activos y pasivos» (Shoko, #535 c: chocaba con t1-5, donde la utilidad
+   * entra por lo de los dueños). Decisión de Sakuta, reversible. El id se
+   * conserva desde la versión con «Utilidad del ejercicio» (Futaba, ficha del
+   * capítulo 1, §10). Va arriba del bloque, como rótulo de la llave que abarca
+   * las demás líneas, y se toca como cualquier otra.
+   */
+  { id: "l-utilidad-balance", informe: PRIMERO, nombre: "Estado de situación financiera", llave: true },
   { id: "l-caja", informe: PRIMERO, nombre: "Efectivo" },
   { id: "l-cobrar-pagar", informe: PRIMERO, nombre: "Cuentas por cobrar y cuentas por pagar" },
   { id: "l-propiedad", informe: PRIMERO, nombre: "Propiedad, planta y equipo" },
   { id: "l-aportes", informe: PRIMERO, nombre: "Aportes de los dueños" },
-  /*
-   * Adaptación del Gráfico 2.6: el libro agrupa la utilidad dentro del
-   * patrimonio. Aquí va como línea propia porque es el destino de la conexión 1
-   * (f1, desde «Utilidad neta»), y por eso se puede tocar como cualquier otra.
-   */
-  { id: "l-utilidad-balance", informe: PRIMERO, nombre: "Utilidad del ejercicio" },
   /* Lo que vendió y lo que gastó durante el año. */
   { id: "l-utilidad-neta", informe: SEGUNDO, nombre: "Utilidad neta" },
   /* De dónde entró y salió la plata. */
@@ -619,7 +760,8 @@ export const ERROR_T1_7 = {
 };
 
 export const ACIERTO_T1_7 = {
-  f1: "✅ El informe de lo que vendió y gastó le pasa su resultado al otro. Lo que la empresa ganó o perdió cambia cómo queda al final.",
+  /* f1 llega en bloque a la foto (Gráfico 2.6, p. 66; Sakuta, #535 c): el mismo sentido que el acierto de cu0-a4 · 5. El ✅ lo quita sinEmoji al pintar. */
+  f1: "✅ Lo que vendió y gastó en el año llega en bloque a la foto: cambia cómo queda la empresa.",
   f2: "✅ La plata que queda al final es la misma que aparece en el otro informe. No son dos cifras parecidas: es la misma.",
   f3: "✅ El movimiento del día a día explica lo que le deben y lo que debe. Lo que cobró y lo que pagó deja rastro ahí.",
   f4: "✅ Lo que compró o vendió de sus cosas grandes explica esa línea.",
@@ -687,7 +829,7 @@ export const ALT_T1_7 = "Tres informes. Cinco flechas llegan al informe de lo qu
  */
 export const T1_8 = {
   id: "t1-donde-se-rompio",
-  nombre: "¿Dónde se Rompió?",
+  nombre: "¿Dónde se rompió?",
   subtema: "El ciclo de la información contable",
   dificultad: "medio",
   fpBase: 25,
@@ -848,48 +990,65 @@ export const ALT_T1_8 = {
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-/* ───────── T1-1 · la consecuencia de estar dentro o fuera ─────────
- * Primera decisión: ¿pertenece a la empresa? (clasificación).
- * Segunda: ¿hasta dónde del ciclo alcanza a ver? (consecuencia). No se puede
- * ni formular antes de la primera: lo que se ve depende de dónde se esté. Y
- * la figura es el MISMO anillo de la primera, que se vuelve a encender.
+/* ───────── T1-1 · qué tiene en juego quien pregunta ─────────
+ * Primera decisión: ¿adentro o afuera? (clasificación).
+ * Segunda (Futaba, lote B del 24-oct, §2; la audita Shoko): ¿qué tiene en
+ * juego esta persona cuando lee el informe? La de antes —«¿hasta dónde ve?»—
+ * se deducía de la primera (adentro ve todo, afuera solo el informe). Esta
+ * cruza las dos zonas: «plata», «piensa» y «oficio» salen tanto de adentro
+ * como de afuera (o solo de afuera), y «trabajo» solo de adentro, así que
+ * saber la zona no da la respuesta. Tampoco repite a H2: H2 parte del
+ * propósito y pide quién es; esta parte de quién es y pide qué se juega.
+ *
+ * Sale de los propósitos de pp. 11-12 (contabilidadIntro.js:156-192). Para el
+ * Repaso, la llave sería el id de la opción (Erwin). Los rótulos cortos, para
+ * la rejilla de 2×2, y el acierto de «plata» son los de Shoko (lote C de
+ * Futaba, §1).
  */
 export const SEGUNDA_T1_1 = {
-  pregunta: "Ya sabe desde dónde pregunta. ¿Hasta dónde del ciclo alcanza a ver?",
+  pregunta: "Ya sabes desde dónde pregunta. ¿Qué tiene en juego esta persona cuando lee el informe?",
   opciones: [
     {
-      id: "todo",
-      texto: "El ciclo entero: ve lo que pasa adentro día a día",
-      /* Mal cuando el usuario es externo: confundir interés con acceso. */
-      msg: "Tener interés en la empresa no es tener entrada a ella. Esa persona la mira desde afuera, y de afuera el día a día no se ve: solo se ve lo que la contabilidad publica.",
+      id: "plata",
+      texto: "Plata que ya puso",
+      msg: "Esa persona no ha puesto plata ni ha prestado nada. Lo que lee no es para cuidar algo que ya puso.",
     },
     {
-      id: "informe",
-      texto: "Solo el informe que sale al final",
-      /* Mal cuando el usuario es interno: creer que espera turno como los de afuera. */
-      msg: "Esperar el informe es lo que le toca a quien está afuera. Esa persona es parte de la empresa: no necesita que le publiquen nada para saber qué está pasando adentro.",
+      id: "trabajo",
+      texto: "Su trabajo",
+      msg: "Esa persona no trabaja en la empresa. Lee el informe por otra razón.",
     },
     {
-      id: "nada",
-      texto: "Nada: la empresa no le enseña sus números a nadie",
-      /* Mal siempre: los números no son un secreto, son el producto del ciclo. */
-      msg: "Entonces el ciclo no serviría para nada. La contabilidad existe justamente para que alguien lea esos números: si no salieran de la empresa, las cinco estaciones terminarían en un cajón.",
+      id: "piensa",
+      texto: "Algo que piensa hacer",
+      msg: "Esa persona no está pensando si comprar o meter plata. Lee el informe por otra razón.",
+    },
+    {
+      id: "oficio",
+      texto: "Su oficio",
+      msg: "Esa persona sí se juega algo propio con esta empresa. No la mira solo para sumar cifras o cobrar.",
     },
   ],
-  /* El por qué del acierto, uno por cada opción que puede ser la correcta. */
-  porque: {
-    todo: "Está adentro, y de adentro se ve el ciclo completo: desde que pasa algo hasta que se decide.",
-    informe: "Desde afuera solo se alcanza el informe. Por eso la contabilidad lo publica: es la única ventana que hay.",
+  /* Qué tiene en juego cada usuario: la correcta sale de aquí, no de la zona. */
+  enJuego: {
+    propietarios: "plata", acreedores: "plata",
+    administradores: "trabajo", empleados: "trabajo",
+    clientes: "piensa", inversionistas: "piensa",
+    asociaciones: "oficio", estado: "oficio",
   },
-  /*
-   * Lo que el anillo enseña con cada elección. Ninguna coincide con el estado
-   * de apertura —la estación 5 encendida y las otras cuatro en reposo—, así
-   * que elegir cualquiera de las tres se ve.
-   */
-  escena: {
-    todo: { anillo: "todas" },
-    informe: { anillo: "solo-el-informe" },
-    nada: { anillo: "ninguna" },
+  /* El porqué del acierto, uno por opción. */
+  porque: {
+    plata: "Puso su capital, le prestó o le vendió a crédito, y mira si eso le rinde o si le van a pagar.",
+    trabajo: "Trabaja en la empresa: lee para manejarla o para saber qué puede pedir.",
+    piensa: "Todavía no ha puesto nada: piensa si le compra o si mete plata ahí.",
+    oficio: "Lo lee por su oficio: saca cifras de todo el sector o cobra los impuestos.",
+  },
+  /* La pista del primer error, según la correcta. Con un intento (C2) no sale; queda para el Repaso. */
+  pista: {
+    plata: "¿Esta persona ya puso algo en la empresa, o todavía no?",
+    piensa: "¿Esta persona ya puso algo en la empresa, o todavía no?",
+    trabajo: "¿Lo que lee le importa por su plata, por su trabajo, por algo que piensa hacer o por su oficio?",
+    oficio: "¿Lee para cuidar algo suyo, o porque se lo pide su oficio?",
   },
 };
 
@@ -908,7 +1067,7 @@ export const SEGUNDA_T1_2 = {
       id: "doblar",
       texto: "Tiene que entrar el doble: sin más de eso no hay más que vender",
       /* Mal cuando no hay insumo: doblar algo que no existe. */
-      msg: "Mire el recuadro ENTRA: dice sin insumo físico. No hay ninguna cosa que doblar ahí, porque no entra ninguna cosa. Lo que esta empresa duplica es su trabajo, no su materia.",
+      msg: "Mira el recuadro ENTRA: dice sin insumo físico. Ahí no entra ninguna cosa que doblar. Esta empresa duplica su trabajo, no su materia.",
     },
     {
       id: "sin-insumo",
@@ -940,36 +1099,56 @@ export const SEGUNDA_T1_2 = {
   },
 };
 
-/* ───────── T1-4 · la consecuencia sobre la igualdad ─────────
- * Primera decisión: qué le pasa a cada una de las tres partes (clasificación,
- * tres marcas y un envío).
- * Segunda: y entonces, ¿qué le pasó a la IGUALDAD? (consecuencia). No es la
- * misma pregunta en otro formato: la primera mira las partes una por una, la
- * segunda mira los dos lados juntos, y solo se puede responder después de
- * haber mirado las partes. La figura son las mismas tres barras, repintadas
- * con lo que cada opción AFIRMA: quien dice que la igualdad se rompió ve las
- * barras rotas, y lo que ve contradice lo que acabó de ver.
+/* ───────── T1-4 · cuál de los cuatro casos del libro es ─────────
+ * Primera decisión: qué le pasa a cada una de las tres partes (tres marcas y
+ * un envío). Segunda (lote del 24-oct; auditoría de Shoko a las P2): ¿cuál de
+ * los cuatro casos de la p. 35 es este hecho? La de antes —«¿qué le pasó a la
+ * igualdad?»— tenía siempre la misma respuesta, porque la igualdad nunca se
+ * rompe, y dejaba de ser una decisión desde el segundo hecho.
+ *
+ * Los nombres son los de la p. 35, textuales, los mismos que enseña cu0-a2
+ * (CASOS_P2): un solo sitio, y los pone `opcionesSegundaT1_4` (aquí no se
+ * puede importar contabilidadPiezas234.js, que ya importa de este archivo).
+ * Las ids son las del caso que deduce `casoDe` del asiento (deuda o aporte,
+ * sube o baja), así que la correcta no se escribe en ninguna tabla.
+ *
+ * Las devoluciones son de Futaba (lote B del 24-oct, §3): dicen qué es el caso
+ * que marcó y mandan a mirar el hecho, sin decir cuál era. Con un solo
+ * intento (C2) sale la devolución; la pista es para cuando haya reintento.
+ */
+/* La letra del caso en la p. 35 (CASOS_P2), por id. */
+export const CASO_DEL_LIBRO_T1_4 = { "deuda-sube": "a", "aporte-sube": "b", "deuda-baja": "c", "aporte-baja": "d" };
+
+/*
+ * El acierto, uno por caso (Futaba, lote D §4; reemplaza al único de Shoko,
+ * que solo servía para el pago de deuda). Lleva el nombre completo del libro,
+ * pp. 35-36; los rótulos de las opciones siguen cortos.
  */
 export const SEGUNDA_T1_4 = {
-  pregunta: "Lo que tiene = lo que debe + lo de los dueños. Después de este hecho, ¿qué le pasó a esa igualdad?",
+  pregunta: "¿Cuál de los cuatro casos es este hecho?",
   opciones: [
-    { id: "sigue", texto: "Sigue dando igual: los dos lados se movieron para el mismo lado" },
     {
-      id: "balancin",
-      texto: "Se rompió: un lado creció y el otro se achicó",
-      msg: "Eso sería un balancín, y la ecuación no es un balancín: los dos lados pueden subir juntos o bajar juntos. Mire las barras: ninguna fue en contra de la otra.",
+      id: "deuda-sube",
+      acierto: "Aumento en el activo y aumento en el pasivo: entró algo y nació una deuda por lo mismo.",
+      msg: "Ese caso es entrar algo y nacer una deuda. Mira si en este hecho hay una deuda, y si algo entró o salió.",
     },
     {
-      id: "un-lado",
-      texto: "Se rompió: se movió un solo lado y el otro se quedó quieto",
-      msg: "Si se moviera un lado solo, los dos totales dejarían de dar lo mismo y la ecuación se habría roto de verdad. Siempre hay dos partes en juego, y una de ellas está al otro lado del signo igual.",
+      id: "aporte-sube",
+      acierto: "Aumento en el activo y aumento en el patrimonio: entró algo que pusieron los dueños.",
+      msg: "Ese caso es entrar algo que ponen los dueños. Mira si en este hecho hay un aporte, y si algo entró o salió.",
+    },
+    {
+      id: "deuda-baja",
+      acierto: "Disminución en el activo y disminución en el pasivo: salió plata y con ella se pagó una deuda.",
+      msg: "Ese caso es salir plata para pagar una deuda. Mira si en este hecho se paga algo, y si algo entró o salió.",
+    },
+    {
+      id: "aporte-baja",
+      acierto: "Disminución en el activo y disminución en el patrimonio: salió algo de la empresa hacia los dueños.",
+      msg: "Ese caso es salir algo hacia los dueños. Mira si en este hecho les devuelven algo, y si algo entró o salió.",
     },
   ],
-  /* El acierto se redacta con el sentido real del hecho: suben o bajan. */
-  porque: {
-    sube: "Los dos lados subieron a la vez, y por lo mismo. Por eso la igualdad aguanta: no hay nada que compensar.",
-    baja: "Los dos lados bajaron a la vez, y por lo mismo. La igualdad aguanta: lo que se fue de un lado se fue también del otro.",
-  },
+  pista: "¿Lo que tiene subió o bajó? ¿Y del otro lado se movió una deuda o lo de los dueños?",
 };
 
 /* ───────── T1-5 · la clasificación que va ANTES del cálculo ─────────
