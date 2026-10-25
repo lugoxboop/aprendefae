@@ -144,7 +144,8 @@ test("★★ en Aprender va después de la pieza 1 y deja libre el lugar de la 2
   /* Aprender: pieza 1 y luego pieza 3. En la lista, la actividad 1 va entre las dos (después de la pieza 1). */
   const aprender = tema.actividades.filter((a) => a.clasificacion.tipo === APRENDER).map((a) => a.id);
   assert.deepEqual(aprender.slice(0, 2), ["t3-a1-vender-no-es-cobrar", "t3-a3-lo-que-ya-paso"]);
-  assert.deepEqual(tema.actividades.slice(0, 3).map((a) => a.id), ["t3-a1-vender-no-es-cobrar", "t3-ingreso-o-cobro", "t3-a3-lo-que-ya-paso"]);
+  /* «¿Gasto o pago?» va detrás de la act. 1 desde el #506. */
+  assert.deepEqual(tema.actividades.slice(0, 4).map((a) => a.id), ["t3-a1-vender-no-es-cobrar", "t3-ingreso-o-cobro", "t3-gasto-o-pago", "t3-a3-lo-que-ya-paso"]);
   /* Las piezas van por número; la 2 no existe todavía. */
   assert.deepEqual(PIEZAS.map((x) => x.numero).slice(0, 2), [1, 3]);
   assert.ok(!PIEZAS.some((x) => x.numero === 2));

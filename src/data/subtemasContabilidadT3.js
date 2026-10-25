@@ -1,4 +1,5 @@
 import { ACT1_T3, HECHOS_ACT1_T3 } from "./contabilidadTema3Act1.js";
+import { ACT_GASTO_O_PAGO, BANCO_A as BANCO_GP_A, BANCO_B as BANCO_GP_B } from "./contabilidadTema3GastoOPago.js";
 import { ACT2_T3, ITEMS_ACT2 } from "./contabilidadTema3Act2.js";
 import { ACT3_T3, PARES_ACT3 } from "./contabilidadTema3Act3.js";
 import { ACT4_T3, ITEMS_ACT4 } from "./contabilidadTema3Act4.js";
@@ -32,6 +33,10 @@ export const INVENTARIO_T3 = [
   {
     actividad: ACT1_T3.id, banco: HECHOS_ACT1_T3, item: (x) => x.id, campo: "grupo",
     unidad: "el hecho (h.id); con segunda decisión, `respuestas: { grupo, segunda }`",
+  },
+  {
+    actividad: ACT_GASTO_O_PAGO.id, banco: [...BANCO_GP_A, ...BANCO_GP_B], item: (x) => x.id, campo: "tipo",
+    unidad: "el hecho (h.id), de la versión A o la B; la respuesta es la casilla tocada",
   },
   {
     actividad: ACT2_T3.id, banco: ITEMS_ACT2, item: (x) => x.id, campo: "queda",
@@ -69,7 +74,7 @@ export const valoresDeRegla = (actividad) => {
  *     su pieza (Takamura): no está aquí;
  *   · los dos Hacer nuevos (t3-gasto-o-pago → «Gasto y pago»,
  *     t3-del-resultado-a-la-caja → «Resultado y caja») no se declaran hasta
- *     que se construyan.
+ *     que se construyan. «¿Gasto o pago?» ya está (#506); el otro, no.
  */
 const INGRESO_Y_COBRO = "Ingreso y cobro";
 const CAUSACION = "Causación";
@@ -77,10 +82,13 @@ const AJUSTE_ACUMULADO = "Ajuste acumulado";
 const AJUSTE_DIFERIDO = "Ajuste diferido";
 const REPARTO = "Reparto por periodos";
 const CIERRE = "Cierre del periodo";
+/* Ya construida (#506): su subtema [fijo] del paquete e3-t3-gasto-o-pago-v3, §1. */
+const GASTO_Y_PAGO = "Gasto y pago";
 
 /* [fijo] — toda la actividad tiene un mismo subtema. */
 export const SUBTEMA_FIJO_T3 = {
   "t3-ingreso-o-cobro": INGRESO_Y_COBRO,
+  "t3-gasto-o-pago": GASTO_Y_PAGO,
   "t3-cuando-se-causa": CAUSACION,
   "t3-ajuste-acumulado": AJUSTE_ACUMULADO,
   "t3-ajuste-diferido": AJUSTE_DIFERIDO,
