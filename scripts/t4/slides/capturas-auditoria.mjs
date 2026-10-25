@@ -5,6 +5,7 @@
  *
  *   (b)  A1 p5 a 320×568, con «Escenario simulado.» en la banda
  *   A8   a 375×667, antes de la acción y 300 ms después: A0 p1, A1 p3, A2 p2, A3 p2, A4 p1 y A5 p2
+ *   A8   en A5 p2, también con el acierto («Menos»): antes y 300 ms después
  *   C2   a 320×568, A1 p4 tras el segundo error, con el porqué en la banda
  *
  * Va a cada pantalla escribiendo la posición en lo guardado de la pestaña (la clave de la página).
@@ -52,6 +53,16 @@ for (const [nombre, p, s, accion] of A8) {
   await accion(pg);
   await pg.waitForTimeout(300);
   await foto(pg, `a8-${nombre}-375-300ms`);
+  await pg.close();
+}
+
+/* A8 en A5 p2 con el acierto (Shibukawa): «Menos», antes y 300 ms después; el saldo del banco deja de decir 2.435.600. */
+{
+  const pg = await ir(375, 667, 5, 1);
+  await foto(pg, "a8-a5-p2-375-menos-antes");
+  await pg.click("[data-pantalla] [data-destino=menos]");
+  await pg.waitForTimeout(300);
+  await foto(pg, "a8-a5-p2-375-menos-300ms");
   await pg.close();
 }
 

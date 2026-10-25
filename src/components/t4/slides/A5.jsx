@@ -70,7 +70,9 @@ export const CSS_SLIDES_A5 = `
 .t4s5-p5 .t4s5-mt { min-height: 36px; }
 .t4s5-ops { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
 .t4s5-ops > .t4s-ctl { display: grid; align-content: center; justify-items: center; gap: 0; min-height: 60px; padding: 2px 4px; text-align: center; }
-.t4s5-ops > .t4s-ctl[data-ver] { padding: 1px 3px; }
+/* A la derecha, 12 px de más: la ✓ de la esquina nunca tapa el nombre (Shibukawa: «Cuentas por»). */
+.t4s5-ops > .t4s-ctl { padding-right: 12px; }
+.t4s5-ops > .t4s-ctl[data-ver] { padding: 1px 11px 1px 3px; }
 .t4s5-ops .n { display: grid; font: 600 12px/14px "Inter", sans-serif; hyphens: auto; overflow-wrap: anywhere; }
 .t4s5-ops .v { min-height: 14px; font: 600 12px/14px "Inter", sans-serif; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .t4s5-tb { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }

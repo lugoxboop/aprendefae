@@ -66,6 +66,7 @@ export const CSS_SLIDES_A3 = `
 .t4s3-hueco > [data-oculta] { visibility: hidden; }
 .t4s3-contar { appearance: none; min-height: 44px; align-self: start; border-radius: 8px; border: 1px solid ${C.texto}; background: transparent; color: ${C.texto}; font: 600 14px/18px "Inter", sans-serif; cursor: pointer; }
 .t4s3-contar:focus-visible { outline: 2px solid ${C.texto}; outline-offset: 2px; }
+.t4s3-control:focus-visible { outline: 2px solid ${C.texto}; outline-offset: 2px; }
 .t4s3-control { display: block; width: 100%; height: 44px; margin: 0; accent-color: ${C.texto}; cursor: pointer; }
 .t4s3-rotfila { display: flex; justify-content: space-between; align-items: center; gap: 8px; height: 16px; }
 .t4s3-rotfila > p { margin: 0; font: 500 12px/16px "Inter", sans-serif; letter-spacing: .04em; color: ${C.texto2}; white-space: nowrap; overflow: hidden; }
