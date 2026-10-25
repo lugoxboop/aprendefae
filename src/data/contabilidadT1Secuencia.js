@@ -1,6 +1,7 @@
 import { ID } from "./contabilidadIntro.js";
 import { pantallasDe } from "./contabilidadT1Pantallas.js";
 import { ID_P2 } from "./contabilidadPiezas234.js";
+import { CALEJA, ACTIVO, PASIVO, PATRIMONIO, mayorConSaldos, tipoDeCuenta } from "./contabilidad.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -44,21 +45,22 @@ export const ID_OCHO_LEEN = "cu0-a1b-ocho-leen-lo-mismo";
 
 /* ═══════════════════ cu0-a1 · EL RECORRIDO DE UN HECHO (10) ═══════════════════ */
 
-const A1_BASE = {
+export const A1_SEC = {
   id: ID,
   pantallas: {
     prediccion: {
       titular: "¿Cuántos pasos hay desde que pasa algo?",
       apoyo: "Mucha gente cree que la contabilidad es solo anotar. ¿Cuántos pasos hay hasta que alguien decide?",
       opciones: ["Uno", "Tres", "Cinco"],
-      /* La misma para las tres: la predicción no califica. */
-      respuesta: "Son cinco, y anotar es solo el tercero. Con las notas sale un informe, y alguien decide.",
+      /* La misma para las tres: la predicción no califica. Lote G de Futaba (la de Shoko, tal cual). */
+      respuesta: "Del hecho a la decisión hay cinco pasos, y anotar es el tercero.",
       razon: "Elige cuántos crees. Aquí no hay respuesta mala.",
       nombreFigura: "Una vía todavía vacía y una libreta, con tres respuestas para elegir.",
     },
     verbos: {
       titular: "Anotar es uno de siete verbos",
-      apoyo: "Toca cada cosa que el sistema permite hacer. Son siete. Registrar, que es anotar, es solo una.",
+      /* Lote G de Futaba. */
+      apoyo: "Toca lo que el sistema permite hacer con los hechos. Son siete verbos; registrar es anotar.",
       nombreFigura: "La definición del libro, con siete verbos para tocar y un contador.",
     },
     adentroAfuera: {
@@ -97,11 +99,11 @@ const A1_BASE = {
     },
     informe: {
       titular: "Sale un informe",
-      apoyo: "La nota se juntó con las demás en un informe. Tu computador ya es una línea entre muchas.",
+      /* Lote G de Futaba: con 4 renglones, «entre muchas» exageraba. */
+      apoyo: "La nota se juntó con las demás en un informe. Tu computador ya es una de sus líneas.",
       toca: "Toca la ficha",
-      /* Futaba: cuatro renglones, uno el del computador; el pie dice cuántos quedan. */
-      renglones: ["Caja", "Equipo de computación", "Cuentas por pagar", "Aportes sociales"],
-      pie: (n) => `y ${n} líneas más`,
+      /* Lote G: el balance de después de la segunda transacción (pp. 36-37), entero y sin pie; ver balanceDelHecho. */
+      totales: { activos: "Total activos", pasivosMasPatrimonio: "Total pasivo y patrimonio" },
       nombreFigura: "El cuarto punto del ciclo encendido y el renglón del libro.",
     },
     paradaQuien: {
@@ -125,38 +127,27 @@ const A1_BASE = {
 };
 
 /*
- * ═══════════ LOTE G DE FUTABA (cu0-a1 · pantallas 1, 2 y 8) ═══════════
+ * ═══════════ EL BALANCE DE LA ESTACIÓN 4 (lote G de Futaba, §2) ═══════════
  *
- * Los sitios de los textos nuevos del lote G, listos y vacíos: aquí no se
- * inventa nada. Un campo con valor reemplaza al de la pantalla; `null` deja
- * lo de siempre.
- *
- *   prediccion  el apoyo de la pantalla 1 (la pregunta de la predicción)
- *   respuesta   la respuesta de la predicción (la misma para las tres)
- *   verbos      el apoyo de la pantalla 2
- *   renglones   los renglones del balance de la pantalla 8, en orden (cuentas
- *               de BALANCE); el pie «y n líneas más» se recalcula solo
- *
- * Las paradas 6 y 9 no se tocan.
+ * El de después de la SEGUNDA transacción (pp. 36-37, total $325.000): el
+ * momento del hecho que sigue la pieza, con el computador comprado y sin
+ * pagar. Se calcula desde el mayor publicado cortado en las dos primeras
+ * transacciones; las actividades que usan las seis no cambian. La caja se
+ * rotula «Efectivo», como la tabla del libro y t1-7.
  */
-export const LOTE_G_A1 = { prediccion: null, respuesta: null, verbos: null, renglones: null };
-
-/* Las pantallas de cu0-a1 con lo que traiga el lote G encima. */
-export function conLoteG(base, lote = {}) {
-  const p = base.pantallas;
-  const v = (k) => lote?.[k] ?? null;
-  return {
-    ...base,
-    pantallas: {
-      ...p,
-      prediccion: { ...p.prediccion, ...(v("prediccion") ? { apoyo: v("prediccion") } : {}), ...(v("respuesta") ? { respuesta: v("respuesta") } : {}) },
-      verbos: { ...p.verbos, ...(v("verbos") ? { apoyo: v("verbos") } : {}) },
-      informe: { ...p.informe, ...(v("renglones") ? { renglones: [...v("renglones")] } : {}) },
-    },
-  };
+export const TRANSACCIONES_DEL_BALANCE_A1 = 2;
+const ROTULO_DEL_LIBRO = { Caja: "Efectivo" };
+const ORDEN_SECCION = [ACTIVO, PASIVO, PATRIMONIO];
+export function balanceDelHecho(transacciones = CALEJA.transacciones.slice(0, TRANSACCIONES_DEL_BALANCE_A1)) {
+  const cuentas = mayorConSaldos(transacciones)
+    .map((c) => ({ cuenta: c.cuenta, rotulo: ROTULO_DEL_LIBRO[c.cuenta] ?? c.cuenta, valor: c.saldo, seccion: tipoDeCuenta(c.cuenta) }))
+    .sort((a, b) => ORDEN_SECCION.indexOf(a.seccion) - ORDEN_SECCION.indexOf(b.seccion) || b.valor - a.valor);
+  const totalDe = (...ss) => cuentas.filter((c) => ss.includes(c.seccion)).reduce((t, c) => t + c.valor, 0);
+  const activos = totalDe(ACTIVO);
+  const pasivosMasPatrimonio = totalDe(PASIVO, PATRIMONIO);
+  return { cuentas, activos, pasivosMasPatrimonio, cuadra: activos === pasivosMasPatrimonio };
 }
 
-export const A1_SEC = conLoteG(A1_BASE, LOTE_G_A1);
 
 /* ═══════════════════ PIEZA NUEVA · OCHO LEEN LO MISMO (4) ═══════════════════ */
 

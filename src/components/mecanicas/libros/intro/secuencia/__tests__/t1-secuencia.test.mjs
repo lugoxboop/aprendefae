@@ -101,13 +101,15 @@ test("★★ Míralo: la ficha se transforma al tocarla, y el riel enciende su e
   } finally { m.desmontar(); }
 });
 
-test("★★ el balance de la estación 4: cuatro renglones, el del computador resaltado, y el pie dice cuántas faltan", () => {
+test("★★★ el balance de la estación 4 (lote G): el de después de la 2.ª transacción, cuatro renglones, «Efectivo», el computador resaltado, sin pie y cuadrando", () => {
   const m = montar(pantalla(PIEZA_RECORRIDO, "informe").Figura, { estado: { tocada: true } });
   try {
-    const lineas = [...m.caja.querySelectorAll("[data-linea]")];
-    assert.deepEqual(lineas.map((l) => l.dataset.linea), A1_SEC.pantallas.informe.renglones);
+    const lineas = [...m.caja.querySelectorAll("[data-linea]")].map((l) => [l.dataset.linea, l.lastChild.textContent.replace(/\D/g, "")]);
+    assert.deepEqual(lineas, [["Efectivo", "300000"], ["Equipo de computación", "25000"], ["Cuentas por pagar", "25000"], ["Aportes sociales", "300000"]]);
     assert.equal(m.caja.querySelector('[data-marcada="si"]').dataset.linea, "Equipo de computación");
-    assert.equal(m.caja.querySelector("[data-pie-balance]").textContent, "y 3 líneas más");
+    assert.equal(m.caja.querySelector("[data-pie-balance]"), null, "con las cuatro cuentas no hay pie");
+    const totales = [...m.caja.querySelectorAll("[data-total]")].map((t) => t.lastChild.textContent.replace(/\D/g, ""));
+    assert.deepEqual(totales, ["325000", "325000"]);
   } finally { m.desmontar(); }
 });
 
@@ -210,25 +212,19 @@ test("★★★ capa 4 de «Ocho leen lo mismo»: franja de 44, cuatro frases en
   capa4SinRecorte(pantalla(PIEZA_OCHO_LEEN, "frase").Figura, FICHA_FRASE_OCHO, "ocho");
 });
 
-test("★★ lote G de Futaba: sin valores, cu0-a1 sigue igual; con valores, reemplaza las pantallas 1, 2 y 8 y el pie se recalcula", async () => {
+test("★★★ lote G: el balance sale del mayor cortado en dos transacciones, cuadra, y las seis siguen dando el de siempre", async () => {
   const D = await import("../../../../../../data/contabilidadT1Secuencia.js");
-  const { BalanceCorto } = await import("../piezaRecorrido.jsx");
-  assert.deepEqual(Object.values(D.LOTE_G_A1), [null, null, null, null], "el lote G llegó: hay que revisar estas pruebas");
-  const igual = D.conLoteG(D.A1_SEC, D.LOTE_G_A1);
-  assert.deepEqual(JSON.stringify(igual), JSON.stringify(D.A1_SEC));
-  const con = D.conLoteG(D.A1_SEC, { prediccion: "P", respuesta: "R", verbos: "V", renglones: ["Caja", "Equipo de computación", "Cuentas por pagar"] });
-  assert.equal(con.pantallas.prediccion.apoyo, "P");
-  assert.equal(con.pantallas.prediccion.respuesta, "R");
-  assert.equal(con.pantallas.verbos.apoyo, "V");
-  assert.deepEqual(con.pantallas.paradaPapel, D.A1_SEC.pantallas.paradaPapel, "las paradas no se tocan");
-  assert.deepEqual(con.pantallas.paradaQuien, D.A1_SEC.pantallas.paradaQuien);
-  const m = montar(BalanceCorto, {});
-  const n = montar(() => h(BalanceCorto, { renglones: con.pantallas.informe.renglones }));
-  try {
-    assert.equal(m.caja.querySelector("[data-pie-balance]").textContent, "y 3 líneas más");
-    assert.equal(n.caja.querySelectorAll("[data-linea]").length, 3);
-    assert.equal(n.caja.querySelector("[data-pie-balance]").textContent, "y 4 líneas más");
-  } finally { m.desmontar(); n.desmontar(); }
+  const { BALANCE } = await import("../../../../../../contabilidad/recorridoDeUnHecho.js");
+  const b = D.balanceDelHecho();
+  assert.equal(D.TRANSACCIONES_DEL_BALANCE_A1, 2);
+  assert.equal(b.activos, 325000);
+  assert.equal(b.pasivosMasPatrimonio, 325000);
+  assert.equal(b.cuadra, true);
+  assert.equal(b.cuentas.reduce((t, c) => t + (c.seccion === "activo" ? c.valor : 0), 0), b.activos);
+  assert.equal(BALANCE.activos, 415000, "las actividades que usan las seis transacciones no cambian");
+  assert.equal(D.A1_SEC.pantallas.prediccion.respuesta, "Del hecho a la decisión hay cinco pasos, y anotar es el tercero.");
+  assert.equal(D.A1_SEC.pantallas.verbos.apoyo, "Toca lo que el sistema permite hacer con los hechos. Son siete verbos; registrar es anotar.");
+  assert.equal(D.A1_SEC.pantallas.informe.apoyo, "La nota se juntó con las demás en un informe. Tu computador ya es una de sus líneas.");
 });
 
 /* ═══════════ cu0-a2 · LA ECUACIÓN CONTABLE ═══════════ */

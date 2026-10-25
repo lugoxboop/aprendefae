@@ -1,9 +1,9 @@
 import { NotebookPen, Users, FileText } from "lucide-react";
 import { FAE } from "../../../../../theme.js";
-import { ID, NOMBRES } from "../../../../../data/contabilidadIntro.js";
+import { ID, NOMBRES, CUENTA_RESALTADA } from "../../../../../data/contabilidadIntro.js";
 import { VERBOS_DEL_LIBRO, VERBO_ANOTAR, EL_HECHO_CORTO } from "../../../../../data/contabilidadT1Pantallas.js";
-import { A1_SEC, deFicha } from "../../../../../data/contabilidadT1Secuencia.js";
-import { HECHO, BALANCE, facturaDelHecho, USUARIO_DEL_RECORRIDO } from "../../../../../contabilidad/recorridoDeUnHecho.js";
+import { A1_SEC, deFicha, balanceDelHecho } from "../../../../../data/contabilidadT1Secuencia.js";
+import { HECHO, facturaDelHecho, USUARIO_DEL_RECORRIDO } from "../../../../../contabilidad/recorridoDeUnHecho.js";
 import { pesos } from "../../../../../data/contabilidad.js";
 import { FormaHecho } from "../formas.jsx";
 import { SIN_DATO } from "../../../../../data/contabilidadIntro.js";
@@ -132,26 +132,32 @@ function FiguraAdentroAfuera({ estado, setEstado }) {
 /* ═══════════ 4, 5, 7 y 8 · La ficha que se transforma al tocarla ═══════════ */
 const FACTURA = facturaDelHecho();
 
-/* El balance de la estación 4 con cuatro renglones y el pie (Mai §2.1.5; renglones de Futaba). */
-export function BalanceCorto({ renglones = T.informe.renglones }) {
-  const filas = renglones.map((c) => BALANCE.cuentas.find((x) => x.cuenta === c)).filter(Boolean);
-  const quedan = BALANCE.cuentas.length - filas.length;
+/*
+ * El balance de la estación 4: el de después de la segunda transacción (lote G
+ * de Futaba, pp. 36-37), entero: cuatro renglones, el del computador
+ * resaltado, y los dos totales iguales a la vista. Sin pie: no queda ninguna
+ * cuenta fuera.
+ */
+export function BalanceCorto({ balance = balanceDelHecho() }) {
+  const fila = (clave, rotulo, valor, { marcada = false, total = false } = {}) => (
+    <div key={clave} data-linea={total ? undefined : rotulo} data-total={total ? clave : undefined} data-marcada={marcada ? "si" : "no"} style={{
+      display: "flex", gap: "8px", fontSize: "12px", lineHeight: "18px", padding: marcada ? "0 6px" : 0, margin: marcada ? "0 -6px" : 0,
+      borderRadius: "5px", background: marcada ? "#B8C4D4" : "transparent", color: marcada ? NAVY : total ? FAE.text : SECUNDARIO,
+      fontWeight: marcada || total ? 700 : 400, borderTop: total ? "1px solid rgba(248,249,250,0.25)" : 0,
+    }}>
+      <span style={{ flex: 1, minWidth: 0 }}>{rotulo}</span>
+      <span style={{ fontVariantNumeric: "tabular-nums" }}>{pesos(valor)}</span>
+    </div>
+  );
+  const de = (activo) => balance.cuentas.filter((c) => (c.seccion === "activo") === activo)
+    .map((c) => fila(c.cuenta, c.rotulo, c.valor, { marcada: c.cuenta === CUENTA_RESALTADA }));
   return (
-    <div data-forma="estado-corto" style={{ padding: "8px 10px", borderRadius: "10px", background: "rgba(10,20,34,0.5)", border: "1px solid rgba(248,249,250,0.14)" }}>
-      <p style={{ margin: "0 0 4px", fontFamily: SORA, fontSize: "12px", fontWeight: 700, color: FAE.text, textAlign: "center" }}>Estado de situación financiera</p>
-      {filas.map((c) => {
-        const marcada = c.cuenta === HECHO.renglon[0].cuenta;
-        return (
-          <div key={c.cuenta} data-linea={c.cuenta} data-marcada={marcada ? "si" : "no"} style={{
-            display: "flex", gap: "8px", fontSize: "12px", lineHeight: "18px", padding: marcada ? "0 6px" : 0, margin: marcada ? "0 -6px" : 0,
-            borderRadius: "5px", background: marcada ? "#B8C4D4" : "transparent", color: marcada ? NAVY : SECUNDARIO, fontWeight: marcada ? 700 : 400,
-          }}>
-            <span style={{ flex: 1, minWidth: 0 }}>{c.cuenta}</span>
-            <span style={{ fontVariantNumeric: "tabular-nums" }}>{pesos(c.valor)}</span>
-          </div>
-        );
-      })}
-      <p data-pie-balance style={{ margin: "2px 0 0", fontSize: "12px", lineHeight: "16px", color: SECUNDARIO }}>{T.informe.pie(quedan)}</p>
+    <div data-forma="estado-corto" style={{ padding: "6px 10px", borderRadius: "10px", background: "rgba(10,20,34,0.5)", border: "1px solid rgba(248,249,250,0.14)" }}>
+      <p style={{ margin: "0 0 2px", fontFamily: SORA, fontSize: "12px", fontWeight: 700, lineHeight: "16px", color: FAE.text, textAlign: "center" }}>Estado de situación financiera</p>
+      {de(true)}
+      {fila("activos", T.informe.totales.activos, balance.activos, { total: true })}
+      {de(false)}
+      {fila("pasivosMasPatrimonio", T.informe.totales.pasivosMasPatrimonio, balance.pasivosMasPatrimonio, { total: true })}
     </div>
   );
 }
