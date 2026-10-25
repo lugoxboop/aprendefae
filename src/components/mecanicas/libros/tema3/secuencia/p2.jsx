@@ -23,14 +23,16 @@
  * Modelo: objeto (72) + 4 + lectura (16) = 92 de 98, igual en las 8.
  * La utilidad de la lectura va tapada en P2-5 y P2-6 hasta responder la 6 (E8).
  *
- * ⛔ P2-7 ESPERA el delta de Itagaki (Takamura, lote 16): armada y esperando.
+ * P2-7 va con el delta v3 §2 (PASA de Takamura, lote 17): las 4 opciones en
+ * la rejilla de 2 × 2 ocupan el modelo (96) y la línea de lectura pasa a la
+ * fila de control, siempre a la vista, con el puente debajo (16 + 4 + 24 = 44).
  * ═══════════════════════════════════════════════════════════════════════════
  */
 import { SAN_CALIXTO, PIEZA_VENDER_NO_ES_COBRAR } from "../../../../../data/contabilidadTema3.js";
 import { CUENTAS_DEL_PERIODO, CUENTAS_QUE_SIGUEN, GASTO } from "../../../../../data/contabilidadTema3Cierre.js";
 import {
   PIEZA_P2, TITULARES_P2, TEXTOS_P2, ACIERTOS_P2, FICHAS_P2_2, ERROR_P2_2_FACTURA, CUENTAS_P2_3, CUENTAS_P2_4,
-  OPC_P2_5, CORRECTA_P2_5, ERRORES_P2_5, ERROR_P2_6, CIERRE_P2, PISTAS_P2, RAZON_P2P6,
+  OPC_P2_5, CORRECTA_P2_5, ERRORES_P2_5, ERROR_P2_6, OPC_P2_7, ERROR_P2_7_SOLO_UNA, CIERRE_P2, PISTAS_P2, RAZON_P2P6,
 } from "../../../../../data/t3SecuenciasTextosP2P6.js";
 import { hazResuelto, mostrarCorrecto, responderHaz } from "../../../../secuencia/secuencia.js";
 import {
@@ -38,7 +40,7 @@ import {
   ASIENTO_INICIAL, ponerCuenta, asientoResuelto, cuentaEnCasilla, zonaAsiento, enOrden, medirAsiento,
 } from "./base.jsx";
 import { medirEleccion } from "./p1.jsx";
-import { FiguraP, Lectura, O4Mini, Tapado, CampoCifra, CAMPO_INICIAL, escribir, verHaz, SUPERFICIE, BORDE_SUP, CIFRA } from "./comunP2P6.jsx";
+import { FiguraP, Lectura, O4Mini, Tapado, CampoCifra, CAMPO_INICIAL, escribir, verHaz, verToque, SUPERFICIE, BORDE_SUP, CIFRA } from "./comunP2P6.jsx";
 
 /* ═══════════ LOS HECHOS DE ENERO ═══════════ */
 const suma = (l) => l.reduce((s, x) => s + x, 0);
@@ -188,7 +190,7 @@ function FiguraCobrados({ estado, setEstado }) {
   return (
     <FiguraP
       data-pantalla-t3="p2-cobrados"
-      ver={verHaz(e)}
+      ver={verToque(e)}
       modelo={(
         <ModeloP2
           lectura={lecturaP2("cobrados", { cobradoHasta })}
@@ -355,9 +357,115 @@ function FiguraUtilidad({ estado, setEstado }) {
   );
 }
 
-/* ═══════════ P2-7 · ⛔ ARMADA Y ESPERANDO (delta de Itagaki, lote 16) ═══════════ */
-function FiguraSeparan() {
-  return <FiguraP data-pantalla-t3="p2-separan" data-pendiente="delta-itagaki" modelo={null} zona={[]} />;
+/* ═══════════ P2-7 · LO QUE SEPARA CAJA Y UTILIDAD (delta v3 §2). Cada toque se califica ═══════════ */
+/*
+ * El puente sale de los hechos: utilidad + lo que entró sin ser ingreso (el
+ * aporte en plata) − lo que es ingreso pero no entró (lo que falta cobrar) =
+ * la caja. 6.450 + 15.000 − 6.800 = 14.650; una prueba lo comprueba.
+ */
+const CLAVES_P2_7 = OPC_P2_7.filter((o) => o.correcta);
+export const PUENTE_P2_7 = { utilidad: UTILIDAD_ENERO, suma: CAJA_INICIAL, resta: POR_COBRAR, caja: CAJA_FIN };
+export const SEPARAN_INICIAL = { ...HAZ_T3, marcadas: [] };
+
+export function tocarSeparan(estado, id) {
+  const e = estado ?? SEPARAN_INICIAL;
+  const o = OPC_P2_7.find((x) => x.id === id);
+  if (hazResuelto(e) || !o || e.marcadas.includes(id)) return e;
+  if (o.correcta) {
+    const marcadas = [...e.marcadas, id];
+    return { ...e, marcadas, ultimo: "acierto", ok: CLAVES_P2_7.every((c) => marcadas.includes(c.id)), eleccion: id };
+  }
+  const r = responderHaz({ ...e, ok: false }, false);
+  /* Con dos errores, el estado correcto: las dos claves, marcadas. */
+  return { ...e, ...r, eleccion: id, marcadas: mostrarCorrecto(r) ? CLAVES_P2_7.map((c) => c.id) : e.marcadas };
+}
+
+/*
+ * La zona. Sin línea de datos: la lectura sigue a la vista en la fila de
+ * control (delta v3 §2). Con una clave marcada y la otra por tocar, el error
+ * «Eligió solo una de las dos claves» de Miyata (v2), como en P2-2 el de
+ * «Dejó sin marcar uno cobrado» (que allí es la razón).
+ */
+export const zonaSeparan = (estado) => {
+  const e = estado ?? SEPARAN_INICIAL;
+  if (e.ok) return [{ texto: ACIERTOS_P2.separan }];
+  if (mostrarCorrecto(e)) {
+    const p = OPC_P2_7.find((o) => o.id === e.eleccion)?.error;
+    return [{ texto: p ?? ACIERTOS_P2.separan, fuerte: true, tipo: "porque" }];
+  }
+  if (e.ultimo === "error" && e.intentos === 1) return [{ texto: PISTAS_P2.separan, fuerte: true, tipo: "pista" }];
+  if (e.ultimo === "acierto" && e.marcadas.length === 1) return [{ texto: ERROR_P2_7_SOLO_UNA }];
+  return [{ texto: TEXTOS_P2.separan }];
+};
+
+const sinSigno = (n) => pesos(n).slice(1);
+
+/* La fila de control de P2-7: lectura (16) + 4 + puente (16 + 2 + barra de 6) = 44. */
+function FilaLecturaPuente({ visible }) {
+  const { utilidad, suma: mas, resta, caja } = PUENTE_P2_7;
+  const tope = utilidad + mas;
+  return (
+    <div style={{ flex: "1 1 0", minWidth: 0, display: "grid", gridTemplateRows: "16px 24px", rowGap: "4px" }} data-fila-lectura>
+      <Lectura pares={lecturaP2("final")} />
+      <div data-puente={visible ? "" : "vacio"} style={{ display: "grid", gridTemplateRows: "16px 6px", rowGap: "2px", visibility: visible ? "visible" : "hidden" }} aria-hidden={visible ? undefined : "true"}>
+        <div className="t3s-cifras" style={{ color: C.texto, fontFamily: CIFRA }}>
+          {sinSigno(utilidad)} +{sinSigno(mas)} −{sinSigno(resta)} = <b>{sinSigno(caja)}</b>
+        </div>
+        <div aria-hidden="true" style={{ position: "relative", height: "6px", borderRadius: "2px", background: "rgba(248,249,250,.08)", overflow: "hidden" }}>
+          <span data-puente-utilidad style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${(utilidad / tope) * 100}%`, background: C.neutro }} />
+          <span data-puente-aporte style={{ position: "absolute", left: `${(utilidad / tope) * 100}%`, top: 0, bottom: 0, width: `${((caja - utilidad) / tope) * 100}%`, background: C.texto }} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function FiguraSeparan({ estado, setEstado }) {
+  const e = estado ?? SEPARAN_INICIAL;
+  const listo = hazResuelto(e);
+  return (
+    <FiguraP
+      data-pantalla-t3="p2-separan"
+      ver={verToque(e)}
+      modelo={(
+        <div role="group" aria-label="Lo que separa la caja y la utilidad" data-rejilla-p2-7 style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gridTemplateRows: "44px 44px", gap: "8px" }}>
+          {OPC_P2_7.map((o) => {
+            const marcada = e.marcadas.includes(o.id);
+            const mal = e.eleccion === o.id && e.ultimo === "error" && !marcada;
+            return (
+              <button
+                key={o.id}
+                type="button"
+                className="t3s-ctl"
+                data-opcion={o.id}
+                data-ver={marcada ? "bien" : mal ? "mal" : undefined}
+                aria-pressed={marcada ? "true" : "false"}
+                aria-disabled={listo || marcada ? "true" : undefined}
+                onClick={listo || marcada ? undefined : () => setEstado((s) => tocarSeparan(s, o.id))}
+              >
+                {o.texto}
+              </button>
+            );
+          })}
+        </div>
+      )}
+      control={<FilaLecturaPuente visible={listo} />}
+      zona={zonaSeparan(e)}
+    />
+  );
+}
+
+function medirSeparan() {
+  const jugar = (ids) => ids.reduce((e, id) => tocarSeparan(e, id), SEPARAN_INICIAL);
+  return [
+    { nombre: "sin-responder", estado: SEPARAN_INICIAL },
+    { nombre: "una-clave", estado: jugar(["aporte"]) },
+    { nombre: "pista", estado: jugar(["gastos-pagados"]) },
+    { nombre: "pista-equipo", estado: jugar(["equipo"]) },
+    { nombre: "acierto", estado: jugar(["aporte", "falta-cobrar"]) },
+    { nombre: "dos-errores-gastos-pagados", estado: jugar(["equipo", "gastos-pagados"]) },
+    { nombre: "dos-errores-equipo", estado: jugar(["gastos-pagados", "equipo"]) },
+  ];
 }
 
 /* ═══════════ P2-8 · CIERRE sin acción, 2 pasos por frase ═══════════ */
@@ -448,9 +556,9 @@ export const SECUENCIA_P2 = {
       medir: medirCampo(UTILIDAD_ENERO, [INGRESOS + GASTOS, INGRESOS]),
     },
     {
-      id: "separan", tipo: "haz", titular: TITULARES_P2.separan, Figura: FiguraSeparan, nombreFigura: "La caja y la utilidad de enero",
-      estadoInicial: HAZ_T3, resuelta: () => false, razon: RAZON_P2P6.opcion, zonaDe: () => [],
-      pendiente: "P2-7: el delta de Itagaki (lote 16)", medir: [{ nombre: "pendiente", estado: HAZ_T3 }],
+      id: "separan", tipo: "haz", titular: TITULARES_P2.separan, Figura: FiguraSeparan,
+      nombreFigura: "Las cuatro opciones, y debajo la línea de caja y utilidad con el puente entre las dos",
+      estadoInicial: SEPARAN_INICIAL, resuelta: hazResuelto, razon: RAZON_P2P6.opcion, zonaDe: zonaSeparan, medir: medirSeparan(),
     },
     {
       id: "cierre", tipo: "cierre", titular: TITULARES_P2.cierre, Figura: FiguraCierre, nombreFigura,

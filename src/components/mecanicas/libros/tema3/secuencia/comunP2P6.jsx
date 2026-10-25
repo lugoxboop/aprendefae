@@ -19,6 +19,13 @@
  *   · CIFRAS EN INTER TABULAR: el sitio no carga ninguna mono (lote 16).
  *   · LO TAPADO (E8): un bloque relleno #0E1B2E, sin borde y sin texto debajo
  *     (D9: el lector de pantalla no oye lo que todavía no se ve).
+ *   · LA LISTA UNIDA (delta v3 §1, P6-7 y P6-9): las opciones que ocupan la
+ *     figura van pegadas, 3 × 44 = 132, con una divisoria de 1 px y el estado
+ *     dibujado por dentro (no suma alto). Va en `entera`: arranca arriba del
+ *     modelo y baja sobre la separación y la fila de control, que quedan vacías;
+ *     la reserva de 150/200 no cambia.
+ *   · LA LÍNEA DE DATOS (v2 §1): un bloque `{ datos }` de la zona, 16 px,
+ *     encima de la pista.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 import { CSS_T3S, C, pesos } from "./base.jsx";
@@ -44,6 +51,19 @@ const CSS_P2P6 = `
 .t3s2-campo:focus-visible { outline: 2px solid ${C.texto}; outline-offset: 2px; }
 .t3s2-campo[data-ver="mal"] { border: 2px solid ${C.error}; }
 .t3s2-campo[data-ver="bien"] { border: 2px solid ${C.texto}; }
+.t3s2-entera { position: absolute; top: 0; left: 0; right: 0; z-index: 1; }
+.t3s2-marca { height: 16px; margin: 0 0 2px; font: 600 12px/16px "Inter", sans-serif; color: ${C.apagado}; text-transform: uppercase; letter-spacing: .02em; white-space: nowrap; }
+.t3s2-lista { display: grid; grid-auto-rows: 44px; border-radius: 8px; box-shadow: inset 0 0 0 1px ${C.quieto}; overflow: hidden; }
+.t3s2-op { appearance: none; display: grid; grid-template-columns: 44px minmax(0, 1fr); grid-template-rows: 16px 16px; align-content: center; column-gap: 8px; height: 44px; width: 100%; margin: 0; padding: 0 10px; border: 0; border-top: 1px solid rgba(248,249,250,.12); border-radius: 0; background: transparent; color: ${C.texto}; text-align: left; cursor: pointer; font: 400 12px/16px "Inter", sans-serif; }
+.t3s2-op:first-child { border-top: 0; border-radius: 8px 8px 0 0; }
+.t3s2-op:last-child { border-radius: 0 0 8px 8px; }
+.t3s2-op > span { white-space: nowrap; overflow: hidden; text-overflow: clip; min-width: 0; }
+.t3s2-op > span:nth-child(odd) { color: ${C.apagado}; }
+.t3s2-op > span:nth-child(even) { font-weight: 600; }
+.t3s2-op[data-ver] { box-shadow: inset 0 0 0 2px ${C.texto}; }
+.t3s2-op[data-ver="mal"] { box-shadow: inset 0 0 0 2px ${C.error}; }
+.t3s2-op[aria-disabled="true"] { cursor: default; }
+.t3s2-op:focus-visible { outline: 2px solid ${C.texto}; outline-offset: -4px; }
 `;
 
 /* La pastilla en línea: «Correcto» en blanco o «No va aquí» en coral (los literales publicados). */
@@ -63,18 +83,22 @@ export function Pastilla({ ver }) {
  *
  * zona  [{ texto, fuerte?, tipo? } | { paso } | { pie } | { rotulo }]
  */
-export function FiguraP({ modelo = null, control = null, zona = [], ver = null, ...datos }) {
+export function FiguraP({ modelo = null, control = null, zona = [], ver = null, entera = null, ...datos }) {
   const bloques = zona.filter(Boolean);
   const primerTexto = bloques.findIndex((z) => z.texto !== undefined && !z.paso && !z.pie && !z.rotulo);
   return (
     <div className="t3s t3s2" {...datos}>
       <style>{CSS_T3S}{CSS_P2P6}</style>
-      <div className="t3s-modelo" data-modelo>{modelo}</div>
+      <div className="t3s-modelo" data-modelo>
+        {modelo}
+        {entera && <div className="t3s2-entera" data-figura-entera>{entera}</div>}
+      </div>
       <div className="t3s-control" data-control>{control}</div>
       <div className="t3s-zona" data-zona aria-live="polite">
         {ver && primerTexto < 0 && <p className="t3s-t" data-texto="veredicto"><Pastilla ver={ver} /></p>}
         {bloques.map((z, k) => (
-          z.paso ? <p key={k} className="t3s-paso" data-paso-zona>{z.paso}</p>
+          z.datos ? <p key={k} className="t3s-cifras" style={{ margin: 0 }} data-linea-datos><DatosEnLinea pares={z.datos} /></p>
+            : z.paso ? <p key={k} className="t3s-paso" data-paso-zona>{z.paso}</p>
             : z.pie ? <p key={k} className="t3s-paso" data-pie>{z.pie}</p>
               : z.rotulo ? <p key={k} className="t3s-rot" data-rotulo-zona>{z.rotulo}</p>
                 : (
@@ -87,6 +111,16 @@ export function FiguraP({ modelo = null, control = null, zona = [], ver = null, 
       </div>
     </div>
   );
+}
+
+/** La línea de datos: [[rótulo, monto]] o [[rótulo]] (un rótulo solo, sin cifra), unidos por « · ». */
+function DatosEnLinea({ pares }) {
+  return pares.map(([nombre, monto], k) => (
+    <span key={nombre}>
+      {k > 0 && " · "}
+      {nombre}{monto === undefined ? null : <> <b data-monto>{pesos(monto)}</b></>}
+    </span>
+  ));
 }
 
 /** Un monto tapado (E8): un bloque, sin la cifra debajo. El lector oye «tapado». */
@@ -207,6 +241,52 @@ export function CampoCifra({ estado, setEstado, correcta, nombre, ver = null }) 
       >
         Comprobar
       </button>
+    </div>
+  );
+}
+
+/*
+ * La pastilla de un Haz en que CADA TOQUE SE CALIFICA (P2-2 y P2-7): el toque
+ * que acierta lleva «Correcto» aunque falte la otra clave; el que falla, «No va
+ * aquí». verHaz no sirve aquí: con una clave marcada y la otra por tocar, ok
+ * sigue en false y daría «No va aquí» a un toque correcto.
+ */
+export function verToque(e) {
+  if (!e?.ultimo) return null;
+  return e.ultimo === "acierto" ? "bien" : "mal";
+}
+
+/*
+ * La lista unida (delta v3 §1). Cada opción es un asiento: «Debe X» y «Haber
+ * Y», en dos renglones de 16. El estado se dibuja por dentro (2 px #F8F9FA o
+ * coral). `marca`: el renglón de 16 + 2 de aire encima de la lista (P6-9).
+ */
+export function ListaUnida({ opciones, estado, correcta, onElegir, nombre, marca = null, verDe }) {
+  const resuelto = hazResuelto(estado);
+  return (
+    <div data-lista-bloque>
+      {marca && <p className="t3s2-marca" data-marca-escenario>{marca}</p>}
+      <div className="t3s2-lista" role="group" aria-label={nombre} data-lista-unida>
+        {opciones.map((o) => {
+          const ver = verDe(estado, o.id, correcta);
+          return (
+            <button
+              key={o.id}
+              type="button"
+              className="t3s2-op"
+              data-opcion={o.id}
+              data-ver={ver ?? undefined}
+              aria-disabled={resuelto ? "true" : undefined}
+              aria-pressed={estado?.eleccion === o.id ? "true" : "false"}
+              aria-label={`Debe ${o.debe}; haber ${o.haber}`}
+              onClick={resuelto ? undefined : () => onElegir(o.id)}
+            >
+              <span aria-hidden="true">Debe</span><span aria-hidden="true">{o.debe}</span>
+              <span aria-hidden="true">Haber</span><span aria-hidden="true">{o.haber}</span>
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }

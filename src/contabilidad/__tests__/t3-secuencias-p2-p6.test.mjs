@@ -10,6 +10,7 @@ import * as P6 from "../../components/mecanicas/libros/tema3/secuencia/p6.jsx";
 import * as T from "../../data/t3SecuenciasTextosP2P6.js";
 import { CUENTAS_DEL_PERIODO, CUENTAS_QUE_SIGUEN } from "../../data/contabilidadTema3Cierre.js";
 import { ENCENDIDA } from "../../data/banderasT3.js";
+import { pesos } from "../../components/mecanicas/libros/tema3/secuencia/base.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -175,16 +176,71 @@ test("★ D11: cada Haz lleva la razón de su tipo de decisión; P2-2 la suya; u
   for (const id of ["antes", "impuesto"]) assert.equal(pantalla(p6, id).razon, T.RAZON_P2P6.cifra);
 });
 
-test("⛔ lo que espera queda armado, sin inventar: P2-7, P6-7, P6-9 y la pista de P6-4", () => {
+test("★ delta v3 montado (#586): nada queda en espera; P2-7, P6-7 y P6-9 se califican y la pista de P6-4 es la de Miyata", () => {
   const pend = [pieza(T.PIEZA_P2.id), pieza(T.PIEZA_P6.id)].flatMap((p) => p.pantallas.filter((s) => s.pendiente).map((s) => `${p.id}/${s.id}`));
-  assert.deepEqual(pend, [
-    "t3-a2-el-mes-de-san-calixto/separan", "t3-a6-lo-que-deja-el-periodo/impuesto",
-    "t3-a6-lo-que-deja-el-periodo/por-pagar", "t3-a6-lo-que-deja-el-periodo/acacias",
-  ]);
-  assert.equal(T.PISTAS_P6.impuesto, null);
-  for (const id of ["separan"]) assert.equal(pantalla(pieza(T.PIEZA_P2.id), id).resuelta(null), false);
-  for (const id of ["por-pagar", "acacias"]) assert.equal(pantalla(pieza(T.PIEZA_P6.id), id).resuelta(null), false);
-  assert.equal(T.PENDIENTES_P2P6.length, 4);
+  assert.deepEqual(pend, []);
+  assert.deepEqual(T.PENDIENTES_P2P6, []);
+  assert.equal(T.PISTAS_P6.impuesto, "El 33 % va sobre la última cifra que destapaste en la pila.");
+  for (const id of ["por-pagar", "acacias"]) {
+    const s = pantalla(pieza(T.PIEZA_P6.id), id);
+    assert.equal(s.resuelta(null), false);
+    assert.equal(s.razon, T.RAZON_P2P6.opcion);
+  }
+  assert.equal(pantalla(pieza(T.PIEZA_P2.id), "separan").razon, T.RAZON_P2P6.opcion);
+});
+
+test("★ P2-7: cada toque se califica; las dos claves resuelven; dos errores dejan las claves marcadas", () => {
+  let e = P2.tocarSeparan(P2.SEPARAN_INICIAL, "aporte");
+  assert.equal(e.ok, false);
+  assert.equal(textoDe(P2.zonaSeparan(e)), T.ERROR_P2_7_SOLO_UNA);
+  e = P2.tocarSeparan(e, "falta-cobrar");
+  assert.equal(e.ok, true);
+  assert.equal(textoDe(P2.zonaSeparan(e)), T.ACIERTOS_P2.separan);
+  const p = P2.tocarSeparan(P2.SEPARAN_INICIAL, "equipo");
+  assert.equal(P2.zonaSeparan(p)[0].tipo, "pista");
+  const mal = P2.tocarSeparan(p, "gastos-pagados");
+  assert.deepEqual(mal.marcadas, ["aporte", "falta-cobrar"]);
+  assert.equal(textoDe(P2.zonaSeparan(mal)), T.OPC_P2_7.find((o) => o.id === "gastos-pagados").error);
+});
+
+test("★ P2-7: la lectura va en la fila de control, siempre a la vista; el puente sale de los hechos y aparece al acertar", () => {
+  const p2 = pieza(T.PIEZA_P2.id);
+  const { utilidad, suma: mas, resta, caja } = P2.PUENTE_P2_7;
+  assert.equal(utilidad + mas - resta, caja);
+  assert.deepEqual([utilidad, mas, resta, caja], [6450, 15000, 6800, 14650]);
+  for (const nombre of ["sin-responder", "pista", "acierto"]) {
+    const html = pintar(p2, "separan", pantalla(p2, "separan").medir.find((m) => m.nombre === nombre).estado);
+    const control = entre(html, "data-control", "data-zona");
+    assert.match(control, /data-lectura/, `${nombre}: la lectura no está en la fila de control`);
+    assert.ok(control.includes("$14.650") && control.includes("$6.450"), nombre);
+    assert.doesNotMatch(entre(html, "data-modelo", "data-control"), /data-lectura/);
+    assert.doesNotMatch(entre(html, "data-zona"), /data-linea-datos/, `${nombre}: en el apoyo no va línea de datos`);
+    assert.match(control, nombre === "acierto" ? /data-puente=""/ : /data-puente="vacio"/);
+  }
+});
+
+test("★ P6-7 y P6-9: lista unida; la marca de P6-9 va en la figura; la línea de datos sale solo con la pista", () => {
+  const p6 = pieza(T.PIEZA_P6.id);
+  for (const [id, datos] of [["por-pagar", "Impuesto de renta $1.958.550"], ["acacias", "Las Acacias · Pérdida $100.000"]]) {
+    const s = pantalla(p6, id);
+    const html = (n) => pintar(p6, id, s.medir.find((m) => m.nombre === n).estado);
+    const sin = html("sin-responder");
+    assert.match(entre(sin, "data-modelo", "data-control"), /data-lista-unida/);
+    assert.equal((sin.match(/class="t3s2-op"/g) ?? []).length, 3);
+    assert.doesNotMatch(sin, /data-linea-datos/);
+    const pista = html(s.medir.find((m) => m.nombre.startsWith("pista-")).nombre);
+    const zona = entre(pista, "data-zona");
+    assert.match(zona, /data-linea-datos/);
+    assert.ok(zona.replace(/<[^>]+>/g, "").includes(datos), `${id}: «${datos}»`);
+    assert.ok(zona.indexOf("data-linea-datos") < zona.indexOf('data-texto="pista"'), "la línea de datos va encima de la pista");
+    assert.doesNotMatch(html("acierto"), /data-linea-datos/);
+    assert.doesNotMatch(entre(pista, "data-modelo", "data-control"), /data-pastilla/);
+    const marca = /data-marca-escenario/;
+    if (id === "acacias") assert.match(entre(sin, "data-modelo", "data-control"), marca);
+    else assert.doesNotMatch(sin, marca);
+  }
+  assert.ok(T.TEXTOS_P6.acacias.includes(pesos(T.LAS_ACACIAS_P6.perdida)), "la pérdida de la línea de datos es la del texto");
+  assert.ok(!T.TEXTOS_P6.acacias.toLowerCase().includes("escenario"), "la marca no va en el apoyo");
 });
 
 test("★ P2-2: cada toque se califica; dos errores dejan los dos cobrados marcados", () => {
@@ -195,6 +251,16 @@ test("★ P2-2: cada toque se califica; dos errores dejan los dos cobrados marca
   const mal = P2.tocarFicha(P2.tocarFicha(P2.COBRADOS_INICIAL, "jcc"), "mps");
   assert.deepEqual(mal.marcadas, ["dia-5", "lcdv"]);
   assert.equal(mal.intentos, 2);
+});
+
+test("★ P2-2 y P2-7: un toque que acierta lleva «Correcto» aunque falte la otra clave", () => {
+  const p2 = pieza(T.PIEZA_P2.id);
+  const uno = pintar(p2, "cobrados", P2.tocarFicha(P2.COBRADOS_INICIAL, "dia-5"));
+  assert.match(entre(uno, "data-zona"), /data-ver="bien"/);
+  const clave = pintar(p2, "separan", P2.tocarSeparan(P2.SEPARAN_INICIAL, "aporte"));
+  assert.match(entre(clave, "data-zona"), /data-ver="bien"/);
+  const mal = pintar(p2, "separan", P2.tocarSeparan(P2.SEPARAN_INICIAL, "equipo"));
+  assert.match(entre(mal, "data-zona"), /data-ver="mal"/);
 });
 
 test("★ P6-2, P6-6 y P6-8: un paso por cuenta, con su error al segundo intento", () => {

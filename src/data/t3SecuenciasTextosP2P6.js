@@ -18,9 +18,9 @@
  * la rama de las condiciones de encendido de #572. Su nombre no empieza por
  * contabilidadTema3: así no entra en la salvaguarda de t3-arma-el-ajuste.
  *
- * ⛔ ESPERAN (Takamura, lote 16): P2-7, P6-7, P6-9 y la pista de P6-4. Su
- * lugar queda armado con null: no se inventa ni se adelanta nada. Kamogawa los
- * pasa por comentario en el PR.
+ *   · -v3-delta.md (Itagaki y Miyata, lote 16; PASA de Takamura, lote 17):
+ *     P2-7, P6-7 y P6-9, la marca «ESCENARIO SIMULADO» y la pista de P6-4.
+ *     Kamogawa dio la orden de montarlas en #586.
  *
  * Los montos de P2 no se escriben aquí: salen de los hechos publicados
  * (contabilidadTema3.js y contabilidadTema3Cierre.js), en p2.jsx.
@@ -115,9 +115,8 @@ export const ERRORES_P2_5 = {
 export const ERROR_P2_6 = "Ingresos menos gastos. Revisa la resta.";
 
 /*
- * P2-7 · ⛔ ESPERA (Takamura, lote 16: la línea de lectura se muestra
- * siempre; Itagaki entrega el delta). Las opciones y sus errores ya tienen
- * PASA (v2 §3); van aquí para que el delta solo tenga que montarlas.
+ * P2-7 · las opciones y sus errores (v2 §3, PASA del lote 12). La forma es la
+ * del delta v3 §2: la línea de lectura en la fila de control, siempre a la vista.
  */
 export const OPC_P2_7 = [
   { id: "aporte", texto: "El aporte", correcta: true, error: null },
@@ -176,6 +175,8 @@ export const TEXTOS_P6 = {
   reparte: "Cierra Ganancias y pérdidas: pon en el haber las dos cuentas que reciben su saldo.",
   porPagar: "¿Ya se pagó el impuesto? Elige el asiento que lo deja anotado.",
   aSuEstado: "Lleva cada cuenta a su lugar en el estado de situación financiera.",
+  /* e3-t3-p2-y-p6-v2.md, P6-9 (la marca va en la figura: delta v3 §1). */
+  acacias: "Las Acacias perdió $100.000 en febrero. ¿Con qué asiento cierra Ganancias y pérdidas?",
 };
 
 export const ACIERTOS_P6 = {
@@ -185,6 +186,9 @@ export const ACIERTOS_P6 = {
   impuesto: "El 33 % de $5.935.000 es $1.958.550. Lo que queda, $3.976.450, es la utilidad del ejercicio.",
   reparte: "Ganancias y pérdidas queda en cero. Su saldo se reparte: una parte para el impuesto y el resto para los accionistas.",
   aSuEstado: "La utilidad del ejercicio es de los accionistas: va al patrimonio. El impuesto por pagar es una deuda: va al pasivo.",
+  /* e3-t3-p2-y-p6-v2.md, P6-7 y P6-9. */
+  porPagar: "Todavía no se paga: queda como una deuda con el Estado, en Impuesto de renta por pagar.",
+  acacias: "La pérdida del ejercicio va al debe y deja en cero a Ganancias y pérdidas.",
 };
 
 /* P6-1 · Sí / No. La clave es «No». */
@@ -246,7 +250,7 @@ export const CUENTAS_P6_6 = [
   { cuenta: "Caja", lado: null, error: "El impuesto no se paga al cerrar. Aquí no sale plata." },
 ];
 
-/* P6-7 y P6-9 · ⛔ ESPERAN el delta de Itagaki (lote 16). Opciones con PASA (v2 §3), sin montar. */
+/* P6-7 y P6-9 · opciones con PASA (v2 §3), en la lista unida del delta v3 §1. */
 export const OPC_P6_7 = [
   { id: "por-pagar", debe: "Impuesto de renta", haber: "Impuesto de renta por pagar", correcta: true, error: null },
   { id: "caja", debe: "Impuesto de renta", haber: "Caja", correcta: false, error: "El impuesto aún no se paga. No sale plata: queda la deuda." },
@@ -257,6 +261,10 @@ export const OPC_P6_9 = [
   { id: "al-reves", debe: "Ganancias y pérdidas", haber: "Pérdida del ejercicio", correcta: false, error: "Ganancias y pérdidas quedó en el debe. Para dejarla en cero, va al haber." },
   { id: "utilidad", debe: "Ganancias y pérdidas", haber: "Utilidad del ejercicio", correcta: false, error: "Con pérdida no hay utilidad que repartir. El saldo quedó en el debe." },
 ];
+
+/* P6-9 · la marca de la figura (delta v3 §1) y el dato de su línea de datos (e3-t3-p2-y-p6-v2.md, P6-9). */
+export const MARCA_P6_9 = "Escenario simulado";
+export const LAS_ACACIAS_P6 = { nombre: "Las Acacias", rotulo: "Pérdida", perdida: 100000 };
 
 /* P6-8 · cada cuenta a su estado, una por paso. */
 export const PASIVO = "pasivo";
@@ -273,22 +281,17 @@ export const CIERRE_P6 = [
   "El impuesto es deuda; el resto va al patrimonio.",
 ];
 
-/* Pistas del primer error (v4 §2). ⛔ La de P6-4 espera la frase de Miyata (lote 16): null. */
+/* Pistas del primer error (v4 §2). La de P6-4, de Miyata (delta v3, lote 16). */
 export const PISTAS_P6 = {
   apertura: "Antes de saber qué les toca a los accionistas, ¿falta algo por restar?",
   separar: "Pregúntate si ese gasto sale de lavar ropa o de cómo se financia la empresa.",
   antes: "A la utilidad de la operación todavía le falta restar un gasto.",
-  impuesto: null,
+  impuesto: "El 33 % va sobre la última cifra que destapaste en la pila.",
   reparte: "El saldo de Ganancias y pérdidas se reparte en dos partes. ¿Cuáles?",
   porPagar: "Pregúntate si ya salió la plata del impuesto, o si todavía se debe.",
   aSuEstado: "Pregúntate a quién le pertenece cada cuenta: a los accionistas o a alguien de afuera.",
   acacias: "Mira de qué lado quedó el saldo. Para dejarlo en cero, va al lado contrario.",
 };
 
-/* Lo que espera, con nombre, para la prueba y el cuerpo del PR. */
-export const PENDIENTES_P2P6 = [
-  "P2-7: el delta de Itagaki (la línea de lectura siempre a la vista)",
-  "P6-7: se monta junto con P6-9 (la misma regla de opciones)",
-  "P6-9: el delta de Itagaki (la marca «ESCENARIO SIMULADO»)",
-  "La pista de P6-4: la frase de Miyata",
-];
+/* Lo que espera, con nombre, para la prueba y el cuerpo del PR: nada (delta v3 montado en #586). */
+export const PENDIENTES_P2P6 = [];

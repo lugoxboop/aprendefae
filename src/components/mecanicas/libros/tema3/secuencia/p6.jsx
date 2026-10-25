@@ -12,22 +12,21 @@
  * tasa del 33 %. Una prueba comprueba que dan los números que Miyata verificó
  * a ojo en la p. 135 (6.020.000, 5.935.000, 1.958.550 y 3.976.450).
  *
- * ⛔ ESPERAN (Takamura, lote 16): P6-7 y P6-9 (delta de Itagaki) y la pista
- * de P6-4 (frase de Miyata). Su lugar queda armado: P6-7 y P6-9 como
- * pantallas en espera; P6-4 sin pista, que entra con un solo cambio en
- * PISTAS_P6.impuesto.
+ * P6-7, P6-9 y la pista de P6-4 van con el delta v3 (PASA de Takamura, lote
+ * 17): las opciones en la lista unida (132) y, en P6-9, la marca «ESCENARIO
+ * SIMULADO» en la figura, encima de la lista: 16 + 2 + 132 = 150 de 150.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 import {
   PIEZA_P6, TITULARES_P6, TEXTOS_P6, ACIERTOS_P6, OBJETIVO_P6, OPC_P6_1, ERRORES_P6_1, OPC_P6_2, GASTOS_P6_2, OPERACION,
   LAVALIMPIO_ENERO, ROTULOS_ESTADO as R, ERRORES_P6_3, ERRORES_P6_4, GANANCIAS_Y_PERDIDAS_P6, CUENTAS_P6_6,
-  ZONAS_P6_8, CUENTAS_P6_8, CIERRE_P6, PISTAS_P6, RAZON_P2P6,
+  ZONAS_P6_8, CUENTAS_P6_8, CIERRE_P6, PISTAS_P6, RAZON_P2P6, OPC_P6_7, OPC_P6_9, MARCA_P6_9, LAS_ACACIAS_P6,
 } from "../../../../../data/t3SecuenciasTextosP2P6.js";
 import { hazResuelto, mostrarCorrecto, responderHaz } from "../../../../secuencia/secuencia.js";
-import { Botones, ControlFlechas, HAZ_T3, elegir, zonaHaz, pesos, C, ALTO_FIGURA_T3, TCompacta, enOrden } from "./base.jsx";
+import { Botones, ControlFlechas, HAZ_T3, elegir, zonaHaz, verBoton, pesos, C, ALTO_FIGURA_T3, TCompacta, enOrden } from "./base.jsx";
 import { medirEleccion } from "./p1.jsx";
 import { medirCampo } from "./p2.jsx";
-import { FiguraP, Renglon, Tapado, CampoCifra, CAMPO_INICIAL, verHaz, SUPERFICIE, BORDE_SUP, CIFRA } from "./comunP2P6.jsx";
+import { FiguraP, Renglon, Tapado, CampoCifra, CAMPO_INICIAL, verHaz, ListaUnida, SUPERFICIE, BORDE_SUP, CIFRA } from "./comunP2P6.jsx";
 
 /* ═══════════ EL ESTADO DE RESULTADOS DE ENERO, DESDE LOS HECHOS ═══════════ */
 const suma = (l) => l.reduce((s, x) => s + x, 0);
@@ -182,7 +181,6 @@ function pantallaCifra({ id, titular, correcta, renglones, pista, errores, antes
   return {
     id, tipo: "haz", titular, Figura: F, nombreFigura: "La pila del estado de resultados de Lavalimpio, con lo que falta tapado",
     estadoInicial: CAMPO_INICIAL, resuelta: hazResuelto, razon: RAZON_P2P6.cifra, zonaDe,
-    pendiente: pista ? null : "La pista de P6-4: la frase de Miyata (lote 16)",
     medir: medirCampo(correcta, malas),
   };
 }
@@ -399,15 +397,46 @@ function medirLlevar() {
   ];
 }
 
-/* ═══════════ P6-7 y P6-9 · ⛔ ARMADAS Y ESPERANDO (delta de Itagaki, lote 16) ═══════════ */
-function pendiente(id, titular, que) {
-  function F() {
-    return <FiguraP data-pantalla-t3={`p6-${id}`} data-pendiente="delta-itagaki" modelo={null} zona={[]} />;
+/* ═══════════ P6-7 y P6-9 · ELIGE EL ASIENTO: la lista unida (delta v3 §1) ═══════════ */
+/*
+ * Las 3 opciones ocupan la figura (3 × 44 = 132; P6-9, con la marca, 150).
+ * La línea de datos va encima de la pista, solo con error (v2 §1; delta v3
+ * §2: P6 no tiene línea de lectura). Sus cifras salen de los hechos: el
+ * impuesto calculado arriba y la pérdida de Las Acacias del texto de Miyata.
+ */
+export const DATOS_P6_7 = [[R.impuesto, IMPUESTO]];
+export const DATOS_P6_9 = [[LAS_ACACIAS_P6.nombre], [LAS_ACACIAS_P6.rotulo, LAS_ACACIAS_P6.perdida]];
+
+function pantallaAsiento({ id, titular, opciones, texto, acierto, pista, datos, marca = null, nombreFigura }) {
+  const correcta = opciones.find((o) => o.correcta).id;
+  const zonaDe = (estado) => {
+    const z = zonaHaz(estado, { antes: [{ texto }], despues: [{ texto: acierto }], pista, porque: (el) => opciones.find((o) => o.id === el)?.error ?? null });
+    return z[0]?.tipo === "pista" ? [{ datos }, ...z] : z;
+  };
+  function F({ estado, setEstado }) {
+    const e = estado ?? HAZ_T3;
+    return (
+      <FiguraP
+        data-pantalla-t3={`p6-${id}`}
+        ver={verHaz(e)}
+        entera={(
+          <ListaUnida
+            nombre="Elige el asiento"
+            opciones={opciones}
+            estado={e}
+            correcta={correcta}
+            marca={marca}
+            verDe={verBoton}
+            onElegir={(x) => setEstado((s) => elegir(s, x, correcta))}
+          />
+        )}
+        zona={zonaDe(e)}
+      />
+    );
   }
   return {
-    id, tipo: "haz", titular, Figura: F, nombreFigura: "El asiento que se elige", estadoInicial: HAZ_T3,
-    resuelta: () => false, razon: RAZON_P2P6.opcion, zonaDe: () => [], pendiente: que,
-    medir: [{ nombre: "pendiente", estado: HAZ_T3 }],
+    id, tipo: "haz", titular, Figura: F, nombreFigura, estadoInicial: HAZ_T3,
+    resuelta: hazResuelto, razon: RAZON_P2P6.opcion, zonaDe, medir: medirEleccion(opciones, correcta),
   };
 }
 
@@ -497,13 +526,20 @@ export const SECUENCIA_P6 = {
       nombreFigura: `El asiento que cierra ${GANANCIAS_Y_PERDIDAS_P6}: el debe dado y el haber por poner`,
       estadoInicial: REPARTE_INICIAL, resuelta: reparteResuelto, razon: RAZON_P2P6.asiento, zonaDe: zonaReparte, medir: medirReparte(),
     },
-    pendiente("por-pagar", TITULARES_P6.porPagar, "P6-7: se monta con P6-9 (delta de Itagaki, lote 16)"),
+    pantallaAsiento({
+      id: "por-pagar", titular: TITULARES_P6.porPagar, opciones: OPC_P6_7, texto: TEXTOS_P6.porPagar, acierto: ACIERTOS_P6.porPagar,
+      pista: PISTAS_P6.porPagar, datos: DATOS_P6_7, nombreFigura: "Tres asientos posibles para el impuesto, en una lista",
+    }),
     {
       id: "a-su-estado", tipo: "haz", titular: TITULARES_P6.aSuEstado, Figura: FiguraLlevar,
       nombreFigura: "La cuenta en curso y las zonas Pasivo y Patrimonio",
       estadoInicial: LLEVAR_INICIAL, resuelta: llevarResuelto, razon: RAZON_P2P6.ubicar, zonaDe: zonaLlevar, medir: medirLlevar(),
     },
-    pendiente("acacias", TITULARES_P6.acacias, "P6-9: la marca «ESCENARIO SIMULADO» (delta de Itagaki, lote 16)"),
+    pantallaAsiento({
+      id: "acacias", titular: TITULARES_P6.acacias, opciones: OPC_P6_9, texto: TEXTOS_P6.acacias, acierto: ACIERTOS_P6.acacias,
+      pista: PISTAS_P6.acacias, datos: DATOS_P6_9, marca: MARCA_P6_9,
+      nombreFigura: "Escenario simulado: tres asientos posibles para cerrar la pérdida, en una lista",
+    }),
     {
       id: "cierre", tipo: "cierre", titular: TITULARES_P6.cierre, Figura: FiguraCierre,
       nombreFigura: "El estado de resultados de Lavalimpio, de arriba abajo",

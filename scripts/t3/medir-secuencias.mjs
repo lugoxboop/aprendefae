@@ -28,7 +28,14 @@
  *            hasta la figura, y el ancho de las cifras más largas en Inter
  *            tabular, con la comprobación de que Inter está cargada.
  *
- *   node scripts/t3/medir-secuencias.mjs [--c6 | --previas] [--capturas <carpeta>] [--json <archivo>]
+ *   P2-7, P6-7 y P6-9 (delta v3, #586): lo que ocupa de verdad lo que va en
+ *            la figura (la rejilla de P2-7; la lista unida, con la marca en
+ *            P6-9), contra la reserva de 150/200. ⛔ Si P6-9 pasa de 150, para.
+ *
+ *   node scripts/t3/medir-secuencias.mjs [--c6 | --previas] [--solo <expresión>] [--capturas <carpeta>] [--json <archivo>]
+ *
+ * --solo mide solo las pantallas cuyo «pieza/pantalla» casa con la expresión
+ * (y se salta C6, las tarjetas, las previas y el control).
  *
  * Las fuentes de Google no se alcanzan desde la caja de medida: si existe
  * FUENTES_NPM (una carpeta con @fontsource/sora e @fontsource/inter), la
@@ -48,6 +55,7 @@ const arg = (n) => { const i = process.argv.indexOf(n); return i > 0 ? process.a
 const SOLO_C6 = process.argv.includes("--c6");
 const CAPTURAS = arg("--capturas");
 const JSON_SALIDA = arg("--json");
+const SOLO = arg("--solo") ? new RegExp(arg("--solo")) : null;
 if (CAPTURAS) mkdirSync(CAPTURAS, { recursive: true });
 const ANCHOS = [320, 375];
 const ALTOS = { 320: 568, 375: 667 };
@@ -236,6 +244,16 @@ function medirPantalla() {
     }
   }
   const nav = document.querySelector("[data-navegacion]")?.getBoundingClientRect();
+  /* Lo que va en la figura entera (P6-7 y P6-9) o la rejilla del modelo (P2-7): de lo alto del modelo a su borde de abajo. */
+  const ocupaEl = fig.querySelector("[data-figura-entera] > *, [data-rejilla-p2-7]");
+  const ocupa = ocupaEl && modelo ? Math.round((ocupaEl.getBoundingClientRect().bottom - modelo.top) * 10) / 10 : null;
+  const marcaEl = fig.querySelector("[data-marca-escenario]");
+  const listaEl = fig.querySelector("[data-lista-unida]");
+  const opcionesAlto = [...fig.querySelectorAll(".t3s2-op, [data-rejilla-p2-7] button")].map((b) => Math.round(b.getBoundingClientRect().height * 10) / 10);
+  const filaLectura = fig.querySelector("[data-fila-lectura]");
+  const lecturaVisible = Boolean(filaLectura?.querySelector("[data-lectura]")?.textContent.trim());
+  const puente = fig.querySelector("[data-puente]");
+  const lineaDatos = fig.querySelector("[data-linea-datos]");
   /*
    * P2 y P6 (#578): la pastilla no toca nada del modelo (condición 5 de #572),
    * la razón no se ve mientras se ve la pista (Itagaki, lote 15) y el ancho
@@ -262,6 +280,12 @@ function medirPantalla() {
     return { texto: f.textContent, natural: Math.round(natural), caja: Math.round(f.getBoundingClientRect().width) };
   });
   return {
+    ocupa,
+    marca: marcaEl ? Math.round(marcaEl.getBoundingClientRect().height * 10) / 10 : null,
+    lista: listaEl ? Math.round(listaEl.getBoundingClientRect().height * 10) / 10 : null,
+    opcionesAlto,
+    filaLectura: filaLectura ? { alto: Math.round(filaLectura.getBoundingClientRect().height * 10) / 10, lectura: lecturaVisible, texto: filaLectura.querySelector("[data-lectura]")?.textContent ?? "", puente: puente ? getComputedStyle(puente).visibility === "visible" : null, puenteTexto: puente?.textContent ?? "" } : null,
+    lineaDatos: lineaDatos ? lineaDatos.textContent : null,
     pastillaTapa,
     razonConPista: conPista && razonVisible,
     renglonMax: renglones.reduce((m, r) => (r.natural > (m?.natural ?? 0) ? r : m), null),
@@ -311,6 +335,16 @@ const CAPTURAS_DE = {
   "t3-a5-cerrar-el-periodo/ingresos/acierto": "p5-4-ingresos-acierto",
   "t3-a5-cerrar-el-periodo/saldo/acierto": "p5-6-saldo",
   "t3-a5-cerrar-el-periodo/cierre/cierre": "p5-10-cierre",
+  /* P2-7, P6-7 y P6-9 (#586, delta v3): sin responder, pista y acierto. */
+  "t3-a2-el-mes-de-san-calixto/separan/sin-responder": "p2-7-separan-sin-responder",
+  "t3-a2-el-mes-de-san-calixto/separan/pista": "p2-7-separan-pista",
+  "t3-a2-el-mes-de-san-calixto/separan/acierto": "p2-7-separan-acierto",
+  "t3-a6-lo-que-deja-el-periodo/por-pagar/sin-responder": "p6-7-por-pagar-sin-responder",
+  "t3-a6-lo-que-deja-el-periodo/por-pagar/pista-caja": "p6-7-por-pagar-pista",
+  "t3-a6-lo-que-deja-el-periodo/por-pagar/acierto": "p6-7-por-pagar-acierto",
+  "t3-a6-lo-que-deja-el-periodo/acacias/sin-responder": "p6-9-acacias-sin-responder",
+  "t3-a6-lo-que-deja-el-periodo/acacias/pista-utilidad": "p6-9-acacias-pista",
+  "t3-a6-lo-que-deja-el-periodo/acacias/acierto": "p6-9-acacias-acierto",
   /* P2 y P6 (#578): una pantalla de cada tipo, más P2-2 con la razón y con la pista. */
   "t3-a2-el-mes-de-san-calixto/apertura/apertura": "p2-1-apertura",
   "t3-a2-el-mes-de-san-calixto/cobrados/sin-responder": "p2-2-haz-razon",
@@ -341,6 +375,7 @@ async function medirEncaje() {
       const pieza = PIEZAS_SECUENCIA_T3[p];
       for (let s = 0; s < pieza.pantallas.length; s += 1) {
         const pt = pieza.pantallas[s];
+        if (SOLO && !SOLO.test(`${pieza.id}/${pt.id}`)) continue;
         for (const m of pt.medir ?? [{ nombre: "base", estado: pt.estadoInicial ?? null }]) {
           const estados = Object.fromEntries(claves.map((k) => [k, null]));
           for (const pz of PIEZAS_SECUENCIA_T3) for (const x of pz.pantallas) estados[`${pz.id}/${x.id}`] = x.estadoInicial ?? null;
@@ -433,30 +468,34 @@ async function medirPrevias() {
 
 /* ═══════════ SALIDA ═══════════ */
 if (!CSS_FUENTES) console.warn("⚠ Sin FUENTES_NPM: Sora e Inter no se cargan y la medida usa la letra de respaldo.");
-const c6 = await medirC6();
+const c6 = SOLO ? null : await medirC6();
+if (c6) {
 console.log(`\n## C6 · marca de 10 px a 320: ${c6.pasa ? "SE DISTINGUE" : "NO SE DISTINGUE"}\n`);
 console.log("| escala | pista | marca | pintada | contraste con el fondo | esquina | relleno se lee | forma se lee |");
 console.log("|---|---|---|---|---|---|---|---|");
 for (const v of c6.veredictos) console.log(`| ${v.escala}× | ${v.actual} | ${v.tipo} | ${v.pintadoAncho}×${v.pintadoAlto} | ${v.contrasteFondo}:1 | ${v.contrasteEsquina}:1 | ${v.rellenoSeLee ? "sí" : "NO"} | ${v.formaSeLee ? "sí" : "NO"} |`);
+}
 
-const tarjetas = await medirTarjetas();
-console.log("\n## Tarjeta de cita\n");
+const tarjetas = SOLO ? [] : await medirTarjetas();
+if (!SOLO) console.log("\n## Tarjeta de cita\n");
 console.log("| ancho | cita | ancho útil | líneas | alto con relleno | reserva | cabe |");
 console.log("|---|---|---|---|---|---|---|");
 for (const t of tarjetas) console.log(`| ${t.ancho} | ${t.id} | ${t.util.toFixed(0)} | ${t.lineas} | ${t.alto} | ${t.reserva} | ${t.cabe ? "sí" : "**NO**"} |`);
 
-const previas = await medirPrevias();
+const previas = SOLO ? null : await medirPrevias();
+if (previas) {
 console.log("\n## Previas de P2 y P6\n");
 console.log(`Fuentes: ${previas.fuentes.join(" · ")}\n`);
 for (const c of previas.cabecera) console.log(`- ${c.ancho}: cabecera hasta el Panel ${c.panel} px · hasta la figura ${c.figura} px · bloque de navegación ${c.navegacion} px · Sora 700 ${c.sora ? "cargada" : "NO"}`);
 console.log("\n| ventana | cifra | Inter tabular | ancho |\n|---|---|---|---|");
 for (const x of previas.cifras.filter((y) => y.anchoVentana === 320)) console.log(`| 320 | ${x.texto} | ${x.px}/${x.peso} | ${x.ancho} |`);
+}
 
 let encaje = null;
 let control = null;
 if (!SOLO_C6 && !process.argv.includes("--previas")) {
   encaje = await medirEncaje();
-  control = await medirControl();
+  control = SOLO ? [] : await medirControl();
   console.log("\n## Encaje\n");
   console.log("| ancho | pieza | n | pantalla | estado | figura fija | líneas apoyo | desborde | titular | letra<12 | toque<44 | palabra partida | barra | errores |");
   console.log("|---|---|---|---|---|---|---|---|---|---|---|---|---|---|");
@@ -469,6 +508,17 @@ if (!SOLO_C6 && !process.argv.includes("--previas")) {
   console.log("| ancho | pieza | n | estado | pastilla tapa | razón con pista | renglón más ancho (natural / caja) |");
   console.log("|---|---|---|---|---|---|---|");
   for (const f of nuevas) console.log(`| ${f.ancho} | ${f.pieza.replace(/^t3-a\d-/, "")} | ${f.n} | ${f.estado} | ${f.pastillaTapa ?? "—"} | ${f.razonConPista ? "**SÍ**" : "no"} | ${f.renglonMax ? `${f.renglonMax.natural} / ${f.renglonMax.caja} «${f.renglonMax.texto}»` : "—"} |`);
+  /* P2-7, P6-7 y P6-9 (#586): lo que ocupa la figura, contra la reserva. */
+  const delta = encaje.filter((f) => /a2-.*\/separan$|a6-.*\/(por-pagar|acacias)$/.test(`${f.pieza}/${f.pantalla}`));
+  if (delta.length) {
+    console.log("\n## P2-7, P6-7 y P6-9: lo que ocupa la figura\n");
+    console.log("| ancho | pantalla | estado | ocupa / reserva | marca | lista | opciones | fila de control (alto · lectura · puente) | línea de datos | apoyo: líneas · desborde |");
+    console.log("|---|---|---|---|---|---|---|---|---|---|");
+    for (const f of delta) {
+      const fl = f.filaLectura;
+      console.log(`| ${f.ancho} | ${f.n} ${f.pantalla} | ${f.estado} | ${f.ocupa ?? "—"} / ${f.figuraFija ?? "—"}${f.ocupa > f.figuraFija ? " **SE PASA**" : ""} | ${f.marca ?? "—"} | ${f.lista ?? "—"} | ${f.opcionesAlto?.join(" · ") || "—"} | ${fl ? `${fl.alto} · ${fl.lectura ? `«${fl.texto}»` : "NO"} · ${fl.puente ? `«${fl.puenteTexto}»` : "vacío"}` : "—"} | ${f.lineaDatos ? `«${f.lineaDatos}»` : "—"} | ${f.lineasApoyo} · ${f.desborde} |`);
+    }
+  }
   console.log("\n## Control\n");
   for (const c of control) console.log(`- ${c.ancho} · ${c.nombre}: barra ${c.barra ? "SÍ" : "no"}, SecuenciaAprender ${c.secuencia ? "sí" : "no"}, figura ${c.figura ?? "—"} px, errores ${c.errores.length}`);
 }

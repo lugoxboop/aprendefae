@@ -194,3 +194,50 @@ Fuentes: 400 12px Inter: cargada · 600 12px Inter: cargada · 600 14px Inter: c
 | 375 | lo-que-deja-el-periodo | 9 | acacias | pendiente | 200 | 0 | 0 | 0 | 0 | 0 | no | — | no | — | 0 |
 | 375 | lo-que-deja-el-periodo | 10 | cierre | paso-1 | 200 | 2 | 0 | 0 | 0 | 0 | no | — | no | 244/313 | 0 |
 | 375 | lo-que-deja-el-periodo | 10 | cierre | paso-2 | 200 | 1 | 0 | 0 | 0 | 0 | no | — | no | 244/313 | 0 |
+
+## Delta v3 (#586): P2-7, P6-7 y P6-9
+
+Sonda: `FUENTES_NPM=… node scripts/t3/medir-secuencias.mjs --solo 'a2-.*/separan$|a6-.*/(por-pagar|acacias)$' --capturas …`. 38 estados (19 por ancho): figura fija 150/200 en todos; letra < 12, toque < 44, palabra partida, barra, errores de página, pastilla sobre el modelo y razón con la pista: 0.
+### P2-7, P6-7 y P6-9: lo que ocupa la figura
+
+| ancho | pantalla | estado | ocupa / reserva | marca | lista | opciones | fila de control (alto · lectura · puente) | línea de datos | apoyo: líneas · desborde |
+|---|---|---|---|---|---|---|---|---|---|
+| 320 | 7 separan | sin-responder | 96 / 150 | — | — | 44 · 44 · 44 · 44 | 44 · «Caja $14.650 · Utilidad $6.450» · vacío | — | 3 · 0 |
+| 320 | 7 separan | una-clave | 96 / 150 | — | — | 44 · 44 · 44 · 44 | 44 · «Caja $14.650 · Utilidad $6.450» · vacío | — | 3 · 0 |
+| 320 | 7 separan | pista | 96 / 150 | — | — | 44 · 44 · 44 · 44 | 44 · «Caja $14.650 · Utilidad $6.450» · vacío | — | 3 · 0 |
+| 320 | 7 separan | pista-equipo | 96 / 150 | — | — | 44 · 44 · 44 · 44 | 44 · «Caja $14.650 · Utilidad $6.450» · vacío | — | 3 · 0 |
+| 320 | 7 separan | acierto | 96 / 150 | — | — | 44 · 44 · 44 · 44 | 44 · «Caja $14.650 · Utilidad $6.450» · «6.450 +15.000 −6.800 = 14.650» | — | 4 · 22 |
+| 320 | 7 separan | dos-errores-gastos-pagados | 96 / 150 | — | — | 44 · 44 · 44 · 44 | 44 · «Caja $14.650 · Utilidad $6.450» · «6.450 +15.000 −6.800 = 14.650» | — | 3 · 0 |
+| 320 | 7 separan | dos-errores-equipo | 96 / 150 | — | — | 44 · 44 · 44 · 44 | 44 · «Caja $14.650 · Utilidad $6.450» · «6.450 +15.000 −6.800 = 14.650» | — | 3 · 0 |
+| 320 | 7 por-pagar | sin-responder | 132 / 150 | — | 132 | 44 · 44 · 44 | — | — | 2 · 0 |
+| 320 | 7 por-pagar | acierto | 132 / 150 | — | 132 | 44 · 44 · 44 | — | — | 3 · 0 |
+| 320 | 7 por-pagar | pista-caja | 132 / 150 | — | 132 | 44 · 44 · 44 | — | «Impuesto de renta $1.958.550» | 3 · 18 |
+| 320 | 7 por-pagar | dos-errores-caja | 132 / 150 | — | 132 | 44 · 44 · 44 | — | — | 2 · 0 |
+| 320 | 7 por-pagar | pista-al-reves | 132 / 150 | — | 132 | 44 · 44 · 44 | — | «Impuesto de renta $1.958.550» | 3 · 18 |
+| 320 | 7 por-pagar | dos-errores-al-reves | 132 / 150 | — | 132 | 44 · 44 · 44 | — | — | 2 · 0 |
+| 320 | 9 acacias | sin-responder | 150 / 150 | 16 | 132 | 44 · 44 · 44 | — | — | 3 · 0 |
+| 320 | 9 acacias | acierto | 150 / 150 | 16 | 132 | 44 · 44 · 44 | — | — | 3 · 0 |
+| 320 | 9 acacias | pista-al-reves | 150 / 150 | 16 | 132 | 44 · 44 · 44 | — | «Las Acacias · Pérdida $100.000» | 3 · 18 |
+| 320 | 9 acacias | dos-errores-al-reves | 150 / 150 | 16 | 132 | 44 · 44 · 44 | — | — | 3 · 0 |
+| 320 | 9 acacias | pista-utilidad | 150 / 150 | 16 | 132 | 44 · 44 · 44 | — | «Las Acacias · Pérdida $100.000» | 3 · 18 |
+| 320 | 9 acacias | dos-errores-utilidad | 150 / 150 | 16 | 132 | 44 · 44 · 44 | — | — | 3 · 0 |
+| 375 | 7 separan | sin-responder | 96 / 200 | — | — | 44 · 44 · 44 · 44 | 44 · «Caja $14.650 · Utilidad $6.450» · vacío | — | 2 · 0 |
+| 375 | 7 separan | una-clave | 96 / 200 | — | — | 44 · 44 · 44 · 44 | 44 · «Caja $14.650 · Utilidad $6.450» · vacío | — | 2 · 0 |
+| 375 | 7 separan | pista | 96 / 200 | — | — | 44 · 44 · 44 · 44 | 44 · «Caja $14.650 · Utilidad $6.450» · vacío | — | 2 · 0 |
+| 375 | 7 separan | pista-equipo | 96 / 200 | — | — | 44 · 44 · 44 · 44 | 44 · «Caja $14.650 · Utilidad $6.450» · vacío | — | 2 · 0 |
+| 375 | 7 separan | acierto | 96 / 200 | — | — | 44 · 44 · 44 · 44 | 44 · «Caja $14.650 · Utilidad $6.450» · «6.450 +15.000 −6.800 = 14.650» | — | 3 · 0 |
+| 375 | 7 separan | dos-errores-gastos-pagados | 96 / 200 | — | — | 44 · 44 · 44 · 44 | 44 · «Caja $14.650 · Utilidad $6.450» · «6.450 +15.000 −6.800 = 14.650» | — | 2 · 0 |
+| 375 | 7 separan | dos-errores-equipo | 96 / 200 | — | — | 44 · 44 · 44 · 44 | 44 · «Caja $14.650 · Utilidad $6.450» · «6.450 +15.000 −6.800 = 14.650» | — | 2 · 0 |
+| 375 | 7 por-pagar | sin-responder | 132 / 200 | — | 132 | 44 · 44 · 44 | — | — | 2 · 0 |
+| 375 | 7 por-pagar | acierto | 132 / 200 | — | 132 | 44 · 44 · 44 | — | — | 3 · 0 |
+| 375 | 7 por-pagar | pista-caja | 132 / 200 | — | 132 | 44 · 44 · 44 | — | «Impuesto de renta $1.958.550» | 2 · 0 |
+| 375 | 7 por-pagar | dos-errores-caja | 132 / 200 | — | 132 | 44 · 44 · 44 | — | — | 2 · 0 |
+| 375 | 7 por-pagar | pista-al-reves | 132 / 200 | — | 132 | 44 · 44 · 44 | — | «Impuesto de renta $1.958.550» | 2 · 0 |
+| 375 | 7 por-pagar | dos-errores-al-reves | 132 / 200 | — | 132 | 44 · 44 · 44 | — | — | 2 · 0 |
+| 375 | 9 acacias | sin-responder | 150 / 200 | 16 | 132 | 44 · 44 · 44 | — | — | 2 · 0 |
+| 375 | 9 acacias | acierto | 150 / 200 | 16 | 132 | 44 · 44 · 44 | — | — | 2 · 0 |
+| 375 | 9 acacias | pista-al-reves | 150 / 200 | 16 | 132 | 44 · 44 · 44 | — | «Las Acacias · Pérdida $100.000» | 3 · 18 |
+| 375 | 9 acacias | dos-errores-al-reves | 150 / 200 | 16 | 132 | 44 · 44 · 44 | — | — | 2 · 0 |
+| 375 | 9 acacias | pista-utilidad | 150 / 200 | 16 | 132 | 44 · 44 · 44 | — | «Las Acacias · Pérdida $100.000» | 3 · 18 |
+| 375 | 9 acacias | dos-errores-utilidad | 150 / 200 | 16 | 132 | 44 · 44 · 44 | — | — | 2 · 0 |
+
