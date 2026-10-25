@@ -8,10 +8,12 @@
  * (orquestador/revisiones/t4-slides/diseno-hanayama.md, §1 y §2).
  *
  *   · la figura es el modelo (alto fijo de 206 px, contenido arriba) y la
- *     banda debajo. El contenedor reserva `--fae-sec-alto-figura`; en T4 la
- *     reserva es `auto` y el alto lo fijan el modelo (206) y la banda
- *     (66 como mínimo). Decisión de Yujiro (24 oct): 206 sin rehacer los
- *     modelos. Cuando Erwin saque la prop `altoFigura`, esto pasa a la prop
+ *     banda debajo. Cada pieza declara `altoFigura` (la prop de Erwin, #537)
+ *     con 206 a 320 y a 375: la reserva del modelo. Como la banda de T4 vive
+ *     dentro del `<figure>` (la devolución cambia; el apoyo del contenedor
+ *     es fijo), el `<figure>` mide `auto` desde `.t4-sec`: el modelo (206) y
+ *     la banda (66 como mínimo). Decisión de Yujiro (24 oct): 206 sin rehacer
+ *     los modelos
  *   · la banda tiene un solo dueño a la vez (§2.2): antes de responder, el
  *     texto de antes; tras responder, la devolución (pastilla con palabra y
  *     el texto de Katsumi); en el Cierre, la frase y el pie. Reserva desde el
@@ -38,6 +40,8 @@ import { C } from "../comun.jsx";
 /* §1: la reserva del modelo y el mínimo de la banda. */
 export const ALTO_MODELO = 206;
 export const ALTO_BANDA = 66;
+/* La reserva que cada pieza declara al contenedor (`pieza.altoFigura`). */
+export const ALTO_FIGURA_T4 = { a320: ALTO_MODELO, a375: ALTO_MODELO };
 
 /*
  * La reserva del contenedor sube desde fuera, sin tocar SecuenciaAprender: la
@@ -45,7 +49,7 @@ export const ALTO_BANDA = 66;
  * `<figure>` del contenedor mide lo que miden el modelo y la banda.
  */
 export const CSS_SLIDES = `
-.t4-sec .fae-sec-raiz { --fae-sec-alto-figura: auto; }
+.t4-sec .fae-sec-figura { height: auto; }
 .t4s { display: grid; grid-template-rows: ${ALTO_MODELO}px auto; height: 100%; min-width: 0; color: ${C.texto}; font-family: "Inter", sans-serif; }
 .t4s * { box-sizing: border-box; }
 .t4s-modelo { position: relative; min-width: 0; display: grid; align-content: start; gap: 8px; }

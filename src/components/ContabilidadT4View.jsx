@@ -45,7 +45,7 @@ import { H4 } from "../data/contabilidadT4H4.js";
 import { H7 } from "../data/contabilidadT4H7.js";
 import { H8 } from "../data/contabilidadT4H8.js";
 import SecuenciaAprender from "./secuencia/SecuenciaAprender.jsx";
-import { CSS_SLIDES } from "./t4/slides/comun.jsx";
+import { ALTO_FIGURA_T4, CSS_SLIDES } from "./t4/slides/comun.jsx";
 import { CSS_SLIDES_A0, piezaSlidesA0 } from "./t4/slides/A0.jsx";
 import { CSS_SLIDES_A1, piezaSlidesA1 } from "./t4/slides/A1.jsx";
 import { CSS_SLIDES_A2, piezaSlidesA2 } from "./t4/slides/A2.jsx";
@@ -128,7 +128,7 @@ export default function ContabilidadT4View({ modo = null, nodoInicial = null, on
   const [nodoAbierto, setNodoAbierto] = useState(nodoInicial ?? null);
   /* D8: el caso de cada pieza de Aprender, elegido al abrir la vista (el 1 la primera vez; al repetir, sorteo). */
   const [casos] = useState(() => Object.fromEntries(PIEZAS_T4.map(({ pieza }) => [pieza.id, casoInicial(pieza.id)])));
-  const [slides] = useState(() => SLIDES_T4.map((s) => s.crear(casos[s.id])));
+  const [slides] = useState(() => SLIDES_T4.map((s) => ({ ...s.crear(casos[s.id]), altoFigura: ALTO_FIGURA_T4 })));
   const hechas = useCompletadas();
   const { pedirCuenta, usuario } = useAuth();
   const [recompensa, celebrar, celebrando] = useRecompensa();
