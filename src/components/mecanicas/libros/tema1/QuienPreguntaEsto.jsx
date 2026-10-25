@@ -45,15 +45,21 @@ import {
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-/* Las preguntas de los dos lectores, tras responder. */
-function Preguntas({ ficha, marcado, ok }) {
-  const lectores = ok ? [ficha.correcta] : [marcado, ficha.correcta];
+/*
+ * La pregunta del lector que era, tras responder, en una reserva FIJA de 48 px
+ * (la regla de Mai; Shoko, #539 b): la de antes crecía con el par de
+ * preguntas. Cabe una, la del correcto, en tres renglones de 16 como mucho; lo
+ * que se confundió lo explica la devolución de debajo.
+ */
+export const ALTO_RESERVA_H2 = 48;
+function Preguntas({ ficha }) {
+  const lectores = [ficha.correcta];
   return (
     <div data-preguntas-lectores className={CLASE_APARECE} style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
       {lectores.map((id) => {
         const a = asientoH2(id);
         return (
-          <p key={id} data-pregunta-de={id} style={{ margin: 0, fontFamily: INTER, fontSize: "12px", lineHeight: 1.4, color: FAE.text }}>
+          <p key={id} data-pregunta-de={id} style={{ margin: 0, fontFamily: INTER, fontSize: "12px", lineHeight: "16px", color: FAE.text }}>
             <b style={{ fontWeight: 700 }}>{a.nombre}:</b> <span style={{ color: SECUNDARIO }}>«{a.pregunta}»</span>
           </p>
         );
@@ -152,6 +158,17 @@ export default function QuienPreguntaEsto({
             </p>
 
             {/* Una sola columna (Shoko, #539): a 320, dos columnas cortaban «El Estado y las autoridades fiscales» y «Acreedores y proveedores». */}
+            {/*
+              El rótulo que dice por qué cuatro asientos van atenuados (Shoko,
+              #539 b: sin él, se lee como «ya usados» o reduce el campo sin
+              explicarlo). El texto lo escribe Futaba (lote F); mientras no
+              llegue, no se pinta nada.
+            */}
+            {H2.rotuloAtenuados && (
+              <p data-rotulo-atenuados style={{ margin: "0 0 6px", fontFamily: INTER, fontSize: "12px", lineHeight: "16px", color: SECUNDARIO }}>
+                {H2.rotuloAtenuados}
+              </p>
+            )}
             <div role="group" aria-label={H2.rotuloMesa} data-mesa style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr)", gap: "6px" }}>
               {ASIENTOS_H2.map((a) => {
                 const activo = f.opciones.includes(a.id);
@@ -193,11 +210,9 @@ export default function QuienPreguntaEsto({
               hueco grande a 320. Aparecen en el mismo momento que la devolución,
               debajo de la mesa, así que nada de lo que ya estaba a la vista se mueve.
             */}
-            {r && (
-              <div data-renglon-preguntas style={{ marginTop: "10px" }}>
-                <Preguntas ficha={f} marcado={marcado} ok={r.ok} />
-              </div>
-            )}
+            <div data-renglon-preguntas style={{ height: `${ALTO_RESERVA_H2}px`, marginTop: "10px", overflow: "hidden" }}>
+              {r && <Preguntas ficha={f} />}
+            </div>
           </div>
         </div>
 

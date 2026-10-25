@@ -1,5 +1,5 @@
 import {
-  H1, PREGUNTAS_H1, MAZOS_H1, H2, FICHAS_H2, CASOS_H2, DEVOLUCION_H2, PAREJAS_H2, ASIENTOS_H2,
+  H1, PREGUNTAS_H1, MAZOS_H1, ACIERTO_INFORME_H1, H2, FICHAS_H2, CASOS_H2, DEVOLUCION_H2, PAREJAS_H2, ASIENTOS_H2,
 } from "../data/contabilidadT1Hacer2.js";
 import { FOTO, PELICULA, COMPARAR } from "../data/contabilidadPiezas234.js";
 import { evaluarP3 } from "./aprenderTema1.js";
@@ -26,7 +26,12 @@ export function sortearH1(barajar, variante = false) {
  */
 export function evaluarH1(pregunta, marcada) {
   const r = evaluarP3(pregunta, marcada);
-  if (r.ok) return { ok: true, patron: null, texto: pregunta.acierto };
+  if (r.ok) {
+    /* El que nombra el estado financiero, si ya llegó (lote F de Futaba); si no, el de la pregunta. */
+    const fecha = pregunta.foto === "enero" ? "1 de enero" : "31 de diciembre";
+    const delInforme = ACIERTO_INFORME_H1[pregunta.respuesta]?.replace("{FECHA}", fecha) ?? null;
+    return { ok: true, patron: null, texto: delInforme ?? pregunta.acierto };
+  }
   return { ok: false, patron: r.patron, texto: r.texto };
 }
 
