@@ -107,6 +107,19 @@ texto blanco en producción, es deuda y va a su propio arreglo, no a este.
 
 **Coral sigue siendo solo error.** El relieve no lo habilita para nada más.
 
+### 2.2b Caras claras, que las hay y no las había previsto
+
+Hay controles publicados con la cara clara sobre el sitio oscuro: los botones
+de navegación de la secuencia, `#B8C4D4`. La regla es la misma y la resolvió
+Mai construyendo T1: **el canto es el gris apagado que ya existe**, no un tono
+inventado — `#8C9BB0`, el gris quieto de `CuatroCapas.jsx` —, y pasa la misma
+prueba que todo lo demás: **1,60:1 contra su cara** [calculado], por encima del
+1,25 exigido.
+
+El patrón general, para la siguiente cara que aparezca: **el canto de una cara
+clara se busca primero entre los tonos ya publicados de esa familia**. Solo si
+no hay ninguno se deriva, y entonces se escribe la razón.
+
 ### 2.3 Elevaciones, radios y recorrido
 
 | Elevación | Canto | Dónde | Radio |
@@ -116,11 +129,19 @@ texto blanco en producción, es deuda y va a su propio arreglo, no a este.
 | E2 | 4 px | botones, nodos del camino | 14 px (nodo: círculo) |
 | E3 | 6 px | **una sola por pantalla**: el nodo actual, la fila propia | 16 px |
 
-- El canto va **dentro** del blanco de toque de 44 px, no se suma por fuera.
+- El canto va **dentro** del blanco de toque de 44 px, no se suma por fuera…
+  **salvo cuando la cara ES el blanco de toque.** Si el control mide 44 y el
+  canto va detrás, el bloque pasa a medir 48, y esos 4 px por control se suman
+  a lo alto de la pantalla. Medido por Mai en T1: el caso más justo deja el
+  desplazamiento en **37 px de los 40** de tope. **El alto que añade el canto
+  se mide contra el presupuesto de la pieza antes de entregar**, no después.
 - E3 es un privilegio escaso: dos cosas a 6 px en la misma pantalla y ninguna
   destaca. Si el diseñador quiere una segunda, baja la primera a E2.
 - Nada lleva `box-shadow`. Ni difuminada, ni dura. El canto es un plano
-  sólido, no una sombra.
+  sólido, no una sombra. Un `inset` de 0 de desenfoque que hace de borde, y
+  que no se anima, no es una sombra y no cae aquí.
+- **El contorno de silueta sustituye al `inset` al 35%** que llevan hoy muchos
+  controles. No se ponen los dos.
 
 ---
 
@@ -236,6 +257,19 @@ tocar.
 
 Decorativas de verdad: **no enseñan nada**, no son la figura de la pieza, no
 llevan nombre accesible. Todas `aria-hidden="true"`.
+
+### 5.0 Dónde NO va la decoración
+
+Antes del catálogo, porque es lo que más se equivoca: **la decoración nunca va
+encima de la figura de una pieza.** El riel, las fichas, la mesa, el diagrama
+son el argumento; una textura encima les quita lectura. Si una pieza de
+Aprender quiere decoración, va **una sola, quieta y detrás** —en el contenedor
+de la figura, no en la figura—, y sale de una trama ya publicada en vez de un
+motivo nuevo. La regla y el ejemplo son de Mai en T1 (los renglones del libro
+mayor a `rgba(203,220,242,.05)`, la trama que ya está en `CSS_SALA`).
+
+**El bucle es solo del leaderboard.** En cualquier otro sitio la decoración no
+se anima, y entonces no hay keyframe que contar.
 
 ### 5.1 La familia
 
