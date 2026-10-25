@@ -91,9 +91,14 @@ const ESTILOS = `
 .fae-sec-nav { transition: transform 160ms ${CURVA}; }
 .fae-sec-nav:active:not([aria-disabled="true"]) { transform: scale(.97); transition-duration: 100ms; }
 .fae-sec-titular:focus-visible, .fae-sec-nav:focus-visible { outline: 2px solid #F8F9FA; outline-offset: 2px; }
-.fae-sec-figura { height: var(--fae-sec-alto-320, 150px); }
-@media (min-width: 375px) and (min-height: 640px) { .fae-sec-figura { height: var(--fae-sec-alto-375, 200px); } }
-@media (min-width: 760px) { .fae-sec-figura { height: 320px; } .fae-sec-raiz { max-width: 860px; margin: 0 auto; } }
+/*
+ * min-height y no height (#549): el hueco reservado es el mismo en todas las
+ * pantallas de la pieza (D5), pero si la figura de verdad mide más, empuja lo
+ * de abajo en vez de taparlo. Antes se salía de su caja y tapaba «Siguiente».
+ */
+.fae-sec-figura { min-height: var(--fae-sec-alto-320, 150px); }
+@media (min-width: 375px) and (min-height: 640px) { .fae-sec-figura { min-height: var(--fae-sec-alto-375, 200px); } }
+@media (min-width: 760px) { .fae-sec-figura { min-height: 320px; } .fae-sec-raiz { max-width: 860px; margin: 0 auto; } }
 @media (prefers-reduced-motion: reduce) {
   .fae-sec-g, .fae-sec--sale, .${CLASE_PASO}, .fae-sec--cierre .fae-sec-figura-viva { animation: none !important; }
   .fae-sec-nav { transition: none; }
@@ -193,6 +198,7 @@ export default function SecuenciaAprender({ temaId, piezas, final = "tema", onFi
   const [primeras, setPrimeras] = useState(() => new Set());
   const [fijo, setFijo] = useState(null);
   const titular = useRef(null);
+  const figuraViva = useRef(null);
   const zona = useRef(null);
   const hueco = useRef(null);
   const bloque = useRef(null);
@@ -321,7 +327,32 @@ export default function SecuenciaAprender({ temaId, piezas, final = "tema", onFi
   }, []);
 
   const Figura = pantalla.Figura;
+  const Mensaje = pantalla.Mensaje ?? null;
   const setFigura = (valor) => setEstado((e) => cambiarFigura(e, piezas, valor));
+  /*
+   * Si la figura mide más que su hueco, en desarrollo se avisa: ya no tapa
+   * nada (empuja), pero la pantalla deja de caber y eso lo tiene que ver quien
+   * la diseña, no descubrirlo el estudiante.
+   */
+  useEffect(() => {
+    if (!import.meta.env?.DEV) return;
+    const viva = figuraViva.current;
+    const figura = viva?.parentElement;
+    if (!viva || !figura || typeof getComputedStyle !== "function") return;
+    const reserva = parseFloat(getComputedStyle(figura).minHeight) || 0;
+    const mide = viva.scrollHeight;
+    if (reserva && mide > reserva + 1) {
+      console.warn(`[SecuenciaAprender] ${pieza.id} · pantalla ${estado.s + 1}: la figura mide ${mide} px y su hueco ${reserva}; empuja lo de abajo. Pide más altoFigura (tope 206/253) o mueve el mensaje a pantalla.Mensaje.`);
+    }
+  });
+
+  const propsFigura = {
+    estado: estado.estados[clave],
+    setEstado: setFigura,
+    paso: dados,
+    primeraVez,
+    reducido: conMovimientoReducido(),
+  };
   const primeraPantalla = !puedeRetroceder(estado);
   const textoSiguiente = literalSiguiente(estado, piezas, final);
   const razon = espera
@@ -391,16 +422,22 @@ export default function SecuenciaAprender({ temaId, piezas, final = "tema", onFi
               aria-label={pantalla.nombreFigura}
               style={{ margin: "12px 0 0", position: "relative" }}
             >
-              <div className="fae-sec-figura-viva" style={{ width: "100%", height: "100%" }}>
-                <Figura
-                  estado={estado.estados[clave]}
-                  setEstado={setFigura}
-                  paso={dados}
-                  primeraVez={primeraVez}
-                  reducido={conMovimientoReducido()}
-                />
+              <div ref={figuraViva} className="fae-sec-figura-viva" style={{ width: "100%", height: "100%" }}>
+                <Figura {...propsFigura} />
               </div>
             </figure>
+
+            {/*
+              LA ZONA DE MENSAJE (#549), fuera de la figura: el veredicto, la
+              pista y la consecuencia de un Haz. Crece con lo que diga sin mover
+              el hueco de la figura, que es el que fija D5. Opcional: la pantalla
+              que no la necesita no la declara.
+            */}
+            {Mensaje && (
+              <div data-mensaje-zona style={{ marginTop: "8px" }}>
+                <Mensaje {...propsFigura} />
+              </div>
+            )}
 
             <div className={g(3)}>
               {pantalla.apoyo && (
