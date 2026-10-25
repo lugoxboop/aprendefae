@@ -9,13 +9,20 @@
  *
  * ═══════════ QUÉ ENTREGA UNA CÉLULA ═══════════
  *
- *   pieza    = { id, pantallas: [pantalla, …] }          4 a 10 pantallas
+ *   pieza    = { id, pantallas: [pantalla, …], altoFigura?, sinPulsos? }   4 a 10 pantallas
+ *              sinPulsos: cuando la figura ya es una cadena de nodos, los Pulsos no se pintan
+ *              (dos filas de nodos se leen como dos avances); el contador sigue para el lector.
  *   pantalla = {
  *     id,                      estable: es la clave de lo guardado en la pestaña
  *     tipo,                    "apertura" · "miralo" · "haz" · "cierre" (lista cerrada, §3.2)
  *     titular,                 la idea, una frase, máx. 10 palabras (§3.3)
  *     apoyo?,                  1 o 2 frases (máx. 25 palabras como objetivo)
  *     Figura,                  componente: ({ estado, setEstado, paso, primeraVez, reducido }) → <figure> viva
+ *     apoyo?,                  también puede ser una lista, un texto por paso (#558): pinta apoyo[paso]
+ *     pie?,                    la línea de la zona de razón cuando no hay razón ni paso, p. ej. «Basado en el libro, p. 6»
+ *     altoFigura?,             { a320, a375 } solo para esta pantalla; con el mismo tope que el de la pieza
+ *     Mensaje?,                componente con las mismas props, FUERA de la figura (#549): el veredicto,
+ *                              la pista y la consecuencia de un Haz. Crece sin mover el hueco de la figura.
  *     nombreFigura,            nombre accesible del <figure>; nunca contiene la respuesta (D9)
  *     estadoInicial?,          lo que la figura recuerda; tiene que ser JSON (se guarda en la pestaña)
  *     pasos?,                  cuántos pasos da «Siguiente» dentro de la pantalla (máx. 5)
@@ -92,7 +99,11 @@ export const pasosTotales = (pantalla) => Math.min(Math.max(0, pantalla.pasos | 
 export function esperaRespuesta(estado, piezas) {
   const pieza = piezas[estado.p];
   const pantalla = pantallaActual(estado, piezas);
-  if (pantalla.tipo !== "haz") return false;
+  /*
+   * Espera un Haz, y también una apertura que lo declare (#558, punto 5): en
+   * T1 la apertura es una predicción obligatoria y bloquea hasta predecir.
+   */
+  if (pantalla.tipo !== "haz" && !(pantalla.tipo === "apertura" && typeof pantalla.resuelta === "function")) return false;
   const clave = claveDe(pieza, pantalla);
   /* Una pantalla Haz ya resuelta no se vuelve a bloquear (§5.2). */
   if (estado.resueltas.includes(clave)) return false;
@@ -161,7 +172,8 @@ export function cambiarFigura(estado, piezas, valor) {
   const clave = claveDe(pieza, pantalla);
   const anterior = estado.estados[clave];
   const nuevo = typeof valor === "function" ? valor(anterior) : valor;
-  const resueltas = pantalla.tipo === "haz" && !estado.resueltas.includes(clave) && pantalla.resuelta?.(nuevo)
+  const bloquea = pantalla.tipo === "haz" || (pantalla.tipo === "apertura" && typeof pantalla.resuelta === "function");
+  const resueltas = bloquea && !estado.resueltas.includes(clave) && pantalla.resuelta?.(nuevo)
     ? [...estado.resueltas, clave]
     : estado.resueltas;
   return { ...estado, estados: { ...estado.estados, [clave]: nuevo }, resueltas };
@@ -213,6 +225,9 @@ export function faltasDePieza(pieza) {
     if (typeof pt?.Figura !== "function") faltas.push(`${donde}: sin figura (una pantalla de puro texto no existe)`);
     if (!pt?.nombreFigura) faltas.push(`${donde}: la figura no tiene nombre accesible`);
     if ((pt?.pasos | 0) > MAX_PASOS) faltas.push(`${donde}: más de ${MAX_PASOS} pasos; se parte la pieza`);
+    if (pt?.tipo === "apertura" && pt.resuelta !== undefined && !pt.razon) {
+      faltas.push(`${donde}: una apertura que bloquea necesita su razón visible (D11)`);
+    }
     if (pt?.tipo === "haz") {
       if (typeof pt.resuelta !== "function") faltas.push(`${donde}: un Haz necesita resuelta(estado)`);
       if (!pt.razon) faltas.push(`${donde}: un Haz necesita la razón por la que «Siguiente» espera (D11)`);
