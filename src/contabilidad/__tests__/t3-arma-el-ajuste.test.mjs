@@ -477,7 +477,7 @@ test("★★★ los dos tutoriales con movimiento reducido: el último cuadro de
       await act(async () => { raiz.render(h(AsiSeJuega, { asi, Mecanica: Comp, onSiguiente: () => {} })); });
       try {
         for (let k = 0; k < 2; k++) {
-          const boton = [...caja.querySelectorAll("button")].find((b) => b.textContent === "Siguiente cuadro");
+          const boton = [...caja.querySelectorAll("button")].find((b) => b.matches("[data-asj-control]") && /^Ver el cuadro/.test(b.textContent));
           await clic(boton);
           for (let n = 0; n < 30; n++) await act(async () => { await new Promise((ok) => setTimeout(ok, 60)); });
         }
