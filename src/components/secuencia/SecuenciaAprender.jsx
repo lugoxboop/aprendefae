@@ -205,6 +205,7 @@ export default function SecuenciaAprender({ temaId, piezas, final = "tema", onFi
   const cambio = useRef(false);
   const pendiente = useRef(null);
   const reloj = useRef(null);
+  const bandaRef = useRef(null);
 
   useEffect(() => { guardar(temaId, estado); }, [temaId, estado]);
 
@@ -353,6 +354,11 @@ export default function SecuenciaAprender({ temaId, piezas, final = "tema", onFi
     primeraVez,
     reducido: conMovimientoReducido(),
   };
+  /* #614: al calificar un Haz, la vista baja a la banda (veredicto, pista, razón) para que se lea sin desplazarse (E2). */
+  const intentosHaz = pantalla.tipo === "haz" ? propsFigura.estado?.intentos ?? 0 : 0;
+  useEffect(() => {
+    if (intentosHaz > 0) bandaRef.current?.scrollIntoView?.({ block: "nearest", behavior: conMovimientoReducido() ? "auto" : "smooth" });
+  }, [intentosHaz]);
   const primeraPantalla = !puedeRetroceder(estado);
   const textoSiguiente = literalSiguiente(estado, piezas, final);
   const razon = espera
@@ -439,7 +445,7 @@ export default function SecuenciaAprender({ temaId, piezas, final = "tema", onFi
               </div>
             )}
 
-            <div className={g(3)}>
+            <div ref={bandaRef} data-banda className={g(3)}>
               {pantalla.apoyo && (
                 <p data-apoyo style={{ margin: "12px 0 0", fontFamily: "Inter, sans-serif", fontSize: "14px", lineHeight: "22px", color: "rgba(248,249,250,0.8)" }}>
                   {pantalla.apoyo}
