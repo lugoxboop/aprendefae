@@ -109,7 +109,12 @@ export const P1_TEXTOS = {
 /* ───────────────── P2 · Las dos familias de cuentas ───────────────── */
 
 export const P2_ID = "cu-a2-dos-familias";
-export const P2_ALTO_FIGURA = { a320: 171, a375: 158 };
+/*
+ * L, T2-13 (#471, 25-oct): con la bandera encendida, P2·7 con fichas en error
+ * mide 200 a 320 y 185 a 375; cada pieza pide el alto de su pantalla más alta
+ * (regla de c-t2-7). Watari T2-7 medía 171/158.
+ */
+export const P2_ALTO_FIGURA = { a320: 200, a375: 185 };
 export const P2_OBJETIVO = "Al terminar, sabrás decir si una cuenta es real o nominal con una sola pregunta.";
 
 export const P2_TEXTOS = {

@@ -14,6 +14,17 @@
  * <figure>, con su hueco), la banda de devolución de #590 ([data-devolucion])
  * y figura + banda (del borde de arriba de la figura al de abajo de la banda,
  * con el margen entre las dos), frente al tope 206 a 320 y 253 a 375.
+ *
+ * --banda --ventana (L, T2-13, 25-oct: la condición que vale es §4 de
+ * aprender-secuencia-v1.md + E2/D10): los mismos estados, con clic REAL
+ * (Playwright desplaza al control si hace falta, como el dedo). En cada uno:
+ *   (1)(2) con la vista arriba, cuánto queda fuera: el fondo de lo último de
+ *       la pantalla ([data-razon]) menos el borde de arriba del bloque pegado
+ *       (sticky, ocupa su sitio en el flujo); y la cuenta de L, alto del
+ *       documento − ventana − bloque pegado. Qué zonas quedan fuera (figura,
+ *       primer control, banda, apoyo).
+ *   (3) en el punto donde quedó la vista tras tocar, si el control tocado y
+ *       la banda se ven juntos entre el borde de arriba y el bloque pegado.
  */
 import { createRequire } from "node:module";
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
@@ -273,6 +284,35 @@ const MEDIR_BANDA = () => {
     texto: banda ? banda.innerText.replace(/\s+/g, " ").trim() : null,
   };
 };
+const VENTANA = process.argv.includes("--ventana");
+/* (1)(2): con la vista arriba. */
+const MEDIR_FUERA = () => {
+  const r = (q) => document.querySelector(q)?.getBoundingClientRect() ?? null;
+  const nav = r("[data-navegacion]");
+  const y0 = window.scrollY;
+  const borde = innerHeight - nav.height;
+  const fin = r("[data-razon]").bottom + y0;
+  const zonas = { figura: r(".fae-sec-figura"), "primer control": document.querySelector("figure button")?.getBoundingClientRect() ?? null, banda: r("[data-devolucion]"), apoyo: r("[data-apoyo]") };
+  return {
+    fuera: Math.max(0, Math.round((fin - borde) * 10) / 10),
+    cuentaL: document.documentElement.scrollHeight - innerHeight - Math.round(nav.height),
+    documento: document.documentElement.scrollHeight, nav: Math.round(nav.height),
+    zonasFuera: Object.entries(zonas).filter(([, z]) => z && z.bottom + y0 > borde + 0.5).map(([k]) => k),
+  };
+};
+/* (3): donde quedó la vista. `nombre`: el control tocado. */
+const MEDIR_JUNTOS = ([nombre, previo]) => {
+  const b = [...document.querySelectorAll("figure button")].find((x) => {
+    const a = x.getAttribute("aria-label");
+    return a ? [nombre, `${nombre}, no va aquí`, `${nombre}, correcto`].includes(a) : x.textContent.trim() === nombre;
+  });
+  const t = b ? b.getBoundingClientRect() : previo;
+  const d = document.querySelector("[data-devolucion]")?.getBoundingClientRect();
+  const borde = document.querySelector("[data-navegacion]").getBoundingClientRect().top;
+  if (!d || !t) return { juntos: false, sinBanda: !d };
+  const arriba = Math.min(t.top, d.top), abajo = Math.max(t.bottom, d.bottom);
+  return { juntos: arriba >= -0.5 && abajo <= borde + 0.5, tramo: Math.round((abajo - arriba) * 10) / 10, visible: Math.round(borde), y: Math.round(window.scrollY), tocadoSigue: Boolean(b) };
+};
 async function banda(nav, ancho, alto, errores) {
   const filas = [];
   const inicial = estadoInicialSec(PIEZAS_SECUENCIA_T2);
@@ -292,10 +332,29 @@ async function banda(nav, ancho, alto, errores) {
             return a ? [x, `${x}, no va aquí`, `${x}, correcto`].includes(a) : b.textContent.trim() === x;
           }), nombre);
           if (i < 0) throw new Error(`${rotulo}: no encontré «${nombre}»`);
-          await p.locator("figure button").nth(i).evaluate((b) => b.click());
-          await p.waitForTimeout(700);
+          const loc = p.locator("figure button").nth(i);
+          if (VENTANA) {
+            await loc.scrollIntoViewIfNeeded();
+            const previo = await loc.evaluate((b) => { const x = b.getBoundingClientRect(); return { top: x.top, bottom: x.bottom }; });
+            await loc.click({ timeout: 2500 });
+            await p.waitForTimeout(700);
+            ultimo = await p.evaluate(MEDIR_JUNTOS, [nombre, previo]);
+          } else {
+            await loc.evaluate((b) => b.click());
+            await p.waitForTimeout(700);
+          }
         };
-        const medir = async (estado) => { filas.push({ pantalla: rotulo, estado, ...(await p.evaluate(MEDIR_BANDA)) }); };
+        let ultimo = null;
+        const medir = async (estado) => {
+          const fila = { pantalla: rotulo, estado, ...(await p.evaluate(MEDIR_BANDA)) };
+          if (VENTANA) {
+            const y = await p.evaluate(() => window.scrollY);
+            await p.evaluate(() => window.scrollTo(0, 0)); await p.waitForTimeout(200);
+            Object.assign(fila, await p.evaluate(MEDIR_FUERA), { tras: ultimo });
+            await p.evaluate((yy) => window.scrollTo(0, yy), y); await p.waitForTimeout(150);
+          }
+          filas.push(fila);
+        };
         const orden = pt.fichas ? (await p.evaluate((c) => JSON.parse(sessionStorage.getItem("fae-secuencia:cuentas-debe-haber") || "{}").estados?.[c]?.orden ?? null, `${pieza.id}/${pt.id}`)) ?? [...pt.fichas.keys()] : null;
         try { await f({ tocar, medir, orden }); } finally { await p.close(); }
       };
@@ -333,6 +392,18 @@ if (process.argv.includes("--banda")) {
     salidaB[ancho] = { filas, errores: [...new Set(errores)] };
     console.log(`\n=== BANDA ${ancho}×${alto} · tope ${TOPE[ancho]} · JS ${salidaB[ancho].errores.length}`);
     for (const e of salidaB[ancho].errores) console.log("   JS · " + e);
+    if (VENTANA) {
+      const LIM = ancho === 320 ? 40 : 0;
+      for (const f of filas) {
+        const ok1 = f.fuera <= LIM && !f.zonasFuera.some((z) => z === "figura" || z === "primer control");
+        console.log(`${f.pantalla.padEnd(26)} ${f.estado.padEnd(44)} fuera ${String(f.fuera).padStart(5)} (cuenta L ${f.cuentaL}) ${ok1 ? "ok" : "PASA"} [${f.zonasFuera.join(", ") || "—"}] · tras tocar ${f.tras?.juntos ? "juntos" : "NO juntos"} (tramo ${f.tras?.tramo} / ${f.tras?.visible}, y ${f.tras?.y}${f.tras?.tocadoSigue === false ? ", control ido" : ""}) · banda ${f.banda}`);
+      }
+      const malos1 = filas.filter((f) => f.fuera > LIM || f.zonasFuera.some((z) => z === "figura" || z === "primer control"));
+      const malos3 = filas.filter((f) => !f.tras?.juntos);
+      const peor = filas.reduce((a, f) => (f.fuera > (a?.fuera ?? -1) ? f : a), null);
+      console.log(`RESUMEN ${ancho}: ${filas.length} estados · fuera máx ${peor.fuera} en ${peor.pantalla} ${peor.estado} · pasan del límite ${LIM}: ${malos1.length} · no juntos tras tocar: ${malos3.length}`);
+      continue;
+    }
     for (const f of filas) {
       const pasa = f.suma !== null && f.suma <= TOPE[ancho];
       console.log(`${f.pantalla.padEnd(26)} ${f.estado.padEnd(44)} fig ${f.figura} (cont ${f.contenido}) + banda ${f.banda} → ${f.suma} ${pasa ? "≤" : "> "}${TOPE[ancho]}${pasa ? "" : ` (+${Math.round((f.suma - TOPE[ancho]) * 10) / 10})`} · ver ${f.veredictos}/${f.enFigura} ${f.palabra}`);

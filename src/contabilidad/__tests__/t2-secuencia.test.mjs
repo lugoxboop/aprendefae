@@ -118,10 +118,12 @@ for (const [n, pieza] of PIEZAS_SECUENCIA_T2.entries()) {
     assert.deepEqual(pieza.pantallas.map((p) => Boolean(p.prediccion)), pred);
   });
 
-  test(`★ ${P}: altoFigura es el medido por Watari T2-7, bajo el tope`, () => {
+  test(`★ ${P}: altoFigura es el medido por Watari T2-7 (o el que fijó L en T2-13), bajo el tope`, () => {
     const m = WATARI7.match(new RegExp(`\`${pieza.id}\`[^\\n]*\`altoFigura: \\{ a320: (\\d+), a375: (\\d+) \\}\``));
     assert.ok(m, `no encontré el altoFigura de ${pieza.id} en el paquete de Watari`);
-    assert.deepEqual(pieza.altoFigura, { a320: Number(m[1]), a375: Number(m[2]) });
+    /* L, T2-13 (#471): P2 sube al alto medido de P2·7 con fichas en error. */
+    const DECIDIDO_POR_L = { "cu-a2-dos-familias": { a320: 200, a375: 185 } };
+    assert.deepEqual(pieza.altoFigura, DECIDIDO_POR_L[pieza.id] ?? { a320: Number(m[1]), a375: Number(m[2]) });
     assert.ok(pieza.altoFigura.a320 <= D.TOPE_ALTO_FIGURA.a320 && pieza.altoFigura.a375 <= D.TOPE_ALTO_FIGURA.a375);
   });
 
