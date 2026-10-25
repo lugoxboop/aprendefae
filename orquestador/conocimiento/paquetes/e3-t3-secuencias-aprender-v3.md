@@ -10,7 +10,7 @@
 > **Estado:**
 > - P1, P3 y P4 tienen **PASA con condiciones** de Takamura (lote 10). Sus condiciones se resolvieron en este paquete.
 > - La v4 de P5 y los titulares nuevos tienen **PASA con condiciones** (lote 12). Quedan dos cosas: los cortes literales de las citas (§3, de Itagaki) y la cita de la p. 123 (de Miyata).
-> - Las cuentas candidatas de los cuatro asientos están en `e3-t3-secuencias-textos-v3.md` §1 (Takamura las revisa en el lote 13).
+> - Las cuentas candidatas de los cuatro asientos están en `e3-t3-secuencias-textos-v3.md` §1, con PASA (lote 13). Las fuentes de sus nombres están en la v4, §3 y §4, y en la adenda 2 del mapa.
 > - Ippo puede montar P1, P3 y P4 ya. P5 la monta igual, pero no se fusiona sin el PASA de esa revisión.
 >
 > **Reglas del montaje:**
