@@ -5,7 +5,7 @@ import { DEL_DIARIO_AL_MAYOR } from "../../../../data/contabilidadAprender.js";
 import { P5_ID, P5_OBJETIVO, P5_TEXTOS as T, P5_ALTO_FIGURA } from "../../../../data/contabilidadT2Secuencia.js";
 import {
   BLANCO, LINEA, CONTORNO, SUAVE, SECUNDARIO, pesos, Raiz, Encabezado, Rotulo, Lado, Control, Fila,
-  responder, leerHaz, marcaDe, colaInicial, colaResuelta, fichaActual, responderCola,
+  responder, leerHaz, marcaDe, useBarajado, enOrden, colaInicial, colaResuelta, fichaActual, responderCola,
 } from "./secuenciaComun.jsx";
 
 /*
@@ -231,6 +231,7 @@ function FiguraDosPreguntas({ estado, setEstado }) {
   const { e, resuelto, verdad, error } = leerHaz(estado);
   const [porFecha, porCuenta] = T.dosPreguntas.opciones;
   const banco03 = LINEAS.find((l) => l.cuenta === "Bancos");
+  const orden = useBarajado(estado, setEstado, 2);
   return (
     <Raiz>
       <div style={{ border: `1px solid ${LINEA}`, borderRadius: "6px" }}>
@@ -247,7 +248,7 @@ function FiguraDosPreguntas({ estado, setEstado }) {
         )}
       </div>
       <Fila>
-        {[porFecha, porCuenta].map((op) => (
+        {enOrden([porFecha, porCuenta], orden).map((op) => (
           <Control key={op} chico onClick={() => { if (!resuelto) responder(setEstado, op === porCuenta, op); }} elegido={e.eleccion === op} marca={marcaDe(e, op, porCuenta)}>{op}</Control>
         ))}
       </Fila>
@@ -290,6 +291,6 @@ export const PIEZA_P5 = {
       Figura: FiguraDosPreguntas, nombreFigura: "El renglón de Bancos en el diario y la T de Bancos", estadoInicial: HAZ_INICIAL, resuelta: hazResuelto,
       devolucion: devolucionDe(T.dosPreguntas), opciones: T.dosPreguntas.opciones, buena: T.dosPreguntas.opciones[1],
     },
-    { id: "cierre", tipo: "cierre", titular: T.cierre.titular, apoyo: T.cierre.apoyo, Figura: FiguraCierre, nombreFigura: "El diario del 3 de enero con el renglón de Bancos" },
+    { id: "cierre", tipo: "cierre", titular: T.cierre.titular, apoyo: T.cierre.apoyo, Figura: FiguraCierre, nombreFigura: "El diario del 3 de enero con el renglón de Bancos", ...(T.cierre.pie ? { razon: T.cierre.pie } : {}) },
   ],
 };

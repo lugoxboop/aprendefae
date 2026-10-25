@@ -149,12 +149,13 @@ const nuevoAcc = () => ({ estados: 0, fuentesOk: true, contraste: { medidos: 0, 
 /* ── el recorrido, sacado de las piezas ── */
 const etiqueta = (d) => String(d).replace("|", ", ");
 /* Lo que se toca en cada pantalla, según su tipo y el modo. Cada paso: [nombre del estado, [controles…]]. */
-function guion(pt, modo) {
+/* `orden`: el de las fichas barajadas que guardó la pantalla (P2·7, lote T2-10), o el de la lista. */
+function guion(pt, modo, orden = pt.fichas ? [...pt.fichas.keys()] : null) {
   if (pt.tipo === "haz" && pt.prediccion) return [["elegido", ["@ultimo"]]];
   if (pt.tipo === "haz" && pt.fichas) {
-    const buenas = pt.fichas.map((_, i) => etiqueta(pt.buenoDe(i)));
+    const buenas = orden.map((i) => etiqueta(pt.buenoDe(i)));
     return modo === "error"
-      ? [["error1", [etiqueta(pt.malaDe(0))]], ["error2", [etiqueta(pt.malaDe(0))]], ["resto", buenas.slice(1)]]
+      ? [["error1", [etiqueta(pt.malaDe(orden[0]))]], ["error2", [etiqueta(pt.malaDe(orden[0]))]], ["resto", buenas.slice(1)]]
       : [["acierto", buenas]];
   }
   if (pt.tipo === "haz") {
@@ -203,7 +204,8 @@ async function recorrido(nav, ancho, alto, acc, filas, errores, modo) {
     for (const [k, pt] of pieza.pantallas.entries()) {
       const rotulo = `P${n + 1}·${k}`;
       await estado(`${rotulo} ${pt.tipo} antes`);
-      for (const [nombre, controles] of guion(pt, modo)) {
+      const orden = pt.fichas ? await p.evaluate((c) => JSON.parse(sessionStorage.getItem("fae-secuencia:cuentas-debe-haber") || "{}").estados?.[c]?.orden ?? null, `${pieza.id}/${pt.id}`) : null;
+      for (const [nombre, controles] of guion(pt, modo, orden ?? undefined)) {
         for (const c of controles) {
           if (c === "@ultimo") await clicReal(p.locator("figure button:not([disabled])").last(), "última opción");
           else if (c === "@todos") {

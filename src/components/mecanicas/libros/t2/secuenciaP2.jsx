@@ -3,7 +3,7 @@ import { HAZ_INICIAL, hazResuelto, mostrarCorrecto } from "../../../secuencia/se
 import { P2_ID, P2_OBJETIVO, P2_TEXTOS as T, P2_ALTO_FIGURA } from "../../../../data/contabilidadT2Secuencia.js";
 import {
   BLANCO, LINEA, CONTORNO, SUAVE, SECUNDARIO, Raiz, Lado, Control, Fila,
-  responder, leerHaz, marcaDe, colaInicial, colaResuelta, fichaActual, responderCola, marcaDestino,
+  responder, leerHaz, marcaDe, useBarajado, enOrden, colaInicial, colaResuelta, fichaActual, responderCola, marcaDestino,
 } from "./secuenciaComun.jsx";
 
 /*
@@ -166,7 +166,7 @@ function Ficha({ texto, marca, clase }) {
 
 function FiguraGastoOCosto({ estado, setEstado }) {
   const { e, resuelto, verdad, error } = leerHaz(estado);
-  const cajones = [{ nombre: "Gastos", opcion: T.gastoOCosto.opciones[0] }, { nombre: "Costos", opcion: T.gastoOCosto.opciones[1] }];
+  const cajones = enOrden([{ nombre: "Gastos", opcion: T.gastoOCosto.opciones[0] }, { nombre: "Costos", opcion: T.gastoOCosto.opciones[1] }], useBarajado(estado, setEstado, 2));
   const buena = T.gastoOCosto.opciones[1];
   return (
     <Raiz>
@@ -213,6 +213,7 @@ function FiguraTresNominales({ estado, setEstado }) {
 function FiguraSeCierra({ estado, setEstado }) {
   const { e, resuelto, verdad, error } = leerHaz(estado);
   const [si, no] = T.seCierra.opciones;
+  const orden = useBarajado(estado, setEstado, 2);
   return (
     <Raiz>
       <div style={{ display: "flex", gap: "8px" }}>
@@ -222,7 +223,7 @@ function FiguraSeCierra({ estado, setEstado }) {
         {!verdad && !error && <div style={{ flex: "1 1 0" }} />}
       </div>
       <Fila>
-        {[si, no].map((op) => (
+        {enOrden([si, no], orden).map((op) => (
           <Control key={op} chico onClick={() => { if (!resuelto) responder(setEstado, op === si, op); }} elegido={e.eleccion === op} marca={marcaDe(e, op, si)}>{op}</Control>
         ))}
       </Fila>
@@ -237,7 +238,9 @@ const [SIGUE, CERO] = T.unaPregunta.cajones;
 const cajonBueno = (k) => (CUENTAS_7[k].real ? SIGUE : CERO);
 
 function FiguraUnaPregunta({ estado, setEstado }) {
-  const e = estado ?? colaInicial(CUENTAS_7.length);
+  /* Las seis cuentas salen barajadas (Mello T2-9): ordenadas, después de la tercera el orden daba la respuesta. */
+  const orden = useBarajado(estado, setEstado, CUENTAS_7.length, colaInicial(CUENTAS_7.length));
+  const e = { ...(estado ?? colaInicial(CUENTAS_7.length)), orden };
   const k = fichaActual(e);
   const dentro = (cajon) => CUENTAS_7.map((c, i) => {
     const r = e.cola[i];
@@ -322,6 +325,6 @@ export const PIEZA_P2 = {
       Figura: FiguraUnaPregunta, nombreFigura: "Los cajones Sigue y Vuelve a cero", estadoInicial: colaInicial(CUENTAS_7.length), resuelta: colaResuelta,
       devolucion: devolucionUnaPregunta, fichas: CUENTAS_7.map((c) => c.cuenta), destinos: [SIGUE, CERO], buenoDe: cajonBueno, malaDe: (i) => (cajonBueno(i) === SIGUE ? CERO : SIGUE),
     },
-    { id: "cierre", tipo: "cierre", titular: T.cierre.titular, apoyo: T.cierre.apoyo, Figura: FiguraCierre, nombreFigura: "Salarios por pagar y el gasto en salarios el 1 de enero" },
+    { id: "cierre", tipo: "cierre", titular: T.cierre.titular, apoyo: T.cierre.apoyo, Figura: FiguraCierre, nombreFigura: "Salarios por pagar y el gasto en salarios el 1 de enero", ...(T.cierre.pie ? { razon: T.cierre.pie } : {}) },
   ],
 };

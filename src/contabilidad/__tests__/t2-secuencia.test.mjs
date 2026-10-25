@@ -60,6 +60,18 @@ const NEAR8 = leer("c-t2-8-near-textos.md");
 const WATARI3 = leer("c-t2-3-watari-figuras.md");
 const WATARI7 = leer("c-t2-7-watari-figuras.md");
 const TODO_NEAR = [NEAR2, NEAR3, NEAR7, NEAR8].join("\n");
+/* La auditoría T2-9 de Mello: sus textos entran letra por letra (lote T2-10). */
+const MELLO9 = leer("c-t2-9-mello-auditoria.md");
+/* Una cita «…» de la auditoría, por lo que la precede en la misma línea. */
+const citaMello = (antes) => {
+  const linea = MELLO9.split("\n").find((l) => l.includes(antes));
+  assert.ok(linea, `no encontré «${antes}» en la auditoría de Mello`);
+  const m = linea.slice(linea.indexOf(antes) + antes.length).match(/«([^»]+)»/);
+  assert.ok(m, `no hay cita después de «${antes}»`);
+  return m[1];
+};
+/* Las oraciones que Mello manda quitar de un apoyo (S2), por pantalla. */
+const RECORTES_MELLO = { "P3·3": citaMello("Se quita la primera oración, "), "P5·5": citaMello("el apoyo termina con ") };
 /* Near T2-8: la tabla de tres textos, por pantalla (columna «texto», letra por letra). */
 const TEXTO_NEAR8 = (pantalla) => {
   const fila = NEAR8.split("\n").find((l) => l.startsWith(`| ${pantalla} |`));
@@ -116,8 +128,18 @@ for (const [n, pieza] of PIEZAS_SECUENCIA_T2.entries()) {
       const [num, , titular, apoyo, razon] = fs[k];
       assert.equal(Number(num), k);
       assert.equal(p.titular, sinMarcas(titular), `${P}·${k}: titular`);
-      assert.ok(sinMarcas(apoyo).startsWith(p.apoyo), `${P}·${k}: el apoyo no está letra por letra:\n  «${p.apoyo}»\n  «${sinMarcas(apoyo)}»`);
-      assert.equal(p.razon ?? "—", razon, `${P}·${k}: razón`);
+      /* Si Mello manda quitar una oración (T2-9, S2), se compara contra el apoyo de Near sin ella, y ya no está. */
+      const recorte = RECORTES_MELLO[`${P}·${k}`];
+      const esperado = recorte ? sinMarcas(apoyo).replace(recorte, "").replace(/\s{2,}/g, " ").trim() : sinMarcas(apoyo);
+      if (recorte) {
+        assert.ok(sinMarcas(apoyo).includes(recorte), `${P}·${k}: la oración que quita Mello está en Near`);
+        assert.ok(!p.apoyo.includes(recorte), `${P}·${k}: sigue la oración que Mello manda quitar: «${recorte}»`);
+        assert.ok(S.palabras(p.titular) + S.palabras(p.apoyo) + S.palabras(p.razon) <= 40, `${P}·${k}: la pantalla pasa de 40 palabras (S2)`);
+      }
+      assert.ok(esperado.startsWith(p.apoyo), `${P}·${k}: el apoyo no está letra por letra:\n  «${p.apoyo}»\n  «${esperado}»`);
+      /* El cierre lleva en la razón el pie de página (lote B, abajo); Near no le da razón. */
+      if (p.tipo === "cierre") assert.equal(razon, "—", `${P}·${k}: razón de Near en el cierre`);
+      else assert.equal(p.razon ?? "—", razon, `${P}·${k}: razón`);
       /* Lo textual: con su marca en el paquete, y el trozo marcado entero dentro del apoyo. */
       assert.equal(Boolean(p.textual), apoyo.includes("**[textual]**"), `${P}·${k}: textual`);
       if (p.textual) assert.ok(p.apoyo.endsWith(apoyo.split("**[textual]** ")[1]), `${P}·${k}: el texto del libro no está entero`);
@@ -154,7 +176,9 @@ test("★ opciones, pistas, devoluciones, consecuencias y frases de cierre: letr
         const d = p.devolucion({ ...S.HAZ_INICIAL, ...caso });
         if (d.pista !== null) enNear(d.pista, `${donde} pista`);
         const plantilla = d.porque.replace(/^(Bancos|Maquinaria|Obligaciones financieras|Ingresos por servicios|Gastos de administración y ventas|Costo de ventas)(?= (es real|mide))/, "{Cuenta}").replace(/^(Pasivos|Patrimonio|Ingresos)(?= vive a la derecha)/, "{Familia}");
-        enNear(plantilla, `${donde} porqué`);
+        /* P3·7 «…vive a la derecha»: su porqué es el de Mello T2-9 (S6), no uno de Near. */
+        if (p.id === "por-que" && caso.eleccion === p.opciones[0]) assert.equal(d.porque, citaMello("Porqué para «a la derecha»: "), `${donde} porqué de Mello`);
+        else enNear(plantilla, `${donde} porqué`);
         if (d.consecuencia) {
           assert.ok(WATARI7.includes(`| ${d.consecuencia} |`), `${donde}: la consecuencia «${d.consecuencia}» no es una de las de una línea de Watari T2-7`);
           conConsecuencia.add(d.consecuencia);
@@ -178,10 +202,11 @@ test("★ opciones, pistas, devoluciones, consecuencias y frases de cierre: letr
 /* ─────────────── montar una pantalla en la secuencia real ─────────────── */
 
 const TEMA = "cuentas-debe-haber";
-async function montarEn(p, idPantalla) {
+async function montarEn(p, idPantalla, { recargar = false } = {}) {
   const s = PIEZAS_SECUENCIA_T2[p].pantallas.findIndex((x) => x.id === idPantalla);
   const inicial = S.estadoInicial(PIEZAS_SECUENCIA_T2);
-  sessionStorage.setItem(`fae-secuencia:${TEMA}`, JSON.stringify({ v: 1, ...inicial, p, s }));
+  /* `recargar`: se monta con lo que ya hay guardado, como al recargar la página. */
+  if (!recargar) sessionStorage.setItem(`fae-secuencia:${TEMA}`, JSON.stringify({ v: 1, ...inicial, p, s }));
   const caja = document.createElement("div");
   document.body.appendChild(caja);
   const raiz = createRoot(caja);
@@ -199,10 +224,11 @@ async function montarEn(p, idPantalla) {
   };
   const siguiente = () => caja.querySelector("[data-siguiente]");
   const estado = () => JSON.parse(sessionStorage.getItem(`fae-secuencia:${TEMA}`)).estados[`${PIEZAS_SECUENCIA_T2[p].id}/${idPantalla}`];
-  const desmontar = async () => { await act(async () => { raiz.unmount(); }); caja.remove(); sessionStorage.clear(); };
+  const desmontar = async ({ conservar = false } = {}) => { await act(async () => { raiz.unmount(); }); caja.remove(); if (!conservar) sessionStorage.clear(); };
+  const rerender = async () => { await act(async () => { raiz.render(h(SecuenciaAprender, { temaId: TEMA, piezas: PIEZAS_SECUENCIA_T2, final: "hacer", onFinal() {} })); }); };
   assert.equal(caja.querySelector("[data-pantalla]").getAttribute("data-pantalla"), String(s + 1));
   assert.equal(caja.querySelector("[data-pieza]").getAttribute("data-pieza"), PIEZAS_SECUENCIA_T2[p].id);
-  return { caja, boton, clic, siguiente, estado, desmontar };
+  return { caja, boton, clic, siguiente, estado, desmontar, rerender };
 }
 
 const bordeDe = (b) => b.style.border || `${b.style.borderWidth} ${b.style.borderStyle}`;
@@ -216,6 +242,8 @@ function marcaEs(b, marca, nombre) {
 /* Los Haz calificados: [pieza, pantalla]. */
 const HAZ = PIEZAS_SECUENCIA_T2.flatMap((pz, p) => pz.pantallas.filter((x) => x.tipo === "haz" && !x.prediccion).map((x) => [p, x]));
 const etiquetaDestino = (d) => d.replace("|", ", ");
+/* El orden de las fichas de una cola: el barajado que guardó la pantalla, o el de la lista. */
+const ordenDeFichas = (m, x) => m.estado()?.orden ?? [...x.fichas.keys()];
 
 test("★ hay Haz calificado en las cinco, y todos se juegan abajo", () => {
   assert.deepEqual([...new Set(HAZ.map(([p]) => p))], [0, 1, 2, 3, 4]);
@@ -231,8 +259,10 @@ for (const [p, x] of HAZ) {
     try {
       assert.equal(m.siguiente().getAttribute("aria-disabled"), "true", "antes de responder, «Siguiente» espera");
       assert.equal(m.caja.querySelector("[data-razon]").textContent, x.razon);
-      const mala = x.fichas ? etiquetaDestino(x.malaDe(0)) : malas[0];
-      const buena = x.fichas ? etiquetaDestino(x.buenoDe(0)) : x.buena;
+      /* Las fichas, en el orden en que salen (P2·7 las baraja: lote A). */
+      const orden = x.fichas ? ordenDeFichas(m, x) : null;
+      const mala = x.fichas ? etiquetaDestino(x.malaDe(orden[0])) : malas[0];
+      const buena = x.fichas ? etiquetaDestino(x.buenoDe(orden[0])) : x.buena;
       await m.clic(mala);
       marcaEs(m.boton(mala), "mal", mala);
       const uno = mensajeDe(x, m.estado());
@@ -252,7 +282,7 @@ for (const [p, x] of HAZ) {
       /* Varias fichas: las demás se colocan bien y entonces se libera. */
       if (x.fichas) {
         assert.equal(m.siguiente().getAttribute("aria-disabled"), "true", "quedan fichas: «Siguiente» espera");
-        for (let i = 1; i < x.fichas.length; i++) await m.clic(etiquetaDestino(x.buenoDe(i)));
+        for (const i of orden.slice(1)) await m.clic(etiquetaDestino(x.buenoDe(i)));
       }
       assert.equal(m.siguiente().getAttribute("aria-disabled"), null, "«Siguiente» se libera");
       assert.equal(m.siguiente().textContent, "Siguiente");
@@ -263,8 +293,7 @@ for (const [p, x] of HAZ) {
   test(`★ Haz ${P} ${x.id}: el acierto lleva ✓, «correcto» y libera «Siguiente»`, async () => {
     const m = await montarEn(p, x.id);
     try {
-      const n = x.fichas ? x.fichas.length : 1;
-      for (let i = 0; i < n; i++) {
+      for (const i of x.fichas ? ordenDeFichas(m, x) : [0]) {
         const buena = x.fichas ? etiquetaDestino(x.buenoDe(i)) : x.buena;
         await m.clic(buena);
         marcaEs(m.boton(buena), "bien", buena);
@@ -312,6 +341,219 @@ test("★ P4·8 y P4·9 van con ene-04 (1 contra 2, $4.800), aunque la maqueta d
       if (id === "cierre") assert.equal((fig.match(/\$4\.800/g) || []).length, 3, "los dos totales llegan a $4.800");
     } finally { await m.desmontar(); }
   }
+});
+
+/* ─────────────── lote T2-10: la auditoría T2-9 de Mello ─────────────── */
+
+/* Math.random con semilla, solo mientras corre `f`. */
+async function conSemilla(semilla, f) {
+  const azar = Math.random;
+  let x = semilla;
+  Math.random = () => { x = (x * 1103515245 + 12345) % 2147483648; return x / 2147483648; };
+  try { return await f(); } finally { Math.random = azar; }
+}
+/* Los nombres de los controles de la figura, en el orden en que se ven (sin la palabra de la marca). */
+const nombresEnFigura = (m) => [...m.caja.querySelectorAll("figure button")].map((b) => (b.getAttribute("aria-label") ?? b.textContent.trim()).replace(/, (no va aquí|correcto)$/, ""));
+const pantallaDe = (p, id) => PIEZAS_SECUENCIA_T2[p].pantallas.find((x) => x.id === id);
+const numeroDe = (p, id) => `P${p + 1}·${PIEZAS_SECUENCIA_T2[p].pantallas.findIndex((x) => x.id === id)}`;
+
+/* Lote A: las nueve pantallas que se barajan, y lo que se baraja en cada una. */
+const BARAJADAS = [
+  [0, "debe-no-es-subir"], [1, "gasto-o-costo"], [1, "se-cierra-igual"], [1, "una-sola-pregunta"],
+  [2, "la-trampa"], [2, "por-que"], [3, "un-pago-dos-bajas"], [3, "muchas-cuentas"], [4, "dos-preguntas"],
+];
+const itemsDe = (x) => x.fichas ?? x.opciones;
+/* Lo que se ve barajado: las opciones en la figura o, en P2·7, la ficha que sale. */
+const vistoDe = (m, x) => (x.fichas ? [m.caja.querySelector("[data-ficha-actual]")?.textContent ?? null] : nombresEnFigura(m).filter((t) => x.opciones.includes(t)));
+
+test("★ lote A: se barajan justo las nueve pantallas de la tabla de Mello (§1)", () => {
+  const tabla = tramo(MELLO9, "### Lote A", "**No se barajan**").split("\n").filter((l) => /^\| P\d·\d \|/.test(l)).map((l) => l.split(" | ")[0].replace("| ", ""));
+  assert.deepEqual(BARAJADAS.map(([p, id]) => numeroDe(p, id)), tabla);
+});
+
+for (const [p, id] of BARAJADAS) {
+  const x = pantallaDe(p, id);
+  const P = numeroDe(p, id);
+  test(`★ lote A · ${P} ${id}: baraja una vez; el mismo orden con re-render, error y recarga; otro orden en otra visita`, async () => {
+    const n = itemsDe(x).length;
+    const m = await conSemilla(11, () => montarEn(p, id));
+    let orden;
+    try {
+      orden = m.estado().orden;
+      assert.ok(Array.isArray(orden) && orden.length === n && [...orden].sort().join() === [...Array(n).keys()].join(), `${P}: el orden se guarda en el estado de la pantalla`);
+      const visto = vistoDe(m, x);
+      assert.deepEqual(visto, x.fichas ? [x.fichas[orden[0]]] : orden.map((i) => x.opciones[i]), `${P}: la figura pinta el orden guardado`);
+      /* Re-render, con otro azar: no se vuelve a barajar. */
+      await conSemilla(97, () => m.rerender());
+      assert.deepEqual(m.estado().orden, orden, `${P}: el re-render no baraja`);
+      assert.deepEqual(vistoDe(m, x), visto);
+      /* Un error: tampoco. */
+      await m.clic(x.fichas ? etiquetaDestino(x.malaDe(orden[0])) : x.opciones.find((o) => o !== x.buena));
+      assert.deepEqual(m.estado().orden, orden, `${P}: el error no baraja`);
+      assert.deepEqual(vistoDe(m, x), visto);
+      /* P2·7: acertada la primera, sale la segunda del orden barajado. */
+      if (x.fichas) {
+        await m.clic(etiquetaDestino(x.buenoDe(orden[0])));
+        assert.deepEqual(vistoDe(m, x), [x.fichas[orden[1]]], `${P}: la segunda ficha es la segunda del orden`);
+      }
+    } finally { await m.desmontar({ conservar: true }); }
+    /* Recargar: se monta con lo guardado y otro azar, y el orden es el mismo. */
+    const r = await conSemilla(5, () => montarEn(p, id, { recargar: true }));
+    try {
+      assert.deepEqual(r.estado().orden, orden, `${P}: recargar no baraja`);
+      if (!x.fichas) assert.deepEqual(vistoDe(r, x), orden.map((i) => x.opciones[i]));
+    } finally { await r.desmontar(); }
+    /* Otra visita (estado nuevo), otra semilla: sale otro orden. */
+    const ordenes = new Set();
+    for (let semilla = 1; semilla <= 12 && ordenes.size < 2; semilla++) {
+      const v = await conSemilla(semilla * 7919, () => montarEn(p, id));
+      try { ordenes.add(JSON.stringify(v.estado().orden)); } finally { await v.desmontar(); }
+    }
+    assert.ok(ordenes.size > 1, `${P}: con otra semilla no cambió nunca el orden: no se baraja`);
+  });
+}
+
+/* Lo que NO se baraja, porque el orden es la lección: debe/haber, casas, platillos, «Sigue»/«Vuelve a cero» y las predicciones. */
+const FIJAS = [
+  [0, "el-saldo", D.P1_TEXTOS.saldo.opciones],
+  [2, "donde-vive", ["Activo", "Pasivo + Patrimonio"]],
+  [3, "la-balanza", ["Activo", "Pasivo + Patrimonio"]],
+  [1, "una-sola-pregunta", D.P2_TEXTOS.unaPregunta.cajones],
+  [4, "mayorizar", null],
+  [3, "segunda-regla", null],
+  ...PIEZAS_SECUENCIA_T2.map((pz, p) => [p, pz.pantallas.find((y) => y.prediccion).id, null]),
+];
+for (const [p, id, fijo] of FIJAS) {
+  const P = numeroDe(p, id);
+  test(`★ lote A · ${P} ${id}: lo que enseña con su orden NO se baraja`, async () => {
+    const vistos = [];
+    for (const semilla of [3, 4242, 90001]) {
+      const m = await conSemilla(semilla, () => montarEn(p, id));
+      try {
+        /* P2·7 baraja las cuentas, no los cajones: solo se mira el orden de los cajones. */
+        const nombres = nombresEnFigura(m).filter((t) => !fijo || fijo.includes(t));
+        vistos.push(nombres);
+        if (id !== "una-sola-pregunta") assert.equal(m.estado()?.orden, undefined, `${P}: no guarda orden barajado`);
+        if (fijo) assert.deepEqual(nombres, fijo, `${P}: el orden fijo`);
+      } finally { await m.desmontar(); }
+    }
+    assert.deepEqual(vistos[1], vistos[0]);
+    assert.deepEqual(vistos[2], vistos[0]);
+  });
+}
+
+/* Lote B: el pie de cada cierre, de Near T2-10 (c-t2-10-near-textos.md §1), letra por letra. */
+const NEAR10 = leer("c-t2-10-near-textos.md");
+const PIE_NEAR10 = (n) => {
+  const fila = NEAR10.split("\n").find((l) => l.startsWith(`| P${n} | `));
+  assert.ok(fila, `no encontré P${n} en c-t2-10-near-textos.md`);
+  return fila.split(" | ")[1].trim();
+};
+
+test("★ lote B · el pie «Basado en el libro…» de Near va en la razón de los cinco cierres, una vez por pieza", () => {
+  for (const [n, pieza] of PIEZAS_SECUENCIA_T2.entries()) {
+    const pie = PIE_NEAR10(n + 1);
+    assert.match(pie, /^Basado en el libro(, pp\. [\d ,y-]+)?\.$/, `P${n + 1}: forma del pie`);
+    assert.equal(D[`P${n + 1}_TEXTOS`].cierre.pie, pie, `P${n + 1}: el pie de Near, letra por letra`);
+    assert.equal(pieza.pantallas.at(-1).razon, pie, `P${n + 1}: el pie va en la razón del cierre`);
+    assert.equal(pieza.pantallas.filter((y) => /Basado en el libro/.test(y.razon ?? "")).length, 1, `P${n + 1}: una vez por pieza`);
+  }
+});
+
+test("★ P1: las cifras de Caja salen de DE_QUE_ESTA_HECHA.ejemplo, y las del cierre, de contabilidadT2Secuencia.js", async () => {
+  const { DE_QUE_ESTA_HECHA } = await import("../../data/contabilidadAprender.js");
+  const ej = DE_QUE_ESTA_HECHA.ejemplo;
+  const cuenta = D.P1_TEXTOS.cierre.cuenta;
+  assert.deepEqual(cuenta, { debe: 50, haber: 30 });
+  assert.ok(D.P1_TEXTOS.cierre.apoyo.includes(`$${cuenta.debe} en el debe y $${cuenta.haber} en el haber`), "el apoyo dice las mismas cifras");
+  const src = readFileSync("src/components/mecanicas/libros/t2/secuenciaP1.jsx", "utf8");
+  assert.ok(!/\[1000, 500\]|\[150\]|debe: 50|haber: 30/.test(src), "P1 no escribe las cifras a mano");
+  /* Se cambian los datos y la figura cambia con ellos. */
+  const antes = [ej.debitos[0], ej.creditos[0], cuenta.debe];
+  ej.debitos[0] = 1234; ej.creditos[0] = 321; cuenta.debe = 77;
+  try {
+    const m = await montarEn(0, "movimientos");
+    try {
+      const fig = m.caja.querySelector("figure").textContent;
+      assert.ok(fig.includes("$1.234") && fig.includes("$321"), "Caja: las cifras de DE_QUE_ESTA_HECHA.ejemplo");
+    } finally { await m.desmontar(); }
+    const c = await montarEn(0, "cierre");
+    try { assert.ok(c.caja.querySelector("figure").textContent.includes("$77"), "el cierre: las cifras de P1_TEXTOS.cierre.cuenta"); } finally { await c.desmontar(); }
+  } finally { [ej.debitos[0], ej.creditos[0], cuenta.debe] = antes; }
+});
+
+test("★ P3: el préstamo sale de cu6-pagare y del saldo inicial de Caja; la ficha de $100, de pruebaTu.fichas[0]", async () => {
+  const { transaccionDelEjemploDos, PIEZA_DEBE_Y_HABER } = await import("../../data/contabilidadDebeHaber.js");
+  const pagare = transaccionDelEjemploDos();
+  assert.equal(pagare.id, "cu6-pagare");
+  const monto = pagare.asiento.debe.find(([c]) => c === "Caja")[1];
+  const cajaDespues = PIEZA_DEBE_Y_HABER.exploracion.cuentas.find((c) => c.cuenta === "Caja").saldoInicial;
+  assert.ok(D.P3_TEXTOS.trampa.apoyo.includes(`préstamo de $${monto}, la Caja pasa de $${(cajaDespues - monto).toLocaleString("es-CO")} a $${cajaDespues.toLocaleString("es-CO")}`), "el texto y los datos coinciden");
+  const src = readFileSync("src/components/mecanicas/libros/t2/secuenciaP3.jsx", "utf8");
+  assert.ok(!/cajaAntes: 1000|monto: 500|FICHA_100 = 100;/.test(src), "P3 no escribe el préstamo ni la ficha a mano");
+  assert.match(src, /const FICHA_100 = T\.pruebaTu\.fichas\[0\];/);
+  assert.match(src, /transaccionDelEjemploDos\(\)/);
+  const m = await montarEn(2, "la-trampa");
+  try {
+    const fig = m.caja.querySelector("figure").textContent;
+    assert.ok(fig.includes(`Saldo $${cajaDespues.toLocaleString("es-CO")}`) && fig.includes(`$${monto}`), "la figura pinta el préstamo de los datos");
+  } finally { await m.desmontar(); }
+});
+
+test("★ P3·7: un porqué por opción mala; el de «a la derecha» es el de Mello, letra por letra, en la pieza jugada", async () => {
+  const x = pantallaDe(2, "por-que");
+  const derecha = x.opciones.find((o) => /a la derecha$/.test(o));
+  const haber = x.opciones.find((o) => /en el haber$/.test(o));
+  const textoMello = citaMello("Porqué para «a la derecha»: ");
+  assert.equal(textoMello, "Pusiste Maquinaria con el pasivo y el patrimonio. Es un activo y vive a la izquierda.");
+  assert.equal(D.P3_TEXTOS.porQue.porqueDerecha, textoMello);
+  for (const [op, porque] of [[derecha, textoMello], [haber, D.P3_TEXTOS.porQue.porque]]) {
+    const m = await montarEn(2, "por-que");
+    try {
+      await m.clic(op);
+      await m.clic(op);
+      assert.equal(mensajeDe(x, m.estado()).porque, porque, `«${op}»: su porqué`);
+    } finally { await m.desmontar(); }
+  }
+  assert.notEqual(textoMello, D.P3_TEXTOS.porQue.porque);
+});
+
+test("★ P4: los platillos parten por palabra (lang es, break-word, guiones) y el control dice «Aplicar la regla»", async () => {
+  const nombres = [];
+  for (const id of ["partida-doble", "la-balanza", "muchas-cuentas", "cierre"]) {
+    const x = pantallaDe(3, id);
+    const html = renderToStaticMarkup(h(x.Figura, { estado: x.estadoInicial ?? null, setEstado() {}, paso: 0, primeraVez: false, reducido: true }));
+    const spans = [...html.matchAll(/<span lang="es" data-nombre-renglon="true" style="([^"]*)">([^<]*)<\/span>/g)];
+    assert.ok(spans.length > 0, `${id}: los nombres de los renglones`);
+    for (const [, estilo, nombre] of spans) {
+      assert.match(estilo, /overflow-wrap:break-word/, `«${nombre}»: break-word`);
+      assert.match(estilo, /hyphens:auto/, `«${nombre}»: guiones`);
+      assert.doesNotMatch(estilo, /anywhere/, `«${nombre}»: no se parte por letra`);
+      nombres.push(nombre);
+    }
+  }
+  /* Las dos que Mello vio partidas. */
+  assert.ok(nombres.includes("Equipo de computación") && nombres.includes("Flota y equipo de transporte"));
+  const control = D.P4_TEXTOS.partidaDoble.control;
+  assert.ok(MELLO9.includes(`Debe decir **«${control}»**`), "el texto del control es el de Mello");
+  const m = await montarEn(3, "partida-doble");
+  try {
+    assert.ok(m.boton(control), `el control «${control}»`);
+    assert.equal(m.boton("Partida doble"), undefined, "ya no repite el titular");
+  } finally { await m.desmontar(); }
+});
+
+test("★ los controles que Mello aprobó (Registrar, Debe, Haber y las fichas) ya no llevan PENDIENTE_DE_REVISION", async () => {
+  for (const f of ["Comun", "P1", "P2", "P3", "P4", "P5", "T2"]) {
+    assert.doesNotMatch(readFileSync(`src/components/mecanicas/libros/t2/secuencia${f}.jsx`, "utf8"), /PENDIENTE_DE_REVISION|ESCRITO POR CLAUDE/, `secuencia${f}.jsx`);
+  }
+  for (const fila of ["| «Registrar» (P3·2) | Pasa.", "| «Debe» y «Haber» (P3·6) | Pasan.", "| Fichas «$100», «$500» y «$1.000» (P3·6) | Pasan."]) {
+    assert.ok(MELLO9.includes(fila), `Mello: ${fila}`);
+  }
+  const m = await montarEn(2, "efectos-opuestos");
+  try { assert.ok(m.boton("Registrar")); } finally { await m.desmontar(); }
+  const t = await montarEn(2, "prueba-tu");
+  try { for (const c of ["$100", "$500", "$1.000", "Debe", "Haber"]) assert.ok(t.boton(c), `P3·6: «${c}»`); } finally { await t.desmontar(); }
 });
 
 /* ─────────────── la bandera ─────────────── */

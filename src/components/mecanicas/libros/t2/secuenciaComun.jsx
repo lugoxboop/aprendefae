@@ -1,5 +1,7 @@
+import { useEffect, useState } from "react";
 import { FAE } from "../../../../theme.js";
 import { HAZ_INICIAL, responderHaz, hazResuelto, mostrarCorrecto } from "../../../secuencia/secuencia.js";
+import { barajar } from "../../../../utils/barajar.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -173,6 +175,33 @@ export function Control({ children, etiqueta, onClick, elegido, marca, disabled,
   );
 }
 
+/* ═══════════ EL ORDEN BARAJADO (lote A de la auditoría T2-9 de Mello) ═══════════
+ *
+ * Un solo ayudante para las nueve pantallas donde el orden no significa nada
+ * (P1·6, P2·4, P2·6, P2·7, P3·4, P3·7, P4·6, P4·8 y P5·6). Baraja UNA vez con
+ * `barajar` (utils/barajar.js, compartido) y guarda el orden en el estado de
+ * la pantalla, `orden`: una permutación de 0…n−1. SecuenciaAprender guarda ese
+ * estado, así que «Anterior», un error o recargar no lo cambian; otra visita
+ * (estado nuevo) baraja otra vez. Lo que enseña con su orden NO pasa por aquí:
+ * debe a la izquierda y haber a la derecha, las casas y los platillos de la
+ * ecuación, los cajones «Sigue» y «Vuelve a cero», y las predicciones.
+ */
+export const ordenValido = (orden, n) =>
+  Array.isArray(orden) && orden.length === n && [...orden].sort((a, b) => a - b).every((v, i) => v === i);
+
+export function useBarajado(estado, setEstado, n, base = HAZ_INICIAL) {
+  const guardado = estado?.orden;
+  const valido = ordenValido(guardado, n);
+  const [nuevo] = useState(() => (valido ? guardado : barajar([...Array(n).keys()])));
+  useEffect(() => {
+    if (!valido) setEstado((antes) => (ordenValido(antes?.orden, n) ? antes : { ...(antes ?? base), orden: nuevo }));
+  }, [valido]);
+  return valido ? guardado : nuevo;
+}
+
+/** Los elementos en el orden barajado. */
+export const enOrden = (xs, orden) => orden.map((i) => xs[i]);
+
 export const Fila = ({ children, style }) => <div style={{ display: "flex", gap: "8px", marginTop: "8px", ...style }}>{children}</div>;
 
 /* ═══════════ EL HAZ CALIFICADO DE UNA SOLA RESPUESTA ═══════════ */
@@ -209,7 +238,12 @@ export const colaInicial = (n) => ({ ...HAZ_INICIAL, cola: Array.from({ length: 
 
 export const colaResuelta = (estado) => Array.isArray(estado?.cola) && estado.cola.length > 0 && estado.cola.every(hazResuelto);
 
-export const fichaActual = (estado) => (estado?.cola ?? []).findIndex((x) => !hazResuelto(x));
+/* La ficha en juego. Con `orden` (P2·7, barajada) se sigue ese orden; el índice es siempre el de la lista original. */
+export const fichaActual = (estado) => {
+  const cola = estado?.cola ?? [];
+  const orden = ordenValido(estado?.orden, cola.length) ? estado.orden : [...cola.keys()];
+  return orden.find((i) => !hazResuelto(cola[i])) ?? -1;
+};
 
 export function responderCola(setEstado, esCorrecto, destino) {
   setEstado((antes) => {

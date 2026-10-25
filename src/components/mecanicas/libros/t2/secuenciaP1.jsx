@@ -2,10 +2,11 @@ import { FAE } from "../../../../theme.js";
 import { HAZ_INICIAL, hazResuelto } from "../../../secuencia/secuencia.js";
 import { useNumeroQueSube } from "../verbos.jsx";
 import { LAVADO_DE_AUTOS } from "../../../../data/contabilidad.js";
+import { DE_QUE_ESTA_HECHA } from "../../../../data/contabilidadAprender.js";
 import { P1_ID, P1_OBJETIVO, P1_TEXTOS as T, P1_ALTO_FIGURA } from "../../../../data/contabilidadT2Secuencia.js";
 import {
   DEBE, HABER, LINEA, SUAVE, ESTILOS, pesos, suma, raiz, Encabezado, Cifra, Rotulo, Lado, Control, Fila,
-  responder, leerHaz, marcaDe,
+  responder, leerHaz, marcaDe, useBarajado, enOrden,
 } from "./secuenciaComun.jsx";
 
 /*
@@ -24,8 +25,8 @@ import {
 
 /* ─────────────── piezas de dibujo ─────────────── */
 
-/* Las cifras del ejemplo de Caja (el mismo de la pieza vieja: «el ejemplo del libro»). */
-const CAJA = { entra: [1000, 500], sale: [150] };
+/* Las cifras del ejemplo de Caja: las de la pieza vieja («el ejemplo del libro»), leídas de sus datos (Mello T2-9, S10). */
+const CAJA = { entra: DE_QUE_ESTA_HECHA.ejemplo.debitos, sale: DE_QUE_ESTA_HECHA.ejemplo.creditos };
 
 /* ─────────────── 0 · Apertura: la T sin raya y las tres fichas entran, una vez ─────────────── */
 
@@ -223,6 +224,7 @@ function SaldoCxp({ valor, marca }) {
 function FiguraDebeNoEsSubir({ estado, setEstado }) {
   const { e, resuelto, verdad, error } = leerHaz(estado);
   const tocar = (op) => { if (!resuelto) responder(setEstado, op === "Baja", op); };
+  const orden = useBarajado(estado, setEstado, T.debeNoEsSubir.opciones.length);
   return (
     <div style={raiz}>
       <style>{ESTILOS}</style>
@@ -241,7 +243,7 @@ function FiguraDebeNoEsSubir({ estado, setEstado }) {
         </Lado>
       </div>
       <Fila style={{ marginTop: "4px" }}>
-        {T.debeNoEsSubir.opciones.map((op) => (
+        {enOrden(T.debeNoEsSubir.opciones, orden).map((op) => (
           <Control key={op} onClick={() => tocar(op)} elegido={e.eleccion === op} marca={marcaDe(e, op, "Baja")}>{op}</Control>
         ))}
       </Fila>
@@ -252,7 +254,7 @@ function FiguraDebeNoEsSubir({ estado, setEstado }) {
 
 /* ─────────────── 7 · Cierre: «Siguiente» da el paso y el saldo de $20 cae en el debe ─────────────── */
 
-const CIERRE = { debe: 50, haber: 30 };
+const CIERRE = T.cierre.cuenta;
 
 function FiguraCierre({ paso }) {
   const listo = paso >= 1;
@@ -310,7 +312,8 @@ export const PIEZA_P1 = {
     },
     {
       id: "cierre", tipo: "cierre", titular: T.cierre.titular, apoyo: T.cierre.apoyo,
-      Figura: FiguraCierre, nombreFigura: "Una cuenta con $50 en el debe y $30 en el haber", pasos: 1, rotulosPaso: [T.cierre.frase],
+      Figura: FiguraCierre, nombreFigura: `Una cuenta con ${pesos(CIERRE.debe)} en el debe y ${pesos(CIERRE.haber)} en el haber`, pasos: 1, rotulosPaso: [T.cierre.frase],
+      ...(T.cierre.pie ? { razon: T.cierre.pie } : {}),
     },
   ],
 };

@@ -5,7 +5,7 @@ import { LAVADO_DE_AUTOS, CALEJA } from "../../../../data/contabilidad.js";
 import { P4_ID, P4_OBJETIVO, P4_TEXTOS as T, P4_ALTO_FIGURA } from "../../../../data/contabilidadT2Secuencia.js";
 import {
   BLANCO, LINEA, SUAVE, pesos, suma, Raiz, Lado, Control, Fila,
-  responder, leerHaz, marcaDe, colaInicial, colaResuelta, fichaActual, responderCola, marcaDestino,
+  responder, leerHaz, marcaDe, useBarajado, enOrden, colaInicial, colaResuelta, fichaActual, responderCola, marcaDestino,
 } from "./secuenciaComun.jsx";
 
 /*
@@ -38,7 +38,11 @@ const PAGO = ENE30.debe[0][1];
 
 /* ─────────────── la balanza ─────────────── */
 
-/* Un renglón dentro de un platillo: nombre y cifra; `marca` "error" (coral punteado) o "bien" (borde blanco). */
+/*
+ * Un renglón dentro de un platillo: nombre y cifra; `marca` "error" (coral punteado) o "bien" (borde blanco).
+ * El nombre se parte POR PALABRA, no por letra (Mello T2-9, la regla de Watari T2-4): break-word con
+ * guiones en español: el nombre largo pasa a dos líneas junto a su cifra (así cabe en el altoFigura medido).
+ */
 function Renglon({ nombre, valor, marca, clase }) {
   /* Sin marca no lleva borde: 4 px menos por renglón (la figura cabe en su altoFigura). */
   const borde = marca === "error" ? `2px dashed ${FAE.coral}` : marca === "bien" ? `2px solid ${BLANCO}` : "0";
@@ -47,7 +51,7 @@ function Renglon({ nombre, valor, marca, clase }) {
       display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: "4px", padding: marca ? "0 4px" : "0 6px", borderRadius: "6px", border: borde,
       fontSize: "12px", lineHeight: "15px", color: marca === "error" ? FAE.coral : FAE.text,
     }}>
-      <span style={{ minWidth: 0, overflowWrap: "anywhere", textAlign: "left" }}>{nombre}</span>
+      <span lang="es" data-nombre-renglon style={{ minWidth: 0, overflowWrap: "break-word", hyphens: "auto", WebkitHyphens: "auto", textAlign: "left" }}>{nombre}</span>
       {valor !== undefined && <span style={{ fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap" }}>{typeof valor === "number" ? pesos(valor) : valor}</span>}
     </span>
   );
@@ -138,7 +142,7 @@ function FiguraPartidaDoble({ estado, setEstado }) {
       <div style={{ minHeight: "21px", marginTop: "8px" }}>
         {vista && <span className="fae-t2s-cae" data-segunda-linea style={{ display: "block", border: `1px solid ${LINEA}`, borderRadius: "6px" }}><Renglon nombre={CXP} valor={CXP_MONTO} /></span>}
       </div>
-      <Fila style={{ marginTop: "6px" }}><Control onClick={() => setEstado({ vista: true })} disabled={vista}>{T.partidaDoble.titular}</Control></Fila>
+      <Fila style={{ marginTop: "6px" }}><Control onClick={() => setEstado({ vista: true })} disabled={vista}>{T.partidaDoble.control}</Control></Fila>
     </Raiz>
   );
 }
@@ -226,6 +230,7 @@ function FiguraUnPago({ estado, setEstado }) {
   const [soloBancos, soloHipoteca, lasDos] = T.unPago.opciones;
   const bancos = verdad ? BANCOS_ANTES - PAGO : BANCOS_ANTES;
   const hipoteca = verdad ? HIPOTECA_ANTES - PAGO : HIPOTECA_ANTES;
+  const orden = useBarajado(estado, setEstado, T.unPago.opciones.length);
   return (
     <Raiz>
       <Balanza
@@ -238,7 +243,7 @@ function FiguraUnPago({ estado, setEstado }) {
           {error && e.eleccion === soloBancos && <Renglon clase="fae-t2s-cae" nombre="Hipoteca por pagar" valor={HIPOTECA_ANTES + PAGO} marca="error" />}
         </> }} />
       <Fila style={{ marginTop: "8px", gap: "4px" }}>
-        {T.unPago.opciones.map((op) => (
+        {enOrden(T.unPago.opciones, orden).map((op) => (
           <Control key={op} chico onClick={() => { if (!resuelto) responder(setEstado, op === lasDos, op); }} elegido={e.eleccion === op} marca={marcaDe(e, op, lasDos)}
             style={{ padding: "0 4px", fontSize: "12px", lineHeight: "15px", borderRadius: "14px" }}>{op}</Control>
         ))}
@@ -274,13 +279,14 @@ function FiguraSimpleCompuesto({ estado, setEstado }) {
 function FiguraDescuadran({ estado, setEstado }) {
   const { e, resuelto, verdad } = leerHaz(estado);
   const [si, no] = T.descuadran.opciones;
+  const orden = useBarajado(estado, setEstado, 2);
   return (
     <Raiz>
       <Balanza
         izq={{ titulo: DEBE_T, children: renglones(ENE04.debe), total: verdad ? totalDe(ENE04.debe) : null }}
         der={{ titulo: HABER_T, children: renglones(ENE04.haber), total: verdad ? totalDe(ENE04.haber) : null }} />
       <Fila style={{ marginTop: "8px" }}>
-        {[si, no].map((op) => (
+        {enOrden([si, no], orden).map((op) => (
           <Control key={op} chico onClick={() => { if (!resuelto) responder(setEstado, op === no, op); }} elegido={e.eleccion === op} marca={marcaDe(e, op, no)}>{op}</Control>
         ))}
       </Fila>
@@ -352,6 +358,6 @@ export const PIEZA_P4 = {
       Figura: FiguraDescuadran, nombreFigura: "El asiento del 4 de enero en la balanza", estadoInicial: HAZ_INICIAL, resuelta: hazResuelto,
       devolucion: devolucionDe(T.descuadran), opciones: T.descuadran.opciones, buena: T.descuadran.opciones[1],
     },
-    { id: "cierre", tipo: "cierre", titular: T.cierre.titular, apoyo: T.cierre.apoyo, Figura: FiguraCierre, nombreFigura: "El asiento del 4 de enero, nivelado" },
+    { id: "cierre", tipo: "cierre", titular: T.cierre.titular, apoyo: T.cierre.apoyo, Figura: FiguraCierre, nombreFigura: "El asiento del 4 de enero, nivelado", ...(T.cierre.pie ? { razon: T.cierre.pie } : {}) },
   ],
 };

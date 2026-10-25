@@ -100,6 +100,10 @@ export const P1_TEXTOS = {
     titular: "¿Cuánto es el saldo y de qué lado va?",
     apoyo: "Una cuenta tiene $50 en el debe y $30 en el haber.",
     frase: "$20, en el debe. Es la diferencia entre los dos movimientos, y va del lado del más grande.",
+    /* Mello T2-9 (S10): las cifras de la figura salen de aquí, no del componente. */
+    cuenta: { debe: 50, haber: 30 },
+    /* Lote B: el pie del cierre, de Near (c-t2-10-near-textos.md §1). */
+    pie: "Basado en el libro, pp. 98-101.",
   },
 };
 
@@ -182,6 +186,8 @@ export const P2_TEXTOS = {
     titular: "¿Por qué el primero es real y el segundo, nominal?",
     apoyo: "Salarios por pagar y el gasto en salarios hablan de lo mismo.",
     frase: "Salarios por pagar es una deuda: sigue ahí después del cierre. El gasto mide lo del periodo y vuelve a cero.",
+    /* Lote B: el pie del cierre, de Near (c-t2-10-near-textos.md §1). */
+    pie: "Basado en el libro.",
   },
 };
 
@@ -208,7 +214,8 @@ export const P3_TEXTOS = {
   },
   dondeVive: {
     titular: "Dónde vive cada cuenta",
-    apoyo: "Cada cuenta crece por el lado en que vive dentro de la ecuación. El activo vive a la izquierda y crece por el debe. El pasivo y el patrimonio viven a la derecha y crecen por el haber.",
+    /* Mello T2-9 (S2): sin su primera oración, «Cada cuenta crece por el lado en que vive dentro de la ecuación.», que ya dice el cierre. */
+    apoyo: "El activo vive a la izquierda y crece por el debe. El pasivo y el patrimonio viven a la derecha y crecen por el haber.",
     razon: "Lleva cada cuenta a su casa.",
     pista: "Pista: mira de qué lado de la ecuación está cada cuenta.",
     porque: "Confundiste dónde vive con dónde se anota. El activo vive a la izquierda y el patrimonio, a la derecha.",
@@ -243,11 +250,16 @@ export const P3_TEXTOS = {
     correcta: 1,
     /* Near T2-8: la pista del primer error. */
     pista: "Pista: mira en qué lado de la ecuación vive Maquinaria.",
+    /* El de «…vive en el haber»: dónde vive contra dónde se anota. */
     porque: "Confundiste dónde vive con dónde se anota. El activo vive a la izquierda.",
+    /* Mello T2-9 (S6): el de «…vive a la derecha», que pone el activo con el pasivo y el patrimonio. */
+    porqueDerecha: "Pusiste Maquinaria con el pasivo y el patrimonio. Es un activo y vive a la izquierda.",
   },
   cierre: {
     titular: "Cada cuenta crece por el lado en que vive",
     apoyo: "Maquinaria es activo y vive a la izquierda: crece por el debe. Aportes sociales es patrimonio: vive a la derecha y baja por el debe.",
+    /* Lote B: el pie del cierre, de Near (c-t2-10-near-textos.md §1). */
+    pie: "Basado en el libro, pp. 87, 89, 90, 93 y 113.",
   },
 };
 
@@ -272,6 +284,8 @@ export const P4_TEXTOS = {
     titular: "Partida doble",
     textual: true,
     apoyo: "Mira la regla que da nombre a esta pieza: Partida doble: «cualquier transacción siempre se debe registrar dos veces, una vez en el debe de una cuenta y otra vez en el haber de otra cuenta».",
+    /* Mello T2-9: el control dice qué pasa al tocarlo (antes repetía el titular). */
+    control: "Aplicar la regla",
   },
   balanza: {
     titular: "La balanza",
@@ -325,6 +339,8 @@ export const P4_TEXTOS = {
   cierre: {
     titular: "¿Tres cuentas cuadran igual que dos?",
     apoyo: "Porque lo que se iguala es la suma de cada lado, no el número de cuentas.",
+    /* Lote B: el pie del cierre, de Near (c-t2-10-near-textos.md §1). */
+    pie: "Basado en el libro, pp. 87 y 98-101.",
   },
 };
 
@@ -362,7 +378,7 @@ export const P5_TEXTOS = {
   },
   mayorizar: {
     titular: "Mayorizar",
-    apoyo: "Mayorizar es pasar cada valor del diario a su cuenta del mayor: lo del debe al debe y lo del haber al haber. No se calcula nada nuevo. Lleva las cuatro líneas del 3 de enero.",
+    apoyo: "Mayorizar es pasar cada valor del diario a su cuenta del mayor: lo del debe al debe y lo del haber al haber. No se calcula nada nuevo.",
     razon: "Lleva las cuatro líneas a su T.",
     pista: "Pista: mira en qué columna del diario está el valor.",
     porque: "Cambiaste la columna. Mayorizar no elige el lado: lo copia tal cual del diario.",
@@ -379,6 +395,8 @@ export const P5_TEXTOS = {
   cierre: {
     titular: "¿En qué libro se registra primero un hecho?",
     apoyo: "En el diario. Es el registro de los asientos originales, en orden de fecha. El mayor viene después y ordena esos datos por cuenta.",
+    /* Lote B: el pie del cierre, de Near (c-t2-10-near-textos.md §1). */
+    pie: "Basado en el libro, pp. 96 y 98-101.",
   },
 };
 

@@ -2,11 +2,11 @@ import { FAE } from "../../../../theme.js";
 import { HAZ_INICIAL, hazResuelto, mostrarCorrecto } from "../../../secuencia/secuencia.js";
 import { useNumeroQueSube } from "../verbos.jsx";
 import { CALEJA } from "../../../../data/contabilidad.js";
-import { PIEZA_DEBE_Y_HABER } from "../../../../data/contabilidadDebeHaber.js";
+import { PIEZA_DEBE_Y_HABER, transaccionDelEjemploDos } from "../../../../data/contabilidadDebeHaber.js";
 import { P3_ID, P3_OBJETIVO, P3_TEXTOS as T, P3_ALTO_FIGURA } from "../../../../data/contabilidadT2Secuencia.js";
 import {
   BLANCO, LINEA, CONTORNO, SUAVE, pesos, suma, Raiz, Encabezado, Cifra, Lado, Control, Fila,
-  responder, leerHaz, marcaDe, colaInicial, colaResuelta, fichaActual, responderCola, marcaDestino,
+  responder, leerHaz, marcaDe, useBarajado, enOrden, colaInicial, colaResuelta, fichaActual, responderCola, marcaDestino,
 } from "./secuenciaComun.jsx";
 
 /*
@@ -16,7 +16,7 @@ import {
  * Forma: c-t2-3-watari-figuras.md §3 (9 pantallas), con el delta T2-7
  * (altoFigura 180 a 320 y 173 a 375; las tres opciones de la pantalla 7 sin
  * pastilla dentro). Objeto propio: la mesa de dos casos. Datos: cal-3 y cal-6
- * de CALEJA («Basado en el libro»), el pagaré cu6 (p. 89) y las cuatro
+ * de CALEJA («Basado en el libro»), el pagaré cu6-pagare (p. 89) y las cuatro
  * cuentas de la exploración (pp. 90, 93 y 113).
  * ═══════════════════════════════════════════════════════════════════════════
  */
@@ -96,7 +96,7 @@ function FiguraEfectos({ estado, setEstado }) {
   return (
     <Raiz>
       <Mesa registrado={registrado} />
-      {/* [ESCRITO POR CLAUDE, NO POR LA FICHA] PENDIENTE_DE_REVISION: el texto de este control. */}
+      {/* «Registrar»: lo aprobó Mello en T2-9 (el verbo del libro, y dice qué pasa). */}
       <Fila style={{ marginTop: "10px" }}><Control onClick={() => setEstado({ registrado: true })} disabled={registrado}>Registrar</Control></Fila>
     </Raiz>
   );
@@ -150,11 +150,22 @@ function FiguraDondeVive({ estado, setEstado }) {
 
 /* ─────────────── 4 · Haz calificado: la trampa del préstamo ─────────────── */
 
-const PRESTAMO = { cajaAntes: 1000, monto: 500 };
+/*
+ * El préstamo de los datos (Mello T2-9, S10): el monto es el pagaré cu6-pagare
+ * (p. 89), y la Caja de antes es el saldo inicial de Caja en la exploración
+ * (p. 90, que ya trae el pagaré) menos ese pagaré.
+ */
+const PAGARE = transaccionDelEjemploDos();
+const PRESTAMO_MONTO = PAGARE.asiento.debe.find(([c]) => c === "Caja")[1];
+const PRESTAMO = {
+  monto: PRESTAMO_MONTO,
+  cajaAntes: PIEZA_DEBE_Y_HABER.exploracion.cuentas.find((c) => c.cuenta === "Caja").saldoInicial - PRESTAMO_MONTO,
+};
 
 function FiguraTrampa({ estado, setEstado }) {
   const { e, resuelto, verdad, error } = leerHaz(estado);
   const [gano, deuda] = T.trampa.opciones;
+  const orden = useBarajado(estado, setEstado, 2);
   return (
     <Raiz>
       <div style={{ display: "flex", gap: "10px" }}>
@@ -164,7 +175,7 @@ function FiguraTrampa({ estado, setEstado }) {
         </MesaT>
       </div>
       <Fila style={{ marginTop: "10px" }}>
-        {[gano, deuda].map((op) => (
+        {enOrden([gano, deuda], orden).map((op) => (
           <Control key={op} chico onClick={() => { if (!resuelto) responder(setEstado, op === deuda, op); }} elegido={e.eleccion === op} marca={marcaDe(e, op, deuda)}>{op}</Control>
         ))}
       </Fila>
@@ -174,7 +185,8 @@ function FiguraTrampa({ estado, setEstado }) {
 
 /* ─────────────── 5 · Míralo: una ficha de $100 en Gastos y otra en Ingresos ─────────────── */
 
-const FICHA_100 = 100;
+/* La ficha de $100: la primera de las fichas de «Prueba tú» (Mello T2-9, S10). */
+const FICHA_100 = T.pruebaTu.fichas[0];
 
 function FiguraGastosIngresos({ estado, setEstado }) {
   const sueltas = estado?.sueltas ?? [];
@@ -228,7 +240,7 @@ function FiguraPruebaTu({ estado, setEstado }) {
         {T.pruebaTu.fichas.map((f) => (
           <Control key={f} chico onClick={() => setEstado({ ...s, ficha: f })} elegido={s.ficha === f} style={{ padding: "0 2px", fontSize: "12px" }}>{pesos(f)}</Control>
         ))}
-        {/* [ESCRITO POR CLAUDE, NO POR LA FICHA] PENDIENTE_DE_REVISION: el texto de este control. */}
+        {/* «Debe» y «Haber», y las fichas: los aprobó Mello en T2-9 (el destino de la ficha, en neutro). */}
         <Control chico onClick={() => soltar("debe")} style={{ padding: "0 2px", fontSize: "12px" }}>Debe</Control>
         <Control chico onClick={() => soltar("haber")} style={{ padding: "0 2px", fontSize: "12px" }}>Haber</Control>
       </Fila>
@@ -249,11 +261,12 @@ function MesaEnLinea() {
 function FiguraPorQue({ estado, setEstado }) {
   const { e, resuelto } = leerHaz(estado);
   const buena = T.porQue.opciones[T.porQue.correcta];
+  const orden = useBarajado(estado, setEstado, T.porQue.opciones.length);
   return (
     <Raiz>
       <MesaEnLinea />
       <div style={{ display: "flex", flexDirection: "column", gap: "4px", marginTop: "6px" }}>
-        {T.porQue.opciones.map((op) => (
+        {enOrden(T.porQue.opciones, orden).map((op) => (
           <Control key={op} chico onClick={() => { if (!resuelto) responder(setEstado, op === buena, op); }} elegido={e.eleccion === op} marca={marcaDe(e, op, buena)}
             style={{ flex: "none", width: "100%", borderRadius: "12px", textAlign: "left", justifyContent: "flex-start" }}>{op}</Control>
         ))}
@@ -271,6 +284,13 @@ function FiguraCierre() {
 /* ─────────────── la pieza ─────────────── */
 
 const devolucionDe = (t) => () => ({ pista: t.pista, porque: t.porque, consecuencia: t.consecuencia ?? null });
+
+/* P3·7: un porqué por opción mala (Mello T2-9, S6): «a la derecha» no es la misma confusión que «en el haber». */
+const devolucionPorQue = (estado) => ({
+  pista: T.porQue.pista,
+  porque: estado?.eleccion === T.porQue.opciones[0] ? T.porQue.porqueDerecha : T.porQue.porque,
+  consecuencia: null,
+});
 
 /* P3·3: la frase de consecuencia es la de Maquinaria (Watari T2-7); Aportes sociales no trae la suya. */
 const devolucionDondeVive = (estado) => ({
@@ -306,8 +326,8 @@ export const PIEZA_P3 = {
     {
       id: "por-que", tipo: "haz", titular: T.porQue.titular, apoyo: T.porQue.apoyo, razon: T.porQue.razon,
       Figura: FiguraPorQue, nombreFigura: "Los saldos finales de Maquinaria y de Aportes sociales", estadoInicial: HAZ_INICIAL, resuelta: hazResuelto,
-      devolucion: devolucionDe(T.porQue), opciones: T.porQue.opciones, buena: T.porQue.opciones[T.porQue.correcta],
+      devolucion: devolucionPorQue, opciones: T.porQue.opciones, buena: T.porQue.opciones[T.porQue.correcta],
     },
-    { id: "cierre", tipo: "cierre", titular: T.cierre.titular, apoyo: T.cierre.apoyo, Figura: FiguraCierre, nombreFigura: "La mesa final de Maquinaria y Aportes sociales" },
+    { id: "cierre", tipo: "cierre", titular: T.cierre.titular, apoyo: T.cierre.apoyo, Figura: FiguraCierre, nombreFigura: "La mesa final de Maquinaria y Aportes sociales", ...(T.cierre.pie ? { razon: T.cierre.pie } : {}) },
   ],
 };
