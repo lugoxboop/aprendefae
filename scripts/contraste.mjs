@@ -27,8 +27,7 @@
  *   node scripts/contraste.mjs "Introducción a la contabilidad"
  * ═══════════════════════════════════════════════════════════════════════════
  */
-import pkg from "/opt/npm-tools/node_modules/playwright-core/index.js";
-const { chromium } = pkg;
+import { chromium } from "./sondas/navegador.mjs";
 
 const TEMA = process.argv[2] ?? "Introducción a la contabilidad";
 const ANCHO = Number((process.argv[3] && !process.argv[3].startsWith("--")) ? process.argv[3] : 320);
@@ -116,7 +115,8 @@ const AVANCE = 'button:visible:has-text("Siguiente"), button:visible:has-text("S
 const b = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium" });
 const p = await b.newPage({ viewport: { width: ANCHO, height: 1400 } });
 await p.goto(RAIZ, { waitUntil: "networkidle" });
-for (const paso of ["Contabilidad", TEMA]) {
+/* La materia por defecto es Contabilidad; MATERIA="Pensamiento Estratégico" o "Macroeconomía" mide las otras. */
+for (const paso of [process.env.MATERIA ?? "Contabilidad", TEMA]) {
   await p.locator(`button:visible:has-text("${paso}")`).first().click({ timeout: 9000 });
   await p.waitForTimeout(650);
 }
@@ -134,6 +134,7 @@ for (const paso of ["Contabilidad", TEMA]) {
  */
 const HACER = process.argv.includes("--hacer") || process.argv.includes("--partidas");
 const PARTIDAS = process.argv.includes("--partidas");
+let unaPagina = false;
 const entro = await (async () => {
   for (const rotulo of HACER ? ["Los juegos que dan FP", "Hacer"] : ["El material que explica", "Aprender"]) {
     const puerta = p.locator(`button:visible:has-text("${rotulo}")`);
@@ -145,9 +146,15 @@ const entro = await (async () => {
      * botón de avanzar; en Hacer se cae en el camino, que no tiene ninguno y
      * sí tiene los nodos de las actividades.
      */
+    /*
+     * Y hay Aprender de una sola página, sin botón de avanzar: los de
+     * Pensamiento Estratégico (Inmersión, el video). Ahí haber entrado se ve en
+     * la insignia de la actividad, y esa página única se mide entera.
+     */
+    unaPagina = !HACER && (await p.locator(AVANCE).count()) === 0 && (await p.locator(".fae-insignia-actividad").count()) > 0;
     const dentro = HACER
       ? (await p.locator("[data-nodo], .fae-ch-estrecho").count()) > 0
-      : (await p.locator(AVANCE).count()) > 0;
+      : (await p.locator(AVANCE).count()) > 0 || unaPagina;
     if (dentro) return rotulo;
   }
   return null;
@@ -204,6 +211,8 @@ if (HACER && PARTIDAS) {
 }
 for (let i = 0; i < (HACER ? 1 : 30); i++) {
   pantallas++;
+  /* Una página larga sin avance: se mide de arriba abajo, no solo lo que cabe en la ventana. */
+  if (unaPagina) await p.setViewportSize({ width: ANCHO, height: Math.min(12000, await p.evaluate(() => document.documentElement.scrollHeight)) });
   const tanda = await p.evaluate(MEDIR);
   for (const m of tanda.malos) {
     const clave = `${m.r}|${m.px}|${m.texto}`;
@@ -228,7 +237,7 @@ console.log(`\n${malos.length} texto(s) por debajo del contraste que pide su tam
  * justo el error que esta casa tiene escrito con nombre: no medido no es lo
  * mismo que limpio.
  */
-if (pantallas <= 1 && !HACER) {
+if (pantallas <= 1 && !HACER && !unaPagina) {
   console.log("NO MEDIDO: solo llegué a 1 pantalla, así que este cero no vale. Mira si el tema abre con otro rótulo.");
   process.exit(2);
 }
