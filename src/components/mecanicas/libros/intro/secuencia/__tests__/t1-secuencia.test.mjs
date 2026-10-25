@@ -8,7 +8,7 @@ import { JSDOM, VirtualConsole } from "jsdom";
  *
  * La forma de cada pieza (faltasDePieza de Erwin), la R10 de la predicción
  * (la vía sin nodos), las paradas con su C2 (pista al 1.er error, el estado
- * correcto al 2.º) y que lo publicado siga detrás de la bandera.
+ * correcto al 2.º) y que lo publicado siga detrás de la bandera contraria.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -166,10 +166,11 @@ test("★★★ Ocho leen lo mismo: dos pasos de cuatro, mezclados, sin rótulos
   } finally { m.desmontar(); }
 });
 
-test("★★ la bandera: sin ?aprender=secuencia, el estudiante sigue viendo las cuatro capas", () => {
-  assert.equal(secuenciaActiva(""), false);
-  assert.equal(secuenciaActiva("?aprender=otra"), false);
+test("★★ la bandera: la secuencia por defecto; ?aprender=capas devuelve las cuatro capas", () => {
+  assert.equal(secuenciaActiva(""), true);
+  assert.equal(secuenciaActiva("?aprender=otra"), true);
   assert.equal(secuenciaActiva("?aprender=secuencia"), true);
+  assert.equal(secuenciaActiva("?aprender=capas"), false);
 });
 
 test("★★ la secuencia monta las piezas y dice «Pieza 1 de N»", () => {
