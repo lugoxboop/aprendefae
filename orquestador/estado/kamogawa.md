@@ -1,4 +1,4 @@
-2026-10-25 06:56 (hora Bogotá)
+2026-10-25 07:10 (hora Bogotá)
 - Vara nueva (24-oct): Mateo no da vistos buenos; se fusiona con PASA del auditor y CI verde. Las 6 correcciones de Takamura a contenido aprobado de T3 las decidió Kamogawa (se aplican); deja de haber BLOQUEADO-MATEO: terminado
 - r5 cerrado (r5-1 a r5-5 en Avanzado; tema oculto hasta el próximo semestre): terminado
 - T3 lote 1 (hilo de Aprender, Hacer nuevos, línea base, lenguaje visual), PR #484: terminado (fusionado)
@@ -13,8 +13,8 @@
 - Capítulo 4 del libro: terminado (Mateo se lo pasó directo a Miyata; #468 cerrado)
 - T3 lote 5: mapa del cap. 4 (Miyata) con PASA con correcciones de Takamura, fusionado (#527): terminado. C2 decidido: «Del resultado a la caja» A usa las cifras de P5 (3.950 → 14.650)
 - T3 lote 6: Takamura auditó el contenido: P2 PASA con condiciones, «Del resultado a la caja» v3 PASA con condiciones, P6 NO PASA hasta C5. Itagaki entregó la secuencia v2 a 150/200 px (en auditoría). Lo que el componente necesita está en #534 para Erwin: terminado
-- P2 y P6 en secuencia: #586 fusionado. Las últimas condiciones de encendido de las seis piezas están en #602 (Las Acacias, D11, utilidad tapada, punteado, P1-7 vigilado, Repaso; CI verde); Takamura lo audita en el lote 22. Después solo faltan #576 (Erwin) y la prueba con un estudiante: en curso
+- T3, las seis piezas de Aprender en secuencia: construidas y con TODAS las condiciones de encendido cerradas por Takamura (#602 fusionado). La bandera sigue apagada hasta que entre #600 de Erwin (los pasos después de un Haz, que llevan las citas de P3, P4 y P5, y el Repaso); luego Takamura verifica y yo la enciendo: en curso
 - T3 secuencias: la v2 de Itagaki cumple en diseño (D5, D4, E8). Decidí S3: las preguntas «En una frase» pasan al Repaso Diario. P5-2 queda en 5 pasos (MAX_PASOS). Itagaki hace la v3 y Miyata los textos (37 titulares, opciones y pistas): en curso
 - Regla j (leer una vez, exprimir y dejarlo en el repo): pasada a los cuatro agentes: terminado
 
-- Volumen en las TRES materias: #601 y #604 (delta de Itagaki y deuda del estándar) fusionados con PASA. Ippo construye H7 (toques de 44, letra de 12; hoy los estudiantes ven 40 y 10) y luego la matriz de GP, en feat/conta-e3-volumen-2: en curso
+- Volumen: PARADO por orden de Miku (25-oct). El encargo era el camino de nodos y pasa entero a Erwin. #601 se queda en main; volumen-2 no se fusiona como volumen: terminado
