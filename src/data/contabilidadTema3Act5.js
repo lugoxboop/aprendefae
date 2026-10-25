@@ -135,7 +135,7 @@ export const ITEMS_ACT5 = [
     haber: "Arriendos pagados por anticipado",
     anclajes: { "Gasto arriendos": "cierra el 30 de junio", "Arriendos pagados por anticipado": "pagado el 1 de junio" },
     acierto: null,
-    pie: "Libro, pp. 143-144",
+    pie: "Basado en el libro, p. 144",
   },
   {
     id: "t3a5-arriendo-costa",

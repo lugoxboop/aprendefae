@@ -116,7 +116,7 @@ test("★★★ los textos de Gen, textuales: consigna, pasos, hechos, pies, aci
     ["Mónica Galindo", "Seguro de cinco años por $480.000, comprado el 1 de marzo. Cierra el 31 de diciembre.", "Basado en el libro, p. 173", "Pasaron 10 de 60 meses. Al periodo le toca $80.000 y quedan $400.000 de seguro por usar."],
     ["Mónica Galindo", "Alquiler de equipos por $1.080.000, pagado el 1 de agosto por seis meses. Cierra el 31 de diciembre.", "Basado en el libro, p. 173", "Pasaron 5 de 6 meses. Al periodo le toca $900.000 y queda un mes sin usar."],
     ["Mónica Galindo", "Arriendo recibido por un año a $160.000 al mes, desde el 1 de junio. Cierra el 31 de diciembre.", "Basado en el libro, p. 173", "Pasaron 7 de 12 meses. Al periodo le toca $1.120.000 y quedan $800.000 por cumplir."],
-    ["San Calixto", "Arriendo de $15.000 pagado el 1 de junio por tres meses. Cierra el 30 de junio.", "Libro, pp. 143-144", "Pasó 1 de 3 meses. Al periodo le toca $5.000 y quedan $10.000 de local por usar."],
+    ["San Calixto", "Arriendo de $15.000 pagado el 1 de junio por tres meses. Cierra el 30 de junio.", "Basado en el libro, p. 144", "Pasó 1 de 3 meses. Al periodo le toca $5.000 y quedan $10.000 de local por usar."],
     ["Arriendos de la Costa", "Arriendo de $15.000 recibido el 1 de junio por tres meses. Cierra el 30 de junio.", "Libro, p. 146", "Pasó 1 de 3 meses. Al periodo le toca $5.000 y quedan $10.000 por cumplir."],
   ]);
   assert.deepEqual(ERROR_POR_CASO, {

@@ -96,7 +96,7 @@ export const PARES_ACT3 = [
     titulo: "El arriendo",
     hecho: "San Calixto le pagó a Arriendos de la Costa tres meses de local por anticipado. Al cerrar junio ya usó un mes: $5.000.",
     monto: 5000,
-    pie: "Libro, pp. 143-144 y 146",
+    pie: "Basado en el libro, pp. 144 y 146",
     empresas: [
       empresa("san-calixto", "San Calixto", "Gasto arriendos", "Arriendos pagados por anticipado",
         ["Arriendos recibidos por anticipado", "Ingresos por arriendos", "Arriendos por pagar"], "Arriendos por pagar"),

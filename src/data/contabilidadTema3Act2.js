@@ -76,7 +76,7 @@ export const ITEMS_ACT2 = [
      * antes de esa fecha», y aquí la máquina también se usó el 31. Este ítem
      * lleva el suyo (Kamogawa, #506).
      */
-    errores: { [CIERRE]: "El cierre cae el 31, pero el gasto venía causándose desde el 27, con cada día de uso. El cierre solo revisa lo que falta anotar." },
+    errores: { [CIERRE]: "El cierre cae el 31, pero ese día no causa el gasto. El cierre solo revisa lo que falta anotar." },
     acierto: "Cada día de uso iba causando el gasto. Los cinco días son de enero, aunque la plata salga en febrero.",
   },
   {
