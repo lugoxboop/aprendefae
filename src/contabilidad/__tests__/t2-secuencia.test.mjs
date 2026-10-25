@@ -15,9 +15,13 @@ import { JSDOM, VirtualConsole } from "jsdom";
  *   ★ cada Haz calificado: ✕ con borde de 2 px y «no va aquí» en el nombre
  *     accesible y la pista al primer error; lo correcto con su porqué al
  *     segundo; ✓ y «correcto» con el acierto; «Siguiente» se libera;
- *   ★ <Veredicto /> no va dentro de la figura (hasta #536);
- *   ★ la bandera: apagada, la vista pinta EXACTAMENTE lo mismo que sin el
- *     cambio; encendida, la secuencia de las cinco y no CuatroCapas;
+ *   ★ la devolución va en la BANDA bajo la figura (#536, #590): un solo
+ *     <Veredicto />, fuera de la figura, en el sitio del apoyo; consecuencia
+ *     y pista al primer error, solo el porqué al segundo, solo la palabra con
+ *     el acierto; el pie de los cinco cierres, visible;
+ *   ★ la bandera: ENCENDIDA (T2-13), Aprender es la secuencia de las cinco y
+ *     no CuatroCapas; la página vieja sigue en el código, y con la bandera
+ *     apagada la vista pinta EXACTAMENTE lo mismo que sin el cambio;
  *   ✖ ROJO HONESTO: lo que sigue faltando de Near, nombrado. No se marca todo
  *     ni skip.
  * ═══════════════════════════════════════════════════════════════════════════
@@ -114,10 +118,12 @@ for (const [n, pieza] of PIEZAS_SECUENCIA_T2.entries()) {
     assert.deepEqual(pieza.pantallas.map((p) => Boolean(p.prediccion)), pred);
   });
 
-  test(`★ ${P}: altoFigura es el medido por Watari T2-7, bajo el tope`, () => {
+  test(`★ ${P}: altoFigura es el medido por Watari T2-7 (o el que fijó L en T2-13), bajo el tope`, () => {
     const m = WATARI7.match(new RegExp(`\`${pieza.id}\`[^\\n]*\`altoFigura: \\{ a320: (\\d+), a375: (\\d+) \\}\``));
     assert.ok(m, `no encontré el altoFigura de ${pieza.id} en el paquete de Watari`);
-    assert.deepEqual(pieza.altoFigura, { a320: Number(m[1]), a375: Number(m[2]) });
+    /* L, T2-13 (#471): P2 sube al alto medido de P2·7 con fichas en error. */
+    const DECIDIDO_POR_L = { "cu-a2-dos-familias": { a320: 200, a375: 185 } };
+    assert.deepEqual(pieza.altoFigura, DECIDIDO_POR_L[pieza.id] ?? { a320: Number(m[1]), a375: Number(m[2]) });
     assert.ok(pieza.altoFigura.a320 <= D.TOPE_ALTO_FIGURA.a320 && pieza.altoFigura.a375 <= D.TOPE_ALTO_FIGURA.a375);
   });
 
@@ -153,6 +159,12 @@ for (const [n, pieza] of PIEZAS_SECUENCIA_T2.entries()) {
   });
 }
 
+/* Los textos de la devolución de un Haz, por caso: pista y consecuencia al primer error, porqué al segundo. */
+const textosDe = (p, caso) => ({
+  ...p.devolucion({ ...S.HAZ_INICIAL, ...caso, intentos: 1, ultimo: "error" }),
+  porque: p.devolucion({ ...S.HAZ_INICIAL, ...caso, intentos: 2, ultimo: "error" }).porque,
+});
+
 test("★ opciones, pistas, devoluciones, consecuencias y frases de cierre: letra por letra contra los paquetes", () => {
   const enNear = (t, donde) => assert.ok(TODO_NEAR.includes(t), `${donde}: «${t}» no está en los paquetes de Near`);
   const conConsecuencia = new Set();
@@ -173,7 +185,7 @@ test("★ opciones, pistas, devoluciones, consecuencias y frases de cierre: letr
       /* Cada ficha u opción en error: su pista, su porqué y su consecuencia. */
       const casos = p.fichas ? p.fichas.map((_, i) => ({ item: i, eleccion: null })) : (p.opciones ?? []).filter((o) => o !== p.buena).map((o) => ({ eleccion: o }));
       for (const caso of casos) {
-        const d = p.devolucion({ ...S.HAZ_INICIAL, ...caso });
+        const d = textosDe(p, caso);
         if (d.pista !== null) enNear(d.pista, `${donde} pista`);
         const plantilla = d.porque.replace(/^(Bancos|Maquinaria|Obligaciones financieras|Ingresos por servicios|Gastos de administración y ventas|Costo de ventas)(?= (es real|mide))/, "{Cuenta}").replace(/^(Pasivos|Patrimonio|Ingresos)(?= vive a la derecha)/, "{Familia}");
         /* P3·7 «…vive a la derecha»: su porqué es el de Mello T2-9 (S6), no uno de Near. */
@@ -239,6 +251,27 @@ function marcaEs(b, marca, nombre) {
   assert.ok(b.querySelector("svg[aria-hidden='true'] path"), `«${nombre}»: el ícono ✓/✕ (forma, no solo color)`);
 }
 
+/*
+ * La banda (#590): un solo <Veredicto /> en toda la pantalla, fuera de la
+ * figura y después de ella, dentro de [data-devolucion]; el apoyo se retira.
+ */
+function bandaEs(m, palabra, { dice = [], calla = [] } = {}) {
+  const veredictos = m.caja.querySelectorAll("[data-mensaje]");
+  assert.equal(veredictos.length, 1, "un solo veredicto en la pantalla");
+  assert.equal(veredictos[0].closest("figure"), null, "el veredicto no va dentro de la figura");
+  const bandas = m.caja.querySelectorAll("[data-devolucion]");
+  assert.equal(bandas.length, 1, "una sola banda de devolución");
+  const banda = bandas[0];
+  assert.ok(banda.contains(veredictos[0]), "el veredicto va en la banda");
+  assert.equal(banda.closest("figure"), null, "la banda va fuera de la figura");
+  assert.ok(m.caja.querySelector("figure").compareDocumentPosition(banda) & w.Node.DOCUMENT_POSITION_FOLLOWING, "la banda va bajo la figura");
+  assert.equal(m.caja.querySelector("[data-apoyo]"), null, "con la devolución, el apoyo se retira");
+  assert.match(veredictos[0].textContent, new RegExp(palabra));
+  for (const t of dice) assert.ok(banda.textContent.includes(t), `la banda dice «${t}»`);
+  for (const t of calla) assert.ok(!banda.textContent.includes(t), `la banda ya no dice «${t}»`);
+  return banda;
+}
+
 /* Los Haz calificados: [pieza, pantalla]. */
 const HAZ = PIEZAS_SECUENCIA_T2.flatMap((pz, p) => pz.pantallas.filter((x) => x.tipo === "haz" && !x.prediccion).map((x) => [p, x]));
 const etiquetaDestino = (d) => d.replace("|", ", ");
@@ -272,11 +305,15 @@ for (const [p, x] of HAZ) {
       if (D.PENDIENTES_T2.some((f) => f.donde.startsWith(`${P} `) && /pista/.test(f.que))) assert.equal(uno.pista, null);
       else assert.ok(uno.pista, `primer error: la pista (${P})`);
       assert.equal(m.siguiente().getAttribute("aria-disabled"), "true", "primer error: «Siguiente» sigue esperando");
-      assert.equal(m.caja.querySelector("figure [data-mensaje]"), null, "<Veredicto /> no va dentro de la figura (#536)");
+      assert.ok(m.caja.querySelector("[data-apoyo]") === null, "primer error: el apoyo deja la banda");
+      bandaEs(m, "No va aquí", { dice: [uno.pista, uno.consecuencia].filter(Boolean) });
+      assert.equal(m.caja.querySelector("[data-consecuencia]")?.textContent ?? null, uno.consecuencia ?? null, "primer error: la consecuencia, si la hay");
       await m.clic(mala);
       const dos = mensajeDe(x, m.estado());
       assert.ok(dos.porque, "segundo error: el porqué");
       assert.equal(dos.pista, undefined, "segundo error: la pista se va");
+      bandaEs(m, "No va aquí", { dice: [dos.porque], calla: [uno.pista, uno.consecuencia].filter(Boolean) });
+      assert.equal(m.caja.querySelector("[data-consecuencia]"), null, "segundo error: sin consecuencia");
       marcaEs(m.boton(mala), "mal", mala);
       marcaEs(m.boton(buena), "verdad", buena);
       /* Varias fichas: las demás se colocan bien y entonces se libera. */
@@ -287,6 +324,7 @@ for (const [p, x] of HAZ) {
       assert.equal(m.siguiente().getAttribute("aria-disabled"), null, "«Siguiente» se libera");
       assert.equal(m.siguiente().textContent, "Siguiente");
       assert.equal(m.caja.querySelector("figure [data-mensaje]"), null);
+      assert.ok(m.caja.querySelectorAll("[data-mensaje]").length <= 1);
     } finally { await m.desmontar(); }
   });
 
@@ -298,6 +336,8 @@ for (const [p, x] of HAZ) {
         await m.clic(buena);
         marcaEs(m.boton(buena), "bien", buena);
         assert.deepEqual(mensajeDe(x, m.estado()), { palabra: "Correcto" });
+        bandaEs(m, "Correcto");
+        assert.equal(m.caja.querySelector("[data-consecuencia]"), null, "el acierto no lleva consecuencia");
       }
       assert.equal(m.siguiente().getAttribute("aria-disabled"), null);
     } finally { await m.desmontar(); }
@@ -460,6 +500,19 @@ test("★ lote B · el pie «Basado en el libro…» de Near va en la razón de 
   }
 });
 
+test("★ lote B · el pie se VE en los cinco cierres: la cáscara lo pinta en la zona de razón (#590)", async () => {
+  for (const [n, pieza] of PIEZAS_SECUENCIA_T2.entries()) {
+    const m = await montarEn(n, "cierre");
+    try {
+      const pie = D[`P${n + 1}_TEXTOS`].cierre.pie;
+      /* P1 tiene un paso: antes de darlo, la zona dice «Paso 1 de 1»; se da y sale el pie. */
+      if ((pieza.pantallas.at(-1).pasos | 0) > 0) await act(async () => { m.siguiente().dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
+      assert.equal(m.caja.querySelector("[data-razon]").textContent, pie, `P${n + 1}: el pie en la zona de razón`);
+      assert.equal(m.caja.querySelector("[data-razon]").closest("figure"), null);
+    } finally { await m.desmontar(); }
+  }
+});
+
 test("★ P1: las cifras de Caja salen de DE_QUE_ESTA_HECHA.ejemplo, y las del cierre, de contabilidadT2Secuencia.js", async () => {
   const { DE_QUE_ESTA_HECHA } = await import("../../data/contabilidadAprender.js");
   const ej = DE_QUE_ESTA_HECHA.ejemplo;
@@ -592,37 +645,45 @@ async function pintarVista(fuente, nombre, modo) {
   } finally { rmSync(ruta, { force: true }); }
 }
 
-test("★ la bandera está APAGADA por defecto y vive en los datos de la célula", () => {
-  assert.equal(D.T2_APRENDER_EN_SECUENCIA, false, "producción no cambia hasta que L la encienda");
-  assert.match(readFileSync("src/data/contabilidadT2Secuencia.js", "utf8"), /^export const T2_APRENDER_EN_SECUENCIA = false;$/m, "se deshace en una línea");
+test("★ la bandera está ENCENDIDA (L, T2-13) y vive en los datos de la célula", () => {
+  assert.equal(D.T2_APRENDER_EN_SECUENCIA, true, "Aprender de T2 es la secuencia");
+  assert.match(readFileSync("src/data/contabilidadT2Secuencia.js", "utf8"), /^export const T2_APRENDER_EN_SECUENCIA = true;$/m, "se deshace en una línea");
 });
 
-test("★ con la bandera apagada, la vista pinta EXACTAMENTE lo que pinta sin el cambio (Aprender y Hacer)", async () => {
+/* La vista con la bandera apagada a mano: lo que pinta producción si L la vuelve a apagar. */
+const APAGADA = variante(VISTA, [["{esAprender && T2_APRENDER_EN_SECUENCIA ? (", "{esAprender && false ? ("]]);
+
+test("★ la página vieja sigue en el código: con la bandera apagada, la vista pinta EXACTAMENTE lo que pinta sin el cambio (Aprender y Hacer)", async () => {
+  assert.ok(/<CuatroCapas pieza=\{pieza\}/.test(VISTA) && /PIEZAS_APRENDER\.map\(/.test(VISTA), "la página vieja no se borra");
   const sinCambio = variante(VISTA, QUITAR);
   assert.ok(!/SecuenciaAprender|T2_APRENDER_EN_SECUENCIA|NavigationContext/.test(sinCambio), "la receta deja restos del cambio");
   /* El fondo de la materia es perezoso (lazy): la primera pintura no lo trae. Se calienta antes de comparar. */
   await pintarVista(VISTA, "t2sec-calienta", "aprender");
   await new Promise((r) => setTimeout(r, 100));
   for (const modo of ["aprender", "hacer", null]) {
-    const ahora = await pintarVista(VISTA, `t2sec-ahora-${modo}`, modo);
+    const ahora = await pintarVista(APAGADA, `t2sec-ahora-${modo}`, modo);
     const antes = await pintarVista(sinCambio, `t2sec-antes-${modo}`, modo);
     assert.ok(ahora.length > 1000, `modo ${modo}: la vista no pintó nada`);
     const i = [...ahora].findIndex((c, k) => c !== antes[k]);
     assert.ok(ahora === antes, `modo ${modo}: la bandera apagada cambió lo que se pinta, desde el carácter ${i}:\n  ahora «${ahora.slice(Math.max(0, i - 80), i + 80)}»\n  antes «${antes.slice(Math.max(0, i - 80), i + 80)}»`);
   }
-  const aprender = await pintarVista(VISTA, "t2sec-ahora-ap", "aprender");
+  const aprender = await pintarVista(APAGADA, "t2sec-ahora-ap", "aprender");
   const { PIEZAS_APRENDER } = await import("../../data/contabilidadAprender.js");
   assert.equal((aprender.match(/<section data-pieza=/g) || []).length, PIEZAS_APRENDER.length, "todas las piezas viejas, en CuatroCapas");
   assert.ok(!aprender.includes("data-secuencia"));
 });
 
-test("★ con la bandera encendida, Aprender es la secuencia de las cinco y no CuatroCapas", async () => {
-  const encendida = variante(VISTA, [["{esAprender && T2_APRENDER_EN_SECUENCIA ? (", "{esAprender && true ? ("]]);
-  const html = await pintarVista(encendida, "t2sec-encendida", "aprender");
+test("★ con la bandera encendida (la vista tal cual), Aprender es la secuencia de las cinco y no CuatroCapas", async () => {
+  const html = await pintarVista(VISTA, "t2sec-encendida", "aprender");
   assert.ok(html.includes(`data-secuencia="${TEMA}"`));
   assert.ok(html.includes(`data-pieza="${IDS[0]}"`));
   assert.ok(html.includes("Pieza 1 de 5"));
   assert.equal((html.match(/<section data-pieza=/g) || []).length, 0);
+  assert.ok(!html.includes("EL LIBRO MAYOR · APRENDER"), "ni el rótulo de CuatroCapas");
+  /* Hacer no cambia con la bandera. */
+  for (const modo of ["hacer", null]) {
+    assert.equal(await pintarVista(VISTA, `t2sec-enc-${modo}`, modo), await pintarVista(APAGADA, `t2sec-apag-${modo}`, modo), `modo ${modo}: la bandera solo toca Aprender`);
+  }
 });
 
 /* ─────────────── ✖ ROJO HONESTO: lo que falta ─────────────── */
@@ -634,7 +695,7 @@ test("✖ PENDIENTE_DE_WATARI: lo que la figura medida todavía no resuelve", ()
 test("★ los tres textos de Near T2-8, letra por letra contra c-t2-8-near-textos.md", () => {
   /* P3·7: la pista del primer error, en la pieza jugada (no solo en el dato). */
   const porQue = PIEZAS_SECUENCIA_T2[2].pantallas.find((x) => x.id === "por-que");
-  const pistaP37 = porQue.devolucion({ ...S.HAZ_INICIAL, eleccion: porQue.opciones[0] }).pista;
+  const pistaP37 = textosDe(porQue, { eleccion: porQue.opciones[0] }).pista;
   assert.equal(pistaP37, TEXTO_NEAR8("P3·7"), "P3·7: la pista del primer error");
   assert.equal(D.P3_TEXTOS.porQue.pista, TEXTO_NEAR8("P3·7"));
   /* P2·5: el ejemplo de la tarjeta Ingresos (versión larga, decisión de L medida a 320). */
@@ -644,7 +705,7 @@ test("★ los tres textos de Near T2-8, letra por letra contra c-t2-8-near-texto
   const trampa = PIEZAS_SECUENCIA_T2[2].pantallas.find((x) => x.id === "la-trampa");
   assert.equal(PIEZAS_SECUENCIA_T2[2].pantallas.indexOf(trampa), 4, "la trampa es P3·4");
   const mala = trampa.opciones.find((o) => o !== trampa.buena);
-  assert.equal(trampa.devolucion({ ...S.HAZ_INICIAL, eleccion: mala }).porque, TEXTO_NEAR8("P3·4"), "P3·4: el porqué del 2.º error");
+  assert.equal(textosDe(trampa, { eleccion: mala }).porque, TEXTO_NEAR8("P3·4"), "P3·4: el porqué del 2.º error");
   assert.equal(D.P3_TEXTOS.trampa.porque, TEXTO_NEAR8("P3·4"));
 });
 
@@ -652,7 +713,7 @@ test("✖ PENDIENTE_DE_NEAR: lo que los paquetes todavía no traen", () => {
   const deNear = D.PENDIENTES_T2.filter((p) => p.de === "Near");
   /* Y lo que se ve en la pieza mientras tanto: P3·7 sin pista, P2·5 sin el ejemplo de Ingresos. */
   const porQue = PIEZAS_SECUENCIA_T2[2].pantallas.find((x) => x.id === "por-que");
-  const sinPista = porQue.devolucion({ ...S.HAZ_INICIAL, eleccion: porQue.opciones[0] }).pista === null;
+  const sinPista = textosDe(porQue, { eleccion: porQue.opciones[0] }).pista === null;
   const sinEjemplo = D.P2_TEXTOS.tresNominales.tarjetas.some((t) => !t.ejemplo);
   assert.deepEqual(deNear.map((p) => `${p.donde}: ${p.que}`), [], `Falta de Near${sinPista ? " — P3·7 juega sin pista al primer error" : ""}${sinEjemplo ? " — P2·5 abre Ingresos sin ejemplo" : ""}`);
   /* Vaciar la lista no basta: lo que se ve en la pieza tiene que haber llegado. */

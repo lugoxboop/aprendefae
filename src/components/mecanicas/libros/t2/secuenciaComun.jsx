@@ -18,8 +18,8 @@ import { barajar } from "../../../../utils/barajar.js";
  *
  * ═══════════ LA MARCA DEL CONTROL TOCADO (Watari T2-7) ═══════════
  *
- * La pastilla sale de la figura: la pinta <Veredicto />, y hasta #536 no
- * tiene sitio (ver contabilidadT2Secuencia.js, «La devolución»). El control
+ * La pastilla sale de la figura: la pinta <Veredicto /> la cáscara, en la
+ * banda bajo la figura (#536/#590; ver «La devolución», abajo). El control
  * tocado se queda con su ícono ✓ o ✕ (forma, no solo color), borde de 2 px y
  * la palabra en su nombre accesible: «{opción}, correcto» o «{opción}, no va
  * aquí». Al segundo error, el control bueno pasa a borde blanco con ✓.
@@ -231,7 +231,7 @@ export function marcaDe(estado, opcion, buena) {
  * líneas). Cada ficha lleva su propio Haz con responderHaz, y la pantalla se
  * resuelve cuando todas lo están: `resuelta: colaResuelta`, que es
  * hazResuelto aplicado a cada ficha. Arriba se copia el Haz de la última
- * ficha respondida (intentos, ok, ultimo), así <Veredicto /> y mensajeDe()
+ * ficha respondida (intentos, ok, ultimo), así <Veredicto /> y paraLaBanda()
  * leen el estado de esa ficha sin saber que hay varias.
  */
 export const colaInicial = (n) => ({ ...HAZ_INICIAL, cola: Array.from({ length: n }, () => HAZ_INICIAL), destinos: Array(n).fill(null), item: null, eleccion: null });
@@ -266,17 +266,33 @@ export function marcaDestino(estado, destino, buenoDe) {
   return null;
 }
 
-/* ═══════════ LA DEVOLUCIÓN, PARA LA BANDA DE #536 ═══════════
+/* ═══════════ LA DEVOLUCIÓN, EN LA BANDA DE #536 (#590) ═══════════
  *
- * Lo que <Veredicto /> y la frase de consecuencia dirían ahora mismo, como
- * datos. La figura no lo pinta (no cabe en su alto: Watari T2-7); la prueba lo
- * lee, y la banda de #536 lo pintará. `pantalla.devolucion(estado)` devuelve
- * { pista, porque, consecuencia } de la ficha o la opción en juego.
+ * La cáscara pinta la devolución en la banda bajo la figura, en el sitio del
+ * apoyo: la línea de consecuencia y <Veredicto /> («Correcto» / «No va aquí»,
+ * la pista al primer error y el porqué al mostrar la correcta). La figura NO
+ * pinta Veredicto propio; el control tocado se queda con su ✓ o ✕.
+ *
+ * `paraLaBanda(textos)` convierte los textos de un Haz —{ pista, porque,
+ * consecuencia } de la ficha u opción en juego— en la `devolucion(estado)`
+ * que espera #590, con lo que toca a cada estado: nada con el acierto (solo
+ * la palabra), consecuencia y pista al primer error, solo el porqué al
+ * segundo. La consecuencia no sale con el acierto ni con la correcta a la
+ * vista: diría algo que ya no es.
  */
-export function mensajeDe(pantalla, estado) {
+export const paraLaBanda = (textos) => (estado) => {
   if (!estado?.ultimo) return null;
+  if (estado.ultimo === "acierto") return { consecuencia: null, pista: null, porque: null };
+  const d = textos(estado) ?? {};
+  if (mostrarCorrecto(estado)) return { consecuencia: null, pista: null, porque: d.porque ?? null };
+  return { consecuencia: d.consecuencia ?? null, pista: d.pista ?? null, porque: null };
+};
+
+/** Lo que la banda dice ahora mismo, como datos (para las pruebas): la palabra y lo de `devolucion`. */
+export function mensajeDe(pantalla, estado) {
+  const d = pantalla.devolucion?.(estado);
+  if (!d) return null;
   if (estado.ultimo === "acierto") return { palabra: "Correcto" };
-  const d = pantalla.devolucion?.(estado) ?? {};
-  if (mostrarCorrecto(estado)) return { palabra: "No va aquí", porque: d.porque ?? null };
-  return { palabra: "No va aquí", consecuencia: d.consecuencia ?? null, pista: d.pista ?? null };
+  if (mostrarCorrecto(estado)) return { palabra: "No va aquí", porque: d.porque };
+  return { palabra: "No va aquí", consecuencia: d.consecuencia, pista: d.pista };
 }

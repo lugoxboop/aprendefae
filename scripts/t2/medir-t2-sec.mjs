@@ -5,13 +5,32 @@
  * como en scripts/t2/medir-t2-linea-base.mjs, con alcance = [data-secuencia].
  * El recorrido sale de las piezas mismas (PIEZAS_SECUENCIA_T2): cada Míralo se toca entero,
  * cada Haz se juega en error (dos errores) y en acierto, y cada figura se compara con su altoFigura.
- * Uso: PUERTO=8141 [FUENTES=dir] [PLAYWRIGHT=dir] [CHROMIUM=bin] \
- *      node --import ./scripts/cargador-jsx.mjs scripts/t2/medir-t2-sec.mjs [--json=salida.json]
+ * Uso: PUERTO=8141 [FUENTES=dir] [PLAYWRIGHT=dir] [CHROMIUM=bin] [ANCHOS=320,375] \
+ *      node --import ./scripts/cargador-jsx.mjs scripts/t2/medir-t2-sec.mjs [--json=salida.json] [--banda]
+ *
+ * --banda (lote T2-13, condición de Levi): cada Haz calificado, en cada estado
+ * (acierto; 1.er error con pista y 2.º con porqué, por CADA opción mala y por
+ * CADA ficha, para dar con el texto más largo real), mide la figura (el
+ * <figure>, con su hueco), la banda de devolución de #590 ([data-devolucion])
+ * y figura + banda (del borde de arriba de la figura al de abajo de la banda,
+ * con el margen entre las dos), frente al tope 206 a 320 y 253 a 375.
+ *
+ * --banda --ventana (L, T2-13, 25-oct: la condición que vale es §4 de
+ * aprender-secuencia-v1.md + E2/D10): los mismos estados, con clic REAL
+ * (Playwright desplaza al control si hace falta, como el dedo). En cada uno:
+ *   (1)(2) con la vista arriba, cuánto queda fuera: el fondo de lo último de
+ *       la pantalla ([data-razon]) menos el borde de arriba del bloque pegado
+ *       (sticky, ocupa su sitio en el flujo); y la cuenta de L, alto del
+ *       documento − ventana − bloque pegado. Qué zonas quedan fuera (figura,
+ *       primer control, banda, apoyo).
+ *   (3) en el punto donde quedó la vista tras tocar, si el control tocado y
+ *       la banda se ven juntos entre el borde de arriba y el bloque pegado.
  */
 import { createRequire } from "node:module";
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { PIEZAS_SECUENCIA_T2 } from "../../src/components/mecanicas/libros/t2/secuenciaT2.jsx";
+import { estadoInicial as estadoInicialSec } from "../../src/components/secuencia/secuencia.js";
 
 const require = createRequire(import.meta.url);
 const { chromium } = require(`${process.env.PLAYWRIGHT ?? "/opt/node-tools/node_modules"}/playwright`);
@@ -244,9 +263,164 @@ async function bloquePegado(nav, ancho, errores) {
   return out;
 }
 
+/* ── --banda: figura + banda de devolución por Haz y estado ── */
+const TOPE = { 320: 206, 375: 253 };
+const MEDIR_BANDA = () => {
+  const fig = document.querySelector(".fae-sec-figura");
+  const banda = document.querySelector("[data-devolucion]");
+  const apoyo = document.querySelector("[data-apoyo]");
+  const f = fig.getBoundingClientRect();
+  const b = banda?.getBoundingClientRect();
+  const viva = fig.querySelector(".fae-sec-figura-viva");
+  const contenido = Math.max(...[...viva.querySelectorAll("*")].map((e) => e.getBoundingClientRect().bottom), viva.getBoundingClientRect().bottom) - f.top;
+  return {
+    figura: Math.round(f.height * 10) / 10, contenido: Math.round(contenido * 10) / 10,
+    banda: b ? Math.round(b.height * 10) / 10 : null,
+    suma: b ? Math.round((b.bottom - f.top) * 10) / 10 : null,
+    conApoyo: apoyo ? Math.round((apoyo.getBoundingClientRect().bottom - f.top) * 10) / 10 : null,
+    veredictos: document.querySelectorAll("[data-mensaje]").length,
+    enFigura: fig.querySelectorAll("[data-mensaje]").length,
+    palabra: banda?.querySelector("[data-mensaje]")?.dataset.mensaje ?? null,
+    texto: banda ? banda.innerText.replace(/\s+/g, " ").trim() : null,
+  };
+};
+const VENTANA = process.argv.includes("--ventana");
+/* (1)(2): con la vista arriba. */
+const MEDIR_FUERA = () => {
+  const r = (q) => document.querySelector(q)?.getBoundingClientRect() ?? null;
+  const nav = r("[data-navegacion]");
+  const y0 = window.scrollY;
+  const borde = innerHeight - nav.height;
+  const fin = r("[data-razon]").bottom + y0;
+  const zonas = { figura: r(".fae-sec-figura"), "primer control": document.querySelector("figure button")?.getBoundingClientRect() ?? null, banda: r("[data-devolucion]"), apoyo: r("[data-apoyo]") };
+  return {
+    fuera: Math.max(0, Math.round((fin - borde) * 10) / 10),
+    cuentaL: document.documentElement.scrollHeight - innerHeight - Math.round(nav.height),
+    documento: document.documentElement.scrollHeight, nav: Math.round(nav.height),
+    zonasFuera: Object.entries(zonas).filter(([, z]) => z && z.bottom + y0 > borde + 0.5).map(([k]) => k),
+  };
+};
+/* (3): donde quedó la vista. `nombre`: el control tocado. */
+const MEDIR_JUNTOS = ([nombre, previo]) => {
+  const b = [...document.querySelectorAll("figure button")].find((x) => {
+    const a = x.getAttribute("aria-label");
+    return a ? [nombre, `${nombre}, no va aquí`, `${nombre}, correcto`].includes(a) : x.textContent.trim() === nombre;
+  });
+  const t = b ? b.getBoundingClientRect() : previo;
+  const d = document.querySelector("[data-devolucion]")?.getBoundingClientRect();
+  const borde = document.querySelector("[data-navegacion]").getBoundingClientRect().top;
+  if (!d || !t) return { juntos: false, sinBanda: !d };
+  const arriba = Math.min(t.top, d.top), abajo = Math.max(t.bottom, d.bottom);
+  return { juntos: arriba >= -0.5 && abajo <= borde + 0.5, tramo: Math.round((abajo - arriba) * 10) / 10, visible: Math.round(borde), y: Math.round(window.scrollY), tocadoSigue: Boolean(b) };
+};
+async function banda(nav, ancho, alto, errores) {
+  const filas = [];
+  const inicial = estadoInicialSec(PIEZAS_SECUENCIA_T2);
+  for (const [n, pieza] of PIEZAS_SECUENCIA_T2.entries()) {
+    for (const [s, pt] of pieza.pantallas.entries()) {
+      if (pt.tipo !== "haz" || pt.prediccion) continue;
+      const rotulo = `P${n + 1}·${s} ${pt.id}`;
+      /* Una visita nueva por recorrido, puesta en la pantalla. */
+      const visita = async (f) => {
+        const p = await nuevaPagina(nav, ancho, alto, errores, JSON.stringify({ v: 1, ...inicial, p: n, s }));
+        await p.goto(`${BASE}#/cuentas-debe-haber/aprender`, { waitUntil: "networkidle" });
+        await p.waitForSelector("[data-secuencia]", { timeout: 10000 });
+        await p.evaluate(() => document.fonts.ready); await p.waitForTimeout(500);
+        const tocar = async (nombre) => {
+          const i = await p.evaluate((x) => [...document.querySelectorAll("figure button")].findIndex((b) => {
+            const a = b.getAttribute("aria-label");
+            return a ? [x, `${x}, no va aquí`, `${x}, correcto`].includes(a) : b.textContent.trim() === x;
+          }), nombre);
+          if (i < 0) throw new Error(`${rotulo}: no encontré «${nombre}»`);
+          const loc = p.locator("figure button").nth(i);
+          if (VENTANA) {
+            await loc.scrollIntoViewIfNeeded();
+            const previo = await loc.evaluate((b) => { const x = b.getBoundingClientRect(); return { top: x.top, bottom: x.bottom }; });
+            await loc.click({ timeout: 2500 });
+            await p.waitForTimeout(700);
+            ultimo = await p.evaluate(MEDIR_JUNTOS, [nombre, previo]);
+          } else {
+            await loc.evaluate((b) => b.click());
+            await p.waitForTimeout(700);
+          }
+        };
+        let ultimo = null;
+        const medir = async (estado) => {
+          const fila = { pantalla: rotulo, estado, ...(await p.evaluate(MEDIR_BANDA)) };
+          if (VENTANA) {
+            const y = await p.evaluate(() => window.scrollY);
+            await p.evaluate(() => window.scrollTo(0, 0)); await p.waitForTimeout(200);
+            Object.assign(fila, await p.evaluate(MEDIR_FUERA), { tras: ultimo });
+            await p.evaluate((yy) => window.scrollTo(0, yy), y); await p.waitForTimeout(150);
+          }
+          filas.push(fila);
+        };
+        const orden = pt.fichas ? (await p.evaluate((c) => JSON.parse(sessionStorage.getItem("fae-secuencia:cuentas-debe-haber") || "{}").estados?.[c]?.orden ?? null, `${pieza.id}/${pt.id}`)) ?? [...pt.fichas.keys()] : null;
+        try { await f({ tocar, medir, orden }); } finally { await p.close(); }
+      };
+      if (pt.fichas) {
+        await visita(async ({ tocar, medir, orden }) => {
+          for (const i of orden) {
+            await tocar(etiqueta(pt.malaDe(i))); await medir(`error1 · ${pt.fichas[i]}`);
+            await tocar(etiqueta(pt.malaDe(i))); await medir(`error2 · ${pt.fichas[i]}`);
+          }
+        });
+        await visita(async ({ tocar, medir, orden }) => {
+          for (const i of orden) { await tocar(etiqueta(pt.buenoDe(i))); await medir(`acierto · ${pt.fichas[i]}`); }
+        });
+      } else {
+        for (const mala of pt.opciones.filter((o) => o !== pt.buena)) {
+          await visita(async ({ tocar, medir }) => {
+            await tocar(mala); await medir(`error1 · «${mala}»`);
+            await tocar(mala); await medir(`error2 · «${mala}»`);
+          });
+        }
+        await visita(async ({ tocar, medir }) => { await tocar(pt.buena); await medir("acierto"); });
+      }
+    }
+  }
+  return filas;
+}
+
+const ANCHOS = [[320, 568], [375, 667]].filter(([a]) => !process.env.ANCHOS || process.env.ANCHOS.split(",").map(Number).includes(a));
 const nav = await chromium.launch({ executablePath: process.env.CHROMIUM ?? "/opt/pw-browsers/chromium" });
+if (process.argv.includes("--banda")) {
+  const salidaB = {};
+  for (const [ancho, alto] of ANCHOS) {
+    const errores = [];
+    const filas = await banda(nav, ancho, alto, errores);
+    salidaB[ancho] = { filas, errores: [...new Set(errores)] };
+    console.log(`\n=== BANDA ${ancho}×${alto} · tope ${TOPE[ancho]} · JS ${salidaB[ancho].errores.length}`);
+    for (const e of salidaB[ancho].errores) console.log("   JS · " + e);
+    if (VENTANA) {
+      const LIM = ancho === 320 ? 40 : 0;
+      for (const f of filas) {
+        const ok1 = f.fuera <= LIM && !f.zonasFuera.some((z) => z === "figura" || z === "primer control");
+        console.log(`${f.pantalla.padEnd(26)} ${f.estado.padEnd(44)} fuera ${String(f.fuera).padStart(5)} (cuenta L ${f.cuentaL}) ${ok1 ? "ok" : "PASA"} [${f.zonasFuera.join(", ") || "—"}] · tras tocar ${f.tras?.juntos ? "juntos" : "NO juntos"} (tramo ${f.tras?.tramo} / ${f.tras?.visible}, y ${f.tras?.y}${f.tras?.tocadoSigue === false ? ", control ido" : ""}) · banda ${f.banda}`);
+      }
+      const malos1 = filas.filter((f) => f.fuera > LIM || f.zonasFuera.some((z) => z === "figura" || z === "primer control"));
+      const malos3 = filas.filter((f) => !f.tras?.juntos);
+      const peor = filas.reduce((a, f) => (f.fuera > (a?.fuera ?? -1) ? f : a), null);
+      console.log(`RESUMEN ${ancho}: ${filas.length} estados · fuera máx ${peor.fuera} en ${peor.pantalla} ${peor.estado} · pasan del límite ${LIM}: ${malos1.length} · no juntos tras tocar: ${malos3.length}`);
+      continue;
+    }
+    for (const f of filas) {
+      const pasa = f.suma !== null && f.suma <= TOPE[ancho];
+      console.log(`${f.pantalla.padEnd(26)} ${f.estado.padEnd(44)} fig ${f.figura} (cont ${f.contenido}) + banda ${f.banda} → ${f.suma} ${pasa ? "≤" : "> "}${TOPE[ancho]}${pasa ? "" : ` (+${Math.round((f.suma - TOPE[ancho]) * 10) / 10})`} · ver ${f.veredictos}/${f.enFigura} ${f.palabra}`);
+    }
+    /* El peor de cada pieza. */
+    for (const pz of PIEZAS_SECUENCIA_T2.keys()) {
+      const suyas = filas.filter((f) => f.pantalla.startsWith(`P${pz + 1}·`));
+      const peor = suyas.reduce((a, f) => (f.suma > (a?.suma ?? -1) ? f : a), null);
+      console.log(`PEOR P${pz + 1} a ${ancho}: ${peor.suma} (tope ${TOPE[ancho]}) en ${peor.pantalla} ${peor.estado} — «${peor.texto}»`);
+    }
+  }
+  await nav.close();
+  if (JSON_SALIDA) writeFileSync(JSON_SALIDA, JSON.stringify(salidaB, null, 1));
+  process.exit(0);
+}
 const salida = { anchos: {} };
-for (const [ancho, alto] of [[320, 568], [375, 667]]) {
+for (const [ancho, alto] of ANCHOS) {
   const errores = []; const acc = nuevoAcc(); const filas = [];
   await recorrido(nav, ancho, alto, acc, filas, errores, "error");
   await recorrido(nav, ancho, alto, acc, filas, errores, "acierto");

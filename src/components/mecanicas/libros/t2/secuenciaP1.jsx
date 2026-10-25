@@ -6,7 +6,7 @@ import { DE_QUE_ESTA_HECHA } from "../../../../data/contabilidadAprender.js";
 import { P1_ID, P1_OBJETIVO, P1_TEXTOS as T, P1_ALTO_FIGURA } from "../../../../data/contabilidadT2Secuencia.js";
 import {
   DEBE, HABER, LINEA, SUAVE, ESTILOS, pesos, suma, raiz, Encabezado, Cifra, Rotulo, Lado, Control, Fila,
-  responder, leerHaz, marcaDe, useBarajado, enOrden,
+  responder, leerHaz, marcaDe, useBarajado, enOrden, paraLaBanda,
 } from "./secuenciaComun.jsx";
 
 /*
@@ -18,8 +18,8 @@ import {
  * contabilidadT2Secuencia.js. Contenedor: SecuenciaAprender (compartido, de
  * Erwin): aquí no hay ni contador, ni pastilla, ni botones de navegación
  * propios. El Haz calificado usa responderHaz / hazResuelto; la devolución
- * (consecuencia, pista, porqué) la declara cada Haz en `devolucion` y NO se
- * pinta dentro de la figura hasta #536.
+ * (consecuencia, pista, porqué) la declara cada Haz en `devolucion` y la
+ * pinta la cáscara en la banda bajo la figura (#590), nunca la figura.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -303,12 +303,12 @@ export const PIEZA_P1 = {
     {
       id: "el-saldo", tipo: "haz", titular: T.saldo.titular, apoyo: T.saldo.apoyo, razon: T.saldo.razon,
       Figura: FiguraSaldo, nombreFigura: "La cuenta Caja con sus dos movimientos", estadoInicial: HAZ_INICIAL, resuelta: hazResuelto,
-      devolucion: devolucionDe(T.saldo), opciones: T.saldo.opciones, buena: T.saldo.opciones[0],
+      devolucion: paraLaBanda(devolucionDe(T.saldo)), opciones: T.saldo.opciones, buena: T.saldo.opciones[0],
     },
     {
       id: "debe-no-es-subir", tipo: "haz", titular: T.debeNoEsSubir.titular, apoyo: T.debeNoEsSubir.apoyo, razon: T.debeNoEsSubir.razon,
       Figura: FiguraDebeNoEsSubir, nombreFigura: "La cuenta Cuentas por pagar de Lavado de Autos Mateo", estadoInicial: HAZ_INICIAL, resuelta: hazResuelto,
-      devolucion: devolucionDe(T.debeNoEsSubir), opciones: T.debeNoEsSubir.opciones, buena: "Baja",
+      devolucion: paraLaBanda(devolucionDe(T.debeNoEsSubir)), opciones: T.debeNoEsSubir.opciones, buena: "Baja",
     },
     {
       id: "cierre", tipo: "cierre", titular: T.cierre.titular, apoyo: T.cierre.apoyo,

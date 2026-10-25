@@ -6,7 +6,7 @@ import { PIEZA_DEBE_Y_HABER, transaccionDelEjemploDos } from "../../../../data/c
 import { P3_ID, P3_OBJETIVO, P3_TEXTOS as T, P3_ALTO_FIGURA } from "../../../../data/contabilidadT2Secuencia.js";
 import {
   BLANCO, LINEA, CONTORNO, SUAVE, pesos, suma, Raiz, Encabezado, Cifra, Lado, Control, Fila,
-  responder, leerHaz, marcaDe, useBarajado, enOrden, colaInicial, colaResuelta, fichaActual, responderCola, marcaDestino,
+  responder, leerHaz, marcaDe, useBarajado, enOrden, colaInicial, colaResuelta, fichaActual, responderCola, marcaDestino, paraLaBanda,
 } from "./secuenciaComun.jsx";
 
 /*
@@ -314,19 +314,19 @@ export const PIEZA_P3 = {
     {
       id: "donde-vive", tipo: "haz", titular: T.dondeVive.titular, apoyo: T.dondeVive.apoyo, razon: T.dondeVive.razon,
       Figura: FiguraDondeVive, nombreFigura: "Las dos casas de la ecuación", estadoInicial: colaInicial(CASO.length), resuelta: colaResuelta,
-      devolucion: devolucionDondeVive, fichas: CASO.map((c) => c.cuenta), destinos: CASAS, buenoDe: casaBuena, malaDe: (i) => CASAS.find((c) => c !== casaBuena(i)),
+      devolucion: paraLaBanda(devolucionDondeVive), fichas: CASO.map((c) => c.cuenta), destinos: CASAS, buenoDe: casaBuena, malaDe: (i) => CASAS.find((c) => c !== casaBuena(i)),
     },
     {
       id: "la-trampa", tipo: "haz", titular: T.trampa.titular, apoyo: T.trampa.apoyo, razon: T.trampa.razon,
       Figura: FiguraTrampa, nombreFigura: "Caja y Documentos por pagar con el préstamo", estadoInicial: HAZ_INICIAL, resuelta: hazResuelto,
-      devolucion: devolucionDe(T.trampa), opciones: T.trampa.opciones, buena: T.trampa.opciones[1],
+      devolucion: paraLaBanda(devolucionDe(T.trampa)), opciones: T.trampa.opciones, buena: T.trampa.opciones[1],
     },
     { id: "gastos-e-ingresos", tipo: "miralo", titular: T.gastosIngresos.titular, apoyo: T.gastosIngresos.apoyo, Figura: FiguraGastosIngresos, nombreFigura: "Gastos de operación, Ingresos por servicios y el patrimonio", estadoInicial: { sueltas: [] } },
     { id: "prueba-tu", tipo: "miralo", titular: T.pruebaTu.titular, apoyo: T.pruebaTu.apoyo, Figura: FiguraPruebaTu, nombreFigura: "Cuatro cuentas con su saldo", estadoInicial: PRUEBA_INICIAL },
     {
       id: "por-que", tipo: "haz", titular: T.porQue.titular, apoyo: T.porQue.apoyo, razon: T.porQue.razon,
       Figura: FiguraPorQue, nombreFigura: "Los saldos finales de Maquinaria y de Aportes sociales", estadoInicial: HAZ_INICIAL, resuelta: hazResuelto,
-      devolucion: devolucionPorQue, opciones: T.porQue.opciones, buena: T.porQue.opciones[T.porQue.correcta],
+      devolucion: paraLaBanda(devolucionPorQue), opciones: T.porQue.opciones, buena: T.porQue.opciones[T.porQue.correcta],
     },
     { id: "cierre", tipo: "cierre", titular: T.cierre.titular, apoyo: T.cierre.apoyo, Figura: FiguraCierre, nombreFigura: "La mesa final de Maquinaria y Aportes sociales", ...(T.cierre.pie ? { razon: T.cierre.pie } : {}) },
   ],

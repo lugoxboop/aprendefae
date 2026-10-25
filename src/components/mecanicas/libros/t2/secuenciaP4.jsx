@@ -5,7 +5,7 @@ import { LAVADO_DE_AUTOS, CALEJA } from "../../../../data/contabilidad.js";
 import { P4_ID, P4_OBJETIVO, P4_TEXTOS as T, P4_ALTO_FIGURA } from "../../../../data/contabilidadT2Secuencia.js";
 import {
   BLANCO, LINEA, SUAVE, pesos, suma, Raiz, Lado, Control, Fila,
-  responder, leerHaz, marcaDe, useBarajado, enOrden, colaInicial, colaResuelta, fichaActual, responderCola, marcaDestino,
+  responder, leerHaz, marcaDe, useBarajado, enOrden, colaInicial, colaResuelta, fichaActual, responderCola, marcaDestino, paraLaBanda,
 } from "./secuenciaComun.jsx";
 
 /*
@@ -340,24 +340,24 @@ export const PIEZA_P4 = {
     {
       id: "la-balanza", tipo: "haz", titular: T.balanza.titular, apoyo: T.balanza.apoyo, razon: T.balanza.razon,
       Figura: FiguraBalanza, nombreFigura: "La balanza con sus dos platillos", estadoInicial: HAZ_INICIAL, resuelta: hazResuelto,
-      devolucion: devolucionDe(T.balanza), opciones: [A, PPT], buena: PPT,
+      devolucion: paraLaBanda(devolucionDe(T.balanza)), opciones: [A, PPT], buena: PPT,
     },
     { id: "primera-regla", tipo: "miralo", titular: T.primeraRegla.titular, apoyo: T.primeraRegla.apoyo, Figura: FiguraPrimeraRegla, nombreFigura: "Los grupos que crecen por el debe y por el haber", estadoInicial: { dentro: [] } },
     {
       id: "segunda-regla", tipo: "haz", titular: T.segundaRegla.titular, apoyo: T.segundaRegla.apoyo, razon: T.segundaRegla.razon,
       Figura: FiguraSegundaRegla, nombreFigura: "Los grupos que crecen por el debe y por el haber", estadoInicial: colaInicial(FAMILIAS_5.length), resuelta: colaResuelta,
-      devolucion: devolucionSegundaRegla, fichas: FAMILIAS_5, destinos: [DEBE_G, HABER_G], buenoDe: grupoBueno, malaDe: () => DEBE_G,
+      devolucion: paraLaBanda(devolucionSegundaRegla), fichas: FAMILIAS_5, destinos: [DEBE_G, HABER_G], buenoDe: grupoBueno, malaDe: () => DEBE_G,
     },
     {
       id: "un-pago-dos-bajas", tipo: "haz", titular: T.unPago.titular, apoyo: T.unPago.apoyo, razon: T.unPago.razon,
       Figura: FiguraUnPago, nombreFigura: "La balanza con Bancos y Hipoteca por pagar", estadoInicial: HAZ_INICIAL, resuelta: hazResuelto,
-      devolucion: devolucionUnPago, opciones: T.unPago.opciones, buena: T.unPago.opciones[2],
+      devolucion: paraLaBanda(devolucionUnPago), opciones: T.unPago.opciones, buena: T.unPago.opciones[2],
     },
     { id: "simple-o-compuesto", tipo: "miralo", titular: T.simpleCompuesto.titular, apoyo: T.simpleCompuesto.apoyo, Figura: FiguraSimpleCompuesto, nombreFigura: "Un asiento en la balanza del debe y el haber", estadoInicial: { cual: T.simpleCompuesto.opciones[0] } },
     {
       id: "muchas-cuentas", tipo: "haz", titular: T.descuadran.titular, apoyo: T.descuadran.apoyo, razon: T.descuadran.razon,
       Figura: FiguraDescuadran, nombreFigura: "El asiento del 4 de enero en la balanza", estadoInicial: HAZ_INICIAL, resuelta: hazResuelto,
-      devolucion: devolucionDe(T.descuadran), opciones: T.descuadran.opciones, buena: T.descuadran.opciones[1],
+      devolucion: paraLaBanda(devolucionDe(T.descuadran)), opciones: T.descuadran.opciones, buena: T.descuadran.opciones[1],
     },
     { id: "cierre", tipo: "cierre", titular: T.cierre.titular, apoyo: T.cierre.apoyo, Figura: FiguraCierre, nombreFigura: "El asiento del 4 de enero, nivelado", ...(T.cierre.pie ? { razon: T.cierre.pie } : {}) },
   ],
