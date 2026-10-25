@@ -131,6 +131,13 @@ if (process.env.MATERIA_ID) {
 }
 await p.waitForTimeout(650);
 for (const paso of [...pasos, TEMA]) {
+  /*
+   * El ratón se aparta antes de cada toque: tras tocar la materia quedaba
+   * encima de la tarjeta de T3, que al pasar el ratón sube 2 px, deja de
+   * estar debajo, baja, y vuelve a subir. Playwright la veía «inestable» y la
+   * sonda salía NO MEDIDO (ficha-tapa de «Ingresos, gastos y ajustes»).
+   */
+  await p.mouse.move(1, 1);
   await p.locator(`button:visible:has-text("${paso}")`).first().click({ timeout: 9000 });
   await p.waitForTimeout(650);
 }
@@ -162,10 +169,12 @@ const entro = await (async () => {
      */
     /*
      * Y hay Aprender de una sola página, sin botón de avanzar: los de
-     * Pensamiento Estratégico (Inmersión, el video). Ahí haber entrado se ve en
-     * la insignia de la actividad, y esa página única se mide entera.
+     * Pensamiento Estratégico (Inmersión, el video, la vista sistémica). Ahí
+     * haber entrado se ve en la insignia de la actividad o en que ya no están
+     * las tarjetas del índice; esa página única se mide entera.
      */
-    unaPagina = !HACER && (await p.locator(AVANCE).count()) === 0 && (await p.locator(".fae-insignia-actividad").count()) > 0;
+    unaPagina = !HACER && (await p.locator(AVANCE).count()) === 0 &&
+      ((await p.locator(".fae-insignia-actividad").count()) > 0 || (await p.locator(".fae-split__cara:visible").count()) === 0);
     const dentro = HACER
       ? (await p.locator("[data-nodo], .fae-ch-estrecho").count()) > 0
       : (await p.locator(AVANCE).count()) > 0 || unaPagina;

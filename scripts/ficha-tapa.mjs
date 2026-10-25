@@ -161,6 +161,13 @@ if (process.env.RUTA) {
   }
   await p.waitForTimeout(700);
   for (const paso of [...pasos, TEMA]) {
+  /*
+   * El ratón se aparta antes de cada toque: tras tocar la materia quedaba
+   * encima de la tarjeta de T3, que al pasar el ratón sube 2 px, deja de
+   * estar debajo, baja, y vuelve a subir. Playwright la veía «inestable» y la
+   * sonda salía NO MEDIDO (ficha-tapa de «Ingresos, gastos y ajustes»).
+   */
+  await p.mouse.move(1, 1);
     await p.locator(`button:visible:has-text("${paso}")`).first().click({ timeout: 9000 });
     await p.waitForTimeout(700);
   }
