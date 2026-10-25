@@ -5,6 +5,7 @@ import BotonAnimo from "../social/BotonAnimo.jsx";
 import { estadoDeAnimos } from "../../social/animo.js";
 import { useAuth } from "../../auth/AuthProvider.jsx";
 import Avatar, { TAMANOS } from "../avatar/Avatar.jsx";
+import { TARJETA_TABLA } from "./tarjeta.js";
 import BandaDecoracion from "../decoracion/BandaDecoracion.jsx";
 import { estadoRanking } from "../decoracion/poses.js";
 
@@ -186,10 +187,10 @@ export default function RankingFP({ subjectId = null, titulo = "Ranking", nota, 
   /* Se consulta al entrar y cada vez que cambia la pestaña. */
   useEffect(() => { consultar(); }, [consultar]);
 
+  /* Tarjeta opaca, la misma de la liga (#571): sobre el ajedrez de Estratégico no se leía. */
   const contenedor = {
     borderRadius: "18px",
-    background: "rgba(248,249,250,0.04)",
-    border: "1px solid rgba(248,249,250,0.12)",
+    ...TARJETA_TABLA,
     padding: "clamp(16px, 2.5vw, 22px)",
   };
 

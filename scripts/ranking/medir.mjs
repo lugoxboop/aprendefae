@@ -49,10 +49,11 @@ for (const [ancho, alto] of [[320, 568], [375, 667]]) {
   await pg.goto(BANCO);
   await pg.waitForSelector("[data-fila-ranking]", { timeout: 120000 });
   await pg.waitForSelector("[data-boton-animo]", { timeout: 30000 });
+  await pg.waitForSelector("[data-fila-liga]", { timeout: 30000 }).catch(() => {});
   await pg.evaluate(() => document.fonts.ready);
   salida.push({ ancho, alto, fuentes: hayFuentes ? "Inter y Sora de producción" : "respaldo del sistema", ...(await pg.evaluate(() => {
     const caja = (e) => e.getBoundingClientRect();
-    const apodos = [...document.querySelectorAll("[data-apodo]")];
+    const apodos = [...document.querySelectorAll("[data-fila-ranking] [data-apodo]")];
     const botones = [...document.querySelectorAll("[data-boton-animo]")];
     const pestanas = [...document.querySelectorAll('[aria-label="Periodo del ranking"] button')];
     const grupo = document.querySelector('[aria-label="Periodo del ranking"]');
@@ -68,6 +69,17 @@ for (const [ancho, alto] of [[320, 568], [375, 667]]) {
       pestanasPartidas: pestanas.filter((b) => caja(b).height > 46).map((b) => b.textContent),
       pestanasSeSalen: Math.round(caja(grupo).right - (caja(tarjeta).right - parseFloat(getComputedStyle(tarjeta).paddingRight))),
       desbordeHorizontal: document.documentElement.scrollWidth > innerWidth,
+      liga: (() => {
+        const filas = [...document.querySelectorAll("[data-fila-liga]")];
+        const ap = filas.map((f) => f.querySelector("[data-apodo]") ?? f.querySelector("span[style*='ellipsis']")).filter(Boolean);
+        return {
+          filasPodio: filas.length,
+          apodoMasAngosto: ap.length ? Math.round(Math.min(...ap.map((a) => caja(a).width))) : null,
+          apodosCortadosOSalidos: ap.filter((a) => a.scrollWidth > a.clientWidth + 1 || caja(a).right > caja(a.closest("[data-fila-liga]")).right + 0.5).length,
+        };
+      })(),
+      /* El fondo de cada tabla (#571): tiene que ser opaco. */
+      fondoTablas: [...document.querySelectorAll("[data-columna] > *")].map((t) => getComputedStyle(t).backgroundColor).filter((c) => c !== "rgba(0, 0, 0, 0)"),
     };
   })) });
   await ctx.close();

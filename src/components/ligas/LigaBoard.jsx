@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { TARJETA_TABLA } from "../ranking/tarjeta.js";
 import { FAE } from "../../theme.js";
 import { useAuth } from "../../auth/AuthProvider.jsx";
 import { tableroDe, contextoDe, repartir, tieneLigas } from "../../ligas/ligas.js";
@@ -26,10 +27,10 @@ import { estadoLiga } from "../decoracion/poses.js";
  * es lo normal —más del 80%—, y por eso no aparecer no señala a nadie.
  */
 
+/* La tarjeta, opaca y compartida con RankingFP (#571): ranking/tarjeta.js. */
 const marco = {
   borderRadius: "18px",
-  background: "rgba(248,249,250,0.04)",
-  border: "1px solid rgba(248,249,250,0.12)",
+  ...TARJETA_TABLA,
   padding: "18px 20px",
 };
 
@@ -173,6 +174,7 @@ export default function LigaBoard({ subjectId, cargarTablero = tableroDe, cargar
             {podio.map((f) => (
               <li
                 key={`${f.posicion}-${f.nickname}`}
+                data-fila-liga
                 style={{
                   display: "flex", alignItems: "center", gap: "10px",
                   padding: "8px 10px", borderRadius: "10px",
@@ -183,16 +185,25 @@ export default function LigaBoard({ subjectId, cargarTablero = tableroDe, cargar
                 <Puesto n={f.posicion} destacado={f.es_tuyo} />
                 {/* A 24 px, el tamaño de liga. Forma, paleta y nivel llegan con la fila (0037). */}
                 <Avatar perfil={f} tamano={TAMANOS.liga} style={{ flexShrink: 0 }} />
-                <span style={{ flex: 1, minWidth: 0, fontSize: "14px", fontWeight: f.es_tuyo ? 700 : 400, color: FAE.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                  {f.nickname}{f.es_tuyo ? " · tú" : ""}
-                </span>
-                <span style={{ fontFamily: "Sora, sans-serif", fontSize: "13.5px", fontWeight: 700, fontVariantNumeric: "tabular-nums", color: FAE.teal }}>
-                  {f.fp} FP
-                </span>
-                {/* Nunca en la fila propia. */}
-                {!f.es_tuyo && animos[f.nickname] && (
-                  <BotonAnimo apodo={f.nickname} recibidos={animos[f.nickname].recibidos} yaLeDi={animos[f.nickname].yaLeDi} />
-                )}
+                {/*
+                  Dos renglones, como RankingFP (#570, gemelo de #556): el apodo
+                  solo en el primero, con todo el ancho; FP y ánimo en el segundo.
+                  Se parte antes que cortarse, nunca «…». A 320 quedaba en 14 px.
+                */}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <span data-apodo style={{ display: "block", fontSize: "14px", lineHeight: 1.3, fontWeight: f.es_tuyo ? 700 : 400, color: FAE.text, overflowWrap: "anywhere" }}>
+                    {f.nickname}{f.es_tuyo ? " · tú" : ""}
+                  </span>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px", marginTop: "2px" }}>
+                    <span data-fp style={{ fontFamily: "Sora, sans-serif", fontSize: "13.5px", fontWeight: 700, fontVariantNumeric: "tabular-nums", color: FAE.teal, whiteSpace: "nowrap" }}>
+                      {f.fp} FP
+                    </span>
+                    {/* Nunca en la fila propia. */}
+                    {!f.es_tuyo && animos[f.nickname] && (
+                      <BotonAnimo apodo={f.nickname} recibidos={animos[f.nickname].recibidos} yaLeDi={animos[f.nickname].yaLeDi} />
+                    )}
+                  </div>
+                </div>
               </li>
             ))}
           </ol>

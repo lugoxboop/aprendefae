@@ -113,3 +113,40 @@ test("★ las pestañas reparten el ancho y ninguna se parte; el primer puesto n
   assert.doesNotMatch(primero, /coral/i, "coral es solo error, no el que va ganando");
   assert.ok(FAE.ambar, "falta el ámbar en el tema");
 });
+
+/* ─────────────── #570: la liga tenía el mismo fallo; #571: las tarjetas eran transparentes ─────────────── */
+
+const { default: LigaBoard } = await import("../../ligas/LigaBoard.jsx");
+const { TARJETA_TABLA } = await import("../tarjeta.js");
+
+test("★ #570: en el podio de la liga el apodo también tiene su línea propia y nunca se corta", async () => {
+  const filas = ["ElContadorMasRapidoDelOeste", "MARIAJOSÉRODRÍGUEZZULUAGA", "Ab"].map((nickname, i) => ({
+    liga: 1, total_ligas: 1, tam_liga: 17, corte_podio: 3, posicion: i + 1, nickname, fp: 300 - i * 40, es_tuyo: false, en_podio: true,
+  }));
+  const cargarTablero = async () => ({ filas, error: null });
+  const cargarContexto = async () => ({ contexto: { totalNiveles: 1, ligaAnterior: null, nivelesAnterior: null, transicion: null, activosReparto: null }, error: null });
+  const m = await montar(h(AuthContext.Provider, { value: auth }, h(LigaBoard, { subjectId: "pensamiento-estrategico", cargarTablero, cargarContexto })));
+  try {
+    await esperar(() => m.caja.querySelectorAll("[data-fila-liga] [data-apodo]").length === filas.length);
+    const apodos = [...m.caja.querySelectorAll("[data-fila-liga] [data-apodo]")];
+    assert.equal(apodos.length, filas.length, "no se pintó un apodo por fila del podio");
+    for (const a of apodos) {
+      const estilo = a.getAttribute("style") ?? "";
+      assert.doesNotMatch(estilo, /text-overflow:\s*ellipsis|white-space:\s*nowrap/, `${a.textContent}: cortado u obligado a una línea`);
+      const hermanos = [...a.parentElement.children].filter((x) => x !== a);
+      assert.ok(!hermanos.some((x) => x.matches("[data-boton-animo], [data-fp]")), `${a.textContent}: comparte línea con el botón o los FP`);
+    }
+  } finally {
+    await m.fin();
+  }
+});
+
+test("★ #571: las dos tablas usan la misma tarjeta, y es opaca", () => {
+  assert.equal(TARJETA_TABLA.background, FAE.navy, "la tarjeta dejó de ser el navy opaco");
+  assert.doesNotMatch(String(TARJETA_TABLA.background), /rgba\(/, "la tarjeta volvió a ser transparente");
+  for (const archivo of ["../RankingFP.jsx", "../../ligas/LigaBoard.jsx"]) {
+    const fuente = readFileSync(new URL(archivo, import.meta.url), "utf8");
+    assert.match(fuente, /\.\.\.TARJETA_TABLA/, `${archivo} no usa la tarjeta compartida`);
+    assert.doesNotMatch(fuente, /background: "rgba\(248,249,250,0\.04\)"/, `${archivo} volvió al 4 %`);
+  }
+});
