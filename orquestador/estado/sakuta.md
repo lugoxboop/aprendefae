@@ -1,13 +1,16 @@
-2026-10-24 18:53 (hora Bogotá)
+2026-10-24 20:07 (hora Bogotá)
 - T1 · #496 (t1-5, las dos torres): terminado, fusionado (233c635) con el PASA de Shoko y el CI en verde
 - T1 · #520 (logito LibretaYLapiz): terminado, fusionado (047f3b7) con el PASA de Shoko y el CI en verde
-- T1 · #531 (las torres se ven moverse al anotar, D4): en curso; las capturas ya están con Shoko; base cambiada a main
-- T1 · #535 (lote 4: los 6 Hacer publicados): en curso; las capturas de las seis piezas ya están con Shoko; base cambiada a main; el cambio de llave de t1-6 para el Repaso se le avisó a Erwin en el #474
-- T1 · lote 5 (H1 y H2) (Kaede): en curso; PR #536
-- T1 · capítulo 2 (D1): terminado; Futaba lo dejó en fichas/b-t1-fuente-cap1-futaba.md §5-8. Decisión mía (§9): f1 sigue el Gráfico 2.6 («explica», sin la nota «misma cifra»), se corrigen las citas P:197 y P:202 y el nombre pasa a «Compañía Caleja». Lo aplica Kaede en un PR propio
+- T1 · #531 (las torres se ven moverse al anotar): en curso; Kaede corrigió en cf56ee5 (torres, devolución y «Siguiente» caben en la ventana de 320×568); la captura ya está con Shoko
+- T1 · #535 (lote 4): en curso; FALLA de Shoko en t1-1, t1-2, t1-4, t1-6, t1-7 y t1-8 (revisiones/b-t1-531-535-shoko.md); Kaede corrige con eso y con el lote D de Futaba (fichas/b-t1-lote-24oct-d-futaba.md)
+- T1 · #539 (lote 5: H1 y H2): en curso; FALLA de Shoko (el apoyo de H1, la rejilla de H2 que se sale a 320 y la reserva de H2), en revisiones/b-t1-551-539-shoko.md (Kaede)
+- T1 · #551 (lo decidido del capítulo 2): terminado, fusionado (e5707a0) con el PASA de Shoko y el CI en verde
+- T1 · «Utilidad del ejercicio» en t1-7 frente al Gráfico 2.6: riesgo que abrió Shoko; lo resuelve Futaba en el §10 de la ficha de fuente
+- Shoko traspasada a un chat nuevo (6c926eca); el 02dc9984 quedó pesado, con 19 subidas; traspasos/shoko.md está al día
+- T1 · capítulo 2 (D1): terminado; Futaba lo dejó en fichas/b-t1-fuente-cap1-futaba.md; mis decisiones están en el §9 y las aplica el #551
 - T1 · Gráfico 2.6, la línea de operación hacia el estado de resultados: BLOQUEADO-MATEO; tiene que mirar la p. 66 en el libro físico. Si la línea llega, cambian tres textos publicados
 - T1 · el caso «se quedan los dos igual» de cu0-a2: BLOQUEADO-MATEO; falta la p. 90 del capítulo 3
-- T1 · los cuatro textos pendientes del #535 (consigna y alt de t1-6, alts de t1-1 y el acierto de la decisión 2 de t1-4) (Futaba): en curso, en el lote D
+- T1 · los textos pendientes del #535 (Futaba): terminado, en fichas/b-t1-lote-24oct-d-futaba.md
 - T1 · «Ocho leen lo mismo»: terminado, en 2×2 (fichas/b-t1-titulares-medidos-mai.md §7), con PASA de Shoko
 - T1 · la capa 4 como excepción del patrón: preguntado a Ukyo y Miku en el #514, sin respuesta
 - T1 · SecuenciaAprender (componente compartido): bloqueado; el #514 sigue sin dueño

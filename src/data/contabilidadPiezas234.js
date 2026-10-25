@@ -197,12 +197,12 @@ export const NOMBRES_P3 = [
   {
     termino: "Estado de situación financiera",
     definicion: "El estado de situación financiera muestra qué tiene y qué debe la empresa un día exacto.",
-    delLibro: "El estado de situación financiera muestra de manera concreta la situación financiera de la empresa en una fecha determinada.",
+    delLibro: "El estado de situación financiera muestra de manera concreta la situación de la empresa en una fecha determinada.",
   },
   {
     termino: "Estado de resultados",
     definicion: "El estado de resultados muestra qué vendió y qué gastó durante todo un periodo.",
-    delLibro: "muestra cómo se han causado los ingresos y cómo se han gastado, así como la utilidad o pérdida resultante de las operaciones de la empresa durante un periodo de tiempo determinado.",
+    delLibro: "muestra cómo se han generado los ingresos y cómo se han causado los gastos, así como la utilidad o pérdida resultante de las operaciones de la empresa durante un periodo de tiempo determinado.",
   },
   {
     termino: "La foto y la película",
