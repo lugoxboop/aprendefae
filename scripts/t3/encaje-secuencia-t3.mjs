@@ -18,6 +18,13 @@
  *   node scripts/t3/encaje-secuencia-t3.mjs            tabla en Markdown
  *   node scripts/t3/encaje-secuencia-t3.mjs --json     lo mismo, en JSON
  *
+ * CÓMO CUENTA LAS PANTALLAS (Takamura en #550, como la secuencia de Itagaki):
+ *   · los pasos de una pantalla («Paso 1 de 2») NO suman pantallas: la capa 2
+ *     ocupa los tramos de ≤ MAX_PASOS que necesite, y nada más;
+ *   · decisión S3 de Kamogawa: las preguntas «En una frase» (la capa 4) de P1,
+ *     P3, P4 y P5 salen de Aprender y pasan al Repaso Diario. No son pantalla
+ *     ni texto de la secuencia, y no se cuentan.
+ *
  * Sale siempre con 0: es una medición, no una puerta. Lo que se pasa queda
  * escrito en la tabla; decidir cómo se reparte es de diseño y contenido.
  * ═══════════════════════════════════════════════════════════════════════════
@@ -26,19 +33,19 @@ import {
   palabras, MAX_PALABRAS_TITULAR, MAX_PALABRAS_PANTALLA, MIN_PANTALLAS, MAX_PANTALLAS, MAX_PASOS,
 } from "../../src/components/secuencia/secuencia.js";
 import {
-  PIEZA_VENDER_NO_ES_COBRAR, PREGUNTA_FINAL, OPCIONES_FINAL, CONSIGNA_CAPA_3, AVISO_CAMBIO, BOTON_OTRA_EMPRESA,
+  PIEZA_VENDER_NO_ES_COBRAR, CONSIGNA_CAPA_3, AVISO_CAMBIO, BOTON_OTRA_EMPRESA,
   SAN_CALIXTO, COMPANIA_CUALQUIERA, ALTERNATIVOS,
 } from "../../src/data/contabilidadTema3.js";
 import { estadoPaso, PASOS } from "../../src/contabilidad/dosLineas.js";
 import {
-  PIEZA_LO_QUE_YA_PASO, SEGMENTOS_P3, CIERRE_P3, CONSIGNA_CAPA_3_P3, PREGUNTA_FINAL_P3, OPCIONES_FINAL_P3, ALTERNATIVOS_P3,
+  PIEZA_LO_QUE_YA_PASO, SEGMENTOS_P3, CIERRE_P3, CONSIGNA_CAPA_3_P3, ALTERNATIVOS_P3,
 } from "../../src/data/contabilidadTema3Pieza3.js";
 import {
-  PIEZA_LO_QUE_YA_SE_PAGO, SEGMENTOS_P4, CIERRE_P4, CONSIGNA_CAPA_3_P4, PREGUNTA_FINAL_P4, OPCIONES_FINAL_P4, ALTERNATIVOS_P4,
+  PIEZA_LO_QUE_YA_SE_PAGO, SEGMENTOS_P4, CIERRE_P4, CONSIGNA_CAPA_3_P4, ALTERNATIVOS_P4,
 } from "../../src/data/contabilidadTema3Pieza4.js";
 import {
-  PIEZA_CERRAR_EL_PERIODO, SEGMENTOS_CIERRE, CIERRE_TEXTO, CONSIGNA_CAPA_3_CIERRE, PREGUNTA_FINAL_CIERRE,
-  OPCIONES_FINAL_CIERRE, ALTERNATIVOS_CIERRE,
+  PIEZA_CERRAR_EL_PERIODO, SEGMENTOS_CIERRE, CIERRE_TEXTO, CONSIGNA_CAPA_3_CIERRE,
+  ALTERNATIVOS_CIERRE,
 } from "../../src/data/contabilidadTema3Cierre.js";
 import { PASOS_P3 } from "../../src/contabilidad/loQueYaPaso.js";
 import { PASOS_P4 } from "../../src/contabilidad/loQueYaSePago.js";
@@ -56,7 +63,7 @@ const OBJETIVO_APOYO = 25;
  * libro), porque hoy se ve junto en la misma carta; la cita plegada se mide
  * también aparte.
  */
-function filasDePieza({ clave, pieza, pasos, textosCapa2, capa3, pregunta, opciones, alternativos }) {
+function filasDePieza({ clave, pieza, pasos, textosCapa2, capa3, alternativos }) {
   const f = [];
   const add = (capa, que, texto, tope) => f.push({ pieza: clave, capa, que, texto, palabras: palabras(texto), tope });
   add("cabecera", "título de la pieza", pieza.titulo, "titular");
@@ -72,13 +79,7 @@ function filasDePieza({ clave, pieza, pasos, textosCapa2, capa3, pregunta, opcio
   textosCapa2.forEach((t, i) => add("capa 2", `paso ${i + 1} de ${pasos}`, t, "pantalla"));
   Object.entries(alternativos).forEach(([k, t]) => add("capa 2", `alternativo del paso ${Number(k) + (Array.isArray(alternativos) ? 1 : 0)} (lector)`, t, "pantalla"));
   capa3.forEach(([que, t, tope]) => add("capa 3", que, t, tope ?? "pantalla"));
-  add("capa 4", "pregunta", pregunta, "titular");
-  opciones.forEach((o) => add("capa 4", `opción «${o.id}»`, o.texto, "pantalla"));
-  add("capa 4", "pregunta + 4 opciones (lo que se ve antes de responder)", [pregunta, ...opciones.map((o) => o.texto)].join(" "), "pantalla");
-  opciones.forEach((o) => add("capa 4", `devolución «${o.id}»`, o.feedback, "pantalla"));
-  const peor = Math.max(...opciones.map((o) => palabras(o.feedback)));
-  add("capa 4", "pregunta + opciones + la devolución más larga (tras responder)", null, "pantalla");
-  f[f.length - 1].palabras = palabras([pregunta, ...opciones.map((o) => o.texto)].join(" ")) + peor;
+  /* La capa 4 («En una frase») no entra: con S3 pasa al Repaso Diario. */
   return f;
 }
 
@@ -92,19 +93,18 @@ export const PIEZAS_T3 = [
   {
     clave: "P1", pieza: PIEZA_VENDER_NO_ES_COBRAR, pasos: PASOS, textosCapa2: textosP1, alternativos: ALTERNATIVOS,
     capa3: [["consigna", CONSIGNA_CAPA_3], ["aviso al cambiar de empresa", AVISO_CAMBIO], ["botón «otra empresa»", BOTON_OTRA_EMPRESA, "rotulo"], ...hechosP1],
-    pregunta: PREGUNTA_FINAL, opciones: OPCIONES_FINAL,
   },
   {
     clave: "P3", pieza: PIEZA_LO_QUE_YA_PASO, pasos: PASOS_P3, textosCapa2: [...SEGMENTOS_P3, CIERRE_P3], alternativos: ALTERNATIVOS_P3,
-    capa3: [["consigna", CONSIGNA_CAPA_3_P3]], pregunta: PREGUNTA_FINAL_P3, opciones: OPCIONES_FINAL_P3,
+    capa3: [["consigna", CONSIGNA_CAPA_3_P3]],
   },
   {
     clave: "P4", pieza: PIEZA_LO_QUE_YA_SE_PAGO, pasos: PASOS_P4, textosCapa2: [...SEGMENTOS_P4, CIERRE_P4], alternativos: ALTERNATIVOS_P4,
-    capa3: [["consigna", CONSIGNA_CAPA_3_P4]], pregunta: PREGUNTA_FINAL_P4, opciones: OPCIONES_FINAL_P4,
+    capa3: [["consigna", CONSIGNA_CAPA_3_P4]],
   },
   {
     clave: "P5", pieza: PIEZA_CERRAR_EL_PERIODO, pasos: PASOS_CIERRE, textosCapa2: [...SEGMENTOS_CIERRE, CIERRE_TEXTO], alternativos: ALTERNATIVOS_CIERRE,
-    capa3: [["consigna", CONSIGNA_CAPA_3_CIERRE]], pregunta: PREGUNTA_FINAL_CIERRE, opciones: OPCIONES_FINAL_CIERRE,
+    capa3: [["consigna", CONSIGNA_CAPA_3_CIERRE]],
   },
 ];
 
@@ -119,13 +119,14 @@ export function medir() {
   /*
    * La cuenta mínima de pantallas, si el contenido se reparte sin reescribirlo
    * (§14.4): es aritmética, no una propuesta de diseño. Supone una pantalla por
-   * término, la capa 2 en tramos de MAX_PASOS pasos, una para la capa 3, una
-   * Haz para la capa 4 y el cierre. Lo que diga la secuencia v2 de Itagaki manda.
+   * término, la capa 2 en tramos de MAX_PASOS pasos (los pasos van dentro de
+   * su pantalla y no suman), una para la capa 3 y el cierre. Sin la Haz de la
+   * capa 4: con S3 pasa al Repaso Diario.
    */
   const piezas = PIEZAS_T3.map(({ clave, pieza, pasos }) => {
     const terminos = pieza.nombres.length;
     const tramosCapa2 = Math.ceil(pasos / MAX_PASOS);
-    const total = terminos + tramosCapa2 + 1 + 1 + 1;
+    const total = terminos + tramosCapa2 + 1 + 1;
     return {
       pieza: clave, terminos, pasosCapa2: pasos, pasosSobran: Math.max(0, pasos - MAX_PASOS), tramosCapa2, pantallasMinimas: total,
       dentro: total >= MIN_PANTALLAS && total <= MAX_PANTALLAS,
@@ -137,7 +138,7 @@ export function medir() {
 function markdown({ filas, piezas, limites }) {
   const out = [];
   out.push(`Límites (secuencia.js): titular ≤ ${limites.MAX_PALABRAS_TITULAR} · pantalla ≤ ${limites.MAX_PALABRAS_PANTALLA} (apoyo ${limites.OBJETIVO_APOYO} como objetivo) · ${limites.MIN_PANTALLAS}-${limites.MAX_PANTALLAS} pantallas · ≤ ${limites.MAX_PASOS} pasos por pantalla.`, "");
-  out.push("### Pantallas y pasos por pieza", "", "| Pieza | Términos (capa 1) | Pasos de capa 2 | Pasos que sobran en una pantalla | Tramos de ≤5 | Pantallas mínimas sin reescribir | ¿4 a 10? |", "|---|---:|---:|---:|---:|---:|---|");
+  out.push("### Pantallas y pasos por pieza", "", "| Pieza | Términos (capa 1) | Pasos de capa 2 | Pasos que sobran en una pantalla | Pantallas de la capa 2 (tramos de ≤5) | Pantallas mínimas sin reescribir | ¿4 a 10? |", "|---|---:|---:|---:|---:|---:|---|");
   for (const p of piezas) out.push(`| ${p.pieza} | ${p.terminos} | ${p.pasosCapa2} | ${p.pasosSobran} | ${p.tramosCapa2} | ${p.pantallasMinimas} | ${p.dentro ? "sí" : "**no**"} |`);
   out.push("", "### Lo que se pasa", "", "| Pieza | Capa | Texto | Palabras | Tope | Se pasa por |", "|---|---|---|---:|---:|---:|");
   const pasan = filas.filter((r) => r.exceso > 0);
