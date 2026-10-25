@@ -1,4 +1,4 @@
-2026-10-25 06:13 (hora Bogotá)
+2026-10-25 06:40 (hora Bogotá)
 - Vara nueva (24-oct): Mateo no da vistos buenos; se fusiona con PASA del auditor y CI verde. Las 6 correcciones de Takamura a contenido aprobado de T3 las decidió Kamogawa (se aplican); deja de haber BLOQUEADO-MATEO: terminado
 - r5 cerrado (r5-1 a r5-5 en Avanzado; tema oculto hasta el próximo semestre): terminado
 - T3 lote 1 (hilo de Aprender, Hacer nuevos, línea base, lenguaje visual), PR #484: terminado (fusionado)
@@ -17,4 +17,4 @@
 - T3 secuencias: la v2 de Itagaki cumple en diseño (D5, D4, E8). Decidí S3: las preguntas «En una frase» pasan al Repaso Diario. P5-2 queda en 5 pasos (MAX_PASOS). Itagaki hace la v3 y Miyata los textos (37 titulares, opciones y pistas): en curso
 - Regla j (leer una vez, exprimir y dejarlo en el repo): pasada a los cuatro agentes: terminado
 
-- Volumen en las TRES materias: Ippo construyó #5, #7, #8 (H6) y #4 en #601 (CI verde, sin tocar lo de Erwin, PE sin cambios); Takamura lo audita en el lote 20. Itagaki resuelve dos paradas: la pastilla de la matriz de GP (#3) y el estante de H7, que además tiene toques de 40 y letra de 10 ya publicados: en curso
+- Volumen en las TRES materias: #601 fusionado con PASA de Takamura (#4, #5, #7 y #8 en H6). Itagaki resolvió las paradas: pastilla de GP opaca y renglón de H7 con toques de 44 y letra de 12, en #604. Takamura lo revisa en el lote 21; luego Ippo construye H7 primero (estudiantes ven hoy toques de 40 px) y después GP. La deuda del estándar quedó en revisiones/e-deuda-estandar.md: en curso
