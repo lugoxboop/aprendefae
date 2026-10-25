@@ -13,6 +13,7 @@ import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
 import { Responder, useTanda } from "../piezas.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";
 import { Encabezado } from "../tema1/encabezado.jsx";
+import { Relieve, CSS_RELIEVE, N1, N2, HUNDIDO, DESTINO_REPOSO, SECUNDARIO_N2 } from "./relieve.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -52,7 +53,6 @@ const CORAL = FAE.coral; // #E76F51
 /* El texto del error, ligado al coral (Xeno; Levi). */
 export const CORAL_TEXTO = "#F4A592";
 export const FONDO_TARJETA = "#294061";
-const FONDO_PRESIONADA = "#304666";
 const TEAL_RAYA = FAE.teal; // #2A9D8F, el borde del Debe
 const TEAL_TEXTO = "#52C4B0"; // el rótulo «Debe»
 const AMBAR = FAE.ambar; // #E9C46A
@@ -62,7 +62,8 @@ const ALTO_COMPROBAR = 80;
 const CSS = `
 .fae-a3 button { -webkit-tap-highlight-color: transparent; }
 .fae-a3 [data-casilla]:focus-visible, .fae-a3-hoja button:focus-visible, .fae-a3 [data-titulo-panel]:focus-visible, .fae-a3 [data-tarjeta-hecho]:focus-visible { outline: 2px solid ${COLOR.neutro}; outline-offset: 2px; }
-.fae-a3-hoja [data-opcion]:active { background: ${FONDO_PRESIONADA} !important; }
+.fae-a3-hoja [data-cancelar] { transition: transform 100ms cubic-bezier(.3,.9,.4,1); }
+.fae-a3-hoja [data-cancelar]:active { transform: scale(.97); }
 @keyframes fae-a3-llena { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 @keyframes fae-a3-estado { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 @keyframes fae-a3-panel { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
@@ -114,7 +115,10 @@ function Casilla({ empresa, lado, cuenta, monto, estado, correcta, abierta, eval
   const borde = abierta ? `3px solid ${COLOR.blanco}`
     : error ? `2px solid ${CORAL}`
     : cuenta ? `2px solid ${color}`
-    : `2px dashed ${COLOR.quieto}`;
+    /* Volumen (#7): la casilla vacía es un destino hundido, con el contorno de siempre (1 px al 35 %). */
+    : `1px solid ${DESTINO_REPOSO}`;
+  /* Con 1 px de contorno, 1 px más de relleno: el contenido no se mueve. */
+  const anchoBorde = abierta ? 3 : error || cuenta ? 2 : 1;
   const animEstado = evaluado && !reducido ? `fae-a3-estado 160ms ${CURVA} ${retraso}ms both` : undefined;
   const etiqueta = nombreAccesible({
     empresa: empresa.nombre, lado, cuenta, monto: pesos(monto),
@@ -124,6 +128,7 @@ function Casilla({ empresa, lado, cuenta, monto, estado, correcta, abierta, eval
     <button
       ref={refBoton}
       type="button"
+      className="fae-destino"
       data-casilla={`${empresa.indice}:${lado}`}
       data-estado-casilla={estado ?? (cuenta ? "llena" : "vacia")}
       aria-haspopup="dialog"
@@ -131,9 +136,10 @@ function Casilla({ empresa, lado, cuenta, monto, estado, correcta, abierta, eval
       aria-disabled={evaluado ? "true" : undefined}
       onClick={() => { if (!evaluado) onTocar(); }}
       style={{
-        flex: "1 1 0", minWidth: 0, minHeight: "72px", boxSizing: "border-box", padding: "10px 8px",
+        flex: "1 1 0", minWidth: 0, minHeight: "72px", boxSizing: "border-box", padding: anchoBorde === 1 ? "11px 9px" : "10px 8px",
         display: "flex", flexDirection: "column", alignItems: "stretch", gap: "4px", textAlign: "left",
-        borderRadius: "12px", border: borde, background: "transparent", color: COLOR.blanco,
+        /* Volumen (#7): recibe la cuenta, así que es un destino hundido: #0D1725, sin canto, scale(.97) al pulsar. */
+        borderRadius: "12px", border: borde, background: HUNDIDO, color: COLOR.blanco,
         cursor: evaluado ? "default" : "pointer", touchAction: "manipulation",
       }}
     >
@@ -242,7 +248,7 @@ function Hoja({ empresa, lado, opciones, actual, enLaOtra, onElegir, onCancelar,
           position: "fixed", left: 0, right: 0, bottom: 0, zIndex: 61, maxHeight: "90vh", overflowY: "auto",
           borderRadius: "20px 20px 0 0",
         }),
-        boxSizing: "border-box", background: COLOR.navy, padding: "10px 16px calc(16px + env(safe-area-inset-bottom, 0px))",
+        boxSizing: "border-box", background: N1, padding: "10px 16px calc(16px + env(safe-area-inset-bottom, 0px))",
         animation: animHoja,
       }}
     >
@@ -253,9 +259,11 @@ function Hoja({ empresa, lado, opciones, actual, enLaOtra, onElegir, onCancelar,
           const elegida = o === actual;
           const enOtra = o === enLaOtra;
           return (
+            /* Volumen (#7): sobre el fondo N1 de la hoja, la opción arranca en N2 + filo, E1; marcada, E2 y borde de 2 px #F8F9FA. */
+            <Relieve key={o} e={elegida ? 4 : 3} filo radio="12px">
             <button
-              key={o}
               type="button"
+              className="fae-rel-cara"
               role="radio"
               aria-checked={elegida ? "true" : "false"}
               data-opcion={o}
@@ -263,18 +271,19 @@ function Hoja({ empresa, lado, opciones, actual, enLaOtra, onElegir, onCancelar,
               style={{
                 minHeight: "56px", width: "100%", boxSizing: "border-box", padding: "8px 16px", borderRadius: "12px",
                 display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "flex-start", textAlign: "left",
-                background: FONDO_TARJETA, border: elegida ? `2px solid ${COLOR.neutro}` : "2px solid transparent",
+                background: N2, border: elegida ? `2px solid ${COLOR.blanco}` : "2px solid transparent",
                 color: COLOR.blanco, fontFamily: INTER, fontSize: "15px", lineHeight: "22px", fontWeight: 600, cursor: "pointer",
               }}
             >
               <span>{o}</span>
-              {elegida && <span data-elegida style={{ fontFamily: INTER, fontSize: "13px", lineHeight: "18px", fontWeight: 400, color: COLOR.apagado }}>{UI.elegida}</span>}
+              {elegida && <span data-elegida style={{ fontFamily: INTER, fontSize: "13px", lineHeight: "18px", fontWeight: 400, color: SECUNDARIO_N2 }}>{UI.elegida}</span>}
               {!elegida && enOtra && (
-                <span data-en-la-otra style={{ fontFamily: INTER, fontSize: "13px", lineHeight: "18px", fontWeight: 400, color: COLOR.apagado }}>
+                <span data-en-la-otra style={{ fontFamily: INTER, fontSize: "13px", lineHeight: "18px", fontWeight: 400, color: SECUNDARIO_N2 }}>
                   {otroLado === "debe" ? UI.estaEnElDebe : UI.estaEnElHaber}
                 </span>
               )}
             </button>
+            </Relieve>
           );
         })}
       </div>
@@ -438,6 +447,7 @@ export default function MismoHecho({
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS}</style>
+      <style>{CSS_RELIEVE}</style>
       <div ref={capa} className="fae-a3" data-act3>
         {!modoDemo && (
           <>
