@@ -458,33 +458,44 @@ export default function AsiSeJuega({ asi, Mecanica, onSiguiente, escala = 1, tit
         </figure>
       </div>
 
-      <div style={{ display: "flex", justifyContent: "center", marginTop: "10px" }}>
-        <button
-          type="button"
-          data-asj-control
-          onClick={control.accion}
-          style={{
-            /* 44 px: el mínimo que un dedo acierta a 320 px. Medido el 15-oct con scripts/blanco-de-toque.mjs. */
-            minHeight: "44px", padding: "0 16px", borderRadius: "999px", cursor: "pointer",
-            background: "transparent", border: "1px solid rgba(248,249,250,0.22)",
-            color: "rgba(248,249,250,0.82)", fontFamily: SORA, fontSize: "12.5px", fontWeight: 600,
-          }}
-        >
-          {control.texto}
-        </button>
-      </div>
-      {reducido && (
-        <p data-asj-cuadro style={{ margin: "6px 0 0", textAlign: "center", fontSize: "12px", color: "rgba(248,249,250,0.6)" }}>
-          Cuadro {cuadro} de 3
-        </p>
-      )}
+      {/*
+        ═══════════ LA BARRA PEGADA LLEVA LOS DOS CONTROLES (#596) ═══════════
 
-      {/* «Siguiente» se queda pegado abajo aunque la página tenga que hacer scroll. */}
-      <div data-asj-siguiente style={{
-        position: "sticky", bottom: 0, zIndex: 5, marginTop: "6px", paddingBottom: "14px",
+        «Siguiente» se queda pegado abajo aunque la página tenga que hacer
+        scroll. «Pausar» (o «Seguir», «Ver el cuadro n», «Ver de nuevo») iba
+        justo encima, en el flujo, y la barra pegada se le montaba: Misa midió
+        −14,6 px de solape a 375 en cu-izquierda-o-derecha y −13,4 en
+        cu-cuadro-dinamicas, y más con las pastillas de 44 px de #595. Dentro
+        de la barra no hay nada que tapar: los dos se alcanzan siempre, con el
+        de la demo a la izquierda y «Siguiente» ocupando el resto.
+      */}
+      <div data-asj-barra style={{
+        position: "sticky", bottom: 0, zIndex: 5, marginTop: "10px", paddingBottom: "14px",
         background: `linear-gradient(to bottom, transparent, ${FAE.bg} 30%)`,
       }}>
-        <Responder onClick={onSiguiente}>Siguiente</Responder>
+        <div style={{ display: "flex", alignItems: "flex-end", gap: "8px" }}>
+          <button
+            type="button"
+            data-asj-control
+            onClick={control.accion}
+            style={{
+              /* 44 px: el mínimo que un dedo acierta a 320 px. Medido el 15-oct con scripts/blanco-de-toque.mjs. */
+              flex: "0 0 auto", minHeight: "44px", padding: "0 14px", borderRadius: "999px", cursor: "pointer",
+              background: FAE.bg, border: "1px solid rgba(248,249,250,0.22)", whiteSpace: "nowrap",
+              color: "rgba(248,249,250,0.82)", fontFamily: SORA, fontSize: "12.5px", fontWeight: 600,
+            }}
+          >
+            {control.texto}
+          </button>
+          <div data-asj-siguiente style={{ flex: "1 1 auto", minWidth: 0 }}>
+            <Responder onClick={onSiguiente}>Siguiente</Responder>
+          </div>
+        </div>
+        {reducido && (
+          <p data-asj-cuadro style={{ margin: "6px 0 0", fontSize: "12px", color: "#A8B6C8" }}>
+            Cuadro {cuadro} de 3
+          </p>
+        )}
       </div>
     </section>
   );
