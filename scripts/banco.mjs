@@ -42,6 +42,10 @@ const todas = args.includes("--todas");
  * «Siguiente» y mide cada una. Es donde aparece lo que no se ve en la
  * primera: la figura que crece y tapa la navegación. */
 const pasos = args.includes("--pasos");
+/* `--b1`: la barra B1 de enganche.md — a 320, la figura o la interacción
+ * empieza en los primeros 280 px de la tarjeta, y antes de ella no hay más de
+ * 40 palabras. Se mide sin «Así se juega», que es tutorial y no la pieza. */
+const b1 = args.includes("--b1");
 const foto = args.includes("--foto");
 const iAncho = args.findIndex((a) => a === "--ancho" || a.startsWith("--ancho="));
 const unAncho = iAncho < 0 ? NaN : Number(args[iAncho].includes("=") ? args[iAncho].split("=")[1] : args[iAncho + 1]);
@@ -109,10 +113,38 @@ const medir = () => {
     .filter((e) => getComputedStyle(e).textOverflow === "ellipsis" && e.scrollWidth > e.clientWidth + 1)
     .filter((e) => e.clientWidth > 2 && !oculto(e))
     .map((e) => `${e.textContent.trim().slice(0, 26)} (pide ${e.scrollWidth}, tiene ${e.clientWidth})`);
+  /*
+   * B1: dónde empieza lo primero que no es texto —figura o control— contado
+   * desde el borde de arriba de la pieza, y cuántas palabras hay antes.
+   */
+  const arriba = raiz.getBoundingClientRect().top + scrollY;
+  const candidatos = [...raiz.querySelectorAll('svg, canvas, img, [data-figura], button, [role="button"], input, select')]
+    .filter((e) => visible(e) && !oculto(e) && e.getBoundingClientRect().height >= 16);
+  const primero = candidatos
+    .map((e) => {
+      const propio = [...e.childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent).join(" ").trim();
+      return { y: Math.round(e.getBoundingClientRect().top + scrollY - arriba), q: (propio || e.getAttribute("aria-label") || e.tagName).trim().slice(0, 24) };
+    })
+    .sort((a, b) => a.y - b.y)[0] ?? null;
+  let palabras = 0;
+  if (primero) {
+    const limite = arriba + primero.y;
+    const paseo = document.createTreeWalker(raiz, NodeFilter.SHOW_TEXT);
+    for (let n = paseo.nextNode(); n; n = paseo.nextNode()) {
+      const e = n.parentElement;
+      if (!e || !visible(e) || oculto(e)) continue;
+      /* El texto de un <style> no son palabras que nadie lea: contarlo
+       * inflaba «palabras antes» con reglas CSS. */
+      if (e.closest("style, script, template")) continue;
+      if (e.getBoundingClientRect().top + scrollY >= limite) continue;
+      palabras += (n.textContent.trim().match(/\S+/g) ?? []).length;
+    }
+  }
   return {
     alto: Math.round(raiz.getBoundingClientRect().height),
     desborde: document.documentElement.scrollWidth > innerWidth,
     toque, chico, cortados,
+    b1: primero ? { empieza: primero.y, que: primero.q, palabras } : null,
   };
 };
 
@@ -131,12 +163,14 @@ if (todas) {
     const fallos = [];
     pg.on("pageerror", (e) => fallos.push(String(e).slice(0, 120)));
     try {
-      await pg.goto(`${BANCO}#${encodeURIComponent(j.id)}`, { waitUntil: "networkidle", timeout: 20000 });
+      await pg.goto(`${BANCO}#${encodeURIComponent(j.id)}${b1 ? "?sin-tutorial" : ""}`, { waitUntil: "networkidle", timeout: 20000 });
       await pg.waitForTimeout(700);
       await pg.evaluate(() => document.fonts.ready);
       const r = await pg.evaluate(medir);
       const avisos = [];
       if (r.alto === 0) avisos.push("NO PINTA NADA");
+      if (b1 && r.b1) avisos.push(`arranque ${r.b1.empieza} px · ${r.b1.palabras} palabras antes`);
+      if (b1 && !r.b1) avisos.push("B1: no encontré ni figura ni control");
       if (r.desborde) avisos.push("desborde horizontal");
       for (const t of r.toque) avisos.push(`toque ${t.h}px «${t.q}»`);
       for (const t of r.chico) avisos.push(`texto ${t.px}px «${t.q}»`);
@@ -222,6 +256,7 @@ for (const [w, h] of ANCHOS) {
   const r = await pg.evaluate(medir);
 
   console.log(`\n=== ${id} · ${w}×${h} ===  alto ${r.alto} px · desborde horizontal: ${r.desborde ? "SÍ" : "no"} · fuentes de producción: ${fuentes ? "sí" : "NO (la medida de ancho no vale)"}`);
+  if (r.b1) console.log(`  B1: lo primero que no es texto empieza en ${r.b1.empieza} px, con ${r.b1.palabras} palabras antes («${r.b1.que}») ${r.b1.empieza > 280 || r.b1.palabras > 40 ? "— FUERA de la barra (280 px / 40 palabras)" : "— dentro de la barra"}`);
   if (fallos.length) console.log(`  errores de la página: ${fallos.join(" | ")}`);
   if (r.toque.length) { console.log(`  toque por debajo de 44 px (${r.toque.length}):`); for (const t of r.toque) console.log(`    ${String(t.h).padStart(3)} px de alto · ${t.w} de ancho · «${t.q}»`); }
   if (r.chico.length) { console.log(`  texto por debajo de 12 px (${r.chico.length}):`); for (const t of r.chico) console.log(`    ${t.px} px · «${t.q}»`); }

@@ -37,8 +37,18 @@ const SECUENCIAS_MOD = import.meta.glob(
 
 const CATALOGO = new Map();
 for (const [ruta, mod] of Object.entries(VISTAS)) {
-  if (!Array.isArray(mod.JUEGOS)) continue;
-  for (const j of mod.JUEGOS) if (j?.id && !CATALOGO.has(j.id)) CATALOGO.set(j.id, { ...j, vista: ruta.split("/").pop() });
+  /*
+   * No todas se llaman `JUEGOS`: las tres vistas de T7 usan `JUEGOS_T7_1` y
+   * compañía, y por mirar solo el nombre exacto se quedaban fuera tres temas
+   * enteros. Vale cualquier `JUEGOS*` cuyas entradas tengan id y Mecánica.
+   */
+  for (const [nombre, lista] of Object.entries(mod)) {
+    if (!/^JUEGOS/.test(nombre) || !Array.isArray(lista)) continue;
+    for (const j of lista) {
+      if (!j?.id || typeof j.Mecanica !== "function" || CATALOGO.has(j.id)) continue;
+      CATALOGO.set(j.id, { ...j, vista: ruta.split("/").pop() });
+    }
+  }
 }
 /*
  * Las secuencias, por su clave: de `PIEZAS_T7_1` sale `t7_1`, y su tema sale de
