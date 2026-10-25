@@ -126,7 +126,7 @@ Todos los textos de P3 caben en 4 líneas ✓.
 | 5 | Haz | El corte de junio | Una ficha se consume | ‹ › |
 | 6 | Haz | Arma el asiento | — | O1 compacto (en esta pantalla reemplaza a las pistas) · ‹ cuenta › con CUENTAS_ASIENTO_P4_JUNIO |
 | 7 | Haz | ¿Cuánto queda? | **El bloque queda tapado hasta que responde (E8)**; luego aparece «$10.000» | 3 botones · OPC_P4_6 |
-| 8 | Haz, **3 pasos** | La otra empresa: ¿tiene o debe? Después, las citas | Bloque con contorno y «Recibido por anticipado». **Pasos 2 y 3: una cita por paso, en la tarjeta de cita:** la de la p. 142 y luego la de la p. 145 (páginas del literal publicado en `delLibro`). | 2 botones · OPC_P4_7 |
+| 8 | Haz, **3 pasos** | La otra empresa: ¿tiene o debe? Después, las citas | Bloque con contorno y «Recibido por anticipado». **Pasos 2 y 3: una cita por paso, en la tarjeta de cita:** la de las pp. 142-143 y luego la de la p. 145. | 2 botones · OPC_P4_7 |
 | 9 | Haz | Su asiento | — | O1 compacto · ‹ cuenta › con CUENTAS_ASIENTO_P4_COSTA |
 | 10 | Cierre, **2 pasos** | — | CIERRE_P4 (152 caracteres, 5 líneas a 320), partido por frase | vacía |
 
@@ -161,15 +161,19 @@ Es una oración completa, así que la cita no queda cortada ni lleva «…». La
 - Es una tarjeta del mismo alto que la reserva (150 / 200), con fondo #1C2939 y una raya izquierda de 3 px #B8C4D4.
 - Relleno de 8. Texto en Inter 14/20, #F8F9FA (13,98:1), con la atribución en la misma línea.
 - Ancho útil: 258 − 3 − 16 = 239 px, unos 30 caracteres por línea.
-- En esos pasos el apoyo solo dice «Así lo dice el libro». En el último paso de cita, la figura vuelve al modelo.
+- En esos pasos el apoyo solo dice «Así lo dice el libro».
+- **La tarjeta se queda hasta que termina el último paso de cita, y el modelo vuelve cuando se pasa a la pantalla siguiente** (Takamura, lote 14). Si volviera antes, la última cita no se vería en ningún momento.
+- **La tarjeta se ancla por contenido**, a la pantalla del término («Acumulado» y «Diferido»), no por el número de pantalla.
 - Se aplica igual en P4-8, aunque ahí las citas caben en el apoyo, para que las citas del libro estén siempre en el mismo sitio.
 - ⛔ **Ippo mide a 320 la tarjeta de la p. 139: 6 líneas, unos 136 px. Si pasa de 150, para y avisa.**
+
+**Las citas son las del `delLibro` de main, que ya incluye #532** (`contabilidadTema3Pieza3.js:96` y `contabilidadTema3Pieza4.js:92`; lo comprobó Kamogawa el 25-oct). La primera de P4 dice «en la medida **que** va pasando» y lleva «(pp. 142-143)». Itagaki había leído una versión anterior a #532, a la que le faltaba el «que» y que decía «(p. 142)». **Ippo monta el texto de `delLibro` de main, no el de esta tabla**, si alguna vez no coinciden.
 
 | Pantalla | Paso | Cita literal (de `delLibro` en main) | Car. | Líneas en la tarjeta a 320 |
 |---|---|---|---|---|
 | P3-7 | 2 | «Son aquellos gastos que ya han sido causados, pero que al cierre del periodo contable todavía no han sido cancelados porque tienen un compromiso de pago futuro» (p. 139). | 171 | 6 (unos 136 px) |
 | P3-7 | 3 | «Son aquellos ingresos que ya han sido devengados, pero que al cierre del periodo contable todavía no se ha recibido el pago de los mismos» (p. 141). | 149 | 5 (unos 116 px) |
-| P4-8 | 2 | «Los gastos diferidos son activos que, en la medida va pasando el tiempo, se van convirtiendo en gastos» (p. 142). | 114 | 4 |
+| P4-8 | 2 | «Los gastos diferidos son activos que, en la medida que va pasando el tiempo, se van convirtiendo en gastos» (pp. 142-143). | 122 | 5 |
 | P4-8 | 3 | «Los ingresos diferidos son pasivos que, en la medida que va pasando el tiempo, se van convirtiendo en ingresos» (p. 145). | 122 | 5 |
 
 **OPC_PREDICE:** «Ingresos / y gastos» cabe en un botón de 80 a 13/16: cada línea mide unos 54 px de 64 útiles [calculado, Itagaki]. Miyata confirma que quitar «Ninguna» no le quita nada a P1, porque en ninguno de sus seis hechos deja de moverse una línea. Si algún día P1 suma un hecho que no mueva nada, como una compra a crédito, «Ninguna» vuelve con su error (E-PRED-6).
@@ -256,6 +260,12 @@ La columna de Miyata es la numeración de sus textos v1. «Repaso» quiere decir
 Si el titular cambia de un paso a otro dentro de una pantalla y `SecuenciaAprender` no lo permite, el de la pantalla es el primero y el otro va como rótulo del paso. Ippo lo anota en el PR.
 
 ## 5 · Lo que Ippo mide y entrega
+
+**Cuatro medidas antes de montar, todas en una sola corrida** (Takamura, lote 14):
+1. La marca de 10 px a 320 (C6).
+2. La tarjeta de la p. 139: tiene que quedar en 150 px o menos.
+3. La pila de P6-3, con los rótulos reales.
+4. **La cabecera de Aprender.** Desde la v2 se supone que mide 124 px, y de esa cifra depende el desborde que se le permite al apoyo cuando hay error. Si mide más, baja el tope de las pistas y Kamogawa revisa las de 85 caracteres.
 
 - **C6:** la marca de 10 px a 320, antes de nada.
 - Las cuatro piezas a 320 y a 375, con el texto real más largo, contadas con la sonda de encaje (#550). Cada paso visible tiene 60 palabras o menos. El desborde es de 40 px o menos, y solo en el apoyo.
