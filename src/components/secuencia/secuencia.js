@@ -16,6 +16,8 @@
  *     titular,                 la idea, una frase, máx. 10 palabras (§3.3)
  *     apoyo?,                  1 o 2 frases (máx. 25 palabras como objetivo)
  *     Figura,                  componente: ({ estado, setEstado, paso, primeraVez, reducido }) → <figure> viva
+ *     Mensaje?,                componente con las mismas props, FUERA de la figura (#549): el veredicto,
+ *                              la pista y la consecuencia de un Haz. Crece sin mover el hueco de la figura.
  *     nombreFigura,            nombre accesible del <figure>; nunca contiene la respuesta (D9)
  *     estadoInicial?,          lo que la figura recuerda; tiene que ser JSON (se guarda en la pestaña)
  *     pasos?,                  cuántos pasos da «Siguiente» dentro de la pantalla (máx. 5)

@@ -211,3 +211,28 @@ test("★ el alto de la figura es por pieza, con los de la v1 por defecto y el t
   assert.deepEqual(altoFiguraDe({ altoFigura: { a320: 180 } }), { a320: 180, a375: 200 });
   assert.deepEqual(altoFiguraDe({ altoFigura: { a320: 400, a375: 400 } }), { a320: 206, a375: 253 }, "pasó del tope");
 });
+
+test("★ #549: el mensaje va fuera de la figura y lee su mismo estado; la figura empuja en vez de tapar", async () => {
+  sessionStorage.clear();
+  const Mensaje = ({ estado }) => h("p", { "data-mensaje-prueba": "" }, `intentos ${estado?.intentos ?? 0}`);
+  const pz = { id: "m1", pantallas: [
+    pantalla("a", "apertura"),
+    pantalla("h", "haz", { estadoInicial: S.HAZ_INICIAL, resuelta: S.hazResuelto, razon: "Elige una opción.", Mensaje }),
+    pantalla("m", "miralo"),
+    pantalla("c", "cierre"),
+  ] };
+  const m = await montar({ temaId: "mensaje", piezas: [pz] });
+  assert.equal(m.q("[data-mensaje-zona]"), null, "una pantalla sin Mensaje no reserva zona");
+  await m.clic("[data-siguiente]");
+  const zona = m.q("[data-mensaje-zona]");
+  assert.ok(zona, "no se pintó la zona de mensaje");
+  assert.equal(zona.closest("figure"), null, "el mensaje quedó dentro de la figura");
+  await m.clic("[data-opcion='mal']");
+  assert.equal(m.q("[data-mensaje-prueba]").textContent, "intentos 1", "el mensaje no lee el estado de la figura");
+  await act(async () => { m.raiz.unmount(); });
+
+  const fuente = readFileSync(new URL("../SecuenciaAprender.jsx", import.meta.url), "utf8");
+  const estilos = fuente.match(/const ESTILOS = `([\s\S]*?)`;/)[1];
+  assert.match(estilos, /\.fae-sec-figura \{ min-height:/, "la figura volvió a alto fijo: se sale y tapa «Siguiente»");
+  assert.doesNotMatch(estilos, /\.fae-sec-figura \{ height:/);
+});
