@@ -19,7 +19,7 @@ import EncabezadoCompacto from "../b5/EncabezadoCompacto.jsx";
 import {
   Pastilla, Mensaje, RegionViva, IconoCheck, IconoX, CORRECTA, REVELADA, CSS_B5H, CLASE_B5H,
 } from "../b5/Devolucion.jsx";
-import { NAVY, CURVA, contadorDe, Avance, CSS_REGISTRO, CLASE_APARECE } from "./registro.jsx";
+import { INTER, NAVY, CURVA, contadorDe, Avance, CSS_REGISTRO, CLASE_APARECE } from "./registro.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -96,6 +96,23 @@ const SORA = "Sora, sans-serif";
  * 0,66 deja el peor texto por encima de 4,5:1.
  */
 export const OPACIDAD_ATENUADA = 0.66;
+/*
+ * El cierre de la situación cuando la decisión 1 estuvo bien y la 2 no: el
+ * mismo bloque que `Mensaje`, sin el visto ni «Correcto.».
+ */
+function CierreSinVeredicto({ texto }) {
+  return (
+    <div role="status" className="fae-b5h-nueva" data-mensaje="cierre" style={{
+      margin: "12px 0 0", padding: "11px 13px", borderRadius: "11px",
+      background: "rgba(184,196,212,0.12)", borderLeft: `3px solid ${NEUTRO}`,
+    }}>
+      <p data-devolucion style={{ margin: 0, fontFamily: INTER, fontSize: "15px", lineHeight: "22px", color: FAE.text, overflowWrap: "anywhere" }}>
+        <span data-texto-retro>{texto}</span>
+      </p>
+    </div>
+  );
+}
+
 /* Las opciones de predicción que no se eligieron. Solo en su borde. */
 export const OPACIDAD_NO_ELEGIDA = 0.5;
 const NEUTRO_RGB = "184,196,212";
@@ -497,15 +514,6 @@ export default function DondeSeRompio({
               {r && <Pastilla marca={r.ok ? CORRECTA : REVELADA} valor={`${roto.n} ${roto.rotulo}`} />}
             </div>
 
-            {/* El contador y la flecha apagada: su sitio está desde el principio (C3). */}
-            <p data-cuenta-apagados aria-live="polite" style={{
-              margin: "6px 0 0", minHeight: "36px", boxSizing: "border-box", padding: "8px 11px", borderRadius: "10px",
-              fontFamily: SORA, fontSize: "13px", fontWeight: 700, lineHeight: "20px", color: FAE.text,
-              background: contador ? "rgba(184,196,212,0.1)" : "transparent",
-              borderLeft: `3px solid ${contador ? NEUTRO : "transparent"}`,
-            }}>
-              {contador && <span className={CLASE_APARECE}>{contador}{flechaApagada && <span data-rotulo-flecha> — {ROTULO_FLECHA_APAGADA}</span>}</span>}
-            </p>
           </div>
 
           {/*
@@ -555,6 +563,19 @@ export default function DondeSeRompio({
                 );
               })}
             </div>
+            {/*
+              El contador y la flecha apagada, debajo de las opciones y junto a la
+              devolución (Shoko, #535): encima de la pregunta, la respuesta quedaba
+              antes del enunciado que la pide. Su sitio está desde el principio (C3).
+            */}
+            <p data-cuenta-apagados aria-live="polite" style={{
+              margin: "9px 0 0", minHeight: "36px", boxSizing: "border-box", padding: "8px 11px", borderRadius: "10px",
+              fontFamily: SORA, fontSize: "13px", fontWeight: 700, lineHeight: "20px", color: FAE.text,
+              background: contador ? "rgba(184,196,212,0.1)" : "transparent",
+              borderLeft: `3px solid ${contador ? NEUTRO : "transparent"}`,
+            }}>
+              {contador && <span className={CLASE_APARECE}>{contador}{flechaApagada && <span data-rotulo-flecha> — {ROTULO_FLECHA_APAGADA}</span>}</span>}
+            </p>
             <p data-cierre-prediccion={fase === FIN && prediccion ? (prediccion.acerto ? "acerto" : "fallo") : undefined} style={{
               margin: "9px 0 0", minHeight: "17px", fontSize: "12.5px", lineHeight: "17px", color: "rgba(248,249,250,0.8)",
             }}>
@@ -565,7 +586,11 @@ export default function DondeSeRompio({
 
         {/* La devolución: la del error tras la decisión 1; la del acierto, al final de la cascada (dice cuántos se apagaron). */}
         <RegionViva>
-          {r && (!r.ok || fase === FIN) && <Mensaje ok={r.ok} texto={sinEmoji(r.texto)} />}
+          {r && !r.ok && <Mensaje ok={false} texto={sinEmoji(r.texto)} />}
+          {/* Si la segunda falló, el cierre no abre con «Correcto.»: llegaría después del error y lo contradiría (Shoko, #535). */}
+          {r && r.ok && fase === FIN && (prediccion?.acerto === false
+            ? <CierreSinVeredicto texto={sinEmoji(r.texto)} />
+            : <Mensaje ok texto={sinEmoji(r.texto)} />)}
         </RegionViva>
 
         {fase === FIN && !modoDemo && (

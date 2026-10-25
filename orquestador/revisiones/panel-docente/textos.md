@@ -43,3 +43,13 @@ Textos del rediseño que especificó Ukyo (`orquestador/conocimiento/prompts/pan
 3. **El estado sin alertas no lleva ícono de riesgo.** Así ● Bajo significa siempre «aviso informativo» y nunca «todo bien».
 4. **B3 con 1 estudiante:** Baki confirma si `n_terminaron` cuenta estudiantes distintos o intentos. Si cuenta estudiantes, con un solo estudiante se usa el texto propio de 1 estudiante, porque el umbral de 5 nunca se alcanzaría.
 5. **Los motivos dicen solo lo que la regla comprueba.** Reemplazan los ejemplos de Ukyo («No entra hace 2 semanas», «Falla casi todo lo evaluativo»), que exageraban el dato: el umbral es de 7 días, se mide actividad y no entradas al sitio, y un acierto bajo 60 % no es «casi todo».
+
+## Textos que faltaban (Katsumi, lote 4, 24 oct)
+
+Los pidió Shibukawa en la auditoría del #498. El panel v1 ya está fusionado, así que estos tres cambios van en un PR aparte.
+
+| Dónde va | Texto | NUEVO o existente |
+|---|---|---|
+| Pie de B2, línea de los destacados (`destacados.js`, mismo cálculo) | {N} van muy bien · Ver quiénes | NUEVO; reemplaza «Ver quiénes van muy bien» |
+| Enlace al panel completo de alertas (`BloqueAlertas`) | Ver todas las alertas | NUEVO; reemplaza «Ver los {N}», que no decía de qué eran los N |
+| Título de la vista de un estudiante | El nombre del estudiante, con el rótulo «Estudiante» encima | NUEVO. No se usa «Mi estudiante», porque sugiere que el profesor tiene uno solo |

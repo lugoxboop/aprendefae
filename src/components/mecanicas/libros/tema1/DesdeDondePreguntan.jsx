@@ -300,12 +300,17 @@ export default function DesdeDondePreguntan({
 
         {/*
           ═══════ LA SEGUNDA DECISIÓN (D4) ═══════
-          Su sitio está desde el principio, en una rejilla de 2×2; se activa al
-          responder la 1, se acierte o no. En la demo no sale.
+          Su sitio está desde el principio, en una rejilla de 2×2, pero la
+          pregunta y las opciones solo aparecen al responder la 1, se acierte o
+          no (Shoko, #535): «Ya sabes desde dónde pregunta» antes de responder
+          presupone la respuesta. Hasta entonces, el sitio va vacío
+          (visibility: hidden: guarda el alto y nada se puede tocar ni leer).
+          En la demo no sale.
         */}
         {!modoDemo && (
-          <div data-segunda-decision data-activa={r && !segunda ? "si" : "no"} style={{ marginTop: "14px" }}>
-            <p style={{ margin: "0 0 8px", fontFamily: SORA, fontSize: "14px", fontWeight: 600, lineHeight: 1.35, color: r ? FAE.text : SECUNDARIO }}>
+          <div data-segunda-decision data-activa={r && !segunda ? "si" : "no"} aria-hidden={!r || undefined}
+            style={{ marginTop: "14px", visibility: r ? "visible" : "hidden" }}>
+            <p style={{ margin: "0 0 8px", fontFamily: SORA, fontSize: "14px", fontWeight: 600, lineHeight: 1.35, color: FAE.text }}>
               {SEGUNDA_T1_1.pregunta}
             </p>
             <div role="group" aria-label={SEGUNDA_T1_1.pregunta} style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px" }}>
@@ -326,7 +331,7 @@ export default function DesdeDondePreguntan({
                       height: "44px", padding: "3px 8px", borderRadius: "10px", boxSizing: "border-box",
                       display: "flex", alignItems: "center", gap: "5px", textAlign: "left",
                       cursor: r && !segunda ? "pointer" : "default",
-                      color: r ? FAE.text : SECUNDARIO, fontFamily: INTER, fontSize: "12px", lineHeight: 1.2,
+                      color: FAE.text, fontFamily: INTER, fontSize: "12px", lineHeight: 1.2,
                       ...estiloC2(estado),
                     }}
                   >

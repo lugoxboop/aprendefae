@@ -29,7 +29,7 @@
 - Ítems retirados conservan su etiqueta en `etiquetasItem.js` para el panel docente.
 
 ## Agentes (sedes fijas desde el 23 oct; sobreviven a mis traspasos)
-- Baki, código: sesión de Claude Code (claude.ai/code/session_01QpJop5McxwEWg52bgBvPGN). Construye, mide con sonda y guardia, abre PR, no fusiona.
+- Baki, código: sesión de Claude Code (claude.ai/code/session_01X55WAged4taZWzNBE5QsR6; desde el 24 oct, tras su traspaso en orquestador/traspasos/baki.md de la rama del #488; la anterior era session_01QpJop5McxwEWg52bgBvPGN). Construye, mide con sonda y guardia, abre PR, no fusiona.
 - Katsumi, contenido: claude.ai/chat/a544b14e-bd46-4e97-b22a-5decfeda0c99. Prompt maestro pedagógico. INFLESZ con `npm run inflesz`, copia contra el libro = 0.
 - Hanayama, diseño: claude.ai/chat/930849c0-7d5d-431e-a1b2-30f3e19b19dc. Prompt maestro de diseño. Especifica sobre el prototipo; no toca lo compartido.
 - Shibukawa, auditoría: claude.ai/chat/3361c35f-ee1b-4585-8736-6e061d5bfdb1. Prompt de auditores y Kit literal. No ve la pantalla: hay que mandarle capturas a 320x568 y 375x667. Da PASA o FALLA.

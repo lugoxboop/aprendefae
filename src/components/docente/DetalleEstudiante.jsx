@@ -4,6 +4,7 @@ import { NIVEL, alertasDe } from "../../docente/alertas.js";
 import { historialDe } from "../../docente/datos.js";
 import { nombreDeActividad } from "../../data/subjects.js";
 import MarcaNivel, { NIVEL_MARCA } from "./MarcaNivel.jsx";
+import { MOTIVO_CORTO } from "../../docente/panelV1.js";
 
 /*
  * ÍTEM 3 — El detalle que se abre DEBAJO de la fila, dentro de la misma fila.
@@ -99,7 +100,8 @@ export default function DetalleEstudiante({ e, subjectId, posicion }) {
             <p style={{ margin: 0, fontFamily: "Sora, sans-serif", fontSize: "13px", fontWeight: 600, color: FAE.text }}>
               {/* La palabra del nivel acompaña al color: el tono nunca va solo. */}
               <span style={{ color: COLOR_NIVEL[alerta.nivel] }}>{PALABRA_NIVEL[alerta.nivel]}</span>
-              {" · "}{alerta.titulo}
+              {/* El motivo de textos.md, el mismo de B2 (Shibukawa, #525): una regla, un nombre. alertas.js no cambia. */}
+              {" · "}{MOTIVO_CORTO[alerta.titulo] ?? alerta.titulo}
             </p>
             {alerta.detalle && (
               <p style={{ margin: "3px 0 0", fontSize: "12.5px", lineHeight: 1.5, color: "rgba(248,249,250,0.66)" }}>
@@ -114,7 +116,8 @@ export default function DetalleEstudiante({ e, subjectId, posicion }) {
         {/* ── Cifras clave. En móvil, rejilla 2×2 compacta. ── */}
         <div className="fae-det-cifras">
           <div><p style={rotulo}>FP TOTAL</p><p style={cifra}>{e.fp_total}</p></div>
-          <div><p style={rotulo}>FP ESTE CICLO</p><p style={{ ...cifra, color: "#3FA69A" }}>{e.fp_ciclo}</p></div>
+          {/* En neutro (Shibukawa, #525): en Contabilidad el teal es el debe. */}
+          <div><p style={rotulo}>FP ESTE CICLO</p><p style={{ ...cifra, color: FAE.text }}>{e.fp_ciclo}</p></div>
           <div>
             <p style={rotulo}>ACIERTO EVALUATIVAS</p>
             <p style={cifra}>

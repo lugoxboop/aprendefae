@@ -221,3 +221,26 @@ test("★★★ la segunda decisión no toca el puntaje: ni fpBase, ni porPartid
     }
   }
 });
+
+/* Futaba, lote D §4: un acierto por caso, con el nombre del libro (pp. 35-36), y el reparto de los ocho hechos. */
+test("★★ T1-4: el acierto de la decisión 2 es uno por caso, y cada hecho cae en el caso de Futaba", () => {
+  const nombres = {
+    "deuda-sube": /^Aumento en el activo y aumento en el pasivo: /,
+    "aporte-sube": /^Aumento en el activo y aumento en el patrimonio: /,
+    "deuda-baja": /^Disminución en el activo y disminución en el pasivo: /,
+    "aporte-baja": /^Disminución en el activo y disminución en el patrimonio: /,
+  };
+  for (const o of SEGUNDA_T1_4.opciones) assert.match(o.acierto ?? "", nombres[o.id], `${o.id}: sin su acierto`);
+  assert.equal(new Set(SEGUNDA_T1_4.opciones.map((o) => o.acierto)).size, 4);
+  const reparto = {
+    "deuda-sube": ["cal-2", "cal-3", "cal-7"], "aporte-sube": ["cal-1", "cal-5"],
+    "deuda-baja": ["cal-4", "cal-8"], "aporte-baja": ["cal-6"],
+  };
+  for (const [caso, ids] of Object.entries(reparto)) {
+    for (const id of ids) assert.equal(correctaSegundaT1_4(TRANSACCIONES_CAP2.find((x) => x.id === id)), caso, id);
+  }
+  /* La correcta conserva su acierto al armar las opciones. */
+  const t = TRANSACCIONES_CAP2[0];
+  const buena = opcionesSegundaT1_4(t).find((o) => o.id === correctaSegundaT1_4(t));
+  assert.ok(buena.acierto && buena.msg === null);
+});

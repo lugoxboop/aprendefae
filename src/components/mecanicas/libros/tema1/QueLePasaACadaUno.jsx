@@ -358,7 +358,7 @@ export default function QueLePasaACadaUno({
 
         <RegionViva>
           {r && <Mensaje ok={r.ok} texto={sinEmoji(r.texto)} />}
-          {r && caso && <Mensaje ok={casoOk} texto={casoOk ? null : opcionCaso?.msg ?? null} />}
+          {r && caso && <Mensaje ok={casoOk} texto={casoOk ? opcionCaso?.acierto ?? null : opcionCaso?.msg ?? null} />}
         </RegionViva>
 
         {r && !modoDemo && (
