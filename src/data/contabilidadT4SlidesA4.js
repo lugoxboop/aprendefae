@@ -39,8 +39,8 @@ const PB = Object.fromEntries(PIEZA_BANCOS_Y_NOTAS.casoB.pantallas.map((p) => [p
 const comun = {
   saldo: {
     titular: PIEZA_BANCOS_Y_NOTAS.objetivo,
+    /* Auditoría de Shibukawa (#488): «Bancos es la plata…» pasa a p2; a 320, p1 era un muro (2 + 7 líneas). */
     antes: [
-      "Bancos es la plata de la empresa en el banco.",
       "Girar un cheque es firmarlo para que el banco pague con esa plata.",
       "Bancos arranca en cero. Consignas $876.000 y giras un cheque de $398.200. ¿Cuánto queda?",
     ],
@@ -56,7 +56,7 @@ const comun = {
   notas: {
     /* Míralo: el texto de Katsumi es una frase de 19 palabras; el titular es la «Idea» de Hanayama. */
     titular: "Las notas del banco restan o suman",
-    antes: P["las-notas"].antes,
+    antes: ["Bancos es la plata de la empresa en el banco.", ...P["las-notas"].antes],
   },
   mandar: {
     titular: P["sube-o-baja"].antes[0],

@@ -22,7 +22,8 @@ Lo escribo porque mi contexto pasó del 80 % con los slides de T4 recién destra
 - Prueba común `t4-slides.test.mjs` (forma, literalidad contra el hilo y los paquetes, B2, recorrido entero en los dos casos). `npm test`: 0 fallos.
 - Sonda `scripts/t4/slides/medir-slides.mjs` (modelo, banda, B1, `bajoNav`; `--pieza`, `--caso`, `--capturas`). Medidas en `orquestador/revisiones/t4-slides/medidas-caso*.json`; capturas en `capturas/`.
 - Abierto, para otros: #541 (Erwin: `faltasDePieza` sin Apertura y sin Cierre); #537 (prop `altoFigura`); a 320, bandas de 4-7 renglones y la banda bajo la navegación fija (lo ven Hanayama y Katsumi); `RAZON_HAZ` es texto de interfaz mío, a revisar por Katsumi.
-- Siguiente: el PASA de Shibukawa y lo que pida.
+- Auditoría de Shibukawa (25 oct): NO PASA con E2 a 320, A4 p1 y A1 p5. Hecho en la tanda siguiente: el ajuste de la banda en `comun.jsx` (`useBandaALaVista`), «Bancos es la plata…» a A4 p2, «Escenario simulado.» en A1 p5, «Decide para seguir.» y A5 p5 con la mecánica nueva de Katsumi (contrapartida entre tres cuentas). Medido: `bajoNav` 0 en las 144 filas, A4 p1 en 7 líneas, A7 ≤ 14 ms. Capturas en `capturas/auditoria/` (`scripts/t4/slides/capturas-auditoria.mjs`). Fuente de los textos nuevos: `auditoria-shibukawa.md`.
+- Siguiente: que Yujiro fusione; nada más pendiente de mi lado.
 
 **Cómo levantar cosas sin repetir errores:**
 - **Build con Supabase falso:** `VITE_SUPABASE_URL=http://fake.supabase.test VITE_SUPABASE_ANON_KEY=anon-falsa npx vite build`.

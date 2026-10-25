@@ -13,10 +13,14 @@
     "lineasTitular": 2,
     "lineasBanda": 5,
     "palabras": 17,
-    "fondo": 556,
+    "fondo": 633,
     "espera": "pantalla",
     "desplaza": 172,
-    "bajoNav": 77,
+    "bajoNav": 0,
+    "ms": {
+     "error": 4,
+     "acierto": 14
+    },
     "lineasBandaDespues": 5
    },
    {
@@ -29,10 +33,14 @@
     "lineasTitular": 2,
     "lineasBanda": 4,
     "palabras": 10,
-    "fondo": 556,
+    "fondo": 633,
     "espera": "pantalla",
-    "desplaza": 148,
-    "bajoNav": 53,
+    "desplaza": 136,
+    "bajoNav": 0,
+    "ms": {
+     "error": null,
+     "acierto": 6
+    },
     "lineasBandaDespues": 4
    },
    {
@@ -45,10 +53,14 @@
     "lineasTitular": 1,
     "lineasBanda": 4,
     "palabras": 13,
-    "fondo": 556,
+    "fondo": 611,
     "espera": "pantalla",
-    "desplaza": 126,
-    "bajoNav": 31,
+    "desplaza": 114,
+    "bajoNav": 0,
+    "ms": {
+     "error": 4,
+     "acierto": 5
+    },
     "lineasBandaDespues": 4
    },
    {
@@ -61,10 +73,10 @@
     "lineasTitular": 2,
     "lineasBanda": 4,
     "palabras": 31,
-    "fondo": 556,
+    "fondo": 629,
     "espera": "pieza",
-    "desplaza": 144,
-    "bajoNav": 49,
+    "desplaza": 132,
+    "bajoNav": 0,
     "lineasBandaDespues": 4
    },
    {
@@ -77,10 +89,14 @@
     "lineasTitular": 2,
     "lineasBanda": 5,
     "palabras": 37,
-    "fondo": 556,
+    "fondo": 635,
     "espera": "pantalla",
     "desplaza": 174,
-    "bajoNav": 79,
+    "bajoNav": 0,
+    "ms": {
+     "error": null,
+     "acierto": 7
+    },
     "lineasBandaDespues": 5
    },
    {
@@ -93,10 +109,14 @@
     "lineasTitular": 1,
     "lineasBanda": 4,
     "palabras": 12,
-    "fondo": 556,
+    "fondo": 611,
     "espera": "pantalla",
-    "desplaza": 126,
-    "bajoNav": 31,
+    "desplaza": 114,
+    "bajoNav": 0,
+    "ms": {
+     "error": 5,
+     "acierto": 7
+    },
     "lineasBandaDespues": 4
    },
    {
@@ -109,10 +129,10 @@
     "lineasTitular": 2,
     "lineasBanda": 4,
     "palabras": 17,
-    "fondo": 556,
+    "fondo": 633,
     "espera": "pantalla",
-    "desplaza": 148,
-    "bajoNav": 53,
+    "desplaza": 136,
+    "bajoNav": 0,
     "lineasBandaDespues": 4
    },
    {
@@ -125,10 +145,14 @@
     "lineasTitular": 2,
     "lineasBanda": 4,
     "palabras": 14,
-    "fondo": 556,
+    "fondo": 633,
     "espera": "pantalla",
-    "desplaza": 148,
-    "bajoNav": 53,
+    "desplaza": 136,
+    "bajoNav": 0,
+    "ms": {
+     "error": 4,
+     "acierto": 4
+    },
     "lineasBandaDespues": 4
    },
    {
@@ -140,11 +164,15 @@
     "banda": 88,
     "lineasTitular": 1,
     "lineasBanda": 4,
-    "palabras": 7,
-    "fondo": 556,
+    "palabras": 9,
+    "fondo": 611,
     "espera": "pantalla",
-    "desplaza": 126,
-    "bajoNav": 31,
+    "desplaza": 114,
+    "bajoNav": 0,
+    "ms": {
+     "error": null,
+     "acierto": 4
+    },
     "lineasBandaDespues": 4
    },
    {
@@ -157,10 +185,10 @@
     "lineasTitular": 2,
     "lineasBanda": 3,
     "palabras": 27,
-    "fondo": 556,
+    "fondo": 611,
     "espera": "pieza",
-    "desplaza": 126,
-    "bajoNav": 31,
+    "desplaza": 114,
+    "bajoNav": 0,
     "lineasBandaDespues": 3
    },
    {
@@ -173,10 +201,14 @@
     "lineasTitular": 2,
     "lineasBanda": 4,
     "palabras": 22,
-    "fondo": 556,
+    "fondo": 635,
     "espera": "pantalla",
-    "desplaza": 150,
-    "bajoNav": 55,
+    "desplaza": 138,
+    "bajoNav": 0,
+    "ms": {
+     "error": null,
+     "acierto": 5
+    },
     "lineasBandaDespues": 4
    },
    {
@@ -189,10 +221,14 @@
     "lineasTitular": 1,
     "lineasBanda": 3,
     "palabras": 19,
-    "fondo": 556,
+    "fondo": 589,
     "espera": "pantalla",
-    "desplaza": 104,
-    "bajoNav": 9,
+    "desplaza": 92,
+    "bajoNav": 0,
+    "ms": {
+     "error": null,
+     "acierto": 4
+    },
     "lineasBandaDespues": 3
    },
    {
@@ -205,10 +241,10 @@
     "lineasTitular": 1,
     "lineasBanda": 3,
     "palabras": 21,
-    "fondo": 556,
+    "fondo": 589,
     "espera": "pantalla",
-    "desplaza": 104,
-    "bajoNav": 9,
+    "desplaza": 92,
+    "bajoNav": 0,
     "lineasBandaDespues": 3
    },
    {
@@ -221,10 +257,14 @@
     "lineasTitular": 2,
     "lineasBanda": 3,
     "palabras": 7,
-    "fondo": 556,
+    "fondo": 611,
     "espera": "pantalla",
-    "desplaza": 126,
-    "bajoNav": 31,
+    "desplaza": 114,
+    "bajoNav": 0,
+    "ms": {
+     "error": null,
+     "acierto": 4
+    },
     "lineasBandaDespues": 3
    },
    {
@@ -237,10 +277,10 @@
     "lineasTitular": 2,
     "lineasBanda": 3,
     "palabras": 20,
-    "fondo": 556,
+    "fondo": 613,
     "espera": "pantalla",
-    "desplaza": 128,
-    "bajoNav": 33,
+    "desplaza": 116,
+    "bajoNav": 0,
     "lineasBandaDespues": 3
    },
    {
@@ -253,10 +293,14 @@
     "lineasTitular": 1,
     "lineasBanda": 4,
     "palabras": 12,
-    "fondo": 556,
+    "fondo": 611,
     "espera": "pantalla",
-    "desplaza": 126,
-    "bajoNav": 31,
+    "desplaza": 114,
+    "bajoNav": 0,
+    "ms": {
+     "error": 5,
+     "acierto": 10
+    },
     "lineasBandaDespues": 4
    },
    {
@@ -269,10 +313,10 @@
     "lineasTitular": 2,
     "lineasBanda": 3,
     "palabras": 24,
-    "fondo": 556,
+    "fondo": 611,
     "espera": "pieza",
-    "desplaza": 126,
-    "bajoNav": 31,
+    "desplaza": 114,
+    "bajoNav": 0,
     "lineasBandaDespues": 3
    },
    {
@@ -285,10 +329,14 @@
     "lineasTitular": 2,
     "lineasBanda": 3,
     "palabras": 15,
-    "fondo": 556,
+    "fondo": 611,
     "espera": "pantalla",
-    "desplaza": 126,
-    "bajoNav": 31,
+    "desplaza": 114,
+    "bajoNav": 0,
+    "ms": {
+     "error": 7,
+     "acierto": 8
+    },
     "lineasBandaDespues": 3
    },
    {
@@ -301,10 +349,10 @@
     "lineasTitular": 1,
     "lineasBanda": 3,
     "palabras": 17,
-    "fondo": 556,
+    "fondo": 589,
     "espera": "pantalla",
-    "desplaza": 104,
-    "bajoNav": 9,
+    "desplaza": 92,
+    "bajoNav": 0,
     "lineasBandaDespues": 3
    },
    {
@@ -317,10 +365,14 @@
     "lineasTitular": 1,
     "lineasBanda": 3,
     "palabras": 9,
-    "fondo": 556,
+    "fondo": 589,
     "espera": "pantalla",
-    "desplaza": 104,
-    "bajoNav": 9,
+    "desplaza": 92,
+    "bajoNav": 0,
+    "ms": {
+     "error": 6,
+     "acierto": null
+    },
     "lineasBandaDespues": 3
    },
    {
@@ -333,10 +385,14 @@
     "lineasTitular": 2,
     "lineasBanda": 4,
     "palabras": 5,
-    "fondo": 556,
+    "fondo": 633,
     "espera": "pantalla",
-    "desplaza": 148,
-    "bajoNav": 53,
+    "desplaza": 136,
+    "bajoNav": 0,
+    "ms": {
+     "error": 4,
+     "acierto": 11
+    },
     "lineasBandaDespues": 4
    },
    {
@@ -349,10 +405,14 @@
     "lineasTitular": 2,
     "lineasBanda": 4,
     "palabras": 10,
-    "fondo": 556,
+    "fondo": 633,
     "espera": "pantalla",
-    "desplaza": 148,
-    "bajoNav": 53,
+    "desplaza": 136,
+    "bajoNav": 0,
+    "ms": {
+     "error": 4,
+     "acierto": null
+    },
     "lineasBandaDespues": 4
    },
    {
@@ -365,10 +425,14 @@
     "lineasTitular": 2,
     "lineasBanda": 3,
     "palabras": 7,
-    "fondo": 556,
+    "fondo": 611,
     "espera": "pantalla",
-    "desplaza": 126,
-    "bajoNav": 31,
+    "desplaza": 114,
+    "bajoNav": 0,
+    "ms": {
+     "error": 3,
+     "acierto": null
+    },
     "lineasBandaDespues": 3
    },
    {
@@ -381,10 +445,14 @@
     "lineasTitular": 2,
     "lineasBanda": 4,
     "palabras": 10,
-    "fondo": 556,
+    "fondo": 633,
     "espera": "pantalla",
-    "desplaza": 148,
-    "bajoNav": 53,
+    "desplaza": 136,
+    "bajoNav": 0,
+    "ms": {
+     "error": null,
+     "acierto": 4
+    },
     "lineasBandaDespues": 4
    },
    {
@@ -397,10 +465,10 @@
     "lineasTitular": 2,
     "lineasBanda": 4,
     "palabras": 29,
-    "fondo": 556,
+    "fondo": 623,
     "espera": "pieza",
-    "desplaza": 138,
-    "bajoNav": 43,
+    "desplaza": 126,
+    "bajoNav": 0,
     "lineasBandaDespues": 4
    },
    {
@@ -409,15 +477,19 @@
     "n": 1,
     "tipo": "haz",
     "modelo": 195,
-    "banda": 158,
+    "banda": 112,
     "lineasTitular": 2,
-    "lineasBanda": 7,
-    "palabras": 44,
-    "fondo": 556,
+    "lineasBanda": 5,
+    "palabras": 34,
+    "fondo": 635,
     "espera": "pantalla",
-    "desplaza": 218,
-    "bajoNav": 123,
-    "lineasBandaDespues": 7
+    "desplaza": 160,
+    "bajoNav": 0,
+    "ms": {
+     "error": null,
+     "acierto": 4
+    },
+    "lineasBandaDespues": 5
    },
    {
     "tope": 143,
@@ -425,15 +497,15 @@
     "n": 2,
     "tipo": "miralo",
     "modelo": 165,
-    "banda": 66,
+    "banda": 112,
     "lineasTitular": 2,
-    "lineasBanda": 3,
-    "palabras": 26,
-    "fondo": 556,
+    "lineasBanda": 5,
+    "palabras": 36,
+    "fondo": 635,
     "espera": "pantalla",
-    "desplaza": 126,
-    "bajoNav": 31,
-    "lineasBandaDespues": 3
+    "desplaza": 160,
+    "bajoNav": 0,
+    "lineasBandaDespues": 5
    },
    {
     "tope": 143,
@@ -445,10 +517,14 @@
     "lineasTitular": 2,
     "lineasBanda": 3,
     "palabras": 7,
-    "fondo": 556,
+    "fondo": 611,
     "espera": "pantalla",
-    "desplaza": 126,
-    "bajoNav": 31,
+    "desplaza": 114,
+    "bajoNav": 0,
+    "ms": {
+     "error": 10,
+     "acierto": 4
+    },
     "lineasBandaDespues": 3
    },
    {
@@ -461,10 +537,14 @@
     "lineasTitular": 2,
     "lineasBanda": 4,
     "palabras": 8,
-    "fondo": 556,
+    "fondo": 633,
     "espera": "pantalla",
-    "desplaza": 148,
-    "bajoNav": 53,
+    "desplaza": 136,
+    "bajoNav": 0,
+    "ms": {
+     "error": 4,
+     "acierto": 4
+    },
     "lineasBandaDespues": 4
    },
    {
@@ -477,10 +557,14 @@
     "lineasTitular": 1,
     "lineasBanda": 4,
     "palabras": 4,
-    "fondo": 556,
+    "fondo": 607,
     "espera": "pieza",
-    "desplaza": 122,
-    "bajoNav": 27,
+    "desplaza": 110,
+    "bajoNav": 0,
+    "ms": {
+     "error": 3,
+     "acierto": 8
+    },
     "lineasBandaDespues": 4
    },
    {
@@ -493,10 +577,14 @@
     "lineasTitular": 2,
     "lineasBanda": 4,
     "palabras": 17,
-    "fondo": 556,
+    "fondo": 633,
     "espera": "pantalla",
-    "desplaza": 148,
-    "bajoNav": 53,
+    "desplaza": 136,
+    "bajoNav": 0,
+    "ms": {
+     "error": 3,
+     "acierto": null
+    },
     "lineasBandaDespues": 4
    },
    {
@@ -509,10 +597,14 @@
     "lineasTitular": 2,
     "lineasBanda": 4,
     "palabras": 25,
-    "fondo": 556,
+    "fondo": 633,
     "espera": "pantalla",
-    "desplaza": 148,
-    "bajoNav": 53,
+    "desplaza": 136,
+    "bajoNav": 0,
+    "ms": {
+     "error": 5,
+     "acierto": 9
+    },
     "lineasBandaDespues": 4
    },
    {
@@ -525,10 +617,14 @@
     "lineasTitular": 2,
     "lineasBanda": 4,
     "palabras": 23,
-    "fondo": 556,
+    "fondo": 633,
     "espera": "pantalla",
-    "desplaza": 148,
-    "bajoNav": 53,
+    "desplaza": 136,
+    "bajoNav": 0,
+    "ms": {
+     "error": 4,
+     "acierto": 3
+    },
     "lineasBandaDespues": 4
    },
    {
@@ -541,26 +637,34 @@
     "lineasTitular": 1,
     "lineasBanda": 3,
     "palabras": 21,
-    "fondo": 556,
+    "fondo": 589,
     "espera": "pantalla",
-    "desplaza": 104,
-    "bajoNav": 9,
+    "desplaza": 92,
+    "bajoNav": 0,
+    "ms": {
+     "error": 3,
+     "acierto": 3
+    },
     "lineasBandaDespues": 3
    },
    {
-    "tope": 121,
+    "tope": 143,
     "pieza": "t4-a5-san-calixto",
     "n": 5,
     "tipo": "haz",
-    "modelo": 148,
+    "modelo": 192,
     "banda": 66,
-    "lineasTitular": 1,
+    "lineasTitular": 2,
     "lineasBanda": 3,
-    "palabras": 9,
-    "fondo": 556,
+    "palabras": 14,
+    "fondo": 611,
     "espera": "pantalla",
-    "desplaza": 104,
-    "bajoNav": 9,
+    "desplaza": 114,
+    "bajoNav": 0,
+    "ms": {
+     "error": 3,
+     "acierto": 3
+    },
     "lineasBandaDespues": 3
    },
    {
@@ -573,10 +677,10 @@
     "lineasTitular": 1,
     "lineasBanda": 4,
     "palabras": 29,
-    "fondo": 556,
+    "fondo": 607,
     "espera": "final",
-    "desplaza": 122,
-    "bajoNav": 27,
+    "desplaza": 110,
+    "bajoNav": 0,
     "lineasBandaDespues": 4
    }
   ]
@@ -599,6 +703,10 @@
     "espera": "pantalla",
     "desplaza": 41,
     "bajoNav": 0,
+    "ms": {
+     "error": 5,
+     "acierto": 8
+    },
     "lineasBandaDespues": 4
    },
    {
@@ -615,6 +723,10 @@
     "espera": "pantalla",
     "desplaza": 0,
     "bajoNav": 0,
+    "ms": {
+     "error": null,
+     "acierto": 8
+    },
     "lineasBandaDespues": 3
    },
    {
@@ -631,6 +743,10 @@
     "espera": "pantalla",
     "desplaza": 0,
     "bajoNav": 0,
+    "ms": {
+     "error": 4,
+     "acierto": 9
+    },
     "lineasBandaDespues": 3
    },
    {
@@ -663,6 +779,10 @@
     "espera": "pantalla",
     "desplaza": 43,
     "bajoNav": 0,
+    "ms": {
+     "error": null,
+     "acierto": 9
+    },
     "lineasBandaDespues": 4
    },
    {
@@ -679,6 +799,10 @@
     "espera": "pantalla",
     "desplaza": 0,
     "bajoNav": 0,
+    "ms": {
+     "error": 4,
+     "acierto": 12
+    },
     "lineasBandaDespues": 3
    },
    {
@@ -711,6 +835,10 @@
     "espera": "pantalla",
     "desplaza": 17,
     "bajoNav": 0,
+    "ms": {
+     "error": 5,
+     "acierto": 4
+    },
     "lineasBandaDespues": 3
    },
    {
@@ -722,11 +850,15 @@
     "banda": 66,
     "lineasTitular": 1,
     "lineasBanda": 3,
-    "palabras": 7,
+    "palabras": 9,
     "fondo": 591,
     "espera": "pantalla",
     "desplaza": 0,
     "bajoNav": 0,
+    "ms": {
+     "error": null,
+     "acierto": 4
+    },
     "lineasBandaDespues": 3
    },
    {
@@ -759,6 +891,10 @@
     "espera": "pantalla",
     "desplaza": 19,
     "bajoNav": 0,
+    "ms": {
+     "error": null,
+     "acierto": 4
+    },
     "lineasBandaDespues": 3
    },
    {
@@ -775,6 +911,10 @@
     "espera": "pantalla",
     "desplaza": 0,
     "bajoNav": 0,
+    "ms": {
+     "error": null,
+     "acierto": 4
+    },
     "lineasBandaDespues": 3
    },
    {
@@ -807,6 +947,10 @@
     "espera": "pantalla",
     "desplaza": 17,
     "bajoNav": 0,
+    "ms": {
+     "error": null,
+     "acierto": 4
+    },
     "lineasBandaDespues": 3
    },
    {
@@ -839,6 +983,10 @@
     "espera": "pantalla",
     "desplaza": 0,
     "bajoNav": 0,
+    "ms": {
+     "error": 4,
+     "acierto": 11
+    },
     "lineasBandaDespues": 3
    },
    {
@@ -871,6 +1019,10 @@
     "espera": "pantalla",
     "desplaza": 0,
     "bajoNav": 0,
+    "ms": {
+     "error": 4,
+     "acierto": 11
+    },
     "lineasBandaDespues": 3
    },
    {
@@ -903,6 +1055,10 @@
     "espera": "pantalla",
     "desplaza": 0,
     "bajoNav": 0,
+    "ms": {
+     "error": 3,
+     "acierto": null
+    },
     "lineasBandaDespues": 3
    },
    {
@@ -919,6 +1075,10 @@
     "espera": "pantalla",
     "desplaza": 0,
     "bajoNav": 0,
+    "ms": {
+     "error": 4,
+     "acierto": 11
+    },
     "lineasBandaDespues": 3
    },
    {
@@ -935,6 +1095,10 @@
     "espera": "pantalla",
     "desplaza": 17,
     "bajoNav": 0,
+    "ms": {
+     "error": 4,
+     "acierto": null
+    },
     "lineasBandaDespues": 3
    },
    {
@@ -951,6 +1115,10 @@
     "espera": "pantalla",
     "desplaza": 17,
     "bajoNav": 0,
+    "ms": {
+     "error": 3,
+     "acierto": null
+    },
     "lineasBandaDespues": 3
    },
    {
@@ -967,6 +1135,10 @@
     "espera": "pantalla",
     "desplaza": 39,
     "bajoNav": 0,
+    "ms": {
+     "error": null,
+     "acierto": 4
+    },
     "lineasBandaDespues": 4
    },
    {
@@ -991,15 +1163,19 @@
     "n": 1,
     "tipo": "haz",
     "modelo": 195,
-    "banda": 136,
+    "banda": 112,
     "lineasTitular": 2,
-    "lineasBanda": 6,
-    "palabras": 44,
-    "fondo": 655,
+    "lineasBanda": 5,
+    "palabras": 34,
+    "fondo": 659,
     "espera": "pantalla",
-    "desplaza": 87,
-    "bajoNav": 4,
-    "lineasBandaDespues": 6
+    "desplaza": 63,
+    "bajoNav": 0,
+    "ms": {
+     "error": null,
+     "acierto": 4
+    },
+    "lineasBandaDespues": 5
    },
    {
     "tope": 121,
@@ -1007,15 +1183,15 @@
     "n": 2,
     "tipo": "miralo",
     "modelo": 165,
-    "banda": 66,
+    "banda": 90,
     "lineasTitular": 1,
-    "lineasBanda": 3,
-    "palabras": 26,
-    "fondo": 591,
+    "lineasBanda": 4,
+    "palabras": 36,
+    "fondo": 615,
     "espera": "pantalla",
-    "desplaza": 0,
+    "desplaza": 19,
     "bajoNav": 0,
-    "lineasBandaDespues": 3
+    "lineasBandaDespues": 4
    },
    {
     "tope": 121,
@@ -1031,6 +1207,10 @@
     "espera": "pantalla",
     "desplaza": 0,
     "bajoNav": 0,
+    "ms": {
+     "error": 3,
+     "acierto": 3
+    },
     "lineasBandaDespues": 3
    },
    {
@@ -1047,6 +1227,10 @@
     "espera": "pantalla",
     "desplaza": 0,
     "bajoNav": 0,
+    "ms": {
+     "error": 3,
+     "acierto": 5
+    },
     "lineasBandaDespues": 3
    },
    {
@@ -1063,6 +1247,10 @@
     "espera": "pieza",
     "desplaza": 31,
     "bajoNav": 0,
+    "ms": {
+     "error": 3,
+     "acierto": 11
+    },
     "lineasBandaDespues": 5
    },
    {
@@ -1079,6 +1267,10 @@
     "espera": "pantalla",
     "desplaza": 17,
     "bajoNav": 0,
+    "ms": {
+     "error": 4,
+     "acierto": null
+    },
     "lineasBandaDespues": 3
    },
    {
@@ -1095,6 +1287,10 @@
     "espera": "pantalla",
     "desplaza": 17,
     "bajoNav": 0,
+    "ms": {
+     "error": 4,
+     "acierto": 10
+    },
     "lineasBandaDespues": 3
    },
    {
@@ -1111,6 +1307,10 @@
     "espera": "pantalla",
     "desplaza": 0,
     "bajoNav": 0,
+    "ms": {
+     "error": 3,
+     "acierto": 5
+    },
     "lineasBandaDespues": 3
    },
    {
@@ -1127,22 +1327,30 @@
     "espera": "pantalla",
     "desplaza": 0,
     "bajoNav": 0,
+    "ms": {
+     "error": 3,
+     "acierto": 9
+    },
     "lineasBandaDespues": 3
    },
    {
-    "tope": 121,
+    "tope": 143,
     "pieza": "t4-a5-san-calixto",
     "n": 5,
     "tipo": "haz",
-    "modelo": 148,
+    "modelo": 192,
     "banda": 66,
-    "lineasTitular": 1,
+    "lineasTitular": 2,
     "lineasBanda": 3,
-    "palabras": 9,
-    "fondo": 591,
+    "palabras": 14,
+    "fondo": 613,
     "espera": "pantalla",
-    "desplaza": 0,
+    "desplaza": 17,
     "bajoNav": 0,
+    "ms": {
+     "error": 3,
+     "acierto": 3
+    },
     "lineasBandaDespues": 3
    },
    {

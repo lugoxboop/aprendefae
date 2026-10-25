@@ -13,7 +13,7 @@
  *                                   del lado y la última partida; el saldo cuenta
  *   3 · lado-de-la-empresa  Haz     igual; el «=» sale cuando los lados se igualan
  *   4 · que-se-asienta      Haz     la tarjeta y «Se asienta / No se asienta»
- *   5 · los-asientos        Haz     nota de 64 y tablero 1 × 2 (Bancos y su contrapartida)
+ *   5 · los-asientos        Haz     nota de 64, Bancos ya puesto y la contrapartida entre tres cuentas (Katsumi, #488)
  *   6 · el-mayor            Cierre  mayor de 131 y, debajo, «Asentar las cinco notas»
  *                                   y, en su lugar, el par igualado
  *
@@ -64,6 +64,15 @@ export const CSS_SLIDES_A5 = `
 .t4s5-nt .l { font: 400 13px/16px "Inter", sans-serif; overflow-wrap: anywhere; }
 .t4s5-nt .p { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font: 500 12px/16px "Inter", sans-serif; color: ${C.texto2}; }
 .t4s5-nt .p > b { font: 600 14px/16px "Inter", sans-serif; font-variant-numeric: tabular-nums; color: ${C.texto}; white-space: nowrap; }
+/* p5 (Katsumi, #488): Bancos ya puesto (no se toca: 36 px) y tres cuentas que sí; nombres en Inter 12/14 con guiones del español. */
+.t4s5-p5 { display: grid; gap: 6px; }
+.t4s5-p5 .t4s5-cta { grid-template-rows: 14px 36px; gap: 2px; }
+.t4s5-p5 .t4s5-mt { min-height: 36px; }
+.t4s5-ops { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.t4s5-ops > .t4s-ctl { display: grid; align-content: center; justify-items: center; gap: 0; min-height: 60px; padding: 2px 4px; text-align: center; }
+.t4s5-ops > .t4s-ctl[data-ver] { padding: 1px 3px; }
+.t4s5-ops .n { display: grid; font: 600 12px/14px "Inter", sans-serif; hyphens: auto; overflow-wrap: anywhere; }
+.t4s5-ops .v { min-height: 14px; font: 600 12px/14px "Inter", sans-serif; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .t4s5-tb { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
 .t4s5-cta { display: grid; grid-template-rows: 28px 44px; gap: 4px; min-width: 0; }
 .t4s5-cta > .n { align-self: end; font: 600 12px/14px "Sora", "Inter", sans-serif; overflow-wrap: anywhere; }
@@ -255,11 +264,27 @@ function FiguraAsienta({ t, estado, setEstado }) {
 const ladoBancos = (a) => (a.debe === "bancos" ? DEBE : HABER);
 
 /*
- * Una nota a la vez. Con la nota resuelta, el asiento queda escrito (Bancos y
- * su contrapartida) y la nota siguiente llega a los 1,4 s, como en A5 de
- * antes; un toque en Bancos mientras tanto la trae ya. Con movimiento
- * reducido llega de una vez.
+ * Katsumi (#488, condición d): la decisión ya no es el lado de Bancos (eso
+ * era A5 p3 otra vez). Bancos aparece puesto en su lado y la nota se lleva a
+ * su contrapartida, entre tres de las cuentas de la p. 191: la correcta y dos
+ * de las otras, siempre en el mismo orden (el de la p. 191), sin el lado.
+ * Una nota a la vez; la siguiente llega a los 1,4 s, como en A5 de antes, y
+ * un toque mientras tanto la trae ya. Con movimiento reducido llega de una vez.
  */
+function cuentasDe(A) {
+  const todas = new Map();
+  for (const a of A) for (const c of a.cuentas) if (c.id !== "bancos" && !todas.has(c.id)) todas.set(c.id, c.renglones);
+  return [...todas].map(([id, renglones]) => ({ id, renglones }));
+}
+
+export function opcionesNota(A, k) {
+  const a = A[k];
+  const correcta = a.cuentas.find((c) => c.id !== "bancos").id;
+  const otras = cuentasDe(A).filter((c) => c.id !== correcta);
+  const fuera = otras[k % otras.length].id;
+  return cuentasDe(A).filter((c) => c.id !== fuera);
+}
+
 function FiguraAsientos({ t, estado, setEstado }) {
   const e = estado ?? HAZ_VACIO;
   const { D } = t;
@@ -280,52 +305,47 @@ function FiguraAsientos({ t, estado, setEstado }) {
   }, [vista, actual, reducido]);
   const a = A[vista];
   const espera = vista !== actual;
-  const correcto = ladoBancos(a);
-  const puesto = colocada(e, a.id, correcto) != null;
-  const otra = a.cuentas.find((c) => c.id !== "bancos");
+  const lado = ladoBancos(a);
+  const correcta = a.cuentas.find((c) => c.id !== "bancos").id;
+  const puesta = colocada(e, a.id, correcta) != null;
   const dev = devDe(t, e, e.foco, { error: () => [t.error] });
-  const mitadBancos = (lado) => {
-    const ver = verDe(e, a.id, lado, correcto);
-    const v = puesto && lado === correcto ? cifra(a.monto) : null;
-    return (
-      <Control
-        key={lado}
-        className="t4s5-mt"
-        data-destino={`bancos:${lado}`}
-        ver={ver}
-        apagado={!espera && resueltaTarjeta(e, a.id)}
-        nombre={`Bancos al ${lado}${v ? `: ${v}` : ""}`}
-        onClick={() => (espera ? setVista(actual) : setEstado((z) => calificar(z, a.id, lado, correcto)))}
-      >
-        <span className="k" style={{ color: lado === DEBE ? C.debeTexto : C.haber }}>{ROTULO[lado]}</span>
-        <span className="v">{v}</span>
-      </Control>
-    );
-  };
-  const mitadOtra = (lado) => {
-    const v = puesto && lado !== correcto ? cifra(a.monto) : null;
-    return (
-      <span key={lado} className="t4s5-mt" data-mitad={`${otra.id}:${lado}`}>
-        <span className="k" style={{ color: lado === DEBE ? C.debeTexto : C.haber }}>{ROTULO[lado]}</span>
-        <span className={`v${v ? " t4s-nueva" : ""}`}>{v}</span>
-      </span>
-    );
-  };
   return (
     <Slide banda={<Banda antes={t.antes} dev={dev} posibles={[{ ver: "bien", textos: [] }, { ver: "mal", textos: [t.porque] }, { ver: "mal", textos: [t.error] }]} />}>
       <div className="t4s5-nt t4s-nueva" key={a.id} data-tarjeta-nota={a.id}>
         <span className="l">{a.linea}</span>
         <span className="p"><span>{F.contadorNota(vista + 1, total)}</span><b>{cifra(a.monto)}</b></span>
       </div>
-      <div className="t4s5-tb" role="group" aria-label={F.tablero} data-tablero>
-        <div className="t4s5-cta" data-cuenta="bancos">
-          <span className="n">{a.cuentas.find((c) => c.id === "bancos").renglones.join(" ")}</span>
-          <div className="t4s5-mts">{mitadBancos(DEBE)}{mitadBancos(HABER)}</div>
+      <div className="t4s5-p5" lang="es">
+      <div className="t4s5-cta" data-cuenta="bancos">
+        <span className="n">{a.cuentas.find((c) => c.id === "bancos").renglones.join(" ")}</span>
+        <div className="t4s5-mts">
+          {[DEBE, HABER].map((l) => (
+            <span key={l} className="t4s5-mt" data-mitad={`bancos:${l}`}>
+              <span className="k" style={{ color: l === DEBE ? C.debeTexto : C.haber }}>{ROTULO[l]}</span>
+              <span className="v">{l === lado ? cifra(a.monto) : null}</span>
+            </span>
+          ))}
         </div>
-        <div className="t4s5-cta" data-cuenta={otra.id}>
-          <span className="n">{otra.renglones.join(" ")}</span>
-          <div className="t4s5-mts">{mitadOtra(DEBE)}{mitadOtra(HABER)}</div>
-        </div>
+      </div>
+      <div className="t4s5-ops" role="group" aria-label={t.titular} data-contrapartidas>
+        {opcionesNota(A, vista).map((c) => {
+          const nombre = c.renglones.join(" ");
+          const v = puesta && c.id === correcta ? cifra(a.monto) : null;
+          return (
+            <Control
+              key={`${a.id}:${c.id}`}
+              data-opcion={c.id}
+              ver={verDe(e, a.id, c.id, correcta)}
+              apagado={!espera && resueltaTarjeta(e, a.id)}
+              nombre={`${nombre}${v ? `: ${v}` : ""}`}
+              onClick={() => (espera ? setVista(actual) : setEstado((z) => calificar(z, a.id, c.id, correcta)))}
+            >
+              <span className="n">{c.renglones.map((r) => <span key={r}>{r}</span>)}</span>
+              <span className={`v${v ? " t4s-nueva" : ""}`}>{v}</span>
+            </Control>
+          );
+        })}
+      </div>
       </div>
     </Slide>
   );

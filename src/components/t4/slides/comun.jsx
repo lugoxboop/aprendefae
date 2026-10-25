@@ -30,7 +30,7 @@
  * Célula D: nadie más lo usa.
  * ═══════════════════════════════════════════════════════════════════════════
  */
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { Check, X } from "lucide-react";
 import { hazResuelto, mostrarCorrecto, responderHaz } from "../../secuencia/secuencia.js";
 import { MARCA } from "../../../data/contabilidadT4.js";
@@ -186,15 +186,64 @@ function Capa({ textos = [], ver = null, pie = null, siguiente = null, oculta = 
   );
 }
 
+/*
+ * E2 a 320 (auditoría de Shibukawa, #488): la navegación del contenedor queda
+ * fija abajo y tapaba la banda. Al montar la pantalla y cada vez que cambia
+ * la devolución, la página baja lo justo para que la banda quede entera
+ * encima de la navegación: d = banda.bottom − (innerHeight − alto de la
+ * navegación). Sin animar: es un ajuste de sitio, no un movimiento.
+ */
+export function useBandaALaVista(clave) {
+  const ref = useRef(null);
+  useLayoutEffect(() => {
+    const banda = ref.current;
+    const V = banda?.ownerDocument?.defaultView;
+    if (!banda || !V?.scrollBy) return undefined;
+    const ajustar = () => {
+      const nav = banda.closest("[data-secuencia]")?.querySelector("[data-navegacion]");
+      const d = banda.getBoundingClientRect().bottom - (V.innerHeight - (nav?.getBoundingClientRect().height ?? 0));
+      if (d > 0.5) V.scrollBy({ top: Math.ceil(d), behavior: "instant" });
+    };
+    ajustar();
+    /*
+     * La navegación pasa a fija un cuadro después (la calcula el contenedor) y
+     * la pantalla puede crecer al llegar (fuentes, la manija de A1): mientras
+     * dure esta devolución, cada cambio de tamaño de la pantalla se vuelve a
+     * mirar. Desplazarse a mano no lo dispara.
+     */
+    const cuadro = V.requestAnimationFrame?.(ajustar);
+    const raiz = banda.closest("[data-secuencia]");
+    const ro = V.ResizeObserver && raiz ? new V.ResizeObserver(() => ajustar()) : null;
+    ro?.observe(raiz);
+    /*
+     * Al cambiar de pieza el contenedor sube la página hasta su zona con un
+     * desplazamiento suave (después de este ajuste): cuando ese desplazamiento
+     * acaba, se vuelve a mirar. Solo el primer segundo, para no pelear con
+     * quien se desplaza a mano.
+     */
+    V.addEventListener?.("scrollend", ajustar);
+    const tarde = V.setTimeout(ajustar, 700);
+    const reloj = V.setTimeout(() => V.removeEventListener?.("scrollend", ajustar), 1000);
+    return () => {
+      V.cancelAnimationFrame?.(cuadro); ro?.disconnect();
+      V.clearTimeout(tarde); V.clearTimeout(reloj); V.removeEventListener?.("scrollend", ajustar);
+    };
+  }, [clave]);
+  return ref;
+}
+
+const claveDev = (dev) => (dev ? `${dev.ver}:${dev.textos.join("|")}:${dev.n ?? 0}` : "antes");
+
 export function Banda({ antes = [], dev = null, posibles = [], pie = null, siguiente = null }) {
+  const ref = useBandaALaVista(claveDev(dev));
   return (
-    <div className="t4s-banda" data-banda data-dueno={dev ? "devolucion" : "antes"}>
+    <div ref={ref} className="t4s-banda" data-banda data-dueno={dev ? "devolucion" : "antes"}>
       {/* Las reservas: lo más alto que la banda va a tener, sin que nada se vea. */}
       <Capa textos={antes} pie={pie} siguiente={siguiente} oculta />
       {posibles.map((d, k) => <Capa key={k} textos={d.textos} ver={d.ver} oculta />)}
       <div aria-live="polite" data-capa-viva>
         {dev ? (
-          <Capa key={`${dev.ver}:${dev.textos.join("|")}:${dev.n ?? 0}`} textos={dev.textos} ver={dev.ver} className="t4s-capa t4s-nueva" data-mensaje={dev.ver === "bien" ? "acierto" : "error"} />
+          <Capa key={claveDev(dev)} textos={dev.textos} ver={dev.ver} className="t4s-capa t4s-nueva" data-mensaje={dev.ver === "bien" ? "acierto" : "error"} />
         ) : (
           <Capa textos={antes} pie={pie} siguiente={siguiente} data-antes />
         )}
@@ -234,6 +283,6 @@ export function useTerminada(piezaId) {
 
 /*
  * La razón visible de por qué «Siguiente» espera en un Haz (D11). Texto de
- * interfaz común, sin contenido del libro; queda para que Katsumi lo ajuste.
+ * interfaz común, sin contenido del libro; el literal es de Katsumi (auditoría del #488).
  */
-export const RAZON_HAZ = "Responde para seguir.";
+export const RAZON_HAZ = "Decide para seguir.";

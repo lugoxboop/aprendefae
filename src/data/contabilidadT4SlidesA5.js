@@ -35,7 +35,8 @@ const PORQUE_A5 = {
   banco: "Los cheques sin cobrar van a Menos, porque el banco aún no los paga. La consignación sin abonar va a Más.",
   empresa: "Las notas crédito van a Más, porque el banco abonó. Las notas débito van a Menos, porque el banco cobró.",
   asienta: "No se asienta. La empresa lo anotó al girarlo, y asentarlo otra vez lo dejaría doble en sus libros.",
-  asientos: "Si la plata entró a la cuenta, Bancos va al debe. Si salió, va al haber.",
+  /* Katsumi (#488, condición d): A5 p5 cambia de mecánica y su porqué reemplaza el del lote 4. */
+  asientos: "La otra cuenta dice por qué se movió la plata: un cobro, un ingreso o un gasto.",
 };
 export const plantillaPorqueB = (texto, cambios = {}) =>
   Object.entries(cambios).reduce((t, [de, a]) => t.split(de).join(a), texto);
@@ -83,10 +84,11 @@ function slides(caso) {
       etiqueta: F.asienta,
       alt: P["que-se-asienta"].alt,
     },
+    /* Katsumi (#488): Bancos ya está en su lado; cada nota se lleva a su contrapartida entre tres cuentas. */
     asientos: {
-      titular: "¿Al debe o al haber?",
-      antes: ["Cada nota mueve Bancos."],
-      error: P["los-asientos"].error,
+      titular: "¿Con qué otra cuenta se asienta cada nota?",
+      antes: ["Bancos ya está en su lado."],
+      error: "Esa cuenta es de otra nota. ¿Por qué se movió esta plata?",
       porque: porque("asientos"),
       alt: P["los-asientos"].alt,
     },

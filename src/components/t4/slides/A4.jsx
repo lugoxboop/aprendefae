@@ -37,7 +37,7 @@ import {
 import { C, cifra } from "../comun.jsx";
 import {
   Banda, Control, HAZ_VACIO, Opciones, RAZON_HAZ, Slide, calificar, colocada, correctoTarjeta, resueltaTarjeta,
-  tarjeta, todasResueltas, useTerminada, verDe,
+  tarjeta, todasResueltas, useBandaALaVista, useTerminada, verDe,
 } from "./comun.jsx";
 
 const CURVA = "cubic-bezier(.3,.9,.4,1)";
@@ -139,8 +139,9 @@ function Capa({ textos = [], ver = null, pie = null, siguiente = null, oculta = 
 }
 
 function BandaConPie({ antes = [], dev = null, posibles = [] }) {
+  const ref = useBandaALaVista(dev ? `${dev.ver}:${dev.textos.join("|")}:${dev.n ?? 0}` : "antes");
   return (
-    <div className="t4s-banda" data-banda data-dueno={dev ? "devolucion" : "antes"}>
+    <div ref={ref} className="t4s-banda" data-banda data-dueno={dev ? "devolucion" : "antes"}>
       <Capa textos={antes} oculta />
       {posibles.map((d, k) => <Capa key={k} textos={d.textos} ver={d.ver} pie={d.pie} siguiente={d.siguiente} oculta />)}
       <div aria-live="polite" data-capa-viva>

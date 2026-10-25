@@ -14,7 +14,8 @@
  *   palabras titular + banda visible de antes
  *   fondo    dónde acaba «Siguiente» respecto del alto de la ventana
  *   tope     B1: dónde empieza el modelo desde el tope de la tarjeta (≤ 280 a 320)
- *   bajoNav  px de la banda que quedan bajo la navegación fija con la página arriba
+ *   bajoNav  px de la banda bajo la navegación, en la ventana (E2; el peor momento de la pantalla)
+ *   ms       en un Haz: del clic a la palabra de la devolución, primer error y acierto (A7, < 500)
  * Y una vez: la cabecera de la vista (hasta el Panel) y el bloque de navegación.
  */
 import { createRequire } from "node:module";
@@ -30,6 +31,8 @@ const CASO = arg("caso", "1");
 const CAPTURAS = arg("capturas", null);
 /* --pieza=t4-a2-el-fondo-fijo: empieza en esa pieza (posición guardada en la pestaña) y para al acabarla. */
 const PIEZA = arg("pieza", null);
+/* --orden=inv: en un Haz toca primero el último control libre (para medir también el acierto donde la correcta va al final). */
+const ORDEN = arg("orden", "directo");
 
 const navegador = await pw.chromium.launch();
 const salida = {};
@@ -95,9 +98,10 @@ for (const [w, h] of ANCHOS) {
         palabras: texto.trim().split(/\s+/).filter(Boolean).length,
         fondo: Math.round(sig.bottom + window.scrollY),
         espera: raiz.querySelector("button[data-siguiente]").getAttribute("data-siguiente"),
-        /* Lo que hay que desplazar para ver la pantalla entera, y si la banda queda bajo la navegación fija con la página arriba. */
+        /* Lo que hay que desplazar para ver la pantalla entera. */
         desplaza: Math.max(0, document.documentElement.scrollHeight - window.innerHeight),
-        bajoNav: banda ? Math.max(0, Math.round(banda.getBoundingClientRect().bottom + window.scrollY - (window.innerHeight - raiz.querySelector("[data-navegacion]").getBoundingClientRect().height))) : 0,
+        /* E2 (Shibukawa): px de la banda bajo la navegación, EN LA VENTANA tal como queda (con el ajuste de comun.jsx). */
+        bajoNav: banda ? Math.max(0, Math.round(banda.getBoundingClientRect().bottom - (window.innerHeight - raiz.querySelector("[data-navegacion]").getBoundingClientRect().height))) : 0,
       };
     });
     const antes = await medir();
@@ -106,25 +110,48 @@ for (const [w, h] of ANCHOS) {
       await pagina.screenshot({ path: `${CAPTURAS}/${antes.pieza}-p1-${w}.png` });
     }
     let despues = antes;
+    let bajoNav = antes.bajoNav;
+    /* A7 (D6): ms del clic a la palabra de la devolución ([data-palabra]) en el primer error y en el acierto. */
+    const ms = { error: null, acierto: null };
     for (let k = 0; k < 24 && despues.espera === "espera"; k++) {
-      const ok = await pagina.evaluate(() => {
+      const r = await pagina.evaluate((inv) => {
         const pt = document.querySelector("[data-secuencia] [data-pantalla]");
-        const c = [...pt.querySelectorAll(".t4s-ctl")].find((b) => b.getAttribute("aria-disabled") !== "true" && !b.dataset.ver);
-        c?.click();
-        return Boolean(c);
-      });
+        const cs = [...pt.querySelectorAll(".t4s-ctl")].filter((b) => b.getAttribute("aria-disabled") !== "true" && !b.dataset.ver);
+        const c = inv ? cs[cs.length - 1] : cs[0];
+        if (!c) return null;
+        const viva = pt.querySelector("[data-capa-viva]");
+        const antes = viva?.innerHTML;
+        const t0 = performance.now();
+        c.click();
+        return new Promise((fin) => {
+          const mira = () => {
+            const m = viva?.querySelector("[data-mensaje]");
+            const p = m?.querySelector("[data-palabra]");
+            if (p && viva.innerHTML !== antes && p.getBoundingClientRect().height > 0) fin({ ms: performance.now() - t0, tipo: m.dataset.mensaje });
+            else if (performance.now() - t0 > 2000) fin({ ms: null, tipo: null });
+            else requestAnimationFrame(mira);
+          };
+          requestAnimationFrame(mira);
+        });
+      }, ORDEN === "inv");
+      const ok = Boolean(r);
+      if (r?.tipo === "error" && ms.error == null) ms.error = Math.round(r.ms);
+      if (r?.tipo === "acierto" && ms.acierto == null) ms.acierto = Math.round(r.ms);
       /* Un Haz de dos tarjetas: la segunda llega tarde (A1 p4, 1,4 s). Se espera una vez antes de rendirse. */
       if (!ok) { if (k > 0 && !(await pagina.evaluate(() => window.__esperoUna))) { await pagina.evaluate(() => { window.__esperoUna = true; }); await pagina.waitForTimeout(1600); continue; } break; }
       await pagina.evaluate(() => { window.__esperoUna = false; });
       await pagina.waitForTimeout(150);
       despues = await medir();
+      bajoNav = Math.max(bajoNav, despues.bajoNav);
     }
     await pagina.waitForTimeout(3200);
     despues = await medir();
-    filas.push({ ...antes, modelo: Math.max(antes.modelo, despues.modelo), lineasBandaDespues: despues.lineasBanda, espera: despues.espera });
+    bajoNav = Math.max(bajoNav, despues.bajoNav);
+    filas.push({ ...antes, bajoNav, ms: antes.espera === "espera" ? ms : undefined, modelo: Math.max(antes.modelo, despues.modelo), lineasBandaDespues: despues.lineasBanda, espera: despues.espera });
     if (despues.espera === "final" || despues.espera === "espera" || (PIEZA && despues.espera === "pieza")) break;
     await pagina.click("[data-secuencia] button[data-siguiente]");
-    await pagina.waitForTimeout(450);
+    /* La pantalla asentada: entrada (≤ 600 ms) y, al cambiar de pieza, el desplazamiento del contenedor. */
+    await pagina.waitForTimeout(900);
   }
   salida[`${w}x${h}`] = { ...fijo, pantallas: filas };
   await pagina.close();

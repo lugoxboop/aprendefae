@@ -32,6 +32,8 @@ const SIN_CIERRE = { "t4-a4-bancos-y-notas": ["la última pantalla tiene que ser
 const CORPUS = [
   leer("orquestador/revisiones/t4-slides/hilo-katsumi.md"),
   leer("orquestador/revisiones/t4-slides/diseno-hanayama.md"),
+  /* Los textos que fijó la auditoría de Shibukawa (A1 p5, «Escenario simulado.»). */
+  leer("orquestador/revisiones/t4-slides/auditoria-shibukawa.md"),
   ...readdirSync(new URL(`../../../${PAQUETES}`, import.meta.url)).filter((f) => f.startsWith("d4-t4-")).map((f) => leer(PAQUETES + f)),
   /* Los datos de las piezas de antes (A0-A5), ya aprobados: rótulos y glosas de las figuras. Los de los slides, no. */
   ...readdirSync(new URL("../../data/", import.meta.url)).filter((f) => /^contabilidadT4(A\d|)\.js$/.test(f)).map((f) => leer(`src/data/${f}`)),

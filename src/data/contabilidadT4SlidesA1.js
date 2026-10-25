@@ -101,7 +101,8 @@ function slides(caso) {
     },
     faltante: {
       titular: "¿Qué control faltó?",
-      antes: [faltante.antes[0].replace(/ ¿Qué control faltó\?$/, "")],
+      /* Auditoría de Shibukawa (#488): el caso es simulado y lo dice en pantalla. */
+      antes: ["Escenario simulado.", faltante.antes[0].replace(/ ¿Qué control faltó\?$/, "")],
       opciones: faltante.opciones.map((id) => ({ id, texto: faltante.tarjetas[id] })),
       correcta: faltante.correcta,
       control: faltante.control,
