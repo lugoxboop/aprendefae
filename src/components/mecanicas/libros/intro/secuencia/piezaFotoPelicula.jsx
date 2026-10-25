@@ -9,8 +9,9 @@ import { evaluarP3, escenaDeAcierto } from "../../../../../contabilidad/aprender
 import {
   MarcoFigura, Escenario, Nota, Fila, Tocable, SORA, INTER, SECUNDARIO, NAVY,
   paradaResuelta, ParadaModelo, figuraFrase, itemsDe, itemsResueltos, itemDelPaso, responderItem,
+  CANTO, N2, SILUETA, conFases,
 } from "./figurasT1.jsx";
-import { pick } from "./piezaRecorrido.jsx";
+import { pick, sinApoyo } from "./piezaRecorrido.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -48,7 +49,7 @@ export function FotoSec({ foto, hueco = false, signo = null, resaltada = false, 
     boxSizing: "border-box", height: `${alto}px`, width: "100%", padding: compacta ? "0 6px" : "0 10px", borderRadius: compacta ? "8px" : "10px",
     display: "flex", flexDirection: "column", justifyContent: "center", alignItems: hueco ? "center" : "flex-start", textAlign: "left",
     background: hueco ? "transparent" : resaltada ? "rgba(184,196,212,0.16)" : "rgba(10,20,34,0.5)",
-    border: hueco ? `2px dashed ${onTocar ? "rgba(248,249,250,.5)" : "rgba(184,196,212,.45)"}` : `${resaltada ? 2 : 1}px solid ${resaltada ? NEUTRO : "rgba(248,249,250,0.16)"}`,
+    border: hueco ? `2px dashed ${onTocar ? "rgba(248,249,250,.5)" : "rgba(184,196,212,.45)"}` : `${resaltada ? 2 : 1}px solid ${resaltada ? NEUTRO : SILUETA}`,
     font: "inherit", color: FAE.text, margin: 0, cursor: onTocar ? "pointer" : "default",
   };
   const dentro = hueco ? (
@@ -67,7 +68,7 @@ export function FotoSec({ foto, hueco = false, signo = null, resaltada = false, 
     </>
   );
   const datos = { "data-foto-sec": foto.id, "data-hueco": hueco ? "si" : undefined, "data-resaltada": resaltada ? "si" : undefined };
-  if (onTocar) return <button type="button" data-tocable {...datos} onClick={onTocar} style={caja}>{dentro}</button>;
+  if (onTocar) return <button type="button" className={CANTO} data-tocable {...datos} onClick={onTocar} style={{ ...caja, background: hueco ? N2 : caja.background }}>{dentro}</button>;
   return <div {...datos} className={hueco ? undefined : "fae-t1s-aparece"} style={caja}>{dentro}</div>;
 }
 
@@ -83,7 +84,7 @@ export function BandaSec({ llena = false, resaltada = false, alto = 44, compacta
   const texto = compacta ? null : invitacion ?? (llena ? ROTULO_BANDA : RANGO_BANDA);
   const dentro = texto && <span style={{ fontFamily: INTER, fontSize: "12px", fontWeight: 600, lineHeight: "16px" }}>{texto}</span>;
   const datos = { "data-banda": llena ? "llena" : "vacia", "data-resaltada": resaltada ? "si" : undefined };
-  if (onTocar) return <button type="button" data-tocable {...datos} onClick={onTocar} style={caja}>{dentro}</button>;
+  if (onTocar) return <button type="button" className={CANTO} data-tocable {...datos} onClick={onTocar} style={{ ...caja, background: llena ? caja.background : N2 }}>{dentro}</button>;
   return <div {...datos} aria-hidden={compacta || undefined} style={caja}>{dentro}</div>;
 }
 
@@ -137,7 +138,7 @@ function FiguraInformes({ estado, setEstado }) {
   const inf = INFORMES.find((i) => i.id === ultimo);
   return (
     <MarcoFigura>
-      <Escenario plano gap={6}>
+      <Escenario plano gap={4}>
         <div role="group" style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: "8px" }}>
           {INFORMES.map((i) => (
             <Tocable key={i.id} data-tocable data-informe-sec={i.id} on={ultimo === i.id} visto={vistos.includes(i.id)} onClick={() => tocar(i.id)}
@@ -150,7 +151,7 @@ function FiguraInformes({ estado, setEstado }) {
           <div key={inf.id} className="fae-t1s-aparece">
             {/* 12/16 (y no la Nota de 13/18): a 320 la cita de P:202 no deja más sitio. */}
             <p data-revela={inf.id} style={{ margin: 0, fontFamily: INTER, fontSize: "12px", lineHeight: "16px", color: FAE.text }}>{inf.texto}</p>
-            <p data-cita aria-label={`Así lo dice el libro: ${inf.nombre.delLibro}`} style={{ margin: "4px 0 0", fontFamily: INTER, fontSize: "12px", lineHeight: "16px", color: SECUNDARIO }}>
+            <p data-cita aria-label={`Así lo dice el libro: ${inf.nombre.delLibro}`} style={{ margin: "2px 0 0", fontFamily: INTER, fontSize: "12px", lineHeight: "16px", color: SECUNDARIO }}>
               «{inf.nombre.delLibro}»
             </p>
           </div>
@@ -293,26 +294,15 @@ function FiguraPrueba({ estado, setEstado, paso }) {
   );
 }
 
-/* ═══════════ 9 · La capa 4 (excepción de Mai §4): la franja lleva la línea del año ═══════════ */
+/* ═══════════ 9 · La capa 4 (excepción de Mai): sin figura ═══════════ */
 export const FICHA_FRASE_A3 = F(17);
-function FranjaLinea() {
-  const chip = (t) => <span style={{ flex: "none", padding: "2px 8px", borderRadius: "6px", border: `1px solid ${NEUTRO}`, fontFamily: SORA, fontSize: "12px", fontWeight: 700, lineHeight: "16px", color: FAE.text }}>{t}</span>;
-  return (
-    <>
-      {chip(CORTA.enero)}
-      <span style={{ flex: 1, height: "12px", borderRadius: "4px", background: "rgba(184,196,212,0.35)", border: `1px solid ${NEUTRO}` }} />
-      {chip(CORTA.diciembre)}
-    </>
-  );
-}
-
 /* ═══════════ 10 · El puente: la foto, la película y una tercera tarjeta que se enciende ═══════════ */
 function FiguraPuente() {
   const tarjeta = (Icono, texto, enciende = false) => (
     <div data-tarjeta={enciende ? "tercera" : undefined} className={enciende ? "fae-t1s-aparece" : undefined} style={{
       flex: 1, minWidth: 0, height: "72px", borderRadius: "10px", boxSizing: "border-box", display: "flex", flexDirection: "column",
       alignItems: "center", justifyContent: "center", gap: "6px", animationDelay: enciende ? "400ms" : undefined,
-      background: enciende ? "rgba(184,196,212,0.16)" : "rgba(10,20,34,0.5)", border: `${enciende ? 2 : 1}px ${enciende ? "solid" : "solid"} ${enciende ? NEUTRO : "rgba(248,249,250,0.16)"}`,
+      background: enciende ? "rgba(184,196,212,0.16)" : "rgba(10,20,34,0.5)", border: `${enciende ? 2 : 1}px ${enciende ? "solid" : "solid"} ${enciende ? NEUTRO : SILUETA}`,
     }}>
       <Icono aria-hidden="true" size={22} strokeWidth={1.75} color={enciende ? FAE.text : SECUNDARIO} />
       {texto && <span style={{ fontFamily: INTER, fontSize: "12px", fontWeight: 600, lineHeight: "16px", color: FAE.text }}>{texto}</span>}
@@ -331,22 +321,22 @@ function FiguraPuente() {
   );
 }
 
-export const PIEZA_FOTO_PELICULA = {
+export const PIEZA_FOTO_PELICULA = conFases({
   id: ID_P3,
   altoFigura: { a320: 184, a375: 184 },
   pantallas: [
-    { id: "prediccion", tipo: "apertura", ...pick(T.prediccion), Figura: FiguraPrediccion },
+    { id: "prediccion", tipo: "apertura", ...sinApoyo(T.prediccion), Figura: FiguraPrediccion },
     { id: "informes", tipo: "apertura", ...pick(T.informes), Figura: FiguraInformes },
     { id: "apodos", tipo: "miralo", ...pick(T.apodos), pasos: 1, rotulosPaso: [T.apodos.paso], Figura: FiguraApodos },
     { id: "enero", tipo: "miralo", ...pick(T.enero), Figura: FiguraEnero },
-    { id: "parada", tipo: "haz", ...pick(T.parada), resuelta: paradaResuelta, Figura: FiguraParada },
+    { id: "parada", tipo: "haz", ...sinApoyo(T.parada), resuelta: paradaResuelta, Figura: FiguraParada },
     { id: "diciembre", tipo: "miralo", ...pick(T.diciembre), Figura: FiguraDiciembre },
     { id: "cambio", tipo: "miralo", ...pick(T.cambio), Figura: FiguraCambio },
     {
-      id: "prueba", tipo: "haz", ...pick(T.prueba), pasos: N_PREGUNTAS - 1,
+      id: "prueba", tipo: "haz", ...sinApoyo(T.prueba), pasos: N_PREGUNTAS - 1,
       rotulosPaso: PREGUNTAS_P3.slice(1).map((q) => q.texto), resuelta: itemsResueltos(N_PREGUNTAS), Figura: FiguraPrueba,
     },
-    { id: "frase", tipo: "haz", ...pick(T.frase), resuelta: paradaResuelta, Figura: figuraFrase(FICHA_FRASE_A3, FranjaLinea) },
+    { id: "frase", tipo: "haz", ...pick(T.frase), resuelta: paradaResuelta, Figura: figuraFrase(FICHA_FRASE_A3) },
     { id: "puente", tipo: "cierre", ...pick(T.puente), Figura: FiguraPuente },
   ],
-};
+});

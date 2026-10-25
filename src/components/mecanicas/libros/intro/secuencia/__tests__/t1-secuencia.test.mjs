@@ -81,12 +81,13 @@ test("★★★ R10: la predicción no trae los nodos; entran como respuesta", (
   } finally { m.desmontar(); }
 });
 
-test("★★ los siete verbos: se cuentan al tocarlos y «registrar» se dice anotar", () => {
+test("★★ los siete verbos: se cuentan al tocarlos (que registrar es anotar lo dice el apoyo)", () => {
   const m = montar(pantalla(PIEZA_RECORRIDO, "verbos").Figura);
   try {
     assert.equal(m.caja.querySelectorAll("[data-verbo]").length, 7);
     tocar(m.caja.querySelector('[data-verbo="registrar"]'));
-    assert.match(m.caja.querySelector("[data-cuenta-verbos]").textContent, /^1 de 7 · registrar es anotar$/);
+    assert.match(m.caja.querySelector("[data-cuenta-verbos]").textContent, /^1 de 7$/);
+    assert.equal(m.caja.querySelector("[data-cuenta-verbos]").dataset.anotar, "si");
   } finally { m.desmontar(); }
 });
 
@@ -192,7 +193,7 @@ function capa4SinRecorte(Figura, ficha, nombre) {
     const raiz = m.caja.querySelector("[data-capa4]");
     assert.ok(raiz, `${nombre}: la figura no lleva data-capa4`);
     assert.match(m.caja.querySelector("style").textContent + [...m.caja.querySelectorAll("style")].map((s) => s.textContent).join(""), /:has\(\[data-capa4\]\)\s*\{\s*height:\s*auto !important/);
-    assert.equal(m.caja.querySelector("[data-franja]").style.height, "44px");
+    assert.equal(m.caja.querySelector("[data-franja]"), null, `${nombre}: la capa 4 va sin figura ni franja (Mai, volumen §1 · 11)`);
     assert.equal(m.caja.querySelectorAll("[data-frase]").length, ficha.opciones.length);
     for (const el of m.caja.querySelectorAll("[data-capa4], [data-capa4] *")) {
       assert.ok(!/auto|scroll|hidden/.test(el.style.overflowY || "") || el.hasAttribute("data-franja"), `${nombre}: algo recorta o desplaza dentro de la figura`);
@@ -207,7 +208,7 @@ function capa4SinRecorte(Figura, ficha, nombre) {
   } finally { m.desmontar(); }
 }
 
-test("★★★ capa 4 de «Ocho leen lo mismo»: franja de 44, cuatro frases enteras, nada se desplaza dentro de la figura", async () => {
+test("★★★ capa 4 de «Ocho leen lo mismo»: sin figura, cuatro frases enteras, nada se desplaza dentro de la figura", async () => {
   const { FICHA_FRASE_OCHO } = await import("../piezaOchoLeen.jsx");
   capa4SinRecorte(pantalla(PIEZA_OCHO_LEEN, "frase").Figura, FICHA_FRASE_OCHO, "ocho");
 });
@@ -300,7 +301,7 @@ test("★★★ cu0-a2 · los cuatro casos: un hecho por paso, un ítem saltado 
   try { assert.ok(f.caja.querySelector("[data-al-final]").textContent.includes("suben o bajan juntos")); } finally { f.desmontar(); }
 });
 
-test("★★★ cu0-a2 · la capa 4: franja de 44 y las cuatro frases en flujo, todas con su devolución", () => {
+test("★★★ cu0-a2 · la capa 4: sin figura y las cuatro frases en flujo, todas con su devolución", () => {
   capa4SinRecorte(pantalla(PIEZA_ECUACION, "frase").Figura, FICHA_FRASE_A2, "cu0-a2");
 });
 
@@ -358,7 +359,7 @@ test("★★★ cu0-a3 · la prueba: cinco preguntas, una por paso, rótulos med
   });
 });
 
-test("★★★ cu0-a3 · la capa 4: franja de 44 y las cuatro frases en flujo, todas con su devolución", () => {
+test("★★★ cu0-a3 · la capa 4: sin figura y las cuatro frases en flujo, todas con su devolución", () => {
   capa4SinRecorte(pantalla(PIEZA_FOTO_PELICULA, "frase").Figura, FICHA_FRASE_A3, "cu0-a3");
 });
 
@@ -439,6 +440,53 @@ test("★★★ cu0-a4 · clasifica: las cinco flechas (f1 también, explica), u
   assert.equal(pt.resuelta(estado), true);
 });
 
-test("★★★ cu0-a4 · la capa 4: franja de 44 y las cuatro frases en flujo, todas con su devolución", () => {
+test("★★★ cu0-a4 · la capa 4: sin figura y las cuatro frases en flujo, todas con su devolución", () => {
   capa4SinRecorte(pantalla(PIEZA_ARTICULAN, "frase").Figura, FICHA_FRASE_A4, "cu0-a4");
+});
+
+/* ═══════════ LA REVISIÓN DE MAI (fichas/b-t1-secuencia-a1-volumen-mai.md) EN LAS CINCO PIEZAS ═══════════ */
+const ORDEN_FASE = Object.values(S.FASES);
+
+test("★★★ volumen §1 · 4: ninguna pantalla de parada lleva apoyo (las predicciones y los Haz que no son la capa 4)", () => {
+  for (const p of PIEZAS_T1_SECUENCIA) {
+    for (const pt of p.pantallas) {
+      const parada = (pt.tipo === "haz" && pt.id !== "frase") || pt.id === "prediccion";
+      if (parada) assert.equal(pt.apoyo, undefined, `${p.id}/${pt.id}`);
+    }
+  }
+});
+
+test("★★★ volumen §1 · 12: las cejillas de fase no retroceden en ninguna pieza", () => {
+  for (const p of PIEZAS_T1_SECUENCIA) {
+    const fases = p.pantallas.map((pt) => ORDEN_FASE.indexOf(pt.fase ?? S.FASES[pt.tipo]));
+    fases.forEach((f, k) => assert.ok(k === 0 || f >= fases[k - 1], `${p.id}: la pantalla ${k + 1} retrocede de fase`));
+  }
+  const a1 = PIEZA_RECORRIDO.pantallas.map((pt) => pt.fase ?? S.FASES[pt.tipo]);
+  assert.deepEqual(a1.slice(2, 8), Array(6).fill(S.FASES.miralo), "a1: de la 3 a la 8, «Mírelo funcionar»");
+  assert.equal(a1[8], S.FASES.haz);
+  assert.equal(a1[9], S.FASES.cierre);
+});
+
+test("★★ volumen §1 · 7: el hecho de la pantalla 4 de cu0-a1 no se pinta dos veces", () => {
+  const pt = pantalla(PIEZA_RECORRIDO, "hecho");
+  assert.equal(pt.apoyo, "Eso pasó de verdad.");
+});
+
+test("★★ volumen §1 · 13: en «Ocho leen» la pregunta sustituye a la consigna, no se suma", () => {
+  const pt = pantalla(PIEZA_OCHO_LEEN, "paso-1");
+  assert.equal(pt.apoyo, undefined);
+  const m = montar(pt.Figura);
+  try {
+    assert.ok(m.caja.querySelector("[data-consigna]"));
+    tocar(m.caja.querySelector('[data-persona="empleados"]'));
+    assert.equal(m.caja.querySelector("[data-consigna]"), null);
+    assert.ok(m.caja.querySelector('[data-pregunta-de="empleados"]'));
+  } finally { m.desmontar(); }
+});
+
+test("★★ volumen §3: lo que se pulsa lleva canto; las opciones de parada, las frases y las personas", () => {
+  for (const [pz, id, sel] of [[PIEZA_RECORRIDO, "parada-papel", "[data-parada]"], [PIEZA_OCHO_LEEN, "paso-1", "[data-persona]"], [PIEZA_OCHO_LEEN, "frase", "[data-frase]"], [PIEZA_RECORRIDO, "verbos", "[data-verbo]"]]) {
+    const m = montar(pantalla(pz, id).Figura);
+    try { for (const b of m.caja.querySelectorAll(sel)) assert.ok(b.classList.contains("fae-t1s-canto"), `${id} ${sel}`); } finally { m.desmontar(); }
+  }
 });

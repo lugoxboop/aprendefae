@@ -1,8 +1,51 @@
 import { FAE } from "../../../../../theme.js";
-import { HAZ_INICIAL, responderHaz, hazResuelto, mostrarCorrecto } from "../../../../secuencia/secuencia.js";
+import { HAZ_INICIAL, responderHaz, hazResuelto, mostrarCorrecto, FASES, TIPOS } from "../../../../secuencia/secuencia.js";
 import { SORA, INTER, SECUNDARIO, NAVY, RIEL, HUNDIDO, REPOSO, ACIERTO, FANTASMA, estiloC2, CURVA } from "../../tema1/registro.jsx";
 
-export { estiloC2, HUNDIDO as HUNDIDO_T1 };
+export { estiloC2 };
+
+/*
+ * ═══════════ EL VOLUMEN (#545, aplicado por Mai: fichas/b-t1-secuencia-a1-volumen-mai.md §3) ═══════════
+ *
+ * La escalera N0 #0E1B2E (página) → N1 #1D3557 (canto) → N2 #344968 (cara).
+ * EL CANTO MARCA LO QUE SE PULSA: cara N2 sobre un canto N1 de 4 px, que es
+ * una sombra sin desenfoque (no un border-bottom) y por eso la cara conserva
+ * sus 44 táctiles y el bloque mide 48. Al pulsar, la cara se hunde 4 px
+ * (100 ms; vuelve en 160) y tapa el canto. Lo que no se pulsa lleva solo el
+ * contorno de silueta de 1 px al 18 %. Con movimiento reducido no hay hundido.
+ */
+export const N1 = "#1D3557";
+export const N2 = "#344968";
+export const SILUETA = "rgba(248,249,250,.18)";
+export const HUNDIDO_T1 = { ...HUNDIDO, border: `1px solid ${SILUETA}` };
+/* La decoración del tema, quieta: los renglones del libro mayor (la trama y el tono de CSS_SALA, marco.jsx), detrás. */
+export const TRAMA = "repeating-linear-gradient(to bottom, transparent 0 21px, rgba(203,220,242,.05) 21px 22px)";
+export const CANTO = "fae-t1s-canto";
+
+/* La cara de un botón de parada según su estado C2 (lo de estiloC2, con la cara N2 y sin el inset). */
+export function estiloBoton(estado) {
+  if (estado === ACIERTO) return { border: `2px solid ${FAE.text}`, background: N2 };
+  if (estado === FANTASMA) return { border: `2px dashed ${FAE.coral}`, background: "transparent", "--fae-canto": "transparent" };
+  return { border: "2px solid transparent", background: N2 };
+}
+
+/*
+ * ═══════════ LAS CEJILLAS NO RETROCEDEN (Mai, volumen §1 · 12) ═══════════
+ * Una parada en medio de pantallas Míralo dice «Mírelo funcionar»: la fase de
+ * una pantalla es la más temprana de las que quedan por delante. Los
+ * literales son los de FASES (compartidos); aquí solo se elige cuál.
+ */
+export function conFases(pieza) {
+  const pts = pieza.pantallas;
+  const orden = (t) => TIPOS.indexOf(t);
+  return {
+    ...pieza,
+    pantallas: pts.map((p, i) => {
+      const t = TIPOS[Math.min(...pts.slice(i).map((q) => orden(q.tipo)))];
+      return t === p.tipo ? p : { ...p, fase: FASES[t] };
+    }),
+  };
+}
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -25,7 +68,13 @@ export const CSS_FIGURAS_T1 = `
 .fae-t1s-nodo { animation: fae-t1s-nodo 240ms ${CURVA} both; }
 .fae-t1s-aparece { animation: fae-t1s-aparece 240ms ${CURVA} both; }
 .fae-t1s-forma { animation: fae-t1s-aparece 500ms ${CURVA} both; }
-@media (prefers-reduced-motion: reduce) { .fae-t1s-nodo, .fae-t1s-aparece, .fae-t1s-forma { animation: none !important; } }
+.fae-t1s-canto { --fae-canto: #1D3557; box-shadow: 0 4px 0 0 var(--fae-canto), 0 0 0 1px rgba(248,249,250,.18); margin-bottom: 4px; transition: transform 160ms ${CURVA}, box-shadow 160ms ${CURVA}; }
+.fae-t1s-canto:active:not([aria-disabled="true"]) { transform: translateY(4px); box-shadow: 0 0 0 0 var(--fae-canto), 0 0 0 1px rgba(248,249,250,.18); transition-duration: 100ms; }
+@media (prefers-reduced-motion: reduce) {
+  .fae-t1s-nodo, .fae-t1s-aparece, .fae-t1s-forma { animation: none !important; }
+  .fae-t1s-canto { transition: none; }
+  .fae-t1s-canto:active:not([aria-disabled="true"]) { transform: none; box-shadow: 0 4px 0 0 var(--fae-canto), 0 0 0 1px rgba(248,249,250,.18); }
+}
 `;
 
 /*
@@ -78,7 +127,7 @@ export function Riel({ nodos = true, encendidos = 0, duda = null, vuelta = "tenu
 export function Escenario({ children, centrado = false, plano = false, gap = 8 }) {
   return (
     <div data-escenario style={{
-      ...(plano ? {} : HUNDIDO), flex: 1, minHeight: 0, boxSizing: "border-box", padding: plano ? 0 : "6px 8px",
+      ...(plano ? {} : HUNDIDO_T1), flex: 1, minHeight: 0, boxSizing: "border-box", padding: plano ? 0 : "6px 8px",
       display: "flex", flexDirection: "column", gap: `${gap}px`, justifyContent: centrado ? "center" : "flex-start",
       overflow: "hidden",
     }}>
@@ -90,7 +139,7 @@ export function Escenario({ children, centrado = false, plano = false, gap = 8 }
 /* El marco de una figura de T1: riel arriba (si la pieza lo lleva) y escenario debajo. */
 export function MarcoFigura({ riel = null, children }) {
   return (
-    <div data-figura-t1 style={{ height: "100%", display: "flex", flexDirection: "column", gap: "8px" }}>
+    <div data-figura-t1 style={{ height: "100%", display: "flex", flexDirection: "column", gap: "8px", backgroundImage: TRAMA }}>
       <style>{CSS_FIGURAS_T1}</style>
       {riel}
       {children}
@@ -121,6 +170,7 @@ export function Fila({ opciones, estadoDe = () => REPOSO, onElegir, activa = tru
           <button
             key={o.id}
             type="button"
+            className={CANTO}
             {...{ [data]: o.id }}
             data-estado={estado}
             aria-disabled={!activa || undefined}
@@ -129,7 +179,7 @@ export function Fila({ opciones, estadoDe = () => REPOSO, onElegir, activa = tru
               minWidth: 0, minHeight: "44px", padding: "4px 6px", borderRadius: "10px", boxSizing: "border-box",
               fontFamily: INTER, fontSize: "13px", fontWeight: 600, lineHeight: "16px", color: FAE.text,
               cursor: activa ? "pointer" : "default", overflowWrap: "anywhere",
-              ...estiloC2(estado),
+              ...estiloBoton(estado),
             }}
           >
             {o.texto}
@@ -264,23 +314,22 @@ export function responderItem(estado, k, id, correcta) {
  * PROVISIONAL HASTA #558. Las cuatro frases publicadas no caben con la
  * reserva de 184 a 320, y no se pueden recortar ni desplazar dentro de la
  * figura (Shoko, auditoría del #559: la cuarta frase y la devolución no se
- * leían). En esta pantalla, y solo en esta, la figura es una FRANJA de 44 px
- * con el modelo en su estado final, y debajo van las cuatro frases enteras y
- * la devolución, en flujo: la que se desplaza es la PANTALLA (Mai midió 146 px
- * a 320).
+ * leían). En esta pantalla, y solo en esta, NO HAY FIGURA (Mai, volumen
+ * §1 · 11, que corrige su §4: ni la franja de 44): las cuatro frases enteras
+ * y la devolución van en flujo, y la que se desplaza es la PANTALLA (Mai midió
+ * 102 px a 320, ninguno a 375).
  *
- * `SecuenciaAprender` no deja cambiar el alto de una pantalla (#558) y no se
- * toca; por eso la figura lleva `data-capa4` y su propia regla `:has()`, que
- * suelta el alto reservado del <figure> solo cuando la contiene.
+ * `SecuenciaAprender` siempre pinta un <figure> con el alto reservado (#558) y
+ * no se toca; por eso las frases llevan `data-capa4` y su propia regla
+ * `:has()`, que suelta ese alto solo cuando las contiene.
  *
- * Las frases van apiladas (no en fila: son frases). La pista del 1.er error
- * es la devolución de lo tocado (`opcion.devolucion`, la de la ficha); con el
- * 2.º se enciende la correcta con el porqué de lo elegido.
+ * Las frases van apiladas (no en fila: son frases), con canto (se pulsan). La
+ * pista del 1.er error es la devolución de lo tocado (`opcion.devolucion`, la
+ * de la ficha); con el 2.º se enciende la correcta con el porqué de lo elegido.
  */
-export const ALTO_FRANJA = 44;
 const CSS_CAPA4 = "figure.fae-sec-figura:has([data-capa4]) { height: auto !important; }";
 
-export function FiguraFrase({ ficha, Franja = null, estado, setEstado }) {
+export function FiguraFrase({ ficha, estado, setEstado }) {
   const e = estado ?? PARADA_INICIAL;
   const correcta = ficha.opciones.find((o) => o.correcta).id;
   const estadoDe = estadoEnParada(e, correcta);
@@ -288,48 +337,41 @@ export function FiguraFrase({ ficha, Franja = null, estado, setEstado }) {
   const devolucion = (id) => ficha.opciones.find((o) => o.id === id)?.devolucion?.texto ?? null;
   const ultima = e.elegidas?.[e.elegidas.length - 1];
   return (
-    <div data-figura-t1 data-capa4 style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+    <div data-figura-t1 data-capa4 data-escenario data-frases style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
       <style>{CSS_FIGURAS_T1}{CSS_CAPA4}</style>
-      <div data-franja aria-hidden="true" style={{
-        ...HUNDIDO, flex: "none", height: `${ALTO_FRANJA}px`, padding: "0 10px", overflow: "hidden",
-        display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
-      }}>
-        {Franja && <Franja />}
-      </div>
-      <div data-escenario data-frases style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-        {ficha.opciones.map((o) => (
-          <button key={o.id} type="button" data-frase={o.id} data-estado={estadoDe(o.id)} aria-disabled={resuelta || undefined}
-            onClick={() => !resuelta && setEstado(responderParada(e, o.id, correcta))}
-            style={{
-              flex: "none", minHeight: "44px", padding: "6px 10px", borderRadius: "10px", boxSizing: "border-box", textAlign: "left",
-              fontFamily: INTER, fontSize: "13px", lineHeight: "18px", color: FAE.text, cursor: resuelta ? "default" : "pointer",
-              ...estiloC2(estadoDe(o.id)),
-            }}>
-            {o.texto.texto}
-          </button>
-        ))}
-        <DevolucionParada estado={e} pista={devolucion(ultima)} porqueDe={devolucion} acierto={devolucion(correcta)} />
-      </div>
+      {ficha.opciones.map((o) => (
+        <button key={o.id} type="button" className={CANTO} data-frase={o.id} data-estado={estadoDe(o.id)} aria-disabled={resuelta || undefined}
+          onClick={() => !resuelta && setEstado(responderParada(e, o.id, correcta))}
+          style={{
+            flex: "none", minHeight: "44px", padding: "6px 10px", borderRadius: "10px", boxSizing: "border-box", textAlign: "left",
+            fontFamily: INTER, fontSize: "13px", lineHeight: "18px", color: FAE.text, cursor: resuelta ? "default" : "pointer",
+            ...estiloBoton(estadoDe(o.id)),
+          }}>
+          {o.texto.texto}
+        </button>
+      ))}
+      <DevolucionParada estado={e} pista={devolucion(ultima)} porqueDe={devolucion} acierto={devolucion(correcta)} />
     </div>
   );
 }
 
-/* La Figura de una pantalla de capa 4: la pantalla de la ficha y la franja de su pieza. */
-export const figuraFrase = (ficha, Franja = null) => function FiguraCapa4(props) {
-  return <FiguraFrase {...props} ficha={ficha} Franja={Franja} />;
+/* La Figura de una pantalla de capa 4: la pantalla de la ficha, sin figura. */
+export const figuraFrase = (ficha) => function FiguraCapa4(props) {
+  return <FiguraFrase {...props} ficha={ficha} />;
 };
 
 /* Las opciones de una capa 4 que no traen devolución en la ficha (no se inventan: se anotan). */
 export const sinDevolucion = (ficha) => ficha.opciones.filter((o) => !o.devolucion?.texto).map((o) => o.id);
 
-/* Un botón que se toca para revelar algo (Míralo): claro al tocarlo, con borde punteado si nunca se tocó. */
+/* Un botón que se toca para revelar algo (Míralo), con canto: claro al tocarlo (canto gris quieto), punteado si nunca se tocó. */
 export function Tocable({ on = false, visto = false, children, style = {}, ...resto }) {
   return (
-    <button type="button" aria-pressed={on} {...resto} style={{
+    <button type="button" aria-pressed={on} {...resto} className={CANTO} style={{
       minWidth: 0, minHeight: "44px", padding: "4px 8px", borderRadius: "10px", boxSizing: "border-box",
       fontFamily: INTER, fontSize: "13px", fontWeight: 600, lineHeight: "16px", cursor: "pointer",
-      color: on ? NAVY : FAE.text, background: on ? "#B8C4D4" : "transparent",
-      border: `2px ${on || visto ? "solid" : "dashed"} ${on ? "#B8C4D4" : visto ? "rgba(248,249,250,.6)" : "rgba(248,249,250,.5)"}`,
+      color: on ? NAVY : FAE.text, background: on ? "#B8C4D4" : N2,
+      border: on || visto ? "2px solid transparent" : "2px dashed rgba(248,249,250,.5)",
+      ...(on ? { "--fae-canto": "#8C9BB0" } : {}),
       ...style,
     }}>
       {children}

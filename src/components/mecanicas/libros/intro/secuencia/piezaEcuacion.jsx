@@ -10,8 +10,9 @@ import { torreEnPantalla, LineaDeAltura } from "../Torre.jsx";
 import {
   MarcoFigura, Escenario, Nota, Fila, Tocable, SORA, INTER, SECUNDARIO, NAVY,
   paradaResuelta, ParadaModelo, figuraFrase, itemsDe, itemsResueltos, itemDelPaso, responderItem,
+  CANTO, N2, SILUETA, conFases,
 } from "./figurasT1.jsx";
-import { pick } from "./piezaRecorrido.jsx";
+import { pick, sinApoyo } from "./piezaRecorrido.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -64,10 +65,10 @@ export function TorreSec({
     if (!onLado) return <div data-lectura={cual} style={{ ...comun, alignItems: cual === "izquierda" ? "flex-end" : "stretch" }}>{hijos}</div>;
     const visto = cual === "izquierda" ? verIzq : verDer;
     return (
-      <button type="button" data-tocable data-lado={cual} aria-pressed={visto} onClick={() => onLado(cual)} style={{
+      <button type="button" className={CANTO} data-tocable data-lado={cual} aria-pressed={visto} onClick={() => onLado(cual)} style={{
         ...comun, alignItems: cual === "izquierda" ? "flex-end" : "stretch", minHeight: `${Math.max(44, total)}px`, padding: "0 4px",
         margin: 0, borderRadius: "8px", boxSizing: "border-box", cursor: "pointer", font: "inherit", color: FAE.text,
-        background: "transparent", border: `2px ${visto ? "solid" : "dashed"} ${visto ? "rgba(248,249,250,.35)" : "rgba(248,249,250,.5)"}`,
+        background: N2, border: visto ? "2px solid transparent" : "2px dashed rgba(248,249,250,.5)",
         position: "relative",
       }}>
         {!visto && rotulosLado && (
@@ -194,7 +195,7 @@ const figuraNombres = (ecuacion) => function FiguraNombres({ estado, setEstado }
             {["activo", "pasivo", "patrimonio"].map(boton)}
           </div>
         )}
-        <TorreSec lado={ecuacion ? "ambas" : marca.lado} marcar={marca.marcar} alto={18} gap={2} encabezado={ecuacion} />
+        <TorreSec lado={ecuacion ? "ambas" : marca.lado} marcar={marca.marcar} alto={16} gap={2} encabezado={ecuacion} />
         {!ecuacion && ultimo && <Nota key={ultimo} data-revela={ultimo}>{NOMBRE[ultimo].definicion}</Nota>}
       </Escenario>
     </MarcoFigura>
@@ -290,7 +291,7 @@ function FiguraCasos({ estado, setEstado, paso }) {
         </p>
       ) : (
         <p key={`${k}-${resuelto}`} data-caso={h.caso.id} data-hecho={h.hecho.id} className="fae-t1s-aparece" style={{
-          margin: 0, height: "36px", fontFamily: INTER, fontSize: "13px", lineHeight: "18px", color: FAE.text, fontWeight: resuelto ? 700 : 400,
+          margin: 0, height: "32px", fontFamily: INTER, fontSize: "12px", lineHeight: "16px", color: FAE.text, fontWeight: resuelto ? 700 : 400,
         }}>
           {resuelto ? h.caso.nombre : h.hecho.texto}
         </p>
@@ -325,9 +326,8 @@ function FiguraRegla({ estado, setEstado }) {
   );
 }
 
-/* ═══════════ 9 · La capa 4 (excepción de Mai §4): la franja lleva la torre entera ═══════════ */
+/* ═══════════ 9 · La capa 4 (excepción de Mai): sin figura ═══════════ */
 export const FICHA_FRASE_A2 = F(14);
-const FranjaTorre = () => <TorreMini />;
 
 /* ═══════════ 10 · El puente: la torre es una foto de un día ═══════════ */
 function FiguraPuente() {
@@ -343,23 +343,22 @@ function FiguraPuente() {
   );
 }
 
-export const PIEZA_ECUACION = {
+export const PIEZA_ECUACION = conFases({
   id: ID_P2,
   altoFigura: { a320: 184, a375: 184 },
   pantallas: [
-    { id: "prediccion", tipo: "apertura", ...pick(T.prediccion), Figura: FiguraPrediccion },
+    { id: "prediccion", tipo: "apertura", ...sinApoyo(T.prediccion), Figura: FiguraPrediccion },
     { id: "nombres", tipo: "apertura", ...pick(T.nombres), Figura: figuraNombres(false) },
     { id: "ecuacion", tipo: "miralo", ...pick(T.ecuacion), Figura: figuraNombres(true) },
     { id: "dos-lados", tipo: "miralo", ...pick(T.dosLados), Figura: FiguraDosLados },
     { id: "dos-veces", tipo: "miralo", ...pick(T.dosVeces), pasos: 1, rotulosPaso: [T.dosVeces.pasos[2]], Figura: FiguraDosVeces },
-    { id: "parada", tipo: "haz", ...pick(T.parada), resuelta: paradaResuelta, Figura: FiguraParada },
+    { id: "parada", tipo: "haz", ...sinApoyo(T.parada), resuelta: paradaResuelta, Figura: FiguraParada },
     {
-      id: "casos", tipo: "haz", ...pick(T.casos), pasos: N_CASOS - 1,
+      id: "casos", tipo: "haz", ...sinApoyo(T.casos), pasos: N_CASOS - 1,
       rotulosPaso: CASOS.hechos.slice(1).map((h) => h.hecho.texto), resuelta: itemsResueltos(N_CASOS), Figura: FiguraCasos,
     },
     { id: "regla", tipo: "miralo", ...pick(T.regla), Figura: FiguraRegla },
-    { id: "frase", tipo: "haz", ...pick(T.frase), resuelta: paradaResuelta, Figura: figuraFrase(FICHA_FRASE_A2, FranjaTorre) },
+    { id: "frase", tipo: "haz", ...pick(T.frase), resuelta: paradaResuelta, Figura: figuraFrase(FICHA_FRASE_A2) },
     { id: "puente", tipo: "cierre", ...pick(T.puente), Figura: FiguraPuente },
   ],
-};
-
+});

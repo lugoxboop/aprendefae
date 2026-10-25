@@ -73,7 +73,8 @@ export const A1_SEC = {
     },
     hecho: {
       titular: "Pasa algo en la empresa",
-      apoyo: "Caleja compra un computador por $25.000. No lo paga: lo queda debiendo. Eso pasó de verdad.",
+      /* El hecho ya está en la ficha de la figura: el apoyo solo añade lo que la ficha no dice (Mai, volumen §1 · 7). */
+      apoyo: "Eso pasó de verdad.",
       toca: "Toca la ficha",
       nombreFigura: "El primer punto del ciclo encendido y una ficha para tocar.",
     },

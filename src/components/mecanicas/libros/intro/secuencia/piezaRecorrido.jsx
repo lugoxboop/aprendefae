@@ -9,7 +9,7 @@ import { FormaHecho } from "../formas.jsx";
 import { SIN_DATO } from "../../../../../data/contabilidadIntro.js";
 import {
   MarcoFigura, Riel, Escenario, Nota, Fila, SORA, INTER, SECUNDARIO, NAVY,
-  PARADA_INICIAL, paradaResuelta, responderParada, estadoEnParada, DevolucionParada,
+  PARADA_INICIAL, paradaResuelta, responderParada, estadoEnParada, DevolucionParada, CANTO, N2, SILUETA, conFases,
 } from "./figurasT1.jsx";
 
 /*
@@ -76,23 +76,28 @@ function FiguraVerbos({ estado, setEstado }) {
     <MarcoFigura riel={<Riel encendidos={0} />}>
       <Escenario plano>
         <div>
-        <p data-cita aria-label={`Así lo dice el libro: ${TRAMO}`} style={{ margin: 0, fontFamily: INTER, fontSize: "13px", lineHeight: "44px", color: FAE.text }}>
+        <p data-cita aria-label={`Así lo dice el libro: ${TRAMO}`} style={{ margin: 0, fontFamily: INTER, fontSize: "13px", lineHeight: "48px", color: FAE.text }}>
           {partes.map((p, k) => {
             if (!VERBOS_DEL_LIBRO.includes(p)) return <span key={k} aria-hidden="true">{p}</span>;
             const on = tocados.includes(p);
             return (
-              <button key={k} type="button" data-verbo={p} aria-pressed={on} onClick={() => tocar(p)} style={{
-                height: "44px", padding: "0 3px", margin: "0 1px", verticalAlign: "middle", borderRadius: "8px", boxSizing: "border-box",
+              <button key={k} type="button" className={CANTO} data-verbo={p} aria-pressed={on} onClick={() => tocar(p)} style={{
+                height: "44px", padding: "0 3px", margin: "0 1px 4px", verticalAlign: "middle", borderRadius: "8px", boxSizing: "border-box",
                 fontFamily: INTER, fontSize: "13px", fontWeight: on ? 700 : 600, color: on ? NAVY : FAE.text, cursor: "pointer",
-                background: on ? "#B8C4D4" : "transparent", border: `2px solid ${on ? "#B8C4D4" : "rgba(248,249,250,.35)"}`,
+                background: on ? "#B8C4D4" : N2, border: "2px solid transparent", ...(on ? { "--fae-canto": "#8C9BB0" } : {}),
               }}>
                 {p}
               </button>
             );
           })}
-        </p>
-        <p data-cuenta-verbos style={{ margin: 0, fontFamily: INTER, fontSize: "12px", lineHeight: "16px", color: SECUNDARIO }}>
-          {tocados.length} de {VERBOS_DEL_LIBRO.length}{tocados.includes(VERBO_ANOTAR) ? " · registrar es anotar" : ""}
+          {/*
+            La cuenta va al final del tramo, en el hueco del último renglón: con
+            el canto (48 por renglón) no queda otro. Sin el «· registrar es
+            anotar» de antes: no cabe a 320 y lo dice ya el apoyo (lote G).
+          */}
+          <span data-cuenta-verbos data-anotar={tocados.includes(VERBO_ANOTAR) ? "si" : undefined} style={{ marginLeft: "6px", fontFamily: INTER, fontSize: "12px", lineHeight: "16px", color: SECUNDARIO, whiteSpace: "nowrap" }}>
+            {tocados.length} de {VERBOS_DEL_LIBRO.length}
+          </span>
         </p>
         </div>
       </Escenario>
@@ -107,11 +112,11 @@ function FiguraAdentroAfuera({ estado, setEstado }) {
   const zona = (z, cuantos) => {
     const on = vistos.includes(z);
     return (
-      <button type="button" data-zona-sec={z} aria-pressed={on} onClick={() => tocar(z)} style={{
+      <button type="button" className={CANTO} data-zona-sec={z} aria-pressed={on} onClick={() => tocar(z)} style={{
         flex: z === "adentro" ? "0 0 44%" : 1, minHeight: "44px", borderRadius: "10px", boxSizing: "border-box",
         display: "flex", alignItems: "center", justifyContent: "center", gap: "6px",
         fontFamily: INTER, fontSize: "13px", fontWeight: 600, color: on ? NAVY : FAE.text, cursor: "pointer",
-        background: on ? "#B8C4D4" : "transparent",
+        background: on ? "#B8C4D4" : N2, ...(on ? { "--fae-canto": "#8C9BB0" } : {}),
         border: z === "adentro" ? `2px solid ${on ? "#B8C4D4" : FAE.text}` : `2px dashed ${on ? "#B8C4D4" : "rgba(248,249,250,.5)"}`,
       }}>
         <Users aria-hidden="true" size={16} strokeWidth={2} />{T.adentroAfuera.rotulos[z]} · {cuantos}
@@ -152,7 +157,7 @@ export function BalanceCorto({ balance = balanceDelHecho() }) {
   const de = (activo) => balance.cuentas.filter((c) => (c.seccion === "activo") === activo)
     .map((c) => fila(c.cuenta, c.rotulo, c.valor, { marcada: c.cuenta === CUENTA_RESALTADA }));
   return (
-    <div data-forma="estado-corto" style={{ padding: "6px 10px", borderRadius: "10px", background: "rgba(10,20,34,0.5)", border: "1px solid rgba(248,249,250,0.14)" }}>
+    <div data-forma="estado-corto" style={{ padding: "6px 10px", borderRadius: "10px", background: "rgba(10,20,34,0.5)", border: `1px solid ${SILUETA}` }}>
       <p style={{ margin: "0 0 2px", fontFamily: SORA, fontSize: "12px", fontWeight: 700, lineHeight: "16px", color: FAE.text, textAlign: "center" }}>Estado de situación financiera</p>
       {de(true)}
       {fila("activos", T.informe.totales.activos, balance.activos, { total: true })}
@@ -170,7 +175,7 @@ export function BalanceCorto({ balance = balanceDelHecho() }) {
  * y en filas de 18. Las publicadas no se tocan: las sigue usando la vista de
  * cuatro capas.
  */
-const TARJETA = { padding: "7px 10px", borderRadius: "10px", background: "rgba(10,20,34,0.5)", border: "1px solid rgba(248,249,250,0.14)", boxSizing: "border-box" };
+const TARJETA = { padding: "7px 10px", borderRadius: "10px", background: "rgba(10,20,34,0.5)", border: `1px solid ${SILUETA}`, boxSizing: "border-box" };
 const CEJA = { margin: "0 0 3px", fontFamily: SORA, fontSize: "12px", fontWeight: 700, lineHeight: "16px", color: SECUNDARIO, letterSpacing: "0.06em" };
 const FILA = { display: "flex", gap: "8px", fontFamily: INTER, fontSize: "12px", lineHeight: "18px" };
 
@@ -232,11 +237,11 @@ const figuraTransforma = (estacion, antes, despues, texto) => function FiguraTra
   return (
     <MarcoFigura riel={<Riel encendidos={tocada ? estacion : estacion - 1} />}>
       <Escenario plano>
-        <button type="button" data-tocar-ficha={tocada ? "hecho" : ""} aria-disabled={tocada || undefined}
+        <button type="button" className={tocada ? undefined : CANTO} data-tocar-ficha={tocada ? "hecho" : ""} aria-disabled={tocada || undefined}
           aria-label={tocada ? undefined : texto} onClick={() => !tocada && setEstado({ tocada: true })}
           style={{
             display: "block", width: "100%", minHeight: "44px", padding: 0, margin: 0, textAlign: "left", font: "inherit",
-            background: "transparent", border: 0, cursor: tocada ? "default" : "pointer", borderRadius: "10px",
+            background: tocada ? "transparent" : N2, border: 0, cursor: tocada ? "default" : "pointer", borderRadius: "10px",
           }}>
           {Forma ? <div key={tocada ? "d" : "a"} className="fae-t1s-forma"><Forma /></div> : null}
           {!tocada && (
@@ -315,25 +320,25 @@ function FiguraCierre({ paso }) {
 }
 
 /* ═══════════ LA PIEZA ═══════════ */
-export const PIEZA_RECORRIDO = {
+export const PIEZA_RECORRIDO = conFases({
   id: ID,
   /* La reserva de la pieza (Mai: 184 + el sitio de la devolución de las paradas, que aquí va dentro de la figura). */
   /* La reserva de Mai (§2): 184 en las cuatro piezas y en los dos anchos. */
   altoFigura: { a320: 184, a375: 184 },
   pantallas: [
-    { id: "prediccion", tipo: "apertura", ...pick(T.prediccion), Figura: FiguraPrediccion },
+    { id: "prediccion", tipo: "apertura", ...sinApoyo(T.prediccion), Figura: FiguraPrediccion },
     { id: "verbos", tipo: "apertura", ...pick(T.verbos), Figura: FiguraVerbos },
     { id: "adentro-afuera", tipo: "miralo", ...pick(T.adentroAfuera), Figura: FiguraAdentroAfuera },
     { id: "hecho", tipo: "miralo", ...pick(T.hecho), Figura: figuraTransforma(1, null, "hecho", T.hecho.toca) },
     { id: "papel", tipo: "miralo", ...pick(T.papel), Figura: figuraTransforma(2, "hecho", "factura", T.papel.toca) },
     {
-      id: "parada-papel", tipo: "haz", ...pick(T.paradaPapel), resuelta: paradaResuelta,
+      id: "parada-papel", tipo: "haz", ...sinApoyo(T.paradaPapel), resuelta: paradaResuelta,
       Figura: figuraParada({ ficha: F(9), rotulos: T.paradaPapel.rotulos, encendidos: 2, duda: 3, Arriba: FacturaCompacta }),
     },
     { id: "anota", tipo: "miralo", ...pick(T.anota), Figura: figuraTransforma(3, "factura", "renglon", T.anota.toca) },
     { id: "informe", tipo: "miralo", ...pick(T.informe), Figura: figuraTransforma(4, "renglon", "estado", T.informe.toca) },
     {
-      id: "parada-quien", tipo: "haz", ...pick(T.paradaQuien), resuelta: paradaResuelta,
+      id: "parada-quien", tipo: "haz", ...sinApoyo(T.paradaQuien), resuelta: paradaResuelta,
       Figura: figuraParada({ ficha: F(12), rotulos: T.paradaQuien.rotulos, encendidos: 4, duda: 5, Arriba: InformeEnLaMesa }),
     },
     {
@@ -341,7 +346,7 @@ export const PIEZA_RECORRIDO = {
       pasos: 1, rotulosPaso: [T.cierre.pasos[1]], Figura: FiguraCierre,
     },
   ],
-};
+});
 
 /* Lo que la secuencia lee de los textos de una pantalla. */
 function pick(t) {
@@ -350,4 +355,6 @@ function pick(t) {
   if (t.razon) o.razon = t.razon;
   return o;
 }
-export { pick };
+/* Una pantalla de parada no lleva apoyo (Mai, volumen §1 · 4): repetía el titular y a 320 quedaba cortado. */
+function sinApoyo(t) { return pick({ ...t, apoyo: null }); }
+export { pick, sinApoyo };

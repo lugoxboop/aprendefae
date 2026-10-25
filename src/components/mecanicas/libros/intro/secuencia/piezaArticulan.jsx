@@ -9,10 +9,11 @@ import { lineaP4, modoDeFlecha } from "../../../../../contabilidad/aprenderTema1
 import {
   MarcoFigura, Escenario, Nota, Fila, Tocable, Riel, SORA, INTER, SECUNDARIO, NAVY, HUNDIDO_T1,
   paradaResuelta, ParadaModelo, figuraFrase, itemsDe, itemsResueltos, itemDelPaso, responderItem,
+  CANTO, N2, SILUETA, conFases,
 } from "./figurasT1.jsx";
 import { TorreMini } from "./piezaEcuacion.jsx";
 import { LineaCompacta } from "./piezaFotoPelicula.jsx";
-import { pick } from "./piezaRecorrido.jsx";
+import { pick, sinApoyo } from "./piezaRecorrido.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -80,7 +81,7 @@ export function MapaSec({ activas = [], lineas = true, mini = false }) {
         position: "absolute", top: `${c.top}px`, height: lineas ? `${c.alto}px` : "28px", width: "40%", [izquierda ? "left" : "right"]: 0,
         boxSizing: "border-box", padding: `${PAD}px 8px`, borderRadius: "8px",
         background: resaltada ? "rgba(184,196,212,0.14)" : "rgba(10,20,34,0.5)",
-        border: `${resaltada ? 2 : 1}px solid ${resaltada ? NEUTRO : "rgba(248,249,250,0.16)"}`,
+        border: `${resaltada ? 2 : 1}px solid ${resaltada ? NEUTRO : SILUETA}`,
       }}>
         {!mini && <p style={{ margin: 0, height: "16px", fontFamily: SORA, fontSize: "12px", fontWeight: 700, lineHeight: "16px", color: FAE.text, whiteSpace: "nowrap" }}>{corto(inf)}</p>}
         {lineas && (
@@ -223,7 +224,7 @@ function FiguraArticula({ estado, setEstado, paso }) {
     <div data-informe-mapa={inf} style={{
       flex: 1, minWidth: 0, height: "44px", borderRadius: "8px", boxSizing: "border-box", display: "flex", alignItems: "center", justifyContent: "center",
       fontFamily: SORA, fontSize: "12px", fontWeight: 700, color: FAE.text,
-      background: tocada ? "rgba(184,196,212,0.14)" : "rgba(10,20,34,0.5)", border: `${tocada ? 2 : 1}px solid ${tocada ? NEUTRO : "rgba(248,249,250,0.16)"}`,
+      background: tocada ? "rgba(184,196,212,0.14)" : "rgba(10,20,34,0.5)", border: `${tocada ? 2 : 1}px solid ${tocada ? NEUTRO : SILUETA}`,
     }}>{corto(inf)}</div>
   );
   return (
@@ -318,13 +319,8 @@ function FiguraClasifica({ estado, setEstado, paso }) {
   );
 }
 
-/* ═══════════ 9 · La capa 4 (excepción de Mai §4): la franja lleva las flechas que llegan a la foto ═══════════ */
+/* ═══════════ 9 · La capa 4 (excepción de Mai): sin figura ═══════════ */
 export const FICHA_FRASE_A4 = F(12);
-function FranjaMapa() {
-  const chip = (inf) => <span key={inf} style={{ flex: "none", padding: "2px 8px", borderRadius: "6px", border: `1px solid ${NEUTRO}`, fontFamily: SORA, fontSize: "12px", fontWeight: 700, lineHeight: "16px", color: FAE.text }}>{corto(inf)}</span>;
-  return (<>{chip(SEGUNDO)}{chip(FLUJOS)}<span style={{ fontFamily: SORA, fontSize: "15px", color: FAE.text }}>→</span>{chip(PRIMERO)}</>);
-}
-
 /* ═══════════ 10 · El cierre del tema: las cuatro figuras en miniatura ═══════════ */
 function FiguraCierre() {
   const celda = (hijo, data) => (
@@ -344,26 +340,26 @@ function FiguraCierre() {
   );
 }
 
-export const PIEZA_ARTICULAN = {
+export const PIEZA_ARTICULAN = conFases({
   id: ID_P4,
   altoFigura: { a320: 184, a375: 184 },
   pantallas: [
-    { id: "prediccion", tipo: "apertura", ...pick(T.prediccion), Figura: FiguraPrediccion },
+    { id: "prediccion", tipo: "apertura", ...sinApoyo(T.prediccion), Figura: FiguraPrediccion },
     { id: "flujos", tipo: "apertura", ...pick(T.flujos), Figura: FiguraFlujos },
     { id: "motivos", tipo: "miralo", ...pick(T.motivos), Figura: FiguraMotivos },
     { id: "articula", tipo: "miralo", ...pick(T.articula), pasos: 1, rotulosPaso: [TEXTOS_P4[1]], Figura: FiguraArticula },
-    { id: "parada", tipo: "haz", ...pick(T.parada), resuelta: paradaResuelta, Figura: FiguraParada },
+    { id: "parada", tipo: "haz", ...sinApoyo(T.parada), resuelta: paradaResuelta, Figura: FiguraParada },
     { id: "dos-flechas", tipo: "miralo", ...pick(T.dosFlechas), Figura: figuraFlechas(["f1", "f2"], { notas: { f1: TEXTOS_P4[2], f2: TEXTOS_P4[3] } }) },
     {
       id: "cinco-flechas", tipo: "miralo", ...pick(T.cincoFlechas), pasos: 1, rotulosPaso: [T.cincoFlechas.paso],
       Figura: figuraFlechas(["f3", "f4", "f5"], { marcas: true, final: T.cincoFlechas.paso }),
     },
     {
-      id: "clasifica", tipo: "haz", ...pick(T.clasifica), pasos: N_FLECHAS - 1,
+      id: "clasifica", tipo: "haz", ...sinApoyo(T.clasifica), pasos: N_FLECHAS - 1,
       rotulosPaso: CLASIFICA.seClasifican.slice(1).map(textoFlecha), resuelta: itemsResueltos(N_FLECHAS), Figura: FiguraClasifica,
     },
-    { id: "frase", tipo: "haz", ...pick(T.frase), resuelta: paradaResuelta, Figura: figuraFrase(FICHA_FRASE_A4, FranjaMapa) },
+    { id: "frase", tipo: "haz", ...pick(T.frase), resuelta: paradaResuelta, Figura: figuraFrase(FICHA_FRASE_A4) },
     /* El último cierre del tema: «Ir a Hacer» lo pinta la vista (`final`), que hoy dice «tema» (pendiente de Erwin y Miku). */
     { id: "cierre", tipo: "cierre", ...pick(T.cierre), Figura: FiguraCierre },
   ],
-};
+});

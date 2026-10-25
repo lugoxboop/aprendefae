@@ -5,7 +5,7 @@ import { OCHO_SEC, deFicha } from "../../../../../data/contabilidadT1Secuencia.j
 import { BALANCE } from "../../../../../contabilidad/recorridoDeUnHecho.js";
 import { pesos } from "../../../../../data/contabilidad.js";
 import {
-  MarcoFigura, Escenario, Nota, SORA, INTER, SECUNDARIO, NAVY, paradaResuelta, figuraFrase,
+  MarcoFigura, Escenario, Nota, SORA, INTER, SECUNDARIO, NAVY, paradaResuelta, figuraFrase, CANTO, N2, SILUETA, conFases,
 } from "./figurasT1.jsx";
 import { pick } from "./piezaRecorrido.jsx";
 
@@ -51,17 +51,19 @@ const figuraCuatro = (ids) => function FiguraCuatro({ estado, setEstado }) {
             const u = usuario(id);
             const on = ultima === id;
             return (
-              <button key={id} type="button" data-persona={id} aria-pressed={on} aria-label={u.nombre} onClick={() => tocar(id)} style={{
+              <button key={id} type="button" className={CANTO} data-persona={id} aria-pressed={on} aria-label={u.nombre} onClick={() => tocar(id)} style={{
                 minWidth: 0, height: "44px", padding: "0 8px", borderRadius: "10px", boxSizing: "border-box", textAlign: "left",
                 fontFamily: INTER, fontSize: "13px", fontWeight: 600, lineHeight: "16px", cursor: "pointer",
-                color: on ? NAVY : FAE.text, background: on ? "#B8C4D4" : "transparent",
-                border: `2px solid ${on ? "#B8C4D4" : vistas.includes(id) ? "rgba(248,249,250,.6)" : "rgba(248,249,250,.35)"}`,
+                color: on ? NAVY : FAE.text, background: on ? "#B8C4D4" : N2, ...(on ? { "--fae-canto": "#8C9BB0" } : {}),
+                border: `2px solid ${on ? "#B8C4D4" : vistas.includes(id) ? "rgba(248,249,250,.6)" : "transparent"}`,
               }}>
                 {OCHO_SEC.corto[id]}
               </button>
             );
           })}
         </div>
+        {/* La pregunta SUSTITUYE a la consigna al tocar a una persona (Mai, volumen §1 · 13): comparten sitio, no se suman. */}
+        {!ultima && <Nota data-consigna>{VACIO_CAPA_3}</Nota>}
         {ultima && (
           <Nota key={ultima} data-pregunta-de={ultima}>
             «{usuario(ultima).pregunta}»
@@ -75,14 +77,14 @@ const figuraCuatro = (ids) => function FiguraCuatro({ estado, setEstado }) {
   );
 };
 
-/* La capa 4 (excepción de Mai §4, en figurasT1.jsx): la franja lleva el informe, el modelo en su estado final. */
+/* La capa 4 (excepción de Mai, en figurasT1.jsx): sin figura, las cuatro frases en flujo. */
 export const FICHA_FRASE_OCHO = deFicha(ID, 16);
-const FiguraFrase = figuraFrase(FICHA_FRASE_OCHO, InformeChip);
+const FiguraFrase = figuraFrase(FICHA_FRASE_OCHO);
 
 /* El puente: el informe del paso cuatro, partido en sus dos lados. */
 function FiguraPuente() {
   const lado = (titulo, total) => (
-    <div style={{ flex: 1, padding: "10px", borderRadius: "10px", background: "rgba(10,20,34,0.5)", border: "1px solid rgba(248,249,250,0.14)", textAlign: "center" }}>
+    <div style={{ flex: 1, padding: "10px", borderRadius: "10px", background: "rgba(10,20,34,0.5)", border: `1px solid ${SILUETA}`, textAlign: "center" }}>
       <p style={{ margin: 0, fontFamily: SORA, fontSize: "12px", fontWeight: 700, color: "#B8C4D4" }}>{titulo}</p>
       <p style={{ margin: "4px 0 0", fontFamily: INTER, fontSize: "14px", fontWeight: 700, color: FAE.text, fontVariantNumeric: "tabular-nums" }}>{pesos(total)}</p>
     </div>
@@ -100,15 +102,16 @@ function FiguraPuente() {
   );
 }
 
-export const PIEZA_OCHO_LEEN = {
+export const PIEZA_OCHO_LEEN = conFases({
   id: OCHO_SEC.id,
   altoFigura: { a320: 184, a375: 184 },
   pantallas: [
-    { id: "paso-1", tipo: "apertura", ...pick({ ...T.paso1, apoyo: VACIO_CAPA_3 }), Figura: figuraCuatro(T.paso1.personas) },
-    { id: "paso-2", tipo: "miralo", ...pick({ ...T.paso2, apoyo: VACIO_CAPA_3 }), Figura: figuraCuatro(T.paso2.personas) },
+    /* La consigna va en el sitio de la pregunta, dentro de la figura: el apoyo no puede cambiar con lo tocado (#558). */
+    { id: "paso-1", tipo: "apertura", ...pick({ ...T.paso1, apoyo: null }), Figura: figuraCuatro(T.paso1.personas) },
+    { id: "paso-2", tipo: "miralo", ...pick({ ...T.paso2, apoyo: null }), Figura: figuraCuatro(T.paso2.personas) },
     {
       id: "frase", tipo: "haz", ...pick({ ...T.frase, apoyo: PREGUNTA_FINAL }), resuelta: paradaResuelta, Figura: FiguraFrase,
     },
     { id: "puente", tipo: "cierre", ...pick(T.puente), Figura: FiguraPuente },
   ],
-};
+});
