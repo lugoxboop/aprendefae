@@ -133,8 +133,8 @@ const ASI_T1_4 = {
       { ms: 1500, en: `[data-control="${TIENE}-${SUBE}"]` },
       { ms: 3000, en: `[data-control="${DEBE}-${SUBE}"]` },
       { ms: 4500, en: `[data-control="${DUENOS}-${IGUAL}"]` },
-      /* 6,0 s: las barras se mueven al enviar. */
-      { ms: 6000, texto: "Ver qué pasó" },
+      /* 6,0 s: las barras se mueven al anotar (lote 4: un solo «Anotar», como t1-5). */
+      { ms: 6000, texto: "Anotar" },
     ],
   },
   cuadros: { gesto: 1 },

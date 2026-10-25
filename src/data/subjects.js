@@ -542,13 +542,16 @@ export const SUBJECTS = {
            * La T1-3 no existe: está retenida por revisión del profesor. Por
            * eso el tema suma 260 FP y no 285.
            */
-          { id: "t1-desde-donde-preguntan", nombre: "¿Desde Dónde Preguntan?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
-          { id: "t1-que-entro-y-que-salio", nombre: "¿Qué Entró y Qué Salió?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
-          { id: "t1-donde-se-rompio", nombre: "¿Dónde se Rompió?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
-          { id: "t1-que-le-pasa-a-cada-uno", nombre: "¿Qué Le Pasa a Cada Uno?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          { id: "t1-desde-donde-preguntan", nombre: "¿Desde dónde preguntan?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
+          { id: "t1-que-entro-y-que-salio", nombre: "¿Qué entró y qué salió?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
+          /* Lote 5 (Célula B): H2 y H1, nuevas, en Aplicación por su dificultad. Dificultad y FP: decisión de Kaede, reversible, la confirma Sakuta. */
+          { id: "t1-quien-pregunta-esto", nombre: "¿Quién pregunta esto?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          { id: "t1-donde-se-rompio", nombre: "¿Dónde se rompió?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          { id: "t1-que-le-pasa-a-cada-uno", nombre: "¿Qué le pasa a cada uno?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          { id: "t1-un-dia-o-un-ano", nombre: "¿Un día, un año o dos fotos?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           { id: "t1-la-ecuacion-en-movimiento", nombre: "La ecuación en movimiento", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
-          { id: "t1-en-cual-estado-aparece", nombre: "¿En Cuál Estado Aparece?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
-          { id: "t1-la-articulacion", nombre: "La Articulación", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
+          { id: "t1-en-cual-estado-aparece", nombre: "¿En qué estado aparece?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
+          { id: "t1-la-articulacion", nombre: "La articulación", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
         ],
       },
       {
@@ -622,6 +625,8 @@ export const SUBJECTS = {
           { id: "t3-que-le-toca", nombre: "¿Qué le toca a este periodo?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           /* «Cerrar el periodo»: la cuarta y última pieza de Aprender, después de «Lo que ya se pagó y no ha pasado» (Levi). */
           { id: "t3-a5-cerrar-el-periodo", nombre: "Cerrar el periodo", clasificacion: { tipo: APRENDER } },
+          /* «Del resultado a la caja», detrás de «Cerrar el periodo» y antes de «El cierre completo» (paquete e3-t3-del-resultado-a-la-caja-v4, §1). Difícil · 50 FP. Migración 0257. */
+          { id: "t3-del-resultado-a-la-caja", nombre: "Del resultado a la caja", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           /* Actividad 7 de Hacer: después de «Cerrar el periodo», al final del camino (Levi). Maestría · 90 FP. */
           { id: "t3-cierre-completo", nombre: "El cierre completo", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
         ],

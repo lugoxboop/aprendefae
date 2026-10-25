@@ -50,6 +50,7 @@ import { textoDeItem as textoDeItemA6 } from "../contabilidad/armaElAsiento.js";
 import { textoDeItem as textoDeItemA7 } from "../contabilidad/asientoCompuesto.js";
 import { hechoDeItem as hechoDeAct1T3 } from "../contabilidad/ingresoOCobro.js";
 import { hechoDeItem as hechoDeGastoOPago } from "../contabilidad/gastoOPago.js";
+import { fichaDeItem as fichaDeResultadoCaja } from "../contabilidad/resultadoCaja.js";
 import { hechoDeItem as hechoDeAct2T3, hechoDeItemRetirado as hechoRetiradoAct2T3 } from "../contabilidad/cuandoSeCausa.js";
 import { hechoDeItemAct4 as hechoDeAct4T3, hechoDeItemAct5 as hechoDeAct5T3 } from "../contabilidad/armaElAjuste.js";
 import { hechoDeParte as hechoDeParteT3 } from "../contabilidad/elCierreCompleto.js";
@@ -102,6 +103,7 @@ import { unidadDeR5_5 } from "../data/repasoCap5PermanenteJuego.js";
 import {
   preguntaDeUsuario, empresaDeItem, hechoDeItem, conceptoDeItem, flechaDeItem, situacionDeItem,
 } from "../contabilidad/tema1.js";
+import { preguntaH1, fichaH2, enunciadoH2 } from "../contabilidad/tema1Hacer2.js";
 
 /* El nombre de cada caso, para desambiguar cuentas que se llaman igual. */
 const EMPRESAS = { lavado: LAVADO_DE_AUTOS.empresa, caleja: CALEJA.empresa };
@@ -603,6 +605,9 @@ Object.assign(REGLAS, {
   "t1-la-ecuacion-en-movimiento": (id) => hechoDeItem(id),
   "t1-en-cual-estado-aparece": (id) => conceptoDeItem(id),
   "t1-la-articulacion": (id) => flechaDeItem(id),
+  /* Lote 5 (Célula B): la pregunta de H1 y el propósito de H2, dichos en palabras. */
+  "t1-un-dia-o-un-ano": (id) => preguntaH1(id)?.texto ?? null,
+  "t1-quien-pregunta-esto": (id) => { const f = fichaH2(id); return f ? enunciadoH2(f) : null; },
 
   /*
    * Tema 3 · act. 1. El ítem es el hecho, con su empresa delante: dos hechos
@@ -611,6 +616,8 @@ Object.assign(REGLAS, {
   "t3-ingreso-o-cobro": (id) => hechoDeAct1T3(id),
   /* «¿Gasto o pago?»: el hecho de las dos versiones (A y B), sin la marca «Escenario simulado.» que todos llevan. */
   "t3-gasto-o-pago": (id) => hechoDeGastoOPago(id),
+  /* «Del resultado a la caja»: la ficha con su empresa y su monto, de la versión A o la B. */
+  "t3-del-resultado-a-la-caja": (id) => fichaDeResultadoCaja(id),
   /* Act. 2: también los ítems retirados del banco (t3a2-pago-60-dias, #439), que ya jugaron estudiantes. */
   "t3-cuando-se-causa": (id) => hechoDeAct2T3(id) ?? hechoRetiradoAct2T3(id),
   "t3-ajuste-acumulado": (id) => hechoDeAct4T3(id),

@@ -56,38 +56,58 @@ export default function BotonAnimo({ apodo, recibidos = 0, yaLeDi = false, onDad
   };
 
   return (
+    /*
+     * 44 px de toque (#556): el botón medía 27 de alto. Lo que se ve —la
+     * píldora— queda igual; el botón es la caja transparente que la rodea y es
+     * la que cumple el mínimo de toque.
+     */
     <button
       type="button"
       onClick={pulsar}
       disabled={yaEsta || estado === "enviando"}
       aria-label={yaEsta ? `Ya le diste ánimo a ${apodo} esta semana` : `Dar ánimo a ${apodo}`}
       title={yaEsta ? "Ya le diste ánimo esta semana" : "Dar ánimo"}
+      data-boton-animo
       style={{
         display: "inline-flex",
         alignItems: "center",
-        gap: "5px",
-        padding: "4px 9px",
-        borderRadius: "999px",
-        border: `1px solid ${yaEsta ? "rgba(231,111,81,0.5)" : "rgba(248,249,250,0.16)"}`,
-        background: yaEsta ? "rgba(231,111,81,0.16)" : "rgba(248,249,250,0.05)",
+        justifyContent: "center",
+        minHeight: "44px",
+        minWidth: "44px",
+        padding: 0,
+        margin: "-8px 0",
+        border: "none",
+        background: "transparent",
         cursor: yaEsta ? "default" : "pointer",
-        /* El destello: un pulso corto al registrarse, sin insignias ni medallas. */
-        transform: destellando ? "scale(1.18)" : "scale(1)",
-        transition: "transform 200ms cubic-bezier(.34,1.56,.64,1), background 200ms ease, border-color 200ms ease",
         flexShrink: 0,
       }}
     >
-      <Destello relleno={yaEsta || destellando ? FAE.coral : "rgba(248,249,250,0.45)"} />
       <span
         style={{
-          fontFamily: "Sora, sans-serif",
-          fontSize: "11.5px",
-          fontWeight: 700,
-          fontVariantNumeric: "tabular-nums",
-          color: yaEsta ? FAE.coral : "rgba(248,249,250,0.6)",
+          display: "inline-flex",
+          alignItems: "center",
+          gap: "5px",
+          padding: "4px 9px",
+          borderRadius: "999px",
+          border: `1px solid ${yaEsta ? "rgba(231,111,81,0.5)" : "rgba(248,249,250,0.16)"}`,
+          background: yaEsta ? "rgba(231,111,81,0.16)" : "rgba(248,249,250,0.05)",
+          /* El destello: un pulso corto al registrarse, sin insignias ni medallas. */
+          transform: destellando ? "scale(1.18)" : "scale(1)",
+          transition: "transform 200ms cubic-bezier(.34,1.56,.64,1), background 200ms ease, border-color 200ms ease",
         }}
       >
-        {cuenta}
+        <Destello relleno={yaEsta || destellando ? FAE.coral : "rgba(248,249,250,0.45)"} />
+        <span
+          style={{
+            fontFamily: "Sora, sans-serif",
+            fontSize: "11.5px",
+            fontWeight: 700,
+            fontVariantNumeric: "tabular-nums",
+            color: yaEsta ? FAE.coral : "rgba(248,249,250,0.6)",
+          }}
+        >
+          {cuenta}
+        </span>
       </span>
     </button>
   );

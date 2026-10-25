@@ -43,23 +43,27 @@ function primeraPantalla(escenario) {
   return { avance: V1.avanceDeClase(porTema, cohorte.length, MATERIA), ...V1.peorActividad(filas), seis };
 }
 
-test("★★★ curso normal: «Actividades hechas» da 26 % y B3, 51 % con 15 que la terminaron (lo que muestran las capturas)", () => {
+/*
+ * El denominador de «Actividades hechas» crece con cada Hacer nueva que el
+ * curso falso no juega, y la cifra baja. Con «¿Gasto o pago?» (Célula E,
+ * #506) y los dos Hacer de T1 (H1 y H2, Célula B, lote 5) quedan, medidos,
+ * 24,39 % en el curso normal y 23,66 % en el grande: 24 y 24 (eran 26 en las
+ * capturas de #498). B3 no cambia (51 %). Aviso a la Célula D en #540.
+ * Con «Del resultado a la caja» (Célula E, #557) quedan, medidos, 24,01 % en
+ * el normal y 23,28 % en el grande: 24 y 23.
+ */
+test("★★★ curso normal: «Actividades hechas» da 24 % (26 % en las capturas, antes de «¿Gasto o pago?», H1 y H2) y B3, 51 % con 15 que la terminaron", () => {
   const r = primeraPantalla("normal");
-  assert.equal(Math.round(r.avance), 26);
+  assert.equal(Math.round(r.avance), 24);
   assert.equal(r.seis.length, 6);
   assert.ok(r.peor, "no hay peor actividad");
   assert.equal(Math.round(r.peor.cifras.pct), 51);
   assert.equal(r.peor.cifras.terminaron, 15);
 });
 
-test("★★ curso grande: las mismas reglas dan 26 % y 51 % con 36 que la terminaron", () => {
+test("★★ curso grande: las mismas reglas dan 23 % (26 % antes de las cuatro Hacer nuevas) y 51 % con 36 que la terminaron", () => {
   const r = primeraPantalla("grande");
-  /*
-   * 25 y no 26 desde «¿Gasto o pago?» (Célula E, #506): una Hacer más en T3
-   * sube el total de Contabilidad y el curso falso no la juega. Medido: 25,72 %
-   * en main y 25,24 % con ella. El «normal» pasa de 26,47 a 25,98 y sigue en 26.
-   */
-  assert.equal(Math.round(r.avance), 25);
+  assert.equal(Math.round(r.avance), 23);
   assert.equal(Math.round(r.peor.cifras.pct), 51);
   assert.equal(r.peor.cifras.terminaron, 36);
 });
