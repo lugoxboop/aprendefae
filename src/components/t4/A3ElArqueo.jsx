@@ -36,6 +36,8 @@ import { useDatosCaso } from "./caso.js";
 export const CSS_A3 = `
 .t4a3-zona { margin: 0; min-height: 22px; text-align: center; font: 600 14px/22px "Inter", sans-serif; white-space: nowrap; }
 .t4a3-control { display: block; width: 100%; height: 44px; margin: 0; accent-color: ${C.texto}; cursor: pointer; }
+/* El foco del control, en la marca y no el azul del navegador (Shibukawa, Kit §2; la misma regla que .t4s3-control de los slides). */
+.t4a3-control:focus-visible { outline: 2px solid ${C.texto}; outline-offset: 2px; }
 .t4a3-camino { display: grid; gap: 6px; }
 .t4a3-camino > button { width: 100%; padding: 0 6px; border-color: ${C.reposo}; }
 .t4a3-camino > button[aria-pressed="true"] { border-width: 2px; border-color: ${C.texto}; }
