@@ -1,11 +1,11 @@
-2026-10-24 20:45 (hora Bogotá)
+2026-10-24 21:13 (hora Bogotá)
 - T1 · #496 (t1-5, las dos torres): terminado, fusionado (233c635) con el PASA de Shoko y el CI en verde
 - T1 · #520 (logito LibretaYLapiz): terminado, fusionado (047f3b7) con el PASA de Shoko y el CI en verde
-- T1 · #531 (las torres se ven moverse al anotar): en curso; tercera FALLA de Shoko (la devolución fija tapa lo que eligió); la forma de lo que se ve después de «Anotar» la decide Mai (b-t1-5-despues-de-anotar-mai.md) y luego Kaede
-- T1 · #535 (lote 4): en curso; Kaede corrigió (52cbc4d y la mezcla con main en a8e7069, CI verde); las capturas nuevas ya están con Shoko
-- T1 · #539 (lote 5: H1 y H2): en curso; Kaede corrigió (8c405e0, CI verde); las capturas están listas para Shoko
+- T1 · #531 (t1-5, lo que se ve después de «Anotar»): en curso; Mai lo resolvió (fichas/b-t1-5-despues-de-anotar-mai.md: cabe en 524 de 568 px con las casillas plegadas en un renglón por parte); lo construye Kaede
+- T1 · #535 (lote 4): en curso; segunda FALLA de Shoko en las seis piezas (revisiones/b-t1-535-b-shoko.md); Kaede corrige; la devolución de t1-6 por familia la escribe Futaba (lote E). Decisión mía: el rótulo «Pasa algo en la empresa» de t1-1 se queda, porque es el nombre publicado
+- T1 · #539 (lote 5: H1 y H2): en curso; las capturas corregidas ya están con Shoko
 - T1 · #551 (lo decidido del capítulo 2): terminado, fusionado (e5707a0) con el PASA de Shoko y el CI en verde
-- T1 · «Utilidad del ejercicio» en t1-7 frente al Gráfico 2.6: riesgo que abrió Shoko; lo resuelve Futaba en el §10 de la ficha de fuente
+- T1 · «Utilidad del ejercicio» en t1-7: terminado; Futaba lo resolvió (§10 de la ficha de fuente): la pieza pasa a «Activos y pasivos, en bloque» con el mismo id; lo aplica Kaede en el #535
 - Shoko traspasada a un chat nuevo (6c926eca); el 02dc9984 quedó pesado, con 19 subidas; traspasos/shoko.md está al día
 - T1 · capítulo 2 (D1): terminado; Futaba lo dejó en fichas/b-t1-fuente-cap1-futaba.md; mis decisiones están en el §9 y las aplica el #551
 - T1 · Gráfico 2.6, la línea de operación hacia el estado de resultados: BLOQUEADO-MATEO; tiene que mirar la p. 66 en el libro físico. Si la línea llega, cambian tres textos publicados
