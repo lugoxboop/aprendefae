@@ -65,7 +65,8 @@ export const CSS_SLIDES = `
 .t4s-ctl[data-ver="mal"] { border-color: ${C.error}; }
 .t4s-ctl[aria-disabled="true"] { cursor: default; }
 .t4s-ctl:focus-visible { outline: 2px solid ${C.texto}; outline-offset: 2px; }
-.t4s-ico { position: absolute; top: 3px; right: 3px; display: block; pointer-events: none; }
+/* El ícono va en la esquina, como insignia sobre el borde: nunca pisa la palabra del control (A5: «ninguno» en 82 px). */
+.t4s-ico { position: absolute; top: -8px; right: -8px; display: block; padding: 1px; border-radius: 999px; background: ${C.fondo}; box-sizing: content-box; pointer-events: none; z-index: 4; }
 .t4s-nueva { animation: t4s-aparece 120ms cubic-bezier(.3,.9,.4,1) both; }
 @keyframes t4s-aparece { from { opacity: 0; } to { opacity: 1; } }
 .t4s-opc { display: grid; gap: 6px; }
