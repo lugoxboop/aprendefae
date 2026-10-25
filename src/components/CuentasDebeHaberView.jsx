@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { ChevronLeft } from "lucide-react";
 import { FAE } from "../theme.js";
 import Logo from "./Logo.jsx";
@@ -25,6 +25,11 @@ import { ESCENAS } from "./mecanicas/libros/escenas.jsx";
 import ElCicloCompleto from "./mecanicas/libros/ciclo/ElCicloCompleto.jsx";
 import JuegoConTutorial from "./mecanicas/libros/JuegoConTutorial.jsx";
 import EscritorioDelContador from "./mecanicas/libros/ciclo/EscritorioDelContador.jsx";
+/* T2-7: los Aprender en secuencia, AL LADO de la página vieja y detrás de la bandera (apagada). */
+import SecuenciaAprender from "./secuencia/SecuenciaAprender.jsx";
+import { PIEZAS_SECUENCIA_T2 } from "./mecanicas/libros/t2/secuenciaP1.jsx";
+import { T2_APRENDER_EN_SECUENCIA } from "../data/contabilidadT2Secuencia.js";
+import { NavigationContext } from "../navigation.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -81,6 +86,7 @@ const lead = { fontSize: "15px", lineHeight: 1.6, color: "rgba(248,249,250,0.62)
 export default function CuentasDebeHaberView({ modo = null, nodoInicial = null, onBack }) {
   const esAprender = modo === APRENDER;
   const [nodoAbierto, setNodoAbierto] = useState(null);
+  const navegacion = useContext(NavigationContext);
   const hechas = useCompletadas();
   const { pedirCuenta, usuario } = useAuth();
   const [recompensa, celebrar, celebrando] = useRecompensa();
@@ -151,7 +157,10 @@ export default function CuentasDebeHaberView({ modo = null, nodoInicial = null, 
           {/* La insignia vive con el contenido, no en la cabecera: a 375 px se comía el título. */}
           <div className="fae-insignia-actividad"><ActivityBadge tipo={esAprender ? APRENDER : HACER} size="sm" /></div>
 
-          {esAprender && (
+          {/* En el mismo hueco del árbol que la página vieja: apagada, ni los id de React cambian. «Ir a Hacer» lleva al camino de Hacer de T2. */}
+          {esAprender && T2_APRENDER_EN_SECUENCIA ? (
+            <SecuenciaAprender temaId={TEMA} piezas={PIEZAS_SECUENCIA_T2} final="hacer" onFinal={() => navegacion?.irA(TEMA, HACER)} />
+          ) : esAprender && (
             <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
               {PIEZAS_APRENDER.map((pieza, k) => {
                 const { Escena, Exploracion, Capa2, Capa4 } = ESCENAS[pieza.id];
