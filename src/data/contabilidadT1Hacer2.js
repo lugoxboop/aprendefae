@@ -41,7 +41,13 @@ export const H1 = {
  * respuesta, `{FECHA}` es la de la foto. Lo escribe Futaba (lote F); mientras
  * una respuesta no tenga el suyo, sale el acierto de cada pregunta.
  */
-export const ACIERTO_INFORME_H1 = {};
+export const ACIERTO_INFORME_H1 = {
+  /* Futaba, lote F (pp. 64-65, Gráfico 2.5). Reemplazan el acierto de cada ítem; sin «Correcto.»: lo pone la pastilla. */
+  [FOTO]: "Esa pregunta es de un día exacto. El informe de un día es el estado de situación financiera: la foto de esa fecha.",
+  /* Solo el estado de resultados: las cuatro preguntas de la película son de ventas, gastos, ingresos o ganancia. */
+  [PELICULA]: "Esa pregunta es de todo el año. El informe que cubre el periodo es el estado de resultados: la película del año.",
+  [COMPARAR]: "Te preguntan cuánto cambió entre dos fechas: se comparan dos estados de situación financiera, la foto del comienzo y la del final.",
+};
 
 /* Los tres rótulos, fijos para todas las preguntas (Shoko; ajustes de Mai §5). */
 export const RESPUESTAS_H1 = [
@@ -123,8 +129,8 @@ export const H2 = {
   objetivo: "Lee para qué usa el informe cada persona y di quién es.",
   consigna: "Lee para qué usa alguien el informe. Elige quién es.",
   rotuloMesa: "Los ocho lectores",
-  /* Por qué cuatro asientos van atenuados en cada ficha: lo escribe Futaba (lote F; Shoko, #539 b). Vacío, no se pinta. */
-  rotuloAtenuados: null,
+  /* Por qué cuatro asientos van atenuados (Futaba, lote F; Shoko, #539 b): dice qué hacer, sin dar el criterio. */
+  rotuloAtenuados: "En esta ficha solo se elige entre los cuatro encendidos.",
 };
 
 /* Los ocho asientos, en el orden de los usuarios y siempre en el mismo lugar: si cambiaran, la posición sería una pista. */

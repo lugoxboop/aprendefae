@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
-  H1, PREGUNTAS_H1, MAZOS_H1, RESPUESTAS_H1, ALT_H1,
+  H1, PREGUNTAS_H1, MAZOS_H1, RESPUESTAS_H1, ALT_H1, ACIERTO_INFORME_H1,
   H2, FICHAS_H2, ASIENTOS_H2, CASOS_H2, DEVOLUCION_H2, PAREJAS_H2,
 } from "../../data/contabilidadT1Hacer2.js";
 import { FOTO, PELICULA, COMPARAR } from "../../data/contabilidadPiezas234.js";
@@ -56,11 +56,11 @@ test("★ H1 · D4: en cada pregunta, las tres respuestas encienden figuras dist
   }
 });
 
-test("★ H1: el acierto es el de la pregunta y el error, el corto de ERROR_P3 (distinto por confusión)", () => {
+test("★ H1: el acierto es el de su informe y el error, el corto de ERROR_P3 (distinto por confusión)", () => {
   for (const q of PREGUNTAS_H1) {
     const bien = evaluarH1(q, q.respuesta);
     assert.equal(bien.ok, true);
-    assert.equal(bien.texto, q.acierto);
+    assert.equal(bien.texto, ACIERTO_INFORME_H1[q.respuesta]);
     const malas = [FOTO, PELICULA, COMPARAR].filter((r) => r !== q.respuesta).map((r) => evaluarH1(q, r));
     for (const m of malas) {
       assert.equal(m.ok, false);
@@ -131,18 +131,19 @@ test("H1 y H2 tienen id, objetivo y consigna", () => {
   assert.equal(H2.id, "t1-quien-pregunta-esto");
 });
 
-test("★★ H1: el acierto que nombra el estado financiero tiene su sitio (lote F de Futaba); sin él, el de la pregunta", async () => {
-  const D = await import("../../data/contabilidadT1Hacer2.js");
-  const q = PREGUNTAS_H1.find((x) => x.respuesta === FOTO && x.foto === "diciembre");
-  assert.equal(evaluarH1(q, FOTO).texto, q.acierto);
-  D.ACIERTO_INFORME_H1[FOTO] = "Correcto. Es una foto al {FECHA}.";
-  try {
-    assert.equal(evaluarH1(q, FOTO).texto, "Correcto. Es una foto al 31 de diciembre.");
-  } finally { delete D.ACIERTO_INFORME_H1[FOTO]; }
+test("★★★ H1: el acierto nombra el informe (Futaba, lote F), uno por respuesta, sin «Correcto.» ni fecha fija", () => {
+  const nombre = { [FOTO]: /estado de situación financiera/, [PELICULA]: /estado de resultados/, [COMPARAR]: /estados de situación financiera/ };
+  for (const q of PREGUNTAS_H1) {
+    const t = evaluarH1(q, q.respuesta).texto;
+    assert.match(t, nombre[q.respuesta], q.id);
+    assert.doesNotMatch(t, /^Correcto/, `${q.id}: abre con el veredicto`);
+    assert.doesNotMatch(t, /31 de diciembre|1 de enero/, `${q.id}: la fecha fija mentiría en otro ítem`);
+    assert.ok(t.split(/\s+/).length <= 25);
+  }
 });
 
 test("★★ H2: la reserva bajo la mesa es fija, de 48 px (Shoko, #539 b), y el rótulo de los atenuados tiene su sitio", async () => {
   const { ALTO_RESERVA_H2 } = await import("../../components/mecanicas/libros/tema1/QuienPreguntaEsto.jsx");
   assert.equal(ALTO_RESERVA_H2, 48);
-  assert.ok("rotuloAtenuados" in H2);
+  assert.equal(H2.rotuloAtenuados, "En esta ficha solo se elige entre los cuatro encendidos.");
 });
