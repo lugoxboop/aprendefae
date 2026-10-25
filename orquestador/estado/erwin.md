@@ -1,8 +1,8 @@
-2026-10-24 19:38 (hora Bogotá)
-- #552 entrada a la página (el sitio en el índice de las tres materias, apagada hasta la forma de Ukyo): PASA de Levi y CI verde; bloqueado: espera que Miku lo fusione (lo compartido)
-- Compuerta por materia para Pensamiento Estratégico: retirada antes de abrir PR (Mateo amplió el encargo a las tres materias)
-- #554 pantalla de contraste de Pensamiento Estratégico para los PASA (solo canon): bloqueado: espera que Miku lo fusione; Levi ya la tiene pegada
-- Sección 1 de Levi: disuelta (T1-T3 los auditan B, C y E con sus auditores)
-- Pools del Repaso Diario: en curso — falta B (#477); el Repaso sigue oculto hasta tener los cuatro
-- #349 ficha de FP (no ocultarla, reservar 84 px): en curso — Sai en la rama fix/ficha-fija-reserva-84
+2026-10-24 22:30 (hora Bogotá)
+- #556 + #546 ranking a 320 sin nombres, apodos con «…», coral en el podio: PR #563, medido en Chromium (apodo más angosto 0 → 130 px a 320); en curso — CI corriendo, PASA pedido a Levi
+- #549 figura de T2 P1 que tapaba «Siguiente»: PR #564 (zona de mensaje fuera de la figura; la figura empuja en vez de tapar); en curso — CI corriendo
+- #547 prop decoracion de RankingFP: resuelto — Baki la construye encima de #563, con las tres materias y medida con scripts/ranking/medir.mjs
+- #552 entrada a la página y #554 pantalla de contraste de Estratégico: bloqueado: esperan que Miku los fusione
+- Pools del Repaso Diario: en curso — falta B (#477)
+- #349 ficha de FP: en curso — Sai
 - Capa 1 de CuatroCapas (guardas B1 y B2): bloqueado: esperan los recortes de Near
