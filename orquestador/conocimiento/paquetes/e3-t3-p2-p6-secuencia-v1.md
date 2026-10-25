@@ -21,6 +21,18 @@
 | Razones del «Siguiente» (D11) | textos v5, §2 | Entra en esta pasada |
 | Enunciados, aciertos y errores de P2 y P6, ids, pies y lugar en el camino | `e3-t3-p2-y-p6-v2.md` (Miyata, lote 6), transcrito en este PR | PASA (P2) y PASA con condiciones (P6), lote 6 |
 
+**Takamura, lote 16: PASA con condiciones.**
+- **Ippo puede montar ya** P2-1 a P2-6, P2-8 y P6-1 a P6-6.
+- **Quedan esperando:**
+  - **P2-7:** la línea de datos se muestra siempre, porque es la línea de lectura de la pieza. Itagaki entrega el delta.
+  - **P6-9:** la marca «ESCENARIO SIMULADO» suma 16 px. Con error queda en 98 px, y si no cabe, la marca pasa al modelo. Itagaki entrega el delta.
+  - **P6-7:** está bien de forma, pero se monta junto con P6-9, que tiene la misma regla de opciones.
+  - **Pista de P6-4:** que señale la pila que está a la vista, no «la pantalla anterior». La escribe Miyata.
+- **«mono 12» no existe en el sitio:** las cifras van en **Inter tabular**. Los anchos que salieron de mono («$5.935.000» a 84 px y la pila de P6-3 a 234 de 258) se vuelven a medir.
+- **D11:** «Quedan fichas por ubicar.» pasa a ser «Cuando ubiques todas las fichas, se abre «Siguiente».», a menos que Miyata diga otra cosa.
+- **Titular de P6-10:** el de la v3 §2 («El estado de resultados, de arriba abajo»), no el de la v2. Ippo monta contra el texto.
+- **Las Acacias** (escenario simulado) queda escrita en `e3-t3-secuencias-textos-v5.md` §1. Ese archivo es su fuente en el repo.
+
 **Decisiones que ya están tomadas y valen aquí:**
 - S3: las preguntas «En una frase» de P2-8 y P6-10 pasan al Repaso Diario.
 - D1: 60 palabras como máximo por paso visible.
@@ -28,7 +40,7 @@
 - C7: las claves van por contenido y no por número.
 - La regla de la tarjeta de cita no aplica: P2 y P6 no tienen citas largas.
 
-**Cuatro medidas antes de montar, en una sola corrida de Ippo** (Takamura, lote 14):
+**Medidas antes de montar, en una sola corrida de Ippo** (Takamura, lotes 14 y 16; también los anchos en Inter tabular):
 1. La pila de P6-3 con los rótulos reales.
 2. La cabecera de Aprender. Si mide más de 124 px, el tope de las pistas baja a 90 caracteres, y la de P6-8 (85 caracteres) hay que revisarla.
 3. Los botones de P2-5 en 2 líneas de 80 px.
