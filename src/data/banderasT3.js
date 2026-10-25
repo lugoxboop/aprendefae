@@ -13,7 +13,7 @@
  * reversible, que no toca datos. La vista anterior no se retira aquí.
  * ═══════════════════════════════════════════════════════════════════════════
  */
-export const ENCENDIDA = false;
+export const ENCENDIDA = true;
 
 export function secuenciaT3Activa(buscar = typeof location !== "undefined" ? location.search : "") {
   if (ENCENDIDA) return true;
