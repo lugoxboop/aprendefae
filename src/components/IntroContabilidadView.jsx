@@ -30,6 +30,8 @@ import CuatroCapas from "./mecanicas/maquinas/CuatroCapas.jsx";
 import { PIEZAS_INTRO } from "../data/contabilidadPiezas234.js";
 import { ESCENAS_INTRO } from "./mecanicas/libros/intro/escenasIntro.jsx";
 import JuegoConTutorial from "./mecanicas/libros/JuegoConTutorial.jsx";
+import SecuenciaAprender from "./secuencia/SecuenciaAprender.jsx";
+import { PIEZAS_T1_SECUENCIA, secuenciaActiva } from "./mecanicas/libros/intro/secuencia/piezasT1.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -166,7 +168,10 @@ export default function IntroContabilidadView({ modo = null, nodoInicial = null,
           {recompensa}
           <div className="fae-insignia-actividad"><ActivityBadge tipo={esAprender ? APRENDER : HACER} size="sm" /></div>
 
-          {esAprender ? (
+          {esAprender && secuenciaActiva() ? (
+            /* Lote 6: el Aprender en secuencia, detrás de su bandera hasta el PASA de Shoko. */
+            <SecuenciaAprender temaId={TEMA} piezas={PIEZAS_T1_SECUENCIA} final="tema" onFinal={onBack} />
+          ) : esAprender ? (
             /*
              * El hueco de abajo le reserva su banda a la ficha de FP, que es
              * fija. Sin el, al detenerse el scroll abajo del todo a 320 px, la
