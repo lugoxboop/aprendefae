@@ -253,6 +253,35 @@ tocar.
 
 ---
 
+### 4.1 Los cinco controles compartidos, con sus valores
+
+Los pidió la Célula E por #560 y los monta Erwin una sola vez. Están aquí
+porque los hereda casi todo el sitio y no pueden vivir solo en un issue.
+
+| Control | Cara | Canto | Elevación | ¿Se hunde? |
+|---|---|---|---|---|
+| Nodo de `CaminoHacer` | N2 `#344968` | N1 `#1D3557` | 4 px (el actual, 6) | sí |
+| `Responder` | teal `#2A9D8F` | `#1D6B61` | 4 px | sí |
+| `BotonComoSeJuega` y «Siguiente» de `AsiSeJuega` | N2 | N1 | 4 px | sí |
+| `BOTON_NAV` de `SecuenciaAprender` | `#B8C4D4` | `#8C9BB0` | 4 px | sí |
+| Pulsos (`corazon/juego.jsx`) | N1 | — | 3 px | no |
+| `ActivityBadge` | N1 | — | 3 px | no |
+
+**El nodo del camino se verá sobre el ajedrez**: `CaminoHacer` lo heredan las
+tres vistas de Estratégico. Antes de fusionar su relieve hay que correr
+`scripts/vida/sonda-telon.mjs` sobre una pantalla de camino de esa materia; si
+dice EXIGE PLACA, el camino necesita su panel opaco y eso es trabajo aparte.
+
+### 4.2 Una palabra que no puede significar dos cosas
+
+**Placa** es, y solo es, el **panel opaco que va detrás de un grupo** para que
+el fondo animado deje de verse a través (§2.4). No es «una superficie que
+sobresale». Para eso, **superficie elevada**: algo con elevación que no se
+pulsa, como los Pulsos o el `ActivityBadge`.
+
+La confusión apareció sola en #560, con los dos sentidos en el mismo cuadro.
+Si las dos cosas se llaman igual, «lleva placa» deja de querer decir nada.
+
 ## 5. Catálogo de decoraciones
 
 Decorativas de verdad: **no enseñan nada**, no son la figura de la pieza, no
