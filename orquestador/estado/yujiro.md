@@ -1,8 +1,8 @@
-2026-10-24 21:06 (hora Bogotá)
+2026-10-24 21:47 (hora Bogotá)
 - Panel docente v1: terminado (fusionado #498: lo relevante arriba —Mi clase, Necesitan atención, La actividad que más costó—; las cifras son las mismas que las del panel viejo; sin escrituras nuevas ni cambios de esquema; PASA de Shibukawa)
 - Logitos de Contabilidad T1-T4: terminado (fusionado #519, PASA de Shibukawa y prueba a 32 px de Hanayama con su ajuste al cajón; el acento de T5 y T6 lo tiene la Célula B en #523)
-- T4 Aprender a tipo presentación: en curso (#488: Baki aplica la corrección común de E2 a 320 y las sueltas, más el cambio de mecánica de A5 p5 de Katsumi —la condición (d) ya está cerrada—; con la evidencia de A7/A8, Shibukawa mira solo A5 p5 y fusiono)
-- Decoración animada de las tablas de posiciones (las tres materias): en curso (Hanayama entregó la banda medida en las tres materias, en el perfil y en la liga, las 9 piezas, Fae y una torre nueva para Estratégico; una sola banda en bucle por página; las paso al repo en cuanto me las pegue como texto; Baki lo construye después de T4)
+- T4 Aprender a tipo presentación: en curso (#488: Shibukawa dio PASA a todo menos dos cosas: el anillo de foco del control de A3 p2 y la captura del acierto de A5 p2 a 375. Baki las arregla en la misma rama; con esas dos, fusiono)
+- Decoración animada de las tablas de posiciones (las tres materias): en curso (especificación v3 de Hanayama, 13 piezas y medidor en main, a18cb04; aviso a Erwin en #547 con la prop y los dos sitios de montaje; Baki lo construye cuando se fusione #488)
 - Hallazgo de la célula: RankingFP a 320 px no muestra ningún nombre (el botón de ánimo deja el apodo en 0 px), en las tres materias: reportado a Erwin como urgente en #556; no lo tocamos, es compartido
 - Textos que faltaban en el panel y arreglos de la vista del estudiante: terminado (fusionado #525, PASA de Shibukawa y 0 toques bajo 44 px)
 - Ajuste del cajón de T4 a 32 px (patas sin tronco central): terminado (fusionado #528, PASA de Hanayama y Shibukawa)
