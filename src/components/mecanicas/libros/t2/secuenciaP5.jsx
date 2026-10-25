@@ -5,7 +5,7 @@ import { DEL_DIARIO_AL_MAYOR } from "../../../../data/contabilidadAprender.js";
 import { P5_ID, P5_OBJETIVO, P5_TEXTOS as T, P5_ALTO_FIGURA } from "../../../../data/contabilidadT2Secuencia.js";
 import {
   BLANCO, LINEA, CONTORNO, SUAVE, SECUNDARIO, pesos, Raiz, Encabezado, Rotulo, Lado, Control, Fila,
-  responder, leerHaz, marcaDe, useBarajado, enOrden, colaInicial, colaResuelta, fichaActual, responderCola,
+  responder, leerHaz, marcaDe, useBarajado, enOrden, colaInicial, colaResuelta, fichaActual, responderCola, paraLaBanda,
 } from "./secuenciaComun.jsx";
 
 /*
@@ -283,13 +283,13 @@ export const PIEZA_P5 = {
     {
       id: "mayorizar", tipo: "haz", titular: T.mayorizar.titular, apoyo: T.mayorizar.apoyo, razon: T.mayorizar.razon,
       Figura: FiguraMayorizar, nombreFigura: "Las cuatro T de las cuentas del 3 de enero", estadoInicial: colaInicial(LINEAS.length), resuelta: colaResuelta,
-      devolucion: devolucionDe(T.mayorizar), fichas: LINEAS.map((l) => l.cuenta), destinos: LINEAS.map((l) => destinoDe(l.cuenta, l.lado)),
+      devolucion: paraLaBanda(devolucionDe(T.mayorizar)), fichas: LINEAS.map((l) => l.cuenta), destinos: LINEAS.map((l) => destinoDe(l.cuenta, l.lado)),
       buenoDe: (i) => destinoDe(LINEAS[i].cuenta, ladoBueno(i)), malaDe: (i) => destinoDe(LINEAS[i].cuenta, ladoBueno(i) === "debe" ? "haber" : "debe"),
     },
     {
       id: "dos-preguntas", tipo: "haz", titular: T.dosPreguntas.titular, apoyo: T.dosPreguntas.apoyo, razon: T.dosPreguntas.razon,
       Figura: FiguraDosPreguntas, nombreFigura: "El renglón de Bancos en el diario y la T de Bancos", estadoInicial: HAZ_INICIAL, resuelta: hazResuelto,
-      devolucion: devolucionDe(T.dosPreguntas), opciones: T.dosPreguntas.opciones, buena: T.dosPreguntas.opciones[1],
+      devolucion: paraLaBanda(devolucionDe(T.dosPreguntas)), opciones: T.dosPreguntas.opciones, buena: T.dosPreguntas.opciones[1],
     },
     { id: "cierre", tipo: "cierre", titular: T.cierre.titular, apoyo: T.cierre.apoyo, Figura: FiguraCierre, nombreFigura: "El diario del 3 de enero con el renglón de Bancos", ...(T.cierre.pie ? { razon: T.cierre.pie } : {}) },
   ],

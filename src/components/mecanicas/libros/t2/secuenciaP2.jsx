@@ -3,7 +3,7 @@ import { HAZ_INICIAL, hazResuelto, mostrarCorrecto } from "../../../secuencia/se
 import { P2_ID, P2_OBJETIVO, P2_TEXTOS as T, P2_ALTO_FIGURA } from "../../../../data/contabilidadT2Secuencia.js";
 import {
   BLANCO, LINEA, CONTORNO, SUAVE, SECUNDARIO, Raiz, Lado, Control, Fila,
-  responder, leerHaz, marcaDe, useBarajado, enOrden, colaInicial, colaResuelta, fichaActual, responderCola, marcaDestino,
+  responder, leerHaz, marcaDe, useBarajado, enOrden, colaInicial, colaResuelta, fichaActual, responderCola, marcaDestino, paraLaBanda,
 } from "./secuenciaComun.jsx";
 
 /*
@@ -312,18 +312,18 @@ export const PIEZA_P2 = {
     {
       id: "gasto-o-costo", tipo: "haz", titular: T.gastoOCosto.titular, apoyo: T.gastoOCosto.apoyo, razon: T.gastoOCosto.razon,
       Figura: FiguraGastoOCosto, nombreFigura: "Los cajones de Gastos y de Costos", estadoInicial: HAZ_INICIAL, resuelta: hazResuelto,
-      devolucion: devolucionDe(T.gastoOCosto), opciones: T.gastoOCosto.opciones, buena: T.gastoOCosto.opciones[1],
+      devolucion: paraLaBanda(devolucionDe(T.gastoOCosto)), opciones: T.gastoOCosto.opciones, buena: T.gastoOCosto.opciones[1],
     },
     { id: "tres-nominales", tipo: "miralo", titular: T.tresNominales.titular, apoyo: T.tresNominales.apoyo, textual: true, Figura: FiguraTresNominales, nombreFigura: "Tres tarjetas de cuentas nominales", estadoInicial: { abierta: null } },
     {
       id: "se-cierra-igual", tipo: "haz", titular: T.seCierra.titular, apoyo: T.seCierra.apoyo, razon: T.seCierra.razon,
       Figura: FiguraSeCierra, nombreFigura: "El cajón de Gastos de operación", estadoInicial: HAZ_INICIAL, resuelta: hazResuelto,
-      devolucion: devolucionDe(T.seCierra), opciones: T.seCierra.opciones, buena: T.seCierra.opciones[0],
+      devolucion: paraLaBanda(devolucionDe(T.seCierra)), opciones: T.seCierra.opciones, buena: T.seCierra.opciones[0],
     },
     {
       id: "una-sola-pregunta", tipo: "haz", titular: T.unaPregunta.titular, apoyo: T.unaPregunta.apoyo, razon: T.unaPregunta.razon,
       Figura: FiguraUnaPregunta, nombreFigura: "Los cajones Sigue y Vuelve a cero", estadoInicial: colaInicial(CUENTAS_7.length), resuelta: colaResuelta,
-      devolucion: devolucionUnaPregunta, fichas: CUENTAS_7.map((c) => c.cuenta), destinos: [SIGUE, CERO], buenoDe: cajonBueno, malaDe: (i) => (cajonBueno(i) === SIGUE ? CERO : SIGUE),
+      devolucion: paraLaBanda(devolucionUnaPregunta), fichas: CUENTAS_7.map((c) => c.cuenta), destinos: [SIGUE, CERO], buenoDe: cajonBueno, malaDe: (i) => (cajonBueno(i) === SIGUE ? CERO : SIGUE),
     },
     { id: "cierre", tipo: "cierre", titular: T.cierre.titular, apoyo: T.cierre.apoyo, Figura: FiguraCierre, nombreFigura: "Salarios por pagar y el gasto en salarios el 1 de enero", ...(T.cierre.pie ? { razon: T.cierre.pie } : {}) },
   ],

@@ -14,7 +14,7 @@
  * PIEZAS_APRENDER) NO se borra. La secuencia entra AL LADO, detrás de esta
  * constante. APAGADA, la vista pinta exactamente lo de main (lo prueba
  * t2-secuencia.test.mjs). Encenderla —o volver a apagarla— es esta línea.
- * La enciende L, no la construcción, y no antes de #536 (ver «La devolución»).
+ * Encendida por L con #590 (la banda de #536), lote T2-13 (#471).
  *
  * ═══════════ DE DÓNDE SALE CADA TEXTO ═══════════
  *
@@ -27,20 +27,19 @@
  * se reparte en pantallas. Los textos `textual: true` son del libro, letra
  * por letra. La prueba lo compara todo contra los paquetes.
  *
- * ═══════════ LA DEVOLUCIÓN, MIENTRAS #536 ═══════════
+ * ═══════════ LA DEVOLUCIÓN, EN LA BANDA (#536, #590) ═══════════
  *
  * La consecuencia, la pastilla y la pista o el porqué miden de 104 a 130 px
- * (Watari T2-7): no caben en la figura, que es de alto fijo, y Watari midió
- * cada altoFigura SIN ellas. La zona donde van (la banda bajo la figura) la
- * pide #536 a Erwin. Hasta entonces la figura NO pinta <Veredicto />: el
- * control tocado lleva ✓ o ✕, borde de 2 px y la palabra en su nombre
- * accesible, y cada Haz declara su `devolucion(estado)` para que la banda la
- * pinte cuando exista (mensajeDe() en secuenciaComun.jsx la arma).
+ * (Watari T2-7): no caben en la figura, y Watari midió cada altoFigura SIN
+ * ellas. Las pinta la cáscara en la banda bajo la figura, en el sitio del
+ * apoyo, con <Veredicto />; la figura no pinta Veredicto propio. El control
+ * tocado lleva ✓ o ✕, borde de 2 px y la palabra en su nombre accesible.
+ * Cada Haz declara `devolucion: paraLaBanda(textos)` (secuenciaComun.jsx).
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-/* ⚑ LA BANDERA. false = producción ve la página vieja, igual que en main. */
-export const T2_APRENDER_EN_SECUENCIA = false;
+/* ⚑ LA BANDERA. true = Aprender de T2 es la secuencia; false = la página vieja, igual que en main. */
+export const T2_APRENDER_EN_SECUENCIA = true;
 
 /* El tope de #513/#524: 206 a 320 y 253 a 375. */
 export const TOPE_ALTO_FIGURA = { a320: 206, a375: 253 };
