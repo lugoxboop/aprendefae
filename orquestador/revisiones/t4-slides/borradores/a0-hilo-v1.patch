@@ -1,0 +1,428 @@
+diff --git a/src/components/t4/AnoEnMarcha.jsx b/src/components/t4/AnoEnMarcha.jsx
+index 4572102..9977828 100644
+--- a/src/components/t4/AnoEnMarcha.jsx
++++ b/src/components/t4/AnoEnMarcha.jsx
+@@ -225,8 +225,9 @@ export function CuerpoA0({ p, onAcierto, onAccion }) {
+   /* D7: «Pasar el año» nunca se apaga; con filas sin marcar, un aviso neutro (no es una devolución), que se va al marcar la que faltaba (Katsumi). */
+   const [aviso, setAviso] = useState(false);
+   const verAviso = juego && aviso && !listas && !fin;
++  const textoAviso = p.aviso ?? FIGURA_ANO.aviso;
+   const bien = juego && fin && juegoBienA0(p.filas, elecciones);
+-  useEffect(() => { if (bien) onAcierto?.(); }, [bien]); // eslint-disable-line react-hooks/exhaustive-deps
++  useEffect(() => { if (bien) { onAcierto?.(); onAccion?.("acierto"); } }, [bien]); // eslint-disable-line react-hooks/exhaustive-deps
+ 
+   let boton = null;
+   if (juego) {
+@@ -243,7 +244,7 @@ export function CuerpoA0({ p, onAcierto, onAccion }) {
+   return (
+     <>
+       <FiguraAno filas={p.filas} ano={ano} quieta={quieta} boton={boton} juego={datosJuego} rotulo={p.rotuloAccion ?? null} />
+-      {juego && <p className="t4r-aviso" data-aviso aria-live="polite">{verAviso ? FIGURA_ANO.aviso : null}</p>}
++      {juego && <p className="t4r-aviso" data-aviso aria-live="polite">{verAviso ? textoAviso : null}</p>}
+       {juego && fin && <Mensaje ok={bien} texto={bien ? p.acierto : errorDe(p, elecciones)} />}
+     </>
+   );
+diff --git a/src/contabilidad/__tests__/t4-a0-el-activo-corriente.test.mjs b/src/contabilidad/__tests__/t4-a0-el-activo-corriente.test.mjs
+index dec6c12..0f1a05e 100644
+--- a/src/contabilidad/__tests__/t4-a0-el-activo-corriente.test.mjs
++++ b/src/contabilidad/__tests__/t4-a0-el-activo-corriente.test.mjs
+@@ -6,8 +6,8 @@ import { readFileSync, readdirSync } from "node:fs";
+  * ═══════════════════════════════════════════════════════════════════════════
+  * T4 · A0 «El activo corriente» (Célula D) · REDISEÑO DE ENGANCHE.
+  *
+- *   · cada texto es el del paquete vigente (d4-t4-a0-v3-rediseno.md, los
+- *     textos de Katsumi aprobados por Yujiro), letra por letra, en su lugar
++ *   · cada texto es el del paquete vigente (d4-t4-a0-v4-hilo.md, el hilo de
++ *     Katsumi del 23 oct; antes v3), letra por letra, en su lugar
+  *   · la figura «El año en marcha» de Hanayama: todo es una función del mes.
+  *     Al pasar el año la mercancía se vuelve plata y el edificio cruza la
+  *     raya; si el año vuelve, se apagan otra vez
+@@ -28,7 +28,7 @@ const { inflesz } = await import("../../herramientas/inflesz.js");
+ const { leer, PAQUETES, RAIZ } = await import("./t4-paquete.mjs");
+ const { pantallasDe, seccionDe, renglones, textoDe } = await import("./t4-rediseno-canon.mjs");
+ 
+-const CANON = "d4-t4-a0-v3-rediseno.md";
++const CANON = "d4-t4-a0-v4-hilo.md";
+ const PAQ = leer(`${PAQUETES}${CANON}`);
+ const CANON_P = pantallasDe(PAQ);
+ const P = Z.PIEZA_EL_ACTIVO_CORRIENTE;
+@@ -44,6 +44,7 @@ function porLugar(p) {
+   if ("acierto" in p) r.push(["Acierto (tras «Correcto.»)", p.acierto]);
+   if (p.errorFila) r.push(["Error si «Deuda de un cliente» va del lado corriente (✗ y el texto; con varios errores, gana este)", p.errorFila.texto]);
+   if (p.error) r.push(["Error (✗ y el texto)", p.error]);
++  if (p.aviso) r.push(["Aviso de «Pasar el año» sin la fila marcada", p.aviso]);
+   if (p.cierre) r.push(["Frase de cierre (desde que se llega)", p.cierre]);
+   if (p.siguiente) r.push(["Siguiente", p.siguiente]);
+   r.push(["Pie", p.pie]);
+@@ -58,12 +59,20 @@ function acertarP3(caja) {
+   tocar(caja.querySelector("[data-accion=pasar]"));
+ }
+ 
+-/* Monta la pieza y avanza hasta la pantalla k; la pregunta del camino se acierta (con movimiento reducido, para que el año salte). */
++/* La P4 (hilo de Katsumi): el arriendo va antes de la raya. */
++function acertarP4(caja) {
++  tocar(caja.querySelector('[data-fila="arriendo"] [data-seg="antes"]'));
++  tocar(caja.querySelector("[data-accion=pasar]"));
++}
++const acertar = (caja, id) => (id === "se-consume" ? acertarP4 : acertarP3)(caja);
++const K = (id) => P.pantallas.findIndex((p) => p.id === id);
++
++/* Monta la pieza y avanza hasta la pantalla k; las preguntas del camino se aciertan (con movimiento reducido, para que el año salte). */
+ function abrir(k = 0) {
+   const antes = movimientoReducido(true);
+   const m = montar(h(PantallasT4, { pieza: P, rotulo: "T4 · APRENDER" }));
+   for (let i = 0; i < k; i++) {
+-    if (P.pantallas[i].pregunta) acertarP3(m.caja);
++    if (P.pantallas[i].pregunta) acertar(m.caja, P.pantallas[i].id);
+     tocar(m.caja.querySelector('[data-boton="seguir"]'));
+   }
+   movimientoReducido(antes);
+@@ -77,18 +86,20 @@ pruebaObjetivo({ P, canon: CANON });
+ 
+ /* ═══════════ 1 · EL TEXTO, CONTRA EL PAQUETE ═══════════ */
+ 
+-test("★★★ el paquete vigente es el del rediseño (v3) y lo dice; los datos lo nombran", () => {
++test("★★★ el paquete vigente es el del hilo (v4) y lo dice; los datos lo nombran", () => {
+   assert.match(PAQ, /\*\*Este archivo es la versión vigente de A0\.\*\*/);
+   assert.match(PAQ, /hanayama-a0-rediseno\.md/);
+   assert.match(PAQ, /katsumi-texto-rediseno\.md/);
++  assert.match(PAQ, /t4-slides\/hilo-katsumi\.md/);
+   assert.match(leer("src/data/contabilidadT4A0.js"), new RegExp(CANON.replace(/\./g, "\\.")));
+ });
+ 
+-test("★★★ las 7 pantallas, en el orden del paquete (lote B: sale el resumen en lista); título e id; todas con la figura «ano»", () => {
++test("★★★ las 6 pantallas, en el orden del paquete (hilo: «la-prueba» se funde en «cual-cruza»); título e id; todas con la figura «ano»", () => {
+   assert.equal(P.id, "t4-a0-el-activo-corriente");
+   assert.equal(P.titulo, "El activo corriente");
+   assert.deepEqual(P.pantallas.map((p) => p.id), CANON_P.map((p) => p.id));
+-  assert.equal(P.pantallas.length, 7);
++  assert.equal(P.pantallas.length, 6);
++  assert.equal(P.pantallas.some((p) => p.id === "la-prueba"), false);
+   assert.ok(!P.pantallas.some((p) => p.id === "resumen" || p.resumen), "queda una pantalla de resumen (capa 4)");
+   for (const p of P.pantallas) assert.equal(p.figura, "ano", p.id);
+ });
+@@ -128,23 +139,23 @@ test("★★★ cada pantalla, en el orden de Hanayama: antes → figura → des
+       assert.equal(zona.dataset.pantalla, p.id);
+       if (p.pregunta) {
+         assert.equal(zona.querySelector('[data-boton="seguir"]'), null, `${p.id}: «Seguir» antes del acierto`);
+-        acertarP3(m.caja);
++        acertar(m.caja, p.id);
+       }
+       const orden = [...zona.querySelectorAll("[data-texto], [data-figura], [data-boton], [data-pie]")]
+         .filter((e) => !e.parentElement.closest("[data-figura]"))
+         .map((e) => (e.matches("[data-figura]") ? "FIGURA" : e.matches("[data-boton]") ? "SEGUIR" : e.matches("[data-pie]") ? "PIE" : e.textContent));
+-      const esperado = [...(p.antes ?? []), "FIGURA", ...(p.despues ?? []), ...(p.cierre ? [p.cierre] : []), ...(p.siguiente ? [p.siguiente] : []), ...(k < 6 ? ["SEGUIR"] : []), "PIE"];
++      const esperado = [...(p.antes ?? []), "FIGURA", ...(p.despues ?? []), ...(p.despuesConAccion ?? []).filter((x) => x.con === "acierto").map((x) => x.texto), ...(p.cierre ? [p.cierre] : []), ...(p.siguiente ? [p.siguiente] : []), ...(k < 5 ? ["SEGUIR"] : []), "PIE"];
+       assert.deepEqual(orden, esperado, p.id);
+       assert.equal(zona.querySelector("[data-pie]").textContent, p.pie);
+-      if (k < 6) tocar(zona.querySelector('[data-boton="seguir"]'));
++      if (k < 5) tocar(zona.querySelector('[data-boton="seguir"]'));
+     }
+   } finally { m.desmontar(); movimientoReducido(false); }
+ });
+ 
+-test("★★★ D7 · P3 es la única pantalla con pregunta, y su «Seguir» no aparece sin el acierto: ni al llegar, ni marcando, ni tras el error, ni tras «Otra vez»", async () => {
+-  assert.deepEqual(P.pantallas.filter((p) => p.pregunta).map((p) => p.id), ["cual-cruza"]);
++test("★★★ D7 · las preguntas son P0 y P4 (hilo), y el «Seguir» de P0 no aparece sin el acierto: ni al llegar, ni marcando, ni tras el error, ni tras «Otra vez»", async () => {
++  assert.deepEqual(P.pantallas.filter((p) => p.pregunta).map((p) => p.id), ["cual-cruza", "se-consume"]);
+   movimientoReducido(true);
+-  const m = abrir(3);
++  const m = abrir(K("cual-cruza"));
+   try {
+     const seguir = () => m.caja.querySelector('[data-boton="seguir"]');
+     assert.equal(seguir(), null, "al llegar");
+@@ -163,27 +174,25 @@ test("★★★ D7 · P3 es la única pantalla con pregunta, y su «Seguir» no
+     assert.equal(m.caja.querySelector("[data-mensaje]").dataset.mensaje, "acierto");
+     assert.ok(seguir(), "tras el acierto no aparece «Seguir»");
+     tocar(seguir());
+-    assert.equal(m.caja.querySelector("[data-pieza]").dataset.pantalla, "los-fijos");
++    assert.equal(m.caja.querySelector("[data-pieza]").dataset.pantalla, "el-efectivo");
+   } finally { m.desmontar(); movimientoReducido(false); }
+ });
+ 
+-test("★★★ P0: el año se arrastra con el teclado; en el mes 1 la mercancía es plata, en la raya el edificio cruza; si vuelve, se apaga", () => {
+-  const m = abrir(0);
++test("★★★ P0: el año se arrastra con el teclado; en el mes 1 la mercancía es plata y la deuda y el edificio llegan a la raya sin volverse plata; si vuelve, se apaga", () => {
++  const m = abrir(K("cual-cruza"));
+   try {
+     const pista = m.caja.querySelector('[data-pista][role="slider"]');
+     assert.ok(pista, "la pista no es un slider");
+     assert.equal(pista.getAttribute("aria-valuenow"), "0");
+-    assert.deepEqual(filas(m.caja), { mercancia: "espera", edificio: "espera" });
++    assert.deepEqual(filas(m.caja), { mercancia: "espera", deuda: "espera", edificio: "espera" });
+     tecla(pista, "ArrowRight");
+     assert.equal(pista.getAttribute("aria-valuenow"), "1");
+-    assert.deepEqual(filas(m.caja), { mercancia: "plata", edificio: "espera" });
++    assert.deepEqual(filas(m.caja), { mercancia: "plata", deuda: "espera", edificio: "espera" });
+     assert.equal(m.caja.querySelector('[data-fila="mercancia"] [data-marca-fila]').textContent, "plata");
+     tecla(pista, "End");
+-    assert.deepEqual(filas(m.caja), { mercancia: "plata", edificio: "despues" });
+-    assert.ok(m.caja.querySelector('[data-fila="edificio"] [data-cruza]'), "el edificio no cruza la raya");
++    assert.deepEqual(filas(m.caja), { mercancia: "plata", deuda: "despues", edificio: "despues" });
+     tecla(pista, "Home");
+-    assert.deepEqual(filas(m.caja), { mercancia: "espera", edificio: "espera" });
+-    assert.equal(m.caja.querySelector("[data-cruza]"), null);
++    assert.deepEqual(filas(m.caja), { mercancia: "espera", deuda: "espera", edificio: "espera" });
+   } finally { m.desmontar(); }
+ });
+ 
+@@ -204,15 +213,16 @@ test("★★★ «Pasar el año» lo recorre solo y cambia la figura; con movimi
+   }
+ });
+ 
+-test("★★★ P1: el efectivo y los depósitos ya son plata en «hoy»; P4: los cuatro fijos cruzan la raya; P5: el arriendo «se consumió»", () => {
+-  const p1 = abrir(1);
++test("★★★ P1: el efectivo y los depósitos ya son plata en «hoy»; P3: los cuatro fijos cruzan la raya; P4: el arriendo «se consumió»", () => {
++  const p1 = abrir(K("el-efectivo"));
+   try { assert.deepEqual(filas(p1.caja), { caja: "plata", bancos: "plata" }); } finally { p1.desmontar(); }
+-  const p4 = abrir(4);
++  const p4 = abrir(K("los-fijos"));
+   try {
+     tecla(p4.caja.querySelector("[data-pista]"), "End");
+     assert.deepEqual(filas(p4.caja), { "un-edificio": "despues", terreno: "despues", maquina: "despues", vehiculo: "despues" });
++    assert.equal(p4.caja.querySelectorAll("[data-cruza]").length, 4, "los fijos no cruzan la raya");
+   } finally { p4.desmontar(); }
+-  const p5 = abrir(5);
++  const p5 = abrir(K("se-consume"));
+   try {
+     const pista = p5.caja.querySelector("[data-pista]");
+     for (let i = 0; i < 5; i++) tecla(pista, "ArrowRight");
+@@ -223,8 +233,8 @@ test("★★★ P1: el efectivo y los depósitos ya son plata en «hoy»; P4: lo
+   } finally { p5.desmontar(); }
+ });
+ 
+-test("★★★ P6 (la última): la figura quieta en el mes 12, sin pista ni acción, y la frase de cierre pegada debajo desde que se llega (capa 4)", () => {
+-  for (const k of [6]) {
++test("★★★ P5 (la última): la figura quieta en el mes 12, sin pista ni acción, y la frase de cierre pegada debajo desde que se llega (capa 4)", () => {
++  for (const k of [K("por-que-importan")]) {
+     const m = abrir(k);
+     try {
+       const fig = m.caja.querySelector("[data-figura]");
+@@ -237,24 +247,59 @@ test("★★★ P6 (la última): la figura quieta en el mes 12, sin pista ni acc
+   }
+ });
+ 
+-test("★★★ P0 (lote B, capa 1): abre con la figura; «Arrastra el año» sobre la pista; la definición, reservada debajo, aparece con el primer movimiento del año", async () => {
+-  const p = P.pantallas[0];
+-  assert.deepEqual(p.antes ?? [], []);
+-  const m = abrir(0);
++test("★★★ P0 y P4 (hilo): la pregunta va antes de la figura, y el texto aprobado reservado debajo sale solo con el acierto: ni al mover el año, ni con el error", async () => {
++  movimientoReducido(true);
++  try {
++    for (const [id, mal, bien] of [
++      ["cual-cruza", [["mercancia", "despues"], ["deuda", "despues"], ["edificio", "despues"]], () => null],
++      ["se-consume", [["arriendo", "despues"]], () => null],
++    ]) {
++      const p = pantalla(id);
++      const m = abrir(K(id));
++      try {
++        const zona = m.caja.querySelector("[data-pieza] .t4r");
++        assert.equal(zona.firstElementChild.textContent, p.antes[0], `${id}: la pregunta no va primero`);
++        assert.equal(m.caja.querySelector("[data-rotulo-accion]"), null, `${id}: queda el rótulo «Arrastra el año»`);
++        const r = m.caja.querySelector('[data-con-accion="acierto"]');
++        assert.equal(r.querySelector(".t4r-fantasma").textContent, p.despuesConAccion[0].texto, `${id}: no reserva su alto`);
++        tecla(m.caja.querySelector("[data-pista]"), "ArrowRight");
++        assert.ok(!r.hasAttribute("data-visible"), `${id}: sale al mover el año`);
++        tecla(m.caja.querySelector("[data-pista]"), "Home");
++        for (const [f, l] of mal) tocar(seg(m.caja, f, l));
++        tocar(m.caja.querySelector("[data-accion=pasar]"));
++        await esperar(0);
++        assert.equal(m.caja.querySelector("[data-mensaje]").dataset.mensaje, "error", id);
++        assert.ok(!r.hasAttribute("data-visible"), `${id}: sale con el error`);
++        tocar(m.caja.querySelector("[data-accion=otra-vez]"));
++        acertar(m.caja, id);
++        await esperar(0);
++        assert.ok(m.caja.querySelector('[data-con-accion="acierto"][data-visible]'), `${id}: no sale con el acierto`);
++        assert.equal(m.caja.querySelector('[data-con-accion="acierto"] [aria-live]').textContent, p.despuesConAccion[0].texto);
++        bien();
++      } finally { m.desmontar(); }
++    }
++  } finally { movimientoReducido(false); }
++});
++
++test("★★★ P4 (hilo): «Pasar el año» sin la fila marcada da su aviso; el arriendo después de la raya da su error NUEVO", async () => {
++  movimientoReducido(true);
++  const p = pantalla("se-consume");
++  const m = abrir(K("se-consume"));
+   try {
+-    const zona = m.caja.querySelector("[data-pieza] .t4r");
+-    assert.ok(zona.firstElementChild.matches("[data-figura]"), "la figura no es lo primero");
+-    const rot = m.caja.querySelector("[data-figura] [data-rotulo-accion]");
+-    assert.equal(rot.textContent, p.rotuloAccion);
+-    assert.ok(rot.compareDocumentPosition(m.caja.querySelector("[data-pista]")) & w.Node.DOCUMENT_POSITION_FOLLOWING, "el rótulo no va sobre la pista");
+-    const r = m.caja.querySelector("[data-con-accion]");
+-    assert.ok(!r.hasAttribute("data-visible"));
+-    assert.equal(r.querySelector(".t4r-fantasma").textContent, p.despuesConAccion[0].texto, "no reserva su alto");
+-    movimientoReducido(true);
+     tocar(m.caja.querySelector("[data-accion=pasar]"));
++    assert.equal(m.caja.querySelector("[data-aviso]").textContent, "Marca la fila primero.");
++    assert.equal(m.caja.querySelector("[data-mensaje]"), null);
++    tocar(seg(m.caja, "arriendo", "despues"));
++    tocar(m.caja.querySelector("[data-accion=pasar]"));
++    await esperar(0);
++    assert.equal(visible(m.caja.querySelector("[data-mensaje]")), p.error);
++    assert.equal(m.caja.querySelector('[data-boton="seguir"]'), null, "«Seguir» tras el error");
++    tocar(m.caja.querySelector("[data-accion=otra-vez]"));
++    acertarP4(m.caja);
+     await esperar(0);
+-    assert.ok(m.caja.querySelector("[data-con-accion][data-visible]"));
+-    assert.equal(m.caja.querySelector("[data-con-accion] [aria-live]").textContent, p.despuesConAccion[0].texto);
++    assert.equal(m.caja.querySelector("[data-mensaje]").dataset.mensaje, "acierto");
++    assert.equal(m.caja.querySelector('[data-fila="arriendo"] [data-marca-fila]').textContent, "se consumió");
++    assert.ok(m.caja.querySelector('[data-boton="seguir"]'), "sin «Seguir» tras el acierto");
+   } finally { m.desmontar(); movimientoReducido(false); }
+ });
+ 
+@@ -263,7 +308,7 @@ test("★★★ P0 (lote B, capa 1): abre con la figura; «Arrastra el año» so
+ 
+ test("★★★ P3: «Pasar el año» no se apaga (D7): con filas sin marcar avisa y no pasa; antes de pasarlo nada de la devolución está en el DOM (PH8-2)", () => {
+   const p = pantalla("cual-cruza");
+-  const m = abrir(3);
++  const m = abrir(K("cual-cruza"));
+   try {
+     const pasar = m.caja.querySelector("[data-accion=pasar]");
+     assert.equal(pasar.getAttribute("aria-disabled"), null);
+@@ -290,7 +335,7 @@ test("★★★ P3: «Pasar el año» no se apaga (D7): con filas sin marcar avi
+ test("★★★ P3 mal: la raya decide; ✗ y coral en la mal elegida, y la que era NO se marca (nombraría la respuesta); el error, ✗ y su texto, «Incorrecto.» solo para el lector", async () => {
+   movimientoReducido(true);
+   const p = pantalla("cual-cruza");
+-  const m = abrir(3);
++  const m = abrir(K("cual-cruza"));
+   try {
+     tocar(seg(m.caja, "mercancia", "despues"));
+     tocar(seg(m.caja, "deuda", "antes"));
+@@ -336,7 +381,7 @@ test("★★★ E2 · P3: el veredicto lleva la devolución a la ventana con «n
+     for (const quieto of [true, false]) {
+       movimientoReducido(quieto);
+       llevados.length = 0;
+-      const m = abrir(3);
++      const m = abrir(K("cual-cruza"));
+       movimientoReducido(quieto);
+       try {
+         tocar(seg(m.caja, "mercancia", "antes"));
+@@ -355,7 +400,7 @@ test("★★★ E2 · P3: el veredicto lleva la devolución a la ventana con «n
+ 
+ test("★★★ P3 bien: «Correcto.» y nada más; ✓ blanco en las tres; ni teal ni ámbar en ninguna parte de A0", async () => {
+   movimientoReducido(true);
+-  const m = abrir(3);
++  const m = abrir(K("cual-cruza"));
+   try {
+     tocar(seg(m.caja, "mercancia", "antes"));
+     tocar(seg(m.caja, "deuda", "despues"));
+@@ -381,7 +426,7 @@ test("★★★ los rótulos de la figura van en renglones fijos que no se parte
+   /* Los renglones fijos de Hanayama §3.1 (que caben en el 70 % lo mide la sonda en Chromium, no jsdom). */
+   const F = Z.FILAS_A0;
+   assert.deepEqual([F.edificioOficina.texto, F.bancos.texto, F.inversiones.texto, F.deuda.texto, F.arriendo.texto, F.mercancia.glosa],
+-    [["Edificio de", "la oficina"], ["Depósitos", "en bancos"], ["Inversiones", "a corto plazo"], ["Deuda de", "un cliente"], ["Arriendo pagado", "por adelantado"], ["se cobra este mes"]]);
++    [["Edificio de", "la oficina"], ["Depósitos", "en bancos"], ["Inversiones", "a corto plazo"], ["Deuda de", "un cliente"], ["Arriendo pagado", "por anticipado"], ["se cobra este mes"]]);
+ });
+ 
+ /* ═══════════ 4 · APRENDER NO DA FP ═══════════ */
+@@ -412,7 +457,7 @@ test("★★★ D6 · P3: el error va por fila: la deuda del lado corriente tien
+   ];
+   movimientoReducido(true);
+   for (const [marcas, texto] of casos) {
+-    const m = abrir(3);
++    const m = abrir(K("cual-cruza"));
+     try {
+       for (const [f, l] of Object.entries(marcas)) tocar(seg(m.caja, f, l));
+       tocar(m.caja.querySelector("[data-accion=pasar]"));
+@@ -451,7 +496,6 @@ test("★★★ D8 · jugado en el caso B: las filas B, la raya decide igual, y
+   const m = montar(h(PantallasT4, { pieza: P, rotulo: "T4 · APRENDER", caso: 2 }));
+   try {
+     assert.equal(m.caja.querySelector("[data-pieza]").dataset.casoPieza, "2");
+-    for (let i = 0; i < 3; i++) tocar(m.caja.querySelector('[data-boton="seguir"]'));
+     assert.equal(m.caja.querySelector("[data-pieza]").dataset.pantalla, "cual-cruza");
+     assert.deepEqual([...m.caja.querySelectorAll("[data-fila]")].map((f) => f.dataset.fila), ["repuestos", "pagare", "camion"]);
+     for (const [f, l] of [["repuestos", "despues"], ["pagare", "antes"], ["camion", "despues"]]) tocar(seg(m.caja, f, l));
+diff --git a/src/data/contabilidadT4A0.js b/src/data/contabilidadT4A0.js
+index 00db085..7665a81 100644
+--- a/src/data/contabilidadT4A0.js
++++ b/src/data/contabilidadT4A0.js
+@@ -5,7 +5,7 @@
+  * Diseño: Hanayama, «El año en marcha» (celula-d/hanayama-a0-rediseno.md),
+  * aprobado por Yujiro en su corte de calidad del 15 oct 2026. Textos: Katsumi
+  * (celula-d/katsumi-texto-rediseno.md), aprobados tal cual. Copia en el canon:
+- * orquestador/conocimiento/paquetes/d4-t4-a0-v3-rediseno.md. Una prueba
++ * orquestador/conocimiento/paquetes/d4-t4-a0-v4-hilo.md (antes, d4-t4-a0-v3-rediseno.md). Una prueba
+  * compara cada texto de aquí contra ella, letra por letra.
+  *
+  * Pasa la barra de enganche B1-B5 (canon: orquestador/conocimiento/
+@@ -77,12 +77,12 @@ export const FILAS_A0 = {
+   terreno: { id: "terreno", texto: ["Un terreno"], glosa: [], mes: null },
+   maquina: { id: "maquina", texto: ["Una máquina"], glosa: [], mes: null },
+   vehiculo: { id: "vehiculo", texto: ["Un vehículo"], glosa: [], mes: null },
+-  arriendo: { id: "arriendo", texto: ["Arriendo pagado", "por adelantado"], glosa: ["seis meses"], mes: 6, consume: true },
++  arriendo: { id: "arriendo", texto: ["Arriendo pagado", "por anticipado"], glosa: ["seis meses"], mes: 6, consume: true },
+ };
+ const F = FILAS_A0;
+ 
+ /*
+- * Las ocho pantallas (Hanayama §2, textos de Katsumi). `figura: "ano"` en
++ * Las seis pantallas (hilo de Katsumi, 23 oct 2026; antes, Hanayama §2). `figura: "ano"` en
+  * todas. `pregunta`: la pantalla pregunta, y «Seguir» no aparece hasta el
+  * acierto (regla D7 del canon, decisión de Yujiro sobre el §2.4 de Hanayama). `modo`: "pista" (se arrastra o se pasa el año), "juego" (P3: se
+  * marca cada fila y la raya decide) o "quieta" (la figura en el mes 12, sin
+@@ -90,12 +90,21 @@ const F = FILAS_A0;
+  */
+ export const PANTALLAS_A0 = [
+   {
+-    id: "la-prueba", figura: "ano", modo: "pista",
+-    /* Lote B, capa 1 (Hanayama §2.1; Katsumi v2): la pieza abre con la figura; el rótulo va sobre la pista y la definición aparece con el primer arrastre. */
+-    rotuloAccion: "Arrastra el año",
+-    despuesConAccion: [{ texto: "Un activo es corriente si se vuelve plata antes de un año." }],
+-    filas: [F.mercancia, F.edificioOficina],
+-    pie: "Basado en el libro, pp. 177-178",
++    /*
++     * Hilo de Katsumi (23 oct 2026, orquestador/revisiones/t4-slides/hilo-katsumi.md):
++     * la pantalla 1 es la decisión de predicción y absorbe a «la-prueba», cuya
++     * definición sale ahora con el acierto (`con: "acierto"`).
++     */
++    id: "cual-cruza", figura: "ano", modo: "juego", pregunta: true,
++    antes: ["¿Qué se vuelve plata antes de un año? Marca cada fila."],
++    filas: [F.mercancia, F.deuda, F.edificioOficina],
++    /* Acierto: «Correcto.» y nada más (Katsumi). Error: ✗ y el texto; no nombra la respuesta. */
++    acierto: "",
++    error: "¿Qué se volvió plata?",
++    /* D6 (Katsumi, lote del Kit): si la deuda va del lado corriente, su error propio; con varios errores, gana este. */
++    errorFila: { fila: "deuda", lado: "antes", texto: "Te deben, sí. ¿Pero cuándo pagan?" },
++    despuesConAccion: [{ texto: "Un activo es corriente si se vuelve plata antes de un año.", con: "acierto" }],
++    pie: "Basado en el libro, p. 178",
+   },
+   {
+     id: "el-efectivo", figura: "ano", modo: "pista",
+@@ -110,17 +119,6 @@ export const PANTALLAS_A0 = [
+     filas: [F.inversiones, F.cartera, F.inventarios],
+     pie: "Basado en el libro, p. 178",
+   },
+-  {
+-    id: "cual-cruza", figura: "ano", modo: "juego", pregunta: true,
+-    antes: ["Marca cada fila."],
+-    filas: [F.mercancia, F.deuda, F.edificioOficina],
+-    /* Acierto: «Correcto.» y nada más (Katsumi). Error: ✗ y el texto; no nombra la respuesta. */
+-    acierto: "",
+-    error: "¿Qué se volvió plata?",
+-    /* D6 (Katsumi, lote del Kit): si la deuda va del lado corriente, su error propio; con varios errores, gana este. */
+-    errorFila: { fila: "deuda", lado: "antes", texto: "Te deben, sí. ¿Pero cuándo pagan?" },
+-    pie: "Basado en el libro, p. 178",
+-  },
+   {
+     id: "los-fijos", figura: "ano", modo: "pista",
+     antes: ["El libro nombra los activos fijos. La empresa los usa por años para trabajar, no para venderlos."],
+@@ -129,9 +127,14 @@ export const PANTALLAS_A0 = [
+     pie: "Basado en el libro, pp. 178-179",
+   },
+   {
+-    id: "se-consume", figura: "ano", modo: "pista",
+-    antes: ["El Tema 2 añade un caso: también es corriente lo que se consume dentro del año. Pasa el año."],
++    /* Hilo de Katsumi: ahora es una decisión de una fila; el texto aprobado sale con el acierto. */
++    id: "se-consume", figura: "ano", modo: "juego", pregunta: true,
++    antes: ["¿De qué lado de la raya va el arriendo de seis meses?"],
+     filas: [F.arriendo],
++    acierto: "",
++    error: "No se vuelve plata, pero ¿qué le pasa dentro del año?",
++    aviso: "Marca la fila primero.",
++    despuesConAccion: [{ texto: "El Tema 2 añade un caso: también es corriente lo que se consume dentro del año. Pasa el año.", con: "acierto" }],
+     pie: "Basado en el Tema 2 y en el libro, p. 178",
+   },
+   {

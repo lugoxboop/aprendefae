@@ -197,10 +197,10 @@ test("★★★ los textos de Gen, textuales", () => {
   ]);
   assert.equal(D.CIERRE_TEXTO, "Las cuentas de ingresos y gastos quedaron en cero. Febrero empieza limpio y lo de enero quedó junto en Ganancias y pérdidas.");
   const p = D.PIEZA_CERRAR_EL_PERIODO;
-  assert.equal(p.objetivo, "Al cerrar el periodo, las cuentas de ingresos y gastos quedan en cero. Lo que dejan es el resultado.");
+  assert.equal(p.objetivo, "Cierra las cuentas de ingresos y gastos y halla el resultado del periodo.");
   assert.deepEqual(p.nombres.map((n) => n.termino), ["Cuentas del periodo", "Cerrar", "Ganancias y pérdidas", "Desde ya"]);
   assert.equal(p.nombres[0].delLibro, "El libro a veces dice renta; es lo mismo que ingreso.");
-  assert.match(p.nombres[1].delLibro, /^«Cerrar una cuenta significa reducir su saldo a cero\. .*» \(p\. 123\)\.$/);
+  assert.match(p.nombres[1].delLibro, /^«Cerrar una cuenta significa reducir su saldo a cero\. .*…» \(p\. 123\)\.$/);
   assert.equal(D.CONSIGNA_CAPA_3_CIERRE, "Toca cada cuenta y mira cómo pasa de su saldo a cero.");
   assert.equal(D.PREGUNTA_FINAL_CIERRE, "Elige la frase que mejor dice para qué se cierran las cuentas.");
   assert.deepEqual(D.OPCIONES_FINAL_CIERRE.filter((o) => o.correcta).map((o) => o.id), ["resultado"]);

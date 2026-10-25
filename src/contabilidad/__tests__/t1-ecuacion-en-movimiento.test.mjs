@@ -40,7 +40,7 @@ const React = await import("react");
 const { createRoot } = await import("react-dom/client");
 const act = React.act ?? (await import("react-dom/test-utils")).act;
 
-const LaEcuacionEnMovimiento = (await import("../../components/mecanicas/libros/tema1/LaEcuacionEnMovimiento.jsx")).default;
+const { default: LaEcuacionEnMovimiento, MS_SUBIR } = await import("../../components/mecanicas/libros/tema1/LaEcuacionEnMovimiento.jsx");
 const { MarcoLibros } = await import("../../components/mecanicas/bloques/marcos.jsx");
 const {
   totalesTras, parteQuieta, enModoCorto, evaluarT1_5, efectoDe,
@@ -423,9 +423,12 @@ test("★★★ la decisión 2 es el total nuevo: anterior más el monto, anteri
     elegirTotal(caja, ACTIVO, 25000);
     elegirTotal(caja, PASIVO, 25000);
     tocar(boton(caja, TORRES_T1_5.anotar));
-    const iba = caja.querySelector(`[data-opcion-total="${ACTIVO}:325000"] [data-pastilla]`);
-    assert.equal(iba.textContent, "Iba aquí: $325.000");
-    assert.equal(caja.querySelector(`[data-opcion-total="${ACTIVO}:25000"] [data-pastilla]`).dataset.pastilla, "tachada");
+    /* Tras anotar, las casillas se pliegan en un renglón por parte (Mai, «después de anotar»): ✕ lo elegido, ✓ lo que iba. */
+    const renglon = caja.querySelector(`[data-plegado="${ACTIVO}"]`);
+    assert.equal(renglon.querySelector("[data-elegido]").textContent, "$25.000");
+    assert.equal(renglon.querySelector("[data-correcto]").textContent, "$325.000");
+    assert.match(renglon.textContent, /^tiene/);
+    assert.equal(caja.querySelectorAll("[data-opcion-total]").length, 0, "las filas de cifra siguen a tamaño táctil tras anotar");
   } finally { desmontar(); }
 });
 
@@ -443,10 +446,9 @@ test("★★★ hecho 1 con tres botones (Shoko), «sin cambio» rotulado, y la 
     elegirTotal(caja, mov(0).mueven[1], 300000);
     assert.equal(caja.querySelectorAll("[data-rotulo-sin-cambio]").length, 0, "el rótulo salió antes de anotar");
     tocar(boton(caja, TORRES_T1_5.anotar));
-    /* Tras anotar, el rótulo sale solo en la opción que eligió, no en el $0 del otro grupo. */
-    const rotulos = [...caja.querySelectorAll("[data-rotulo-sin-cambio]")];
-    assert.deepEqual(rotulos.map((r) => r.closest("[data-opcion-total]").dataset.opcionTotal), [`${ACTIVO}:0`]);
-    assert.equal(rotulos[0].textContent, TORRES_T1_5.sinCambio);
+    /* Tras anotar se pliega: lo que tiene, ✕ $0 ✓ $100.000; la otra parte, bien, sin ✕. */
+    assert.equal(caja.querySelector(`[data-plegado="${ACTIVO}"] [data-elegido]`).textContent, "$0");
+    assert.equal(caja.querySelector(`[data-plegado="${mov(0).mueven[1]}"] [data-elegido]`), null);
     const retro = caja.querySelector("[data-texto-retro]").textContent;
     assert.ok(retro.endsWith(linea("sinCambio", "lo que tiene")), retro);
     assert.ok(!retro.includes("pusiste lo que se movió"));
@@ -584,6 +586,73 @@ test("difícil, 50 FP y los ocho hechos", () => {
   assert.equal(T1_5.dificultad, "dificil");
   assert.equal(T1_5.fpBase, 50);
   assert.equal(T1_5.porPartida, TRANSACCIONES_CAP2.length);
+});
+
+/*
+ * ═══════════ LAS TORRES SE VEN MOVERSE (PR propio, a 320) ═══════════
+ *
+ * Con las torres fuera de la pantalla al anotar, la pieza sube a ellas y solo
+ * entonces las mueve; el foco va a «Siguiente» sin desplazar la página. Con
+ * las torres a la vista, todo pasa en el acto, como siempre.
+ */
+test("★★★ al anotar con las torres fuera de la pantalla: sube a ellas, y se mueven al llegar", async () => {
+  const proto = w.Element.prototype;
+  const rectOriginal = proto.getBoundingClientRect;
+  const subidas = [];
+  proto.getBoundingClientRect = function () {
+    if (this.matches?.("[data-caja-torres]")) return { top: -278, bottom: -34, left: 0, right: 300, width: 300, height: 244 };
+    return rectOriginal.call(this);
+  };
+  proto.scrollIntoView = function (o) { subidas.push(o); };
+  const focoOriginal = w.HTMLElement.prototype.focus;
+  const focos = [];
+  w.HTMLElement.prototype.focus = function (o) { focos.push(o); return focoOriginal.call(this, o); };
+  const { caja, desmontar } = montar();
+  try {
+    const antes = altoDe(caja, ACTIVO);
+    decidir(caja, 0);
+    tocar(boton(caja, TORRES_T1_5.anotar));
+    assert.equal(subidas.length, 1, "no subió a las torres");
+    assert.equal(subidas[0].block, "start");
+    assert.equal(altoDe(caja, ACTIVO), antes, "las torres se movieron antes de estar a la vista");
+    /* Mientras sube, ni devolución ni foco: el foco no cae en algo que no se ve. */
+    assert.equal(caja.querySelector("[data-veredicto]").style.visibility, "hidden");
+    assert.equal(focos.length, 0, "el foco se fue antes de terminar la subida");
+    await act(async () => { await new Promise((r) => setTimeout(r, MS_SUBIR + 60)); });
+    assert.notEqual(altoDe(caja, ACTIVO), antes, "las torres no se movieron al llegar");
+    assert.ok(focos.some((o) => o?.preventScroll === true), "el foco al veredicto desplaza la página");
+    /*
+     * Mai («después de anotar»): la devolución va en el flujo, nada fijo, y el
+     * foco al veredicto; las casillas se pliegan en un renglón por parte; la
+     * reserva de las torres es de 176 y la leyenda va arriba de ellas.
+     */
+    const bloque = caja.querySelector("[data-bloque-devolucion]");
+    assert.equal(bloque.style.position, "");
+    assert.equal(w.document.activeElement, caja.querySelector("[data-veredicto]"));
+    assert.ok(bloque.querySelector("[data-avance]"), "«Siguiente» no está debajo de la devolución");
+    assert.equal(caja.querySelectorAll("[data-plegado]").length, 2, "no se plegaron las dos partes que se mueven");
+    assert.equal(caja.querySelector("[data-torres]").style.height, "176px");
+    assert.ok(caja.querySelector("[data-leyenda]").compareDocumentPosition(caja.querySelector("[data-torres]")) & 4, "la leyenda no va arriba de las torres");
+  } finally {
+    desmontar();
+    proto.getBoundingClientRect = rectOriginal;
+    delete proto.scrollIntoView;
+    w.HTMLElement.prototype.focus = focoOriginal;
+  }
+});
+
+test("★★ con las torres a la vista, anotar las mueve en el acto y no desplaza nada", () => {
+  const proto = w.Element.prototype;
+  const subidas = [];
+  proto.scrollIntoView = function (o) { subidas.push(o); };
+  const { caja, desmontar } = montar();
+  try {
+    const antes = altoDe(caja, ACTIVO);
+    decidir(caja, 0);
+    tocar(boton(caja, TORRES_T1_5.anotar));
+    assert.equal(subidas.length, 0);
+    assert.notEqual(altoDe(caja, ACTIVO), antes);
+  } finally { desmontar(); delete proto.scrollIntoView; }
 });
 
 test("★★ la muestra de la leyenda es la de Mai: 24×8, plana, sin borde propio, con el tratamiento de su tramo y 7 px hasta la palabra", () => {
