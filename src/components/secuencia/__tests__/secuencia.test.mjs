@@ -322,3 +322,73 @@ test("★ #536: la devolución ocupa la banda del apoyo al responder, fuera de l
   assert.equal(m.q("[data-razon]").textContent, "Basado en el libro, p. 42");
   await act(async () => { m.raiz.unmount(); });
 });
+
+test("★ #576: pasos después de responder un Haz, con su titular y su anuncio, sin dejar saltarse la respuesta", async () => {
+  sessionStorage.clear();
+  const FiguraTras = ({ estado, setEstado, pasoTras }) =>
+    h("div", null,
+      h("span", { "data-paso-tras": pasoTras }, `tras ${pasoTras}`),
+      h("button", { type: "button", "data-opcion": "bien", onClick: () => setEstado((e) => S.responderHaz(e, true)) }, "A"),
+      h("span", { "data-intentos": estado?.intentos ?? 0 }));
+  const pz = { id: "t3", pantallas: [
+    pantalla("a", "apertura"),
+    pantalla("h", "haz", {
+      Figura: FiguraTras, estadoInicial: S.HAZ_INICIAL, resuelta: S.hazResuelto, razon: "Responde primero.",
+      pasosTras: 2, rotulosPasoTras: ["Cita 1", "Cita 2"], titularesTras: ["Esto se llama acumulado"],
+    }),
+    pantalla("m", "miralo"),
+    pantalla("c", "cierre"),
+  ] };
+  assert.deepEqual(S.faltasDePieza(pz), []);
+  assert.ok(S.faltasDePieza({ ...pz, pantallas: pz.pantallas.map((p) => (p.tipo === "miralo" ? { ...p, pasosTras: 1 } : p)) })
+    .some((f) => /sin nada que responder/.test(f)));
+
+  const m = await montar({ temaId: "tras", piezas: [pz] });
+  await m.clic("[data-siguiente]");
+  /* Antes de responder: espera, sin pasos de después. */
+  assert.equal(m.q("[data-siguiente]").getAttribute("aria-disabled"), "true");
+  await m.clic("[data-siguiente]");
+  assert.equal(m.q("[data-paso-tras]").dataset.pasoTras, "0", "dio un paso de después sin responder");
+  await m.clic("[data-opcion='bien']");
+  /* Resuelto: «Siguiente» da los dos pasos de después antes de cambiar de pantalla. */
+  assert.equal(m.q("[data-razon]").textContent, "Paso 1 de 2");
+  await m.clic("[data-siguiente]");
+  assert.equal(m.q("[data-paso-tras]").dataset.pasoTras, "1");
+  assert.equal(m.q(".fae-sec-titular").textContent, "Esto se llama acumulado", "el titular del paso no cambió");
+  assert.match(m.caja.textContent, /Paso 1 de 2: Cita 1/);
+  await m.clic("[data-siguiente]");
+  assert.equal(m.q("[data-paso-tras]").dataset.pasoTras, "2");
+  assert.equal(m.q(".fae-sec-titular").textContent, "Titular h", "sin titular propio, vuelve el de la pantalla");
+  assert.equal(m.q("[data-tipo]").getAttribute("data-tipo"), "haz", "cambió de pantalla antes de terminar los pasos");
+  await m.clic("[data-siguiente]");
+  await new Promise((r) => setTimeout(r, 200));
+  await act(async () => {});
+  assert.equal(m.q("[data-tipo]").getAttribute("data-tipo"), "miralo");
+  await act(async () => { m.raiz.unmount(); });
+});
+
+test("★ #576: llegar al cierre deja la pieza como hecha, una vez, y el Repaso la cuenta", async () => {
+  sessionStorage.clear();
+  const vistas = [];
+  const m = await montar({ temaId: "hecho", piezas: [pieza("p1"), pieza("p2")], registrar: (id) => vistas.push(id) });
+  /* p1: apertura (2 pasos), míralo, haz, cierre. */
+  for (let k = 0; k < 4; k++) await m.clic("[data-siguiente]");
+  assert.deepEqual(vistas, [], "registró antes del cierre");
+  await m.clic("[data-opcion='bien']");
+  await m.clic("[data-siguiente]");
+  await new Promise((r) => setTimeout(r, 200));
+  await act(async () => {});
+  assert.equal(m.q("[data-tipo]").getAttribute("data-tipo"), "cierre");
+  assert.deepEqual(vistas, ["p1"]);
+  await act(async () => { m.raiz.unmount(); });
+
+  /* El cliente real: sin pieza en el catálogo o sin sesión, no llama al servidor. */
+  const { registrarAprenderHecho } = await import("../../../aprender/hecho.js");
+  const llamadas = [];
+  const cliente = (session) => ({ auth: { getSession: async () => ({ data: { session } }) }, rpc: async (f, a) => { llamadas.push([f, a]); return { error: null }; } });
+  assert.equal(await registrarAprenderHecho("no-existe-en-el-catalogo", cliente({})), false);
+  assert.equal(await registrarAprenderHecho("t3-a1-vender-no-es-cobrar", cliente(null)), false);
+  assert.equal(await registrarAprenderHecho("t3-a1-vender-no-es-cobrar", cliente({})), true);
+  assert.equal(await registrarAprenderHecho("t3-a1-vender-no-es-cobrar", cliente({})), false, "la misma pieza se mandó dos veces");
+  assert.deepEqual(llamadas, [["registrar_aprender", { p_subject_id: "contabilidad", p_activity_id: "t3-a1-vender-no-es-cobrar" }]]);
+});

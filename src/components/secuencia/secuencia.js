@@ -26,6 +26,9 @@
  *     nombreFigura,            nombre accesible del <figure>; nunca contiene la respuesta (D9)
  *     estadoInicial?,          lo que la figura recuerda; tiene que ser JSON (se guarda en la pestaña)
  *     pasos?,                  cuántos pasos da «Siguiente» dentro de la pantalla (máx. 5)
+ *     pasosTras?,              cuántos da DESPUÉS de resolver el Haz (máx. 5; #576)
+ *     rotulosPasoTras?,        lo que anuncia cada uno al lector
+ *     titularesTras?,          el titular que toma la pantalla en cada uno (si cambia)
  *     rotulosPaso?,            lo que revela cada paso, para el lector de pantalla
  *     resuelta?(estado),       solo Haz: true con la primera respuesta válida
  *     razon?,                  solo Haz: por qué «Siguiente» espera (la escribe contenido, D11)
@@ -95,6 +98,18 @@ export const pasosDados = (estado, piezas) => estado.pasos[claveDe(piezas[estado
 
 export const pasosTotales = (pantalla) => Math.min(Math.max(0, pantalla.pasos | 0), MAX_PASOS);
 
+/*
+ * PASOS DESPUÉS DE RESPONDER (#576, T3). `pasos` se da ANTES de que un Haz
+ * espere su respuesta; `pasosTras` se da DESPUÉS, cuando ya está resuelto: las
+ * citas del libro que nombran lo que el estudiante acaba de hacer («Esto se
+ * llama acumulado», P3-7 y P4-8; «Cerrar» y la cita de la p. 123, P5-4). Se
+ * guardan aparte, con su propia cuenta, para que una pantalla pueda tener las
+ * dos cosas.
+ */
+const claveTras = (clave) => `${clave}#tras`;
+export const pasosTrasTotales = (pantalla) => Math.min(Math.max(0, pantalla.pasosTras | 0), MAX_PASOS);
+export const pasosTrasDados = (estado, piezas) => estado.pasos[claveTras(claveDe(piezas[estado.p], pantallaActual(estado, piezas)))] ?? 0;
+
 /** Si la pantalla actual es un Haz que todavía espera su primera respuesta válida. */
 export function esperaRespuesta(estado, piezas) {
   const pieza = piezas[estado.p];
@@ -116,6 +131,7 @@ const esUltimaPieza = (estado, piezas) => estado.p === piezas.length - 1;
 /**
  * Qué hará «Siguiente» ahora mismo:
  *   "paso"      da el siguiente paso de la pantalla (§5.1.1)
+ *   "pasoTras"  da un paso de los de después de responder (#576)
  *   "pantalla"  pasa a la pantalla siguiente
  *   "pieza"     pasa a la primera pantalla de la pieza siguiente («Siguiente pieza»)
  *   "final"     último cierre del tema: «Ir a Hacer» o «Volver al tema»
@@ -124,6 +140,7 @@ const esUltimaPieza = (estado, piezas) => estado.p === piezas.length - 1;
 export function queHaceSiguiente(estado, piezas) {
   if (pasosDados(estado, piezas) < pasosTotales(pantallaActual(estado, piezas))) return "paso";
   if (esperaRespuesta(estado, piezas)) return "espera";
+  if (pasosTrasDados(estado, piezas) < pasosTrasTotales(pantallaActual(estado, piezas))) return "pasoTras";
   if (!esUltimaPantalla(estado, piezas)) return "pantalla";
   if (!esUltimaPieza(estado, piezas)) return "pieza";
   return "final";
@@ -146,6 +163,8 @@ export function avanzar(estado, piezas) {
   switch (accion) {
     case "paso":
       return { ...estado, pasos: { ...estado.pasos, [clave]: pasosDados(estado, piezas) + 1 } };
+    case "pasoTras":
+      return { ...estado, pasos: { ...estado.pasos, [claveTras(clave)]: pasosTrasDados(estado, piezas) + 1 } };
     case "pantalla":
       return { ...estado, s: estado.s + 1 };
     case "pieza":
@@ -225,6 +244,14 @@ export function faltasDePieza(pieza) {
     if (typeof pt?.Figura !== "function") faltas.push(`${donde}: sin figura (una pantalla de puro texto no existe)`);
     if (!pt?.nombreFigura) faltas.push(`${donde}: la figura no tiene nombre accesible`);
     if ((pt?.pasos | 0) > MAX_PASOS) faltas.push(`${donde}: más de ${MAX_PASOS} pasos; se parte la pieza`);
+    if ((pt?.pasosTras | 0) > MAX_PASOS) faltas.push(`${donde}: más de ${MAX_PASOS} pasos después de responder; se parte la pieza`);
+    if ((pt?.pasosTras | 0) > 0 && pt?.tipo !== "haz" && typeof pt?.resuelta !== "function") {
+      faltas.push(`${donde}: pasos después de responder sin nada que responder (solo un Haz o una apertura que predice)`);
+    }
+    /* D1 por paso visible: cada titular de después de responder cuenta como el de la pantalla. */
+    for (const t of pt?.titularesTras ?? []) {
+      if (palabras(t) > MAX_PALABRAS_TITULAR) faltas.push(`${donde}: un titular de después de responder pasa de ${MAX_PALABRAS_TITULAR} palabras`);
+    }
     if (pt?.tipo === "apertura" && pt.resuelta !== undefined && !pt.razon) {
       faltas.push(`${donde}: una apertura que bloquea necesita su razón visible (D11)`);
     }

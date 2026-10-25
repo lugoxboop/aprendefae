@@ -2,8 +2,9 @@ import { useEffect, useId, useRef, useState } from "react";
 import { FAE } from "../../theme.js";
 import { Panel } from "../mecanicas/salaDeControl/marco.jsx";
 import { Pulsos } from "../mecanicas/corazon/juego.jsx";
+import { registrarAprenderHecho } from "../../aprender/hecho.js";
 import {
-  FASES, LITERAL, estadoInicial, guardadoValido, pantallaActual, pasosDados, pasosTotales,
+  FASES, LITERAL, estadoInicial, guardadoValido, pantallaActual, pasosDados, pasosTotales, pasosTrasDados, pasosTrasTotales,
   queHaceSiguiente, literalSiguiente, avanzar, puedeRetroceder, retroceder, cambiarFigura,
   claveDe, mostrarCorrecto,
 } from "./secuencia.js";
@@ -188,7 +189,7 @@ export function altoFiguraDe(pieza) {
   return { a320: de("a320"), a375: de("a375") };
 }
 
-export default function SecuenciaAprender({ temaId, piezas, final = "tema", onFinal }) {
+export default function SecuenciaAprender({ temaId, piezas, final = "tema", onFinal, registrar = registrarAprenderHecho }) {
   const id = useId();
   const [estado, setEstado] = useState(() => leerGuardado(temaId, piezas) ?? estadoInicial(piezas));
   const [direccion, setDireccion] = useState(null); // null al montar · "adelante" · "atras"
@@ -212,8 +213,19 @@ export default function SecuenciaAprender({ temaId, piezas, final = "tema", onFi
   const total = pieza.pantallas.length;
   const dados = pasosDados(estado, piezas);
   const totalPasos = pasosTotales(pantalla);
+  const dadosTras = pasosTrasDados(estado, piezas);
+  const totalTras = pasosTrasTotales(pantalla);
   const accion = queHaceSiguiente(estado, piezas);
   const espera = accion === "espera";
+
+  /*
+   * Llegar al cierre de una pieza la deja como hecha (#576, 0153): es lo que
+   * permite que el Repaso enseñe sus ítems. Sin FP; si la pieza no es una
+   * actividad del catálogo o no hay sesión, no se registra nada.
+   */
+  useEffect(() => {
+    if (pantalla.tipo === "cierre") registrar?.(pieza.id);
+  }, [pieza.id, pantalla.tipo]); // eslint-disable-line react-hooks/exhaustive-deps
 
 
   /* La apertura arma su figura UNA vez al llegar (§8.3): la figura recibe primeraVez. */
@@ -251,6 +263,13 @@ export default function SecuenciaAprender({ temaId, piezas, final = "tema", onFi
         const n = dados + 1;
         const rotulo = pantalla.rotulosPaso?.[n - 1];
         setAnuncio(`Paso ${n} de ${totalPasos}${rotulo ? `: ${rotulo}` : ""}`);
+        return;
+      }
+      case "pasoTras": {
+        setEstado(avanzar(estado, piezas));
+        const n = dadosTras + 1;
+        const rotulo = pantalla.rotulosPasoTras?.[n - 1];
+        setAnuncio(`Paso ${n} de ${totalTras}${rotulo ? `: ${rotulo}` : ""}`);
         return;
       }
       case "pantalla":
@@ -324,6 +343,8 @@ export default function SecuenciaAprender({ temaId, piezas, final = "tema", onFi
     estado: estado.estados[clave],
     setEstado: setFigura,
     paso: dados,
+    /* Los pasos de después de responder (#576): la figura sabe cuántos se dieron. */
+    pasoTras: dadosTras,
     primeraVez,
     reducido: conMovimientoReducido(),
   };
@@ -339,7 +360,9 @@ export default function SecuenciaAprender({ temaId, piezas, final = "tema", onFi
     ? pantalla.razon
     : totalPasos > 0 && dados < totalPasos
       ? `Paso ${dados + 1} de ${totalPasos}`
-      : pantalla.pie ?? (pantalla.tipo === "cierre" ? pantalla.razon ?? null : null);
+      : accion === "pasoTras"
+        ? `Paso ${dadosTras + 1} de ${totalTras}`
+        : pantalla.pie ?? (pantalla.tipo === "cierre" ? pantalla.razon ?? null : null);
   /* El apoyo puede ser uno por paso (#558, cambio 6 de Mai): una sola zona que cambia al dar el paso. */
   const apoyoDelPaso = Array.isArray(pantalla.apoyo) ? pantalla.apoyo[Math.min(dados, pantalla.apoyo.length - 1)] : pantalla.apoyo;
   /*
@@ -423,7 +446,7 @@ export default function SecuenciaAprender({ temaId, piezas, final = "tema", onFi
                 className="fae-sec-titular"
                 style={{ margin: "4px 0 0", fontFamily: "Sora, sans-serif", fontSize: "17px", fontWeight: 700, lineHeight: "22px", color: "#F8F9FA", letterSpacing: "-0.01em" }}
               >
-                {pantalla.titular}
+                {(dadosTras > 0 && pantalla.titularesTras?.[dadosTras - 1]) || pantalla.titular}
               </h2>
             </div>
 
