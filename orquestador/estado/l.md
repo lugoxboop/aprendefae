@@ -1,4 +1,4 @@
-2026-10-25 03:38 (hora Bogotá)
+2026-10-25 04:39 (hora Bogotá)
 - Tema: T2 cuentas-debe-haber (T5 y T7 ocultos por Erwin, nada borrado). Contabilidad tiene estudiantes: solo se agrega
 - Regla j: terminado, llegó a Misa (#471), Near y Watari; a Mello le llega con su próximo lote
 - #482 (subtemas para el Repaso), #494 (línea base) y #516 (logito CasilleroDeCuentas): terminado, fusionados con el PASA de Mello y CI verde
@@ -8,5 +8,5 @@
 - Recortes de Near para CuatroCapas que esperaba Erwin: no se entregan este semestre (eran de T7 y T5, ocultos); avisado en #492
 - Lote T2-12 (blanco de toque, #585 de Ukyo): encargado a Misa en #471; seis piezas `cu-` a ≥ 44 × 44 px, decisiones en paquetes/c-t2-1-decisiones-l.md
 
-- Encender la bandera de las slides: bloqueado: SecuenciaAprender no tiene zona para la devolución (#536 de Watari, issue miku de Misa), es de Erwin
+- Encender la bandera de las slides (lote T2-13): Erwin abrió #590 (zona de devolución y razón en cierres, PASA de Levi; lo fusiona Miku). Misa prepara el encendido sobre esa rama, con la condición de Levi: figura + banda ≤ 206/253 con el texto más largo de cada Haz. Va antes que T2-12
 - Aviso de cupo: la sesión de Misa muestra «51 % usado; al ritmo actual alcanzarás el límite semanal antes de tiempo» (se restablece el vie 30-oct). L baja su frecuencia de revisión a cada 75-90 min y la célula trabaja por lotes completos
