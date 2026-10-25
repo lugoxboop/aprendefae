@@ -301,7 +301,8 @@ test("★★★ va en el camino de T3 justo detrás de «¿Ingreso o cobro?», M
   assert.deepEqual(a.clasificacion, { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 });
   assert.ok(JUEGOS.some((j) => j.id === "t3-gasto-o-pago" && j.Mecanica === GastoOPago));
   /* No reordena nada: las demás siguen en su orden relativo. */
-  assert.deepEqual(ids.filter((x) => x !== "t3-gasto-o-pago"), [
+  /* «Del resultado a la caja» (#555) entró después; tampoco reordena. */
+  assert.deepEqual(ids.filter((x) => x !== "t3-gasto-o-pago" && x !== "t3-del-resultado-a-la-caja"), [
     "t3-a1-vender-no-es-cobrar", "t3-ingreso-o-cobro", "t3-a3-lo-que-ya-paso", "t3-a4-lo-que-ya-se-pago", "t3-cuando-se-causa",
     "t3-ajuste-acumulado", "t3-ajuste-diferido", "t3-mismo-hecho", "t3-que-le-toca", "t3-a5-cerrar-el-periodo", "t3-cierre-completo",
   ]);

@@ -63,6 +63,7 @@ const MODULOS = {
   "contabilidadTema3Act7.js": await import("../../data/contabilidadTema3Act7.js"),
   "contabilidadTema3Act3.js": await import("../../data/contabilidadTema3Act3.js"),
   "contabilidadTema3GastoOPago.js": await import("../../data/contabilidadTema3GastoOPago.js"),
+  "contabilidadTema3ResultadoCaja.js": await import("../../data/contabilidadTema3ResultadoCaja.js"),
 };
 function await_(m) {
   assert.ok(MODULOS[m], `falta importar ${m} en la salvaguarda`);

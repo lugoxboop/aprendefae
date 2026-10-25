@@ -50,6 +50,7 @@ import { textoDeItem as textoDeItemA6 } from "../contabilidad/armaElAsiento.js";
 import { textoDeItem as textoDeItemA7 } from "../contabilidad/asientoCompuesto.js";
 import { hechoDeItem as hechoDeAct1T3 } from "../contabilidad/ingresoOCobro.js";
 import { hechoDeItem as hechoDeGastoOPago } from "../contabilidad/gastoOPago.js";
+import { fichaDeItem as fichaDeResultadoCaja } from "../contabilidad/resultadoCaja.js";
 import { hechoDeItem as hechoDeAct2T3, hechoDeItemRetirado as hechoRetiradoAct2T3 } from "../contabilidad/cuandoSeCausa.js";
 import { hechoDeItemAct4 as hechoDeAct4T3, hechoDeItemAct5 as hechoDeAct5T3 } from "../contabilidad/armaElAjuste.js";
 import { hechoDeParte as hechoDeParteT3 } from "../contabilidad/elCierreCompleto.js";
@@ -611,6 +612,8 @@ Object.assign(REGLAS, {
   "t3-ingreso-o-cobro": (id) => hechoDeAct1T3(id),
   /* «¿Gasto o pago?»: el hecho de las dos versiones (A y B), sin la marca «Escenario simulado.» que todos llevan. */
   "t3-gasto-o-pago": (id) => hechoDeGastoOPago(id),
+  /* «Del resultado a la caja»: la ficha con su empresa y su monto, de la versión A o la B. */
+  "t3-del-resultado-a-la-caja": (id) => fichaDeResultadoCaja(id),
   /* Act. 2: también los ítems retirados del banco (t3a2-pago-60-dias, #439), que ya jugaron estudiantes. */
   "t3-cuando-se-causa": (id) => hechoDeAct2T3(id) ?? hechoRetiradoAct2T3(id),
   "t3-ajuste-acumulado": (id) => hechoDeAct4T3(id),
