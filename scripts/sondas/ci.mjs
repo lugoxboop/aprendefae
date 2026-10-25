@@ -118,6 +118,7 @@ for (const t of temas) {
       const fila = { materia: t.materia, tema: t.tema, sonda: s.id, ancho, fallos, pantallas, antes: antes ?? null, veredicto, segundos: Math.round((Date.now() - inicio) / 1000) };
       filas.push(fila);
       console.log(`${veredicto.startsWith("ROJO") ? "✗" : "·"} ${t.tema} · ${s.id} · ${ancho}px → ${fallos ?? "NO MEDIDO"} en ${pantallas ?? "?"} pantallas (antes ${antes ?? "—"}) · ${veredicto} · ${fila.segundos}s`);
+      if (process.env.GITHUB_ACTIONS && veredicto.startsWith("ROJO")) console.log(`::error title=${s.id} ${ancho}px · ${t.tema}::${veredicto}`);
       if (veredicto.startsWith("ROJO") || process.env.SONDAS_DETALLE) console.log(texto.split("\n").slice(-40).map((l) => "    " + l).join("\n"));
     }
   }

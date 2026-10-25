@@ -117,6 +117,11 @@ jobs:
         run: |
           node scripts/sondas/ci.mjs --juntar sondas-resultado > linea-base-propuesta.json
           { echo '### Línea base que sale de esta corrida'; echo; echo 'Si un PR baja un número, se copia esto a `scripts/sondas/linea-base.json` en el mismo PR.'; echo; echo '```json'; cat linea-base-propuesta.json; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+      - name: Dejarla también como anotación
+        # Los artefactos y los registros se bajan de un almacén aparte; la
+        # anotación se lee por la API normal de GitHub, que es la que tienen
+        # los agentes (check-runs → annotations).
+        run: echo "::notice title=linea-base-propuesta::$(node -e 'process.stdout.write(JSON.stringify(JSON.parse(require("fs").readFileSync("linea-base-propuesta.json","utf8"))))')"
       - name: Guardarla
         uses: actions/upload-artifact@v4
         with:
