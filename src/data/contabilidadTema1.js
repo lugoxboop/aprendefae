@@ -367,7 +367,7 @@ export const ALT_T1_4 = `Tres barras: ${enLista(PARTES.map((p) => p.idea))}.`;
 
 export const T1_5 = {
   id: "t1-la-ecuacion-en-movimiento",
-  nombre: "La Ecuación en Movimiento",
+  nombre: "La ecuación en movimiento",
   subtema: "La ecuación contable, hecho por hecho",
   dificultad: "dificil",
   fpBase: 50,
@@ -397,7 +397,8 @@ export const DESDE_EL_CORTO = 5;
 export const ERROR_T1_5 = {
   A: "❌ Los dos lados no dan igual. Faltan {Z} de un lado. Vuelve al hecho: lo que entró tiene que venir de algún lado.",
   C: "❌ Esa parte no cambia con este hecho. Tiene que quedar igual que antes. Si la mueves, se pierde el rastro de lo de atrás.",
-  B: "❌ Los dos lados dan igual, pero los números no son los de este hecho. Que dé igual no basta. Revisa cuánto entró o salió.",
+  /* Futaba, 24-oct (tabla sin emoji de Shoko): «Fíjate» en vez de «Revisa». */
+  B: "❌ Los dos lados dan igual, pero los números no son los de este hecho. Que dé igual no basta. Fíjate cuánto entró o salió.",
 };
 
 /*
@@ -428,6 +429,85 @@ export const HISTORIAL_T1_5 = {
 export const ACIERTO_T1_5_FINAL = "✅ Y ahí está el mes completo. Lo que tiene la empresa y lo que debe más lo de los dueños dan lo mismo, hecho por hecho, desde cero.";
 
 export const ALT_T1_5 = `Tres casillas para escribir: ${enLista(PARTES.map((p) => p.idea))}.`;
+
+/*
+ * ═══════════ T1-5 CON LAS DOS TORRES (P2 de Mai, 23-oct) ═══════════
+ *
+ * Los textos nuevos de la P2 (orquestador/conocimiento/fichas/
+ * b-t1-5-torres-p2-mai.md, §7), con las correcciones de la auditoría de
+ * Shoko (revisiones/b-t1-bancos-y-torres-shoko.md). PARA SHOKO. Lo publicado de arriba no se
+ * toca: los 8 hechos, PARTES y ERROR_T1_5 se reusan tal cual (la vista les
+ * quita el emoji al pintarlos), y `T1_5.consigna` se queda como estaba
+ * aunque la vista ya no la muestre.
+ *
+ * La consigna nueva está pendiente de que Futaba la confirme (§7). El
+ * acierto por hecho también: hasta que llegue, los hechos 1 a 7 dicen solo
+ * «Correcto.» y el 8 lleva ACIERTO_T1_5_FINAL sin el emoji (§0).
+ */
+export const TORRES_T1_5 = {
+  /* Textos del 24-oct (P2 de Mai, con los de Shoko; ficha b-t1-5-torres-p2-mai.md §7). */
+  consigna: "Lee el hecho. Di cuál no se mueve y el total nuevo de las otras dos.",
+  /* El «no» va en negrilla, no en mayúsculas (Shoko): la vista resalta la palabra `negrillaQuieta`. */
+  preguntaQuieta: "¿Cuál de las tres no se mueve con este hecho?",
+  negrillaQuieta: "no",
+  preguntaDireccion: "¿Cuál es el total nuevo de las otras dos?",
+  /* El rótulo de cada grupo de cifras: «{parte} · total nuevo». */
+  totalNuevo: "[PARTE] · total nuevo",
+  /* Debajo de la cifra del total de antes, y solo después de «Anotar» y si fue la elegida (Shoko: antes de responder delataba la opción). */
+  sinCambio: "el total anterior, sin cambio",
+  /* Futaba, b-t1-lote-24oct-futaba.md §3. La pista es del 1.er error; con un solo intento por decisión, va en «¿Cómo se juega?». */
+  pistaTotal: "Parte del total que ya tenía esa parte. ¿Le sumas o le restas lo de este hecho?",
+  /* La devolución de la decisión 2 según lo que marcó (no da la cifra: la pastilla ya dice «Iba aquí: …»). */
+  /*
+   * «monto» y «sinCambio» son de la auditoría de Shoko al #496 (24-oct, la
+   * segunda), que reemplazan los de Futaba y nombran la parte: {PARTE}.
+   * «contrario» es el de Futaba con la misma entrada «En {PARTE}:», para que
+   * ninguna línea quede sin decir de qué parte habla (lo que pidió Shoko).
+   */
+  devolucionTotal: {
+    contrario: "En {PARTE}: ese total va en el sentido contrario. Fíjate si con este hecho esa parte crece o se achica.",
+    /* Shoko, #496: la cifra elegida es el total de otra parte después del hecho. */
+    otraParte: "En {PARTE}: ese es el total de otra parte, no el de esta. Mira cuánto tenía esta antes del hecho.",
+    monto: "En {PARTE}: pusiste lo que se movió, no con cuánto quedó. Súmalo o réstalo al total que había.",
+    sinCambio: "En {PARTE}: el total ya no es el de antes.",
+  },
+  /*
+   * La C de las torres (Shoko, #496): la de ERROR_T1_5 hablaba de mover la
+   * parte quieta, que en este diseño el estudiante no hace. {ELEGIDA} y
+   * {CORRECTA} son las ideas de las partes.
+   */
+  errorQuieta: "{ELEGIDA} sí se mueve con este hecho. La que se queda igual es {CORRECTA}.",
+  /* «Correcto: se queda igual» e «Iba aquí: se queda igual»: lo que se pega a la palabra de la pastilla. */
+  quedaIgual: "se queda igual",
+  anotar: "Anotar",
+  siguiente: "Siguiente",
+  verResultado: "Ver el resultado",
+  contador: "Hecho [n] de [N]",
+  /* Lo que se lee sin ver las torres (§7). [X], [Y], [Z]: los tres totales; [T], el de cada lado. */
+  alt: "Lo que tiene, [X]; lo que debe, [Y], más lo que es de los dueños, [Z]: dan [T].",
+};
+
+/*
+ * La tercera opción cuando el total anterior es $0 (Shoko, #496): con solo dos,
+ * se acertaba la mitad de las veces al azar. Hecho 1: lo de un solo socio.
+ * Hecho 2, lo que debe: el total de la otra torre.
+ */
+export const TERCERA_OPCION_T1_5 = {
+  "cal-1": { [ACTIVO]: 100000, [PATRIMONIO]: 100000 },
+  "cal-2": { [PASIVO]: 325000 },
+};
+
+/* El acierto de cada hecho (Futaba, 24-oct). El del hecho 8 cierra el mes; el cierre de la partida sigue con ACIERTO_T1_5_FINAL. */
+export const ACIERTO_T1_5 = {
+  "cal-1": "Entró plata de los socios. Lo que tiene y lo de los dueños quedan en $300.000, y la empresa todavía no debe nada.",
+  "cal-2": "Entró un computador y nació una deuda por lo mismo. Lo que tiene sube a $325.000 y lo que debe, a $25.000.",
+  "cal-3": "Entró una máquina con plata del banco. Lo que tiene llega a $375.000 y lo que debe, a $75.000.",
+  "cal-4": "Salió plata para pagar parte del computador. Lo que tiene baja a $365.000 y lo que debe, a $65.000.",
+  "cal-5": "Un socio nuevo trajo un local. Lo que tiene sube a $465.000 y lo de los dueños, a $400.000.",
+  "cal-6": "Le devolvieron plata a un socio. Lo que tiene baja a $415.000 y lo de los dueños, a $350.000.",
+  "cal-7": "Entró mercancía y nació una deuda con el proveedor. Lo que tiene sube a $475.000 y lo que debe, a $125.000.",
+  "cal-8": "Salió plata para pagar parte del préstamo. Lo que tiene baja a $465.000 y lo que debe, a $115.000.",
+};
 
 /* ═══════════════════ T1-6 · ¿EN CUÁL ESTADO APARECE? ═══════════════════ */
 
