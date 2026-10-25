@@ -1,8 +1,8 @@
-2026-10-24 23:49 (hora Bogotá)
+2026-10-25 00:10 (hora Bogotá)
 - Panel docente v1: terminado (fusionado #498: lo relevante arriba —Mi clase, Necesitan atención, La actividad que más costó—; las cifras son las mismas que las del panel viejo; sin escrituras nuevas ni cambios de esquema; PASA de Shibukawa)
 - Logitos de Contabilidad T1-T4: terminado (fusionado #519, PASA de Shibukawa y prueba a 32 px de Hanayama con su ajuste al cajón; el acento de T5 y T6 lo tiene la Célula B en #523)
 - T4 Aprender a tipo presentación: terminado (fusionado #488, 6885ab8, y la misma deuda de foco en A3ElArqueo.jsx en #561, 5bd4db1; los dos con PASA de Shibukawa y CI verde)
-- Decoración animada de las tablas de posiciones (las tres materias): en curso (#565 con PASA CON CORRECCIONES: pasa en Contabilidad, Macro y el perfil; en Estratégico se apaga hasta la placa de #545, porque sobre el tablero 3D da 2,55:1; Baki aplica esa línea y fusiono; aviso a Ukyo y Erwin en #545)
+- Decoración animada de las tablas de posiciones: terminado en Contabilidad, Macro y el perfil (fusionado #565, 202ab88, PASA de Shibukawa y CI verde). En Estratégico queda apagada hasta la placa de Ukyo (#545); cuando #545 se fusione, Baki quita la línea de decoracionTablas.js y Shibukawa audita Estratégico dentro de la placa
 - Hallazgo de la célula: RankingFP a 320 px no muestra ningún nombre (el botón de ánimo deja el apodo en 0 px), en las tres materias: reportado a Erwin como urgente en #556; no lo tocamos, es compartido
 - Textos que faltaban en el panel y arreglos de la vista del estudiante: terminado (fusionado #525, PASA de Shibukawa y 0 toques bajo 44 px)
 - Ajuste del cajón de T4 a 32 px (patas sin tronco central): terminado (fusionado #528, PASA de Hanayama y Shibukawa)
