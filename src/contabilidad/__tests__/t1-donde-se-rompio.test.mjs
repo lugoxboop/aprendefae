@@ -412,6 +412,16 @@ test("★★★ si la predicción falló, el cierre no abre con «Correcto.»; l
       const cuenta = caja.querySelector("[data-cuenta-apagados]");
       assert.ok(caja.querySelector("[data-prediccion]").contains(cuenta), "la cuenta no está con la predicción");
       assert.ok(opciones.compareDocumentPosition(cuenta) & 4, "la cuenta queda encima de las opciones");
+      /* ✓ en la que era y ✕ en la elegida si no era; la banda con el borde de error (Shoko, #535 b). */
+      const op = (n) => caja.querySelector(`[data-prediccion-opcion="${n}"]`);
+      assert.equal(op(bien).dataset.veredictoPrediccion, "acierto");
+      assert.ok(op(bien).querySelector('[data-icono="visto"]'));
+      if (!acierta) {
+        const mala = PREDICCION_T1_8.opciones.find((x) => x !== bien);
+        assert.equal(op(mala).dataset.veredictoPrediccion, "fantasma");
+        assert.ok(op(mala).querySelector('[data-icono="tache"]'));
+        assert.ok(cuenta.querySelector('[data-icono="tache"]'), "la banda del error es neutra");
+      }
     } finally { desmontar(); }
   }
 });

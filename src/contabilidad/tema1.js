@@ -5,7 +5,7 @@ import {
   TRANSACCIONES_CAP2, T1_4, PARTES, SUBE, BAJA, IGUAL,
   ERROR_A_T1_4, ERROR_B_T1_4, ACIERTO_T1_4,
   T1_5, ERROR_T1_5, DESDE_EL_CORTO, TERCERA_OPCION_T1_5,
-  T1_6, CONCEPTOS, SEGUNDO, ERROR_T1_6, ACIERTO_T1_6, PESO_INFORME, PESO_SECCION,
+  T1_6, CONCEPTOS, SEGUNDO, ERROR_T1_6, DEVOLUCION_POR_FAMILIA_T1_6, ACIERTO_T1_6, PESO_INFORME, PESO_SECCION,
   ERROR_T1_7, BANCO_T1_7,
   T1_8, PUNTOS_T1_8, SITUACIONES_T1_8, ACIERTO_T1_8, ERROR_T1_8, PREDICCION_T1_8,
   CONTADOR_T1_8, CONTADOR_UNO_T1_8,
@@ -497,7 +497,9 @@ export function evaluarT1_6(concepto, marcado) {
   }
   /* El informe está bien y la sección no: C en el primero; C2 (ingresos ↔ gastos) en el segundo. */
   const patron = concepto.informe === SEGUNDO ? "C2" : "C";
-  return { ok, texto: ERROR_T1_6[patron], patron, informeOk, seccionOk: false };
+  /* La de su familia, si ya la escribió Futaba (lote E); si no, la de siempre. */
+  const deFamilia = DEVOLUCION_POR_FAMILIA_T1_6[concepto.familia]?.[patron] ?? null;
+  return { ok, texto: deFamilia ?? ERROR_T1_6[patron], patron, informeOk, seccionOk: false };
 }
 
 /* El informe pesa 60 y la sección 40, en las dieciséis fichas (ver PESO_INFORME). */

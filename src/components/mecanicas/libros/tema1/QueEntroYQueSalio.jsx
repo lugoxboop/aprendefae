@@ -133,7 +133,7 @@ function SegundaT1_2({ opciones, correcta, porque, onPintar, onResuelta }) {
       clearTimeout(reloj.current);
       reloj.current = setTimeout(() => onPintar(SEGUNDA_T1_2.escena[correcta]), RETRASO_REVELA_MS);
     }
-    onResuelta(id === correcta);
+    onResuelta(id === correcta, id);
   };
 
   return (
@@ -192,6 +192,7 @@ export default function QueEntroYQueSalio({
   /* La segunda decisión (D4): su escena para los dos recuadros. No puntúa. */
   const [escenaSegunda, setEscenaSegunda] = useState(null);
   const [segundaHecha, setSegundaHecha] = useState(false);
+  const [segundaElegida, setSegundaElegida] = useState(null);
   const zonaBoton = useRef(null);
 
   const e = t.items[t.i];
@@ -217,13 +218,13 @@ export default function QueEntroYQueSalio({
 
   const avanzar = () => {
     setR(null); setMarcada(null);
-    setEscenaSegunda(null); setSegundaHecha(false);
+    setEscenaSegunda(null); setSegundaHecha(false); setSegundaElegida(null);
     if (t.i + 1 < cuantas) t.setI(t.i + 1);
     else t.setTerminado(true);
   };
   const reiniciar = () => {
     t.reiniciar(); setR(null); setRespuestas([]); setMarcada(null);
-    setEscenaSegunda(null); setSegundaHecha(false);
+    setEscenaSegunda(null); setSegundaHecha(false); setSegundaElegida(null);
   };
 
   if (t.terminado) {
@@ -249,6 +250,8 @@ export default function QueEntroYQueSalio({
   const marcaEntra = esc ? esc.entra === "marcado" : Boolean(r?.ok) || escena === "los-dos" || escena === "entra-vacio";
   const marcaSale = esc ? esc.sale === "marcado" : Boolean(r?.ok) || escena === "los-dos" || escena === "objeto";
   const trazoCortado = esc?.trazo === "cortado";
+  const textoSegunda = segundaElegida ? opcionesSegundaT1_2(e).find((o) => o.id === segundaElegida)?.msg ?? "" : "";
+  const mandaAMirarEntra = /ENTRA/.test(`${r?.texto ?? ""} ${textoSegunda}`);
   const trazoTenue = esc?.trazo === "vacio";
 
   const estadoDe = (id) => {
@@ -296,7 +299,12 @@ export default function QueEntroYQueSalio({
               marcado={marcaEntra}
               late={escena === "entra-vacio"}
               vacio={sinObjeto(e)}
-              atenuado={esc?.entra === "atenuado"}
+              /*
+                ENTRA no se atenúa mientras en pantalla haya una devolución que
+                manda a mirarlo («Mira el cuadro de ENTRA»; Shoko, #535 b): el
+                único elemento al que apunta el auto-rescate no puede quedar apagado.
+              */
+              atenuado={esc?.entra === "atenuado" && !mandaAMirarEntra}
             />
 
             {/*
@@ -398,7 +406,7 @@ export default function QueEntroYQueSalio({
             correcta={correctaSegundaT1_2(e)}
             porque={porqueSegundaT1_2(e)}
             onPintar={setEscenaSegunda}
-            onResuelta={() => setSegundaHecha(true)}
+            onResuelta={(_, id) => { setSegundaHecha(true); setSegundaElegida(id); }}
           />
         )}
 

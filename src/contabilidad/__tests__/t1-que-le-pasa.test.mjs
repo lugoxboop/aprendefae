@@ -345,7 +345,7 @@ test("★★ las tres partes salen con su idea y con su término del libro", () 
   } finally { desmontar(); }
 });
 
-test("★★ no se puede anotar hasta marcar las tres y elegir el caso (un solo «Anotar», Shoko)", () => {
+test("★★ no se puede anotar hasta marcar las tres; el caso se elige después (Shoko, #535 b)", () => {
   const { caja, desmontar } = montar();
   try {
     const boton = () => [...caja.querySelectorAll("button")].find((b) => /^Marca las tres|^Anotar$/.test(b.textContent));
@@ -353,9 +353,7 @@ test("★★ no se puede anotar hasta marcar las tres y elegir el caso (un solo 
     marcar(caja, PARTES[0].id, SUBE);
     marcar(caja, PARTES[1].id, SUBE);
     marcar(caja, PARTES[2].id, IGUAL);
-    assert.equal(boton().disabled, true, "se puede anotar sin elegir el caso");
-    tocar(caja.querySelector("[data-caso]"));
-    assert.equal(boton().disabled, false, "con las tres y el caso sigue sin poder anotarse");
+    assert.equal(boton().disabled, false, "con las tres sigue sin poder anotarse");
     assert.equal(boton().textContent, "Anotar");
   } finally { desmontar(); }
 });
@@ -416,7 +414,7 @@ test("★★★ un intento: al fallar, las barras van a lo correcto y la mal mov
   } finally { desmontar(); }
 });
 
-test("★★★ la decisión 2: los cuatro casos de la p. 35, con las barras quietas hasta «Anotar», y el caso pegado a las barras", () => {
+test("★★★ la decisión 2: los cuatro casos de la p. 35, después de «Anotar», y el renglón sin nombrar el caso", () => {
   for (const acertar of [true, false]) {
     const { caja, desmontar } = montar();
     try {
@@ -427,26 +425,24 @@ test("★★★ la decisión 2: los cuatro casos de la p. 35, con las barras qui
         "Aumento en activo y en pasivo", "Aumento en activo y en patrimonio",
         "Disminución en activo y en pasivo", "Disminución en activo y en patrimonio",
       ]);
-      /* Se elige antes de anotar, con las barras quietas: si se movieran antes, el caso se leería en la pantalla. */
-      assert.ok(casos().every((b) => !b.disabled), "la decisión 2 no se puede tomar antes de anotar");
+      /* Reservada, pero sin verse ni poder tocarse antes de anotar (Shoko, #535 b): reducía 27 combinaciones a 4. */
+      const sitio = caja.querySelector("[data-segunda-decision]");
+      assert.equal(sitio.style.visibility, "hidden", "los casos se ven antes de anotar");
+      assert.ok(casos().every((b) => b.disabled), "la decisión 2 se puede tomar antes de anotar");
       for (const p of PARTES) marcar(caja, p.id, e[p.id]);
+      anotar(caja);
+      assert.equal(sitio.style.visibility, "visible");
+      assert.equal(caja.querySelectorAll("[data-parte][data-revelado]").length, 3, "las barras no se movieron al anotar");
+      /* El renglón dice el resultado sin nombrar el caso: si no, la 2 es la misma pregunta. */
+      const renglon = caja.querySelector("[data-renglon-caso]");
+      assert.equal(renglon.textContent, "Correcto: así quedan las tres partes");
+      for (const b of casos()) assert.ok(!renglon.textContent.includes(b.querySelector("span").textContent));
+      assert.ok(![...caja.querySelectorAll("button")].some((b) => /Siguiente hecho|Ver el resultado/.test(b.textContent)), "se avanza sin elegir el caso");
       const bueno = casoDe(t);
       const elegido = acertar ? bueno : casos().map((b) => b.dataset.caso).find((x) => x !== bueno);
       tocar(caja.querySelector(`[data-caso="${elegido}"]`));
-      assert.equal(caja.querySelectorAll("[data-parte][data-revelado]").length, 0, "las barras se movieron antes de anotar");
-      assert.equal(caja.querySelector("[data-renglon-caso]").textContent, "", "el caso se veredicta antes de anotar");
-      anotar(caja);
-      assert.equal(caja.querySelectorAll("[data-parte][data-revelado]").length, 3, "las barras no se movieron al anotar");
-      const renglon = caja.querySelector("[data-renglon-caso]");
-      assert.equal(renglon.querySelector("[data-caso-elegido]").dataset.casoElegido, elegido);
       assert.equal(caja.querySelector(`[data-caso="${bueno}"]`).dataset.estado, "acierto");
-      const nombre = caja.querySelector(`[data-caso="${bueno}"] span`).textContent;
-      if (acertar) {
-        assert.equal(renglon.textContent, `Correcto: ${nombre}`);
-      } else {
-        assert.equal(renglon.textContent, `Iba aquí: ${nombre}`);
-        assert.equal(caja.querySelector(`[data-caso="${elegido}"]`).dataset.estado, "fantasma");
-      }
+      if (!acertar) assert.equal(caja.querySelector(`[data-caso="${elegido}"]`).dataset.estado, "fantasma");
       assert.ok(casos().every((b) => b.disabled), "la decisión 2 tiene reintento");
       assert.ok([...caja.querySelectorAll("button")].some((b) => /Siguiente hecho|Ver el resultado/.test(b.textContent)));
     } finally { desmontar(); }

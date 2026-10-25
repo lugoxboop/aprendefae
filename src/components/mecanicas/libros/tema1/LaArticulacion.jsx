@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FAE } from "../../../../theme.js";
 import { NEUTRO, NAVY_DEL_CHIP } from "../../../../data/contabilidadIntro.js";
 import {
@@ -14,7 +14,7 @@ import { useMovimientoReducido, SOLO_LECTOR } from "../verbos.jsx";
 import { IdeaConTermino } from "./encabezado.jsx";
 import EncabezadoCompacto from "../b5/EncabezadoCompacto.jsx";
 import {
-  Pastilla, Mensaje, RegionViva, IconoCheck, IconoX, REVELADA, CSS_B5H, CLASE_B5H,
+  Mensaje, RegionViva, IconoCheck, IconoX, CSS_B5H, CLASE_B5H,
 } from "../b5/Devolucion.jsx";
 import {
   SORA, INTER, SECUNDARIO, REPOSO, ACIERTO, FANTASMA, estiloC2, contadorDe, Avance, CSS_REGISTRO, CURVA,
@@ -143,7 +143,7 @@ function Hilo({ desde, hasta, b, fantasma = false, fijo, sello }) {
       key={sello}
       data-hilo={fantasma ? undefined : ""}
       data-hilo-fantasma={fantasma ? "" : undefined}
-      className={fijo ? "fae-t17-hilo-fijo" : "fae-t17-hilo"}
+      className="fae-t17-hilo-fijo"
       style={{
         margin: 0, padding: "6px 10px", borderRadius: "10px", boxSizing: "border-box",
         fontFamily: SORA, fontSize: "12px", fontWeight: 700, lineHeight: 1.35, textAlign: "center",
@@ -199,12 +199,6 @@ export default function LaArticulacion({
   const [inverso, setInverso] = useState(null);
   const reloj = useRef(null);
   const zonaBoton = useRef(null);
-  const zonaHilo = useRef(null);
-  /* El alto de la zona con los hilos de esta flecha, para guardarlo cuando se vayan. */
-  const [altoZona, setAltoZona] = useState(0);
-  useLayoutEffect(() => {
-    if (hilo && zonaHilo.current) setAltoZona(zonaHilo.current.getBoundingClientRect().height);
-  }, [hilo?.sello]);
 
   const cuantas = t.items.length;
   const pct = puntuar(respuestas, cuantas);
@@ -231,20 +225,22 @@ export default function LaArticulacion({
     setLlegadas((xs) => (xs.includes(buena.hasta) ? xs : [...xs, buena.hasta]));
     setHilo({ buena, tocado: { desde, hasta: id }, sello: Date.now() });
     clearTimeout(reloj.current);
-    /* Los dos hilos se van a los 1.200 ms. En la demo, no. */
-    if (!modoDemo) reloj.current = setTimeout(() => setHilo(null), MS_HILO);
+    /*
+     * Los hilos se quedan hasta la flecha siguiente (Shoko, #535 b): la flecha
+     * correcta se ve completa, con sus dos extremos, y el error tachado al lado.
+     */
     setR({ ...nuevo, buena, tocado: { desde, hasta: id } });
     setDesde(null);
   };
 
   const avanzar = () => {
     clearTimeout(reloj.current);
-    setR(null); setDesde(null); setHilo(null); setAltoZona(0);
+    setR(null); setDesde(null); setHilo(null);
     if (t.i + 1 < cuantas) t.setI(t.i + 1);
     else t.setTerminado(true);
   };
   const reiniciar = () => {
-    t.reiniciar(); setR(null); setRespuestas([]); setAltoZona(0);
+    t.reiniciar(); setR(null); setRespuestas([]);
     setDesde(null); setHilo(null); setLlegadas([]); setDibujadas([]); setInverso(null);
   };
 
@@ -350,11 +346,15 @@ export default function LaArticulacion({
     if (!r?.ok && (id === hilo.tocado.desde || id === hilo.tocado.hasta)) return FANTASMA;
     return null;
   };
-  /* El icono de C2 se queda hasta la flecha siguiente, aunque los hilos ya se hayan ido. */
+  /*
+   * El icono de C2 en los dos extremos (Shoko, #535 b): ✓ en el origen y el
+   * destino de la flecha correcta; ✕ en lo que tocó y no era, como en las
+   * otras cinco piezas.
+   */
   const marcaDe = (id) => {
     if (!r) return null;
-    if (id === r.buena.hasta) return "ok";
-    if (!r.ok && id === r.tocado.hasta) return "mal";
+    if (id === r.buena.desde || id === r.buena.hasta) return "ok";
+    if (!r.ok && (id === r.tocado.desde || id === r.tocado.hasta)) return "mal";
     return null;
   };
 
@@ -387,32 +387,34 @@ export default function LaArticulacion({
                       {inf.cuando}
                     </p>
                   ) : <span style={{ display: "block", height: "5px" }} />}
-                  <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-                    {lineasDe(inf.id, b).map((l) => (
-                      <Linea
-                        key={l.id}
-                        linea={l}
-                        estado={estadoDe(l.id)}
-                        marca={marcaDe(l.id)}
-                        llegada={llegadas.includes(l.id)}
-                        onTocar={tocar}
-                        activo={!r}
-                      />
-                    ))}
-                  </div>
+                  {(() => {
+                    const lineas = lineasDe(inf.id, b);
+                    const llave = lineas.find((l) => l.llave);
+                    const resto = lineas.filter((l) => !l.llave);
+                    const linea = (l) => (
+                      <Linea key={l.id} linea={l} estado={estadoDe(l.id)} marca={marcaDe(l.id)}
+                        llegada={llegadas.includes(l.id)} onTocar={tocar} activo={!r} />
+                    );
+                    return (
+                      <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                        {/* La llave de activos y pasivos (Gráfico 2.6): arriba, y abarca las demás líneas del bloque. */}
+                        {llave && linea(llave)}
+                        <div data-llave-abarca={llave ? "si" : undefined} style={llave
+                          ? { display: "flex", flexDirection: "column", gap: "4px", marginLeft: "8px", paddingLeft: "8px", borderLeft: `2px solid ${NEUTRO}` }
+                          : { display: "flex", flexDirection: "column", gap: "4px" }}>
+                          {resto.map(linea)}
+                        </div>
+                      </div>
+                    );
+                  })()}
                 </div>
               ))}
             </div>
 
-            {/* Los hilos y el veredicto: su alto es el de esta flecha y se guarda cuando los hilos se van. */}
-            <div ref={zonaHilo} data-zona-hilo style={{ minHeight: `${altoZona}px`, marginTop: "9px", display: "flex", flexDirection: "column", gap: "6px" }}>
+            {/* Los hilos: la flecha correcta completa y, si erró, la suya tachada. Se quedan; no hay banda vacía. */}
+            <div data-zona-hilo style={{ marginTop: "9px", display: "flex", flexDirection: "column", gap: "6px" }}>
               {hilo && <Hilo desde={hilo.buena.desde} hasta={hilo.buena.hasta} b={b} fijo={modoDemo} sello={hilo.sello} />}
               {hilo && !r?.ok && <Hilo desde={hilo.tocado.desde} hasta={hilo.tocado.hasta} b={b} fantasma fijo={modoDemo} sello={`${hilo.sello}f`} />}
-              {r && !r.ok && (
-                <span style={{ alignSelf: "flex-start" }}>
-                  <Pastilla marca={REVELADA} valor={lineaPorId(r.buena.hasta, b).nombre} envuelve />
-                </span>
-              )}
             </div>
           </div>
         </div>
