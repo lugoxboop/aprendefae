@@ -169,7 +169,7 @@ export default function IntroContabilidadView({ modo = null, nodoInicial = null,
           <div className="fae-insignia-actividad"><ActivityBadge tipo={esAprender ? APRENDER : HACER} size="sm" /></div>
 
           {esAprender && secuenciaActiva() ? (
-            /* Lote 6: el Aprender en secuencia, detrás de su bandera hasta el PASA de Shoko. */
+            /* Lote 6: el Aprender en secuencia, por defecto desde el PASA de Shoko (#559). `?aprender=capas` devuelve las cuatro capas. */
             <SecuenciaAprender temaId={TEMA} piezas={PIEZAS_T1_SECUENCIA} final="tema" onFinal={onBack} />
           ) : esAprender ? (
             /*

@@ -1,4 +1,4 @@
-2026-10-25 01:50 (hora Bogotá)
+2026-10-25 02:41 (hora Bogotá)
 - T1 · #496 (t1-5, las dos torres): terminado, fusionado (233c635) con el PASA de Shoko y el CI en verde
 - T1 · #520 (logito LibretaYLapiz): terminado, fusionado (047f3b7) con el PASA de Shoko y el CI en verde
 - T1 · #531 (t1-5, lo que se ve después de «Anotar»): terminado, fusionado (ad898f9) con el PASA de Shoko y el CI en verde
@@ -13,7 +13,8 @@
 - T1 · los textos pendientes del #535 (Futaba): terminado, en fichas/b-t1-lote-24oct-d-futaba.md
 - T1 · «Ocho leen lo mismo»: terminado, en 2×2 (fichas/b-t1-titulares-medidos-mai.md §7), con PASA de Shoko
 - T1 · los 5 Aprender en secuencia (#559): terminado, fusionado (657f70d) con el PASA de Shoko (Medio, el tope lo pone la prueba con un estudiante ajeno), detrás de la bandera ?aprender=secuencia
-- T1 · encender la secuencia por defecto (Kaede): en curso; antes de abrir el PR verifica que no se pierda ni se duplique el avance guardado de cu0-a1 a cu0-a4; si algo puede dañar datos de estudiantes, se escala
+- T1 · la secuencia encendida por defecto para los estudiantes (#584): terminado, fusionado (e5cac91) con el PASA de Shoko y el CI en verde, ya publicado; ?aprender=capas devuelve las cuatro capas; no toca datos de estudiantes (verificado con prueba)
+- T1 · subir de Medio a Avanzado: BLOQUEADO-MATEO; hace falta que un estudiante ajeno a la clase haga las cinco piezas de punta a punta (D2, D3 y D9)
 - T1 · los tres arreglos del componente compartido (pulsos, barra superpuesta, ancho de «Siguiente pieza») (#558): bloqueado; es de Erwin, y Kaede le preparó el PR
 - Regla nueva de Miku: el volumen y la decoración de Ukyo (#545) van en cada pieza que toque Mai. Ojo: la skill celula-diseno de main todavía no trae #545, así que le pasé a Mai el texto del issue
 - Lo compartido que falla en los 7 Hacer: bloqueado; es de Erwin (#487)

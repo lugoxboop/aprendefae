@@ -1,9 +1,10 @@
-2026-10-25 01:33 (hora Bogotá)
-- Listos para que Miku fusione (PASA de Levi + CI verde): #564 y después #575 (va encima), #573, #580, #529
-- #581 trinquete «el teal no es color de texto» en toda la plataforma: CI verde; en curso — falta el PASA de Levi
-- #573: después de fusionar, captura del índice de Estratégico a 320 y contorno contra el ajedrez (de producción)
-- #580: después de fusionar, la pantalla de Estratégico (Expediente Rescate enseña el Cierre)
-- #542: lo de cada célula, en #579 (porcentajes B, C y E; panel docente y nombres cortados D; B1 medido)
+2026-10-25 02:47 (hora Bogotá)
+- #556 ranking a 320 sin nombres: terminado — #563 fusionado y en producción
+- Listos para que Miku fusione (PASA de Levi + CI verde): #564 y después #575 (va encima), #573, #580, #529, #581, #582
+- #582 sondas en CI (contraste y ficha-tapa, 11 temas, 320 y 375, trinquete con línea base de 66 medidas): estable en dos corridas; decisión de Miku: hacerla obligatoria en GitHub
+- Para que Miku reparta: 100 fallos de contraste en Macroeconomía (Demanda Agregada 44, Política Económica 42) y los 87 textos en teal (#581)
+- #573 y #580: después de fusionar, capturas de Estratégico en producción
+- #542: lo de cada célula, en #579
 - #552 entrada a la página y #554 pantalla de contraste: bloqueado: esperan que Miku los fusione
 - Pools del Repaso Diario: en curso — falta B (#477)
 - Capa 1 de CuatroCapas (guardas B1 y B2): bloqueado: esperan los recortes de Near
