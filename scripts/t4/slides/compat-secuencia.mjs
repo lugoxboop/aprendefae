@@ -4,11 +4,13 @@
  *
  *   node scripts/t4/slides/compat-secuencia.mjs --url=http://localhost:5303/scripts/t4/harness-t4/ [--caso=1]
  *
- * Recorre las 36 pantallas de A0-A5 a 320×568, 320×667 y 375×667. En cada
- * pantalla mide «antes» de responder y, en cada Haz, dos caminos desde el
- * mismo punto (se restaura lo guardado en la pestaña entre uno y otro):
- *   acierto   toca las correctas (las que la figura marca con Check tras resolver)
- *   c2        toca las incorrectas hasta resolver cada tarjeta por dos errores
+ * Recorre las 36 pantallas de A0-A5 a 320×568, 320×667 y 375×667. Mide al
+ * llegar («antes») y después de CADA toque en un Haz. Cada tarjeta se toca
+ * así: un control libre (el primero, o el último con --orden=inv); si da
+ * error, se vuelve a tocar el mismo, y ese segundo error la resuelve (C2).
+ * Las dos pasadas, directa e inversa, juntan aciertos, errores y C2 en todas
+ * las pantallas. Cada estado se clasifica por lo que se ve: error, c2 (error
+ * con «Siguiente» ya libre) o acierto.
  * En cada estado:
  *   click     si page.click llega a «Siguiente» (prueba de Playwright con
  *             trial: visible, estable y que el clic le llega a él), o expira
@@ -24,6 +26,7 @@ let pw; try { pw = require("playwright"); } catch { pw = require("/opt/node-tool
 const arg = (k, d) => process.argv.find((a) => a.startsWith(`--${k}=`))?.split("=").slice(1).join("=") ?? d;
 const URL_ = arg("url", "http://localhost:5291/scripts/t4/harness-t4/");
 const CASO = arg("caso", "1");
+const INV = arg("orden", "directo") === "inv";
 const TAMANOS = arg("tamanos", "320x568,320x667,375x667").split(",").map((s) => s.split("x").map(Number));
 
 const medir = (pg) => pg.evaluate(() => {
@@ -36,14 +39,18 @@ const medir = (pg) => pg.evaluate(() => {
     return (propio === "Correcto" || propio === "No va aquí" || propio === "Correcto." ) && visible(el) && r(el).height > 0;
   }).length;
   const fig = r(pt.querySelector(".fae-sec-figura"));
-  const razon = r(raiz.querySelector("[data-razon]"));
+  /* La razón del contenedor, no las que una figura lleve dentro (A2 p1 tiene la suya). */
+  const razon = r([...raiz.querySelectorAll("[data-razon]")].find((el) => !el.closest(".fae-sec-figura")));
   const nav = r(raiz.querySelector("[data-navegacion]"));
   const banda = r(pt.querySelector("[data-banda]"));
   const modelo = pt.querySelector("[data-modelo]");
   let fondoModelo = 0;
   if (modelo) for (const el of modelo.querySelectorAll("*")) { const b = el.getBoundingClientRect(); if (b.height > 0 && getComputedStyle(el).visibility !== "hidden") fondoModelo = Math.max(fondoModelo, b.bottom); }
   const pisa = (a, b) => (a && b ? Math.max(0, Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top)) : 0);
+  const vistas = [...raiz.querySelectorAll("span, b, p")].filter((el) => visible(el) && r(el).height > 0)
+    .map((el) => [...el.childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent).join("").trim());
   return {
+    veredicto: vistas.includes("No va aquí") ? "error" : vistas.includes("Correcto") || vistas.includes("Correcto.") ? "acierto" : null,
     pieza: raiz.dataset.pieza.slice(3, 5), n: Number(pt.dataset.pantalla), tipo: pt.dataset.tipo,
     espera: raiz.querySelector("button[data-siguiente]").getAttribute("data-siguiente"),
     palabras,
@@ -63,32 +70,16 @@ async function estado(pg, etiqueta) {
   return { ...m, estado: etiqueta, click: await llega(pg) };
 }
 
-/* Toca, entre los controles libres, el primero que cumple `quiero`; si la tarjeta siguiente llega tarde, espera una vez. */
-async function tocarHasta(pg, quiero) {
-  for (let k = 0, esperado = false; k < 30; k++) {
-    if ((await medir(pg)).espera !== "espera") return true;
-    const ok = await pg.evaluate((q) => {
-      const pt = document.querySelector("[data-secuencia] [data-pantalla]");
-      const cs = [...pt.querySelectorAll(".t4s-ctl")].map((c, i) => ({ c, i })).filter(({ c }) => c.getAttribute("aria-disabled") !== "true");
-      const elegido = cs.find(({ c, i }) => (q.correctas ? q.lista.includes(i) && !c.dataset.ver : !q.lista.includes(i) && c.dataset.ver !== "bien"));
-      elegido?.c.click();
-      return Boolean(elegido);
-    }, quiero);
-    if (!ok) { if (esperado) return false; esperado = true; await pg.waitForTimeout(1700); continue; }
-    esperado = false;
-    await pg.waitForTimeout(160);
-  }
-  return (await medir(pg)).espera !== "espera";
-}
-
-const clave = (pg) => pg.evaluate(() => `fae-secuencia:${document.querySelector("[data-secuencia]").dataset.secuencia}`);
-const guardado = async (pg) => pg.evaluate((k) => sessionStorage.getItem(k), await clave(pg));
-async function restaurar(pg, g) {
-  await pg.evaluate(([k, v]) => sessionStorage.setItem(k, v), [await clave(pg), g]);
-  await pg.reload();
-  await pg.waitForSelector("[data-secuencia] [data-pantalla]");
-  await pg.waitForTimeout(900);
-}
+/* Un toque: repite el control que acaba de fallar (segundo error, C2); si no, el primero libre (o el último con --orden=inv). */
+const tocar = (pg) => pg.evaluate((inv) => {
+  const pt = document.querySelector("[data-secuencia] [data-pantalla]");
+  const libres = [...pt.querySelectorAll(".t4s-ctl")].filter((c) => c.getAttribute("aria-disabled") !== "true");
+  const repetir = libres.find((c) => c.dataset.ver === "mal");
+  const nuevos = libres.filter((c) => !c.dataset.ver);
+  const c = repetir ?? (inv ? nuevos[nuevos.length - 1] : nuevos[0]);
+  c?.click();
+  return Boolean(c);
+}, INV);
 
 const navegador = await pw.chromium.launch();
 const salida = {};
@@ -102,21 +93,13 @@ for (const [w, h] of TAMANOS) {
   const filas = [];
   for (let vuelta = 0; vuelta < 60; vuelta++) {
     filas.push(await estado(pg, "antes"));
-    const m0 = await medir(pg);
-    if (m0.espera === "espera") {
-      const g0 = await guardado(pg);
-      /* Aprender cuáles son las correctas: resolver de cualquier modo y leer los Check. */
-      await tocarHasta(pg, { correctas: false, lista: [] });
-      await pg.waitForTimeout(400);
-      const correctas = await pg.evaluate(() => [...document.querySelectorAll("[data-secuencia] [data-pantalla] .t4s-ctl")].map((c, i) => (c.dataset.ver === "bien" ? i : -1)).filter((i) => i >= 0));
-      await restaurar(pg, g0);
-      await tocarHasta(pg, { correctas: true, lista: correctas });
-      await pg.waitForTimeout(500);
-      filas.push(await estado(pg, "acierto"));
-      await restaurar(pg, g0);
-      await tocarHasta(pg, { correctas: false, lista: correctas });
-      await pg.waitForTimeout(500);
-      filas.push(await estado(pg, "c2"));
+    for (let k = 0, esperado = false; k < 40 && (await medir(pg)).espera === "espera"; k++) {
+      if (!(await tocar(pg))) { if (esperado) break; esperado = true; await pg.waitForTimeout(1700); continue; }
+      esperado = false;
+      await pg.waitForTimeout(350);
+      const m = await medir(pg);
+      const etiqueta = m.veredicto === "error" ? (m.espera === "espera" ? "error" : "c2") : m.veredicto ?? "toque";
+      filas.push({ ...m, estado: etiqueta, click: m.espera === "espera" ? null : await llega(pg) });
     }
     const fin = await medir(pg);
     if (fin.espera === "final" || fin.espera === "espera") break;
