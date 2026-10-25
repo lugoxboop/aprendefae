@@ -13,19 +13,23 @@ tema (kit.md, el reparto de Miku).
 
 ---
 
-## 0. Alcance, y es lo primero porque es lo que se rompe
+## 0. Alcance: las tres materias, un solo cambio
 
-**Solo Macroeconomía y Contabilidad. Pensamiento Estratégico no se toca.**
+**Macroeconomía, Contabilidad y Pensamiento Estratégico.** Mateo había dejado
+Estratégico fuera para quitarnos trabajo; al ver que `CaminoHacer` y varios
+controles son compartidos, su respuesta por Miku (24-oct) fue hacerlo todo de
+una vez. Así que no hay bandera opt-in por materia, no hay mapa de materias
+que entran, y **ser compartido ya no es razón para frenar ni para duplicar
+código**: un componente compartido se cambia una vez y vale para las tres.
 
-El peligro no es desobedecer, es romperlo sin querer: `CaminoHacer.jsx` es
-compartido y lo usan `PensamientoSistemicoView.jsx` y `PorterView.jsx`. Los
-dos leaderboards (`RankingFP.jsx` y `ligas/LigaBoard.jsx`) viven dentro de
-`TopicIndexView.jsx`, que es **el mismo componente para las tres materias**.
+Lo que esto NO relaja, y es lo contrario de relajarse: ahora hay **más
+superficie viva que se puede romper**. Macroeconomía y Contabilidad tienen
+estudiantes reales y Estratégico está publicado. La regla de siempre manda:
+**se añade, no se reemplaza** lo que ya funciona.
 
-Por eso **nada de esto entra como cambio global de un componente
-compartido**. Todo entra como opt-in por materia, con el contrato mecánico de
-la §9. Si una entrega cambia el aspecto por defecto de un componente
-compartido, está mal aunque se vea bien.
+Y trae una exigencia nueva que es, además, la razón de ser de la §2.4: el
+relieve tiene que funcionar sobre **los tres fondos**, no sobre el navy plano.
+Medido (§10), no funcionaba. Lo que sigue ya está corregido.
 
 ---
 
@@ -76,9 +80,10 @@ blanco. **No es un color de acento nuevo** —la paleta de acentos (teal, ámbar
 coral) no se toca—; es un tono de superficie, y la prohibición del kit sobre
 «un quinto color» habla de acentos en los dibujos, no de la escalera de fondos.
 
-El canto de N2 se ve contra su cara (1,35) **y** contra la página (1,40). Ese
-doble requisito es lo que falla con el canto oscurecido, y es la prueba que
-hay que pasar para proponer cualquier superficie nueva.
+El canto de N2 se ve contra su cara (1,35) y contra el navy plano (1,40). Eso
+basta en Macro y Contabilidad. **No basta en Estratégico, y por qué no, con
+sus números, está en la §2.4**: ahí el telón no es plano y hace falta además
+contorno y placa. Léela antes de dar por buena cualquier superficie nueva.
 
 **Filo:** 1 px arriba, `#586A83` (1,65:1 contra la cara N2 [calculado]). Es la
 luz, y viene de arriba siempre. Nunca filo abajo ni canto arriba.
@@ -119,6 +124,61 @@ texto blanco en producción, es deuda y va a su propio arreglo, no a este.
 
 ---
 
+### 2.4 El telón no es constante, y eso rompía el canto
+
+Esto es lo que cambió al entrar Estratégico, y no se descubre leyendo código:
+**detrás del contenido no hay un color plano.** Hay una escena animada y un
+velo radial encima (`BackgroundVeil`), y lo que resulta cambia por materia y
+por zona de la pantalla. Medido con `scripts/vida/sonda-telon.mjs` a 320 px, en
+la banda donde viven el ranking y las tarjetas:
+
+| Pantalla | Velo | Luminancia del telón (mín · p50 · p95 · máx) |
+|---|---|---|
+| Índice Macro | 0,10 | 0,0101 · **0,0107** · 0,0188 · 0,0836 |
+| Índice Contabilidad | 0,10 | 0,0101 · **0,0107** · 0,0120 · 0,0255 |
+| Índice Estratégico | 0,34 | 0,0034 · **0,0389** · 0,1560 · 0,2168 |
+| Actividad Estratégico | 0,62 | 0,0052 · **0,0281** · 0,0841 · 0,1095 |
+
+Referencias: `#0E1B2E` = 0,0107 · N1 `#1D3557` = 0,0350 · N2 `#344968` = 0,0649.
+
+Tres lecturas, y la tercera es la que manda:
+
+1. En Macro y Contabilidad el telón **es** el navy plano (p50 0,0107 clavado).
+   La escalera de la §2.1 se sostiene tal cual: canto 1,40:1, cara 1,89:1.
+2. En el índice de Estratégico el telón sube a 0,0389 de mediana: **más claro
+   que el propio canto N1** (0,0350). La razón del canto contra el telón cae a
+   **1,05:1** y en el 5% más claro la relación **se invierte** (p95 0,1560, más
+   del doble que la cara N2). La madera clara del ajedrez se come el relieve.
+3. Dentro de una misma pantalla el telón recorre de 0,0034 a 0,2168: **64 veces**.
+   No hay un color de canto que funcione contra todo ese rango.
+
+**Conclusión, y retira un requisito que yo mismo había escrito:** el canto
+**no puede** tener que verse contra la página. Esa exigencia era correcta
+cuando la página era un navy plano y es imposible de cumplir ahora. Se
+sustituye por tres reglas que sí se sostienen sobre los tres fondos:
+
+- **El canto se juzga contra su propia cara**, que es constante: **≥ 1,25:1**.
+  N2 sobre N1 da 1,35:1 y pasa.
+- **Contorno de silueta:** 1 px `rgba(248,249,250,.18)` alrededor del bloque
+  entero (cara + canto). Cubre los dos regímenes: sobre telón oscuro el
+  contorno claro dibuja el borde; sobre telón claro el bloque ya es más oscuro
+  que su entorno y la silueta se lee sola.
+- **Placa** donde el telón gana: un panel **opaco** N1 detrás del grupo entero
+  —el leaderboard, la rejilla de tarjetas—, con el mismo contorno y 16 px de
+  radio. Dentro de la placa el telón deja de existir y el relieve vuelve a ser
+  el de la §2.1.
+
+**Cuándo es obligatoria la placa**, y es una prueba, no una opinión: cuando el
+p95 del telón supera la luminancia de la cara N2 (0,0649). La sonda lo dice
+sola. Hoy: **índice de Estratégico y actividad de Estratégico la exigen**;
+Macro y Contabilidad no. Ponerla igualmente en las tres no es error —unifica—,
+pero quitarla donde la sonda la exige sí lo es.
+
+Las superficies **nunca** son `rgba`. Una cara semitransparente deja pasar el
+ajedrez y convierte cada medición en inútil.
+
+---
+
 ## 3. Cómo se implementa sin romper «solo transform y opacity»
 
 Esta es la parte que se hace mal si no se dice. El canto **no es un
@@ -144,9 +204,8 @@ El canto es **una capa hermana detrás**, y la que se mueve es la cara:
 | Hover / foco (ratón) | cara a `-(N+2)` | 160 ms | la misma |
 
 Los 100/160 ms son los que ya tiene el canon para pulsar un botón: lo que
-cambia es **qué** se mueve. En Macroeconomía y Contabilidad, lo que lleva
-relieve se hunde; el `scale(.97)` sigue vigente para todo lo demás y para
-Pensamiento Estratégico, que no entra aquí.
+cambia es **qué** se mueve. En las tres materias, lo que lleva relieve se
+hunde; el `scale(.97)` sigue vigente para todo lo que no lo lleva.
 
 Con movimiento reducido el hundido **se queda**: es la respuesta directa a un
 dedo sobre un control, 4 px y 100 ms, no es decoración. Lo que se va es lo de
@@ -274,13 +333,17 @@ de la entrada. Cero animaciones nuevas infinitas.
 
 ### La excepción
 
-**Solo el bloque de los leaderboards** (`RankingFP` y `LigaBoard`), y solo en
-Macroeconomía y Contabilidad:
+**Solo el bloque de los leaderboards** (`RankingFP` y `LigaBoard`), en las
+tres materias:
 
 - **Máximo 3 elementos en bucle visibles a la vez.** Tres, no «unas pocas».
 - Van en una **banda propia** de 72 px (56 px por debajo de 375) entre el
   título y la primera fila. **Nunca por detrás de texto**: así no hay riesgo
   de legibilidad que medir después.
+- La banda va **dentro de la placa** del grupo donde la placa sea obligatoria
+  (§2.4). Sobre la madera clara del ajedrez, un trazo `#CBDCF2` a 0,45 de
+  opacidad baja a 2,55:1 contra el telón más claro medido [calculado]: se ve,
+  pero pierde la mitad de su presencia. Dentro de la placa no depende de eso.
 - Fae va junto a «tú», en pose estática, sin bucle. No cuenta en los 3.
 
 ### Las cinco condiciones que la pagan
@@ -345,33 +408,32 @@ botones y tarjetas (§4) y, si lleva, la decoración de la §5 sin bucle.
 
 ---
 
-## 9. El contrato de opt-in por materia
+## 9. Un cambio, tres materias: qué sustituye a la protección
 
-La clave es la misma en todo el sitio: `subjectId` / `materiaId`, con valores
-`macroeconomia`, `contabilidad` y `pensamiento-estrategico`
-(`src/data/subjects.js`).
+Antes esto era un contrato de opt-in: prop apagada por defecto, mapa por
+materia, nada global. **Ese contrato se cae entero.** `CaminoHacer` recibe el
+relieve y lo reciben sus siete vistas de Macro y Contabilidad y las dos de
+Estratégico (`PensamientoSistemicoView`, `PorterView`) a la vez. Los dos
+leaderboards viven en `TopicIndexView`, que es el mismo para las tres: se
+cambia una vez.
 
-El patrón ya existe y se copia tal cual, el de `FondoMateria.jsx`: un mapa con
-entradas **solo** para las materias que entran; la que no está en el mapa cae
-en `null` y se dibuja exactamente como hoy.
+Lo que **sustituye** a esa protección, porque la superficie en riesgo creció:
 
-**Las cuatro reglas mecánicas:**
-
-1. **Prop con valor por defecto apagado.** `CaminoHacer` recibe `relieve =
-   false`; `RankingFP` y `LigaBoard` reciben `decoracion = null`. Las vistas de
-   Macro y Contabilidad la pasan; `PensamientoSistemicoView` y `PorterView` no
-   se tocan **en absoluto**.
-2. **Ninguna regla CSS global.** Nada de un selector sobre `.fae-card` ni
-   sobre ninguna clase compartida. El relieve llega por una clase que pone el
-   propio componente cuando la prop está encendida.
-3. **Tokens añadidos, nunca modificados.** En `theme.js` se **añade** un
-   bloque nuevo (la escalera de la §2). No se cambia el valor de ninguna clave
-   existente. Cambiar `FAE.navy` repinta Estratégico sin que nadie lo pida.
-4. **La prueba de que no se rompió nada**, y va en todo PR de este encargo:
-   con la prop apagada, el render de Pensamiento Estratégico es **idéntico**
-   al de `main`. Captura a 320 px del índice de Estratégico antes y después.
-
----
+1. **Se añade, no se reemplaza.** El relieve se monta encima de lo que hay: no
+   se borra un estado, no se cambia una cota, no se retira un componente
+   publicado. Si una pieza necesita que algo existente desaparezca, eso es otro
+   PR y otra conversación.
+2. **Ningún valor existente de `theme.js` cambia.** Los tonos de la escalera se
+   **añaden**. Cambiar `FAE.navy` repinta las tres materias de golpe, que es
+   justo el riesgo que trae hacerlo todo a la vez.
+3. **Toda pieza se comprueba también en una pantalla de Estratégico** antes de
+   que su auditor dé PASA. Es una pantalla más, no un lote más: el índice de
+   Estratégico sirve para casi todo, porque es el caso peor de telón (§2.4).
+4. **La sonda del telón decide la placa**, no el ojo. `node
+   scripts/vida/sonda-telon.mjs` y se pega su salida al PR.
+5. **El camino de Estratégico no se reordena.** Relieve sí; número de nodos,
+   orden, ramal del desafío y bloqueos (que no existen: ningún nodo se bloquea
+   nunca) se quedan como están.
 
 ## 10. Las mediciones
 
@@ -412,6 +474,10 @@ una pasada; lo que se cita son los órdenes de magnitud y las diferencias
 grandes, no el milisegundo. Una diferencia por debajo de ~200 ms a ×6 está
 dentro del ruido y no decide nada.
 
+Y la cuarta medición, la del telón, está en la §2.4 con su tabla:
+`node scripts/vida/sonda-telon.mjs`, que además dice sola qué pantalla exige
+placa.
+
 Las tres lecturas que mandan: el coste **crece con el número de elementos en
 bucle**, por eso el tope son 3 y no «las que se vean bien»; la **pausa
 devuelve el coste a cero**, por eso es obligatoria y no recomendable; y la
@@ -428,8 +494,11 @@ parada de medición para el constructor es §11, punto 6.
 ## 11. Antes de entregar
 
 1. 320 y 375 px, con el texto más largo real.
-2. El canto se ve contra su cara **y** contra la página: las dos razones
-   calculadas y escritas. Un canto a menos de 1,25:1 contra la página no vale.
+2. El canto se ve contra su cara: **≥ 1,25:1**, calculado y escrito. Contra la
+   página ya **no** se exige (§2.4): lo cubren el contorno de silueta y la
+   placa.
+2b. `node scripts/vida/sonda-telon.mjs` corrido y su salida pegada al PR. Donde
+   dice EXIGE PLACA, la pieza lleva placa. Ninguna superficie en `rgba`.
 3. Ningún `box-shadow`, ningún `filter` animado, ningún `border-width`
    animado. Solo `transform` y `opacity`.
 4. Elementos en bucle visibles a la vez: **≤ 3**, y solo en la banda del
@@ -440,14 +509,16 @@ parada de medición para el constructor es §11, punto 6.
    construida y no sobre el arnés. Si 3 elementos pasan de +15% de hilo
    principal a ×6, bajan a 2.
 7. Movimiento reducido y gama baja: pose media, quieta, y el hundido sigue.
-8. La prueba de Estratégico de la §9.4: captura antes y después, idénticas.
+8. **La misma pieza, vista en una pantalla de Pensamiento Estratégico**, con
+   captura a 320 px. Es el caso peor de telón y es donde se cae el relieve si
+   se va a caer. Sin esa captura no hay PASA.
 9. Blanco y negro: el relieve se sigue leyendo. Si el volumen solo existía por
    el color, no había volumen.
 10. Lista de estados, y «no aplica» donde no aplique.
 
 ---
 
-## 12. Lo que encontré de paso, y no va en este PR
+## 12. Lo que encontré de paso, y es de otro dueño
 
 Dos cosas que vi mirando los leaderboards y que son de otro dueño:
 
