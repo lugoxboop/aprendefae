@@ -1,4 +1,5 @@
 import { test } from "node:test";
+import { ACTIVO as ACTIVO_, PASIVO as PASIVO_, PATRIMONIO as PATRIMONIO_ } from "../../data/contabilidad.js";
 import assert from "node:assert/strict";
 import { JSDOM, VirtualConsole } from "jsdom";
 
@@ -257,7 +258,8 @@ test("★★★ en el segundo, cruzar ingresos y gastos es C2, y reconoce el inf
     const r = evaluarT1_6(c, { informe: SEGUNDO, seccion: otra });
     assert.equal(r.patron, "C2", c.nombre);
     assert.equal(r.informeOk, true);
-    assert.equal(r.texto, ERROR_T1_6.C2);
+    /* El texto es el de su destino (Futaba, lote E); el patrón sigue siendo C2. */
+    assert.notEqual(r.texto, ERROR_T1_6.C2);
     assert.ok(r.texto.startsWith("El informe es el correcto"));
   }
 });
@@ -423,4 +425,21 @@ test("difícil, 50 FP y diez fichas por tanda", () => {
   assert.equal(T1_6.dificultad, "dificil");
   assert.equal(T1_6.fpBase, 50);
   assert.equal(T1_6.porPartida, 10);
+});
+
+/* Futaba, lote E (D6 de Shoko): con el informe bien y la parte mal, la devolución es la del destino correcto, y dice por qué. */
+test("★★★ t1-6: el error de parte trae la devolución de su destino, una por cada uno de los cinco", async () => {
+  const T1 = await import("../../data/contabilidadTema1.js");
+  const L = await import("../tema1.js");
+  const destinos = new Set();
+  for (const c of T1.CONCEPTOS) {
+    const otra = (c.informe === T1.PRIMERO ? [ACTIVO_, PASIVO_, PATRIMONIO_] : [T1.INGRESOS, T1.GASTOS]).find((x) => x !== c.seccion);
+    const r = L.evaluarT1_6(c, { informe: c.informe, seccion: otra });
+    const esperado = T1.DEVOLUCION_POR_DESTINO_T1_6[`${c.informe}:${c.seccion}`];
+    assert.ok(esperado, `${c.id}: su destino no tiene devolución`);
+    assert.equal(r.texto, esperado, c.id);
+    assert.ok(r.texto.split(/\s+/).length <= 25, `${c.id}: pasa de 25 palabras`);
+    destinos.add(r.texto);
+  }
+  assert.equal(destinos.size, 5);
 });

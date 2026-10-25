@@ -627,16 +627,21 @@ export const ERROR_T1_6 = {
 };
 
 /*
- * ═══════════ EL SITIO DE LA DEVOLUCIÓN POR FAMILIA (Shoko, #535 b) ═══════════
+ * ═══════════ LA DEVOLUCIÓN POR DESTINO (Futaba, lote E; D6 de Shoko) ═══════════
  *
- * La C de arriba sirve igual para las dieciséis fichas y no dice por qué: es
- * el mensaje genérico contra el que advierte el Kit. Futaba escribe una
- * devolución por familia de ficha (lote E). Cuando llegue va aquí, con la
- * llave `familia` → patrón («C» o «C2») → texto, y cada ficha de CONCEPTOS
- * lleva su `familia`. Mientras una ficha no tenga la suya, sale la de
- * ERROR_T1_6 de siempre (evaluarT1_6). No cambia el puntaje.
+ * Reemplaza la C única de arriba, que servía igual para las dieciséis fichas y
+ * no decía por qué. Sale cuando el informe está bien y la parte no, según el
+ * destino CORRECTO de la ficha (la llave informe:seccion): dice por qué va ahí
+ * y por qué no en lo demás de ese informe, así que vale marque lo que marque.
+ * Respaldo: pp. 34, 52-53 y 54 (ficha de fuente, punto 5). A y B no cambian.
  */
-export const DEVOLUCION_POR_FAMILIA_T1_6 = {};
+export const DEVOLUCION_POR_DESTINO_T1_6 = {
+  [`${PRIMERO}:${ACTIVO}`]: "El informe es el correcto. Esto es de la empresa, algo que tiene: es activo. No es una deuda ni de los dueños.",
+  [`${PRIMERO}:${PASIVO}`]: "El informe es el correcto. Esto la empresa se lo debe a otro: es pasivo. No lo tiene ni es de los dueños.",
+  [`${PRIMERO}:${PATRIMONIO}`]: "El informe es el correcto. Esto les toca a los dueños: es patrimonio. No es algo que la empresa tenga ni deba.",
+  [`${SEGUNDO}:${INGRESOS}`]: "El informe es el correcto. Esto lo recibió la empresa en el año: es ingreso. Un gasto es lo que se le fue.",
+  [`${SEGUNDO}:${GASTOS}`]: "El informe es el correcto. Esto se le fue a la empresa en el año: es gasto. Un ingreso es lo que recibió.",
+};
 
 export const ACIERTO_T1_6 = {
   "c6-01": "✅ Va en el estado de situación financiera, en el activo. Una patente no se toca, pero es de la empresa y vale.",
