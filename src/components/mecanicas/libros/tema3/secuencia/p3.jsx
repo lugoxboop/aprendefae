@@ -19,7 +19,7 @@ import {
 import { ROTULO_PISTA, RESULTADOS, CAJA, MARCAS } from "../../../../../data/contabilidadTema3.js";
 import {
   TITULARES_P3, OPC_P3_1, OPC_SI_NO, OPC_P3_5, ERRORES_P3_1, ERROR_SI_NO_P3, ERRORES_P3_5, PISTAS,
-  CUENTAS_ASIENTO_P3_SANCALIXTO, CUENTAS_ASIENTO_P3_SANMIGUEL, RAZON_HAZ_T3,
+  CUENTAS_ASIENTO_P3_SANCALIXTO, CUENTAS_ASIENTO_P3_SANMIGUEL, RAZON_HAZ_T3, RAZONES_HAZ_T3,
 } from "../../../../../data/t3SecuenciasTextos.js";
 import { hazResuelto } from "../../../../secuencia/secuencia.js";
 import {
@@ -102,6 +102,8 @@ function hazEleccion({ id, titular, opciones, correcta, antes, despues, pista, e
         ver={verDe(e)}
         modelo={modelo(hazResuelto(e), e)}
         control={<Botones nombre={nombre} opciones={opciones} estado={e} correcta={correcta} onElegir={(x) => setEstado((s) => elegir(s, x, correcta))} />}
+        resuelta={hazResuelto(e)}
+        recogido={<Botones nombre={nombre} opciones={opciones} estado={e} correcta={correcta} onElegir={(x) => setEstado((s) => elegir(s, x, correcta))} recoger />}
         zona={zonaDe(e)}
       />
     );
@@ -125,6 +127,8 @@ function pantallaCorte() {
       <Figura
         data-pantalla-t3="p3-corte"
         ver={verDe(e)}
+        resuelta={listo}
+        recogido={<ControlFlechas nombre="Mueve el corte" valores={FILA} indice={e.indice ?? 0} rotulo={(d) => `${d} de enero`} soloCentro />}
         modelo={<ModeloP3 marcas causa corte={listo ? 31 : null} cortePrevio={FILA[e.indice ?? 0]} retardo={listo} />}
         control={(
           <ControlFlechas
@@ -144,7 +148,7 @@ function pantallaCorte() {
   const pon = (ids) => ids.reduce((e, d) => ({ ...elegir(e, d, "31"), indice: FILA.indexOf(Number(d)) }), CORTE_INICIAL);
   return {
     id: "corte", tipo: "haz", titular: TITULARES_P3.corte, Figura: F, nombreFigura: NOMBRE_FIGURA, estadoInicial: CORTE_INICIAL,
-    resuelta: hazResuelto, razon: RAZON_HAZ_T3, zonaDe,
+    resuelta: hazResuelto, razon: RAZONES_HAZ_T3.corte, zonaDe,
     medir: [
       { nombre: "sin-responder", estado: CORTE_INICIAL },
       { nombre: "pista", estado: pon(["28"]) },
@@ -162,11 +166,11 @@ function pantallaAsiento({ id, titular, candidatas, empresa, despues, pista, rot
   function F({ estado, setEstado }) {
     const e = estado ?? ASIENTO_INICIAL;
     const a = Asiento({ estado: e, setEstado, candidatas, monto: empresa.asiento.debe.monto, encima: resuelta(e) ? <b style={{ color: C.texto }}>{empresa.nombre} · {rotulo}</b> : empresa.nombre });
-    return <Figura data-pantalla-t3={`p3-${id}`} ver={a.ver} modelo={a.modelo} control={a.control} zona={zonaDe(e)} />;
+    return <Figura data-pantalla-t3={`p3-${id}`} ver={a.ver} resuelta={a.resuelta} recogido={a.recogido} modelo={a.modelo} control={a.control} zona={zonaDe(e)} />;
   }
   return {
     id, tipo: "haz", titular, Figura: F, nombreFigura: `El asiento de ${empresa.nombre}: la casilla Debe y la casilla Haber`,
-    estadoInicial: ASIENTO_INICIAL, resuelta, razon: RAZON_HAZ_T3, zonaDe,
+    estadoInicial: ASIENTO_INICIAL, resuelta, razon: RAZONES_HAZ_T3.asiento, zonaDe,
     pendiente: candidatas ? null : `CUENTAS de Miyata para «${titular}»`,
     medir: medirAsiento(candidatas),
   };

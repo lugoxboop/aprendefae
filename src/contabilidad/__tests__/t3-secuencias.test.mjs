@@ -66,11 +66,35 @@ test("★ los titulares son los de la tabla de correspondencia (§4), en su orde
   CUATRO.forEach((p, k) => assert.deepEqual(p.pantallas.map((s) => s.titular), TITULARES_DEL_PAQUETE[k], p.id));
 });
 
-test("★ la forma: lo único que falta es la razón de «Siguiente» (D11), que Miyata no ha entregado", () => {
-  assert.equal(T.RAZON_HAZ_T3, null, "si ya llegó la razón, esta prueba tiene que pedir cero faltas");
+test("★ la forma: cero faltas, ya con la razón de «Siguiente» (D11, textos v5 §2)", () => {
+  for (const p of CUATRO) assert.deepEqual(faltasDePieza(p), [], p.id);
+});
+
+test("★ D11: cada Haz lleva la razón de su tipo de decisión (v5 §2, columna «Cuándo se ve»), literal", () => {
+  assert.deepEqual(T.RAZONES_HAZ_T3, {
+    eleccion: "Cuando respondas, se abre «Siguiente».",
+    asiento: "Cuando pongas las dos cuentas, se abre «Siguiente».",
+    ubicar: "Quedan fichas por ubicar.",
+    cifra: "Cuando escribas la cifra, se abre «Siguiente».",
+    corte: "Cuando pongas el corte, se abre «Siguiente».",
+    ordenar: "Cuando ordenes los dos pasos, se abre «Siguiente».",
+  });
+  assert.equal(T.RAZON_HAZ_T3, T.RAZONES_HAZ_T3.eleccion);
+  const R = T.RAZONES_HAZ_T3;
+  const tipo = {
+    "t3-a1-vender-no-es-cobrar/nombres": R.ubicar,
+    "t3-a3-lo-que-ya-paso/corte": R.corte, "t3-a4-lo-que-ya-se-pago/corte": R.corte,
+    "t3-a3-lo-que-ya-paso/ajuste-san-calixto": R.asiento, "t3-a3-lo-que-ya-paso/ajuste-san-miguel": R.asiento,
+    "t3-a4-lo-que-ya-se-pago/asiento-junio": R.asiento, "t3-a4-lo-que-ya-se-pago/asiento-costa": R.asiento,
+    "t3-a5-cerrar-el-periodo/separar": R.ubicar, "t3-a5-cerrar-el-periodo/ordenar": R.ordenar,
+    "t3-a5-cerrar-el-periodo/ingresos": R.ubicar, "t3-a5-cerrar-el-periodo/gastos": R.ubicar,
+    "t3-a5-cerrar-el-periodo/saldo": R.cifra,
+    "t3-a5-cerrar-el-periodo/acacias-ingresos": R.ubicar, "t3-a5-cerrar-el-periodo/acacias-gastos": R.ubicar,
+  };
   for (const p of CUATRO) {
-    const otras = faltasDePieza(p).filter((f) => !/razón por la que «Siguiente» espera/.test(f));
-    assert.deepEqual(otras, [], p.id);
+    for (const s of p.pantallas.filter((x) => x.tipo === "haz")) {
+      assert.equal(s.razon, tipo[`${p.id}/${s.id}`] ?? R.eleccion, `${p.id}/${s.id}`);
+    }
   }
 });
 
@@ -132,7 +156,15 @@ test("★ P5-2: cinco pasos de Miyata; la pista manda sobre la lista; dos errore
   assert.match(textoDe(zonaSeparar(e)), /Ingresos por servicios cuenta lo que se vendió/);
   const fin = T.PASOS_P5_2.slice(1).reduce((x, p) => separar(x, p.respuesta), e);
   assert.equal(fin.k, 5);
-  assert.match(textoDe(zonaSeparar({ ...fin, viendo: "no-vacia" })), /Alquiler por pagar, Caja, Aportes sociales/);
+  /* Condición 2 de #572: la lista nombra solo las 6 que ya estaban puestas, nunca las 5 en juego. */
+  for (const zona of ["vacia", "no-vacia"]) {
+    for (const e2 of [SEPARAR_INICIAL, e, fin]) {
+      assert.equal(textoDe(zonaSeparar({ ...e2, ultimo: null, viendo: zona })), T.YA_PUESTAS_P5_2[zona].join(", "), zona);
+    }
+  }
+  assert.equal(T.YA_PUESTAS_P5_2.vacia.length + T.YA_PUESTAS_P5_2["no-vacia"].length, 6);
+  const lista = textoDe(zonaSeparar({ ...fin, viendo: "no-vacia" })) + textoDe(zonaSeparar({ ...fin, viendo: "vacia" }));
+  for (const p of T.PASOS_P5_2) assert.ok(!lista.includes(p.cuenta), `${p.cuenta} está en juego y sale en la lista`);
 });
 
 test("★ las cuentas de los cuatro asientos son las de Miyata (v3 §1): 4 por asiento, el par y dos que no van", () => {
@@ -168,12 +200,47 @@ test("★ el asiento: la casilla activa recibe la cuenta; al revés, pista y lue
   assert.equal(z(e), "D");
 });
 
-test("⛔ no se inventa: Las Acacias no tiene datos y sus tres pantallas quedan esperando", () => {
-  const pendientes = CUATRO.flatMap((p) => p.pantallas.filter((s) => s.pendiente).map((s) => `${p.id}/${s.id}`));
+test("★ Las Acacias (v5 §1): sus cuentas y saldos, «Escenario simulado» primero; ⛔ la consigna sigue pendiente", () => {
+  const A = T.LAS_ACACIAS;
+  const suma = (l) => l.reduce((t, c) => t + c.saldo, 0);
+  assert.equal(suma(A.ingresos), 3200000);
+  assert.equal(suma(A.gastos), 3300000);
+  assert.equal(suma(A.siguen.filter((c) => c.cuenta !== "Aportes sociales")), 1500000, "lo que no se vacía cuadra: 1.600.000 − 100.000");
+  assert.deepEqual(A.gastos.map((c) => c.cuenta), ["Gasto salarios", "Gasto servicios públicos", "Gasto mantenimiento", "Gasto papelería", "Gasto materiales e insumos"]);
+  assert.equal(T.ESCENARIO_SIMULADO, "Escenario simulado");
+  const p5 = CUATRO[3];
+  for (const id of ["acacias-ingresos", "acacias-gastos", "perdida"]) {
+    const s = p5.pantallas.find((x) => x.id === id);
+    for (const m of s.medir) {
+      const z = s.zonaDe(m.estado);
+      assert.equal(z[0].pie, "Escenario simulado", `${id} · ${m.nombre}: el primer renglón es la marca`);
+    }
+    /* Se resuelve con sus datos: ya no está armada y esperando. */
+    assert.equal(s.resuelta(s.medir.find((m) => m.nombre === "acierto").estado), true, id);
+  }
+  /* ⛔ No se inventa: la consigna no está en ningún archivo, y queda marcada como pendiente. */
+  const pendientes = PIEZAS_SECUENCIA_T3.flatMap((p) => p.pantallas.filter((s) => s.pendiente).map((s) => `${p.id}/${s.id}`));
   assert.deepEqual(pendientes, [
     "t3-a5-cerrar-el-periodo/acacias-ingresos", "t3-a5-cerrar-el-periodo/acacias-gastos", "t3-a5-cerrar-el-periodo/perdida",
   ]);
-  for (const p of PIEZAS_SECUENCIA_T3) for (const s of p.pantallas.filter((x) => x.pendiente)) assert.equal(s.resuelta(s.estadoInicial), false);
+});
+
+test("★ condición 1: los contadores de P1 salen de los hechos publicados, acumulados hecho por hecho", async () => {
+  const { modeloP1, modeloCierreP1 } = await import("../../components/mecanicas/libros/tema3/secuencia/p1.jsx");
+  const { contadores, estadoPaso, PASOS } = await import("../../contabilidad/dosLineas.js");
+  const { COMPANIA_CUALQUIERA } = await import("../../data/contabilidadTema3.js");
+  for (const emp of [SAN_CALIXTO, COMPANIA_CUALQUIERA]) {
+    emp.hechos.forEach((h, i) => {
+      const previas = emp.hechos.slice(0, i).flatMap((x) => x.marcas);
+      assert.deepEqual(modeloP1(emp, i, false).suma, contadores(previas), `${h.id} antes de responder`);
+      assert.deepEqual(modeloP1(emp, i, true).suma, contadores([...previas, ...h.marcas]), `${h.id} al responder`);
+    });
+  }
+  /* Al responder el aporte, «Entró» llega a 15.000 (paquete §2, P1-2). */
+  assert.equal(modeloP1(SAN_CALIXTO, 0, true).suma.entrada, 15000);
+  /* El Cierre es el paso 6 publicado de San Calixto: 9.000 de ingresos, 2.500 de gastos, 20.000 que entraron. */
+  assert.deepEqual(modeloCierreP1().suma, estadoPaso(PASOS).contadores);
+  assert.deepEqual(modeloCierreP1().suma, { ingreso: 9000, gasto: 2500, entrada: 20000, salida: 0 });
 });
 
 test("★ OPC_PREDICE va en 3 botones, sin «Ninguna» (Kamogawa, lote 12)", () => {

@@ -17,7 +17,7 @@ import {
 import { ROTULO_PISTA, RESULTADOS, CAJA, MARCAS } from "../../../../../data/contabilidadTema3.js";
 import {
   TITULARES_P4, OPC_PREDICE, OPC_SI_NO, OPC_P4_3, OPC_P4_6, OPC_P4_7, ERRORES_PREDICE, ERROR_SI_NO_P4,
-  ERRORES_P4_3, ERRORES_P4_6, ERRORES_P4_7, PISTAS, CUENTAS_ASIENTO_P4_JUNIO, CUENTAS_ASIENTO_P4_COSTA, PIE_ASIENTO_P4_JUNIO, RAZON_HAZ_T3,
+  ERRORES_P4_3, ERRORES_P4_6, ERRORES_P4_7, PISTAS, CUENTAS_ASIENTO_P4_JUNIO, CUENTAS_ASIENTO_P4_COSTA, PIE_ASIENTO_P4_JUNIO, RAZON_HAZ_T3, RAZONES_HAZ_T3,
 } from "../../../../../data/t3SecuenciasTextos.js";
 import { hazResuelto } from "../../../../secuencia/secuencia.js";
 import {
@@ -99,6 +99,8 @@ function hazEleccion({ id, titular, opciones, correcta, antes, despues, pista, p
         ver={verDe(e)}
         modelo={modelo(hazResuelto(e))}
         control={<Botones nombre={nombreControl} opciones={opciones} estado={e} correcta={correcta} onElegir={(x) => setEstado((s) => elegir(s, x, correcta))} />}
+        resuelta={hazResuelto(e)}
+        recogido={<Botones nombre={nombreControl} opciones={opciones} estado={e} correcta={correcta} onElegir={(x) => setEstado((s) => elegir(s, x, correcta))} recoger />}
         zona={zonaDe(e)}
       />
     );
@@ -122,6 +124,8 @@ function pantallaCorte() {
       <Figura
         data-pantalla-t3="p4-corte"
         ver={verDe(e)}
+        resuelta={listo}
+        recogido={<ControlFlechas nombre="Mueve el corte" valores={MESES} indice={e.indice ?? 1} rotulo={CIERRE_DE} soloCentro />}
         modelo={<ModeloP4 pago bloque={listo ? "junio-gastado" : "lleno"} cierres={listo ? 1 : 0} cierreNuevo={listo} corte={listo ? 0 : null} cortePrevio={e.indice ?? 1} rotuloBloque={nombre("Pagado por anticipado")} />}
         control={(
           <ControlFlechas
@@ -141,7 +145,7 @@ function pantallaCorte() {
   const pon = (ids) => ids.reduce((e, m) => ({ ...elegir(e, m, MESES[0]), indice: MESES.indexOf(m) }), CORTE_INICIAL);
   return {
     id: "corte", tipo: "haz", titular: TITULARES_P4.corte, Figura: F, nombreFigura: NOMBRE_FIGURA, estadoInicial: CORTE_INICIAL,
-    resuelta: hazResuelto, razon: RAZON_HAZ_T3, zonaDe,
+    resuelta: hazResuelto, razon: RAZONES_HAZ_T3.corte, zonaDe,
     medir: [
       { nombre: "sin-responder", estado: CORTE_INICIAL },
       { nombre: "pista", estado: pon(["Julio"]) },
@@ -153,15 +157,19 @@ function pantallaCorte() {
 
 function pantallaAsiento({ id, titular, candidatas, empresa, despues, pista, pie = null }) {
   const resuelta = asientoResuelto(candidatas);
-  const zonaDe = (estado) => [...zonaAsiento(estado, candidatas, { antes: [], despues, pista }), ...(pie ? [{ pie }] : [])];
+  /*
+   * El pie va primero (condición 6 de #572): así comparte fila con la pastilla
+   * en vez de sumar un renglón debajo del texto. Medido con la cabecera real.
+   */
+  const zonaDe = (estado) => [...(pie ? [{ pie }] : []), ...zonaAsiento(estado, candidatas, { antes: [], despues, pista })];
   function F({ estado, setEstado }) {
     const e = estado ?? ASIENTO_INICIAL;
     const a = Asiento({ estado: e, setEstado, candidatas, monto: empresa.asiento.debe.monto, encima: empresa.nombre });
-    return <Figura data-pantalla-t3={`p4-${id}`} ver={a.ver} modelo={a.modelo} control={a.control} zona={zonaDe(e)} />;
+    return <Figura data-pantalla-t3={`p4-${id}`} ver={a.ver} resuelta={a.resuelta} recogido={a.recogido} modelo={a.modelo} control={a.control} zona={zonaDe(e)} />;
   }
   return {
     id, tipo: "haz", titular, Figura: F, nombreFigura: `El asiento de ${empresa.nombre}: la casilla Debe y la casilla Haber`,
-    estadoInicial: ASIENTO_INICIAL, resuelta, razon: RAZON_HAZ_T3, zonaDe,
+    estadoInicial: ASIENTO_INICIAL, resuelta, razon: RAZONES_HAZ_T3.asiento, zonaDe,
     pendiente: candidatas ? null : `CUENTAS de Miyata para «${titular}»`,
     medir: medirAsiento(candidatas),
   };

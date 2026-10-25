@@ -1,6 +1,7 @@
-2026-10-25 02:47 (hora Bogotá)
+2026-10-25 03:51 (hora Bogotá)
 - #556 ranking a 320 sin nombres: terminado — #563 fusionado y en producción
-- Listos para que Miku fusione (PASA de Levi + CI verde): #564 y después #575 (va encima), #573, #580, #529, #581, #582
+- Listos para que Miku fusione (PASA de Levi + CI verde): #564, después #575 y después #590 (van apilados), #573, #580, #529, #581, #582
+- #536 banda de devolución y razón del cierre en SecuenciaAprender: PR #590 con PASA; condición: C mide figura + banda antes de encender su bandera
 - #582 sondas en CI (contraste y ficha-tapa, 11 temas, 320 y 375, trinquete con línea base de 66 medidas): estable en dos corridas; decisión de Miku: hacerla obligatoria en GitHub
 - Para que Miku reparta: 100 fallos de contraste en Macroeconomía (Demanda Agregada 44, Política Económica 42) y los 87 textos en teal (#581)
 - #573 y #580: después de fusionar, capturas de Estratégico en producción

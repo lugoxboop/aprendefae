@@ -55,11 +55,12 @@ const arg = (n) => { const i = process.argv.indexOf(n); return i > 0 ? process.a
 const SOLO_C6 = process.argv.includes("--c6");
 const CAPTURAS = arg("--capturas");
 const JSON_SALIDA = arg("--json");
-const SOLO = arg("--solo") ? new RegExp(arg("--solo")) : null;
 if (CAPTURAS) mkdirSync(CAPTURAS, { recursive: true });
 const ANCHOS = [320, 375];
 const ALTOS = { 320: 568, 375: 667 };
 const FUENTES_NPM = process.env.FUENTES_NPM ?? null;
+/* --solo <regex>: solo las pantallas cuyo «pieza/pantalla» casa (para repetir rápido una parte). */
+const SOLO = arg("--solo") ? new RegExp(arg("--solo")) : null;
 
 const servidor = await createServer({ root: RAIZ, logLevel: "error", server: { port: 0, host: "127.0.0.1" } });
 await servidor.listen();
@@ -203,7 +204,14 @@ function medirPantalla() {
   const control = caja(fig.querySelector("[data-control]"));
   const zona = fig.querySelector("[data-zona]");
   const textos = [...zona.querySelectorAll("p")];
-  const altoZona = textos.length ? textos[textos.length - 1].getBoundingClientRect().bottom - textos[0].getBoundingClientRect().top : 0;
+  /*
+   * El alto de la zona se cuenta desde donde empieza su reserva (12 px bajo la
+   * fila de control) hasta el fondo de lo último que tenga, sea <p> o no: así
+   * cuenta la pastilla, que ahora va en la zona (condición 5 de #572), y no se
+   * puede esconder nada subiéndolo con un margen negativo.
+   */
+  const hijos = [...zona.children];
+  const altoZona = hijos.length && control ? hijos[hijos.length - 1].getBoundingClientRect().bottom - (control.bottom + 12) : 0;
   const lineasApoyo = textos.filter((p) => p.classList.contains("t3s-t")).reduce((s, p) => s + Math.round(p.getBoundingClientRect().height / 22), 0);
   /* Letra: todo texto propio visible del contenedor. */
   const chicas = [];
@@ -259,13 +267,13 @@ function medirPantalla() {
    * la razón no se ve mientras se ve la pista (Itagaki, lote 15) y el ancho
    * natural de cada renglón rótulo · cifra contra el ancho del modelo.
    */
-  const pastilla = fig.querySelector("[data-pastilla], .t3s-pastilla");
+  const pastillaP2 = fig.querySelector("[data-pastilla], .t3s-pastilla");
   let pastillaTapa = null;
-  if (pastilla) {
-    const p = pastilla.getBoundingClientRect();
+  if (pastillaP2) {
+    const p = pastillaP2.getBoundingClientRect();
     pastillaTapa = 0;
     for (const el of fig.querySelectorAll("[data-modelo] *")) {
-      if (el === pastilla || pastilla.contains(el) || el.contains(pastilla)) continue;
+      if (el === pastillaP2 || pastillaP2.contains(el) || el.contains(pastillaP2)) continue;
       const r = el.getBoundingClientRect();
       if (!r.width || !r.height || getComputedStyle(el).visibility === "hidden") continue;
       if (r.left < p.right && r.right > p.left && r.top < p.bottom && r.bottom > p.top) pastillaTapa += 1;
@@ -279,6 +287,64 @@ function medirPantalla() {
     const natural = hijos.reduce((s, h) => { const r = document.createRange(); r.selectNodeContents(h); return s + r.getBoundingClientRect().width; }, 0) + 8 * Math.max(0, hijos.length - 1);
     return { texto: f.textContent, natural: Math.round(natural), caja: Math.round(f.getBoundingClientRect().width) };
   });
+  /*
+   * Condición 5 de #572: la pastilla nunca se monta sobre el modelo. Se cruza
+   * su caja con la de cada cosa pintada del modelo: cada palabra (por rango de
+   * texto, no por el elemento entero) y cada elemento sin texto que tenga
+   * borde o fondo (marcas, fichas, casillas, carriles).
+   */
+  const pastilla = fig.querySelector(".t3s-pastilla");
+  const sobreModelo = [];
+  if (pastilla) {
+    const p = pastilla.getBoundingClientRect();
+    const cruza = (r) => r.width > 0 && r.height > 0 && r.left < p.right - 0.5 && r.right > p.left + 0.5 && r.top < p.bottom - 0.5 && r.bottom > p.top + 0.5;
+    const mod = fig.querySelector("[data-modelo]");
+    const recorrer = document.createTreeWalker(mod, NodeFilter.SHOW_TEXT);
+    for (let n = recorrer.nextNode(); n; n = recorrer.nextNode()) {
+      if (pastilla.contains(n) || !n.textContent.trim()) continue;
+      const s = getComputedStyle(n.parentElement);
+      if (s.visibility === "hidden") continue;
+      const rx = document.createRange();
+      const re = /\S+/g; let m;
+      while ((m = re.exec(n.textContent))) {
+        rx.setStart(n, m.index); rx.setEnd(n, m.index + m[0].length);
+        if ([...rx.getClientRects()].some(cruza)) sobreModelo.push(`«${m[0]}»`);
+      }
+    }
+    for (const el of mod.querySelectorAll("*")) {
+      if (pastilla.contains(el) || el === pastilla) continue;
+      const s = getComputedStyle(el);
+      if (s.visibility === "hidden" || s.display === "none") continue;
+      const pinta = (s.backgroundColor !== "rgba(0, 0, 0, 0)" && s.backgroundColor !== "transparent") || parseFloat(s.borderTopWidth) > 0 || parseFloat(s.borderLeftWidth) > 0
+        || getComputedStyle(el, "::before").content !== "none";
+      if (!pinta || el.children.length) continue;
+      /* El carril se pinta con ::before en su mitad (2 px): se mide esa franja, no la caja de 12. */
+      const r = el.getBoundingClientRect();
+      const caja = el.matches("[data-carril]") ? { left: r.left, right: r.right, top: r.top + 5, bottom: r.top + 7, width: r.width, height: 2 } : r;
+      if (cruza(caja)) sobreModelo.push(el.getAttribute("data-marca-compacta") ?? el.getAttribute("data-ficha-cuenta") ?? el.getAttribute("data-casilla") ?? (el.matches("[data-carril]") ? "carril" : el.tagName.toLowerCase()));
+    }
+  }
+  /* Y cuando va en la fila de control (al acertar), que no pise ningún botón ni campo. */
+  const sobreControl = [];
+  if (pastilla) {
+    const p = pastilla.getBoundingClientRect();
+    for (const b of fig.querySelectorAll("[data-control] button, [data-control] input")) {
+      if (getComputedStyle(b).visibility === "hidden") continue;
+      const r = b.getBoundingClientRect();
+      if (r.left < p.right - 0.5 && r.right > p.left + 0.5 && r.top < p.bottom - 0.5 && r.bottom > p.top + 0.5) sobreControl.push(b.textContent.trim() || b.getAttribute("aria-label"));
+    }
+  }
+  /* Condición 1: lo que dicen los contadores de P1. Condición 4: el monto dado del asiento. */
+  const cifras = [...fig.querySelectorAll("[data-modelo] [data-cifras]")].map((c) => c.textContent.trim());
+  const monto = fig.querySelector("[data-monto-dado]");
+  const montoVisible = monto ? (() => {
+    const r = monto.getBoundingClientRect();
+    const s = getComputedStyle(monto);
+    const encima = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+    return s.visibility !== "hidden" && r.width > 0 && (encima === monto || monto.contains(encima)) ? monto.textContent : `tapado por ${encima?.className || encima?.tagName}`;
+  })() : null;
+  /* La cabecera: del borde de arriba de la página a la figura. */
+  const figura = raiz.querySelector(".fae-sec-figura")?.getBoundingClientRect();
   return {
     ocupa,
     marca: marcaEl ? Math.round(marcaEl.getBoundingClientRect().height * 10) / 10 : null,
@@ -289,6 +355,14 @@ function medirPantalla() {
     pastillaTapa,
     razonConPista: conPista && razonVisible,
     renglonMax: renglones.reduce((m, r) => (r.natural > (m?.natural ?? 0) ? r : m), null),
+    pastilla: pastilla ? pastilla.textContent : null,
+    pastillaEn: pastilla ? (pastilla.closest("[data-control]") ? "control" : "zona") : null,
+    sobreModelo,
+    sobreControl,
+    cifras,
+    montoVisible,
+    cabecera: figura ? Math.round(figura.top + scrollY) : null,
+    navFija: document.querySelector("[data-navegacion]")?.style.position === "fixed",
     modeloAlto: modelo?.height ?? null,
     figuraFija: control && modelo ? control.bottom - modelo.top : null,
     anchoFigura: modelo?.width ?? null,
@@ -364,6 +438,30 @@ const CAPTURAS_DE = {
   "t3-a6-lo-que-deja-el-periodo/cierre/paso-2": "p6-10-cierre",
 };
 
+/*
+ * Las capturas del encendido (condiciones de #572), con --lote encendido:
+ * solo lo que cambió. P4-6 con la cabecera real la toma medir-cabecera-real.mjs.
+ */
+const CAPTURAS_ENCENDIDO = {
+  "t3-a1-vender-no-es-cobrar/aporte/sin-responder": "enc-p1-2-contadores-sin-responder",
+  "t3-a1-vender-no-es-cobrar/aporte/acierto": "enc-p1-2-contadores-acierto",
+  "t3-a1-vender-no-es-cobrar/maquina/acierto": "enc-p1-5-contadores-acierto",
+  "t3-a1-vender-no-es-cobrar/cierre/cierre": "enc-p1-9-cierre-contadores",
+  "t3-a1-vender-no-es-cobrar/nombres/pista": "enc-p1-6-pastilla-pista",
+  "t3-a1-vender-no-es-cobrar/nombres/todas": "enc-p1-6-pastilla-acierto",
+  "t3-a3-lo-que-ya-paso/dias/pista-1": "enc-p3-2-pastilla-pista",
+  "t3-a3-lo-que-ya-paso/dias/acierto": "enc-p3-2-pastilla-acierto",
+  "t3-a3-lo-que-ya-paso/ajuste-san-calixto/sin-responder": "enc-p3-5-asiento-monto-sin-responder",
+  "t3-a3-lo-que-ya-paso/ajuste-san-calixto/acierto": "enc-p3-5-asiento-monto-acierto",
+  "t3-a5-cerrar-el-periodo/separar/lista-se-vacian": "enc-p5-2-lista-se-vacian",
+  "t3-a5-cerrar-el-periodo/separar/lista-no-se-vacian": "enc-p5-2-lista-no-se-vacian",
+  "t3-a5-cerrar-el-periodo/acacias-ingresos/sin-responder": "enc-p5-7-acacias-ingresos-sin-responder",
+  "t3-a5-cerrar-el-periodo/acacias-ingresos/acierto": "enc-p5-7-acacias-ingresos-acierto",
+  "t3-a5-cerrar-el-periodo/acacias-gastos/acierto": "enc-p5-8-acacias-gastos-acierto",
+  "t3-a5-cerrar-el-periodo/perdida/acierto": "enc-p5-9-acacias-perdida-acierto",
+};
+const LOTE = arg("--lote") === "encendido" ? CAPTURAS_ENCENDIDO : CAPTURAS_DE;
+
 async function medirEncaje() {
   const { PIEZAS_SECUENCIA_T3, TEMA_SECUENCIA_T3 } = await piezasDeSecuencia();
   const filas = [];
@@ -385,7 +483,7 @@ async function medirEncaje() {
           const r = await pg.evaluate(medirPantalla);
           const titular = await pg.$eval("[data-secuencia-t3] h2", (h) => ({ texto: h.textContent, alto: h.getBoundingClientRect().height })).catch(() => null);
           filas.push({ ancho, pieza: pieza.id, n: s + 1, pantalla: pt.id, tipo: pt.tipo, estado: m.nombre, titularLineas: titular ? Math.round(titular.alto / 22) : null, errores, ...r });
-          const captura = CAPTURAS_DE[`${pieza.id}/${pt.id}/${m.nombre}`];
+          const captura = LOTE[`${pieza.id}/${pt.id}/${m.nombre}`];
           if (CAPTURAS && captura) await pg.screenshot({ path: join(CAPTURAS, `${captura}-${ancho}.png`), scale: "css", fullPage: true });
           await pg.close();
         }
@@ -494,6 +592,7 @@ for (const x of previas.cifras.filter((y) => y.anchoVentana === 320)) console.lo
 let encaje = null;
 let control = null;
 if (!SOLO_C6 && !process.argv.includes("--previas")) {
+  if (SOLO) console.log(`(solo ${SOLO})`);
   encaje = await medirEncaje();
   control = SOLO ? [] : await medirControl();
   console.log("\n## Encaje\n");
@@ -519,6 +618,17 @@ if (!SOLO_C6 && !process.argv.includes("--previas")) {
       console.log(`| ${f.ancho} | ${f.n} ${f.pantalla} | ${f.estado} | ${f.ocupa ?? "—"} / ${f.figuraFija ?? "—"}${f.ocupa > f.figuraFija ? " **SE PASA**" : ""} | ${f.marca ?? "—"} | ${f.lista ?? "—"} | ${f.opcionesAlto?.join(" · ") || "—"} | ${fl ? `${fl.alto} · ${fl.lectura ? `«${fl.texto}»` : "NO"} · ${fl.puente ? `«${fl.puenteTexto}»` : "vacío"}` : "—"} | ${f.lineaDatos ? `«${f.lineaDatos}»` : "—"} | ${f.lineasApoyo} · ${f.desborde} |`);
     }
   }
+  console.log("\n## Pastilla sobre el modelo (condición 5)\n");
+  const tapan = encaje.filter((f) => f.sobreModelo?.length);
+  console.log(tapan.length ? tapan.map((f) => `- ${f.ancho} · ${f.pieza} · ${f.pantalla} · ${f.estado}: «${f.pastilla}» sobre ${f.sobreModelo.join(", ")}`).join("\n") : `Ninguna: en ${encaje.filter((f) => f.pastilla).length} estados con pastilla, 0 cruces con el modelo.`);
+  const pisan = encaje.filter((f) => f.sobreControl?.length);
+  console.log(`En la fila de control: ${encaje.filter((f) => f.pastillaEn === "control").length} estados; en la zona: ${encaje.filter((f) => f.pastillaEn === "zona").length}. Sobre un botón o campo: ${pisan.length ? pisan.map((f) => `${f.ancho} ${f.pantalla} ${f.estado} (${f.sobreControl.join(", ")})`).join("; ") : "ninguno"}.`);
+  console.log("\n## Contadores de P1 (condición 1)\n");
+  for (const f of encaje.filter((x) => x.cifras?.length)) console.log(`- ${f.ancho} · ${f.n} ${f.pantalla} · ${f.estado}: ${f.cifras.join(" | ")}`);
+  console.log("\n## Monto del asiento (condición 4)\n");
+  for (const f of encaje.filter((x) => x.montoVisible !== null && x.montoVisible !== undefined)) console.log(`- ${f.ancho} · ${f.pantalla} · ${f.estado}: ${f.montoVisible}`);
+  console.log("\n## Cabecera (del borde de la página a la figura)\n");
+  for (const a of ANCHOS) { const c = [...new Set(encaje.filter((f) => f.ancho === a && f.cabecera).map((f) => f.cabecera))]; console.log(`- ${a}: ${c.join(", ")} px`); }
   console.log("\n## Control\n");
   for (const c of control) console.log(`- ${c.ancho} · ${c.nombre}: barra ${c.barra ? "SÍ" : "no"}, SecuenciaAprender ${c.secuencia ? "sí" : "no"}, figura ${c.figura ?? "—"} px, errores ${c.errores.length}`);
 }
