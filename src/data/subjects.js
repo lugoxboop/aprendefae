@@ -544,8 +544,11 @@ export const SUBJECTS = {
            */
           { id: "t1-desde-donde-preguntan", nombre: "¿Desde dónde preguntan?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
           { id: "t1-que-entro-y-que-salio", nombre: "¿Qué entró y qué salió?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
+          /* Lote 5 (Célula B): H2 y H1, nuevas, en Aplicación por su dificultad. Dificultad y FP: decisión de Kaede, reversible, la confirma Sakuta. */
+          { id: "t1-quien-pregunta-esto", nombre: "¿Quién pregunta esto?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           { id: "t1-donde-se-rompio", nombre: "¿Dónde se rompió?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           { id: "t1-que-le-pasa-a-cada-uno", nombre: "¿Qué le pasa a cada uno?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          { id: "t1-un-dia-o-un-ano", nombre: "¿Un día, un año o dos fotos?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
           { id: "t1-la-ecuacion-en-movimiento", nombre: "La ecuación en movimiento", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           { id: "t1-en-cual-estado-aparece", nombre: "¿En qué estado aparece?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
           { id: "t1-la-articulacion", nombre: "La articulación", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },

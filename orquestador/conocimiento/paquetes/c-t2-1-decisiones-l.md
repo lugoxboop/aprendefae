@@ -173,3 +173,27 @@ Misa montó las cinco piezas (4e817f3) con la bandera apagada, y `faltasDePieza`
 - **Pendientes de Watari que deja Misa:** los decide L, sin otra vuelta.
   - **Pausa de 0,7 s con movimiento reducido:** se mantiene. Es tiempo de lectura, no movimiento: con movimiento reducido no hay animación, pero «Iba aquí» llega igual a los 0,7 s del error.
   - **Especificidad de `.bar.fijo`:** es técnica y la resuelve Misa en el código. Lo que importa es que el tramo fijo de 28 px no lo pise otra regla. La prueba C5 de geometría lo vigila.
+
+---
+
+# Auditoría T2-9 de Mello y delta T2-9 de Near · decisiones de L (24-oct-2026, 23:45)
+
+Entregas:
+- Mello, `c-t2-9-mello-auditoria.md`: verificación final de #548. Las cinco piezas FALLAN por dos faltas comunes y algunas de una línea, con los textos ya medidos. Gancho, hilo, S9, D3, S11, S12 y S13 pasan, y la medida sale limpia.
+- Near, `c-t2-9-near-delta.md`: los cinco textos que faltaban en #499.
+
+**Se acepta todo lo de Mello.** En #548 (Misa, lote T2-10):
+- **Lote A, barajar:** un solo ayudante en `secuenciaComun.jsx`, que baraja una vez y guarda el orden en el estado. Aplica en P1·6, P2·4, P2·6, P2·7 (las seis cuentas), P3·4, P3·7, P4·6, P4·8 y P5·6. No se baraja lo que enseña el orden: el debe y el haber, las casas y los platillos, los cajones «Sigue» y «Vuelve a cero», y las predicciones. Lleva su prueba de barajado.
+- **Lote B, pie de página:** «Basado en el libro, pp. …» en la `razon` del cierre de cada pieza. Near confirma las páginas de cada una.
+- **P1:** las cifras de Caja salen de `DE_QUE_ESTA_HECHA.ejemplo`, y las del cierre ($50 y $30) pasan a `contabilidadT2Secuencia.js`.
+- **P3:** el porqué de «vive a la derecha», con el texto de Mello. El préstamo sale de `cu6-pagare` y del saldo inicial de Caja. P3·3 pierde su primera oración (queda en 33 palabras).
+- **P4:** las palabras se parten por palabra, no por letra (`overflow-wrap: break-word`, `hyphens: auto`, `lang="es"`). El control «Partida doble» pasa a «Aplicar la regla».
+- **P5·5:** se quita la orden repetida del apoyo (queda en 36 palabras).
+- Se quitan los comentarios `PENDIENTE_DE_REVISION` de los controles que ya pasaron.
+
+En #499 (C1 entre Aprender y Hacer):
+- **Cuadra por valor E3:** el cheque pasa a $760, con Cuentas por pagar 630 D, Hipoteca 400 D y Bancos 760 H. El porqué y el retro de Bancos son los de Mello.
+- **Las que vuelven a cero:** VC·1, VC·3 y VC·7 se repiten con P2. Se cambian por nominales que no estén en P2 (Mello propone Ingresos por intereses y Gastos por arriendo, más un segundo gasto en lugar de Costo de ventas), con los mismos saldos para que la utilidad siga en $10.500. Near escribe los nombres, los porqués y los retros.
+- **Textos de `c-t2-9-near-delta.md`:** entran tal cual (porqué de origen, acierto de «revisar», J3, pies de fuente y «Así se juega»).
+
+**Para Erwin, no es falla de la célula:** los nombres de fase de SecuenciaAprender («Mírelo funcionar», «Ahora pruebe usted») están en «usted», y el contenido va en «tú». Se avisa en #492.
