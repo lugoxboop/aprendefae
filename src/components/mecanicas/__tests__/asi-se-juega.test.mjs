@@ -455,7 +455,7 @@ test("★★★ movimiento reducido: tres cuadros, la mano quieta en el gesto, �
     try {
       const control = () => caja.querySelector("[data-asj-control]");
       const sig = () => caja.querySelector("[data-asj-siguiente] button");
-      assert.equal(control().textContent, "Siguiente cuadro");
+      assert.equal(control().textContent, "Ver el cuadro 2", "el control de cuadro no puede empezar como «Siguiente» (#542)");
       assert.equal(caja.querySelector("[data-asj-cuadro]").textContent, "Cuadro 1 de 3");
       /* Sin reloj: medio segundo después sigue en el inicio. */
       await act(async () => { await new Promise((r) => setTimeout(r, 300)); });
