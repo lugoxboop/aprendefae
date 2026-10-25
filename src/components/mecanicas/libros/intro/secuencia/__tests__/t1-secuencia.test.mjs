@@ -409,10 +409,10 @@ test("★★★ cu0-a4 · parada (C2): pista al 1.er error; al 2.º «A la foto�
   } finally { m.desmontar(); }
 });
 
-test("★★ cu0-a4 · la llave se llama «Activos y pasivos, en bloque» y la nota «Es la misma cifra con otro nombre» ya no existe", () => {
+test("★★ cu0-a4 · la llave se llama «El balance completo» y la nota «Es la misma cifra con otro nombre» ya no existe", () => {
   const m = montar(pantalla(PIEZA_ARTICULAN, "dos-flechas").Figura);
   try {
-    assert.match(m.caja.querySelector('[data-flecha-sec="f1"]').textContent, /Utilidad neta → Activos y pasivos, en bloque/);
+    assert.match(m.caja.querySelector('[data-flecha-sec="f1"]').textContent, /Utilidad neta → El balance completo/);
     tocar(m.caja.querySelector('[data-flecha-sec="f1"]'));
     tocar(m.caja.querySelector('[data-flecha-sec="f2"]'));
     assert.doesNotMatch(m.caja.textContent, /misma cifra con otro nombre/);
