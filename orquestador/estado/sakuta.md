@@ -1,9 +1,9 @@
-2026-10-24 21:13 (hora Bogotá)
+2026-10-24 21:48 (hora Bogotá)
 - T1 · #496 (t1-5, las dos torres): terminado, fusionado (233c635) con el PASA de Shoko y el CI en verde
 - T1 · #520 (logito LibretaYLapiz): terminado, fusionado (047f3b7) con el PASA de Shoko y el CI en verde
 - T1 · #531 (t1-5, lo que se ve después de «Anotar»): en curso; Mai lo resolvió (fichas/b-t1-5-despues-de-anotar-mai.md: cabe en 524 de 568 px con las casillas plegadas en un renglón por parte); lo construye Kaede
-- T1 · #535 (lote 4): en curso; segunda FALLA de Shoko en las seis piezas (revisiones/b-t1-535-b-shoko.md); Kaede corrige; la devolución de t1-6 por familia la escribe Futaba (lote E). Decisión mía: el rótulo «Pasa algo en la empresa» de t1-1 se queda, porque es el nombre publicado
-- T1 · #539 (lote 5: H1 y H2): en curso; las capturas corregidas ya están con Shoko
+- T1 · #535 (lote 4): en curso; Kaede corrige con la segunda auditoría de Shoko (revisiones/b-t1-535-b-shoko.md) y con las 5 devoluciones de t1-6 de Futaba (fichas/b-t1-lote-24oct-e-futaba.md). t1-4 se queda con un solo «Anotar» (Shoko lo retiró) y solo cambia el chip
+- T1 · #539 (lote 5: H1 y H2): en curso; segunda FALLA de Shoko (revisiones/b-t1-539-b-shoko.md): el acierto de H1 tiene que nombrar el informe, H2 necesita un rótulo para las cuatro personas atenuadas, y la reserva de H2 vuelve a 48 px. Los textos los escribe Futaba (lote F) y el resto Kaede
 - T1 · #551 (lo decidido del capítulo 2): terminado, fusionado (e5707a0) con el PASA de Shoko y el CI en verde
 - T1 · «Utilidad del ejercicio» en t1-7: terminado; Futaba lo resolvió (§10 de la ficha de fuente): la pieza pasa a «Activos y pasivos, en bloque» con el mismo id; lo aplica Kaede en el #535
 - Shoko traspasada a un chat nuevo (6c926eca); el 02dc9984 quedó pesado, con 19 subidas; traspasos/shoko.md está al día
