@@ -14,6 +14,7 @@ import { Encabezado } from "../tema1/encabezado.jsx";
 import {
   C, INTER, CIFRA, CONTADOR, SOLO_LECTOR, LECTOR, ESTADOS, Pastilla, Responder, useIntento,
 } from "../../../repasoCap5/comun.jsx";
+import { Relieve, CSS_RELIEVE, N0, N1, N2 } from "./relieve.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -57,8 +58,7 @@ const CORRIGE_MS = 900;
 
 const CSS = `
 .fae-gp button:focus-visible, .fae-gp [tabindex]:focus-visible { outline: 2px solid ${C.texto}; outline-offset: 2px; }
-.fae-gp-casilla { -webkit-tap-highlight-color: transparent; transition: transform 90ms ${CURVA}; }
-.fae-gp-casilla:not([aria-disabled="true"]):active { transform: scale(0.98); }
+.fae-gp-casilla { -webkit-tap-highlight-color: transparent; }
 @keyframes fae-gp-cae { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: none; } }
 .fae-gp-cae { animation: fae-gp-cae ${CAE_MS}ms ${CURVA} both; }
 .fae-gp-barra { transform-origin: left center; transition: transform ${CUENTA_MS}ms ${CURVA}; }
@@ -115,39 +115,57 @@ function Ficha({ numero, enCurso }) {
   );
 }
 
-/* Una casilla de la matriz: un botón de 56 px de alto con su nombre de dos rótulos (§6, §8, C3). */
+/*
+ * Volumen (#3; forma v1 §1 y delta §1, Itagaki): en reposo, cara N1 sobre
+ * canto N0 en E1; la elegida (la tocada: acierto o error), cara N2 + filo
+ * sobre canto N1 en E2. «Iba aquí» va en la correcta, que no se eligió: se
+ * queda en N1. El acierto o el error no cambian la elevación, cambian el
+ * borde (2 px #F8F9FA o coral). Las caras son opacas (canon §2.4).
+ */
+const FONDO_PASTILLA = { mal: "#30303B", ok: "#2F3C4C", revelada: "#2F3C4C" };
+
+/* Una casilla de la matriz: una cara de 56 px de alto (60 con el canto) con su nombre de dos rótulos (§6, §8, C3). */
 function Casilla({ casilla, estado, fichas, activa, onTocar }) {
   const forma = ESTADOS[estado] ?? ESTADOS.reposo;
+  const elegida = estado === "ok" || estado === "mal";
+  const veredicto = estado === "ok" || estado === "mal" || estado === "revelada";
   return (
+    <Relieve e={elegida ? 4 : 3} canto={elegida ? N1 : N0} filo={elegida} radio="8px" style={{ minWidth: 0 }}>
     <button
       type="button"
-      className="fae-gp-casilla"
+      className="fae-rel-cara fae-gp-casilla"
       data-casilla={casilla.id}
       data-estado={estado}
       aria-label={nombreDeCasilla(casilla)}
       aria-disabled={activa ? undefined : "true"}
       onClick={() => onTocar(casilla.id)}
       style={{
-        position: "relative", display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "flex-start",
+        display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "flex-start", width: "100%",
         gap: "4px", boxSizing: "border-box", height: "56px", minWidth: 0, padding: "4px 0 0", borderRadius: "8px",
-        cursor: activa ? "pointer" : "default", border: forma.border, background: forma.background, color: C.texto,
+        cursor: activa ? "pointer" : "default", border: forma.border, background: elegida ? N2 : N1, color: C.texto,
+        touchAction: "manipulation",
       }}
     >
       {/*
-        * La pastilla, centrada, con 4 px de holgura a cada lado (Takamura en
-        * #533). «No va aquí» con su X mide 80,5 con hueco de 3 (81,5 con el de
-        * 4 del estándar; medido, Inter 12/700). Con el contorno de 2 px, la
-        * casilla necesita 2 + 4 + 80,5 + 4 + 2 = 92,5: por eso a 320 la
-        * columna de rótulos cede (56 → 43) y las columnas se separan 3 px. A
-        * 375 la columna sigue en 56 y la casilla mide 113.
+        * La pastilla se queda dentro, centrada en su fila de 16 px, con fondo
+        * OPACO (delta §1): #30303B en el error y #2F3C4C en «Correcto» e «Iba
+        * aquí». Así su contraste no depende de la cara (N1 o N2) que tenga
+        * debajo. El fondo lleva los 4 px de holgura a cada lado de Takamura
+        * (#533): «No va aquí» con su X mide 80,5 + 2 × 4 = 88,5, justo lo que
+        * deja por dentro la casilla de 92,5 a 320 con su contorno de 2.
         */}
-      <span data-fila-pastilla style={{ display: "flex", justifyContent: "center", alignSelf: "stretch", boxSizing: "border-box", padding: "0 4px", height: "16px", lineHeight: "16px" }}>
-        {(estado === "ok" || estado === "mal" || estado === "revelada") && <Pastilla estado={estado} hueco={3} />}
+      <span data-fila-pastilla style={{ display: "flex", justifyContent: "center", alignSelf: "stretch", boxSizing: "border-box", height: "16px", lineHeight: "16px" }}>
+        {veredicto && (
+          <span data-pastilla={estado} style={{ display: "inline-flex", boxSizing: "border-box", height: "16px", padding: "0 4px", borderRadius: "4px", background: FONDO_PASTILLA[estado] }}>
+            <Pastilla estado={estado} hueco={3} />
+          </span>
+        )}
       </span>
       <span data-fichas style={{ display: "flex", flexWrap: "wrap", gap: "4px", paddingLeft: "3px" }}>
         {fichas.map((f) => <Ficha key={f.numero} numero={f.numero} enCurso={f.enCurso} />)}
       </span>
     </button>
+    </Relieve>
   );
 }
 
@@ -329,6 +347,7 @@ export default function GastoOPago({
     return (
       <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
         <style>{CSS}</style>
+        <style>{CSS_RELIEVE}</style>
         <div className="fae-gp" data-gasto-o-pago data-version={jugada} data-estado-partida="resumen">
           <Matriz colocadas={anteriores} estados={{}} activa={false} onTocar={() => {}} valores={base}
             habria={{ gastos: null, salio: null }} escala={escala} />
@@ -376,6 +395,7 @@ export default function GastoOPago({
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS}</style>
+      <style>{CSS_RELIEVE}</style>
       <div ref={raiz} className="fae-gp" data-gasto-o-pago data-version={jugada} data-estado-partida={toque ? (toque.r.ok ? "bien" : `mal-${fase}`) : "vacio"}>
         {!modoDemo && (
           <div data-encabezado-hacer>
