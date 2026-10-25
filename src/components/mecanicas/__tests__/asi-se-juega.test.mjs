@@ -481,8 +481,8 @@ test("★★ T1-4 real: el «·» antes de revelar y «Marca las tres» apagado 
     const puntos = [...caja.querySelectorAll('[data-signo="sin"]')];
     assert.equal(puntos.length, 3);
     for (const x of puntos) assert.equal(x.style.color, "rgb(168, 182, 200)");
-    /* El caso se elige después de «Anotar» (Shoko, #535 b): el botón pide solo las tres. */
-    const marca = boton(caja, "Marca las tres");
+    /* Lote 4: en la partida el botón pide también el caso (un solo «Anotar»). */
+    const marca = boton(caja, "Marca las tres y el caso");
     assert.equal(marca.disabled, true);
     assert.equal(marca.style.color, "rgb(168, 182, 200)");
   } finally { desmontar(); }
