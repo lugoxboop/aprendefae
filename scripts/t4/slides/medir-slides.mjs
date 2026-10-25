@@ -113,7 +113,9 @@ for (const [w, h] of ANCHOS) {
         c?.click();
         return Boolean(c);
       });
-      if (!ok) break;
+      /* Un Haz de dos tarjetas: la segunda llega tarde (A1 p4, 1,4 s). Se espera una vez antes de rendirse. */
+      if (!ok) { if (k > 0 && !(await pagina.evaluate(() => window.__esperoUna))) { await pagina.evaluate(() => { window.__esperoUna = true; }); await pagina.waitForTimeout(1600); continue; } break; }
+      await pagina.evaluate(() => { window.__esperoUna = false; });
       await pagina.waitForTimeout(150);
       despues = await medir();
     }
