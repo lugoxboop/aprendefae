@@ -1,6 +1,6 @@
 import {
   CASOS_RESULTADO_CAJA, CASO_A, CASO_B, ELECCIONES, signoDe, rotuloDe,
-  VARIOS_ERRORES, ERROR_CUADRA_CON_ERRORES, NO_MUEVE,
+  VARIOS_ERRORES, errorCuadraConErrores, NO_MUEVE,
 } from "../data/contabilidadTema3ResultadoCaja.js";
 
 /*
@@ -12,8 +12,9 @@ import {
  *
  * Se califica la clasificación completa, ficha por ficha, con un intento.
  * El mensaje lleva, en este orden:
- *   · ERROR_CUADRA_CON_ERRORES, si la caja de las respuestas es la correcta
- *     pero hay exactamente dos fichas mal puestas (A6: el texto dice «dos»);
+ *   · A6, si la caja de las respuestas es la correcta pero hay fichas mal
+ *     puestas, con su número en palabras: «dos» en A; «tres» o «cuatro» en B
+ *     (Kamogawa, #557);
  *   · los errores de las dos primeras fichas mal puestas, en el orden de las
  *     fichas;
  *   · «Y hay más fichas por revisar.», si hay más de dos.
@@ -47,7 +48,7 @@ export function evaluarResultadoCaja(caso, respuestas) {
   const textos = [];
   if (ok) textos.push(caso.acierto);
   else {
-    if (cuadra && mal.length === 2) textos.push(ERROR_CUADRA_CON_ERRORES);
+    if (cuadra) textos.push(errorCuadraConErrores(mal.length));
     for (const f of mal.slice(0, 2)) textos.push(f.error);
     if (mal.length > 2) textos.push(VARIOS_ERRORES);
   }

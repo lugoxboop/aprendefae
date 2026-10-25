@@ -11,7 +11,8 @@ import { JSDOM, VirtualConsole } from "jsdom";
  *   · los textos literales: §0, §3, §4, §5 y §6
  *   · las cuentas: A da 14.650 y B 6.800.000, por la utilidad y por la caja
  *   · la evaluación: dos errores como mucho, en el orden de las fichas,
- *     «Y hay más…» y ERROR_CUADRA_CON_ERRORES (A6)
+ *     «Y hay más…» y A6 con su número en palabras («dos» en A; «tres» o
+ *     «cuatro» en B)
  *   · el puente: escala, renglones, alto de Itagaki y el tramo menor ≥ 4 px
  *   · montada: una ficha por paso, sin total corrido, la lista que devuelve
  *     la ficha, «Comprobar» solo con todas, el punteado y A7 (sin punteado si
@@ -88,6 +89,10 @@ test("★★★ catálogo, consigna, pasos, cierre y los textos de §0 (A4, A6, 
   assert.equal(D.ROTULO_CAJA_CIERRE, "Caja al cierre");
   assert.equal(D.LEYENDA_PUNTEADO, "Punteado: así quedaba con tus respuestas");
   assert.equal(D.ERROR_CUADRA_CON_ERRORES, "Llegaste a la caja correcta, pero con dos fichas mal puestas: sus errores se cancelaron.");
+  /* Kamogawa, #557: el número va en palabras. */
+  assert.equal(D.errorCuadraConErrores(2), D.ERROR_CUADRA_CON_ERRORES);
+  assert.equal(D.errorCuadraConErrores(3), "Llegaste a la caja correcta, pero con tres fichas mal puestas: sus errores se cancelaron.");
+  assert.equal(D.errorCuadraConErrores(4), "Llegaste a la caja correcta, pero con cuatro fichas mal puestas: sus errores se cancelaron.");
   assert.deepEqual(D.ELECCIONES.map((e) => e.rotulo), ["Suma", "Resta", "No mueve la caja"]);
   assert.equal(D.INTERFAZ_RESULTADO_CAJA.paso(2, 4), "Paso 2 de 4");
 });
@@ -189,22 +194,22 @@ test("★★★ A6: en A, Equipo en «Suma» y Alquiler en «Resta» llegan a la
   assert.equal(r.cuadra, true);
   assert.deepEqual(r.textos, [D.ERROR_CUADRA_CON_ERRORES, CASO_A.fichas[1].error, CASO_A.fichas[3].error]);
   /*
-   * El texto dice «dos». Recorridas las 3⁴ y 3⁶ respuestas: en A es el único
-   * caso que cuadra con errores; en B cuadran dos, con 3 y 4 fichas mal, y
-   * ahí no sale (diría «dos» sin serlo).
+   * Recorridas las 3⁴ y 3⁶ respuestas: en A es el único caso que cuadra con
+   * errores, y dice «dos»; en B cuadran dos, con 3 y 4 fichas mal, y A6 dice
+   * «tres» y «cuatro» (Kamogawa, #557). Siempre va primero.
    */
   const cuadran = (caso) => {
     const ids = caso.fichas.map((f) => f.id);
     const salen = [];
     const rec = (k, resp) => {
-      if (k === ids.length) { const e = L.evaluarResultadoCaja(caso, resp); if (e.cuadra) salen.push([e.mal.length, e.textos.includes(D.ERROR_CUADRA_CON_ERRORES)]); return; }
+      if (k === ids.length) { const e = L.evaluarResultadoCaja(caso, resp); if (e.cuadra) salen.push([e.mal.length, e.textos[0] === D.errorCuadraConErrores(e.mal.length)]); return; }
       for (const o of [SUMA, RESTA, NO_MUEVE]) rec(k + 1, { ...resp, [ids[k]]: o });
     };
     rec(0, {});
     return salen.sort();
   };
   assert.deepEqual(cuadran(CASO_A), [[2, true]]);
-  assert.deepEqual(cuadran(CASO_B), [[3, false], [4, false]]);
+  assert.deepEqual(cuadran(CASO_B), [[3, true], [4, true]]);
 });
 
 /* ═══════════ EL PUENTE ═══════════ */
@@ -444,6 +449,54 @@ test("★★★ cuadra con errores en B (tres mal): sin leyenda; caja negativa e
     assert.equal(puente.querySelector("[data-leyenda]").textContent, "Con tus respuestas, la caja daba −$3.200.000");
   } finally { m.desmontar(); }
 });
+
+/*
+ * A6 en las dos versiones, por recorrido completo (Kamogawa, #557): se busca
+ * entre todas las respuestas la que cuadra con n fichas mal, se juega ficha
+ * por ficha en la pieza montada y se comprueba. A6 va primero, con el número
+ * en palabras; después, los errores de las dos primeras mal puestas, y «Y hay
+ * más fichas por revisar.» si son más de dos. Sin punteado ni leyenda.
+ */
+const cuadraCon = (caso, n) => {
+  const ids = caso.fichas.map((f) => f.id);
+  let hallado = null;
+  const rec = (k, c) => {
+    if (hallado) return;
+    if (k === ids.length) {
+      const e = L.evaluarResultadoCaja(caso, respuestasDe(caso, c));
+      if (e.cuadra && e.mal.length === n) hallado = { ...c };
+      return;
+    }
+    for (const x of [SUMA, RESTA, NO_MUEVE]) rec(k + 1, { ...c, [ids[k]]: x });
+  };
+  rec(0, {});
+  return hallado;
+};
+for (const [version, n, palabra] of [["A", 2, "dos"], ["B", 3, "tres"], ["B", 4, "cuatro"]]) {
+  test(`★★★ A6 montada, recorrido completo: ${version} con ${n} fichas mal dice «${palabra}» y después los errores`, async () => {
+    const caso = L.casoDe(version);
+    const cambios = cuadraCon(caso, n);
+    assert.ok(cambios, `hay una respuesta de ${version} que cuadra con ${n} mal`);
+    const m = await montar({ version });
+    try {
+      await jugar(m.caja, caso, cambios);
+      await tocar(m.caja.querySelector("[data-comprobar]"));
+      assert.equal(estado(m.caja), "mal");
+      const mal = caso.fichas.filter((f) => respuestasDe(caso, cambios)[f.id] !== f.va);
+      assert.equal(mal.length, n);
+      const esperados = [
+        `Llegaste a la caja correcta, pero con ${palabra} fichas mal puestas: sus errores se cancelaron.`,
+        ...mal.slice(0, 2).map((f) => f.error),
+        ...(n > 2 ? [D.VARIOS_ERRORES] : []),
+      ];
+      assert.deepEqual(textos(m.caja), esperados);
+      const puente = m.caja.querySelector("[data-puente]");
+      assert.equal(puente.querySelector("[data-punteado]"), null);
+      assert.equal(puente.querySelector("[data-cifra-suya]"), null);
+      assert.equal(puente.querySelector("[data-leyenda]"), null);
+    } finally { m.desmontar(); }
+  });
+}
 
 test("★★★ A1: A en los intentos impares y B en los pares, contados al terminar; la puntuación es por ficha", async () => {
   localStorage.clear();

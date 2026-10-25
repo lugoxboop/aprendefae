@@ -21,7 +21,11 @@
  *                negativa, «Con tus respuestas, la caja daba −$X»; si
  *                cuadra con errores, ninguna.
  *   · TENUE      Kamogawa, #557: la ficha que no mueve la caja y el
- *                estudiante sumó o restó, en su renglón tenue, con su alto.
+ *                estudiante sumó o restó, en su renglón tenue, con su alto
+ *                y el contraste de cada texto suyo contra su fondo (≥ 4,5:1).
+ *   · A6         Kamogawa, #557: si cuadra con errores, el primer párrafo
+ *                es A6 con el número en palabras («dos» en A; «tres» y
+ *                «cuatro» en B, partidas cuadra y cuadra4).
  *   · BARRA, SALE, LETRA (≥ 12 px), TOQUE (≥ 44 × 44) y CONTRASTE (texto
  *                ≥ 4,5:1, contorno de los botones en reposo ≥ 3:1).
  *
@@ -37,7 +41,7 @@ import { createServer } from "vite";
 import { createRequire } from "node:module";
 import { existsSync, mkdirSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { CASO_A, CASO_B, SUMA, RESTA, NO_MUEVE, LEYENDA_PUNTEADO, LEYENDA_NEGATIVA, TU_RESPUESTA, signoDe } from "../../src/data/contabilidadTema3ResultadoCaja.js";
+import { CASO_A, CASO_B, SUMA, RESTA, NO_MUEVE, LEYENDA_PUNTEADO, LEYENDA_NEGATIVA, TU_RESPUESTA, signoDe, errorCuadraConErrores } from "../../src/data/contabilidadTema3ResultadoCaja.js";
 import { cajaDe, pesos, conSigno } from "../../src/contabilidad/resultadoCaja.js";
 
 const RAIZ = resolve(import.meta.dirname, "../..");
@@ -63,8 +67,9 @@ const PARTIDAS = {
     bien: {},
     mal: { "t3rc-b3": SUMA, "t3rc-b6": SUMA },
     negativa: { "t3rc-b1": RESTA },
-    /* La única que cuadra con tres mal (con cuatro hay otra). */
+    /* Las únicas dos que cuadran con errores en B: con tres mal y con cuatro. */
     cuadra: { "t3rc-b1": NO_MUEVE, "t3rc-b3": SUMA, "t3rc-b4": SUMA },
+    cuadra4: { "t3rc-b2": RESTA, "t3rc-b3": NO_MUEVE, "t3rc-b4": NO_MUEVE, "t3rc-b6": SUMA },
   },
 };
 
@@ -77,6 +82,7 @@ const compartidos = new Set();
 const filas = [];
 const enVentana = [];
 const cortes = [];
+const tonosTenue = [];
 const fuentesReales = existsSync(`${FUENTES}fuentes.css`);
 
 async function contexto(ancho) {
@@ -118,11 +124,6 @@ function medir() {
   r.punteado = document.querySelector("[data-puente] [data-punteado]")?.getBoundingClientRect().width ?? null;
   r.cifraSuya = document.querySelector("[data-puente] [data-cifra-suya]")?.textContent ?? null;
   r.leyendas = [...document.querySelectorAll("[data-puente] [data-leyenda]")].map((x) => ({ tipo: x.dataset.leyenda, texto: x.textContent, alto: x.getBoundingClientRect().height }));
-  r.tenues = [...document.querySelectorAll("[data-puente] [data-renglon-tenue]")].map((x) => {
-    const [nombre, cifra] = x.querySelectorAll("span");
-    const monto = x.querySelector("[data-monto-tenue]").getClientRects();
-    return { nombre: nombre.textContent, cifra: cifra.textContent, alto: x.getBoundingClientRect().height, lineasNombre: Math.round(nombre.getBoundingClientRect().height / 16), lineasCifra: Math.round(cifra.getBoundingClientRect().height / 16), cifraEnUnRenglon: monto.length === 1 };
-  });
   const nombreLineas = (el) => { const rg = document.createRange(); rg.selectNodeContents(el); return new Set([...rg.getClientRects()].map((q) => Math.round(q.top))).size; };
   const nombre1 = document.querySelector("[data-tarjeta] [data-nombre]");
   r.lineasNombre = nombre1 ? nombreLineas(nombre1) : null;
@@ -144,6 +145,12 @@ function medir() {
   const lum = (c) => { const f = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; }; return 0.2126 * f(c[0]) + 0.7152 * f(c[1]) + 0.0722 * f(c[2]); };
   const contraste = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((u, v) => v - u); return (x + 0.05) / (y + 0.05); };
 
+  r.tenues = [...document.querySelectorAll("[data-puente] [data-renglon-tenue]")].map((x) => {
+    const [nombre, cifra] = x.querySelectorAll("span");
+    const monto = x.querySelector("[data-monto-tenue]").getClientRects();
+    return { contraste: [...x.querySelectorAll("span")].filter((e) => [...e.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim())).map((e) => ({ texto: e.textContent.trim(), color: getComputedStyle(e).color, k: Math.round(contraste(rgba(getComputedStyle(e).color), fondoDe(e)) * 100) / 100, fondo: fondoDe(e).slice(0, 3).map((v) => Math.round(v)) })),
+      nombre: nombre.textContent, cifra: cifra.textContent, alto: x.getBoundingClientRect().height, lineasNombre: Math.round(nombre.getBoundingClientRect().height / 16), lineasCifra: Math.round(cifra.getBoundingClientRect().height / 16), cifraEnUnRenglon: monto.length === 1 };
+  });
   const nombre = (el) => `${el.tagName.toLowerCase()}${[...el.attributes].filter((a) => a.name.startsWith("data-")).map((a) => `[${a.name}]`).slice(0, 2).join("")} «${(el.textContent || "").trim().slice(0, 24)}»`;
   const visible = (el) => {
     for (let x = el; x && x !== document.body; x = x.parentElement) {
@@ -293,7 +300,7 @@ async function partida(ancho, version, nombre) {
   await pagina.waitForTimeout(400);
   await pagina.locator("[data-puente]").scrollIntoViewIfNeeded();
   await pagina.waitForTimeout(1800);
-  const estado = { bien: "bien", mal: "mal (punteado)", negativa: "mal (caja negativa, A7)", cuadra: "mal (cuadra con errores, A6)" }[nombre];
+  const estado = { bien: "bien", mal: "mal (punteado)", negativa: "mal (caja negativa, A7)", cuadra: "mal (cuadra con errores, A6)", cuadra4: "mal (cuadra con cuatro errores, A6)" }[nombre];
   const r = nota(estado, await pagina.evaluate(medir));
   filas.push(`|  |  | ↳ ${nombre}: pista ${r.pista?.toFixed(1)} px, punteado ${r.punteado === null ? "ninguno" : `${r.punteado.toFixed(1)} px`}, cifra de sus respuestas ${r.cifraSuya ?? "—"}, renglones ${r.renglones.join(" ")} |`);
   if (nombre === "negativa" && r.punteado !== null) fallos.push(`${etq}: A7, hay punteado con la caja negativa`);
@@ -304,7 +311,18 @@ async function partida(ancho, version, nombre) {
     : nombre === "negativa" ? [{ tipo: "negativa", texto: `${LEYENDA_NEGATIVA} ${pesos(suya)}` }] : [];
   const vista = r.leyendas.map(({ tipo, texto }) => ({ tipo, texto }));
   if (JSON.stringify(vista) !== JSON.stringify(esperada)) fallos.push(`${etq}: LEYENDA ${JSON.stringify(vista)}, se esperaba ${JSON.stringify(esperada)}`);
-  if (nombre === "cuadra" && (r.punteado !== null || r.cifraSuya !== null)) fallos.push(`${etq}: cuadra con errores y hay punteado o cifra`);
+  /* A6 (Kamogawa, #557): el primer párrafo, con el número de fichas mal en palabras. */
+  const malas = caso.fichas.filter((f) => (cambios[f.id] ?? f.va) !== f.va).length;
+  const primero = await pagina.evaluate(() => document.querySelector("[data-parrafo-devolucion]")?.textContent.replace(/^(Correcto|Incorrecto)\. /, "") ?? null);
+  if (nombre.startsWith("cuadra")) {
+    if (primero !== errorCuadraConErrores(malas)) fallos.push(`${etq}: A6 dice «${primero}», se esperaba «${errorCuadraConErrores(malas)}»`);
+    filas.push(`|  |  | ↳ A6 con ${malas} mal: «${primero}» |`);
+  }
+  for (const x of r.tenues) for (const c of x.contraste) {
+    tonosTenue.push(`| ${ancho} | ${version} | ${nombre} | «${c.texto}» | ${c.color} | rgb(${c.fondo.join(", ")}) | ${c.k.toFixed(2)}:1 |`);
+    if (c.k < 4.5) fallos.push(`${etq}: renglón tenue «${c.texto}» a ${c.k}:1 (< 4,5)`);
+  }
+  if (nombre.startsWith("cuadra") && (r.punteado !== null || r.cifraSuya !== null)) fallos.push(`${etq}: cuadra con errores y hay punteado o cifra`);
   if (nombre === "negativa" && r.cifraSuya !== pesos(suya)) fallos.push(`${etq}: la cifra negativa es ${r.cifraSuya}, se esperaba ${pesos(suya)}`);
   /* La cifra negativa va pegada a la frase: el monto no se parte (nowrap) y sale en el mismo párrafo. */
   /* TENUE (Kamogawa, #557): una por cada ficha que no mueve y el estudiante movió. */
@@ -315,8 +333,8 @@ async function partida(ancho, version, nombre) {
   filas.push(`|  |  | ↳ leyenda: ${r.leyendas.length ? r.leyendas.map((l) => `«${l.texto}» (${l.alto.toFixed(1)} px)`).join(", ") : "ninguna"}; renglón tenue: ${r.tenues.length ? r.tenues.map((x) => `«${x.nombre} ${x.cifra}» (${x.alto.toFixed(1)} px, nombre en ${x.lineasNombre} l., cifra en ${x.lineasCifra} l.)`).join(", ") : "ninguno"} |`);
   if (conCapturas) {
     await pagina.evaluate(() => scrollTo(0, 0));
-    await captura({ bien: "bien", mal: "mal", negativa: "mal-negativa", cuadra: "mal-cuadra" }[nombre]);
-    if (CAPTURAS && r.tenues.length) await pagina.locator("[data-puente]").screenshot({ path: `${CAPTURAS}/resultado-caja-${version}-${ancho}-tenue.png`, animations: "disabled" });
+    await captura({ bien: "bien", mal: "mal", negativa: "mal-negativa", cuadra: "mal-cuadra", cuadra4: "mal-cuadra4" }[nombre]);
+    if (CAPTURAS && r.tenues.length && nombre === "mal") await pagina.locator("[data-puente]").screenshot({ path: `${CAPTURAS}/resultado-caja-${version}-${ancho}-tenue.png`, animations: "disabled" });
   }
   if (nombre === "bien") {
     await pagina.click("[data-siguiente]");
@@ -378,6 +396,10 @@ console.log("\n**La regla de ventana:** la ranura de decisión entera en la vent
 console.log("| Partida | Paso | Arriba | Abajo | Alto | Ventana |");
 console.log("|---|---|---|---|---|---|");
 console.log(enVentana.join("\n"));
+console.log("\n**El renglón tenue · contraste medido** (cada texto suyo contra su fondo efectivo; mínimo 4,5:1):\n");
+console.log("| Ancho | Versión | Partida | Texto | Color | Fondo | Contraste |");
+console.log("|---|---|---|---|---|---|---|");
+console.log(tonosTenue.join("\n"));
 if (compartidos.size) console.log(`\nCompartido, no de esta pieza (se informa, no falla):\n${[...compartidos].join("\n")}`);
 console.log(fallos.length ? `\n${fallos.length} NO CUMPLEN:\n${fallos.join("\n")}` : "\nTodo cumple a 320 y 375 en A y B: la ranura entera en la ventana en cada paso, «No mueve la caja» sin cortes, tramo menor ≥ 4 px, sin barra, nada se sale, nada bajo 12 px, toques ≥ 44, texto ≥ 4,5:1 y contorno ≥ 3:1.");
 process.exit(fallos.length ? 1 : 0);

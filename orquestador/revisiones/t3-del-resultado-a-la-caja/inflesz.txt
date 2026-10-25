@@ -12,8 +12,16 @@
        Y hay más fichas por revisar.
  75,5   15 p ·  28 s · 1 f  cumple (≥ 65)
        Llegaste a la caja correcta, pero con dos fichas mal puestas: sus errores se cancelaron.
+ 75,5   15 p ·  28 s · 1 f  cumple (≥ 65)
+       Llegaste a la caja correcta, pero con tres fichas mal puestas: sus errores se cancelaron.
+ 71,4   15 p ·  29 s · 1 f  cumple (≥ 65)
+       Llegaste a la caja correcta, pero con cuatro fichas mal puestas: sus errores se cancelaron.
  55,5    6 p ·  14 s · 1 f  no aplica (menos de 10 palabras)
        Punteado: así quedaba con tus respuestas
+ 84,1    7 p ·  13 s · 1 f  no aplica (menos de 10 palabras)
+       Con tus respuestas, la caja daba −$350
+ 84,1    7 p ·  13 s · 1 f  no aplica (menos de 10 palabras)
+       Con tus respuestas, la caja daba −$3.200.000
 100,0    3 p ·   5 s · 1 f  no aplica (menos de 10 palabras)
        Caja al cierre
  91,8   12 p ·  21 s · 2 f  cumple (≥ 65)
@@ -71,4 +79,4 @@
  75,4   24 p ·  46 s · 2 f  cumple (≥ 65)
        Ejemplo: la panadería ganó $300.000 y aún le deben $100.000. La ficha de cuentas por cobrar va en Resta: la caja subió solo $200.000.
 
-36 textos, 0 por debajo de 65.
+40 textos, 0 por debajo de 65.
