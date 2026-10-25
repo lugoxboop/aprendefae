@@ -1,8 +1,8 @@
-2026-10-24 22:51 (hora Bogotá)
+2026-10-24 22:57 (hora Bogotá)
 - T1 · #496 (t1-5, las dos torres): terminado, fusionado (233c635) con el PASA de Shoko y el CI en verde
 - T1 · #520 (logito LibretaYLapiz): terminado, fusionado (047f3b7) con el PASA de Shoko y el CI en verde
 - T1 · #531 (t1-5, lo que se ve después de «Anotar»): terminado, fusionado (ad898f9) con el PASA de Shoko y el CI en verde
-- T1 · #535 (lote 4): en curso; Kaede corrigió t1-8 y t1-7 (b043a96, CI verde); las capturas de la cuarta vuelta ya están con Shoko
+- T1 · #535 (lote 4: los 6 Hacer publicados): terminado, fusionado (6f62798) con el PASA de Shoko en las seis (Medio) y el CI en verde. Queda una mejora chica: en t1-7 la pieza pasa a «El balance completo» (Kaede)
 - T1 · #539 (lote 5): en curso; H1 tiene PASA; a H2 le falta que la reserva no crezca al responder (Kaede). Los cuatro encendidos están bien: se lo expliqué a Shoko
 - T1 · #551 (lo decidido del capítulo 2): terminado, fusionado (e5707a0) con el PASA de Shoko y el CI en verde
 - T1 · «Utilidad del ejercicio» en t1-7: terminado; Futaba lo resolvió (§10 de la ficha de fuente): la pieza pasa a «Activos y pasivos, en bloque» con el mismo id; lo aplica Kaede en el #535
