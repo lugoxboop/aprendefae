@@ -1,4 +1,4 @@
-2026-10-25 02:40 (hora Bogotá)
+2026-10-25 03:12 (hora Bogotá)
 - Vara nueva (24-oct): Mateo no da vistos buenos; se fusiona con PASA del auditor y CI verde. Las 6 correcciones de Takamura a contenido aprobado de T3 las decidió Kamogawa (se aplican); deja de haber BLOQUEADO-MATEO: terminado
 - r5 cerrado (r5-1 a r5-5 en Avanzado; tema oculto hasta el próximo semestre): terminado
 - T3 lote 1 (hilo de Aprender, Hacer nuevos, línea base, lenguaje visual), PR #484: terminado (fusionado)
@@ -13,7 +13,7 @@
 - Capítulo 4 del libro: terminado (Mateo se lo pasó directo a Miyata; #468 cerrado)
 - T3 lote 5: mapa del cap. 4 (Miyata) con PASA con correcciones de Takamura, fusionado (#527): terminado. C2 decidido: «Del resultado a la caja» A usa las cifras de P5 (3.950 → 14.650)
 - T3 lote 6: Takamura auditó el contenido: P2 PASA con condiciones, «Del resultado a la caja» v3 PASA con condiciones, P6 NO PASA hasta C5. Itagaki entregó la secuencia v2 a 150/200 px (en auditoría). Lo que el componente necesita está en #534 para Erwin: terminado
-- P2 y P6 en secuencia: paquete #578 con PASA completo de Takamura (lote 17), fusionado. Con eso, las seis piezas de T3 tienen forma y texto aprobados. Ippo construye P2 y P6 (rama feat/conta-e3-p2-p6-secuencia), con los deltas ya pasados: en curso
+- P2 y P6 en secuencia: #578 fusionado (PASA completo). Ippo abrió #586 (P2 y P6 detrás de la bandera; cabecera real 105 px; pila 243/258; 154 estados sin fallas). Una sesión nueva monta P2-7, P6-7, P6-9 y la pista de P6-4; luego audita Takamura: en curso
 - T3 secuencias: la v2 de Itagaki cumple en diseño (D5, D4, E8). Decidí S3: las preguntas «En una frase» pasan al Repaso Diario. P5-2 queda en 5 pasos (MAX_PASOS). Itagaki hace la v3 y Miyata los textos (37 titulares, opciones y pistas): en curso
 - Regla j (leer una vez, exprimir y dejarlo en el repo): pasada a los cuatro agentes: terminado
 
