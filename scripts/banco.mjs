@@ -38,6 +38,10 @@ const sueltos = args.filter((a, i) => !a.startsWith("--") && !(args[i - 1] === "
 const id = sueltos[0] ?? "";
 const lista = args.includes("--lista");
 const todas = args.includes("--todas");
+/* `--pasos`: en una secuencia de Aprender, recorre pantalla a pantalla con
+ * «Siguiente» y mide cada una. Es donde aparece lo que no se ve en la
+ * primera: la figura que crece y tapa la navegación. */
+const pasos = args.includes("--pasos");
 const foto = args.includes("--foto");
 const iAncho = args.findIndex((a) => a === "--ancho" || a.startsWith("--ancho="));
 const unAncho = iAncho < 0 ? NaN : Number(args[iAncho].includes("=") ? args[iAncho].split("=")[1] : args[iAncho + 1]);
@@ -139,6 +143,62 @@ if (todas) {
     await pg.close();
   }
   console.log(`\nSin reproches: ${limpias} de ${catalogo.length}.`);
+  await navegador.close(); await servidor.close();
+  process.exit(0);
+}
+
+if (pasos) {
+  for (const [w, h] of ANCHOS) {
+    const ctx = await navegador.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: 1 });
+    const pg = await ctx.newPage();
+    const fallos = [];
+    pg.on("pageerror", (e) => fallos.push(String(e).slice(0, 120)));
+    await pg.goto(`${BANCO}#${encodeURIComponent(id)}`, { waitUntil: "networkidle" });
+    await pg.waitForTimeout(800);
+    await pg.evaluate(() => document.fonts.ready);
+    console.log(`\n=== ${id} · ${w}×${h} · pantalla a pantalla ===`);
+    let n = 0, igual = 0, antes = "";
+    while (n < 60) {
+      n += 1;
+      const r = await pg.evaluate(medir);
+      const titular = await pg.evaluate(() => document.querySelector("h2")?.textContent?.trim().slice(0, 40) ?? "");
+      const avisos = [];
+      if (r.desborde) avisos.push("desborde horizontal");
+      for (const t of r.toque) avisos.push(`toque ${t.h}px «${t.q}»`);
+      for (const t of r.chico) avisos.push(`texto ${t.px}px «${t.q}»`);
+      if (r.cortados.length) avisos.push(`cortados: ${r.cortados.join(", ")}`);
+      /* Lo que más duele en una secuencia: que algo quede por debajo del pliegue
+       * o encima de la navegación. Se mide contra el alto de la ventana. */
+      const nav = await pg.evaluate((alto) => {
+        const b = [...document.querySelectorAll("button")].find((x) => /^Siguiente/.test(x.textContent.trim()));
+        if (!b) return null;
+        const r = b.getBoundingClientRect();
+        const tapado = document.elementFromPoint(Math.round(r.left + r.width / 2), Math.round(r.top + r.height / 2));
+        return { y: Math.round(r.top + scrollY), fuera: Math.round(r.top + scrollY + r.height) > alto, tapado: tapado && !b.contains(tapado) && tapado !== b ? (tapado.tagName + "." + (tapado.className || "").toString().slice(0, 20)) : null };
+      }, h);
+      if (nav?.tapado) avisos.push(`«Siguiente» tapado por ${nav.tapado}`);
+      console.log(`  ${String(n).padStart(2)} · ${String(r.alto).padStart(4)} px · «${titular}»${avisos.length ? " · " + avisos.join(" · ") : ""}`);
+      if (!nav) break;
+      const avanzo = await pg.evaluate(() => {
+        const b = [...document.querySelectorAll("button")].find((x) => /^Siguiente/.test(x.textContent.trim()));
+        if (!b || b.disabled) return false;
+        b.click(); return true;
+      });
+      if (!avanzo) break;
+      await pg.waitForTimeout(700);
+      /*
+       * Una pantalla de Haz no deja pasar sin respuesta válida, y eso está
+       * bien: «Siguiente» se pulsa y no avanza. Si la pantalla no cambia dos
+       * veces seguidas, es eso y no un cuelgue. Se dice y se para.
+       */
+      const ahora = await pg.evaluate(() => (document.querySelector("h2")?.textContent ?? "") + "|" + document.body.scrollHeight);
+      igual = ahora === antes ? igual + 1 : 0;
+      antes = ahora;
+      if (igual >= 1) { console.log(`     ⤷ se detiene aquí: la pantalla pide una respuesta para seguir (es lo esperado en un Haz)`); break; }
+    }
+    if (fallos.length) console.log(`  errores de la página: ${fallos.join(" | ")}`);
+    await ctx.close();
+  }
   await navegador.close(); await servidor.close();
   process.exit(0);
 }

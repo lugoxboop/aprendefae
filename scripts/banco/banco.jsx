@@ -28,13 +28,46 @@ import { MarcoLibros } from "../../src/components/mecanicas/bloques/marcos.jsx";
 import { FAE } from "../../src/theme.js";
 
 const VISTAS = import.meta.glob("../../src/components/*View.jsx", { eager: true });
+/* Las secuencias de Aprender no están en JUEGOS: viven en módulos propios que
+ * exportan PIEZAS_* y TEMA_*, y los importa cada vista. Se recogen igual. */
+const SECUENCIAS_MOD = import.meta.glob(
+  ["../../src/components/mecanicas/libros/**/secuencia/*.js", "../../src/components/mecanicas/libros/**/secuencia*.jsx", "../../src/components/mecanicas/libros/t7/Aprender*.jsx"],
+  { eager: true }
+);
 
 const CATALOGO = new Map();
 for (const [ruta, mod] of Object.entries(VISTAS)) {
   if (!Array.isArray(mod.JUEGOS)) continue;
   for (const j of mod.JUEGOS) if (j?.id && !CATALOGO.has(j.id)) CATALOGO.set(j.id, { ...j, vista: ruta.split("/").pop() });
 }
-window.__CATALOGO = [...CATALOGO.entries()].map(([id, j]) => ({ id, vista: j.vista }));
+/*
+ * Las secuencias, por su clave: de `PIEZAS_T7_1` sale `t7_1`, y su tema sale de
+ * `TEMA_T7_1` del mismo módulo (o del `TEMA_*` que haya, si solo hay uno).
+ */
+const SECUENCIAS = new Map();
+for (const [ruta, mod] of Object.entries({ ...VISTAS, ...SECUENCIAS_MOD })) {
+  const temas = Object.entries(mod).filter(([k, v]) => (k === "TEMA" || k.startsWith("TEMA_")) && typeof v === "string");
+  const css = Object.entries(mod).filter(([k, v]) => k.startsWith("CSS_") && typeof v === "string").map(([, v]) => v);
+  for (const [k, piezas] of Object.entries(mod)) {
+    /*
+     * No todo `PIEZAS_*` es una secuencia de Aprender: T7 y T4 tienen listas
+     * con el mismo nombre para otros componentes, y montarlas aquí revienta
+     * con «pieza.pantallas is not iterable». La forma manda sobre el nombre.
+     */
+    if (!k.startsWith("PIEZAS_") || !Array.isArray(piezas) || !piezas.length) continue;
+    if (!piezas.every((pz) => Array.isArray(pz?.pantallas))) continue;
+    const sufijo = k.slice("PIEZAS_".length);
+    const clave = sufijo.toLowerCase().replace(/_/g, "-");
+    /* Sin TEMA a mano, uno de mentira: aquí solo sirve de clave de guardado. */
+    const tema = temas.find(([tk]) => tk.slice("TEMA_".length) === sufijo)?.[1] ?? temas[0]?.[1] ?? `banco-${clave}`;
+    if (!SECUENCIAS.has(clave)) SECUENCIAS.set(clave, { tema, piezas, css, modulo: ruta.split("/").pop() });
+  }
+}
+
+window.__CATALOGO = [
+  ...[...CATALOGO.entries()].map(([id, j]) => ({ id, vista: j.vista, clase: "hacer" })),
+  ...[...SECUENCIAS.entries()].map(([k, v]) => ({ id: `aprender:${k}`, vista: v.modulo, clase: "aprender", piezas: v.piezas.length })),
+];
 
 const { default: JuegoConTutorial } = await import("../../src/components/mecanicas/libros/JuegoConTutorial.jsx")
   .catch(() => ({ default: null }));
@@ -52,9 +85,22 @@ const SESION_FALSA = {
 
 const [id, consulta = ""] = decodeURIComponent(location.hash.slice(1)).split("?");
 const juego = CATALOGO.get(id);
+const secuencia = id.startsWith("aprender:") ? SECUENCIAS.get(id.slice("aprender:".length)) : null;
 const raiz = createRoot(document.getElementById("raiz"));
 
-if (!juego) {
+if (secuencia) {
+  const { default: SecuenciaAprender } = await import("../../src/components/secuencia/SecuenciaAprender.jsx");
+  raiz.render(
+    <StrictMode>
+      <AuthContext.Provider value={SESION_FALSA}>
+        <div data-pieza={id} style={{ padding: "16px" }}>
+          {secuencia.css.map((c, i) => <style key={i}>{c}</style>)}
+          <SecuenciaAprender temaId={secuencia.tema} piezas={secuencia.piezas} final="tema" onFinal={() => {}} />
+        </div>
+      </AuthContext.Provider>
+    </StrictMode>
+  );
+} else if (!juego) {
   raiz.render(
     <div style={{ padding: 16, color: "#F8F9FA", fontFamily: "Inter, sans-serif", fontSize: 14 }}>
       <p style={{ margin: "0 0 12px" }}>{id ? `No hay ninguna pieza con el id «${id}».` : "Pon el id de la pieza en el hash."}</p>
