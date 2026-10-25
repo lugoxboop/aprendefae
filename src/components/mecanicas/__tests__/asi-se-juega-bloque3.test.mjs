@@ -117,7 +117,8 @@ test("★★ las catorce actividades tienen «Así se juega»", () => {
 });
 
 test("★★ consignas: T1-6 cambia (la ficha no se toca) y las siete del Tema 2 son nuevas", () => {
-  assert.equal(T1_6.consigna, "Toca el informe donde va la ficha. Si es el de arriba, toca también en qué parte.");
+  /* Lote 4: un toque sobre cinco destinos (P2 de Mai, ajustes del 24-oct). */
+  assert.equal(T1_6.consigna, "Lee la ficha. Toca a cuál de los cinco va: activo, pasivo, patrimonio, ingresos o gastos.");
   assert.deepEqual(CONSIGNA_TEMA2, {
     "cu-izquierda-o-derecha": "Lee si la cuenta sube o baja. Lleva la ficha al lado que corresponde.",
     "cu-de-que-familia": "Arrastra cada cuenta a su familia.",
@@ -139,7 +140,7 @@ test("★★ consignas: T1-6 cambia (la ficha no se toca) y las siete del Tema 2
 
 test("★★ los pasos de Gen, palabra por palabra", () => {
   const pasos = Object.fromEntries(IDS.map((id) => [id, ASI_TODAS[id].pasos]));
-  assert.deepEqual(pasos[T1_6.id], ["Lee la ficha de arriba.", "Toca el informe donde va esa ficha.", "Toca la parte y confirma con Colocar la ficha."]);
+  assert.deepEqual(pasos[T1_6.id], ["Lee la ficha de arriba.", "Toca su destino, uno de los cinco, en un solo toque.", "Mira cómo sube la cuenta de ese destino."]);
   assert.deepEqual(pasos["cu-izquierda-o-derecha"], ["Lee si esa cuenta sube o baja.", "Arrastra la ficha al debe o al haber.", "El ▲ marca el lado por donde esa cuenta crece."]);
   assert.deepEqual(pasos["cu-de-que-familia"], ["Lee el nombre de la cuenta.", "Pregúntate: ¿la empresa la tiene, la debe o es lo que la empresa les reconoce a los socios?", "Arrastra la cuenta a esa familia."]);
   assert.deepEqual(pasos["cu-cuadro-dinamicas"], ["Piensa si esa familia crece por el debe o por el haber.", "Toca + o − y queda puesto en la casilla del debe.", "La casilla del haber se llena sola, con el signo contrario."]);
@@ -184,12 +185,22 @@ for (const id of IDS) {
     const dos = montar(tutorial(id));
     try {
       assert.equal(dos.caja.querySelector("[data-asi-se-juega]"), null, "salió otra vez");
-      const consigna = dos.caja.querySelector("[data-encabezado] [data-consigna]");
-      assert.equal(consigna?.textContent, ASI_TODAS[id].consigna, "la consigna no se ve arriba");
       const ayuda = dos.caja.querySelector("[data-encabezado] [data-como-se-juega]");
-      assert.ok(ayuda, "no está «¿Cómo se juega?» bajo la consigna");
-      tocar(ayuda);
-      assert.ok(dos.caja.querySelector(`[data-asi-se-juega="${id}"]`), "«¿Cómo se juega?» no la abrió");
+      assert.ok(ayuda, "no está «¿Cómo se juega?» en el encabezado");
+      if (id === T1_6.id) {
+        /*
+         * T1-6 con el encabezado compacto de B (lote 4, C1): la consigna va
+         * plegada bajo «¿Cómo se juega?», que la despliega.
+         */
+        tocar(ayuda);
+        assert.equal(dos.caja.querySelector("[data-como-se-juega-panel]").dataset.comoSeJuegaPanel, "abierto");
+        assert.equal(dos.caja.querySelector("[data-consigna]").textContent, ASI_TODAS[id].consigna);
+      } else {
+        const consigna = dos.caja.querySelector("[data-encabezado] [data-consigna]");
+        assert.equal(consigna?.textContent, ASI_TODAS[id].consigna, "la consigna no se ve arriba");
+        tocar(ayuda);
+        assert.ok(dos.caja.querySelector(`[data-asi-se-juega="${id}"]`), "«¿Cómo se juega?» no la abrió");
+      }
     } finally { dos.desmontar(); }
   });
 }
@@ -207,7 +218,7 @@ test("★★ en el Tema 2 la pantalla no repite el nombre que ya está encima (q
 /* ═══════════════════ LA DEMO NO GUARDA NADA, Y TERMINA DONDE DEBE ═══════════════════ */
 
 const ACIERTO = {
-  [T1_6.id]: "Va en el primer informe, en lo que tiene. El horno es de la panadería y le dura años.",
+  [T1_6.id]: "Va en el estado de situación financiera, en el activo. El horno es de la panadería y le dura años.",
   "cu-izquierda-o-derecha": "Debe. Muebles y enseres es un activo, y los activos crecen por la izquierda.",
   "cu-de-que-familia": "Activo. La maquinaria es algo que la panadería tiene.",
   "cu-cuadro-dinamicas": "Los activos crecen por el debe. Es la fila base: de aquí salen las demás.",
@@ -261,20 +272,19 @@ test("★★★ en modo demo, responder no llama a onCompletar (Tema 2)", () => 
 
 /* ═══════════════════ LOS PENDIENTES DE T1-1 ═══════════════════ */
 
-test("★★ T1-1: «DÓNDE QUEDÓ» con tilde, y los puntos 1 a 4 atenuados en el borde con el texto en #A8B6C8", async () => {
+test("★★ T1-1 (lote 4): las cinco estaciones con el nombre en #A8B6C8, sin opacidad en la fila, y el veredicto escrito tras responder", async () => {
   const { EJEMPLO_T1_1 } = await import("../../../data/asiSeJuegaBloque2.js");
   const { caja, desmontar } = montar(React.createElement(DesdeDondePreguntan, {
-    Marco: MarcoLibros, onCompletar: () => {}, items: [EJEMPLO_T1_1],
+    Marco: MarcoLibros, onCompletar: () => {}, items: [EJEMPLO_T1_1], modoDemo: true,
   }));
   try {
-    for (const n of [1, 2, 3, 4]) {
+    for (const n of [1, 2, 3, 4, 5]) {
       const est = caja.querySelector(`[data-estacion="${n}"]`);
       assert.equal(est.style.opacity, "", `punto ${n}: la fila entera lleva opacidad`);
       assert.equal(est.querySelector("[data-nombre-estacion]").style.color, "rgb(168, 182, 200)", `punto ${n}: el nombre no es #A8B6C8`);
-      assert.equal(est.querySelector("span").style.color, "rgb(168, 182, 200)", `punto ${n}: el número no es #A8B6C8`);
     }
     tocar(caja.querySelector(`[data-zona="${ZONA_FUERA}"]`));
-    assert.equal(caja.querySelector("[data-rotulo-seccion]").textContent, "DÓNDE QUEDÓ");
+    assert.equal(caja.querySelector("[data-renglon]").textContent, "Correcto");
   } finally { desmontar(); }
 });
 
@@ -317,16 +327,16 @@ test("★★ texto atenuado en #A8B6C8: botón desactivado, marcas de vacío, «
   } finally { c.desmontar(); }
 });
 
-test("★★ T1-6: franjas de tiempo y término en #A8B6C8, y «Activo» en navy sobre la parte elegida", () => {
+test("★★ T1-6: las fechas en #A8B6C8, y el destino correcto en navy con contorno #F8F9FA (C2)", () => {
   const { caja, desmontar } = montar(React.createElement(EnCualEstadoAparece, {
     Marco: MarcoLibros, onCompletar: () => {}, items: [B3.EJEMPLO_T1_6],
   }));
   try {
-    tocar(caja.querySelector('[data-informe="primero"]'));
-    tocar(caja.querySelector('[data-seccion="activo"]'));
+    tocar(caja.querySelector('[data-destino="primero-activo"]'));
     for (const x of caja.querySelectorAll('[data-linea="cuando"]')) assert.equal(x.style.color, "rgb(168, 182, 200)");
-    assert.equal(caja.querySelector("[data-termino-informe]").style.color, "rgb(168, 182, 200)");
-    assert.equal(caja.querySelector('[data-seccion="activo"] [data-termino]').style.color, "rgb(29, 53, 87)");
+    const activo = caja.querySelector('[data-destino="primero-activo"]');
+    assert.equal(activo.style.background, "rgb(29, 53, 87)");
+    assert.equal(activo.style.border, "2px solid rgb(248, 249, 250)");
   } finally { desmontar(); }
 });
 

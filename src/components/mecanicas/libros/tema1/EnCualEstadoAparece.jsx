@@ -1,137 +1,175 @@
 import { useEffect, useRef, useState } from "react";
 import { barajar } from "../../../../utils/barajar.js";
 import { FAE } from "../../../../theme.js";
-import { NEUTRO, NAVY_DEL_CHIP, TEXTO_ATENUADO } from "../../../../data/contabilidadIntro.js";
 import {
-  T1_6, INFORMES, SECCIONES_T1_6, PRIMERO, ALT_T1_6,
+  T1_6, INFORMES, SECCIONES_T1_6, SECCIONES_SEGUNDO_T1_6, PRIMERO, SEGUNDO, ALT_T1_6,
 } from "../../../../data/contabilidadTema1.js";
 import {
-  sortearT1_6, evaluarT1_6, valorDeItem, puntuarT1_6, pesoDeCadaItem,
+  sortearT1_6, evaluarT1_6, valorDeItem, puntuarT1_6, pesoDeCadaItem, sinEmoji,
 } from "../../../../contabilidad/tema1.js";
-import { Retro, Pulsos, Cierre } from "../../corazon/juego.jsx";
+import { Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
-import { Responder, useTanda } from "../piezas.jsx";
+import { useTanda } from "../piezas.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";
-import { Encabezado, IdeaConTermino } from "./encabezado.jsx";
+import EncabezadoCompacto from "../b5/EncabezadoCompacto.jsx";
+import {
+  Pastilla, Mensaje, RegionViva, IconoCheck, IconoX, CORRECTA, TACHADA, REVELADA, CSS_B5H, CLASE_B5H,
+} from "../b5/Devolucion.jsx";
+import {
+  SORA, INTER, SECUNDARIO, HUNDIDO, REPOSO, ACIERTO, FANTASMA, estiloC2, contadorDe, Avance,
+  CSS_REGISTRO, CLASE_APARECE,
+} from "./registro.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
- * T1-6 · ¿EN CUÁL ESTADO APARECE?
+ * T1-6 · ¿EN QUÉ ESTADO APARECE? — la foto y la película se llenan (P2 de
+ * Mai, 23-oct; ajustes a la auditoría de Shoko, 24-oct, §3).
  *
- * Una ficha con un concepto y dos informes. Si va en el primero, además hay
- * que decir en qué parte.
+ * La ficha cae, con UN toque, en uno de cinco destinos: «Activo», «Pasivo» o
+ * «Patrimonio», en la foto de un día (el estado de situación financiera, al
+ * 31 de diciembre), o «Ingresos» o «Gastos», en la película de todo el año
+ * (el estado de resultados, con su franja de tiempo). Al azar se acierta una
+ * de cada cinco; con dos decisiones seguidas, la primera binaria, se acertaba
+ * la mitad de las veces.
  *
- * ═══════════ LA PESTAÑA LLEVA DOS LÍNEAS ═══════════
+ * El puntaje sigue siendo el de la llave compuesta (`informe-seccion`): el
+ * informe pesa 60 y la parte 40. Un solo intento.
  *
- * La idea simple arriba y CUÁNDO debajo: «a 31 dic» contra «1 ene – 31 dic».
- * Esa segunda línea no es un adorno — es el criterio entero de la actividad.
- * Un informe es la foto de un día y el otro cuenta un año, y sin la franja de
- * tiempo a la vista la pregunta se convierte en memorizar dos listas.
+ * El registro: tras tocar, el contador del destino CORRECTO sube y ese
+ * destino queda resaltado hasta la ficha siguiente, se acierte o no. Si
+ * erró, el tocado queda con el fantasma coral y ✕, y el renglón reservado
+ * dice «Iba aquí: {informe} · {parte}». El escenario mide lo mismo vacío y
+ * respondido: el renglón de abajo tiene su alto desde el principio.
  *
- * El término del libro va de rótulo DENTRO de la pestaña, en el encabezado del
- * informe. No dentro de ninguna frase, y no se quita nunca.
- *
- * ═══════════ «LO QUE GANÓ Y GASTÓ» NO SE USA ═══════════
- *
- * El segundo informe se llama «Lo que vendió y lo que gastó durante el año».
- * El nombre viejo está retirado del sitio entero.
+ * Los nombres de los informes son los del Aprender (Futaba, 24-oct): la vista
+ * pinta `termino` y `fecha`, y deja `idea` intacta para T1-7 y cu0-a4.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-const CSS = `
-@keyframes fae-t16-entra { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: none; } }
-.fae-t16-entra { animation: fae-t16-entra 280ms ease-out both; }
-@keyframes fae-t16-rebota {
-  0% { transform: translateX(0); } 30% { transform: translateX(-5px); }
-  60% { transform: translateX(4px); } 100% { transform: translateX(0); }
-}
-.fae-t16-rebota { animation: fae-t16-rebota 400ms ease-out 1; }
-@media (prefers-reduced-motion: reduce) {
-  .fae-t16-entra, .fae-t16-rebota { animation: none !important; opacity: 1 !important; transform: none !important; }
-}
-`;
+const CIFRA = { fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace", fontVariantNumeric: "tabular-nums" };
+const FOTO = INFORMES.find((i) => i.id === PRIMERO);
+const PELICULA = INFORMES.find((i) => i.id === SEGUNDO);
 
-const SORA = "Sora, sans-serif";
+/* Los cinco destinos, en el orden de la pantalla. La foto rotula con el término del libro. */
+export const DESTINOS_EN_PANTALLA = [
+  ...SECCIONES_T1_6.map((s) => ({ informe: PRIMERO, seccion: s.id, nombre: s.termino })),
+  ...SECCIONES_SEGUNDO_T1_6.map((s) => ({ informe: SEGUNDO, seccion: s.id, nombre: s.idea })),
+];
+const claveDe = (d) => `${d.informe}-${d.seccion}`;
+const destinoCorrecto = (c) => DESTINOS_EN_PANTALLA.find((d) => d.informe === c.informe && d.seccion === c.seccion);
+const informeDe = (id) => INFORMES.find((i) => i.id === id);
+const nombreLargo = (d) => `${informeDe(d.informe).termino} · ${d.nombre}`;
+const fichas = (n) => `${n} ${n === 1 ? "ficha" : "fichas"}`;
+
+/* Alto reservado del renglón «Entró: …» / «Iba aquí: …». Medido a 320 con el texto más largo (PR del lote 4). */
+export const ALTO_RENGLON = 40;
+
+function Destino({ d, cuenta, estado, marca, activo, onTocar }) {
+  return (
+    <button
+      type="button"
+      data-destino={claveDe(d)}
+      data-estado={estado}
+      aria-label={`${d.nombre}, ${fichas(cuenta)}`}
+      aria-pressed={estado === FANTASMA || (marca === CORRECTA)}
+      disabled={!activo}
+      onClick={activo ? () => onTocar(d) : undefined}
+      style={{
+        minHeight: "44px", width: "100%", boxSizing: "border-box", padding: "6px 8px", borderRadius: "10px",
+        display: "flex", alignItems: "center", justifyContent: "space-between", gap: "6px",
+        color: FAE.text, cursor: activo ? "pointer" : "default", textAlign: "left",
+        transition: "background-color 240ms cubic-bezier(.3,.9,.4,1)",
+        ...estiloC2(estado),
+      }}
+    >
+      <span style={{ display: "flex", alignItems: "center", gap: "4px", minWidth: 0 }}>
+        {marca === TACHADA && <IconoX />}
+        {(marca === CORRECTA || marca === REVELADA) && <IconoCheck />}
+        <span style={{ fontFamily: SORA, fontSize: "13px", fontWeight: 600, lineHeight: 1.25, overflowWrap: "normal" }}>{d.nombre}</span>
+      </span>
+      <span
+        key={cuenta}
+        data-cuenta={cuenta}
+        aria-hidden="true"
+        className={CLASE_APARECE}
+        style={{
+          flex: "none", minWidth: "22px", padding: "1px 5px", boxSizing: "border-box", borderRadius: "6px",
+          border: "1px solid rgba(248,249,250,0.35)", textAlign: "center",
+          fontSize: "12px", lineHeight: "18px", color: FAE.text, ...CIFRA,
+        }}
+      >
+        {cuenta}
+      </span>
+    </button>
+  );
+}
+
+function CabezaDeInforme({ inf }) {
+  return (
+    <div data-cabeza-informe={inf.id} style={{ margin: "0 0 6px", display: "flex", flexWrap: "wrap", alignItems: "baseline", gap: "0 8px" }}>
+      <p data-termino-informe={inf.termino} style={{ margin: 0, fontFamily: SORA, fontSize: "12px", fontWeight: 700, lineHeight: 1.3, color: FAE.text }}>
+        {inf.termino}
+      </p>
+      {/* La fecha es el criterio de la actividad: un día exacto contra todo un periodo. */}
+      <p data-linea="cuando" style={{ margin: 0, fontFamily: INTER, fontSize: "12px", lineHeight: 1.3, color: SECUNDARIO }}>
+        {inf.fecha}
+      </p>
+    </div>
+  );
+}
 
 /*
  * ═══════════ EL MODO DEMO DE «ASÍ SE JUEGA» ═══════════
  *
- * Es este mismo componente, no una copia dibujada: `items` le da el ejemplo
- * desde afuera en vez de sortearlo del banco, y `modoDemo` le quita lo que no
- * es la zona de juego —el encabezado, el avance, el botón de seguir— y le
- * corta la salida: no llama a `onCompletar`, así que no hay FP, ni intentos,
- * ni progreso. Cómo se juega no cambia en nada; eso es lo que se enseña.
+ * Es este mismo componente: `items` le da el ejemplo desde afuera y `modoDemo`
+ * le quita el encabezado y el avance, y no llama a `onCompletar`.
  */
 export default function EnCualEstadoAparece({
-  Marco, rotulo, titulo, acento, onCompletar, items = null, modoDemo = false, onComoSeJuega = null,
+  Marco, rotulo, titulo, acento, onCompletar, items = null, modoDemo = false,
 }) {
   const t = useTanda(() => items ?? sortearT1_6(barajar));
 
-  const [informe, setInforme] = useState(null);
-  const [seccion, setSeccion] = useState(null);
   const [r, setR] = useState(null);
-  const [intento, setIntento] = useState(0);
   const [respuestas, setRespuestas] = useState([]);
-  const [rebotando, setRebotando] = useState(false);
-  const reloj = useRef(null);
+  /* Cuántas fichas recibió cada destino en la tanda: siempre el correcto (el registro). */
+  const [cuentas, setCuentas] = useState({});
   const zonaBoton = useRef(null);
 
   const c = t.items[t.i];
   const cuantas = t.items.length;
   const pct = puntuarT1_6(respuestas, cuantas);
-  const esperandoReintento = Boolean(r && !r.ok && intento === 1);
-  const puedeResponder = !r || esperandoReintento;
-  /* Con el segundo informe no hay sección que elegir: la respuesta ya está. */
-  const completo = informe === PRIMERO ? Boolean(seccion) : Boolean(informe);
 
   useEffect(() => {
     if (t.terminado && !modoDemo) onCompletar?.(pct, Date.now() - t.inicio.current, t.detalle.current);
   }, [t.terminado]);
-  useEffect(() => () => clearTimeout(reloj.current), []);
   useEffect(() => {
-    if (r && !esperandoReintento && !modoDemo) zonaBoton.current?.querySelector("button")?.focus();
-  }, [r, esperandoReintento]);
+    if (r && !modoDemo) zonaBoton.current?.focus();
+  }, [r]);
 
-  const enviar = () => {
-    if (!completo || (r && !esperandoReintento)) return;
-    const marcado = { informe, seccion: informe === PRIMERO ? seccion : null };
+  const tocar = (d) => {
+    if (r) return;
+    const marcado = { informe: d.informe, seccion: d.seccion };
     const nuevo = evaluarT1_6(c, marcado);
-    const valor = valorDeItem(c, nuevo);
-
-    if (!nuevo.ok) {
-      setRebotando(true);
-      clearTimeout(reloj.current);
-      reloj.current = setTimeout(() => setRebotando(false), 420);
-    }
-
-    if (intento === 0) {
-      t.anotar(c.id, nuevo.ok, nuevo.ok ? null : `${marcado.informe}${marcado.seccion ? `/${marcado.seccion}` : ""}`);
-      if (!nuevo.ok) { setR({ ...nuevo, primero: true }); setIntento(1); return; }
-      setRespuestas((xs) => [...xs, { id: c.id, valor, primeroOk: true }]);
-      setR({ ...nuevo, primero: true });
-      return;
-    }
-    /* En el segundo intento el ítem vale la mitad de lo que habría valido. */
-    setRespuestas((xs) => [...xs, { id: c.id, valor: valor / 2, primeroOk: false, segundoOk: nuevo.ok }]);
-    setIntento(2);
-    setR({ ...nuevo, primero: false });
+    const bien = destinoCorrecto(c);
+    t.anotar(c.id, nuevo.ok, nuevo.ok ? null : `${d.informe}/${d.seccion}`);
+    setRespuestas((xs) => [...xs, { id: c.id, valor: valorDeItem(c, nuevo), primeroOk: nuevo.ok }]);
+    setCuentas((x) => ({ ...x, [claveDe(bien)]: (x[claveDe(bien)] ?? 0) + 1 }));
+    setR({ ...nuevo, tocado: d, correcto: bien });
   };
 
   const avanzar = () => {
-    setR(null); setIntento(0); setInforme(null); setSeccion(null); setRebotando(false);
+    setR(null);
     if (t.i + 1 < cuantas) t.setI(t.i + 1);
     else t.setTerminado(true);
   };
   const reiniciar = () => {
-    t.reiniciar(); setR(null); setIntento(0); setRespuestas([]);
-    setInforme(null); setSeccion(null); setRebotando(false);
+    t.reiniciar(); setR(null); setRespuestas([]); setCuentas({});
   };
 
   if (t.terminado) {
     const bien = respuestas.filter((x) => x.primeroOk).length;
     return (
       <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
-        <style>{CSS}</style>
         <Cierre pct={Math.round(pct)} onReiniciar={reiniciar} textoReiniciar="Otra tanda">
           <p style={TEXTO_CIERRE}>
             {bien} de {cuantas} completas al primer intento. Cada ficha valía {pesoDeCadaItem(cuantas).toFixed(2)} %:
@@ -142,176 +180,106 @@ export default function EnCualEstadoAparece({
     );
   }
 
-  const elegirInforme = (id) => {
-    if (!puedeResponder) return;
-    setInforme(id);
-    /* Cambiar de informe borra la sección: era del otro. */
-    if (id !== PRIMERO) setSeccion(null);
+  /* Estado y marca de cada destino: el correcto se resalta siempre tras tocar; el tocado mal, fantasma. */
+  const estadoDe = (d) => {
+    if (!r) return REPOSO;
+    if (claveDe(d) === claveDe(r.correcto)) return ACIERTO;
+    if (claveDe(d) === claveDe(r.tocado)) return FANTASMA;
+    return REPOSO;
   };
+  const marcaDe = (d) => {
+    if (!r) return null;
+    if (claveDe(d) === claveDe(r.correcto)) return r.ok ? CORRECTA : REVELADA;
+    if (claveDe(d) === claveDe(r.tocado)) return TACHADA;
+    return null;
+  };
+  const destino = (d) => (
+    <Destino
+      key={claveDe(d)}
+      d={d}
+      cuenta={cuentas[claveDe(d)] ?? 0}
+      estado={estadoDe(d)}
+      marca={marcaDe(d)}
+      activo={!r}
+      onTocar={tocar}
+    />
+  );
 
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
-      <style>{CSS}</style>
-      {!modoDemo && (
-        <>
-          <Encabezado objetivo={T1_6.objetivo} consigna={T1_6.consigna} onComoSeJuega={onComoSeJuega} />
-          <div style={{ marginBottom: "12px" }}>
-            <Pulsos total={cuantas} hechos={t.i + (r && !esperandoReintento ? 1 : 0)} enCurso={t.i + 1} etiqueta="Ficha" />
-          </div>
-        </>
-      )}
-
-      {/* Aquí dentro no entra el vocabulario del Tema 2. */}
-      <div data-contenido>
-        <p
-          data-ficha={c.id}
-          className={rebotando ? "fae-t16-rebota" : undefined}
-          style={{
-            margin: "0 0 12px", padding: "11px 13px", borderRadius: "11px",
-            fontFamily: SORA, fontSize: "14px", fontWeight: 700, lineHeight: 1.3, color: FAE.text,
-            background: "rgba(10,20,34,0.5)",
-            border: `1px ${rebotando ? "dashed" : "solid"} ${rebotando ? FAE.coral : "rgba(248,249,250,0.2)"}`,
-          }}
-        >
-          {c.nombre}
-        </p>
-
-        {/*
-          ═══════════ LAS DOS PESTAÑAS, CADA UNA CON SUS DOS LÍNEAS ═══════════
-          Apiladas y no en fila: a 375 px, dos pestañas de 160 px cada una
-          parten «Lo que la empresa tiene y debe hoy» en cinco renglones.
-        */}
-        <div data-pestanas style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-          {INFORMES.map((inf) => {
-            const activa = informe === inf.id;
-            /*
-             * La pestaña que ya no se puede elegir se atenúa en el borde y el
-             * fondo, no entera: heredada, la opacidad dejaba su franja de
-             * tiempo en 2,4:1. El texto va en #A8B6C8 sólido.
-             */
-            const tenue = !puedeResponder && !activa;
-            return (
-              <div key={inf.id}>
-                <button
-                  type="button"
-                  data-informe={inf.id}
-                  data-elegido={activa ? "si" : "no"}
-                  aria-pressed={activa}
-                  disabled={!puedeResponder}
-                  onClick={() => elegirInforme(inf.id)}
-                  style={{
-                    display: "block", textAlign: "left", width: "100%", boxSizing: "border-box",
-                    padding: "9px 11px", borderRadius: activa ? "10px 10px 0 0" : "10px",
-                    cursor: puedeResponder ? "pointer" : "default",
-                    background: activa ? "rgba(184,196,212,0.12)" : tenue ? "rgba(10,20,34,0.2)" : "rgba(10,20,34,0.4)",
-                    /* Bordes en propiedades largas: mezclar `border` con `borderBottom` hace que React avise al repintar. */
-                    borderStyle: "solid",
-                    borderWidth: activa ? "2px 2px 0 2px" : "1px",
-                    borderColor: activa ? NEUTRO : tenue ? "rgba(248,249,250,0.08)" : "rgba(248,249,250,0.16)",
-                    color: tenue ? TEXTO_ATENUADO : FAE.text,
-                  }}
-                >
-                  <span data-linea="idea" style={{
-                    display: "block", fontFamily: SORA, fontSize: "12.5px", fontWeight: 700, lineHeight: 1.25,
-                  }}>
-                    {inf.idea}
-                  </span>
-                  {/* La franja de tiempo: es el criterio, no un pie de página. */}
-                  <span data-linea="cuando" style={{
-                    display: "block", marginTop: "2px", fontSize: "10.5px",
-                    color: TEXTO_ATENUADO,
-                  }}>
-                    {inf.cuando}
-                  </span>
-                </button>
-
-                {activa && (
-                  <div data-dentro={inf.id} className="fae-t16-entra" style={{
-                    padding: "8px 11px 10px", borderRadius: "0 0 10px 10px",
-                    background: "rgba(184,196,212,0.06)",
-                    border: `2px solid ${NEUTRO}`, borderTop: "none",
-                  }}>
-                    {/* El término del libro, de rótulo en el encabezado del informe. */}
-                    <p data-termino-informe={inf.termino} style={{
-                      margin: "0 0 7px", fontSize: "10px", letterSpacing: "0.06em",
-                      color: TEXTO_ATENUADO,
-                    }}>
-                      {inf.termino}
-                    </p>
-                    {inf.id === PRIMERO ? (
-                      <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
-                        {SECCIONES_T1_6.map((s) => {
-                          const esta = seccion === s.id;
-                          return (
-                            <button
-                              key={s.id}
-                              type="button"
-                              data-seccion={s.id}
-                              data-marcada={esta ? "si" : "no"}
-                              aria-pressed={esta}
-                              disabled={!puedeResponder}
-                              onClick={puedeResponder ? () => setSeccion(s.id) : undefined}
-                              style={{
-                                display: "block", textAlign: "left", boxSizing: "border-box",
-                                padding: "7px 9px", borderRadius: "8px",
-                                cursor: puedeResponder ? "pointer" : "default",
-                                background: esta ? NEUTRO : "rgba(10,20,34,0.4)",
-                                border: `1px solid ${esta ? NEUTRO : "rgba(248,249,250,0.18)"}`,
-                              }}
-                            >
-                              <IdeaConTermino
-                                idea={s.idea}
-                                termino={s.termino}
-                                tamano={11.5}
-                                color={esta ? NAVY_DEL_CHIP : FAE.text}
-                                /* Sobre la parte elegida (fondo #B8C4D4), el término va en navy. */
-                                colorTermino={esta ? NAVY_DEL_CHIP : undefined}
-                              />
-                            </button>
-                          );
-                        })}
-                      </div>
-                    ) : (
-                      <p data-sin-secciones style={{
-                        margin: 0, fontSize: "11px", color: "rgba(248,249,250,0.55)",
-                      }}>
-                        Aquí no hay que elegir parte.
-                      </p>
-                    )}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-
-        {esperandoReintento && (
-          <p data-fallo style={{
-            margin: "9px 0 0", padding: "7px 10px", borderRadius: "10px",
-            fontSize: "12px", textAlign: "center", color: "rgba(248,249,250,0.75)",
-            border: `1px dashed ${FAE.coral}`,
-          }}>
-            La ficha no se colocó.
-          </p>
+      <style>{CSS_B5H}{CSS_REGISTRO}</style>
+      <div className={CLASE_B5H} data-t16-destinos>
+        {!modoDemo && (
+          <EncabezadoCompacto
+            objetivo={T1_6.objetivo}
+            contador={contadorDe("Ficha", t.i + 1, cuantas)}
+            consigna={T1_6.consigna}
+          />
         )}
-      </div>
 
-      {r && <Retro texto={r.texto} />}
+        {/* Aquí dentro no entra el vocabulario del Tema 2. */}
+        <div data-contenido>
+          <div data-escenario style={{ ...HUNDIDO, padding: "10px" }}>
+            {/* La ficha es la primera pieza de la figura: es la que cae en un destino. */}
+            <p data-ficha={c.id} style={{
+              margin: "0 0 10px", padding: "10px 12px", borderRadius: "11px",
+              fontFamily: SORA, fontSize: "14px", fontWeight: 700, lineHeight: 1.3, color: FAE.text,
+              background: "rgba(10,20,34,0.5)", border: "1px solid rgba(248,249,250,0.2)",
+            }}>
+              {c.nombre}
+            </p>
 
-      {puedeResponder && (
-        <Responder onClick={enviar} deshabilitado={!completo}>
-          {completo ? "Colocar la ficha" : informe === PRIMERO ? "Elige en qué parte" : "Elige un informe"}
-        </Responder>
-      )}
-      {r && !esperandoReintento && !modoDemo && (
-        <div ref={zonaBoton}>
-          <Responder onClick={avanzar}>
-            {t.i + 1 === cuantas ? "Ver el resultado" : "Siguiente ficha"}
-          </Responder>
+            {/*
+              Las dos zonas una debajo de la otra, cada una con su título a todo
+              lo ancho (Shoko): en dos columnas «Estado de situación financiera»
+              se partía en tres renglones y empujaba el primer destino. En la
+              foto los tres destinos van en columna (en fila, «Patrimonio» no
+              cabe a 320); en la película, los dos en fila.
+            */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+              <div data-informe={PRIMERO} role="group" aria-label={`${FOTO.termino}, ${FOTO.fecha}`}>
+                <CabezaDeInforme inf={FOTO} />
+                <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                  {DESTINOS_EN_PANTALLA.filter((d) => d.informe === PRIMERO).map(destino)}
+                </div>
+              </div>
+              <div data-informe={SEGUNDO} role="group" aria-label={`${PELICULA.termino}, ${PELICULA.fecha}`}>
+                <CabezaDeInforme inf={PELICULA} />
+                {/* La franja del tiempo: la película corre todo el año. */}
+                <div data-franja aria-hidden="true" style={{
+                  height: "6px", margin: "0 0 6px", borderRadius: "3px",
+                  background: "repeating-linear-gradient(90deg, rgba(184,196,212,.55) 0 6px, transparent 6px 12px)",
+                }} />
+                <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)", gap: "6px" }}>
+                  {DESTINOS_EN_PANTALLA.filter((d) => d.informe === SEGUNDO).map(destino)}
+                </div>
+              </div>
+            </div>
+
+            {/* El renglón reservado: a dónde entró la ficha, o a dónde iba. */}
+            <div data-renglon style={{ minHeight: `${ALTO_RENGLON}px`, marginTop: "8px", display: "flex", alignItems: "center" }}>
+              {r && r.ok && (
+                <p data-entro className={CLASE_APARECE} style={{ margin: 0, fontFamily: INTER, fontSize: "12px", lineHeight: 1.35, color: SECUNDARIO }}>
+                  Entró: {c.nombre} → {nombreLargo(r.correcto)}
+                </p>
+              )}
+              {r && !r.ok && <Pastilla marca={REVELADA} valor={nombreLargo(r.correcto)} envuelve />}
+            </div>
+          </div>
         </div>
-      )}
 
-      {!modoDemo && <p style={SOLO_LECTOR}>{ALT_T1_6}</p>}
+        <RegionViva>
+          {r && <Mensaje ok={r.ok} texto={sinEmoji(r.texto)} />}
+        </RegionViva>
+
+        {r && !modoDemo && (
+          <Avance onClick={avanzar} refBoton={zonaBoton}>
+            {t.i + 1 === cuantas ? "Ver el resultado" : "Siguiente ficha"}
+          </Avance>
+        )}
+
+        {!modoDemo && <p style={SOLO_LECTOR}>{ALT_T1_6}</p>}
+      </div>
     </Marco>
   );
 }
