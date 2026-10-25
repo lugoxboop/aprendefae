@@ -156,7 +156,11 @@ function medir() {
     const borde = parseFloat(getComputedStyle(b).borderLeftWidth);
     const q = v.getBoundingClientRect();
     const exceso = Math.max(cb.left + borde - q.left, q.right - (cb.right - borde));
-    r.pastillas = [...(r.pastillas ?? []), Math.round((cb.width - 2 * borde - q.width) * 10) / 10];
+    /* Holgura a cada lado: de la pastilla al borde de dentro del contorno (Takamura en #533: ≥ 4 px a los dos lados). */
+    const izq = q.left - (cb.left + borde);
+    const der = (cb.right - borde) - q.right;
+    r.pastillas = [...(r.pastillas ?? []), `${izq.toFixed(1)} / ${der.toFixed(1)}`];
+    if (Math.min(izq, der) < 3.95) r.sale.push(`pastilla «${v.textContent}» con ${Math.min(izq, der).toFixed(1)} px de holgura (< 4)`);
     if (exceso > 0.01) r.sale.push(`pastilla «${v.textContent}» ${exceso.toFixed(1)} px fuera de su casilla`);
   }
   /* El contorno en reposo de una casilla contra el fondo de la matriz (no es texto: 3:1). */

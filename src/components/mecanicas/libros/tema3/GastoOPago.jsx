@@ -134,12 +134,14 @@ function Casilla({ casilla, estado, fichas, activa, onTocar }) {
       }}
     >
       {/*
-        * La pastilla, centrada y sin relleno lateral. A 320 la casilla mide 85 y,
-        * con el contorno de 2 px, deja 81 por dentro: «No va aquí» con su X mide
-        * 81,5 con el hueco de 4 del estándar y 80,5 con 3 (medido, Inter 12/700).
-        * Por eso aquí el hueco es 3. A 375 sobra (112,5).
+        * La pastilla, centrada, con 4 px de holgura a cada lado (Takamura en
+        * #533). «No va aquí» con su X mide 80,5 con hueco de 3 (81,5 con el de
+        * 4 del estándar; medido, Inter 12/700). Con el contorno de 2 px, la
+        * casilla necesita 2 + 4 + 80,5 + 4 + 2 = 92,5: por eso a 320 la
+        * columna de rótulos cede (56 → 43) y las columnas se separan 3 px. A
+        * 375 la columna sigue en 56 y la casilla mide 113.
         */}
-      <span style={{ display: "flex", justifyContent: "center", alignSelf: "stretch", height: "16px", lineHeight: "16px" }}>
+      <span data-fila-pastilla style={{ display: "flex", justifyContent: "center", alignSelf: "stretch", boxSizing: "border-box", padding: "0 4px", height: "16px", lineHeight: "16px" }}>
         {(estado === "ok" || estado === "mal" || estado === "revelada") && <Pastilla estado={estado} hueco={3} />}
       </span>
       <span data-fichas style={{ display: "flex", flexWrap: "wrap", gap: "4px", paddingLeft: "3px" }}>
@@ -195,7 +197,7 @@ export function Matriz({ colocadas, estados, activa, onTocar, valores, habria, e
     <div data-matriz ref={refMatriz} style={{
       boxSizing: "border-box", padding: "11px", borderRadius: "12px", background: C.panel, border: "1px solid rgba(248,249,250,0.12)",
     }}>
-      <div role="group" aria-label="Casillas" style={{ display: "grid", gridTemplateColumns: "56px minmax(0, 1fr) minmax(0, 1fr)", columnGap: "4px", rowGap: "4px" }}>
+      <div role="group" aria-label="Casillas" style={{ display: "grid", gridTemplateColumns: "minmax(0, 56px) minmax(92.5px, 1fr) minmax(92.5px, 1fr)", columnGap: "3px", rowGap: "4px" }}>
         <span aria-hidden="true" style={{ height: "36px" }} />
         {[ROTULO_SIN_SALIDA, ROTULO_SALIDA].map((r) => (
           <span key={r} aria-hidden="true" data-rotulo-columna style={{ ...ROTULO, height: "36px", display: "flex", alignItems: "flex-end", justifyContent: "center", textAlign: "center", paddingBottom: "4px", boxSizing: "border-box" }}>{r}</span>
