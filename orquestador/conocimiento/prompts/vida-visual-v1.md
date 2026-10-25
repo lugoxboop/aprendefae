@@ -142,8 +142,42 @@ no hay ninguno se deriva, y entonces se escribe la razón.
   que no se anima, no es una sombra y no cae aquí.
 - **El contorno de silueta sustituye al `inset` al 35%** que llevan hoy muchos
   controles. No se ponen los dos.
+- **Repartido entre las dos capas**, que es como no queda una raya en medio: el
+  canto lleva el anillo completo y la cara lo lleva arriba y a los lados
+  (ejecución de la Célula E en #601).
+- **El contenedor reserva siempre los 4 px de la elevación máxima**, aunque el
+  bloque esté en E1. Así pasar de E1 a E2 no mueve nada de lo que hay debajo, y
+  en E1 queda 1 px libre bajo el canto.
 
 ---
+
+### 2.3b Lo que recibe: el hundido
+
+La escalera solo subía. Un **destino** —una casilla que espera una ficha, una
+columna donde se suelta una cuenta— es lo contrario y hacía falta. Lo resolvió
+la Célula E construyendo T3 (#601) y entra tal cual:
+
+- **Un escalón más oscuro que su contenedor, y sin canto.** En Contabilidad es
+  `#0D1725`, que no es un tono nuevo: es el interior publicado de la cuenta T.
+- **Al pulsar no se hunde**, porque no tiene canto que tapar: `scale(.97)`.
+- **Solo existe DENTRO de una superficie elevada, nunca sobre la página.**
+  Medido: `#0D1725` contra la página da **1,04:1** —a efectos prácticos son el
+  mismo tono— y contra N1 **1,46:1**, contra N2 **1,97:1**. Un hundido puesto
+  sobre el fondo es un agujero invisible.
+
+### 2.3c Subir la superficie obliga a recomprobar lo que va escrito encima
+
+Esto faltaba y es un fallo del texto original: levanté las superficies a N2 sin
+decir que la paleta de texto de encima deja de valer sola. Lo midió la Célula E:
+
+| Sobre N2 `#344968` | Daba | Queda |
+|---|---|---|
+| Secundario `#A8B6C8` | 4,43:1 — corto | **`#B8C4D4`** |
+| Coral pleno de error | 2,70:1 | **`#F4A592`** (el ya publicado) |
+
+**La regla, para las cinco células:** cuando un bloque sube de N1 a N2, se
+vuelven a medir **todos** los colores de texto que lleva encima. Lo que pasaba
+sobre el navy puede no pasar sobre la cara elevada.
 
 ### 2.4 El telón no es constante, y eso rompía el canto
 
