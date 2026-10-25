@@ -242,7 +242,13 @@ for (const id of [T1_8.id, T1_7.id, T1_4.id]) {
       assert.ok(ayuda, "no está «¿Cómo se juega?» bajo la consigna");
       assert.ok(ayuda.textContent.includes("¿Cómo se juega?"));
       tocar(ayuda);
-      assert.ok(dos.caja.querySelector(`[data-asi-se-juega="${id}"]`), "«¿Cómo se juega?» no la abrió");
+      if ([T1_8.id, T1_7.id, T1_4.id].includes(id)) {
+        /* Lote 4, C1: el encabezado compacto de B despliega la consigna bajo «¿Cómo se juega?». */
+        assert.equal(dos.caja.querySelector("[data-como-se-juega-panel]").dataset.comoSeJuegaPanel, "abierto");
+        assert.equal(dos.caja.querySelector("[data-encabezado] [data-consigna]").textContent, ASI_SE_JUEGA[id].consigna);
+      } else {
+        assert.ok(dos.caja.querySelector(`[data-asi-se-juega="${id}"]`), "«¿Cómo se juega?» no la abrió");
+      }
     } finally { dos.desmontar(); }
 
     /* Otro estudiante en el mismo navegador la ve como nueva. */
@@ -355,7 +361,7 @@ for (const id of [T1_8.id, T1_7.id, T1_4.id]) {
 
       /* Lo que la demo enseña al terminar, pintado por el componente real. */
       if (id === T1_8.id) {
-        await esperar(() => caja.querySelector("[data-contador]")?.textContent === "Se apagaron 4 puntos.");
+        await esperar(() => caja.querySelector("[data-cuenta-apagados]")?.textContent === "Se apagaron 4 puntos.");
         assert.equal(caja.querySelectorAll('[data-apagado="si"]').length, 4);
         assert.ok(caja.querySelector('[data-prediccion-opcion="4"][data-elegida="si"]'));
       }
@@ -371,7 +377,14 @@ for (const id of [T1_8.id, T1_7.id, T1_4.id]) {
       }
       await esperar(() => caja.querySelector('[role="status"]'));
       const retro = caja.querySelector('[role="status"]');
-      assert.ok(retro?.textContent.startsWith("Correcto: ✅"), "la demo no mostró su acierto");
+      /* Lote 4: las piezas de T1 pintan su propio mensaje (C2), con «Correcto.» y sin el emoji del banco. */
+      const LOTE_4 = [T1_8.id, T1_7.id, T1_4.id];
+      if (LOTE_4.includes(id)) {
+        assert.ok(retro?.textContent.startsWith("Correcto."), "la demo no mostró su acierto");
+        assert.ok(!/[\u2705\u274C]/u.test(retro.textContent), "el mensaje trae el emoji del banco");
+      } else {
+        assert.ok(retro?.textContent.startsWith("Correcto: ✅"), "la demo no mostró su acierto");
+      }
 
       /* Ni botón de seguir de la partida, ni avance, ni encabezado: solo la zona de juego. */
       assert.equal(caja.querySelector("[data-escenario] [data-encabezado]"), null);
@@ -440,7 +453,7 @@ test("★★★ movimiento reducido: tres cuadros, la mano quieta en el gesto, �
       assert.equal(caja.querySelector("[data-asj-cuadro]").textContent, "Cuadro 1 de 3");
       /* Sin reloj: medio segundo después sigue en el inicio. */
       await act(async () => { await new Promise((r) => setTimeout(r, 300)); });
-      assert.equal(caja.querySelector('[data-prediccion-opcion]'), null, "la demo corrió sola");
+      assert.equal(caja.querySelector("[data-asj-escenario] [data-marca]"), null, "la demo corrió sola");
       assert.equal(sig().disabled, false, "con movimiento reducido «Siguiente» debe estar activo desde el primer cuadro");
       assert.equal(sig().textContent, "Siguiente");
 
@@ -454,7 +467,7 @@ test("★★★ movimiento reducido: tres cuadros, la mano quieta en el gesto, �
       assert.equal(caja.querySelector("[data-asj-cuadro]").textContent, "Cuadro 3 de 3");
       assert.equal(sig().disabled, false);
       assert.equal(sig().textContent, "Siguiente");
-      await esperar(() => caja.querySelector("[data-contador]")?.textContent === "Se apagaron 4 puntos.");
+      await esperar(() => caja.querySelector("[data-cuenta-apagados]")?.textContent === "Se apagaron 4 puntos.");
       assert.equal(control().textContent, "Ver de nuevo");
     } finally { desmontar(); }
   } finally { movimientoReducido = false; }
@@ -468,7 +481,8 @@ test("★★ T1-4 real: el «·» antes de revelar y «Marca las tres» apagado 
     const puntos = [...caja.querySelectorAll('[data-signo="sin"]')];
     assert.equal(puntos.length, 3);
     for (const x of puntos) assert.equal(x.style.color, "rgb(168, 182, 200)");
-    const marca = boton(caja, "Marca las tres");
+    /* Lote 4: en la partida el botón pide también el caso (un solo «Anotar»). */
+    const marca = boton(caja, "Marca las tres y el caso");
     assert.equal(marca.disabled, true);
     assert.equal(marca.style.color, "rgb(168, 182, 200)");
   } finally { desmontar(); }
@@ -480,7 +494,7 @@ test("★★ T1-8 real: números apagados, chip «apagado» y predicción no ele
   }));
   try {
     tocar(caja.querySelector(`[data-punto="${EJEMPLO_T1_8.rompe}"]`));
-    await esperar(() => caja.querySelector('[data-prediccion-opcion="4"]'));
+    await esperar(() => caja.querySelector('[data-prediccion][data-activa="si"]'));
     tocar(caja.querySelector('[data-prediccion-opcion="4"]'));
     await esperar(() => caja.querySelectorAll('[data-apagado="si"]').length === 4);
     for (const n of [2, 3, 4, 5]) {
@@ -492,7 +506,8 @@ test("★★ T1-8 real: números apagados, chip «apagado» y predicción no ele
       const op = caja.querySelector(`[data-prediccion-opcion="${n}"]`);
       assert.equal(op.style.color, "rgb(168, 182, 200)", `opción ${n}`);
       assert.equal(op.style.opacity, "", `opción ${n}: el botón entero lleva opacidad`);
-      assert.equal(op.style.borderColor, "rgba(248, 249, 250, 0.15)", `opción ${n}: el borde no va al 0,5`);
+      /* Lote 4: el contorno de reposo va pintado por dentro (C2, borde de 2 sin salto). */
+      assert.match(op.style.boxShadow, /rgba\(248,\s*249,\s*250,\s*0\.15\)/, `opción ${n}: el contorno no va al 0,5`);
     }
   } finally { desmontar(); }
 });
@@ -514,12 +529,12 @@ test("★★★ T1-8 real: debajo de la pregunta de predicción, la regla fija; 
   }));
   try {
     tocar(caja.querySelector(`[data-punto="${EJEMPLO_T1_8.rompe}"]`));
-    await esperar(() => caja.querySelector('[data-prediccion-opcion="4"]'));
+    await esperar(() => caja.querySelector('[data-prediccion][data-activa="si"]'));
     reglaBajoLaPregunta(caja);
     tocar(caja.querySelector('[data-prediccion-opcion="4"]'));
     /* Fija: sigue ahí después de elegir. */
     reglaBajoLaPregunta(caja);
-    await esperar(() => caja.querySelector("[data-cierre-prediccion]"));
+    await esperar(() => caja.querySelector('[data-cierre-prediccion="acerto"]'));
     assert.equal(caja.querySelector("[data-cierre-prediccion]").textContent, "Acertaste. Mira hasta dónde llegó.");
   } finally { desmontar(); }
 });
@@ -530,9 +545,9 @@ test("★★ T1-8: fallar la predicción conserva su texto de siempre", async ()
   }));
   try {
     tocar(caja.querySelector(`[data-punto="${EJEMPLO_T1_8.rompe}"]`));
-    await esperar(() => caja.querySelector('[data-prediccion-opcion="1"]'));
+    await esperar(() => caja.querySelector('[data-prediccion][data-activa="si"]'));
     tocar(caja.querySelector('[data-prediccion-opcion="1"]'));
-    await esperar(() => caja.querySelector("[data-cierre-prediccion]"));
+    await esperar(() => caja.querySelector('[data-cierre-prediccion="fallo"]'));
     assert.equal(caja.querySelector("[data-cierre-prediccion]").textContent, "No era lo que creías. Mira hasta dónde alcanzó a llegar.");
   } finally { desmontar(); }
 });
@@ -558,7 +573,7 @@ test("★★★ en modo demo, terminar el ítem no llama a onCompletar ni ofrece
     tocar(caja.querySelector('[data-control="activo-sube"]'));
     tocar(caja.querySelector('[data-control="pasivo-sube"]'));
     tocar(caja.querySelector('[data-control="patrimonio-igual"]'));
-    tocar(boton(caja, "Ver qué pasó"));
+    tocar(boton(caja, "Anotar"));
     assert.equal(boton(caja, "Ver el resultado"), undefined);
     assert.equal(boton(caja, "Siguiente hecho"), undefined);
     assert.equal(llamadas, 0);

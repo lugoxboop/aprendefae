@@ -162,3 +162,14 @@ Decisiones:
 Misa montó las cinco piezas (4e817f3) con la bandera apagada, y `faltasDePieza` da `[]`. Quedan tres rojos honestos:
 - **P1·6, el selector de 231 px contra 183:** **no lleva selector.** La figura de P1·6 es la de Watari en T2-3: la T de Cuentas por pagar de Lavado, con «Sube» y «Baja». El selector entre Caja y Documentos por pagar era el ajuste A1·7 de T2-2, y la figura de T2-3 lo reemplazó; con el selector, el VE de Near para P1·6 sobra. Así se respeta el alto medido de 183.
 - **P3·7, la pista del primer error, y P2·5, el ejemplo de Ingresos:** los escribe Near (lote T2-8). En el mismo lote, Near acorta el porqué de P3·4 a 16 palabras o menos.
+
+---
+
+# #548 listo y traspaso de Misa · decisiones de L (24-oct-2026, 23:05)
+
+- **#548:** el CI está verde (41ae301) y salió de borrador con la bandera apagada. Mello hace la verificación final (lote T2-9).
+- **Traspaso de Misa:** fusionado (#568, `orquestador/traspasos/misa.md`).
+- **Pendientes de Near para #499** (lote T2-9): el porqué de los 4 ítems de origen, la frase de acierto de «revisar», el hecho de J3, el pie de fuente y el «Así se juega» de las tres.
+- **Pendientes de Watari que deja Misa:** los decide L, sin otra vuelta.
+  - **Pausa de 0,7 s con movimiento reducido:** se mantiene. Es tiempo de lectura, no movimiento: con movimiento reducido no hay animación, pero «Iba aquí» llega igual a los 0,7 s del error.
+  - **Especificidad de `.bar.fijo`:** es técnica y la resuelve Misa en el código. Lo que importa es que el tramo fijo de 28 px no lo pise otra regla. La prueba C5 de geometría lo vigila.

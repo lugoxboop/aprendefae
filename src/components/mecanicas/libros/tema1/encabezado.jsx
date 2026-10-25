@@ -126,7 +126,8 @@ export function IdeaConTermino({ idea, termino, tamano = 13, color = FAE.text, c
         {idea}
       </span>
       <span data-termino={termino} style={{
-        fontSize: `${Math.max(9, tamano - 3.5)}px`, lineHeight: 1.25,
+        /* El piso de 12 px de kit.md también vale para el rótulo del libro (lote 4). */
+        fontSize: `${Math.max(12, tamano - 3.5)}px`, lineHeight: 1.25,
         color: colorTermino, whiteSpace: "nowrap",
       }}>
         {termino}
