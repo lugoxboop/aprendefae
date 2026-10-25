@@ -1,0 +1,427 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<meta charset="utf-8"><title>Figuras de T2 al tope 206</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<style>
+/* Concepto: un pliego técnico para quien construye — reglas arriba, teléfonos reales en medio, procedencia de cada cifra al lado. Tema oscuro único, como el producto. */
+:root {
+  --g-bg: #08111E;      /* fondo del pliego (no es del producto) */
+  --g-panel: #0E1B2E;   /* fondo real de las actividades */
+  --g-ink: #F8F9FA;
+  --g-muted: #A8B6C8;
+  --g-line: #22324A;
+  --g-error: #E76F51;
+  --f-display: "Sora", "Inter", system-ui, sans-serif;
+  --f-body: "Inter", system-ui, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme: dark;
+}
+body { background: var(--g-bg); color: var(--g-ink); font-family: var(--f-body); font-size: 15px; line-height: 1.55; margin: 0; }
+.pliego { max-width: 1120px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 96px; display: grid; gap: 56px; grid-template-columns: minmax(0, 1fr); }
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+h1 { font-size: clamp(28px, 5vw, 44px); line-height: 1.1; }
+h2 { font-size: 24px; line-height: 1.2; }
+h3 { font-size: 17px; line-height: 1.3; }
+p { margin: 0; max-width: 68ch; }
+a { color: var(--g-ink); }
+code, .mono { font-family: var(--f-mono); font-size: 0.86em; }
+.eyebrow { font-family: var(--f-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--g-muted); }
+.sec { display: grid; gap: 20px; grid-template-columns: minmax(0, 1fr); }
+.pliego > *, .visor, .telefonos { min-width: 0; }
+.visor { grid-template-columns: minmax(0, 1fr); }
+.sec > header { display: grid; gap: 8px; border-top: 1px solid var(--g-line); padding-top: 20px; }
+.lead { color: var(--g-muted); font-size: 16px; }
+.cab { display: grid; gap: 14px; }
+.meta { display: flex; flex-wrap: wrap; gap: 8px 20px; color: var(--g-muted); font-size: 13px; }
+.rejilla { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 16px; }
+.regla { border: 1px solid var(--g-line); border-radius: 12px; padding: 16px; display: grid; gap: 6px; align-content: start; }
+.regla b { font-family: var(--f-display); font-size: 15px; }
+.regla p { color: var(--g-muted); font-size: 14px; }
+.tabla-wrap { overflow-x: auto; border: 1px solid var(--g-line); border-radius: 12px; }
+table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 14px; }
+th, td { text-align: left; vertical-align: top; padding: 10px 14px; border-bottom: 1px solid var(--g-line); }
+th { font-family: var(--f-mono); font-weight: 500; font-size: 12px; letter-spacing: .04em; color: var(--g-muted); text-transform: uppercase; background: var(--g-panel); }
+tr:last-child td { border-bottom: 0; }
+td.num { font-variant-numeric: tabular-nums; white-space: nowrap; font-family: var(--f-mono); }
+td .near, li .near { color: var(--g-muted); font-style: italic; }
+.est { font-family: var(--f-mono); font-size: 12px; letter-spacing: .06em; white-space: nowrap; }
+.prov { display: inline-block; font-family: var(--f-mono); font-size: 11px; letter-spacing: .05em; padding: 2px 7px; border-radius: 4px; border: 1px solid var(--g-line); color: var(--g-muted); white-space: nowrap; }
+.prov.m { border-color: #3B7A72; color: #8FD3C9; }
+.prov.e { border-color: #7A5A24; color: #E9C46A; }
+.prov.c { border-color: #4A5E7A; color: #C9D5E4; }
+.prov.d { border-color: #4A5E7A; color: var(--g-muted); }
+.procedencia { border: 1px solid var(--g-line); border-radius: 12px; padding: 16px; font-size: 14px; display: grid; gap: 6px; background: var(--g-panel); }
+.procedencia p { color: var(--g-muted); max-width: none; }
+ul.limpia { margin: 0; padding-left: 18px; display: grid; gap: 6px; max-width: 72ch; }
+ul.limpia li::marker { color: var(--g-muted); }
+
+/* visor de estados */
+.visor { display: grid; gap: 14px; }
+.estados { display: flex; flex-wrap: wrap; gap: 6px; }
+.estados button { font: 500 13px var(--f-mono); letter-spacing: .04em; color: var(--g-muted); background: transparent; border: 1px solid var(--g-line); border-radius: 999px;
+  padding: 0 14px; min-height: 36px; cursor: pointer; }
+.estados button[aria-pressed="true"] { color: var(--g-bg); background: var(--g-ink); border-color: var(--g-ink); }
+.estados button:focus-visible { outline: 2px solid var(--g-ink); outline-offset: 2px; }
+.telefonos { display: flex; gap: 24px; align-items: flex-start; overflow-x: auto; padding-bottom: 8px; }
+.tel { flex: none; display: grid; gap: 8px; }
+.tel-rot { font-family: var(--f-mono); font-size: 12px; color: var(--g-muted); display: flex; justify-content: space-between; gap: 8px; }
+.pantalla { position: relative; padding: 16px 30px; border: 1px solid var(--g-line); border-radius: 18px; overflow: hidden; background: var(--g-panel); }
+.tel[data-w="375"] .pantalla { width: 315px; } /* caja de contenido: 315 + 2 × 30 de relleno = 375 */
+.tel[data-w="320"] .pantalla { width: 260px; } /* 260 + 2 × 30 = 320 */
+.pantalla .bandeja { position: static !important; }
+/* 30 px por lado = 16 de página + 14 del panel: contenido de 315 a 375 y 260 a 320, medido por Misa */
+.lado { display: grid; gap: 12px; align-content: start; min-width: 0; flex: 1 1 280px; max-width: 420px; }
+.lado h3 { font-size: 15px; }
+.lado ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 14px; color: var(--g-ink); }
+.lado .nota { font-size: 13px; color: var(--g-muted); }
+
+/* íconos en la guía */
+.ico-demo { display: flex; gap: 14px; align-items: center; }
+.ico-demo svg { width: 40px; height: 40px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+
+pre { margin: 0; background: var(--g-panel); border: 1px solid var(--g-line); border-radius: 12px; padding: 16px; overflow-x: auto; font: 12.5px/1.55 var(--f-mono); color: #DCE3EC; }
+details { border: 1px solid var(--g-line); border-radius: 12px; padding: 0 16px; }
+details[open] { padding-bottom: 16px; }
+summary { cursor: pointer; padding-block: 14px; font-family: var(--f-display); font-weight: 600; }
+.copiar { font: 500 12px var(--f-mono); background: transparent; color: var(--g-ink); border: 1px solid var(--g-line); border-radius: 6px; padding: 6px 10px; cursor: pointer; justify-self: start; }
+.alerta { border: 1px solid #7A5A24; border-radius: 12px; padding: 14px 16px; display: grid; gap: 4px; font-size: 14px; }
+.alerta b { color: #E9C46A; font-family: var(--f-display); }
+.indice { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; }
+.indice a { color: var(--g-muted); text-decoration: none; border-bottom: 1px solid var(--g-line); }
+.indice a:hover { color: var(--g-ink); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+.mq { --texto:#F8F9FA; --aten:#A8B6C8; --neutro:#B8C4D4; --teal:#2A9D8F; --teal-t:#3FA69A; --ambar:#E9C46A; --coral:#E76F51; --coral-t:#EE8266;
+  background:#1F2D3D; color:var(--texto); font:400 14px/1.45 Inter, system-ui, sans-serif; display:grid; gap:10px; box-sizing:border-box; }
+.mq * { box-sizing:border-box; }
+.mq p { margin:0; }
+.mq .cej { font:700 12px/1.3 Sora, Inter, sans-serif; letter-spacing:.08em; text-transform:uppercase; color:var(--aten); }
+.mq .txt { font-size:15px; }
+.mq .hund { background:rgba(10,20,34,.45); border:1px solid rgba(248,249,250,.12); border-radius:12px; padding:10px 12px; display:grid; gap:8px; }
+.mq .tit { font:600 13px/1.3 Sora, Inter, sans-serif; }
+.mq .num { font-family:"JetBrains Mono", ui-monospace, monospace; font-variant-numeric:tabular-nums; font-weight:600; font-size:13px; white-space:nowrap; }
+.mq .td { color:var(--teal-t); } .mq .th { color:var(--ambar); }
+.mq svg { width:16px; height:16px; flex:none; }
+.mq .pas { display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:999px; font:600 12px/1.2 Inter, sans-serif; white-space:nowrap; }
+.mq .pas.ok { border:1px solid var(--texto); } .mq .pas.mal { border:1px solid var(--coral); color:var(--coral-t); } .mq .pas.iba { border:1px dashed var(--texto); }
+.mq .falla, .mq .cuadra { display:flex; gap:6px; align-items:flex-start; font-size:13px; line-height:1.4; } .mq .falla { color:var(--coral-t); }
+.mq .msg { padding:10px 12px; background:rgba(184,196,212,.12); border-left:3px solid var(--neutro); border-radius:0 10px 10px 0; font-size:14px; }
+.mq .msg.mal { border-left-color:var(--coral); } .mq .msg .pas { margin-right:6px; }
+.mq .seguir { min-height:44px; border-radius:12px; border:0; background:var(--neutro); color:#1D3557; font:600 15px Inter, sans-serif; }
+.mq .seguir[aria-disabled="true"] { background:transparent; border:2px solid rgba(248,249,250,.35); color:var(--aten); }
+.mq .malb { outline:2px solid var(--coral); outline-offset:-2px; }
+/* a */
+.mq .diario { margin:0; padding:0; list-style:none; display:grid; gap:4px; }
+.mq .ren { display:grid; grid-template-columns:3.6em minmax(0,1fr) 3.6em auto; gap:6px; align-items:center; min-height:32px; padding:4px 8px; border-radius:6px; font-size:13px; }
+.mq .ren.hecho { color:var(--aten); } .mq .ren.cur { outline:2px solid var(--texto); outline-offset:-2px; color:var(--texto); }
+.mq .ren.enlazado, .mq .ln.enlazado { background:rgba(184,196,212,.16); }
+.mq .ctas { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:8px; }
+.mq .cta { min-height:88px; display:grid; align-content:start; gap:4px; padding:8px; border-radius:10px; border:1px solid rgba(248,249,250,.35); background:transparent; color:var(--texto); font:inherit; text-align:left; }
+.mq .cta.elegida { border:2px solid var(--texto); padding:7px; } .mq .cta.elegida.malb { border-color:var(--coral); outline:0; }
+.mq .cta-tit { font-weight:600; font-size:13px; }
+.mq .cta-t { display:grid; grid-template-columns:1fr 1fr; border-top:2px solid var(--neutro); min-height:30px; }
+.mq .cta-t > span { display:grid; align-content:start; gap:2px; padding:4px 2px 0; } .mq .cta-t > span:first-child { border-right:2px solid var(--neutro); }
+.mq .ln { font:600 12px/1.25 "JetBrains Mono", monospace; border-radius:4px; padding:1px 2px; }
+.mq .ln.nueva { outline:2px solid var(--texto); } .mq .ln.nueva.malb { outline-color:var(--coral); }
+.mq .ln.fantasma { outline:1px dashed var(--texto); display:grid; gap:2px; justify-items:start; }
+.mq .orden { display:grid; grid-template-columns:1fr 1fr; border:1px solid var(--neutro); border-radius:10px; overflow:hidden; }
+.mq .orden button { min-height:44px; border:0; background:transparent; color:var(--texto); font:600 13px Inter, sans-serif; } .mq .orden .on { background:var(--neutro); color:#1D3557; }
+/* b */
+.mq .lista { margin:0; padding:0; list-style:none; display:grid; gap:4px; }
+.mq .cu { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:4px 8px; min-height:32px; padding:4px 8px; border-radius:6px; font-size:13px; border:1px solid rgba(248,249,250,.12); }
+.mq .cu.cur { outline:2px solid var(--texto); outline-offset:-2px; } .mq .cu.vacio { color:var(--aten); border-style:dashed; } .mq .cu s { color:var(--aten); }
+.mq .cierre { display:grid; gap:4px; padding:8px; border-radius:8px; border:1px dashed var(--neutro); }
+.mq .gyp { display:flex; justify-content:space-between; gap:8px; font-size:13px; padding:2px 4px; } .mq .gyp.tot { border-top:1px solid rgba(248,249,250,.35); padding-top:6px; font-weight:600; } .mq .gyp.vacio { color:var(--aten); }
+.mq .ops { display:grid; gap:8px; }
+.mq .op { min-height:44px; display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:4px 8px; padding:10px 12px; border-radius:12px; border:1px solid rgba(248,249,250,.35); background:transparent; color:var(--texto); font:500 14px Inter, sans-serif; text-align:left; }
+.mq .op.bien, .mq .op.pista { border:2px solid var(--texto); padding:9px 11px; } .mq .op.malb { border:2px solid var(--coral); outline:0; padding:9px 11px; }
+/* c */
+.mq .asiento { width:100%; min-width:0; border-collapse:collapse; font-size:13px; } .mq .asiento td { padding:4px 2px; border-bottom:0; vertical-align:middle; text-align:left; } .mq .asiento td.num { text-align:right; }
+.mq .asiento tr.sum td { border-top:1px solid rgba(248,249,250,.35); font-weight:600; } .mq .hueco { border:1px dashed var(--neutro); border-radius:4px; padding:0 6px; }
+.mq .columnas { position:relative; display:grid; grid-template-columns:1fr 1fr; gap:16px; height:150px; padding:0 8px; border-bottom:2px solid var(--neutro); }
+.mq .col { display:flex; align-items:flex-end; } .mq .pila { width:100%; height:100%; display:flex; flex-direction:column-reverse; gap:2px; }
+.mq .bar { display:grid; place-items:center; border-radius:3px; font:600 12px/1 "JetBrains Mono", monospace; color:#0E1B2E; }
+.mq .col.d .bar { background:var(--teal); } .mq .col.h .bar { background:var(--ambar); }
+.mq .bar.corta { outline:2px solid var(--coral); outline-offset:1px; }
+.mq .nivel { position:absolute; left:0; right:0; border-top:2px dashed var(--neutro); } .mq .nivel.igual { border-top-style:solid; border-top-color:var(--texto); }
+.mq .hueco-barra { position:absolute; right:8px; width:calc(50% - 16px); border:2px dashed var(--coral); border-bottom:0; border-radius:3px 3px 0 0; }
+.mq .conteo { display:grid; grid-template-columns:1fr 1fr; gap:16px; font-size:12px; color:var(--aten); text-align:center; }
+.mq .casilla { display:flex; flex-wrap:wrap; gap:8px; } .mq .casilla input { flex:1 1 120px; min-width:0; min-height:44px; border-radius:10px; border:1px solid rgba(248,249,250,.35); background:rgba(10,20,34,.45); color:var(--texto); font:600 16px "JetBrains Mono", monospace; padding:0 12px; }
+.mq .cmp { min-height:44px; padding:0 14px; border-radius:12px; border:2px solid var(--neutro); background:transparent; color:var(--texto); font:600 14px Inter, sans-serif; } .mq .cmp[aria-disabled="true"] { opacity:.5; }
+.mq .escrito { flex:1 1 100%; min-height:44px; display:flex; flex-wrap:wrap; align-items:center; gap:4px 10px; padding:8px 12px; border-radius:10px; border:2px solid var(--texto); } .mq .escrito.malb { border-color:var(--coral); outline:0; } .mq .escrito.iba { border-style:dashed; }
+.mq .cej2 { font:500 12px Inter, sans-serif; color:var(--aten); }
+.mq .ren.ren2 { grid-template-columns:3.4em minmax(0,1fr) auto; grid-template-areas:"f c c" "f l m"; row-gap:0; }
+.mq .ren2 .f { grid-area:f; align-self:start; } .mq .ren2 .c { grid-area:c; } .mq .ren2 .l { grid-area:l; } .mq .ren2 .m { grid-area:m; }
+.mq .ln { display:grid; } .mq .ln small { font:500 12px/1.2 Inter, sans-serif; color:var(--aten); }
+.mq .asiento { table-layout:fixed; } .mq .asiento td:nth-child(2), .mq .asiento td:nth-child(3) { width:6.3em; } .mq .asiento td:first-child { overflow-wrap:anywhere; }
+.mq .fig { display:grid; gap:8px; align-content:start; }
+.mq .ficha { display:inline-flex; align-items:center; min-height:28px; padding:2px 8px; border-radius:6px; background:rgba(184,196,212,.16); border:1px solid rgba(248,249,250,.35); font:600 13px/1.25 "JetBrains Mono", monospace; }
+.mq .ficha.sale { border-style:dashed; } .mq .tentativo, .mq .tentativo-b { border:2px dashed var(--coral) !important; opacity:.85; }
+.mq .fichero { display:flex; flex-wrap:wrap; gap:6px; align-items:center; } .mq .fichero:empty { display:none; }
+.mq .t { display:grid; gap:2px; } .mq .t-nom { font:600 13px/1.25 Sora, Inter, sans-serif; } .mq .t-nom small { font:500 12px Inter, sans-serif; color:var(--aten); }
+.mq .t-cuerpo { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); border-top:2px solid var(--neutro); }
+.mq .t-lado { display:flex; flex-direction:column; align-items:flex-start; gap:4px; padding:4px 6px; min-height:44px; background:transparent; border:0; color:var(--texto); font:inherit; text-align:left; }
+.mq .t-lado.d { border-right:2px solid var(--neutro); } .mq .sin-raya .t-lado.d { border-right-color:transparent; }
+.mq .t-lado.destino { outline:1px solid rgba(248,249,250,.35); outline-offset:-3px; border-radius:6px; cursor:pointer; }
+.mq .t-lado.malb { outline:2px solid var(--coral); outline-offset:-3px; } .mq .t-lado.pista { outline:2px solid var(--texto); outline-offset:-3px; }
+.mq .rot { font:700 12px/1.2 Inter, sans-serif; letter-spacing:.06em; } .mq .rot.d { color:var(--teal-t); } .mq .rot.h { color:var(--ambar); }
+.mq .dest { font:500 12px Inter, sans-serif; color:var(--aten); }
+.mq .t-fila { display:grid; grid-template-columns:1fr 1fr; gap:6px; padding:2px 6px; min-height:24px; border-top:1px solid rgba(248,249,250,.2); }
+.mq .saldo { display:inline-flex; min-height:28px; align-items:center; padding:2px 8px; border-radius:6px; border:2px solid var(--texto); font:600 13px "JetBrains Mono", monospace; white-space:nowrap; }
+.mq .nota-fig { font-size:12px; color:var(--aten); }
+.mq .tent { display:flex; gap:6px; font-size:13px; line-height:1.35; color:var(--coral-t); } .mq .tent svg { width:16px; height:16px; flex:none; }
+.mq .ctls { display:grid; grid-template-columns:repeat(auto-fit, minmax(76px, 1fr)); gap:8px; } .mq .ctls.col { grid-template-columns:1fr; } .mq .ctls.dos { grid-template-columns:repeat(auto-fit, minmax(110px, 1fr)); }
+.mq .ctl { flex:1 1 auto; min-height:44px; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:2px 8px; padding:6px 10px; border-radius:12px; border:1px solid rgba(248,249,250,.35); background:transparent; color:var(--texto); font:600 13px/1.3 Inter, sans-serif; text-align:left; }
+.mq .ctl.mal { border:2px solid var(--coral); padding:5px 9px; } .mq .ctl.bien, .mq .ctl.pista, .mq .ctl.elegido { border:2px solid var(--texto); padding:5px 9px; }
+.mq .cal { display:flex; gap:8px; font:600 12px Inter, sans-serif; color:var(--aten); } .mq .cal .on { color:var(--texto); border-bottom:2px solid var(--texto); }
+.mq .cajs { display:grid; grid-template-columns:repeat(auto-fit, minmax(72px, 1fr)); gap:6px; } .mq .cajs.dos { grid-template-columns:1fr 1fr; }
+.mq .caj { display:grid; gap:4px; align-content:start; min-height:76px; padding:6px; border-radius:8px 8px 4px 4px; border:1px solid rgba(248,249,250,.35); border-bottom-width:4px; background:transparent; color:var(--texto); font:inherit; text-align:left; }
+.mq .caj.malb { border-color:var(--coral); border-width:2px 2px 4px; } .mq .caj.pista { border-color:var(--texto); border-width:2px 2px 4px; }
+.mq .caj-n { font:600 12px/1.25 Inter, sans-serif; } .mq .caj small { font-size:12px; color:var(--aten); line-height:1.3; } .mq .caj small.def { color:var(--texto); }
+.mq .caj-in { display:flex; flex-wrap:wrap; gap:3px; } .mq .caj-in i { width:14px; height:9px; border-radius:2px; background:var(--neutro); }
+.mq .mesa { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:6px; }
+.mq .caso { display:grid; gap:3px; align-content:start; padding:6px 8px; border-radius:8px; background:rgba(10,20,34,.45); border:1px solid rgba(248,249,250,.12); color:var(--texto); font:inherit; text-align:left; }
+.mq .caso.destino { min-height:52px; border-color:rgba(248,249,250,.35); } .mq .caso.pista { outline:2px solid var(--texto); outline-offset:-2px; }
+.mq .med { display:flex; flex-wrap:wrap; gap:2px 6px; font-size:13px; } .mq .sube::after { content:" ▲"; } .mq .baja::after { content:" ▼"; }
+.mq .reg { display:flex; flex-wrap:wrap; gap:4px; align-items:center; } .mq .rotm { font:700 12px Inter, sans-serif; }
+.mq .ecu { display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); gap:4px; } .mq .igual { align-self:center; font:600 16px Sora, sans-serif; }
+.mq .casa { display:grid; gap:3px; align-content:start; min-height:100px; padding:6px; border-radius:8px; border:1px dashed var(--neutro); background:transparent; color:var(--texto); font:inherit; text-align:left; } .mq .casa small { font-size:12px; color:var(--aten); }
+.mq .casa.malb { border:2px solid var(--coral); } .mq .casa.pista { border:2px solid var(--texto); }
+.mq .bal { position:relative; padding-top:14px; } .mq .barra { position:absolute; top:4px; left:14%; width:72%; height:3px; background:var(--neutro); border-radius:2px; transition:transform .45s cubic-bezier(.3,.9,.4,1); }
+.mq .plats { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:6px; padding:8px 0; }
+.mq .plat { display:grid; gap:3px; align-content:start; min-height:64px; padding:6px; border-radius:8px; border:1px solid rgba(248,249,250,.35); background:transparent; color:var(--texto); font:inherit; text-align:left; transition:transform .45s cubic-bezier(.3,.9,.4,1); }
+.mq .plat.malb { border:2px solid var(--coral); } .mq .plat.pista { border:2px solid var(--texto); }
+.mq .nom { display:flex; flex-wrap:wrap; justify-content:space-between; gap:0 4px; padding:2px 5px; border-radius:5px; background:rgba(184,196,212,.14); font-size:12px; line-height:1.3; } .mq .nom .num { font-size:12px; }
+.mq .nom.flota { border:1px dashed var(--texto); } .mq .tot { justify-self:end; font-size:13px; }
+.mq .sel { display:grid; grid-template-columns:1fr 1fr; border:1px solid var(--neutro); border-radius:10px; overflow:hidden; }
+.mq .sel button { min-height:44px; padding:4px 6px; border:0; background:transparent; color:var(--texto); font:600 13px/1.25 Inter, sans-serif; } .mq .sel .on { background:var(--neutro); color:#1D3557; }
+.mq .dia { display:grid; gap:2px; padding:6px 8px; border-radius:8px; background:rgba(10,20,34,.45); }
+.mq .dia-cab { display:flex; justify-content:space-between; gap:6px; font:600 12px Inter, sans-serif; color:var(--aten); }
+.mq .dia-r { display:grid; grid-template-columns:minmax(0,1fr) 4.4em 4.4em; gap:4px; font-size:12px; line-height:1.3; padding:2px 4px; border-radius:4px; } .mq .dia-r b { text-align:right; font-size:12px; }
+.mq .dia-r.hab span { padding-left:12px; } .mq .dia-r.corrida span { padding-left:24px; } .mq .dia-r.lit, .mq .ln.lit, .mq .nueve .lit { background:rgba(184,196,212,.18); outline:1px solid var(--texto); }
+.mq .minis { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:6px; }
+.mq .t.mini .t-lado { min-height:44px; } .mq .t.mini { padding:4px 6px; border-radius:8px; background:rgba(10,20,34,.45); }
+.mq .ln { display:grid; font:600 12px/1.2 "JetBrains Mono", monospace; padding:1px 3px; border-radius:4px; } .mq .ln small { font:500 12px/1.2 Inter, sans-serif; color:var(--aten); }
+.mq .nueve { display:grid; gap:1px; } .mq .nueve p { display:flex; justify-content:space-between; gap:6px; font-size:12px; line-height:1.3; padding:1px 4px; border-radius:3px; }
+.mq .t.larga .t-lado { gap:2px; }
+.mq .entra { animation:cae .4s cubic-bezier(.3,.9,.4,1) both; } @keyframes cae { from { opacity:0; transform:translateY(-8px); } }
+@media (prefers-reduced-motion: reduce) { .mq *, .mq *::before { animation:none !important; transition:none !important; } }
+.mq .dia-cab small { font-size:12px; }
+.mq .plat { padding:4px 5px; min-height:56px; } .mq .bal { padding-top:12px; } .mq .plats { padding:4px 0; }
+.mq .t.larga .ln { display:flex; gap:4px; align-items:baseline; } .mq .resumen-mesa { display:flex; flex-wrap:wrap; gap:4px 12px; font-size:13px; } .mq .resumen-mesa .num { font-size:13px; }
+.mq .ctl { justify-content:flex-start; } .mq .ctl svg { width:16px; height:16px; flex:none; } .mq .ctl.mal svg { color:var(--coral-t); } .mq .estado-op { min-height:24px; }
+.mq .ficha.lit { outline:1px solid var(--texto); background:rgba(184,196,212,.18); } .mq .ficha .th { color:var(--ambar); font-family:Inter, sans-serif; }
+.mq .ctl > span { flex:1 1 0; min-width:0; } .mq .dia-1 { font-size:12px; line-height:1.3; padding:2px 4px; border-radius:4px; } .mq .dia-1.lit { outline:1px solid var(--texto); background:rgba(184,196,212,.18); } .mq .dia-1 .num { font-size:12px; }
+.mq .t.mini { padding:2px 5px; gap:0; } .mq .minis { gap:4px; } .mq .fig { gap:6px; } .mq .t.mini .t-nom { font-size:12px; line-height:1.2; }
+
+/* T2-7 · tope 206/253 */
+.mq .nueve { gap:0; } .mq .nueve p { line-height:1.25; padding:0 4px; }
+.mq .veredicto { margin-top:8px; } .mq .veredicto p { margin:6px 0 0; font:400 14px/22px Inter, sans-serif; color:rgba(248,249,250,.8); }
+.mq .pv { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; border:2px solid #F8F9FA; font:600 13px Inter, sans-serif; } .mq .pv.mal { border-color:var(--coral); color:var(--coral); }
+.mq .nueve .lit { outline:0; box-shadow:inset 3px 0 0 #F8F9FA; }
+
+.marcos { display:flex; flex-wrap:wrap; gap:20px; align-items:flex-start; } .marco { display:grid; gap:6px; max-width:100%; overflow-x:auto; }
+.marco-rot { font:500 12px var(--f-mono); color:var(--g-muted); display:flex; justify-content:space-between; gap:8px; }
+.marco-caja { box-sizing:content-box; padding:16px 31px; background:#1F2D3D; border:1px solid var(--g-line); border-radius:18px; }
+.vivo { display:grid; gap:10px; grid-template-columns:minmax(0,1fr); } .botones { display:flex; flex-wrap:wrap; gap:8px; }
+.botones button { font:500 13px var(--f-mono); color:var(--g-ink); background:transparent; border:1px solid var(--g-line); border-radius:999px; min-height:44px; min-width:44px; padding:0 14px; cursor:pointer; }
+.botones button.on { border:2px solid var(--g-ink); } .botones button:focus-visible { outline:2px solid var(--g-ink); outline-offset:2px; }
+.frase { font-family:var(--f-display); font-size:19px; line-height:1.4; max-width:64ch; }
+.tabla-wrap { overflow-x:auto; } pre.css { overflow-x:auto; font:12px/1.5 var(--f-mono); padding:14px; border:1px solid var(--g-line); border-radius:10px; white-space:pre; }
+.mq .reserva { position:relative; height:var(--alto); outline:1px dashed rgba(248,249,250,.35); outline-offset:2px; }
+.mq .reserva-rot { font:500 12px "JetBrains Mono", monospace; color:var(--aten); }
+.mq .banda { min-height:66px; border-top:1px dashed rgba(248,249,250,.2); padding-top:2px; } .mq .tit-p { font:700 17px/22px Sora, Inter, sans-serif; }
+</style>
+<main class="pliego">
+  <header class="cab"><span class="eyebrow">Célula C · Lote T2-7 · Delta sobre c-t2-3-watari-figuras · Watari</span>
+    <h1>Figuras de T2 al tope 206</h1>
+    <p class="lead">Las cinco figuras de Aprender quedan por debajo del tope nuevo de #524 (206 px a 320 y 253 a 375), con el objeto propio y el estado más alto de cada pieza intactos. Lo que se recortó es la pastilla, que ya pinta <code>&lt;Veredicto /&gt;</code>, y un poco de aire en P5.</p>
+    <div class="meta"><span>v7 · 24 de octubre de 2026</span><span>main 019c24fe</span><span>issue #536 a Erwin</span></div>
+  </header>
+  <section class="sec" id="altos"><header><span class="eyebrow">Por pieza</span><h2>Alto nuevo</h2></header>
+    <div class="tabla-wrap"><table><thead><tr><th>Pieza</th><th>Figura a 320 (antes → ahora)</th><th>a 375</th><th><code>altoFigura</code></th><th>Banda máx. 320 · 375</th><th>Qué cambió</th></tr></thead><tbody><tr><td><b>P1</b> · De qué está hecha una cuenta<br><code>cu-a1-anatomia-de-una-cuenta</code></td><td class='mono'>213 → <b>183</b></td><td class='mono'>213 → <b>183</b></td><td class='mono'>{ a320: 183, a375: 183 }</td><td class='mono'>108 · 104</td><td>Sin la línea de estado de 24 px bajo «Sube» y «Baja» (pantalla 6). La T, su saldo y los dos controles siguen iguales.</td></tr><tr><td><b>P2</b> · Las dos familias de cuentas<br><code>cu-a2-dos-familias</code></td><td class='mono'>183 → <b>171</b></td><td class='mono'>183 → <b>158</b></td><td class='mono'>{ a320: 171, a375: 158 }</td><td class='mono'>108 · 104</td><td>No pasaba del tope. Pierde la pastilla en «Sí, se cierra» y «No, sigue abierta» (pantalla 6).</td></tr><tr><td><b>P3</b> · El debe y el haber<br><code>cu-a5-debe-y-haber</code></td><td class='mono'>214 → <b>180</b></td><td class='mono'>177 → <b>173</b></td><td class='mono'>{ a320: 180, a375: 173 }</td><td class='mono'>130 · 108</td><td>Las tres opciones apiladas de la pantalla 7 ya no llevan la pastilla en un tercer renglón: el botón tocado mide 48 px, antes 82. La línea de la mesa se queda.</td></tr><tr><td><b>P4</b> · La partida doble y las dos reglas<br><code>cu-a3-partida-doble</code></td><td class='mono'>212 → <b>181</b></td><td class='mono'>208 → <b>178</b></td><td class='mono'>{ a320: 181, a375: 178 }</td><td class='mono'>108 · 108</td><td>Sin la línea de estado bajo «Sí, lo descuadra» y «No lo descuadra» (pantalla 8). La balanza de ene-03 con los dos contadores se queda entera.</td></tr><tr><td><b>P5</b> · Del diario al mayor<br><code>cu-a4-diario-y-mayor</code></td><td class='mono'>218 → <b>197</b></td><td class='mono'>218 → <b>197</b></td><td class='mono'>{ a320: 197, a375: 197 }</td><td class='mono'>108 · 104</td><td>Los nueve hechos de «Verlos por fecha» (pantalla 1) van a 12/15 px, sin relleno vertical: la lista pasa de 166 a 142 px. El estado más alto pasa a ser la pantalla 6 (renglón del diario sobre la T de Bancos), que mide 197.</td></tr></tbody></table></div>
+    <div class="procedencia"><div><span class="prov m">MEDIDO EN MAQUETA</span></div><p>212 estados de figura a 258 y 313 px. La letra más chica mide 12 px. Botones de menos de 44 px, fuera de caja o desbordados: 0. Todas las figuras quedan bajo 206 a 320 y bajo 253 a 375. La banda es la devolución completa: la consecuencia, la pastilla y la pista o el porqué de Near.</p></div>
+  </section>
+  <section class="sec" id="cambios"><header><span class="eyebrow">Qué cambió</span><h2>Cuatro ajustes, uno por regla</h2></header><ul class="limpia marcas"><li><b>La pastilla sale de la figura.</b> La palabra («Correcto» o «No va aquí») la pinta <code>&lt;Veredicto /&gt;</code>, y #492 prohíbe una pastilla propia. Dentro de la figura, el control tocado se queda con el ícono ✓ o ✕ (forma, no solo color) y el borde de 2 px, que es la regla 3 del §2 de Hanayama. El nombre accesible del botón lleva la palabra. Se van la línea <code>.estado-op</code> de 24 px y la pastilla dentro de las opciones apiladas, y con eso P1, P3 y P4 quedan debajo del tope.</li><li><b>La lista de nueve hechos de P5, más apretada.</b> A 12 px con interlineado de 15 y sin relleno vertical. La letra mínima sigue en 12 px.</li><li><b>Las frases de consecuencia caben en una línea a 320.</b> Siguen en la banda, antes de la pastilla. Pasan de dos renglones a uno, de 18 px, y le dejan esos px al porqué de Near. Las doce frases nuevas están abajo.</li><li><b>El alto de figura por pieza es el medido, no 206.</b> Cada pieza pide en <code>altoFigura</code> el alto de su pantalla más alta. Lo que le sobra hasta 206 se lo queda la banda.</li></ul>
+    <div class="tabla-wrap"><table><thead><tr><th>Frase de consecuencia en T2-3</th><th>T2-7, una línea a 320</th></tr></thead><tbody><tr><td>Así el saldo quedaría del lado de $150, el movimiento menor.</td><td><b>Así quedaría del lado de $150.</b></td></tr><tr><td>Así la deuda quedaría en $4.250: pagar la haría crecer.</td><td><b>Así pagar subiría la deuda a $4.250.</b></td></tr><tr><td>Así quedaría con los gastos de vender, no con el valor de lo vendido.</td><td><b>Así sería un gasto de vender.</b></td></tr><tr><td>Así, 20X2 empezaría con gastos de 20X1.</td><td><b>Así 20X2 traería gastos de 20X1.</b></td></tr><tr><td>Así, el 1 de enero Bancos diría $0, y el dinero sigue en el banco.</td><td><b>Así Bancos diría $0 el 1 de enero.</b></td></tr><tr><td>Así sus $50.000 en el debe la habrían hecho bajar.</td><td><b>Así su debe de $50.000 la bajaría.</b></td></tr><tr><td>Así aparecería un ingreso de $500, y nadie se lo ganó.</td><td><b>Así habría un ingreso que nadie ganó.</b></td></tr><tr><td>Así el activo pesaría $50.000 contra $0.</td><td><b>Así sería $50.000 contra $0.</b></td></tr><tr><td>Así una venta, que sube el patrimonio, lo bajaría.</td><td><b>Así una venta bajaría el patrimonio.</b></td></tr><tr><td>Así la hipoteca subiría a $8.400 por pagarla.</td><td><b>Así la hipoteca subiría a $8.400.</b></td></tr><tr><td>Si lo descuadrara, un lado sumaría más que el otro.</td><td><b>Así un lado sumaría más que el otro.</b></td></tr><tr><td>Así el mayor repetiría el orden del diario.</td><td><b>Así el mayor sería otro diario.</b></td></tr></tbody></table></div></section>
+  <section class="sec" id="banda"><header><span class="eyebrow">Lo que no es mío · issue #536 a Erwin</span><h2>La banda bajo la figura</h2>
+    <p class="frase">El tope de 206 cuenta con una banda de 66 px debajo de la figura para la devolución, pero <code>SecuenciaAprender</code> todavía no la tiene: #492 manda pintar <code>&lt;Veredicto /&gt;</code> dentro de la figura, y ahí no cabe.</p></header>
+    <ul class="limpia marcas"><li><b>Medido:</b> la devolución mide de 104 a 130 px. Sumada a la figura, pasa de 206 en todos los Haz. En la banda, con el alto medido por pieza, cabe a 375 sin desplazar, y a 320 desplaza de 7 a 38 px, dentro de los 40 que permite el §4 de #470.</li>
+    <li><b>Pedido a Erwin (#536):</b> que la cáscara pinte la devolución en la zona del apoyo cuando el Haz ya se respondió. Mientras no llegue, Misa no debe meter <code>&lt;Veredicto /&gt;</code> dentro de la figura con el <code>altoFigura</code> de esta tabla.</li>
+    <li><b>Para Near (por L):</b> el porqué de P3·4 al segundo error (20 palabras) ocupa 4 renglones a 320 y es lo que da los 130 px. Con 16 palabras o menos baja a 3 renglones.</li></ul></section>
+  <section class="sec" id="vivo"><header><span class="eyebrow">Para mirar</span><h2>Cada pieza en su reserva</h2><p class="frase">El recuadro punteado es el <code>altoFigura</code> de la pieza. Debajo va la banda tal como la pediría la cáscara.</p></header>
+    <div class="vivo"><div class="botones piezas" role="group" aria-label="Pieza"><button type="button" data-k="a1" class=on>P1</button><button type="button" data-k="a2">P2</button><button type="button" data-k="a5">P3</button><button type="button" data-k="a3">P4</button><button type="button" data-k="a4">P5</button></div><div class="botones slides" role="group" aria-label="Pantalla"></div><div class="botones estados" role="group" aria-label="Estado"></div>
+      <div class="marcos"><div class="marco"><div class="marco-rot"><span>320 px</span><span>contenido 258</span></div><div class="marco-caja"><div class="mq" lang="es" style="width:258px"></div></div></div><div class="marco"><div class="marco-rot"><span>375 px</span><span>contenido 313</span></div><div class="marco-caja"><div class="mq" lang="es" style="width:313px"></div></div></div></div></div></section>
+  <section class="sec" id="misa"><header><span class="eyebrow">Para Misa</span><h2>CSS del delta</h2><p class="frase">Va encima de lo de T2-3. El <code>altoFigura</code> de cada pieza sale de la tabla de arriba.</p></header><pre class="css">/* T2-7 · sobre lo de T2-3 */
+/* P5 · los nueve hechos de «Verlos por fecha» */
+.nueve { gap: 0; }
+.nueve p { line-height: 1.25; padding: 0 4px; }   /* 12 px · 15 de interlineado */
+.nueve .lit { outline: 0; box-shadow: inset 3px 0 0 #F8F9FA; }   /* el hecho con Bancos: fondo y barra, sin contorno que se pise con el vecino */
+/* Opciones de la figura: sin .estado-op y sin pastilla dentro. El tocado: ícono + borde 2 px */
+.ctl.mal  { border: 2px solid var(--coral); padding: 5px 9px; }
+.ctl.bien { border: 2px solid #F8F9FA;      padding: 5px 9px; }
+.ctl svg  { width: 16px; height: 16px; flex: none; }   /* lucide X o Check, trazo 2,5 */
+.ctl.mal svg { color: var(--coral-t); }
+/* aria-label del tocado: «{opción}, no va aquí» o «{opción}, correcto» */</pre></section>
+  <section class="sec" id="noverif"><header><span class="eyebrow">Lo que no verifiqué</span><h2>Pendiente</h2></header><ul class="limpia marcas"><li>Las figuras están medidas en la maqueta, no dentro de <code>SecuenciaAprender</code>. El alto real lo confirma Misa con P1.</li><li>Las pistas que todavía dicen [Pista de Near] o [Acierto de Near] no están medidas en la banda.</li><li>No lo he visto en un teléfono real.</li></ul></section>
+</main>
+<script>/* T2-3 · Figuras de las 5 Aprender de T2 sobre el patrón de secuencia de Ukyo (#470) y la v2 de Near (c-t2-2-near-lote.md §2).
+   Watari, 24-oct. Cada pantalla: { n, near ([lee]/[toca]/[decide]), tipo (Apertura, Míralo, Haz, Cierre), est, fig(est), msg(est) }.
+   fig = solo la figura (zona reservada de la pieza); msg = la pista o la devolución, que van fuera de la figura. */
+(function () {
+  const $ = (n) => '$' + n.toLocaleString('es-CO');
+  const X = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
+  const V = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
+  const P_OK = `<span class="pas ok">${V}Correcto</span>`, P_MAL = `<span class="pas mal">${X}No va aquí</span>`;
+  const f = (v, c = '') => `<span class="ficha ${c}">${$(v)}</span>`;
+  const si = (t) => `<p class="tent">${X}<span>${t}</span></p>`; // la consecuencia de la opción mala: tentativa, punteada, el modelo no cambia (D3 + C4)
+  const msg = (t, tipo) => `<div class="veredicto" data-mensaje="${tipo === 'ok' ? 'acierto' : 'error'}"><span class="pv ${tipo === 'ok' ? 'ok' : 'mal'}">${tipo === 'ok' ? '✓' : '✕'} ${tipo === 'ok' ? 'Correcto' : 'No va aquí'}</span><p>${t}</p></div>`; // = <Veredicto /> de SecuenciaAprender
+  // T2-3: en las opciones, el botón elegido lleva su ícono (✕ o ✓, forma y no solo color) y la pastilla va en una línea debajo del grupo: así una opción de 80 px no se desborda ni crece a tres líneas.
+  // T2-7: la palabra del veredicto ya no va en la figura. El control tocado lleva el ícono (✕ o ✓) y el borde de 2 px;
+  // «Correcto» o «No va aquí» la pinta <Veredicto /> en la banda de bajo la figura (§2 de Hanayama, #513).
+  const ctl = (lista, cls = '') => `<div class="ctls ${cls}">${lista.map(([t, e]) => `<button type="button" class="ctl${e ? ' ' + e : ''}"${e === 'mal' ? ' aria-label="' + t + ', no va aquí"' : e === 'bien' ? ' aria-label="' + t + ', correcto"' : ''}>${e === 'mal' ? X : e === 'bien' ? V : ''}<span>${t}</span></button>`).join('')}</div>`;
+  // Cuenta T compacta. Con `botones`, cada lado es un destino de 44 px o más.
+  const T = (nom, d, h, o = {}) => `<div class="t${o.cls ? ' ' + o.cls : ''}">${nom ? `<p class="t-nom">${nom}</p>` : ''}<div class="t-cuerpo${o.sinRaya ? ' sin-raya' : ''}">
+    ${['d', 'h'].map((l) => `<${o.botones ? 'button type="button"' : 'div'} class="t-lado ${l}${o.mal === l ? ' malb' : ''}${o.pista === l ? ' pista' : ''}${o.botones ? ' destino' : ''}">${o.nombres ? `<span class="rot ${l}">${l === 'd' ? 'DEBE' : 'HABER'}</span>` : ''}${l === 'd' ? d : h}</${o.botones ? 'button' : 'div'}>`).join('')}</div>${o.pie || ''}</div>`;
+  const P = {};
+
+  // ═══ P1 · cu-a1 · El saldo que cae del lado mayor
+  const CAJA = (o = {}) => T('Caja', f(1000) + f(500), f(150, 'sale'), { nombres: true, ...o });
+  P.a1 = { titulo: 'De qué está hecha una cuenta', id: 'cu-a1-anatomia-de-una-cuenta', objeto: 'El saldo que cae del lado mayor', s: [
+    { near: '[lee]', tipo: 'Apertura', est: ['llega'], que: 'La T sin raya y las tres fichas entran escalonadas, una vez. Sin respuesta a la vista.',
+      fig: () => `<div class="fichero">${f(1000) + f(500) + f(150, 'sale')}</div>` + T('Caja', '', '', { sinRaya: true }) },
+    { near: '[decide]', tipo: 'Haz (predicción, no se califica)', est: ['antes', 'izq', 'der'], que: 'Los dos lados de la T son los botones «Izquierda» y «Derecha». Lo que entra cae del lado tocado y lo que sale, del otro. Cualquier lado vale, así que no lleva pastilla: la pantalla 3 pone los nombres.',
+      fig: (e) => (e === 'antes' ? `<div class="fichero">${f(1000) + f(500) + f(150, 'sale')}</div>` : '') + T('Caja', e === 'izq' ? f(1000, 'entra') + f(500, 'entra') : e === 'der' ? f(150, 'sale entra') : '<span class="dest">Izquierda</span>', e === 'der' ? f(1000, 'entra') + f(500, 'entra') : e === 'izq' ? f(150, 'sale entra') : '<span class="dest">Derecha</span>', { sinRaya: true, botones: e === 'antes' }) },
+    { near: '[lee]', tipo: 'Míralo', est: ['antes', 'toca'], que: 'Toca una ficha y se marca como «aumento» (lo que entra) o «disminución» (lo que sale). Es lo que dice la definición del libro.',
+      fig: (e) => CAJA({ nombres: false, pie: e === 'toca' ? '<p class="nota-fig">$1.000: aumento de Caja · $150: disminución</p>' : '' }) },
+    { near: '[lee]', tipo: 'Míralo', est: ['antes', 'despues'], que: 'La raya baja y parte la cuenta. Al tocar cada lado aparece su nombre, «DEBE» en teal y «HABER» en ámbar.',
+      fig: (e) => CAJA({ nombres: e === 'despues' }) },
+    { near: '[toca]', tipo: 'Míralo', est: ['antes', 'despues'], que: '«Sumar» es un control de la figura, neutro y de 44 px. Cada total cuenta hacia arriba con useNumeroQueSube.',
+      fig: (e) => CAJA({ pie: `<div class="t-fila"><span class="num td">${e === 'despues' ? $(1500) : '—'}</span><span class="num th">${e === 'despues' ? $(150) : '—'}</span></div>` }) + (e === 'antes' ? ctl([['Sumar']]) : '') },
+    { near: '[decide]', tipo: 'Haz', est: ['antes', 'error1', 'error2', 'bien'], que: 'Los dos lados son los botones. Si toca el haber, el saldo se dibuja allí punteado y en coral, y la T sigue igual. Al segundo error, el saldo cae en el debe, que queda con borde blanco.',
+      fig: (e) => CAJA({ botones: e === 'antes' || e === 'error1', mal: e === 'error1' ? 'h' : null, pista: e === 'error2' ? 'd' : null,
+        pie: `<div class="t-fila"><span class="num td">${$(1500)}</span><span class="num th">${$(150)}</span></div><div class="t-fila"><span>${e === 'bien' || e === 'error2' ? '<span class="saldo entra">Saldo $1.350</span>' : ''}</span><span>${e === 'error1' ? '<span class="saldo tentativo">Saldo $1.350</span>' : ''}</span></div>` })
+        + (e === 'error1' ? si('Así quedaría del lado de $150.') : ''),
+      msg: (e) => (e === 'error1' ? msg('Pista: compara las dos sumas. ¿Cuál es más grande?', 'mal') : e === 'error2' ? msg('Seguiste el último valor. El saldo va del lado del movimiento mayor, y ese es el debe.', 'mal') : e === 'bien' ? msg('[Acierto de Near.]', 'ok') : '') },
+    { near: '[decide]', tipo: 'Haz', est: ['antes', 'error1', 'error2', 'bien'], que: 'La T de Cuentas por pagar de Lavado, con saldo de $4.000 (ene-08 y ene-12) y el pago de $250 en el debe. «Sube» y «Baja» son botones. «Sube» dibuja $4.250 punteado y en coral; la T no cambia. «Baja» deja el saldo en $3.750.',
+      fig: (e) => T('Cuentas por pagar', f(250, e === 'antes' ? '' : 'entra'), f(2000) + f(2000), { nombres: true, pista: e === 'error2' ? 'd' : null,
+        pie: `<div class="t-fila"><span></span><span class="num">${e === 'bien' || e === 'error2' ? `Saldo ${$(4000)} → ${$(3750)}` : `Saldo ${$(4000)}`}</span></div>` })
+        + (e === 'error1' ? si('Así pagar subiría la deuda a $4.250.') : '') + ctl([['Sube', e === 'error1' ? 'mal' : ''], ['Baja', e === 'bien' ? 'bien' : e === 'error2' ? 'pista' : '']]),
+      msg: (e) => (e === 'error1' ? msg('Pista: después de pagar, ¿le debes más o menos al proveedor?', 'mal') : e === 'error2' ? msg('Leíste el debe como aumento. El debe es un lugar: en una deuda, lo que va al debe la baja.', 'mal') : e === 'bien' ? msg('[Acierto de Near.]', 'ok') : '') },
+    { near: 'cierre', tipo: 'Cierre', est: ['antes', 'paso'], que: 'La pregunta de cierre va como titular. «Siguiente» da un paso: el saldo de $20 cae en el debe y entra la frase de Near. Después, un pulso de escala de 1 a 1,03 y de vuelta a 1.',
+      fig: (e) => T('', f(50), f(30, 'sale'), { nombres: true, pie: `<div class="t-fila"><span>${e === 'paso' ? '<span class="saldo entra">Saldo $20</span>' : ''}</span><span></span></div>` }) },
+  ] };
+
+  // ═══ P2 · cu-a2 · Los cajones que se vacían el 31 de diciembre
+  const cal = (ene) => `<p class="cal"><span class="${ene ? '' : 'on'}">31 dic 20X1</span><span aria-hidden="true">→</span><span class="${ene ? 'on' : ''}">1 ene 20X2</span></p>`;
+  const caj = (n, vacio, o = {}) => `<${o.boton ? 'button type="button"' : 'div'} class="caj${vacio ? ' vacio' : ''}${o.cls ? ' ' + o.cls : ''}"><span class="caj-n">${n}</span><span class="caj-in">${vacio ? '<b class="num">$0</b>' : '<i></i>'.repeat(o.mucho ? 8 : 3)}</span>${o.extra || ''}</${o.boton ? 'button' : 'div'}>`;
+  P.a2 = { titulo: 'Las dos familias de cuentas', id: 'cu-a2-dos-familias', objeto: 'Los cajones que se vacían el 31 de diciembre', s: [
+    { near: '[lee]', tipo: 'Apertura', est: ['llega'], que: 'Dos cajones llenos y el calendario el 31 de diciembre.', fig: () => cal(false) + `<div class="cajs">${caj('Caja')}${caj('Ingresos por servicios')}</div>` },
+    { near: '[decide]', tipo: 'Haz (predicción, no se califica)', est: ['antes', 'despues'], que: 'Los dos cajones son los botones. Al tocar uno, se marca como «Tu elección», el calendario pasa al 1 de enero y cada cajón hace lo que hace. No lleva pastilla.',
+      fig: (e) => cal(e === 'despues') + `<div class="cajs">${caj('Caja', false, { boton: e === 'antes', extra: e === 'despues' ? '<small>Tu elección</small>' : '' })}${caj('Ingresos por servicios', e === 'despues', { boton: e === 'antes' })}</div>` },
+    { near: '[lee]', tipo: 'Míralo', est: ['antes', 'despues'], que: 'Toca cada cajón real y cruza al año nuevo con su contenido (translateX).', fig: (e) => cal(e === 'despues') + `<div class="cajs">${['Caja', 'Cuentas por pagar', 'Aportes sociales'].map((c) => caj(c, false, { boton: e === 'antes' })).join('')}</div>` },
+    { near: '[lee]', tipo: 'Míralo', est: ['antes', 'despues'], que: 'Toca Ingresos por servicios y su contenido sale del cajón (opacity y translateY), que queda en $0.', fig: (e) => cal(e === 'despues') + `<div class="cajs">${caj('Ingresos por servicios', e === 'despues', { boton: e === 'antes' })}</div>` },
+    { near: '[decide]', tipo: 'Haz', est: ['antes', 'error1', 'error2', 'bien'], que: 'Los cajones «Gastos» y «Costos» son los botones. Si cae mal, la ficha queda punteada y en coral en el cajón de Gastos.',
+      fig: (e) => `<div class="fichero">${e === 'antes' ? '<span class="ficha">Lo que costó lo vendido</span>' : ''}</div><div class="cajs">${caj('Gastos', true, { boton: e === 'antes' || e === 'error1', cls: e === 'error1' ? 'malb' : '', extra: e === 'error1' ? '<span class="ficha tentativo">Lo que costó lo vendido</span>' : '' })}${caj('Costos', true, { boton: e === 'antes' || e === 'error1', cls: e === 'error2' ? 'pista' : '', extra: e === 'bien' || e === 'error2' ? '<span class="ficha entra">Lo que costó lo vendido</span>' : '' })}</div>` + (e === 'error1' ? si('Así sería un gasto de vender.') : ''),
+      msg: (e) => (e === 'error1' ? msg('Pista: piensa si es lo que gastaste para vender o lo que valía lo vendido.', 'mal') : e === 'error2' ? msg('Lo tomaste por un gasto. El libro lo llama costo de ventas: es lo que costó lo que vendiste.', 'mal') : e === 'bien' ? msg('[Acierto de Near.]', 'ok') : '') },
+    { near: '[toca]', tipo: 'Míralo', est: ['antes', 'abierto'], que: 'Los tres cajones nominales están cerrados. Al tocar uno, se abre (translateY) y muestra la definición textual y su ejemplo. Solo hay uno abierto a la vez.',
+      fig: (e) => `<div class="cajs">${caj('Ingresos', false, { boton: true })}${caj('Gastos', false, { boton: true, cls: e === 'abierto' ? 'abierto' : '', extra: e === 'abierto' ? '<small class="def">«los desembolsos necesarios para generar los ingresos» · salarios, arriendos</small>' : '' })}${caj('Costos', false, { boton: true })}</div>` },
+    { near: '[decide]', tipo: 'Haz', est: ['antes', 'error1', 'error2', 'bien'], que: 'El cajón de Gastos de operación va lleno. «Sí, se cierra» y «No, sigue abierta» son botones. «No» lo dibuja lleno el 1 de enero, punteado y en coral; el cajón real no cambia.',
+      fig: (e) => cal(e === 'bien' || e === 'error2') + `<div class="cajs">${caj('Gastos de operación', e === 'bien' || e === 'error2', { mucho: true, cls: e === 'error1' ? 'tentativo-b' : '' })}</div>` + (e === 'error1' ? si('Así 20X2 traería gastos de 20X1.') : '') + ctl([['Sí, se cierra', e === 'bien' ? 'bien' : e === 'error2' ? 'pista' : ''], ['No, sigue abierta', e === 'error1' ? 'mal' : '']]),
+      msg: (e) => (e === 'error1' ? msg('Pista: la familia no depende de cuánto se use la cuenta.', 'mal') : e === 'error2' ? msg('Pensaste que transitoria es la que se usa poco. Se cierra porque mide el año, no por su uso.', 'mal') : e === 'bien' ? msg('[Acierto de Near.]', 'ok') : '') },
+    { near: '[toca]', tipo: 'Haz', est: ['antes', 'error1', 'error2', 'bien'], que: 'Las seis cuentas entran de a una, como ficha. Los cajones grandes «Sigue» y «Vuelve a cero» son los botones, y la cuenta queda escrita dentro del que se toca. Lleva la escalera por cuenta.',
+      fig: (e) => `<div class="fichero"><span class="ficha">${e === 'bien' ? 'Costo de ventas' : 'Bancos'}</span><small class="nota-fig">${e === 'bien' ? '6 de 6' : '1 de 6'}</small></div><div class="cajs dos">${caj('Sigue', false, { boton: true, cls: e === 'error2' ? 'pista' : '', extra: e === 'bien' ? '<small>Bancos · Maquinaria · Obligaciones financieras</small>' : '' })}${caj('Vuelve a cero', true, { boton: true, cls: e === 'error1' ? 'malb' : '', extra: e === 'error1' ? '<span class="ficha tentativo">Bancos</span>' : e === 'bien' ? '<small>Ingresos por servicios · Gastos de administración y ventas · Costo de ventas</small>' : '' })}</div>` + (e === 'error1' ? si('Así Bancos diría $0 el 1 de enero.') : ''),
+      msg: (e) => (e === 'error1' ? msg('[Pista de Near para la regla: ¿el saldo sigue después del cierre?]', 'mal') : e === 'error2' ? msg('[Devolución de Near.]', 'mal') : e === 'bien' ? msg('[Acierto de Near.]', 'ok') : '') },
+    { near: 'cierre', tipo: 'Cierre', est: ['llega'], que: 'La frase de cierre de Near queda pegada a dos cajones: Salarios por pagar, lleno el 1 de enero, y el gasto en salarios, en $0.',
+      fig: () => cal(true) + `<div class="cajs">${caj('Salarios por pagar')}${caj('Gasto en salarios', true)}</div>` },
+  ] };
+
+  // ═══ P3 · cu-a5 · La mesa de dos casos
+  const caso = (n, fam, de, a, reg = '', cls = '') => `<div class="caso ${cls}"><p class="t-nom">${n} <small>${fam}</small></p><p class="med"><span class="num">${$(de)}</span>${a != null ? `<span aria-hidden="true">→</span><span class="num ${a > de ? 'sube' : 'baja'}">${$(a)}</span>` : ''}</p>${reg}</div>`;
+  const reg = (lado, v) => `<p class="reg"><span class="${lado === 'd' ? 'td' : 'th'} rotm">${lado === 'd' ? 'DEBE' : 'HABER'}</span>${f(v)}</p>`;
+  const mesa = (a, b) => `<div class="mesa">${a}${b}</div>`;
+  const MAQ = (a) => caso('Maquinaria', 'activo', 0, a, reg('d', 50000)), APO = (a) => caso('Aportes sociales', 'patrimonio', 400000, a, reg('d', 50000));
+  P.a5 = { titulo: 'El debe y el haber', id: 'cu-a5-debe-y-haber', objeto: 'La mesa de dos casos', s: [
+    { near: '[lee]', tipo: 'Apertura', est: ['llega'], que: 'La mesa con los dos casos y su registro de $50.000 en el debe.', fig: () => mesa(MAQ(null), APO(null)) },
+    { near: '[decide]', tipo: 'Haz (predicción, no se califica)', est: ['antes', 'elegido'], que: '«Sí, igual» y «No, distinto» son botones. La elección queda marcada, sin pastilla, y la pantalla 2 la pone a prueba.', fig: (e) => mesa(MAQ(null), APO(null)) + ctl([['Sí, igual', e === 'elegido' ? 'elegido' : ''], ['No, distinto']]) },
+    { near: '[lee]', tipo: 'Míralo', est: ['antes', 'despues'], que: '«Registrar» es un control de la figura. Los saldos cuentan hacia su valor nuevo: uno sube (▲) y el otro baja (▼).', fig: (e) => mesa(MAQ(e === 'despues' ? 50000 : null), APO(e === 'despues' ? 350000 : null)) + (e === 'antes' ? ctl([['Registrar']]) : '') },
+    { near: '[toca]', tipo: 'Haz', est: ['antes', 'error1', 'error2', 'bien'], que: 'Las dos casas de la ecuación son los botones. La cuenta que cae en la casa equivocada queda punteada y en coral, con la regla de esa casa.',
+      fig: (e) => `<div class="fichero">${e === 'bien' ? '' : '<span class="ficha">Maquinaria</span>'}</div><div class="ecu"><button type="button" class="casa${e === 'error2' ? ' pista' : ''}"><span class="caj-n">Activo · izquierda</span><small>crece por el debe</small>${e === 'bien' ? '<span class="ficha entra">Maquinaria</span>' : ''}</button><span class="igual">=</span><button type="button" class="casa${e === 'error1' ? ' malb' : ''}"><span class="caj-n">Pasivo + Patrimonio · derecha</span><small>crece por el haber</small>${e === 'error1' ? '<span class="ficha tentativo">Maquinaria</span>' : ''}${e === 'bien' ? '<span class="ficha">Aportes sociales</span>' : ''}</button></div>` + (e === 'error1' ? si('Así su debe de $50.000 la bajaría.') : ''),
+      msg: (e) => (e === 'error1' ? msg('[Pista de Near.]', 'mal') : e === 'error2' ? msg('Confundiste dónde vive con dónde se anota. El activo vive a la izquierda.', 'mal') : e === 'bien' ? msg('[Acierto de Near.]', 'ok') : '') },
+    { near: '[decide]', tipo: 'Haz', est: ['antes', 'error1', 'error2', 'bien'], que: 'La mesa muestra Caja y Documentos por pagar (cu6-pagaré, p. 89). «Sí, ganó $500» pone un ingreso punteado y en coral, y el modelo no cambia. «No, nació una deuda» sube los dos saldos.',
+      fig: (e) => mesa(caso('Caja', 'activo', 1000, e === 'bien' || e === 'error2' ? 1500 : null), caso('Documentos por pagar', 'pasivo', 0, e === 'bien' || e === 'error2' ? 500 : null, '', e === 'error2' ? 'pista' : '')) + (e === 'error1' ? si('Así habría un ingreso que nadie ganó.') : '') + ctl([['Sí, ganó $500', e === 'error1' ? 'mal' : ''], ['No, nació una deuda', e === 'bien' ? 'bien' : '']]),
+      msg: (e) => (e === 'error1' ? msg('Pista: mira qué más aparece cuando entra el préstamo.', 'mal') : e === 'error2' ? msg('Viste entrar plata y pensaste en ganancia. Nace una deuda de $500: los dos lados de la ecuación suben juntos.', 'mal') : e === 'bien' ? msg('[Acierto de Near.]', 'ok') : '') },
+    { near: '[toca]', tipo: 'Míralo', est: ['antes', 'despues'], que: 'Se suelta una ficha de $100 en Gastos de operación (debe) y otra en Ingresos por servicios (haber). Debajo, el medidor del patrimonio baja con una y sube con la otra.',
+      fig: (e) => `<div class="fichero">${e === 'antes' ? f(100) + f(100) : ''}</div>` + mesa(caso('Gastos de operación', 'gasto', 0, e === 'despues' ? 100 : null, e === 'despues' ? reg('d', 100) : ''), caso('Ingresos por servicios', 'ingreso', 0, e === 'despues' ? 100 : null, e === 'despues' ? reg('h', 100) : '')) + `<p class="nota-fig">Patrimonio: ${e === 'despues' ? '− $100 con el gasto · + $100 con el ingreso' : 'sin cambios'}</p>` },
+    { near: '[toca]', tipo: 'Míralo', est: ['antes'], que: 'Cuatro saldos en cifras que se mueven en vivo, sin barras: $100 frente a $400.000 no se vería. No califica.',
+      fig: () => `<div class="fichero">${f(100) + f(500) + f(1000)}</div><div class="mesa cuatro">${[['Caja', 1500], ['Aportes sociales', 400000], ['Gastos de operación', 0], ['Ingresos por servicios', 0]].map(([n, v]) => `<button type="button" class="caso destino"><span class="t-nom">${n}</span><span class="num">${$(v)}</span></button>`).join('')}</div>` },
+    { near: 'cierre (opciones)', tipo: 'Haz', est: ['antes', 'error1', 'bien'], que: 'La pregunta de cierre de Near, con sus tres opciones a, b y c, va como Haz antes del Cierre: #470 no deja una acción obligatoria en el Cierre. Arriba queda la mesa en una línea, con los dos saldos finales.',
+      fig: (e) => `<p class="resumen-mesa"><span class="sube">Maquinaria</span><span class="baja">Aportes sociales</span></p>` + ctl([['Porque Maquinaria vive a la derecha.', e === 'error1' ? 'mal' : ''], ['Porque Maquinaria vive a la izquierda.', e === 'bien' ? 'bien' : ''], ['Porque Maquinaria vive en el haber.']], 'col'),
+      msg: (e) => (e === 'error1' ? msg('Confundiste dónde vive con dónde se anota. El activo vive a la izquierda.', 'mal') : e === 'bien' ? msg('[Acierto de Near.]', 'ok') : '') },
+    { near: 'cierre (frase)', tipo: 'Cierre', est: ['llega'], que: 'La respuesta de Near queda pegada a la mesa final.', fig: () => mesa(MAQ(50000), APO(350000)) },
+  ] };
+
+  // ═══ P4 · cu-a3 · La balanza de totales con nombres (Balanza de verbos.jsx sin cambios: izquierda y derecha reciben la lista)
+  const nom = (n, v, c = '') => `<span class="nom ${c}"><span>${n}</span>${v != null ? `<b class="num">${$(v)}</b>` : ''}</span>`;
+  const bal = (inc, i, d, o = {}) => `<div class="bal"><i class="barra" style="transform:rotate(${inc * 5}deg)"></i><div class="plats"><${o.botones ? 'button type="button"' : 'div'} class="plat d${o.malI ? ' malb' : ''}${o.pistaI ? ' pista' : ''}" style="transform:translateY(${inc * 8}px)"><span class="caj-n td">${o.ti || 'Activo'}</span>${i}</${o.botones ? 'button' : 'div'}><${o.botones ? 'button type="button"' : 'div'} class="plat h${o.pistaD ? ' pista' : ''}" style="transform:translateY(${-inc * 8}px)"><span class="caj-n th">${o.td || 'Pasivo + Patrimonio'}</span>${d}</${o.botones ? 'button' : 'div'}></div></div>`;
+  P.a3 = { titulo: 'La partida doble y las dos reglas', id: 'cu-a3-partida-doble', objeto: 'La balanza de totales con nombres', s: [
+    { near: '[lee]', tipo: 'Apertura', est: ['llega'], que: 'La balanza vacía y nivelada, A | P + Pt.', fig: () => bal(0, '', '') },
+    { near: '[decide]', tipo: 'Haz (predicción, no se califica)', est: ['antes', 'elegido'], que: 'Después de elegir, Equipo de computación entra al platillo del activo con su cifra y la balanza se inclina. Es el estado verdadero de esa sola línea.', fig: (e) => bal(e === 'elegido' ? 1 : 0, e === 'elegido' ? nom('Equipo de computación', 25000, 'entra') : '', '') + ctl([['Sí, quedan iguales', e === 'elegido' ? 'elegido' : ''], ['No, quedan distintos']]) },
+    { near: '[lee]', tipo: 'Míralo', est: ['antes', 'despues'], que: 'Al tocar la regla, aparece junto a la balanza la segunda línea, Cuentas por pagar $25.000, todavía fuera de los platillos.', fig: (e) => bal(1, nom('Equipo de computación', 25000), '') + `<div class="fichero">${e === 'despues' ? nom('Cuentas por pagar', 25000, 'flota entra') : ''}</div>` },
+    { near: '[toca]', tipo: 'Haz', est: ['antes', 'error1', 'error2', 'bien'], que: 'Los platillos son los botones. Si Cuentas por pagar cae en el del activo, queda punteada y en coral, la balanza no cambia y se escribe la consecuencia.',
+      fig: (e) => bal(e === 'bien' || e === 'error2' ? 0 : 1, nom('Equipo de computación', 25000) + (e === 'error1' ? nom('Cuentas por pagar', 25000, 'tentativo') : ''), e === 'bien' || e === 'error2' ? nom('Cuentas por pagar', 25000, 'entra') : '', { botones: e === 'antes' || e === 'error1', malI: e === 'error1', pistaD: e === 'error2' }) + `<div class="fichero">${e === 'antes' ? nom('Cuentas por pagar', 25000, 'flota') : ''}</div>` + (e === 'error1' ? si('Así sería $50.000 contra $0.') : ''),
+      msg: (e) => (e === 'error1' ? msg('[Pista de Near.]', 'mal') : e === 'error2' ? msg('[Devolución de Near.]', 'mal') : e === 'bien' ? msg('[Acierto de Near.]', 'ok') : '') },
+    { near: '[lee]', tipo: 'Míralo', est: ['antes', 'despues'], que: 'Los platillos pasan a ser grupos. Al tocar Activos, Gastos y Costos, cada uno entra a «Crece por el debe».', fig: (e) => bal(0, e === 'despues' ? nom('Activos') + nom('Gastos') + nom('Costos', null, 'entra') : '', '', { ti: 'Crece por el debe', td: 'Crece por el haber' }) + `<div class="fichero">${e === 'antes' ? nom('Activos') + nom('Gastos') + nom('Costos') : ''}</div>` },
+    { near: '[toca]', tipo: 'Haz', est: ['antes', 'error1', 'error2', 'bien'], que: 'Pasivos, Patrimonio e Ingresos entran de a una y los grupos son los botones. La que cae mal queda punteada y en coral en el grupo elegido. No rebota: lo acordamos en T2-2.',
+      fig: (e) => bal(0, nom('Activos') + nom('Gastos') + nom('Costos') + (e === 'error1' ? nom('Ingresos', null, 'tentativo') : ''), nom('Pasivos') + nom('Patrimonio') + (e === 'bien' || e === 'error2' ? nom('Ingresos', null, 'entra') : ''), { ti: 'Crece por el debe', td: 'Crece por el haber', botones: e === 'antes' || e === 'error1', malI: e === 'error1', pistaD: e === 'error2' }) + (e === 'error1' ? si('Así una venta bajaría el patrimonio.') : ''),
+      msg: (e) => (e === 'error1' ? msg('[Pista de Near.]', 'mal') : e === 'error2' ? msg('[Devolución de Near.]', 'mal') : e === 'bien' ? msg('[Acierto de Near.]', 'ok') : '') },
+    { near: '[decide]', tipo: 'Haz', est: ['antes', 'error1', 'error2', 'bien'], que: 'La balanza con Bancos (activo, $2.250 antes del 30 de enero) y Hipoteca por pagar ($8.000). «Bajan las dos» baja los dos platillos $400 y la balanza sigue nivelada. Cada opción mala dibuja su cifra punteada y en coral.',
+      fig: (e) => { const ok = e === 'bien' || e === 'error2'; return bal(0, nom('Bancos', ok ? 1850 : 2250), nom('Hipoteca por pagar', ok ? 7600 : 8000), { ti: 'Activo', td: 'Pasivo' }) + (e === 'error1' ? si('Así la hipoteca subiría a $8.400.') : '') + ctl([['Baja solo Bancos', e === 'error1' ? 'mal' : ''], ['Baja solo la hipoteca'], ['Bajan las dos', e === 'bien' ? 'bien' : e === 'error2' ? 'pista' : '']]); },
+      msg: (e) => (e === 'error1' ? msg('Pista: después de pagar, mira cuánto debes y cuánto tienes en el banco.', 'mal') : e === 'error2' ? msg('Pensaste que el debe siempre suma. En un pasivo, el debe resta: la hipoteca también baja.', 'mal') : e === 'bien' ? msg('[Acierto de Near.]', 'ok') : '') },
+    { near: '[lee]', tipo: 'Míralo', est: ['simple', 'compuesto'], que: 'Un selector «Simple / Compuesto», que no califica. Simple es ene-30: un nombre por platillo. Compuesto es ene-03: dos por platillo, $10.000 contra $10.000. La balanza sigue nivelada en los dos.',
+      fig: (e) => `<div class="sel"><button type="button" class="${e === 'simple' ? 'on' : ''}">Simple</button><button type="button" class="${e === 'compuesto' ? 'on' : ''}">Compuesto</button></div>` + (e === 'simple' ? bal(0, nom('Hipoteca por pagar', 400), nom('Bancos', 400), { ti: 'Debe', td: 'Haber' }) : bal(0, nom('Construcciones y edificaciones', 6000) + nom('Terrenos', 4000), nom('Bancos', 2000) + nom('Hipoteca por pagar', 8000), { ti: 'Debe', td: 'Haber' })) },
+    { near: '[decide]', tipo: 'Haz', est: ['antes', 'error1', 'error2', 'bien'], que: 'ene-03 en la balanza, con los contadores de cada lado en «$?». «No lo descuadra» hace contar los dos totales hasta $10.000. «Sí» escribe la consecuencia punteada y en coral, y la balanza sigue nivelada porque es la verdad.',
+      fig: (e) => { const ok = e === 'bien' || e === 'error2'; return bal(0, nom('Construcciones y edificaciones') + nom('Terrenos') + `<b class="num tot">${ok ? '$10.000' : '$?'}</b>`, nom('Bancos') + nom('Hipoteca por pagar') + `<b class="num tot">${ok ? '$10.000' : '$?'}</b>`, { ti: 'Debe', td: 'Haber' }) + (e === 'error1' ? si('Así un lado sumaría más que el otro.') : '') + ctl([['Sí, lo descuadra', e === 'error1' ? 'mal' : ''], ['No lo descuadra', e === 'bien' ? 'bien' : e === 'error2' ? 'pista' : '']]); },
+      msg: (e) => (e === 'error1' ? msg('Pista: suma cada lado antes de contar las cuentas.', 'mal') : e === 'error2' ? msg('Creíste que un asiento compuesto viene descuadrado. Cuadra si las sumas son iguales: $10.000 y $10.000.', 'mal') : e === 'bien' ? msg('[Acierto de Near.]', 'ok') : '') },
+    { near: 'cierre', tipo: 'Cierre', est: ['llega'], que: 'La frase de cierre pegada a la balanza de ene-03, nivelada y con sus totales.', fig: () => bal(0, nom('Construcciones y edificaciones') + nom('Terrenos') + '<b class="num tot">$10.000</b>', nom('Bancos') + nom('Hipoteca por pagar') + '<b class="num tot">$10.000</b>', { ti: 'Debe', td: 'Haber' }) },
+  ] };
+
+  // ═══ P5 · cu-a4 · El renglón que viaja del diario a su T
+  const ENE03 = [['Construcciones y edificaciones', 'd', 6000], ['Terrenos', 'd', 4000], ['Bancos', 'h', 2000], ['Hipoteca por pagar', 'h', 8000]];
+  const diario = (o = {}) => `<div class="dia"><p class="dia-cab"><span>3 ene</span>${o.cols ? '<small>fecha · detalle · debe · haber</small>' : ''}</p>${ENE03.map(([c, l, v], i) => `<p class="dia-r${l === 'h' ? ' hab' : ''}${o.lit === i ? ' lit' : ''}${o.va === i ? ' va' : ''}"><span>${c}</span><b class="num ${l === 'd' ? 'td' : 'th'}">${l === 'd' ? $(v) : ''}</b><b class="num th">${l === 'h' ? $(v) : ''}</b></p>`).join('')}</div>`;
+  const mini = (c, d, h, o = {}) => T(c, d, h, { cls: 'mini' + (o.cls ? ' ' + o.cls : ''), botones: o.botones, mal: o.mal, pista: o.pista });
+  const BANCOS9 = [['2 ene', 'd', 5000], ['3 ene', 'h', 2000], ['4 ene', 'h', 800], ['8 ene', null], ['12 ene', 'h', 500], ['18 ene', 'h', 250], ['25 ene', null], ['26 ene', 'd', 800], ['30 ene', 'h', 400]];
+  P.a4 = { titulo: 'Del diario al mayor', id: 'cu-a4-diario-y-mayor', objeto: 'El renglón que viaja del diario a su T', s: [
+    { near: '[lee]', tipo: 'Apertura', est: ['llega'], que: 'El asiento del 3 de enero se escribe solo, renglón a renglón, una vez.', fig: () => diario() },
+    { near: '[decide]', tipo: 'Haz (predicción, no se califica)', est: ['fecha', 'cuenta'], que: 'Con «Verlos por fecha», los nueve hechos van en orden y los movimientos de Bancos quedan repartidos y marcados. Con «Verlos por cuenta», se juntan en la T de Bancos. No lleva pastilla: la pantalla 6 lo pregunta.',
+      fig: (e) => `<div class="sel"><button type="button" class="${e === 'fecha' ? 'on' : ''}">Verlos por fecha</button><button type="button" class="${e === 'cuenta' ? 'on' : ''}">Verlos por cuenta</button></div>` + (e === 'fecha' ? `<div class="nueve">${BANCOS9.map(([d, l, v]) => `<p class="${l ? 'lit' : ''}"><span>${d}</span><span>${l ? `Bancos ${l === 'd' ? '+' : '−'} ${$(v)}` : 'sin Bancos'}</span></p>`).join('')}</div>`
+        : T('Bancos', BANCOS9.filter((r) => r[1] === 'd').map((r) => `<span class="ln"><small>${r[0]}</small>${$(r[2])}</span>`).join(''), BANCOS9.filter((r) => r[1] === 'h').map((r) => `<span class="ln"><small>${r[0]}</small>${$(r[2])}</span>`).join(''), { nombres: true, cls: 'larga' })) },
+    { near: '[lee]', tipo: 'Míralo', est: ['antes', 'despues'], que: 'Al tocar un renglón se nombran sus columnas: fecha, detalle, debe y haber.', fig: (e) => diario({ cols: e === 'despues', lit: e === 'despues' ? 0 : null }) },
+    { near: '[toca]', tipo: 'Míralo', est: ['antes', 'despues'], que: 'Al tocar el asiento del 1 de julio, la cuenta del haber se corre a la derecha (translateX) y aparece la explicación corta.',
+      fig: (e) => `<div class="dia"><p class="dia-cab"><span>1 jul</span></p><p class="dia-r"><span>Caja</span><b class="num td">$2.000</b><b></b></p><p class="dia-r hab${e === 'despues' ? ' corrida' : ''}"><span>Aportes sociales</span><b></b><b class="num th">$2.000</b></p>${e === 'despues' ? '<p class="nota-fig">[Explicación corta del libro]</p>' : ''}</div>` },
+    { near: '[lee]', tipo: 'Míralo', est: ['antes', 'despues'], que: '«Ver el mayor» es un control de la figura. Aparecen las cuatro T vacías de las cuentas del 3 de enero, dos por fila.',
+      fig: (e) => (e === 'antes' ? diario() + ctl([['Ver el mayor']]) : `<div class="minis">${ENE03.map(([c]) => mini(c, '', '')).join('')}</div>`) },
+    { near: '[toca]', tipo: 'Haz', est: ['antes', 'error1', 'error2', 'bien'], que: 'Viaja un renglón por vez, como ficha. Los lados de las cuatro T son los destinos. Si cae del lado contrario, queda punteado y en coral, y la T no lo guarda (en vez del rebote de Near). Al segundo error, el valor viaja a su lado y ese lado queda con borde blanco.',
+      fig: (e) => `<div class="fichero"><span class="ficha">3 ene · Bancos · Haber · $2.000</span></div><div class="minis">${ENE03.map(([c, l, v], i) => { const hecho = i < 2; const esB = c === 'Bancos';
+        return mini(c, hecho && l === 'd' ? `<span class="ln"><small>3 ene</small>${$(v)}</span>` : esB && e === 'error1' ? `<span class="ln tentativo"><small>3 ene</small>${$(2000)}</span>` : '', esB && (e === 'bien' || e === 'error2') ? `<span class="ln entra"><small>3 ene</small>${$(2000)}</span>` : '', { botones: e === 'antes' || e === 'error1', mal: esB && e === 'error1' ? 'd' : null, pista: esB && e === 'error2' ? 'h' : null }); }).join('')}</div>`,
+      msg: (e) => (e === 'error1' ? msg('Pista: mira en qué columna del diario está el valor.', 'mal') : e === 'error2' ? msg('Cambiaste la columna. Mayorizar no elige el lado: lo copia tal cual del diario.', 'mal') : e === 'bien' ? msg('[Acierto de Near.]', 'ok') : '') },
+    { near: '[decide]', tipo: 'Haz', est: ['antes', 'error1', 'error2', 'bien'], que: 'El renglón de Bancos del diario arriba y, debajo, su T: uno encima del otro. Con el acierto, ene-03 se enciende en los dos. «¿Qué pasó en cada fecha?» dibuja el mayor en orden de fecha, punteado y en coral: sería otro diario.',
+      fig: (e) => { const ok = e === 'bien' || e === 'error2'; return `<p class="dia-1${ok ? ' lit' : ''}">Diario, 3 ene: Bancos · <span class="th">Haber</span> <b class="num">$2.000</b></p>` + T('Mayor · Bancos', `<span class="ln"><small>2 ene</small>${$(5000)}</span>`, `<span class="ln${ok ? ' lit' : ''}"><small>3 ene</small>${$(2000)}</span>`, { cls: 'mini' + (e === 'error1' ? ' tentativo-b' : '') }) + (e === 'error1' ? si('Así el mayor sería otro diario.') : '') + ctl([['¿Qué pasó en cada fecha?', e === 'error1' ? 'mal' : ''], ['¿Cómo quedó cada cuenta?', e === 'bien' ? 'bien' : e === 'error2' ? 'pista' : '']], 'col'); },
+      msg: (e) => (e === 'error1' ? msg('Pista: recuerda cómo agrupa el mayor los valores.', 'mal') : e === 'error2' ? msg('Le diste al mayor el orden del diario. El mayor ordena por cuenta, no por fecha.', 'mal') : e === 'bien' ? msg('[Acierto de Near.]', 'ok') : '') },
+    { near: 'cierre', tipo: 'Cierre', est: ['llega'], que: 'La frase de cierre pegada al diario de ene-03 con el renglón de Bancos encendido.', fig: () => diario({ lit: 2 }) },
+  ] };
+  window.T23F = P;
+})();
+
+const ALT = {"a1": [183, 183], "a2": [171, 158], "a5": [180, 173], "a3": [181, 178], "a4": [197, 197]};
+const NOM = { llega: 'Al llegar', antes: 'Antes', despues: 'Después', izq: 'Izquierda', der: 'Derecha', toca: 'Tocado', abierto: 'Abierto', elegido: 'Elegido', fecha: 'Por fecha', cuenta: 'Por cuenta', simple: 'Simple', compuesto: 'Compuesto', paso: 'Paso dado', error1: '1.er error', error2: '2.º error', bien: 'Acierto' };
+(function () { const v = document.querySelector('#vivo .vivo'); let k = 'a1', i = 0, est = null;
+  const pintar = () => { const s = T23F[k].s[i]; est = s.est.includes(est) ? est : s.est[0];
+    v.querySelector('.slides').innerHTML = T23F[k].s.map((x, j) => `<button type="button" data-i="${j}" class="${j === i ? 'on' : ''}">${j}</button>`).join('');
+    v.querySelector('.estados').innerHTML = s.est.map((x) => `<button type="button" data-e="${x}" class="${x === est ? 'on' : ''}">${NOM[x] || x}</button>`).join('');
+    v.querySelectorAll('.mq').forEach((m, j) => { m.innerHTML = `<p class="cej">Pantalla ${i} · ${s.tipo.split(' ')[0]}</p><p class="reserva-rot">altoFigura ${ALT[k][j]} px</p><div class="reserva" style="--alto:${ALT[k][j]}px"><div class="fig">${s.fig(est)}</div></div><div class="banda">${s.msg ? s.msg(est) : ''}</div>`;
+      const t = m.querySelector('.fig .tent'); if (t) m.querySelector('.banda').prepend(t); }); };
+  v.querySelector('.piezas').addEventListener('click', (ev) => { const b = ev.target.closest('[data-k]'); if (!b) return; k = b.dataset.k; i = 0; est = null; v.querySelectorAll('.piezas button').forEach((x) => x.classList.toggle('on', x === b)); pintar(); });
+  v.querySelector('.slides').addEventListener('click', (ev) => { const b = ev.target.closest('[data-i]'); if (!b) return; i = +b.dataset.i; est = null; pintar(); });
+  v.querySelector('.estados').addEventListener('click', (ev) => { const b = ev.target.closest('[data-e]'); if (!b) return; est = b.dataset.e; pintar(); }); pintar(); })();
+</script>
+</body></html>

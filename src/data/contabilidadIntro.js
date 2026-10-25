@@ -254,6 +254,15 @@ export const ALTERNATIVOS = {
   capa3: "Ocho usuarios consultan el resumen. Al elegir Administradores se enciende además el trazo de retorno hacia la primera estación; con los otros siete el trazo permanece atenuado.",
 };
 
+/*
+ * Lo que oye quien no ve el trazo al elegir un usuario en la capa 3. Vivía
+ * escrito en `ExploraUsuarios.jsx`; mismo texto, letra por letra.
+ */
+export const ALT_RETORNO = {
+  encendido: "El trazo de retorno hacia la primera estación está encendido: la decisión de este usuario cambia la actividad de la empresa.",
+  atenuado: "El trazo de retorno permanece atenuado: este usuario consulta el resumen desde afuera del ciclo.",
+};
+
 /* ═══════════════════ TOKENS DE LA PIEZA ═══════════════════ */
 
 /*
@@ -278,6 +287,14 @@ export const ROTULO_PIEZA = "EL CICLO CONTABLE · APRENDER";
 export const BOTON_REPETIR = "Repetir";
 export const BOTON_SIGUIENTE = "Siguiente";
 export const BOTON_REVER = "Ver el recorrido otra vez";
+/*
+ * El rótulo de la capa 2 cuando ya se cerró el ciclo, y el botón que la
+ * vuelve al paso 1. Vivían escritos en `ElRecorridoDeUnHecho.jsx`; se pasan
+ * aquí para que la lista de pantallas (`contabilidadT1Pantallas.js`) los lea
+ * de la misma fuente que el componente. Mismo texto, letra por letra.
+ */
+export const ROTULO_CIERRE = "El ciclo cerrado";
+export const BOTON_DESDE_EL_PRINCIPIO = "Desde el principio";
 
 /*
  * ═══════════════════ LA PIEZA, CON EL CONTRATO DE CuatroCapas ═══════════════════

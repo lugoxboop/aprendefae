@@ -97,3 +97,27 @@ Lo que **no** ahorra, y conviene no intentar: escribir en estilo telegrama,
 abreviar o quitar palabras. Las palabras cortadas se parten en más pedazos, no
 en menos, y encima hay que gastar en descifrarlas. Lo que se ahorra no es cómo
 se dice: es cuánto se carga.
+
+## j) Una sola pasada: lo que llega se exprime la primera vez
+
+Orden de Mateo del 24 de octubre de 2026, vía Miku. Lo que más gasta no es
+abrir un material pesado: es **volver a abrirlo**. Un capítulo del libro, una
+ficha, una entrega o una auditoría se leen **una vez, de pies a cabeza**, y en
+esa misma pasada se saca todo lo que va a hacer falta.
+
+- **Exprime en la primera lectura.** No solo lo que necesitas hoy: también lo
+  que vas a necesitar después, las cifras con su página, las citas, y **lo que
+  falta**. Si al leer el capítulo 1 ves que te faltan páginas del capítulo 2,
+  eso se anota ahí mismo, en esa lectura. No se deja para una segunda vuelta.
+- **Déjalo escrito en el repo**, en el canon o en tu ficha. Lo que solo vive en
+  un chat hay que volver a pedirlo cuando ese chat se traspase, y pedirlo dos
+  veces gasta el tiempo de Mateo, que es más escaso que los tokens.
+- **No mandes a nadie a «revisar si…».** Esa frase obliga a releer el material
+  entero para contestar algo que debió salir de la primera pasada. Si hace
+  falta saberlo, se sabe porque está anotado.
+- **Volver a abrirlo es la excepción**, no el procedimiento: solo cuando lo
+  anotado no alcanza y la decisión no se puede tomar sin ello.
+
+Vale igual para los materiales de Mateo que para las entregas entre agentes: el
+que recibe exprime, anota y decide. El que entrega escribe para que el otro no
+tenga que volver a la fuente.

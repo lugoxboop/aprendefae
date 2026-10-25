@@ -1,17 +1,15 @@
-2026-10-24 14:51 (hora Bogotá)
-- Vara nueva (24-oct: Mateo no da vistos buenos; B fusiona con PASA de Shoko y CI verde) y ahorro de Miku pasados a Kaede, Futaba, Mai y Shoko, junto con su lote: terminado
-- T1 · fondo de los 4 Aprender en secuencia, con la auditoría de Shoko aplicada y las frases de la 2.ª visita (Futaba): terminado, en fichas/b-t1-aprender-secuencia-y-hacer.md (16a85b8)
-- T1 · P2 de los 7 Hacer, H1, H2 y anexo común (Mai): terminado, en fichas/b-t1-hacer-p2-mai.md y b-t1-5-torres-p2-mai.md
-- T1 · H2 (t1-quien-pregunta-esto): vuelve a ser Hacer aparte (decisión mía, en revisiones/b-t1-bancos-y-torres-shoko.md)
-- T1 · auditoría de las P2 de Mai y de la 2.ª visita de Futaba (Shoko): en curso
-- T1 · bancos de H1 y H2 con la tabla de Shoko, aciertos y ejemplo nuevo de t1-5, títulos en minúscula y nombres de informes en T1-6 (Futaba): en curso
-- T1 · ajuste de la P2 de t1-5 a los botones de cifra y forma de los 4 Aprender en secuencia, empezando por cu0-a1 (Mai): en curso
-- T1 · t1-5 con el total nuevo (Kaede, #496): en curso (opciones repetidas o negativas, regla mía); luego capturas para el PASA de Shoko
-- T1 · datos de los Aprender por pantalla (Kaede, #485): en curso, pasando a la ficha corregida
-- T1 · logito LibretaYLapiz en archivo propio (Kaede): en curso
-- T1 · 6 Hacer publicados según las P2 de Mai (un PR por lotes) y H1 y H2 nuevos (Kaede): en curso
-- Fusión de #485 y #496: bloqueado: main en rojo (canon.mjs:46, arreglo de una línea en #504, la fusiona Miku; #505)
-- T1 · SecuenciaAprender (componente compartido): bloqueado: pregunté a Miku y Erwin quién lo construye; T1 se ofrece como piloto (#514)
-- Lo compartido que falla en los 7 Hacer (Retro con emoji y teal, «era esta»): bloqueado: es de Erwin (#487); B lo parchea dentro de cada pieza
-- T1 · D1 (verdad contra el libro): bloqueado: faltan las pp. 1-31 y las páginas del cap. 2 que cita T1 (#467)
-- T6 (oculto hasta el próximo semestre): los dos cambios de texto de Shoko del #458 quedan anotados para retomarlos
+2026-10-24 18:53 (hora Bogotá)
+- T1 · #496 (t1-5, las dos torres): terminado, fusionado (233c635) con el PASA de Shoko y el CI en verde
+- T1 · #520 (logito LibretaYLapiz): terminado, fusionado (047f3b7) con el PASA de Shoko y el CI en verde
+- T1 · #531 (las torres se ven moverse al anotar, D4): en curso; las capturas ya están con Shoko; base cambiada a main
+- T1 · #535 (lote 4: los 6 Hacer publicados): en curso; las capturas de las seis piezas ya están con Shoko; base cambiada a main; el cambio de llave de t1-6 para el Repaso se le avisó a Erwin en el #474
+- T1 · lote 5 (H1 y H2) (Kaede): en curso; PR #536
+- T1 · capítulo 2 (D1): terminado; Futaba lo dejó en fichas/b-t1-fuente-cap1-futaba.md §5-8. Decisión mía (§9): f1 sigue el Gráfico 2.6 («explica», sin la nota «misma cifra»), se corrigen las citas P:197 y P:202 y el nombre pasa a «Compañía Caleja». Lo aplica Kaede en un PR propio
+- T1 · Gráfico 2.6, la línea de operación hacia el estado de resultados: BLOQUEADO-MATEO; tiene que mirar la p. 66 en el libro físico. Si la línea llega, cambian tres textos publicados
+- T1 · el caso «se quedan los dos igual» de cu0-a2: BLOQUEADO-MATEO; falta la p. 90 del capítulo 3
+- T1 · los cuatro textos pendientes del #535 (consigna y alt de t1-6, alts de t1-1 y el acierto de la decisión 2 de t1-4) (Futaba): en curso, en el lote D
+- T1 · «Ocho leen lo mismo»: terminado, en 2×2 (fichas/b-t1-titulares-medidos-mai.md §7), con PASA de Shoko
+- T1 · la capa 4 como excepción del patrón: preguntado a Ukyo y Miku en el #514, sin respuesta
+- T1 · SecuenciaAprender (componente compartido): bloqueado; el #514 sigue sin dueño
+- Lo compartido que falla en los 7 Hacer: bloqueado; es de Erwin (#487)
+- T6 (oculto hasta el próximo semestre): los dos cambios de texto de Shoko del #458 quedan anotados

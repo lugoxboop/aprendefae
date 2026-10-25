@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { FAE } from "../../../../theme.js";
 import {
   ESTACIONES, TEXTOS, CIERRE, EL_HECHO, ALTERNATIVOS, NEUTRO,
-  BOTON_REPETIR, BOTON_SIGUIENTE,
+  BOTON_REPETIR, BOTON_SIGUIENTE, ROTULO_CIERRE, BOTON_DESDE_EL_PRINCIPIO,
 } from "../../../../data/contabilidadIntro.js";
 import {
   HECHO, BALANCE, facturaDelHecho, anilloEn, retornoEn,
@@ -164,7 +164,7 @@ export default function ElRecorridoDeUnHecho() {
         margin: "0 0 9px", fontFamily: SORA, fontSize: "12px", fontWeight: 600,
         color: "#A8B6C8",
       }}>
-        {cerrado ? "El ciclo cerrado" : `Paso ${paso} de ${PASOS}`}
+        {cerrado ? ROTULO_CIERRE : `Paso ${paso} de ${PASOS}`}
       </p>
 
       <div style={{ display: "flex", gap: "6px", alignItems: "stretch" }}>
@@ -216,7 +216,7 @@ export default function ElRecorridoDeUnHecho() {
         </button>
         {cerrado && (
           <button type="button" data-reiniciar onClick={() => { setPaso(1); setRepeticion((r) => r + 1); }} style={boton(true)}>
-            Desde el principio
+            {BOTON_DESDE_EL_PRINCIPIO}
           </button>
         )}
       </div>

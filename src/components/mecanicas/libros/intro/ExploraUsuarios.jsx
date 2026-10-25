@@ -1,6 +1,6 @@
 import { useState } from "react";
 import {
-  USUARIOS, TEXTO_DEL_SELECTOR, VACIO_CAPA_3, ALTERNATIVOS, NEUTRO, NAVY_DEL_CHIP,
+  USUARIOS, TEXTO_DEL_SELECTOR, VACIO_CAPA_3, ALTERNATIVOS, ALT_RETORNO, NEUTRO, NAVY_DEL_CHIP,
 } from "../../../../data/contabilidadIntro.js";
 import {
   BALANCE, retornoParaUsuario, usuarioPorId, ENCENDIDO,
@@ -107,9 +107,7 @@ export default function ExploraUsuarios() {
       <p style={SOLO_LECTOR}>{ALTERNATIVOS.capa3}</p>
       {usuario && (
         <p style={SOLO_LECTOR}>
-          {retorno === ENCENDIDO
-            ? "El trazo de retorno hacia la primera estación está encendido: la decisión de este usuario cambia la actividad de la empresa."
-            : "El trazo de retorno permanece atenuado: este usuario consulta el resumen desde afuera del ciclo."}
+          {retorno === ENCENDIDO ? ALT_RETORNO.encendido : ALT_RETORNO.atenuado}
         </p>
       )}
     </div>
