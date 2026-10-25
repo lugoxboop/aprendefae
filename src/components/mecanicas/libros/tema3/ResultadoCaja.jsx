@@ -230,8 +230,13 @@ export function Puente({ caso, suya, respuestas = null, armar = true }) {
           return (
             <div key={f.id} data-renglon-tenue={f.id} style={{ "--k": k, minHeight: "30px", boxSizing: "border-box" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "8px", minHeight: "16px" }}>
-                <span style={{ minWidth: 0, fontFamily: INTER, fontSize: "12px", lineHeight: "16px", fontWeight: 600, color: C.apagado }}>{f.nombre}</span>
-                <span data-cifra-tenue style={{ ...CIFRA, flex: "none", fontSize: "12px", lineHeight: "16px", color: C.apagado }}>{conSigno(f.signo, f.monto)} {TU_RESPUESTA}</span>
+                <span style={{ flex: "1 1 auto", minWidth: 0, fontFamily: INTER, fontSize: "12px", lineHeight: "16px", fontWeight: 600, color: C.apagado }}>{f.nombre}</span>
+                {/* La cifra y, debajo, «(tu respuesta)»: así el nombre no se aprieta a 320 y el renglón mide lo mismo en A y en B. */}
+                <span data-cifra-tenue style={{ flex: "none", display: "flex", flexDirection: "column", alignItems: "flex-end", color: C.apagado }}>
+                  <span data-monto-tenue style={{ ...CIFRA, whiteSpace: "nowrap", fontSize: "12px", lineHeight: "16px", color: C.apagado }}>{conSigno(f.signo, f.monto)}</span>
+                  {" "}
+                  <span style={{ whiteSpace: "nowrap", fontFamily: INTER, fontSize: "12px", lineHeight: "16px", color: C.apagado }}>{TU_RESPUESTA}</span>
+                </span>
               </div>
             </div>
           );

@@ -8,7 +8,7 @@
  * #hacer:t3-del-resultado-a-la-caja), con Inter y Sora de @fontsource 5.3.0,
  * y en las dos versiones (A y B, fijadas por el número de intentos guardado)
  * juega cuatro partidas: bien, mal con punteado, mal con la caja negativa
- * (A7) y, en A, la que cuadra con errores (A6). Mide:
+ * (A7) y la que cuadra con errores (A6; en B, con tres fichas mal). Mide:
  *
  *   · VENTANA    la regla de T3: en cada paso (también el 1 tras «Así se
  *                juega», al devolver una ficha desde la lista y con
@@ -17,21 +17,28 @@
  *                cortadas (cada palabra en un solo renglón y dentro del botón).
  *   · TRAMO      que en el puente el tramo menor mida 4 px o más.
  *   · ALTOS      encabezado, ficha del caso, ranura, tarjeta, renglones y puente.
+ *   · LEYENDA    Kamogawa, #557: «Punteado: …» solo si hay punteado; en caja
+ *                negativa, «Con tus respuestas, la caja daba −$X»; si
+ *                cuadra con errores, ninguna.
+ *   · TENUE      Kamogawa, #557: la ficha que no mueve la caja y el
+ *                estudiante sumó o restó, en su renglón tenue, con su alto.
  *   · BARRA, SALE, LETRA (≥ 12 px), TOQUE (≥ 44 × 44) y CONTRASTE (texto
  *                ≥ 4,5:1, contorno de los botones en reposo ≥ 3:1).
  *
  *   node scripts/t3/medir-resultado-caja.mjs [carpeta-de-capturas]
  *
  * Con carpeta, guarda las capturas a media escala (deviceScaleFactor 1) de
- * vacío, a mitad, bien, mal (punteado), mal con caja negativa y resumen, en
- * A y B y en los dos anchos. Sale con 1 si algo no cumple.
+ * vacío, a mitad, bien, mal (punteado), mal con caja negativa, mal que cuadra
+ * con errores y resumen, en A y B y en los dos anchos; y el puente solo, con
+ * el renglón tenue, de la partida «mal» (resultado-caja-<v>-<ancho>-tenue). Sale con 1 si algo no cumple.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 import { createServer } from "vite";
 import { createRequire } from "node:module";
 import { existsSync, mkdirSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { CASO_A, CASO_B, SUMA, RESTA, NO_MUEVE } from "../../src/data/contabilidadTema3ResultadoCaja.js";
+import { CASO_A, CASO_B, SUMA, RESTA, NO_MUEVE, LEYENDA_PUNTEADO, LEYENDA_NEGATIVA, TU_RESPUESTA, signoDe } from "../../src/data/contabilidadTema3ResultadoCaja.js";
+import { cajaDe, pesos, conSigno } from "../../src/contabilidad/resultadoCaja.js";
 
 const RAIZ = resolve(import.meta.dirname, "../..");
 const require = createRequire(import.meta.url);
@@ -56,6 +63,8 @@ const PARTIDAS = {
     bien: {},
     mal: { "t3rc-b3": SUMA, "t3rc-b6": SUMA },
     negativa: { "t3rc-b1": RESTA },
+    /* La única que cuadra con tres mal (con cuatro hay otra). */
+    cuadra: { "t3rc-b1": NO_MUEVE, "t3rc-b3": SUMA, "t3rc-b4": SUMA },
   },
 };
 
@@ -108,6 +117,12 @@ function medir() {
   r.pista = document.querySelector("[data-puente] [data-pista]")?.getBoundingClientRect().width ?? null;
   r.punteado = document.querySelector("[data-puente] [data-punteado]")?.getBoundingClientRect().width ?? null;
   r.cifraSuya = document.querySelector("[data-puente] [data-cifra-suya]")?.textContent ?? null;
+  r.leyendas = [...document.querySelectorAll("[data-puente] [data-leyenda]")].map((x) => ({ tipo: x.dataset.leyenda, texto: x.textContent, alto: x.getBoundingClientRect().height }));
+  r.tenues = [...document.querySelectorAll("[data-puente] [data-renglon-tenue]")].map((x) => {
+    const [nombre, cifra] = x.querySelectorAll("span");
+    const monto = x.querySelector("[data-monto-tenue]").getClientRects();
+    return { nombre: nombre.textContent, cifra: cifra.textContent, alto: x.getBoundingClientRect().height, lineasNombre: Math.round(nombre.getBoundingClientRect().height / 16), lineasCifra: Math.round(cifra.getBoundingClientRect().height / 16), cifraEnUnRenglon: monto.length === 1 };
+  });
   const nombreLineas = (el) => { const rg = document.createRange(); rg.selectNodeContents(el); return new Set([...rg.getClientRects()].map((q) => Math.round(q.top))).size; };
   const nombre1 = document.querySelector("[data-tarjeta] [data-nombre]");
   r.lineasNombre = nombre1 ? nombreLineas(nombre1) : null;
@@ -251,7 +266,7 @@ async function partida(ancho, version, nombre) {
     await panel.screenshot({ path: `${CAPTURAS}/resultado-caja-${version}-${ancho}-${estado}.png`, animations: "disabled" });
   };
   await pagina.waitForTimeout(900);
-  const conCapturas = nombre !== "cuadra";
+  const conCapturas = true;
   if (nombre === "bien") { nota("vacío", await pagina.evaluate(medir)); await captura("vacio"); }
   for (const [k, f] of caso.fichas.entries()) {
     revisarVentana(etq, await pagina.evaluate(ventana));
@@ -283,9 +298,25 @@ async function partida(ancho, version, nombre) {
   filas.push(`|  |  | ↳ ${nombre}: pista ${r.pista?.toFixed(1)} px, punteado ${r.punteado === null ? "ninguno" : `${r.punteado.toFixed(1)} px`}, cifra de sus respuestas ${r.cifraSuya ?? "—"}, renglones ${r.renglones.join(" ")} |`);
   if (nombre === "negativa" && r.punteado !== null) fallos.push(`${etq}: A7, hay punteado con la caja negativa`);
   if (nombre === "mal" && r.punteado === null) fallos.push(`${etq}: el error no dejó punteado`);
+  /* LEYENDA (Kamogawa, #557). */
+  const suya = cajaDe(caso, Object.fromEntries(caso.fichas.map((f) => [f.id, cambios[f.id] ?? f.va])));
+  const esperada = nombre === "mal" ? [{ tipo: "punteado", texto: LEYENDA_PUNTEADO }]
+    : nombre === "negativa" ? [{ tipo: "negativa", texto: `${LEYENDA_NEGATIVA} ${pesos(suya)}` }] : [];
+  const vista = r.leyendas.map(({ tipo, texto }) => ({ tipo, texto }));
+  if (JSON.stringify(vista) !== JSON.stringify(esperada)) fallos.push(`${etq}: LEYENDA ${JSON.stringify(vista)}, se esperaba ${JSON.stringify(esperada)}`);
+  if (nombre === "cuadra" && (r.punteado !== null || r.cifraSuya !== null)) fallos.push(`${etq}: cuadra con errores y hay punteado o cifra`);
+  if (nombre === "negativa" && r.cifraSuya !== pesos(suya)) fallos.push(`${etq}: la cifra negativa es ${r.cifraSuya}, se esperaba ${pesos(suya)}`);
+  /* La cifra negativa va pegada a la frase: el monto no se parte (nowrap) y sale en el mismo párrafo. */
+  /* TENUE (Kamogawa, #557): una por cada ficha que no mueve y el estudiante movió. */
+  const tenuesEsperados = caso.fichas.filter((f) => f.va === NO_MUEVE && signoDe(cambios[f.id])).map((f) => ({ nombre: f.nombre, cifra: `${conSigno(signoDe(cambios[f.id]), f.monto)} ${TU_RESPUESTA}` }));
+  const tenuesVistos = r.tenues.map(({ nombre: n, cifra }) => ({ nombre: n, cifra }));
+  if (JSON.stringify(tenuesVistos) !== JSON.stringify(tenuesEsperados)) fallos.push(`${etq}: TENUE ${JSON.stringify(tenuesVistos)}, se esperaba ${JSON.stringify(tenuesEsperados)}`);
+  for (const x of r.tenues) if (!x.cifraEnUnRenglon) fallos.push(`${etq}: el monto del renglón tenue se parte`);
+  filas.push(`|  |  | ↳ leyenda: ${r.leyendas.length ? r.leyendas.map((l) => `«${l.texto}» (${l.alto.toFixed(1)} px)`).join(", ") : "ninguna"}; renglón tenue: ${r.tenues.length ? r.tenues.map((x) => `«${x.nombre} ${x.cifra}» (${x.alto.toFixed(1)} px, nombre en ${x.lineasNombre} l., cifra en ${x.lineasCifra} l.)`).join(", ") : "ninguno"} |`);
   if (conCapturas) {
     await pagina.evaluate(() => scrollTo(0, 0));
-    await captura({ bien: "bien", mal: "mal", negativa: "mal-negativa" }[nombre]);
+    await captura({ bien: "bien", mal: "mal", negativa: "mal-negativa", cuadra: "mal-cuadra" }[nombre]);
+    if (CAPTURAS && r.tenues.length) await pagina.locator("[data-puente]").screenshot({ path: `${CAPTURAS}/resultado-caja-${version}-${ancho}-tenue.png`, animations: "disabled" });
   }
   if (nombre === "bien") {
     await pagina.click("[data-siguiente]");
