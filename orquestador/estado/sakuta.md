@@ -1,9 +1,9 @@
-2026-10-24 20:07 (hora Bogotá)
+2026-10-24 20:45 (hora Bogotá)
 - T1 · #496 (t1-5, las dos torres): terminado, fusionado (233c635) con el PASA de Shoko y el CI en verde
 - T1 · #520 (logito LibretaYLapiz): terminado, fusionado (047f3b7) con el PASA de Shoko y el CI en verde
-- T1 · #531 (las torres se ven moverse al anotar): en curso; Kaede corrigió en cf56ee5 (torres, devolución y «Siguiente» caben en la ventana de 320×568); la captura ya está con Shoko
-- T1 · #535 (lote 4): en curso; FALLA de Shoko en t1-1, t1-2, t1-4, t1-6, t1-7 y t1-8 (revisiones/b-t1-531-535-shoko.md); Kaede corrige con eso y con el lote D de Futaba (fichas/b-t1-lote-24oct-d-futaba.md)
-- T1 · #539 (lote 5: H1 y H2): en curso; FALLA de Shoko (el apoyo de H1, la rejilla de H2 que se sale a 320 y la reserva de H2), en revisiones/b-t1-551-539-shoko.md (Kaede)
+- T1 · #531 (las torres se ven moverse al anotar): en curso; tercera FALLA de Shoko (la devolución fija tapa lo que eligió); la forma de lo que se ve después de «Anotar» la decide Mai (b-t1-5-despues-de-anotar-mai.md) y luego Kaede
+- T1 · #535 (lote 4): en curso; Kaede corrigió (52cbc4d y la mezcla con main en a8e7069, CI verde); las capturas nuevas ya están con Shoko
+- T1 · #539 (lote 5: H1 y H2): en curso; Kaede corrigió (8c405e0, CI verde); las capturas están listas para Shoko
 - T1 · #551 (lo decidido del capítulo 2): terminado, fusionado (e5707a0) con el PASA de Shoko y el CI en verde
 - T1 · «Utilidad del ejercicio» en t1-7 frente al Gráfico 2.6: riesgo que abrió Shoko; lo resuelve Futaba en el §10 de la ficha de fuente
 - Shoko traspasada a un chat nuevo (6c926eca); el 02dc9984 quedó pesado, con 19 subidas; traspasos/shoko.md está al día
@@ -12,7 +12,6 @@
 - T1 · el caso «se quedan los dos igual» de cu0-a2: BLOQUEADO-MATEO; falta la p. 90 del capítulo 3
 - T1 · los textos pendientes del #535 (Futaba): terminado, en fichas/b-t1-lote-24oct-d-futaba.md
 - T1 · «Ocho leen lo mismo»: terminado, en 2×2 (fichas/b-t1-titulares-medidos-mai.md §7), con PASA de Shoko
-- T1 · la capa 4 como excepción del patrón: preguntado a Ukyo y Miku en el #514, sin respuesta
-- T1 · SecuenciaAprender (componente compartido): bloqueado; el #514 sigue sin dueño
+- T1 · los 5 Aprender en secuencia (lote 6) (Kaede): en curso; SecuenciaAprender ya está en main (#491 y #524, de Erwin) y Miku cerró el #514
 - Lo compartido que falla en los 7 Hacer: bloqueado; es de Erwin (#487)
 - T6 (oculto hasta el próximo semestre): los dos cambios de texto de Shoko del #458 quedan anotados
