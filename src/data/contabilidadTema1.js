@@ -714,13 +714,17 @@ export const INFORMES_T1_7 = [
 export const LINEAS = [
   /* El informe al que llegan todas. No sale ninguna flecha de aquí. */
   /*
-   * Gráfico 2.6 (p. 66): la flecha del estado de resultados llega a la llave de
-   * activos y pasivos, no a una línea. Esta pieza es esa llave. El id se
+   * Gráfico 2.6 (p. 66): la flecha del estado de resultados llega en bloque al
+   * estado de situación financiera, no a una línea. Esta pieza es ese bloque
+   * entero —lo que tiene, lo que debe y lo que es de los dueños—: por eso no
+   * dice «activos y pasivos» (Shoko, #535 c: chocaba con t1-5, donde la utilidad
+   * entra por lo de los dueños). Decisión de Sakuta, reversible. El id se
    * conserva desde la versión con «Utilidad del ejercicio» (Futaba, ficha del
    * capítulo 1, §10). Va arriba del bloque, como rótulo de la llave que abarca
    * las demás líneas, y se toca como cualquier otra.
    */
-  { id: "l-utilidad-balance", informe: PRIMERO, nombre: "Activos y pasivos, en bloque", llave: true },
+  /* «El balance completo» y no «Estado de situación financiera»: repetía el título del bloque y parecía una línea más (Sakuta, #539). */
+  { id: "l-utilidad-balance", informe: PRIMERO, nombre: "El balance completo", llave: true },
   { id: "l-caja", informe: PRIMERO, nombre: "Efectivo" },
   { id: "l-cobrar-pagar", informe: PRIMERO, nombre: "Cuentas por cobrar y cuentas por pagar" },
   { id: "l-propiedad", informe: PRIMERO, nombre: "Propiedad, planta y equipo" },
@@ -757,8 +761,8 @@ export const ERROR_T1_7 = {
 };
 
 export const ACIERTO_T1_7 = {
-  /* Futaba, ficha del capítulo 1, §10: f1 llega en bloque (Gráfico 2.6, p. 66). El ✅ lo quita sinEmoji al pintar, como en las otras cuatro. */
-  f1: "✅ Lo que vendió y gastó en el año llega en bloque: cambia cómo quedan los activos y los pasivos.",
+  /* f1 llega en bloque a la foto (Gráfico 2.6, p. 66; Sakuta, #535 c): el mismo sentido que el acierto de cu0-a4 · 5. El ✅ lo quita sinEmoji al pintar. */
+  f1: "✅ Lo que vendió y gastó en el año llega en bloque a la foto: cambia cómo queda la empresa.",
   f2: "✅ La plata que queda al final es la misma que aparece en el otro informe. No son dos cifras parecidas: es la misma.",
   f3: "✅ El movimiento del día a día explica lo que le deben y lo que debe. Lo que cobró y lo que pagó deja rastro ahí.",
   f4: "✅ Lo que compró o vendió de sus cosas grandes explica esa línea.",

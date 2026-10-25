@@ -10,6 +10,9 @@ import { ITEMS_ACT2, ITEMS_ACT2_RETIRADOS, ERROR_POR_TIPO, HECHO, ERRORES_SEGUND
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
+/* Un ítem puede traer su propio error para un tipo (`errores`); si no, el del tipo (F2 de Takamura). */
+export const errorDeMarca = (item, tipo) => item.errores?.[tipo] ?? ERROR_POR_TIPO[tipo];
+
 export const correctaDe = (item) => item.marcas.find((m) => m.tipo === HECHO) ?? null;
 
 export function evaluarAct2(item, marcaId) {
@@ -20,7 +23,7 @@ export function evaluarAct2(item, marcaId) {
     ok,
     tipo: marca.tipo,
     correcta: correctaDe(item).id,
-    textos: ok ? [item.acierto] : [ERROR_POR_TIPO[marca.tipo], item.acierto],
+    textos: ok ? [item.acierto] : [errorDeMarca(item, marca.tipo), item.acierto],
   };
 }
 

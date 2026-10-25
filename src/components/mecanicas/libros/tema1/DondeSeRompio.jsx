@@ -587,12 +587,14 @@ export default function DondeSeRompio({
               margin: "9px 0 0", minHeight: "36px", boxSizing: "border-box", padding: "8px 11px", borderRadius: "10px",
               fontFamily: SORA, fontSize: "13px", fontWeight: 700, lineHeight: "20px", color: FAE.text,
               background: contador ? "rgba(184,196,212,0.1)" : "transparent",
-              /* Con la predicción errada, la banda lleva el tratamiento de error de las demás: borde coral y ✕. */
-              borderLeft: `3px solid ${!contador ? "transparent" : prediccion?.acerto === false ? FAE.coral : NEUTRO}`,
+              /*
+               * La banda dice un hecho verdadero («Se apagaron 3 puntos.»), así que va
+               * neutra y sin ✕ (Shoko, #535 c): el ✕ queda solo en lo que eligió el
+               * estudiante.
+               */
+              borderLeft: `3px solid ${contador ? NEUTRO : "transparent"}`,
               display: "flex", alignItems: "center", gap: "6px",
             }}>
-              {contador && prediccion?.acerto === false && <IconoX />}
-              {contador && prediccion?.acerto && <IconoCheck />}
               {contador && <span className={CLASE_APARECE}>{contador}{flechaApagada && <span data-rotulo-flecha> — {ROTULO_FLECHA_APAGADA}</span>}</span>}
             </p>
             <p data-cierre-prediccion={fase === FIN && prediccion ? (prediccion.acerto ? "acerto" : "fallo") : undefined} style={{

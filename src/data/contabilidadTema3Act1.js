@@ -78,7 +78,7 @@ export const HECHOS_ACT1_T3 = [
     texto: "Los socios abren la empresa con $15.000 en plata",
     queEs: "aporte",
     acierto: "Entró plata, pero la empresa no vendió lo que ofrece. Es un aporte." },
-  { id: "t3a1-cc-computador", grupo: SIN_INGRESO, empresa: COMPANIA_CUALQUIERA, fuente: "p. 130",
+  { id: "t3a1-cc-computador", grupo: SIN_INGRESO, empresa: COMPANIA_CUALQUIERA, fuente: "pp. 129-130",
     texto: "Vendió un computador por $15.000, su mismo valor",
     queEs: "activo",
     acierto: "No vende computadores. Entregó uno y recibió su mismo valor en plata." },

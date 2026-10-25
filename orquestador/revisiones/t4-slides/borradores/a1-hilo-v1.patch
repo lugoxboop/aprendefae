@@ -1,0 +1,463 @@
+diff --git a/orquestador/conocimiento/paquetes/d4-t4-a1-v7-hilo.md b/orquestador/conocimiento/paquetes/d4-t4-a1-v7-hilo.md
+new file mode 100644
+index 0000000..6ed3dc9
+--- /dev/null
++++ b/orquestador/conocimiento/paquetes/d4-t4-a1-v7-hilo.md
+@@ -0,0 +1,128 @@
++**T4 · A1 «La caja» · versión 7: el hilo de presentación.**
++- **Este archivo es la versión vigente de A1.** Sustituye el contenido de pantalla de `d4-t4-a1-v6-rediseno.md`, que queda como historia (de ahí salen el diseño del cajón de Hanayama, `hanayama-a1-rediseno.md`, los textos de Katsumi, `katsumi-texto-rediseno.md`, la partición de los controles, el caso B y la manija del cajón).
++- Fuente: el hilo lógico de Katsumi del 23 oct 2026, `orquestador/revisiones/t4-slides/hilo-katsumi.md`, encargado por Yujiro (orden de Mateo), con la preauditoría en papel de Shibukawa (PASA). Transcripción de Baki: los textos son de Katsumi, letra por letra.
++- Por qué: con la Vara 2 (`orquestador/revisiones/panel-docente/aceptacion.md`), la pantalla 1 tiene que traer una decisión. «cobra» pasa a la pantalla 1 y absorbe a «dos-cuentas» (sus glosas de Caja y Bancos y el puente al Tema 2). La tarjeta del cobro va a debe, haber o «no se mueve», y el asiento del cobro sale con el acierto. Seis pantallas (la v6 tenía siete).
++- Textos **NUEVO** de Katsumi: la pregunta de la P0 y su error de «no se mueve». El error del haber reúsa el aprobado de los cheques. Sale «Toca «Cobrar».»: el cobro ya no es un botón sino la decisión.
++- Sigue la decisión de Yujiro de la v6: **el control 7 (caja menor) enciende Bancos**, no «Pago en efectivo», porque el fondo se abre y se repone con cheque de Bancos (pp. 181-184).
++- INFLESZ medido con `src/herramientas/inflesz.js`. Todo texto de 10 o más palabras da 65 o más.
++- Las secciones «El cajón en P5 y P6» y «Glosas del cajón (P0)» conservan su título de la v6; con el hilo, «el-faltante» y «controles» son la P4 y la P5.
++
++## Objetivo de la pieza
++
++- Bajo el título, en la P0: «Decidir qué mueve Caja y cómo cuidarla.» (<10)
++
++## Contenido, pantalla por pantalla
++
++**P0 · cobra**
++- Antes de la figura: «En el Tema 2 la plata ya iba en dos cuentas.» (99,6)
++- Antes de la figura: «Sus Servicios arregla computadores, y hoy los clientes le pagan de contado.» (70,2)
++- Antes de la figura: «¿Por dónde entra esa plata a Caja?» (<10)
++- Acierto (tras «Correcto.»): «» (<10)
++- Error si va al haber: «Aquí la empresa recibe, no paga.» (<10)
++- Error si va a «Caja no se mueve»: «Le pagan de contado: esa plata no pasó por el banco.» (93,9)
++- Pie: «Basado en el libro, pp. 179-180, y en el Tema 2»
++
++**P1 · consigna**
++- Antes de la figura: «Ese día, la plata va al banco. ¿Qué le pasa a Caja?» (107,4)
++- Tarjeta del origen: «Consigna en su cuenta corriente» (<10)
++- Acierto (tras «Correcto.»): «» (<10)
++- Error si va al debe: «No entró plata nueva: son los mismos $435.000.» (<10)
++- Error si va a «Caja no se mueve»: «Sigue siendo suya, pero ¿sigue en la caja?» (<10)
++- Pie: «Basado en el libro, p. 180»
++
++**P2 · dos-salidas**
++- Antes de la figura: «El libro lleva esa plata al banco. Supón que también pudieras pagar con ella. Prueba las dos.» (94,9)
++- Pie: «Basado en el libro, p. 180»
++
++**P3 · cheques**
++- Antes de la figura: «Para el libro, la caja también guarda cheques. Manda cada uno a su sitio.» (93,0)
++- Cheque «recibido» · tarjeta: «Un cliente le paga con un cheque» (<10)
++- Cheque «recibido» · acierto (tras «Correcto.»): «Ese cheque entró a la caja.» (<10)
++- Cheque «recibido» · error si va al haber: «Aquí la empresa recibe, no paga.» (<10)
++- Cheque «recibido» · error si va a «caja no se mueve»: «Ese cheque no pasó por el banco.» (<10)
++- Cheque «propio» · tarjeta: «Sus Servicios paga con un cheque propio» (<10)
++- Cheque «propio» · acierto (tras «Correcto.»): «Esa plata sale del banco.» (<10)
++- Cheque «propio» · error si va al debe: «Aquí la empresa paga, no recibe.» (<10)
++- Cheque «propio» · error si va al haber: «¿De dónde sale esa plata?» (<10)
++- Pie: «Basado en el libro, pp. 179, 180 y 187»
++
++**P4 · el-faltante**
++- Antes de la figura: «Andrés cobra y anota. ¿Qué control faltó?» (<10)
++- Tarjeta · separar (la correcta): «Separar funciones» (<10)
++- Tarjeta · arqueo: «Arqueo sorpresa» (<10)
++- Tarjeta · poliza: «Póliza de manejo» (<10)
++- Error · arqueo (✗ y el texto): «Al contar, caja y libro cuadran: lo no anotado no se ve.» (96,2)
++- Error · poliza (✗ y el texto): «La póliza paga el robo, pero no lo impide.» (<10)
++- Pie: «Basado en el libro, pp. 179-180 · Escenario simulado»
++
++**P5 · controles**
++- Antes de la figura: «Toca cada control: se enciende lo que vigila.» (<10)
++- Frase de cierre (con los siete encendidos, debajo del cajón): «Cada control tapa una fuga distinta.» (<10)
++- Siguiente: «Siguiente: «El fondo fijo».» (<10)
++- Pie: «Basado en el libro, pp. 179-180»
++
++## Caso B (D8), pantalla por pantalla
++
++D8 (lote nocturno, 16 oct 2026; textos de Katsumi, `celula-d/katsumi-d8-caso-b.md`): el mismo recorrido con otra empresa y otras cifras construidas; la decisión de cada pantalla no cambia. El sorteo elige el caso para toda la pieza; el primer recorrido usa siempre el caso 1. Aquí va solo lo que cambia; lo demás es el caso 1. Cifras del caso B (construidas): cobro 612.000; en «el-faltante», anotado 584.000 y sin anotar 28.000. Origen del cajón: «Taller Ríos Ltda.». Los pies llevan además « · Cifras construidas». Donde el pie largo hacía pasar la pantalla de 60 palabras (sonda), el pie del caso B queda «Cifras construidas, p. N» (Katsumi): «consigna», «cheques».
++
++**P0 · cobra** (completa)
++- Antes de la figura: «En el Tema 2 la plata ya iba en dos cuentas.» (99,6)
++- Antes de la figura: «Taller Ríos arregla motos, y hoy los clientes le pagan de contado.» (85,8)
++- Antes de la figura: «¿Por dónde entra esa plata a Caja?» (<10)
++- Acierto (tras «Correcto.»): «» (<10)
++- Error si va al haber: «Aquí la empresa recibe, no paga.» (<10)
++- Error si va a «Caja no se mueve»: «Le pagan de contado: esa plata no pasó por el banco.» (93,9)
++- Pie: «Basado en el libro, pp. 179-180, y en el Tema 2 · Cifras construidas»
++
++**P1 · consigna**
++- Error si va al debe: «No entró plata nueva: son los mismos $612.000.» (<10)
++- Pie: «Cifras construidas, p. 180»
++
++**P2 · dos-salidas**
++- Pie: «Basado en el libro, p. 180 · Cifras construidas»
++
++**P3 · cheques**
++- Cheque «propio» · tarjeta: «Taller Ríos paga con un cheque propio» (<10)
++- Pie: «Cifras construidas, pp. 179, 180 y 187»
++
++**P4 · el-faltante**
++- Antes de la figura: «Lucía cobra y anota. ¿Qué control faltó?» (<10)
++- Pie: «Basado en el libro, pp. 179-180 · Escenario simulado · Cifras construidas»
++
++**P5 · controles**
++- Pie: «Basado en el libro, pp. 179-180 · Cifras construidas»
++
++## El cajón en P5 y P6
++
++En P5 (el-faltante) el cajón va sin salidas ni glosas: el origen muestra lo cobrado (435.000), el Debe y «En la caja», 410.000, y junto al tubo de entrada, en neutro, lo que no llegó al libro. Con el acierto, la pastilla «Correcto» en la tarjeta, sin mensaje (decisión de Yujiro), y se enciende lo que cuida la separación (el control 4): el tubo de entrada y las columnas.
++
++En P6 (controles) el cajón va entero, sin el caso. Los siete controles de las pp. 179-180, en el orden del libro, son botones de 44 px como mínimo en la parte que cuidan (Hanayama): el 1 y el 4 bajo las columnas, el 2 y el 7 en Bancos, el 3 en «Pago en efectivo», el 5 junto a «En la caja», el 6 junto al nombre del cajón. Tocar uno enciende su parte; no se califican.
++
++- Junto al tubo de entrada (P5): «25.000 sin anotar»
++- Control 1: «Registro diario»
++- Control 2: «Consignación»
++- Control 3: «Tope de pagos»
++- Control 4: «Separación»
++- Control 5: «Arqueo»
++- Control 6: «Póliza»
++- Control 7: «Caja menor»
++
++## Glosas del cajón (P0)
++
++- Bajo «Caja»: «a la mano, como tu billetera»
++- Bajo «Bancos»: «en el banco»
++
++## Interfaz común del rediseño (A0, A1 y H1)
++
++Decisiones 1 y 2 de Katsumi; corte de Yujiro, ajuste 2.
++
++- Palabra del acierto (va antes del texto): «Correcto.»
++- Palabra del error: ninguna visible. El error es ✗ y el texto.
++- Solo para el lector de pantalla, delante del texto del error: «Incorrecto.»
++- Marca del destino acertado: «✓ Correcto»
++- Marca del destino mal elegido: «✗ No va aquí»
++- Marca del destino que era: «Iba aquí»
++
++## Lo que es mío y lo que es del libro
++
++Igual que en `katsumi-texto-rediseno.md`, sección A1: la billetera es analogía de Katsumi; el pago en efectivo de 435.000 en P3 es un supuesto marcado («Supón que…»), porque en la p. 180 Sus Servicios consigna; que el cheque recibido entre a Caja es deducción de Katsumi (HD4-2); la glosa de la póliza de manejo es de Katsumi (HD4-3). A1 P1 dice «computadores» (Colombia); el libro, «computadoras».
+diff --git a/scripts/t4/sonda-enganche/enganche_planes.json b/scripts/t4/sonda-enganche/enganche_planes.json
+index c835d5d..df37ee4 100644
+--- a/scripts/t4/sonda-enganche/enganche_planes.json
++++ b/scripts/t4/sonda-enganche/enganche_planes.json
+@@ -22,7 +22,7 @@
+   "se-consume": [{"click": "[data-accion=pasar]", "espera": 3200, "mide": "fin del año"}]
+  },
+  "t4-a1-la-caja": {
+-  "cobra": [{"click": "[data-accion=cobrar]", "espera": 700, "mide": "cobrado"}],
++  "cobra": [{"click": "[data-destino=haber]", "espera": 400, "mide": "error al haber", "veredicto": "error"}, {"click": "[data-destino=no-se-mueve]", "espera": 400, "mide": "error a la bandeja", "veredicto": "error"}, {"click": "[data-destino=debe]", "espera": 700, "mide": "acierto", "veredicto": "acierto"}],
+   "consigna": [
+    {"click": "[data-destino=debe]", "espera": 400, "mide": "error al debe", "veredicto": "error"},
+    {"click": "[data-destino=no-se-mueve]", "espera": 400, "mide": "error a la bandeja", "veredicto": "error"},
+diff --git a/src/components/t4/LaCaja.jsx b/src/components/t4/LaCaja.jsx
+index eb8475b..e87a902 100644
+--- a/src/components/t4/LaCaja.jsx
++++ b/src/components/t4/LaCaja.jsx
+@@ -82,24 +82,35 @@ function useVibra() {
+   return [vibra, sacudir];
+ }
+ 
+-function Mapa({ p }) {
+-  return <Cajon glosasCuenta={Boolean(p.glosasCuenta)} cajonA1={QUIETO} />;
+-}
+-
+-function Cobra({ p }) {
++function Cobra({ p, onAcierto }) {
++  /* Hilo de Katsumi: el cobro es una decisión (debe, haber o «no se mueve»), como la consignación. */
+   const { M, cobro, rotuloOrigen } = useCasoA1();
+-  const [hecho, setHecho] = useState(false);
++  const [elegida, setElegida] = useState(null);
++  const [vibra, sacudir] = useVibra();
++  const ok = elegida === p.correcta;
++  useEffect(() => { if (ok) onAcierto?.(); }, [ok]); // eslint-disable-line react-hooks/exhaustive-deps
++  const elegir = (d) => {
++    if (ok) return;
++    setElegida(d);
++    if (d !== p.correcta) sacudir(d);
++  };
+   return (
+     <>
+       <Cajon
+-        cajonA1={{ abre: hecho ? 1 : 0 }}
+-        origen={{ rotulo: rotuloOrigen, monto: M, montoFoco: !hecho, accion: { id: "cobrar", texto: FIGURA_CAJON.acciones.cobrar, hecha: hecho, onClick: () => setHecho(true) } }}
++        cajonA1={{ abre: ok ? 1 : 0 }}
++        glosasCuenta={Boolean(p.glosasCuenta)}
++        origen={{ rotulo: rotuloOrigen, monto: M, montoFoco: !ok, clave: "cobro" }}
+         glosas={{ debe: true }}
+-        debe={hecho ? [{ id: "cobro", v: M, foco: true }] : []}
+-        saldo={hecho ? cobro : 0}
+-        vivo={hecho ? ["entrada"] : []}
++        debe={ok ? [{ id: "cobro", v: M, foco: true }] : []}
++        saldo={ok ? cobro : 0}
++        vivo={ok ? ["entrada"] : []}
++        bandeja={{}}
++        destinos={{ activos: !ok, onElegir: elegir, marcas: elegida ? { [elegida]: ok ? "bien" : "mal" } : {} }}
++        palabras
++        vibra={vibra}
+       />
+-      {hecho && <AsientoA1 asiento={p.asiento} />}
++      {elegida && <Mensaje key={elegida} ok={ok} texto={ok ? p.acierto : p.errores[elegida]} />}
++      {ok && <AsientoA1 asiento={p.asiento} />}
+     </>
+   );
+ }
+@@ -234,7 +245,7 @@ function Controles({ onCierre }) {
+   return <Cajon cajonA1={QUIETO} saldo="—" luz={c?.luz ?? []} vivo={c?.vivo ?? []} controles={{ lista: CONTROLES_A1, activo: k, onTocar: tocar }} />;
+ }
+ 
+-const CUERPOS = { mapa: Mapa, cobra: Cobra, consigna: Consigna, salidas: DosSalidas, cheques: Cheques, faltante: Faltante, controles: Controles };
++const CUERPOS = { cobra: Cobra, consigna: Consigna, salidas: DosSalidas, cheques: Cheques, faltante: Faltante, controles: Controles };
+ 
+ /* El cuerpo de una pantalla de A1: el cajón y lo que sale debajo con la acción. */
+ export function CuerpoA1({ p, onAcierto, onCierre }) {
+diff --git a/src/contabilidad/__tests__/t4-a1-la-caja.test.mjs b/src/contabilidad/__tests__/t4-a1-la-caja.test.mjs
+index e79f906..53b62c8 100644
+--- a/src/contabilidad/__tests__/t4-a1-la-caja.test.mjs
++++ b/src/contabilidad/__tests__/t4-a1-la-caja.test.mjs
+@@ -6,7 +6,7 @@ import { readFileSync, readdirSync } from "node:fs";
+  * ═══════════════════════════════════════════════════════════════════════════
+  * T4 · A1 «La caja» (Célula D) · REDISEÑO DE ENGANCHE.
+  *
+- *   · cada texto es el del paquete vigente (d4-t4-a1-v6-rediseno.md, los
++ *   · cada texto es el del paquete vigente (d4-t4-a1-v7-hilo.md, los
+  *     textos de Katsumi aprobados por Yujiro), letra por letra, en su lugar
+  *   · el cajón operable de Hanayama: cobrar, mandar la consignación al lado
+  *     que se cree, sacar la plata por cada salida, decidir con los cheques y
+@@ -29,7 +29,7 @@ const { inflesz } = await import("../../herramientas/inflesz.js");
+ const { leer, PAQUETES, RAIZ } = await import("./t4-paquete.mjs");
+ const { pantallasDe, seccionDe, renglones, textoDe, fusionB } = await import("./t4-rediseno-canon.mjs");
+ 
+-const CANON = "d4-t4-a1-v6-rediseno.md";
++const CANON = "d4-t4-a1-v7-hilo.md";
+ const PAQ = leer(`${PAQUETES}${CANON}`);
+ const CANON_P = pantallasDe(PAQ);
+ const P = A.PIEZA_LA_CAJA;
+@@ -59,6 +59,7 @@ function porLugar(p) {
+ 
+ /* Las dos preguntas, bien: la consignación al haber; el cheque recibido al debe y, 1,4 s después, el propio a la bandeja. */
+ async function acertar(m, p) {
++  if (p.tipo === "cobra") tocar(m.caja.querySelector(`[data-destino="${A.DEBE}"]`));
+   if (p.tipo === "consigna") tocar(m.caja.querySelector(`[data-destino="${A.HABER}"]`));
+   if (p.tipo === "cheques") {
+     tocar(m.caja.querySelector(`[data-destino="${A.DEBE}"]`));
+@@ -91,17 +92,18 @@ pruebaObjetivo({ P, canon: CANON });
+ 
+ /* ═══════════ 1 · EL TEXTO, CONTRA EL PAQUETE ═══════════ */
+ 
+-test("★★★ el paquete vigente es el del rediseño (v6) y lo dice, con la decisión del control 7; los datos lo nombran", async () => {
++test("★★★ el paquete vigente es el del hilo (v7) y lo dice, con la decisión del control 7; los datos lo nombran", async () => {
+   assert.match(PAQ, /\*\*Este archivo es la versión vigente de A1\.\*\*/);
+   assert.match(PAQ, /\*\*el control 7 \(caja menor\) enciende Bancos\*\*/);
+   assert.match(leer("src/data/contabilidadT4.js"), new RegExp(CANON.replace(/\./g, "\\.")));
+ });
+ 
+-test("★★★ las 7 pantallas, en el orden del paquete (lote B: sale el resumen en lista; la P5 de antes se parte en «el-faltante» y «controles»); título e id; todas con el cajón", async () => {
++test("★★★ las 6 pantallas, en el orden del paquete (hilo: «dos-cuentas» se funde en «cobra»); título e id; todas con el cajón", async () => {
+   assert.equal(P.id, "t4-a1-la-caja");
+   assert.equal(P.titulo, "La caja");
+   assert.deepEqual(P.pantallas.map((p) => p.id), CANON_P.map((p) => p.id));
+-  assert.equal(P.pantallas.length, 7);
++  assert.equal(P.pantallas.length, 6);
++  assert.equal(P.pantallas.some((p) => p.id === "dos-cuentas"), false);
+   assert.ok(!P.pantallas.some((p) => p.id === "resumen" || p.resumen), "queda una pantalla de resumen (capa 4)");
+   for (const p of P.pantallas) assert.equal(p.figura, "cajon", p.id);
+ });
+@@ -150,7 +152,7 @@ test("★★★ los dos asientos de la p. 180 cuadran; la única cifra del libro
+ /* ═══════════ 2 · LA PANTALLA Y EL CAJÓN ═══════════ */
+ 
+ test("★★★ cada pantalla, en el orden de Hanayama: antes → cajón → después → frase de cierre → siguiente → «Seguir» → pie (en las preguntas, tras el acierto)", async () => {
+-  const m = await abrir("dos-cuentas");
++  const m = await abrir("cobra");
+   try {
+     for (const [k, p] of P.pantallas.entries()) {
+       const zona = q(m, "[data-pieza]");
+@@ -163,16 +165,27 @@ test("★★★ cada pantalla, en el orden de Hanayama: antes → cajón → des
+       const orden = [...zona.querySelectorAll("[data-texto], [data-figura], [data-boton], [data-pie]")]
+         .filter((e) => !e.parentElement.closest("[data-figura]"))
+         .map((e) => (e.matches("[data-figura]") ? "FIGURA" : e.matches("[data-boton]") ? "SEGUIR" : e.matches("[data-pie]") ? "PIE" : e.textContent));
+-      const esperado = [...(p.antes ?? []), "FIGURA", ...(p.despues ?? []), ...(p.cierre ? [p.cierre] : []), ...(p.siguiente ? [p.siguiente] : []), ...(k < 6 ? ["SEGUIR"] : []), "PIE"];
++      const esperado = [...(p.antes ?? []), "FIGURA", ...(p.despues ?? []), ...(p.cierre ? [p.cierre] : []), ...(p.siguiente ? [p.siguiente] : []), ...(k < 5 ? ["SEGUIR"] : []), "PIE"];
+       assert.deepEqual(orden, esperado, p.id);
+-      if (k < 6) tocar(zona.querySelector('[data-boton="seguir"]'));
++      if (k < 5) tocar(zona.querySelector('[data-boton="seguir"]'));
+     }
+   } finally { m.desmontar(); }
+ });
+ 
+-test("★★★ D7 · en las tres pantallas con pregunta, «Seguir» no aparece sin el acierto: ni al llegar, ni tras cada error, ni con un solo cheque; la última (controles) no lo lleva", async () => {
+-  assert.deepEqual(P.pantallas.filter((p) => p.pregunta).map((p) => p.id), ["consigna", "cheques", "el-faltante"]);
++test("★★★ D7 · en las cuatro pantallas con pregunta, «Seguir» no aparece sin el acierto: ni al llegar, ni tras cada error, ni con un solo cheque; la última (controles) no lo lleva", async () => {
++  assert.deepEqual(P.pantallas.filter((p) => p.pregunta).map((p) => p.id), ["cobra", "consigna", "cheques", "el-faltante"]);
+   const seguir = (m) => q(m, '[data-boton="seguir"]');
++  const b = await abrir("cobra");
++  try {
++    assert.equal(seguir(b), null, "cobra, al llegar");
++    for (const d of [A.HABER, A.NO_SE_MUEVE]) {
++      tocar(q(b, `[data-destino="${d}"]`));
++      assert.equal(q(b, "[data-mensaje]").dataset.mensaje, "error");
++      assert.equal(seguir(b), null, `cobra, tras el error en ${d}`);
++    }
++    tocar(q(b, `[data-destino="${A.DEBE}"]`));
++    assert.ok(seguir(b), "cobra: tras el acierto no aparece «Seguir»");
++  } finally { b.desmontar(); }
+   const c = await abrir("consigna");
+   try {
+     assert.equal(seguir(c), null, "consigna, al llegar");
+@@ -212,14 +225,15 @@ test("★★★ D7 · en las tres pantallas con pregunta, «Seguir» no aparece
+   } finally { k.desmontar(); }
+ });
+ 
+-test("★★★ P0: el cajón con sus rótulos (Caja, Debe, Haber, Bancos, Pago en efectivo) y la glosa de cada cuenta bajo su nombre, sin acción ni cifra", async () => {
+-  const m = await abrir("dos-cuentas");
++test("★★★ P0 (hilo): la pregunta antes del cajón (B1); el cajón con la glosa de cada cuenta bajo su nombre y la tarjeta del cobro, sin botón y con los tres destinos", async () => {
++  const m = await abrir("cobra");
+   try {
+     const zona = q(m, "[data-pieza] .t4r");
+-    assert.ok(zona.firstElementChild.matches("[data-figura]"), "P0 no abre con el cajón (capa 1)");
++    assert.deepEqual([...zona.children].slice(0, 3).map((e) => e.textContent), pantalla("cobra").antes, "P0 no abre con sus tres textos");
+     const fig = q(m, "[data-figura=cajon]");
+-    assert.equal(fig.querySelector("button"), null);
+-    assert.equal(visible(fig), "Cajaa la mano, como tu billeteraDebeHaberBancosen el bancoPagoen efectivo");
++    assert.equal(fig.querySelector("[data-accion]"), null, "queda el botón «Cobrar»");
++    for (const d of [A.DEBE, A.HABER, A.NO_SE_MUEVE]) assert.ok(q(m, `[data-destino="${d}"]`), `falta el destino ${d}`);
++    assert.ok(q(m, "[data-glosa-cuenta=caja]") && q(m, "[data-glosa-cuenta=bancos]"), "faltan las glosas de las cuentas");
+     assert.match(fig.querySelector("figcaption").textContent, /cajón de paso/);
+   } finally { m.desmontar(); }
+ });
+@@ -227,7 +241,7 @@ test("★★★ P0: el cajón con sus rótulos (Caja, Debe, Haber, Bancos, Pago
+ test("★★★ P0, las glosas del cajón: las del paquete, letra por letra, bajo «Caja» y bajo «Bancos»; solo en P0", async () => {
+   const g = renglones(seccionDe(PAQ, "Glosas del cajón (P0)"));
+   assert.deepEqual(g.map((x) => [x.lugar, x.texto]), [["Bajo «Caja»", A.FIGURA_CAJON.glosaCaja.join(" ")], ["Bajo «Bancos»", A.FIGURA_CAJON.glosaBancos.join(" ")]]);
+-  const m = await abrir("dos-cuentas");
++  const m = await abrir("cobra");
+   try {
+     const caja = q(m, "[data-glosa-cuenta=caja]");
+     const bancos = q(m, "[data-glosa-cuenta=bancos]");
+@@ -238,13 +252,20 @@ test("★★★ P0, las glosas del cajón: las del paquete, letra por letra, baj
+   for (const p of P.pantallas.slice(1)) assert.ok(!p.glosasCuenta, `${p.id} lleva glosas`);
+ });
+ 
+-test("★★★ P1 «Cobrar»: el tubo se enciende, 435.000 entra al Debe, «En la caja» va a 435.000 y sale el asiento 1", async () => {
++test("★★★ P0 «cobra» (hilo): mientras pregunta, nada de la respuesta; cada error con SU texto y sin escribir nada; el acierto: el tubo se enciende, 435.000 entra al Debe, «En la caja» va a 435.000 y sale el asiento 1", async () => {
++  const p = pantalla("cobra");
+   const m = await abrir("cobra");
+   try {
+     assert.deepEqual([lineas(m, A.DEBE), saldo(m), vivos(m)], [[], "0", []]);
+-    assert.equal(q(m, "[data-asiento]"), null, "el asiento 1 está antes de cobrar");
++    assert.equal(q(m, "[data-asiento]"), null, "el asiento 1 está antes de acertar");
+     assert.equal(q(m, "[data-origen] .t4cv-rot").textContent, A.FIGURA_CAJON.rotuloOrigen);
+-    tocar(q(m, "[data-accion=cobrar]"));
++    for (const x of Object.values(p.errores)) assert.ok(!q(m, "[data-pieza]").outerHTML.includes(x), `«${x}» está en el DOM antes de responder`);
++    for (const d of [A.HABER, A.NO_SE_MUEVE]) {
++      tocar(q(m, `[data-destino="${d}"]`));
++      assert.equal(visible(q(m, "[data-mensaje]")), p.errores[d], d);
++      assert.deepEqual([lineas(m, A.DEBE), saldo(m)], [[], "0"], `${d}: el error escribe en el cajón`);
++    }
++    tocar(q(m, `[data-destino="${A.DEBE}"]`));
+     assert.deepEqual([lineas(m, A.DEBE), saldo(m), vivos(m)], [["435.000"], "435000", ["entrada"]]);
+     assert.equal(q(m, "[data-asiento]").dataset.asiento, A.ASIENTO_COBRO.nombre);
+   } finally { m.desmontar(); }
+@@ -498,7 +519,7 @@ test("★★★ D9 · el cajón de A1 es un cajón: la manija bajo su base en to
+     const c = await abrir("cobra");
+     try {
+       assert.equal(q(c, "[data-cajon]").dataset.abre, "0");
+-      tocar(q(c, "[data-accion=cobrar]"));
++      tocar(q(c, `[data-destino="${A.DEBE}"]`));
+       await esperar(0);
+       assert.equal(q(c, "[data-cajon]").dataset.abre, "1");
+       const a = animados.find((x) => x.el.matches("[data-cajon]"));
+@@ -518,7 +539,7 @@ test("★★★ D9 · el cajón de A1 es un cajón: la manija bajo su base en to
+     animados.length = 0;
+     const r = await abrir("cobra");
+     try {
+-      tocar(q(r, "[data-accion=cobrar]"));
++      tocar(q(r, `[data-destino="${A.DEBE}"]`));
+       await esperar(0);
+       assert.equal(animados.filter((x) => x.el.matches("[data-cajon]")).length, 0, "con movimiento reducido el cajón se mueve");
+     } finally { r.desmontar(); }
+@@ -558,9 +579,8 @@ test("★★★ D8 · jugado en el caso B: Taller Ríos cobra 612.000; la consig
+   const seguir = () => tocar(q(m, '[data-boton="seguir"]'));
+   try {
+     assert.equal(q(m, "[data-pieza]").dataset.casoPieza, "2");
+-    seguir();
+     assert.equal(q(m, "[data-origen] .t4cv-rot").textContent, "Taller Ríos Ltda.");
+-    tocar(q(m, "[data-accion=cobrar]"));
++    tocar(q(m, `[data-destino="${A.DEBE}"]`));
+     assert.deepEqual([lineas(m, A.DEBE), saldo(m)], [["612.000"], "612000"]);
+     seguir();
+     tocar(q(m, `[data-destino="${A.DEBE}"]`));
+diff --git a/src/contabilidad/__tests__/t4-aprender-rd.mjs b/src/contabilidad/__tests__/t4-aprender-rd.mjs
+index 6f8286f..698ec30 100644
+--- a/src/contabilidad/__tests__/t4-aprender-rd.mjs
++++ b/src/contabilidad/__tests__/t4-aprender-rd.mjs
+@@ -125,7 +125,17 @@ export function pruebaObjetivo({ P, canon }) {
+       assert.equal(o?.textContent, P.objetivo);
+       assert.equal(raiz.firstElementChild, o, "el objetivo no es lo primero bajo el título");
+       assert.equal(o.closest(".t4r"), null, "el objetivo va dentro de la pantalla");
+-      assert.equal(q(m, "[data-pieza] .t4r").firstElementChild.matches("[data-figura]") || Boolean(q(m, "[data-pieza] .t4r").firstElementChild.querySelector(":scope > [data-figura]")), true, "la P0 ya no abre con la figura");
++      /*
++       * Hilo de Katsumi (23 oct): la P0 puede abrir con la pregunta de predicción
++       * antes de la figura, siempre dentro de B1 (como mucho 40 palabras antes de
++       * ella; los px los mide la sonda en Chromium).
++       */
++      const pant = q(m, "[data-pieza] .t4r");
++      const fig = pant.querySelector("[data-figura]");
++      assert.ok(fig, "la P0 no tiene figura");
++      const antesDeFig = [...pant.querySelectorAll("[data-texto]")].filter((e) => e.compareDocumentPosition(fig) & 4 && !e.closest("[data-figura]"));
++      const pal = antesDeFig.map((e) => e.textContent).join(" ").split(/\s+/).filter(Boolean).length;
++      assert.ok(pal <= 40, `la P0 lleva ${pal} palabras antes de la figura (B1: 40)`);
+       if (P.pantallas[0].pregunta) await jugar(m, P, P.pantallas[0].id);
+       assert.equal(q(m, "[data-objetivo]")?.textContent, P.objetivo, "el objetivo se va al responder la P0");
+       tocar(seguir(m));
+diff --git a/src/data/contabilidadT4.js b/src/data/contabilidadT4.js
+index a5f923f..28ae8ff 100644
+--- a/src/data/contabilidadT4.js
++++ b/src/data/contabilidadT4.js
+@@ -7,7 +7,7 @@
+  * 2026, con su ajuste: el control 7 (caja menor) enciende Bancos, porque el
+  * fondo se abre y se repone con cheque de Bancos (pp. 181-184). Textos:
+  * Katsumi (celula-d/katsumi-texto-rediseno.md), aprobados tal cual. Copia en
+- * el canon: orquestador/conocimiento/paquetes/d4-t4-a1-v6-rediseno.md. Una
++ * el canon: orquestador/conocimiento/paquetes/d4-t4-a1-v7-hilo.md. Una
+  * prueba compara cada texto de aquí contra ella, letra por letra.
+  *
+  * Siete pantallas; en cinco el estudiante opera el cajón: cobra, manda la
+@@ -155,17 +155,24 @@ export const ESPERA_CHEQUE_MS = 1400;
+  */
+ export const PANTALLAS_A1 = [
+   {
+-    id: "dos-cuentas", tipo: "mapa", figura: "cajon",
+-    /* Lote B, capa 1: abre con el cajón; las definiciones pasan a glosas de sus cuentas, y el puente al Tema 2 va debajo, desde el principio (P0 no tiene acción). */
++    /*
++     * Hilo de Katsumi (23 oct 2026, orquestador/revisiones/t4-slides/hilo-katsumi.md):
++     * la pantalla 1 es la decisión de predicción y absorbe a «dos-cuentas» (sus
++     * glosas de Caja y Bancos y el puente al Tema 2). La tarjeta del cobro va a
++     * debe, haber o «no se mueve», y el asiento sale con el acierto.
++     */
++    id: "cobra", tipo: "cobra", figura: "cajon", pregunta: true,
+     glosasCuenta: true,
+-    despues: ["En el Tema 2 la plata ya iba en dos cuentas."],
+-    pie: "Basado en el libro, p. 179, y en el Tema 2",
+-  },
+-  {
+-    id: "cobra", tipo: "cobra", figura: "cajon",
+-    antes: ["Sus Servicios arregla computadores, y hoy los clientes le pagan de contado. Toca «Cobrar»."],
++    antes: [
++      "En el Tema 2 la plata ya iba en dos cuentas.",
++      "Sus Servicios arregla computadores, y hoy los clientes le pagan de contado.",
++      "¿Por dónde entra esa plata a Caja?",
++    ],
++    correcta: DEBE,
++    acierto: "",
++    errores: { [HABER]: "Aquí la empresa recibe, no paga.", [NO_SE_MUEVE]: "Le pagan de contado: esa plata no pasó por el banco." },
+     asiento: ASIENTO_COBRO,
+-    pie: PIE_180,
++    pie: "Basado en el libro, pp. 179-180, y en el Tema 2",
+   },
+   {
+     id: "consigna", tipo: "consigna", figura: "cajon", pregunta: true,
+@@ -239,7 +246,7 @@ export const pieCortoB = (pie) => pie.replace(/ · Cifras construidas$/, "").rep
+ const conMonto = (a, monto) => ({ ...a, lineas: a.lineas.map((l) => ({ ...l, monto })) });
+ const PANTALLAS_A1_B = PANTALLAS_A1.map((p) => {
+   const b = { ...p, pie: pieCasoB(p.pie) };
+-  if (p.id === "cobra") Object.assign(b, { antes: ["Taller Ríos arregla motos, y hoy los clientes le pagan de contado. Toca «Cobrar»."], asiento: conMonto(ASIENTO_COBRO, COBRO_A1_B) });
++  if (p.id === "cobra") Object.assign(b, { antes: [p.antes[0], "Taller Ríos arregla motos, y hoy los clientes le pagan de contado.", p.antes[2]], asiento: conMonto(ASIENTO_COBRO, COBRO_A1_B) });
+   if (p.id === "consigna") Object.assign(b, { errores: { ...p.errores, [DEBE]: "No entró plata nueva: son los mismos $612.000." }, asiento: conMonto(ASIENTO_CONSIGNACION, COBRO_A1_B) });
+   if (p.id === "el-faltante") b.antes = ["Lucía cobra y anota. ¿Qué control faltó?"];
+   return b;

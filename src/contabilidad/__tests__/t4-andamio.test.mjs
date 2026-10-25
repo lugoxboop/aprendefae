@@ -53,7 +53,7 @@ const h = React.createElement;
 
 const D = await import("../../data/contabilidadT4.js");
 const { SUBJECTS, APRENDER, HACER, actividadesDeTipo, tiposDeTema, tieneContenidoDe } = await import("../../data/subjects.js");
-const { default: ContabilidadT4View, PIEZAS_T4, JUEGOS_T4, TEMA_T4 } = await import("../../components/ContabilidadT4View.jsx");
+const { default: ContabilidadT4View, PIEZAS_T4, JUEGOS_T4, TEMA_T4, SLIDES_T4 } = await import("../../components/ContabilidadT4View.jsx");
 const { default: TopicIndexView } = await import("../../components/TopicIndexView.jsx");
 const { AuthContext } = await import("../../auth/AuthProvider.jsx");
 const { VISTAS, vistaDeTema } = await import("../../ruta.js");
@@ -245,7 +245,7 @@ test("★★★ el título del tema rompe en dos renglones antes que perder pala
   assert.doesNotMatch(regla, /text-overflow:\s*ellipsis;/, "volvió la elipsis: el título perderá palabras otra vez");
 });
 
-test("★★★ la vista montada: cabecera con el título; Aprender con A0 a A5 como «PIEZA 1 DE 6»…«PIEZA 6 DE 6»; Hacer con el camino y su nodo H1", () => {
+test("★★★ la vista montada: cabecera con el título; Aprender con A0 a A5 en SecuenciaAprender («Pieza 1 de 6»); Hacer con el camino y su nodo H1", () => {
   for (const modo of [null, APRENDER, HACER]) {
     const m = montar(h(ContabilidadT4View, { modo, onBack: () => {} }));
     try {
@@ -259,8 +259,11 @@ test("★★★ la vista montada: cabecera con el título; Aprender con A0 a A5 
         assert.ok(m.caja.querySelector('[data-nodo="t4-entra-o-sale-de-caja"]'), "Hacer: falta el nodo de H1 en el camino");
         assert.equal(m.caja.querySelectorAll("[data-pieza]").length, 0);
       } else {
-        assert.deepEqual(m.caja.textContent.match(/PIEZA \d+ DE \d+/g), ["PIEZA 1 DE 6", "PIEZA 2 DE 6", "PIEZA 3 DE 6", "PIEZA 4 DE 6", "PIEZA 5 DE 6", "PIEZA 6 DE 6"], `modo ${modo}: rótulos de las piezas`);
-        assert.deepEqual([...m.caja.querySelectorAll("[data-pieza]")].map((x) => x.dataset.pieza), ["t4-a0-el-activo-corriente", "t4-a1-la-caja", "t4-a2-el-fondo-fijo", "t4-a3-el-arqueo", "t4-a4-bancos-y-notas", "t4-a5-san-calixto"]);
+        /* Los slides (#488): una pantalla a la vez; el contador de piezas es el del contenedor, sin ámbar. */
+        assert.deepEqual(SLIDES_T4.map((s) => s.id), ["t4-a0-el-activo-corriente", "t4-a1-la-caja", "t4-a2-el-fondo-fijo", "t4-a3-el-arqueo", "t4-a4-bancos-y-notas", "t4-a5-san-calixto"], "faltan piezas en los slides");
+        assert.match(m.caja.querySelector("[data-contador-pieza]")?.textContent ?? "", /^Pieza 1 de 6$/, `modo ${modo}: el contador de piezas`);
+        assert.deepEqual([...m.caja.querySelectorAll("[data-pieza]")].map((x) => x.dataset.pieza), ["t4-a0-el-activo-corriente"]);
+        assert.ok(m.caja.querySelector(".t4-sec [data-secuencia]").dataset.secuencia.startsWith(`${TEMA_T4}/`), "la clave guardada no lleva el tema y el caso");
         assert.ok(!m.caja.textContent.includes("Este tema todavía no tiene juegos."), `modo ${modo}: Aprender no pinta el camino`);
       }
     } finally { m.desmontar(); }
@@ -271,7 +274,7 @@ test("★★★ ningún texto de T4 queda «[ESCRITO POR CLAUDE — PENDIENTE DE
   const raiz = new URL("../../../", import.meta.url);
   const archivos = [
     ...readdirSync(new URL("src/data/", raiz)).filter((f) => /^(contabilidadT4|asiSeJuegaT4)/.test(f)).map((f) => `src/data/${f}`),
-    ...readdirSync(new URL("src/components/t4/", raiz)).map((f) => `src/components/t4/${f}`),
+    ...readdirSync(new URL("src/components/t4/", raiz), { recursive: true }).filter((f) => /\.jsx?$/.test(f)).map((f) => `src/components/t4/${f}`),
     "src/components/ContabilidadT4View.jsx",
   ];
   assert.ok(archivos.length >= 8, "no se encontraron los archivos de T4");

@@ -420,7 +420,8 @@ test("★★★ si la predicción falló, el cierre no abre con «Correcto.»; l
         const mala = PREDICCION_T1_8.opciones.find((x) => x !== bien);
         assert.equal(op(mala).dataset.veredictoPrediccion, "fantasma");
         assert.ok(op(mala).querySelector('[data-icono="tache"]'));
-        assert.ok(cuenta.querySelector('[data-icono="tache"]'), "la banda del error es neutra");
+        /* La banda dice un hecho verdadero: va neutra, sin ✕ (Shoko, #535 c). */
+        assert.equal(cuenta.querySelector('[data-icono="tache"]'), null, "la banda lleva ✕ sobre el dato verdadero");
       }
     } finally { desmontar(); }
   }

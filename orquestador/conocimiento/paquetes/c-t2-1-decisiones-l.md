@@ -154,3 +154,11 @@ Decisiones:
 - **`<Veredicto />` no va dentro de la figura** mientras Erwin no dé una zona para la devolución (#536 de Watari y el issue `miku` de Misa). Hasta entonces la secuencia queda detrás de la bandera apagada. Se puede fusionar con la bandera apagada, porque es reversible y ningún estudiante la ve.
 - **El porqué de P3·4 al segundo error** debe bajar a 16 palabras o menos (hoy ocupa 4 renglones a 320). Va para Near en su próximo lote.
 - **Mello verifica las cinco piezas juntas**, cuando Misa haya montado todo, para gastar un solo turno de auditoría.
+
+---
+
+# #548 con las cinco piezas · decisiones de L (24-oct-2026, 21:20)
+
+Misa montó las cinco piezas (4e817f3) con la bandera apagada, y `faltasDePieza` da `[]`. Quedan tres rojos honestos:
+- **P1·6, el selector de 231 px contra 183:** **no lleva selector.** La figura de P1·6 es la de Watari en T2-3: la T de Cuentas por pagar de Lavado, con «Sube» y «Baja». El selector entre Caja y Documentos por pagar era el ajuste A1·7 de T2-2, y la figura de T2-3 lo reemplazó; con el selector, el VE de Near para P1·6 sobra. Así se respeta el alto medido de 183.
+- **P3·7, la pista del primer error, y P2·5, el ejemplo de Ingresos:** los escribe Near (lote T2-8). En el mismo lote, Near acorta el porqué de P3·4 a 16 palabras o menos.
