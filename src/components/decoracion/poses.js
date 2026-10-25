@@ -1,23 +1,27 @@
 /*
- * Qué pose lleva Fae y si la banda corre, según el estado de la tabla
- * (zonas-hanayama.md §2). `null` = Fae no va. Fae cambia de pose sin animar.
+ * Si va Fae y si la banda corre, según el estado de la tabla
+ * (zonas-hanayama.md §1.5 y §2, con la corrección del 25-oct).
  *
+ * FAE NO CODIFICA DÓNDE ESTÁS TÚ (Ukyo en #567; pose elegida por Hanayama).
+ * La banda es aria-hidden, así que lo que dijera su pose no llegaría al
+ * lector de pantalla, y las tres poses se distinguen poco entre sí. Fae va
+ * siempre con «saluda»: la única que no dice nada de tu resultado.
+ *
+ *   fae      "saluda", o null donde no va
  *   quieta   cargando o error: la banda está, en pose de reposo, y sin Fae
  *            (una cara contenta junto a «No se pudo cargar…» diría otra cosa)
+ *
+ * El ranking que va debajo de una liga tampoco lleva Fae: eso lo decide la
+ * vista con `fae: false` en su `decoracion` (§1.3).
  */
+export const POSE_FAE = "saluda";
+
 export function estadoRanking({ session, cargando, error, filas }) {
-  if (!session) return { fae: "saluda", quieta: false };
-  if (cargando || error || filas == null) return { fae: null, quieta: true };
-  if (filas.length === 0) return { fae: "mira", quieta: false };
-  const propia = filas.find((f) => f.es_tuyo);
-  if (!propia) return { fae: "saluda", quieta: false };
-  return { fae: propia.posicion <= 3 ? "celebra" : "mira", quieta: false };
+  if (session && (cargando || error || filas == null)) return { fae: null, quieta: true };
+  return { fae: POSE_FAE, quieta: false };
 }
 
-export function estadoLiga({ session, cargando, error, filas, enPodio, transicion }) {
+export function estadoLiga({ cargando, error }) {
   if (cargando || error) return { fae: null, quieta: true };
-  if (!session) return { fae: "saluda", quieta: false };
-  if (!filas || filas.length === 0) return { fae: "saluda", quieta: false };
-  if (transicion) return { fae: "mira", quieta: false };
-  return { fae: enPodio ? "celebra" : "mira", quieta: false };
+  return { fae: POSE_FAE, quieta: false };
 }

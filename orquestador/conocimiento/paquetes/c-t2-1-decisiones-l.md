@@ -197,3 +197,12 @@ En #499 (C1 entre Aprender y Hacer):
 - **Textos de `c-t2-9-near-delta.md`:** entran tal cual (porqué de origen, acierto de «revisar», J3, pies de fuente y «Así se juega»).
 
 **Para Erwin, no es falla de la célula:** los nombres de fase de SecuenciaAprender («Mírelo funcionar», «Ahora pruebe usted») están en «usted», y el contenido va en «tú». Se avisa en #492.
+
+---
+
+# Auditoría T2-11 de Mello · decisiones de L (25-oct-2026, 02:30)
+
+`c-t2-11-mello-auditoria.md`: #548 (e65b062) pasa en 7 de 9 puntos. Fallan dos, y en los dos la receta de T2-9 era de Mello. Ya probó los arreglos en un build.
+- **P4, las palabras se parten a 320:** se arregla en la célula, en el `Renglon` de `secuenciaP4.jsx`, con tres cambios: `flexWrap: "wrap"`, el nombre con `minWidth: "min-content"` y `overflowWrap: "normal"`, y la cifra con `marginLeft: "auto"`. La prueba de P4 pasa a buscar eso. **Mello aprueba #548 cuando entre este cambio, sin otra ronda**: lo fusiono con el CI verde.
+- **El pie no se pinta en los cierres:** `SecuenciaAprender` solo pinta la razón mientras espera respuesta. Es una línea en lo compartido (Erwin), y va en #536, que es la condición para encender la bandera. Los datos ya están en #548.
+- **Decisión de Mello, aceptada:** el pie de fuente no cuenta para el tope de 40 palabras, porque es una cita, como «Escenario simulado».

@@ -28,6 +28,8 @@ const RAIZ = resolve(import.meta.dirname, "../..");
 const require = createRequire(import.meta.url);
 let pw; try { pw = require("playwright"); } catch { pw = require("/opt/node-tools/node_modules/playwright"); }
 const CAPTURAS = process.argv[2] ?? null;
+/* SOLO_CAPTURAS=1: solo el punto 6 (las capturas), sin las comprobaciones ni la CPU. */
+const SOLO_CAPTURAS = Boolean(process.env.SOLO_CAPTURAS);
 const FUENTES = resolve(RAIZ, "scripts/t4/sonda-enganche/.sonda-fuentes");
 const hayFuentes = existsSync(`${FUENTES}/fontsource-inter-5.3.0`);
 
@@ -119,6 +121,7 @@ for (const [w, h] of [[320, 568], [375, 667]]) {
   }
 }
 
+if (!SOLO_CAPTURAS) {
 /* 3: la pausa. Fuera de pantalla, de vuelta, con la pestaña oculta y visible otra vez. */
 {
   const { ctx, pg } = await abrir({ caso: "r:n10:conta", w: 320, h: 568 });
@@ -163,6 +166,8 @@ for (const freno of [6, 10]) {
   const ms = (xs) => xs.map((x) => x.hilo);
   const extra = mediana(ms(con)) - mediana(ms(sin));
   salida.cpu[`x${freno}`] = { sinBanda: ms(sin), conBanda: ms(con), estiloConBanda: con.map((x) => x.estilo), extraMediana: extra, porcentaje: Math.round((extra / DUR) * 1000) / 10 };
+}
+
 }
 
 console.log(JSON.stringify(salida, null, 1));
