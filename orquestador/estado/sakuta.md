@@ -1,4 +1,4 @@
-2026-10-25 00:05 (hora Bogotá)
+2026-10-25 00:40 (hora Bogotá)
 - T1 · #496 (t1-5, las dos torres): terminado, fusionado (233c635) con el PASA de Shoko y el CI en verde
 - T1 · #520 (logito LibretaYLapiz): terminado, fusionado (047f3b7) con el PASA de Shoko y el CI en verde
 - T1 · #531 (t1-5, lo que se ve después de «Anotar»): terminado, fusionado (ad898f9) con el PASA de Shoko y el CI en verde
@@ -12,7 +12,7 @@
 - T1 · el caso «se quedan los dos igual» de cu0-a2: BLOQUEADO-MATEO; falta la p. 90 del capítulo 3
 - T1 · los textos pendientes del #535 (Futaba): terminado, en fichas/b-t1-lote-24oct-d-futaba.md
 - T1 · «Ocho leen lo mismo»: terminado, en 2×2 (fichas/b-t1-titulares-medidos-mai.md §7), con PASA de Shoko
-- T1 · los 5 Aprender en secuencia (#559, lote 6): en curso; las cinco piezas corren de punta a punta. FALLA de Shoko en cu0-a1 · 2 y cu0-a2 · 9 por contenido (Futaba, lote H); en cu0-a3 · 8 la captura era después de dos toques (aclarado). La secuencia queda topada en Medio por D7: las capas 4 se desplazan de 129 a 177 px a 320, y Mai mide cómo bajarlas. La forma y el volumen de #545 los aplica un agente de Kaede; los tres cambios del componente van a Erwin (#558)
+- T1 · los 5 Aprender en secuencia (#559, lote 6) (Kaede): en curso; ya están todas las piezas para la segunda vuelta: lote H de Futaba (cu0-a1 · 2 y cu0-a2 · 9) y el § nuevo de Mai (las cuatro capas 4 bajan a 0-18 px a 320 sin excepción, y la correcta lleva ✓ «Era esta»), más la forma y el volumen de #545. Los tres cambios del componente van a Erwin (#558)
 - Regla nueva de Miku: el volumen y la decoración de Ukyo (#545) van en cada pieza que toque Mai. Ojo: la skill celula-diseno de main todavía no trae #545, así que le pasé a Mai el texto del issue
 - Lo compartido que falla en los 7 Hacer: bloqueado; es de Erwin (#487)
 - T6 (oculto hasta el próximo semestre): los dos cambios de texto de Shoko del #458 quedan anotados
