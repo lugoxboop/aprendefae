@@ -1,11 +1,11 @@
-2026-10-25 03:51 (hora Bogotá)
+2026-10-25 06:01 (hora Bogotá)
 - #556 ranking a 320 sin nombres: terminado — #563 fusionado y en producción
-- Listos para que Miku fusione (PASA de Levi + CI verde): #564, después #575 y después #590 (van apilados), #573, #580, #529, #581, #582
-- #536 banda de devolución y razón del cierre en SecuenciaAprender: PR #590 con PASA; condición: C mide figura + banda antes de encender su bandera
-- #582 sondas en CI (contraste y ficha-tapa, 11 temas, 320 y 375, trinquete con línea base de 66 medidas): estable en dos corridas; decisión de Miku: hacerla obligatoria en GitHub
-- Para que Miku reparta: 100 fallos de contraste en Macroeconomía (Demanda Agregada 44, Política Económica 42) y los 87 textos en teal (#581)
-- #573 y #580: después de fusionar, capturas de Estratégico en producción
+- Listos para que Miku fusione (PASA de Levi + CI verde): pila #564 → #575 → #590 → #600 (en ese orden; #600 sube la migración 0153); #580 y luego #598 (va encima); #573, #529, #581, #582
+- #576 pasos tras el Haz y Repaso de piezas de Aprender: PR #600 con PASA (reversión de la 0153 escrita y probada)
+- #596 Así se juega, «Pausar» tapado: PR #598 con PASA, re-medido con fuentes de producción
+- #560 volumen en los cinco controles compartidos: en curso — encargado a Sai (rama feat/conta-a-volumen)
+- #574 pose de Fae: cerrado (ya estaba en main, 73fd905)
+- Decisiones de Miku: sondas obligatorias en GitHub; dueño para los 100 fallos de contraste de Macro y los 87 textos en teal; reparto de #585 (blanco de toque) y el número del piso de letra
 - #542: lo de cada célula, en #579
 - #552 entrada a la página y #554 pantalla de contraste: bloqueado: esperan que Miku los fusione
 - Pools del Repaso Diario: en curso — falta B (#477)
-- Capa 1 de CuatroCapas (guardas B1 y B2): bloqueado: esperan los recortes de Near
