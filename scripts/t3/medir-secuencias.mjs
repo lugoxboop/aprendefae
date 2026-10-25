@@ -460,7 +460,20 @@ const CAPTURAS_ENCENDIDO = {
   "t3-a5-cerrar-el-periodo/acacias-gastos/acierto": "enc-p5-8-acacias-gastos-acierto",
   "t3-a5-cerrar-el-periodo/perdida/acierto": "enc-p5-9-acacias-perdida-acierto",
 };
-const LOTE = arg("--lote") === "encendido" ? CAPTURAS_ENCENDIDO : CAPTURAS_DE;
+/*
+ * Las del segundo encendido (lotes 18 y 19 de Takamura), con --lote enc2: la
+ * utilidad tapada de P2-2, el bloque tapado con su punteado en P6-1, las tres
+ * de Las Acacias con los textos v6 y la D11 de ubicar.
+ */
+const CAPTURAS_ENC2 = {
+  "t3-a2-el-mes-de-san-calixto/cobrados/sin-responder": "enc2-p2-2-utilidad-tapada",
+  "t3-a6-lo-que-deja-el-periodo/apertura/paso-1-objetivo": "enc2-p6-1-bloque-tapado",
+  "t3-a5-cerrar-el-periodo/acacias-ingresos/sin-responder": "enc2-p5-7-acacias-ingresos-consigna",
+  "t3-a5-cerrar-el-periodo/acacias-gastos/dos-errores": "enc2-p5-8-acacias-gastos-error",
+  "t3-a5-cerrar-el-periodo/perdida/acierto": "enc2-p5-9-acacias-perdida-acierto",
+  "t3-a5-cerrar-el-periodo/ingresos/sin-responder": "enc2-p5-4-d11-ubicar",
+};
+const LOTE = { encendido: CAPTURAS_ENCENDIDO, enc2: CAPTURAS_ENC2 }[arg("--lote")] ?? CAPTURAS_DE;
 
 async function medirEncaje() {
   const { PIEZAS_SECUENCIA_T3, TEMA_SECUENCIA_T3 } = await piezasDeSecuencia();

@@ -17,7 +17,8 @@
  *     y nada salta. Nunca se ven las dos. Es una regla de estilo con :has(),
  *     escrita aquí: SecuenciaAprender no se toca.
  *   · CIFRAS EN INTER TABULAR: el sitio no carga ninguna mono (lote 16).
- *   · LO TAPADO (E8): un bloque relleno #0E1B2E, sin borde y sin texto debajo
+ *   · LO TAPADO (E8): un bloque relleno #0E1B2E con contorno punteado de 1 px
+ *     (lote 19) y sin texto debajo
  *     (D9: el lector de pantalla no oye lo que todavía no se ve).
  *   · LA LISTA UNIDA (delta v3 §1, P6-7 y P6-9): las opciones que ocupan la
  *     figura van pegadas, 3 × 44 = 132, con una divisoria de 1 px y el estado
@@ -33,6 +34,12 @@ import { hazResuelto, mostrarCorrecto, responderHaz, HAZ_INICIAL } from "../../.
 
 export const CIFRA = '"Inter", sans-serif';
 export const TAPADO = "#0E1B2E";
+/*
+ * El contorno de lo tapado (Takamura, lote 19): el #0E1B2E solo casi no se
+ * distingue del fondo. Lleva el mismo punteado de 1 px de «Del resultado a la
+ * caja» (ResultadoCaja.jsx, `data-punteado`: 1px dashed, color atenuado #B8C4D4).
+ */
+export const PUNTEADO_TAPA = C.neutro;
 /* El borde de 1 px de las placas y las superficies del modelo (forma v2, §1). */
 export const SUPERFICIE = "#1C2939";
 export const BORDE_SUP = "1px solid rgba(248,249,250,.12)";
@@ -42,7 +49,7 @@ const CSS_P2P6 = `
 .t3s2-pastilla { display: inline-flex; align-items: center; gap: 4px; height: 20px; padding: 0 7px; margin-right: 6px; border-radius: 999px; border: 2px solid ${C.texto}; color: ${C.texto}; font: 600 12px/16px "Inter", sans-serif; white-space: nowrap; vertical-align: 1px; box-sizing: border-box; }
 .t3s2-pastilla[data-ver="mal"] { border-color: ${C.error}; color: ${C.error}; }
 .t3-sec:has(.t3s2 [data-texto="pista"]) [data-razon] { visibility: hidden; }
-.t3s2-tapa { display: inline-block; vertical-align: -3px; height: 14px; border-radius: 3px; background: ${TAPADO}; }
+.t3s2-tapa { display: inline-block; vertical-align: -3px; height: 14px; border-radius: 3px; background: ${TAPADO}; box-sizing: border-box; border: 1px dashed ${PUNTEADO_TAPA}; }
 .t3s2-fila { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; height: 16px; font: 400 12px/16px "Inter", sans-serif; color: ${C.apagado}; white-space: nowrap; min-width: 0; }
 .t3s2-fila > span:first-child { min-width: 0; overflow: hidden; text-overflow: clip; }
 .t3s2-fila b { font: 600 12px/16px ${CIFRA}; color: ${C.texto}; font-variant-numeric: tabular-nums; }

@@ -8,8 +8,6 @@ import BackgroundVeil from "./shared/BackgroundVeil.jsx";
 import Logo from "./Logo.jsx";
 import RankingFP from "./ranking/RankingFP.jsx";
 import LigaBoard from "./ligas/LigaBoard.jsx";
-import { tieneLigas } from "../ligas/ligas.js";
-import { decoracionDe } from "../data/decoracionTablas.js";
 import BannerRepaso from "./repaso/BannerRepaso.jsx";
 import { marcaDeTema } from "./shared/contenidoNuevo.jsx";
 import IdentificadorDeTema, { CSS_IDENTIFICADOR } from "./shared/IdentificadorDeTema.jsx";
@@ -230,16 +228,19 @@ export default function TopicIndexView({
           */}
           <div style={{ width: "100%", maxWidth: "560px", display: "flex", flexDirection: "column", gap: "16px" }}>
             {/*
-              La decoración (zonas-hanayama.md §1.3, #547): una sola banda en
-              bucle y una sola Fae por página. Si hay liga, corre la suya y la
-              del ranking va quieta y sin Fae.
+              SIN DECORACIÓN, por orden de Mateo del 25 de octubre. La banda se
+              construyó (#565, #567) y se retiró de aquí el mismo día: el ranking
+              ya estaba bien y la decoración lo empeoraba. Lo que Mateo pidió era
+              volumen en el CAMINO de actividades, no adornos en las tablas.
+              El componente sigue en src/components/decoracion/ y LigaBoard y
+              RankingFP siguen aceptando la prop: volver a encenderlo es pasarla
+              de nuevo. No se borra nada.
             */}
-            <LigaBoard subjectId={subjectId} decoracion={decoracionDe(subjectId)} />
+            <LigaBoard subjectId={subjectId} />
             <RankingFP
               subjectId={subjectId}
               titulo={`Ranking de ${name}`}
               nota="Solo esta materia"
-              decoracion={decoracionDe(subjectId, { bucle: !tieneLigas(subjectId), fae: !tieneLigas(subjectId) })}
             />
           </div>
         </div>

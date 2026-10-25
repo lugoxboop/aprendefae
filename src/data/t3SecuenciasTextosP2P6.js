@@ -132,6 +132,18 @@ export const CIERRE_P2 = [
   "El 31 todavía falta algo. Desde el 27 usa una máquina alquilada y no la ha pagado.",
 ];
 
+/*
+ * P2-8 · «En una frase», que con S3 pasa al Repaso Diario (textos v2 §3).
+ * Pregunta, opciones y devoluciones de e3-t3-p2-y-p6-v2.md (pantalla 8),
+ * literales; el acierto es el de la pantalla. INFLESZ oficial: 86,6 · 88,6 · 75,7.
+ */
+export const PREGUNTA_FINAL_P2 = "¿Qué cambia la utilidad del mes?";
+export const OPCIONES_FINAL_P2 = [
+  { id: "vender-y-consumir", texto: "Vender y consumir", correcta: true, feedback: "Vender y consumir. Cobrar y pagar mueven la caja, no la utilidad." },
+  { id: "cobrar-y-pagar", texto: "Cobrar y pagar", correcta: false, feedback: "Cobrar y pagar mueven la caja. La utilidad cambia al vender y al consumir." },
+  { id: "aportes", texto: "Los aportes", correcta: false, feedback: "Los aportes suben el patrimonio, pero no son ingreso. No cambian la utilidad." },
+];
+
 /* Pistas del primer error (v4 §2). P2-3 no lleva: es un Míralo. */
 export const PISTAS_P2 = {
   cobrados: "Busca los servicios que se pagaron el mismo día que se prestaron.",
@@ -279,6 +291,19 @@ export const CUENTAS_P6_8 = [
 export const CIERRE_P6 = [
   "A la operación se le resta lo no operacional. Así queda la utilidad antes de impuestos.",
   "El impuesto es deuda; el resto va al patrimonio.",
+];
+
+/*
+ * P6-10 · «En una frase», al Repaso Diario (textos v2 §3). De
+ * e3-t3-p2-y-p6-v2.md (pantalla 10), literales. INFLESZ oficial del acierto
+ * 91,3; de las devoluciones 76,9 y 67,2 (la de la caja tiene menos de 10 palabras).
+ */
+export const PREGUNTA_FINAL_P6 = "¿Qué es la utilidad del ejercicio?";
+export const OPCIONES_FINAL_P6 = [
+  { id: "queda-a-los-accionistas", texto: "Lo que queda a los accionistas después del impuesto", correcta: true, feedback: "Lo que les queda a los accionistas después del impuesto. Por eso va al patrimonio." },
+  { id: "caja", texto: "Todo lo que entró a la caja", correcta: false, feedback: "La caja mide la plata, no lo ganado." },
+  { id: "antes-de-impuestos", texto: "La utilidad antes de impuestos", correcta: false, feedback: "Le falta restar el impuesto a la utilidad antes de impuestos." },
+  { id: "saldo-gyp", texto: "El saldo de Ganancias y pérdidas", correcta: false, feedback: "Ese saldo se reparte: una parte es el impuesto y otra la utilidad del ejercicio." },
 ];
 
 /* Pistas del primer error (v4 §2). La de P6-4, de Miyata (delta v3, lote 16). */
