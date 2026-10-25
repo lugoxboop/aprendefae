@@ -58,7 +58,7 @@ test("★★★ los cuatro pares son los de la tabla de control de Levi", () => 
     ["La máquina", 2500, "Libro, pp. 140 y 142",
       ["San Calixto", "Gasto alquiler", "Alquiler por pagar", "Servicios por cobrar", "Ingresos por servicios", "Alquiler pagado por anticipado"],
       ["San Miguel", "Servicios por cobrar", "Ingresos por servicios", "Gasto alquiler", "Alquiler por pagar", "Servicios recibidos por anticipado"]],
-    ["El arriendo", 5000, "Basado en el libro, pp. 144 y 146",
+    ["El arriendo", 5000, "Basado en el libro, pp. 143-144 y 146",
       ["San Calixto", "Gasto arriendos", "Arriendos pagados por anticipado", "Arriendos recibidos por anticipado", "Ingresos por arriendos", "Arriendos por pagar"],
       ["Arriendos de la Costa", "Arriendos recibidos por anticipado", "Ingresos por arriendos", "Gasto arriendos", "Arriendos pagados por anticipado", "Arriendos por cobrar"]],
     ["Los equipos", 1800000, "Basado en el libro, p. 174",

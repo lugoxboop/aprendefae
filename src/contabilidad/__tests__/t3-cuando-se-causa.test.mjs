@@ -439,7 +439,7 @@ test("F2 (línea base de Takamura): la máquina de San Calixto lleva su propio e
   const item = A2.ITEMS_ACT2.find((x) => x.id === "t3a2-maquina-san-calixto");
   const r = L.evaluarAct2(item, "cierre");
   assert.equal(r.ok, false);
-  assert.equal(r.textos[0], "El cierre cae el 31, pero ese día no causa el gasto. El cierre solo revisa lo que falta anotar.");
+  assert.equal(r.textos[0], "El cierre no causa el gasto: solo revisa lo que falta anotar. El gasto lo causó el uso de la máquina.");
   /* Los demás ítems con cierre siguen con el error general. */
   const mps = A2.ITEMS_ACT2.find((x) => x.id === "t3a2-mps");
   assert.equal(L.evaluarAct2(mps, "cierre").textos[0], A2.ERROR_POR_TIPO[A2.CIERRE]);

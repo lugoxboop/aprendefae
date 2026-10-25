@@ -100,7 +100,7 @@ export const ITEMS_ACT6 = [
     corte: 1,
     alPeriodo: 5000,
     queda: 10000,
-    pie: "Basado en el libro, p. 144",
+    pie: "Basado en el libro, pp. 143-144",
     acierto: "Pasó 1 de 3 meses. Al periodo le toca $5.000 y quedan $10.000 de local por usar.",
   },
   {

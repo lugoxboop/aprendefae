@@ -116,7 +116,7 @@ const TABLA_5 = [
   ["Mónica Galindo", "31 de diciembre", 1120000, false, "Arriendos recibidos por anticipado", "Ingresos por arriendos", "Basado en el libro, p. 173"],
   ["Mónica Galindo", "31 de diciembre", 386000, true, "Servicios recibidos por anticipado", "Ingresos por servicios", "Basado en el libro, p. 173"],
   ["Servicios del Caribe", "31 de marzo", 120000, true, "Servicios recibidos por anticipado", "Ingresos por servicios", "Basado en el libro, p. 172"],
-  ["San Calixto", "30 de junio", 5000, false, "Gasto arriendos", "Arriendos pagados por anticipado", "Basado en el libro, p. 144"],
+  ["San Calixto", "30 de junio", 5000, false, "Gasto arriendos", "Arriendos pagados por anticipado", "Basado en el libro, pp. 143-144"],
   ["Arriendos de la Costa", "30 de junio", 5000, false, "Arriendos recibidos por anticipado", "Ingresos por arriendos", "Libro, p. 146"],
 ];
 
