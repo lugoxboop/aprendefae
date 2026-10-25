@@ -38,8 +38,9 @@ const CORPUS = [
 ].join("\n").replace(/\s+/g, " ");
 
 /* La plantilla de un texto: las cifras y las personas de los dos casos, cambiadas por marcas. */
-const PERSONAS = /\b(Rosa Primorosa|Rosa)\b/g;
-const plantilla = (t) => t.replace(/\s+/g, " ").replace(/\$?\d[\d.,]*/g, "#").replace(PERSONAS, "@");
+const PERSONAS = /\b(Rosa Primorosa|Rosa|Marta)\b/g;
+const EMPRESAS = /\b(Sus Servicios|Taller Ríos)\b/g;
+const plantilla = (t) => t.replace(/\s+/g, " ").replace(/\$?\d[\d.,]*/g, "#").replace(PERSONAS, "@").replace(EMPRESAS, "&");
 const CORPUS_PLANTILLA = plantilla(CORPUS);
 
 /* Todos los textos de una pieza: los strings de `textos`, en hondo (ids y cifras aparte). */

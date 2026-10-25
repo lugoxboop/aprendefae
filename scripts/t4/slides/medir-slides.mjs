@@ -35,7 +35,13 @@ const navegador = await pw.chromium.launch();
 const salida = {};
 for (const [w, h] of ANCHOS) {
   const pagina = await navegador.newPage({ viewport: { width: w, height: h }, deviceScaleFactor: 1 });
-  await pagina.addInitScript((c) => { try { sessionStorage.clear(); localStorage.setItem("aprendefae-t4-caso", c); } catch {} }, CASO);
+  /* Se empieza limpio UNA vez por página: las recargas de --pieza tienen que conservar la posición. */
+  await pagina.addInitScript((c) => {
+    try {
+      if (!sessionStorage.getItem("medir-slides")) { sessionStorage.clear(); sessionStorage.setItem("medir-slides", "1"); }
+      localStorage.setItem("aprendefae-t4-caso", c);
+    } catch {}
+  }, CASO);
   await pagina.goto(URL_);
   await pagina.waitForSelector("[data-secuencia] [data-pantalla]");
   await pagina.evaluate(() => document.fonts.ready);
