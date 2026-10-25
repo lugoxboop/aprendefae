@@ -48,11 +48,12 @@ function Renglon({ nombre, valor, marca, clase }) {
   const borde = marca === "error" ? `2px dashed ${FAE.coral}` : marca === "bien" ? `2px solid ${BLANCO}` : "0";
   return (
     <span className={clase} data-renglon={marca || undefined} style={{
-      display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: "4px", padding: marca ? "0 4px" : "0 6px", borderRadius: "6px", border: borde,
+      display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "baseline", gap: "0 4px", padding: marca ? "0 4px" : "0 6px", borderRadius: "6px", border: borde,
       fontSize: "12px", lineHeight: "15px", color: marca === "error" ? FAE.coral : FAE.text,
     }}>
-      <span lang="es" data-nombre-renglon style={{ minWidth: 0, overflowWrap: "break-word", hyphens: "auto", WebkitHyphens: "auto", textAlign: "left" }}>{nombre}</span>
-      {valor !== undefined && <span style={{ fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap" }}>{typeof valor === "number" ? pesos(valor) : valor}</span>}
+      {/* Mello T2-11: el nombre no se parte nunca dentro de una palabra; si no cabe con la cifra, la cifra baja a su línea (flexWrap). */}
+      <span lang="es" data-nombre-renglon style={{ flex: "1 1 0", minWidth: "min-content", overflowWrap: "normal", textAlign: "left" }}>{nombre}</span>
+      {valor !== undefined && <span style={{ marginLeft: "auto", fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap" }}>{typeof valor === "number" ? pesos(valor) : valor}</span>}
     </span>
   );
 }

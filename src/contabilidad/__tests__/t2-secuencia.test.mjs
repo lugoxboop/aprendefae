@@ -518,7 +518,7 @@ test("★ P3·7: un porqué por opción mala; el de «a la derecha» es el de Me
   assert.notEqual(textoMello, D.P3_TEXTOS.porQue.porque);
 });
 
-test("★ P4: los platillos parten por palabra (lang es, break-word, guiones) y el control dice «Aplicar la regla»", async () => {
+test("★ P4: los platillos nunca parten una palabra (min-content, sin break-word ni anywhere; Mello T2-11) y el control dice «Aplicar la regla»", async () => {
   const nombres = [];
   for (const id of ["partida-doble", "la-balanza", "muchas-cuentas", "cierre"]) {
     const x = pantallaDe(3, id);
@@ -526,8 +526,8 @@ test("★ P4: los platillos parten por palabra (lang es, break-word, guiones) y 
     const spans = [...html.matchAll(/<span lang="es" data-nombre-renglon="true" style="([^"]*)">([^<]*)<\/span>/g)];
     assert.ok(spans.length > 0, `${id}: los nombres de los renglones`);
     for (const [, estilo, nombre] of spans) {
-      assert.match(estilo, /overflow-wrap:break-word/, `«${nombre}»: break-word`);
-      assert.match(estilo, /hyphens:auto/, `«${nombre}»: guiones`);
+      assert.match(estilo, /min-width:min-content/, `«${nombre}»: min-width: min-content`);
+      assert.doesNotMatch(estilo, /break-word/, `«${nombre}»: sin break-word`);
       assert.doesNotMatch(estilo, /anywhere/, `«${nombre}»: no se parte por letra`);
       nombres.push(nombre);
     }
