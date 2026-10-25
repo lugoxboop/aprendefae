@@ -15,12 +15,10 @@
  *   node scripts/ficha-tapa.mjs "Las cuentas, el debe y el haber" 320
  * ═══════════════════════════════════════════════════════════════════════════
  */
-import { existsSync } from "node:fs";
-/* Playwright no vive en el mismo sitio en todos los contenedores: se prueba en orden. */
-const PLAYWRIGHT = [process.env.PLAYWRIGHT_CORE, "/opt/npm-tools/node_modules/playwright-core/index.js", "/opt/node22/lib/node_modules/playwright/index.js"]
-  .find((ruta) => ruta && existsSync(ruta));
-const pkg = (await import(PLAYWRIGHT)).default;
-const { chromium } = pkg;
+/* La búsqueda de Playwright vive en sondas/navegador.mjs: cubre el contenedor
+   de los agentes y también GitHub Actions, que no comparten ni el paquete ni
+   el ejecutable. */
+import { chromium } from "./sondas/navegador.mjs";
 const TEMA = process.argv[2] ?? "Las cuentas, el debe y el haber";
 const ANCHO = Number(process.argv[3] ?? 320);
 const RAIZ = `http://127.0.0.1:${process.env.PUERTO ?? 8099}/`;
@@ -135,16 +133,34 @@ await p.route("**/*", (route) => {
   return route.continue();
 });
 /*
- * RUTA=#/activos-financieros abre el tema por su dirección: hay temas que
- * están ocultos del índice pero cuya ruta abre, y esos no se alcanzan
- * tocando botones (#349).
+ * CÓMO LLEGA LA SONDA AL TEMA, en orden de preferencia.
+ *
+ *   RUTA=#/activos-financieros   el tema por su dirección. Hay temas ocultos
+ *                                del índice cuya ruta sí abre, y a esos no se
+ *                                llega tocando botones (#349).
+ *   MATERIA_ID=contabilidad      la MATERIA por su dirección, y de ahí el tema
+ *                                con un toque.
+ *   MATERIA="Macroeconomía"      desde la portada, a golpe de botón.
+ *
+ * El del medio existe desde el 27-oct y es el que debería usarse siempre: la
+ * portada dejó de enseñar Pensamiento Estratégico, así que buscar ahí un
+ * botón con el nombre de la materia falla para esa materia. Una sonda que
+ * depende de lo que la portada enseñe hoy se rompe cada vez que la portada
+ * cambie, y la portada va a seguir cambiando.
  */
 if (process.env.RUTA) {
   await p.goto(RAIZ + process.env.RUTA, { waitUntil: "networkidle" });
   await p.waitForTimeout(700);
 } else {
-  await p.goto(RAIZ, { waitUntil: "networkidle" });
-  for (const paso of ["Contabilidad", TEMA]) {
+  const pasos = [];
+  if (process.env.MATERIA_ID) {
+    await p.goto(`${RAIZ}#/${process.env.MATERIA_ID}`, { waitUntil: "networkidle" });
+  } else {
+    await p.goto(RAIZ, { waitUntil: "networkidle" });
+    pasos.push(process.env.MATERIA ?? "Contabilidad");
+  }
+  await p.waitForTimeout(700);
+  for (const paso of [...pasos, TEMA]) {
     await p.locator(`button:visible:has-text("${paso}")`).first().click({ timeout: 9000 });
     await p.waitForTimeout(700);
   }
