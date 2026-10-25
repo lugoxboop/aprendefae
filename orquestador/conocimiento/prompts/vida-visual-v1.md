@@ -254,20 +254,48 @@ Lienzo 40×40. Tamaño en pantalla 28 a 44 px.
 | 7 | Libro entreabierto | Conta | flota | sí |
 | 8 | Clip | Conta | flota + rota 6° | sí |
 | 9 | Sello hexagonal | Conta | pulso | sí |
-| 10 | **Fae**, el muñequito | las dos | entrada, una vez | **no** |
+| 10 | **Fae**, el muñequito | las tres | entrada, una vez | **no** |
+| 11 | Torre de ajedrez | Estratégico | flota | sí |
 
 Reparto, como con los identificadores: **el diseñador de cada célula dibuja
 las de sus temas** dentro de estas reglas; quien dibuje una reserva su número
 en la tabla antes de empezar, en el PR, para que no salgan dos monedas
-distintas.
+distintas. **Las 1 a 11 están dibujadas y reservadas por Hanayama**
+(`orquestador/revisiones/decoracion-ranking/piezas/`); la 11 es suya y entró al
+cambiar el alcance, porque Estratégico se había quedado sin pieza propia. La
+siguiente que se dibuje es la 12.
+
+**La vara de «son piezas distintas», y es medible.** Dos piezas del catálogo se
+distinguen entre sí al menos tanto como el par más parecido que ya hay: cubo
+contra moneda, **71%** de huella distinta a 28 px. Una pieza nueva que se
+parezca más que eso a otra no es una pieza nueva, es la misma con un trazo
+movido. Se mide rasterizando las dos al tamaño de pantalla y comparando el
+canal alfa.
+
+**Detalle de ejecución que mejora lo que yo había escrito:** la opacidad va en
+`stroke-opacity`, no en la opacidad del grupo. Así no se componen dos
+transparencias, que es justo lo que el kit prohíbe.
 
 ### 5.2 Fae, el muñequito
 
 Una sola mascota para la casa, no una por materia. Se construye con el mismo
 lenguaje de trazo: cabeza circular, cuerpo en cápsula, sin cara detallada
-—dos puntos bastan— y sin accesorios de materia. Tres poses **estáticas**:
-saluda, celebra, mira. No tiene bucle: entra una vez y se queda quieta. Es
-decoración, no un personaje que hable: nunca lleva bocadillo ni texto.
+—dos puntos bastan— y sin accesorios de materia. No tiene bucle: entra una vez
+y se queda quieta. Es decoración, no un personaje que hable: nunca lleva
+bocadillo ni texto.
+
+**Fae no codifica nada, y esto no es negociable.** Su pose no dice tu puesto,
+ni tu racha, ni si vas bien. Dos razones: la banda va `aria-hidden`, así que
+cualquier información que viva ahí no existe para quien usa lector de pantalla;
+y medido, las tres poses dibujadas se distinguen entre sí un 15-33% cuando la
+vara del catálogo es 71%, o sea que a 28 px no se leen como poses distintas de
+todos modos. Si hay que marcar tu puesto, va en la fila propia con **palabra y
+forma**, como el riesgo del panel docente.
+
+**Por eso, una sola pose por tabla.** Tres poses que se parecen un 15% no son
+tres poses. O se redibujan hasta separarse como se separa el resto del
+catálogo, o Fae tiene una y buena. Prefiero una y buena: es una mascota, no un
+juego de iconos.
 
 ### 5.3 Los tres movimientos, y son tres
 
@@ -391,14 +419,19 @@ usa el panel docente, extendidas a un cuarto grupo.
 
 - `opacity` 0→1 y `translateY` 12→0 px. Curva de la casa. **Total 520 ms**,
   por debajo del tope de 560 ms que fija `aprender-secuencia-v1.md`.
-- Máximo cuatro grupos. No se escalona fila por fila de una lista: la lista
-  entera es **un** grupo. Diez filas escalonadas son diez animaciones y la
-  página tarda dos segundos en estarse quieta.
+- **Máximo cuatro grupos, y es un tope, no una sugerencia.** Con seis, el
+  último arranca a 400 ms y termina a 680: por encima del techo de 560 ms que
+  fija `aprender-secuencia-v1.md`. No se escalona fila por fila de una lista:
+  la lista entera es **un** grupo, y una rejilla de temas entera también. Diez
+  filas escalonadas son diez animaciones y la página tarda dos segundos en
+  estarse quieta justo cuando el estudiante ya quiere tocar algo.
 - **Después de 520 ms no se mueve nada** salvo los 3 bucles de la banda del
   leaderboard, que arrancan al terminar la entrada, no antes.
 - El fondo de materia ya está ahí: no entra, no se anima, no se toca.
-- Movimiento reducido: solo `opacity`, 120 ms, sin escalonado ni
-  desplazamiento.
+- Movimiento reducido: **no se anima nada**, la página aparece puesta. Lo había
+  escrito como un fundido de 120 ms; la Célula A lo implementó sin animación
+  (`animation: none`) y es mejor, porque un fundido sigue siendo movimiento para
+  quien pidió que no lo hubiera. Adoptado de su versión.
 
 **Los slides de Aprender ya están definidos** en `aprender-secuencia-v1.md`
 (entrada escalonada 0/80/160, 280 ms, translateX al avanzar, 200 ms sin
