@@ -5,6 +5,8 @@ import BotonAnimo from "../social/BotonAnimo.jsx";
 import { estadoDeAnimos } from "../../social/animo.js";
 import { useAuth } from "../../auth/AuthProvider.jsx";
 import Avatar, { TAMANOS } from "../avatar/Avatar.jsx";
+import BandaDecoracion from "../decoracion/BandaDecoracion.jsx";
+import { estadoRanking } from "../decoracion/poses.js";
 
 /*
  * Tabla de posiciones de FP. Sirve a los dos emplazamientos: por materia
@@ -152,7 +154,11 @@ export async function pedirRanking({ subjectId, periodo }) {
   return supabase.rpc("ranking_fp", { p_subject: subjectId, p_periodo: periodo });
 }
 
-export default function RankingFP({ subjectId = null, titulo = "Ranking", nota, pedir = pedirRanking }) {
+/*
+ * `decoracion` (opcional, #547): { piezas, bucle, fae }. Con ella va la banda
+ * de vida-visual-v1 entre la cabecera y las pestañas; sin ella, nada cambia.
+ */
+export default function RankingFP({ subjectId = null, titulo = "Ranking", nota, pedir = pedirRanking, decoracion = null }) {
   const { session, perfil, pedirCuenta } = useAuth();
   const [periodo, setPeriodo] = useState("semestre");
   const [estado, setEstado] = useState({ cargando: false, filas: null, error: null });
@@ -200,6 +206,11 @@ export default function RankingFP({ subjectId = null, titulo = "Ranking", nota, 
         </h3>
         {nota && <span style={{ fontSize: "12.5px", color: "#A8B6C8" }}>{nota}</span>}
       </div>
+
+      {decoracion && (() => {
+        const { fae, quieta } = estadoRanking({ session, ...estado });
+        return <BandaDecoracion piezas={decoracion.piezas} bucle={decoracion.bucle && !quieta} fae={decoracion.fae ? fae : null} />;
+      })()}
 
       <div
         role="group"

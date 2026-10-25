@@ -1,0 +1,16 @@
+# T1 · Auditoría del #559 en 3029f8e, la secuencia completa (Shoko, 25-oct)
+
+La subió Sakuta tal como salió del chat de Shoko (6c926eca).
+
+**Veredicto del lote: FALLA.** Dos de contenido, que son prerrequisito, y una de interacción. El resto pasa.
+
+- **cu0-a2 · 9 · FALLA (prerrequisito, fidelidad)** — la devolución del error dice «Nadie ajusta nada. Dan igual solos, porque son las mismas cosas miradas de dos formas». La opción equivocada que se marcó es «Porque el contador ajusta las cifras hasta que den igual», y la primera frase la contradice bien; el problema es que la pieza acaba de enseñar en la pantalla 6 que al comprar algo a crédito la torre crece **igual de alta por los dos lados**, es decir, que sí hay un registro que mantiene la igualdad. «Nadie ajusta nada» se lee como que la igualdad es espontánea. Un estudiante puede salir creyendo que el balance cuadra solo. Hay que distinguir «el contador no fuerza las cifras» de «cada hecho se anota por los dos lados». Lo revisa Futaba contra el capítulo.
+- **cu0-a1 · 2 · FALLA (prerrequisito, fidelidad)** — el apoyo quedó peor que antes. Dice «Son siete verbos; registrar es anotar», y eso ya no distingue las dos cuentas: la pantalla 1 dice cinco pasos y la 2 dice siete verbos, sin nada que diga que se cuentan cosas distintas. Que registrar sea además el paso 3 es correcto y es justo lo que hace falta decir en la misma frase. Propongo: **«Son siete verbos, distintos de los cinco pasos. Registrar es anotar: el paso 3.»** Futaba la valida.
+- **cu0-a3 · 8 · Básico · FALLA** — la devolución de «La película» dice «Te preguntan cuánto cambió algo entre dos fechas. La película no lo muestra; compara tú las dos fotos», pero en esa misma pantalla «Las dos fotos» aparece marcada en azul como elegida. Dos opciones marcadas a la vez, una con ✗ y otra como respuesta: no se entiende cuál fue el toque del estudiante. Si es el estado tras dos toques, es la misma confusión de capturas de la vuelta pasada; si es el estado real, el señalamiento está mal.
+- **cu0-a2 · 7 y cu0-a3 · 8 · nota, no falla** — las dos dicen «Responde los cuatro hechos para seguir» / «Responde las cinco preguntas para seguir» y la captura solo muestra el primero. No lo cuento, pero en la próxima vuelta quiero una del último, con «Siguiente» ya habilitado, para confirmar que la capa deja salir.
+
+**El resto pasa.** Las cinco piezas corren de punta a punta, las paradas traen su fantasma con «✕ No va aquí» y pista propia, y Ocho · 3 quedó resuelto: las cuatro frases enteras en la franja de 44 y cada error con su porqué. No cuento el volumen de #545, los tres arreglos del #558 ni la p4o1 de cu0-a4 · 9.
+
+Lo que sí señalo aparte, porque no es de esta vuelta pero decide el nivel: los desplazamientos de las capas 4 a 320 —Ocho 177, cu0-a2 177, cu0-a3 129, cu0-a4 155— están muy por encima del tope de 40. Con eso, D7 Avanzado («no requiere scroll en ningún punto») no se puede dar, así que la secuencia entera queda topada en Medio hasta que el volumen de Mai los baje. No es FALLA de este PR, es la condición para subir de nivel.
+
+Para la re-auditoría, a 320: cu0-a1 · 2 con el apoyo nuevo; cu0-a2 · 9 con la devolución corregida; cu0-a3 · 8 con un solo toque; y las dos de capa 4 completadas hasta el último ítem.

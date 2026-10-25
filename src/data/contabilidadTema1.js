@@ -723,7 +723,8 @@ export const LINEAS = [
    * capítulo 1, §10). Va arriba del bloque, como rótulo de la llave que abarca
    * las demás líneas, y se toca como cualquier otra.
    */
-  { id: "l-utilidad-balance", informe: PRIMERO, nombre: "Estado de situación financiera", llave: true },
+  /* «El balance completo» y no «Estado de situación financiera»: repetía el título del bloque y parecía una línea más (Sakuta, #539). */
+  { id: "l-utilidad-balance", informe: PRIMERO, nombre: "El balance completo", llave: true },
   { id: "l-caja", informe: PRIMERO, nombre: "Efectivo" },
   { id: "l-cobrar-pagar", informe: PRIMERO, nombre: "Cuentas por cobrar y cuentas por pagar" },
   { id: "l-propiedad", informe: PRIMERO, nombre: "Propiedad, planta y equipo" },
