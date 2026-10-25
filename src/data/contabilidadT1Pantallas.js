@@ -103,7 +103,7 @@ export const VERBOS_NO_TOCABLES = ["ofrecer", "permite"];
 /* Regla de Mai para todo el recorrido: cada estación muestra su nombre solo cuando se enciende. */
 export const ESTACION_SIN_NOMBRE_HASTA_ENCENDERSE = true;
 /* El nombre completo de la empresa va como rótulo de la escena, no en el texto (INFLESZ). */
-export const ROTULO_ESCENA_A1 = "Comercializadora Caleja";
+export const ROTULO_ESCENA_A1 = "Compañía Caleja";
 
 const PREDICE_PASOS = nuevo("Mucha gente cree que la contabilidad es anotar. ¿Cuántos pasos crees que hay, desde que pasa algo hasta que alguien decide?");
 /* Reemplaza a EL_HECHO (INFLESZ 39,9) en la secuencia; el nombre completo de la empresa sigue en la factura (nota 1 de la ficha). */
@@ -444,16 +444,17 @@ const A4 = [
     texto: [nuevo("Lo que vendió y gastó en el año, ¿a qué informe crees que llega?")],
     pista: nuevo("¿Cuál de los tres guarda cómo quedó la empresa?"),
     opciones: [
-      opcion("foto", "A la foto", nuevo("Llega a la foto: la utilidad neta del año es la misma cifra que la utilidad del ejercicio."), true),
+      opcion("foto", "A la foto", nuevo("Llega a la foto: el resultado del año cambia cómo queda la empresa."), true),
       opcion("plata", "Al de la plata", nuevo("La plata tiene su propio informe. Lo que vendió y gastó llega a la foto y cambia cómo queda.")),
       opcion("ninguno", "A ninguno", nuevo("Sí llega a uno: a la foto. Lo que vendió y gastó cambia cómo queda la empresa.")),
     ],
-    flecha: FLECHAS_P4.find((f) => f.id === "f1"), fuente: "Nuevo, de P:415 y T:589-605 (f1)",
+    flecha: FLECHAS_P4.find((f) => f.id === "f1"), fuente: "Nuevo, de P:415 y T:589-605 (f1); acierto de Futaba, Gráfico 2.6 (p. 66; fichas/b-t1-fuente-cap1-futaba.md §7 y §9)",
   },
   {
-    n: 7, idea: "Flecha 1", ve: "f1, de bloque a bloque, con su nota en la flecha", hace: "siguiente",
-    texto: [publicado(TEXTOS_P4[2])], flechas: ["f1"], notaFlecha: nuevo("Es la misma cifra con otro nombre."),
-    fuente: "P:415, P:403; nota de la auditoría de base",
+    n: 7, idea: "Flecha 1", ve: "f1, de bloque a bloque", hace: "siguiente",
+    texto: [publicado(TEXTOS_P4[2])], flechas: ["f1"],
+    /* Sin la nota «Es la misma cifra con otro nombre»: el Gráfico 2.6 no la dibuja (p. 66; Sakuta, ficha de Futaba §9). */
+    fuente: "P:415, P:403; Gráfico 2.6, p. 66",
   },
   {
     n: 8, idea: "Flecha 2: la misma cifra", ve: "f2: la ficha viaja del saldo final al efectivo", hace: "siguiente",
@@ -470,17 +471,17 @@ const A4 = [
   },
   {
     n: 11, idea: "Prueba: repite o explica",
-    ve: "Las cinco flechas; al tocar una, queda sola. f1 se ve pero no se pregunta hasta que el Gráfico 2.6 diga si repite o explica",
+    ve: "Las cinco flechas; al tocar una, queda sola",
     hace: "clasifica",
     texto: [nuevo("Toca una flecha. ¿Repite la misma cifra o solo explica una línea de la foto?")],
     opciones: ["Repite la cifra", "Explica una línea"].map(nuevo),
     flechas: FLECHAS_P4, modo: MODO_FLECHA,
-    /* f1 es HUECO hasta el capítulo 2 (Gráfico 2.6; contradicción con P:403, #467): se ve, no se pregunta. */
-    seClasifican: ["f2", "f3", "f4", "f5"],
+    /* f1 se pregunta y explica: va de bloque a bloque en el Gráfico 2.6 (p. 66), como en P:403 (Sakuta, ficha de Futaba §9). */
+    seClasifican: ["f1", "f2", "f3", "f4", "f5"],
     /* La que viaja (MODO_FLECHA.viaja) es la que repite; las demás explican. */
     devolucionRepiteMarcadaExplica: nuevo("Esta sí repite: el saldo final de efectivo es el mismo número que el efectivo de la foto."),
     devolucionExplicaMarcadaRepite: nuevo("Esta no repite ninguna cifra. Solo explica una línea de la foto."),
-    fuente: "Nuevo, de P:399-408 (MODO_FLECHA). f1: HUECO hasta el capítulo 2 (Gráfico 2.6)",
+    fuente: "Nuevo, de P:399-408 (MODO_FLECHA); f1, Gráfico 2.6 (p. 66)",
   },
   {
     n: 12, idea: "En una frase", ve: "Las 4 opciones", hace: "frase",

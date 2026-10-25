@@ -35,7 +35,7 @@
 - Kaede, constructor (Claude Code): claude.ai/code/session_01D4JtpNoHqDM288SH6okZpo (desde el 24-oct; la vieja 01Vh7Swg quedó al 78 %, ver traspasos/kaede.md). Un lote por mensaje, un PR, «sin preguntar lo que se puede deshacer» (R20). Le pido informe de una línea.
 - Futaba, contenido: claude.ai/chat/4c4c17ec-5ce8-476a-93b9-256f7b0e5ddf. Lee main ella misma. Le doy archivo:línea, el estándar (≤ 25 palabras, INFLESZ ≥ 65, sin veredicto ni emoji) y le pido la entrega en tabla.
 - Mai, diseño: claude.ai/chat/3e99a458-f712-4924-b070-539e3566ae89 (desde el 24-oct; el chat viejo b702113f quedó pesado, ver traspasos/mai.md). Se rige por el prompt maestro de diseño. Siempre le pregunto dónde y con qué midió.
-- Shoko, auditora: claude.ai/chat/02dc9984-e01c-4d28-ae43-c1847b9a947a (desde el 24-oct; el chat viejo be98df9f quedó pesado, ver traspasos/shoko.md). No ve código: le mando hojas de capturas (320 y 375) y le pido una línea por pieza (pieza · nivel · lo que falta). Su veredicto manda.
+- Shoko, auditora: claude.ai/chat/6c926eca-ba18-452a-af22-ae2f620b9af7 (desde el 24-oct en la noche; los chats viejos be98df9f y 02dc9984 quedaron pesados, ver traspasos/shoko.md). No ve código: le mando hojas de capturas (320 y 375) y le pido una línea por pieza (pieza · nivel · lo que falta). Su veredicto manda.
 - Mensajes a los chats: con Chrome (una sola pestaña, en el grupo propio). Se pega con `document.execCommand('insertText')` en `[contenteditable="true"]` y se envía con Return. Si sale NOED, se espera a que cargue y se reintenta.
 - Para leer un chat sin Chrome: `conversation_search` / `read_conversation` (el índice puede ir atrasado).
 - Ahorro: mensajes cortos, el detalle va al PR, capturas solo para verificar lo terminado.

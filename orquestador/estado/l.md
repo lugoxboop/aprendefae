@@ -1,4 +1,4 @@
-2026-10-24 19:12 (hora Bogotá)
+2026-10-24 20:14 (hora Bogotá)
 - Tema: T2 cuentas-debe-haber (T5 y T7 ocultos por Erwin, nada borrado). Contabilidad tiene estudiantes: solo se agrega
 - Regla j: terminado, llegó a Misa (#471), Near y Watari; a Mello le llega con su próximo lote
 - #482 (subtemas para el Repaso), #494 (línea base) y #516 (logito CasilleroDeCuentas): terminado, fusionados con el PASA de Mello y CI verde

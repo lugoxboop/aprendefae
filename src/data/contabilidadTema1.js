@@ -262,7 +262,7 @@ export const ROTULO_SALE = "SALE";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
- * EL CASO DE CALEJA DEL CAPÍTULO 2 — las ocho transacciones.
+ * EL CASO DE CALEJA — las ocho del ejemplo de la ecuación, pp. 36-40.
  *
  * ═══════════ POR QUÉ HAY DOS LISTAS Y NO UNA ═══════════
  *
@@ -284,6 +284,11 @@ export const ROTULO_SALE = "SALE";
  * con estas dos, la ecuación cierra en 465.000 = 465.000, que es la cifra que
  * el capítulo 2 pide. Hay una prueba que lo verifica. Lo que falta confirmar
  * contra el libro es cómo están redactadas y de cuánto es cada una.
+ *
+ * Futaba (24-oct, capítulo 2): los ocho totales coinciden con el libro
+ * (300.000 → … → 465.000) y la 7 está en la p. 39 tal como va aquí. El libro
+ * no le pone nombre a esta empresa: «Compañía Caleja Ltda.» es la del flujo de
+ * efectivo (pp. 62-63), que comparte las seis primeras.
  */
 export const TRANSACCIONES_CAP2 = [
   ...CALEJA.transacciones,

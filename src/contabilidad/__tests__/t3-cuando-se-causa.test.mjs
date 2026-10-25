@@ -279,7 +279,8 @@ test("★★ va después de la pieza 3 en el camino del Tema 3, y tiene regla do
   const ids = tema.actividades.map((a) => a.id);
   assert.ok(ids.indexOf("t3-cuando-se-causa") > ids.indexOf("t3-a3-lo-que-ya-paso"));
   assert.equal(tema.actividades.find((a) => a.id === "t3-cuando-se-causa").clasificacion.tipo, HACER);
-  assert.deepEqual(JUEGOS.map((j) => j.id).slice(0, 2), ["t3-ingreso-o-cobro", "t3-cuando-se-causa"]);
+  /* «¿Gasto o pago?» va entre las dos desde el #506. */
+  assert.deepEqual(JUEGOS.map((j) => j.id).slice(0, 3), ["t3-ingreso-o-cobro", "t3-gasto-o-pago", "t3-cuando-se-causa"]);
   assert.equal(REGLAS["t3-cuando-se-causa"]("t3a2-jcc"), "San Calixto · Cotizó el 4 y le pidieron el trabajo el 6. Prestó el servicio a JCC el 8 y facturó el 12.");
   /* El ítem retirado en el #439 se sigue leyendo en el panel docente, pero ya no sale en la partida (Yujiro). */
   assert.equal(REGLAS["t3-cuando-se-causa"]("t3a2-pago-60-dias"), "Una empresa de servicios · Cotiza y acuerda el trabajo. Presta el servicio. Le pagan 60 días después.");
