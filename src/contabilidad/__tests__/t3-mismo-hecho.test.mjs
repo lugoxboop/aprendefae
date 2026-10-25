@@ -322,9 +322,10 @@ test("★★★ la fila del monto dice SOLO la cifra —sin «Monto:» ni chevr�
 test("★★ en el camino: nodo 5, entre «Arma el ajuste diferido» y «¿Qué le toca…?»; Análisis 50; tutorial y docente", () => {
   const tema = SUBJECTS.contabilidad.topics.find((t) => t.id === "ingresos-gastos-y-caja");
   const hacer = tema.actividades.filter((a) => a.clasificacion.tipo === HACER && !a.clasificacion.desafio).map((a) => a.id);
-  assert.equal(hacer.indexOf("t3-mismo-hecho"), 4, "nodo 5");
-  assert.equal(hacer[3], "t3-ajuste-diferido");
-  assert.equal(hacer[5], "t3-que-le-toca");
+  /* Nodo 6 desde que «¿Gasto o pago?» entró detrás de la act. 1 (#506); los vecinos no cambian. */
+  assert.equal(hacer.indexOf("t3-mismo-hecho"), 5, "nodo 6");
+  assert.equal(hacer[4], "t3-ajuste-diferido");
+  assert.equal(hacer[6], "t3-que-le-toca");
   assert.deepEqual(tema.actividades.find((a) => a.id === "t3-mismo-hecho").clasificacion, { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 });
   assert.ok(JUEGOS.some((j) => j.id === "t3-mismo-hecho"));
   const asi = ASI_SE_JUEGA["t3-mismo-hecho"];

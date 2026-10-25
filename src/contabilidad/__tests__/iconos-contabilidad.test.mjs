@@ -120,7 +120,8 @@ test("★★★ el mapeo es solo de Contabilidad: ids reales, sin T1-3, sin el C
      con la fecha en que se pidió, y se saca al dibujarla.
      T4 · H3, H4, H7 y H8 del rediseño de los Hacer (Célula D, #308, 15 oct):
      ids nuevos, ícono pedido al coordinador. */
-  const SIN_ICONO_TODAVIA = new Set(["t4-se-mueve-la-caja-menor", "t4-el-arqueo-de-rosa", "t4-concilia-la-cuenta", "t4-se-asienta-o-no"]);
+  /* T3 · «¿Gasto o pago?» (Célula E, #506, 24 oct): id nuevo; el paquete no trae ícono y se pidió al coordinador. */
+  const SIN_ICONO_TODAVIA = new Set(["t4-se-mueve-la-caja-menor", "t4-el-arqueo-de-rosa", "t4-concilia-la-cuenta", "t4-se-asienta-o-no", "t3-gasto-o-pago"]);
   const esperadas = [...hacer].filter((id) => !conDesafio.has(id) && !SIN_ICONO_TODAVIA.has(id));
   assert.equal(esperadas.length, 58);
   assert.deepEqual(Object.keys(ICONO_POR_ACTIVIDAD).sort(), esperadas.sort(), "falta o sobra un ícono");
