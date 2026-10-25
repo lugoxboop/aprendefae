@@ -1,4 +1,4 @@
-2026-10-25 07:00 (hora Bogotá)
+2026-10-25 07:11 (hora Bogotá)
 - T1 · #496 (t1-5, las dos torres): terminado, fusionado (233c635) con el PASA de Shoko y el CI en verde
 - T1 · #520 (logito LibretaYLapiz): terminado, fusionado (047f3b7) con el PASA de Shoko y el CI en verde
 - T1 · #531 (t1-5, lo que se ve después de «Anotar»): terminado, fusionado (ad898f9) con el PASA de Shoko y el CI en verde
@@ -14,6 +14,7 @@
 - T1 · la secuencia encendida por defecto para los estudiantes (#584): terminado, fusionado (e5cac91) con el PASA de Shoko y el CI en verde, ya publicado; ?aprender=capas devuelve las cuatro capas; no toca datos de estudiantes (verificado con prueba)
 - En espera, sin frenar nada (Miku, 25-oct): la p. 66 del Gráfico 2.6, la p. 90 del capítulo 3 y un estudiante ajeno que haga las cinco piezas (para subir de Medio)
 - T1 · los tres arreglos del componente compartido (pulsos, barra superpuesta, ancho de «Siguiente pieza») (#558): bloqueado; es de Erwin, y Kaede le preparó el PR
-- T1 · el volumen de #545 en los controles de los 9 Hacer (Mai, luego Kaede): en curso; Mai parte de la forma de la Célula E (orquestador/revisiones/volumen/e-volumen-forma-v1.md y su delta) y anota en una sección «Diverge de E» lo que no coincida
+- El volumen y las animaciones pasan enteros a Erwin (Miku, 25-oct); retiré el lote de Mai
+- Regla de ahorro de Miku pasada a los cuatro agentes; sin lotes abiertos salvo el #575 (para Erwin)
 - Lo compartido que falla en los 7 Hacer: bloqueado; es de Erwin (#487)
 - T6 (oculto hasta el próximo semestre): los dos cambios de texto de Shoko del #458 quedan anotados
