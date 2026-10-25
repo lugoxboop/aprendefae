@@ -130,7 +130,7 @@ test("★★★ el texto de Gen: los ocho segmentos, el cierre en el paso 9 y lo
 
 test("★★ capa 1 en el orden corregido, objetivo y capa 4 de Gen", () => {
   const p = P3.PIEZA_LO_QUE_YA_PASO;
-  assert.equal(p.objetivo, "El hecho ya ocurrió y la plata no ha llegado. Al cerrar el mes hay que anotarlo igual.");
+  assert.equal(p.objetivo, "Reconoce y anota lo que ya se causó y aún no se paga ni se cobra.");
   assert.deepEqual(p.nombres.map((n) => n.termino), ["Se causa", "Cierre del mes", "Ajuste", "Acumulado", "Desde ya"]);
   assert.equal(p.nombres[0].delLibro, "El libro también dice devengar; es lo mismo.");
   assert.match(p.nombres[3].delLibro, /\(p\. 139\).*\(p\. 141\)/);
