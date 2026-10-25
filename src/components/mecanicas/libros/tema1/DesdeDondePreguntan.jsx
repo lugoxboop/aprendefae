@@ -246,7 +246,12 @@ export default function DesdeDondePreguntan({
           lo que se juega («la pregunta · algo que piensa hacer») se parte a 320.
         */}
         <span data-sitio-ficha style={{ display: "flex", alignItems: "center", minHeight: `${ALTO_FICHA}px` }}>
-          {r && cual === u.zona && <span data-asentada={u.id} style={{ display: "flex" }}><Ficha enJuego={elegida} /></span>}
+          {/*
+            La ficha lleva lo que de verdad se juega (el registro), no lo que eligió
+            el estudiante: con un error, el chip decía la respuesta errada como si
+            fuera el dato (Shoko, #535 b). Sale cuando ya respondió la 2.
+          */}
+          {r && cual === u.zona && <span data-asentada={u.id} style={{ display: "flex" }}><Ficha enJuego={segunda ? opciones.find((o) => o.id === correcta) : null} /></span>}
         </span>
         {marca && <span style={SOLO_LECTOR}><Pastilla marca={marca} /></span>}
       </button>

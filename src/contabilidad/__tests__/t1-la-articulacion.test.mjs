@@ -286,12 +286,17 @@ test("★★★ fallar dibuja el hilo correcto y el del estudiante como fantasma
     assert.equal(fantasma.style.textDecoration, "line-through");
     assert.equal(caja.querySelector('[data-linea="l-caja"]').dataset.estado, "fantasma");
     assert.equal(caja.querySelector('[data-linea="l-utilidad-balance"]').dataset.estado, "acierto");
-    assert.match(caja.querySelector("[data-zona-hilo]").textContent, new RegExp(`Iba aquí: ${lineaPorId("l-utilidad-balance").nombre}`));
+    /* ✓ en los dos extremos de la correcta, ✕ en lo tocado que no era (Shoko, #535 b). */
+    const marca = (id) => caja.querySelector(`[data-linea="${id}"] [data-icono]`)?.dataset.icono ?? null;
+    assert.equal(marca("l-utilidad-neta"), "visto");
+    assert.equal(marca("l-utilidad-balance"), "visto");
+    assert.equal(marca("l-caja"), "tache");
     assert.ok([...caja.querySelectorAll("[data-linea]")].every((b) => b.disabled), "se puede volver a intentar");
     assert.ok(!caja.querySelector("[data-devolucion]").textContent.includes("❌"));
-    /* Los dos hilos se van; la marca de llegada se queda en el destino correcto. */
+    /* Los hilos se quedan hasta la flecha siguiente: la correcta completa, sin banda vacía; la llegada, en el destino correcto. */
     await esperar(MS_HILO + 60);
-    assert.equal(caja.querySelectorAll("[data-hilo], [data-hilo-fantasma]").length, 0, "los hilos se quedaron");
+    assert.equal(caja.querySelectorAll("[data-hilo]").length, 1, "la flecha correcta se fue");
+    assert.equal(caja.querySelectorAll("[data-hilo-fantasma]").length, 1);
     assert.equal(caja.querySelector('[data-linea="l-utilidad-balance"]').dataset.llegada, "si");
     assert.equal(caja.querySelector('[data-linea="l-caja"]').dataset.llegada, undefined);
   } finally { desmontar(); }

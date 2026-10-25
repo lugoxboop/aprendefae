@@ -19,7 +19,7 @@ import EncabezadoCompacto from "../b5/EncabezadoCompacto.jsx";
 import {
   Pastilla, Mensaje, RegionViva, IconoCheck, IconoX, CORRECTA, REVELADA, CSS_B5H, CLASE_B5H,
 } from "../b5/Devolucion.jsx";
-import { INTER, NAVY, CURVA, contadorDe, Avance, CSS_REGISTRO, CLASE_APARECE } from "./registro.jsx";
+import { INTER, NAVY, CURVA, ACIERTO, FANTASMA, estiloC2, contadorDe, Avance, CSS_REGISTRO, CLASE_APARECE } from "./registro.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -539,6 +539,13 @@ export default function DondeSeRompio({
               {PREDICCION_T1_8.opciones.map((n) => {
                 const elegida = prediccion?.elegido === n;
                 const abierta = fase === PREDICCION && !prediccion;
+                /*
+                 * Al final, el registro de C2 como en las otras cinco (Shoko, #535 b):
+                 * ✓ y en blanco la que era; ✕ y coral discontinuo la elegida si no era.
+                 */
+                const final = fase === FIN && prediccion;
+                const era = final && n === noAlcanzados(s.rompe);
+                const veredicto = !final ? null : era ? ACIERTO : elegida ? FANTASMA : null;
                 return (
                   <button
                     key={n}
@@ -548,16 +555,24 @@ export default function DondeSeRompio({
                     aria-pressed={elegida}
                     disabled={!abierta}
                     tabIndex={respondida ? undefined : -1}
+                    data-veredicto-prediccion={veredicto ?? undefined}
                     onClick={() => predecir(n)}
                     style={{
                       minHeight: "44px", padding: "10px 0", borderRadius: "10px", fontFamily: SORA, fontSize: "15px", fontWeight: 700,
                       cursor: abierta ? "pointer" : "default",
-                      background: elegida ? NEUTRO : "transparent",
-                      color: elegida ? NAVY_DEL_CHIP : prediccion ? TEXTO_ATENUADO : FAE.text,
-                      border: `2px solid ${elegida ? NEUTRO : "transparent"}`,
-                      boxShadow: elegida ? "none" : `inset 0 0 0 1px ${prediccion ? atenuar(BLANCO_RGB, 0.3, OPACIDAD_NO_ELEGIDA) : "rgba(248,249,250,0.3)"}`,
+                      display: "flex", alignItems: "center", justifyContent: "center", gap: "4px",
+                      ...(veredicto
+                        ? { ...estiloC2(veredicto), color: FAE.text }
+                        : {
+                          background: elegida ? NEUTRO : "transparent",
+                          color: elegida ? NAVY_DEL_CHIP : prediccion ? TEXTO_ATENUADO : FAE.text,
+                          border: `2px solid ${elegida ? NEUTRO : "transparent"}`,
+                          boxShadow: elegida ? "none" : `inset 0 0 0 1px ${prediccion ? atenuar(BLANCO_RGB, 0.3, OPACIDAD_NO_ELEGIDA) : "rgba(248,249,250,0.3)"}`,
+                        }),
                     }}
                   >
+                    {veredicto === ACIERTO && <IconoCheck />}
+                    {veredicto === FANTASMA && <IconoX />}
                     {n}
                   </button>
                 );
@@ -572,8 +587,12 @@ export default function DondeSeRompio({
               margin: "9px 0 0", minHeight: "36px", boxSizing: "border-box", padding: "8px 11px", borderRadius: "10px",
               fontFamily: SORA, fontSize: "13px", fontWeight: 700, lineHeight: "20px", color: FAE.text,
               background: contador ? "rgba(184,196,212,0.1)" : "transparent",
-              borderLeft: `3px solid ${contador ? NEUTRO : "transparent"}`,
+              /* Con la predicción errada, la banda lleva el tratamiento de error de las demás: borde coral y ✕. */
+              borderLeft: `3px solid ${!contador ? "transparent" : prediccion?.acerto === false ? FAE.coral : NEUTRO}`,
+              display: "flex", alignItems: "center", gap: "6px",
             }}>
+              {contador && prediccion?.acerto === false && <IconoX />}
+              {contador && prediccion?.acerto && <IconoCheck />}
               {contador && <span className={CLASE_APARECE}>{contador}{flechaApagada && <span data-rotulo-flecha> — {ROTULO_FLECHA_APAGADA}</span>}</span>}
             </p>
             <p data-cierre-prediccion={fase === FIN && prediccion ? (prediccion.acerto ? "acerto" : "fallo") : undefined} style={{
