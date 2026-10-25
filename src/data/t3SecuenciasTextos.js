@@ -303,7 +303,8 @@ export const CUENTAS_ASIENTO_P4_COSTA = asiento(
 export const RAZONES_HAZ_T3 = {
   eleccion: "Cuando respondas, se abre «Siguiente».",
   asiento: "Cuando pongas las dos cuentas, se abre «Siguiente».",
-  ubicar: "Quedan fichas por ubicar.",
+  /* Miyata, lote 16 (delta v3): reemplaza a «Quedan fichas por ubicar.», igual que en RAZON_P2P6. */
+  ubicar: "Cuando ubiques todas las fichas, se abre «Siguiente».",
   cifra: "Cuando escribas la cifra, se abre «Siguiente».",
   corte: "Cuando pongas el corte, se abre «Siguiente».",
   ordenar: "Cuando ordenes los dos pasos, se abre «Siguiente».",
@@ -338,4 +339,38 @@ export const LAS_ACACIAS = {
     { cuenta: "Cuentas por cobrar – clientes", saldo: 600000 },
     { cuenta: "Aportes sociales", saldo: 1600000 },
   ],
+};
+
+/*
+ * ═══════════ LAS ACACIAS: LOS TEXTOS (v6, lote 18 de Miyata; lote 19 de Takamura) ═══════════
+ *
+ * e3-t3-secuencias-textos-v6.md, literales. INFLESZ remedido con el oficial
+ * (scripts/inflesz.mjs), todos ≥ 65:
+ *   consigna de ingresos 65,2 · consigna de gastos 94,9 · Caja 88,4 ·
+ *   Cuentas por cobrar – clientes 85,7 · Aportes sociales 81,8 · acierto de la
+ *   pregunta 94,0.
+ *
+ * Lo que la v6 deja condicionado y no entra:
+ *   · la variante corta del error de Cuentas por cobrar – clientes: el texto
+ *     largo da 85,7, no baja de 65;
+ *   · el error NUEVO «pasó un gasto»: el control ‹ cuenta › de la pantalla de
+ *     ingresos solo ofrece los dos ingresos y las tres que siguen; un gasto no
+ *     se puede tocar ahí;
+ *   · «Dejó sin pasar una cuenta del periodo»: el control no tiene un «ya
+ *     terminé»; la pantalla se resuelve al pasar la última, así que no hay
+ *     momento en que se dispare.
+ */
+export const TEXTOS_ACACIAS = {
+  consignaIngresos: "Escenario simulado. Las Acacias cierra febrero. Pasa a Ganancias y pérdidas solo lo que se vacía.",
+  consignaGastos: "Ahora pasa los gastos. Lo que no se vacía se queda donde está.",
+  pregunta: "¿Qué quedó en Ganancias y pérdidas?",
+  acierto: "Ganancias y pérdidas quedó con $100.000 en el debe. Es una pérdida: el mes gastó más de lo que ganó.",
+  /* Pie de P5-9: el cierre determina «la utilidad o la pérdida». Va con la pregunta abierta (p5.jsx dice por qué). */
+  pie: "Basado en el libro, p. 123",
+};
+/* El porqué de pasar una cuenta que no se vacía, por cuenta (v6 §2, las dos pantallas). */
+export const ERRORES_ACACIAS = {
+  "Caja": "Caja no se vacía: lo que la empresa tiene sigue al mes siguiente.",
+  "Cuentas por cobrar – clientes": "Cuentas por cobrar – clientes no se vacía: lo que la empresa tiene sigue al mes siguiente.",
+  "Aportes sociales": "Aportes sociales no se vacía: es lo que pusieron los socios, y sigue al mes siguiente.",
 };

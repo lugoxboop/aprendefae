@@ -38,6 +38,17 @@ const SOLO = arg("--solo") ? new RegExp(arg("--solo")) : /t3-a4-lo-que-ya-se-pag
 if (CAPTURAS) mkdirSync(CAPTURAS, { recursive: true });
 if (!hayFuentes()) console.warn("⚠ Sin las fuentes de producción (bash scripts/t4/sonda-enganche/fuentes.sh): la medida usa la letra de respaldo y no vale.");
 const ALTOS = { 320: 568, 375: 667 };
+/*
+ * UMBRALES VIGILADOS (Takamura, lote 18): estados que hoy caben justo. Se
+ * miden SIEMPRE, aunque --solo no los pida, y la sonda falla si su holgura baja
+ * del mínimo o si no se pudieron medir. P1-7 inventario «sin responder» mide
+ * 0 px a 320 (el aviso de cambio más el título del hecho): un renglón más y
+ * la zona queda bajo la barra fija.
+ */
+const VIGILADOS = [
+  { ancho: 320, clave: "t3-a1-vender-no-es-cobrar/inventario", estado: "sin-responder", minimo: 0, nombre: "P1-7 inventario" },
+];
+const vigilado = (ancho, clave, estado) => VIGILADOS.find((v) => v.ancho === ancho && v.clave === clave && (estado === undefined || v.estado === estado));
 
 const claves = [];
 for (const pz of PIEZAS_SECUENCIA_T3) for (const pt of pz.pantallas) claves.push(`${pz.id}/${pt.id}`);
@@ -89,8 +100,11 @@ for (const ancho of [320, 375]) {
     const pz = PIEZAS_SECUENCIA_T3[p];
     for (let s = 0; s < pz.pantallas.length; s += 1) {
       const pt = pz.pantallas[s];
-      if (!SOLO.test(`${pz.id}/${pt.id}`)) continue;
+      const clave = `${pz.id}/${pt.id}`;
+      const pedida = SOLO.test(clave);
+      if (!pedida && !vigilado(ancho, clave)) continue;
       for (const m of pt.medir ?? [{ nombre: "base", estado: pt.estadoInicial ?? null }]) {
+        if (!pedida && !vigilado(ancho, clave, m.nombre)) continue;
         const { ctx, page, errores } = await abrirPanel(nav, { url: URL_BASE, ancho, alto: ALTOS[ancho], ruta: "?t3=secuencia#/ingresos-gastos-y-caja/aprender" });
         await page.evaluate(([k, v]) => sessionStorage.setItem(k, v), [`fae-secuencia:${TEMA_SECUENCIA_T3}`, guardadoDe(p, s, pt, m)]);
         await page.reload();
@@ -98,7 +112,7 @@ for (const ancho of [320, 375]) {
         await page.evaluate(() => document.fonts.ready);
         await page.waitForTimeout(500);
         const r = await page.evaluate(medir);
-        filas.push({ ancho, pantalla: `${pz.id.replace(/^t3-a\d-/, "")}/${pt.id}`, estado: m.nombre, errores: errores.length, ...r });
+        filas.push({ ancho, clave, pantalla: `${pz.id.replace(/^t3-a\d-/, "")}/${pt.id}`, estado: m.nombre, errores: errores.length, ...r });
         if (CAPTURAS && m.nombre === (pt.medir?.find((x) => /acierto/.test(x.nombre))?.nombre ?? m.nombre)) {
           await page.screenshot({ path: join(CAPTURAS, `${pz.id.replace(/^t3-a(\d)-.*/, "p$1")}-${s + 1}-cabecera-real-${m.nombre}-${ancho}.png`) });
         }
@@ -113,4 +127,11 @@ console.log("|---|---|---|---|---|---|---|---|---|---|---|---|---|");
 for (const f of filas) console.log(`| ${f.ancho} | ${f.pantalla} | ${f.estado} | ${f.cabecera ?? f.falta} | ${f.titularTop} | ${f.figura} | ${f.zona} | ${f.navFija ? "sí" : "no"} | ${f.navAlto} | ${f.holgura} | ${f.cuenta ?? "—"} | ${f.barra ? "SÍ" : "no"} | ${f.errores} |`);
 const mal = filas.filter((f) => f.falta || f.holgura < 0 || f.barra || f.errores);
 console.log(mal.length ? `\n${mal.length} NO CABEN o fallan.` : "\nTodo cabe: el fondo de la zona queda por encima de la barra en cada estado medido.");
-process.exit(mal.length ? 1 : 0);
+console.log("\n## Umbrales vigilados\n");
+const vigilancia = VIGILADOS.map((v) => {
+  const f = filas.find((x) => x.ancho === v.ancho && x.clave === v.clave && x.estado === v.estado);
+  const pasa = Boolean(f) && !f.falta && Number.isFinite(f.holgura) && f.holgura >= v.minimo;
+  console.log(`- ${v.nombre} · ${v.estado} · ${v.ancho}: holgura ${f ? f.holgura ?? f.falta : "SIN MEDIR"} px (mínimo ${v.minimo}) → ${pasa ? "vigilado, pasa" : "**FALLA**"}`);
+  return pasa;
+});
+process.exit(mal.length || vigilancia.includes(false) ? 1 : 0);
