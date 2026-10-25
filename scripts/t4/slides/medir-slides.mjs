@@ -41,7 +41,8 @@ for (const [w, h] of ANCHOS) {
   await pagina.evaluate(() => document.fonts.ready);
   if (PIEZA) {
     const p = await pagina.evaluate((id) => {
-      const k = Object.keys(sessionStorage).find((x) => x.startsWith("fae-secuencia:"));
+      /* La clave de ESTA página (tema/casos): con otras pestañas abiertas puede haber más de una. */
+      const k = `fae-secuencia:${document.querySelector("[data-secuencia]").dataset.secuencia}`;
       const g = JSON.parse(sessionStorage.getItem(k));
       const ids = [...new Set(Object.keys(g.estados).map((x) => x.split("/")[0]))];
       g.p = ids.indexOf(id); g.s = 0;
