@@ -65,6 +65,12 @@ const CSS = `
 const ancho = (n) => `${n}px`;
 /* Lo que se espera a que el desplazamiento suave llegue a las torres antes de moverlas. */
 export const MS_SUBIR = 420;
+
+/* El bloque de la devolución, pegado abajo como el «Siguiente» de «Así se juega». */
+const PEGADO_ABAJO = {
+  position: "sticky", bottom: 0, zIndex: 5, paddingTop: "10px", paddingBottom: "14px",
+  background: `linear-gradient(to bottom, transparent, ${FAE.bg} 16px)`,
+};
 /* Una cifra con su signo de verdad: un total negativo se lee con «−», no con un guion. */
 const cifra = (v) => (v < 0 ? `−${pesos(-v)}` : pesos(v));
 const parte = (id) => PARTES.find((p) => p.id === id);
@@ -243,9 +249,10 @@ export default function LaEcuacionEnMovimiento({
   useEffect(() => {
     if (terminado && !modoDemo) onCompletar?.(pct, Date.now() - inicio.current, detalle.current);
   }, [terminado]);
+  /* El foco va a «Siguiente» cuando ya se ve: al terminar la subida, en el bloque pegado de abajo. */
   useEffect(() => {
-    if (r && !modoDemo) botonSeguir.current?.focus({ preventScroll: true });
-  }, [r]);
+    if (r && torresAlDia && !modoDemo) botonSeguir.current?.focus({ preventScroll: true });
+  }, [r, torresAlDia]);
 
   const anotar = () => {
     if (!listo || r) return;
@@ -462,16 +469,24 @@ export default function LaEcuacionEnMovimiento({
           {quietaElegida !== null && mov.mueven.map(renderTotales)}
         </div>
 
-        <RegionViva>
-          {r && <Mensaje ok={r.ok} texto={r.ok ? textoAcierto : textoError} />}
-        </RegionViva>
+        {/*
+          * La devolución y «Siguiente», en un bloque pegado abajo (Sakuta, #531):
+          * a 320×568 no caben con las torres, así que la devolución se queda fija
+          * sobre «Siguiente» y se ven las dos cosas a la vez. Entra cuando
+          * termina la subida de MS_SUBIR, no antes.
+          */}
+        <div data-bloque-devolucion style={r && torresAlDia ? PEGADO_ABAJO : undefined}>
+          <RegionViva>
+            {r && torresAlDia && <Mensaje ok={r.ok} texto={r.ok ? textoAcierto : textoError} />}
+          </RegionViva>
 
-        {!r && <Avance onClick={anotar} deshabilitado={!listo}>{TORRES_T1_5.anotar}</Avance>}
-        {r && !modoDemo && (
-          <Avance onClick={avanzar} refBoton={botonSeguir}>
-            {i + 1 === total ? TORRES_T1_5.verResultado : TORRES_T1_5.siguiente}
-          </Avance>
-        )}
+          {!r && <Avance onClick={anotar} deshabilitado={!listo}>{TORRES_T1_5.anotar}</Avance>}
+          {r && !modoDemo && (
+            <Avance onClick={avanzar} refBoton={botonSeguir}>
+              {i + 1 === total ? TORRES_T1_5.verResultado : TORRES_T1_5.siguiente}
+            </Avance>
+          )}
+        </div>
       </div>
     </Marco>
   );

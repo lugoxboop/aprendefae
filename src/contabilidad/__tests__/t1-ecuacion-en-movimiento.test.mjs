@@ -613,9 +613,18 @@ test("★★★ al anotar con las torres fuera de la pantalla: sube a ellas, y s
     assert.equal(subidas.length, 1, "no subió a las torres");
     assert.equal(subidas[0].block, "start");
     assert.equal(altoDe(caja, ACTIVO), antes, "las torres se movieron antes de estar a la vista");
+    /* Mientras sube, ni devolución ni foco: el foco no cae en un botón que no se ve. */
+    assert.equal(caja.querySelector("[data-bloque-devolucion]").style.position, "");
+    assert.equal(focos.length, 0, "el foco se fue antes de terminar la subida");
     await act(async () => { await new Promise((r) => setTimeout(r, MS_SUBIR + 60)); });
     assert.notEqual(altoDe(caja, ACTIVO), antes, "las torres no se movieron al llegar");
     assert.ok(focos.some((o) => o?.preventScroll === true), "el foco a «Siguiente» desplaza la página");
+    /* La devolución queda fija sobre «Siguiente», en el bloque pegado de abajo (Sakuta, #531). */
+    const bloque = caja.querySelector("[data-bloque-devolucion]");
+    assert.equal(bloque.style.position, "sticky");
+    assert.equal(bloque.style.bottom, "0px");
+    assert.ok(bloque.querySelector("[data-avance]"), "«Siguiente» no está en el bloque pegado");
+    assert.ok(bloque.textContent.trim().length > 20, "la devolución no está en el bloque pegado");
   } finally {
     desmontar();
     proto.getBoundingClientRect = rectOriginal;
