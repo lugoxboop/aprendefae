@@ -206,3 +206,13 @@ En #499 (C1 entre Aprender y Hacer):
 - **P4, las palabras se parten a 320:** se arregla en la célula, en el `Renglon` de `secuenciaP4.jsx`, con tres cambios: `flexWrap: "wrap"`, el nombre con `minWidth: "min-content"` y `overflowWrap: "normal"`, y la cifra con `marginLeft: "auto"`. La prueba de P4 pasa a buscar eso. **Mello aprueba #548 cuando entre este cambio, sin otra ronda**: lo fusiono con el CI verde.
 - **El pie no se pinta en los cierres:** `SecuenciaAprender` solo pinta la razón mientras espera respuesta. Es una línea en lo compartido (Erwin), y va en #536, que es la condición para encender la bandera. Los datos ya están en #548.
 - **Decisión de Mello, aceptada:** el pie de fuente no cuenta para el tope de 40 palabras, porque es una cita, como «Escenario simulado».
+
+---
+
+# Lote T2-12 · blanco de toque · decisiones de L (25-oct-2026, 03:45)
+
+Ukyo (#585) barrió las 82 Hacer a 320 con el banco de #583. Seis de las diez con pastillas por debajo de 44 px son de T2: `cu-asiento-compuesto` (26 px, 14 pastillas, la mecánica entera), `cu-debita-o-acredita` y `cu-arma-el-asiento` (35), `cu-izquierda-o-derecha` y `cu-de-que-familia` (36), `cu-cuadro-dinamicas` (40).
+- **Una sola corrección para las seis (Misa, #471):** todo control que se toca mide ≥ 44 × 44 px a 320 y 375, con ≥ 8 px entre blancos vecinos. La letra no cambia: se gana con `minHeight` y `padding`.
+- **`cu-asiento-compuesto`:** si a 320 deja de caber con 44 px, no se recorta contenido; Misa trae el alto medido y L decide con Watari.
+- **Lo compartido no se toca:** si una pastilla sale de `piezas.jsx` o `verbos.jsx`, va por issue `miku` a Erwin.
+- **Evidencia:** cifras del banco antes y después en el PR, una prueba por pieza que mire el alto, y auditoría de Mello con esas cifras. `t3-cierre-completo` es de la Célula E.

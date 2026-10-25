@@ -8,9 +8,10 @@
  * Paquete e3-t3-secuencias-aprender-v3.md §3 y §4 (contra «Texto clave»).
  * Textos aprobados de contabilidadTema3Cierre.js; nuevos de t3SecuenciasTextos.js.
  *
- * ⛔ Las Acacias (pantallas 7, 8 y 9) no tienen datos en ninguna parte: ni
- * sus cuentas ni sus saldos (solo «Pérdida $100.000»). Quedan armadas y
- * esperando, sin inventar cifras.
+ * Las Acacias (pantallas 7, 8 y 9): cuentas y saldos de los textos v5 §1 de
+ * Miyata, un escenario simulado que lleva «Escenario simulado» como primer
+ * renglón. ⛔ Su consigna no está en ningún archivo: se pidió en el PR y no se
+ * inventa (la zona lleva solo la marca hasta que llegue).
  * ═══════════════════════════════════════════════════════════════════════════
  */
 import {
@@ -20,7 +21,8 @@ import {
 } from "../../../../../data/contabilidadTema3Cierre.js";
 import { PIEZA_VENDER_NO_ES_COBRAR } from "../../../../../data/contabilidadTema3.js";
 import {
-  TITULARES_P5, OPC_P5_2, OPC_P5_6, ERROR_P5_3, ERRORES_P5_6, PISTAS, PASOS_P5_2, YA_PUESTAS_P5_2, RAZON_HAZ_T3,
+  TITULARES_P5, OPC_P5_2, OPC_P5_6, ERROR_P5_3, ERRORES_P5_6, PISTAS, PASOS_P5_2, YA_PUESTAS_P5_2, RAZON_HAZ_T3, RAZONES_HAZ_T3,
+  LAS_ACACIAS, ESCENARIO_SIMULADO,
 } from "../../../../../data/t3SecuenciasTextos.js";
 import { hazResuelto, mostrarCorrecto, responderHaz } from "../../../../secuencia/secuencia.js";
 import {
@@ -94,7 +96,12 @@ export function zonaSeparar(estado) {
   const t = u ? e.it[u.k] : null;
   /* Si hay una pista a la vista, la pista manda sobre la lista. */
   if (u && !u.ok && !u.dosErrores) return [{ paso: `Paso ${u.k + 1} de ${PASOS_P5_2.length}` }, { texto: PISTAS.p5.separar, fuerte: true, tipo: "pista" }];
-  if (e.viendo) return [{ texto: puestas(e, e.viendo).join(", "), tipo: "lista" }];
+  /*
+   * La lista de nombres: solo las 6 que ya estaban puestas desde la Apertura
+   * (condición 2 de #572). Las 5 en juego no se nombran aquí, ni después de
+   * ubicarlas: la lista no da respuestas.
+   */
+  if (e.viendo) return [{ texto: YA_PUESTAS_P5_2[e.viendo].join(", "), tipo: "lista" }];
   const sig = e.k < PASOS_P5_2.length ? [{ paso: `Paso ${e.k + 1} de ${PASOS_P5_2.length}` }] : [];
   if (u && u.dosErrores && t) return [...sig, { texto: PASOS_P5_2[u.k].error, fuerte: true, tipo: "porque" }];
   return sig;
@@ -110,9 +117,11 @@ function FiguraSeparar({ estado, setEstado }) {
     <Figura
       data-pantalla-t3="p5-separar"
       ver={ver}
+      resuelta={e.k >= PASOS_P5_2.length}
+      recogido={null}
       modelo={(
         <div style={{ display: "grid", gridTemplateRows: "44px 48px", rowGap: "4px" }}>
-          <div data-cuenta-en-curso style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px", border: `2px solid ${C.texto}`, borderRadius: "8px", padding: "0 10px", marginRight: ver ? "110px" : 0 }}>
+          <div data-cuenta-en-curso style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px", border: `2px solid ${C.texto}`, borderRadius: "8px", padding: "0 10px" }}>
             <span style={{ font: "600 14px/18px Inter, sans-serif", minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{actual?.cuenta ?? ""}</span>
             <b style={{ font: `600 12px/16px ${MONO}` }}>{actual ? pesos(actual.saldo) : ""}</b>
           </div>
@@ -190,9 +199,10 @@ export function pasar(estado, objetivo, cuenta) {
   return { ...e, ...r, eleccion: cuenta, pasadas: mostrarCorrecto(r) ? objetivo.map((c) => c.cuenta) : e.pasadas };
 }
 
-function pantallaPasar({ id, titular, objetivo, antes, despues, previas = [] }) {
-  const candidatas = [...objetivo.map((c) => c.cuenta), ...SIGUEN];
-  const zonaDe = (estado) => zonaHaz(estado, { antes, despues, pista: PISTAS.p5.pasar, porque: () => null });
+function pantallaPasar({ id, titular, objetivo, antes, despues, previas = [], siguen = SIGUEN, encima = [], nombreFigura = null }) {
+  const candidatas = [...objetivo.map((c) => c.cuenta), ...siguen];
+  /* `encima`: lo que va siempre primero en la zona (Las Acacias: «Escenario simulado»). */
+  const zonaDe = (estado) => [...encima, ...zonaHaz(estado, { antes, despues, pista: PISTAS.p5.pasar, porque: () => null })];
   function F({ estado, setEstado }) {
     const e = estado ?? PASAR_INICIAL;
     const listo = hazResuelto(e);
@@ -204,6 +214,8 @@ function pantallaPasar({ id, titular, objetivo, antes, despues, previas = [] }) 
       <Figura
         data-pantalla-t3={`p5-${id}`}
         ver={e.ultimo ? (e.ultimo === "acierto" ? "bien" : mostrarCorrecto(e) ? null : "mal") : null}
+        resuelta={listo}
+        recogido={<ControlFlechas nombre="Elige la cuenta que pasa" valores={candidatas} indice={e.indice ?? 0} rotulo={(c) => (pasada && c === enCentro ? `${c} $0` : c)} soloCentro />}
         modelo={<TCompacta nombre={GANANCIAS_Y_PERDIDAS} debe={debe} haber={haber} />}
         control={(
           <ControlFlechas
@@ -222,13 +234,13 @@ function pantallaPasar({ id, titular, objetivo, antes, despues, previas = [] }) 
   }
   const jugar = (lista) => lista.reduce((e, c) => pasar(e, objetivo, c), PASAR_INICIAL);
   return {
-    id, tipo: "haz", titular, Figura: F, nombreFigura: `La cuenta ${GANANCIAS_Y_PERDIDAS} en T y las cuentas de San Calixto`,
-    estadoInicial: PASAR_INICIAL, resuelta: hazResuelto, razon: RAZON_HAZ_T3, zonaDe,
+    id, tipo: "haz", titular, Figura: F, nombreFigura: nombreFigura ?? `La cuenta ${GANANCIAS_Y_PERDIDAS} en T y las cuentas de San Calixto`,
+    estadoInicial: PASAR_INICIAL, resuelta: hazResuelto, razon: RAZONES_HAZ_T3.ubicar, zonaDe,
     medir: [
       { nombre: "sin-responder", estado: PASAR_INICIAL },
-      { nombre: "pista", estado: jugar([SIGUEN[0]]) },
+      { nombre: "pista", estado: jugar([siguen[0]]) },
       { nombre: "acierto", estado: jugar(objetivo.map((c) => c.cuenta)) },
-      { nombre: "dos-errores", estado: jugar([SIGUEN[0], SIGUEN[1]]) },
+      { nombre: "dos-errores", estado: jugar([siguen[0], siguen[1]]) },
       /* El nombre más largo en el centro del control. */
       { nombre: "centro-mas-largo", estado: { ...PASAR_INICIAL, indice: candidatas.reduce((a, c, k) => (c.length > candidatas[a].length ? k : a), 0) } },
     ],
@@ -247,6 +259,8 @@ function FiguraSaldo({ estado, setEstado }) {
     <Figura
       data-pantalla-t3="p5-saldo"
       ver={verDe(e)}
+      resuelta={listo}
+      recogido={<input aria-label="Escribe el saldo" inputMode="numeric" value={e.valor} disabled readOnly style={{ flex: "1 1 0", minWidth: 0, height: "44px", borderRadius: "8px", border: `2px solid ${C.texto}`, background: "transparent", color: C.texto, font: `600 14px/18px ${MONO}`, padding: "0 10px" }} />}
       modelo={<O4Compacto ingresos={TOTAL_INGRESOS} gastos={TOTAL_GASTOS} tapado={!listo} resultado={`${UTILIDAD} ${pesos(QUEDA)}`} />}
       control={(
         <div style={{ display: "flex", gap: "8px", flex: "1 1 0", minWidth: 0 }}>
@@ -274,15 +288,43 @@ function FiguraSaldo({ estado, setEstado }) {
   );
 }
 
-/* ═══════════ LAS ACACIAS: ARMADAS Y ESPERANDO SUS DATOS ═══════════ */
-function pendienteAcacias(id, titular) {
-  function F() {
-    return <Figura data-pantalla-t3={`p5-${id}`} data-pendiente="las-acacias" modelo={null} zona={[]} />;
+/* ═══════════ LAS ACACIAS (textos v5 §1: escenario simulado) ═══════════ */
+const ACACIAS_INGRESOS = LAS_ACACIAS.ingresos.map((c) => ({ ...c, tipo: INGRESO }));
+const ACACIAS_GASTOS = LAS_ACACIAS.gastos.map((c) => ({ ...c, tipo: GASTO }));
+const ACACIAS_SIGUEN = LAS_ACACIAS.siguen.map((c) => c.cuenta);
+const suma = (l) => l.reduce((t, c) => t + c.saldo, 0);
+export const ACACIAS_TOTAL_INGRESOS = suma(ACACIAS_INGRESOS);
+export const ACACIAS_TOTAL_GASTOS = suma(ACACIAS_GASTOS);
+/* El primer renglón de las tres pantallas: no sale del libro. */
+const MARCA_ESCENARIO = { pie: ESCENARIO_SIMULADO };
+/* ⛔ Lo que falta y no se inventa: la consigna (pedida en el PR a Kamogawa). */
+const FALTA_CONSIGNA = "La consigna de las pantallas de Las Acacias (lote 4 de Miyata, nunca entró en un archivo)";
+const NOMBRE_FIGURA_ACACIAS = `La cuenta ${GANANCIAS_Y_PERDIDAS} en T y las cuentas de ${LAS_ACACIAS.nombre}`;
+
+/* P5-9 · ¿Utilidad o pérdida? El O4 con los totales de Las Acacias; el resultado se destapa al responder. */
+function pantallaPerdida() {
+  const correcta = "perdida";
+  const resultado = OPC_P5_6.find((o) => o.id === correcta).texto;
+  const zonaDe = (estado) => [MARCA_ESCENARIO, ...zonaHaz(estado, { antes: [], despues: [], pista: PISTAS.p5.acacias, porque: (el) => ERRORES_P5_6[el] ?? null })];
+  function F({ estado, setEstado }) {
+    const e = estado ?? HAZ_T3;
+    return (
+      <Figura
+        data-pantalla-t3="p5-perdida"
+        ver={verDe(e)}
+        modelo={<O4Compacto ingresos={ACACIAS_TOTAL_INGRESOS} gastos={ACACIAS_TOTAL_GASTOS} tapado={!hazResuelto(e)} resultado={resultado} />}
+        control={<Botones nombre="¿Utilidad o pérdida?" opciones={OPC_P5_6} estado={e} correcta={correcta} onElegir={(x) => setEstado((s) => elegir(s, x, correcta))} />}
+        resuelta={hazResuelto(e)}
+        recogido={<Botones nombre="¿Utilidad o pérdida?" opciones={OPC_P5_6} estado={e} correcta={correcta} onElegir={(x) => setEstado((s) => elegir(s, x, correcta))} recoger />}
+        zona={zonaDe(e)}
+      />
+    );
   }
   return {
-    id, tipo: "haz", titular, Figura: F, nombreFigura: "Las cuentas de Las Acacias", estadoInicial: HAZ_T3,
-    resuelta: () => false, razon: RAZON_HAZ_T3, zonaDe: () => [], pendiente: "Los datos de Las Acacias (cuentas y saldos)",
-    medir: [{ nombre: "pendiente", estado: HAZ_T3 }],
+    id: "perdida", tipo: "haz", titular: TITULARES_P5.perdida, Figura: F, nombreFigura: `${GANANCIAS_Y_PERDIDAS} de ${LAS_ACACIAS.nombre}: ingresos y gastos en barras`,
+    estadoInicial: HAZ_T3, resuelta: hazResuelto, razon: RAZON_HAZ_T3, zonaDe, pendiente: FALTA_CONSIGNA,
+    opciones: OPC_P5_6, errores: ERRORES_P5_6, pista: PISTAS.p5.acacias,
+    medir: medirEleccion(OPC_P5_6, correcta),
   };
 }
 
@@ -299,7 +341,7 @@ export const SECUENCIA_P5 = {
     },
     {
       id: "separar", tipo: "haz", titular: TITULARES_P5.separar, Figura: FiguraSeparar, nombreFigura: `La cuenta en curso y los montones ${SE_VACIAN} y ${NO_SE_VACIAN}`,
-      estadoInicial: SEPARAR_INICIAL, resuelta: (e) => (e?.k ?? 0) >= PASOS_P5_2.length, razon: RAZON_HAZ_T3, zonaDe: zonaSeparar, medir: medirSeparar(),
+      estadoInicial: SEPARAR_INICIAL, resuelta: (e) => (e?.k ?? 0) >= PASOS_P5_2.length, razon: RAZONES_HAZ_T3.ubicar, zonaDe: zonaSeparar, medir: medirSeparar(),
     },
     (() => {
       const zonaDe = (estado) => zonaHaz(estado, { antes: [], despues: [{ texto: SEGMENTOS_CIERRE[1] }], pista: PISTAS.p5.ordenar, porque: (el) => (el === DIAGRAMA_CIERRE ? ERROR_P5_3 : null) });
@@ -311,13 +353,15 @@ export const SECUENCIA_P5 = {
             ver={verDe(e)}
             modelo={<Diagrama listo={hazResuelto(e)} />}
             control={<Botones nombre="¿Cuál va primero?" opciones={OPC_ORDEN} estado={e} correcta={DIAGRAMA_AJUSTES} onElegir={(x) => setEstado((s) => elegir(s, x, DIAGRAMA_AJUSTES))} />}
+            resuelta={hazResuelto(e)}
+            recogido={<Botones nombre="¿Cuál va primero?" opciones={OPC_ORDEN} estado={e} correcta={DIAGRAMA_AJUSTES} onElegir={(x) => setEstado((s) => elegir(s, x, DIAGRAMA_AJUSTES))} recoger />}
             zona={zonaDe(e)}
           />
         );
       }
       return {
         id: "ordenar", tipo: "haz", titular: TITULARES_P5.ordenar, Figura: F, nombreFigura: "El diagrama del libro: dos casillas en orden",
-        estadoInicial: HAZ_T3, resuelta: hazResuelto, razon: RAZON_HAZ_T3, zonaDe, medir: medirEleccion(OPC_ORDEN, DIAGRAMA_AJUSTES),
+        estadoInicial: HAZ_T3, resuelta: hazResuelto, razon: RAZONES_HAZ_T3.ordenar, zonaDe, medir: medirEleccion(OPC_ORDEN, DIAGRAMA_AJUSTES),
       };
     })(),
     /*
@@ -336,7 +380,7 @@ export const SECUENCIA_P5 = {
     }),
     {
       id: "saldo", tipo: "haz", titular: TITULARES_P5.saldo, Figura: FiguraSaldo, nombreFigura: `${GANANCIAS_Y_PERDIDAS}: ingresos y gastos en barras`,
-      estadoInicial: SALDO_INICIAL, resuelta: hazResuelto, razon: RAZON_HAZ_T3,
+      estadoInicial: SALDO_INICIAL, resuelta: hazResuelto, razon: RAZONES_HAZ_T3.cifra,
       zonaDe: (estado) => zonaHaz(estado, { antes: [], despues: [{ rotulo: GANANCIAS_Y_PERDIDAS }, { texto: SEGMENTOS_CIERRE[6] }], pista: PISTAS.p5.saldo, porque: () => null }),
       medir: [
         { nombre: "sin-responder", estado: SALDO_INICIAL },
@@ -344,10 +388,21 @@ export const SECUENCIA_P5 = {
         { nombre: "acierto", estado: { ...elegir(SALDO_INICIAL, String(QUEDA), String(QUEDA)), valor: "3950" } },
       ],
     },
-    pendienteAcacias("acacias-ingresos", TITULARES_P5.acaciasIngresos),
-    pendienteAcacias("acacias-gastos", TITULARES_P5.acaciasGastos),
-    /* P5-9 tiene sus opciones, errores y pista (OPC_P5_6), pero el O4 necesita los totales de Las Acacias. */
-    { ...pendienteAcacias("perdida", TITULARES_P5.perdida), opciones: OPC_P5_6, errores: ERRORES_P5_6, pista: PISTAS.p5.acacias },
+    {
+      ...pantallaPasar({
+        id: "acacias-ingresos", titular: TITULARES_P5.acaciasIngresos, objetivo: ACACIAS_INGRESOS, siguen: ACACIAS_SIGUEN,
+        encima: [MARCA_ESCENARIO], antes: [], despues: [], nombreFigura: NOMBRE_FIGURA_ACACIAS,
+      }),
+      pendiente: FALTA_CONSIGNA,
+    },
+    {
+      ...pantallaPasar({
+        id: "acacias-gastos", titular: TITULARES_P5.acaciasGastos, objetivo: ACACIAS_GASTOS, previas: ACACIAS_INGRESOS, siguen: ACACIAS_SIGUEN,
+        encima: [MARCA_ESCENARIO], antes: [], despues: [], nombreFigura: NOMBRE_FIGURA_ACACIAS,
+      }),
+      pendiente: FALTA_CONSIGNA,
+    },
+    pantallaPerdida(),
     {
       id: "cierre", tipo: "cierre", titular: TITULARES_P5.cierre, nombreFigura: `La T de ${GANANCIAS_Y_PERDIDAS} al final de enero`,
       Figura: () => (
