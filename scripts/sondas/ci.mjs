@@ -50,7 +50,7 @@ const SONDAS = [
 ];
 
 const clave = (materia, tema, sonda, ancho) => `${materia}|${tema}|${sonda}|${ancho}`;
-const slug = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+const slug = (s) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
 /* ═══════════ juntar: de los resultados a la línea base ═══════════ */
 if (process.argv.includes("--juntar")) {

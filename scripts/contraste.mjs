@@ -112,8 +112,26 @@ const MEDIR = `(() => {
  */
 const AVANCE = 'button:visible:has-text("Siguiente"), button:visible:has-text("Seguir")';
 
+/*
+ * Se mide la pantalla QUIETA. Un texto a mitad de su entrada (opacidad 0,6
+ * camino de 1) daba un contraste que el estudiante no ve más que un instante,
+ * y hacía que la misma pantalla diera 1 fallo en una corrida y 2 en la
+ * siguiente (Fuerzas de Porter, #582). Se espera a que terminen las
+ * animaciones finitas, con tope de 2,5 s; las infinitas no se esperan.
+ */
+const quieto = () => p.evaluate(() => Promise.race([
+  Promise.all(document.getAnimations().filter((a) => a.effect?.getTiming?.().iterations !== Infinity).map((a) => a.finished.catch(() => {}))),
+  new Promise((r) => setTimeout(r, 2500)),
+]));
+
 const b = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium" });
 const p = await b.newPage({ viewport: { width: ANCHO, height: 1400 } });
+/*
+ * Sin YouTube: el aviso «El video carga al llegar aquí» se ve hasta que el
+ * video llega, y que llegara o no en cada corrida hacía variar la cuenta. Se
+ * mide siempre con el aviso puesto, que es lo que ve quien tiene mala señal.
+ */
+await p.route(/youtube|ytimg|googlevideo/, (r) => r.abort());
 await p.goto(RAIZ, { waitUntil: "networkidle" });
 /* La materia por defecto es Contabilidad; MATERIA="Pensamiento Estratégico" o "Macroeconomía" mide las otras. */
 for (const paso of [process.env.MATERIA ?? "Contabilidad", TEMA]) {
@@ -199,6 +217,7 @@ if (HACER && PARTIDAS) {
     await p.waitForTimeout(900);
     for (let paso = 0; paso < 6; paso++) {
       pantallas++;
+      await quieto();
       const tanda = await p.evaluate(MEDIR);
       for (const m of tanda.malos) { const clave = `${m.r}|${m.px}|${m.texto}`; if (!vistos.has(clave)) vistos.set(clave, m); }
       for (const t of tanda.sinMedir) sinMedir.add(t);
@@ -222,7 +241,8 @@ for (let i = 0; i < (HACER ? 1 : 30); i++) {
   pantallas++;
   /* Una página larga sin avance: se mide de arriba abajo, no solo lo que cabe en la ventana. */
   if (unaPagina) await p.setViewportSize({ width: ANCHO, height: Math.min(12000, await p.evaluate(() => document.documentElement.scrollHeight)) });
-  const tanda = await p.evaluate(MEDIR);
+  await quieto();
+      const tanda = await p.evaluate(MEDIR);
   for (const m of tanda.malos) {
     const clave = `${m.r}|${m.px}|${m.texto}`;
     if (!vistos.has(clave)) vistos.set(clave, m);
