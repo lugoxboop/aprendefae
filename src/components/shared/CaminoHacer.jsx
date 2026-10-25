@@ -4,6 +4,7 @@ import { iconoDe } from "./iconosActividad.jsx";
 import PreviaActividad from "./previas/PreviaActividad.jsx";
 import { bloquesDe } from "../../hacer/bloques.js";
 import { registrarApertura } from "./contenidoNuevo.jsx";
+import { useEstiloVolumen, FAMILIAS, ELEVACION, SILUETA, CLASE_SVG, CLASE_CARA } from "../../estilo/volumen.jsx";
 
 /*
  * Camino de actividades para la mitad "Hacer" de cualquier tema.
@@ -304,7 +305,16 @@ const etiquetaAria = (nodo, marcas, prefijo = "") =>
  * @param {boolean} [p.porBloques] partir el camino en bloques de dificultad; los
  *        nodos traen entonces su `dificultad` (nodosDe la pone)
  */
-export default function CaminoHacer({ nodos = [], onAbrir, vacio, especial = null, resaltado = null, marcas = null, porBloques = false }) {
+/*
+ * `placa` (#560, regla de la placa de vida-visual-v1 §2.4): un panel OPACO N1
+ * detrás del camino entero, con el contorno de silueta y 16 px de radio. Va
+ * donde la sonda del telón dice EXIGE PLACA —Pensamiento Estratégico, donde el
+ * ajedrez sube el telón por encima de la cara N2 y el relieve se invierte—.
+ */
+/* Sin relleno lateral y con el contorno en outline hacia dentro: el SVG conserva su ancho, y con él el toque del nodo (con relleno perdía 3 px a 320; con border, 1 px a 375). */
+const PLACA = { background: FAMILIAS.n2.canto, outline: `1px solid ${SILUETA}`, outlineOffset: "-1px", borderRadius: "16px", padding: "14px 0" };
+
+export default function CaminoHacer({ nodos = [], onAbrir, vacio, especial = null, resaltado = null, marcas = null, porBloques = false, placa = false }) {
   const n = nodos.length;
   const caja = useRef(null);
 
@@ -349,7 +359,7 @@ export default function CaminoHacer({ nodos = [], onAbrir, vacio, especial = nul
 
   if (porBloques) {
     return (
-      <div ref={caja}>
+      <div ref={caja} data-placa={placa ? "" : undefined} style={placa ? PLACA : undefined}>
         <style>{CSS_CAMINO}</style>
         {especial && <style>{CSS_ESPECIAL}</style>}
         {resaltado && <style>{CSS_RESALTADO}</style>}
@@ -359,7 +369,7 @@ export default function CaminoHacer({ nodos = [], onAbrir, vacio, especial = nul
   }
 
   return (
-    <div ref={caja}>
+    <div ref={caja} data-placa={placa ? "" : undefined} style={placa ? PLACA : undefined}>
       <style>{CSS_CAMINO}</style>
       {especial && <style>{CSS_ESPECIAL}</style>}
       {resaltado && <style>{CSS_RESALTADO}</style>}
@@ -426,12 +436,20 @@ function Lienzo({ nodos, onAbrir, especial, resaltado, marcas }) {
   return (
     <div style={{ position: "relative", width: "100%", maxWidth: `${anchoTotal}px`, margin: "0 auto" }}>
       <svg viewBox={`0 0 ${anchoTotal} ${m.alto}`} width="100%" style={{ display: "block", overflow: "visible" }}>
-        {/* La línea del recorrido, por debajo de todo. */}
+        {/*
+          La línea del recorrido, por debajo de todo, CON CUERPO (#560): sus
+          cantos van primero, corridos 4 px hacia abajo (N1 bajo la línea, y
+          #1D6B61 bajo el tramo teal), y encima las caras, opacas.
+        */}
+        {d && <path data-canto-linea d={d} transform={`translate(0 ${ELEVACION})`} fill="none" stroke={FAMILIAS.n2.canto} strokeWidth={m.grosor} strokeLinecap="round" />}
+        {d && sugerido !== 0 && (
+          <path data-canto-linea d={trazo(p.slice(0, sugerido === -1 ? n : sugerido + 1))} transform={`translate(0 ${ELEVACION})`} fill="none" stroke={FAMILIAS.teal.canto} strokeWidth={m.grosor} strokeLinecap="round" />
+        )}
         {d && (
-          <path d={d} fill="none" stroke="rgba(248,249,250,0.22)" strokeWidth={m.grosor} strokeLinecap="round" />
+          <path d={d} fill="none" stroke={FAMILIAS.n2.cara} strokeWidth={m.grosor} strokeLinecap="round" />
         )}
         {/*
-          El tramo ya recorrido, en teal encima del gris. Se dibuja hasta el
+          El tramo ya recorrido, en teal encima de la línea. Se dibuja hasta el
           último nodo hecho: enseña avance real sin cerrarle el paso a nadie.
         */}
         {d && sugerido !== 0 && (
@@ -441,7 +459,6 @@ function Lienzo({ nodos, onAbrir, especial, resaltado, marcas }) {
             stroke={FAE.teal}
             strokeWidth={m.grosor}
             strokeLinecap="round"
-            opacity="0.75"
           />
         )}
 
@@ -581,10 +598,12 @@ function alLado({ x, y }, radio, alto, anchoTotal = ANCHO) {
 
 /* Un nodo del camino. Lo usan las dos formas: la de siempre y la de bloques. */
 function NodoSvg({ nodo, x, y, m, numero, sugerido, resaltado, marcas, onAbrir, tono = null, bloqueId, prefijo = "" }) {
+  useEstiloVolumen();
   const Icono = iconoDe(nodo.id);
   const lado = Math.round(m.radio * 1.1);
   return (
     <g
+      className={CLASE_SVG}
       data-nodo={nodo.id}
       data-bloque-de={bloqueId}
       {...alPulsar(onAbrir, nodo.id)}
@@ -606,11 +625,19 @@ function NodoSvg({ nodo, x, y, m, numero, sugerido, resaltado, marcas, onAbrir, 
         <circle className="fae-ch-aqui" cx={x} cy={y} r={m.radio + 12} fill="none" stroke={FAE.teal} strokeWidth="3" />
       )}
 
+      {/*
+        * VOLUMEN (#560): el canto es un círculo hermano DETRÁS de la cara,
+        * corrido 4 px hacia abajo (N1 bajo la cara N2; #1D6B61 bajo la teal de
+        * hecha). Todo lo de la cara va en un grupo que se hunde 4 px al pulsar
+        * y lo tapa; los aros de sugerido y «estás aquí» se quedan quietos.
+        */}
+      <circle data-canto cx={x} cy={y + ELEVACION} r={m.radio} fill={nodo.completada ? FAMILIAS.teal.canto : FAMILIAS.n2.canto} pointerEvents="none" />
+      <g className={CLASE_CARA}>
       <circle
         cx={x}
         cy={y}
         r={m.radio}
-        fill={nodo.completada ? FAE.teal : "rgba(14,27,46,0.85)"}
+        fill={nodo.completada ? FAE.teal : FAMILIAS.n2.cara}
         stroke={nodo.completada ? FAE.teal : tono?.nodo ?? "rgba(248,249,250,0.45)"}
         strokeWidth={tono ? 2.5 : 2}
         style={tono?.brillo && !nodo.completada ? { filter: tono.brillo } : undefined}
@@ -658,6 +685,7 @@ function NodoSvg({ nodo, x, y, m, numero, sugerido, resaltado, marcas, onAbrir, 
           {numero}
         </text>
       )}
+      </g>
     </g>
   );
 }
@@ -753,8 +781,12 @@ function LienzoPorBloques({ bloques, onAbrir, resaltado, marcas }) {
   return (
     <div data-camino-bloques style={{ position: "relative", width: "100%", maxWidth: `${ANCHO}px`, margin: "0 auto" }}>
       <svg viewBox={`0 0 ${ANCHO} ${m.alto}`} width="100%" style={{ display: "block", overflow: "visible" }}>
+        {/* La línea, con cuerpo (#560): canto N1 corrido 4 px detrás y cara N2 opaca; los tramos de cada bloque van encima. */}
         {puntos.length > 1 && (
-          <path data-linea d={trazo(puntos)} fill="none" stroke="rgba(248,249,250,0.22)" strokeWidth={m.grosor} strokeLinecap="round" />
+          <path data-canto-linea d={trazo(puntos)} transform={`translate(0 ${ELEVACION})`} fill="none" stroke={FAMILIAS.n2.canto} strokeWidth={m.grosor} strokeLinecap="round" />
+        )}
+        {puntos.length > 1 && (
+          <path data-linea d={trazo(puntos)} fill="none" stroke={FAMILIAS.n2.cara} strokeWidth={m.grosor} strokeLinecap="round" />
         )}
         {tramosSueltos(puntos).slice(0, Math.max(0, recorridos)).map((d, i) => (
           <path key={i} data-recorrido d={d} fill="none" stroke={tonoDe(orden[i + 1].id).linea} strokeWidth={m.grosor} strokeLinecap="round" opacity="0.75" />

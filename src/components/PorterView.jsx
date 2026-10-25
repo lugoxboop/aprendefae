@@ -560,7 +560,7 @@ export default function PorterView({ modo = null, nodoInicial = null, onBack }) 
             <p style={{ fontSize: "15px", lineHeight: 1.6, color: "rgba(248,249,250,0.62)", margin: "0 0 24px" }}>
               Toca el juego que quieras. No hay orden obligatorio: el camino sugiere uno, no lo impone.
             </p>
-            <CaminoHacer nodos={nodos} onAbrir={setNodoAbierto} resaltado={resaltado} />
+            <CaminoHacer nodos={nodos} onAbrir={setNodoAbierto} resaltado={resaltado} placa />
           </>
         )}
 

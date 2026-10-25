@@ -258,6 +258,7 @@ export default function IcebergView({ modo = null, nodoInicial = null, onBack })
               Toca el juego que quieras. No hay orden obligatorio: el camino sugiere uno, no lo impone.
             </p>
             <CaminoHacer
+              placa
               nodos={nodos}
               onAbrir={setNodoAbierto}
               especial={nodoDesafio}
