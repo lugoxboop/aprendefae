@@ -103,12 +103,6 @@ export const P1_TEXTOS = {
   },
 };
 
-/* Los datos de P1·6, del libro: Lavado de Autos Mateo (pp. 98-101) y el pagaré cu6 (p. 89). */
-export const P1_SELECTOR_FAMILIA = [
-  { cuenta: "Caja", familia: "Activo", lado: "debe", saldo: 1350 },
-  { cuenta: "Documentos por pagar", familia: "Pasivo", lado: "haber", saldo: 500 },
-];
-
 /* ───────────────── P2 · Las dos familias de cuentas ───────────────── */
 
 export const P2_ID = "cu-a2-dos-familias";
@@ -392,7 +386,6 @@ export const P5_TEXTOS = {
  * lista no esté vacía; cada entrada se borra cuando su texto llega.
  */
 export const PENDIENTES_T2 = [
-  { de: "Watari", marcador: "PENDIENTE_DE_WATARI", donde: "P1·6 Debe no es subir", que: "el selector Caja / Documentos por pagar del delta T2-3 de Near no está en la figura de 183 px: resuelto, con «Sube» y «Baja» marcados y el selector, mide 231 a 320 y a 375 (sonda, 25-oct). Falta dónde va o qué cede" },
   { de: "Near", marcador: "PENDIENTE_DE_NEAR", donde: "P2·5 Tres nominales", que: "el ejemplo de la tarjeta Ingresos (la v2 da «salarios y arriendos» y «costo de ventas»)" },
   { de: "Near", marcador: "PENDIENTE_DE_NEAR", donde: "P3·7 ¿Por qué Maquinaria subió…?", que: "la pista del primer error (la v2 trae solo la devolución de la a y la c; T2-7 §6 no la añade)" },
 ];

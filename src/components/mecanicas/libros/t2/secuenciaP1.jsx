@@ -2,7 +2,7 @@ import { FAE } from "../../../../theme.js";
 import { HAZ_INICIAL, hazResuelto } from "../../../secuencia/secuencia.js";
 import { useNumeroQueSube } from "../verbos.jsx";
 import { LAVADO_DE_AUTOS } from "../../../../data/contabilidad.js";
-import { P1_ID, P1_OBJETIVO, P1_TEXTOS as T, P1_ALTO_FIGURA, P1_SELECTOR_FAMILIA } from "../../../../data/contabilidadT2Secuencia.js";
+import { P1_ID, P1_OBJETIVO, P1_TEXTOS as T, P1_ALTO_FIGURA } from "../../../../data/contabilidadT2Secuencia.js";
 import {
   DEBE, HABER, LINEA, SUAVE, ESTILOS, pesos, suma, raiz, Encabezado, Cifra, Rotulo, Lado, Control, Fila,
   responder, leerHaz, marcaDe,
@@ -223,8 +223,6 @@ function SaldoCxp({ valor, marca }) {
 function FiguraDebeNoEsSubir({ estado, setEstado }) {
   const { e, resuelto, verdad, error } = leerHaz(estado);
   const tocar = (op) => { if (!resuelto) responder(setEstado, op === "Baja", op); };
-  const elegirCuenta = (k) => setEstado((antes) => ({ ...antes, cuenta: k }));
-  const cuenta = P1_SELECTOR_FAMILIA[e.cuenta ?? 0];
   return (
     <div style={raiz}>
       <style>{ESTILOS}</style>
@@ -247,23 +245,7 @@ function FiguraDebeNoEsSubir({ estado, setEstado }) {
           <Control key={op} onClick={() => tocar(op)} elegido={e.eleccion === op} marca={marcaDe(e, op, "Baja")}>{op}</Control>
         ))}
       </Fila>
-      {resuelto && (
-        /*
-         * Delta T2-3 de Near: resuelto, un selector entre dos cuentas reales, que no califica.
-         * PENDIENTE_DE_WATARI: con él la figura mide 231 px y el altoFigura es 183 (ver PENDIENTES_T2).
-         */
-        <>
-          <Fila style={{ marginTop: "6px" }}>
-            {P1_SELECTOR_FAMILIA.map((c, k) => (
-              <Control key={c.cuenta} chico onClick={() => elegirCuenta(k)} elegido={(e.cuenta ?? 0) === k}>{c.cuenta}</Control>
-            ))}
-          </Fila>
-          <p data-familia style={{ margin: "4px 0 0", fontSize: "12px", lineHeight: "16px", color: SUAVE }}>
-            {cuenta.cuenta} · {cuenta.familia} · saldo {pesos(cuenta.saldo)} en el{" "}
-            <span style={{ fontWeight: 700, borderBottom: `2px solid ${cuenta.lado === "debe" ? DEBE : HABER}` }}>{cuenta.lado}</span>
-          </p>
-        </>
-      )}
+      {/* P1·6 va sin el selector Caja / Documentos por pagar del delta T2-3 (L, #471, 25-oct): la figura de T2-3, 183 px. */}
     </div>
   );
 }
