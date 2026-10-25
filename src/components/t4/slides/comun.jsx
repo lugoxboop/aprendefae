@@ -252,11 +252,15 @@ export function Banda({ antes = [], dev = null, posibles = [], pie = null, sigui
   );
 }
 
-/* La figura de una pantalla de T4: el modelo de 206 y la banda. */
+/*
+ * La figura de una pantalla de T4: el modelo de 206 y la banda. El modelo
+ * lleva `data-figura`: es lo que el estudiante mira para decidir, y desde ahí
+ * mide B1 el banco común en todo el catálogo (enganche.md, «Alcance de B1»).
+ */
 export function Slide({ banda, children, ...datos }) {
   return (
     <div className="t4s" {...datos}>
-      <div className="t4s-modelo" data-modelo>{children}</div>
+      <div className="t4s-modelo" data-modelo data-figura="modelo">{children}</div>
       {banda}
     </div>
   );

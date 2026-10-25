@@ -97,6 +97,8 @@ for (const caso of [1, 2]) {
       const donde = `${raiz.dataset.pieza}/${pt.dataset.pantalla}`;
       visto.push(donde);
       assert.ok(pt.querySelector("[data-modelo]"), `${donde}: sin modelo`);
+      /* B1 en todo el catálogo (enganche.md, «Alcance de B1»): la figura se marca con data-figura. */
+      assert.ok(pt.querySelector("[data-modelo][data-figura]"), `${donde}: el modelo no lleva data-figura`);
       assert.ok(pt.querySelector("[data-banda]"), `${donde}: sin banda`);
       for (let k = 0; k < 30 && sig().dataset.siguiente === "espera"; k++) {
         const c = [...pt.querySelectorAll(".t4s-ctl")].find((b) => b.getAttribute("aria-disabled") !== "true" && !b.dataset.ver);
