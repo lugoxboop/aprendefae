@@ -36,6 +36,9 @@ import { PIEZA_LO_QUE_YA_PASO } from "../data/contabilidadTema3Pieza3.js";
 import { PIEZA_LO_QUE_YA_SE_PAGO } from "../data/contabilidadTema3Pieza4.js";
 import { PIEZA_CERRAR_EL_PERIODO } from "../data/contabilidadTema3Cierre.js";
 import { ESCENAS_TEMA3 } from "./mecanicas/libros/tema3/escenasTema3.jsx";
+import SecuenciaAprender from "./secuencia/SecuenciaAprender.jsx";
+import { PIEZAS_SECUENCIA_T3, TEMA_SECUENCIA_T3 } from "./mecanicas/libros/tema3/secuencia/index.js";
+import { secuenciaT3Activa } from "../data/banderasT3.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -134,7 +137,12 @@ export default function ContabilidadTema3View({ modo = null, nodoInicial = null,
           {recompensa}
           <div className="fae-insignia-actividad"><ActivityBadge tipo={esAprender ? APRENDER : HACER} size="sm" /></div>
 
-          {esAprender ? (
+          {esAprender && secuenciaT3Activa() ? (
+            /* Detrás de la bandera (banderasT3.js): las cuatro piezas en SecuenciaAprender, sin tocarlo. */
+            <div className="t3-sec" data-secuencia-t3>
+              <SecuenciaAprender temaId={TEMA_SECUENCIA_T3} piezas={PIEZAS_SECUENCIA_T3} final="tema" onFinal={onBack} />
+            </div>
+          ) : esAprender ? (
             <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
               {PIEZAS.map(({ pieza }, k) => {
                 const { Capa2, Exploracion, Capa4 } = ESCENAS_TEMA3[pieza.id];

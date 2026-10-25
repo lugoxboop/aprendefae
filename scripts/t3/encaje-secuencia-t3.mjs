@@ -149,7 +149,41 @@ function markdown({ filas, piezas, limites }) {
   return out.join("\n");
 }
 
+/*
+ * ═══════════ --secuencia: LAS PIEZAS MONTADAS (paquete v3, D1) ═══════════
+ *
+ * Con las piezas ya montadas en SecuenciaAprender (secuencia/index.js), cuenta
+ * por ESTADO VISIBLE —titular + lo que dice la zona del apoyo en ese estado—,
+ * que es como D1 cuenta el tope de 60. Los estados son los que cada pantalla
+ * declara en `medir` (los mismos que mide en Chromium medir-secuencias.mjs).
+ * Se carga con el cargador de JSX:
+ *   node --import ./scripts/cargador-jsx.mjs scripts/t3/encaje-secuencia-t3.mjs --secuencia
+ */
+async function medirSecuencia() {
+  const { PIEZAS_SECUENCIA_T3 } = await import("../../src/components/mecanicas/libros/tema3/secuencia/index.js");
+  const filas = [];
+  for (const pz of PIEZAS_SECUENCIA_T3) {
+    pz.pantallas.forEach((pt, k) => {
+      let max = 0; let cual = "—";
+      for (const m of pt.medir ?? []) {
+        const zona = pt.zonaDe?.(m.estado ?? pt.estadoInicial ?? null, m.paso ?? 0) ?? [];
+        const n = palabras(pt.titular) + palabras(zona.filter((z) => z.texto).map((z) => z.texto).join(" "));
+        if (n > max) { max = n; cual = m.nombre; }
+      }
+      filas.push({ pieza: pz.id, n: k + 1, pantalla: pt.id, tipo: pt.tipo, titular: palabras(pt.titular), maxEstado: max, estado: cual, pasos: pt.pasos ?? 0, pendiente: pt.pendiente ?? null });
+    });
+  }
+  return filas;
+}
+
 if (import.meta.url === `file://${process.argv[1]}`) {
-  const m = medir();
-  console.log(process.argv.includes("--json") ? JSON.stringify(m, null, 2) : markdown(m));
+  if (process.argv.includes("--secuencia")) {
+    const filas = await medirSecuencia();
+    const out = ["| Pieza | n | Pantalla | Tipo | Titular | Máx. por estado visible | Estado | Pasos | ≤ 60 | Pendiente |", "|---|---:|---|---|---:|---:|---|---:|---|---|"];
+    for (const f of filas) out.push(`| ${f.pieza} | ${f.n} | ${f.pantalla} | ${f.tipo} | ${f.titular} | ${f.maxEstado} | ${f.estado} | ${f.pasos} | ${f.maxEstado <= MAX_PALABRAS_PANTALLA && f.titular <= MAX_PALABRAS_TITULAR ? "sí" : "**no**"} | ${f.pendiente ?? ""} |`);
+    console.log(process.argv.includes("--json") ? JSON.stringify(filas, null, 2) : out.join("\n"));
+  } else {
+    const m = medir();
+    console.log(process.argv.includes("--json") ? JSON.stringify(m, null, 2) : markdown(m));
+  }
 }
