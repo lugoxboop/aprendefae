@@ -17,6 +17,7 @@ import { SOLO_LECTOR } from "../verbos.jsx";
 import { Encabezado } from "../tema1/encabezado.jsx";
 import { TONO_ROTULO } from "../debeHaber/piezasDebeHaber.jsx";
 import { partirPorFrases } from "../ElAsientoSimple.jsx";
+import { Relieve, CSS_RELIEVE, N2, HUNDIDO, DESTINO_REPOSO, DESTINO_DISPONIBLE, SECUNDARIO_N2 } from "./relieve.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -50,8 +51,9 @@ const AYUDA_VALOR = "Toca el valor y después el lado de su cuenta.";
 const CSS = `
 @keyframes fae-aj-traza { from { stroke-dashoffset: 260; } to { stroke-dashoffset: 0; } }
 .fae-aj-ancla { stroke-dasharray: 260; animation: fae-aj-traza 500ms ease-out both; }
-@keyframes fae-aj-cae { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: none; } }
-.fae-aj-cae { animation: fae-aj-cae 300ms cubic-bezier(.26,.84,.38,1) both; }
+/* Volumen (#5): la ficha que llega baja de su elevación a E0, solo con transform, en 160 ms. */
+@keyframes fae-aj-cae { from { transform: translateY(-4px); } to { transform: none; } }
+.fae-aj-cae { animation: fae-aj-cae 160ms cubic-bezier(.3,.9,.4,1) both; }
 @keyframes fae-aj-fundido { from { opacity: 0; } to { opacity: 1; } }
 .fae-aj button { -webkit-tap-highlight-color: transparent; }
 .fae-aj button:focus-visible, .fae-aj input:focus-visible { outline: 2px solid ${COLOR.blanco}; outline-offset: 2px; }
@@ -81,6 +83,7 @@ function CuentaT({
       <button
         key={cual}
         type="button"
+        className="fae-destino"
         data-columna={cual}
         data-destino={activa ? `${indice}:${cual}` : undefined}
         disabled={!activa && !(conFicha && !bloqueada)}
@@ -91,8 +94,9 @@ function CuentaT({
         style={{
           flex: 1, minWidth: 0, display: "flex", flexDirection: "column", justifyContent: "flex-end", gap: "3px",
           padding: "5px 3px", borderRadius: "9px", minHeight: "84px",
-          background: activa ? `${COLOR_LADO[cual]}14` : "transparent",
-          border: activa ? `1px dashed ${COLOR_LADO[cual]}` : "1px solid transparent",
+          /* Volumen (#5): destino hundido. Un escalón más oscuro (#0D1725), sin canto; #CBDCF2 cuando espera la ficha. */
+          background: HUNDIDO,
+          border: `1px solid ${activa ? DESTINO_DISPONIBLE : DESTINO_REPOSO}`,
           cursor: activa || (conFicha && !bloqueada) ? "pointer" : "default",
         }}
       >
@@ -109,7 +113,8 @@ function CuentaT({
           ? (
             <span data-valor={cual} className="fae-aj-cae" style={{
               display: "block", padding: "8px 2px", borderRadius: "8px", boxSizing: "border-box",
-              background: `${COLOR_LADO[cual]}22`, border: `1px solid ${COLOR_LADO[cual]}`,
+              /* La ficha ya puesta: N2 sin filo, en E0. El lado lo dicen la palabra y la posición, no el teal. */
+              background: N2, border: "1px solid transparent",
               fontFamily: SORA, fontSize: valorFicha.length > 8 ? "10.5px" : "12px", fontWeight: 700,
               color: COLOR.blanco, textAlign: "center", whiteSpace: "nowrap",
               width: "max-content", minWidth: "100%", alignSelf: "center",
@@ -138,7 +143,7 @@ function CuentaT({
             aria-label={bloqueada ? fila.cuenta : `${fila.cuenta}. Tócala para quitarla.`}
             style={{
               display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden",
-              width: "100%", minHeight: "44px", margin: "0 0 6px", padding: "2px", background: "transparent", border: "none",
+              width: "100%", minHeight: "44px", margin: "0 0 6px", padding: "2px", background: N2, border: "none", borderRadius: "8px",
               fontFamily: SORA, fontWeight: 700, fontSize: "11.5px", lineHeight: 1.25, color: COLOR.blanco, textAlign: "center",
               cursor: bloqueada ? "default" : "pointer",
             }}
@@ -149,14 +154,15 @@ function CuentaT({
         : (
           <button
             type="button"
+            className="fae-destino"
             data-destino={destinoNombre ? `nombre:${indice}` : undefined}
             disabled={!destinoNombre}
             onClick={onNombre}
             aria-label={`Poner un nombre en la cuenta ${indice + 1}`}
             style={{
               display: "block", width: "100%", minHeight: "44px", margin: "0 0 6px", borderRadius: "8px",
-              background: destinoNombre ? "rgba(184,196,212,0.13)" : "transparent",
-              border: `1px dashed ${destinoNombre ? COLOR.neutro : "rgba(248,249,250,0.22)"}`,
+              background: HUNDIDO,
+              border: `1px solid ${destinoNombre ? DESTINO_DISPONIBLE : DESTINO_REPOSO}`,
               color: COLOR.apagado, fontFamily: SORA, fontSize: "10.5px", cursor: destinoNombre ? "pointer" : "default",
             }}
           >
@@ -329,6 +335,7 @@ function ArmaElAjuste({
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS}</style>
+      <style>{CSS_RELIEVE}</style>
       <div className="fae-aj" data-arma-ajuste={actividadId}>
         {!modoDemo && (
           <>
@@ -435,24 +442,27 @@ function ArmaElAjuste({
               ? (
                 <div style={{ display: "flex", gap: "8px" }}>
                   {filas.map((f, i) => (
+                    <Relieve key={i} e={4} filo plano={Boolean(f.lado)} radio="10px" style={{ flex: "1 1 0", minWidth: 0 }}>
                     <button
-                      key={i}
                       type="button"
+                      className="fae-rel-cara"
                       data-ficha-valor={i}
                       disabled={Boolean(f.lado)}
                       aria-pressed={tomada === `valor:${i}`}
                       aria-label={`Valor de ${f.cuenta}. Llévalo al debe o al haber de esa cuenta.`}
                       onClick={() => setTomada((x) => (x === `valor:${i}` ? null : `valor:${i}`))}
                       style={{
-                        flex: "1 1 0", minWidth: 0, minHeight: "44px", padding: "8px 6px", borderRadius: "10px", boxSizing: "border-box",
+                        display: "block", width: "100%", minHeight: "44px", padding: "8px 6px", borderRadius: "10px", boxSizing: "border-box",
                         cursor: f.lado ? "default" : "pointer", fontFamily: SORA, fontSize: "13px", fontWeight: 700,
-                        background: tomada === `valor:${i}` ? COLOR.neutro : "transparent",
-                        color: tomada === `valor:${i}` ? COLOR.navy : f.lado ? COLOR.apagado : COLOR.blanco,
-                        border: `${f.lado ? "1px dashed" : "2px solid"} ${f.lado ? COLOR.quieto : COLOR.neutro}`,
+                        /* Volumen (#5): N2 + filo en E2; tomada, borde de 2 px #F8F9FA; ya puesta, plana (E0). */
+                        background: N2,
+                        color: f.lado ? SECUNDARIO_N2 : COLOR.blanco,
+                        border: `2px solid ${tomada === `valor:${i}` ? COLOR.blanco : "transparent"}`,
                       }}
                     >
                       {f.lado ? "—" : fichaDe(f)}
                     </button>
+                    </Relieve>
                   ))}
                 </div>
               )
@@ -462,23 +472,26 @@ function ArmaElAjuste({
                     const puesta = filas.some((f) => f.cuenta === c);
                     const sel = tomada === c;
                     return (
+                      <Relieve key={c} e={4} filo plano={puesta} radio="999px">
                       <button
-                        key={c}
                         type="button"
+                        className="fae-rel-cara"
                         data-nombre={c}
                         disabled={puesta}
                         aria-pressed={sel}
                         onClick={() => tocarNombre(c)}
                         style={{
-                          minHeight: "44px", padding: "8px 12px", borderRadius: "999px", cursor: puesta ? "default" : "pointer",
+                          display: "block", minHeight: "44px", padding: "8px 12px", borderRadius: "999px", cursor: puesta ? "default" : "pointer",
                           fontFamily: INTER, fontSize: "13px", fontWeight: 600, textAlign: "left",
-                          background: sel ? COLOR.neutro : "transparent",
-                          color: sel ? COLOR.navy : puesta ? COLOR.apagado : COLOR.blanco,
-                          border: `${puesta ? "1px dashed" : "2px solid"} ${puesta ? COLOR.quieto : COLOR.neutro}`,
+                          /* Volumen (#5): la ficha empieza en E2, N2 + filo; tomada, borde de 2 px #F8F9FA; puesta, plana (E0). */
+                          background: N2,
+                          color: puesta ? SECUNDARIO_N2 : COLOR.blanco,
+                          border: `2px solid ${sel ? COLOR.blanco : "transparent"}`,
                         }}
                       >
                         {c}
                       </button>
+                      </Relieve>
                     );
                   })}
                 </div>

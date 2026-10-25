@@ -8,6 +8,8 @@ import BackgroundVeil from "./shared/BackgroundVeil.jsx";
 import Logo from "./Logo.jsx";
 import RankingFP from "./ranking/RankingFP.jsx";
 import LigaBoard from "./ligas/LigaBoard.jsx";
+import { tieneLigas } from "../ligas/ligas.js";
+import { decoracionDe } from "../data/decoracionTablas.js";
 import BannerRepaso from "./repaso/BannerRepaso.jsx";
 import { marcaDeTema } from "./shared/contenidoNuevo.jsx";
 import IdentificadorDeTema, { CSS_IDENTIFICADOR } from "./shared/IdentificadorDeTema.jsx";
@@ -227,11 +229,17 @@ export default function TopicIndexView({
             es la que cambia cada semana.
           */}
           <div style={{ width: "100%", maxWidth: "560px", display: "flex", flexDirection: "column", gap: "16px" }}>
-            <LigaBoard subjectId={subjectId} />
+            {/*
+              La decoración (zonas-hanayama.md §1.3, #547): una sola banda en
+              bucle y una sola Fae por página. Si hay liga, corre la suya y la
+              del ranking va quieta y sin Fae.
+            */}
+            <LigaBoard subjectId={subjectId} decoracion={decoracionDe(subjectId)} />
             <RankingFP
               subjectId={subjectId}
               titulo={`Ranking de ${name}`}
               nota="Solo esta materia"
+              decoracion={decoracionDe(subjectId, { bucle: !tieneLigas(subjectId), fae: !tieneLigas(subjectId) })}
             />
           </div>
         </div>

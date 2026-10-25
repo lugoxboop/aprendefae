@@ -103,7 +103,7 @@ export const VERBOS_NO_TOCABLES = ["ofrecer", "permite"];
 /* Regla de Mai para todo el recorrido: cada estación muestra su nombre solo cuando se enciende. */
 export const ESTACION_SIN_NOMBRE_HASTA_ENCENDERSE = true;
 /* El nombre completo de la empresa va como rótulo de la escena, no en el texto (INFLESZ). */
-export const ROTULO_ESCENA_A1 = "Comercializadora Caleja";
+export const ROTULO_ESCENA_A1 = "Compañía Caleja";
 
 const PREDICE_PASOS = nuevo("Mucha gente cree que la contabilidad es anotar. ¿Cuántos pasos crees que hay, desde que pasa algo hasta que alguien decide?");
 /* Reemplaza a EL_HECHO (INFLESZ 39,9) en la secuencia; el nombre completo de la empresa sigue en la factura (nota 1 de la ficha). */
@@ -155,7 +155,7 @@ const A1 = [
     pista: nuevo("Piensa para qué sirve un papel que prueba lo que pasó."),
     opciones: [
       opcion("anota", "Se anota en los libros", nuevo("El papel es la base para anotar: con él, el hecho se escribe en los libros."), true),
-      opcion("guarda", "Se guarda y ya", nuevo("Guardar el papel no basta. El papel es la base para anotar el hecho, y ese es el paso que sigue.")),
+      opcion("guarda", "Se guarda y ya", nuevo("Guardar el papel no basta. El papel sirve para anotar el hecho: ese es el paso que sigue.")),
       opcion("estado", "Se le manda al Estado", nuevo("El Estado lee el informe, pero eso viene después. Antes, el papel sirve para anotar el hecho.")),
     ],
     fuente: "Nuevo, de I:102 y de los distractores I:227 e I:234",
@@ -197,15 +197,15 @@ const A1 = [
     texto: [publicado(PREGUNTA_FINAL)],
     opciones: frase(OPCIONES, {
       op1: "Los que deciden son los jefes, y eso cambia lo que la empresa hace. Así nacen hechos nuevos.",
-      op2: "Anotar es el punto tres de cinco. Después vienen el informe y la decisión, y sin ellos nadie usaría lo anotado.",
-      op3: "El Estado sí pregunta eso, pero es uno de ocho. El mismo informe responde lo que preguntan los ocho.",
-      op4: "Los papeles son el punto dos y hacen falta para anotar. Pero guardarlos no es el trabajo: falta lo que viene después.",
+      op2: "Anotar es el punto tres de cinco. Sin el informe y la decisión, nadie usaría lo anotado.",
+      op3: "El Estado sí pregunta eso, pero es uno de ocho. El mismo informe les responde a todos.",
+      op4: "Los papeles son el punto dos. Pero guardarlos no es el trabajo: falta lo que sigue.",
     }, { op1: "Convierte en informes lo que pasa en la empresa, para que alguien decida." }),
     segunda: segunda("¿Cuál de estas frases describe solo el punto tres del ciclo?", "op2", {
-      op2: "El punto tres es anotar: el papel pasa a los libros. Lo demás del ciclo viene antes o después.",
+      op2: "El punto tres es anotar: el papel pasa a los libros. Lo demás viene antes o después.",
       op1: "Esa frase recoge el ciclo entero, del hecho hasta la decisión. El punto tres es solo una parte.",
       op3: "Los impuestos son lo que pregunta el Estado al leer el informe. Eso pasa después del punto tres.",
-      op4: "Guardar papeles tiene que ver con el punto dos, el del papel. El tres es lo que se hace con él.",
+      op4: "Guardar papeles es del punto dos, el del papel. El tres es lo que se hace con él.",
     }),
     fuente: "I:202; devoluciones recortadas de I:214, I:221, I:228 e I:235; op1 de la auditoría de base",
   },
@@ -265,9 +265,9 @@ const A2 = [
     texto: [nuevo("La empresa compra algo nuevo y lo queda debiendo. ¿Qué crees que le pasa a la torre?")],
     pista: nuevo("¿Lo nuevo hace la torre más alta o más baja?"),
     opciones: [
-      opcion("crecen", "Crecen los dos lados", nuevo("Entra algo nuevo y también una deuda nueva. La torre crece, y es igual de alta por los dos lados."), true),
-      opcion("uno-baja", "Un lado sube y el otro baja", nuevo("Mira la torre: es una sola. Si crece por un lado, también crece cuando la lees por el otro.")),
-      opcion("no-cambia", "La torre no cambia", nuevo("Entró algo que antes no estaba, así que la torre crece. Y la deuda nueva hace crecer el otro lado igual.")),
+      opcion("crecen", "Crecen los dos lados", nuevo("Entra algo nuevo y nace una deuda. La torre crece igual de alta por los dos lados."), true),
+      opcion("uno-baja", "Un lado sube y el otro baja", nuevo("La torre es una sola. Si crece por un lado, también crece leída por el otro.")),
+      opcion("no-cambia", "La torre no cambia", nuevo("Entró algo nuevo, así que la torre crece. La deuda nueva hace crecer igual el otro lado.")),
     ],
     caso: CASOS_P2[0], fuente: "Nuevo, del caso a, P:116; libro p. 35",
   },
@@ -282,12 +282,13 @@ const A2 = [
     hechos: [["cal-3", "a", CRECEN], ["cal-5", "b", CRECEN], ["cal-4", "c", BAJAN_LOS_DOS], ["cal-6", "d", BAJAN_LOS_DOS]]
       .map(([id, caso, correcta]) => ({ hecho: TRANSACCIONES_CAP2.find((h) => h.id === id), caso: CASOS_P2.find((c) => c.id === caso), correcta })),
     devoluciones: {
-      crecenEnVezDeBajan: nuevo("Con este hecho sale algo de la empresa. La torre se encoge, y por los dos lados baja lo mismo."),
-      bajanEnVezDeCrecen: nuevo("Con este hecho entra algo a la empresa. La torre crece, y por los dos lados sube lo mismo."),
+      crecenEnVezDeBajan: nuevo("Con este hecho sale algo de la empresa. La torre se encoge igual por los dos lados."),
+      bajanEnVezDeCrecen: nuevo("Con este hecho entra algo a la empresa. La torre crece igual por los dos lados."),
       unoSube: nuevo("La torre es una sola: si crece o se encoge, se ve igual por los dos lados."),
     },
     nota: publicado(NOTA_CAPA3_P2), notaTrasLosCasos: ["a", "c"],
-    alFinal: publicado(TEXTOS_P2[5]),
+    /* Lote C de Futaba (§2), a 18 palabras; Shoko lo pasó (revisiones/b-t1-496-520-lote-c-shoko.md). */
+    alFinal: recortado("En los cuatro casos, los dos lados se mueven hacia el mismo lado: suben o bajan juntos.", TEXTOS_P2[5]),
     fuente: "Nuevo; hechos de src/data/contabilidad.js:249-266 (cal-3 a cal-6, cifras del libro); P:99, P:115-120, P:126; p. 35",
   },
   {
@@ -299,16 +300,16 @@ const A2 = [
     n: 14, idea: "En una frase", ve: "Las 4 opciones", hace: "frase",
     texto: [publicado(PREGUNTA_P2)],
     opciones: frase(OPCIONES_P2, {
-      p2o1: "La torre es una sola: por la izquierda dice qué es cada cosa, por la derecha de dónde salió.",
-      p2o2: "Eso es lo que más confunde. En los cuatro casos del libro, los dos lados suben juntos o bajan juntos.",
-      p2o3: "Casi siempre debe menos de lo que tiene, y la diferencia es de los dueños. Si debiera todo, a ellos no les quedaría nada.",
+      p2o1: "Es una sola torre: la izquierda dice qué es cada cosa, la derecha de dónde salió.",
+      p2o2: "Es lo que más confunde. En los cuatro casos del libro, los dos lados suben o bajan juntos.",
+      p2o3: "Casi siempre debe menos de lo que tiene; la diferencia es de los dueños.",
       p2o4: "Nadie ajusta nada. Dan igual solos, porque son las mismas cosas miradas de dos formas.",
     }, { p2o1: "Porque son las mismas cosas contadas dos veces: qué son y de dónde salieron." }),
-    segunda: segunda("¿Cuál de estas frases desmienten los cuatro casos del libro?", "p2o2", {
+    segunda: segunda("¿Qué frase dice lo contrario de la regla «suben juntos o bajan juntos»?", "p2o2", {
       p2o2: "Es la que más confunde. Los cuatro casos la desmienten: los dos lados suben juntos o bajan juntos.",
-      p2o1: "Esa frase es cierta: es la razón por la que dan igual. Aquí se busca la que los casos desmienten.",
-      p2o3: "Esa también es falsa, pero los casos no hablan de ella. Habla de cuánto debe la empresa.",
-      p2o4: "Esa también es falsa, pero los casos no tratan de ajustes. Muestran cómo se mueven los dos lados.",
+      p2o1: "Esa frase es cierta: no es la que se busca. Falta la que contradice la regla.",
+      p2o3: "Esa también es falsa, pero no contradice la regla: habla de cuánto debe la empresa.",
+      p2o4: "Esa también es falsa, pero no contradice la regla: habla de ajustes, no de los dos lados.",
     }),
     fuente: "P:128; devoluciones de P:135-157, sin «Correcto.» ni «No.»",
   },
@@ -392,14 +393,14 @@ const A3 = [
     n: 17, idea: "En una frase", ve: "Las 4 opciones", hace: "frase",
     texto: [publicado(PREGUNTA_P3)],
     opciones: frase(OPCIONES_P3, {
-      p3o1: "Por eso uno se llama foto y el otro película. Uno dice cómo está la empresa; el otro, qué pasó.",
+      p3o1: "Por eso uno se llama foto y el otro película: uno dice cómo está; el otro, qué pasó.",
       p3o2: "Los dos tienen cifras. Lo que cambia es el tiempo que cubre cada uno.",
       p3o3: "Los ocho pueden leer los dos. Lo que cambia es qué te dice cada uno.",
       p3o4: "Los dos los hace la empresa. El Estado es uno de los que los leen.",
     }, { p3o1: "Uno muestra un solo día y el otro, todo un periodo." }),
     segunda: segunda("¿Qué frase se equivoca sobre quién lee los informes?", "p3o3", {
-      p3o3: "Los ocho usuarios pueden leer los dos informes. Los de adentro y los de afuera leen la foto y la película.",
-      p3o1: "Esa frase es cierta: es la diferencia entre la foto y la película. No habla de quién los lee.",
+      p3o3: "Los ocho usuarios pueden leer los dos informes, los de adentro y los de afuera.",
+      p3o1: "Esa frase es cierta: es la diferencia entre foto y película. No habla de quién los lee.",
       p3o2: "Esa frase se equivoca, pero sobre las cifras, no sobre quién lee. Los dos informes tienen cifras.",
       p3o4: "Esa se equivoca sobre quién los hace, no sobre quién los lee. Los dos los hace la empresa.",
     }),
@@ -444,16 +445,17 @@ const A4 = [
     texto: [nuevo("Lo que vendió y gastó en el año, ¿a qué informe crees que llega?")],
     pista: nuevo("¿Cuál de los tres guarda cómo quedó la empresa?"),
     opciones: [
-      opcion("foto", "A la foto", nuevo("Llega a la foto: la utilidad neta del año es la misma cifra que la utilidad del ejercicio."), true),
-      opcion("plata", "Al de la plata", nuevo("La plata tiene su propio informe. Lo que vendió y gastó llega a la foto y cambia cómo queda.")),
+      opcion("foto", "A la foto", nuevo("Llega a la foto: el resultado del año cambia cómo queda la empresa."), true),
+      opcion("plata", "Al de la plata", nuevo("La plata tiene su informe. Lo que vendió y gastó llega a la foto y cambia cómo queda.")),
       opcion("ninguno", "A ninguno", nuevo("Sí llega a uno: a la foto. Lo que vendió y gastó cambia cómo queda la empresa.")),
     ],
-    flecha: FLECHAS_P4.find((f) => f.id === "f1"), fuente: "Nuevo, de P:415 y T:589-605 (f1)",
+    flecha: FLECHAS_P4.find((f) => f.id === "f1"), fuente: "Nuevo, de P:415 y T:589-605 (f1); acierto de Futaba, Gráfico 2.6 (p. 66; fichas/b-t1-fuente-cap1-futaba.md §7 y §9)",
   },
   {
-    n: 7, idea: "Flecha 1", ve: "f1, de bloque a bloque, con su nota en la flecha", hace: "siguiente",
-    texto: [publicado(TEXTOS_P4[2])], flechas: ["f1"], notaFlecha: nuevo("Es la misma cifra con otro nombre."),
-    fuente: "P:415, P:403; nota de la auditoría de base",
+    n: 7, idea: "Flecha 1", ve: "f1, de bloque a bloque", hace: "siguiente",
+    texto: [publicado(TEXTOS_P4[2])], flechas: ["f1"],
+    /* Sin la nota «Es la misma cifra con otro nombre»: el Gráfico 2.6 no la dibuja (p. 66; Sakuta, ficha de Futaba §9). */
+    fuente: "P:415, P:403; Gráfico 2.6, p. 66",
   },
   {
     n: 8, idea: "Flecha 2: la misma cifra", ve: "f2: la ficha viaja del saldo final al efectivo", hace: "siguiente",
@@ -470,32 +472,32 @@ const A4 = [
   },
   {
     n: 11, idea: "Prueba: repite o explica",
-    ve: "Las cinco flechas; al tocar una, queda sola. f1 se ve pero no se pregunta hasta que el Gráfico 2.6 diga si repite o explica",
+    ve: "Las cinco flechas; al tocar una, queda sola",
     hace: "clasifica",
     texto: [nuevo("Toca una flecha. ¿Repite la misma cifra o solo explica una línea de la foto?")],
     opciones: ["Repite la cifra", "Explica una línea"].map(nuevo),
     flechas: FLECHAS_P4, modo: MODO_FLECHA,
-    /* f1 es HUECO (contradicción con P:403, se escala a Miku): se ve, no se pregunta. */
-    seClasifican: ["f2", "f3", "f4", "f5"],
+    /* f1 se pregunta y explica: va de bloque a bloque en el Gráfico 2.6 (p. 66), como en P:403 (Sakuta, ficha de Futaba §9). */
+    seClasifican: ["f1", "f2", "f3", "f4", "f5"],
     /* La que viaja (MODO_FLECHA.viaja) es la que repite; las demás explican. */
     devolucionRepiteMarcadaExplica: nuevo("Esta sí repite: el saldo final de efectivo es el mismo número que el efectivo de la foto."),
     devolucionExplicaMarcadaRepite: nuevo("Esta no repite ninguna cifra. Solo explica una línea de la foto."),
-    fuente: "Nuevo, de P:399-408 (MODO_FLECHA). f1: HUECO, se escala a Miku",
+    fuente: "Nuevo, de P:399-408 (MODO_FLECHA); f1, Gráfico 2.6 (p. 66)",
   },
   {
     n: 12, idea: "En una frase", ve: "Las 4 opciones", hace: "frase",
     texto: [publicado(PREGUNTA_P4)],
     opciones: frase(OPCIONES_P4, {
-      p4o1: "Por eso ninguna flecha sale de la foto: ella recibe. Los otros dos explican y ella guarda el resultado.",
-      p4o2: "Va al revés. La foto del final necesita lo que los otros calculan. La que va primero es la foto del comienzo.",
+      p4o1: "Por eso ninguna flecha sale de la foto: ella recibe y guarda el resultado de los otros dos.",
+      p4o2: "Va al revés: la foto del final necesita lo que calculan los otros; la del comienzo va primero.",
       p4o3: "Si fuera así no habría ninguna flecha. Y hay cinco, todas llegando al mismo informe.",
-      p4o4: "Cada uno dice algo distinto: uno qué tiene, otro qué vendió y gastó, otro por dónde se movió la plata.",
+      p4o4: "Cada uno dice algo distinto: qué tiene, qué vendió y gastó, y por dónde se movió la plata.",
     }),
     segunda: segunda("¿Qué frase pone las flechas al revés?", "p4o2", {
-      p4o2: "Esa frase pone la foto como punto de partida. Las flechas hacen lo contrario: todas llegan a la foto.",
+      p4o2: "Esa frase pone la foto como punto de partida. Las flechas hacen lo contrario: llegan a ella.",
       p4o1: "Esa frase es cierta: las flechas van de los otros dos hacia la foto. No están al revés.",
       p4o3: "Esa frase quita las flechas, no las voltea. Si no tuvieran que ver, no habría ninguna flecha.",
-      p4o4: "Esa frase no habla de flechas sino de lo que dice cada informe. Y cada uno dice algo distinto.",
+      p4o4: "Esa frase no habla de flechas, sino de lo que dice cada informe.",
     }),
     fuente: "P:424; devoluciones de P:431-452, sin «Correcto.» ni «No.»",
   },

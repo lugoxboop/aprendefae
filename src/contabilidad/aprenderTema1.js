@@ -86,6 +86,8 @@ export function evaluarP3(pregunta, marcada) {
   else if (correcta === PELICULA && marcada === FOTO) patron = "B";
   else if (correcta === FOTO && marcada === COMPARAR) patron = "C1";
   else if (correcta === PELICULA && marcada === COMPARAR) patron = "C2";
+  /* D2 (Futaba, lote B §5): quien marcó la película no eligió ninguna foto, así que la D no le habla a él. */
+  else if (correcta === COMPARAR && marcada === PELICULA) patron = "D2";
   else if (correcta === COMPARAR) patron = "D";
   else throw new Error(`no hay explicación para «${marcada}» cuando era «${correcta}»`);
 

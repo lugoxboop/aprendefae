@@ -197,12 +197,12 @@ export const NOMBRES_P3 = [
   {
     termino: "Estado de situación financiera",
     definicion: "El estado de situación financiera muestra qué tiene y qué debe la empresa un día exacto.",
-    delLibro: "El estado de situación financiera muestra de manera concreta la situación financiera de la empresa en una fecha determinada.",
+    delLibro: "El estado de situación financiera muestra de manera concreta la situación de la empresa en una fecha determinada.",
   },
   {
     termino: "Estado de resultados",
     definicion: "El estado de resultados muestra qué vendió y qué gastó durante todo un periodo.",
-    delLibro: "muestra cómo se han causado los ingresos y cómo se han gastado, así como la utilidad o pérdida resultante de las operaciones de la empresa durante un periodo de tiempo determinado.",
+    delLibro: "muestra cómo se han generado los ingresos y cómo se han causado los gastos, así como la utilidad o pérdida resultante de las operaciones de la empresa durante un periodo de tiempo determinado.",
   },
   {
     termino: "La foto y la película",
@@ -288,12 +288,24 @@ export const PREGUNTAS_P3 = [
  * película: en un caso sobra la segunda foto, en el otro sobran las dos. Una
  * sola explicación para los dos casos diría media verdad en uno de ellos.
  */
+/*
+ * Un solo juego, el corto (Shoko: «dos textos para el mismo error se separan
+ * en la primera corrección y después nadie sabe cuál vio el estudiante»). Lo
+ * usan cu0-a3 y H1 (t1-un-dia-o-un-ano). Textos del lote C de Futaba (§2), a
+ * 18 palabras; la D2 con la corrección de Shoko (revisiones/
+ * b-t1-496-520-lote-c-shoko.md): con dos puntos se leía que la película
+ * compara las dos fotos.
+ *
+ * D2 es nueva: la D habla de «una sola foto», y quien marcó la película no
+ * eligió ninguna foto.
+ */
 export const ERROR_P3 = {
-  A: { texto: "Esa pregunta es de un día exacto. La película cubre todo el año, así que no te dice cómo estaba la empresa ese día.", escena: "una-foto" },
-  B: { texto: "Esa pregunta es de todo el año. Una foto es de un día: no te cuenta qué pasó en los meses.", escena: "banda" },
-  C1: { texto: "Con una foto basta. Comparar las dos sirve para saber cuánto cambió, y aquí no te preguntan por el cambio.", escena: "una-foto" },
-  C2: { texto: "Con la película basta. Te preguntan por lo que pasó en el año, no por cuánto cambió entre dos fechas.", escena: "banda" },
-  D: { texto: "Te preguntan por el cambio entre dos fechas. Una sola foto te dice cómo estaba un día. Para el cambio necesitas las dos.", escena: "dos-fotos" },
+  A: { texto: "Esa pregunta es de un día exacto. La película cubre todo el año, no ese día.", escena: "una-foto" },
+  B: { texto: "Esa pregunta es de todo el año. Una foto es de un día: no cuenta los meses.", escena: "banda" },
+  C1: { texto: "Con una foto basta. Comparar las dos sirve para ver cuánto cambió, y aquí no preguntan eso.", escena: "una-foto" },
+  C2: { texto: "Con la película basta. Te preguntan qué pasó en el año, no cuánto cambió entre dos fechas.", escena: "banda" },
+  D: { texto: "Te preguntan por el cambio entre dos fechas. Una sola foto muestra un día: necesitas las dos.", escena: "dos-fotos" },
+  D2: { texto: "Te preguntan cuánto cambió algo entre dos fechas. La película no lo muestra; compara tú las dos fotos.", escena: "dos-fotos" },
 };
 
 export const PREGUNTA_P3 = "Elige la frase que mejor dice en qué se diferencian los dos informes.";

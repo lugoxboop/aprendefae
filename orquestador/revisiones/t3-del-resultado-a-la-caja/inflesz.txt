@@ -1,0 +1,84 @@
+ 99,4   17 p ·  27 s · 2 f  cumple (≥ 65)
+       Parte de la utilidad del mes. Pon cada ficha donde va y halla la caja al cierre.
+ 89,7   10 p ·  18 s · 2 f  cumple (≥ 65)
+       Mira la utilidad del mes. La caja empezó en cero.
+ 79,9   17 p ·  30 s · 1 f  cumple (≥ 65)
+       Por cada ficha, pregúntate si hace que la caja tenga más o menos plata que la utilidad.
+105,2   11 p ·  16 s · 1 f  cumple (≥ 65)
+       Ponla en Suma, en Resta o en No mueve la caja.
+ 94,3   20 p ·  34 s · 3 f  cumple (≥ 65)
+       La utilidad mide lo que se ganó. La caja mide la plata. Las fichas explican la distancia entre las dos.
+107,4    6 p ·   9 s · 1 f  no aplica (menos de 10 palabras)
+       Y hay más fichas por revisar.
+ 75,5   15 p ·  28 s · 1 f  cumple (≥ 65)
+       Llegaste a la caja correcta, pero con dos fichas mal puestas: sus errores se cancelaron.
+ 55,5    6 p ·  14 s · 1 f  no aplica (menos de 10 palabras)
+       Punteado: así quedaba con tus respuestas
+100,0    3 p ·   5 s · 1 f  no aplica (menos de 10 palabras)
+       Caja al cierre
+ 91,8   12 p ·  21 s · 2 f  cumple (≥ 65)
+       San Calixto abrió el 2 de enero. Este es su primer mes.
+ 47,1    4 p ·  10 s · 1 f  no aplica (menos de 10 palabras)
+       Utilidad antes del impuesto
+ 83,6   23 p ·  37 s · 1 f  cumple (≥ 65)
+       Los $3.950 de utilidad, más el aporte y lo que se debe, menos lo que falta cobrar, dan los $14.650 de la caja.
+ 79,2    3 p ·   6 s · 1 f  no aplica (menos de 10 palabras)
+       Aporte en plata
+ 91,1   22 p ·  37 s · 2 f  cumple (≥ 65)
+       Los socios metieron plata a la caja, y un aporte no es ingreso. Por eso la caja tiene más que la utilidad.
+-13,2    2 p ·   7 s · 1 f  no aplica (menos de 10 palabras)
+       Equipo aportado
+103,8   15 p ·  23 s · 2 f  cumple (≥ 65)
+       El equipo entró a la empresa, pero no es plata. La caja no lo ve.
+ 93,8    4 p ·   7 s · 1 f  no aplica (menos de 10 palabras)
+       Cuentas por cobrar – clientes
+ 85,9   19 p ·  34 s · 2 f  cumple (≥ 65)
+       Esas facturas ya cuentan en la utilidad, pero la plata no ha llegado. La caja tiene menos por eso.
+ 79,2    3 p ·   6 s · 1 f  no aplica (menos de 10 palabras)
+       Alquiler por pagar
+ 90,5   18 p ·  31 s · 2 f  cumple (≥ 65)
+       Ese gasto ya bajó la utilidad, pero la plata no ha salido. La caja tiene más por eso.
+ 73,0   12 p ·  25 s · 3 f  cumple (≥ 65)
+       Escenario simulado. Estudio Foco abrió en marzo. Este es su primer mes.
+ 16,9    3 p ·   9 s · 1 f  no aplica (menos de 10 palabras)
+       Utilidad del ejercicio
+ 74,8   31 p ·  58 s · 2 f  cumple (≥ 65)
+       Escenario simulado. Los $1.541.000 de utilidad, más el impuesto que se debe, el aporte y el préstamo, menos el anticipo y lo que falta cobrar, dan los $6.800.000 de la caja.
+ 95,5   21 p ·  34 s · 2 f  cumple (≥ 65)
+       Los socios metieron plata a la caja este mes, y un aporte no es ingreso. La caja tiene más por eso.
+-13,2    2 p ·   7 s · 1 f  no aplica (menos de 10 palabras)
+       Préstamo recibido
+ 99,0   19 p ·  30 s · 2 f  cumple (≥ 65)
+       El banco metió plata a la caja, y un préstamo no es ingreso. La caja tiene más por eso.
+ 39,9    5 p ·  13 s · 1 f  no aplica (menos de 10 palabras)
+       Arriendo abril–junio, por anticipado
+ 94,0   18 p ·  30 s · 2 f  cumple (≥ 65)
+       Salió plata por un arriendo que aún no se usa. No bajó la utilidad, pero sí la caja.
+ 89,7    5 p ·   9 s · 1 f  no aplica (menos de 10 palabras)
+       Impuesto de renta por pagar
+ 81,1   17 p ·  32 s · 2 f  cumple (≥ 65)
+       Ese impuesto ya bajó la utilidad, pero todavía no se paga. La caja tiene más por eso.
+ 47,1    4 p ·  10 s · 1 f  no aplica (menos de 10 palabras)
+       Equipo comprado a crédito
+ 79,9   17 p ·  30 s · 1 f  cumple (≥ 65)
+       Ese equipo no movió la caja ni la utilidad: todavía no se paga y no es gasto.
+ 78,2    8 p ·  16 s · 2 f  no aplica (menos de 10 palabras)
+       Ganó $300.000 este mes. Aún le deben $100.000.
+ 70,8   14 p ·  29 s · 2 f  cumple (≥ 65)
+       La utilidad fue $300.000, pero $100.000 no han llegado. La caja subió solo $200.000.
+ 86,0   38 p ·  66 s · 3 f  cumple (≥ 65)
+       Arriba, la empresa y su utilidad del mes. Debajo, una ficha por paso con tres botones: Suma, Resta y No mueve la caja. Las fichas ya puestas quedan en una lista, y se pueden cambiar antes de comprobar.
+ 75,4   24 p ·  46 s · 2 f  cumple (≥ 65)
+       Ejemplo: la panadería ganó $300.000 y aún le deben $100.000. La ficha de cuentas por cobrar va en Resta: la caja subió solo $200.000.
+
+36 textos, 0 por debajo de 65.
+
+# Variantes de #557 (Kamogawa): A6 con «tres» y «cuatro» (B) y la leyenda de la caja negativa. 2026-10-24 23:06 (Bogotá).
+ 75,5   15 p ·  28 s · 1 f  cumple (≥ 65)
+       Llegaste a la caja correcta, pero con tres fichas mal puestas: sus errores se cancelaron.
+ 71,4   15 p ·  29 s · 1 f  cumple (≥ 65)
+       Llegaste a la caja correcta, pero con cuatro fichas mal puestas: sus errores se cancelaron.
+ 84,1    7 p ·  13 s · 1 f  no aplica (menos de 10 palabras)
+       Con tus respuestas, la caja daba −$350
+
+3 textos, 0 por debajo de 65.

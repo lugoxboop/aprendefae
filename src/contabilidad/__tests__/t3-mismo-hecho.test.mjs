@@ -58,9 +58,9 @@ test("★★★ los cuatro pares son los de la tabla de control de Levi", () => 
     ["La máquina", 2500, "Libro, pp. 140 y 142",
       ["San Calixto", "Gasto alquiler", "Alquiler por pagar", "Servicios por cobrar", "Ingresos por servicios", "Alquiler pagado por anticipado"],
       ["San Miguel", "Servicios por cobrar", "Ingresos por servicios", "Gasto alquiler", "Alquiler por pagar", "Servicios recibidos por anticipado"]],
-    ["El arriendo", 5000, "Libro, pp. 144 y 146",
-      ["San Calixto", "Gastos arriendos", "Arriendos pagados por anticipado", "Arriendos recibidos por anticipado", "Ingresos por arriendos", "Arriendos por pagar"],
-      ["Arriendos de la Costa", "Arriendos recibidos por anticipado", "Ingresos por arriendos", "Gastos arriendos", "Arriendos pagados por anticipado", "Arriendos por cobrar"]],
+    ["El arriendo", 5000, "Basado en el libro, pp. 143-144 y 146",
+      ["San Calixto", "Gasto arriendos", "Arriendos pagados por anticipado", "Arriendos recibidos por anticipado", "Ingresos por arriendos", "Arriendos por pagar"],
+      ["Arriendos de la Costa", "Arriendos recibidos por anticipado", "Ingresos por arriendos", "Gasto arriendos", "Arriendos pagados por anticipado", "Arriendos por cobrar"]],
     ["Los equipos", 1800000, "Basado en el libro, p. 174",
       ["La Gata Caliente", "Gasto alquiler", "Alquiler por pagar", "Servicios por cobrar", "Ingresos por servicios", "Caja"],
       ["Home Mark", "Servicios por cobrar", "Ingresos por servicios", "Gasto alquiler", "Alquiler por pagar", "Caja"]],
@@ -322,9 +322,10 @@ test("★★★ la fila del monto dice SOLO la cifra —sin «Monto:» ni chevr�
 test("★★ en el camino: nodo 5, entre «Arma el ajuste diferido» y «¿Qué le toca…?»; Análisis 50; tutorial y docente", () => {
   const tema = SUBJECTS.contabilidad.topics.find((t) => t.id === "ingresos-gastos-y-caja");
   const hacer = tema.actividades.filter((a) => a.clasificacion.tipo === HACER && !a.clasificacion.desafio).map((a) => a.id);
-  assert.equal(hacer.indexOf("t3-mismo-hecho"), 4, "nodo 5");
-  assert.equal(hacer[3], "t3-ajuste-diferido");
-  assert.equal(hacer[5], "t3-que-le-toca");
+  /* Nodo 6 desde que «¿Gasto o pago?» entró detrás de la act. 1 (#506); los vecinos no cambian. */
+  assert.equal(hacer.indexOf("t3-mismo-hecho"), 5, "nodo 6");
+  assert.equal(hacer[4], "t3-ajuste-diferido");
+  assert.equal(hacer[6], "t3-que-le-toca");
   assert.deepEqual(tema.actividades.find((a) => a.id === "t3-mismo-hecho").clasificacion, { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 });
   assert.ok(JUEGOS.some((j) => j.id === "t3-mismo-hecho"));
   const asi = ASI_SE_JUEGA["t3-mismo-hecho"];

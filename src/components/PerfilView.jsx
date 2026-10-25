@@ -2,6 +2,7 @@ import { ChevronLeft } from "lucide-react";
 import { FAE } from "../theme.js";
 import Logo from "./Logo.jsx";
 import RankingFP from "./ranking/RankingFP.jsx";
+import { decoracionDe } from "../data/decoracionTablas.js";
 import { useAuth } from "../auth/AuthProvider.jsx";
 import { useContext, useEffect, useState } from "react";
 import { NavigationContext } from "../navigation.js";
@@ -304,7 +305,7 @@ export default function PerfilView({ seccion = null, onBack }) {
           </button>
         )}
 
-        <RankingFP key={vuelta} titulo="Ranking general" nota="Todas las materias" />
+        <RankingFP key={vuelta} titulo="Ranking general" nota="Todas las materias" decoracion={decoracionDe("general")} />
       </div>
     </div>
   );

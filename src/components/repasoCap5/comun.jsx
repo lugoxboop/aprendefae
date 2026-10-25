@@ -118,9 +118,10 @@ function reducidoAhora() {
  * sin ícono; en casilla con cifra, «Iba aquí: {valor}». Íconos de lucide, 16
  * px, trazo 2,5.
  */
-export function Pastilla({ estado, valor = null, pieza = null }) {
+export function Pastilla({ estado, valor = null, pieza = null, hueco = 4 }) {
   if (estado !== "ok" && estado !== "mal" && estado !== "revelada") return null;
-  const base = { display: "inline-flex", alignItems: "center", gap: "4px", fontFamily: INTER, fontSize: "12px", fontWeight: 700, lineHeight: "16px", whiteSpace: "nowrap" };
+  /* `hueco`: el espacio entre el ícono y la palabra. 4 en todo el repaso; «¿Gasto o pago?» usa 3 en sus casillas de 85 px a 320 (ver GastoOPago.jsx). */
+  const base = { display: "inline-flex", alignItems: "center", gap: `${hueco}px`, fontFamily: INTER, fontSize: "12px", fontWeight: 700, lineHeight: "16px", whiteSpace: "nowrap" };
   const datos = { "data-veredicto": estado, ...(pieza ? { "data-marca-pieza": pieza } : {}) };
   if (estado === "ok") {
     return <span {...datos} style={{ ...base, color: C.texto }}><Check size={16} strokeWidth={2.5} color={C.texto} aria-hidden="true" />{FEEDBACK.ok}</span>;

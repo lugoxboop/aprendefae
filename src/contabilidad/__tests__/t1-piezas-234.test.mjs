@@ -393,14 +393,14 @@ test("★★★ el hueco de la foto que falta mide lo mismo que la foto", () => 
  * «Marcó comparar» no significa lo mismo si la buena era la foto que si era la
  * película. Una sola explicación para los dos casos diría media verdad en uno.
  */
-test("★★★ las cinco reglas de error salen de la pareja, no solo de lo que marcó", () => {
+test("★★★ las seis reglas de error salen de la pareja, no solo de lo que marcó (D2: marcó la película y era comparar)", () => {
   const casos = [
     { correcta: FOTO, marcada: PELICULA, patron: "A" },
     { correcta: PELICULA, marcada: FOTO, patron: "B" },
     { correcta: FOTO, marcada: COMPARAR, patron: "C1" },
     { correcta: PELICULA, marcada: COMPARAR, patron: "C2" },
     { correcta: COMPARAR, marcada: FOTO, patron: "D" },
-    { correcta: COMPARAR, marcada: PELICULA, patron: "D" },
+    { correcta: COMPARAR, marcada: PELICULA, patron: "D2" },
   ];
   for (const c of casos) {
     const q = PREGUNTAS_P3.find((x) => x.respuesta === c.correcta);
@@ -414,7 +414,7 @@ test("★★★ las cinco reglas de error salen de la pareja, no solo de lo que 
   assert.ok(ERROR_P3.C1.texto.includes("Con una foto basta"));
   assert.ok(ERROR_P3.C2.texto.includes("Con la película basta"));
   /* Y las cinco explicaciones son cinco. */
-  assert.equal(new Set(Object.values(ERROR_P3).map((e) => e.texto)).size, 5);
+  assert.equal(new Set(Object.values(ERROR_P3).map((e) => e.texto)).size, 6);
 });
 
 test("★★ acertar no trae explicación de error, y enciende lo que responde", () => {
