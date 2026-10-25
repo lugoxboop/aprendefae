@@ -26,7 +26,7 @@ export const SAN_CALIXTO_P4 = {
   marcaCierre: "gasto",
   bloque: { cuenta: "Arriendos pagados por anticipado", etiqueta: "Por gastar", ficha: "llena" },
   asiento: {
-    debe: { cuenta: "Gastos arriendos", monto: POR_MES },
+    debe: { cuenta: "Gasto arriendos", monto: POR_MES },
     haber: { cuenta: "Arriendos pagados por anticipado", monto: POR_MES },
   },
 };
@@ -81,7 +81,7 @@ export const PIEZA_LO_QUE_YA_SE_PAGO = {
   id: "t3-a4-lo-que-ya-se-pago",
   numero: 4,
   titulo: "Lo que ya se pagó y no ha pasado",
-  objetivo: "Aquí la plata se mueve primero. El hecho viene después, mes a mes.",
+  objetivo: "Reconoce y anota lo que se pagó o se recibió por anticipado, mes a mes.",
   nombres: [
     { termino: "Diferido", definicion: "Diferido es cuando la plata se mueve antes de que el hecho ocurra." },
     { termino: "Pagado por anticipado", definicion: "Lo que la empresa pagó por anticipado es algo que todavía tiene. Lo va gastando con el tiempo." },
@@ -89,7 +89,7 @@ export const PIEZA_LO_QUE_YA_SE_PAGO = {
       termino: "Recibido por anticipado",
       definicion: "Lo que la empresa recibió por anticipado es algo que todavía debe. Lo va cumpliendo con el tiempo.",
       /* Las dos citas del libro, con el rótulo que Gen escribió, como en la pieza 3. */
-      delLibro: "«Los gastos diferidos son activos que, en la medida va pasando el tiempo, se van convirtiendo en gastos» (p. 142). «Los ingresos diferidos son pasivos que, en la medida que va pasando el tiempo, se van convirtiendo en ingresos» (p. 145).",
+      delLibro: "«Los gastos diferidos son activos que, en la medida que va pasando el tiempo, se van convirtiendo en gastos» (pp. 142-143). «Los ingresos diferidos son pasivos que, en la medida que va pasando el tiempo, se van convirtiendo en ingresos» (p. 145).",
     },
     /* «Lo que se planta», con el rótulo de las piezas 1 y 3. */
     { termino: "Desde ya", definicion: "En la pieza anterior la plata iba atrás. Aquí va adelante." },

@@ -122,10 +122,12 @@ test("★★ a2 · 12 predice los cuatro casos con los hechos de Caleja, en el o
   assert.deepEqual(p.hechos.map((h) => h.correcta === "Crecen los dos lados"), p.hechos.map((h) => h.caso.mueve === P.SUBEN));
 });
 
-test("★★ a4 · 11: se clasifican f2 a f5; f1 se ve pero no se pregunta (HUECO, a Miku)", () => {
+test("★★ a4 · 11: se clasifican las cinco; f1 explica, de bloque a bloque (Gráfico 2.6, p. 66)", () => {
   const p = pantallasDe(P.ID_P4).find((x) => x.hace === "clasifica");
-  assert.deepEqual(p.seClasifican, ["f2", "f3", "f4", "f5"]);
-  assert.ok(p.flechas.some((f) => f.id === "f1"));
+  assert.deepEqual(p.seClasifican, ["f1", "f2", "f3", "f4", "f5"]);
+  assert.deepEqual(P.MODO_FLECHA.f1, { viaja: false, deBloque: true });
+  /* La nota «misma cifra» contradecía que f1 explique: ya no está en ninguna pantalla. */
+  assert.ok(pantallasDe(P.ID_P4).every((x) => !x.notaFlecha));
 });
 
 /* ═══════════════════ 2 · EL ORIGEN DE CADA TEXTO ═══════════════════ */

@@ -96,7 +96,7 @@ test("★★★ los once hechos: empresa, fuente, grupo y retroalimentación de 
     [DESPUES, "San Calixto", "Envió a MPS una factura de $2.800 por servicios prestados, 25 de enero", "p. 121", "El servicio ya se prestó, así que el ingreso ya existe y queda una cuenta por cobrar."],
     [DESPUES, "San Miguel", "Ya prestó el servicio de la máquina y no le han pagado los $2.500", "p. 142", "Prestó la máquina cinco días. El ingreso es suyo aunque no haya cobrado."],
     [SIN_INGRESO, "San Calixto", "Los socios abren la empresa con $15.000 en plata", "p. 121", "Entró plata, pero la empresa no vendió lo que ofrece. Es un aporte."],
-    [SIN_INGRESO, "Compañía Cualquiera", "Vendió un computador por $15.000, su mismo valor", "p. 130", "No vende computadores. Entregó uno y recibió su mismo valor en plata."],
+    [SIN_INGRESO, "Compañía Cualquiera", "Vendió un computador por $15.000, su mismo valor", "pp. 129-130", "No vende computadores. Entregó uno y recibió su mismo valor en plata."],
     [SIN_INGRESO, "Lavalimpio", "Recibió un préstamo de $5.000.000 de una entidad financiera", "p. 131", "El banco le prestó. Entró plata y nació una deuda, no un ingreso."],
     [SIN_INGRESO, "Lavalimpio", "Se inicia el negocio con la venta de 5.000 acciones de $1.000, pagadas de contado", "p. 131", "Vender acciones no es vender lo que la empresa ofrece. Los accionistas pusieron plata: es un aporte, nunca un ingreso."],
   ]);
