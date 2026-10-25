@@ -38,7 +38,7 @@ export const ID_OCHO_LEEN = "cu0-a1b-ocho-leen-lo-mismo";
 
 /* ═══════════════════ cu0-a1 · EL RECORRIDO DE UN HECHO (10) ═══════════════════ */
 
-export const A1_SEC = {
+const A1_BASE = {
   id: ID,
   pantallas: {
     prediccion: {
@@ -117,6 +117,40 @@ export const A1_SEC = {
     },
   },
 };
+
+/*
+ * ═══════════ LOTE G DE FUTABA (cu0-a1 · pantallas 1, 2 y 8) ═══════════
+ *
+ * Los sitios de los textos nuevos del lote G, listos y vacíos: aquí no se
+ * inventa nada. Un campo con valor reemplaza al de la pantalla; `null` deja
+ * lo de siempre.
+ *
+ *   prediccion  el apoyo de la pantalla 1 (la pregunta de la predicción)
+ *   respuesta   la respuesta de la predicción (la misma para las tres)
+ *   verbos      el apoyo de la pantalla 2
+ *   renglones   los renglones del balance de la pantalla 8, en orden (cuentas
+ *               de BALANCE); el pie «y n líneas más» se recalcula solo
+ *
+ * Las paradas 6 y 9 no se tocan.
+ */
+export const LOTE_G_A1 = { prediccion: null, respuesta: null, verbos: null, renglones: null };
+
+/* Las pantallas de cu0-a1 con lo que traiga el lote G encima. */
+export function conLoteG(base, lote = {}) {
+  const p = base.pantallas;
+  const v = (k) => lote?.[k] ?? null;
+  return {
+    ...base,
+    pantallas: {
+      ...p,
+      prediccion: { ...p.prediccion, ...(v("prediccion") ? { apoyo: v("prediccion") } : {}), ...(v("respuesta") ? { respuesta: v("respuesta") } : {}) },
+      verbos: { ...p.verbos, ...(v("verbos") ? { apoyo: v("verbos") } : {}) },
+      informe: { ...p.informe, ...(v("renglones") ? { renglones: [...v("renglones")] } : {}) },
+    },
+  };
+}
+
+export const A1_SEC = conLoteG(A1_BASE, LOTE_G_A1);
 
 /* ═══════════════════ PIEZA NUEVA · OCHO LEEN LO MISMO (4) ═══════════════════ */
 

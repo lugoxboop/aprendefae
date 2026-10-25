@@ -133,8 +133,8 @@ function FiguraAdentroAfuera({ estado, setEstado }) {
 const FACTURA = facturaDelHecho();
 
 /* El balance de la estación 4 con cuatro renglones y el pie (Mai §2.1.5; renglones de Futaba). */
-function BalanceCorto() {
-  const filas = T.informe.renglones.map((c) => BALANCE.cuentas.find((x) => x.cuenta === c)).filter(Boolean);
+export function BalanceCorto({ renglones = T.informe.renglones }) {
+  const filas = renglones.map((c) => BALANCE.cuentas.find((x) => x.cuenta === c)).filter(Boolean);
   const quedan = BALANCE.cuentas.length - filas.length;
   return (
     <div data-forma="estado-corto" style={{ padding: "8px 10px", borderRadius: "10px", background: "rgba(10,20,34,0.5)", border: "1px solid rgba(248,249,250,0.14)" }}>

@@ -209,3 +209,24 @@ test("★★★ capa 4 de «Ocho leen lo mismo»: franja de 44, cuatro frases en
   const { FICHA_FRASE_OCHO } = await import("../piezaOchoLeen.jsx");
   capa4SinRecorte(pantalla(PIEZA_OCHO_LEEN, "frase").Figura, FICHA_FRASE_OCHO, "ocho");
 });
+
+test("★★ lote G de Futaba: sin valores, cu0-a1 sigue igual; con valores, reemplaza las pantallas 1, 2 y 8 y el pie se recalcula", async () => {
+  const D = await import("../../../../../../data/contabilidadT1Secuencia.js");
+  const { BalanceCorto } = await import("../piezaRecorrido.jsx");
+  assert.deepEqual(Object.values(D.LOTE_G_A1), [null, null, null, null], "el lote G llegó: hay que revisar estas pruebas");
+  const igual = D.conLoteG(D.A1_SEC, D.LOTE_G_A1);
+  assert.deepEqual(JSON.stringify(igual), JSON.stringify(D.A1_SEC));
+  const con = D.conLoteG(D.A1_SEC, { prediccion: "P", respuesta: "R", verbos: "V", renglones: ["Caja", "Equipo de computación", "Cuentas por pagar"] });
+  assert.equal(con.pantallas.prediccion.apoyo, "P");
+  assert.equal(con.pantallas.prediccion.respuesta, "R");
+  assert.equal(con.pantallas.verbos.apoyo, "V");
+  assert.deepEqual(con.pantallas.paradaPapel, D.A1_SEC.pantallas.paradaPapel, "las paradas no se tocan");
+  assert.deepEqual(con.pantallas.paradaQuien, D.A1_SEC.pantallas.paradaQuien);
+  const m = montar(BalanceCorto, {});
+  const n = montar(() => h(BalanceCorto, { renglones: con.pantallas.informe.renglones }));
+  try {
+    assert.equal(m.caja.querySelector("[data-pie-balance]").textContent, "y 3 líneas más");
+    assert.equal(n.caja.querySelectorAll("[data-linea]").length, 3);
+    assert.equal(n.caja.querySelector("[data-pie-balance]").textContent, "y 4 líneas más");
+  } finally { m.desmontar(); n.desmontar(); }
+});
