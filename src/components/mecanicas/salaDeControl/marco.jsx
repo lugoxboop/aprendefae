@@ -1,4 +1,5 @@
 import { FAE } from "../../../theme.js";
+import { ROTULO, TITULO } from "../../../estilo/jerarquia.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -74,8 +75,8 @@ export function Panel({ rotulo, titulo, children, acento = FAE.teal, style }) {
           {rotulo && (
             <p
               style={{
-                fontFamily: "Sora, sans-serif", fontSize: "10.5px", fontWeight: 700,
-                letterSpacing: "0.16em", color: acento, margin: "0 0 5px",
+                /* Jerarquía (src/estilo/jerarquia.js): el rótulo dice dónde estás, a 12 px. */
+                ...ROTULO, color: acento, margin: "0 0 6px",
               }}
             >
               {rotulo}
@@ -84,9 +85,8 @@ export function Panel({ rotulo, titulo, children, acento = FAE.teal, style }) {
           {titulo && (
             <h3
               style={{
-                fontFamily: "Sora, sans-serif", fontWeight: 700,
-                fontSize: "clamp(15px, 2.2vw, 18px)", letterSpacing: "-0.015em",
-                color: FAE.text, margin: 0, lineHeight: 1.25,
+                /* El título es lo primero que se lee: 20 px, el más grande de la tarjeta. */
+                ...TITULO, margin: 0,
               }}
             >
               {titulo}

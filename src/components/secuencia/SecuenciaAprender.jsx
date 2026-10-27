@@ -156,10 +156,10 @@ export function Veredicto({ estado, pista, porque }) {
         {acierto ? "Correcto" : "No va aquí"}
       </span>
       {!acierto && !mostrarCorrecto(estado) && pista && (
-        <p style={{ margin: "6px 0 0", fontFamily: "Inter, sans-serif", fontSize: "14px", lineHeight: "22px", color: "rgba(248,249,250,0.8)" }}>{pista}</p>
+        <p style={{ margin: "6px 0 0", fontFamily: "Inter, sans-serif", fontSize: "14px", lineHeight: "22px", color: "#C9D3E0" }}>{pista}</p>
       )}
       {mostrarCorrecto(estado) && porque && (
-        <p style={{ margin: "6px 0 0", fontFamily: "Inter, sans-serif", fontSize: "14px", lineHeight: "22px", color: "rgba(248,249,250,0.8)" }}>{porque}</p>
+        <p style={{ margin: "6px 0 0", fontFamily: "Inter, sans-serif", fontSize: "14px", lineHeight: "22px", color: "#C9D3E0" }}>{porque}</p>
       )}
     </div>
   );
@@ -447,7 +447,7 @@ export default function SecuenciaAprender({ temaId, piezas, final = "tema", onFi
 
             <div ref={bandaRef} data-banda className={g(3)}>
               {pantalla.apoyo && (
-                <p data-apoyo style={{ margin: "12px 0 0", fontFamily: "Inter, sans-serif", fontSize: "14px", lineHeight: "22px", color: "rgba(248,249,250,0.8)" }}>
+                <p data-apoyo style={{ margin: "12px 0 0", fontFamily: "Inter, sans-serif", fontSize: "14px", lineHeight: "22px", color: "#C9D3E0" }}>
                   {pantalla.apoyo}
                 </p>
               )}

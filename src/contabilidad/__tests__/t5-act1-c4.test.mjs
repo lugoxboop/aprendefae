@@ -192,7 +192,7 @@ test("★★★ C4-1: no hay cifra que escribir, así que nada se califica antes
  * Retomada por Erwin en #580: el cierre compartido (cifra neutra, «RESULTADO» a 12 px) y el «¿Cómo se juega?»
  * de 44 px cambian el marcado de TODAS las piezas, con o sin C4. FichasUnNivel no se tocó.
  */
-const HUELLA_MAIN_FICHAS = "a4f3cc5d463bb365898e23fa767f8a8b1b0d392030674ed231042c5d5db5f6f4";
+const HUELLA_MAIN_FICHAS = "e01330b11637c0ea950525c2818817862f777108309fe7068a373610a1f5d7b2";
 test("★★★ sin la prop `c4`, FichasUnNivel pinta exactamente lo de main (T6 Act1 y T5 Act1, paso a paso)", async () => {
   assert.equal(await recorridoFichas(), HUELLA_MAIN_FICHAS);
 });
