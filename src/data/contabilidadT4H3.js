@@ -175,7 +175,7 @@ export const SERIES_H3 = [SERIE_1, SERIE_2];
 
 /* ═══════════ «ASÍ SE JUEGA» ═══════════ */
 
-export const PASOS_H3 = ["Lee la operación.", "¿Qué cuenta sube? ¿Cuál baja?", "El libro tiene que dar lo del sobre."];
+export const PASOS_H3 = ["Lee la operación y su monto.", "Toca el DEBE de la cuenta que sube.", "Toca el HABER de la que baja y luego Comprobar."];
 export const ALT_H3 = "Papelería Arcoíris abre una caja menor de $200.000. Caja menor va al debe y Bancos al haber, y el libro queda igual que el sobre: 200.000.";
 /* La apertura de Papelería Arcoíris (construida, no está en ninguna serie). La demo nunca falla. */
 export const EJEMPLO_H3 = {

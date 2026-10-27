@@ -114,11 +114,7 @@ const ASI_FAMILIA = {
   actividadId: "cu-de-que-familia",
   titulo: nombreDe("cu-de-que-familia"),
   consigna: CONSIGNA_TEMA2["cu-de-que-familia"],
-  pasos: [
-    "Lee el nombre de la cuenta.",
-    "Pregúntate: ¿la empresa la tiene, la debe o es lo que la empresa les reconoce a los socios?",
-    "Arrastra la cuenta a esa familia.",
-  ],
+  pasos: ["Lee el nombre de la cuenta.", "Decide si la empresa la tiene, la debe o es de los socios.", "Arrastra la cuenta a esa familia."],
   alt: "la ficha «Maquinaria · $3.000.000» se arrastra a la sección «ACTIVO» del estado de situación financiera de la panadería.",
   demo: { items: [EJEMPLO_FAMILIA], empresa: "Panadería" },
   guion: {
@@ -142,11 +138,7 @@ const ASI_CUADRO = {
   actividadId: "cu-cuadro-dinamicas",
   titulo: nombreDe("cu-cuadro-dinamicas"),
   consigna: CONSIGNA_TEMA2["cu-cuadro-dinamicas"],
-  pasos: [
-    "Piensa si esa familia crece por el debe o por el haber.",
-    "Toca + o − y queda puesto en la casilla del debe.",
-    "La casilla del haber se llena sola, con el signo contrario.",
-  ],
+  pasos: ["Lee la familia de la fila.", "Toca + si crece por el debe, o − si crece por el haber.", "La casilla del haber se llena sola, con el signo contrario."],
   alt: "en la fila «Activos» se pone «+» en la casilla del DEBE, y la del HABER se llena sola con «−».",
   demo: {},
   guion: {
@@ -210,11 +202,7 @@ const ASI_SALDO = {
   actividadId: "cu-saldo-de-la-cuenta",
   titulo: nombreDe("cu-saldo-de-la-cuenta"),
   consigna: CONSIGNA_TEMA2["cu-saldo-de-la-cuenta"],
-  pasos: [
-    "Suma cada columna de la cuenta por separado.",
-    "Escribe el saldo: la diferencia entre las dos sumas.",
-    "Toca el lado de la columna que sumó más.",
-  ],
+  pasos: ["Suma cada columna de la cuenta por separado.", "Escribe el saldo: la resta entre las dos sumas.", "Toca Debe o Haber: el lado que sumó más."],
   alt: "en la cuenta Caja de la panadería se escribe «$700.000» y se toca «Debe». Queda el saldo del lado del debe.",
   demo: { items: [EJEMPLO_SALDO] },
   guion: {

@@ -24,11 +24,7 @@ export const ACT4_T3 = {
   consigna: "Lee el hecho. Pon un nombre en cada cuenta y el valor en su lado.",
 };
 
-export const PASOS_ACT4 = [
-  "Pregúntate si lo que falta anotar es un gasto o un ingreso.",
-  "Toca un nombre y después la cuenta donde va.",
-  "Toca el valor y después el lado de su cuenta.",
-];
+export const PASOS_ACT4 = ["Lee el hecho: ¿falta anotar un gasto o un ingreso?", "Toca un nombre y luego la cuenta donde va.", "Toca el valor y luego el lado de su cuenta."];
 
 /* La clase de cada ítem: decide el texto de cuenta errada. */
 export const POR_PAGAR = "gasto";

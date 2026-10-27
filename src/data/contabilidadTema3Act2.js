@@ -218,8 +218,8 @@ export const EJEMPLO_PANADERIA = {
 
 export const PASOS_ACT2 = [
   /* Pasos 1 y 3: F4 de la línea base de Takamura, decididos por Kamogawa (#506). El 2 es el de Levi. */
-  "Ubica las marcas en la línea, de la primera a la última.",
-  "Busca el día en que se entregó el bien o se prestó el servicio.",
-  "Revisa que no sea la fecha del papel, de la plata, del acuerdo ni del cierre.",
+  "Lee el hecho y las marcas de la línea.",
+  "Busca el día en que se entregó o se prestó.",
+  "Toca esa marca: no la del papel ni la de la plata.",
 ];
 export const ALT_TUTORIAL_ACT2 = "Ejemplo: la línea tiene tres marcas. Se toca la de la entrega del pan, el 10, y no la del pedido ni la del pago.";

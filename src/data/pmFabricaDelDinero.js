@@ -177,11 +177,7 @@ export const CREA_O_CAMBIA = {
   cierre: "Fíjese en quién paga y con qué. Si el Banco de la República paga con pesos nuevos, se crea dinero. Si alguien paga con plata que ya existía, solo cambia de manos. Si el Banco recibe pesos al vender, el dinero sale de circulación.",
 };
 
-export const PASOS_CREA_O_CAMBIA = [
-  "Lea el hecho.",
-  "Pregúntese quién paga y con qué plata.",
-  "Elija una de las tres opciones: tiene un solo intento por hecho.",
-];
+export const PASOS_CREA_O_CAMBIA = ["Lea el hecho de la tarjeta.", "Decida quién paga y con qué plata.", "Toque una de las tres opciones: hay un solo intento por hecho."];
 
 export const CREA = "crea";
 export const CAMBIA = "cambia";

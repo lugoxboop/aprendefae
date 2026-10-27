@@ -24,11 +24,7 @@ export const ARTERIA = {
   cierre: "La tasa no reparte parejo. Entra fuerte por la inversión, llega al consumo porque las familias tienen menos con qué gastar y toca las exportaciones netas por el tipo de cambio. En el modelo, al gasto público no lo toca.",
 };
 
-export const PASOS_ARTERIA = [
-  "Lee qué pasa en el eslabón y a quién le pasa.",
-  "Pregúntate si alguien ya cambió cuánto gasta.",
-  "Toca esa arteria, o toca que todavía no llega a ninguna.",
-];
+export const PASOS_ARTERIA = ["Lee qué pasa en el eslabón y a quién le pasa.", "Decide si alguien ya cambió cuánto gasta.", "Toca esa arteria, o toca que todavía no llega a ninguna."];
 
 /* En este orden fijo: son las arterias del modelo, numeradas. */
 export const OPCIONES_ARTERIA = [
