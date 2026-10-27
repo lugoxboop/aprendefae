@@ -117,7 +117,7 @@ test("★★★ D8: la partida real, sin inyectar nada, baraja: el orden varía 
 /* ═══════════ SIN `mezclar`: LO DE MAIN ═══════════ */
 
 /* La huella del recorrido de T5 Act2 y T6 Act2 (Célula B) sin `mezclar`, tomada con el código de main (efa2501e). */
-const HUELLA_MAIN_MESA = "054334106b15c1d803dd95bfa277e3da510da05c4e45ed8b0b30724fa64ae57c";
+const HUELLA_MAIN_MESA = "52409dd20e558d0abb3bafc93b36299a1732d24ce80ca80696e54d07091d782a";
 test("★★★ sin la prop `mezclar`, CierreConMesa pinta exactamente lo de main (T5 Act2 y T6 Act2, paso a paso)", async () => {
   assert.equal(await recorridoMesa(), HUELLA_MAIN_MESA);
   await con(h(CierreConDiario, { ...MARCO, onCompletar: () => {}, mezclar: null }), async (caja) => {

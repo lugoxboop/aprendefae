@@ -62,10 +62,7 @@ const CEJILLAS = {
     cuantas: 1,
     razon: "«EL ASIENTO CORRECTO» y demás rótulos de AsientoEnLineas: etiquetan el asiento que está justo debajo y se entiende sin ellos.",
   },
-  "src/components/mecanicas/corazon/juego.jsx": {
-    cuantas: 1,
-    razon: "El rótulo opcional de la tarjeta de resultado: etiqueta algo que ya se lee solo. «RESULTADO» subió a 12 px en #542.",
-  },
+
 };
 
 const tamanosPequenos = (fuente) => {
