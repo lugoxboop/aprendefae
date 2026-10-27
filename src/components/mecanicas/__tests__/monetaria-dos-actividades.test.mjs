@@ -163,7 +163,7 @@ test("★★★ A: los textos, tal cual", () => {
   assert.equal(ARTERIA.cierre, "La tasa no reparte parejo. Entra fuerte por la inversión, llega al consumo porque las familias tienen menos con qué gastar y toca las exportaciones netas por el tipo de cambio. En el modelo, al gasto público no lo toca.");
   assert.deepEqual(M.PASOS_ARTERIA, [
     "Lee qué pasa en el eslabón y a quién le pasa.",
-    "Pregúntate si alguien ya cambió cuánto gasta.",
+    "Decide si alguien ya cambió cuánto gasta.",
     "Toca esa arteria, o toca que todavía no llega a ninguna.",
   ]);
   assert.equal(M.EJEMPLO_ARTERIA.texto, "Un hotel cancela la construcción de un ala nueva por el costo del crédito.");

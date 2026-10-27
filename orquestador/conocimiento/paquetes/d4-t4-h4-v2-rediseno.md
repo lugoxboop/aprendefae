@@ -198,9 +198,9 @@ En la pregunta 4, el mensaje de cada cuenta equivocada sale igual en el debe y e
 
 | Lugar | Texto | Conteo |
 |---|---|---|
-| Paso 1 | Suma soportes y caja. | 4 pal. |
-| Paso 2 | ¿Falta, cuadra o sobra? | 4 pal. |
-| Paso 3 | Luego, la diferencia y el reembolso. | 6 pal. |
+| Paso 1 | Suma soportes y caja, y compáralo con el fondo. | 4 pal. |
+| Paso 2 | Toca Falta, Cuadra o Sobra. | 4 pal. |
+| Paso 3 | Luego escribe la diferencia y el reembolso. | 6 pal. |
 | Ejemplo · título | Iván · un vivero | 3 pal. |
 | Ejemplo · tarjeta (sobre: soportes 268.400, caja 54.300) | Fondo de $320.000. Si falta plata, la empresa la asume. | 10 pal. · INFLESZ 83,5 |
 | Acierto del ejemplo (zona «Sobra») | Correcto. $268.400 más $54.300 dan $322.700: más que el fondo de $320.000. | 12 pal. · INFLESZ 81,4 |

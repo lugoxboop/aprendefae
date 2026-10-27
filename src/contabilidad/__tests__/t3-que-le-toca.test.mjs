@@ -108,8 +108,8 @@ test("★★★ para cada ítem: el mes correcto del corte (10, 5, 7, 1 y 1) y l
 test("★★★ los textos de Gen, textuales: consigna, pasos, hechos, pies, aciertos y errores", () => {
   assert.equal(A6.ACT6_T3.consigna, "Lee el hecho. Marca el corte y escribe las dos cifras.");
   assert.deepEqual(A6.PASOS_ACT6, [
-    "Mira cuánto se pagó o se recibió y por cuántos meses.",
-    "Marca el corte en el mes en que cierra la empresa.",
+    "Lee cuánto se pagó o se recibió y por cuántos meses.",
+    "Mueve el corte con Antes o Después hasta el mes del cierre.",
     "Escribe cuánto le toca al periodo y cuánto queda.",
   ]);
   assert.deepEqual(ITEMS_ACT6.map((x) => [x.empresa, x.hecho, x.pie, x.acierto]), [
@@ -274,7 +274,7 @@ test("★★★ en pantalla: bloqueados hasta que haya corte; el formato se apli
     const campo = m.caja.querySelector('[data-campo="alPeriodo"]');
     assert.equal(campo.getAttribute("aria-disabled"), "true");
     assert.equal(campo.readOnly, true);
-    assert.equal(m.caja.querySelector("[data-pista]").textContent, "Marca el corte en el mes en que cierra la empresa.");
+    assert.equal(m.caja.querySelector("[data-pista]").textContent, "Mueve el corte con Antes o Después hasta el mes del cierre.");
     assert.equal(comprobar(m.caja).disabled, true);
     assert.equal(m.caja.querySelector('[data-paso-corte="antes"]').disabled, true);
     await clic(m.caja.querySelector('[data-paso-corte="despues"]'));

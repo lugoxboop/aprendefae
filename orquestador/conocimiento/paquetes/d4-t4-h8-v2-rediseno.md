@@ -131,9 +131,9 @@ Orden de las reglas (paquete): sin Bancos; Bancos al lado contrario; la cuenta; 
 
 | Lugar | Texto | Conteo |
 |---|---|---|
-| Paso 1 | ¿Les falta a los libros? | 5 pal. |
-| Paso 2 | Si les falta, se asienta. | 5 pal. |
-| Paso 3 | El mayor da el saldo final. | 6 pal. |
+| Paso 1 | Lee la partida: ¿les falta a los libros? | 5 pal. |
+| Paso 2 | Toca el botón que dice si se asienta o no. | 5 pal. |
+| Paso 3 | Arma cada asiento y escribe el saldo del mayor. | 6 pal. |
 | Ejemplo (partida, 50.000) | La empresa giró un cheque, y nadie lo ha cobrado todavía. | 11 pal. · INFLESZ 76,9 |
 | Acierto del ejemplo («No se asienta») | Correcto. La empresa ya lo anotó al girarlo: a sus libros no les falta nada. | 15 pal. · INFLESZ 91,3 |
 | Texto alternativo (`alt`) | Un cheque de $50.000 que nadie ha cobrado va a «No se asienta», porque la empresa ya lo anotó al girarlo. | 21 pal. · INFLESZ 79 |

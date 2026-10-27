@@ -103,9 +103,9 @@ Los errores son los del paquete, sin cambios (Hanayama los usó para medir). Sol
 
 | Lugar | Texto | Conteo |
 |---|---|---|
-| Paso 1 | Lee la operación. | 3 pal. |
-| Paso 2 | ¿Qué cuenta sube? ¿Cuál baja? | 5 pal. |
-| Paso 3 | El libro tiene que dar lo del sobre. | 8 pal. |
+| Paso 1 | Lee la operación y su monto. | 3 pal. |
+| Paso 2 | Toca el DEBE de la cuenta que sube. | 5 pal. |
+| Paso 3 | Toca el HABER de la que baja y luego Comprobar. | 8 pal. |
 | Ejemplo (tarjeta, 200.000; sobre «LO QUE TIENE JULIO») | El 2 de enero, Papelería Arcoíris abre una caja menor. Le hace un cheque a Julio, que la va a manejar. | 21 pal. · INFLESZ 74,7 |
 | Acierto del ejemplo | Correcto. La plata pasa del banco al fondo: Caja menor va al debe y Bancos al haber. | 17 pal. · INFLESZ 95,7 |
 | Texto alternativo (`alt`) | Papelería Arcoíris abre una caja menor de $200.000. Caja menor va al debe y Bancos al haber, y el libro queda igual que el sobre: 200.000. | 26 pal. · INFLESZ 74 |

@@ -145,7 +145,7 @@ test("★★★ act. 5: cada ítem con las cuentas, los lados, el valor, el cier
 
 test("★★★ los textos de Gen, textuales (y los hechos 4 y 5 de la act. 5 fijados por Levi)", () => {
   assert.equal(A4.ACT4_T3.consigna, "Lee el hecho. Pon un nombre en cada cuenta y el valor en su lado.");
-  assert.deepEqual(A4.PASOS_ACT4, ["Pregúntate si lo que falta anotar es un gasto o un ingreso.", "Toca un nombre y después la cuenta donde va.", "Toca el valor y después el lado de su cuenta."]);
+  assert.deepEqual(A4.PASOS_ACT4, ["Lee el hecho: ¿falta anotar un gasto o un ingreso?", "Toca un nombre y luego la cuenta donde va.", "Toca el valor y luego el lado de su cuenta."]);
   assert.deepEqual(A4.ITEMS_ACT4.map((x) => x.hecho), [
     "Salarios acumulados por pagar a marzo 31",
     "Intereses pendientes de pago a marzo 31",
@@ -165,7 +165,7 @@ test("★★★ los textos de Gen, textuales (y los hechos 4 y 5 de la act. 5 fi
     "El mismo hecho del otro lado. El ingreso ya es suyo y falta cobrarlo.",
   ]);
   assert.equal(A5.ACT5_T3.consigna, "Lee el hecho. Arma el asiento y escribe el valor del periodo.");
-  assert.deepEqual(A5.PASOS_ACT5, ["Mira cuánto se pagó o se recibió y por cuántos meses.", "Calcula cuánto le toca a este periodo.", "Pon un nombre en cada cuenta y escribe el valor."]);
+  assert.deepEqual(A5.PASOS_ACT5, ["Lee cuánto se pagó o se recibió y por cuántos meses.", "Calcula cuánto le toca a este periodo.", "Pon un nombre en cada cuenta y escribe ese valor."]);
   assert.deepEqual(A5.ITEMS_ACT5.map((x) => x.hecho), [
     "Mónica Galindo cierra el 31 de diciembre. Seguro de cinco años por $480.000, comprado el 1 de marzo",
     "Mónica Galindo cierra el 31 de diciembre. Alquiler de equipos: pagó $1.080.000 por seis meses, desde el 1 de agosto",

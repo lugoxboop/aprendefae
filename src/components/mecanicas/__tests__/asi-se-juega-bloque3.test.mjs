@@ -142,11 +142,11 @@ test("★★ los pasos de Gen, palabra por palabra", () => {
   const pasos = Object.fromEntries(IDS.map((id) => [id, ASI_TODAS[id].pasos]));
   assert.deepEqual(pasos[T1_6.id], ["Lee la ficha de arriba.", "Toca su destino, uno de los cinco, en un solo toque.", "Mira cómo sube la cuenta de ese destino."]);
   assert.deepEqual(pasos["cu-izquierda-o-derecha"], ["Lee si esa cuenta sube o baja.", "Arrastra la ficha al debe o al haber.", "El ▲ marca el lado por donde esa cuenta crece."]);
-  assert.deepEqual(pasos["cu-de-que-familia"], ["Lee el nombre de la cuenta.", "Pregúntate: ¿la empresa la tiene, la debe o es lo que la empresa les reconoce a los socios?", "Arrastra la cuenta a esa familia."]);
-  assert.deepEqual(pasos["cu-cuadro-dinamicas"], ["Piensa si esa familia crece por el debe o por el haber.", "Toca + o − y queda puesto en la casilla del debe.", "La casilla del haber se llena sola, con el signo contrario."]);
+  assert.deepEqual(pasos["cu-de-que-familia"], ["Lee el nombre de la cuenta.", "Decide si la empresa la tiene, la debe o es de los socios.", "Arrastra la cuenta a esa familia."]);
+  assert.deepEqual(pasos["cu-cuadro-dinamicas"], ["Lee la familia de la fila.", "Toca + si crece por el debe, o − si crece por el haber.", "La casilla del haber se llena sola, con el signo contrario."]);
   assert.deepEqual(pasos["cu-debita-o-acredita"], ["Lee la transacción completa.", "Mira por qué cuenta te preguntan.", "Arrastra la ficha: al debe es debitar, al haber es acreditar."]);
-  assert.deepEqual(pasos["cu-saldo-de-la-cuenta"], ["Suma cada columna de la cuenta por separado.", "Escribe el saldo: la diferencia entre las dos sumas.", "Toca el lado de la columna que sumó más."]);
-  assert.deepEqual(pasos["cu-arma-el-asiento"], ["Lee la transacción y busca las dos cuentas.", "Toca un nombre y después la cuenta donde va.", "Toca el valor y después el lado de su cuenta."]);
+  assert.deepEqual(pasos["cu-saldo-de-la-cuenta"], ["Suma cada columna de la cuenta por separado.", "Escribe el saldo: la resta entre las dos sumas.", "Toca Debe o Haber: el lado que sumó más."]);
+  assert.deepEqual(pasos["cu-arma-el-asiento"], ["Lee la transacción y busca las dos cuentas.", "Toca un nombre y luego la cuenta donde va.", "Toca el valor y luego el lado de su cuenta."]);
   assert.deepEqual(pasos["cu-asiento-compuesto"], ["Lee la transacción y cuenta cuántas cuentas se mueven.", "Saca cada cuenta al debe o al haber y escribe su valor.", "Revisa que los totales den igual: solo hay un intento."]);
 });
 

@@ -235,8 +235,8 @@ const ASI_ASIENTO_SIMPLE = {
   consigna: CONSIGNA_TEMA2["cu-arma-el-asiento"],
   pasos: [
     "Lee la transacción y busca las dos cuentas.",
-    "Toca un nombre y después la cuenta donde va.",
-    "Toca el valor y después el lado de su cuenta.",
+    "Toca un nombre y luego la cuenta donde va.",
+    "Toca el valor y luego el lado de su cuenta.",
   ],
   alt: "se toca «Maquinaria» y después la primera cuenta, y «Caja» y después la segunda. Se toca cada valor y después su lado: el «DEBE» de Maquinaria y el «HABER» de Caja. Al confirmar se traza el arco.",
   demo: { items: [EJEMPLO_ASIENTO_SIMPLE] },
