@@ -415,16 +415,22 @@ export default function CaminoHacer({ nodos = [], onAbrir, vacio, especial = nul
 }
 
 /*
- * En qué lado del final del camino cabe la mascota. El último nodo se va a un
- * lado y su rótulo al contrario, así que ocupan los dos: la mascota se queda
- * con el lado del NODO, pegada al borde y por debajo de él, que es donde
- * queda aire. Con un solo nodo el camino va centrado y el rótulo debajo, así
- * que ahí no hay lado libre y la mascota se va al centro, bajo todo.
+ * En qué lado del final del camino cabe la mascota: en el CONTRARIO al último
+ * nodo.
+ *
+ * Medido a 320 px, que es donde se ve: bajo el último nodo quedan unos 38 px
+ * libres —56 de margen menos el radio— y la mascota mide 48. Puesta del lado
+ * del nodo se le monta encima; puesta enfrente cae bajo el rótulo, que acaba
+ * bastante más arriba, y no roza nada. A 375 las dos opciones se veían bien,
+ * y por eso la primera versión pasó: a 375 casi todo cabe.
+ *
+ * Con un solo nodo el camino va centrado y su rótulo DEBAJO, así que no hay
+ * lado contrario: la mascota se va al centro, bajo todo.
  */
 export function ladoLibreAlFinal(puntos, ancho = ANCHO) {
   if (!puntos?.length || puntos.length === 1) return "centro";
   const ultimo = puntos[puntos.length - 1];
-  return ultimo.x < ancho / 2 ? "izquierda" : "derecha";
+  return ultimo.x < ancho / 2 ? "derecha" : "izquierda";
 }
 
 /* -------------------------------- el lienzo -------------------------------- */

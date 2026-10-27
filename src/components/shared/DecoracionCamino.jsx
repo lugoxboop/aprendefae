@@ -253,8 +253,8 @@ export default function DecoracionCamino({ tema = null, densa = true, mascota = 
         no mueve ni una huella del recorrido.
       */}
       {mascota && (
-        <div style={{ position: "absolute", bottom: "6px", ...SITIO_MASCOTA[ladoMascota] }}>
-          <Mascota tamano={48} />
+        <div style={{ position: "absolute", bottom: "2px", ...SITIO_MASCOTA[ladoMascota] }}>
+          <Mascota tamano={38} />
         </div>
       )}
     </div>
