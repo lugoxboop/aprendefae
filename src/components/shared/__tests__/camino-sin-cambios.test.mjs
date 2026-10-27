@@ -105,9 +105,32 @@ function casos() {
  * de eso se encarga `decoracion-camino.test.mjs`.
  */
 export function sinDecoracion(html) {
-  return html
-    .replace(/<div class="fae-dc" aria-hidden="true" style="[^"]*">.*?<\/div>/gs, "")
-    .replaceAll("; position: relative; z-index: 1;", ";");
+  let salida = html;
+  /*
+   * Se recorta contando divs, no con una expresión regular perezosa: la capa
+   * lleva dentro el muñequito, que va en su propio div, y un `.*?</div>` se
+   * pararía en el cierre de ese y dejaría basura. Contar es aburrido y no
+   * falla cuando alguien añade otra cosa dentro.
+   */
+  for (;;) {
+    const abre = salida.indexOf('<div class="fae-dc"');
+    if (abre === -1) break;
+    let i = abre;
+    let hondo = 1; // ya estamos dentro del div de la capa
+    for (;;) {
+      const sig = salida.slice(i + 1).search(/<\/?div\b/);
+      if (sig === -1) throw new Error("capa decorativa sin cerrar en el HTML");
+      i = i + 1 + sig;
+      if (salida.startsWith("</div", i)) {
+        hondo -= 1;
+        if (hondo === 0) break;
+      } else {
+        hondo += 1;
+      }
+    }
+    salida = salida.slice(0, abre) + salida.slice(salida.indexOf(">", i) + 1);
+  }
+  return salida.replaceAll("; position: relative; z-index: 1;", ";");
 }
 
 const huella = (html) => createHash("sha256").update(sinDecoracion(html)).digest("hex");

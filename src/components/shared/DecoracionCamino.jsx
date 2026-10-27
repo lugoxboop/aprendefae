@@ -1,4 +1,5 @@
 import { FAE } from "../../theme.js";
+import Mascota from "./Mascota.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -172,6 +173,19 @@ const DEL_TEMA = {
   ],
 };
 
+/*
+ * Dónde se planta la mascota al final del camino. El camino serpentea, así
+ * que el último nodo cae a un lado o al otro y su rótulo se va al contrario:
+ * la mascota se pone en el lado que queda libre. En el centro solo cuando no
+ * se sabe —un camino de un nodo, por ejemplo—, que es donde el centro sí
+ * está despejado.
+ */
+const SITIO_MASCOTA = {
+  izquierda: { left: "4%" },
+  derecha: { right: "4%" },
+  centro: { left: "50%", transform: "translateX(-50%)" },
+};
+
 function Figura({ p }) {
   const dibujo = FIGURAS[p.f];
   if (!dibujo) return null;
@@ -223,7 +237,7 @@ function Figura({ p }) {
  *              true añade las del tema. Un camino de un solo nodo, o uno muy
  *              corto, no tiene sitio para más de lo tenue.
  */
-export default function DecoracionCamino({ tema = null, densa = true }) {
+export default function DecoracionCamino({ tema = null, densa = true, mascota = true, ladoMascota = "centro" }) {
   const piezas = densa ? [...AMBIENTE, ...(DEL_TEMA[tema] || [])] : AMBIENTE;
   return (
     <div className="fae-dc" aria-hidden="true" style={CAJA}>
@@ -231,6 +245,18 @@ export default function DecoracionCamino({ tema = null, densa = true }) {
       {piezas.map((p, i) => (
         <Figura key={`${p.f}-${i}`} p={p} />
       ))}
+      {/*
+        La mascota va al final del recorrido, centrada, en el aire que el
+        camino ya reserva abajo. Vive en esta capa y no en el lienzo por dos
+        razones: aquí ya está puesto que nada se toca ni se lee, y la foto de
+        `camino-sin-cambios` pesa el HTML sin esta capa, así que el muñequito
+        no mueve ni una huella del recorrido.
+      */}
+      {mascota && (
+        <div style={{ position: "absolute", bottom: "6px", ...SITIO_MASCOTA[ladoMascota] }}>
+          <Mascota tamano={48} />
+        </div>
+      )}
     </div>
   );
 }

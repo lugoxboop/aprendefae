@@ -80,7 +80,7 @@ test("★★★ se queda dentro de su caja: ni una figura provoca barra horizont
     const capa = m.caja.querySelector(".fae-dc");
     assert.equal(capa.style.overflow, "hidden", "lo que asoma se corta, no empuja la página");
     assert.equal(capa.style.position, "absolute", "no ocupa sitio en el flujo");
-    for (const f of capa.querySelectorAll("svg")) {
+    for (const f of capa.querySelectorAll(":scope > svg")) {
       const izq = parseFloat(f.style.left);
       const arr = parseFloat(f.style.top);
       assert.ok(izq >= 0 && izq <= 95, `una figura empieza en ${izq}% de ancho`);
@@ -92,7 +92,7 @@ test("★★★ se queda dentro de su caja: ni una figura provoca barra horizont
 test("★★★ es tenue: ninguna figura compite con un nodo", async () => {
   const m = await montar(h(DecoracionCamino, { tema: "contabilidad" }));
   try {
-    for (const f of m.caja.querySelectorAll(".fae-dc svg")) {
+    for (const f of m.caja.querySelectorAll(".fae-dc > svg")) {
       const op = parseFloat(f.style.opacity);
       assert.ok(op > 0 && op <= 0.14, `una figura va a ${op} de opacidad; el techo es 0,14`);
     }
@@ -120,14 +120,14 @@ test("★★★ es determinista: dos pintados dan exactamente lo mismo", async (
 
 test("★★★ el tema añade sus glifos y no se cuelan los de la otra materia", async () => {
   const conta = await montar(h(DecoracionCamino, { tema: "contabilidad" }));
-  const nConta = conta.caja.querySelectorAll(".fae-dc svg").length;
+  const nConta = conta.caja.querySelectorAll(".fae-dc > svg").length;
   conta.desmontar();
   const macro = await montar(h(DecoracionCamino, { tema: "macroeconomia" }));
-  const nMacro = macro.caja.querySelectorAll(".fae-dc svg").length;
+  const nMacro = macro.caja.querySelectorAll(".fae-dc > svg").length;
   const htmlMacro = macro.caja.innerHTML;
   macro.desmontar();
   const pelado = await montar(h(DecoracionCamino, { tema: null }));
-  const nPelado = pelado.caja.querySelectorAll(".fae-dc svg").length;
+  const nPelado = pelado.caja.querySelectorAll(".fae-dc > svg").length;
   pelado.desmontar();
 
   assert.equal(nConta, nMacro, "las dos materias reciben el mismo número de figuras");
@@ -154,6 +154,45 @@ test("★★★ dentro del camino va DETRÁS del recorrido", async () => {
 test("★★★ un camino sin tema sigue teniendo decoración", async () => {
   const m = await montar(h(CaminoHacer, { nodos: NODOS, onAbrir() {} }));
   try {
-    assert.ok(m.caja.querySelector(".fae-dc svg"), "Pensamiento Estratégico también tiene fondo");
+    assert.ok(m.caja.querySelector(".fae-dc > svg"), "Pensamiento Estratégico también tiene fondo");
   } finally { m.desmontar(); }
+});
+
+/* ── la mascota ── */
+
+test("★★★ la mascota está al final del camino, y tampoco se toca ni se oye", async () => {
+  const m = await montar(h(CaminoHacer, { nodos: NODOS, onAbrir() {}, tema: "contabilidad" }));
+  try {
+    const mascota = m.caja.querySelector(".fae-ms");
+    assert.ok(mascota, "el camino trae su muñequito");
+    assert.equal(mascota.getAttribute("aria-hidden"), "true");
+    assert.equal(mascota.getAttribute("focusable"), "false");
+    /* Vive DENTRO de la capa decorativa: de ahí hereda que nada se puede pulsar. */
+    assert.ok(mascota.closest(".fae-dc"), "va dentro de la decoración, no suelta en el lienzo");
+    const sitio = mascota.parentElement;
+    assert.equal(sitio.style.position, "absolute");
+    assert.ok(sitio.style.bottom, "se ancla abajo, en el aire que el camino ya reserva");
+  } finally { m.desmontar(); }
+});
+
+test("★★★ se puede quitar la mascota sin tocar el resto de la decoración", async () => {
+  const con = await montar(h(DecoracionCamino, { tema: "contabilidad" }));
+  const nCon = con.caja.querySelectorAll(".fae-dc > svg").length;
+  con.desmontar();
+  const sin = await montar(h(DecoracionCamino, { tema: "contabilidad", mascota: false }));
+  try {
+    assert.equal(sin.caja.querySelector(".fae-ms"), null, "sin mascota no hay muñequito");
+    assert.equal(sin.caja.querySelectorAll(".fae-dc > svg").length, nCon, "y las figuras siguen todas");
+  } finally { sin.desmontar(); }
+});
+
+test("★★★ el saludo de la mascota no es un bucle", async () => {
+  const { CSS: CSS_MASCOTA } = await import("../Mascota.jsx");
+  const saludo = CSS_MASCOTA.slice(CSS_MASCOTA.indexOf(".fae-ms-brazo"));
+  assert.ok(
+    !/fae-ms-saluda[^;]*infinite/.test(saludo),
+    "saluda un número de veces y para: un muñequito que saluda sin parar cansa",
+  );
+  const reducido = CSS_MASCOTA.slice(CSS_MASCOTA.indexOf("prefers-reduced-motion"));
+  assert.match(reducido, /animation:\s*none/, "con movimiento reducido se queda quieta");
 });

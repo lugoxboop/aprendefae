@@ -414,6 +414,19 @@ export default function CaminoHacer({ nodos = [], onAbrir, vacio, especial = nul
   );
 }
 
+/*
+ * En qué lado del final del camino cabe la mascota. El último nodo se va a un
+ * lado y su rótulo al contrario, así que ocupan los dos: la mascota se queda
+ * con el lado del NODO, pegada al borde y por debajo de él, que es donde
+ * queda aire. Con un solo nodo el camino va centrado y el rótulo debajo, así
+ * que ahí no hay lado libre y la mascota se va al centro, bajo todo.
+ */
+export function ladoLibreAlFinal(puntos, ancho = ANCHO) {
+  if (!puntos?.length || puntos.length === 1) return "centro";
+  const ultimo = puntos[puntos.length - 1];
+  return ultimo.x < ancho / 2 ? "izquierda" : "derecha";
+}
+
 /* -------------------------------- el lienzo -------------------------------- */
 
 function Lienzo({ nodos, onAbrir, especial, resaltado, marcas, tema = null }) {
@@ -466,7 +479,7 @@ function Lienzo({ nodos, onAbrir, especial, resaltado, marcas, tema = null }) {
         orden de pintado del navegador lo posicionado gana a lo que está en
         flujo, por tenue que sea.
       */}
-      <DecoracionCamino tema={tema} />
+      <DecoracionCamino tema={tema} ladoMascota={ladoLibreAlFinal(p, ANCHO)} />
       <svg viewBox={`0 0 ${anchoTotal} ${m.alto}`} width="100%" style={{ display: "block", overflow: "visible", position: "relative", zIndex: 1 }}>
         {/* La línea del recorrido, por debajo de todo. */}
         {d && (
@@ -807,7 +820,7 @@ function LienzoPorBloques({ bloques, onAbrir, resaltado, marcas, tema = null }) 
 
   return (
     <div data-camino-bloques style={{ position: "relative", width: "100%", maxWidth: `${ANCHO}px`, margin: "0 auto" }}>
-      <DecoracionCamino tema={tema} />
+      <DecoracionCamino tema={tema} ladoMascota={ladoLibreAlFinal(puntos, ANCHO)} />
       <svg viewBox={`0 0 ${ANCHO} ${m.alto}`} width="100%" style={{ display: "block", overflow: "visible", position: "relative", zIndex: 1 }}>
         {puntos.length > 1 && (
           <path data-linea d={trazo(puntos)} fill="none" stroke="rgba(248,249,250,0.22)" strokeWidth={m.grosor} strokeLinecap="round" />
