@@ -1,4 +1,5 @@
-2026-10-25 13:29 (hora Bogotá)
+2026-10-27 10:22 (hora Bogotá)
+- Repaso Diario T2 (lote T2-13, orden de Mateo vía Miku 27-oct): terminado, #620 en main con 23 ítems (cu-de-que-familia 18, cu-cuadro-dinamicas 5) y 5 Hacer fuera con su razón; PASA de Mello. Nota para Erwin: el rótulo de `Enunciado` sale teal por defecto en todo el Repaso. La célula vuelve a pausa
 - Tema: T2 cuentas-debe-haber (T5 y T7 ocultos por Erwin, nada borrado). Contabilidad tiene estudiantes: solo se agrega
 - Regla j: terminado, llegó a Misa (#471), Near y Watari; a Mello le llega con su próximo lote
 - #482 (subtemas para el Repaso), #494 (línea base) y #516 (logito CasilleroDeCuentas): terminado, fusionados con el PASA de Mello y CI verde
