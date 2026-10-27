@@ -13,7 +13,8 @@ import { H8_ID } from "../../data/contabilidadT4H8.js";
  * EL REPASO DE CONTABILIDAD — T4 · efectivo-caja-menor-bancos (Efectivo, caja menor y bancos).
  *
  * DUEÑA: Célula D (general Yujiro). Etiquetado de Katsumi, aprobado por
- * Yujiro tal cual: entran 31 ítems (H1 8, H4 8, H7 15); H3 y H8 quedan fuera.
+ * Yujiro, con el arreglo de Shibukawa en H7: entran 23 ítems (H1 8, H4 8,
+ * H7 7); H3 y H8 quedan fuera.
  *
  * ═══════════ NI UNA COPIA DE CONTENIDO ═══════════
  *
@@ -58,12 +59,20 @@ import { H8_ID } from "../../data/contabilidadT4H8.js";
  * ronda, por el regalo de arriba. Las de h4-3 y h4-5 están retiradas y no
  * entran nunca.
  *
- * ═══════════ H7: FASE 1, SIN LOS TEXTOS REPETIDOS ═══════════
+ * ═══════════ H7: FASE 1, UNA PARTIDA POR MOLDE (auditoría de Shibukawa, #622) ═══════════
  *
- * Entran s1-1…s1-9 y s2-1…s2-5 y s2-9. Fuera: s2-6, s2-7 y s2-8, que tienen
- * el mismo texto que s1-6, s1-7 y s1-8 (dos tarjetas idénticas, la primera
- * respondería la segunda), y `saldo-banco`/`saldo-libros`, que son cifras
- * escritas que dependen de las nueve partidas puestas.
+ * Las partidas de un mismo molde solo cambian el nombre o la fecha, y
+ * comparten la devolución palabra por palabra: los tres cheques girados de
+ * cada serie (`gir(n, e)`), la consignación (s1-4/s2-4), el cliente que
+ * consigna (s1-5/s2-5), el cheque devuelto (s1-9/s2-9) y los tres textos que
+ * la serie 2 repite tal cual (s2-6/7/8). El motor agrupa por clave, no por
+ * molde, así que dos del mismo molde podrían salir el mismo día y la primera
+ * le regalaría la respuesta a la segunda (el mismo caso que recorta H4).
+ *
+ * Entran 7, uno por molde: s1-1, s1-4, s1-5, s1-6, s1-7, s1-8 y s1-9 (s1-5 y
+ * s1-6, y s1-7 y s1-8, son hechos distintos). Fuera: s1-2, s1-3, toda la
+ * serie 2 y `saldo-banco`/`saldo-libros`, que son cifras escritas que
+ * dependen de las nueve partidas puestas.
  */
 const SUBTEMA_T4 = Object.fromEntries(itemsVigentesT4().map((x) => [x.clave, x.subtema]));
 const subtema = (actividad, itemId) => subtemaPorRegla(SUBTEMA_T4, `${actividad}:${itemId}`, "contabilidadT4Subtemas.js");
@@ -116,10 +125,15 @@ const itemsH4 = RONDAS_H4.filter((r) => PREGUNTA_H4[r.id]).map((r) => {
     devolucion: (e) => { const [c, l] = e.split(":"); return conPagina(evaluarCuentaH4(p, c, l).texto, r.pagina); } });
 });
 
-/* H7 · Concilia la cuenta: las partidas de la fase 1, sin los tres textos repetidos de la serie 2. */
-export const REPETIDAS_H7 = ["s2-6", "s2-7", "s2-8"];
+/* H7 · Concilia la cuenta: una partida de la fase 1 por molde, ver la cabecera. */
+export const PARTIDAS_H7 = ["s1-1", "s1-4", "s1-5", "s1-6", "s1-7", "s1-8", "s1-9"];
 const OPCIONES_H7 = SECCIONES_H7.map((s) => { const [lib, signo] = s.split(":"); return { id: s, texto: `${ROTULOS_H7[lib]} · ${ROTULOS_H7[signo]}` }; });
-const itemsH7 = SERIES_H7.flatMap((s) => s.partidas).filter((p) => !REPETIDAS_H7.includes(p.id)).map((p) => itemDeRepaso(H7_ID, p.id, {
+const partidaH7 = (id) => {
+  const p = SERIES_H7.flatMap((s) => s.partidas).find((q) => q.id === id);
+  if (!p) throw new Error(`${H7_ID}: la partida ${id} no está en el banco`);
+  return p;
+};
+const itemsH7 = PARTIDAS_H7.map(partidaH7).map((p) => itemDeRepaso(H7_ID, p.id, {
   subtema: subtema(H7_ID, p.id),
   rotulo: H7.nombre.toUpperCase(),
   enunciado: p.texto,

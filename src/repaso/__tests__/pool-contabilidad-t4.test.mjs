@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 
-import { ITEMS_T4, FUERA_T4, PREGUNTA_H4, REPETIDAS_H7 } from "../contabilidad/t4.js";
+import { ITEMS_T4, FUERA_T4, PREGUNTA_H4, PARTIDAS_H7 } from "../contabilidad/t4.js";
 import { ITEMS_T4 as FILAS_T4, itemsVigentesT4 } from "../../data/contabilidadT4Subtemas.js";
 import { H1, H1_ID, ITEMS_H1, DESTINOS_H1, evaluarH1 } from "../../data/contabilidadT4H1.js";
 import { H3_ID } from "../../data/contabilidadT4H3.js";
@@ -18,11 +18,11 @@ const de = (act) => ITEMS_T4.filter((x) => x.actividad === act);
 const retroDe = (bloques) => bloques.find((b) => b.tipo === "retro")?.texto;
 const notaDe = (bloques) => bloques.find((b) => b.tipo === "nota")?.texto;
 
-test("★ entran 31: H1 8, H4 8, H7 15; H3 y H8 fuera con su razón", () => {
-  assert.equal(ITEMS_T4.length, 31);
+test("★ entran 23: H1 8, H4 8, H7 7; H3 y H8 fuera con su razón", () => {
+  assert.equal(ITEMS_T4.length, 23);
   assert.equal(de(H1_ID).length, 8);
   assert.equal(de(H4_ID).length, 8);
-  assert.equal(de(H7_ID).length, 15);
+  assert.equal(de(H7_ID).length, 7);
   assert.deepEqual(FUERA_T4.map((f) => f.id), [H3_ID, H8_ID]);
   for (const f of FUERA_T4) assert.ok(f.razon.length > 40, `${f.id}: razón vacía`);
 });
@@ -41,8 +41,7 @@ test("★ el itemId es el que la pieza anota, nunca un índice", () => {
   assert.deepEqual(de(H1_ID).map((x) => x.itemId), ITEMS_H1.map((x) => x.id));
   assert.deepEqual(de(H4_ID).map((x) => x.itemId), Object.entries(PREGUNTA_H4).map(([r, p]) => itemH4(r, p)).sort((a, b) =>
     RONDAS_H4.findIndex((r) => r.id === a.split(":")[0]) - RONDAS_H4.findIndex((r) => r.id === b.split(":")[0])));
-  const partidas = SERIES_H7.flatMap((s) => s.partidas).map((p) => p.id).filter((id) => !REPETIDAS_H7.includes(id));
-  assert.deepEqual(de(H7_ID).map((x) => x.itemId), partidas);
+  assert.deepEqual(de(H7_ID).map((x) => x.itemId), PARTIDAS_H7);
   for (const x of ITEMS_T4) assert.ok(!/^\d+$/.test(x.itemId), `${x.clave}: el itemId parece un índice`);
 });
 
@@ -57,14 +56,32 @@ test("★ H4: una pregunta por ronda, dos distintas por par del sorteo, con el r
   for (const x of [...de(H1_ID), ...de(H7_ID)]) assert.equal(x.etiqueta, undefined, `${x.clave}: no enseña cifras`);
 });
 
-test("★ H7: fuera los tres textos repetidos de la serie 2, y ningún texto se repite en el pool", () => {
-  const todas = SERIES_H7.flatMap((s) => s.partidas);
-  for (const id of REPETIDAS_H7) {
-    const p = todas.find((q) => q.id === id);
-    assert.ok(todas.some((q) => q.id !== id && q.id.startsWith("s1-") && q.texto === p.texto), `${id} ya no repite texto: revisar si vuelve a entrar`);
+/*
+ * El molde de una partida de H7: su tipo y su texto sin lo que cambia de una
+ * a otra del mismo molde (el nombre, la fecha, «él/ella», «el cliente/la
+ * clienta»). Dos partidas del mismo molde comparten la devolución palabra por
+ * palabra, así que una le regalaría la respuesta a la otra (Shibukawa, #622).
+ */
+const TODAS_H7 = SERIES_H7.flatMap((s) => s.partidas);
+const NOMBRES_H7 = [...new Set(TODAS_H7.map((p) => p.quien).filter(Boolean))];
+const FECHAS_H7 = SERIES_H7.map((s) => s.fecha);
+const moldeH7 = (p) => {
+  let t = p.texto;
+  for (const v of [...NOMBRES_H7, ...FECHAS_H7]) t = t.split(v).join("·");
+  return `${p.tipo}|${t.replace(/(?<!\p{L})(él|ella)(?!\p{L})/gu, "·").replace(/\b(el cliente|la clienta)\b/gi, "·")}`;
+};
+
+test("★ H7: una partida por molde, y ningún molde del banco se queda sin su tarjeta", () => {
+  const moldes = de(H7_ID).map((x) => moldeH7(TODAS_H7.find((p) => p.id === x.itemId)));
+  assert.equal(new Set(moldes).size, moldes.length, "dos partidas del mismo molde (solo cambia nombre o fecha) en el pool");
+  /* Lo que queda fuera es de verdad repetido: si una partida nueva o corregida trae otro molde, esto avisa para que entre. */
+  for (const p of TODAS_H7) assert.ok(moldes.includes(moldeH7(p)), `${p.id}: su molde no está en el pool — revisar si entra`);
+  /* Y el molde agrupa también por la devolución: las del mismo molde la comparten. */
+  for (const p of TODAS_H7) {
+    const q = TODAS_H7.find((r) => moldeH7(r) === moldeH7(p));
+    assert.equal(p.acierto, q.acierto);
+    assert.deepEqual(p.errores, q.errores);
   }
-  const textos = de(H7_ID).map((x) => x.enunciado);
-  assert.equal(new Set(textos).size, textos.length);
 });
 
 /*
