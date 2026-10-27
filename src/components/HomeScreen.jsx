@@ -6,7 +6,14 @@ import SubjectCard, { MacroIcon, EstrategiaIcon, ContabilidadIcon } from "./Subj
 import Logo from "./Logo.jsx";
 import Footer from "./shared/Footer.jsx";
 
-/* Pantalla de entrada: degradado en malla + titular rotativo + las dos materias. */
+/*
+ * ⚑ La tarjeta de Pensamiento Estratégico en la portada. false = no se enseña
+ * (orden de Mateo, 27-oct). Cambiarla a true la devuelve: una línea,
+ * reversible, que no toca la materia ni los datos de nadie.
+ */
+export const PORTADA_ESTRATEGICO = false;
+
+/* Pantalla de entrada: degradado en malla + titular rotativo + las materias en curso. */
 export default function HomeScreen({ onSelectSubject }) {
   return (
     <div
@@ -72,15 +79,27 @@ export default function HomeScreen({ onSelectSubject }) {
               hoverBorder="rgba(231,111,81,0.7)"
               onClick={() => onSelectSubject("macroeconomia")}
             />
-            <SubjectCard
-              icon={<EstrategiaIcon />}
-              title="Pensamiento Estratégico"
-              label="Card Pensamiento Estratégico"
-              accent={FAE.teal}
-              hoverBg="rgba(42,157,143,0.14)"
-              hoverBorder="rgba(42,157,143,0.75)"
-              onClick={() => onSelectSubject("pensamiento-estrategico")}
-            />
+            {/*
+              PENSAMIENTO ESTRATÉGICO, FUERA DE LA PORTADA. Orden de Mateo del
+              27 de octubre: este semestre la portada enseña solo las dos
+              materias en curso.
+
+              Se esconde la tarjeta, NO la materia: `pensamiento-estrategico`
+              sigue entera en subjects.js, sus temas se siguen construyendo y
+              quien tenga el enlace o venga de su propio progreso entra igual.
+              Volver a enseñarla es poner PORTADA_ESTRATEGICO en true.
+            */}
+            {PORTADA_ESTRATEGICO && (
+              <SubjectCard
+                icon={<EstrategiaIcon />}
+                title="Pensamiento Estratégico"
+                label="Card Pensamiento Estratégico"
+                accent={FAE.teal}
+                hoverBg="rgba(42,157,143,0.14)"
+                hoverBorder="rgba(42,157,143,0.75)"
+                onClick={() => onSelectSubject("pensamiento-estrategico")}
+              />
+            )}
             <SubjectCard
               icon={<ContabilidadIcon />}
               title="Contabilidad"
