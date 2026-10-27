@@ -147,7 +147,18 @@ export default function VideoYouTube({ videoId, titulo, canal, nota }) {
               alignItems: "center",
               justifyContent: "center",
               fontSize: "13px",
-              color: "rgba(248,249,250,0.35)",
+              /*
+               * 0,48 y no 0,35. A 0,35 daba 3,11:1 sobre el fondo del marco
+               * (#0F1723) y a 13 px el mínimo es 4,5. Lo cazó la sonda de
+               * contraste en CI el 27-oct; el calculado para 4,5 es 0,47 y se
+               * deja un punto de margen, que el fondo no es idéntico en
+               * todas las vistas que montan este reproductor.
+               *
+               * Es un marcador aria-hidden, sí, pero decorativo no quiere
+               * decir invisible: un estudiante con el video sin cargar lo
+               * único que tiene delante es esta frase.
+               */
+              color: "rgba(248,249,250,0.48)",
             }}
           >
             El video carga al llegar aquí
