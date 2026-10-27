@@ -5,7 +5,7 @@ import {
   T1_7, FLECHAS, CIERRE_T1_7, INVERSO_T1_7, ALT_T1_7, BANCO_T1_7,
 } from "../../../../data/contabilidadTema1.js";
 import {
-  evaluarT1_7, lineaPorId, lineasDe, informeQueRecibe, puntuar, pesoDeCadaItem, sinEmoji,
+  evaluarT1_7, lineaPorId, lineasDe, informeQueRecibe, puntuar, pesoDeCadaItem, sinEmoji, devolucionInversoT1_7,
 } from "../../../../contabilidad/tema1.js";
 import { Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
@@ -328,7 +328,7 @@ export default function LaArticulacion({
                     })}
                   </div>
                   {/* El veredicto ya lo dice el mensaje: se quitan el emoji y el «Correcto.» repetido. */}
-                  {op && <Mensaje ok={op.correcta} texto={sinEmoji(op.feedback).replace(/^Correcto\.\s*/, "")} />}
+                  {op && <Mensaje ok={op.correcta} texto={devolucionInversoT1_7(op)} />}
                 </div>
               );
             })}

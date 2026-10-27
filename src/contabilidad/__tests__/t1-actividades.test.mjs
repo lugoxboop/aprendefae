@@ -139,7 +139,8 @@ test("★★★ el sorteo es 2 internos y 4 externos, siempre", () => {
 test("★ los ocho tienen devolución de acierto, y los cuatro de la ficha van textuales", () => {
   for (const u of USUARIOS_T1_1) {
     const r = evaluarT1_1(u, u.zona);
-    assert.ok(r.texto.startsWith("✅"), u.id);
+    /* Sin emoji (Repaso T1, como en el lote 6d): el veredicto es `ok`. */
+    assert.ok(r.ok && !/^[\u2705\u274C]/u.test(r.texto), u.id);
     assert.ok(!/\{/.test(r.texto), `${u.id}: quedó un hueco`);
     if (ACIERTO_T1_1[u.id]) assert.equal(r.texto, ACIERTO_T1_1[u.id], `${u.id} no usa el texto de la ficha`);
   }
@@ -237,13 +238,13 @@ test("★ acertar trae la relación; fallar no la trae nunca", () => {
     const bien = evaluarT1_2(e, e.clase);
     assert.equal(bien.ok, true, e.id);
     assert.equal(bien.relacion, e.relacion, `${e.id}: el trazo no dice la relación`);
-    assert.ok(bien.texto.startsWith("✅"));
+    assert.ok(!/^[\u2705\u274C]/u.test(bien.texto), `${e.id}: volvió el emoji`);
 
     const otra = CLASES_IDS.find((c) => c !== e.clase);
     const mal = evaluarT1_2(e, otra);
     assert.equal(mal.ok, false, e.id);
     assert.equal(mal.relacion, null, `${e.id}: el fallo enseñó la relación, que es la respuesta`);
-    assert.ok(mal.texto.startsWith("❌"));
+    assert.ok(!/^[\u2705\u274C]/u.test(mal.texto), `${e.id}: volvió el emoji`);
     assert.ok(!/\{/.test(mal.texto), `${e.id}: quedó un hueco sin llenar`);
   }
 });
@@ -284,7 +285,7 @@ test("★★ ninguna explicación quedó con un hueco sin rellenar", () => {
 test("★★ los ocho usuarios y las once empresas tienen su propia devolución", () => {
   for (const u of USUARIOS_T1_1) {
     const texto = evaluarT1_1(u, u.zona).texto;
-    assert.ok(texto.startsWith("✅"), `${u.id}: el acierto perdió su marca`);
+    assert.ok(!/^[\u2705\u274C]/u.test(texto), `${u.id}: el acierto volvió a llevar emoji`);
     assert.equal(texto, ACIERTO_T1_1[u.id], `${u.id}: no sirve su propio texto`);
   }
   for (const e of EMPRESAS) {

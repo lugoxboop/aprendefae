@@ -53,6 +53,7 @@ const {
   CIERRE_T1_7, INVERSO_T1_7, PRIMERO, SEGUNDO, FLUJOS,
 } = await import("../../data/contabilidadTema1.js");
 const { FAE } = await import("../../theme.js");
+const { INVERSO_EN_EL_REPASO } = await import("../../repaso/contabilidad/t1.js");
 
 const montar = () => {
   const caja = document.createElement("div");
@@ -360,8 +361,9 @@ test("★★★ el modo inverso son tres preguntas y NO da FP", () => {
     assert.equal(q.opciones.filter((o) => o.correcta).length, 1, `${q.id}: no hay una sola correcta`);
     assert.equal(q.opciones.length, 3, `${q.id}: no son tres opciones`);
     for (const o of q.opciones) {
-      assert.ok(o.feedback.startsWith(o.correcta ? "✅" : "❌"),
-        `${o.id}: la devolución no lleva la marca que le toca`);
+      /* p1 y p2 las lee el Repaso y van sin emoji (lote 6d); la p3 espera la p. 66 y sigue como estaba. */
+      if (INVERSO_EN_EL_REPASO.includes(q.id)) assert.ok(!/^[\u2705\u274C]/u.test(o.feedback), `${o.id}: volvió el emoji`);
+      else assert.ok(o.feedback.startsWith(o.correcta ? "✅" : "❌"), `${o.id}: la devolución no lleva la marca que le toca`);
     }
     assert.equal(new Set(q.opciones.map((o) => o.feedback)).size, 3, `${q.id}: dos opciones comparten devolución`);
   }

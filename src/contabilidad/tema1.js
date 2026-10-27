@@ -515,6 +515,9 @@ export function puntuarT1_6(respuestas, cuantas) {
 
 /* ═══════════════════ T1-7 · LA ARTICULACIÓN ═══════════════════ */
 
+/* La devolución de una pregunta del modo inverso, como se lee: sin emoji ni el «Correcto.» de entrada. La usan la pieza y el Repaso. */
+export const devolucionInversoT1_7 = (opcion) => sinEmoji(opcion?.feedback).replace(/^Correcto\.\s*/, "");
+
 /*
  * Todas reciben el banco al final, con el de verdad por defecto. Solo la demo
  * de «Así se juega» pasa otro: el juego no cambia en nada.

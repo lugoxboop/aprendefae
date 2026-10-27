@@ -80,25 +80,25 @@ export const ROTULO_ZONA = {
  * falta la buena.
  */
 export const ACIERTO_T1_1 = {
-  propietarios: "✅ Adentro. Los dueños son parte de la empresa. Pero la flecha no se prendió: el día a día lo manejan los jefes.",
-  administradores: "✅ Adentro. Y mira la flecha que se prendió: los jefes deciden, y eso cambia lo que la empresa hace.",
-  empleados: "✅ Adentro. Los empleados son parte de la empresa, aunque no manden ni sean dueños.",
-  acreedores: "✅ Afuera. Le prestó o le vendió a crédito, pero no es parte de la empresa.",
-  clientes: "✅ Afuera. Le compra a la empresa, pero no es parte de ella.",
-  inversionistas: "✅ Afuera. Todavía no ha puesto nada. Está mirando si le conviene.",
-  asociaciones: "✅ Afuera. Juntan números de muchas empresas para sacar cuentas del grupo.",
-  estado: "✅ Afuera. Tiene poder sobre la empresa, pero no es parte de ella. Lee el informe como los demás de afuera.",
+  propietarios: "Adentro. Los dueños son parte de la empresa. Pero la flecha no se prendió: el día a día lo manejan los jefes.",
+  administradores: "Adentro. Y mira la flecha que se prendió: los jefes deciden, y eso cambia lo que la empresa hace.",
+  empleados: "Adentro. Los empleados son parte de la empresa, aunque no manden ni sean dueños.",
+  acreedores: "Afuera. Le prestó o le vendió a crédito, pero no es parte de la empresa.",
+  clientes: "Afuera. Le compra a la empresa, pero no es parte de ella.",
+  inversionistas: "Afuera. Todavía no ha puesto nada. Está mirando si le conviene.",
+  asociaciones: "Afuera. Juntan números de muchas empresas para sacar cuentas del grupo.",
+  estado: "Afuera. Tiene poder sobre la empresa, pero no es parte de ella. Lee el informe como los demás de afuera.",
 };
 
 export const ERROR_T1_1 = {
   /* A · un interno colocado afuera. */
   A: {
-    texto: "❌ Esa persona sí es parte de la empresa. Los de adentro son tres: dueños, jefes y empleados. No importa si trabajan ahí todos los días. Importa si son parte.",
+    texto: "Esa persona sí es parte de la empresa. Los de adentro son tres: dueños, jefes y empleados. No importa si trabajan ahí todos los días. Importa si son parte.",
     escena: "los-tres-internos",
   },
   /* B · un externo colocado adentro. */
   B: {
-    texto: "❌ Esa persona no es parte de la empresa: la mira desde afuera. Lee el informe y lo usa para algo suyo.",
+    texto: "Esa persona no es parte de la empresa: la mira desde afuera. Lee el informe y lo usa para algo suyo.",
     escena: "zona-exterior",
     rotulo: "consultan desde afuera",
   },
@@ -177,17 +177,17 @@ export const EMPRESAS = [
  * la ficha solo traía tres—: si falta el de una empresa, la evaluación se cae.
  */
 export const ACIERTO_T1_2 = {
-  "t2-01": "✅ Industrial. Entró algodón y salió tela. No es lo mismo: adentro lo cambiaron.",
-  "t2-02": "✅ Comercial. Entró lo mismo que salió. La empresa solo lo revendió.",
-  "t2-03": "✅ De servicios. No entró ninguna cosa. Lo que vende el banco es lo que sabe hacer.",
-  "t2-04": "✅ Industrial. Entró caña. Salió azúcar. No es lo mismo: adentro la cambiaron.",
-  "t2-05": "✅ De servicios. No hay ninguna cosa que señalar. Venden lo que saben hacer.",
-  "t2-06": "✅ Agropecuaria. Entraron terneros y salió ganado. Ese ganado no se compró ni se sacó del suelo: se crió adentro.",
-  "t2-07": "✅ Comercial. Entraron productos y salieron los mismos. Solo cambiaron de dueño.",
-  "t2-08": "✅ Minera. Nadie le vendió el petróleo. Lo sacaron del subsuelo.",
-  "t2-09": "✅ Industrial. Entró una cosa. Salió otra muy distinta. Adentro la cambiaron.",
-  "t2-10": "✅ Minera. La piedra ya estaba en el suelo. Solo la sacaron.",
-  "t2-11": "✅ Agropecuaria. Nadie lo trajo ni lo sacó del suelo. El banano se sembró y creció aquí.",
+  "t2-01": "Industrial. Entró algodón y salió tela. No es lo mismo: adentro lo cambiaron.",
+  "t2-02": "Comercial. Entró lo mismo que salió. La empresa solo lo revendió.",
+  "t2-03": "De servicios. No entró ninguna cosa. Lo que vende el banco es lo que sabe hacer.",
+  "t2-04": "Industrial. Entró caña. Salió azúcar. No es lo mismo: adentro la cambiaron.",
+  "t2-05": "De servicios. No hay ninguna cosa que señalar. Venden lo que saben hacer.",
+  "t2-06": "Agropecuaria. Entraron terneros y salió ganado. Ese ganado no se compró ni se sacó del suelo: se crió adentro.",
+  "t2-07": "Comercial. Entraron productos y salieron los mismos. Solo cambiaron de dueño.",
+  "t2-08": "Minera. Nadie le vendió el petróleo. Lo sacaron del subsuelo.",
+  "t2-09": "Industrial. Entró una cosa. Salió otra muy distinta. Adentro la cambiaron.",
+  "t2-10": "Minera. La piedra ya estaba en el suelo. Solo la sacaron.",
+  "t2-11": "Agropecuaria. Nadie lo trajo ni lo sacó del suelo. El banano se sembró y creció aquí.",
 };
 
 /*
@@ -238,14 +238,14 @@ export const CLAVE_ERA_SERVICIOS = "G";
  * escribe en el recuadro, para que al menos ese vínculo no se rompa en silencio.
  */
 export const ERROR_T1_2 = {
-  A: "❌ Mira los dos cuadros otra vez. ¿Salió lo mismo que entró? Si sí, la empresa solo revende. Si no, lo cambió.",
-  B: "❌ Mira el cuadro de ENTRA. Una industrial recibe materia y la cambia. Una minera no le compra a nadie: saca del suelo algo que ya estaba.",
-  C: "❌ Las dos hacen algo nuevo, pero de forma distinta. Una cambia cosas con máquinas. La otra siembra o cría seres vivos.",
-  D: "❌ Una comercial compra para revender igual. Aquí lo que sale no se compró: se sembró o se crió adentro.",
-  E: "❌ Aquí sí hay una cosa que puedes señalar. Las de servicios no venden cosas. Venden lo que saben hacer.",
-  F: "❌ Una comercial le compra a alguien. Una minera no: saca del suelo algo que ya estaba ahí. Mira el cuadro de ENTRA.",
-  G: "❌ Mira el cuadro de ENTRA: dice sin insumo físico. No hay nada que cambiar, revender, criar ni sacar.",
-  H: "❌ Las dos sacan algo de la tierra. Pero una cría animales o siembra plantas. La otra saca piedra o petróleo, que ya estaban ahí.",
+  A: "Mira los dos cuadros otra vez. ¿Salió lo mismo que entró? Si sí, la empresa solo revende. Si no, lo cambió.",
+  B: "Mira el cuadro de ENTRA. Una industrial recibe materia y la cambia. Una minera no le compra a nadie: saca del suelo algo que ya estaba.",
+  C: "Las dos hacen algo nuevo, pero de forma distinta. Una cambia cosas con máquinas. La otra siembra o cría seres vivos.",
+  D: "Una comercial compra para revender igual. Aquí lo que sale no se compró: se sembró o se crió adentro.",
+  E: "Aquí sí hay una cosa que puedes señalar. Las de servicios no venden cosas. Venden lo que saben hacer.",
+  F: "Una comercial le compra a alguien. Una minera no: saca del suelo algo que ya estaba ahí. Mira el cuadro de ENTRA.",
+  G: "Mira el cuadro de ENTRA: dice sin insumo físico. No hay nada que cambiar, revender, criar ni sacar.",
+  H: "Las dos sacan algo de la tierra. Pero una cría animales o siembra plantas. La otra saca piedra o petróleo, que ya estaban ahí.",
 };
 
 /* Qué se resalta con cada explicación. Los demás resaltan los dos recuadros. */
@@ -617,11 +617,11 @@ export const CONCEPTOS = [
 
 export const ERROR_T1_6 = {
   /* A · va en el segundo y lo puso en el primero. */
-  A: "❌ Eso no es algo que la empresa tenga hoy. Es algo que pasó durante el año. Un informe es una foto de un día. El otro cuenta todo el año.",
+  A: "Eso no es algo que la empresa tenga hoy. Es algo que pasó durante el año. Un informe es una foto de un día. El otro cuenta todo el año.",
   /* B · va en el primero y lo puso en el segundo. */
-  B: "❌ Eso la empresa lo tiene o lo debe, y mañana lo sigue teniendo. El otro informe solo cuenta lo que pasó dentro del año.",
+  B: "Eso la empresa lo tiene o lo debe, y mañana lo sigue teniendo. El otro informe solo cuenta lo que pasó dentro del año.",
   /* C · el informe está bien y la sección no. */
-  C: "❌ El informe es el correcto, eso ya lo tienes. Ahora pregúntate: ¿la empresa lo tiene, lo debe, o es de los dueños?",
+  C: "El informe es el correcto, eso ya lo tienes. Ahora pregúntate: ¿la empresa lo tiene, lo debe, o es de los dueños?",
   /* C2 · el informe es el segundo y se cruzaron ingresos y gastos (Futaba, 24-oct). */
   C2: "El informe es el correcto. Ahora pregúntate: ¿eso entró a la empresa en el año, o es algo que gastó?",
 };
@@ -644,22 +644,22 @@ export const DEVOLUCION_POR_DESTINO_T1_6 = {
 };
 
 export const ACIERTO_T1_6 = {
-  "c6-01": "✅ Va en el estado de situación financiera, en el activo. Una patente no se toca, pero es de la empresa y vale.",
-  "c6-02": "✅ Va en el estado de resultados, en ingresos. No es algo que la empresa tenga: es lo que vendió durante el año.",
-  "c6-03": "✅ Va en el estado de situación financiera, en el pasivo. Es plata que le queda debiendo a un proveedor.",
-  "c6-04": "✅ Va en el estado de situación financiera, en el patrimonio. Es una parte de las ganancias que no se repartió.",
-  "c6-05": "✅ Va en el estado de situación financiera, en el activo. Es la plata que tiene disponible.",
-  "c6-06": "✅ Va en el estado de resultados, en gastos. Es lo que la empresa gastó durante el año.",
-  "c6-07": "✅ Va en el estado de situación financiera, en el activo. Es plata que los clientes le quedaron debiendo.",
-  "c6-08": "✅ Va en el estado de situación financiera, en el activo. Son cosas de la empresa que duran años.",
-  "c6-09": "✅ Va en el estado de resultados, en ingresos. Es lo que obtuvo en el año por algo que no es su negocio de siempre.",
-  "c6-10": "✅ Va en el estado de situación financiera, en el activo. Es plata puesta a producir en otra parte, y se recupera pronto.",
-  "c6-11": "✅ Va en el estado de situación financiera, en el pasivo. Es una deuda con un papel firmado.",
-  "c6-12": "✅ Va en el estado de situación financiera, en el pasivo. Es lo que le debe a un banco este año.",
-  "c6-13": "✅ Va en el estado de situación financiera, en el activo. Es plata puesta a producir en otra parte, y tarda en volver.",
-  "c6-14": "✅ Va en el estado de situación financiera, en el pasivo. Es lo que calcula que va a pagar por arreglos de lo vendido.",
-  "c6-15": "✅ Va en el estado de situación financiera, en el pasivo. Es lo que le debe al Estado y todavía no le ha pagado.",
-  "c6-16": "✅ Va en el estado de situación financiera, en el pasivo. Es lo que les debe a sus empleados y todavía no les ha pagado.",
+  "c6-01": "Va en el estado de situación financiera, en el activo. Una patente no se toca, pero es de la empresa y vale.",
+  "c6-02": "Va en el estado de resultados, en ingresos. No es algo que la empresa tenga: es lo que vendió durante el año.",
+  "c6-03": "Va en el estado de situación financiera, en el pasivo. Es plata que le queda debiendo a un proveedor.",
+  "c6-04": "Va en el estado de situación financiera, en el patrimonio. Es una parte de las ganancias que no se repartió.",
+  "c6-05": "Va en el estado de situación financiera, en el activo. Es la plata que tiene disponible.",
+  "c6-06": "Va en el estado de resultados, en gastos. Es lo que la empresa gastó durante el año.",
+  "c6-07": "Va en el estado de situación financiera, en el activo. Es plata que los clientes le quedaron debiendo.",
+  "c6-08": "Va en el estado de situación financiera, en el activo. Son cosas de la empresa que duran años.",
+  "c6-09": "Va en el estado de resultados, en ingresos. Es lo que obtuvo en el año por algo que no es su negocio de siempre.",
+  "c6-10": "Va en el estado de situación financiera, en el activo. Es plata puesta a producir en otra parte, y se recupera pronto.",
+  "c6-11": "Va en el estado de situación financiera, en el pasivo. Es una deuda con un papel firmado.",
+  "c6-12": "Va en el estado de situación financiera, en el pasivo. Es lo que le debe a un banco este año.",
+  "c6-13": "Va en el estado de situación financiera, en el activo. Es plata puesta a producir en otra parte, y tarda en volver.",
+  "c6-14": "Va en el estado de situación financiera, en el pasivo. Es lo que calcula que va a pagar por arreglos de lo vendido.",
+  "c6-15": "Va en el estado de situación financiera, en el pasivo. Es lo que le debe al Estado y todavía no le ha pagado.",
+  "c6-16": "Va en el estado de situación financiera, en el pasivo. Es lo que les debe a sus empleados y todavía no les ha pagado.",
 };
 
 /*
@@ -790,18 +790,18 @@ export const INVERSO_T1_7 = [
     id: "p1",
     pregunta: "Si la plata que queda al final no fuera igual en los dos informes, ¿qué querría decir?",
     opciones: [
-      { id: "p1a", correcta: true, texto: "Que hay un error. Las dos cifras tienen que ser la misma.", feedback: "✅ Correcto. No son dos cuentas que se parecen: es la misma cifra por dos caminos. Si no dan igual, uno de los dos está mal." },
-      { id: "p1b", correcta: false, texto: "Que la empresa gastó más plata de la que tenía.", feedback: "❌ No. Que quede con poca plata es posible y no es un error. Lo que no puede pasar es que los dos informes digan cifras distintas de lo mismo." },
-      { id: "p1c", correcta: false, texto: "Que los dos informes cubren tiempos distintos.", feedback: "❌ Los dos cierran el mismo día. Si cubrieran tiempos distintos, no se podrían conectar." },
+      { id: "p1a", correcta: true, texto: "Que hay un error. Las dos cifras tienen que ser la misma.", feedback: "Correcto. No son dos cuentas que se parecen: es la misma cifra por dos caminos. Si no dan igual, uno de los dos está mal." },
+      { id: "p1b", correcta: false, texto: "Que la empresa gastó más plata de la que tenía.", feedback: "No. Que quede con poca plata es posible y no es un error. Lo que no puede pasar es que los dos informes digan cifras distintas de lo mismo." },
+      { id: "p1c", correcta: false, texto: "Que los dos informes cubren tiempos distintos.", feedback: "Los dos cierran el mismo día. Si cubrieran tiempos distintos, no se podrían conectar." },
     ],
   },
   {
     id: "p2",
     pregunta: "Si el informe de lo que vendió y gastó no le pasara nada al otro, ¿qué le faltaría?",
     opciones: [
-      { id: "p2a", correcta: true, texto: "El efecto de lo que la empresa ganó o perdió en el año.", feedback: "✅ Correcto. El otro informe muestra cómo quedó la empresa, y no puede quedar igual después de un año en que ganó o perdió." },
-      { id: "p2b", correcta: false, texto: "La lista de las cosas que compró en el año.", feedback: "❌ Eso lo explica otra flecha: la de lo que compró y vendió de sus cosas grandes." },
-      { id: "p2c", correcta: false, texto: "El detalle de las deudas que pidió.", feedback: "❌ Las deudas ya están en el otro informe. Su movimiento lo explican otras flechas." },
+      { id: "p2a", correcta: true, texto: "El efecto de lo que la empresa ganó o perdió en el año.", feedback: "Correcto. El otro informe muestra cómo quedó la empresa, y no puede quedar igual después de un año en que ganó o perdió." },
+      { id: "p2b", correcta: false, texto: "La lista de las cosas que compró en el año.", feedback: "Eso lo explica otra flecha: la de lo que compró y vendió de sus cosas grandes." },
+      { id: "p2c", correcta: false, texto: "El detalle de las deudas que pidió.", feedback: "Las deudas ya están en el otro informe. Su movimiento lo explican otras flechas." },
     ],
   },
   {
@@ -884,14 +884,15 @@ export const SITUACIONES_T1_8 = [
 
 /*
  * Un acierto por punto, VERSIÓN FINAL: «este hecho no llegó a X puntos» (Gen)
- * y «este hecho» en vez de «este gasto» (Levi — la 2 es una venta). El ✅ es
- * la marca del sitio para el tono de la devolución, como en todo el tema.
+ * y «este hecho» en vez de «este gasto» (Levi — la 2 es una venta). Sin el
+ * ✅ que llevaban al inicio (Repaso T1, decisión de Sakuta: solo se quitó el
+ * emoji, como en el lote 6d); el veredicto lo da `ok`, no el texto.
  */
 export const ACIERTO_T1_8 = {
-  2: "✅ Se rompió en el papel. Sin factura no queda un papel, así que este hecho no se anota, no llega al informe y los jefes deciden sin saberlo. Se apagaron cuatro puntos.",
-  3: "✅ Se rompió al anotar. El papel está. Pero nadie lo pasó a los libros, así que este hecho no llega al informe y los jefes deciden sin saberlo. Se apagaron tres puntos.",
-  4: "✅ Se rompió en el informe. Este hecho está anotado, pero lo dejaron por fuera del informe. Los jefes deciden sin ver este dato. Se apagaron dos puntos.",
-  5: "✅ El informe sí se hizo: los primeros cuatro puntos quedaron encendidos. Pero los jefes no decidieron nada con él. Por eso el último punto se apaga y la flecha de vuelta no se enciende.",
+  2: "Se rompió en el papel. Sin factura no queda un papel, así que este hecho no se anota, no llega al informe y los jefes deciden sin saberlo. Se apagaron cuatro puntos.",
+  3: "Se rompió al anotar. El papel está. Pero nadie lo pasó a los libros, así que este hecho no llega al informe y los jefes deciden sin saberlo. Se apagaron tres puntos.",
+  4: "Se rompió en el informe. Este hecho está anotado, pero lo dejaron por fuera del informe. Los jefes deciden sin ver este dato. Se apagaron dos puntos.",
+  5: "El informe sí se hizo: los primeros cuatro puntos quedaron encendidos. Pero los jefes no decidieron nada con él. Por eso el último punto se apaga y la flecha de vuelta no se enciende.",
 };
 
 /*
@@ -902,8 +903,8 @@ export const ACIERTO_T1_8 = {
  *     mismo razonamiento que T1-7. Texto y rótulo en su versión de Levi.
  */
 export const ERROR_T1_8 = {
-  A: "❌ Hasta ese punto todo funcionó bien. Mira más adelante: el corte está después.",
-  B: "❌ Este hecho nunca llegó a ese punto. Se cortó antes, así que desde ahí ya no aparece.",
+  A: "Hasta ese punto todo funcionó bien. Mira más adelante: el corte está después.",
+  B: "Este hecho nunca llegó a ese punto. Se cortó antes, así que desde ahí ya no aparece.",
 };
 export const ROTULO_ERROR_B_T1_8 = "este hecho no llegó aquí";
 
