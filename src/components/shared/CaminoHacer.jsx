@@ -415,17 +415,16 @@ export default function CaminoHacer({ nodos = [], onAbrir, vacio, especial = nul
 }
 
 /*
- * En qué lado del final del camino cabe la mascota: en el CONTRARIO al último
- * nodo.
+ * En qué lado del final del camino cabe Fae: en el CONTRARIO al último nodo.
  *
  * Medido a 320 px, que es donde se ve: bajo el último nodo quedan unos 38 px
- * libres —56 de margen menos el radio— y la mascota mide 48. Puesta del lado
+ * libres —56 de margen menos el radio— y Fae mide 38. Puesta del lado
  * del nodo se le monta encima; puesta enfrente cae bajo el rótulo, que acaba
  * bastante más arriba, y no roza nada. A 375 las dos opciones se veían bien,
  * y por eso la primera versión pasó: a 375 casi todo cabe.
  *
  * Con un solo nodo el camino va centrado y su rótulo DEBAJO, así que no hay
- * lado contrario: la mascota se va al centro, bajo todo.
+ * lado contrario: Fae se va al centro, bajo todo.
  */
 export function ladoLibreAlFinal(puntos, ancho = ANCHO) {
   if (!puntos?.length || puntos.length === 1) return "centro";
@@ -485,7 +484,7 @@ function Lienzo({ nodos, onAbrir, especial, resaltado, marcas, tema = null }) {
         orden de pintado del navegador lo posicionado gana a lo que está en
         flujo, por tenue que sea.
       */}
-      <DecoracionCamino tema={tema} ladoMascota={ladoLibreAlFinal(p, ANCHO)} />
+      <DecoracionCamino tema={tema} ladoFae={ladoLibreAlFinal(p, ANCHO)} />
       <svg viewBox={`0 0 ${anchoTotal} ${m.alto}`} width="100%" style={{ display: "block", overflow: "visible", position: "relative", zIndex: 1 }}>
         {/* La línea del recorrido, por debajo de todo. */}
         {d && (
@@ -826,7 +825,7 @@ function LienzoPorBloques({ bloques, onAbrir, resaltado, marcas, tema = null }) 
 
   return (
     <div data-camino-bloques style={{ position: "relative", width: "100%", maxWidth: `${ANCHO}px`, margin: "0 auto" }}>
-      <DecoracionCamino tema={tema} ladoMascota={ladoLibreAlFinal(puntos, ANCHO)} />
+      <DecoracionCamino tema={tema} ladoFae={ladoLibreAlFinal(puntos, ANCHO)} />
       <svg viewBox={`0 0 ${ANCHO} ${m.alto}`} width="100%" style={{ display: "block", overflow: "visible", position: "relative", zIndex: 1 }}>
         {puntos.length > 1 && (
           <path data-linea d={trazo(puntos)} fill="none" stroke="rgba(248,249,250,0.22)" strokeWidth={m.grosor} strokeLinecap="round" />

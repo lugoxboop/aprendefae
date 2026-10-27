@@ -1,260 +1,228 @@
-import { FAE } from "../../theme.js";
-import Mascota from "./Mascota.jsx";
+import { useEffect, useRef, useState } from "react";
+import { Dibujo, FAE_POSES, PIEZAS } from "../decoracion/piezas.jsx";
+import { POSE_FAE } from "../decoracion/poses.js";
+import { shouldRenderStatic } from "../../utils/device.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
  * LA DECORACIÓN DEL CAMINO — que el recorrido pase por un sitio, no por un
  * vacío.
  *
- * POR QUÉ EXISTE. El camino de actividades estaba solo: una serpentina de
- * nodos sobre fondo liso. Mateo pidió «elementos decorativos alrededor del
- * camino, animaciones geométricas, del tema o en general». Esto es eso:
- * figuras facetadas que respiran despacio detrás del recorrido, y un par de
- * glifos del tema —una cuenta T, unas barras— para que la decoración diga de
- * qué materia es y no sea adorno genérico.
+ * POR QUÉ EXISTE. Mateo, 27-oct: «no olvides los elementos decorativos
+ * alrededor del camino, animaciones geométricas, del tema o en general». El
+ * camino era una serpentina de nodos sobre fondo liso.
  *
- * LAS CUATRO REGLAS QUE SE IMPUSO
+ * DE DÓNDE SALEN LAS FIGURAS, Y ESTO IMPORTA. No se dibuja ninguna aquí. Las
+ * once piezas del catálogo están dibujadas y reservadas por Hanayama
+ * (vida-visual-v1 §5.1 de Ukyo, piezas en src/components/decoracion/) y las
+ * usan ya las bandas de las tablas de posiciones. Dibujar otro tetraedro
+ * «parecido» sería tener dos tetraedros distintos en el mismo sitio, que es
+ * exactamente lo que la reserva de piezas existe para evitar.
  *
- *   1. DETRÁS Y SIN TOCAR. La capa va en z-index 0 bajo el recorrido, con
- *      pointer-events en none y aria-hidden. Nada de lo que hay aquí se puede
- *      pulsar, enfocar ni oír con un lector de pantalla. Un adorno que roba
- *      un toque deja de ser adorno.
+ * El reparto por materia sale del catálogo:
+ *   las dos      tetraedro (1), cubo (2)
+ *   Macro        billete (5), flecha de tendencia (6)
+ *   Contabilidad libro (7), clip (8)
+ *   Estratégico  torre de ajedrez (11)
+ * La chispa (3), la moneda (4) y el sello (9) quedan reservadas y fuera.
  *
- *   2. DENTRO DE SU CAJA. `overflow: hidden` sobre la caja del camino. Es la
- *      diferencia entre decorar y provocar barra horizontal a 320 px: lo que
- *      asoma, se corta.
+ * FAE. La mascota de la casa, la pieza 10, en su pose publicada. Va al final
+ * del recorrido, QUIETA: §5.2 dice que Fae no tiene bucle, y no codifica
+ * nada —ni tu puesto, ni tu racha, ni si vas bien—, porque esta capa va
+ * aria-hidden y lo que viva aquí no existe para un lector de pantalla.
  *
- *   3. TAN TENUE QUE NO COMPITE. Entre 0,05 y 0,12 de opacidad. La prueba es
- *      sencilla: si al mirar la pantalla ves primero un rombo y no el nodo
- *      que sigue, la decoración ganó y eso es un fallo.
+ * ═══════════ UNA EXTENSIÓN DEL ESTÁNDAR, DICHA EN VOZ ALTA ═══════════
+ * La §5.0 de vida-visual-v1 dice «el bucle es solo del leaderboard; en
+ * cualquier otro sitio la decoración no se anima». La orden de Mateo del
+ * 27-oct pide movimiento alrededor del camino, así que aquí hay bucle. Queda
+ * escrito para que Ukyo lo recoja en la v2 del estándar en vez de que alguien
+ * lo encuentre un día y no sepa si fue un descuido.
  *
- *   4. DETERMINISTA. Ni un Math.random. Las mismas figuras en los mismos
- *      sitios en cada pintado: así la foto de `camino-sin-cambios` sigue
- *      siendo una foto y no un sorteo, y el camino no «parpadea» distinto
- *      cada vez que React vuelve a pintar.
+ * Lo que NO se relaja por eso: el bucle se para fuera de pantalla, se para
+ * con la pestaña oculta y no existe con movimiento reducido ni en gama baja.
+ * Son las mismas cuatro condiciones de BandaDecoracion, y por la misma razón:
+ * una animación que corre sin que nadie la vea es batería del estudiante.
  *
- * EL MOVIMIENTO. Flotan de 14 a 26 segundos por vuelta, cada una con su
- * desfase: a esa velocidad el ojo no las persigue, solo nota que el fondo
- * está vivo. Solo `transform` y `opacity`, las dos que el navegador mueve sin
- * recalcular la página. Con movimiento reducido se quedan quietas —no más
- * lentas: quietas— y siguen ahí, porque la composición no depende de que se
- * muevan.
+ * LAS REGLAS QUE NO SE TOCAN
+ *   1. Detrás y sin tocar: z-index 0 bajo el recorrido, pointer-events none,
+ *      aria-hidden. Va en línea, no en la hoja: si el <style> no llegara,
+ *      seguiría puesto.
+ *   2. Dentro de su caja: overflow hidden. Es la diferencia entre decorar y
+ *      provocar barra horizontal a 320 px.
+ *   3. Una sola transparencia, en el trazo. La opacidad del grupo compondría
+ *      dos y el kit lo prohíbe (§5.1).
+ *   4. Determinista: ni un Math.random, o la foto del camino deja de ser una
+ *      foto.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
 /*
- * Lo que mantiene al adorno en su sitio va EN LÍNEA, no en la hoja de estilos.
- * Estar detrás, no ocupar flujo, no robar toques y recortarse en su caja son
- * las cuatro propiedades de las que depende que esto sea decoración y no un
- * fallo: si un día el <style> no llegara, o alguien pisara la clase desde
- * fuera, seguirían puestas. En la hoja queda solo el movimiento, que es lo
- * único que puede faltar sin consecuencias.
+ * La familia dice 0,45 de trazo. Ahí vive sobre la banda de una tabla, que es
+ * una franja vacía; aquí vive DETRÁS del recorrido, y a 0,45 el ojo va antes
+ * al cubo que al nodo que toca. Se baja a 0,16, que es una sola
+ * transparencia igual —en el trazo, no en el grupo— y deja la figura legible
+ * sin que compita. La prueba sigue siendo la de Ukyo: si al mirar la pantalla
+ * ves primero una figura y no el nodo siguiente, está mal.
  */
-const CAJA = {
-  position: "absolute",
-  inset: 0,
-  zIndex: 0,
-  overflow: "hidden",
-  pointerEvents: "none",
-};
-
-const NODO = FAE.node; // #CBDCF2, el gris azulado de los nodos
-const TEAL = FAE.teal;
-const AMBAR = FAE.ambar;
+const OPACIDAD_AL_FONDO = 0.16;
 
 export const CSS = `
-.fae-dc-f {
-  transform-origin: 50% 50%;
-  animation: fae-dc-flota var(--fae-dc-dur) ease-in-out var(--fae-dc-esp) infinite alternate;
-}
+.fae-dc-p { position: absolute; transform-origin: 50% 50%; }
+.fae-dc-p > svg { display: block; width: 100%; height: 100%; }
 @keyframes fae-dc-flota {
-  from { transform: translate3d(0, var(--fae-dc-sube), 0) rotate(var(--fae-dc-giro-a)); }
-  to   { transform: translate3d(0, calc(var(--fae-dc-sube) * -1), 0) rotate(var(--fae-dc-giro-b)); }
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50%      { transform: translateY(var(--fae-dc-alto, -6px)) rotate(var(--fae-dc-giro, 0deg)); }
 }
-/* El anillo no flota: gira entero y muy despacio. Un solo elemento que rota
-   basta para que la capa no parezca una imagen fija. */
-.fae-dc-gira {
-  transform-origin: 50% 50%;
-  animation: fae-dc-vuelta var(--fae-dc-dur) linear var(--fae-dc-esp) infinite;
+.fae-dc[data-bucle] .fae-dc-p {
+  animation: fae-dc-flota var(--fae-dc-dur) cubic-bezier(.3,.9,.4,1) var(--fae-dc-retardo) infinite;
 }
-@keyframes fae-dc-vuelta {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .fae-dc-f, .fae-dc-gira { animation: none; }
-}
+.fae-dc[data-pausa] .fae-dc-p { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) { .fae-dc .fae-dc-p { animation: none !important; } }
 `;
 
 /*
- * Las figuras. Cada una se dibuja en una caja de 0 a 100 y luego se escala,
- * así la colocación se piensa en porcentajes y el tamaño en píxeles.
+ * Lo que mantiene al adorno en su sitio va EN LÍNEA, no en la hoja de
+ * estilos. Estar detrás, no ocupar flujo, no robar toques y recortarse en su
+ * caja son las cuatro propiedades de las que depende que esto sea decoración
+ * y no un fallo. En la hoja queda solo el movimiento, que es lo único que
+ * puede faltar sin consecuencias.
  */
-const FIGURAS = {
-  /* El tetraedro que pidió Mateo: triángulo con la arista de dentro, que es
-     lo único que hace falta para que se lea en volumen y no plano. */
-  tetra: (
-    <g>
-      <polygon points="50,6 95,90 5,90" />
-      <polyline points="50,6 63,66 5,90" />
-      <polyline points="63,66 95,90" />
-    </g>
-  ),
-  hexa: <polygon points="50,4 91,27 91,73 50,96 9,73 9,27" />,
-  rombo: <polygon points="50,4 92,50 50,96 8,50" />,
-  anillo: <circle cx="50" cy="50" r="44" />,
-  triangulo: <polygon points="50,10 92,86 8,86" />,
-
-  /* Del tema: macroeconomía. Tres barras y una curva, los dos dibujos que
-     salen en cada tema de la materia. */
-  barras: (
-    <g>
-      <polyline points="16,90 16,58" />
-      <polyline points="50,90 50,34" />
-      <polyline points="84,90 84,14" />
-    </g>
-  ),
-  curva: <path d="M 6 84 C 28 84, 34 28, 54 28 S 78 62, 94 18" />,
-
-  /* Del tema: contabilidad. La cuenta T y una moneda. Nada más reconocible
-     en esa materia que la T de debe y haber. */
-  cuentaT: (
-    <g>
-      <polyline points="10,22 90,22" />
-      <polyline points="50,22 50,92" />
-    </g>
-  ),
-  moneda: (
-    <g>
-      <circle cx="50" cy="50" r="42" />
-      <circle cx="50" cy="50" r="22" />
-    </g>
-  ),
-};
+const CAJA = { position: "absolute", inset: 0, zIndex: 0, overflow: "hidden", pointerEvents: "none" };
 
 /*
- * La composición. Se piensa como el margen de una página: las figuras grandes
- * en las esquinas, donde la serpentina nunca llega, y las pequeñas repartidas
- * para que ningún tramo quede del todo desnudo.
+ * La composición: una figura cada ~12 % de alto, alternando lado, para que
+ * ningún tramo del recorrido quede desnudo por largo que sea el camino.
  *
- *   x, y    dónde, en % de la caja del camino
- *   t       tamaño en px
- *   op      opacidad
- *   dur/esp segundos de vuelta y de desfase
- *   sube    cuánto sube y baja, en px
+ *   x, y    en % de la caja del camino
+ *   t       tamaño en px (la familia manda de 28 a 44)
+ *   dur     segundos de vuelta, y retardo para que no respiren a la vez
+ *   alto    cuánto sube, en px; giro, cuánto se inclina
  */
-const AMBIENTE = [
-  { f: "tetra", x: 1, y: 5, t: 78, op: 0.07, color: NODO, dur: 22, esp: 0, sube: 7, giro: [-6, 2] },
-  { f: "hexa", x: 80, y: 14, t: 58, op: 0.06, color: TEAL, dur: 18, esp: 2.5, sube: 6, giro: [4, -5] },
-  { f: "rombo", x: 2, y: 24, t: 40, op: 0.08, color: AMBAR, dur: 16, esp: 1.2, sube: 8, giro: [-8, 6] },
-  { f: "anillo", x: 83, y: 34, t: 74, op: 0.05, color: NODO, dur: 46, esp: 0, gira: true },
-  { f: "triangulo", x: 3, y: 46, t: 46, op: 0.07, color: NODO, dur: 20, esp: 3.4, sube: 6, giro: [5, -4] },
-  { f: "tetra", x: 79, y: 56, t: 66, op: 0.06, color: TEAL, dur: 26, esp: 1.8, sube: 9, giro: [3, -7] },
-  { f: "rombo", x: 4, y: 68, t: 34, op: 0.08, color: NODO, dur: 14, esp: 0.6, sube: 5, giro: [-5, 5] },
-  { f: "hexa", x: 82, y: 78, t: 48, op: 0.06, color: AMBAR, dur: 21, esp: 2.9, sube: 7, giro: [6, -3] },
-  { f: "anillo", x: 2, y: 88, t: 56, op: 0.05, color: TEAL, dur: 52, esp: 1, gira: true },
-  { f: "triangulo", x: 84, y: 94, t: 36, op: 0.07, color: NODO, dur: 17, esp: 0.3, sube: 6, giro: [-4, 4] },
+const COMUNES = [
+  { p: "tetraedro", x: 3, y: 5, t: 40, dur: 7.2, retardo: 0, alto: -6, giro: -3 },
+  { p: "cubo", x: 82, y: 15, t: 34, dur: 5.1, retardo: 0.9, alto: -5, giro: 4 },
+  { p: "tetraedro", x: 2, y: 38, t: 30, dur: 6.4, retardo: 1.7, alto: -6, giro: 3 },
+  { p: "cubo", x: 84, y: 50, t: 38, dur: 8.1, retardo: 0.4, alto: -5, giro: -4 },
+  { p: "tetraedro", x: 4, y: 64, t: 32, dur: 5.6, retardo: 2.3, alto: -6, giro: 5 },
+  { p: "cubo", x: 81, y: 76, t: 30, dur: 7.8, retardo: 1.2, alto: -5, giro: -3 },
+  /*
+   * Esta se queda en el 86 y no baja más: por debajo del 88 se le monta a
+   * Fae, que vive pegada al borde de abajo y puede caer a cualquiera de los
+   * dos lados según dónde acabe el camino. La franja final es suya.
+   */
+  { p: "tetraedro", x: 3, y: 86, t: 36, dur: 6.0, retardo: 0.6, alto: -6, giro: -4 },
 ];
 
-/*
- * Lo del tema. Dos piezas, no más: llevan color propio y se notan, así que
- * una tercera dejaría de ser un guiño y pasaría a ser un patrón. Se cuelan
- * entre las de fondo, a media altura, que es donde el estudiante está
- * mirando mientras recorre.
- */
+/* Las del tema. Dos por materia, del catálogo reservado; ninguna inventada. */
 const DEL_TEMA = {
   macroeconomia: [
-    { f: "barras", x: 5, y: 35, t: 42, op: 0.1, color: FAE.coral, dur: 19, esp: 0.9, sube: 5, giro: [-3, 3] },
-    { f: "curva", x: 78, y: 67, t: 50, op: 0.09, color: FAE.coral, dur: 24, esp: 2.2, sube: 7, giro: [2, -3] },
+    { p: "flecha", x: 78, y: 32, t: 36, dur: 6.8, retardo: 1.1, alto: -6, giro: 3 },
+    { p: "billete", x: 5, y: 72, t: 40, dur: 7.6, retardo: 2.0, alto: -5, giro: 3 },
   ],
   contabilidad: [
-    { f: "cuentaT", x: 6, y: 35, t: 40, op: 0.11, color: TEAL, dur: 19, esp: 0.9, sube: 5, giro: [-3, 3] },
-    { f: "moneda", x: 80, y: 67, t: 38, op: 0.09, color: AMBAR, dur: 24, esp: 2.2, sube: 7, giro: [2, -3] },
+    { p: "libro", x: 78, y: 32, t: 38, dur: 6.8, retardo: 1.1, alto: -6, giro: -3 },
+    { p: "clip", x: 5, y: 72, t: 32, dur: 7.6, retardo: 2.0, alto: -5, giro: 6 },
+  ],
+  "pensamiento-estrategico": [
+    { p: "torre", x: 78, y: 32, t: 36, dur: 6.8, retardo: 1.1, alto: -6, giro: -3 },
+    { p: "torre", x: 5, y: 72, t: 30, dur: 7.6, retardo: 2.0, alto: -5, giro: 4 },
   ],
 };
 
 /*
- * Dónde se planta la mascota al final del camino. El camino serpentea, así
- * que el último nodo cae a un lado o al otro y su rótulo se va al contrario:
- * la mascota se pone en el lado que queda libre. En el centro solo cuando no
- * se sabe —un camino de un nodo, por ejemplo—, que es donde el centro sí
- * está despejado.
+ * Dónde se planta Fae al final del camino: en el lado CONTRARIO al último
+ * nodo. Medido a 320: bajo el último nodo quedan unos 38 px libres y Fae mide
+ * 38; puesta del lado del nodo se le monta encima, puesta enfrente cae bajo
+ * el rótulo, que acaba bastante más arriba. A 375 las dos se veían bien, y
+ * por eso la primera versión pasó: a 375 casi todo cabe.
  */
-const SITIO_MASCOTA = {
+const SITIO_FAE = {
   izquierda: { left: "4%" },
   derecha: { right: "4%" },
   centro: { left: "50%", transform: "translateX(-50%)" },
 };
 
-function Figura({ p }) {
-  const dibujo = FIGURAS[p.f];
-  if (!dibujo) return null;
-  const comun = {
-    style: {
-      position: "absolute",
-      left: `${p.x}%`,
-      top: `${p.y}%`,
-      width: `${p.t}px`,
-      height: `${p.t}px`,
-      opacity: p.op,
-      "--fae-dc-dur": `${p.dur}s`,
-      "--fae-dc-esp": `${p.esp ?? 0}s`,
-      ...(p.gira
-        ? null
-        : {
-            "--fae-dc-sube": `${p.sube ?? 6}px`,
-            "--fae-dc-giro-a": `${p.giro?.[0] ?? 0}deg`,
-            "--fae-dc-giro-b": `${p.giro?.[1] ?? 0}deg`,
-          }),
-    },
-    className: p.gira ? "fae-dc-gira" : "fae-dc-f",
-  };
+function Pieza({ d }) {
+  const pieza = PIEZAS[d.p];
+  if (!pieza) return null;
   return (
-    <svg
-      {...comun}
-      viewBox="0 0 100 100"
-      width={p.t}
-      height={p.t}
-      aria-hidden="true"
-      focusable="false"
-      fill="none"
-      stroke={p.color}
-      strokeWidth="3"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+    <div
+      className="fae-dc-p"
+      style={{
+        left: `${d.x}%`,
+        top: `${d.y}%`,
+        width: `${d.t}px`,
+        height: `${d.t}px`,
+        "--fae-dc-dur": `${d.dur}s`,
+        "--fae-dc-retardo": `${d.retardo}s`,
+        "--fae-dc-alto": `${d.alto}px`,
+        "--fae-dc-giro": `${d.giro}deg`,
+      }}
     >
-      {dibujo}
-    </svg>
+      <Dibujo pieza={pieza} tamano={d.t} strokeOpacity={OPACIDAD_AL_FONDO} />
+    </div>
   );
 }
 
 /**
- * La capa decorativa del camino. Se pone dentro de la caja en position
- * relative que ya envuelve el recorrido, antes del SVG.
+ * La capa decorativa del camino. Va dentro de la caja en position relative
+ * que ya envuelve el recorrido, ANTES del SVG.
  *
- * @param tema  "macroeconomia" | "contabilidad" | null — qué glifos añade.
- * @param densa false (por defecto) deja solo las figuras grandes y tenues;
- *              true añade las del tema. Un camino de un solo nodo, o uno muy
- *              corto, no tiene sitio para más de lo tenue.
+ * @param tema       "macroeconomia" | "contabilidad" | "pensamiento-estrategico" | null
+ * @param fae        false quita a Fae sin tocar el resto
+ * @param ladoFae    "izquierda" | "derecha" | "centro"
  */
-export default function DecoracionCamino({ tema = null, densa = true, mascota = true, ladoMascota = "centro" }) {
-  const piezas = densa ? [...AMBIENTE, ...(DEL_TEMA[tema] || [])] : AMBIENTE;
+export default function DecoracionCamino({ tema = null, fae = true, ladoFae = "centro" }) {
+  const ref = useRef(null);
+  /* Movimiento reducido o gama baja: quieta. Se decide al montar, una vez. */
+  const [estatica] = useState(() => (typeof window === "undefined" ? true : shouldRenderStatic()));
+  const corre = !estatica;
+  const [aLaVista, setALaVista] = useState(true);
+  const [visible, setVisible] = useState(
+    () => typeof document === "undefined" || document.visibilityState !== "hidden",
+  );
+
+  /* Fuera de pantalla, en pausa. El camino es alto: casi siempre hay parte fuera. */
+  useEffect(() => {
+    if (!corre || !ref.current || typeof IntersectionObserver === "undefined") return undefined;
+    const io = new IntersectionObserver(([e]) => setALaVista(e.isIntersecting), { threshold: 0 });
+    io.observe(ref.current);
+    return () => io.disconnect();
+  }, [corre]);
+
+  /* Con la pestaña oculta, en pausa. */
+  useEffect(() => {
+    if (!corre) return undefined;
+    const alCambiar = () => setVisible(document.visibilityState !== "hidden");
+    document.addEventListener("visibilitychange", alCambiar);
+    return () => document.removeEventListener("visibilitychange", alCambiar);
+  }, [corre]);
+
+  const pausa = corre && (!aLaVista || !visible);
+  const piezas = [...COMUNES, ...(DEL_TEMA[tema] || [])];
+
   return (
-    <div className="fae-dc" aria-hidden="true" style={CAJA}>
+    <div
+      ref={ref}
+      className="fae-dc"
+      aria-hidden="true"
+      style={CAJA}
+      data-bucle={corre ? "" : undefined}
+      data-pausa={pausa ? "" : undefined}
+    >
       <style>{CSS}</style>
-      {piezas.map((p, i) => (
-        <Figura key={`${p.f}-${i}`} p={p} />
+      {piezas.map((d, i) => (
+        <Pieza key={`${d.p}-${i}`} d={d} />
       ))}
-      {/*
-        La mascota va al final del recorrido, centrada, en el aire que el
-        camino ya reserva abajo. Vive en esta capa y no en el lienzo por dos
-        razones: aquí ya está puesto que nada se toca ni se lee, y la foto de
-        `camino-sin-cambios` pesa el HTML sin esta capa, así que el muñequito
-        no mueve ni una huella del recorrido.
-      */}
-      {mascota && (
-        <div style={{ position: "absolute", bottom: "2px", ...SITIO_MASCOTA[ladoMascota] }}>
-          <Mascota tamano={38} />
+      {fae && (
+        <div style={{ position: "absolute", bottom: "2px", width: "38px", height: "38px", ...SITIO_FAE[ladoFae] }}>
+          {/*
+            Fae sí va al 0,45 de la familia. Ella no está detrás del
+            recorrido: está en el aire del final, donde no hay nada con lo
+            que competir, y es el personaje de la casa. Bajarla al 0,16 del
+            fondo la dejaba en una mancha.
+          */}
+          <Dibujo pieza={FAE_POSES[POSE_FAE]} tamano={38} />
         </div>
       )}
     </div>
