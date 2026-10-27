@@ -6,14 +6,15 @@
  * su pregunta «En una frase») sigue siendo lo que se ve hasta que la versión
  * en SecuenciaAprender esté verificada (Takamura) y Kamogawa la encienda.
  *
- * Las dos conviven detrás de esta bandera. Apagada por defecto. Para mirarla
- * sin encenderla para nadie más: `?t3=secuencia` en la dirección.
+ * Las dos conviven detrás de esta bandera. ENCENDIDA desde que Takamura
+ * verificó las seis piezas: la secuencia es lo que ven todos. Apagada, se
+ * mira sin encenderla para nadie más con `?t3=secuencia` en la dirección.
  *
- * Encenderla para todos es cambiar ENCENDIDA a true: un cambio de una línea,
+ * Volver atrás es cambiar ENCENDIDA a false: un cambio de una línea,
  * reversible, que no toca datos. La vista anterior no se retira aquí.
  * ═══════════════════════════════════════════════════════════════════════════
  */
-export const ENCENDIDA = false;
+export const ENCENDIDA = true;
 
 export function secuenciaT3Activa(buscar = typeof location !== "undefined" ? location.search : "") {
   if (ENCENDIDA) return true;

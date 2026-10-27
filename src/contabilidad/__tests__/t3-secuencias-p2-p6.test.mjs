@@ -48,7 +48,8 @@ test("★ P2 y P6 son piezas nuevas: P2 detrás de P1, P6 al final; las publicad
     "t3-a1-vender-no-es-cobrar", "t3-a2-el-mes-de-san-calixto", "t3-a3-lo-que-ya-paso",
     "t3-a4-lo-que-ya-se-pago", "t3-a5-cerrar-el-periodo", "t3-a6-lo-que-deja-el-periodo",
   ]);
-  assert.equal(ENCENDIDA, false, "la bandera sigue apagada");
+  /* Encendida: esas seis, en ese orden y con esos ids, son ya lo que se ve. */
+  assert.equal(ENCENDIDA, true, "la bandera quedó encendida con P2 y P6 dentro");
 });
 
 test("★ 8 y 10 pantallas, con los titulares del paquete (P2-8 de la v4, P6-10 de la v3) y la forma completa", () => {

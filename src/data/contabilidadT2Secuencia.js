@@ -39,8 +39,9 @@
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-/* ⚑ LA BANDERA. false = producción ve la página vieja, igual que en main. */
-export const T2_APRENDER_EN_SECUENCIA = false;
+/* ⚑ LA BANDERA. true = producción ve la secuencia; false la devuelve a la página
+   vieja, que sigue en su sitio. Encendida por L tras la verificación de Mello. */
+export const T2_APRENDER_EN_SECUENCIA = true;
 
 /* El tope de #513/#524: 206 a 320 y 253 a 375. */
 export const TOPE_ALTO_FIGURA = { a320: 206, a375: 253 };

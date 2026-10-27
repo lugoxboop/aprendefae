@@ -25,7 +25,7 @@ import { ESCENAS } from "./mecanicas/libros/escenas.jsx";
 import ElCicloCompleto from "./mecanicas/libros/ciclo/ElCicloCompleto.jsx";
 import JuegoConTutorial from "./mecanicas/libros/JuegoConTutorial.jsx";
 import EscritorioDelContador from "./mecanicas/libros/ciclo/EscritorioDelContador.jsx";
-/* T2-7: los Aprender en secuencia, AL LADO de la página vieja y detrás de la bandera (apagada). */
+/* T2-7: los Aprender en secuencia, AL LADO de la página vieja y detrás de la bandera (encendida). */
 import SecuenciaAprender from "./secuencia/SecuenciaAprender.jsx";
 import { PIEZAS_SECUENCIA_T2 } from "./mecanicas/libros/t2/secuenciaT2.jsx";
 import { T2_APRENDER_EN_SECUENCIA } from "../data/contabilidadT2Secuencia.js";

@@ -1,5 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 
 import { faltasDePieza, palabras, MAX_PALABRAS_PANTALLA, MAX_PASOS, HAZ_INICIAL } from "../../components/secuencia/secuencia.js";
 import { PIEZAS_SECUENCIA_T3 } from "../../components/mecanicas/libros/tema3/secuencia/index.js";
@@ -246,11 +247,21 @@ test("★ OPC_PREDICE va en 3 botones, sin «Ninguna» (Kamogawa, lote 12)", () 
   assert.ok(!("ninguna" in T.ERRORES_PREDICE));
 });
 
-test("★ la bandera: apagada por defecto, se mira con ?t3=secuencia", () => {
-  assert.equal(ENCENDIDA, false, "lo publicado sigue siendo lo que ven los estudiantes");
-  assert.equal(secuenciaT3Activa(""), false);
-  assert.equal(secuenciaT3Activa("?t3=secuencia"), true);
-  assert.equal(secuenciaT3Activa("?t3=otra"), false);
+test("★ la bandera: encendida, la secuencia es lo que ven todos, y la página vieja sigue en su sitio", () => {
+  assert.equal(ENCENDIDA, true, "la secuencia verificada es ya lo que ven los estudiantes");
+  /* Encendida, nadie se queda fuera: ninguna dirección devuelve la vista anterior. */
+  for (const busqueda of ["", "?t3=secuencia", "?t3=otra"]) {
+    assert.equal(secuenciaT3Activa(busqueda), true, `con ?${busqueda} también`);
+  }
+  /* Se apaga en una línea: la constante sigue sola en el archivo de datos. */
+  const bandera = readFileSync("src/data/banderasT3.js", "utf8");
+  assert.match(bandera, /^export const ENCENDIDA = true;$/m, "se deshace en una línea");
+  assert.match(bandera, /if \(ENCENDIDA\) return true;[\s\S]*t3"\) === "secuencia"/, "apagada, el atajo ?t3=secuencia sigue ahí");
+  /* Y la vista no retira lo publicado: la rama de CuatroCapas no se borró. */
+  const vista = readFileSync("src/components/ContabilidadTema3View.jsx", "utf8");
+  assert.match(vista, /esAprender && secuenciaT3Activa\(\) \? \(/, "Aprender entra por la bandera");
+  assert.match(vista, /<SecuenciaAprender temaId=\{TEMA_SECUENCIA_T3\} piezas=\{PIEZAS_SECUENCIA_T3\}/, "encendida pinta la secuencia de las piezas de T3");
+  assert.match(vista, /\) : esAprender \? \([\s\S]*<CuatroCapas pieza=\{pieza\}/, "apagada sigue pintando CuatroCapas: lo publicado no se retira");
 });
 
 test("★ Repaso: las 4 «En una frase» con su texto literal, ítems nuevos, sin tocar ningún id", () => {

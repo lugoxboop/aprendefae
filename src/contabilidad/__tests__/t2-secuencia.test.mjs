@@ -16,8 +16,9 @@ import { JSDOM, VirtualConsole } from "jsdom";
  *     accesible y la pista al primer error; lo correcto con su porqué al
  *     segundo; ✓ y «correcto» con el acierto; «Siguiente» se libera;
  *   ★ <Veredicto /> no va dentro de la figura (hasta #536);
- *   ★ la bandera: apagada, la vista pinta EXACTAMENTE lo mismo que sin el
- *     cambio; encendida, la secuencia de las cinco y no CuatroCapas;
+ *   ★ la bandera: ENCENDIDA, la vista pinta la secuencia de las cinco y no
+ *     CuatroCapas, y Hacer no se mueve ni un carácter; devuelta a false,
+ *     vuelve a pintar EXACTAMENTE lo mismo que sin el cambio;
  *   ✖ ROJO HONESTO: lo que sigue faltando de Near, nombrado. No se marca todo
  *     ni skip.
  * ═══════════════════════════════════════════════════════════════════════════
@@ -592,37 +593,54 @@ async function pintarVista(fuente, nombre, modo) {
   } finally { rmSync(ruta, { force: true }); }
 }
 
-test("★ la bandera está APAGADA por defecto y vive en los datos de la célula", () => {
-  assert.equal(D.T2_APRENDER_EN_SECUENCIA, false, "producción no cambia hasta que L la encienda");
-  assert.match(readFileSync("src/data/contabilidadT2Secuencia.js", "utf8"), /^export const T2_APRENDER_EN_SECUENCIA = false;$/m, "se deshace en una línea");
+test("★ la bandera está ENCENDIDA y vive en los datos de la célula, en una sola línea", () => {
+  assert.equal(D.T2_APRENDER_EN_SECUENCIA, true, "la secuencia verificada es ya lo que ve producción");
+  assert.match(readFileSync("src/data/contabilidadT2Secuencia.js", "utf8"), /^export const T2_APRENDER_EN_SECUENCIA = true;$/m, "se deshace en una línea");
 });
 
-test("★ con la bandera apagada, la vista pinta EXACTAMENTE lo que pinta sin el cambio (Aprender y Hacer)", async () => {
+test("★ devuelta a false, la vista vuelve a pintar EXACTAMENTE lo que pinta sin el cambio (Aprender y Hacer)", async () => {
   const sinCambio = variante(VISTA, QUITAR);
   assert.ok(!/SecuenciaAprender|T2_APRENDER_EN_SECUENCIA|NavigationContext/.test(sinCambio), "la receta deja restos del cambio");
+  /* La bandera encendida no retira la página vieja: apagarla la devuelve intacta. Se simula aquí. */
+  const apagada = variante(VISTA, [["{esAprender && T2_APRENDER_EN_SECUENCIA ? (", "{esAprender && false ? ("]]);
   /* El fondo de la materia es perezoso (lazy): la primera pintura no lo trae. Se calienta antes de comparar. */
   await pintarVista(VISTA, "t2sec-calienta", "aprender");
   await new Promise((r) => setTimeout(r, 100));
   for (const modo of ["aprender", "hacer", null]) {
-    const ahora = await pintarVista(VISTA, `t2sec-ahora-${modo}`, modo);
+    const ahora = await pintarVista(apagada, `t2sec-apagada-${modo}`, modo);
     const antes = await pintarVista(sinCambio, `t2sec-antes-${modo}`, modo);
     assert.ok(ahora.length > 1000, `modo ${modo}: la vista no pintó nada`);
     const i = [...ahora].findIndex((c, k) => c !== antes[k]);
     assert.ok(ahora === antes, `modo ${modo}: la bandera apagada cambió lo que se pinta, desde el carácter ${i}:\n  ahora «${ahora.slice(Math.max(0, i - 80), i + 80)}»\n  antes «${antes.slice(Math.max(0, i - 80), i + 80)}»`);
   }
-  const aprender = await pintarVista(VISTA, "t2sec-ahora-ap", "aprender");
+  const aprender = await pintarVista(apagada, "t2sec-apagada-ap", "aprender");
   const { PIEZAS_APRENDER } = await import("../../data/contabilidadAprender.js");
   assert.equal((aprender.match(/<section data-pieza=/g) || []).length, PIEZAS_APRENDER.length, "todas las piezas viejas, en CuatroCapas");
   assert.ok(!aprender.includes("data-secuencia"));
 });
 
+test("★ con la bandera encendida, Hacer y la vista por defecto no se mueven ni un carácter", async () => {
+  const sinCambio = variante(VISTA, QUITAR);
+  await pintarVista(VISTA, "t2sec-calienta2", "hacer");
+  await new Promise((r) => setTimeout(r, 100));
+  for (const modo of ["hacer", null]) {
+    const ahora = await pintarVista(VISTA, `t2sec-encendida-${modo}`, modo);
+    const antes = await pintarVista(sinCambio, `t2sec-antes2-${modo}`, modo);
+    assert.ok(ahora.length > 1000, `modo ${modo}: la vista no pintó nada`);
+    const i = [...ahora].findIndex((c, k) => c !== antes[k]);
+    assert.ok(ahora === antes, `modo ${modo}: encender la bandera movió lo que se pinta, desde el carácter ${i}:\n  ahora «${ahora.slice(Math.max(0, i - 80), i + 80)}»\n  antes «${antes.slice(Math.max(0, i - 80), i + 80)}»`);
+  }
+});
+
 test("★ con la bandera encendida, Aprender es la secuencia de las cinco y no CuatroCapas", async () => {
-  const encendida = variante(VISTA, [["{esAprender && T2_APRENDER_EN_SECUENCIA ? (", "{esAprender && true ? ("]]);
-  const html = await pintarVista(encendida, "t2sec-encendida", "aprender");
+  /* Sin recetas: esto es la vista tal como está en producción. */
+  const html = await pintarVista(VISTA, "t2sec-encendida", "aprender");
   assert.ok(html.includes(`data-secuencia="${TEMA}"`));
   assert.ok(html.includes(`data-pieza="${IDS[0]}"`));
   assert.ok(html.includes("Pieza 1 de 5"));
   assert.equal((html.match(/<section data-pieza=/g) || []).length, 0);
+  /* Y la rama vieja sigue escrita en la vista: no se retiró nada. */
+  assert.match(VISTA, /\) : esAprender && \([\s\S]*<CuatroCapas pieza=\{pieza\}/);
 });
 
 /* ─────────────── ✖ ROJO HONESTO: lo que falta ─────────────── */

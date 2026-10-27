@@ -44,8 +44,12 @@ const P2 = pieza(T26.PIEZA_P2.id);
 const textos = (zona) => zona.map((z) => z.texto ?? z.pie ?? "").filter(Boolean);
 const medida = (s, nombre) => s.medir.find((m) => m.nombre === nombre).estado;
 
-test("★ la bandera sigue apagada", () => {
-  assert.equal(ENCENDIDA, false);
+test("★ la bandera quedó encendida: las seis condiciones de abajo son las que lo permitieron", () => {
+  assert.equal(ENCENDIDA, true);
+  /* Lo que se enciende es la secuencia de las seis piezas, por la vista de T3. */
+  const vista = readFileSync(new URL("src/components/ContabilidadTema3View.jsx", RAIZ), "utf8");
+  assert.match(vista, /esAprender && secuenciaT3Activa\(\) \? \([\s\S]*<SecuenciaAprender temaId=\{TEMA_SECUENCIA_T3\} piezas=\{PIEZAS_SECUENCIA_T3\}/);
+  assert.equal(PIEZAS_SECUENCIA_T3.length, 6);
 });
 
 /* ═══════════ 1 · LAS ACACIAS ═══════════ */

@@ -8,7 +8,7 @@ import { PIEZA_P5 } from "./secuenciaP5.jsx";
  * Las cinco piezas de Aprender de T2 en secuencia, en el orden del tema
  * (A1 → A2 → A5 → A3 → A4, el mismo de PIEZAS_APRENDER). La vista
  * (CuentasDebeHaberView.jsx) las pasa tal cual a SecuenciaAprender, detrás de
- * T2_APRENDER_EN_SECUENCIA (apagada).
+ * T2_APRENDER_EN_SECUENCIA (encendida).
  */
 export const PIEZAS_SECUENCIA_T2 = [PIEZA_P1, PIEZA_P2, PIEZA_P3, PIEZA_P4, PIEZA_P5];
 
