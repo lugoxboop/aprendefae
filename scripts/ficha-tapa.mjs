@@ -15,8 +15,7 @@
  *   node scripts/ficha-tapa.mjs "Las cuentas, el debe y el haber" 320
  * ═══════════════════════════════════════════════════════════════════════════
  */
-import pkg from "/opt/npm-tools/node_modules/playwright-core/index.js";
-const { chromium } = pkg;
+import { chromium } from "./sondas/navegador.mjs";
 const TEMA = process.argv[2] ?? "Las cuentas, el debe y el haber";
 const ANCHO = Number(process.argv[3] ?? 320);
 const RAIZ = `http://127.0.0.1:${process.env.PUERTO ?? 8099}/`;
@@ -131,7 +130,15 @@ await p.route("**/*", (route) => {
   return route.continue();
 });
 await p.goto(RAIZ, { waitUntil: "networkidle" });
-for (const paso of ["Contabilidad", TEMA]) {
+/* La materia por defecto es Contabilidad; MATERIA="Pensamiento Estratégico" o "Macroeconomía" mide las otras. */
+for (const paso of [process.env.MATERIA ?? "Contabilidad", TEMA]) {
+  /*
+   * El ratón se aparta antes de cada toque: tras tocar la materia quedaba
+   * encima de la tarjeta de T3, que al pasar el ratón sube 2 px, deja de
+   * estar debajo, baja, y vuelve a subir. Playwright la veía «inestable» y la
+   * sonda salía NO MEDIDO (ficha-tapa de «Ingresos, gastos y ajustes»).
+   */
+  await p.mouse.move(1, 1);
   await p.locator(`button:visible:has-text("${paso}")`).first().click({ timeout: 9000 });
   await p.waitForTimeout(700);
 }

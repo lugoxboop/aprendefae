@@ -1,0 +1,137 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# LAS SONDAS, SOLAS (#581, Levi: «la sonda tiene que correr en CI, no a mano»).
+#
+# Contraste (Aprender y las partidas de Hacer) y ficha-tapa, a 320 y 375, en
+# cada tema visible de las tres materias, sobre el paquete construido. Una
+# celda de la matriz por tema, en paralelo. La vara es la línea base
+# (scripts/sondas/linea-base.json): si un PR SUBE un número, se pone rojo.
+# Qué mide cada sonda y qué no: scripts/sondas/ci.mjs.
+#
+# El paquete se construye con un Supabase de mentira: las sondas fingen la
+# sesión y responden ellas mismas a Supabase, así que no hace falta ningún
+# secreto y nada sale hacia la base de verdad.
+# ═══════════════════════════════════════════════════════════════════════════
+name: Sondas
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: sondas-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+permissions:
+  contents: read
+
+jobs:
+  paquete:
+    name: Construir y listar los temas
+    runs-on: ubuntu-latest
+    outputs:
+      temas: ${{ steps.lista.outputs.temas }}
+    steps:
+      - name: Traer el código
+        uses: actions/checkout@v7
+      - name: Preparar Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: npm
+      - name: Instalar dependencias
+        run: npm ci
+      - name: Listar los temas visibles
+        id: lista
+        run: echo "temas=$(node scripts/sondas/ci.mjs --todas --lista)" >> "$GITHUB_OUTPUT"
+      - name: Compilar con un Supabase de mentira
+        env:
+          VITE_SUPABASE_URL: https://falso.supabase.co
+          VITE_SUPABASE_ANON_KEY: sonda
+        run: npm run build
+      - name: Guardar el paquete
+        uses: actions/upload-artifact@v4
+        with:
+          name: paquete
+          path: dist
+          retention-days: 3
+
+  medir:
+    name: ${{ matrix.tema }}
+    needs: paquete
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.paquete.outputs.temas) }}
+    steps:
+      - name: Traer el código
+        uses: actions/checkout@v7
+      - name: Preparar Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: npm
+      - name: Instalar dependencias y Chromium
+        run: |
+          npm ci
+          npm install --no-save playwright@1.63.0
+          npx playwright install --with-deps chromium
+      - name: Traer el paquete
+        uses: actions/download-artifact@v4
+        with:
+          name: paquete
+          path: dist
+      - name: Medir
+        env:
+          PUERTO: "8099"
+        run: |
+          (cd dist && python3 -m http.server 8099 --bind 127.0.0.1 >/dev/null 2>&1 &)
+          for i in $(seq 1 30); do curl -sf http://127.0.0.1:8099/ >/dev/null && break; sleep 1; done
+          node scripts/sondas/ci.mjs --materia "${{ matrix.materia }}" --tema "${{ matrix.tema }}" --salida sondas-resultado
+      - name: Guardar el resultado
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sondas-${{ strategy.job-index }}
+          path: sondas-resultado
+          retention-days: 14
+
+  juntar:
+    name: Línea base propuesta
+    needs: medir
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Traer el código
+        uses: actions/checkout@v7
+      - name: Traer los resultados
+        uses: actions/download-artifact@v4
+        with:
+          pattern: sondas-*
+          path: sondas-resultado
+          merge-multiple: true
+      - name: Juntar
+        run: |
+          node scripts/sondas/ci.mjs --juntar sondas-resultado > linea-base-propuesta.json
+          { echo '### Línea base que sale de esta corrida'; echo; echo 'Si un PR baja un número, se copia esto a `scripts/sondas/linea-base.json` en el mismo PR.'; echo; echo '```json'; cat linea-base-propuesta.json; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+      - name: Dejarla también como anotación
+        # Los artefactos y los registros se bajan de un almacén aparte; las
+        # anotaciones se leen por la API normal de GitHub, que es la que tienen
+        # los agentes (check-runs → annotations). Una anotación guarda unos
+        # 4.000 caracteres, así que va partida en trozos de 30 medidas
+        # (títulos linea-base-1, linea-base-2…): se juntan uniendo los objetos.
+        run: |
+          node -e '
+            const d = JSON.parse(require("fs").readFileSync("linea-base-propuesta.json", "utf8"));
+            const e = Object.entries(d);
+            for (let i = 0; i < e.length; i += 30) console.log(`::notice title=linea-base-${i / 30 + 1}::${JSON.stringify(Object.fromEntries(e.slice(i, i + 30)))}`);
+          '
+      - name: Guardarla
+        uses: actions/upload-artifact@v4
+        with:
+          name: linea-base-propuesta
+          path: linea-base-propuesta.json
+          retention-days: 30
