@@ -15,7 +15,11 @@
  *   node scripts/ficha-tapa.mjs "Las cuentas, el debe y el haber" 320
  * ═══════════════════════════════════════════════════════════════════════════
  */
-import pkg from "/opt/npm-tools/node_modules/playwright-core/index.js";
+import { existsSync } from "node:fs";
+/* Playwright no vive en el mismo sitio en todos los contenedores: se prueba en orden. */
+const PLAYWRIGHT = [process.env.PLAYWRIGHT_CORE, "/opt/npm-tools/node_modules/playwright-core/index.js", "/opt/node22/lib/node_modules/playwright/index.js"]
+  .find((ruta) => ruta && existsSync(ruta));
+const pkg = (await import(PLAYWRIGHT)).default;
 const { chromium } = pkg;
 const TEMA = process.argv[2] ?? "Las cuentas, el debe y el haber";
 const ANCHO = Number(process.argv[3] ?? 320);
@@ -130,10 +134,20 @@ await p.route("**/*", (route) => {
   if (/supabase\.co/.test(u)) return route.fulfill({ status: 200, contentType: "application/json", body: "[]" });
   return route.continue();
 });
-await p.goto(RAIZ, { waitUntil: "networkidle" });
-for (const paso of ["Contabilidad", TEMA]) {
-  await p.locator(`button:visible:has-text("${paso}")`).first().click({ timeout: 9000 });
+/*
+ * RUTA=#/activos-financieros abre el tema por su dirección: hay temas que
+ * están ocultos del índice pero cuya ruta abre, y esos no se alcanzan
+ * tocando botones (#349).
+ */
+if (process.env.RUTA) {
+  await p.goto(RAIZ + process.env.RUTA, { waitUntil: "networkidle" });
   await p.waitForTimeout(700);
+} else {
+  await p.goto(RAIZ, { waitUntil: "networkidle" });
+  for (const paso of ["Contabilidad", TEMA]) {
+    await p.locator(`button:visible:has-text("${paso}")`).first().click({ timeout: 9000 });
+    await p.waitForTimeout(700);
+  }
 }
 const todos = [];
 const glifos = [];
@@ -176,29 +190,60 @@ if (APRENDER) {
   console.log(`Pantallas CON ficha: ${conFicha} · SIN ficha: ${sinFicha}.`);
   process.exit(conFicha === 0 ? 2 : (u.length === 0 ? 0 : 1));
 }
-const nodos = await p.locator("[data-nodo], .fae-ch-estrecho .fae-ch-rotulo").count();
-for (let k = 0; k < Math.min(nodos, 10); k++) {
-  const punto = await p.evaluate((i) => {
-    const e = [...document.querySelectorAll("[data-nodo], .fae-ch-estrecho .fae-ch-rotulo")][i];
-    if (!e) return null;
-    const r = e.getBoundingClientRect();
-    if (r.width < 2) return null;
-    return { x: r.x + r.width / 2, y: r.y + r.height / 2 };
-  }, k);
-  if (!punto) continue;
-  await p.mouse.click(punto.x, punto.y);
-  await p.waitForTimeout(900);
-  for (const desplazar of [0, 220, 460]) {
-    await p.evaluate((d) => window.scrollTo(0, d), desplazar);
+/*
+ * EL CAMINO DE HACER, NODO POR NODO (#349). Cada nodo se abre desde la
+ * dirección del camino, de cero, y si sale su ficha se toca «Empezar».
+ * Antes la sonda volvía con el historial y salía del tema: medía UNA
+ * actividad, 3 pantallas por tema, un verde que casi no midió nada.
+ *
+ * Dentro de la actividad se mide arriba, en dos alturas intermedias y abajo
+ * del todo, y lo mismo después de tocar «Saltar» o el primer botón de
+ * avance, si lo hay: el tutorial y el juego son pantallas distintas.
+ */
+const CAMINO = p.url();
+/* Los ids de los nodos VISIBLES, sin repetir: hay caminos con copias ocultas para otro ancho. */
+const idsDeNodos = await p.evaluate(() => [...new Set([...document.querySelectorAll("[data-nodo]")]
+  .filter((e) => { const r = e.getBoundingClientRect(); return r.width > 1 && r.height > 1; })
+  .map((e) => e.dataset.nodo))]);
+const medirAqui = async () => {
+  for (const desplazar of [0, 220, 460, "fondo"]) {
+    await p.evaluate((d) => window.scrollTo(0, d === "fondo" ? document.documentElement.scrollHeight : d), desplazar);
     await p.waitForTimeout(260);
     const r = await p.evaluate(MIRA);
     if (r.sinFicha) { sinFicha++; continue; }
     conFicha++;
     for (const t of r.tapados) (t.decorativo ? glifos : todos).push(`${t.tocable ? "CONTROL" : "texto  "}  «${t.texto}»`);
   }
-  await p.goBack().catch(() => {});
+};
+let actividades = 0;
+for (const id of idsDeNodos) {
+  /* De cero: un cambio solo de hash no siempre cierra la actividad abierta. */
+  await p.goto("about:blank");
+  await p.goto(CAMINO, { waitUntil: "networkidle" }).catch(() => {});
+  await p.waitForTimeout(700);
+  const nodo = p.locator(`[data-nodo="${id}"]:visible`).first();
+  if ((await nodo.count()) === 0) continue;
+  await nodo.scrollIntoViewIfNeeded().catch(() => {});
+  await nodo.click({ timeout: 5000 }).catch(() => {});
   await p.waitForTimeout(600);
+  /* Unos caminos abren la ficha del nodo con «Empezar»; otros, la actividad directamente. */
+  const empezar = p.locator("button.fae-dn-empezar:visible");
+  if ((await empezar.count()) > 0) await empezar.first().click({ timeout: 5000 }).catch(() => {});
+  await p.waitForTimeout(900);
+  /* Dentro de una actividad siempre está «Volver al camino»; la dirección no siempre cambia. */
+  const dentro = (await p.locator('button:visible:has-text("Volver al camino")').count()) > 0;
+  if (process.env.DEPURAR) console.log("nodo", id, dentro);
+  if (!dentro) continue;
+  actividades++;
+  await medirAqui();
+  const avance = p.locator('button:visible:has-text("Saltar"), button:visible:has-text("Empezar"), button:visible:has-text("Siguiente")');
+  if ((await avance.count()) > 0) {
+    await avance.first().click({ timeout: 5000 }).catch(() => {});
+    await p.waitForTimeout(700);
+    await medirAqui();
+  }
 }
+console.log(`Actividades abiertas: ${actividades} de ${idsDeNodos.length} nodos.`);
 await b.close();
 const unicos = [...new Set(todos)];
 for (const t of unicos) console.log("  " + t);

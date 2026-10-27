@@ -82,3 +82,27 @@ test("★★★ esconder la tarjeta no borró la materia: sigue entera en los da
   assert.ok(m, "la materia sigue en SUBJECTS");
   assert.ok(m.topics?.length > 0, "y conserva sus temas, así que nadie perdió su progreso");
 });
+
+/* ── la apertura ── */
+
+test("★★★ la portada se arma CADA vez que se llega a ella", async () => {
+  /*
+   * Estuvo un rato armándose solo la primera vez de la visita —idea del #552
+   * de la Célula A, que tenía su lógica: volver y ver la misma apertura
+   * parece una espera—. Mateo la probó el 27-oct y dijo lo contrario: al
+   * salir a la página principal la quiere igual de viva que al entrar. Manda
+   * él, y la prueba lo guarda para que nadie lo «optimice» de vuelta.
+   */
+  const primera = await portada();
+  const unas = primera.caja.querySelectorAll(".fae-ent").length;
+  primera.desmontar();
+
+  const segunda = await portada();
+  try {
+    assert.ok(unas >= 4, `la portada entra en fila; animadas: ${unas}`);
+    assert.equal(
+      segunda.caja.querySelectorAll(".fae-ent").length, unas,
+      "al volver desde una materia se arma otra vez, igual que la primera",
+    );
+  } finally { segunda.desmontar(); }
+});

@@ -1,33 +1,55 @@
 import { useState } from "react";
 import { FAE } from "../theme.js";
-import { HERO_PHRASES, HERO_SUBCOPY } from "../data/heroPhrases.js";
+import { HERO_SUBCOPY, PESO_DE_LA_HORA, bancosDe, franjaDe, titularesDe } from "../data/heroPhrases.js";
 
 /*
- * Elige el titular de la sesión, igual que el export:
- * - Si la sesión ya tiene uno guardado, se reutiliza (no cambia al recargar).
- * - Si no, se sortea entre todos menos el de la sesión anterior, para no repetir.
- * - Si sessionStorage/localStorage fallan, cae a un sorteo simple.
- * Es idempotente: volver a llamarla dentro de la misma sesión devuelve lo mismo.
+ * Elige el titular de la sesión.
+ *
+ * TRES REGLAS, EN ESTE ORDEN:
+ *   1. Dentro de una sesión no cambia. Recargar la portada y que el titular
+ *      salte es lo que hace que una página parezca inestable.
+ *   2. Salvo que haya cambiado la franja. El que abrió a las 23:50 y vuelve
+ *      a las 00:10 ya no está en la misma noche: se vuelve a sortear.
+ *   3. No repite el de la última vez. Dos visitas seguidas con la misma frase
+ *      se leen como «solo tiene una».
+ *
+ * Y una cosa más: la mitad de las veces sale una frase DE LA HORA. Se sortea
+ * primero el banco —el de la hora o el de siempre— y después la frase dentro
+ * de él. Sorteando del montón entero, la de la hora salía una de cada cuatro
+ * veces, porque el banco de siempre es tres veces más grande, y la de la hora
+ * es la que Mateo pidió.
+ *
+ * Si sessionStorage o localStorage fallan —modo privado, almacenamiento
+ * bloqueado—, sortea y ya: el titular nunca puede tumbar la portada.
  */
-export function pickHeadlineIndex() {
-  const KEY = "fae:headline";
-  const LAST = "fae:headline:last";
+export function elegirTitular(ahora = new Date(), sorteo = Math.random) {
+  const CLAVE = "fae:titular";
+  const ULTIMO = "fae:titular:ultimo";
+  const lote = titularesDe(ahora);
+  const franja = franjaDe(ahora.getHours());
+  const alAzar = (lista) => lista[Math.min(lista.length - 1, Math.floor(sorteo() * lista.length))];
+
+  const { hora, siempre } = bancosDe(ahora);
+  const banco = sorteo() < PESO_DE_LA_HORA && hora.length ? hora : siempre;
+
   try {
-    const held = sessionStorage.getItem(KEY);
-    if (held !== null && HERO_PHRASES[+held]) return +held;
-    const last = localStorage.getItem(LAST);
-    const pool = HERO_PHRASES.map((h, i) => i).filter((i) => String(i) !== last);
-    const pick = pool[Math.floor(Math.random() * pool.length)];
-    sessionStorage.setItem(KEY, String(pick));
-    localStorage.setItem(LAST, String(pick));
-    return pick;
-  } catch (e) {
-    return Math.floor(Math.random() * HERO_PHRASES.length);
+    const guardado = JSON.parse(sessionStorage.getItem(CLAVE) || "null");
+    if (guardado?.franja === franja && lote.includes(guardado.frase)) return guardado.frase;
+
+    const ultimo = localStorage.getItem(ULTIMO);
+    const candidatas = banco.filter((f) => f !== ultimo);
+    const frase = alAzar(candidatas.length ? candidatas : banco);
+
+    sessionStorage.setItem(CLAVE, JSON.stringify({ franja, frase }));
+    localStorage.setItem(ULTIMO, frase);
+    return frase;
+  } catch {
+    return alAzar(banco);
   }
 }
 
 export default function Hero() {
-  const [index] = useState(pickHeadlineIndex);
+  const [titular] = useState(() => elegirTitular());
 
   return (
     <div style={{ textAlign: "center", maxWidth: "min(90vw, 560px)" }}>
@@ -47,7 +69,7 @@ export default function Hero() {
           justifyContent: "center",
         }}
       >
-        {HERO_PHRASES[index]}
+        {titular}
       </h1>
       <p
         style={{

@@ -3,6 +3,15 @@ import { FAE } from "../theme.js";
 import { ACTIVIDADES_TRANSVERSALES, APRENDER, EMPTY_TOPICS_MESSAGE, HACER, tieneContenidoDe, tiposDeTema } from "../data/subjects.js";
 import SubjectCard from "./SubjectCard.jsx";
 import TopicSplitCard from "./TopicSplitCard.jsx";
+import Entrada, { EstiloEntrada, entrada } from "./shared/Entrada.jsx";
+
+/*
+ * Hasta dónde escalona la entrada de las tarjetas. Con 80 ms de paso, la
+ * séptima ya entra a los 560 ms; de ahí en adelante todas entran a la vez.
+ * Una materia de doce temas no puede tener la última tarjeta esperando casi
+ * un segundo: eso deja de ser jerarquía y pasa a ser lentitud.
+ */
+const TOPE_ESCALON = 7;
 import ActivityBadge from "./shared/ActivityBadge.jsx";
 import BackgroundVeil from "./shared/BackgroundVeil.jsx";
 import Logo from "./Logo.jsx";
@@ -60,6 +69,8 @@ export default function TopicIndexView({
       {background}
       <BackgroundVeil centerAlpha={veilCenterAlpha} />
 
+      <EstiloEntrada />
+
       <div
         style={{
           position: "relative",
@@ -80,7 +91,15 @@ export default function TopicIndexView({
           forma de ir al inicio. Lo demás de la regla —sin divisor, pastilla
           compacta, título que trunca el último— sí se aplica.
         */}
-        <div className="fae-cabecera-titulo fae-sin-volver" style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+        {/*
+          LA COREOGRAFÍA DE LA PANTALLA DE MATERIA. Mismo criterio que la
+          portada: entra primero dónde estás (la cabecera), luego lo que hay
+          que hacer hoy (el Repaso), luego los temas uno detrás de otro, y al
+          final con qué te comparas. El escalón de las tarjetas se corta en la
+          sexta: una materia de doce temas no puede hacer esperar medio
+          segundo a la última.
+        */}
+        <div {...entrada(0, "baja")} className="fae-cabecera-titulo fae-sin-volver" style={{ ...entrada(0, "baja").style, display: "flex", alignItems: "center", gap: "14px" }}>
           <span className="fae-cabecera-marca"><Logo variant="symbol" size={28} theme="dark" /></span>
           <h1
             style={{
@@ -105,7 +124,7 @@ export default function TopicIndexView({
         */}
         {/* `publicado: false` la deja fuera mientras se construye; el Repaso de Macro no lo lleva y se ve como siempre. */}
         {ACTIVIDADES_TRANSVERSALES.filter((a) => a.indice === subjectId && a.publicado !== false).map((a) => (
-          <div key={a.id} data-encabezado-materia style={{ width: "100%", maxWidth: "760px", margin: "clamp(18px, 3vh, 28px) auto 0" }}>
+          <div key={a.id} {...entrada(1)} data-encabezado-materia style={{ ...entrada(1).style, width: "100%", maxWidth: "760px", margin: "clamp(18px, 3vh, 28px) auto 0" }}>
             {/* La expansión vive dentro del banner; el botón de empezar navega a la partida. */}
             <BannerRepaso actividad={a} onEmpezar={() => onOpenTopic(a.temaId)} />
           </div>
@@ -138,7 +157,7 @@ export default function TopicIndexView({
                 maxWidth: "760px",
               }}
             >
-              {topics.map((topic) => {
+              {topics.map((topic, i) => {
                 /*
                  * Un tema con actividades de los dos tipos muestra las dos
                  * insignias; uno sin clasificar no muestra ninguna. Sale del
@@ -181,7 +200,7 @@ export default function TopicIndexView({
                 const hayQueElegir =
                   tieneContenidoDe(topic, APRENDER) && tieneContenidoDe(topic, HACER);
 
-                return hayQueElegir ? (
+                const tarjeta = hayQueElegir ? (
                   <TopicSplitCard
                     key={topic.id}
                     topic={topic}
@@ -201,6 +220,11 @@ export default function TopicIndexView({
                     label={`Tema ${topic.title}`}
                     onClick={() => onOpenTopic(topic.id)}
                   />
+                );
+                return (
+                  <Entrada key={topic.id} orden={2 + Math.min(i, TOPE_ESCALON - 2)} modo="crece" estira>
+                    {tarjeta}
+                  </Entrada>
                 );
               })}
             </div>
@@ -226,7 +250,7 @@ export default function TopicIndexView({
             tamaño, el ranking con toda la materia. La liga va primero porque
             es la que cambia cada semana.
           */}
-          <div style={{ width: "100%", maxWidth: "560px", display: "flex", flexDirection: "column", gap: "16px" }}>
+          <Entrada orden={TOPE_ESCALON + 1} modo="fondo" style={{ width: "100%", maxWidth: "560px", display: "flex", flexDirection: "column", gap: "16px" }}>
             {/*
               SIN DECORACIÓN, por orden de Mateo del 25 de octubre. La banda se
               construyó (#565, #567) y se retiró de aquí el mismo día: el ranking
@@ -242,7 +266,7 @@ export default function TopicIndexView({
               titulo={`Ranking de ${name}`}
               nota="Solo esta materia"
             />
-          </div>
+          </Entrada>
         </div>
       </div>
     </div>

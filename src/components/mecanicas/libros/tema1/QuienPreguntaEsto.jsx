@@ -3,7 +3,7 @@ import { User } from "lucide-react";
 import { barajar } from "../../../../utils/barajar.js";
 import { FAE } from "../../../../theme.js";
 import { H2, ASIENTOS_H2 } from "../../../../data/contabilidadT1Hacer2.js";
-import { sortearH2, evaluarH2, enunciadoH2, asientoH2 } from "../../../../contabilidad/tema1Hacer2.js";
+import { sortearH2, evaluarH2, enunciadoH2, asientoH2, mensajeH2 } from "../../../../contabilidad/tema1Hacer2.js";
 import { puntuar, pesoDeCadaItem } from "../../../../contabilidad/tema1.js";
 import { Cierre } from "../../corazon/juego.jsx";
 import { TEXTO_CIERRE } from "../../bloques/marcos.jsx";
@@ -217,7 +217,7 @@ export default function QuienPreguntaEsto({
         </div>
 
         <RegionViva>
-          {r && <Mensaje ok={r.ok} texto={r.porque ? `${r.texto} ${r.porque}` : r.texto} />}
+          {r && <Mensaje ok={r.ok} texto={mensajeH2(r)} />}
         </RegionViva>
 
         {r && !modoDemo && (

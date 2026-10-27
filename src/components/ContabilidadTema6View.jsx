@@ -175,7 +175,7 @@ export default function ContabilidadTema6View({ modo = null, nodoInicial = null,
               </ContextoResumen.Provider>
             </div>
           ) : (
-            <CaminoHacer nodos={nodos} onAbrir={(id) => setNodoAbierto(id)} vacio="Este tema todavía no tiene juegos." />
+            <CaminoHacer tema="contabilidad" nodos={nodos} onAbrir={(id) => setNodoAbierto(id)} vacio="Este tema todavía no tiene juegos." />
           )}
         </div>
       </div>

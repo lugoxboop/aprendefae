@@ -86,4 +86,7 @@ export function evaluarH2(ficha, marcado, vuelta = 1) {
   return { ok: false, texto, porque: porqueDeParejaH2(ficha, marcado) };
 }
 
+/* Lo que se lee tras marcar: la devolución y, si la hay, el porqué de la pareja. La usan la pieza y el Repaso. */
+export const mensajeH2 = (r) => (r.porque ? `${r.texto} ${r.porque}` : r.texto);
+
 export { H1, H2 };

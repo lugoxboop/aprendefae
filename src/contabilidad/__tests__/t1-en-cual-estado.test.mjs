@@ -98,7 +98,7 @@ test("★★ las dieciséis fichas están, sin repetirse, y cada una con su devo
   assert.equal(new Set(CONCEPTOS.map((c) => c.nombre)).size, 16, "hay dos fichas con el mismo nombre");
   for (const c of CONCEPTOS) {
     assert.ok(ACIERTO_T1_6[c.id], `${c.nombre}: sin devolución de acierto`);
-    assert.ok(ACIERTO_T1_6[c.id].startsWith("✅"), `${c.nombre}: la devolución perdió su marca`);
+    assert.ok(!/^[\u2705\u274C]/u.test(ACIERTO_T1_6[c.id]), `${c.nombre}: la devolución volvió a llevar emoji`);
   }
   assert.equal(Object.keys(ACIERTO_T1_6).length, 16, "sobra o falta una devolución");
 });

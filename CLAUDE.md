@@ -4,6 +4,27 @@ Este archivo se carga solo en toda sesión. **Es un índice, no el canon**: dice
 dónde está cada cosa para que no tengas que leer archivos enteros buscándola.
 Mantenlo corto; lo paga cada sesión, cada turno.
 
+## Lo primero de todo: mira si ya está hecho
+
+```sh
+# qué hay construido y sin fusionar. `gh pr list` NO sirve aquí: usa GraphQL
+# y estas sesiones lo tienen bloqueado. La API REST sí.
+gh api "repos/lugoxboop/aprendefae/pulls?state=open&per_page=50" \
+  --jq '.[] | "#\(.number) \(.title)"'
+```
+
+Antes de construir cualquier cosa, mira los PR abiertos. El 27 de octubre
+Miku reconstruyó **tres veces** algo que ya existía —la entrada animada
+(#552), el volumen del camino (#609) y las figuras de decoración, que estaban
+dibujadas y reservadas desde el 24— porque no miró primero. Esa consulta
+cuesta nada; reconstruir una pieza cuesta el doble, y además deja dos
+versiones distintas de lo mismo en el sitio.
+
+Lo mismo con las piezas dibujadas: antes de dibujar un icono, una figura o un
+personaje, busca si ya está reservado (`src/components/decoracion/piezas.jsx`
+y `node scripts/canon.mjs "reserva"`). Dos tetraedros parecidos en la misma
+pantalla es exactamente lo que la reserva existe para evitar.
+
 ## Lo primero: busca antes de leer
 
 ```sh

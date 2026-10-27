@@ -240,7 +240,7 @@ export default function DemandaAgregadaHacerView({ nodoInicial = null, onBack })
                 Doce juegos, del reconocer al reconstruir. No hay orden obligatorio: el camino sugiere
                 uno, no lo impone.
               </p>
-              <CaminoHacer nodos={nodos} onAbrir={setNodoAbierto} resaltado={resaltado} porBloques />
+              <CaminoHacer tema="macroeconomia" nodos={nodos} onAbrir={setNodoAbierto} resaltado={resaltado} porBloques />
             </>
           )}
 
