@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 /*
  * ═══════════════════════════════════════════════════════════════════════════
  * ENTRADA — cómo aparece una pantalla de AprendeFAE.
@@ -106,38 +104,6 @@ export const CSS = `
 }
 `;
 
-/*
- * ═══════════ UNA VEZ POR VISITA ═══════════
- *
- * La idea es de la Célula A, del #552: la secuencia del inicio es la entrada
- * a la APLICACIÓN, no a la pantalla. Si el estudiante entra a una materia y
- * vuelve al inicio, el inicio ya está puesto: volver a armarlo delante de él
- * la tercera vez deja de ser una apertura y pasa a ser una espera.
- *
- * Se recuerda en memoria del módulo, que se olvida al recargar. No se guarda
- * nada en el navegador: no hay nada aquí que merezca sobrevivir a una
- * recarga, y sí hay un coste en guardarlo.
- *
- * Esto vale para la PORTADA. La pantalla de materia sí anima cada vez: entrar
- * a Contabilidad es llegar a un sitio nuevo, no volver al mismo.
- */
-let yaEntro = false;
-
-/** Verdadero solo en el primer montaje de la visita. */
-export function usarEntradaUnaVez() {
-  const [primera] = useState(() => {
-    const esLaPrimera = !yaEntro;
-    yaEntro = true;
-    return esLaPrimera;
-  });
-  return primera;
-}
-
-/** Solo para las pruebas: vuelve al estado de primera visita. */
-export function olvidarEntrada() {
-  yaEntro = false;
-}
-
 /* El <style> de la entrada. Una vez por pantalla, arriba, antes que lo que anima. */
 export function EstiloEntrada() {
   return <style>{CSS}</style>;
@@ -152,7 +118,7 @@ export function EstiloEntrada() {
  */
 export function entrada(orden = 0, modo = "sube", { retardo = 0, duracion = DURACION, activa = true } = {}) {
   /* Apagada no devuelve nada: la pieza se pinta donde va, sin clase y sin
-     variables. Es lo que usa la portada cuando no es la primera visita. */
+     variables. No animar nunca puede acabar significando no pintar. */
   if (!activa) return {};
   const m = MODOS[modo] || MODOS.sube;
   const espera = Math.max(0, Math.round(orden * PASO + retardo));

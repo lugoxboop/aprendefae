@@ -5,7 +5,7 @@ import Hero from "./Hero.jsx";
 import SubjectCard, { MacroIcon, EstrategiaIcon, ContabilidadIcon } from "./SubjectCard.jsx";
 import Logo from "./Logo.jsx";
 import Footer from "./shared/Footer.jsx";
-import Entrada, { EstiloEntrada, usarEntradaUnaVez } from "./shared/Entrada.jsx";
+import Entrada, { EstiloEntrada } from "./shared/Entrada.jsx";
 
 /*
  * ⚑ La tarjeta de Pensamiento Estratégico en la portada. false = no se enseña
@@ -16,11 +16,6 @@ export const PORTADA_ESTRATEGICO = false;
 
 /* Pantalla de entrada: degradado en malla + titular rotativo + las materias en curso. */
 export default function HomeScreen({ onSelectSubject }) {
-  /* La portada se arma delante del estudiante la primera vez de la visita.
-     Al volver desde una materia ya está puesta: ver la misma apertura por
-     tercera vez es una espera, no una apertura. */
-  const anima = usarEntradaUnaVez();
-
   return (
     <div
       style={{
@@ -67,7 +62,7 @@ export default function HomeScreen({ onSelectSubject }) {
           * envoltorio animado le cambiaría el marco de referencia.
           */}
         {/* Marca de identidad, deliberadamente por debajo del titular y las tarjetas. */}
-        <Entrada orden={0} modo="baja" activa={anima}>
+        <Entrada orden={0} modo="baja">
           <Logo variant="full" size={30} theme="dark" />
         </Entrada>
 
@@ -82,7 +77,7 @@ export default function HomeScreen({ onSelectSubject }) {
             padding: "clamp(20px, 5vh, 56px) 0 clamp(16px, 4vh, 40px)",
           }}
         >
-          <Entrada orden={1} modo="sube" activa={anima}>
+          <Entrada orden={1} modo="sube">
             <Hero />
           </Entrada>
 
@@ -95,7 +90,7 @@ export default function HomeScreen({ onSelectSubject }) {
               maxWidth: "760px",
             }}
           >
-            <Entrada orden={2} modo="crece" activa={anima} estira>
+            <Entrada orden={2} modo="crece" estira>
             <SubjectCard
               icon={<MacroIcon />}
               title="Macroeconomía"
@@ -117,7 +112,7 @@ export default function HomeScreen({ onSelectSubject }) {
               Volver a enseñarla es poner PORTADA_ESTRATEGICO en true.
             */}
             {PORTADA_ESTRATEGICO && (
-              <Entrada orden={4} modo="crece" activa={anima} estira>
+              <Entrada orden={4} modo="crece" estira>
               <SubjectCard
                 icon={<EstrategiaIcon />}
                 title="Pensamiento Estratégico"
@@ -129,7 +124,7 @@ export default function HomeScreen({ onSelectSubject }) {
               />
               </Entrada>
             )}
-            <Entrada orden={3} modo="crece" activa={anima} estira>
+            <Entrada orden={3} modo="crece" estira>
             <SubjectCard
               icon={<ContabilidadIcon />}
               title="Contabilidad"
@@ -143,7 +138,7 @@ export default function HomeScreen({ onSelectSubject }) {
           </div>
         </div>
 
-        <Entrada orden={5} modo="pie" activa={anima} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
+        <Entrada orden={5} modo="pie" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
           <span style={{ fontSize: "12.5px", color: "#A8B6C8", whiteSpace: "nowrap" }}>
             Entrar no pide registro.
           </span>
