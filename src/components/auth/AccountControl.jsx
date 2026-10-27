@@ -320,7 +320,7 @@ const CSS_CUENTA = `
 .fae-atajo-entra { animation: fae-atajo-entra 0.2s ease-out; }
 @media (prefers-reduced-motion: reduce) { .fae-atajo-entra { animation: none; } }
 `;
-const EstiloCuenta = () => <style>{CSS_CUENTA + CSS_ESQUINA}</style>;
+const EstiloCuenta = () => <style>{CSS_CUENTA}</style>;
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -497,45 +497,12 @@ const POSICION_LECTOR = {
  */
 export const FONDO_FLOTANTE = "rgba(22,35,58,0.97)";
 
-/*
- * ═══════ A 320 PX LA FICHA SE PEGA A LA ESQUINA (#349, 27 oct.) ═══════
- *
- * La ficha se queda fija y no se esconde: eso lo decidió Xeno y lo confirmó
- * el #529. Pero fija quiere decir que su huella es, a todas horas, contenido
- * que el estudiante no puede tocar — y a 320 px eso dejó de ser teórico: la
- * sonda cazó el destino «HABER» de «Arma el Ajuste» (T3) sin un solo hueco
- * libre de 44 px, con 24 por encima de la ficha y 22 por debajo.
- *
- * Lo que NO lo arregla, y conviene que quede escrito para no intentarlo otra
- * vez: darle espacio arriba a la mecánica. El control no está clavado en la
- * cima de la página —se cazó con la página a 598 de 1410— así que cualquier
- * posición de scroll lo vuelve a poner a ras del borde, bajo la banda de la
- * ficha. Mover la ficha hacia arriba tampoco: por eso mismo.
- *
- * Lo que sí: a lo ancho. A 320, con el margen de siempre, la ficha empieza en
- * x=269 y ese destino acaba en x=285, así que se cruzan. Pegada a la esquina
- * empieza en 279 y al control le quedan 45 px limpios a su izquierda, por
- * encima del piso de toque. A 375 no se cruzaban, así que ahí no se cambia
- * nada y el margen de Xeno se queda como está.
- *
- * No se encoge la ficha para ganar ese hueco: con 37 x 38 ya está por debajo
- * del piso de toque y achicarla cambiaría un defecto por otro.
- */
-const ANCHO_ESQUINA = 360;
-
 const ENVOLTORIO = {
   position: "fixed",
   top: "clamp(14px, 2.4vh, 24px)",
   right: "clamp(14px, 2.4vw, 24px)",
   zIndex: 40,
 };
-
-/* La clase existe para que la media query pueda ganarle al estilo en línea. */
-const CSS_ESQUINA = `
-@media (max-width: ${ANCHO_ESQUINA}px) {
-  .fae-cuenta-esquina { right: 4px !important; }
-}
-`;
 
 export default function AccountControl({ conTitulo = false }) {
   const { disponible, cargando, perfil, session, cerrarSesion } = useAuth();
@@ -548,14 +515,14 @@ export default function AccountControl({ conTitulo = false }) {
     return (
       <>
         <EstiloCuenta />
-        <div className="fae-cuenta-esquina" style={{ ...ENVOLTORIO, width: "1px", height: "1px" }} />
+        <div style={{ ...ENVOLTORIO, width: "1px", height: "1px" }} />
       </>
     );
   }
 
   if (!session) {
     return (
-      <div className="fae-cuenta-esquina" style={ENVOLTORIO}>
+      <div style={ENVOLTORIO}>
         <EstiloCuenta />
         <GoogleSignInButton size="medium" adaptable fondo={FONDO_FLOTANTE} />
       </div>
@@ -619,7 +586,7 @@ function ConSesion({ usuarioId, perfil, cerrarSesion, conTitulo = false }) {
   const irATienda = () => { setAbierto(false); nav?.irATienda?.(); };
 
   return (
-    <div className="fae-cuenta-esquina" style={ENVOLTORIO} ref={caja}>
+    <div style={ENVOLTORIO} ref={caja}>
       <EstiloCuenta />
       {esDocente && (
         <button

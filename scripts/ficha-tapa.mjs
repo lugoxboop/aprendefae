@@ -18,7 +18,7 @@
 /* La búsqueda de Playwright vive en sondas/navegador.mjs: cubre el contenedor
    de los agentes y también GitHub Actions, que no comparten ni el paquete ni
    el ejecutable. */
-import { chromium } from "./sondas/navegador.mjs";
+import { chromium, fuenteLocal, comoSeMidieronLasFuentes } from "./sondas/navegador.mjs";
 const TEMA = process.argv[2] ?? "Las cuentas, el debe y el haber";
 const ANCHO = Number(process.argv[3] ?? 320);
 const RAIZ = `http://127.0.0.1:${process.env.PUERTO ?? 8099}/`;
@@ -117,6 +117,9 @@ const p = await b.newPage({ viewport: { width: ANCHO, height: 760 } });
 await p.addInitScript((s2) => { try { localStorage.setItem("aprendefae-auth", s2); } catch (e) {} }, JSON.stringify(SESION));
 await p.route("**/*", (route) => {
   const u = route.request().url();
+  /* La tipografía primero: sin ella la maqueta no es la que mide CI. */
+  const fuente = fuenteLocal(u);
+  if (fuente) return route.fulfill({ status: 200, ...fuente });
   if (u.includes("/auth/v1/user")) return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(USUARIO) });
   if (u.includes("/rest/v1/rpc/registrar_fp")) return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ fp_awarded: 0, repeat_index: 0 }) });
   if (u.includes("/rest/v1/profiles")) {
@@ -211,6 +214,7 @@ if (APRENDER) {
   console.log(`\n${u.length} elemento(s) tapados por la ficha de FP en «${TEMA}» (Aprender) a ${ANCHO} px.`);
   if (glifos.length) console.log(`Y ${new Set(glifos).size} glifo(s) dentro de controles que SÍ se alcanzan: tapan el dibujo, no el toque.`);
   console.log(`Pantallas CON ficha: ${conFicha} · SIN ficha: ${sinFicha}.`);
+console.log(`Tipografía: ${comoSeMidieronLasFuentes}`);
   process.exit(conFicha === 0 ? 2 : (u.length === 0 ? 0 : 1));
 }
 /*
@@ -294,6 +298,7 @@ for (const t of unicos) console.log("  " + t);
 console.log(`\n${unicos.length} elemento(s) tapados por la ficha de FP en «${TEMA}» a ${ANCHO} px.`);
 if (glifos.length) console.log(`Y ${new Set(glifos).size} glifo(s) dentro de controles que SÍ se alcanzan: tapan el dibujo, no el toque.`);
 console.log(`Pantallas CON ficha: ${conFicha} · SIN ficha: ${sinFicha}.`);
+console.log(`Tipografía: ${comoSeMidieronLasFuentes}`);
 if (conFicha === 0) {
   console.log("NO MEDIDO: la ficha no se pintó en ninguna pantalla, así que este cero no vale.");
   console.log("La píldora de FP solo sale con sesión; sin ella no hay nada que pueda tapar.");
