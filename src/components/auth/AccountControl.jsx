@@ -482,18 +482,20 @@ const POSICION_LECTOR = {
  * trozo de línea mientras pasa es lo que hace cualquier botón fijo; leer dos
  * textos encimados no lo hace ninguno.
  *
+ * NO SE ESCONDE AL BAJAR (Xeno, 24 oct., #349). El 18 de octubre se probó a
+ * ocultarla al desplazar y se deshizo: escondía la entrada a la cuenta y el
+ * «Entrar», podía esconder la confirmación de FP justo al ganarla, y no
+ * arreglaba lo medido —el texto tapado con el scroll DETENIDO—. Eso se arregla
+ * en las vistas: en Contabilidad todo destino de un desplazamiento automático
+ * lleva `scroll-margin-top: 84px` (FICHA_RESERVA en theme.js, regla
+ * .fae-reserva-ficha en global.css).
+ * Texto que pasa por debajo mientras se hace scroll sigue siendo aceptable.
+ *
  * Por eso toda pieza flotante de este archivo lleva el mismo fondo casi
  * opaco —el del menú que abre, #16233A— y conserva su borde y su desenfoque.
  * El botón de Google de verdad (filled_black) ya es opaco: no se toca.
  */
 export const FONDO_FLOTANTE = "rgba(22,35,58,0.97)";
-
-/*
- * Lo que hay que bajar para que la ficha se vaya: su banda es el top de
- * 14-24 px mas sus 38 de alto. 48 la deja irse en cuanto el texto empieza a
- * entrar en su sitio, y no antes.
- */
-const UMBRAL_FICHA = 48;
 
 const ENVOLTORIO = {
   position: "fixed",
@@ -502,80 +504,23 @@ const ENVOLTORIO = {
   zIndex: 40,
 };
 
-/*
- * El hueco que se deja cuando no hay nada que pintar: 1 x 1, sin fondo y sin
- * borde, para que nada tape una linea de texto. Es el mismo que ya usaba
- * «cargando», y mantiene los hooks montados: al volver arriba la ficha
- * aparece con su cifra, no contando desde cero.
- */
-function Hueco() {
-  return (
-    <>
-      <EstiloCuenta />
-      <div style={{ ...ENVOLTORIO, width: "1px", height: "1px" }} />
-    </>
-  );
-}
-
 export default function AccountControl({ conTitulo = false }) {
   const { disponible, cargando, perfil, session, cerrarSesion } = useAuth();
-
-  /*
-   * ═══════ SE QUEDA FIJA ARRIBA, Y SE VA AL BAJAR (#349, 18 oct.) ═══════
-   *
-   * Xeno la dejo fija a proposito el 15 de octubre: dentro de una actividad
-   * los FP en vivo importan mas que la identidad, y un contador que se va con
-   * el scroll deja de ser lo que se mira al acertar. Esa razon sigue en pie, y
-   * la nota de abajo tambien: lo que flota tiene que TAPAR el texto, no
-   * mezclarse con el.
-   *
-   * Pero Sakuta midio lo que esa decision cuesta a 320 px: en una sola pieza
-   * de Aprender, 75 textos distintos pasan por debajo de la ficha al bajar, y
-   * a uno le tapa el 27 %. «Tapar un trozo de linea mientras pasa» deja de ser
-   * inofensivo cuando la linea tapada es la que se esta leyendo, y le bloquea
-   * D7 a siete piezas de la Celula B.
-   *
-   * El arreglo respeta las dos cosas, y se puede porque no compiten donde
-   * importa: los FP se GANAN en los juegos, que caben en la pantalla y no se
-   * desplazan, y el texto que se tapa esta en el material largo, donde no se
-   * gana ni un punto. Asi que la ficha se queda mientras la pagina este
-   * arriba —y en una pagina que no se desplaza eso es siempre, que es el caso
-   * del contador de Xeno— y desaparece en cuanto se baja.
-   *
-   * No hace falta medir el alto de la pagina: si no se desplaza, scrollY se
-   * queda en 0 y la ficha nunca se va. Vuelve de un tiron hacia arriba, que es
-   * el gesto con el que se busca el menu de la cuenta.
-   *
-   * El hook va ANTES de los returns tempranos de abajo, para que el orden no
-   * cambie entre renders.
-   */
-  const [arriba, setArriba] = useState(true);
-  useEffect(() => {
-    let pedido = 0;
-    const mira = () => {
-      pedido = 0;
-      setArriba((window.scrollY || document.documentElement.scrollTop || 0) <= UMBRAL_FICHA);
-    };
-    const alMoverse = () => { if (!pedido) pedido = requestAnimationFrame(mira); };
-    mira();
-    window.addEventListener("scroll", alMoverse, { passive: true });
-    window.addEventListener("resize", alMoverse);
-    return () => {
-      window.removeEventListener("scroll", alMoverse);
-      window.removeEventListener("resize", alMoverse);
-      if (pedido) cancelAnimationFrame(pedido);
-    };
-  }, []);
 
   /* Sin credenciales configuradas no se anuncia un login que no existe. */
   if (!disponible) return null;
 
   /* Mientras se resuelve la sesión guardada no se parpadea entre estados. */
-  if (cargando) return <Hueco />;
+  if (cargando) {
+    return (
+      <>
+        <EstiloCuenta />
+        <div style={{ ...ENVOLTORIO, width: "1px", height: "1px" }} />
+      </>
+    );
+  }
 
   if (!session) {
-    /* «Entrar» fue el primero que se vio tapando texto al bajar (Celula C). */
-    if (!arriba) return <Hueco />;
     return (
       <div style={ENVOLTORIO}>
         <EstiloCuenta />
@@ -585,11 +530,10 @@ export default function AccountControl({ conTitulo = false }) {
   }
 
   /* Una por cuenta: si se entra con otra, el atajo vuelve a decidir desde cero. */
-  /* `arriba` lo mide el padre una sola vez y baja como prop: una fuente, no dos oyentes del scroll. */
-  return <ConSesion key={session.user.id} usuarioId={session.user.id} perfil={perfil} cerrarSesion={cerrarSesion} conTitulo={conTitulo} arriba={arriba} />;
+  return <ConSesion key={session.user.id} usuarioId={session.user.id} perfil={perfil} cerrarSesion={cerrarSesion} conTitulo={conTitulo} />;
 }
 
-function ConSesion({ usuarioId, perfil, cerrarSesion, conTitulo = false, arriba = true }) {
+function ConSesion({ usuarioId, perfil, cerrarSesion, conTitulo = false }) {
   const nav = useContext(NavigationContext);
   const [abierto, setAbierto] = useState(false);
   const caja = useRef(null);
@@ -640,12 +584,6 @@ function ConSesion({ usuarioId, perfil, cerrarSesion, conTitulo = false, arriba 
   /* Directo a la sección del avatar, sin pasar por apodo y nombre real. */
   const irAMiAvatar = () => { setAbierto(false); nav?.irA?.("perfil", null, "avatar"); };
   const irATienda = () => { setAbierto(false); nav?.irATienda?.(); };
-
-  /*
-   * Con el menu abierto NO se va: el estudiante lo abrio y un roce del dedo
-   * que desplace la pagina no puede cerrarselo en la cara.
-   */
-  if (!arriba && !abierto) return <Hueco />;
 
   return (
     <div style={ENVOLTORIO} ref={caja}>

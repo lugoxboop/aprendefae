@@ -26,6 +26,17 @@ export const FAE = {
 export const ANCHO_ESTRECHO = 560;
 
 /*
+ * LA BANDA DE LA FICHA DE FP (Xeno, 24 oct., #349). La ficha va fija arriba a
+ * la derecha (top de 14-24 px y 38 de alto) y no se esconde. Lo que se le
+ * reserva es esta banda: en las vistas de Contabilidad todo lo que se
+ * desplaza solo lleva este scroll-margin-top (regla .fae-reserva-ficha de
+ * global.css, que una prueba ata a esta constante), para no aterrizar debajo
+ * de la ficha. 84 es la reserva que ya probó #438; la cabecera compacta
+ * reserva 76.
+ */
+export const FICHA_RESERVA = 84;
+
+/*
  * ═══════════ EL SUELO TIPOGRÁFICO, TAL COMO ESTÁ HOY ═══════════
  *
  * Nada de esto se aplica solo: es la regla que se sigue a mano, escrita aquí
