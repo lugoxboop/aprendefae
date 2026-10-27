@@ -238,6 +238,9 @@ const medirAqui = async () => {
     for (const t of r.tapados) (t.decorativo ? glifos : todos).push(`${t.tocable ? "CONTROL" : "texto  "}  «${t.texto}»`);
   }
 };
+/* Los segmentos del hash estando en el camino: dentro de una actividad hay uno más. */
+const BASE_HASH = await p.evaluate(() => location.hash.split("/").filter(Boolean).length);
+
 let actividades = 0;
 for (const id of idsDeNodos) {
   /* De cero: un cambio solo de hash no siempre cierra la actividad abierta. */
@@ -253,8 +256,26 @@ for (const id of idsDeNodos) {
   const empezar = p.locator("button.fae-dn-empezar:visible");
   if ((await empezar.count()) > 0) await empezar.first().click({ timeout: 5000 }).catch(() => {});
   await p.waitForTimeout(900);
-  /* Dentro de una actividad siempre está «Volver al camino»; la dirección no siempre cambia. */
-  const dentro = (await p.locator('button:visible:has-text("Volver al camino")').count()) > 0;
+  /*
+   * ¿Entramos en la actividad?
+   *
+   * Se miraba solo el botón «Volver al camino». No vale: Demanda Agregada
+   * llama a ese mismo botón «El camino» —es la única de las seis vistas que
+   * lo hace—, así que la sonda entraba en sus doce actividades, las medía
+   * bien y luego decía que no había abierto ninguna. Un NO MEDIDO por un
+   * literal, no por la pantalla.
+   *
+   * Ahora se aceptan los dos rótulos Y la dirección: dentro de una actividad
+   * el hash gana un segmento (#/camino-da/hacer → #/camino-da/hacer/<id>).
+   * Con dos señales, que una vista cambie su texto no vuelve a dejar el tema
+   * sin medir.
+   *
+   * El rótulo distinto queda avisado aparte: un mismo botón debería llamarse
+   * igual en todo el sitio, pero eso lo decide diseño, no una sonda.
+   */
+  const volver = await p.locator('button:visible:has-text("Volver al camino"), button:visible:has-text("El camino")').count();
+  const profundo = (await p.evaluate(() => location.hash.split("/").filter(Boolean).length)) > (BASE_HASH ?? 0);
+  const dentro = volver > 0 || profundo;
   if (process.env.DEPURAR) console.log("nodo", id, dentro);
   if (!dentro) continue;
   actividades++;
