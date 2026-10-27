@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { FAE, ANCHO_ESTRECHO } from "../../theme.js";
 import { iconoDe } from "./iconosActividad.jsx";
+import DecoracionCamino from "./DecoracionCamino.jsx";
 import PreviaActividad from "./previas/PreviaActividad.jsx";
 import { bloquesDe } from "../../hacer/bloques.js";
 import { registrarApertura } from "./contenidoNuevo.jsx";
@@ -329,7 +330,13 @@ const etiquetaAria = (nodo, marcas, prefijo = "") =>
  * @param {boolean} [p.porBloques] partir el camino en bloques de dificultad; los
  *        nodos traen entonces su `dificultad` (nodosDe la pone)
  */
-export default function CaminoHacer({ nodos = [], onAbrir, vacio, especial = null, resaltado = null, marcas = null, porBloques = false }) {
+/*
+ * `tema` elige los glifos de la materia que acompañan a la decoración de
+ * fondo (una cuenta T en Contabilidad, unas barras en Macro). Sin él solo
+ * sale la geometría, que vale para cualquier materia: así una vista nueva no
+ * tiene que saber nada de esto para verse bien.
+ */
+export default function CaminoHacer({ nodos = [], onAbrir, vacio, especial = null, resaltado = null, marcas = null, porBloques = false, tema = null }) {
   const n = nodos.length;
   const caja = useRef(null);
 
@@ -370,7 +377,7 @@ export default function CaminoHacer({ nodos = [], onAbrir, vacio, especial = nul
     );
   }
 
-  const comunes = { nodos, onAbrir, resaltado, marcas };
+  const comunes = { nodos, onAbrir, resaltado, marcas, tema };
 
   if (porBloques) {
     return (
@@ -409,7 +416,7 @@ export default function CaminoHacer({ nodos = [], onAbrir, vacio, especial = nul
 
 /* -------------------------------- el lienzo -------------------------------- */
 
-function Lienzo({ nodos, onAbrir, especial, resaltado, marcas }) {
+function Lienzo({ nodos, onAbrir, especial, resaltado, marcas, tema = null }) {
   const n = nodos.length;
   const m = medidas(n);
   const p = posiciones(n, m);
@@ -452,7 +459,15 @@ function Lienzo({ nodos, onAbrir, especial, resaltado, marcas }) {
 
   return (
     <div style={{ position: "relative", width: "100%", maxWidth: `${anchoTotal}px`, margin: "0 auto" }}>
-      <svg viewBox={`0 0 ${anchoTotal} ${m.alto}`} width="100%" style={{ display: "block", overflow: "visible" }}>
+      {/*
+        La decoración va la primera y en z-index 0; el recorrido se pone en
+        relative con z-index 1 justo debajo. Sin esos dos números el adorno,
+        que está en position absolute, se pintaría ENCIMA de los nodos: en el
+        orden de pintado del navegador lo posicionado gana a lo que está en
+        flujo, por tenue que sea.
+      */}
+      <DecoracionCamino tema={tema} />
+      <svg viewBox={`0 0 ${anchoTotal} ${m.alto}`} width="100%" style={{ display: "block", overflow: "visible", position: "relative", zIndex: 1 }}>
         {/* La línea del recorrido, por debajo de todo. */}
         {d && (
           <path d={d} fill="none" stroke="rgba(248,249,250,0.22)" strokeWidth={m.grosor} strokeLinecap="round" />
@@ -734,7 +749,7 @@ const TONOS = {
 
 const OCULTO = { position: "absolute", width: "1px", height: "1px", overflow: "hidden", clipPath: "inset(50%)", whiteSpace: "nowrap" };
 
-function CaminoPorBloques({ nodos, onAbrir, especial, resaltado, marcas }) {
+function CaminoPorBloques({ nodos, onAbrir, especial, resaltado, marcas, tema = null }) {
   const bloques = bloquesDe(nodos);
   const orden = bloques.flatMap((b) => b.nodos);
   /*
@@ -751,7 +766,7 @@ function CaminoPorBloques({ nodos, onAbrir, especial, resaltado, marcas }) {
       {especial && (
         <DesafioEnTarjeta especial={especial} onAbrir={onAbrir} resaltado={resaltado} marca={marcas?.[especial.id]} marcas={marcas} />
       )}
-      <LienzoPorBloques bloques={bloques} onAbrir={setDetalle} resaltado={resaltado} marcas={marcas} />
+      <LienzoPorBloques bloques={bloques} onAbrir={setDetalle} resaltado={resaltado} marcas={marcas} tema={tema} />
       {nodoDetalle && (
         <DetalleNodo
           key={nodoDetalle.id}
@@ -780,7 +795,7 @@ function CaminoPorBloques({ nodos, onAbrir, especial, resaltado, marcas }) {
  * Cada nodo lleva en su nombre accesible el bloque y la dificultad —el título
  * ya no lo envuelve en el DOM, así que un lector de pantalla lo oye ahí—.
  */
-function LienzoPorBloques({ bloques, onAbrir, resaltado, marcas }) {
+function LienzoPorBloques({ bloques, onAbrir, resaltado, marcas, tema = null }) {
   const orden = bloques.flatMap((b) => b.nodos);
   const { m, puntos, cabeceras } = disposicionPorBloques(bloques, orden.length);
   const bloqueDe = new Map(bloques.flatMap((b) => b.nodos.map((n) => [n.id, b])));
@@ -792,7 +807,8 @@ function LienzoPorBloques({ bloques, onAbrir, resaltado, marcas }) {
 
   return (
     <div data-camino-bloques style={{ position: "relative", width: "100%", maxWidth: `${ANCHO}px`, margin: "0 auto" }}>
-      <svg viewBox={`0 0 ${ANCHO} ${m.alto}`} width="100%" style={{ display: "block", overflow: "visible" }}>
+      <DecoracionCamino tema={tema} />
+      <svg viewBox={`0 0 ${ANCHO} ${m.alto}`} width="100%" style={{ display: "block", overflow: "visible", position: "relative", zIndex: 1 }}>
         {puntos.length > 1 && (
           <path data-linea d={trazo(puntos)} fill="none" stroke="rgba(248,249,250,0.22)" strokeWidth={m.grosor} strokeLinecap="round" />
         )}

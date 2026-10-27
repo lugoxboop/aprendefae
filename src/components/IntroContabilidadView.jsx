@@ -234,7 +234,7 @@ export default function IntroContabilidadView({ modo = null, nodoInicial = null,
               </ContextoResumen.Provider>
             </div>
           ) : (
-            <CaminoHacer nodos={nodos} onAbrir={(id) => setNodoAbierto(id)} />
+            <CaminoHacer tema="contabilidad" nodos={nodos} onAbrir={(id) => setNodoAbierto(id)} />
           )}
         </div>
       </div>

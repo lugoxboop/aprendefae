@@ -87,7 +87,30 @@ function casos() {
   return lista;
 }
 
-const huella = (html) => createHash("sha256").update(html).digest("hex");
+/*
+ * LA DECORACIÓN NO CUENTA PARA ESTA FOTO, Y ES A PROPÓSITO.
+ *
+ * El 27 de octubre entró DecoracionCamino: una capa de figuras geométricas
+ * detrás del recorrido, y dos propiedades en el SVG (position y z-index) para
+ * que el recorrido quede por encima de ella.
+ *
+ * Se podría haber rehecho la foto entera. No se hizo: rehacerla habría
+ * borrado la única prueba de que el cambio no tocó nada más. En vez de eso
+ * se quita la capa del HTML antes de pesarlo, y así la foto de main sigue
+ * valiendo carácter a carácter. Que las huellas sigan cuadrando DESPUÉS de
+ * añadir la decoración es justo lo que había que demostrar: el adorno se
+ * puso encima, no en medio.
+ *
+ * Si mañana la decoración cambia, esta prueba ni se entera —no es lo suyo—;
+ * de eso se encarga `decoracion-camino.test.mjs`.
+ */
+export function sinDecoracion(html) {
+  return html
+    .replace(/<div class="fae-dc" aria-hidden="true" style="[^"]*">.*?<\/div>/gs, "")
+    .replaceAll("; position: relative; z-index: 1;", ";");
+}
+
+const huella = (html) => createHash("sha256").update(sinDecoracion(html)).digest("hex");
 
 /* El camino, y la ventana previa de cada uno de sus nodos. */
 async function fotografiar({ props }) {

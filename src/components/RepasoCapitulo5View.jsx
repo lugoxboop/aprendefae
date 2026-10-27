@@ -400,7 +400,7 @@ export default function RepasoCapitulo5View({ nodoInicial = null, onBack }) {
           ) : (
             <>
               <PortadaRepaso />
-              <CaminoHacer nodos={nodos} onAbrir={(id) => setNodoAbierto(id)} vacio="Este tema todavía no tiene juegos." />
+              <CaminoHacer tema="contabilidad" nodos={nodos} onAbrir={(id) => setNodoAbierto(id)} vacio="Este tema todavía no tiene juegos." />
             </>
           )}
         </div>

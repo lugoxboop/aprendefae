@@ -310,6 +310,7 @@ export default function PoliticaFiscalView({ modo = null, nodoInicial = null, on
               </p>
               <Tesoreria />
               <CaminoHacer
+                tema="macroeconomia"
                 nodos={nodos}
                 onAbrir={setNodoAbierto}
                 especial={nodoDesafio}
