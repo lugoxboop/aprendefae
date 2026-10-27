@@ -83,28 +83,26 @@ test("★★★ esconder la tarjeta no borró la materia: sigue entera en los da
   assert.ok(m.topics?.length > 0, "y conserva sus temas, así que nadie perdió su progreso");
 });
 
-/* ── la apertura, una vez por visita (idea de la Célula A, #552) ── */
+/* ── la apertura ── */
 
-const { olvidarEntrada } = await import("../shared/Entrada.jsx");
-
-test("★★★ la portada se arma la primera vez de la visita y al volver ya está puesta", async () => {
-  olvidarEntrada();
-
+test("★★★ la portada se arma CADA vez que se llega a ella", async () => {
+  /*
+   * Estuvo un rato armándose solo la primera vez de la visita —idea del #552
+   * de la Célula A, que tenía su lógica: volver y ver la misma apertura
+   * parece una espera—. Mateo la probó el 27-oct y dijo lo contrario: al
+   * salir a la página principal la quiere igual de viva que al entrar. Manda
+   * él, y la prueba lo guarda para que nadie lo «optimice» de vuelta.
+   */
   const primera = await portada();
-  const animadas = [...primera.caja.querySelectorAll(".fae-ent")].length;
+  const unas = primera.caja.querySelectorAll(".fae-ent").length;
   primera.desmontar();
-  assert.ok(animadas >= 4, `la primera vez entra en fila; animadas: ${animadas}`);
 
   const segunda = await portada();
   try {
+    assert.ok(unas >= 4, `la portada entra en fila; animadas: ${unas}`);
     assert.equal(
-      segunda.caja.querySelectorAll(".fae-ent").length, 0,
-      "al volver desde una materia la portada ya está: ver la misma apertura otra vez es una espera",
+      segunda.caja.querySelectorAll(".fae-ent").length, unas,
+      "al volver desde una materia se arma otra vez, igual que la primera",
     );
-    /* Y sigue estando todo: no animar no puede significar no pintar. */
-    const etiquetas = [...segunda.caja.querySelectorAll("[aria-label]")].map((e) => e.getAttribute("aria-label"));
-    for (const esperada of [/macro/i, /contabilidad/i]) {
-      assert.ok(etiquetas.some((e) => esperada.test(e)), `la portada sigue ofreciendo ${esperada}`);
-    }
-  } finally { segunda.desmontar(); olvidarEntrada(); }
+  } finally { segunda.desmontar(); }
 });

@@ -33,6 +33,30 @@ export const useAuth = () => {
 /** Como useAuth, pero devuelve null fuera del proveedor en vez de lanzar. */
 export const useAuthOpcional = () => useContext(AuthContext);
 
+/*
+ * ¿Hay que pedirle el apodo a quien está entrando?
+ *
+ * Va aparte y exportada porque es la regla que falló: entre el 24 y el 27 de
+ * octubre, quien abría el sitio con sesión guardada veía el diálogo de cuenta
+ * durante un cuarto de segundo. La sesión llega del almacenamiento del
+ * navegador al instante; el perfil llega del servidor después. En ese hueco
+ * había un repintado con sesión puesta y perfil en null, que es exactamente
+ * la forma de «primer ingreso, elige apodo».
+ *
+ * La regla, dicha entera: solo es primer ingreso si la lectura del perfil
+ * TERMINÓ y devolvió vacío. Mientras se está leyendo no se sabe, y «no sé» no
+ * se pinta como «no tienes cuenta».
+ *
+ * Son dos banderas y no una porque son dos huecos distintos: `cargando` cubre
+ * la primera lectura al abrir, y `leyendoPerfil` cubre cada
+ * onAuthStateChange posterior, que vuelve a abrir el mismo hueco con
+ * `cargando` ya en false.
+ */
+export function esPrimerIngreso({ session, perfil, errorPerfil, cargando, leyendoPerfil }) {
+  if (cargando || leyendoPerfil) return false;
+  return Boolean(session) && !perfil && !errorPerfil;
+}
+
 export function AuthProvider({ children }) {
   const [session, setSession] = useState(null);
   const [perfil, setPerfil] = useState(null);
@@ -42,6 +66,20 @@ export function AuthProvider({ children }) {
   const [cargando, setCargando] = useState(supabaseConfigurado);
   /* null = diálogo cerrado; string = motivo por el que se pide la cuenta. */
   const [motivoLogin, setMotivoLogin] = useState(null);
+  /*
+   * true mientras se está LEYENDO el perfil de alguien que ya tiene sesión.
+   *
+   * Sin esto, al abrir el sitio con sesión guardada se veía el diálogo de
+   * cuenta durante un cuarto de segundo: la sesión llega del almacenamiento
+   * del navegador al instante y el perfil llega del servidor después, así que
+   * entre medias había un repintado con sesión puesta y perfil todavía en
+   * null, que es exactamente la forma de «primer ingreso, elige apodo».
+   *
+   * `cargando` no bastaba: cubre la primera lectura, pero cada
+   * onAuthStateChange vuelve a abrir la misma ventana con `cargando` ya en
+   * false. Esto la cierra por los dos lados.
+   */
+  const [leyendoPerfil, setLeyendoPerfil] = useState(false);
 
   /*
    * Lee la fila propia. RLS garantiza que solo puede devolver la del usuario.
@@ -73,11 +111,17 @@ export function AuthProvider({ children }) {
       if (!s) {
         setPerfil(null);
         setErrorPerfil(null);
+        setLeyendoPerfil(false);
         return;
       }
+      /* Se marca ANTES de pedir el perfil, en el mismo lote que setSession:
+         si se marcara después, el repintado de en medio ya habría enseñado
+         el diálogo, que es el parpadeo que esto viene a quitar. */
+      setLeyendoPerfil(true);
       const { perfil: p, error } = await cargarPerfil(s.user.id);
       setPerfil(p);
       setErrorPerfil(error);
+      setLeyendoPerfil(false);
     };
 
     /* Sesión ya guardada de una visita anterior. */
@@ -101,8 +145,7 @@ export function AuthProvider({ children }) {
     };
   }, [cargarPerfil]);
 
-  /* Solo es primer ingreso si la lectura funcionó y devolvió vacío. */
-  const necesitaApodo = Boolean(session) && !perfil && !errorPerfil;
+  const necesitaApodo = esPrimerIngreso({ session, perfil, errorPerfil, cargando, leyendoPerfil });
 
   /*
    * Punto de entrada desde el resto de la app. Devuelve true si ya hay cuenta
@@ -232,7 +275,7 @@ export function AuthProvider({ children }) {
       apodoDisponible,
       cerrarSesion,
     }),
-    [cargando, session, perfil, errorPerfil, necesitaApodo, motivoLogin, pedirCuenta, cerrarDialogo, crearPerfil, guardarPerfil, aplicarPerfil, refrescarPerfil, apodoDisponible, cerrarSesion]
+    [cargando, leyendoPerfil, session, perfil, errorPerfil, necesitaApodo, motivoLogin, pedirCuenta, cerrarDialogo, crearPerfil, guardarPerfil, aplicarPerfil, refrescarPerfil, apodoDisponible, cerrarSesion]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

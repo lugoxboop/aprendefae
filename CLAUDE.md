@@ -7,13 +7,16 @@ Mantenlo corto; lo paga cada sesión, cada turno.
 ## Lo primero de todo: mira si ya está hecho
 
 ```sh
-gh pr list --state open --limit 50       # qué hay construido y sin fusionar
+# qué hay construido y sin fusionar. `gh pr list` NO sirve aquí: usa GraphQL
+# y estas sesiones lo tienen bloqueado. La API REST sí.
+gh api "repos/lugoxboop/aprendefae/pulls?state=open&per_page=50" \
+  --jq '.[] | "#\(.number) \(.title)"'
 ```
 
 Antes de construir cualquier cosa, mira los PR abiertos. El 27 de octubre
 Miku reconstruyó **tres veces** algo que ya existía —la entrada animada
 (#552), el volumen del camino (#609) y las figuras de decoración, que estaban
-dibujadas y reservadas desde el 24— porque no miró primero. Un `gh pr list`
+dibujadas y reservadas desde el 24— porque no miró primero. Esa consulta
 cuesta nada; reconstruir una pieza cuesta el doble, y además deja dos
 versiones distintas de lo mismo en el sitio.
 
