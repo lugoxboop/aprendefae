@@ -82,3 +82,29 @@ test("★★★ esconder la tarjeta no borró la materia: sigue entera en los da
   assert.ok(m, "la materia sigue en SUBJECTS");
   assert.ok(m.topics?.length > 0, "y conserva sus temas, así que nadie perdió su progreso");
 });
+
+/* ── la apertura, una vez por visita (idea de la Célula A, #552) ── */
+
+const { olvidarEntrada } = await import("../shared/Entrada.jsx");
+
+test("★★★ la portada se arma la primera vez de la visita y al volver ya está puesta", async () => {
+  olvidarEntrada();
+
+  const primera = await portada();
+  const animadas = [...primera.caja.querySelectorAll(".fae-ent")].length;
+  primera.desmontar();
+  assert.ok(animadas >= 4, `la primera vez entra en fila; animadas: ${animadas}`);
+
+  const segunda = await portada();
+  try {
+    assert.equal(
+      segunda.caja.querySelectorAll(".fae-ent").length, 0,
+      "al volver desde una materia la portada ya está: ver la misma apertura otra vez es una espera",
+    );
+    /* Y sigue estando todo: no animar no puede significar no pintar. */
+    const etiquetas = [...segunda.caja.querySelectorAll("[aria-label]")].map((e) => e.getAttribute("aria-label"));
+    for (const esperada of [/macro/i, /contabilidad/i]) {
+      assert.ok(etiquetas.some((e) => esperada.test(e)), `la portada sigue ofreciendo ${esperada}`);
+    }
+  } finally { segunda.desmontar(); olvidarEntrada(); }
+});

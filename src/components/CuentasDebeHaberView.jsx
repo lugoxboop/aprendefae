@@ -178,7 +178,7 @@ export default function CuentasDebeHaberView({ modo = null, nodoInicial = null, 
             <>
               <h2 style={h2}>El camino de este tema</h2>
               <p style={lead}>Toca el juego que quieras. No hay orden obligatorio: el camino sugiere uno, no lo impone.</p>
-              <CaminoHacer nodos={nodos} onAbrir={setNodoAbierto} especial={nodoDesafio} resaltado={resaltado} porBloques />
+              <CaminoHacer tema="contabilidad" nodos={nodos} onAbrir={setNodoAbierto} especial={nodoDesafio} resaltado={resaltado} porBloques />
             </>
           )}
 

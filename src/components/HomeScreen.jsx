@@ -5,6 +5,7 @@ import Hero from "./Hero.jsx";
 import SubjectCard, { MacroIcon, EstrategiaIcon, ContabilidadIcon } from "./SubjectCard.jsx";
 import Logo from "./Logo.jsx";
 import Footer from "./shared/Footer.jsx";
+import Entrada, { EstiloEntrada, usarEntradaUnaVez } from "./shared/Entrada.jsx";
 
 /*
  * ⚑ La tarjeta de Pensamiento Estratégico en la portada. false = no se enseña
@@ -15,6 +16,11 @@ export const PORTADA_ESTRATEGICO = false;
 
 /* Pantalla de entrada: degradado en malla + titular rotativo + las materias en curso. */
 export default function HomeScreen({ onSelectSubject }) {
+  /* La portada se arma delante del estudiante la primera vez de la visita.
+     Al volver desde una materia ya está puesta: ver la misma apertura por
+     tercera vez es una espera, no una apertura. */
+  const anima = usarEntradaUnaVez();
+
   return (
     <div
       style={{
@@ -35,6 +41,8 @@ export default function HomeScreen({ onSelectSubject }) {
         */}
       <BackgroundVeil />
 
+      <EstiloEntrada />
+
       <div
         style={{
           position: "relative",
@@ -45,8 +53,23 @@ export default function HomeScreen({ onSelectSubject }) {
           padding: "clamp(18px, 3vh, 30px) 24px clamp(18px, 3vh, 34px)",
         }}
       >
+        {/*
+          * LA COREOGRAFÍA DE LA PORTADA. El orden de entrada es el orden en que
+          * queremos que se mire: primero de dónde estás (la marca, que baja),
+          * luego qué es esto (el titular), luego lo único que hay que hacer
+          * (elegir materia, y las tarjetas entran una detrás de otra para que
+          * se lean como dos opciones y no como un bloque), y al final lo
+          * accesorio. Toda la pantalla está puesta en 440 ms: se arma delante
+          * de ti y ya puedes tocar.
+          *
+          * El fondo NO entra: es el escenario, ya está encendido cuando llegas.
+          * Y tampoco se puede envolver, porque va en position:fixed y un
+          * envoltorio animado le cambiaría el marco de referencia.
+          */}
         {/* Marca de identidad, deliberadamente por debajo del titular y las tarjetas. */}
-        <Logo variant="full" size={30} theme="dark" />
+        <Entrada orden={0} modo="baja" activa={anima}>
+          <Logo variant="full" size={30} theme="dark" />
+        </Entrada>
 
         <div
           style={{
@@ -59,7 +82,9 @@ export default function HomeScreen({ onSelectSubject }) {
             padding: "clamp(20px, 5vh, 56px) 0 clamp(16px, 4vh, 40px)",
           }}
         >
-          <Hero />
+          <Entrada orden={1} modo="sube" activa={anima}>
+            <Hero />
+          </Entrada>
 
           <div
             style={{
@@ -70,6 +95,7 @@ export default function HomeScreen({ onSelectSubject }) {
               maxWidth: "760px",
             }}
           >
+            <Entrada orden={2} modo="crece" activa={anima} estira>
             <SubjectCard
               icon={<MacroIcon />}
               title="Macroeconomía"
@@ -79,6 +105,7 @@ export default function HomeScreen({ onSelectSubject }) {
               hoverBorder="rgba(231,111,81,0.7)"
               onClick={() => onSelectSubject("macroeconomia")}
             />
+            </Entrada>
             {/*
               PENSAMIENTO ESTRATÉGICO, FUERA DE LA PORTADA. Orden de Mateo del
               27 de octubre: este semestre la portada enseña solo las dos
@@ -90,6 +117,7 @@ export default function HomeScreen({ onSelectSubject }) {
               Volver a enseñarla es poner PORTADA_ESTRATEGICO en true.
             */}
             {PORTADA_ESTRATEGICO && (
+              <Entrada orden={4} modo="crece" activa={anima} estira>
               <SubjectCard
                 icon={<EstrategiaIcon />}
                 title="Pensamiento Estratégico"
@@ -99,7 +127,9 @@ export default function HomeScreen({ onSelectSubject }) {
                 hoverBorder="rgba(42,157,143,0.75)"
                 onClick={() => onSelectSubject("pensamiento-estrategico")}
               />
+              </Entrada>
             )}
+            <Entrada orden={3} modo="crece" activa={anima} estira>
             <SubjectCard
               icon={<ContabilidadIcon />}
               title="Contabilidad"
@@ -109,15 +139,16 @@ export default function HomeScreen({ onSelectSubject }) {
               hoverBorder="rgba(233,196,106,0.7)"
               onClick={() => onSelectSubject("contabilidad")}
             />
+            </Entrada>
           </div>
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
+        <Entrada orden={5} modo="pie" activa={anima} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
           <span style={{ fontSize: "12.5px", color: "#A8B6C8", whiteSpace: "nowrap" }}>
             Entrar no pide registro.
           </span>
           <Footer />
-        </div>
+        </Entrada>
       </div>
     </div>
   );
