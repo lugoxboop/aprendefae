@@ -127,13 +127,13 @@ test("★★★ las ocho situaciones, con su versión final y su punto de ruptur
 });
 
 test("★★★ los aciertos, los errores y la predicción son el texto literal del encargo", () => {
-  /* Versión final de Levi. El ✅ es la marca de tono del sitio. */
-  assert.equal(ACIERTO_T1_8[2], "✅ Se rompió en el papel. Sin factura no queda un papel, así que este hecho no se anota, no llega al informe y los jefes deciden sin saberlo. Se apagaron cuatro puntos.");
-  assert.equal(ACIERTO_T1_8[3], "✅ Se rompió al anotar. El papel está. Pero nadie lo pasó a los libros, así que este hecho no llega al informe y los jefes deciden sin saberlo. Se apagaron tres puntos.");
-  assert.equal(ACIERTO_T1_8[4], "✅ Se rompió en el informe. Este hecho está anotado, pero lo dejaron por fuera del informe. Los jefes deciden sin ver este dato. Se apagaron dos puntos.");
-  assert.equal(ACIERTO_T1_8[5], "✅ El informe sí se hizo: los primeros cuatro puntos quedaron encendidos. Pero los jefes no decidieron nada con él. Por eso el último punto se apaga y la flecha de vuelta no se enciende.");
-  assert.equal(ERROR_T1_8.A, "❌ Hasta ese punto todo funcionó bien. Mira más adelante: el corte está después.");
-  assert.equal(ERROR_T1_8.B, "❌ Este hecho nunca llegó a ese punto. Se cortó antes, así que desde ahí ya no aparece.");
+  /* Versión final de Levi, sin el emoji del inicio (Repaso T1, como en el lote 6d): el tono lo da `ok`. */
+  assert.equal(ACIERTO_T1_8[2], "Se rompió en el papel. Sin factura no queda un papel, así que este hecho no se anota, no llega al informe y los jefes deciden sin saberlo. Se apagaron cuatro puntos.");
+  assert.equal(ACIERTO_T1_8[3], "Se rompió al anotar. El papel está. Pero nadie lo pasó a los libros, así que este hecho no llega al informe y los jefes deciden sin saberlo. Se apagaron tres puntos.");
+  assert.equal(ACIERTO_T1_8[4], "Se rompió en el informe. Este hecho está anotado, pero lo dejaron por fuera del informe. Los jefes deciden sin ver este dato. Se apagaron dos puntos.");
+  assert.equal(ACIERTO_T1_8[5], "El informe sí se hizo: los primeros cuatro puntos quedaron encendidos. Pero los jefes no decidieron nada con él. Por eso el último punto se apaga y la flecha de vuelta no se enciende.");
+  assert.equal(ERROR_T1_8.A, "Hasta ese punto todo funcionó bien. Mira más adelante: el corte está después.");
+  assert.equal(ERROR_T1_8.B, "Este hecho nunca llegó a ese punto. Se cortó antes, así que desde ahí ya no aparece.");
   assert.equal(ROTULO_ERROR_B_T1_8, "este hecho no llegó aquí");
   assert.equal(PREDICCION_T1_8.pregunta, "¿Cuántos puntos se van a apagar?");
   assert.deepEqual(PREDICCION_T1_8.opciones, [1, 2, 3, 4], "la predicción no va de 1 a 4");

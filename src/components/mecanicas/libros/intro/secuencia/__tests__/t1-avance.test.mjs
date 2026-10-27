@@ -77,9 +77,34 @@ test("★★★ (a) el servidor no conoce ningún Aprender de T1: no hay fila qu
   }
 });
 
-test("★★★ (a) el Repaso de T1 no lee ningún Aprender", async () => {
+/*
+ * Desde el etiquetado de Futaba (27-oct; decisión (c) de Sakuta), el Repaso de
+ * T1 sí lee los Aprender, pero solo sus «En una frase», como hace t3.js con
+ * los de T3. Lo que esta prueba sigue fijando es lo mismo: el avance no se
+ * toca. Esos ítems llevan el id de la pieza del catálogo (o el de cu0-a1b,
+ * cuando entre), y el pool solo enseña ítems de actividades hechas; como
+ * ningún Aprender se registra como hecho (las pruebas de arriba), no le salen a
+ * nadie hasta que Erwin cablee cómo cuenta Aprender.
+ */
+test("★★★ (a) el Repaso de T1 lee los Aprender solo por sus «En una frase», y no le salen a nadie mientras Aprender no cuente", async () => {
   const { ITEMS_T1, FUERA_T1 } = await import("../../../../../../repaso/contabilidad/t1.js");
-  assert.doesNotMatch(JSON.stringify([ITEMS_T1, FUERA_T1]), /cu0-/);
+  const { SUBJECTS, APRENDER, HACER, actividadesDeTipo } = await import("../../../../../../data/subjects.js");
+  const { REPASOS, poolDel } = await import("../../../../../../repaso/repasos.js");
+  const { ID_REPASO_CONTABILIDAD } = await import("../../../../../../repaso/repaso.js");
+  const { ID_OCHO_LEEN } = await import("../../../../../../data/contabilidadT1Secuencia.js");
+  const tema = SUBJECTS.contabilidad.topics.find((t) => t.id === "introduccion-contabilidad");
+  const aprender = [...actividadesDeTipo(tema, APRENDER).map((a) => a.id), ID_OCHO_LEEN];
+  const deAprender = ITEMS_T1.filter((x) => /^cu0-/.test(x.actividad));
+  assert.equal(deAprender.length, 8, "cuatro frases y sus cuatro segundas visitas");
+  for (const x of deAprender) {
+    assert.ok(aprender.includes(x.actividad), `${x.clave}: no es una pieza de Aprender de T1`);
+    assert.ok(["en-una-frase", "en-una-frase-2"].includes(x.itemId), `${x.clave}: de Aprender solo entra la frase`);
+  }
+  assert.doesNotMatch(JSON.stringify(FUERA_T1), /cu0-/);
+  /* Quien hizo todos los Hacer de T1 y ningún Aprender (lo que hoy puede tener un estudiante) no ve ninguna frase. */
+  const hechas = new Set(actividadesDeTipo(tema, HACER).map((a) => a.id));
+  assert.ok(poolDel(REPASOS[ID_REPASO_CONTABILIDAD], hechas).length > 0, "el pool salió vacío: la prueba no mide nada");
+  assert.deepEqual(poolDel(REPASOS[ID_REPASO_CONTABILIDAD], hechas).filter((x) => /^cu0-/.test(x.actividad)), []);
 });
 
 test("★★★ (b)(c) el catálogo de T1 sigue con los cuatro Aprender de siempre y las piezas usan esos ids", async () => {
