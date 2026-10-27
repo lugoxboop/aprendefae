@@ -1210,11 +1210,17 @@ export const ACTIVIDADES_TRANSVERSALES = [
    * cuatro temas del semestre (src/repaso/contabilidad/). Su fila del
    * servidor es la migración 0152.
    *
-   * `publicado: false` lo deja fuera del índice mientras el pool se llena:
-   * cada célula entrega el etiquetado de su tema, y un banner que solo dice
-   * «te faltan actividades» porque el pool aún está vacío sería mentirle al
-   * estudiante. Se publica poniéndolo en true cuando la prueba del pool de
-   * Contabilidad diga que los cuatro temas tienen ítems.
+   * PUBLICADO el 27-oct-2026. Estuvo fuera del índice mientras el pool se
+   * llenaba: un banner que solo dijera «te faltan actividades» porque el pool
+   * está vacío sería mentirle al estudiante. Esa mañana las células B, C y D
+   * entregaron el etiquetado de T1, T2 y T4 (#623, #620, #622) y el pool pasó
+   * de 4 ítems de un solo tema a 137 de los cuatro.
+   *
+   * Lo que guarda esto no es la fecha: es la prueba «el Repaso de Contabilidad
+   * no se publica con el pool a medias» (pool-contabilidad.test.mjs). Mientras
+   * estaba en false la prueba se saltaba; al publicarlo empezó a exigir que
+   * los cuatro temas aporten y que se llegue al mínimo del pool. Devolverlo a
+   * false la vuelve a dormir, así que si alguien lo hace, que sea a sabiendas.
    */
   {
     id: "repaso-diario-contabilidad",
@@ -1222,7 +1228,6 @@ export const ACTIVIDADES_TRANSVERSALES = [
     materiaId: "contabilidad",
     temaId: "repaso-diario-contabilidad",
     indice: "contabilidad",
-    publicado: false,
     clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 60, renovableDiario: true },
   },
 ];
