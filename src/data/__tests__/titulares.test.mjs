@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
-  FRASES, FRASES_DIA, FRANJAS, HERO_PHRASES, TOPE_CARACTERES, franjaDe, titularesDe,
+  FRASES, FRASES_DIA, FRANJAS, HERO_PHRASES, TOPE_CARACTERES, bancosDe, franjaDe, titularesDe,
 } from "../heroPhrases.js";
 import { elegirTitular } from "../../components/Hero.jsx";
 
@@ -120,5 +120,34 @@ test("★★★ sin almacenamiento la portada sigue teniendo titular", () => {
   } finally {
     if (previo) Object.defineProperty(globalThis, "sessionStorage", previo);
     else delete globalThis.sessionStorage;
+  }
+});
+
+test("★★★ la mitad de las veces sale una frase de la hora", () => {
+  /*
+   * La razón de que exista PESO_DE_LA_HORA: el banco de «siempre» es tres
+   * veces más grande que el de una franja, así que sorteando del montón
+   * entero la frase de la hora salía una de cada cuatro visitas. Es la que
+   * Mateo pidió; tiene que salir la mitad.
+   */
+  const ahora = new Date(2026, 9, 27, 8); // martes por la mañana
+  const { hora } = bancosDe(ahora);
+  let deLaHora = 0;
+  const VECES = 400;
+  for (let i = 0; i < VECES; i++) {
+    conAlmacen(() => {
+      const f = elegirTitular(ahora);
+      if (hora.includes(f)) deLaHora += 1;
+    });
+  }
+  const parte = deLaHora / VECES;
+  assert.ok(parte > 0.38 && parte < 0.62, `salieron ${(parte * 100).toFixed(0)} % de la hora; se espera cerca del 50 %`);
+});
+
+test("★★★ y el banco de la hora de cada franja es el suyo", () => {
+  for (const [h, esperada] of [[2, "madrugada"], [8, "manana"], [15, "tarde"], [21, "noche"]]) {
+    const { hora } = bancosDe(new Date(2026, 9, 27, h));
+    for (const f of FRASES[esperada]) assert.ok(hora.includes(f), `a las ${h} ofrece «${f}»`);
+    assert.ok(!hora.some((f) => FRASES.siempre.includes(f)), "el banco de la hora no lleva las de siempre");
   }
 });

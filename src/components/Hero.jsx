@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { FAE } from "../theme.js";
-import { HERO_SUBCOPY, franjaDe, titularesDe } from "../data/heroPhrases.js";
+import { HERO_SUBCOPY, PESO_DE_LA_HORA, bancosDe, franjaDe, titularesDe } from "../data/heroPhrases.js";
 
 /*
  * Elige el titular de la sesión.
@@ -13,6 +13,12 @@ import { HERO_SUBCOPY, franjaDe, titularesDe } from "../data/heroPhrases.js";
  *   3. No repite el de la última vez. Dos visitas seguidas con la misma frase
  *      se leen como «solo tiene una».
  *
+ * Y una cosa más: la mitad de las veces sale una frase DE LA HORA. Se sortea
+ * primero el banco —el de la hora o el de siempre— y después la frase dentro
+ * de él. Sorteando del montón entero, la de la hora salía una de cada cuatro
+ * veces, porque el banco de siempre es tres veces más grande, y la de la hora
+ * es la que Mateo pidió.
+ *
  * Si sessionStorage o localStorage fallan —modo privado, almacenamiento
  * bloqueado—, sortea y ya: el titular nunca puede tumbar la portada.
  */
@@ -23,19 +29,22 @@ export function elegirTitular(ahora = new Date(), sorteo = Math.random) {
   const franja = franjaDe(ahora.getHours());
   const alAzar = (lista) => lista[Math.min(lista.length - 1, Math.floor(sorteo() * lista.length))];
 
+  const { hora, siempre } = bancosDe(ahora);
+  const banco = sorteo() < PESO_DE_LA_HORA && hora.length ? hora : siempre;
+
   try {
     const guardado = JSON.parse(sessionStorage.getItem(CLAVE) || "null");
     if (guardado?.franja === franja && lote.includes(guardado.frase)) return guardado.frase;
 
     const ultimo = localStorage.getItem(ULTIMO);
-    const candidatas = lote.filter((f) => f !== ultimo);
-    const frase = alAzar(candidatas.length ? candidatas : lote);
+    const candidatas = banco.filter((f) => f !== ultimo);
+    const frase = alAzar(candidatas.length ? candidatas : banco);
 
     sessionStorage.setItem(CLAVE, JSON.stringify({ franja, frase }));
     localStorage.setItem(ULTIMO, frase);
     return frase;
   } catch {
-    return alAzar(lote);
+    return alAzar(banco);
   }
 }
 

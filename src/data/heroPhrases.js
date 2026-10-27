@@ -155,13 +155,34 @@ export function franjaDe(hora) {
   return (FRANJAS.find((f) => h >= f.desde && h < f.hasta) || FRANJAS[1]).id;
 }
 
+/*
+ * Cada cuántas visitas sale una frase de la hora. La mitad.
+ *
+ * Sin esto no hacía falta: el banco de «siempre» tiene 32 frases y el de una
+ * franja 10, así que sorteando del montón entero la de la hora salía una de
+ * cada cuatro veces y Mateo podía no verla nunca. Y la frase de la hora es
+ * justo la que pidió. Se sortea primero el banco y después la frase.
+ */
+export const PESO_DE_LA_HORA = 0.5;
+
 /**
- * Las frases candidatas para un momento: las de su franja, las de siempre y,
- * si el día tiene, las suyas. Siempre devuelve algo, aunque falle todo.
+ * Los dos bancos de un momento, por separado: el de su hora (la franja más
+ * lo que añada el día) y el de siempre.
+ */
+export function bancosDe(ahora = new Date()) {
+  const franja = franjaDe(ahora.getHours());
+  const hora = [...(FRASES[franja] || []), ...(FRASES_DIA[ahora.getDay()] || [])];
+  return { hora, siempre: FRASES.siempre };
+}
+
+/**
+ * Todas las frases candidatas para un momento, en un solo lote: las de su
+ * franja, las del día y las de siempre. Siempre devuelve algo, aunque falle
+ * todo.
  */
 export function titularesDe(ahora = new Date()) {
-  const franja = franjaDe(ahora.getHours());
-  const lote = [...(FRASES[franja] || []), ...FRASES.siempre, ...(FRASES_DIA[ahora.getDay()] || [])];
+  const { hora, siempre } = bancosDe(ahora);
+  const lote = [...hora, ...siempre];
   return lote.length ? lote : FRASES.siempre;
 }
 
