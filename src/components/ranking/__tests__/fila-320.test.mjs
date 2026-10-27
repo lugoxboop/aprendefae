@@ -113,3 +113,60 @@ test("★ las pestañas reparten el ancho y ninguna se parte; el primer puesto n
   assert.doesNotMatch(primero, /coral/i, "coral es solo error, no el que va ganando");
   assert.ok(FAE.ambar, "falta el ámbar en el tema");
 });
+
+/* ─────────────── #570: la liga tenía el mismo fallo; #571: las tarjetas eran transparentes ─────────────── */
+
+const { default: LigaBoard } = await import("../../ligas/LigaBoard.jsx");
+const { TARJETA_TABLA } = await import("../tarjeta.js");
+
+test("★ #570: en el podio de la liga el apodo también tiene su línea propia y nunca se corta", async () => {
+  const filas = ["ElContadorMasRapidoDelOeste", "MARIAJOSÉRODRÍGUEZZULUAGA", "Ab"].map((nickname, i) => ({
+    liga: 1, total_ligas: 1, tam_liga: 17, corte_podio: 3, posicion: i + 1, nickname, fp: 300 - i * 40, es_tuyo: false, en_podio: true,
+  }));
+  const cargarTablero = async () => ({ filas, error: null });
+  const cargarContexto = async () => ({ contexto: { totalNiveles: 1, ligaAnterior: null, nivelesAnterior: null, transicion: null, activosReparto: null }, error: null });
+  const m = await montar(h(AuthContext.Provider, { value: auth }, h(LigaBoard, { subjectId: "pensamiento-estrategico", cargarTablero, cargarContexto })));
+  try {
+    await esperar(() => m.caja.querySelectorAll("[data-fila-liga] [data-apodo]").length === filas.length);
+    const apodos = [...m.caja.querySelectorAll("[data-fila-liga] [data-apodo]")];
+    assert.equal(apodos.length, filas.length, "no se pintó un apodo por fila del podio");
+    for (const a of apodos) {
+      const estilo = a.getAttribute("style") ?? "";
+      assert.doesNotMatch(estilo, /text-overflow:\s*ellipsis|white-space:\s*nowrap/, `${a.textContent}: cortado u obligado a una línea`);
+      const hermanos = [...a.parentElement.children].filter((x) => x !== a);
+      assert.ok(!hermanos.some((x) => x.matches("[data-boton-animo], [data-fp]")), `${a.textContent}: comparte línea con el botón o los FP`);
+    }
+  } finally {
+    await m.fin();
+  }
+});
+
+test("★ #571: las dos tablas usan la misma tarjeta, y es opaca", () => {
+  /* #1C2939 y no el navy: el navy no es superficie y con él el teal de las cifras daba 2,78:1 (#573). */
+  assert.equal(TARJETA_TABLA.background, "#1C2939", "la tarjeta dejó de ser la superficie opaca #1C2939");
+  assert.doesNotMatch(String(TARJETA_TABLA.background), /rgba\(/, "la tarjeta volvió a ser transparente");
+  for (const archivo of ["../RankingFP.jsx", "../../ligas/LigaBoard.jsx"]) {
+    const fuente = readFileSync(new URL(archivo, import.meta.url), "utf8");
+    assert.match(fuente, /\.\.\.TARJETA_TABLA/, `${archivo} no usa la tarjeta compartida`);
+    assert.doesNotMatch(fuente, /background: "rgba\(248,249,250,0\.04\)"/, `${archivo} volvió al 4 %`);
+  }
+});
+
+/*
+ * #573 (Levi: «opaco no es legible»): medido con scripts/ranking/medir.mjs, el
+ * texto de las dos tablas pasa 4,5:1 (mínimo 4,63 a 320 y 375). Lo que lo
+ * rompía eran colores de texto concretos; aquí no pueden volver: ni teal como
+ * color de TEXTO ni blanco por debajo del 50 %. El coral queda solo para el
+ * error (4,76:1 a 14 px sobre la tarjeta).
+ */
+test("★ #573: ningún texto de las tablas en teal ni en blanco tenue", () => {
+  for (const archivo of ["../RankingFP.jsx", "../../ligas/LigaBoard.jsx", "../../ligas/CabeceraLiga.jsx", "../../social/BotonAnimo.jsx"]) {
+    const fuente = readFileSync(new URL(archivo, import.meta.url), "utf8");
+    const colores = [...fuente.matchAll(/(?<![a-zA-Z])color: ([^,}\n]+)/g)].map((x) => x[1].trim());
+    for (const c of colores) {
+      assert.doesNotMatch(c, /FAE\.teal\b/, `${archivo}: texto en ${c}`);
+      const alfa = c.match(/rgba\(248,\s*249,\s*250,\s*(0?\.\d+)\)/);
+      if (alfa) assert.ok(Number(alfa[1]) >= 0.5, `${archivo}: texto blanco al ${alfa[1]}`);
+    }
+  }
+});

@@ -1,6 +1,10 @@
 import { FAE } from "../../theme.js";
 import { mensajeSemanal, TIPO_MENSAJE } from "../../ligas/niveles.js";
 import InsigniaLiga from "./InsigniaLiga.jsx";
+import { ATENUADO_TABLA } from "../ranking/tarjeta.js";
+
+/* La flecha de ascenso no es texto que se lea (va oculta al lector): le basta el 3:1 de lo que no es texto. */
+const FLECHA_ASCENSO = FAE.teal;
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -89,7 +93,7 @@ export default function CabeceraLiga({
           </h3>
         </div>
         {tamLiga > 0 && (
-          <span style={{ fontSize: "12px", color: "rgba(248,249,250,0.45)", whiteSpace: "nowrap" }}>
+          <span style={{ fontSize: "12px", color: ATENUADO_TABLA, whiteSpace: "nowrap" }}>
             {tamLiga} compitiendo
           </span>
         )}
@@ -131,11 +135,12 @@ export default function CabeceraLiga({
             fontFamily: "Sora, sans-serif",
             fontSize: "12.5px",
             fontWeight: 600,
-            color: FAE.teal,
+            /* El texto en neutro (el teal a 12,5 px da 4,43:1 sobre la tarjeta, #573); el color lo lleva la flecha. */
+            color: FAE.text,
             margin: "8px 0 0",
           }}
         >
-          <span aria-hidden="true">↑</span>
+          <span aria-hidden="true" style={{ color: FLECHA_ASCENSO }}>↑</span>
           {m.ascenso}
         </p>
       )}
