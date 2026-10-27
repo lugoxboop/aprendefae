@@ -15,12 +15,10 @@
  *   node scripts/ficha-tapa.mjs "Las cuentas, el debe y el haber" 320
  * ═══════════════════════════════════════════════════════════════════════════
  */
-import { existsSync } from "node:fs";
-/* Playwright no vive en el mismo sitio en todos los contenedores: se prueba en orden. */
-const PLAYWRIGHT = [process.env.PLAYWRIGHT_CORE, "/opt/npm-tools/node_modules/playwright-core/index.js", "/opt/node22/lib/node_modules/playwright/index.js"]
-  .find((ruta) => ruta && existsSync(ruta));
-const pkg = (await import(PLAYWRIGHT)).default;
-const { chromium } = pkg;
+/* La búsqueda de Playwright vive en sondas/navegador.mjs: cubre el contenedor
+   de los agentes y también GitHub Actions, que no comparten ni el paquete ni
+   el ejecutable. */
+import { chromium } from "./sondas/navegador.mjs";
 const TEMA = process.argv[2] ?? "Las cuentas, el debe y el haber";
 const ANCHO = Number(process.argv[3] ?? 320);
 const RAIZ = `http://127.0.0.1:${process.env.PUERTO ?? 8099}/`;
@@ -135,16 +133,41 @@ await p.route("**/*", (route) => {
   return route.continue();
 });
 /*
- * RUTA=#/activos-financieros abre el tema por su dirección: hay temas que
- * están ocultos del índice pero cuya ruta abre, y esos no se alcanzan
- * tocando botones (#349).
+ * CÓMO LLEGA LA SONDA AL TEMA, en orden de preferencia.
+ *
+ *   RUTA=#/activos-financieros   el tema por su dirección. Hay temas ocultos
+ *                                del índice cuya ruta sí abre, y a esos no se
+ *                                llega tocando botones (#349).
+ *   MATERIA_ID=contabilidad      la MATERIA por su dirección, y de ahí el tema
+ *                                con un toque.
+ *   MATERIA="Macroeconomía"      desde la portada, a golpe de botón.
+ *
+ * El del medio existe desde el 27-oct y es el que debería usarse siempre: la
+ * portada dejó de enseñar Pensamiento Estratégico, así que buscar ahí un
+ * botón con el nombre de la materia falla para esa materia. Una sonda que
+ * depende de lo que la portada enseñe hoy se rompe cada vez que la portada
+ * cambie, y la portada va a seguir cambiando.
  */
 if (process.env.RUTA) {
   await p.goto(RAIZ + process.env.RUTA, { waitUntil: "networkidle" });
   await p.waitForTimeout(700);
 } else {
-  await p.goto(RAIZ, { waitUntil: "networkidle" });
-  for (const paso of ["Contabilidad", TEMA]) {
+  const pasos = [];
+  if (process.env.MATERIA_ID) {
+    await p.goto(`${RAIZ}#/${process.env.MATERIA_ID}`, { waitUntil: "networkidle" });
+  } else {
+    await p.goto(RAIZ, { waitUntil: "networkidle" });
+    pasos.push(process.env.MATERIA ?? "Contabilidad");
+  }
+  await p.waitForTimeout(700);
+  for (const paso of [...pasos, TEMA]) {
+  /*
+   * El ratón se aparta antes de cada toque: tras tocar la materia quedaba
+   * encima de la tarjeta de T3, que al pasar el ratón sube 2 px, deja de
+   * estar debajo, baja, y vuelve a subir. Playwright la veía «inestable» y la
+   * sonda salía NO MEDIDO (ficha-tapa de «Ingresos, gastos y ajustes»).
+   */
+  await p.mouse.move(1, 1);
     await p.locator(`button:visible:has-text("${paso}")`).first().click({ timeout: 9000 });
     await p.waitForTimeout(700);
   }
@@ -215,6 +238,9 @@ const medirAqui = async () => {
     for (const t of r.tapados) (t.decorativo ? glifos : todos).push(`${t.tocable ? "CONTROL" : "texto  "}  «${t.texto}»`);
   }
 };
+/* Los segmentos del hash estando en el camino: dentro de una actividad hay uno más. */
+const BASE_HASH = await p.evaluate(() => location.hash.split("/").filter(Boolean).length);
+
 let actividades = 0;
 for (const id of idsDeNodos) {
   /* De cero: un cambio solo de hash no siempre cierra la actividad abierta. */
@@ -230,8 +256,26 @@ for (const id of idsDeNodos) {
   const empezar = p.locator("button.fae-dn-empezar:visible");
   if ((await empezar.count()) > 0) await empezar.first().click({ timeout: 5000 }).catch(() => {});
   await p.waitForTimeout(900);
-  /* Dentro de una actividad siempre está «Volver al camino»; la dirección no siempre cambia. */
-  const dentro = (await p.locator('button:visible:has-text("Volver al camino")').count()) > 0;
+  /*
+   * ¿Entramos en la actividad?
+   *
+   * Se miraba solo el botón «Volver al camino». No vale: Demanda Agregada
+   * llama a ese mismo botón «El camino» —es la única de las seis vistas que
+   * lo hace—, así que la sonda entraba en sus doce actividades, las medía
+   * bien y luego decía que no había abierto ninguna. Un NO MEDIDO por un
+   * literal, no por la pantalla.
+   *
+   * Ahora se aceptan los dos rótulos Y la dirección: dentro de una actividad
+   * el hash gana un segmento (#/camino-da/hacer → #/camino-da/hacer/<id>).
+   * Con dos señales, que una vista cambie su texto no vuelve a dejar el tema
+   * sin medir.
+   *
+   * El rótulo distinto queda avisado aparte: un mismo botón debería llamarse
+   * igual en todo el sitio, pero eso lo decide diseño, no una sonda.
+   */
+  const volver = await p.locator('button:visible:has-text("Volver al camino"), button:visible:has-text("El camino")').count();
+  const profundo = (await p.evaluate(() => location.hash.split("/").filter(Boolean).length)) > (BASE_HASH ?? 0);
+  const dentro = volver > 0 || profundo;
   if (process.env.DEPURAR) console.log("nodo", id, dentro);
   if (!dentro) continue;
   actividades++;

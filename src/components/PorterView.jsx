@@ -249,7 +249,17 @@ function Gauge({ gauge, answers, onAnswer }) {
         <span
           style={{
             fontFamily: "Sora, sans-serif", fontSize: "12.5px", fontWeight: 700, whiteSpace: "nowrap",
-            color: intensity ? intensity.color : "rgba(248,249,250,0.38)",
+            /*
+             * 0,50 y no 0,38. A 0,38 daba 3,36:1 sobre la tarjeta (#172436) y
+             * a 12,5 px el mínimo es 4,5. Lo cazó la sonda de contraste en CI
+             * el 27-oct; el calculado para 4,5 es 0,49 y se deja un punto de
+             * margen.
+             *
+             * «SIN RESPONDER» es el estado de partida de las cinco fuerzas:
+             * es lo que el estudiante tiene delante ANTES de empezar, así que
+             * es justo el texto que no puede costar leer.
+             */
+            color: intensity ? intensity.color : "rgba(248,249,250,0.50)",
           }}
         >
           {intensity ? intensity.label.toUpperCase() : "SIN RESPONDER"}
