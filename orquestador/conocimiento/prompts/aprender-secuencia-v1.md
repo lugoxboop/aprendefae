@@ -100,8 +100,29 @@ son los publicados: «Correcto» / «No va aquí».
 
 ### 3.3 Una pantalla = una idea
 
-Titular de máximo 10 palabras y 54 caracteres [supuesto: 258 px ÷ ≈9,4 px por carácter de
-Sora 700 a 17 px × 2 líneas; parada de medición §12]. Apoyo de máximo 25 palabras (objetivo) y
+Titular de **máximo 10 palabras**, y la longitud **se mide, no se cuenta**: tiene que caber en
+**2 renglones a 320 px** con su texto real. El tope de 54 caracteres era `[supuesto]` y la parada
+de medición la cerró Misa en T2 P1: un titular de 54 salía en 3 renglones.
+
+Lo que medí al revisarlo (Sora 700 a 17 px, `line-height` 22, `letter-spacing` −0,01em, Chromium
+con la fuente de producción) dice que **el número que fallaba no era el 54, era el 258**:
+
+| Ancho útil del titular | Caben en 2 renglones hasta |
+|---|---|
+| 200 px | 48 caracteres |
+| 212-224 px | 50 |
+| 236 px | 52 |
+| 248 px o más | 54 |
+
+Y dentro de cada ancho **la misma longitud cambia de renglón según las palabras**: a 212 px hay
+titulares de 50 que entran y otros de 50 que no, porque una palabra larga no se parte. Por eso un
+tope de caracteres no es el instrumento: es una guía.
+
+- **La guía:** 46 caracteres. Por debajo de eso no hace falta medir a ningún ancho de los de la tabla.
+- **La prueba:** entre 46 y 54, se mide con el texto real a 320. Tres renglones, se corta.
+- ⛔ **Parada abierta para quien tenga el componente a mano:** el ancho útil real del titular en
+  `SecuenciaAprender` a 320 px, que la tabla convierte en el tope exacto. La medida de Misa sugiere
+  que está en torno a 230, no en 258. Apoyo de máximo 25 palabras (objetivo) y
 60 en toda la pantalla (tope B2). Lo que no cabe va en otra pantalla o lo dice la figura.
 
 ### 3.4 Prueba del hilo
@@ -404,7 +425,7 @@ B4 aplica a las pastillas de Haz.
 
 ## 16. Respuestas a Hanayama (Célula D, 23 oct)
 
-a) **Reserva de figura: aceptada por pieza**, no fija en 150/200. La figura de la pieza mide lo de su pantalla más alta (la misma en todas, regla D5), con tope **220 px a 320 y 319 a 375**; el apoyo baja debajo y puede desbordar hasta 40 px a 320. Si una figura pasa del tope, la pantalla se parte. El primer control sigue dentro de los primeros 280 px (B1).
+a) **Reserva de figura: aceptada por pieza**, no fija en 150/200. La figura de la pieza mide lo de su pantalla más alta (la misma en todas, regla D5), con tope **206 px a 320 y 253 a 375, con la banda de apoyo, razón y devolución (66 px, tres líneas de Inter 14/22) debajo** (corrección del 24 oct: 220/319 era sin esa banda; Hanayama midió en T4: 416 − 144 − 66 = 206 a 320, `revisiones/t4-slides/diseno-hanayama.md` §1). Una pieza puede reservar menos; T4 usa 206 en los dos anchos. El apoyo puede desbordar hasta 40 px a 320. Si una figura pasa del tope, la pantalla se parte. El primer control sigue dentro de los primeros 280 px (B1).
 b) **Objetivo D2:** es el titular de la pantalla 1 (una oración, máx. 2 líneas). **Pie «Basado en el libro, pp. …»:** en la zona de razón (Inter 12, #A8B6C8) del **Cierre**, una vez por pieza; no se repite en cada pantalla (B5).
 c) **Pantallas de un solo control** son **Haz** si el control tiene que dar una respuesta válida para seguir (cobrar, el cheque, Contar, «Pagar el siguiente») y **Míralo** si solo se explora (el extracto). Nunca pasos de una Apertura: la Apertura se arma sola y no cuenta para B3. Las dos primeras cuentan para B3.
 d) **Sí**: la clave de persistencia incluye el caso (§5.2 corregido). El segundo intento no hereda el estado del primero.
