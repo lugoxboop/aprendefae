@@ -1,5 +1,6 @@
 import { FAE } from "../../../../theme.js";
 import { NEUTRO, NAVY_DEL_CHIP } from "../../../../data/contabilidadIntro.js";
+import { CUERPO, TEXTO_APOYO, TEXTO_DATO } from "../../../../estilo/jerarquia.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -69,7 +70,7 @@ export function BotonComoSeJuega({ onClick }) {
         /* 44 px de toque (kit.md); los márgenes negativos lo dejan ocupar lo mismo que antes. */
         minHeight: "44px", minWidth: "44px", margin: "0 0 -10px -6px", padding: "0 6px",
         background: "transparent", border: "none", borderRadius: "10px", cursor: "pointer",
-        color: "rgba(248,249,250,0.6)", fontFamily: "Inter, sans-serif", fontSize: "12px",
+        ...TEXTO_DATO,
       }}
     >
       <span aria-hidden="true" style={{
@@ -94,14 +95,16 @@ export function Encabezado({ objetivo = null, consigna, onComoSeJuega = null }) 
     <div data-encabezado style={{ margin: "0 0 14px" }}>
       {objetivo && (
         <p data-objetivo style={{
-          margin: 0, fontSize: "13px", lineHeight: 1.5, color: "rgba(248,249,250,0.86)",
+          /* Lo segundo que se lee, después del título: qué se busca (jerarquia.js). */
+          ...CUERPO, margin: 0,
         }}>
           {objetivo}
         </p>
       )}
       <p data-consigna style={{
-        margin: objetivo ? "6px 0 0" : 0, paddingTop: objetivo ? "6px" : 0, fontSize: "12px", lineHeight: 1.45,
-        color: "rgba(248,249,250,0.6)", borderTop: objetivo ? "1px solid rgba(248,249,250,0.12)" : "none",
+        /* Cómo se hace: 14 px y gris claro, un escalón por debajo del objetivo. */
+        ...TEXTO_APOYO,
+        margin: objetivo ? "8px 0 0" : 0, paddingTop: objetivo ? "8px" : 0, borderTop: objetivo ? "1px solid rgba(248,249,250,0.12)" : "none",
       }}>
         {consigna}
       </p>

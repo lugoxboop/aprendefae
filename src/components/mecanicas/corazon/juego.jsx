@@ -2,6 +2,7 @@ import { FAE } from "../../../theme.js";
 import { CierreConResumen } from "../../shared/PantallaResumen.jsx";
 import { CSS_CORAZON } from "./circulatorio.jsx";
 import { CARD_SHELL } from "../../SubjectCard.jsx";
+import { ROTULO, TEXTO_DATO } from "../../../estilo/jerarquia.js";
 
 /* El borde de las tarjetas del sitio, el mismo de CARD_SHELL. */
 const BORDE_TARJETA = CARD_SHELL.border.replace(/^1px solid /, "");
@@ -304,7 +305,7 @@ export function Pulsos({ total, hechos, etiqueta = "Avance", enCurso = null, cue
             }}
           />
         </div>
-        <span style={{ fontFamily: "Inter, sans-serif", fontSize: "12px", fontWeight: 600, color: "rgba(248,249,250,0.62)", whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums" }}>
+        <span style={{ ...TEXTO_DATO, whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums" }}>
           {etiqueta} {numero} de {total}
         </span>
       </div>
@@ -348,7 +349,7 @@ export function Pulsos({ total, hechos, etiqueta = "Avance", enCurso = null, cue
           );
         })}
       </div>
-      <span style={{ fontFamily: "Inter, sans-serif", fontSize: "12px", fontWeight: 600, color: "rgba(248,249,250,0.62)", whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums" }}>
+      <span style={{ ...TEXTO_DATO, whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums" }}>
         {etiqueta} {numero} de {total}
       </span>
     </div>
@@ -431,7 +432,7 @@ export function Enunciado({ rotulo, children, acento = FAE.teal }) {
       }}
     >
       {rotulo && (
-        <p style={{ margin: "0 0 7px", fontFamily: "Sora, sans-serif", fontSize: "10.5px", fontWeight: 700, letterSpacing: "0.16em", color: acento }}>
+        <p style={{ margin: "0 0 7px", ...ROTULO, color: acento }}>
           {rotulo}
         </p>
       )}
