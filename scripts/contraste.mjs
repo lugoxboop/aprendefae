@@ -27,7 +27,7 @@
  *   node scripts/contraste.mjs "Introducción a la contabilidad"
  * ═══════════════════════════════════════════════════════════════════════════
  */
-import { chromium } from "./sondas/navegador.mjs";
+import { chromium, fuenteLocal, comoSeMidieronLasFuentes } from "./sondas/navegador.mjs";
 
 const TEMA = process.argv[2] ?? "Introducción a la contabilidad";
 const ANCHO = Number((process.argv[3] && !process.argv[3].startsWith("--")) ? process.argv[3] : 320);
@@ -140,6 +140,19 @@ const p = await b.newPage({ viewport: { width: ANCHO, height: 1400 } });
  * mide siempre con el aviso puesto, que es lo que ve quien tiene mala señal.
  */
 await p.route(/youtube|ytimg|googlevideo/, (r) => r.abort());
+
+/*
+ * Las tipografías, o se mide otra maqueta (#632). Sora e Inter vienen de Google
+ * Fonts: en CI cargan y en el contenedor de los agentes están bloqueadas, así
+ * que el navegador cae a la de respaldo. El contraste de un color no depende de
+ * la fuente, pero QUÉ TEXTOS HAY sí: con otra tipografía cambian los cortes de
+ * línea, y con ellos qué encuentra la sonda y sobre qué fondo cae cada trozo.
+ * Un recuento medido con la de respaldo no es comparable con la línea base.
+ */
+await p.route("**/*", (route) => {
+  const fuente = fuenteLocal(route.request().url());
+  return fuente ? route.fulfill({ status: 200, ...fuente }) : route.continue();
+});
 
 const pasos = [];
 if (process.env.MATERIA_ID) {
@@ -275,6 +288,7 @@ for (const m of malos) {
   console.log(`  ${String(m.r).padStart(5)}:1  (pide ${m.piso})  ${String(m.px).padStart(5)}px/${m.peso}  <${m.etiqueta}>  «${m.texto}»\n          texto ${m.color}  sobre ${m.fondo}  ·  ${m.donde}`);
 }
 console.log(`\n${malos.length} texto(s) por debajo del contraste que pide su tamaño, en ${pantallas} pantalla(s) de «${TEMA}» a ${ANCHO} px.`);
+console.log(`Tipografía: ${comoSeMidieronLasFuentes}`);
 /*
  * Un cero sobre una pantalla no es un cero: quiere decir que no entré. Lo
  * digo fuerte porque «0 textos ... en 1 pantalla» se lee como éxito, y es

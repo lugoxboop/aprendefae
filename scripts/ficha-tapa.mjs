@@ -97,7 +97,25 @@ const MIRA = `(() => {
       const padre = el.closest("button, a");
       if (padre && padre !== el && cabeElDedo(padre.getBoundingClientRect())) decorativo = true;
     }
-    tapados.push({ texto: txt.slice(0, 40), etiqueta: el.tagName.toLowerCase(), tocable, decorativo });
+    /*
+     * La geometría va en el informe, no en una copia parcheada a mano. Sin
+     * ella, «1 elemento tapado» obliga a instrumentar la sonda cada vez para
+     * saber DÓNDE, y eso ya me costó tres rondas: con los rectángulos
+     * delante, el informe de CI dice por qué falla y cuánto falta.
+     */
+    tapados.push({
+      texto: txt.slice(0, 40), etiqueta: el.tagName.toLowerCase(), tocable, decorativo,
+      rect: [Math.round(r.left), Math.round(r.top), Math.round(r.width), Math.round(r.height)],
+      ficha: [Math.round(f.left), Math.round(f.top), Math.round(f.width), Math.round(f.height)],
+      scrollY: Math.round(window.scrollY), alto: Math.round(document.documentElement.scrollHeight),
+      /* Lo que le queda libre a cada lado: es lo que hay que llevar a 44. */
+      libre: {
+        arriba: Math.round(Math.min(r.bottom, f.top) - r.top),
+        abajo: Math.round(r.bottom - Math.max(r.top, f.bottom)),
+        izq: Math.round(Math.min(r.right, f.left) - r.left),
+        der: Math.round(r.right - Math.max(r.left, f.right)),
+      },
+    });
   }
   return { ficha: [Math.round(f.left), Math.round(f.top), Math.round(f.width), Math.round(f.height)], tapados };
 })()`;
@@ -201,7 +219,7 @@ if (APRENDER) {
       const r = await p.evaluate(MIRA);
       if (r.sinFicha) { sinFicha++; continue; }
       conFicha++;
-      for (const t of r.tapados) (t.decorativo ? glifos : todos).push(`${t.tocable ? "CONTROL" : "texto  "}  «${t.texto}»`);
+      for (const t of r.tapados) (t.decorativo ? glifos : todos).push(`${t.tocable ? "CONTROL" : "texto  "}  «${t.texto}» rect=${t.rect.join(",")} ficha=${t.ficha.join(",")} libre(arr/ab/izq/der)=${t.libre.arriba}/${t.libre.abajo}/${t.libre.izq}/${t.libre.der} scrollY=${t.scrollY}/${t.alto}`);
     }
     const sig = p.locator(AVANCE);
     if ((await sig.count()) === 0) break;
@@ -239,7 +257,7 @@ const medirAqui = async () => {
     const r = await p.evaluate(MIRA);
     if (r.sinFicha) { sinFicha++; continue; }
     conFicha++;
-    for (const t of r.tapados) (t.decorativo ? glifos : todos).push(`${t.tocable ? "CONTROL" : "texto  "}  «${t.texto}»`);
+    for (const t of r.tapados) (t.decorativo ? glifos : todos).push(`${t.tocable ? "CONTROL" : "texto  "}  «${t.texto}» rect=${t.rect.join(",")} ficha=${t.ficha.join(",")} libre(arr/ab/izq/der)=${t.libre.arriba}/${t.libre.abajo}/${t.libre.izq}/${t.libre.der} scrollY=${t.scrollY}/${t.alto}`);
   }
 };
 /* Los segmentos del hash estando en el camino: dentro de una actividad hay uno más. */
