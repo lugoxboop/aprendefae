@@ -23,6 +23,10 @@ const PALETAS_ESPERADAS = {
   marea:       { c1: "#2A9D8F", c2: "#3D5A80", stroke: "#14263F", node: "#E76F51", ring: "#2A9D8F" },
   brasa:       { c1: "#E76F51", c2: "#3D5A80", stroke: "#14263F", node: "#2A9D8F", ring: "#E76F51" },
   aurora:      { c1: "#E76F51", c2: "#2A9D8F", stroke: "#3D5A80", node: "#3D5A80", ring: "#E76F51" },
+  /* Las dos del 28-oct: los dos pares ordenados que faltaban de los tres
+     colores de marca. El nodo es el color que NO está en el par. */
+  ascua:       { c1: "#3D5A80", c2: "#E76F51", stroke: "#14263F", node: "#2A9D8F", ring: "#E76F51" },
+  arrecife:    { c1: "#2A9D8F", c2: "#E76F51", stroke: "#14263F", node: "#3D5A80", ring: "#2A9D8F" },
   comparacion: { c1: "#4A5A72", c2: "#7A8798", stroke: "#9AA5B4", node: "#C8D0DA", ring: "#6B7A90" },
 };
 
@@ -32,9 +36,16 @@ const FORMAS_ESPERADAS = {
   nucleo:   { n: 8, rot: -90, alt: 0.66, step: 3 },
   red:      { n: 12, rot: -90, alt: 1, step: 5 },
   cuna:     { n: 5, rot: -90, alt: 1, step: 2 },
+  /* Las cuatro del 28-oct. Cada una trae un n que no estaba, o el mismo n
+     con puntas donde antes no las había: Astro es Red con el radio impar a
+     la mitad, y por eso no es «Red otra vez». */
+  vertice:  { n: 3, rot: -90, alt: 1, step: 1 },
+  astro:    { n: 12, rot: -90, alt: 0.5, step: 5 },
+  enlace:   { n: 9, rot: -90, alt: 1, step: 4 },
+  orbita:   { n: 16, rot: -90, alt: 0.88, step: 7 },
 };
 
-test("las cinco paletas y las cinco formas son las del kit, valor por valor", () => {
+test("las seis paletas y las nueve formas son las del kit, valor por valor", () => {
   assert.deepEqual(PALETTES, PALETAS_ESPERADAS);
   assert.deepEqual(SHAPES, FORMAS_ESPERADAS);
 });
@@ -173,7 +184,7 @@ test("las cuerdas del nivel IV unen el anillo interior con el salto de cada form
   }
 });
 
-test("las 80 combinaciones se calculan y ninguna sale vacía o con NaN", () => {
+test("las 216 combinaciones se calculan y ninguna sale vacía o con NaN", () => {
   const vistas = new Set();
   for (const forma of FORMAS) {
     for (const paleta of PALETAS) {
@@ -197,8 +208,8 @@ test("las 80 combinaciones se calculan y ninguna sale vacía o con NaN", () => {
       }
     }
   }
-  assert.equal(FORMAS.length * PALETAS.length * NIVELES.length, 80);
-  assert.equal(vistas.size, 80, "cada combinación da una figura distinta de las demás");
+  assert.equal(FORMAS.length * PALETAS.length * NIVELES.length, 216);
+  assert.equal(vistas.size, 216, "cada combinación da una figura distinta de las demás");
 });
 
 test("valores fuera de rango caen en el defecto sin lanzar: decaedro, marea, nivel I", () => {
@@ -214,8 +225,10 @@ test("valores fuera de rango caen en el defecto sin lanzar: decaedro, marea, niv
 
 test("'comparacion' NO está entre las paletas elegibles, y sí existe para las miniaturas", () => {
   assert.ok(!PALETAS.includes("comparacion"), "si se cuela como opción, es un bug");
-  assert.equal(PALETAS.length, 4);
-  assert.deepEqual(PALETAS, ["nocturno", "marea", "brasa", "aurora"]);
+  assert.equal(PALETAS.length, 6);
+  /* El orden importa: las dos nuevas van DETRÁS, para que quien ya eligió la
+     suya la siga encontrando en el mismo sitio del selector. */
+  assert.deepEqual(PALETAS, ["nocturno", "marea", "brasa", "aurora", "ascua", "arrecife"]);
   assert.ok(PALETTES.comparacion, "pero existe: es la gris de las miniaturas de forma");
   assert.equal(PALETA_COMPARACION, "comparacion");
   assert.equal(NIVEL_COMPARACION, 2, "las miniaturas de forma van fijas en nivel II");
@@ -265,14 +278,20 @@ test("por debajo de 40 px se retiran halo y cuerdas, y el nivel sigue siendo el 
 
 /* ─────────────────── los dos lados de la frontera con SQL ─────────────────── */
 
-test("las formas y paletas del generador son las mismas que acepta la 0035", () => {
+test("la 0035 conserva su texto original: es el registro de lo que se aplicó", () => {
   const sql = readFileSync(new URL("../../../supabase/migrations/0035_avatares_y_cristales.sql", import.meta.url), "utf8");
 
-  const formas = `avatar_shape in (${FORMAS.map((f) => `'${f}'`).join(", ")})`;
-  assert.ok(sql.includes(formas), `la 0035 debería aceptar exactamente: ${formas}`);
-
-  const paletas = `avatar_palette in (${PALETAS.map((p) => `'${p}'`).join(", ")})`;
-  assert.ok(sql.includes(paletas), `la 0035 debería aceptar exactamente: ${paletas}`);
+  /*
+   * LA 0035 SIGUE DICIENDO LAS CINCO FORMAS Y LAS CUATRO PALETAS DE ENTONCES,
+   * y tiene que seguir diciéndolas. Una migración ya aplicada es un registro
+   * histórico, no un archivo de configuración: editarla dejaría CI y
+   * producción construyendo bases distintas.
+   *
+   * Las listas VIGENTES las amplía la 0258, y que coincidan con el cliente lo
+   * comprueba catalogo-avatares.test.mjs leyendo la migración más reciente.
+   */
+  assert.ok(sql.includes("avatar_shape in ('decaedro', 'prisma', 'nucleo', 'red', 'cuna')"));
+  assert.ok(sql.includes("avatar_palette in ('nocturno', 'marea', 'brasa', 'aurora')"));
 
   /* Y en ninguna parte de la migración 'comparacion' es un valor aceptado. */
   assert.ok(!/in \([^)]*'comparacion'/.test(sql), "'comparacion' no puede ser un valor válido en la base");

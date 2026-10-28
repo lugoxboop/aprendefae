@@ -35,6 +35,32 @@ import { supabase } from "../lib/supabase.js";
 export const PRECIO_NIVEL = { 2: 60, 3: 150, 4: 300 };
 export const NIVELES_COMPRABLES = [2, 3, 4];
 
+/*
+ * ═══════════ LAS PIEZAS: FORMAS Y PALETAS QUE SE COMPRAN (0153) ═══════════
+ *
+ * Hasta el 28-oct la Tienda vendía solo los tres niveles: comprados los tres,
+ * se quedaba vacía para siempre y los Cristales dejaban de servir para nada.
+ *
+ * Lo que NO está aquí es tan importante como lo que está: las cinco formas y
+ * las cuatro paletas originales no se compran, porque ya eran de todos.
+ * Cobrar por algo que ya era de alguien no es monetizar, es quitárselo.
+ *
+ * Los precios suben con lo elaborada que es la figura, no al azar: Vértice es
+ * un triángulo y Órbita teje dieciséis vértices con cuerdas. Las dos paletas
+ * valen lo mismo entre sí porque son el mismo trabajo.
+ *
+ * Y están EN SQL también (0153, precio_pieza_avatar). SQL no lee JavaScript,
+ * así que cristales.test.mjs lee la migración y falla si los dos lados se
+ * separan: el cliente pinta el precio, pero quien cobra es la base.
+ */
+export const PRECIO_PIEZA = {
+  forma: { vertice: 30, enlace: 60, astro: 75, orbita: 100 },
+  paleta: { ascua: 45, arrecife: 45 },
+};
+
+export const FORMAS_COMPRABLES = ["vertice", "enlace", "astro", "orbita"];
+export const PALETAS_COMPRABLES = ["ascua", "arrecife"];
+
 /* ─────────────────────── lo que se gana ─────────────────────── */
 
 export const CRISTALES_RACHA = { 3: 5, 7: 10, 14: 20, 30: 50 };
@@ -113,6 +139,46 @@ export function nivelesDesbloqueados(perfil) {
 }
 
 export const estaDesbloqueado = (perfil, nivel) => nivelesDesbloqueados(perfil).includes(Math.floor(Number(nivel)));
+
+/* ─────────────────────── las piezas ─────────────────────── */
+
+/* Las cinco formas y las cuatro paletas que siempre fueron de todos. */
+export const FORMAS_LIBRES = ["decaedro", "prisma", "nucleo", "red", "cuna"];
+export const PALETAS_LIBRES = ["nocturno", "marea", "brasa", "aurora"];
+
+const LIBRES = { forma: FORMAS_LIBRES, paleta: PALETAS_LIBRES };
+const COLUMNA = { forma: "avatar_unlocked_shapes", paleta: "avatar_unlocked_palettes" };
+
+/**
+ * Las piezas que este perfil puede usar, con las libres SIEMPRE dentro.
+ *
+ * Las libres se añaden aquí y no se confía en que vengan de la base: un
+ * perfil viejo leído antes de que corriera la 0153, o una respuesta sin esa
+ * columna, dejaría al estudiante sin su propia forma. El servidor vuelve a
+ * comprobarlo de todos modos; esto es para que la pantalla no mienta.
+ */
+export function piezasDesbloqueadas(perfil, tipo) {
+  const crudo = perfil?.[COLUMNA[tipo]];
+  const lista = Array.isArray(crudo) ? crudo.filter((x) => typeof x === "string") : [];
+  return [...new Set([...(LIBRES[tipo] ?? []), ...lista])];
+}
+
+export const piezaDesbloqueada = (perfil, tipo, clave) => piezasDesbloqueadas(perfil, tipo).includes(clave);
+
+/** Lo que cuesta una pieza. 0 = no se vende (porque es libre, o no existe). */
+export const precioDePieza = (tipo, clave) => PRECIO_PIEZA[tipo]?.[clave] ?? 0;
+
+/** Cuántos Cristales faltan para esta pieza. 0 = alcanza (o ya es suya). */
+export function faltanParaPieza(perfil, tipo, clave) {
+  if (piezaDesbloqueada(perfil, tipo, clave)) return 0;
+  return Math.max(0, precioDePieza(tipo, clave) - saldoDe(perfil));
+}
+
+/** comprada · alcanzable · falta — el mismo trío que los niveles. */
+export function estadoDePieza(perfil, tipo, clave) {
+  if (piezaDesbloqueada(perfil, tipo, clave)) return "comprado";
+  return faltanParaPieza(perfil, tipo, clave) === 0 ? "alcanzable" : "falta";
+}
 
 export const precioDe = (nivel) => PRECIO_NIVEL[Math.floor(Number(nivel))] ?? 0;
 
@@ -228,6 +294,21 @@ export async function comprarNivel(nivel) {
   if (error) {
     console.error("[aprendeFAE] Compra de nivel:", error.code ?? "", error.message);
     return { error: motivoDeError(error, "comprar este nivel") };
+  }
+  return { perfil: Array.isArray(data) ? data[0] : data };
+}
+
+/*
+ * Comprar una forma o una paleta. Mismo trato que comprarNivel: el saldo lo
+ * descuenta la base en la misma sentencia que comprueba que alcanza, así que
+ * dos toques seguidos no cobran dos veces.
+ */
+export async function comprarPieza(tipo, clave) {
+  if (!supabase) return { error: SIN_CONFIGURAR };
+  const { data, error } = await supabase.rpc("comprar_pieza_avatar", { p_tipo: tipo, p_clave: clave });
+  if (error) {
+    console.error("[aprendeFAE] Compra de pieza:", error.code ?? "", error.message);
+    return { error: motivoDeError(error, tipo === "forma" ? "comprar esta forma" : "comprar esta paleta") };
   }
   return { perfil: Array.isArray(data) ? data[0] : data };
 }

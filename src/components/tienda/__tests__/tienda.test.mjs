@@ -162,12 +162,19 @@ test("CORAL NO APARECE en la Tienda, ni en un borde, ni en un texto, ni en un fo
    * Los avatares quedan fuera de la búsqueda a propósito: el coral de un avatar
    * es el color de sus nodos en las paletas Nocturno, Brasa y Aurora —parte de
    * la identidad de la figura, definida en el kit— y no un estado de la pantalla.
+   *
+   * Y desde el 28-oct queda fuera también la MUESTRA de una paleta a la venta.
+   * Ascua y Arrecife llevan coral porque el coral ES lo que se está vendiendo:
+   * pintar la muestra sin él sería enseñar un producto que no existe. La
+   * exención es exacta —el propio [data-muestra] y nada más—, así que el
+   * borde, el texto y el fondo de esa misma tarjeta siguen vigilados: si
+   * alguien pinta de coral el precio de Ascua, esta prueba lo caza igual.
    */
   const m = montar({ perfil: PERFIL({ cristales_balance: 0 }) });
   try {
     const coral = FAE.coral.toLowerCase();
     const sospechosos = [...m.caja.querySelectorAll("*")].filter((el) => {
-      if (el.closest("svg[data-avatar]")) return false;
+      if (el.closest("svg[data-avatar]") || el.hasAttribute("data-muestra")) return false;
       const estilo = (el.getAttribute("style") ?? "").toLowerCase();
       return estilo.includes(coral) || estilo.includes("231, 111, 81") || estilo.includes("231,111,81");
     });
