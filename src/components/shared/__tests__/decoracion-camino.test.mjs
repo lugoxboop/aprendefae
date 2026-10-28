@@ -224,3 +224,26 @@ test("★★★ Fae va al trazo de la familia, no al del fondo", async () => {
     );
   } finally { m.desmontar(); }
 });
+
+/* ── la entrada del camino ── */
+
+test("★★★ el camino se traza al entrar, y con movimiento reducido no", async () => {
+  /*
+   * Mateo, 28-oct: «que al entrar al camino sea una animación elegante». Se
+   * anima el BORDE INFERIOR del recorte del contenedor, así que el recorrido
+   * se revela de arriba abajo y el orden sale de la geometría, sin
+   * coreografiar nodo por nodo. Eso importa porque el camino se pinta de
+   * cuatro maneras —normal y por bloques, ancha y estrecha— y una cascada por
+   * nodo habría que escribirla cuatro veces.
+   */
+  const { CSS_ENTRADA } = await import("../CaminoHacer.jsx");
+  const m = await montar(h(CaminoHacer, { nodos: NODOS, onAbrir() {} }));
+  try {
+    assert.ok(m.caja.querySelector(".fae-ch-entra"), "el contenedor del camino entra");
+    assert.match(CSS_ENTRADA, /clip-path: inset\(0 0 100% 0\)/, "empieza recortado del todo");
+    assert.match(CSS_ENTRADA, /clip-path: inset\(0 0 -60% 0\)/, "y acaba con holgura, sin cortar lo que asoma");
+    const reducido = CSS_ENTRADA.slice(CSS_ENTRADA.indexOf("prefers-reduced-motion"));
+    assert.match(reducido, /animation: none/, "con movimiento reducido no hay recorte ninguno");
+    assert.ok(!/animation-duration/.test(reducido), "se quita, no se ralentiza");
+  } finally { m.desmontar(); }
+});

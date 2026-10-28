@@ -17,6 +17,12 @@ import { JSDOM, VirtualConsole } from "jsdom";
  *
  * Para rehacer la foto contra otro CaminoHacer (solo si el cambio es a
  * propósito): CAMINO_MODULO=<ruta absoluta> FOTO=escribir node --test …
+ *
+ * La foto NO se ha rehecho nunca desde que se tomó de main. Lo que entra
+ * encima del camino —la decoración, Fae, la entrada— se RECORTA antes de
+ * pesar en vez de rehacerse, y por eso las 42 huellas siguen siendo la
+ * prueba de que el recorrido no se ha movido. Rehacer la foto es cómodo y
+ * borra justo esa prueba: hacerlo solo cuando el recorrido cambie de verdad.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -130,7 +136,19 @@ export function sinDecoracion(html) {
     }
     salida = salida.slice(0, abre) + salida.slice(salida.indexOf(">", i) + 1);
   }
-  return salida.replaceAll("; position: relative; z-index: 1;", ";");
+  /*
+   * Y la clase de la entrada del 28-oct. Es un envoltorio que solo anima el
+   * recorte del contenedor: no mueve, no redimensiona y no cambia ni un nodo
+   * del recorrido, así que quitarla del peso deja la foto de main valiendo
+   * carácter a carácter. Que siga cuadrando DESPUÉS de añadirla es justo lo
+   * que había que demostrar.
+   */
+  return salida
+    .replaceAll("; position: relative; z-index: 1;", ";")
+    .replaceAll(' class="fae-ch-entra"', "")
+    /* La hoja de la entrada, entera. Vive en su propio <style> justo para
+       poder recortarla sin tocar las reglas de verdad del camino. */
+    .replace(/<style>\s*\.fae-ch-entra[\s\S]*?<\/style>/g, "");
 }
 
 const huella = (html) => createHash("sha256").update(sinDecoracion(html)).digest("hex");

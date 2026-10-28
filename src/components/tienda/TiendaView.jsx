@@ -4,13 +4,15 @@ import { FAE } from "../../theme.js";
 import Logo from "../Logo.jsx";
 import IconoCristal from "../shared/IconoCristal.jsx";
 import Avatar from "../avatar/Avatar.jsx";
+import Entrada, { EstiloEntrada, entrada } from "../shared/Entrada.jsx";
 import { useAuth } from "../../auth/AuthProvider.jsx";
 import { marcarVisitada } from "../../tienda/novedades.js";
 import {
-  combinacionDe, ETIQUETA_NIVEL, NOMBRE_NIVEL, NOMBRE_FORMA, NOMBRE_PALETA, PALETA_COMPARACION, PALETTES,
+  combinacionDe, ETIQUETA_NIVEL, NIVELES, NOMBRE_NIVEL, NOMBRE_FORMA, NOMBRE_PALETA,
+  PALETA_COMPARACION, PALETTES, leyenda,
 } from "../../avatar/generador.js";
 import {
-  FORMAS_COMPRABLES, FUENTES, NIVELES_COMPRABLES, PALETAS_COMPRABLES,
+  FORMAS_COMPRABLES, FUENTES, PALETAS_COMPRABLES,
   comprarNivel, comprarPieza, estadoDeNivel, estadoDePieza, faltanPara, faltanParaPieza,
   precioDe, precioDePieza, saldoDe,
 } from "../../cristales/cristales.js";
@@ -19,20 +21,44 @@ import {
  * ═══════════════════════════════════════════════════════════════════════════
  * LA TIENDA.
  *
- * Tres bloques, de arriba abajo: el saldo, cómo se gana y qué se puede comprar.
+ * ═══════════ LO QUE CAMBIÓ EL 28-OCT, Y POR QUÉ ═══════════
  *
- * ═══════════ LA TABLA DE CÓMO GANAR VA SIEMPRE A LA VISTA ═══════════
+ * Mateo: «la distribución es muy tosca y torpe, no es llamativa». Tenía
+ * razón, y el diagnóstico es concreto: eran NUEVE tarjetas anchas idénticas
+ * apiladas en una columna de 4.600 px, con la figura a 56 px perdida al lado
+ * de tres líneas de texto. Todo pesaba igual, así que nada destacaba, y lo
+ * primero que se veía al entrar era una tabla de precios en vez del producto.
  *
- * No detrás de un acordeón ni de un «¿cómo consigo Cristales?». Un precio sin
- * la forma de conseguir el dinero es una pared, y esconder la tabla convierte
- * la Tienda en una lista de cosas que no puedes tener.
+ * Lo que hace esta versión, en orden:
+ *
+ *   1. UN ESCAPARATE ARRIBA. Lo primero es el avatar propio, grande, con su
+ *      nombre. Se está comprando para ÉL: enseñarlo antes que nada es la
+ *      diferencia entre una tienda y un formulario de precios.
+ *   2. REJILLA, NO COLUMNA. Las piezas van de dos en dos con la figura a 76
+ *      px y el texto debajo. La página pasa de 4.600 px a poco más de 2.000,
+ *      y se compara de un vistazo en vez de desplazándose.
+ *   3. LOS CUATRO NIVELES JUNTOS, incluido el I que ya es tuyo. Es una
+ *      progresión: enseñar solo los tres que faltan esconde de dónde sales.
+ *   4. LA ENTRADA ESCALONADA, con el mismo sistema de la portada.
+ *
+ * ═══════════ LA TABLA DE CÓMO GANAR SIGUE A LA VISTA ═══════════
+ *
+ * No detrás de un acordeón —eso sigue prohibido: un precio sin la forma de
+ * conseguir el dinero es una pared—, pero ya no se come la primera pantalla.
+ * Arriba van las tres fuentes más rápidas en una línea, junto al saldo; la
+ * tabla completa, al final y entera. Así nunca hay un precio sin su camino y
+ * lo primero que se ve es lo que se vende.
  *
  * ═══════════ Y NADA DE CORAL ═══════════
  *
  * En todo el sitio el coral significa error. Un nivel que todavía no alcanzas
  * no es un error: es un precio. Va en gris atenuado, diciendo exactamente
- * cuántos Cristales faltan —un número, no un «insuficiente»—. Teal solo para lo
- * que ya es tuyo y para el botón de lo que sí alcanzas.
+ * cuántos Cristales faltan —un número, no un «insuficiente»—. Teal solo para
+ * lo que ya es tuyo y para el botón de lo que sí alcanzas.
+ *
+ * La única excepción es la MUESTRA de una paleta a la venta: Ascua y Arrecife
+ * llevan coral porque el coral es lo que se está vendiendo. La prueba exime
+ * el propio [data-muestra] y nada más.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -43,25 +69,175 @@ const TARJETA = {
   padding: "16px 18px",
 };
 
-/* El degradado de la muestra de paleta, el mismo que usa el selector. */
-const PALETAS_MUESTRA = PALETTES;
-
-/*
- * «Ya es tuyo» vive en UN solo sitio y lo comparten la tarjeta de nivel y la
- * de pieza. No es por ahorrar cinco líneas: el trinquete del teal cuenta
- * cuántos textos en teal tiene cada archivo, y duplicar el literal lo habría
- * subido de 3 a 4. Un segundo texto en teal es una regresión aunque sea copia
- * del primero, así que se comparte el único que ya estaba aprobado.
- */
-function YaEsTuyo({ genero = "o" }) {
-  return <p style={{ fontSize: "12.5px", color: FAE.teal, margin: 0 }}>{`Ya es tuy${genero}`}</p>;
-}
-
 const ETIQUETA = { fontSize: "12.5px", color: "rgba(248,249,250,0.5)", margin: "0 0 4px" };
 const NUMERO = {
   fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "30px", margin: 0,
   color: FAE.text, fontVariantNumeric: "tabular-nums", lineHeight: 1.05,
 };
+
+const RUBRO = {
+  fontFamily: "Sora, sans-serif", fontSize: "11px", fontWeight: 700,
+  letterSpacing: "0.14em", color: "rgba(248,249,250,0.5)", margin: "0 0 4px",
+};
+const PIE_RUBRO = { fontSize: "12.5px", lineHeight: 1.45, color: "rgba(248,249,250,0.5)", margin: "0 0 12px" };
+
+/* Dos columnas a cualquier ancho del teléfono: a 320 cada celda queda en 136 px. */
+const REJILLA = { display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: "10px" };
+
+/*
+ * «Ya es tuyo» vive en UN solo sitio y lo comparten las tres tarjetas. No es
+ * por ahorrar líneas: el trinquete del teal cuenta cuántos textos en teal
+ * tiene cada archivo, y duplicar el literal lo subiría. Un segundo texto en
+ * teal es una regresión aunque sea copia del primero.
+ */
+function YaEsTuyo({ genero = "o" }) {
+  return <span style={{ fontSize: "12px", color: FAE.teal }}>{`Ya es tuy${genero}`}</span>;
+}
+
+/*
+ * «+N ◆», lo que se GANA. Un solo sitio, usado por la franja de atajos y por
+ * la tabla de abajo. Igual que con «Ya es tuyo», no es por ahorrar líneas: el
+ * trinquete cuenta los textos en teal por archivo, y el mismo dato escrito
+ * dos veces contaría dos.
+ */
+function Ganancia({ cuanto, tamano = 14 }) {
+  return (
+    <span style={{ display: "inline-flex", alignItems: "center", gap: "5px", flexShrink: 0 }}>
+      <span style={{ fontFamily: "Sora, sans-serif", fontWeight: 600, fontSize: `${tamano}px`, color: FAE.teal, fontVariantNumeric: "tabular-nums" }}>
+        +{cuanto}
+      </span>
+      <IconoCristal tamano={tamano - 1} />
+    </span>
+  );
+}
+
+/* El precio con su cristal, o cuánto falta. El mismo pie para todo lo que se vende. */
+function Precio({ precio, faltan, alcanza }) {
+  return (
+    <span style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "4px", flexWrap: "wrap", fontSize: "12px", color: "rgba(248,249,250,0.6)" }}>
+      <IconoCristal tamano={11} apagado={!alcanza} />
+      <span style={{ fontVariantNumeric: "tabular-nums" }}>{precio}</span>
+      {!alcanza && (
+        <span data-faltan={faltan} style={{ color: "rgba(248,249,250,0.45)", whiteSpace: "nowrap" }}>
+          · te faltan {faltan}
+        </span>
+      )}
+    </span>
+  );
+}
+
+function Boton({ alcanza, ocupado, onClick, ...resto }) {
+  return (
+    <button
+      type="button"
+      {...resto}
+      disabled={!alcanza || ocupado}
+      onClick={onClick}
+      style={{
+        fontFamily: "Sora, sans-serif", fontSize: "12.5px", fontWeight: 600,
+        padding: "8px 0", borderRadius: "999px", border: "none", width: "100%",
+        cursor: alcanza && !ocupado ? "pointer" : "default",
+        backgroundColor: alcanza ? FAE.teal : "rgba(248,249,250,0.08)",
+        color: alcanza ? FAE.bg : "rgba(248,249,250,0.4)",
+      }}
+    >
+      {ocupado ? "…" : "Desbloquear"}
+    </button>
+  );
+}
+
+/*
+ * La celda de la rejilla. Una sola para niveles, formas y paletas: el
+ * estudiante no tiene por qué aprender tres lenguajes dentro de la misma
+ * pantalla, y lo único que cambia entre las tres es qué se enseña arriba.
+ */
+function Celda({ figura, titulo, pie, estado, children, ...resto }) {
+  const comprado = estado === "comprado";
+  return (
+    <div
+      {...resto}
+      data-estado={estado}
+      style={{
+        ...TARJETA,
+        padding: "14px 10px 12px",
+        display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", textAlign: "center",
+        /* Teal pleno y no atenuado: en una rejilla de cuatro, lo que ya es
+           tuyo tiene que distinguirse de un vistazo y sin leer. */
+        borderColor: comprado ? FAE.teal : "rgba(248,249,250,0.12)",
+        background: comprado ? "rgba(42,157,143,0.10)" : TARJETA.background,
+        opacity: estado === "falta" ? 0.66 : 1,
+      }}
+    >
+      <span style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "76px" }}>{figura}</span>
+      <span style={{ fontFamily: "Sora, sans-serif", fontWeight: 600, fontSize: "13.5px", lineHeight: 1.25 }}>{titulo}</span>
+      {pie}
+      {children}
+    </div>
+  );
+}
+
+function CeldaNivel({ nivel, perfil, onComprar, comprando }) {
+  const { forma, paleta } = combinacionDe(perfil);
+  /* El I no se compra: es de todos desde el primer día. */
+  const estado = nivel === 1 ? "comprado" : estadoDeNivel(perfil, nivel);
+  const alcanza = estado === "alcanzable";
+  return (
+    <Celda
+      data-nivel={nivel}
+      estado={estado}
+      figura={<Avatar forma={forma} paleta={paleta} nivel={nivel} tamano={72} />}
+      titulo={`${ETIQUETA_NIVEL(nivel)} · ${NOMBRE_NIVEL[nivel]}`}
+      pie={estado === "comprado"
+        ? <YaEsTuyo />
+        : <Precio precio={precioDe(nivel)} faltan={faltanPara(perfil, nivel)} alcanza={alcanza} />}
+    >
+      {estado !== "comprado" && (
+        <Boton data-comprar={nivel} alcanza={alcanza} ocupado={comprando === nivel} onClick={() => onComprar(nivel)} />
+      )}
+    </Celda>
+  );
+}
+
+/*
+ * La celda de una pieza. Lo que se enseña arriba depende de qué se vende:
+ *
+ *   forma    la figura en la paleta de COMPARACIÓN, el gris de las
+ *            miniaturas del selector. Se vende una geometría, no un color, y
+ *            pintarla en teal haría creer que el teal viene incluido.
+ *   paleta   solo el degradado, sin figura. Al revés, por la misma razón.
+ */
+function CeldaPieza({ tipo, clave, perfil, onComprar, comprando }) {
+  const estado = estadoDePieza(perfil, tipo, clave);
+  const alcanza = estado === "alcanzable";
+  const id = `${tipo}-${clave}`;
+  return (
+    <Celda
+      data-pieza={id}
+      estado={estado}
+      figura={tipo === "forma" ? (
+        <Avatar forma={clave} paleta={PALETA_COMPARACION} nivel={2} tamano={72} />
+      ) : (
+        <span
+          aria-hidden="true"
+          data-muestra={clave}
+          style={{
+            width: "66px", height: "66px", borderRadius: "18px", display: "block",
+            background: `linear-gradient(135deg, ${PALETTES[clave].c1} 0%, ${PALETTES[clave].c2} 100%)`,
+            border: "1px solid rgba(248,249,250,0.14)",
+          }}
+        />
+      )}
+      titulo={tipo === "forma" ? NOMBRE_FORMA[clave] : NOMBRE_PALETA[clave]}
+      pie={estado === "comprado"
+        ? <YaEsTuyo genero="a" />
+        : <Precio precio={precioDePieza(tipo, clave)} faltan={faltanParaPieza(perfil, tipo, clave)} alcanza={alcanza} />}
+    >
+      {estado !== "comprado" && (
+        <Boton data-comprar-pieza={id} alcanza={alcanza} ocupado={comprando === id} onClick={() => onComprar(tipo, clave)} />
+      )}
+    </Celda>
+  );
+}
 
 function Fuente({ fuente }) {
   return (
@@ -80,175 +256,8 @@ function Fuente({ fuente }) {
           </span>
         )}
       </span>
-      <span style={{ display: "flex", alignItems: "center", gap: "5px", flexShrink: 0 }}>
-        <span style={{ fontFamily: "Sora, sans-serif", fontWeight: 600, fontSize: "14px", color: FAE.teal, fontVariantNumeric: "tabular-nums" }}>
-          +{fuente.cuanto}
-        </span>
-        <IconoCristal tamano={13} />
-      </span>
+      <Ganancia cuanto={fuente.cuanto} />
     </li>
-  );
-}
-
-function TarjetaNivel({ nivel, perfil, onComprar, comprando }) {
-  const { forma, paleta } = combinacionDe(perfil);
-  const estado = estadoDeNivel(perfil, nivel);
-  const faltan = faltanPara(perfil, nivel);
-  const precio = precioDe(nivel);
-  const comprado = estado === "comprado";
-  const alcanza = estado === "alcanzable";
-
-  return (
-    <div
-      data-nivel={nivel}
-      data-estado={estado}
-      style={{
-        ...TARJETA,
-        /*
-         * A 375 px no caben la miniatura, el nombre con su precio y el botón en
-         * una sola fila sin partir «te faltan 225» por la mitad. Con flexWrap y
-         * una base de 140 px para el texto, el botón baja a su propia línea en
-         * el teléfono y se queda al lado en cuanto hay sitio.
-         */
-        display: "flex", alignItems: "center", gap: "14px", flexWrap: "wrap",
-        borderColor: comprado ? FAE.teal : "rgba(248,249,250,0.12)",
-        background: comprado ? "rgba(42,157,143,0.10)" : TARJETA.background,
-        opacity: estado === "falta" ? 0.62 : 1,
-      }}
-    >
-      <Avatar forma={forma} paleta={paleta} nivel={nivel} tamano={56} />
-
-      <div style={{ flex: "1 1 140px", minWidth: 0 }}>
-        <p style={{ fontFamily: "Sora, sans-serif", fontWeight: 600, fontSize: "15px", margin: "0 0 2px" }}>
-          {ETIQUETA_NIVEL(nivel)} · {NOMBRE_NIVEL[nivel]}
-        </p>
-        {comprado ? (
-          <YaEsTuyo />
-        ) : (
-          <p style={{ display: "flex", alignItems: "center", gap: "5px", flexWrap: "wrap", fontSize: "12.5px", color: "rgba(248,249,250,0.6)", margin: 0 }}>
-            <IconoCristal tamano={12} apagado={!alcanza} />
-            <span style={{ fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap" }}>{precio}</span>
-            {!alcanza && (
-              <span data-faltan={faltan} style={{ color: "rgba(248,249,250,0.5)", whiteSpace: "nowrap" }}>
-                · te faltan {faltan}
-              </span>
-            )}
-          </p>
-        )}
-      </div>
-
-      {!comprado && (
-        <button
-          type="button"
-          data-comprar={nivel}
-          disabled={!alcanza || Boolean(comprando)}
-          onClick={() => onComprar(nivel)}
-          style={{
-            fontFamily: "Sora, sans-serif", fontSize: "13px", fontWeight: 600,
-            padding: "9px 15px", borderRadius: "999px", border: "none",
-            flexShrink: 0, marginLeft: "auto",
-            cursor: alcanza && !comprando ? "pointer" : "default",
-            backgroundColor: alcanza ? FAE.teal : "rgba(248,249,250,0.08)",
-            color: alcanza ? FAE.bg : "rgba(248,249,250,0.4)",
-          }}
-        >
-          {comprando === nivel ? "…" : "Desbloquear"}
-        </button>
-      )}
-    </div>
-  );
-}
-
-/*
- * ═══════════════════════════════════════════════════════════════════════════
- * LA TARJETA DE UNA PIEZA — una forma o una paleta.
- *
- * Misma anatomía que la del nivel, y a propósito: el estudiante no tiene por
- * qué aprender dos lenguajes dentro de la misma pantalla. Lo que cambia es
- * qué se enseña a la izquierda.
- *
- *   forma    la figura en la paleta de COMPARACIÓN, el gris de las
- *            miniaturas del selector. Se está vendiendo una geometría, no un
- *            color, y pintarla en teal haría creer que el teal viene incluido.
- *   paleta   solo el degradado, sin figura. Al revés por la misma razón.
- *
- * Las dos en nivel II: es el nivel donde la forma ya tiene nodos y radios y
- * se lee entera, sin el degradado del III que taparía el color que se vende.
- * ═══════════════════════════════════════════════════════════════════════════
- */
-function TarjetaPieza({ tipo, clave, perfil, onComprar, comprando }) {
-  const estado = estadoDePieza(perfil, tipo, clave);
-  const faltan = faltanParaPieza(perfil, tipo, clave);
-  const precio = precioDePieza(tipo, clave);
-  const comprado = estado === "comprado";
-  const alcanza = estado === "alcanzable";
-  const id = `${tipo}-${clave}`;
-  const nombre = tipo === "forma" ? NOMBRE_FORMA[clave] : NOMBRE_PALETA[clave];
-
-  return (
-    <div
-      data-pieza={id}
-      data-estado={estado}
-      style={{
-        ...TARJETA,
-        display: "flex", alignItems: "center", gap: "14px", flexWrap: "wrap",
-        borderColor: comprado ? FAE.teal : "rgba(248,249,250,0.12)",
-        background: comprado ? "rgba(42,157,143,0.10)" : TARJETA.background,
-        opacity: estado === "falta" ? 0.62 : 1,
-      }}
-    >
-      {tipo === "forma" ? (
-        <Avatar forma={clave} paleta={PALETA_COMPARACION} nivel={2} tamano={56} />
-      ) : (
-        <span
-          aria-hidden="true"
-          data-muestra={clave}
-          style={{
-            width: "56px", height: "56px", borderRadius: "14px", flexShrink: 0,
-            background: `linear-gradient(135deg, ${PALETAS_MUESTRA[clave].c1} 0%, ${PALETAS_MUESTRA[clave].c2} 100%)`,
-            border: "1px solid rgba(248,249,250,0.14)",
-          }}
-        />
-      )}
-
-      <div style={{ flex: "1 1 140px", minWidth: 0 }}>
-        <p style={{ fontFamily: "Sora, sans-serif", fontWeight: 600, fontSize: "15px", margin: "0 0 2px" }}>
-          {nombre} <span style={{ fontWeight: 400, color: "rgba(248,249,250,0.45)" }}>· {tipo === "forma" ? "forma" : "paleta"}</span>
-        </p>
-        {comprado ? (
-          <YaEsTuyo genero="a" />
-        ) : (
-          <p style={{ display: "flex", alignItems: "center", gap: "5px", flexWrap: "wrap", fontSize: "12.5px", color: "rgba(248,249,250,0.6)", margin: 0 }}>
-            <IconoCristal tamano={12} apagado={!alcanza} />
-            <span style={{ fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap" }}>{precio}</span>
-            {!alcanza && (
-              <span data-faltan={faltan} style={{ color: "rgba(248,249,250,0.5)", whiteSpace: "nowrap" }}>
-                · te faltan {faltan}
-              </span>
-            )}
-          </p>
-        )}
-      </div>
-
-      {!comprado && (
-        <button
-          type="button"
-          data-comprar-pieza={id}
-          disabled={!alcanza || Boolean(comprando)}
-          onClick={() => onComprar(tipo, clave)}
-          style={{
-            fontFamily: "Sora, sans-serif", fontSize: "13px", fontWeight: 600,
-            padding: "9px 15px", borderRadius: "999px", border: "none",
-            flexShrink: 0, marginLeft: "auto",
-            cursor: alcanza && !comprando ? "pointer" : "default",
-            backgroundColor: alcanza ? FAE.teal : "rgba(248,249,250,0.08)",
-            color: alcanza ? FAE.bg : "rgba(248,249,250,0.4)",
-          }}
-        >
-          {comprando === id ? "…" : "Desbloquear"}
-        </button>
-      )}
-    </div>
   );
 }
 
@@ -301,6 +310,8 @@ export default function TiendaView({ onBack, onComprar = comprarNivel, onComprar
     else if (fila) aplicarPerfil(fila);
   };
 
+  const combo = combinacionDe(perfil);
+
   return (
     <div
       style={{
@@ -311,8 +322,9 @@ export default function TiendaView({ onBack, onComprar = comprarNivel, onComprar
         backgroundImage: "radial-gradient(circle at 50% -10%, rgba(42,157,143,0.16), transparent 55%)",
       }}
     >
+      <EstiloEntrada />
       <div style={{ maxWidth: "680px", margin: "0 auto", padding: "clamp(18px, 3vh, 30px) 24px 56px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "26px" }}>
+        <div {...entrada(0, "baja")} style={{ ...entrada(0, "baja").style, display: "flex", alignItems: "center", gap: "10px", marginBottom: "22px" }}>
           <Logo variant="symbol" size={26} theme="dark" />
           <span aria-hidden="true" style={{ width: "1px", height: "22px", backgroundColor: "rgba(248,249,250,0.16)", margin: "0 4px" }} />
           <button
@@ -351,70 +363,113 @@ export default function TiendaView({ onBack, onComprar = comprarNivel, onComprar
           </div>
         ) : (
           <>
-            {/* ── el saldo ── */}
-            <div data-saldo style={{ ...TARJETA, display: "flex", alignItems: "center", gap: "14px", marginBottom: "22px" }}>
-              <IconoCristal tamano={30} />
-              <div>
-                <p style={ETIQUETA}>Cristales</p>
-                <p style={NUMERO}>{saldoDe(perfil)}</p>
+            {/*
+              ── el escaparate ──
+
+              El avatar propio, grande y antes que nada. Es para él para lo que
+              se compra; enseñarlo primero es la diferencia entre una tienda y
+              una lista de precios. El saldo va al lado, no en una tarjeta
+              aparte que se comía media pantalla.
+            */}
+            <Entrada orden={1} modo="crece">
+              <div
+                data-escaparate
+                style={{
+                  ...TARJETA, display: "flex", alignItems: "center", gap: "16px", marginBottom: "10px",
+                  background: "linear-gradient(135deg, rgba(42,157,143,0.14) 0%, rgba(29,53,87,0.55) 60%)",
+                }}
+              >
+                <Avatar perfil={perfil} tamano={84} />
+                <div style={{ minWidth: 0 }}>
+                  <p style={ETIQUETA}>Tu avatar</p>
+                  <p style={{ fontFamily: "Sora, sans-serif", fontWeight: 600, fontSize: "14.5px", margin: "0 0 10px", lineHeight: 1.3 }}>
+                    {leyenda(combo)}
+                  </p>
+                  <span data-saldo style={{ display: "inline-flex", alignItems: "center", gap: "7px" }}>
+                    <IconoCristal tamano={20} />
+                    <span style={{ ...NUMERO, fontSize: "22px" }}>{saldoDe(perfil)}</span>
+                    <span style={{ fontSize: "12.5px", color: "rgba(248,249,250,0.5)" }}>Cristales</span>
+                  </span>
+                </div>
               </div>
-            </div>
-
-            {/* ── cómo se ganan ── */}
-            <section data-como-ganar style={{ ...TARJETA, marginBottom: "22px" }}>
-              <h2 style={{ fontFamily: "Sora, sans-serif", fontSize: "11px", fontWeight: 700, letterSpacing: "0.14em", color: FAE.teal, margin: "0 0 6px" }}>
-                CÓMO GANAR CRISTALES
-              </h2>
-              <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-                {FUENTES.map((f) => <Fuente key={f.id} fuente={f} />)}
-              </ul>
-            </section>
-
-            {/* ── lo que se puede comprar ── */}
-            <h2 style={{ fontFamily: "Sora, sans-serif", fontSize: "11px", fontWeight: 700, letterSpacing: "0.14em", color: "rgba(248,249,250,0.5)", margin: "0 0 12px" }}>
-              DISPONIBLE
-            </h2>
-            <p style={{ fontSize: "13px", lineHeight: 1.5, color: "rgba(248,249,250,0.55)", margin: "0 0 14px" }}>
-              Niveles de detalle para tu avatar. Se compran en el orden que quieras, son para siempre y no se
-              pierden al cambiar de forma o de paleta.
-            </p>
-            <div style={{ display: "grid", gap: "12px" }}>
-              {NIVELES_COMPRABLES.map((n) => (
-                <TarjetaNivel key={n} nivel={n} perfil={perfil} onComprar={comprar} comprando={comprando} />
-              ))}
-            </div>
+            </Entrada>
 
             {/*
-              ── las piezas ──
-
-              Van DESPUÉS de los niveles y no antes. El nivel cambia el avatar
-              que ya tienes; la forma y la paleta lo cambian por otro. Quien
-              llega con pocos Cristales encuentra primero lo que mejora lo
-              suyo, que es lo que casi siempre quiere.
+              Las tres fuentes más rápidas, en una franja. La tabla entera sigue
+              abajo y sin acordeón: esto no la sustituye, la adelanta.
             */}
-            <h2 style={{ fontFamily: "Sora, sans-serif", fontSize: "11px", fontWeight: 700, letterSpacing: "0.14em", color: "rgba(248,249,250,0.5)", margin: "30px 0 12px" }}>
-              FORMAS
-            </h2>
-            <p style={{ fontSize: "13px", lineHeight: 1.5, color: "rgba(248,249,250,0.55)", margin: "0 0 14px" }}>
-              Geometrías nuevas para tu avatar. Las cinco de siempre siguen siendo tuyas y no se compran.
-            </p>
-            <div data-formas style={{ display: "grid", gap: "12px" }}>
-              {FORMAS_COMPRABLES.map((f) => (
-                <TarjetaPieza key={f} tipo="forma" clave={f} perfil={perfil} onComprar={comprarLaPieza} comprando={comprando} />
-              ))}
-            </div>
+            <Entrada orden={2} modo="sube">
+              <ul
+                data-atajos
+                style={{
+                  listStyle: "none", display: "flex", gap: "8px", flexWrap: "wrap",
+                  padding: 0, margin: "0 0 26px",
+                }}
+              >
+                {FUENTES.filter((f) => ["racha-7", "actividades", "podio"].includes(f.id)).map((f) => (
+                  <li
+                    key={f.id}
+                    style={{
+                      display: "flex", alignItems: "center", gap: "5px", flex: "1 1 auto",
+                      padding: "7px 11px", borderRadius: "999px",
+                      background: "rgba(248,249,250,0.05)", border: "1px solid rgba(248,249,250,0.10)",
+                      fontSize: "11.5px", color: "rgba(248,249,250,0.68)", whiteSpace: "nowrap",
+                    }}
+                  >
+                    {f.id === "racha-7" ? "7 días seguidos" : f.id === "actividades" ? "5 actividades" : "Podio de liga"}
+                    <Ganancia cuanto={String(f.cuanto).split(" / ")[0]} tamano={12} />
+                  </li>
+                ))}
+              </ul>
+            </Entrada>
 
-            <h2 style={{ fontFamily: "Sora, sans-serif", fontSize: "11px", fontWeight: 700, letterSpacing: "0.14em", color: "rgba(248,249,250,0.5)", margin: "30px 0 12px" }}>
-              PALETAS
-            </h2>
-            <p style={{ fontSize: "13px", lineHeight: 1.5, color: "rgba(248,249,250,0.55)", margin: "0 0 14px" }}>
-              Los dos pares de color que faltaban. Van con cualquier forma y con cualquier nivel.
-            </p>
-            <div data-paletas style={{ display: "grid", gap: "12px" }}>
-              {PALETAS_COMPRABLES.map((p) => (
-                <TarjetaPieza key={p} tipo="paleta" clave={p} perfil={perfil} onComprar={comprarLaPieza} comprando={comprando} />
-              ))}
-            </div>
+            {/* ── los cuatro niveles, el I incluido ── */}
+            <Entrada orden={3} modo="sube">
+              <h2 style={RUBRO}>NIVEL DE DETALLE</h2>
+              <p style={PIE_RUBRO}>
+                Cuánto se dibuja tu avatar. Cada nivel suma algo al anterior y se queda para siempre, también
+                si cambias de forma o de paleta.
+              </p>
+              <div data-niveles style={{ ...REJILLA, marginBottom: "26px" }}>
+                {NIVELES.map((n) => (
+                  <CeldaNivel key={n} nivel={n} perfil={perfil} onComprar={comprar} comprando={comprando} />
+                ))}
+              </div>
+            </Entrada>
+
+            {/* ── las formas ── */}
+            <Entrada orden={4} modo="sube">
+              <h2 style={RUBRO}>FORMAS</h2>
+              <p style={PIE_RUBRO}>Geometrías nuevas. Las cinco de siempre siguen siendo tuyas y no se compran.</p>
+              <div data-formas style={{ ...REJILLA, marginBottom: "26px" }}>
+                {FORMAS_COMPRABLES.map((f) => (
+                  <CeldaPieza key={f} tipo="forma" clave={f} perfil={perfil} onComprar={comprarLaPieza} comprando={comprando} />
+                ))}
+              </div>
+            </Entrada>
+
+            {/* ── las paletas ── */}
+            <Entrada orden={5} modo="sube">
+              <h2 style={RUBRO}>PALETAS</h2>
+              <p style={PIE_RUBRO}>Los dos pares de color que faltaban. Van con cualquier forma y con cualquier nivel.</p>
+              <div data-paletas style={{ ...REJILLA, marginBottom: "30px" }}>
+                {PALETAS_COMPRABLES.map((p) => (
+                  <CeldaPieza key={p} tipo="paleta" clave={p} perfil={perfil} onComprar={comprarLaPieza} comprando={comprando} />
+                ))}
+              </div>
+            </Entrada>
+
+            {/* ── cómo se ganan, entera y sin acordeón ── */}
+            <Entrada orden={6} modo="fondo">
+              <section data-como-ganar style={TARJETA}>
+                <h2 style={{ fontFamily: "Sora, sans-serif", fontSize: "11px", fontWeight: 700, letterSpacing: "0.14em", color: FAE.teal, margin: "0 0 6px" }}>
+                  CÓMO GANAR CRISTALES
+                </h2>
+                <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+                  {FUENTES.map((f) => <Fuente key={f.id} fuente={f} />)}
+                </ul>
+              </section>
+            </Entrada>
 
             {error && (
               <p role="alert" style={{ fontSize: "13px", lineHeight: 1.5, color: FAE.ambar, margin: "16px 0 0" }}>
