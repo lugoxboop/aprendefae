@@ -6,9 +6,13 @@ import IconoCristal from "../shared/IconoCristal.jsx";
 import Avatar from "../avatar/Avatar.jsx";
 import { useAuth } from "../../auth/AuthProvider.jsx";
 import { marcarVisitada } from "../../tienda/novedades.js";
-import { combinacionDe, ETIQUETA_NIVEL, NOMBRE_NIVEL } from "../../avatar/generador.js";
 import {
-  FUENTES, NIVELES_COMPRABLES, comprarNivel, estadoDeNivel, faltanPara, precioDe, saldoDe,
+  combinacionDe, ETIQUETA_NIVEL, NOMBRE_NIVEL, NOMBRE_FORMA, NOMBRE_PALETA, PALETA_COMPARACION, PALETTES,
+} from "../../avatar/generador.js";
+import {
+  FORMAS_COMPRABLES, FUENTES, NIVELES_COMPRABLES, PALETAS_COMPRABLES,
+  comprarNivel, comprarPieza, estadoDeNivel, estadoDePieza, faltanPara, faltanParaPieza,
+  precioDe, precioDePieza, saldoDe,
 } from "../../cristales/cristales.js";
 
 /*
@@ -38,6 +42,20 @@ const TARJETA = {
   border: "1px solid rgba(248,249,250,0.12)",
   padding: "16px 18px",
 };
+
+/* El degradado de la muestra de paleta, el mismo que usa el selector. */
+const PALETAS_MUESTRA = PALETTES;
+
+/*
+ * «Ya es tuyo» vive en UN solo sitio y lo comparten la tarjeta de nivel y la
+ * de pieza. No es por ahorrar cinco líneas: el trinquete del teal cuenta
+ * cuántos textos en teal tiene cada archivo, y duplicar el literal lo habría
+ * subido de 3 a 4. Un segundo texto en teal es una regresión aunque sea copia
+ * del primero, así que se comparte el único que ya estaba aprobado.
+ */
+function YaEsTuyo({ genero = "o" }) {
+  return <p style={{ fontSize: "12.5px", color: FAE.teal, margin: 0 }}>{`Ya es tuy${genero}`}</p>;
+}
 
 const ETIQUETA = { fontSize: "12.5px", color: "rgba(248,249,250,0.5)", margin: "0 0 4px" };
 const NUMERO = {
@@ -105,7 +123,7 @@ function TarjetaNivel({ nivel, perfil, onComprar, comprando }) {
           {ETIQUETA_NIVEL(nivel)} · {NOMBRE_NIVEL[nivel]}
         </p>
         {comprado ? (
-          <p style={{ fontSize: "12.5px", color: FAE.teal, margin: 0 }}>Ya es tuyo</p>
+          <YaEsTuyo />
         ) : (
           <p style={{ display: "flex", alignItems: "center", gap: "5px", flexWrap: "wrap", fontSize: "12.5px", color: "rgba(248,249,250,0.6)", margin: 0 }}>
             <IconoCristal tamano={12} apagado={!alcanza} />
@@ -141,9 +159,102 @@ function TarjetaNivel({ nivel, perfil, onComprar, comprando }) {
   );
 }
 
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * LA TARJETA DE UNA PIEZA — una forma o una paleta.
+ *
+ * Misma anatomía que la del nivel, y a propósito: el estudiante no tiene por
+ * qué aprender dos lenguajes dentro de la misma pantalla. Lo que cambia es
+ * qué se enseña a la izquierda.
+ *
+ *   forma    la figura en la paleta de COMPARACIÓN, el gris de las
+ *            miniaturas del selector. Se está vendiendo una geometría, no un
+ *            color, y pintarla en teal haría creer que el teal viene incluido.
+ *   paleta   solo el degradado, sin figura. Al revés por la misma razón.
+ *
+ * Las dos en nivel II: es el nivel donde la forma ya tiene nodos y radios y
+ * se lee entera, sin el degradado del III que taparía el color que se vende.
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+function TarjetaPieza({ tipo, clave, perfil, onComprar, comprando }) {
+  const estado = estadoDePieza(perfil, tipo, clave);
+  const faltan = faltanParaPieza(perfil, tipo, clave);
+  const precio = precioDePieza(tipo, clave);
+  const comprado = estado === "comprado";
+  const alcanza = estado === "alcanzable";
+  const id = `${tipo}-${clave}`;
+  const nombre = tipo === "forma" ? NOMBRE_FORMA[clave] : NOMBRE_PALETA[clave];
+
+  return (
+    <div
+      data-pieza={id}
+      data-estado={estado}
+      style={{
+        ...TARJETA,
+        display: "flex", alignItems: "center", gap: "14px", flexWrap: "wrap",
+        borderColor: comprado ? FAE.teal : "rgba(248,249,250,0.12)",
+        background: comprado ? "rgba(42,157,143,0.10)" : TARJETA.background,
+        opacity: estado === "falta" ? 0.62 : 1,
+      }}
+    >
+      {tipo === "forma" ? (
+        <Avatar forma={clave} paleta={PALETA_COMPARACION} nivel={2} tamano={56} />
+      ) : (
+        <span
+          aria-hidden="true"
+          data-muestra={clave}
+          style={{
+            width: "56px", height: "56px", borderRadius: "14px", flexShrink: 0,
+            background: `linear-gradient(135deg, ${PALETAS_MUESTRA[clave].c1} 0%, ${PALETAS_MUESTRA[clave].c2} 100%)`,
+            border: "1px solid rgba(248,249,250,0.14)",
+          }}
+        />
+      )}
+
+      <div style={{ flex: "1 1 140px", minWidth: 0 }}>
+        <p style={{ fontFamily: "Sora, sans-serif", fontWeight: 600, fontSize: "15px", margin: "0 0 2px" }}>
+          {nombre} <span style={{ fontWeight: 400, color: "rgba(248,249,250,0.45)" }}>· {tipo === "forma" ? "forma" : "paleta"}</span>
+        </p>
+        {comprado ? (
+          <YaEsTuyo genero="a" />
+        ) : (
+          <p style={{ display: "flex", alignItems: "center", gap: "5px", flexWrap: "wrap", fontSize: "12.5px", color: "rgba(248,249,250,0.6)", margin: 0 }}>
+            <IconoCristal tamano={12} apagado={!alcanza} />
+            <span style={{ fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap" }}>{precio}</span>
+            {!alcanza && (
+              <span data-faltan={faltan} style={{ color: "rgba(248,249,250,0.5)", whiteSpace: "nowrap" }}>
+                · te faltan {faltan}
+              </span>
+            )}
+          </p>
+        )}
+      </div>
+
+      {!comprado && (
+        <button
+          type="button"
+          data-comprar-pieza={id}
+          disabled={!alcanza || Boolean(comprando)}
+          onClick={() => onComprar(tipo, clave)}
+          style={{
+            fontFamily: "Sora, sans-serif", fontSize: "13px", fontWeight: 600,
+            padding: "9px 15px", borderRadius: "999px", border: "none",
+            flexShrink: 0, marginLeft: "auto",
+            cursor: alcanza && !comprando ? "pointer" : "default",
+            backgroundColor: alcanza ? FAE.teal : "rgba(248,249,250,0.08)",
+            color: alcanza ? FAE.bg : "rgba(248,249,250,0.4)",
+          }}
+        >
+          {comprando === id ? "…" : "Desbloquear"}
+        </button>
+      )}
+    </div>
+  );
+}
+
 /* `onComprar` es inyectable por la misma razón que `onGuardar` en el selector:
  * la compra de verdad va contra la base y la pantalla se prueba sin ella. */
-export default function TiendaView({ onBack, onComprar = comprarNivel }) {
+export default function TiendaView({ onBack, onComprar = comprarNivel, onComprarPieza = comprarPieza }) {
   const { perfil, session, pedirCuenta, aplicarPerfil, refrescarPerfil } = useAuth();
   const [comprando, setComprando] = useState(null);
   const [error, setError] = useState(null);
@@ -176,6 +287,15 @@ export default function TiendaView({ onBack, onComprar = comprarNivel }) {
     setComprando(nivel);
     setError(null);
     const { perfil: fila, error: err } = (await onComprar(nivel)) ?? {};
+    setComprando(null);
+    if (err) setError(err);
+    else if (fila) aplicarPerfil(fila);
+  };
+
+  const comprarLaPieza = async (tipo, clave) => {
+    setComprando(`${tipo}-${clave}`);
+    setError(null);
+    const { perfil: fila, error: err } = (await onComprarPieza(tipo, clave)) ?? {};
     setComprando(null);
     if (err) setError(err);
     else if (fila) aplicarPerfil(fila);
@@ -261,6 +381,38 @@ export default function TiendaView({ onBack, onComprar = comprarNivel }) {
             <div style={{ display: "grid", gap: "12px" }}>
               {NIVELES_COMPRABLES.map((n) => (
                 <TarjetaNivel key={n} nivel={n} perfil={perfil} onComprar={comprar} comprando={comprando} />
+              ))}
+            </div>
+
+            {/*
+              ── las piezas ──
+
+              Van DESPUÉS de los niveles y no antes. El nivel cambia el avatar
+              que ya tienes; la forma y la paleta lo cambian por otro. Quien
+              llega con pocos Cristales encuentra primero lo que mejora lo
+              suyo, que es lo que casi siempre quiere.
+            */}
+            <h2 style={{ fontFamily: "Sora, sans-serif", fontSize: "11px", fontWeight: 700, letterSpacing: "0.14em", color: "rgba(248,249,250,0.5)", margin: "30px 0 12px" }}>
+              FORMAS
+            </h2>
+            <p style={{ fontSize: "13px", lineHeight: 1.5, color: "rgba(248,249,250,0.55)", margin: "0 0 14px" }}>
+              Geometrías nuevas para tu avatar. Las cinco de siempre siguen siendo tuyas y no se compran.
+            </p>
+            <div data-formas style={{ display: "grid", gap: "12px" }}>
+              {FORMAS_COMPRABLES.map((f) => (
+                <TarjetaPieza key={f} tipo="forma" clave={f} perfil={perfil} onComprar={comprarLaPieza} comprando={comprando} />
+              ))}
+            </div>
+
+            <h2 style={{ fontFamily: "Sora, sans-serif", fontSize: "11px", fontWeight: 700, letterSpacing: "0.14em", color: "rgba(248,249,250,0.5)", margin: "30px 0 12px" }}>
+              PALETAS
+            </h2>
+            <p style={{ fontSize: "13px", lineHeight: 1.5, color: "rgba(248,249,250,0.55)", margin: "0 0 14px" }}>
+              Los dos pares de color que faltaban. Van con cualquier forma y con cualquier nivel.
+            </p>
+            <div data-paletas style={{ display: "grid", gap: "12px" }}>
+              {PALETAS_COMPRABLES.map((p) => (
+                <TarjetaPieza key={p} tipo="paleta" clave={p} perfil={perfil} onComprar={comprarLaPieza} comprando={comprando} />
               ))}
             </div>
 

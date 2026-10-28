@@ -36,7 +36,7 @@ const { default: SeccionAvatar } = await import("../SeccionAvatar.jsx");
 const { default: EditarPerfil, SECCIONES } = await import("../EditarPerfil.jsx");
 const { NavigationContext } = await import("../../../navigation.js");
 const { FAE } = await import("../../../theme.js");
-const { PALETAS, PALETTES } = await import("../../../avatar/generador.js");
+const { FORMAS, PALETAS, PALETTES } = await import("../../../avatar/generador.js");
 
 const rgb = (hex) => {
   const [, r, g, b] = /^#(..)(..)(..)$/.exec(hex);
@@ -68,15 +68,21 @@ const pestana = (caja, id) => caja.querySelector(`[data-pestana="${id}"]`);
 const opciones = (caja) => [...caja.querySelectorAll("[data-opcion]")];
 const opcion = (caja, v) => caja.querySelector(`[data-opcion="${v}"]`);
 
-test("abre en Forma, con las cinco figuras en gris y en nivel II", () => {
+test("abre en Forma, con las nueve figuras en gris y en nivel II", () => {
   const m = montar();
   try {
     const celdas = opciones(m.caja);
-    assert.deepEqual(celdas.map((c) => c.dataset.opcion), ["decaedro", "prisma", "nucleo", "red", "cuna"]);
+    /* El orden importa: las cuatro nuevas van DETRÁS de las cinco de siempre,
+       para que quien ya eligió la suya la siga encontrando donde estaba. */
+    assert.deepEqual(
+      celdas.map((c) => c.dataset.opcion),
+      ["decaedro", "prisma", "nucleo", "red", "cuna", "vertice", "astro", "enlace", "orbita"],
+    );
+    assert.equal(celdas.length, FORMAS.length);
     /* Todas con la paleta de comparación y el nivel II: se compara la geometría. */
     assert.deepEqual(
       celdas.map((c) => c.querySelector("svg[data-avatar]").dataset.avatar),
-      ["decaedro-comparacion-2", "prisma-comparacion-2", "nucleo-comparacion-2", "red-comparacion-2", "cuna-comparacion-2"],
+      FORMAS.map((f) => `${f}-comparacion-2`),
     );
   } finally { m.desmontar(); }
 });
@@ -179,12 +185,12 @@ test("el anillo no cambia el tamaño de la celda: solo el color del borde", asyn
   } finally { m.desmontar(); }
 });
 
-test("la pestaña Paleta ofrece cuatro colores y NUNCA la paleta de comparación", async () => {
+test("la pestaña Paleta ofrece seis colores y NUNCA la paleta de comparación", async () => {
   const m = montar();
   try {
     await pulsar(pestana(m.caja, "paleta"));
     const celdas = opciones(m.caja);
-    assert.deepEqual(celdas.map((c) => c.dataset.opcion), ["nocturno", "marea", "brasa", "aurora"]);
+    assert.deepEqual(celdas.map((c) => c.dataset.opcion), ["nocturno", "marea", "brasa", "aurora", "ascua", "arrecife"]);
     assert.equal(celdas.length, PALETAS.length);
     assert.equal(opcion(m.caja, "comparacion"), null, "si aparece, es un bug");
     /* Solo el degradado, sin geometría: se compara el color. */

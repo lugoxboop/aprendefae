@@ -56,15 +56,62 @@ export const PALETTES = {
   marea:       { c1: '#2A9D8F', c2: NAVY_AVATAR, stroke: '#14263F', node: '#E76F51', ring: '#2A9D8F' },
   brasa:       { c1: '#E76F51', c2: NAVY_AVATAR, stroke: '#14263F', node: '#2A9D8F', ring: '#E76F51' },
   aurora:      { c1: '#E76F51', c2: '#2A9D8F', stroke: NAVY_AVATAR, node: NAVY_AVATAR, ring: '#E76F51' },
+  /*
+   * ═══════════ ASCUA Y ARRECIFE, LOS DOS PARES QUE FALTABAN ═══════════
+   *
+   * Con tres colores de marca hay SEIS pares ordenados y había cuatro. Estos
+   * son los dos que quedaban, y por eso no hay un séptimo: el espacio se
+   * agota aquí. Inventar una paleta más obligaría a meter un cuarto color, y
+   * el ámbar está reservado para las alertas del panel docente.
+   *
+   * Las dos cumplen la regla de la casa: el nodo lleva el color de marca que
+   * NO está en el par, y el aro lleva el acento —nunca el navy—.
+   *
+   *   ascua     navy → coral, nodo teal
+   *   arrecife  teal → coral, nodo navy
+   *
+   * Arrecife se distingue de Aurora, que es el mismo par al revés, por dos
+   * cosas a la vez: en los niveles bajos el relleno plano es c2 (coral contra
+   * teal) y el contorno es c1 (teal contra coral). No es la misma figura con
+   * otro nombre.
+   */
+  ascua:       { c1: NAVY_AVATAR, c2: '#E76F51', stroke: '#14263F', node: '#2A9D8F', ring: '#E76F51' },
+  arrecife:    { c1: '#2A9D8F', c2: '#E76F51', stroke: '#14263F', node: NAVY_AVATAR, ring: '#2A9D8F' },
   comparacion: { c1: '#4A5A72', c2: '#7A8798', stroke: '#9AA5B4', node: '#C8D0DA', ring: '#6B7A90' },
 };
 
+/*
+ * Una forma son cuatro números y nada más:
+ *
+ *   n     cuántos vértices
+ *   rot   dónde empieza el primero; -90 lo pone arriba, y no se cambia
+ *   alt   el radio de los vértices impares. 1 es un polígono regular; por
+ *         debajo de 1 salen puntas, y eso cambia también el hueco interior
+ *   step  a cuántos vértices salta cada cuerda del Nivel IV. Un paso grande
+ *         teje una estrella densa; un paso de 1 solo repite el perímetro
+ *
+ * Las cuatro de abajo se añadieron el 28-oct para que el catálogo pasara de
+ * 20 cuerpos a 36. Se eligieron por lo que NO se parecen a las cinco de
+ * antes: un n que no estaba, o el mismo n con puntas donde antes no las
+ * había.
+ */
 export const SHAPES = {
   decaedro: { n: 10, rot: -90, alt: 1,    step: 3 },
   prisma:   { n: 6,  rot: -90, alt: 1,    step: 2 },
   nucleo:   { n: 8,  rot: -90, alt: 0.66, step: 3 },
   red:      { n: 12, rot: -90, alt: 1,    step: 5 },
   cuna:     { n: 5,  rot: -90, alt: 1,    step: 2 },
+  /* El triángulo de la marca. Es la única forma de tres vértices y la más
+     limpia del catálogo: con paso 1 las cuerdas del IV recorren el borde. */
+  vertice:  { n: 3,  rot: -90, alt: 1,    step: 1 },
+  /* Doce vértices como Red, pero con el radio impar a la mitad: donde Red es
+     un disco facetado, Astro es una estrella de puntas largas. */
+  astro:    { n: 12, rot: -90, alt: 0.5,  step: 5 },
+  /* Nueve vértices, paso 4: el eneagrama, la cuerda más tupida del catálogo. */
+  enlace:   { n: 9,  rot: -90, alt: 1,    step: 4 },
+  /* Dieciséis vértices casi iguales: a tamaño grande es un disco con oleaje;
+     a 24 px del ranking se lee como un círculo, que es lo que debe. */
+  orbita:   { n: 16, rot: -90, alt: 0.88, step: 7 },
 };
 
 export function verts(s, R) {
@@ -176,11 +223,13 @@ export function computeAvatarProps(shapeKey, paletteKey, level) {
 /*
  * ═══════════ LO QUE UN ESTUDIANTE PUEDE ELEGIR ═══════════
  *
- * Las cinco formas, las CUATRO paletas —'comparacion' no está— y los cuatro
- * niveles. El orden es el que se enseña en las pestañas del selector.
+ * Las NUEVE formas, las SEIS paletas —'comparacion' no está— y los cuatro
+ * niveles. El orden es el que se enseña en las pestañas del selector, y las
+ * nuevas van detrás de las viejas a propósito: quien ya eligió la suya la
+ * sigue encontrando donde estaba.
  */
-export const FORMAS = ["decaedro", "prisma", "nucleo", "red", "cuna"];
-export const PALETAS = ["nocturno", "marea", "brasa", "aurora"];
+export const FORMAS = ["decaedro", "prisma", "nucleo", "red", "cuna", "vertice", "astro", "enlace", "orbita"];
+export const PALETAS = ["nocturno", "marea", "brasa", "aurora", "ascua", "arrecife"];
 
 /** La paleta interna de las miniaturas de «Forma». Nunca elegible. Ver la cabecera. */
 export const PALETA_COMPARACION = "comparacion";
@@ -193,6 +242,10 @@ export const NOMBRE_FORMA = {
   nucleo: "Núcleo",
   red: "Red",
   cuna: "Cuña",
+  vertice: "Vértice",
+  astro: "Astro",
+  enlace: "Enlace",
+  orbita: "Órbita",
 };
 
 export const NOMBRE_PALETA = {
@@ -200,6 +253,8 @@ export const NOMBRE_PALETA = {
   marea: "Marea",
   brasa: "Brasa",
   aurora: "Aurora",
+  ascua: "Ascua",
+  arrecife: "Arrecife",
 };
 
 /* Los cuatro niveles del avatar, con su número romano y su palabra. */

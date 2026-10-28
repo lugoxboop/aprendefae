@@ -8,7 +8,7 @@ import {
   FORMAS, NIVELES, NIVEL_COMPARACION, NOMBRE_FORMA, NOMBRE_NIVEL, NOMBRE_PALETA,
   PALETAS, PALETA_COMPARACION, PALETTES, ETIQUETA_NIVEL, combinacionDe, leyenda,
 } from "../../avatar/generador.js";
-import { estaDesbloqueado, guardarAvatar, precioDe } from "../../cristales/cristales.js";
+import { estaDesbloqueado, guardarAvatar, piezaDesbloqueada, precioDe, precioDePieza } from "../../cristales/cristales.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -194,47 +194,76 @@ export default function SeccionAvatar({ perfil: perfilProp = null, onGuardar = g
 
           {pestana === "forma" && (
             <div className="fae-avatar-sel__rejilla" data-opciones="forma">
-              {FORMAS.map((f) => (
-                <Celda
-                  key={f}
-                  data-opcion={f}
-                  aria-pressed={combo.forma === f}
-                  activa={combo.forma === f}
-                  etiqueta={NOMBRE_FORMA[f]}
-                  onClick={() => elegir({ forma: f })}
-                >
-                  {/*
-                    Las cinco en gris y en nivel II: aquí se compara la
-                    geometría, y con la paleta puesta se elegiría por color.
-                  */}
-                  <Avatar forma={f} paleta={PALETA_COMPARACION} nivel={NIVEL_COMPARACION} tamano={56} />
-                </Celda>
-              ))}
+              {FORMAS.map((f) => {
+                /*
+                 * Las cuatro formas que entraron el 28-oct se compran; las
+                 * cinco de siempre siguen siendo de todos. Una que no es tuya
+                 * se ve —para que sepas qué hay— pero atenuada y con su
+                 * precio, y tocarla lleva a la Tienda en vez de no hacer
+                 * nada. Es el mismo trato que ya tenían los niveles.
+                 */
+                const mia = piezaDesbloqueada(perfil, "forma", f);
+                return (
+                  <Celda
+                    key={f}
+                    data-opcion={f}
+                    data-bloqueado={mia ? undefined : "si"}
+                    aria-pressed={combo.forma === f}
+                    activa={combo.forma === f}
+                    atenuada={!mia}
+                    etiqueta={NOMBRE_FORMA[f]}
+                    onClick={() => (mia ? elegir({ forma: f }) : irATienda())}
+                  >
+                    {/*
+                      Todas en gris y en nivel II: aquí se compara la
+                      geometría, y con la paleta puesta se elegiría por color.
+                    */}
+                    <Avatar forma={f} paleta={PALETA_COMPARACION} nivel={NIVEL_COMPARACION} tamano={56} />
+                    {!mia && (
+                      <span style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "11.5px", color: "rgba(248,249,250,0.6)" }}>
+                        <IconoCristal tamano={11} apagado />
+                        <span style={{ fontVariantNumeric: "tabular-nums" }}>{precioDePieza("forma", f)}</span>
+                      </span>
+                    )}
+                  </Celda>
+                );
+              })}
             </div>
           )}
 
           {pestana === "paleta" && (
             <div className="fae-avatar-sel__rejilla" data-opciones="paleta">
-              {PALETAS.map((p) => (
-                <Celda
-                  key={p}
-                  data-opcion={p}
-                  aria-pressed={combo.paleta === p}
-                  activa={combo.paleta === p}
-                  etiqueta={NOMBRE_PALETA[p]}
-                  onClick={() => elegir({ paleta: p })}
-                >
-                  {/* Solo el degradado: sin geometría, para que se compare el color. */}
-                  <span
-                    aria-hidden="true"
-                    data-muestra={p}
-                    style={{
-                      width: "50px", height: "50px", borderRadius: "999px", display: "block",
-                      background: `linear-gradient(135deg, ${PALETTES[p].c1} 0%, ${PALETTES[p].c2} 100%)`,
-                    }}
-                  />
-                </Celda>
-              ))}
+              {PALETAS.map((p) => {
+                const mia = piezaDesbloqueada(perfil, "paleta", p);
+                return (
+                  <Celda
+                    key={p}
+                    data-opcion={p}
+                    data-bloqueado={mia ? undefined : "si"}
+                    aria-pressed={combo.paleta === p}
+                    activa={combo.paleta === p}
+                    atenuada={!mia}
+                    etiqueta={NOMBRE_PALETA[p]}
+                    onClick={() => (mia ? elegir({ paleta: p }) : irATienda())}
+                  >
+                    {/* Solo el degradado: sin geometría, para que se compare el color. */}
+                    <span
+                      aria-hidden="true"
+                      data-muestra={p}
+                      style={{
+                        width: "50px", height: "50px", borderRadius: "999px", display: "block",
+                        background: `linear-gradient(135deg, ${PALETTES[p].c1} 0%, ${PALETTES[p].c2} 100%)`,
+                      }}
+                    />
+                    {!mia && (
+                      <span style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "11.5px", color: "rgba(248,249,250,0.6)" }}>
+                        <IconoCristal tamano={11} apagado />
+                        <span style={{ fontVariantNumeric: "tabular-nums" }}>{precioDePieza("paleta", p)}</span>
+                      </span>
+                    )}
+                  </Celda>
+                );
+              })}
             </div>
           )}
 
@@ -274,7 +303,7 @@ export default function SeccionAvatar({ perfil: perfilProp = null, onGuardar = g
                   cursor: "pointer", fontFamily: "Sora, sans-serif", fontSize: "13px", fontWeight: 600, color: FAE.teal,
                 }}
               >
-                Desbloquear más niveles →
+                Desbloquear más en la Tienda →
               </button>
             </>
           )}
