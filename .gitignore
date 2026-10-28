@@ -7,3 +7,7 @@ dist
 # Secretos de las Edge Functions. El .env.example sí se sube; este NUNCA.
 supabase/functions/.env
 supabase/functions/**/.env
+
+# La salida de las sondas al correr scripts/sondas/ci.mjs a mano: son mediciones,
+# no codigo. En CI se sube como artefacto y nunca entra al repositorio.
+sondas-resultado/

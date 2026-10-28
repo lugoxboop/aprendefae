@@ -18,7 +18,7 @@
 /* La búsqueda de Playwright vive en sondas/navegador.mjs: cubre el contenedor
    de los agentes y también GitHub Actions, que no comparten ni el paquete ni
    el ejecutable. */
-import { chromium } from "./sondas/navegador.mjs";
+import { chromium, fuenteLocal, comoSeMidieronLasFuentes } from "./sondas/navegador.mjs";
 const TEMA = process.argv[2] ?? "Las cuentas, el debe y el haber";
 const ANCHO = Number(process.argv[3] ?? 320);
 const RAIZ = `http://127.0.0.1:${process.env.PUERTO ?? 8099}/`;
@@ -97,7 +97,25 @@ const MIRA = `(() => {
       const padre = el.closest("button, a");
       if (padre && padre !== el && cabeElDedo(padre.getBoundingClientRect())) decorativo = true;
     }
-    tapados.push({ texto: txt.slice(0, 40), etiqueta: el.tagName.toLowerCase(), tocable, decorativo });
+    /*
+     * La geometría va en el informe, no en una copia parcheada a mano. Sin
+     * ella, «1 elemento tapado» obliga a instrumentar la sonda cada vez para
+     * saber DÓNDE, y eso ya me costó tres rondas: con los rectángulos
+     * delante, el informe de CI dice por qué falla y cuánto falta.
+     */
+    tapados.push({
+      texto: txt.slice(0, 40), etiqueta: el.tagName.toLowerCase(), tocable, decorativo,
+      rect: [Math.round(r.left), Math.round(r.top), Math.round(r.width), Math.round(r.height)],
+      ficha: [Math.round(f.left), Math.round(f.top), Math.round(f.width), Math.round(f.height)],
+      scrollY: Math.round(window.scrollY), alto: Math.round(document.documentElement.scrollHeight),
+      /* Lo que le queda libre a cada lado: es lo que hay que llevar a 44. */
+      libre: {
+        arriba: Math.round(Math.min(r.bottom, f.top) - r.top),
+        abajo: Math.round(r.bottom - Math.max(r.top, f.bottom)),
+        izq: Math.round(Math.min(r.right, f.left) - r.left),
+        der: Math.round(r.right - Math.max(r.left, f.right)),
+      },
+    });
   }
   return { ficha: [Math.round(f.left), Math.round(f.top), Math.round(f.width), Math.round(f.height)], tapados };
 })()`;
@@ -117,6 +135,9 @@ const p = await b.newPage({ viewport: { width: ANCHO, height: 760 } });
 await p.addInitScript((s2) => { try { localStorage.setItem("aprendefae-auth", s2); } catch (e) {} }, JSON.stringify(SESION));
 await p.route("**/*", (route) => {
   const u = route.request().url();
+  /* La tipografía primero: sin ella la maqueta no es la que mide CI. */
+  const fuente = fuenteLocal(u);
+  if (fuente) return route.fulfill({ status: 200, ...fuente });
   if (u.includes("/auth/v1/user")) return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(USUARIO) });
   if (u.includes("/rest/v1/rpc/registrar_fp")) return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ fp_awarded: 0, repeat_index: 0 }) });
   if (u.includes("/rest/v1/profiles")) {
@@ -198,7 +219,7 @@ if (APRENDER) {
       const r = await p.evaluate(MIRA);
       if (r.sinFicha) { sinFicha++; continue; }
       conFicha++;
-      for (const t of r.tapados) (t.decorativo ? glifos : todos).push(`${t.tocable ? "CONTROL" : "texto  "}  «${t.texto}»`);
+      for (const t of r.tapados) (t.decorativo ? glifos : todos).push(`${t.tocable ? "CONTROL" : "texto  "}  «${t.texto}» rect=${t.rect.join(",")} ficha=${t.ficha.join(",")} libre(arr/ab/izq/der)=${t.libre.arriba}/${t.libre.abajo}/${t.libre.izq}/${t.libre.der} scrollY=${t.scrollY}/${t.alto}`);
     }
     const sig = p.locator(AVANCE);
     if ((await sig.count()) === 0) break;
@@ -211,6 +232,7 @@ if (APRENDER) {
   console.log(`\n${u.length} elemento(s) tapados por la ficha de FP en «${TEMA}» (Aprender) a ${ANCHO} px.`);
   if (glifos.length) console.log(`Y ${new Set(glifos).size} glifo(s) dentro de controles que SÍ se alcanzan: tapan el dibujo, no el toque.`);
   console.log(`Pantallas CON ficha: ${conFicha} · SIN ficha: ${sinFicha}.`);
+console.log(`Tipografía: ${comoSeMidieronLasFuentes}`);
   process.exit(conFicha === 0 ? 2 : (u.length === 0 ? 0 : 1));
 }
 /*
@@ -235,7 +257,7 @@ const medirAqui = async () => {
     const r = await p.evaluate(MIRA);
     if (r.sinFicha) { sinFicha++; continue; }
     conFicha++;
-    for (const t of r.tapados) (t.decorativo ? glifos : todos).push(`${t.tocable ? "CONTROL" : "texto  "}  «${t.texto}»`);
+    for (const t of r.tapados) (t.decorativo ? glifos : todos).push(`${t.tocable ? "CONTROL" : "texto  "}  «${t.texto}» rect=${t.rect.join(",")} ficha=${t.ficha.join(",")} libre(arr/ab/izq/der)=${t.libre.arriba}/${t.libre.abajo}/${t.libre.izq}/${t.libre.der} scrollY=${t.scrollY}/${t.alto}`);
   }
 };
 /* Los segmentos del hash estando en el camino: dentro de una actividad hay uno más. */
@@ -294,6 +316,7 @@ for (const t of unicos) console.log("  " + t);
 console.log(`\n${unicos.length} elemento(s) tapados por la ficha de FP en «${TEMA}» a ${ANCHO} px.`);
 if (glifos.length) console.log(`Y ${new Set(glifos).size} glifo(s) dentro de controles que SÍ se alcanzan: tapan el dibujo, no el toque.`);
 console.log(`Pantallas CON ficha: ${conFicha} · SIN ficha: ${sinFicha}.`);
+console.log(`Tipografía: ${comoSeMidieronLasFuentes}`);
 if (conFicha === 0) {
   console.log("NO MEDIDO: la ficha no se pintó en ninguna pantalla, así que este cero no vale.");
   console.log("La píldora de FP solo sale con sesión; sin ella no hay nada que pueda tapar.");

@@ -169,7 +169,13 @@ function CuentaT({
             sin nombre
           </button>
         )}
-      <div style={{ display: "flex", gap: "5px", borderTop: "1px solid rgba(248,249,250,0.22)", paddingTop: "7px" }}>
+      {/*
+        * `fae-t-apila` (global.css): a 320 px la ficha de FP tapaba el destino
+        * «HABER», y la ficha no puede apartarse sin quedar bajo el piso de
+        * toque. Apiladas, cada destino ocupa el ancho de la fila y el hueco
+        * deja de ser el problema. A 375 siguen lado a lado.
+        */}
+      <div className="fae-t-apila" style={{ display: "flex", gap: "5px", borderTop: "1px solid rgba(248,249,250,0.22)", paddingTop: "7px" }}>
         {columna(DEBE)}
         <div aria-hidden="true" style={{ width: "1px", background: "rgba(248,249,250,0.22)" }} />
         {columna(HABER)}

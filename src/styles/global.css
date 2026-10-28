@@ -147,3 +147,43 @@ input:focus-visible {
 .fae-reserva-ficha * {
   scroll-margin-top: 84px;
 }
+
+/*
+ * LA T SE APILA A 320 PX (#349, 28 oct.). Una cuenta T pone el debe y el haber
+ * lado a lado, y a 320 px cada columna se queda en unos 51 px — justo donde la
+ * ficha de FP, que es fija y está en la esquina de arriba a la derecha, se come
+ * el destino de la derecha. La sonda lo cazó en «Arma el Ajuste» (T3): al
+ * destino «HABER» le quedaban 24 px libres por encima de la ficha, 22 por
+ * debajo y 33 por la izquierda, y hacen falta 44.
+ *
+ * Lo que NO lo arregla, todo medido, para que nadie lo repita:
+ *
+ *   · Espacio arriba en la mecánica. El control no está clavado en la cima de
+ *     la página —se cazó con la página a 598 de 1410—, así que cualquier
+ *     desplazamiento lo vuelve a poner a ras del borde, bajo la banda.
+ *   · Apartar la ficha. Pegada a la esquina quedaban 43 px, uno por debajo del
+ *     piso, y su ancho crece con los dígitos de los FP: el margen justo de hoy
+ *     se lo come mañana un estudiante con más puntos.
+ *   · Encogerla. Con 39 x 38 ya está bajo el piso de toque.
+ *   · Que la fila ceda a lo ancho. Las columnas son `flex: 1`, así que ceder
+ *     las ENCOGE en vez de moverlas: con 12 px de cesión el destino bajó a
+ *     45 px de ancho y el hueco solo subió a 39. Para llegar a 44 harían falta
+ *     17 px y las columnas quedarían en 34, bajo el piso.
+ *   · Esconder la ficha al bajar. Lo prohíbe el #529, y con razón: escondía la
+ *     confirmación de FP justo cuando el estudiante los ganaba.
+ *
+ * Lo que sí: apilarlas. Cada destino pasa a ocupar el ancho de la fila, así que
+ * su borde izquierdo se mueve 62 px y el hueco deja de ser el problema. A 320
+ * la altura es barata y dos destinos de 51 px de ancho estaban apretados de
+ * todas formas. A 375 no se toca nada.
+ */
+@media (max-width: 360px) {
+  .fae-t-apila {
+    flex-direction: column;
+  }
+  /* El filo que parte el debe del haber: de columna a renglón. */
+  .fae-t-apila > [aria-hidden="true"] {
+    width: 100% !important;
+    height: 1px;
+  }
+}
