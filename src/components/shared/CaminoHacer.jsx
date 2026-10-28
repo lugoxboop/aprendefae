@@ -274,6 +274,51 @@ const CSS_VOLUMEN = `
  * escritorio; en el teléfono sube a 14 porque se lee a la distancia del brazo.
  * Ningún texto del camino baja de 12 px.
  */
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * EL CAMINO SE TRAZA, NO APARECE (Mateo, 28-oct: «que al entrar al camino sea
+ * una animación elegante e interesante»).
+ *
+ * El recorrido se revela de arriba abajo en 620 ms, como si alguien lo fuera
+ * dibujando: primero el primer nodo, después la línea que baja hacia el
+ * segundo, y así hasta el final. No hay que coreografiar nodo por nodo para
+ * conseguirlo —y eso es lo bueno del truco—: se anima el BORDE INFERIOR del
+ * recorte del contenedor, así que lo que entra en escena es exactamente lo
+ * que está más arriba en el camino, y el orden sale solo de la geometría.
+ *
+ * POR QUÉ ASÍ Y NO NODO A NODO. El camino se pinta de cuatro maneras
+ * distintas —normal y por bloques, cada una en su versión ancha y estrecha—,
+ * y los nodos son `<g>` dentro de un SVG en unas y `<button>` en HTML en
+ * otras. Una cascada por nodo necesitaría un retardo por elemento en los
+ * cuatro sitios; esto es una regla y vale para los cuatro.
+ *
+ * `clip-path` no provoca recálculo de la página: el navegador recorta al
+ * pintar. Y el recorte final lleva holgura (-60% abajo) para no cortarle nada
+ * a lo que asoma fuera de la caja, que en el camino son los rótulos y la
+ * decoración.
+ *
+ * 620 ms es largo para una entrada, y aquí está bien: lo que se está contando
+ * es un recorrido, y un recorrido que se revela de golpe no se lee como
+ * recorrido. Con movimiento reducido no hay recorte ninguno.
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+/*
+ * Va en su PROPIA hoja y no dentro de CSS_CAMINO, a propósito: la foto de
+ * `camino-sin-cambios` recorta esta hoja entera antes de pesar el HTML, y
+ * mezclarla con las reglas de verdad del camino obligaría a recortar también
+ * esas —que son justo las que la foto tiene que vigilar—.
+ */
+export const CSS_ENTRADA = `
+.fae-ch-entra { animation: fae-ch-trazo 620ms cubic-bezier(.3, .9, .4, 1) both; }
+@keyframes fae-ch-trazo {
+  from { clip-path: inset(0 0 100% 0); }
+  to   { clip-path: inset(0 0 -60% 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fae-ch-entra { animation: none; }
+}
+`;
+
 const CSS_CAMINO = `
 .fae-ch-estrecho { display: none; }
 .fae-ch-rotulo { font-size: 13.5px; text-wrap: balance; }
@@ -381,8 +426,10 @@ export default function CaminoHacer({ nodos = [], onAbrir, vacio, especial = nul
 
   if (porBloques) {
     return (
-      <div ref={caja}>
-        <style>{CSS_CAMINO}</style>
+      <div ref={caja} className="fae-ch-entra">
+        <style>{CSS_ENTRADA}</style>
+        <style>{CSS_ENTRADA}</style>
+      <style>{CSS_CAMINO}</style>
         <style>{CSS_VOLUMEN}</style>
         {especial && <style>{CSS_ESPECIAL}</style>}
         {resaltado && <style>{CSS_RESALTADO}</style>}
@@ -392,7 +439,8 @@ export default function CaminoHacer({ nodos = [], onAbrir, vacio, especial = nul
   }
 
   return (
-    <div ref={caja}>
+    <div ref={caja} className="fae-ch-entra">
+      <style>{CSS_ENTRADA}</style>
       <style>{CSS_CAMINO}</style>
       <style>{CSS_VOLUMEN}</style>
       {especial && <style>{CSS_ESPECIAL}</style>}

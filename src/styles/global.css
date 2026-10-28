@@ -147,3 +147,40 @@ input:focus-visible {
 .fae-reserva-ficha * {
   scroll-margin-top: 84px;
 }
+
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * TODA VISTA ENTRA, NO APARECE (Mateo, 28-oct: «que todo tenga animación al
+ * estilo landing page, nos dará fluidez»).
+ *
+ * Esto es el suelo: CUALQUIER vista del sitio, incluidas las que nadie ha
+ * coreografiado todavía, se funde al entrar en vez de aparecer de golpe. Las
+ * pantallas que sí tienen coreografía propia —la portada, el índice de
+ * materia, la Tienda, el camino— escalonan sus bloques encima de esto.
+ *
+ * ═══════════ SOLO OPACIDAD, Y ES UNA DECISIÓN TÉCNICA ═══════════
+ *
+ * Nada de `transform` aquí. Un transform en un ancestro le cambia el marco de
+ * referencia a todo `position: fixed` que lleve dentro, y dentro de una vista
+ * van el velo del fondo, la malla y la ficha de FP: las tres se descolocarían.
+ * `opacity` no crea ese marco —crea contexto de apilamiento, que es otra
+ * cosa— así que es lo único seguro a este nivel. El movimiento con
+ * desplazamiento se hace bloque a bloque, donde sí se controla lo que hay
+ * dentro.
+ *
+ * 260 ms y no 280: esta entrada se paga en CADA cambio de pantalla, y lo que
+ * en la portada se lee como apertura, repetido veinte veces en una sesión, se
+ * leería como lentitud.
+ */
+.fae-vista-entra {
+  animation: fae-vista-entra 260ms cubic-bezier(.3, .9, .4, 1) both;
+}
+
+@keyframes fae-vista-entra {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fae-vista-entra { animation: none; }
+}

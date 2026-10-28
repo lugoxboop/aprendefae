@@ -39,5 +39,30 @@ test("★★★ todas las vistas de Contabilidad llevan la reserva, y ninguna de
   /* Un tema nuevo de Contabilidad no puede quedarse fuera sin que esto lo diga. */
   for (const tema of SUBJECTS.contabilidad.topics) assert.ok(vistas.has(tema.id), `${tema.id} no lleva la reserva`);
   for (const tema of SUBJECTS.macroeconomia.topics) assert.ok(!vistas.has(tema.id), `${tema.id} es de Macro y no se toca`);
-  assert.match(app, /VISTAS_CONTABILIDAD\.has\(view\) \? <div className="fae-reserva-ficha" style=\{\{ display: "contents" \}\}>/);
+  /*
+   * Y que el envoltorio de verdad le ponga la clase a esas vistas. Se busca
+   * la clase y la condición por separado, no la línea entera: el 28-oct ese
+   * div pasó a llevar también la entrada de vista y perdió el
+   * `display: contents` —lo que no genera caja no se puede animar—, y una
+   * prueba que afirmaba la línea letra por letra se cayó por un cambio que
+   * no tenía nada que ver con la reserva.
+   *
+   * Lo que de verdad importa es esto: que la clase dependa de
+   * VISTAS_CONTABILIDAD y de nada más.
+   */
+  const envoltorio = app.match(/className=\{`fae-vista-entra\$\{([^}]*)\}`\}/);
+  assert.ok(envoltorio, "falta el envoltorio de vista en App.jsx");
+  assert.match(envoltorio[1], /VISTAS_CONTABILIDAD\.has\(view\)/, "la reserva depende de la lista, no de otra cosa");
+  assert.match(envoltorio[1], /fae-reserva-ficha/, "y pone esa clase");
+});
+
+test("★★★ la reserva sigue valiendo con caja: el selector es de descendientes", () => {
+  /*
+   * El envoltorio dejó de ser `display: contents` el 28-oct. La regla es
+   * `.fae-reserva-ficha *`, que apunta a los descendientes y funciona igual
+   * con caja que sin ella; si algún día se cambiara a `> *` o a `:scope`,
+   * esto lo cazaría.
+   */
+  const css = leer("../styles/global.css");
+  assert.match(css, /\.fae-reserva-ficha \*\s*\{/, "el selector tiene que llegar a todos los descendientes");
 });

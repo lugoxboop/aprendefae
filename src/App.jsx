@@ -178,10 +178,28 @@ export default function App() {
         * La banda de la ficha de FP (#349). En Contabilidad todo destino de un
         * desplazamiento automático —scrollIntoView, o un focus() que mueve la
         * pantalla— aterriza 84 px más abajo, fuera de la ficha. Va por CSS y
-        * no destino por destino porque son casi cien. `display: contents` no
-        * añade caja: el envoltorio no cambia nada del diseño. Macro no entra.
+        * no destino por destino porque son casi cien. Macro no entra.
+        *
+        * EL ENVOLTORIO YA NO LLEVA `display: contents`, y es a propósito: un
+        * elemento con contents no genera caja, y lo que no tiene caja no se
+        * puede animar. Como la entrada de vista vive en este mismo div, hacía
+        * falta una caja de verdad. Un div en flujo normal alrededor de una
+        * vista que ya trae su propio `min-height: 100vh` no cambia nada del
+        * diseño, y el selector de la reserva es `.fae-reserva-ficha *`, que
+        * funciona igual con caja que sin ella.
         */}
-      {VISTAS_CONTABILIDAD.has(view) ? <div className="fae-reserva-ficha" style={{ display: "contents" }}>{node}</div> : node}
+      {/*
+        * La entrada de CUALQUIER vista, incluidas las que nadie coreografió.
+        * `key={view}` es lo que la hace funcionar: sin ella React reutiliza el
+        * div al cambiar de pantalla, la animación no se reinicia y solo se
+        * vería la primera vez de la sesión.
+        *
+        * La clase va DENTRO del envoltorio de la ficha y no fuera, para no
+        * meter un elemento entre `display: contents` y la vista.
+        */}
+      <div className={`fae-vista-entra${VISTAS_CONTABILIDAD.has(view) ? " fae-reserva-ficha" : ""}`} key={view}>
+        {node}
+      </div>
       <AccountControl conTitulo={VISTAS_CON_TITULO.has(view)} />
       <AuthDialog />
       {/* Escucha al motor de FP y confirma en pantalla. Se monta una sola vez. */}
