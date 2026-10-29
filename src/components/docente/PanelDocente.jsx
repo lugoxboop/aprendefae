@@ -9,6 +9,10 @@ import { alertasDelGrupo, avancePorTema, NIVEL } from "../../docente/alertas.js"
 import { avanceDeClase, cifrasDeActividad, masHechas, necesitanAtencion, peorActividad } from "../../docente/panelV1.js";
 import { destacadosDe } from "../../docente/destacados.js";
 import { csvDelPanel, descargarCsv } from "../../docente/exportar.js";
+import { diagnosticoDelGrupo } from "../../docente/diagnosticos.js";
+import { esfuerzoContraResultado } from "../../docente/esfuerzoResultado.js";
+import { fraseDeHoy } from "../../docente/frase.js";
+import { alternarSilencio, guardarPreferencias, preferenciasDe, umbralesCon } from "../../docente/preferenciasDocente.js";
 import BloqueAlertas from "./BloqueAlertas.jsx";
 import Destacados from "./Destacados.jsx";
 import ResumenClase, { DesdeTuVisita, SelectorMateria } from "./ResumenClase.jsx";
@@ -16,8 +20,13 @@ import AtencionAhora from "./AtencionAhora.jsx";
 import PeorActividad from "./PeorActividad.jsx";
 import ListaEstudiantes from "./ListaEstudiantes.jsx";
 import ListaActividades from "./ListaActividades.jsx";
+import FraseDeHoy from "./FraseDeHoy.jsx";
+import EsfuerzoResultado from "./EsfuerzoResultado.jsx";
+import BloqueRiesgo from "./BloqueRiesgo.jsx";
+import ListaRiesgo from "./ListaRiesgo.jsx";
 import VistaEstudiante from "./VistaEstudiante.jsx";
 import { CSS_V1, V1, tarjetaV1, notaV1, volverV1 } from "./estiloV1.js";
+import Entrada, { EstiloEntrada, entrada } from "../shared/Entrada.jsx";
 
 /*
  * Panel docente.
@@ -41,6 +50,17 @@ import { CSS_V1, V1, tarjetaV1, notaV1, volverV1 } from "./estiloV1.js";
  * antes, de las mismas funciones; solo cambian de sitio (P7). El rediseño no
  * agrega escrituras: panel_resumen y grupo_marcar siguen como estaban (P8).
  */
+
+/*
+ * entrada() devuelve className y style; cuando además hace falta estilo propio
+ * hay que fundir los dos objetos, y llamarla dos veces en la misma etiqueta
+ * —una en el spread y otra dentro del style— se lee como un error aunque
+ * funcione. Esto lo hace una vez.
+ */
+function conEntrada(orden, modo, extra) {
+  const e = entrada(orden, modo);
+  return { className: e.className, style: { ...e.style, ...extra } };
+}
 
 const seccion = { fontFamily: "Sora, sans-serif", fontSize: "13px", fontWeight: 700, letterSpacing: "0.1em", color: "rgba(248,249,250,0.55)", margin: "0 0 12px" };
 const tarjeta = { padding: "14px 16px", borderRadius: "14px", background: "rgba(248,249,250,0.04)", border: "1px solid rgba(248,249,250,0.1)" };
@@ -349,6 +369,37 @@ export default function PanelDocente({ actividadInicial = null, onBack }) {
     const cargandoPeor = entre.some((f) => !f.cifras);
     return { cargando: cargandoPeor, nMirables: actividadesMirables.length, ...peorActividad(entre) };
   }, [filasActividades, seis, actividadesMirables.length]);
+
+  /*
+   * ═══════════════════════════ PANEL v2 ═══════════════════════════
+   *
+   * Lo que se añadió después de mirar veinte paneles de la competencia. El
+   * hallazgo que ordena todo: ninguno reporta valor por el gráfico; el valor
+   * aparece cuando el dato trae pegado el botón. Y el estudio con 253 docentes
+   * que puntuaron los informes de Moodle en 1,9 sobre 5 explica por qué un
+   * panel más completo no nos saca de la fila.
+   *
+   * NO HAY CIFRAS NUEVAS NI UNA LLAMADA MÁS. Todo sale de panel_estudiantes y
+   * de panel_actividad, que ya viajaban; lo que cambia es que ahora se cruzan
+   * (tiempo contra acierto), se nombran (diagnósticos en vez de un índice) y
+   * terminan en algo que hacer. Tampoco escribe nada: las preferencias del
+   * docente viven en su navegador.
+   */
+  const [prefs, setPrefs] = useState(() => preferenciasDe(materia ?? ""));
+  useEffect(() => { if (materia) setPrefs(preferenciasDe(materia)); }, [materia]);
+  /* Set, no array: la pertenencia se pregunta una vez por estudiante y por diagnóstico. */
+  const silenciados = useMemo(() => new Set(prefs.silenciados), [prefs.silenciados]);
+  const umbrales = useMemo(() => umbralesCon(prefs), [prefs]);
+  const riesgo = useMemo(() => diagnosticoDelGrupo(cohorte, silenciados, umbrales), [cohorte, silenciados, umbrales]);
+  const esfuerzo = useMemo(() => esfuerzoContraResultado(cohorte), [cohorte]);
+  const lineasFrase = useMemo(
+    () => fraseDeHoy({ cohorte, activos, peor: estadoPeor.peor, riesgo, sinGrupo: grupo.length === 0 }),
+    [cohorte, activos, estadoPeor.peor, riesgo, grupo.length]
+  );
+  /* Guardar devuelve lo que quedó guardado, ya saneado: el estado nunca se
+   * adelanta a lo que el almacenamiento aceptó. */
+  const ajustar = (id, valor) => { if (materia) setPrefs(guardarPreferencias(materia, { [id]: valor })); };
+  const silenciar = (userId, diagId) => { if (materia) setPrefs(alternarSilencio(materia, userId, diagId)); };
   /* «Actividades» pide el resto al entrar: de seis en seis, para no lanzar sesenta llamadas a la vez. */
   const [cargandoTodas, setCargandoTodas] = useState(false);
   useEffect(() => {
@@ -367,6 +418,21 @@ export default function PanelDocente({ actividadInicial = null, onBack }) {
   const ir = (v) => {
     setVista(v);
     try { window.scrollTo({ top: 0, behavior: "auto" }); } catch { /* jsdom */ }
+  };
+
+  /*
+   * Los destinos que nombra la frase de hoy. frase.js no sabe qué vistas
+   * existen —por eso se puede probar sin navegador— y la traducción vive
+   * aquí, en el único sitio que sí las conoce.
+   */
+  const irDestino = (destino) => {
+    if (destino?.startsWith("actividad:")) {
+      const id = destino.slice("actividad:".length);
+      elegirActividad(id);
+      ir({ tipo: "actividades", actividad: id });
+      return;
+    }
+    ir({ tipo: destino === "estudiantes" ? "estudiantes" : "riesgo" });
   };
   const temaDe = (actividadId) => {
     const t = SUBJECTS[materia]?.topics?.find((x) => (x.actividades ?? []).some((a) => a.id === actividadId));
@@ -482,6 +548,19 @@ export default function PanelDocente({ actividadInicial = null, onBack }) {
         onVolver={() => ir({ tipo: desde })}
       />
     );
+  } else if (vista.tipo === "riesgo") {
+    cuerpo = (
+      <ListaRiesgo
+        riesgo={riesgo}
+        silenciados={prefs.silenciados}
+        prefs={prefs}
+        cohorte={cohorte}
+        onAbrir={(id) => ir({ tipo: "estudiante", id, desde: "riesgo" })}
+        onSilenciar={silenciar}
+        onAjustar={ajustar}
+        onVolver={() => ir({ tipo: "inicio" })}
+      />
+    );
   } else if (vista.tipo === "actividades") {
     cuerpo = (
       <ListaActividades
@@ -509,7 +588,15 @@ export default function PanelDocente({ actividadInicial = null, onBack }) {
             </p>
           </section>
         ) : (
+          <>
+            {/*
+              * Capa 0. Va antes que las tarjetas y es el único bloque con
+              * acento: lo primero que se lee es una oración con sujeto y un
+              * botón, no un número grande sin destinatario.
+              */}
+            <FraseDeHoy {...entrada(0, "sube")} lineas={lineasFrase} onIr={irDestino} />
           <div className="pd1-rejilla">
+            <Entrada orden={1} modo="crece" estira>
             <ResumenClase
               avance={avance}
               activos={activos}
@@ -521,6 +608,8 @@ export default function PanelDocente({ actividadInicial = null, onBack }) {
               abierto={temasAbiertos}
               onAlternar={() => setTemasAbiertos((v) => !v)}
             />
+            </Entrada>
+            <Entrada orden={2} modo="crece" estira>
             <AtencionAhora
               atencion={atencion}
               nDestacados={destacados.length}
@@ -528,7 +617,8 @@ export default function PanelDocente({ actividadInicial = null, onBack }) {
               onVerTodos={() => ir({ tipo: "atencion" })}
               onAbrir={(id) => ir({ tipo: "estudiante", id, desde: "inicio" })}
             />
-            <div data-ms-peor={msPeor ?? undefined} style={{ minWidth: 0, display: "grid" }}>
+            </Entrada>
+            <div {...conEntrada(3, "crece", { minWidth: 0, display: "grid" })} data-ms-peor={msPeor ?? undefined}>
               <PeorActividad
                 estado={estadoPeor}
                 singular={singular}
@@ -537,10 +627,39 @@ export default function PanelDocente({ actividadInicial = null, onBack }) {
               />
             </div>
           </div>
+
+          {/*
+            * Capa 2, la franja que llenó la media pantalla que antes quedaba
+            * en blanco a 1280: a la izquierda el gráfico que separa al que se
+            * esfuerza y falla del que va rápido y falla, a la derecha las
+            * personas concretas con su diagnóstico y su botón. El concepto y
+            * la persona, uno al lado del otro.
+            */}
+          <div className="pd2-dos">
+            <EsfuerzoResultado
+              {...entrada(4, "crece")}
+              datos={esfuerzo}
+              onAbrir={(id) => ir({ tipo: "estudiante", id, desde: "inicio" })}
+            />
+            <div {...conEntrada(5, "crece", { display: "grid", gap: "12px", minWidth: 0 })}>
+              <BloqueRiesgo
+                riesgo={riesgo}
+                total={cohorte.length}
+                onAbrir={(id) => ir({ tipo: "estudiante", id, desde: "riesgo" })}
+                onSilenciar={silenciar}
+                onVerTodos={() => ir({ tipo: "riesgo" })}
+              />
+              {/* Lo que cambió desde la última visita cuelga de esta columna y no
+                * del final de la página: así la derecha acompaña a la izquierda
+                * en vez de dejar medio metro de fondo debajo. */}
+              <DesdeTuVisita resumen={resumenVisita} temaDe={temaDe} />
+            </div>
+          </div>
+          </>
         )}
-        {!sinEstudiantes && <DesdeTuVisita resumen={resumenVisita} temaDe={temaDe} />}
         <nav aria-label="Vistas del panel" style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "16px" }}>
           {[
+            { id: "riesgo", texto: "A quién mirar", ir: () => ir({ tipo: "riesgo" }) },
             { id: "estudiantes", texto: "Mis estudiantes", ir: () => ir({ tipo: "estudiantes" }) },
             { id: "actividades", texto: "Actividades", ir: () => ir({ tipo: "actividades", actividad: null }) },
           ].map((x) => (
@@ -558,6 +677,7 @@ export default function PanelDocente({ actividadInicial = null, onBack }) {
     <Marco onBack={onBack}>
       <div className="pd1">
         <style>{CSS_V1}</style>
+        <EstiloEntrada />
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", marginBottom: "8px" }}>
           {/*
             * Con más de una materia, las pastillas hacen de título (la elegida es

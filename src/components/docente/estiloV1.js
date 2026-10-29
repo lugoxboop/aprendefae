@@ -18,7 +18,10 @@ export const CSS_V1 = `
 @keyframes pd1-entrar { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
 .pd1-entrar { animation: pd1-entrar 280ms ${V1.curva} both; }
 .pd1-rejilla { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
-@media (min-width: 900px) { .pd1-rejilla { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; } }
+/* align-items: start desde que son tres columnas: sin esto la rejilla estira
+ * las tres al alto de la más larga y las otras dos quedan con un faldón
+ * gris debajo de su último renglón, que a 1280 era medio bloque vacío. */
+@media (min-width: 900px) { .pd1-rejilla { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; align-items: start; } }
 @media (max-width: 399px) { .pd1-tercera { display: none; } }
 .pd1-b4 { display: none; }
 @media (min-width: 1024px) { .pd1-b4 { display: block; } }
@@ -30,6 +33,21 @@ export const CSS_V1 = `
 @keyframes pd1-pulso { 0%, 100% { opacity: .55; } 50% { opacity: .9; } }
 .pd1-esqueleto { background: rgba(248,249,250,0.06); border-radius: 8px; }
 @media (prefers-reduced-motion: reduce) { .pd1-entrar { animation: none !important; } }
+
+/*
+ * Panel v2: la segunda franja en dos columnas.
+ *
+ * Hasta 1024 px, una sola columna apilada: el profesor mira esto de pie,
+ * entre clases y con el teléfono, y una matriz de dos columnas a 375 px no
+ * existe. Desde 1024, el gráfico a la izquierda y a quién mirar a la derecha
+ * —el concepto que falla junto a la persona que lo falla—, que es lo que
+ * llenaba la mitad de pantalla que antes quedaba en blanco.
+ *
+ * align-items: start para que la columna corta no se estire hasta el alto de
+ * la larga y deje un hueco gris debajo de su último renglón.
+ */
+.pd2-dos { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; margin-top: 12px; align-items: start; }
+@media (min-width: 1024px) { .pd2-dos { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 16px; } }
 `;
 
 export const tarjetaV1 = {

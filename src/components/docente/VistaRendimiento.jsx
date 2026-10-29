@@ -2,6 +2,8 @@ import { useContext, useEffect, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { FAE } from "../../theme.js";
 import { actividadDe, itemsDe, grupoDeActividad } from "../../docente/datos.js";
+import { preguntasDificiles } from "../../docente/repaso.js";
+import RepasoDeLasFalladas from "./RepasoDeLasFalladas.jsx";
 import { BANDAS, bandaDe, CORTE_BAJO } from "../../docente/bandas.js";
 import { etiquetaDeItem } from "../../docente/etiquetasItem.js";
 import { NavigationContext } from "../../navigation.js";
@@ -546,6 +548,16 @@ export default function VistaRendimiento({ subjectId, actividad, nombreMateria }
             </div>
           ) : (
             <>
+              {/*
+                * Antes de la lista, el repaso. El orden importa: lo primero que
+                * se ve del diagnóstico es lo que se puede hacer con él, y
+                * debajo el detalle para quien quiera comprobarlo.
+                */}
+              <RepasoDeLasFalladas
+                actividadNombre={actividad.nombre}
+                dificiles={preguntasDificiles(items, (itemId) => etiquetaDeItem(actividad.id, itemId))}
+                total={items.length}
+              />
               {/*
                 * La nota de cobertura DESAPARECE cuando el detalle cubre todos
                 * los intentos: una nota permanente que siempre dice lo mismo se
