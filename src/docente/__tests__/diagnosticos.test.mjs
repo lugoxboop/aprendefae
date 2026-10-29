@@ -270,3 +270,32 @@ test("los activos nunca pasan del tamaño de la cohorte", () => {
   assert.match(neg.texto, /0 de 5/);
   assert.match(neg.texto, /5 no han entrado/);
 });
+
+test("todo diagnóstico dice una cifra, no solo una etiqueta", () => {
+  /*
+   * «Riesgo: alto» es lo que estamos quitando. Un diagnóstico sin número no
+   * se puede comprobar ni discutir, y un profesor que no puede comprobar un
+   * aviso deja de creérselo. Cada regla tiene que traer el dato que la
+   * dispara, y esta prueba lo exige de todas a la vez para que una regla
+   * nueva no se cuele sin él.
+   */
+  const muestras = [
+    quien({ dias_inactivo: 12, n_registros: 6 }),
+    quien({ dias_inactivo: 12, n_registros: 1 }),
+    quien({ duracion_media_ms: 400000, pct_evaluativa: 30, pct_exploratoria: 30 }),
+    quien({ duracion_media_ms: 20000, pct_evaluativa: 30, pct_exploratoria: 30 }),
+    quien({ duracion_media_ms: 20000, pct_evaluativa: 99, pct_exploratoria: 99 }),
+    quien({ pct_evaluativa: 40, n_evaluativas: 5, n_exploratorias: 6 }),
+  ];
+  const vistos = new Set();
+  for (const e of muestras) {
+    for (const d of diagnosticarA(e, { medianaMs: 150000 })) {
+      vistos.add(d.id);
+      assert.match(d.dice, /\d/, `${d.id} no trae ninguna cifra: "${d.dice}"`);
+      assert.ok(d.nombre.length > 0 && d.nombre.length < 46, `${d.id}: el nombre tiene que caber en una fila`);
+      /* Ningún diagnóstico acusa a nadie: el panel dice dónde mirar, no juzga. */
+      assert.ok(!/tramp|copi|fraude|sospech|minti|hizo trampa/i.test(`${d.nombre} ${d.dice}`), `${d.id} acusa: "${d.dice}"`);
+    }
+  }
+  assert.ok(vistos.size >= 6, `faltan reglas por cubrir, solo se dispararon: ${[...vistos].join(", ")}`);
+});
