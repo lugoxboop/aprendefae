@@ -38,6 +38,15 @@ import { V1, notaV1, tarjetaV1, tituloBloque, volverV1 } from "./estiloV1.js";
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
+/*
+ * A 1280 el marco del panel son 1040 px y esta vista es una sola columna: sin
+ * tope, cada motivo se estira en una línea de mil píxeles y el ojo pierde el
+ * principio del renglón siguiente. 76ch es el ancho de lectura cómodo del
+ * resto del sitio; en móvil no hace nada, porque la pantalla ya es más
+ * estrecha que eso.
+ */
+const ANCHO_DE_LECTURA = { maxWidth: "76ch" };
+
 const MARCA = {
   [NIVEL.URGENTE]: NIVEL_MARCA.URGENTE,
   [NIVEL.ATENCION]: NIVEL_MARCA.ATENCION,
@@ -164,7 +173,7 @@ export default function ListaRiesgo({
     <section data-vista="riesgo">
       <button type="button" style={volverV1} onClick={onVolver} data-volver>‹ Volver al resumen</button>
 
-      <section style={{ ...tarjetaV1, marginBottom: "12px" }}>
+      <section style={{ ...tarjetaV1, marginBottom: "12px", ...ANCHO_DE_LECTURA }}>
         <h2 style={tituloBloque}>A quién mirar</h2>
         <p style={notaV1}>
           {riesgo.length === 0
@@ -191,7 +200,7 @@ export default function ListaRiesgo({
 
       {/* Lo silenciado, visible y reversible. Esconderlo sería silenciarlo dos veces. */}
       {silenciados.length > 0 && (
-        <section style={{ ...tarjetaV1, marginBottom: "12px" }} data-silenciados={silenciados.length}>
+        <section style={{ ...tarjetaV1, marginBottom: "12px", ...ANCHO_DE_LECTURA }} data-silenciados={silenciados.length}>
           <h2 style={tituloBloque}>Marcadas como «no aplica» ({silenciados.length})</h2>
           <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
             {silenciados.map((clave) => {
@@ -212,7 +221,7 @@ export default function ListaRiesgo({
       )}
 
       {/* Los umbrales, aquí y no en otra pantalla: se duda de un umbral delante de su lista. */}
-      <section style={{ ...tarjetaV1, marginBottom: "12px" }}>
+      <section style={{ ...tarjetaV1, marginBottom: "12px", ...ANCHO_DE_LECTURA }}>
         <button
           type="button"
           className="pd1-toque pd1-foco"
@@ -266,7 +275,7 @@ export default function ListaRiesgo({
        * que los diagnósticos que hoy no se pueden calcular se declaran, con lo
        * que haría falta para tenerlos.
        */}
-      <section style={tarjetaV1}>
+      <section style={{ ...tarjetaV1, ...ANCHO_DE_LECTURA }}>
         <button
           type="button"
           className="pd1-toque pd1-foco"
