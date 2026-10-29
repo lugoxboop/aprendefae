@@ -137,8 +137,13 @@ export function DesdeTuVisita({ resumen, temaDe }) {
   if (!resumen) return null;
   const temas = [...new Set((resumen.actividades_nuevas ?? []).map(temaDe).filter(Boolean))];
   const desde = desdeCuando(resumen.desde);
+  /*
+   * Ya no se anima ni se separa sola: desde el panel v2 cuelga de la columna
+   * derecha, que entra como un bloque y lleva su propio hueco. Dos animaciones
+   * encima de la misma tarjeta se leen como un parpadeo.
+   */
   return (
-    <section className="pd1-b4 pd1-entrar" style={{ ...tarjetaV1, padding: "12px 16px", marginTop: "16px", animationDelay: "240ms" }} data-bloque="b4" aria-labelledby="pd1-b4">
+    <section className="pd1-b4" style={{ ...tarjetaV1, padding: "12px 16px" }} data-bloque="b4" aria-labelledby="pd1-b4">
       <p style={{ margin: 0, fontSize: "14px", color: FAE.text }} data-cifra="desde-tu-visita">
         <span id="pd1-b4" style={{ fontFamily: "Sora, sans-serif", fontWeight: 700 }}>Desde tu última visita</span>
         <span style={{ color: V1.texto2 }}> · </span>
