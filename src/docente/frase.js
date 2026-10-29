@@ -39,16 +39,25 @@ export function fraseDeHoy({ cohorte = [], activos = 0, peor = null, riesgo = []
   if (n === 0) return lineas;
 
   /*
+   * `activos` puede venir del servidor, que cuenta sobre TODOS los de la
+   * materia, mientras la cohorte puede ser solo el grupo curado del profesor.
+   * Sin este tope salía «14 de 5 estudiantes trabajaron», que no es un número
+   * raro: es una frase que no significa nada y que quema la confianza en el
+   * bloque entero, que es justo lo primero que se lee.
+   */
+  const trabajaron = Math.min(Math.max(0, Number(activos) || 0), n);
+
+  /*
    * 1 · Quién está y quién no. La cifra que ya estaba en la primera tarjeta,
    * dicha como frase y con la mitad que falta nombrada, que es la parte
    * accionable: los activos no necesitan nada del profesor.
    */
-  const quietos = Math.max(0, n - activos);
+  const quietos = n - trabajaron;
   lineas.push({
     id: "actividad",
     texto: quietos === 0
-      ? `${activos === n ? "Los" : ""} ${activos} de ${n} ${es(n, "estudiante", "estudiantes")} ${es(activos, "trabajó", "trabajaron")} este ciclo.`.trim()
-      : `${activos} de ${n} ${es(n, "estudiante", "estudiantes")} ${es(activos, "trabajó", "trabajaron")} este ciclo; ${quietos} no ${es(quietos, "ha entrado", "han entrado")}.`,
+      ? `${trabajaron === n ? "Los" : ""} ${trabajaron} de ${n} ${es(n, "estudiante", "estudiantes")} ${es(trabajaron, "trabajó", "trabajaron")} este ciclo.`.trim()
+      : `${trabajaron} de ${n} ${es(n, "estudiante", "estudiantes")} ${es(trabajaron, "trabajó", "trabajaron")} este ciclo; ${quietos} no ${es(quietos, "ha entrado", "han entrado")}.`,
     accion: quietos > 0 ? { texto: `Ver ${es(quietos, "al que falta", "a los que faltan")}`, destino: "riesgo" } : null,
   });
 

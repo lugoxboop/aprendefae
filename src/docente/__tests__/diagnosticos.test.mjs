@@ -254,3 +254,19 @@ test("los umbrales del profesor se quedan dentro de rango", () => {
   assert.equal(u.pctBajaParaPrisa, 75, "los dos cortes de acierto se mueven juntos");
   assert.equal(u.duracionRapidaMs, UMBRALES.duracionRapidaMs, "lo que no es ajustable no cambia");
 });
+
+test("los activos nunca pasan del tamaño de la cohorte", () => {
+  /*
+   * El servidor cuenta los activos sobre TODA la materia; la cohorte puede ser
+   * solo el grupo curado. Sin tope, la primera línea del panel decía «14 de 5
+   * estudiantes trabajaron».
+   */
+  const cohorte = Array.from({ length: 5 }, (_, i) => quien({ user_id: `u${i}` }));
+  const l = fraseDeHoy({ cohorte, activos: 14, riesgo: [] }).find((x) => x.id === "actividad");
+  assert.match(l.texto, /5 de 5/);
+  assert.ok(!/no han entrado/.test(l.texto));
+
+  const neg = fraseDeHoy({ cohorte, activos: -3, riesgo: [] }).find((x) => x.id === "actividad");
+  assert.match(neg.texto, /0 de 5/);
+  assert.match(neg.texto, /5 no han entrado/);
+});
