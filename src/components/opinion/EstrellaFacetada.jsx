@@ -86,14 +86,16 @@ export function vertices() {
   });
 }
 
-export default function EstrellaFacetada({ encendida = false, tenue = false, tamano = 30, orden = 0, id = "es" }) {
+export default function EstrellaFacetada({ encendida = false, tamano = 30, orden = 0, id = "es" }) {
   const vs = vertices();
   const n = vs.length;
   const tono = encendida ? TEAL : TONO_APAGADO;
   /*
-   * Tres pesos y no dos: apagada se tiene que ver que ahí HAY una estrella
-   * sin que parezca puesta, y «tenue» es el ensayo —lo que se enciende bajo
-   * el dedo o el cursor antes de decidir—.
+   * Dos pesos, no tres. Hubo un estado «tenue» para el ensayo bajo el dedo;
+   * se quitó al hacer la estrella corregible: ahora pasar por encima enseña
+   * el valor NUEVO encendido del todo, que es lo único que muestra bien una
+   * corrección a la baja —con un tercer peso, bajar de cuatro a dos dejaba
+   * las dos de arriba encendidas y el ensayo no se entendía—.
    *
    * Apagada va a 0,5 y no a 0,3, que es lo que vale la figura del resumen.
    * Medido sobre el fondo de la tarjeta: a 0,3 la faceta fuerte daba 1,96:1 y
@@ -101,7 +103,7 @@ export default function EstrellaFacetada({ encendida = false, tenue = false, tam
    * resumen puede quedarse en 0,3 porque es un adorno que nadie pulsa; esto
    * es un control, y un control que no se ve no se usa.
    */
-  const opacidadBase = encendida ? 1 : tenue ? 0.72 : 0.5;
+  const opacidadBase = encendida ? 1 : 0.5;
   const idLuz = `fae-es-luz-${id}`;
 
   return (

@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { supabase } from "../../lib/supabase.js";
 import {
   ESCALA_ACTIVIDAD, LARGO_MAXIMO, nuevoVale,
-  puntuarActividad, comentarActividad,
+  puntuarActividad, recalificarActividad, comentarActividad,
 } from "../../opinion/enviar.js";
 import EstrellaFacetada, { CSS_ESTRELLA } from "./EstrellaFacetada.jsx";
 
@@ -23,13 +23,16 @@ import EstrellaFacetada, { CSS_ESTRELLA } from "./EstrellaFacetada.jsx";
  * después y es opcional de verdad: va a esa misma fila con el vale de 0156,
  * así que escribirlo no vuelve a contar la actividad.
  *
- * ═══════════ POR QUÉ NO SE PUEDE CORREGIR DESPUÉS ═══════════
+ * ═══════════ SE PUEDE CORREGIR, Y ANTES NO ═══════════
  *
- * Una vez mandada, las estrellas se quedan quietas. Permitir cambiarla
- * obligaría a borrar y reescribir filas por un vale que vive en el navegador,
- * y el precio de equivocarse es una estrella de diferencia en una media; el
- * de abrir esa puerta es que cualquiera con el vale reescriba su voto las
- * veces que quiera. Los 900 ms cubren el resbalón, que es el caso real.
+ * La primera versión dejaba las estrellas quietas una vez mandadas, con el
+ * argumento de que 900 ms bastaban para el resbalón. No bastan: uno se da
+ * cuenta de que puso cuatro cuando ya está leyendo «Muy buena», no en el
+ * primer segundo. Lo encontró Mateo a los diez minutos de publicarlo.
+ *
+ * Ahora cada toque posterior CORRIGE la misma fila con el mismo vale (0157),
+ * así que no se cuenta dos veces, y se puede dudar las veces que haga falta
+ * durante dos horas. Fuera de ese vale y de ese rato, nadie toca nada.
  *
  * ═══════════ QUÉ SE GUARDA ═══════════
  *
@@ -56,19 +59,29 @@ export default function EstrellasActividad({ actividadId, materiaId }) {
   const reloj = useRef(null);
 
   const elegir = (n) => {
-    if (mandada) return;
     setPuntaje(n);
+    setEnsayo(0);
     if (reloj.current) clearTimeout(reloj.current);
     reloj.current = setTimeout(async () => {
-      if (!vale.current) vale.current = nuevoVale();
+      /*
+       * La primera vez crea la fila; las siguientes corrigen ESA fila con el
+       * mismo vale. Insertar otra contaría la actividad dos veces y su media
+       * mentiría, que es justo lo que esto viene a medir bien.
+       */
+      const primera = !vale.current;
+      if (primera) vale.current = nuevoVale();
       setMandada(true);
-      await puntuarActividad(supabase, {
-        puntaje: n,
-        actividadId,
-        materiaId,
-        vale: vale.current,
-        ancho: typeof window === "undefined" ? null : window.innerWidth,
-      });
+      if (primera) {
+        await puntuarActividad(supabase, {
+          puntaje: n,
+          actividadId,
+          materiaId,
+          vale: vale.current,
+          ancho: typeof window === "undefined" ? null : window.innerWidth,
+        });
+      } else {
+        await recalificarActividad(supabase, { vale: vale.current, puntaje: n });
+      }
       /*
        * El reloj NO se cancela al desmontar, y es a propósito: si el
        * estudiante toca una estrella y pulsa «Volver» en el mismo segundo,
@@ -91,7 +104,6 @@ export default function EstrellasActividad({ actividadId, materiaId }) {
     setComentado(true);
   };
 
-  const mostradas = ensayo || puntaje;
 
   return (
     <div
@@ -121,22 +133,22 @@ export default function EstrellasActividad({ actividadId, materiaId }) {
             role="radio"
             aria-checked={puntaje === n}
             aria-label={`${n} de 5 — ${ESCALA_ACTIVIDAD[n]}`}
-            disabled={mandada}
             onClick={() => elegir(n)}
-            onMouseEnter={() => !mandada && setEnsayo(n)}
-            onFocus={() => !mandada && setEnsayo(n)}
+            onMouseEnter={() => setEnsayo(n)}
+            onFocus={() => setEnsayo(n)}
             onBlur={() => setEnsayo(0)}
             style={{
               display: "flex", alignItems: "center", justifyContent: "center",
               width: "44px", height: "44px", minWidth: "44px", flexShrink: 0, padding: 0,
               background: "transparent", border: "none", borderRadius: "12px",
-              cursor: mandada ? "default" : "pointer",
+              cursor: "pointer",
             }}
           >
             <EstrellaFacetada
               id={`${actividadId || "act"}-${n}`}
-              encendida={n <= puntaje}
-              tenue={!puntaje && n <= ensayo}
+              /* Con el dedo encima manda el ensayo: así se ve la corrección
+                 antes de soltarla, igual que la primera vez. */
+              encendida={n <= (ensayo || puntaje)}
               orden={n - 1}
               tamano={30}
             />
@@ -145,7 +157,9 @@ export default function EstrellasActividad({ actividadId, materiaId }) {
       </div>
 
       <p aria-live="polite" style={{ margin: 0, minHeight: "18px", fontSize: "12.5px", color: puntaje ? "#CBDCF2" : "rgba(248,249,250,0.55)" }}>
-        {puntaje ? ESCALA_ACTIVIDAD[puntaje] : "Anónimo, y opcional"}
+        {puntaje
+          ? (mandada ? `${ESCALA_ACTIVIDAD[puntaje]} · puedes cambiarla` : ESCALA_ACTIVIDAD[puntaje])
+          : "Anónimo, y opcional"}
       </p>
 
       {/* El comentario solo existe después de puntuar: antes sería una tarea más. */}
