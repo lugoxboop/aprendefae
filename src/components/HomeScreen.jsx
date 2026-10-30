@@ -6,6 +6,7 @@ import SubjectCard, { MacroIcon, EstrategiaIcon, ContabilidadIcon } from "./Subj
 import Logo from "./Logo.jsx";
 import Footer from "./shared/Footer.jsx";
 import Entrada, { EstiloEntrada } from "./shared/Entrada.jsx";
+import BotonOpinion from "./opinion/BotonOpinion.jsx";
 
 /*
  * ⚑ La tarjeta de Pensamiento Estratégico en la portada. false = no se enseña
@@ -138,11 +139,20 @@ export default function HomeScreen({ onSelectSubject, onQueEs }) {
           </div>
         </div>
 
-        <Entrada orden={5} modo="pie" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
-          <span style={{ fontSize: "12.5px", color: "#A8B6C8", whiteSpace: "nowrap" }}>
-            Entrar no pide registro.
-          </span>
-          <Footer onQueEs={onQueEs} />
+        <Entrada orden={5} modo="pie" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "14px" }}>
+          {/*
+            * El botón de opinión va aquí y no flotando en una esquina: ver la
+            * cabecera de BotonOpinion.jsx. Entra con el pie porque es
+            * accesorio, y la única decisión de esta pantalla sigue siendo
+            * elegir materia.
+            */}
+          <BotonOpinion origen="inicio" />
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
+            <span style={{ fontSize: "12.5px", color: "#A8B6C8", whiteSpace: "nowrap" }}>
+              Entrar no pide registro.
+            </span>
+            <Footer onQueEs={onQueEs} />
+          </div>
         </Entrada>
       </div>
     </div>

@@ -63,8 +63,16 @@ const salidaJson = opcion("--json", null);
 const PUERTO = Number(process.env.PUERTO ?? 8131);
 
 /* Las pantallas del estudiante, en el orden en que las encuentra. */
+/*
+ * Cada pantalla es [nombre, ruta] y, si hace falta un toque para que exista lo
+ * que se quiere medir, un tercer campo con el selector de lo que hay que
+ * tocar. Lo añadió la hoja de opinión: un diálogo que solo aparece al pulsar
+ * no se mide desde la URL, y hasta ahora todo lo que vivía detrás de un clic
+ * quedaba sin medir — que es justo donde se cuela una letra de 10 px.
+ */
 const RUTAS = [
   ["portada", "/"],
+  ["hoja de opinión", "/", "[data-boton-opinion]"],
   ["contabilidad", "/#/contabilidad"],
   ["T1 introducción", "/#/introduccion-contabilidad"],
   ["T2 cuentas, debe y haber", "/#/cuentas-debe-haber"],
@@ -288,10 +296,16 @@ for (const ancho of anchos) {
   const pag = await ctx.newPage();
   pag.on("pageerror", (e) => informe.push({ ancho, ruta: "(error de página)", error: String(e).slice(0, 160) }));
 
-  for (const [nombre, ruta] of RUTAS) {
+  for (const [nombre, ruta, abrir] of RUTAS) {
     try {
       await pag.goto(`http://127.0.0.1:${PUERTO}${ruta}`, { waitUntil: "load", timeout: 20000 });
       await pag.waitForTimeout(1400);
+      if (abrir) {
+        await pag.click(abrir, { timeout: 5000 });
+        /* Lo que entra animado hay que dejarlo llegar: medir a mitad de la
+           entrada da opacidades y posiciones que no son las finales. */
+        await pag.waitForTimeout(600);
+      }
       const r = await pag.evaluate(MEDIR);
       informe.push({ ancho, ruta: nombre, ...r });
       total.letra += r.letra.length;
