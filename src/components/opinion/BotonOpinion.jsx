@@ -85,7 +85,15 @@ export default function BotonOpinion({ origen = "inicio" }) {
         <span aria-hidden="true" style={{ color: "rgba(248,249,250,0.30)" }}>·</span>
         <span style={{ fontWeight: 500, color: "#A8B6C8" }}>anónimo</span>
       </button>
-      <HojaOpinion abierta={abierta} onCerrar={() => setAbierta(false)} origen={origen} />
+      {/*
+        * La hoja se monta al abrirla, no antes. No es solo ahorro: la hoja lee
+        * la sesión para saber si puede ofrecer firmar, y montarla siempre
+        * obligaba a la portada entera a vivir dentro de <AuthProvider>. Tres
+        * pruebas de portada que la pintan suelta se cayeron por eso.
+        */}
+      {abierta && (
+        <HojaOpinion abierta onCerrar={() => setAbierta(false)} origen={origen} />
+      )}
     </>
   );
 }
