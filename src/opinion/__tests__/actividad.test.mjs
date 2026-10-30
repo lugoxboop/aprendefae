@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import {
-  ESCALA_ACTIVIDAD, nuevoVale, puntuarActividad, comentarActividad,
+  ESCALA_ACTIVIDAD, nuevoVale, puntuarActividad, recalificarActividad, comentarActividad,
 } from "../enviar.js";
 
 function clienteFalso(respuesta = { data: true, error: null }) {
@@ -97,4 +97,40 @@ test("una estrella de actividad tampoco guarda quién la mandó", () => {
 test("el panel no lo puede leer cualquiera", () => {
   assert.match(SQL, /actividades_puntuadas[\s\S]{0,400}es_docente\(\)/);
   assert.match(SQL, /revoke all on function public\.actividades_puntuadas\(text\) from public, anon/);
+});
+
+/* ═══════════ CORREGIR LA ESTRELLA (0157) ═══════════ */
+
+test("corregir no manda otra opinión: corrige la fila del vale", async () => {
+  const c = clienteFalso();
+  await recalificarActividad(c, { vale: "22222222-2222-4222-8222-222222222222", puntaje: 2 });
+  assert.equal(c.llamadas[0].nombre, "recalificar_opinion");
+  assert.deepEqual(c.llamadas[0].args, { p_envio: "22222222-2222-4222-8222-222222222222", p_puntaje: 2 });
+});
+
+test("sin vale o con puntaje fuera de rango no se llama a nadie", async () => {
+  const c = clienteFalso();
+  assert.equal((await recalificarActividad(c, { vale: null, puntaje: 3 })).ok, false);
+  assert.equal((await recalificarActividad(c, { vale: "x", puntaje: 0 })).ok, false);
+  assert.equal((await recalificarActividad(c, { vale: "x", puntaje: 6 })).ok, false);
+  assert.equal(c.llamadas.length, 0);
+});
+
+test("un vale caducado se distingue del error también al corregir", async () => {
+  const r = await recalificarActividad(clienteFalso({ data: false, error: null }), { vale: "x", puntaje: 3 });
+  assert.deepEqual(r, { ok: false, motivo: "caducado" });
+});
+
+const SQL157 = readFileSync(new URL("../../../supabase/migrations/0157_cambiar_la_estrella.sql", import.meta.url), "utf8");
+
+test("corregir se puede varias veces, pero solo esa fila y solo dos horas", () => {
+  assert.match(SQL157, /where envio = p_envio\s*\n\s*and creado > now\(\) - interval '2 hours'/);
+  /* A diferencia del comentario, aquí NO hay cerrojo de un solo uso: dudar
+     dos veces es normal y la última es la que vale. */
+  assert.equal(/set puntaje[\s\S]{0,200}and texto is null/.test(SQL157), false);
+  assert.match(SQL157, /p_puntaje < 1 or p_puntaje > 5/);
+});
+
+test("la puede llamar quien entra sin registro, como la estrella misma", () => {
+  assert.match(SQL157, /grant execute on function public\.recalificar_opinion\(uuid, smallint\) to anon, authenticated/);
 });

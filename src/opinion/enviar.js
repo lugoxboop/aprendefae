@@ -160,6 +160,29 @@ export async function puntuarActividad(cliente, { puntaje, actividadId, materiaI
   }
 }
 
+/*
+ * Corregir la estrella ya mandada, sobre esa misma fila.
+ *
+ * Insertar otra contaría la actividad dos veces, así que esto UPDATEA con el
+ * vale. Se puede usar varias veces: dudar dos veces es normal y la última
+ * vale. Lo que no se puede es tocar la fila de otro ni una de hace tres
+ * horas, y de eso se encarga 0157.
+ */
+export async function recalificarActividad(cliente, { vale, puntaje } = {}) {
+  if (!sePuedeEnviar({ puntaje })) return { ok: false, motivo: "sin-puntaje" };
+  if (!vale) return { ok: false, motivo: "sin-vale" };
+  if (!cliente) return { ok: false, motivo: "sin-conexion" };
+
+  try {
+    const { data, error } = await cliente.rpc("recalificar_opinion", { p_envio: vale, p_puntaje: puntaje });
+    if (error) return { ok: false, motivo: "error", detalle: error.message };
+    if (data === false) return { ok: false, motivo: "caducado" };
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, motivo: "error", detalle: String(e?.message ?? e) };
+  }
+}
+
 /* El comentario, sobre la fila que ya se mandó. */
 export async function comentarActividad(cliente, { vale, texto } = {}) {
   const limpio = limpiarTexto(texto);
