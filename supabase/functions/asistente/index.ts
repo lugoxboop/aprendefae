@@ -42,18 +42,26 @@ import { opcionesDelModelo } from "./bruno.js";
 /* El sitio es una sola página en aprendefae.com; en local, el dev server. */
 const ORIGENES = ["https://aprendefae.com", "https://www.aprendefae.com", "http://localhost:5173"];
 
-function cabecerasCors(origen: string | null) {
+/*
+ * supabase-js manda además x-client-info (y otras según la versión). Si el
+ * preflight no las permite, el navegador nunca hace el POST y el panel solo dice
+ * «Bruno no pudo responder» (lo vimos en vivo el 30-oct). Se devuelven las que
+ * pida el navegador: el origen ya está restringido arriba.
+ */
+const CABECERAS_BASE = "authorization, x-client-info, apikey, content-type";
+
+function cabecerasCors(origen: string | null, pedidas: string | null) {
   const permitido = origen && ORIGENES.includes(origen) ? origen : ORIGENES[0];
   return {
     "Access-Control-Allow-Origin": permitido,
-    "Access-Control-Allow-Headers": "authorization, content-type, apikey",
+    "Access-Control-Allow-Headers": pedidas ? `${CABECERAS_BASE}, ${pedidas}` : CABECERAS_BASE,
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     Vary: "Origin",
   };
 }
 
 Deno.serve(async (peticion: Request) => {
-  const cors = cabecerasCors(peticion.headers.get("Origin"));
+  const cors = cabecerasCors(peticion.headers.get("Origin"), peticion.headers.get("Access-Control-Request-Headers"));
 
   if (peticion.method === "OPTIONS") {
     return new Response(null, { status: 204, headers: cors });
