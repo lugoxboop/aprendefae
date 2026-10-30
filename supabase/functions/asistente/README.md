@@ -1,8 +1,10 @@
 # Edge Function «asistente» — la tubería
 
 Recibe un mensaje del sitio, comprueba sesión y cupo, le pregunta al modelo y
-devuelve la respuesta. **Todavía no hay asistente**: no hay prompt de sistema,
-ni comportamiento pedagógico, ni contexto, ni interfaz. Eso llega con Gen.
+devuelve la respuesta. **Desde el 30-oct es Bruno**, el tutor: el prompt
+pedagógico, el armado del contexto (pantalla + datos del ítem) y el tope de
+120 palabras están en `bruno.js`; la ventana del sitio, en `src/bruno/`. Su
+evaluación con casos reales: `scripts/bruno/evaluar.mjs`.
 
 Lo que sí está terminado es lo que hay que hacer bien una sola vez: dónde vive
 la clave, quién puede invocar, y cuánto puede gastar cada estudiante.

@@ -87,17 +87,14 @@ Deno.serve(async (peticion: Request) => {
       };
     },
 
-    /*
-     * Haiku 4.5 NO acepta `output_config.effort` ni thinking adaptativo —usa
-     * budget_tokens, y aquí no hace falta pensar— así que la petición es la
-     * mínima: modelo, tope y el mensaje. Sin prompt de sistema a propósito:
-     * el comportamiento del asistente lo define Gen, no esta tubería.
-     */
-    async llamarModelo({ mensaje, modelo, maxTokens }: { mensaje: string; modelo: string; maxTokens: number }) {
+    async llamarModelo({ system, messages, modelo, maxTokens }: { system: string; messages: unknown[]; modelo: string; maxTokens: number }) {
+      /* Bruno (bruno.js): prompt de sistema pedagógico, con el contexto de la pantalla en el turno. */
       const r = await anthropic.messages.create({
         model: modelo,
         max_tokens: maxTokens,
-        messages: [{ role: "user", content: mensaje }],
+        system,
+        // deno-lint-ignore no-explicit-any
+        messages: messages as any,
       });
       return r.content
         .filter((b) => b.type === "text")

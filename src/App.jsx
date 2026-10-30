@@ -1,4 +1,5 @@
 import { useState, useCallback, lazy, Suspense } from "react";
+import Bruno from "./bruno/Bruno.jsx";
 import { FAE } from "./theme.js";
 import { NavigationContext } from "./navigation.js";
 import { useRuta, vistaDeTema } from "./ruta.js";
@@ -94,6 +95,11 @@ const VISTAS_CONTABILIDAD = new Set([
   "efectivo-caja-menor-bancos", "activos-financieros", "cuentas-por-cobrar",
   "inventarios-periodico", "inventarios-permanente", "inventarios-descuentos-nic2", "repaso-capitulo-5",
 ]);
+
+/* Bruno no sale en el inicio, los índices de materia ni las páginas de cuenta: ahí no hay actividad que orientar. */
+const VISTAS_SIN_BRUNO = new Set(["home", "macroeconomia", "pensamiento-estrategico", "contabilidad", "docente", "que-es", "perfil", "tienda"]);
+const VISTAS_PE = new Set(["pensamiento-sistemico", "modelo-iceberg", "fuerzas-porter"]);
+const materiaDeVista = (v) => (VISTAS_CONTABILIDAD.has(v) || v === "repaso-diario-contabilidad" ? "Contabilidad" : VISTAS_PE.has(v) ? "Pensamiento Estratégico" : "Macroeconomía");
 
 const VISTAS_CON_TITULO = new Set([
   "macroeconomia", "pensamiento-estrategico", "contabilidad",
@@ -202,6 +208,8 @@ export default function App() {
         {node}
       </div>
       <AccountControl conTitulo={VISTAS_CON_TITULO.has(view)} />
+      {/* Bruno, el tutor: solo dentro de un tema, donde hay actividades. */}
+      {!VISTAS_SIN_BRUNO.has(view) && <Bruno materia={materiaDeVista(view)} tema={view} />}
       <AuthDialog />
       {/* Escucha al motor de FP y confirma en pantalla. Se monta una sola vez. */}
       <AvisoFP />
