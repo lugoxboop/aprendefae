@@ -219,11 +219,32 @@ const MEDIR = () => {
     const esControl = el.matches("button, a[href], input, select, textarea, [role=button], [tabindex]:not([tabindex='-1'])");
     if (esControl) {
       const r = el.getBoundingClientRect();
-      const chico = r.height < TOQUE_PX || r.width < TOQUE_PX;
+      /*
+       * EL ÁREA DE TOQUE NO ES SIEMPRE LA CAJA DEL ELEMENTO.
+       *
+       * Este sitio ya agranda varios controles pequeños con un ::after
+       * absoluto de max(100%, 44px) —el logo mide 26 px y responde en 44—, y
+       * getBoundingClientRect no ve un pseudo-elemento. La primera versión de
+       * esta sonda los denunciaba todos, y arreglar lo que ya estaba bien es
+       * peor que no medir: mueve el dibujo y no gana nada.
+       */
+      const extra = (cual) => {
+        const ps = getComputedStyle(el, cual);
+        if (!ps || ps.content === "none" || ps.position === "static") return { w: 0, h: 0 };
+        return { w: parseFloat(ps.width) || 0, h: parseFloat(ps.height) || 0 };
+      };
+      const a1 = extra("::after"), a2 = extra("::before");
+      const anchoReal = Math.max(r.width, a1.w, a2.w);
+      const altoReal = Math.max(r.height, a1.h, a2.h);
+      const chico = altoReal < TOQUE_PX - 0.5 || anchoReal < TOQUE_PX - 0.5;
       const clave = `${donde(el)}|${recorta(el.textContent)}`;
       if (chico && !vistos.has("t" + clave)) {
         vistos.add("t" + clave);
-        toque.push({ alto: Math.round(r.height), ancho: Math.round(r.width), donde: donde(el), texto: recorta(el.textContent) });
+        toque.push({
+          alto: Math.round(altoReal), ancho: Math.round(anchoReal),
+          dibujo: `${Math.round(r.width)}x${Math.round(r.height)}`,
+          donde: donde(el), texto: recorta(el.textContent),
+        });
       }
       const nombre = (el.getAttribute("aria-label") || el.getAttribute("title") || el.textContent || el.getAttribute("alt") || "").trim();
       if (!nombre && !vistos.has("n" + clave)) {
