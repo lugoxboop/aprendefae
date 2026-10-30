@@ -37,6 +37,7 @@
 import Anthropic from "npm:@anthropic-ai/sdk@0.71.0";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { manejar } from "./manejador.js";
+import { opcionesDelModelo } from "./bruno.js";
 
 /* El sitio es una sola página en aprendefae.com; en local, el dev server. */
 const ORIGENES = ["https://aprendefae.com", "https://www.aprendefae.com", "http://localhost:5173"];
@@ -87,21 +88,18 @@ Deno.serve(async (peticion: Request) => {
       };
     },
 
-    /*
-     * Haiku 4.5 NO acepta `output_config.effort` ni thinking adaptativo —usa
-     * budget_tokens, y aquí no hace falta pensar— así que la petición es la
-     * mínima: modelo, tope y el mensaje. Sin prompt de sistema a propósito:
-     * el comportamiento del asistente lo define Gen, no esta tubería.
-     */
-    async llamarModelo({ mensaje, modelo, maxTokens }: { mensaje: string; modelo: string; maxTokens: number }) {
-      const r = await anthropic.messages.create({
+    async llamarModelo({ system, messages, modelo, maxTokens }: { system: string; messages: unknown[]; modelo: string; maxTokens: number }) {
+      /* Bruno (bruno.js): prompt de sistema pedagógico, con el contexto de la pantalla en el turno. */
+      // deno-lint-ignore no-explicit-any
+      const r = await (anthropic.messages.create as any)({
         model: modelo,
-        max_tokens: maxTokens,
-        messages: [{ role: "user", content: mensaje }],
+        ...opcionesDelModelo(modelo, maxTokens),
+        system,
+        messages,
       });
-      return r.content
+      return (r.content as { type: string; text?: string }[])
         .filter((b) => b.type === "text")
-        .map((b) => (b as { text: string }).text)
+        .map((b) => b.text ?? "")
         .join("")
         .trim();
     },

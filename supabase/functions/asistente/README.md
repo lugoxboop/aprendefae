@@ -1,8 +1,10 @@
 # Edge Function «asistente» — la tubería
 
 Recibe un mensaje del sitio, comprueba sesión y cupo, le pregunta al modelo y
-devuelve la respuesta. **Todavía no hay asistente**: no hay prompt de sistema,
-ni comportamiento pedagógico, ni contexto, ni interfaz. Eso llega con Gen.
+devuelve la respuesta. **Desde el 30-oct es Bruno**, el tutor: el prompt
+pedagógico, el armado del contexto (pantalla + datos del ítem) y el tope de
+120 palabras están en `bruno.js`; la ventana del sitio, en `src/bruno/`. Su
+evaluación con casos reales: `scripts/bruno/evaluar.mjs`.
 
 Lo que sí está terminado es lo que hay que hacer bien una sola vez: dónde vive
 la clave, quién puede invocar, y cuánto puede gastar cada estudiante.
@@ -15,7 +17,7 @@ Se ponen **una vez** y no requieren volver a desplegar la función al cambiarlos
 |---|---|---|
 | `ANTHROPIC_API_KEY` | La clave de API de Anthropic | **Sí** — sin ella la función responde 503 |
 | `ASISTENTE_LIMITE_DIARIO` | Invocaciones por estudiante y día | No: sin él se usa un **provisional de 10** |
-| `ASISTENTE_MODELO` | El modelo | No: por defecto `claude-haiku-4-5` |
+| `ASISTENTE_MODELO` | El modelo | No: por defecto `claude-sonnet-5-5` (decisión de Mateo, 30-oct). Para abaratar: `claude-haiku-4-5` |
 
 ```bash
 supabase secrets set ANTHROPIC_API_KEY=sk-ant-...

@@ -3,6 +3,7 @@ import { FAE } from "../../../theme.js";
 import { DEBE, HABER, COLOR_LADO, pesos } from "../../../data/contabilidad.js";
 import { TEXTO_ATENUADO } from "../../../data/contabilidadIntro.js";
 import { MarcaVeredicto } from "./marcaVeredicto.jsx";
+import { registrarDatos, soltarDatos } from "../../../bruno/contexto.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -443,6 +444,14 @@ export function useTanda(sortear) {
   const anotar = (item, ok, respuesta = null) => {
     detalle.current.push({ item, ok, intentos: 1, respuesta: ok ? null : respuesta, orden: detalle.current.length + 1 });
   };
+
+  /* Bruno ve el ítem que se está preguntando, con su respuesta (src/bruno/contexto.js). */
+  const dueno = useRef({});
+  useEffect(() => {
+    if (!terminado && items?.[i] !== undefined) registrarDatos({ item: items[i], numero: i + 1, total: items.length }, dueno.current);
+    else soltarDatos(dueno.current);
+  }, [items, i, terminado]);
+  useEffect(() => () => soltarDatos(dueno.current), []);
 
   return { items, i, setI, aciertos, setAciertos, terminado, setTerminado, detalle, inicio, reiniciar, anotar };
 }

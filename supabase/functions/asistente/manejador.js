@@ -35,10 +35,13 @@
 export const LIMITE_PROVISIONAL = 10;
 
 /* El modelo de prueba de la tubería. También configurable, por lo mismo. */
-export const MODELO_POR_DEFECTO = "claude-haiku-4-5";
+export const MODELO_POR_DEFECTO = "claude-sonnet-5-5";
+
+import { construirPeticion, recortarPalabras, limpiarFormato, MAX_MENSAJE } from "./bruno.js";
 
 /* Techo de la respuesta. Corto: aquí solo se demuestra que el tubo conduce. */
-export const MAX_TOKENS = 1024;
+/* Bruno no pasa de 120 palabras (~200 tokens en español); 400 deja margen sin pagar de más. */
+export const MAX_TOKENS = 400;
 
 /** Lee el límite del entorno. Devuelve también de dónde salió, para el registro. */
 export function leerLimite(env) {
@@ -130,8 +133,10 @@ export async function manejar(peticion, deps) {
   } catch {
     return responder(400, { error: MOTIVOS.sinMensaje });
   }
-  const mensaje = typeof cuerpo?.mensaje === "string" ? cuerpo.mensaje.trim() : "";
+  const mensaje = typeof cuerpo?.mensaje === "string" ? cuerpo.mensaje.trim().slice(0, MAX_MENSAJE) : "";
   if (!mensaje) return responder(400, { error: MOTIVOS.sinMensaje });
+  /* Bruno: el prompt pedagógico, lo que ve el estudiante y la conversación (bruno.js). */
+  const { system, messages } = construirPeticion({ mensaje, contexto: cuerpo?.contexto, historial: cuerpo?.historial });
 
   /* 4. El cupo. Lo decide la base, no esta función. */
   const { limite, fuente } = leerLimite(env);
@@ -160,7 +165,7 @@ export async function manejar(peticion, deps) {
   const modelo = env.ASISTENTE_MODELO || MODELO_POR_DEFECTO;
   let texto;
   try {
-    texto = await llamarModelo({ mensaje, modelo, maxTokens: MAX_TOKENS });
+    texto = recortarPalabras(limpiarFormato(await llamarModelo({ mensaje, system, messages, modelo, maxTokens: MAX_TOKENS })));
   } catch (e) {
     /* El detalle va al registro; al estudiante, un motivo corto. */
     registrar("error", "El modelo falló: " + (e?.message ?? e));
