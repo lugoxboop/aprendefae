@@ -3,6 +3,7 @@ import { Children } from "react";
 import { FAE } from "../../theme.js";
 import FiguraFacetada, { TAMANO as TAMANO_FIGURA } from "./FiguraFacetada.jsx";
 import { useAuthOpcional } from "../../auth/AuthProvider.jsx";
+import EstrellasActividad from "../opinion/EstrellasActividad.jsx";
 import { escucharFP } from "../../fp/aviso.js";
 import {
   usaPantallaResumen, resumenDe, formatoDe, partidaValida, decidir, anunciarPartida,
@@ -121,6 +122,8 @@ export function useResumenDePartida(materiaId, celebrando = false) {
 
   const contexto = (actividadId, onVolver) => ({
     activa: usaPantallaResumen(materiaId, actividadId),
+    /* Para las estrellas de opinión: con qué actividad y de qué materia. */
+    materiaId,
     partida: partida && partida.actividadId === actividadId ? partida : null,
     celebrando,
     limpiar,
@@ -388,7 +391,21 @@ export default function PantallaResumen({ texto = null, onRepetir = null, sinRec
         </div>
       )}
 
-      <div style={{ display: "grid", gap: "10px" }}>
+      {/*
+        * Las estrellas van ENCIMA de los botones y debajo de las cifras: se
+        * ven al leer el resultado de arriba abajo, y no se cruzan con la
+        * salida. No son un paso: quien no quiera, pulsa «Volver».
+        *
+        * No salen en la repetición. A la segunda vuelta la actividad ya no se
+        * está estrenando —y quien repite suele venir a subir el puntaje, no a
+        * juzgarla—, así que preguntarle otra vez es justo la saturación que
+        * Mateo pidió evitar.
+        */}
+      {!r.repeticion && partida.actividadId && (
+        <EstrellasActividad actividadId={partida.actividadId} materiaId={ctx.materiaId} />
+      )}
+
+      <div style={{ display: "grid", gap: "10px", marginTop: "18px" }}>
         <button
           type="button"
           data-volver
