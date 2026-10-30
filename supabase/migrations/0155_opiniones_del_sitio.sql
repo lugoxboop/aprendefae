@@ -210,7 +210,15 @@ begin
 end;
 $$;
 
-revoke all on function public.opiniones_recientes(integer) from public;
+/*
+ * `from public, anon` y no solo `from public`: medido en producción, tras el
+ * revoke a PUBLIC la función seguía apareciendo con permiso de ejecución para
+ * `anon` —Supabase se lo concede por privilegios por defecto del esquema—.
+ * No era un agujero, porque la primera línea de la función exige es_docente()
+ * y un visitante sin sesión no lo es; pero una puerta cerrada por dentro y
+ * además sin llave se revisa más rápido que una cerrada solo por dentro.
+ */
+revoke all on function public.opiniones_recientes(integer) from public, anon;
 grant execute on function public.opiniones_recientes(integer) to authenticated;
 
 commit;
