@@ -147,7 +147,9 @@ export default function VideoYouTube({ videoId, titulo, canal, nota }) {
               alignItems: "center",
               justifyContent: "center",
               fontSize: "13px",
-              color: "rgba(248,249,250,0.35)",
+              /* 0,35 daba 3,1:1. Es el texto que explica por qué el video
+                 todavía no se ve: si no se lee, parece que está roto. */
+              color: "rgba(248,249,250,0.72)",
             }}
           >
             El video carga al llegar aquí
@@ -160,7 +162,10 @@ export default function VideoYouTube({ videoId, titulo, canal, nota }) {
         style={{
           fontSize: "12.5px",
           lineHeight: 1.55,
-          color: "rgba(248,249,250,0.5)",
+          /* 0,5 daba 3,1:1 sobre esta superficie y el mínimo es 4,5. Es el
+             aviso de que el video no es nuestro y de qué recibe YouTube: la
+             letra que menos se puede permitir ser ilegible. */
+          color: "rgba(248,249,250,0.72)",
           margin: 0,
           padding: "11px 18px 14px",
           borderTop: "1px solid rgba(248,249,250,0.08)",

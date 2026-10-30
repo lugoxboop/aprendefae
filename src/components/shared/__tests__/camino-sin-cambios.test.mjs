@@ -148,7 +148,14 @@ export function sinDecoracion(html) {
     .replaceAll(' class="fae-ch-entra"', "")
     /* La hoja de la entrada, entera. Vive en su propio <style> justo para
        poder recortarla sin tocar las reglas de verdad del camino. */
-    .replace(/<style>\s*\.fae-ch-entra[\s\S]*?<\/style>/g, "");
+    .replace(/<style>\s*\.fae-ch-entra[\s\S]*?<\/style>/g, "")
+    /*
+     * Y el contador «N de M» del 29-oct, que se añadió arriba del recorrido.
+     * Mismo criterio que la entrada: es un renglón de texto encima del camino,
+     * no toca ni un nodo ni una línea, así que quitarlo del peso deja la foto
+     * de main valiendo carácter a carácter.
+     */
+    .replace(/<p data-progreso-camino[^>]*>[^<]*<\/p>/g, "");
 }
 
 const huella = (html) => createHash("sha256").update(sinDecoracion(html)).digest("hex");

@@ -216,7 +216,15 @@ const MEDIR = () => {
       }
     }
 
-    const esControl = el.matches("button, a[href], input, select, textarea, [role=button], [tabindex]:not([tabindex='-1'])");
+    /*
+     * Un enlace DENTRO de un párrafo no cuenta: la propia norma (WCAG 2.5.8)
+     * exime los objetivos en línea dentro de un bloque de texto, porque
+     * agrandarlos a 44 px rompería el renglón y empujaría las palabras de al
+     * lado. Sin esta excepción la sonda pide arreglar «más en la política de
+     * privacidad» en mitad de una frase, que es justo lo que no hay que hacer.
+     */
+    const enLinea = el.tagName === "A" && el.closest("p, li") && getComputedStyle(el).display.startsWith("inline");
+    const esControl = !enLinea && el.matches("button, a[href], input, select, textarea, [role=button], [tabindex]:not([tabindex='-1'])");
     if (esControl) {
       const r = el.getBoundingClientRect();
       /*

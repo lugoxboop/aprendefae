@@ -332,7 +332,11 @@ export default function TiendaView({ onBack, onComprar = comprarNivel, onComprar
             onClick={onBack}
             aria-label="Volver"
             style={{
-              display: "flex", alignItems: "center", justifyContent: "center", padding: "8px",
+              /* 44 px medidos, no de padding: con 8 de relleno sobre un icono
+                 de 20 el botón salía de 38 y es el control más usado del
+                 sitio después de los nodos. */
+              display: "flex", alignItems: "center", justifyContent: "center",
+              width: "44px", height: "44px", padding: 0, flexShrink: 0,
               borderRadius: "999px", background: "rgba(248,249,250,0.06)",
               border: "1px solid rgba(248,249,250,0.14)", cursor: "pointer",
             }}
@@ -390,6 +394,20 @@ export default function TiendaView({ onBack, onComprar = comprarNivel, onComprar
                     <span style={{ ...NUMERO, fontSize: "22px" }}>{saldoDe(perfil)}</span>
                     <span style={{ fontSize: "12.5px", color: "rgba(248,249,250,0.5)" }}>Cristales</span>
                   </span>
+                  {/*
+                    LA FRASE DE LAS DOS MONEDAS.
+                    Arriba, en todas las pantallas del sitio, el estudiante ve
+                    su número de FP. Llega aquí, encuentra precios, y lo normal
+                    es que intente pagar con ellos. Quien ve 975 de algo
+                    durante semanas y luego no puede gastarlo no concluye que
+                    hay dos monedas: concluye que la tienda está rota.
+                    Doce palabras lo evitan, y van aquí y no en la tabla del
+                    final, que es donde estaba la explicación y adonde no llega
+                    quien ya se fue.
+                  */}
+                  <p style={{ margin: "8px 0 0", fontSize: "12.5px", lineHeight: 1.5, color: "rgba(248,249,250,0.58)", maxWidth: "42ch" }} data-dos-monedas>
+                    Aquí se paga con Cristales. Tus FP no se gastan: miden lo que llevas aprendido.
+                  </p>
                 </div>
               </div>
             </Entrada>

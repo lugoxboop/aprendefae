@@ -162,7 +162,7 @@ function Tesoreria() {
         border: "1px solid rgba(248,249,250,0.14)", boxShadow: "inset 0 1px 0 rgba(248,249,250,0.08)",
       }}
     >
-      <p style={{ fontFamily: "Sora, sans-serif", fontSize: "10.5px", fontWeight: 700, letterSpacing: "0.16em", color: FAE.teal, margin: "0 0 12px" }}>
+      <p style={{ fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700, letterSpacing: "0.16em", color: FAE.teal, margin: "0 0 12px" }}>
         LA TESORERÍA NACIONAL · UN CUARTO DE LA SALA DE CONTROL
       </p>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "12px" }}>

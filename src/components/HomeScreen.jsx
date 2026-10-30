@@ -15,7 +15,7 @@ import Entrada, { EstiloEntrada } from "./shared/Entrada.jsx";
 export const PORTADA_ESTRATEGICO = false;
 
 /* Pantalla de entrada: degradado en malla + titular rotativo + las materias en curso. */
-export default function HomeScreen({ onSelectSubject }) {
+export default function HomeScreen({ onSelectSubject, onQueEs }) {
   return (
     <div
       style={{
@@ -142,7 +142,7 @@ export default function HomeScreen({ onSelectSubject }) {
           <span style={{ fontSize: "12.5px", color: "#A8B6C8", whiteSpace: "nowrap" }}>
             Entrar no pide registro.
           </span>
-          <Footer />
+          <Footer onQueEs={onQueEs} />
         </Entrada>
       </div>
     </div>

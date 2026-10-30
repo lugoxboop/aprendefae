@@ -44,10 +44,21 @@ export default function ActivityBadge({ tipo, size = "md" }) {
         alignItems: "center",
         fontFamily: "Sora, sans-serif",
         fontWeight: 700,
-        fontSize: compacto ? "10.5px" : "11.5px",
+        /*
+         * 12 y 13, no 10,5 y 11,5. El piso de kit.md es 12 px y esta insignia
+         * lo rompía en las dos tallas, en todos los temas de las dos materias
+         * a la vez: era el texto más pequeño del sitio y estaba justo en el
+         * paso por el que pasa todo el contenido. Las mayúsculas espaciadas
+         * aguantan bien el tamaño pequeño, pero «aguanta» no es la regla.
+         *
+         * El padding baja un punto para que la pastilla crezca lo mínimo: con
+         * el mismo hueco, dos píxeles más de letra la harían saltar de línea
+         * en la cabecera estrecha del camino.
+         */
+        fontSize: compacto ? "12px" : "13px",
         letterSpacing: "0.08em",
         textTransform: "uppercase",
-        padding: compacto ? "3px 9px" : "4px 11px",
+        padding: compacto ? "2px 9px" : "3px 11px",
         borderRadius: "999px",
         whiteSpace: "nowrap",
         color: estilo.color,

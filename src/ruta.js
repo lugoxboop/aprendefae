@@ -77,6 +77,7 @@ export const VISTAS = new Set([
    * que hace esta lista con cualquier hash desconocido.
    */
   /* Nivel sitio */
+  "que-es",
   "perfil",
   "tienda",
   "docente",
