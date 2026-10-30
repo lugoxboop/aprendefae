@@ -94,3 +94,85 @@ export async function enviarOpinion(cliente, { puntaje, texto, anonimo, temas, o
     return { ok: false, motivo: "error", detalle: String(e?.message ?? e) };
   }
 }
+
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * PUNTUAR LA ACTIVIDAD QUE SE ACABA DE CERRAR
+ *
+ * Dos llamadas y no una, por una razón de diseño: la estrella se manda en
+ * cuanto se toca, porque quien puntúa y pulsa «Volver» no puede perder su
+ * voto por no haber confirmado nada. El comentario llega después, si llega, y
+ * va a ESA MISMA fila con el vale que se generó aquí (ver 0156). Si entrara
+ * como una opinión aparte, la actividad quedaría contada dos veces y su media
+ * mentiría.
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+export const ESCALA_ACTIVIDAD = {
+  1: "No me sirvió",
+  2: "Floja",
+  3: "Normal",
+  4: "Buena",
+  5: "Muy buena",
+};
+
+/*
+ * El vale: un uuid al azar por envío. `crypto.randomUUID` no existe en
+ * navegadores viejos ni en las pruebas, así que hay un respaldo; lo único que
+ * se le pide es que no se repita y que no se pueda adivinar.
+ */
+export function nuevoVale(aleatorio = null) {
+  const c = aleatorio ?? (typeof crypto !== "undefined" ? crypto : null);
+  if (c?.randomUUID) return c.randomUUID();
+  const b = new Uint8Array(16);
+  if (c?.getRandomValues) c.getRandomValues(b);
+  else for (let i = 0; i < 16; i += 1) b[i] = Math.floor(Math.random() * 256);
+  b[6] = (b[6] & 0x0f) | 0x40;
+  b[8] = (b[8] & 0x3f) | 0x80;
+  const h = [...b].map((x) => x.toString(16).padStart(2, "0")).join("");
+  return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20)}`;
+}
+
+/* La estrella. Devuelve el vale para poder comentar esa misma fila después. */
+export async function puntuarActividad(cliente, { puntaje, actividadId, materiaId, ancho, vale } = {}) {
+  if (!sePuedeEnviar({ puntaje })) return { ok: false, motivo: "sin-puntaje" };
+  if (!cliente) return { ok: false, motivo: "sin-conexion" };
+  const envio = vale ?? nuevoVale();
+
+  try {
+    const { data, error } = await cliente.rpc("enviar_opinion", {
+      p_puntaje: puntaje,
+      p_texto: null,
+      /* Igual que en la hoja del sitio: no se guarda quién la mandó. */
+      p_anonimo: true,
+      p_temas: [],
+      p_origen: "actividad",
+      p_dispositivo: dispositivoDe(ancho),
+      p_actividad: actividadId ?? null,
+      p_materia: materiaId ?? null,
+      p_envio: envio,
+    });
+    if (error) return { ok: false, motivo: "error", detalle: error.message };
+    if (data === false) return { ok: false, motivo: "repetida" };
+    return { ok: true, vale: envio };
+  } catch (e) {
+    return { ok: false, motivo: "error", detalle: String(e?.message ?? e) };
+  }
+}
+
+/* El comentario, sobre la fila que ya se mandó. */
+export async function comentarActividad(cliente, { vale, texto } = {}) {
+  const limpio = limpiarTexto(texto);
+  if (!vale || !limpio) return { ok: false, motivo: "sin-texto" };
+  if (!cliente) return { ok: false, motivo: "sin-conexion" };
+
+  try {
+    const { data, error } = await cliente.rpc("comentar_opinion", { p_envio: vale, p_texto: limpio });
+    if (error) return { ok: false, motivo: "error", detalle: error.message };
+    /* false = el vale caducó o esa fila ya tenía comentario. */
+    if (data === false) return { ok: false, motivo: "caducado" };
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, motivo: "error", detalle: String(e?.message ?? e) };
+  }
+}
