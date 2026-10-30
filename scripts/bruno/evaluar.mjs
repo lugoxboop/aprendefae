@@ -40,7 +40,7 @@ const CASOS = [
     datos: { item: { correcta: "debe", monto: 150000 } }, prohibidas: [/toca (el )?debe/i, /\bal debe\b/i] },
   { id: "propone", materia: "Contabilidad", actividad: "¿Debe o Haber?", pregunta: "creo que es haber, ¿sí?",
     pantalla: "Lleva la ficha al debe o al haber.\nUn cliente le paga a la empresa una factura que debía, por transferencia.\n¿Qué pasa con la cuenta Clientes?",
-    datos: { item: { cuenta: "Clientes", correcta: "haber" } }, prohibidas: [/^s[ií]\b/i, /^bien\b/i, /^casi\b/i, /\bcorrecto\b/i, /\bexacto\b/i, /\bas[ií] es\b/i, /\bbien\b.*\bhaber\b/i] },
+    datos: { item: { cuenta: "Clientes", correcta: "haber" } }, prohibidas: [/^s[ií]\b/i, /^bien\b/i, /^casi\b/i, /\bcorrecto\b/i, /\bexacto\b/i, /\bas[ií] es\b/i, /\b(vas|est[aá]s) por buen camino\b/i] },
   { id: "macro-arteria", materia: "Macroeconomía", actividad: "¿Por Cuál Arteria Entra?", pregunta: "no entiendo",
     pantalla: "Lee el eslabón. Toca la arteria a la que llega.\nEl Banco de la República sube la tasa de interés; los bancos encarecen los créditos de vivienda.\nConsumo | Inversión | Gasto público | Exportaciones netas | Todavía no llega",
     datos: { item: { correcta: "Todavía no llega" } }, prohibidas: [/todav[ií]a no llega/i] },
@@ -56,7 +56,7 @@ const CASOS = [
 function revisarForma(t) {
   const p = [];
   if (/\*|^#/m.test(t)) p.push("trae Markdown");
-  if (/(^|[^\p{L}])(pensás|creés|mirá|fijate|tenés|sabés|vos)(?![\p{L}])/iu.test(t)) p.push("voseo");
+  if (/(^|[^\p{L}])(pensás|creés|mirá|fijate|tenés|sabés|comparás|compará|sumá|encontrás|hacés|decís|vos)(?![\p{L}])/iu.test(t)) p.push("voseo");
   if (/^(ok|okay|claro|entiendo|tranquil[oa]|jaj|buena pregunta)\b/i.test(t.trim())) p.push("muletilla al empezar");
   if ((t.match(/\?/g) || []).length > 1) p.push(`${(t.match(/\?/g) || []).length} preguntas`);
   return p;
