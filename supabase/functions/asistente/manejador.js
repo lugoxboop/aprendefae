@@ -37,7 +37,7 @@ export const LIMITE_PROVISIONAL = 10;
 /* El modelo de prueba de la tubería. También configurable, por lo mismo. */
 export const MODELO_POR_DEFECTO = "claude-haiku-4-5";
 
-import { construirPeticion, recortarPalabras, MAX_MENSAJE } from "./bruno.js";
+import { construirPeticion, recortarPalabras, limpiarFormato, MAX_MENSAJE } from "./bruno.js";
 
 /* Techo de la respuesta. Corto: aquí solo se demuestra que el tubo conduce. */
 /* Bruno no pasa de 120 palabras (~200 tokens en español); 400 deja margen sin pagar de más. */
@@ -165,7 +165,7 @@ export async function manejar(peticion, deps) {
   const modelo = env.ASISTENTE_MODELO || MODELO_POR_DEFECTO;
   let texto;
   try {
-    texto = recortarPalabras(await llamarModelo({ mensaje, system, messages, modelo, maxTokens: MAX_TOKENS }));
+    texto = recortarPalabras(limpiarFormato(await llamarModelo({ mensaje, system, messages, modelo, maxTokens: MAX_TOKENS })));
   } catch (e) {
     /* El detalle va al registro; al estudiante, un motivo corto. */
     registrar("error", "El modelo falló: " + (e?.message ?? e));

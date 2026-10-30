@@ -1,12 +1,12 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { construirPeticion, recortarPalabras, sanearHistorial, SISTEMA_BRUNO, MAX_PALABRAS, MAX_PANTALLA } from "../bruno.js";
+import { construirPeticion, recortarPalabras, limpiarFormato, sanearHistorial, SISTEMA_BRUNO, MAX_PALABRAS, MAX_PANTALLA } from "../bruno.js";
 import { manejar } from "../manejador.js";
 
 const palabras = (t) => t.trim().split(/\s+/).filter(Boolean).length;
 
 test("★ el prompt de Bruno trae las reglas que no se rompen", () => {
-  for (const regla of [/Nunca des la respuesta/, /120 palabras/, /UNA pregunta corta/, /DATOS INTERNOS/, /Nunca la cites/]) assert.match(SISTEMA_BRUNO, regla);
+  for (const regla of [/Nunca des la respuesta/, /120 palabras/, /Exactamente UNA pregunta/, /Nunca de vos/, /sin asteriscos/, /DATOS INTERNOS/, /Nunca la cites/]) assert.match(SISTEMA_BRUNO, regla);
 });
 
 test("★ ninguna respuesta pasa de 120 palabras, y se corta en una frase entera", () => {
@@ -56,4 +56,9 @@ test("★ el manejador le pasa a la API el prompt y el contexto, y recorta lo qu
   assert.equal(recibido.system, SISTEMA_BRUNO);
   assert.match(recibido.messages.at(-1).content[0].text, /PANTALLA:\nLee el hecho\./);
   assert.ok(palabras(cuerpo.respuesta) <= MAX_PALABRAS);
+});
+
+test("★ el formato Markdown no llega al panel: sin asteriscos, sin títulos", () => {
+  assert.equal(limpiarFormato("Mira el **debe** y el *haber*.\n## Pista\nUsa la _billetera_."), "Mira el debe y el haber.\nPista\nUsa la billetera.");
+  assert.equal(limpiarFormato("- uno\n- dos"), "- uno\n- dos");
 });

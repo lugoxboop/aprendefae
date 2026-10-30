@@ -14,7 +14,7 @@
  * Cuesta unos 0,01 USD por corrida con Haiku. Sin clave, solo valida los casos.
  * ═══════════════════════════════════════════════════════════════════════════
  */
-import { construirPeticion, recortarPalabras, MAX_PALABRAS } from "../../supabase/functions/asistente/bruno.js";
+import { construirPeticion, recortarPalabras, limpiarFormato, MAX_PALABRAS } from "../../supabase/functions/asistente/bruno.js";
 
 const CASOS = [
   { id: "debe-haber-1", materia: "Contabilidad", actividad: "¿Debe o Haber?", pregunta: "no entiendo esta actividad",
@@ -40,7 +40,7 @@ const CASOS = [
     datos: { item: { correcta: "debe", monto: 150000 } }, prohibidas: [/toca (el )?debe/i, /\bal debe\b/i] },
   { id: "propone", materia: "Contabilidad", actividad: "¿Debe o Haber?", pregunta: "creo que es haber, ¿sí?",
     pantalla: "Lleva la ficha al debe o al haber.\nUn cliente le paga a la empresa una factura que debía, por transferencia.\n¿Qué pasa con la cuenta Clientes?",
-    datos: { item: { cuenta: "Clientes", correcta: "haber" } }, prohibidas: [/^s[ií]\b/i, /\bcorrecto\b/i, /\bexacto\b/i, /\bas[ií] es\b/i, /\bbien\b.*\bhaber\b/i] },
+    datos: { item: { cuenta: "Clientes", correcta: "haber" } }, prohibidas: [/^s[ií]\b/i, /^bien\b/i, /^casi\b/i, /\bcorrecto\b/i, /\bexacto\b/i, /\bas[ií] es\b/i, /\bbien\b.*\bhaber\b/i] },
   { id: "macro-arteria", materia: "Macroeconomía", actividad: "¿Por Cuál Arteria Entra?", pregunta: "no entiendo",
     pantalla: "Lee el eslabón. Toca la arteria a la que llega.\nEl Banco de la República sube la tasa de interés; los bancos encarecen los créditos de vivienda.\nConsumo | Inversión | Gasto público | Exportaciones netas | Todavía no llega",
     datos: { item: { correcta: "Todavía no llega" } }, prohibidas: [/todav[ií]a no llega/i] },
@@ -51,6 +51,16 @@ const CASOS = [
     pantalla: "Lleva la ficha al debe o al haber.", datos: null, prohibidas: [] },
   { id: "sin-pantalla", materia: "", actividad: "", pregunta: "ayuda", pantalla: "", datos: null, prohibidas: [] },
 ];
+
+/* La forma, que la ronda en vivo del 30-oct mostró que falla: Markdown, voseo, muletillas, varias preguntas. */
+function revisarForma(t) {
+  const p = [];
+  if (/\*|^#/m.test(t)) p.push("trae Markdown");
+  if (/(^|[^\p{L}])(pensás|creés|mirá|fijate|tenés|sabés|vos)(?![\p{L}])/iu.test(t)) p.push("voseo");
+  if (/^(ok|okay|claro|entiendo|tranquil[oa]|jaj|buena pregunta)\b/i.test(t.trim())) p.push("muletilla al empezar");
+  if ((t.match(/\?/g) || []).length > 1) p.push(`${(t.match(/\?/g) || []).length} preguntas`);
+  return p;
+}
 
 const palabras = (t) => t.trim().split(/\s+/).filter(Boolean).length;
 const clave = process.env.ANTHROPIC_API_KEY;
@@ -66,11 +76,13 @@ for (const c of CASOS) {
   });
   const j = await r.json();
   if (!r.ok) { console.log(`✗ ${c.id}: la API respondió ${r.status} ${j?.error?.type ?? ""}`); fallos++; continue; }
-  const texto = recortarPalabras(j.content.filter((b) => b.type === "text").map((b) => b.text).join("").trim());
+  const crudo = j.content.filter((b) => b.type === "text").map((b) => b.text).join("").trim();
+  const texto = recortarPalabras(limpiarFormato(crudo));
   const problemas = [];
   if (palabras(texto) > MAX_PALABRAS) problemas.push(`${palabras(texto)} palabras`);
   if (!/\?\s*$/.test(texto) && c.datos) problemas.push("no termina en pregunta");
   for (const p of c.prohibidas) if (p.test(texto)) problemas.push(`suelta la respuesta (${p})`);
+  problemas.push(...revisarForma(crudo));
   if (problemas.length) fallos++;
   console.log(`${problemas.length ? "✗" : "✓"} ${c.id} · ${palabras(texto)} palabras${problemas.length ? " · " + problemas.join(" · ") : ""}\n   ${texto.replace(/\n/g, " ")}\n`);
 }
