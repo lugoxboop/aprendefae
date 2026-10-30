@@ -160,6 +160,31 @@ export function sinDecoracion(html) {
 
 const huella = (html) => createHash("sha256").update(sinDecoracion(html)).digest("hex");
 
+/*
+ * ═══════════ EL PANEL DEL NODO, DONDE ESTABA ═══════════
+ *
+ * El 30-oct el panel del nodo pasó a colgar del body: la máscara con la que
+ * el camino se revela le recortaba el pintado del velo y el fondo quedaba
+ * oscurecido solo en la columna central (ver velo-del-nodo.test.mjs).
+ *
+ * Ese cambio no mueve ni un nodo ni una línea, pero sí cambiaría las 42
+ * huellas, porque antes el panel era el último hijo del camino y ahora es
+ * hermano suyo. Rehacer la foto por esto sería tirar justo la prueba de que
+ * el recorrido no se ha movido —lo que avisa la cabecera—, así que en vez de
+ * eso se pesa una COPIA con el panel puesto donde estaba: el mismo recurso
+ * que ya se usa para recortar la decoración, pero al revés.
+ *
+ * Que el panel esté de verdad fuera del camino lo guarda velo-del-nodo.test
+ * y previas.test; aquí solo se pesa el recorrido.
+ */
+function conElPanelDondeEstaba(caja) {
+  const panel = document.body.querySelector(":scope > .fae-dn-fondo");
+  if (!panel) return document.body.innerHTML;
+  const copia = caja.cloneNode(true);
+  copia.firstElementChild?.appendChild(panel.cloneNode(true));
+  return copia.outerHTML;
+}
+
 /* El camino, y la ventana previa de cada uno de sus nodos. */
 async function fotografiar({ props }) {
   const caja = document.createElement("div");
@@ -173,7 +198,7 @@ async function fotografiar({ props }) {
   const partes = [caja.innerHTML];
   for (const nodo of caja.querySelectorAll("[data-nodo]")) {
     await act(async () => { nodo.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
-    partes.push(document.body.innerHTML);
+    partes.push(conElPanelDondeEstaba(caja));
     const cerrar = [...document.querySelectorAll("button")].find((b) => b.textContent.trim() === "Cerrar");
     if (cerrar) await act(async () => { cerrar.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
   }

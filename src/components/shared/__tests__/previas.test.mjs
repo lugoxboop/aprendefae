@@ -110,13 +110,21 @@ test("tocar un nodo abre su panel con el icono quieto; la animación llega despu
   reducirMovimiento = false;
   const abiertas = [];
   const m = abrirPanel("flujo-de-caja", (id) => abiertas.push(id));
-  const panel = () => m.cont.querySelector('[role="dialog"]');
+  /*
+   * Desde el 30-oct el panel se cuelga del body, no del camino: la máscara
+   * con la que el camino se revela recortaba el pintado de su velo y el fondo
+   * quedaba oscurecido solo en la columna central (ver velo-del-nodo.test.mjs).
+   * Por eso se busca en el documento, y se comprueba aquí mismo que NO está
+   * dentro del camino: si alguien lo devuelve ahí, el fallo vuelve.
+   */
+  const panel = () => document.querySelector('[role="dialog"]');
 
   assert.ok(panel(), "el toque abre el panel");
+  assert.equal(m.cont.querySelector('[role="dialog"]'), null, "el panel no puede colgar del camino: la máscara le recorta el velo");
   assert.equal(panel().querySelector("h3").textContent, "Flujo de caja: ¿a quién afecta?");
   assert.deepEqual(abiertas, [], "el toque ya no entra directo");
   assert.ok(panel().querySelector("[data-estatico]"), "el panel sale con el icono quieto");
-  assert.equal(m.cont.querySelectorAll("[data-previa]").length, 0, "y sin animación todavía");
+  assert.equal(document.querySelectorAll("[data-previa]").length, 0, "y sin animación todavía");
   assert.equal(document.activeElement.textContent, "Empezar");
 
   await esperar();
@@ -126,7 +134,7 @@ test("tocar un nodo abre su panel con el icono quieto; la animación llega despu
 
   tocar([...panel().querySelectorAll("button")].find((b) => b.textContent === "Empezar"));
   assert.deepEqual(abiertas, ["flujo-de-caja"]);
-  assert.equal(m.cont.querySelector('[role="dialog"]'), null);
+  assert.equal(document.querySelector('[role="dialog"]'), null);
   assert.equal(document.querySelectorAll("[data-previa]").length, 0, "al empezar, el bucle se acaba");
   m.desmontar();
 });
@@ -138,12 +146,12 @@ test("Escape y «Cerrar» cierran el panel y desmontan la animación", async () 
   await esperar();
   assert.ok(document.querySelector('[data-previa="sala-monitores"]'));
   act(() => { document.dispatchEvent(new w.KeyboardEvent("keydown", { key: "Escape", bubbles: true })); });
-  assert.equal(m.cont.querySelector('[role="dialog"]'), null);
+  assert.equal(document.querySelector('[role="dialog"]'), null);
   assert.equal(document.querySelectorAll("[data-previa]").length, 0);
 
   tocar(m.cont.querySelector('g[data-nodo="triage-emergencias"]'));
-  tocar([...m.cont.querySelectorAll('[role="dialog"] button')].find((b) => b.textContent === "Cerrar"));
-  assert.equal(m.cont.querySelector('[role="dialog"]'), null);
+  tocar([...document.querySelectorAll('[role="dialog"] button')].find((b) => b.textContent === "Cerrar"));
+  assert.equal(document.querySelector('[role="dialog"]'), null);
   m.desmontar();
 });
 
@@ -153,7 +161,7 @@ test("en el teléfono, deslizar la hoja hacia abajo la cierra; un roce corto sig
   try {
     const abiertas = [];
     const m = abrirPanel("triage-emergencias", (id) => abiertas.push(id));
-    const hoja = () => m.cont.querySelector('[role="dialog"]');
+    const hoja = () => document.querySelector('[role="dialog"]');
 
     puntero(hoja(), "pointerdown", 500);
     puntero(hoja(), "pointermove", 505);
@@ -174,13 +182,13 @@ test("en el teléfono, deslizar la hoja hacia abajo la cierra; un roce corto sig
   }
 
   const m = abrirPanel("triage-emergencias");
-  const hoja = m.cont.querySelector('[role="dialog"]');
+  const hoja = document.querySelector('[role="dialog"]');
   puntero(hoja, "pointerdown", 500);
   puntero(hoja, "pointermove", 640);
   puntero(hoja, "pointerup", 640);
-  assert.ok(m.cont.querySelector('[role="dialog"]'), "en escritorio el panel no se arrastra");
-  tocar(m.cont.querySelector(".fae-dn-fondo"));
-  assert.equal(m.cont.querySelector('[role="dialog"]'), null, "tocar fuera lo cierra");
+  assert.ok(document.querySelector('[role="dialog"]'), "en escritorio el panel no se arrastra");
+  tocar(document.querySelector(".fae-dn-fondo"));
+  assert.equal(document.querySelector('[role="dialog"]'), null, "tocar fuera lo cierra");
   m.desmontar();
 });
 
@@ -190,7 +198,7 @@ test("con «reducir movimiento», icono quieto y ninguna animación montada", as
     const m = abrirPanel("cirugia-reconstruccion");
     await esperar();
     await esperar();
-    assert.ok(m.cont.querySelector('[role="dialog"] [data-estatico]'));
+    assert.ok(document.querySelector('[role="dialog"] [data-estatico]'));
     assert.equal(document.querySelectorAll("[data-previa]").length, 0);
     m.desmontar();
   } finally {
@@ -204,7 +212,7 @@ test("Las cuatro de una sola decisión se quedan quietas aunque se permita el mo
     const m = abrirPanel(id);
     await esperar();
     await esperar();
-    assert.ok(m.cont.querySelector('[role="dialog"] [data-estatico]'), id);
+    assert.ok(document.querySelector('[role="dialog"] [data-estatico]'), id);
     assert.equal(document.querySelectorAll("[data-previa]").length, 0, id);
     m.desmontar();
   }
