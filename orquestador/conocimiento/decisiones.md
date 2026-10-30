@@ -83,9 +83,34 @@ escribiendo el hash y registra FP de una clasificación que no existe.
 
 **Toda actividad publicada necesita su regla de etiqueta** en el panel docente.
 
-**Las migraciones las corre Mateo a mano**, en el SQL Editor de Supabase. Nadie
-más las ejecuta. Se entregan numeradas, ordenadas e idempotentes, y quien las
-escribe reporta qué tiene que devolver la consulta de comprobación.
+**Las migraciones las aplica el despliegue, no una persona** (desde el 15 de
+octubre de 2026; antes las corría Mateo a mano en el SQL Editor de Supabase).
+El paso «Aplicar las migraciones que falten» de `.github/workflows/deploy.yml`
+aplica en cada empujón a `main` todo lo que no esté en
+`public.migraciones_aplicadas`, y lo registra ahí dentro de la misma
+transacción. Se siguen entregando numeradas, ordenadas e idempotentes, y quien
+las escribe reporta qué tiene que devolver la consulta de comprobación.
+
+**NADIE las pega a mano en el editor SQL.** No es una preferencia de estilo: una
+migración aplicada a mano NO queda registrada, así que el despliegue la vuelve
+a intentar y muere en el primer `create` de algo que ya existe. Y ese paso va
+ANTES de la subida por FTP, así que el sitio deja de publicarse entero —sin
+aviso, porque lo que se pone en rojo es una ejecución de Actions que nadie
+mira—. Pasó el 30 de octubre de 2026 con la 0156: dos horas de trabajo
+fusionado y ninguna llegó a producción.
+
+Si una ya se aplicó a mano, lo que la destraba es registrarla:
+
+```sql
+insert into public.migraciones_aplicadas (archivo)
+values ('0156_estrellas_de_actividad.sql') on conflict (archivo) do nothing;
+```
+
+y relanzar el despliegue desde Actions → «Desplegar a producción» → Run
+workflow.
+
+**Y fusionar no es publicar.** Antes de decirle a nadie que algo está arriba, se
+mira el sitio en vivo, no el PR.
 
 ---
 
