@@ -72,7 +72,7 @@ create index if not exists opiniones_actividad_idx
 
 drop function if exists public.enviar_opinion(smallint, text, boolean, text[], text, text);
 
-create function public.enviar_opinion(
+create or replace function public.enviar_opinion(
   p_puntaje     smallint,
   p_texto       text    default null,
   p_anonimo     boolean default true,
