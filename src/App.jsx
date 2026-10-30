@@ -5,6 +5,7 @@ import { useRuta, vistaDeTema } from "./ruta.js";
 
 /* La pantalla de entrada se carga de forma estática: es lo primero que ve el estudiante. */
 import HomeScreen from "./components/HomeScreen.jsx";
+import QueEsView from "./components/QueEsView.jsx";
 
 /*
  * El indicador de cuenta y el diálogo de login acompañan a todas las vistas, y
@@ -426,6 +427,12 @@ export default function App() {
     );
   }
 
+  if (view === "que-es") {
+    /* Se vuelve a la portada y no al historial: se entra aquí desde el pie,
+     * y el pie está en la portada. */
+    return wrap(<QueEsView onBack={goHome} />);
+  }
+
   if (view === "perfil") {
     return wrap(
       <Suspense fallback={siteFallback}>
@@ -466,5 +473,5 @@ export default function App() {
    * no son vistas conocidas, así que llegar aquí con otra cosa no debería
    * pasar; si pasa, se ve la portada y no una pantalla en blanco.
    */
-  return wrap(<HomeScreen onSelectSubject={(subject) => setView(subject)} />);
+  return wrap(<HomeScreen onSelectSubject={(subject) => setView(subject)} onQueEs={() => setView("que-es")} />);
 }

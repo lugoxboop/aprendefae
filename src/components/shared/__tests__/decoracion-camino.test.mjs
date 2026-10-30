@@ -227,23 +227,55 @@ test("★★★ Fae va al trazo de la familia, no al del fondo", async () => {
 
 /* ── la entrada del camino ── */
 
-test("★★★ el camino se traza al entrar, y con movimiento reducido no", async () => {
+test("★★★ el camino se traza al entrar, en pantallas y no en porcentaje", async () => {
   /*
    * Mateo, 28-oct: «que al entrar al camino sea una animación elegante». Se
-   * anima el BORDE INFERIOR del recorte del contenedor, así que el recorrido
-   * se revela de arriba abajo y el orden sale de la geometría, sin
-   * coreografiar nodo por nodo. Eso importa porque el camino se pinta de
-   * cuatro maneras —normal y por bloques, ancha y estrecha— y una cascada por
-   * nodo habría que escribirla cuatro veces.
+   * anima el BORDE INFERIOR del revelado, así que el recorrido se destapa de
+   * arriba abajo y el orden sale de la geometría, sin coreografiar nodo por
+   * nodo. Eso importa porque el camino se pinta de cuatro maneras —normal y
+   * por bloques, ancha y estrecha— y una cascada por nodo habría que
+   * escribirla cuatro veces.
+   *
+   * LO QUE ESTA PRUEBA PROTEGE, Y POR QUÉ (Mateo, 29-oct: «es tan rápida que
+   * ni siquiera me entero, es como un parpadeo»). La primera versión recortaba
+   * un PORCENTAJE de la altura del camino, y un camino mide cuatro o cinco
+   * pantallas: el borde tenía que atravesarlas todas en la misma animación, y
+   * la única pantalla que el estudiante está mirando se revelaba en los
+   * primeros cincuenta milisegundos. Alargar la duración no lo arreglaba:
+   * hacía más lento el barrido de lo que ya no se ve.
+   *
+   * Por eso aquí se exige que el recorrido esté en unidades de PANTALLA (vh).
+   * Es la diferencia entre que se vea y que no, y es un error fácil de volver
+   * a cometer, porque el porcentaje parece lo natural.
    */
   const { CSS_ENTRADA } = await import("../CaminoHacer.jsx");
   const m = await montar(h(CaminoHacer, { nodos: NODOS, onAbrir() {} }));
   try {
     assert.ok(m.caja.querySelector(".fae-ch-entra"), "el contenedor del camino entra");
-    assert.match(CSS_ENTRADA, /clip-path: inset\(0 0 100% 0\)/, "empieza recortado del todo");
-    assert.match(CSS_ENTRADA, /clip-path: inset\(0 0 -60% 0\)/, "y acaba con holgura, sin cortar lo que asoma");
+
+    const avance = CSS_ENTRADA.slice(CSS_ENTRADA.indexOf("@keyframes"), CSS_ENTRADA.indexOf("prefers-reduced-motion"));
+    assert.match(avance, /mask-size:\s*100% 0/, "empieza tapado del todo");
+    const enPantallas = [...avance.matchAll(/mask-size:\s*100% (\d+)vh/g)].map((x) => Number(x[1]));
+    assert.ok(enPantallas.length >= 2, "el recorrido se mide en pantallas, no en porcentaje del camino");
+
+    /*
+     * El primer tramo tiene que cubrir la pantalla que se está mirando y poco
+     * más. El gradiente corta al 50 %, así que la zona destapada es la mitad
+     * del mask-size: un tramo de 220vh destapa 110vh, justo el viewport.
+     */
+    const primero = Math.min(...enPantallas);
+    assert.ok(primero >= 150 && primero <= 300, `el primer tramo destapa ${primero / 2}vh: tiene que rondar la pantalla visible`);
+    assert.ok(Math.max(...enPantallas) > primero * 4, "y el resto se termina de destapar fuera de la vista");
+
+    /* Una curva de aterrizaje (el segundo control alto) vuelve a producir el parpadeo. */
+    const curva = CSS_ENTRADA.match(/cubic-bezier\(([^)]+)\)/);
+    assert.ok(curva, "la entrada declara su curva");
+    const y1 = Number(curva[1].split(",")[1]);
+    assert.ok(y1 < 0.5, `la curva de un barrido arranca contenida, no en .${y1}: con una de aterrizaje el borde cruza y nadie lo ve`);
+
     const reducido = CSS_ENTRADA.slice(CSS_ENTRADA.indexOf("prefers-reduced-motion"));
-    assert.match(reducido, /animation: none/, "con movimiento reducido no hay recorte ninguno");
+    assert.match(reducido, /animation: none/, "con movimiento reducido no hay barrido ninguno");
+    assert.match(reducido, /mask-image: none/, "ni máscara que deje medio camino tapado");
     assert.ok(!/animation-duration/.test(reducido), "se quita, no se ralentiza");
   } finally { m.desmontar(); }
 });

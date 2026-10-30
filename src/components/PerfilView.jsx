@@ -96,7 +96,11 @@ export default function PerfilView({ seccion = null, onBack }) {
             onClick={onBack}
             aria-label="Volver"
             style={{
-              display: "flex", alignItems: "center", justifyContent: "center", padding: "8px",
+              /* 44 px medidos, no de padding: con 8 de relleno sobre un icono
+                 de 20 el botón salía de 38 y es el control más usado del
+                 sitio después de los nodos. */
+              display: "flex", alignItems: "center", justifyContent: "center",
+              width: "44px", height: "44px", padding: 0, flexShrink: 0,
               borderRadius: "999px", background: "rgba(248,249,250,0.06)",
               border: "1px solid rgba(248,249,250,0.14)", cursor: "pointer",
             }}

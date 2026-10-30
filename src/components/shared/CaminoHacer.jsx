@@ -308,14 +308,59 @@ const CSS_VOLUMEN = `
  * mezclarla con las reglas de verdad del camino obligaría a recortar también
  * esas —que son justo las que la foto tiene que vigilar—.
  */
+/*
+ * ═══════════ EL CAMINO SE DIBUJA; ANTES PARPADEABA ═══════════
+ *
+ * Mateo lo describió exacto: «es tan rápida que ni siquiera me entero, es como
+ * un parpadeo». Había dos causas y la segunda es la que importa.
+ *
+ * LA CURVA. Estaba con la de la casa, cubic-bezier(.3,.9,.4,1), que es de
+ * ATERRIZAJE: su segundo punto de control en .9 le hace recorrer el 90 % del
+ * trayecto en el primer tercio del tiempo y dedicar el resto a frenar. Para
+ * una tarjeta que cae en su sitio es perfecta; para el borde de un revelado,
+ * no: cruza y nadie lo ve. Un barrido quiere velocidad pareja y salida suave,
+ * que es cubic-bezier(.33,.08,.2,1).
+ *
+ * EL RECORRIDO, QUE ERA EL PROBLEMA DE VERDAD. El clip-path iba del 100 % al
+ * -60 % de la ALTURA DEL CAMINO, y un camino mide cuatro o cinco pantallas.
+ * El borde tenía que atravesarlas todas en la misma animación, así que la
+ * única pantalla que el estudiante estaba mirando se revelaba en los primeros
+ * cincuenta milisegundos. Alargar la duración no arreglaba nada: hacía más
+ * lento el barrido de lo que ya no se ve.
+ *
+ * Así que el recorrido ahora se mide en PANTALLAS y no en porcentaje del
+ * camino. La máscara avanza de 0 a 110vh —justo lo que se está mirando— y usa
+ * el 70 % del tiempo en hacerlo; el 30 % restante termina de destapar el resto
+ * de golpe, varias pantallas más abajo, donde nadie puede notarlo. El efecto
+ * es el que se quería: el camino se dibuja de arriba abajo, a una velocidad
+ * que el ojo sigue.
+ *
+ * Y entra DESPUÉS de la cabecera. Los 160 ms de espera no son adorno: sin
+ * ellos el camino y el título se mueven a la vez, el ojo no sabe cuál mirar y
+ * las dos animaciones se estorban. Primero dónde estás; después, lo que vas a
+ * hacer.
+ *
+ * Por qué máscara y no clip-path: clip-path recorta por una forma, y aquí hace
+ * falta que el corte avance en unidades de pantalla. mask-size se anima y
+ * acepta vh. Donde no haya soporte de máscaras no hay animación y el camino
+ * está ahí desde el primer fotograma, que es la degradación correcta.
+ */
 export const CSS_ENTRADA = `
-.fae-ch-entra { animation: fae-ch-trazo 620ms cubic-bezier(.3, .9, .4, 1) both; }
+.fae-ch-entra {
+  -webkit-mask-image: linear-gradient(to bottom, #000 0 50%, transparent 50%);
+  mask-image: linear-gradient(to bottom, #000 0 50%, transparent 50%);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  animation: fae-ch-trazo 1000ms cubic-bezier(.33, .08, .2, 1) 160ms both;
+}
 @keyframes fae-ch-trazo {
-  from { clip-path: inset(0 0 100% 0); }
-  to   { clip-path: inset(0 0 -60% 0); }
+  from { -webkit-mask-size: 100% 0; mask-size: 100% 0; opacity: 0; }
+  12%  { opacity: 1; }
+  70%  { -webkit-mask-size: 100% 220vh; mask-size: 100% 220vh; }
+  to   { -webkit-mask-size: 100% 4000vh; mask-size: 100% 4000vh; opacity: 1; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .fae-ch-entra { animation: none; }
+  .fae-ch-entra { animation: none; -webkit-mask-image: none; mask-image: none; }
 }
 `;
 
@@ -356,6 +401,30 @@ const alPulsar = (onAbrir, id) => ({
  * trae el suyo (`nodo.icono`, hoy solo Contabilidad) usa este mismo color.
  */
 const colorDelRotulo = (nodo) => (nodo.completada ? FAE.text : "rgba(248,249,250,0.72)");
+
+/*
+ * El contador del camino. Discreto a propósito: es una referencia, no un
+ * marcador. Un número grande arriba convertiría el camino en una barra de
+ * progreso, y lo que tiene que mirar el estudiante son los nodos.
+ */
+function Progreso({ texto }) {
+  if (!texto) return null;
+  return (
+    <p
+      data-progreso-camino
+      style={{
+        margin: "0 0 10px",
+        fontFamily: "Sora, sans-serif",
+        fontSize: "12.5px",
+        fontWeight: 600,
+        letterSpacing: "0.04em",
+        color: "rgba(248,249,250,0.52)",
+      }}
+    >
+      {texto}
+    </p>
+  );
+}
 
 const etiquetaAria = (nodo, marcas, prefijo = "") =>
   `${prefijo}${nodo.nombre}${nodo.completada ? " · completada" : ""}${marcas?.[nodo.id] ? ` · ${marcas[nodo.id]}` : ""}`;
@@ -424,12 +493,32 @@ export default function CaminoHacer({ nodos = [], onAbrir, vacio, especial = nul
 
   const comunes = { nodos, onAbrir, resaltado, marcas, tema };
 
+  /*
+   * CUÁNTO LLEVAS, QUE ES LO QUE SOSTIENE EL HÁBITO.
+   *
+   * Dentro de una actividad el estudiante sí sabe dónde está («Empresa 1 de
+   * 6»), pero el camino entero no decía nada: se veía una columna de nodos sin
+   * saber si eran tres o catorce ni cuántos faltaban. Es la cifra que hace
+   * volver —ver un 7 de 9 pide terminar— y la que decide si abandonas al
+   * tercer nodo creyendo que esto no se acaba nunca.
+   *
+   * Se cuenta de los nodos que ya se están pintando, así que no hay un dato
+   * nuevo que mantener ni una llamada más: si un camino cambia de piezas, el
+   * número cambia solo.
+   */
+  const hechas = nodos.filter((n) => n.completada).length;
+  const progreso = nodos.length > 0
+    ? (hechas === nodos.length
+        ? `Las ${nodos.length} hechas`
+        : `${hechas} de ${nodos.length} ${nodos.length === 1 ? "hecha" : "hechas"}`)
+    : null;
+
   if (porBloques) {
     return (
       <div ref={caja} className="fae-ch-entra">
         <style>{CSS_ENTRADA}</style>
-        <style>{CSS_ENTRADA}</style>
-      <style>{CSS_CAMINO}</style>
+        <Progreso texto={progreso} />
+        <style>{CSS_CAMINO}</style>
         <style>{CSS_VOLUMEN}</style>
         {especial && <style>{CSS_ESPECIAL}</style>}
         {resaltado && <style>{CSS_RESALTADO}</style>}
@@ -441,6 +530,7 @@ export default function CaminoHacer({ nodos = [], onAbrir, vacio, especial = nul
   return (
     <div ref={caja} className="fae-ch-entra">
       <style>{CSS_ENTRADA}</style>
+      <Progreso texto={progreso} />
       <style>{CSS_CAMINO}</style>
       <style>{CSS_VOLUMEN}</style>
       {especial && <style>{CSS_ESPECIAL}</style>}
