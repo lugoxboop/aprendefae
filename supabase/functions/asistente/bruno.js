@@ -65,6 +65,21 @@ LO QUE RECIBES
 - DATOS INTERNOS: la información del ejercicio, que puede incluir la respuesta correcta. Úsala SOLO para saber hacia dónde orientar. Nunca la cites, ni la copies, ni la parafrasees de forma que la revele.
 Si no hay pantalla ni datos, pregúntale en qué actividad está y qué no entiende.`;
 
+/*
+ * Los modelos de la generación 5 (Sonnet 5.5 y hermanos) piensan por defecto, y
+ * ese pensamiento sale del mismo max_tokens: con 400 de tope, Sonnet 5.5 devolvía
+ * «Te piden» y se quedaba sin aire (prueba en vivo del 30-oct). A esos modelos se
+ * les da pensamiento adaptativo con esfuerzo bajo —le sirve para revisar que la
+ * pista no regale la respuesta— y un tope que alcance para pensar y responder.
+ * Los de la generación 4 (Haiku 4.5) no piensan si no se les pide: van igual.
+ */
+export function opcionesDelModelo(modelo, maxTokens) {
+  if (/^claude-(sonnet|opus|haiku|fable)-5/.test(String(modelo))) {
+    return { max_tokens: Math.max(maxTokens, 2000), thinking: { type: "adaptive" }, output_config: { effort: "low" } };
+  }
+  return { max_tokens: maxTokens };
+}
+
 /** Quita el formato Markdown que el panel mostraría tal cual (asteriscos, guiones bajos, títulos). */
 export function limpiarFormato(texto) {
   return String(texto ?? "")

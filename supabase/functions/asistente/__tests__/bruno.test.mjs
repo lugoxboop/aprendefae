@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { construirPeticion, recortarPalabras, limpiarFormato, sanearHistorial, SISTEMA_BRUNO, MAX_PALABRAS, MAX_PANTALLA } from "../bruno.js";
+import { construirPeticion, recortarPalabras, limpiarFormato, opcionesDelModelo, sanearHistorial, SISTEMA_BRUNO, MAX_PALABRAS, MAX_PANTALLA } from "../bruno.js";
 import { manejar } from "../manejador.js";
 
 const palabras = (t) => t.trim().split(/\s+/).filter(Boolean).length;
@@ -61,4 +61,12 @@ test("★ el manejador le pasa a la API el prompt y el contexto, y recorta lo qu
 test("★ el formato Markdown no llega al panel: sin asteriscos, sin títulos", () => {
   assert.equal(limpiarFormato("Mira el **debe** y el *haber*.\n## Pista\nUsa la _billetera_."), "Mira el debe y el haber.\nPista\nUsa la billetera.");
   assert.equal(limpiarFormato("- uno\n- dos"), "- uno\n- dos");
+});
+
+test("★ a Sonnet 5.5 se le da aire para pensar y responder; a Haiku 4.5 se le deja igual", () => {
+  const s = opcionesDelModelo("claude-sonnet-5-5", 400);
+  assert.ok(s.max_tokens >= 2000);
+  assert.deepEqual(s.thinking, { type: "adaptive" });
+  assert.equal(s.output_config.effort, "low");
+  assert.deepEqual(opcionesDelModelo("claude-haiku-4-5", 400), { max_tokens: 400 });
 });
