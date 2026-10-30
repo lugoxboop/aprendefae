@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { FAE, ANCHO_ESTRECHO } from "../../theme.js";
 import { iconoDe } from "./iconosActividad.jsx";
 import DecoracionCamino from "./DecoracionCamino.jsx";
@@ -1170,7 +1171,28 @@ function DetalleNodo({ nodo, bloque, numero, onCerrar, onEmpezar }) {
 
   const estatico = <IconoEstatico nodo={nodo} numero={numero} />;
 
-  return (
+  /*
+   * ═══════════ POR QUÉ ESTE EMERGENTE VA EN UN PORTAL ═══════════
+   *
+   * El camino se revela con una máscara (`.fae-ch-entra`, CSS_ENTRADA). Una
+   * máscara no recorta solo al elemento: recorta el PINTADO de todo lo que
+   * cuelga de él, y la caja de la máscara es la del contenedor del camino,
+   * que es una columna centrada. El velo de este panel es `position: fixed;
+   * inset: 0` y de hecho MIDE toda la ventana —medido: 1320 × 620 en una
+   * ventana de 1320 × 620—, pero se pintaba solo dentro de esa columna: a los
+   * lados quedaban dos franjas sin oscurecer y el fondo se veía a medio
+   * apagar. Lo cazó Mateo el 30 de octubre.
+   *
+   * Colgarlo del body lo saca de la máscara. No cambia nada de su aspecto ni
+   * de su comportamiento: el velo ya era fijo y ya cubría la ventana entera;
+   * lo único que cambia es quién puede recortarlo, que ahora no es nadie.
+   *
+   * Es el mismo arreglo que la hoja de opinión necesitó por otro motivo (allí
+   * era un z-index encerrado en su contexto de apilamiento). Dos veces la
+   * misma lección: un velo de pantalla completa no puede vivir dentro del
+   * contenido al que tapa.
+   */
+  return createPortal((
     <div className="fae-dn-fondo" onClick={() => cerrar.current()}>
       <style>{CSS_DETALLE}</style>
       <div
@@ -1211,7 +1233,7 @@ function DetalleNodo({ nodo, bloque, numero, onCerrar, onEmpezar }) {
         </div>
       </div>
     </div>
-  );
+  ), document.body);
 }
 
 /*
