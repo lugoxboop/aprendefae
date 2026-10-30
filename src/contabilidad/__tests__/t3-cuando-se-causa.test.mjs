@@ -257,7 +257,7 @@ test("★★★ el tutorial: la panadería, el paso 2 de Levi, su alternativo y 
   const asi = ASI_SE_JUEGA["t3-cuando-se-causa"];
   assert.ok(asi, "no hay «Así se juega»");
   assert.equal(asi.titulo, "¿Cuándo se causa?");
-  assert.equal(asi.pasos[1], "Busca el día en que se entregó el bien o se prestó el servicio.");
+  assert.equal(asi.pasos[1], "Busca el día en que se entregó o se prestó.");
   /* El componente antepone «Ejemplo: »: lo que se lee es el texto de Levi. */
   assert.equal(`Ejemplo: ${asi.alt}`, "Ejemplo: la línea tiene tres marcas. Se toca la de la entrega del pan, el 10, y no la del pedido ni la del pago.");
   const ej = asi.demo.items[0];

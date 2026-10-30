@@ -44,9 +44,9 @@
 | Texto | Literal |
 |---|---|
 | Consigna | Parte de la utilidad del mes. Pon cada ficha donde va y halla la caja al cierre. |
-| Paso 1 | Mira la utilidad del mes. La caja empezó en cero. |
-| Paso 2 | Por cada ficha, pregúntate si hace que la caja tenga más o menos plata que la utilidad. |
-| Paso 3 | Ponla en Suma, en Resta o en No mueve la caja. |
+| Paso 1 | Mira la utilidad del mes: la caja empezó en cero. |
+| Paso 2 | Lee la ficha: ¿deja más o menos plata que la utilidad? |
+| Paso 3 | Toca Suma, Resta o No mueve la caja. |
 | CIERRE_RESULTADO_CAJA | La utilidad mide lo que se ganó. La caja mide la plata. Las fichas explican la distancia entre las dos. |
 | Varios errores | Y hay más fichas por revisar. |
 | ROTULO_CAJA_CIERRE | Caja al cierre |

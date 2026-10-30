@@ -26,11 +26,7 @@ export const ACT5_T3 = {
   consigna: "Lee el hecho. Arma el asiento y escribe el valor del periodo.",
 };
 
-export const PASOS_ACT5 = [
-  "Mira cuánto se pagó o se recibió y por cuántos meses.",
-  "Calcula cuánto le toca a este periodo.",
-  "Pon un nombre en cada cuenta y escribe el valor.",
-];
+export const PASOS_ACT5 = ["Lee cuánto se pagó o se recibió y por cuántos meses.", "Calcula cuánto le toca a este periodo.", "Pon un nombre en cada cuenta y escribe ese valor."];
 
 export const PAGO = "pago";
 export const COBRO = "cobro";

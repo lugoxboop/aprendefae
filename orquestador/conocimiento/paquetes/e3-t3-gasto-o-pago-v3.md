@@ -8,7 +8,7 @@
 
 - **C1 · Textos (sustituyen los de Miyata):**
   - Consigna: «Lee el hecho. Toca la casilla que dice si hubo gasto y si salió plata.»
-  - Paso 3: «Toca la casilla donde caen tus dos respuestas.»
+  - Paso 3: «Toca la casilla que junta tus dos respuestas.»
 - **C2 · Rótulos de la matriz:** ROTULO_SIN_SALIDA = «No salió»; ROTULO_SIN_GASTO = «Sin gasto».
 - **C3 · La línea «lo que habría sido» (H1):**
   - Una sola leyenda a todo el ancho, encima de los contadores: «Punteado: así quedaba con tu toque».
@@ -39,9 +39,9 @@
 | Texto | Literal |
 |---|---|
 | Consigna | Lee el hecho. Toca la casilla que dice si hubo gasto y si salió plata. |
-| Paso 1 | Pregúntate si la empresa ya consumió algo para poder vender. |
-| Paso 2 | Pregúntate si ese día salió plata de la caja. |
-| Paso 3 | Toca la casilla donde caen tus dos respuestas. |
+| Paso 1 | Lee el hecho de la tarjeta. |
+| Paso 2 | Decide si hubo gasto y si salió plata ese día. |
+| Paso 3 | Toca la casilla que junta tus dos respuestas. |
 | CIERRE_GASTO_O_PAGO | Gastar es consumir; pagar es sacar plata. Unas veces pasan el mismo día y otras no. |
 
 Textos fijos de interfaz (Itagaki): «Hecho n de 6», «Siguiente hecho», «Ver mi resumen», «Correcto», «No va aquí», «Iba aquí». Literales ya publicados que se reutilizan: «Gastos» y «Salió».

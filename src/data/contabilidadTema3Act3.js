@@ -17,11 +17,7 @@ export const ACT3_T3 = {
   consigna: "Lee el hecho. Arma el asiento de las dos empresas.",
 };
 
-export const PASOS_ACT3 = [
-  "Pregúntate quién recibió y quién entregó.",
-  "Arma el asiento de cada empresa por separado.",
-  "Revisa que los dos asientos no sean una copia: cada empresa anota su propia cara del hecho.",
-];
+export const PASOS_ACT3 = ["Lee el hecho: ¿quién recibió y quién entregó?", "Arma el asiento de la primera empresa.", "Arma el de la otra con su propia cara del hecho."];
 
 export const ESTADO_VACIO = "Un hecho, dos contabilidades. Nunca son iguales.";
 export const ALT_INICIAL = "Dos libros abiertos, uno por empresa. Cada uno tiene dos casillas vacías, una en el Debe y otra en el Haber. Al tocar una casilla se abren cinco cuentas para elegir.";

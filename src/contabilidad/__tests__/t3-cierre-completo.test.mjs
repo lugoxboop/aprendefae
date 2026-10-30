@@ -223,9 +223,9 @@ test("★★★ el resumen cuenta sobre 6: dos casos, tres partes cada uno", asy
 test("★★★ los textos de Gen, textuales, y el tutorial de la panadería se resuelve con su guion", async () => {
   assert.equal(A7.ACT7_T3.consigna, "Lee los saldos. Arma los dos asientos de cierre y escribe lo que queda.");
   assert.deepEqual(A7.PASOS_ACT7, [
-    "Junta todos los ingresos y pásalos a Ganancias y pérdidas.",
-    "Junta todos los gastos y pásalos a Ganancias y pérdidas.",
-    "Calcula lo que queda en Ganancias y pérdidas.",
+    "Lee los saldos de ingresos y gastos.",
+    "Toca AL DEBE o AL HABER en cada cuenta y luego Confirmar asiento.",
+    "Escribe lo que queda en Ganancias y pérdidas.",
   ]);
   const asi = ASI_SE_JUEGA["t3-cierre-completo"];
   assert.ok(asi);

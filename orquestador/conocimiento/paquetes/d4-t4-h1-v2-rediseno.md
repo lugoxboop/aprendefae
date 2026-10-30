@@ -103,9 +103,9 @@
 
 ## Así se juega
 
-- Paso 1: «Lee el hecho.» (<10)
-- Paso 2: «¿Entra plata a la caja, sale o no la toca?» (103,4)
-- Paso 3: «Toca donde va y mira el saldo.» (<10)
+- Paso 1: «Lee el hecho de la tarjeta.» (<10)
+- Paso 2: «Si entra plata, toca DEBE; si sale, toca HABER.» (<10)
+- Paso 3: «Si la caja no cambia, toca el botón Caja no se mueve.» (101,4)
 - Ejemplo · hecho: «Paga de contado unas llantas, con billetes de la caja.» (84,7)
 - Ejemplo · monto: 60.000 · va a: haber · sale hacia: pago
 - Ejemplo · acierto (tras «Correcto.»): «Salieron billetes de la caja, así que va al haber.» (90,9)

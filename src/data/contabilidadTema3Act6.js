@@ -22,11 +22,7 @@ export const ACT6_T3 = {
   consigna: "Lee el hecho. Marca el corte y escribe las dos cifras.",
 };
 
-export const PASOS_ACT6 = [
-  "Mira cuánto se pagó o se recibió y por cuántos meses.",
-  "Marca el corte en el mes en que cierra la empresa.",
-  "Escribe cuánto le toca al periodo y cuánto queda.",
-];
+export const PASOS_ACT6 = ["Lee cuánto se pagó o se recibió y por cuántos meses.", "Mueve el corte con Antes o Después hasta el mes del cierre.", "Escribe cuánto le toca al periodo y cuánto queda."];
 
 /* Los dos tipos de ítem (Levi): deciden si «Queda» va sólido o discontinuo. */
 export const PAGO = "pago";

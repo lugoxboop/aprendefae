@@ -104,9 +104,9 @@ Pie: «Formato y signos del libro, p. 190. Cifras construidas». Botón «Compro
 
 | Lugar | Texto | Conteo |
 |---|---|---|
-| Paso 1 | Lee la partida. | 3 pal. |
-| Paso 2 | ¿Quién no la tiene todavía? | 5 pal. |
-| Paso 3 | Si suma, al Más; si resta, al Menos. | 8 pal. |
+| Paso 1 | Lee la partida de la tarjeta. | 3 pal. |
+| Paso 2 | Busca la libreta que todavía no la tiene. | 5 pal. |
+| Paso 3 | En esa libreta, toca Más si suma o Menos si resta. | 8 pal. |
 | Ejemplo (partida, 12.000; el par de la demo: el banco 640.000, los libros 652.000) | El banco le descontó a la empresa la comisión por manejar la cuenta. | 13 pal. · INFLESZ 83,6 |
 | Acierto del ejemplo (Menos de los libros) | Correcto. El banco ya la descontó, y los libros todavía no: va al Menos de los libros. | 17 pal. · INFLESZ 95,7 |
 | Texto alternativo (`alt`) | El banco descontó una comisión de $12.000. Los libros todavía no la tienen, así que la partida va al Menos de los libros. | 23 pal. · INFLESZ 84,3 |

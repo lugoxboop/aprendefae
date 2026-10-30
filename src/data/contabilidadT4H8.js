@@ -182,7 +182,7 @@ export const CIERRE_H8 = {
 
 /* ═══════════ «ASÍ SE JUEGA» ═══════════ */
 
-export const PASOS_H8 = ["¿Les falta a los libros?", "Si les falta, se asienta.", "El mayor da el saldo final."];
+export const PASOS_H8 = ["Lee la partida: ¿les falta a los libros?", "Toca el botón que dice si se asienta o no.", "Arma cada asiento y escribe el saldo del mayor."];
 export const ALT_H8 = "Un cheque de $50.000 que nadie ha cobrado va a «No se asienta», porque la empresa ya lo anotó al girarlo.";
 /* El cheque de $50.000 que nadie ha cobrado (construido, sin serie). Solo la etapa 1: no regala ningún asiento. */
 export const EJEMPLO_H8 = {

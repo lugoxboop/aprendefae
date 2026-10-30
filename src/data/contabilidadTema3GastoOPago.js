@@ -26,11 +26,7 @@ export const ACT_GASTO_O_PAGO = {
 };
 
 /* §2, con C1 aplicado al paso 3. */
-export const PASOS_GASTO_O_PAGO = [
-  "Pregúntate si la empresa ya consumió algo para poder vender.",
-  "Pregúntate si ese día salió plata de la caja.",
-  "Toca la casilla donde caen tus dos respuestas.",
-];
+export const PASOS_GASTO_O_PAGO = ["Lee el hecho de la tarjeta.", "Decide si hubo gasto y si salió plata ese día.", "Toca la casilla que junta tus dos respuestas."];
 export const CIERRE_GASTO_O_PAGO = "Gastar es consumir; pagar es sacar plata. Unas veces pasan el mismo día y otras no.";
 
 /* Los cuatro tipos (§3). Cada uno es una casilla: [hubo gasto, salió plata]. */

@@ -74,9 +74,9 @@ test("★★★ catálogo, consigna (C1), pasos, cierre, rótulos (C2) y leyenda
     ["t3-gasto-o-pago", "¿Gasto o pago?", "medio", 25, 6]);
   assert.equal(D.ACT_GASTO_O_PAGO.consigna, "Lee el hecho. Toca la casilla que dice si hubo gasto y si salió plata.");
   assert.deepEqual(D.PASOS_GASTO_O_PAGO, [
-    "Pregúntate si la empresa ya consumió algo para poder vender.",
-    "Pregúntate si ese día salió plata de la caja.",
-    "Toca la casilla donde caen tus dos respuestas.",
+    "Lee el hecho de la tarjeta.",
+    "Decide si hubo gasto y si salió plata ese día.",
+    "Toca la casilla que junta tus dos respuestas.",
   ]);
   assert.equal(D.CIERRE_GASTO_O_PAGO, "Gastar es consumir; pagar es sacar plata. Unas veces pasan el mismo día y otras no.");
   assert.deepEqual([D.ROTULO_GASTO, D.ROTULO_SIN_GASTO, D.ROTULO_SALIDA, D.ROTULO_SIN_SALIDA], ["Gastos", "Sin gasto", "Salió", "No salió"]);

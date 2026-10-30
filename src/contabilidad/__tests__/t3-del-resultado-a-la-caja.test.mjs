@@ -79,9 +79,9 @@ test("★★★ catálogo, consigna, pasos, cierre y los textos de §0 (A4, A6, 
     ["t3-del-resultado-a-la-caja", "Del resultado a la caja", "dificil", 50]);
   assert.equal(D.ACT_RESULTADO_CAJA.consigna, "Parte de la utilidad del mes. Pon cada ficha donde va y halla la caja al cierre.");
   assert.deepEqual(D.PASOS_RESULTADO_CAJA, [
-    "Mira la utilidad del mes. La caja empezó en cero.",
-    "Por cada ficha, pregúntate si hace que la caja tenga más o menos plata que la utilidad.",
-    "Ponla en Suma, en Resta o en No mueve la caja.",
+    "Mira la utilidad del mes: la caja empezó en cero.",
+    "Lee la ficha: ¿deja más o menos plata que la utilidad?",
+    "Toca Suma, Resta o No mueve la caja.",
   ]);
   assert.equal(D.CIERRE_RESULTADO_CAJA, "La utilidad mide lo que se ganó. La caja mide la plata. Las fichas explican la distancia entre las dos.");
   assert.equal(D.VARIOS_ERRORES, "Y hay más fichas por revisar.");

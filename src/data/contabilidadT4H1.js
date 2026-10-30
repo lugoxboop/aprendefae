@@ -180,7 +180,7 @@ export const CIERRE_H1 = {
  * unas llantas pagadas con billetes de la caja, 60.000, al haber hacia el
  * pago. La mano TOCA el haber del cajón.
  */
-export const PASOS_H1 = ["Lee el hecho.", "¿Entra plata a la caja, sale o no la toca?", "Toca donde va y mira el saldo."];
+export const PASOS_H1 = ["Lee el hecho de la tarjeta.", "Si entra plata, toca DEBE; si sale, toca HABER.", "Si la caja no cambia, toca el botón Caja no se mueve."];
 export const ALT_H1 = "El taller paga unas llantas con billetes de la caja. Sale plata: el hecho va al haber, y en la caja quedan 340.000 de los 400.000.";
 export const EJEMPLO_H1 = {
   id: "demo",

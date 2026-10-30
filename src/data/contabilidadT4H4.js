@@ -222,7 +222,7 @@ export const PARES_H4 = [["h4-1", "h4-6"], ["h4-2", "h4-4"], ["h5-1", "h5-3"], [
 
 /* ═══════════ «ASÍ SE JUEGA» ═══════════ */
 
-export const PASOS_H4 = ["Suma soportes y caja.", "¿Falta, cuadra o sobra?", "Luego, la diferencia y el reembolso."];
+export const PASOS_H4 = ["Suma soportes y caja, y compáralo con el fondo.", "Toca Falta, Cuadra o Sobra.", "Luego escribe la diferencia y el reembolso."];
 export const ALT_H4 = "Los soportes y la caja suman $322.700, más que el fondo de $320.000. Sobra plata, así que la aguja queda a la derecha de la marca del fondo.";
 /* Ronda construida, fuera del banco (vivero, 320.000): solo la pregunta 1; la mano toca «Sobra». */
 const DEMO = ronda("demo", "Iván · un vivero", "Iván", 320_000, 268_400, 54_300, ASUME);

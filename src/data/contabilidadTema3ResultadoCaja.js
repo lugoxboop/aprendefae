@@ -26,11 +26,7 @@ export const ACT_RESULTADO_CAJA = {
 };
 
 /* §3: los pasos de «Así se juega». */
-export const PASOS_RESULTADO_CAJA = [
-  "Mira la utilidad del mes. La caja empezó en cero.",
-  "Por cada ficha, pregúntate si hace que la caja tenga más o menos plata que la utilidad.",
-  "Ponla en Suma, en Resta o en No mueve la caja.",
-];
+export const PASOS_RESULTADO_CAJA = ["Mira la utilidad del mes: la caja empezó en cero.", "Lee la ficha: ¿deja más o menos plata que la utilidad?", "Toca Suma, Resta o No mueve la caja."];
 export const CIERRE_RESULTADO_CAJA = "La utilidad mide lo que se ganó. La caja mide la plata. Las fichas explican la distancia entre las dos.";
 
 /* Las tres elecciones de cada ficha (§2), en el orden de los botones. */

@@ -172,7 +172,7 @@ export const CIERRE_PIE_H7 = "Formato y signos del libro, p. 190. Cifras constru
 
 /* ═══════════ «ASÍ SE JUEGA» ═══════════ */
 
-export const PASOS_H7 = ["Lee la partida.", "¿Quién no la tiene todavía?", "Si suma, al Más; si resta, al Menos."];
+export const PASOS_H7 = ["Lee la partida de la tarjeta.", "Busca la libreta que todavía no la tiene.", "En esa libreta, toca Más si suma o Menos si resta."];
 export const ALT_H7 = "El banco descontó una comisión de $12.000. Los libros todavía no la tienen, así que la partida va al Menos de los libros.";
 /* La comisión de $12.000 (construida, sin serie), con un par propio: con el de una serie, la demo mostraría sus datos. */
 export const EJEMPLO_H7 = {
