@@ -142,7 +142,7 @@ test("camino feliz: consume cupo, llama al modelo y devuelve su texto", async ()
 });
 
 test("el id del modelo de prueba no lleva sufijo de fecha", () => {
-  assert.equal(MODELO_POR_DEFECTO, "claude-haiku-4-5");
+  assert.equal(MODELO_POR_DEFECTO, "claude-sonnet-5-5");
   assert.ok(!/\d{8}$/.test(MODELO_POR_DEFECTO), "los ids del catálogo van sin fecha");
 });
 

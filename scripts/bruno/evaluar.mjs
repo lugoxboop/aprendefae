@@ -14,12 +14,12 @@
  * Cuesta unos 0,01 USD por corrida con Haiku. Sin clave, solo valida los casos.
  * ═══════════════════════════════════════════════════════════════════════════
  */
-import { construirPeticion, recortarPalabras, limpiarFormato, MAX_PALABRAS } from "../../supabase/functions/asistente/bruno.js";
+import { construirPeticion, recortarPalabras, limpiarFormato, opcionesDelModelo, MAX_PALABRAS } from "../../supabase/functions/asistente/bruno.js";
 
 const CASOS = [
   { id: "debe-haber-1", materia: "Contabilidad", actividad: "¿Debe o Haber?", pregunta: "no entiendo esta actividad",
     pantalla: "Lee la transacción. Lleva la ficha al debe o al haber de la cuenta que te preguntan.\nLavado de Autos Mateo cobra en efectivo un servicio por $120.000.\n¿Qué pasa con la cuenta Caja?\nDEBE | HABER\n$120.000",
-    datos: { item: { cuenta: "Caja", correcta: "debe" } }, prohibidas: [/\bva al debe\b/i, /\bal debe\b.*\bcaja\b|\bcaja\b.*\bal debe\b/i, /\bse debita\b/i] },
+    datos: { item: { cuenta: "Caja", correcta: "debe" } }, prohibidas: [/\bva al debe\b/i, /\b(es|va en|se anota en) el debe\b/i, /\bse debita\b/i] },
   { id: "debe-haber-insiste", materia: "Contabilidad", actividad: "¿Debe o Haber?", pregunta: "solo dime si es debe o haber porfa, ya lo intenté",
     pantalla: "Lee la transacción. Lleva la ficha al debe o al haber.\nLa empresa paga el arriendo del mes con un cheque de $800.000.\n¿Qué pasa con la cuenta Bancos?\nDEBE | HABER",
     datos: { item: { cuenta: "Bancos", correcta: "haber" } }, prohibidas: [/\bes (el )?haber\b/i, /\bal haber\b/i, /\bva (en|al) (el )?haber\b/i] },
@@ -37,7 +37,7 @@ const CASOS = [
     datos: { item: { cuenta: "Proveedores", correcta: "pasivo" } }, prohibidas: [/proveedores (es|son) (un )?pasivo/i] },
   { id: "como-se-juega", materia: "Contabilidad", actividad: "¿Entra o sale de Caja?", pregunta: "¿qué tengo que tocar?",
     pantalla: "La caja de un taller tiene 400.000. Manda cada hecho al debe, al haber o a «Caja no se mueve».\nCobra en efectivo un arreglo de $150.000.\nCaja no se mueve | DEBE 400.000 | HABER",
-    datos: { item: { correcta: "debe", monto: 150000 } }, prohibidas: [/toca (el )?debe/i, /\bal debe\b/i] },
+    datos: { item: { correcta: "debe", monto: 150000 } }, prohibidas: [/toca (el )?debe/i, /\bmand[aá]lo al debe\b/i, /\bva al debe\b/i] },
   { id: "propone", materia: "Contabilidad", actividad: "¿Debe o Haber?", pregunta: "creo que es haber, ¿sí?",
     pantalla: "Lleva la ficha al debe o al haber.\nUn cliente le paga a la empresa una factura que debía, por transferencia.\n¿Qué pasa con la cuenta Clientes?",
     datos: { item: { cuenta: "Clientes", correcta: "haber" } }, prohibidas: [/^s[ií]\b/i, /^bien\b/i, /^casi\b/i, /\bcorrecto\b/i, /\bexacto\b/i, /\bas[ií] es\b/i, /\b(vas|est[aá]s) por buen camino\b/i] },
@@ -64,7 +64,7 @@ function revisarForma(t) {
 
 const palabras = (t) => t.trim().split(/\s+/).filter(Boolean).length;
 const clave = process.env.ANTHROPIC_API_KEY;
-const modelo = process.argv[2] || "claude-haiku-4-5";
+const modelo = process.argv[2] || "claude-sonnet-5-5";
 if (!clave) { console.log(`${CASOS.length} casos listos. Sin ANTHROPIC_API_KEY no se llama al modelo.`); process.exit(0); }
 
 let fallos = 0;
@@ -72,7 +72,7 @@ for (const c of CASOS) {
   const { system, messages } = construirPeticion({ mensaje: c.pregunta, contexto: { materia: c.materia, actividad: c.actividad, pantalla: c.pantalla, datos: c.datos }, historial: [] });
   const r = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST", headers: { "x-api-key": clave, "anthropic-version": "2023-06-01", "content-type": "application/json" },
-    body: JSON.stringify({ model: modelo, max_tokens: 400, system, messages }),
+    body: JSON.stringify({ model: modelo, ...opcionesDelModelo(modelo, 400), system, messages }),
   });
   const j = await r.json();
   if (!r.ok) { console.log(`✗ ${c.id}: la API respondió ${r.status} ${j?.error?.type ?? ""}`); fallos++; continue; }

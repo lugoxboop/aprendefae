@@ -35,7 +35,7 @@
 export const LIMITE_PROVISIONAL = 10;
 
 /* El modelo de prueba de la tubería. También configurable, por lo mismo. */
-export const MODELO_POR_DEFECTO = "claude-haiku-4-5";
+export const MODELO_POR_DEFECTO = "claude-sonnet-5-5";
 
 import { construirPeticion, recortarPalabras, limpiarFormato, MAX_MENSAJE } from "./bruno.js";
 
