@@ -71,7 +71,7 @@ const SQL = readFileSync(new URL("../../../supabase/migrations/0156_estrellas_de
 test("la función vieja se borra y la nueva se crea en la MISMA transacción", () => {
   const i = SQL.indexOf("begin;");
   const d = SQL.indexOf("drop function if exists public.enviar_opinion");
-  const c = SQL.indexOf("create function public.enviar_opinion");
+  const c = SQL.search(/create (or replace )?function public\.enviar_opinion/);
   const f = SQL.indexOf("commit;");
   assert.ok(i < d && d < c && c < f, "fuera de la transacción habría un instante sin función");
 });
