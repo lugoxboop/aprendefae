@@ -23,6 +23,7 @@ import ListaActividades from "./ListaActividades.jsx";
 import FraseDeHoy from "./FraseDeHoy.jsx";
 import EsfuerzoResultado from "./EsfuerzoResultado.jsx";
 import Fabrica from "./Fabrica.jsx";
+import LlamadoFabrica from "./LlamadoFabrica.jsx";
 import BloqueRiesgo from "./BloqueRiesgo.jsx";
 import ListaRiesgo from "./ListaRiesgo.jsx";
 import VistaEstudiante from "./VistaEstudiante.jsx";
@@ -590,6 +591,23 @@ export default function PanelDocente({ actividadInicial = null, onBack }) {
   } else {
     cuerpo = (
       <>
+        {/*
+          * La fábrica, a la vista y FUERA del «si hay estudiantes». Estaba en
+          * la fila de botones del final, del mismo tamaño que «Mis
+          * estudiantes»; es lo único de esta pantalla que ofrece hacer algo
+          * nuevo y ahí no se encontraba.
+          *
+          * No se apaga con el curso vacío a propósito: las demás vistas
+          * enseñan lo que hizo el curso y sin curso no enseñan nada, pero
+          * preparar material se hace ANTES de que empiece el semestre — justo
+          * cuando el resto del panel está en blanco y esto es lo único que
+          * tiene sentido tocar.
+          */}
+        <LlamadoFabrica
+          {...entrada(0, "crece")}
+          nombreMateria={nombreMateria}
+          onIr={() => ir({ tipo: "fabrica" })}
+        />
         {sinEstudiantes ? (
           /*
            * Ukyo §7, 0 estudiantes, con el texto de Katsumi. No hay «código de
@@ -681,24 +699,10 @@ export default function PanelDocente({ actividadInicial = null, onBack }) {
               {x.texto}
             </button>
           ))}
-          {/*
-            * La fábrica va aparte de las tres de arriba y NO se apaga sin
-            * estudiantes: las otras tres enseñan lo que hizo el curso y sin
-            * curso no enseñan nada, pero preparar material se hace antes de
-            * que empiece. Lleva el relleno teal porque es lo único de esta
-            * fila que crea algo en vez de mirar.
-            */}
-          <button
-            type="button"
-            onClick={() => ir({ tipo: "fabrica" })}
-            data-ir="fabrica"
-            style={{
-              ...volverV1, marginBottom: 0, cursor: "pointer",
-              background: FAE.teal, border: "none", color: "#06202A", fontWeight: 700,
-            }}
-          >
-            Crear actividades
-          </button>
+          {/* La fábrica ya no está aquí: subió al cuerpo del panel, encima de
+              las cifras (LlamadoFabrica). Dos entradas a lo mismo en la misma
+              pantalla no es el doble de visible, es una duda sobre cuál de las
+              dos hace otra cosa. */}
         </nav>
         {sinEstudiantes && <p style={{ ...notaV1, marginTop: "8px" }} data-razon-apagado>Se abre cuando alguien haga su primera actividad.</p>}
       </>
