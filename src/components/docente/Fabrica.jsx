@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { Plus, Sparkles, FileText, X, ShieldCheck, Eye, Check, Trash2, Wand2 } from "lucide-react";
+import { Plus, Sparkles, FileText, X, ShieldCheck, Eye, Check, Trash2 } from "lucide-react";
 import { FAE } from "../../theme.js";
 import { supabase } from "../../lib/supabase.js";
 import { V1, tarjetaV1, notaV1, volverV1 } from "./estiloV1.js";
 import { MAX_ARCHIVOS, revisar, formatearPeso, encargar, misBorradores, cambiarEstado } from "../../docente/fabrica.js";
+import Robot, { CSS_ROBOT } from "../../bruno/Robot.jsx";
+import { EstiloEntrada, entrada } from "../shared/Entrada.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -60,13 +62,24 @@ export default function Fabrica({ materia, nombreMateria, onVolver, cliente = su
   const [borradores, setBorradores] = useState([]);
   const [abierto, setAbierto] = useState(null);
   const [encima, setEncima] = useState(false);
-  const entrada = useRef(null);
+  /* El saludo es de una sola vez; el parpadeo, uno por lote que llega. */
+  const [saludo, setSaludo] = useState(true);
+  const [parpadeo, setParpadeo] = useState(0);
+  /* `campoArchivos` y no `entrada`: ese nombre ya es el de la función de
+     animación de la casa, y llamarlo igual la tapaba dentro del componente. */
+  const campoArchivos = useRef(null);
 
   const cargar = async () => {
     const r = await misBorradores(cliente, materia);
     if (r.ok) setBorradores(r.borradores);
   };
   useEffect(() => { cargar(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [materia]);
+  /* El saludo se apaga al acabar para que no vuelva a dispararse con cada
+     repintado: es un «hola», no un tic. */
+  useEffect(() => {
+    const t = setTimeout(() => setSaludo(false), 700);
+    return () => clearTimeout(t);
+  }, []);
 
   const recibir = (lista) => {
     const malo = revisar([...archivos, ...Array.from(lista ?? [])]);
@@ -83,9 +96,10 @@ export default function Fabrica({ materia, nombreMateria, onVolver, cliente = su
     setTrabajando(false);
     if (!r.ok) { setAviso({ tipo: "error", texto: r.motivo }); return; }
     setAviso({ tipo: "bien", texto: r.creadas === 1 ? "Lista una. Léela antes de publicar." : `Listas ${r.creadas}. Léelas antes de publicar.` });
+    setParpadeo((n) => n + 1);
     setMensaje("");
     setArchivos([]);
-    if (entrada.current) entrada.current.value = "";
+    if (campoArchivos.current) campoArchivos.current.value = "";
     await cargar();
   };
 
@@ -99,15 +113,21 @@ export default function Fabrica({ materia, nombreMateria, onVolver, cliente = su
   return (
     <section data-vista="fabrica">
       <style>{CSS}</style>
+      <style>{CSS_ROBOT}</style>
+      <EstiloEntrada />
       <button type="button" style={volverV1} onClick={onVolver} data-volver>‹ Volver al resumen</button>
 
-      {/* ── CABECERA: una línea, con su icono ────────────────────────── */}
-      <div style={{ display: "flex", alignItems: "center", gap: "11px", margin: "4px 0 16px" }}>
-        <span style={{
-          display: "grid", placeItems: "center", width: "38px", height: "38px", flexShrink: 0,
-          borderRadius: "12px", background: "rgba(42,157,143,0.14)", border: "1px solid rgba(42,157,143,0.4)",
-        }}>
-          <Wand2 size={19} color={FAE.teal} aria-hidden="true" />
+      {/*
+        * ── CABECERA ──────────────────────────────────────────────────
+        *
+        * El robot de Bruno, no un icono. Es el mismo que ya le contesta al
+        * estudiante, y ponerlo aquí dice sin una palabra quién va a hacer el
+        * trabajo. Saluda al entrar, mira a los lados mientras crea y parpadea
+        * cuando termina: tres estados, ninguno en bucle, que es la regla.
+        */}
+      <div {...entrada(0, "baja")} style={{ ...entrada(0, "baja").style, display: "flex", alignItems: "center", gap: "12px", margin: "4px 0 16px" }}>
+        <span className={saludo ? "fae-bruno-saluda" : undefined} style={{ flexShrink: 0, display: "block" }}>
+          <Robot tamano={42} estado={trabajando ? "pensando" : "quieto"} parpadeo={parpadeo} />
         </span>
         <div style={{ minWidth: 0 }}>
           <h2 style={{ margin: 0, fontFamily: "Sora, sans-serif", fontSize: "18px", fontWeight: 700, color: FAE.text }}>
@@ -119,7 +139,9 @@ export default function Fabrica({ materia, nombreMateria, onVolver, cliente = su
 
       {/* ── EL ENCARGO ───────────────────────────────────────────────── */}
       <div
-        className={`fab-caja${encima ? " fab-caja--encima" : ""}`}
+        {...entrada(1, "sube")}
+        className={`fab-caja${encima ? " fab-caja--encima" : ""} ${entrada(1, "sube").className ?? ""}`}
+        style={entrada(1, "sube").style}
         onDragOver={(e) => { e.preventDefault(); setEncima(true); }}
         onDragLeave={() => setEncima(false)}
         onDrop={(e) => { e.preventDefault(); setEncima(false); recibir(e.dataTransfer?.files); }}
@@ -157,7 +179,7 @@ export default function Fabrica({ materia, nombreMateria, onVolver, cliente = su
 
         <div className="fab-barra">
           <input
-            ref={entrada}
+            ref={campoArchivos}
             id="fabrica-archivos"
             type="file"
             multiple
@@ -182,7 +204,7 @@ export default function Fabrica({ materia, nombreMateria, onVolver, cliente = su
 
       {/* ── LOS EJEMPLOS, EN VEZ DE INSTRUCCIONES ────────────────────── */}
       {!mensaje && (
-        <div className="fab-ejemplos">
+        <div {...entrada(2, "sube")} className={`fab-ejemplos ${entrada(2, "sube").className ?? ""}`} style={entrada(2, "sube").style}>
           {EJEMPLOS.map((e) => (
             <button key={e} type="button" className="fab-ejemplo" onClick={() => setMensaje(e)}>
               {e}
@@ -191,7 +213,7 @@ export default function Fabrica({ materia, nombreMateria, onVolver, cliente = su
         </div>
       )}
 
-      <p className="fab-promesa">
+      <p {...entrada(3, "pie")} className={`fab-promesa ${entrada(3, "pie").className ?? ""}`} style={entrada(3, "pie").style}>
         <ShieldCheck size={14} color={FAE.teal} aria-hidden="true" />
         Tu archivo no se guarda. Se usa para crearlas y se descarta.
       </p>
@@ -212,10 +234,19 @@ export default function Fabrica({ materia, nombreMateria, onVolver, cliente = su
       {/* ── LOS BORRADORES ───────────────────────────────────────────── */}
       {borradores.length > 0 && (
         <ul className="fab-lista">
-          {borradores.map((b) => {
+          {borradores.map((b, i) => {
             const publicada = b.estado === "publicada";
+            /* Entran en fila, como las tarjetas de la portada: se leen como
+               una lista que se arma, no como un bloque que aparece. */
+            const e = entrada(4 + Math.min(i, 5), "crece");
             return (
-              <li key={b.id} className={`fab-tarjeta${publicada ? " fab-tarjeta--viva" : ""}`} data-borrador={b.id}>
+              <li
+                key={b.id}
+                {...e}
+                className={`fab-tarjeta${publicada ? " fab-tarjeta--viva" : ""} ${e.className ?? ""}`}
+                style={e.style}
+                data-borrador={b.id}
+              >
                 <div className="fab-tarjeta__fila">
                   <span className={`fab-punto${publicada ? " fab-punto--viva" : ""}`} aria-hidden="true" />
                   <div style={{ flex: 1, minWidth: 0 }}>

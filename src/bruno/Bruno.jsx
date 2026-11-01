@@ -3,7 +3,7 @@ import { X, ArrowUp } from "lucide-react";
 import { supabase } from "../lib/supabase.js";
 import { useAuthOpcional } from "../auth/AuthProvider.jsx";
 import { contextoActual } from "./contexto.js";
-import Robot from "./Robot.jsx";
+import Robot, { CSS_ROBOT } from "./Robot.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -66,26 +66,18 @@ const CSS = `
 @keyframes fae-bruno-desde-derecha { from { opacity: 0; transform: translateX(14px) scale(.97); } to { opacity: 1; transform: none; } }
 @keyframes fae-bruno-palabra { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 @keyframes fae-bruno-punto { 0%, 100% { opacity: .35; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-3px); } }
-@keyframes fae-bruno-saludo { 0% { opacity: 0; transform: translateY(6px) rotate(-14deg) scale(.7); } 60% { opacity: 1; transform: rotate(8deg) scale(1.06); } 100% { opacity: 1; transform: none; } }
-@keyframes fae-bruno-parpadeo { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(.12); } }
-@keyframes fae-bruno-mira { 0%, 100% { transform: translateX(-1.6px); } 50% { transform: translateX(1.6px); } }
-@keyframes fae-bruno-late { 0%, 100% { opacity: .35; } 50% { opacity: 1; } }
+${CSS_ROBOT}
 
 .fae-bruno-entra { animation: fae-bruno-sube 340ms ${CURVA} both; }
 .fae-bruno-entra-propia { animation: fae-bruno-desde-derecha 300ms ${CURVA} both; }
 .fae-bruno-palabra { display: inline-block; animation: fae-bruno-palabra 260ms ${CURVA} both; }
 .fae-bruno-punto { display: inline-block; width: 6px; height: 6px; border-radius: 999px; background: ${APOYO}; animation: fae-bruno-punto 900ms ${CURVA} 12 both; }
 
-.fae-bruno-robot-ojos, .fae-bruno-robot-mirada, .fae-bruno-robot-antena { transform-box: fill-box; transform-origin: center; }
-.fae-bruno-robot-ojos { animation: fae-bruno-parpadeo 240ms ${CURVA} 1 both; }
-.fae-bruno-saluda { animation: fae-bruno-saludo 620ms ${CURVA} both; }
-[data-bruno-robot="pensando"] .fae-bruno-robot-mirada { animation: fae-bruno-mira 1100ms ${CURVA} 10 both; }
-[data-bruno-robot="pensando"] .fae-bruno-robot-antena { animation: fae-bruno-late 700ms ${CURVA} 16 both; }
 
 @media (prefers-reduced-motion: reduce) {
   .fae-bruno-panel, .fae-bruno-boton, .fae-bruno-enviar, .fae-bruno-chip { transition: none; }
-  .fae-bruno-entra, .fae-bruno-entra-propia, .fae-bruno-palabra, .fae-bruno-punto, .fae-bruno-saluda,
-  .fae-bruno-robot-ojos, .fae-bruno-robot-mirada, .fae-bruno-robot-antena { animation: none !important; }
+  /* Las del robot se apagan en su propia hoja (CSS_ROBOT). */
+  .fae-bruno-entra, .fae-bruno-entra-propia, .fae-bruno-palabra, .fae-bruno-punto { animation: none !important; }
 }
 @media (min-width: 640px) { .fae-bruno-panel { left: auto !important; width: 384px; right: 16px !important; } }
 `;

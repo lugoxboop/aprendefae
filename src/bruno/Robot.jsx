@@ -14,6 +14,34 @@
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
+/*
+ * ═══════════ EL CSS DEL ROBOT VIVE CON EL ROBOT ═══════════
+ *
+ * Estaba dentro de la hoja de Bruno.jsx, que es donde nació. Al querer usarlo
+ * también en la fábrica del panel docente había dos caminos: copiar los
+ * fotogramas —y que un día se arreglara el parpadeo en un sitio y no en el
+ * otro— o mudarlos aquí. Se mudaron: quien pinte el robot incluye esta hoja y
+ * se lleva su movimiento con él. Bruno.jsx la importa en vez de repetirla.
+ */
+export const CURVA = "cubic-bezier(.3,.9,.4,1)";
+
+export const CSS_ROBOT = `
+@keyframes fae-bruno-saludo { 0% { opacity: 0; transform: translateY(6px) rotate(-14deg) scale(.7); } 60% { opacity: 1; transform: rotate(8deg) scale(1.06); } 100% { opacity: 1; transform: none; } }
+@keyframes fae-bruno-parpadeo { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(.12); } }
+@keyframes fae-bruno-mira { 0%, 100% { transform: translateX(-1.6px); } 50% { transform: translateX(1.6px); } }
+@keyframes fae-bruno-late { 0%, 100% { opacity: .35; } 50% { opacity: 1; } }
+
+.fae-bruno-robot-ojos, .fae-bruno-robot-mirada, .fae-bruno-robot-antena { transform-box: fill-box; transform-origin: center; }
+.fae-bruno-robot-ojos { animation: fae-bruno-parpadeo 240ms ${CURVA} 1 both; }
+.fae-bruno-saluda { animation: fae-bruno-saludo 620ms ${CURVA} both; }
+[data-bruno-robot="pensando"] .fae-bruno-robot-mirada { animation: fae-bruno-mira 1100ms ${CURVA} 10 both; }
+[data-bruno-robot="pensando"] .fae-bruno-robot-antena { animation: fae-bruno-late 700ms ${CURVA} 16 both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fae-bruno-saluda, .fae-bruno-robot-ojos, .fae-bruno-robot-mirada, .fae-bruno-robot-antena { animation: none !important; }
+}
+`;
+
 const TEAL = "#2A9D8F";
 const TEAL_CLARO = "#3DBBAB";
 const VISOR = "#0B1626";
