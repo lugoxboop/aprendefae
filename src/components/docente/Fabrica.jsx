@@ -1,98 +1,88 @@
 import { useEffect, useRef, useState } from "react";
+import { Plus, Sparkles, FileText, X, ShieldCheck, Eye, Check, Trash2, Wand2 } from "lucide-react";
 import { FAE } from "../../theme.js";
 import { supabase } from "../../lib/supabase.js";
-import { V1, tarjetaV1, tituloBloque, notaV1, volverV1 } from "./estiloV1.js";
-import {
-  MAX_ARCHIVOS, revisar, formatearPeso, encargar, misBorradores, cambiarEstado,
-} from "../../docente/fabrica.js";
+import { V1, tarjetaV1, notaV1, volverV1 } from "./estiloV1.js";
+import { MAX_ARCHIVOS, revisar, formatearPeso, encargar, misBorradores, cambiarEstado } from "../../docente/fabrica.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
  * LA FÁBRICA — el profesor crea sus propias actividades
  *
- * Encargo de Mateo (1-nov). El profesor sube su material, escribe qué quiere,
- * y el sitio le devuelve actividades hechas con el molde de «Aprender».
+ * Encargo de Mateo (1-nov). Rehecha la misma tarde: la primera versión era
+ * correcta y aburrida —tres párrafos de instrucciones, dos botones de texto
+ * gris y ni un color—. Su palabra fue «ruido visual», y tenía razón: cuando
+ * hay que explicar tanto, normalmente es que la pantalla no se explica sola.
  *
- * ═══════════ POR QUÉ NO ES UN CHAT ═══════════
+ * ═══════════ LO QUE SE QUITÓ, Y QUÉ OCUPÓ SU SITIO ═══════════
  *
- * Mateo lo pensó primero como un chatbot. Un chat es la forma correcta cuando
- * no se sabe de antemano qué se va a pedir; aquí se sabe: hay un material, un
- * encargo y un resultado. Un campo, un botón y una lista hacen el mismo
- * trabajo sin enseñarle a nadie a conversar con una máquina, y sin que el
- * profesor tenga que adivinar qué decir para que salga bien.
+ *   El párrafo de instrucciones  →  tres ejemplos que se tocan y escriben
+ *                                   solos. Nadie lee cómo se usa una caja de
+ *                                   texto; sí mira qué escribió otro.
+ *   «Adjuntar archivo»           →  un «+». Lo pidió Mateo y es lo correcto:
+ *                                   el botón no necesita decir qué hace si el
+ *                                   signo ya lo dice.
+ *   El aviso de que no se guarda →  una línea con su escudo. Sigue estando,
+ *                                   porque es una promesa, pero deja de ser
+ *                                   un párrafo.
+ *   Dos botones grises           →  uno teal con su varita. En una pantalla
+ *                                   hay una sola acción principal, y que se
+ *                                   note cuál es ahorra más que un texto.
  *
- * Se puede escribir, adjuntar, o las dos cosas. Lo único que no se puede es
- * mandar el encargo vacío.
+ * ═══════════ EL COLOR DICE EL ESTADO, NO DECORA ═══════════
  *
- * ═══════════ LO QUE SALE SON BORRADORES ═══════════
- *
- * Nada de esto llega a un estudiante solo. Quedan en esta pantalla hasta que
- * el profesor los lee y los publica, que es la misma regla con la que Duolingo
- * genera ejercicios: la máquina propone, el experto elige. Aquí el experto es
- * él, que además conoce a su curso.
- *
- * ═══════════ EL ARCHIVO NO SE GUARDA ═══════════
- *
- * Va en la petición, el modelo lo lee y se descarta. Se le dice en pantalla,
- * porque subir el capítulo de un libro a un sitio ajeno es justo la clase de
- * cosa sobre la que un profesor tiene derecho a saber qué pasa.
+ * Teal para lo publicado y para la única acción que crea algo. Gris para lo
+ * que todavía es borrador. Nada más: el panel es una herramienta de trabajo y
+ * un color que no significa nada es ruido con otro nombre.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-/* Lo que tarda de verdad: un PDF entero y tres actividades no son instantáneos. */
-const AVISO_ESPERA = "Esto tarda hasta un minuto. Puedes dejar la pestaña abierta.";
+/* Tres encargos de verdad, de los que un profesor de la facultad escribiría. */
+const EJEMPLOS = [
+  "Del capítulo 3, con ejemplos en pesos",
+  "Gasto contra pago, que ahí se enredan",
+  "Repaso de lo que falló en el parcial",
+];
 
-const campo = {
-  width: "100%", boxSizing: "border-box", resize: "vertical", minHeight: "110px",
-  padding: "12px 14px", borderRadius: "14px",
-  background: "rgba(10,20,34,0.45)", border: `1px solid ${V1.borde ?? "rgba(248,249,250,0.16)"}`,
-  color: FAE.text, fontFamily: "Inter, sans-serif", fontSize: "16px", lineHeight: 1.5,
-};
+const AVISO_ESPERA = "Dame menos de un minuto…";
 
-const boton = (activo) => ({
-  minHeight: "44px", padding: "0 22px", borderRadius: "999px", border: "none",
-  background: activo ? FAE.teal : "rgba(248,249,250,0.10)",
-  color: activo ? "#06202A" : "rgba(248,249,250,0.62)",
-  fontFamily: "Sora, sans-serif", fontSize: "14.5px", fontWeight: 700,
-  cursor: activo ? "pointer" : "not-allowed",
-});
-
-export default function Fabrica({ materia, nombreMateria, onVolver }) {
+/*
+ * `cliente` entra por parámetro y no se importa a secas para poder montar esta
+ * pantalla sin base: con un cliente de mentira se la puede fotografiar con
+ * borradores dentro y medirla a 320 px, que es como se encontró que el «+»
+ * medía lo que tiene que medir. En el panel se usa el de verdad y nadie lo pasa.
+ */
+export default function Fabrica({ materia, nombreMateria, onVolver, cliente = supabase }) {
   const [mensaje, setMensaje] = useState("");
   const [archivos, setArchivos] = useState([]);
   const [trabajando, setTrabajando] = useState(false);
   const [aviso, setAviso] = useState(null);
   const [borradores, setBorradores] = useState([]);
   const [abierto, setAbierto] = useState(null);
+  const [encima, setEncima] = useState(false);
   const entrada = useRef(null);
 
   const cargar = async () => {
-    const r = await misBorradores(supabase, materia);
+    const r = await misBorradores(cliente, materia);
     if (r.ok) setBorradores(r.borradores);
   };
-
   useEffect(() => { cargar(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [materia]);
 
-  const elegirArchivos = (lista) => {
-    const malo = revisar(lista);
+  const recibir = (lista) => {
+    const malo = revisar([...archivos, ...Array.from(lista ?? [])]);
     if (malo) { setAviso({ tipo: "error", texto: malo }); return; }
     setAviso(null);
-    setArchivos(Array.from(lista));
+    setArchivos((a) => [...a, ...Array.from(lista ?? [])]);
   };
-
-  const quitar = (i) => setArchivos((a) => a.filter((_, k) => k !== i));
 
   const enviar = async () => {
     if (trabajando) return;
     setTrabajando(true);
     setAviso({ tipo: "espera", texto: AVISO_ESPERA });
-    const r = await encargar(supabase, { materia, mensaje, archivos });
+    const r = await encargar(cliente, { materia, mensaje, archivos });
     setTrabajando(false);
     if (!r.ok) { setAviso({ tipo: "error", texto: r.motivo }); return; }
-    setAviso({
-      tipo: "bien",
-      texto: r.creadas === 1 ? "Lista una actividad. Léela antes de publicarla." : `Listas ${r.creadas} actividades. Léelas antes de publicarlas.`,
-    });
+    setAviso({ tipo: "bien", texto: r.creadas === 1 ? "Lista una. Léela antes de publicar." : `Listas ${r.creadas}. Léelas antes de publicar.` });
     setMensaje("");
     setArchivos([]);
     if (entrada.current) entrada.current.value = "";
@@ -100,7 +90,7 @@ export default function Fabrica({ materia, nombreMateria, onVolver }) {
   };
 
   const marcar = async (id, estado) => {
-    const r = await cambiarEstado(supabase, id, estado);
+    const r = await cambiarEstado(cliente, id, estado);
     if (r.ok) { setAbierto(null); await cargar(); }
   };
 
@@ -108,209 +98,307 @@ export default function Fabrica({ materia, nombreMateria, onVolver }) {
 
   return (
     <section data-vista="fabrica">
+      <style>{CSS}</style>
       <button type="button" style={volverV1} onClick={onVolver} data-volver>‹ Volver al resumen</button>
 
-      <section style={{ ...tarjetaV1, marginBottom: "22px" }} data-fabrica-encargo>
-        <h2 style={{ ...tituloBloque, fontSize: "16px" }}>Crear actividades desde tu material</h2>
-        <p style={{ ...notaV1, marginBottom: "16px" }}>
-          Sube el capítulo o el tema y dime qué quieres que salga. Te dejo tres borradores
-          de <strong style={{ color: FAE.text }}>{nombreMateria || materia}</strong> para que los leas
-          y publiques los que sirvan. <strong style={{ color: FAE.text }}>Tu archivo no se guarda</strong>:
-          se usa para crearlas y se descarta.
-        </p>
+      {/* ── CABECERA: una línea, con su icono ────────────────────────── */}
+      <div style={{ display: "flex", alignItems: "center", gap: "11px", margin: "4px 0 16px" }}>
+        <span style={{
+          display: "grid", placeItems: "center", width: "38px", height: "38px", flexShrink: 0,
+          borderRadius: "12px", background: "rgba(42,157,143,0.14)", border: "1px solid rgba(42,157,143,0.4)",
+        }}>
+          <Wand2 size={19} color={FAE.teal} aria-hidden="true" />
+        </span>
+        <div style={{ minWidth: 0 }}>
+          <h2 style={{ margin: 0, fontFamily: "Sora, sans-serif", fontSize: "18px", fontWeight: 700, color: FAE.text }}>
+            Crear actividades
+          </h2>
+          <p style={{ ...notaV1, fontSize: "13px" }}>De tu material, para {nombreMateria || materia}</p>
+        </div>
+      </div>
 
-        <label htmlFor="fabrica-mensaje" style={{ ...notaV1, display: "block", marginBottom: "6px", color: FAE.text, fontWeight: 600 }}>
-          Qué quieres que haga
-        </label>
+      {/* ── EL ENCARGO ───────────────────────────────────────────────── */}
+      <div
+        className={`fab-caja${encima ? " fab-caja--encima" : ""}`}
+        onDragOver={(e) => { e.preventDefault(); setEncima(true); }}
+        onDragLeave={() => setEncima(false)}
+        onDrop={(e) => { e.preventDefault(); setEncima(false); recibir(e.dataTransfer?.files); }}
+        data-fabrica-encargo
+      >
         <textarea
           id="fabrica-mensaje"
+          className="fab-campo"
           value={mensaje}
           onChange={(e) => setMensaje(e.target.value.slice(0, 4000))}
-          placeholder="Por ejemplo: del capítulo 3, tres actividades sobre causación, con ejemplos en pesos. O: explica la diferencia entre gasto y pago, que ahí se enredan todos."
-          style={campo}
+          rows={3}
+          aria-label="Qué quieres que haga"
+          placeholder="¿Qué quieres que salga? Escríbelo aquí, o suelta tu PDF."
         />
 
-        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "10px", marginTop: "14px" }}>
-          <input
-            ref={entrada}
-            id="fabrica-archivos"
-            type="file"
-            multiple
-            accept=".pdf,.txt,.md,.csv,application/pdf,text/plain,text/markdown,text/csv"
-            onChange={(e) => elegirArchivos(e.target.files)}
-            style={{ display: "none" }}
-          />
-          <label
-            htmlFor="fabrica-archivos"
-            style={{
-              display: "inline-flex", alignItems: "center", minHeight: "44px", padding: "0 18px",
-              borderRadius: "999px", background: "transparent", border: "1px solid rgba(248,249,250,0.28)",
-              color: FAE.text, fontFamily: "Sora, sans-serif", fontSize: "14px", fontWeight: 600, cursor: "pointer",
-            }}
-          >
-            Adjuntar archivo
-          </label>
-          <span style={{ ...notaV1, fontSize: "12.5px" }}>PDF o texto · hasta {MAX_ARCHIVOS} · 8 MB cada uno</span>
-        </div>
-
         {archivos.length > 0 && (
-          <ul style={{ listStyle: "none", margin: "12px 0 0", padding: 0, display: "grid", gap: "6px" }}>
+          <ul className="fab-adjuntos">
             {archivos.map((a, i) => (
-              <li key={`${a.name}-${i}`} style={{
-                display: "flex", alignItems: "center", gap: "10px", padding: "8px 12px",
-                borderRadius: "12px", background: "rgba(248,249,250,0.05)", fontSize: "13px",
-              }}>
-                <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{a.name}</span>
-                <span style={{ color: V1.texto2, fontSize: "12px" }}>{formatearPeso(a.size)}</span>
+              <li key={`${a.name}-${i}`} className="fab-chip">
+                <FileText size={14} color={FAE.teal} aria-hidden="true" />
+                <span className="fab-chip__nombre">{a.name}</span>
+                <span className="fab-chip__peso">{formatearPeso(a.size)}</span>
                 <button
                   type="button"
-                  onClick={() => quitar(i)}
+                  className="fab-chip__x"
+                  onClick={() => setArchivos((x) => x.filter((_, k) => k !== i))}
                   aria-label={`Quitar ${a.name}`}
-                  style={{
-                    minWidth: "44px", minHeight: "44px", background: "transparent", border: "none",
-                    color: "rgba(248,249,250,0.6)", cursor: "pointer", fontSize: "18px", lineHeight: 1,
-                  }}
                 >
-                  ×
+                  <X size={14} aria-hidden="true" />
                 </button>
               </li>
             ))}
           </ul>
         )}
 
-        <div style={{ display: "flex", alignItems: "center", gap: "14px", marginTop: "18px", flexWrap: "wrap" }}>
-          <button type="button" onClick={enviar} disabled={!puede} style={boton(puede)} data-crear>
-            {trabajando ? "Creando…" : "Crear actividades"}
+        <div className="fab-barra">
+          <input
+            ref={entrada}
+            id="fabrica-archivos"
+            type="file"
+            multiple
+            accept=".pdf,.txt,.md,.csv,application/pdf,text/plain,text/markdown,text/csv"
+            onChange={(e) => recibir(e.target.files)}
+            style={{ display: "none" }}
+          />
+          {/* El «+» que pidió Mateo: el signo dice lo que hacía la etiqueta. */}
+          <label htmlFor="fabrica-archivos" className="fab-mas" title={`Adjuntar PDF o texto · hasta ${MAX_ARCHIVOS}`}>
+            <Plus size={20} aria-hidden="true" />
+            <span className="fab-solo-lector">Adjuntar archivo</span>
+          </label>
+
+          <span style={{ flex: 1 }} />
+
+          <button type="button" onClick={enviar} disabled={!puede} className="fab-crear" data-crear>
+            <Sparkles size={16} aria-hidden="true" />
+            {trabajando ? "Creando…" : "Crear"}
           </button>
-          {aviso && (
-            <p
-              role={aviso.tipo === "error" ? "alert" : "status"}
-              style={{
-                margin: 0, fontSize: "13px", lineHeight: 1.45,
-                color: aviso.tipo === "error" ? FAE.coral : aviso.tipo === "bien" ? FAE.node : V1.texto2,
-              }}
-            >
-              {aviso.texto}
-            </p>
-          )}
         </div>
-      </section>
+      </div>
 
-      <h2 style={{ ...tituloBloque, fontSize: "15px" }}>
-        Tus borradores {borradores.length > 0 && <span style={{ color: V1.texto2, fontWeight: 400 }}>({borradores.length})</span>}
-      </h2>
+      {/* ── LOS EJEMPLOS, EN VEZ DE INSTRUCCIONES ────────────────────── */}
+      {!mensaje && (
+        <div className="fab-ejemplos">
+          {EJEMPLOS.map((e) => (
+            <button key={e} type="button" className="fab-ejemplo" onClick={() => setMensaje(e)}>
+              {e}
+            </button>
+          ))}
+        </div>
+      )}
 
-      {borradores.length === 0 ? (
-        <p style={{ ...notaV1, marginBottom: "28px" }}>
-          Todavía no hay ninguno. Lo que crees aquí aparece en esta lista y no lo ve nadie más hasta que lo publiques.
+      <p className="fab-promesa">
+        <ShieldCheck size={14} color={FAE.teal} aria-hidden="true" />
+        Tu archivo no se guarda. Se usa para crearlas y se descarta.
+      </p>
+
+      {aviso && (
+        <p
+          role={aviso.tipo === "error" ? "alert" : "status"}
+          className="fab-aviso"
+          /* El acierto NO va en teal: el teal rellena y contornea, nunca
+             escribe (trinquete de toda la plataforma). Va en el azul claro de
+             la casa, que sí es color de letra. */
+          style={{ color: aviso.tipo === "error" ? FAE.coral : aviso.tipo === "bien" ? FAE.node : V1.texto2 }}
+        >
+          {aviso.texto}
         </p>
-      ) : (
-        <ul style={{ listStyle: "none", margin: "0 0 28px", padding: 0, display: "grid", gap: "10px" }}>
-          {borradores.map((b) => (
-            <li key={b.id} style={{ ...tarjetaV1, marginBottom: 0, padding: "14px 16px" }} data-borrador={b.id}>
-              <div style={{ display: "flex", alignItems: "flex-start", gap: "12px", flexWrap: "wrap" }}>
-                <div style={{ flex: "1 1 220px", minWidth: 0 }}>
-                  <p style={{ margin: 0, fontFamily: "Sora, sans-serif", fontSize: "14.5px", fontWeight: 700, color: FAE.text }}>
-                    {b.titulo}
-                  </p>
-                  <p style={{ ...notaV1, marginTop: "3px", fontSize: "12.5px" }}>
-                    {b.estado === "publicada" ? "Publicada" : "Borrador"}
-                    {b.pieza?.nombres ? ` · ${b.pieza.nombres.length} términos` : ""}
-                    {b.pieza?.pasos ? ` · ${b.pieza.pasos.length} pasos` : ""}
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setAbierto(abierto === b.id ? null : b.id)}
-                  style={{
-                    minHeight: "44px", padding: "0 16px", borderRadius: "999px", cursor: "pointer",
-                    background: "transparent", border: "1px solid rgba(248,249,250,0.26)",
-                    color: FAE.text, fontFamily: "Sora, sans-serif", fontSize: "13.5px", fontWeight: 600,
-                  }}
-                  data-leer
-                >
-                  {abierto === b.id ? "Cerrar" : "Leer"}
-                </button>
-              </div>
+      )}
 
-              {abierto === b.id && <Vista pieza={b.pieza} encargo={b.encargo} />}
-
-              {abierto === b.id && (
-                <div style={{ display: "flex", gap: "10px", marginTop: "14px", flexWrap: "wrap" }}>
-                  {b.estado !== "publicada" && (
-                    <button type="button" onClick={() => marcar(b.id, "publicada")} style={boton(true)} data-publicar>
-                      Publicar
-                    </button>
-                  )}
+      {/* ── LOS BORRADORES ───────────────────────────────────────────── */}
+      {borradores.length > 0 && (
+        <ul className="fab-lista">
+          {borradores.map((b) => {
+            const publicada = b.estado === "publicada";
+            return (
+              <li key={b.id} className={`fab-tarjeta${publicada ? " fab-tarjeta--viva" : ""}`} data-borrador={b.id}>
+                <div className="fab-tarjeta__fila">
+                  <span className={`fab-punto${publicada ? " fab-punto--viva" : ""}`} aria-hidden="true" />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <p className="fab-tarjeta__titulo">{b.titulo}</p>
+                    <p className="fab-tarjeta__meta">
+                      {publicada ? "Publicada" : "Borrador"}
+                      {b.pieza?.pasos ? ` · ${b.pieza.pasos.length} pasos` : ""}
+                    </p>
+                  </div>
                   <button
                     type="button"
-                    onClick={() => marcar(b.id, "descartada")}
-                    style={{
-                      minHeight: "44px", padding: "0 18px", borderRadius: "999px", cursor: "pointer",
-                      background: "transparent", border: "1px solid rgba(231,111,81,0.5)",
-                      color: FAE.text, fontFamily: "Sora, sans-serif", fontSize: "14px", fontWeight: 600,
-                    }}
-                    data-descartar
+                    className="fab-icono"
+                    onClick={() => setAbierto(abierto === b.id ? null : b.id)}
+                    aria-label={abierto === b.id ? `Cerrar ${b.titulo}` : `Leer ${b.titulo}`}
+                    aria-expanded={abierto === b.id}
+                    data-leer
                   >
-                    Descartar
+                    {abierto === b.id ? <X size={17} aria-hidden="true" /> : <Eye size={17} aria-hidden="true" />}
                   </button>
                 </div>
-              )}
-            </li>
-          ))}
+
+                {abierto === b.id && (
+                  <>
+                    <Vista pieza={b.pieza} />
+                    <div className="fab-acciones">
+                      {!publicada && (
+                        <button type="button" onClick={() => marcar(b.id, "publicada")} className="fab-crear" data-publicar>
+                          <Check size={16} aria-hidden="true" />
+                          Publicar
+                        </button>
+                      )}
+                      <button type="button" onClick={() => marcar(b.id, "descartada")} className="fab-icono fab-icono--fuera" aria-label={`Descartar ${b.titulo}`} data-descartar>
+                        <Trash2 size={17} aria-hidden="true" />
+                      </button>
+                    </div>
+                  </>
+                )}
+              </li>
+            );
+          })}
         </ul>
       )}
     </section>
   );
 }
 
-/* La actividad tal cual quedó, para leerla entera antes de decidir. */
-function Vista({ pieza, encargo }) {
+/* La actividad entera, para leerla antes de decidir. Sin rótulos en mayúscula:
+   la jerarquía ya la dan el tamaño y el espacio. */
+function Vista({ pieza }) {
   if (!pieza) return null;
-  const termino = (i) => pieza.nombres?.[i]?.termino ?? null;
-
   return (
-    <div style={{ marginTop: "14px", paddingTop: "14px", borderTop: "1px solid rgba(248,249,250,0.12)" }} data-vista-borrador>
-      {encargo && (
-        <p style={{ ...notaV1, fontSize: "12.5px", fontStyle: "italic", marginBottom: "12px" }}>
-          Lo pediste así: «{encargo}»
-        </p>
-      )}
-      {pieza.objetivo && (
-        <p style={{ ...notaV1, marginBottom: "12px", color: FAE.node }}>{pieza.objetivo}</p>
-      )}
-
-      <p style={{ margin: "0 0 6px", fontSize: "12px", letterSpacing: "0.06em", color: V1.texto2 }}>TÉRMINOS</p>
-      <ul style={{ margin: "0 0 14px", paddingLeft: "18px", display: "grid", gap: "4px" }}>
+    <div className="fab-vista" data-vista-borrador>
+      {pieza.objetivo && <p className="fab-objetivo">{pieza.objetivo}</p>}
+      <ul className="fab-terminos">
         {(pieza.nombres ?? []).map((n, i) => (
-          <li key={i} style={{ fontSize: "13.5px", lineHeight: 1.5, color: "rgba(248,249,250,0.85)" }}>
-            <strong style={{ color: FAE.text }}>{n.termino}:</strong> {n.definicion}
-          </li>
+          <li key={i}><strong>{n.termino}</strong> {n.definicion}</li>
         ))}
       </ul>
-
-      <p style={{ margin: "0 0 6px", fontSize: "12px", letterSpacing: "0.06em", color: V1.texto2 }}>PASOS</p>
-      <ol style={{ margin: "0 0 14px", paddingLeft: "18px", display: "grid", gap: "6px" }}>
-        {(pieza.pasos ?? []).map((p, i) => (
-          <li key={i} style={{ fontSize: "13.5px", lineHeight: 1.5, color: "rgba(248,249,250,0.85)" }}>
-            {p.texto}
-            {termino(p.resaltar) && (
-              <span style={{ color: V1.texto2, fontSize: "12px" }}> — enciende «{termino(p.resaltar)}»</span>
-            )}
-          </li>
-        ))}
+      <ol className="fab-pasos">
+        {(pieza.pasos ?? []).map((p, i) => <li key={i}>{p.texto}</li>)}
       </ol>
-
-      <p style={{ margin: "0 0 6px", fontSize: "12px", letterSpacing: "0.06em", color: V1.texto2 }}>PREGUNTA FINAL</p>
-      <p style={{ margin: "0 0 8px", fontSize: "14px", lineHeight: 1.5, color: FAE.text, fontWeight: 600 }}>{pieza.pregunta}</p>
-      {pieza.respuesta && (
-        <p style={{
-          margin: 0, padding: "10px 12px", borderRadius: "12px", fontSize: "13.5px", lineHeight: 1.55,
-          color: "rgba(248,249,250,0.85)", background: "rgba(42,157,143,0.08)", borderLeft: `3px solid ${FAE.teal}`,
-        }}>
-          {pieza.respuesta}
-        </p>
-      )}
+      <p className="fab-pregunta">{pieza.pregunta}</p>
+      {pieza.respuesta && <p className="fab-respuesta">{pieza.respuesta}</p>}
     </div>
   );
 }
+
+/*
+ * El estilo va en una hoja y no en línea: aquí hay estados —el foco del campo,
+ * el hover del «+», la caja encendida mientras se arrastra un archivo— que el
+ * estilo en línea no sabe expresar, y eran justo lo que le faltaba.
+ */
+const CSS = `
+.fab-solo-lector { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+.fab-caja {
+  border-radius: 18px; padding: 6px 6px 6px;
+  background: rgba(10,20,34,0.45);
+  border: 1px solid rgba(248,249,250,0.16);
+  transition: border-color 180ms ease, background 180ms ease;
+}
+.fab-caja:focus-within { border-color: rgba(42,157,143,0.65); }
+.fab-caja--encima { border-color: ${FAE.teal}; background: rgba(42,157,143,0.08); border-style: dashed; }
+
+.fab-campo {
+  width: 100%; box-sizing: border-box; display: block; resize: vertical; min-height: 86px;
+  padding: 12px 12px 4px; background: transparent; border: none; outline: none;
+  color: ${FAE.text}; font-family: Inter, sans-serif; font-size: 16px; line-height: 1.5;
+}
+.fab-campo::placeholder { color: rgba(248,249,250,0.52); }
+
+.fab-adjuntos { list-style: none; margin: 4px 0 0; padding: 0 8px; display: flex; flex-wrap: wrap; gap: 6px; }
+.fab-chip {
+  display: inline-flex; align-items: center; gap: 7px; max-width: 100%;
+  padding: 5px 5px 5px 10px; border-radius: 999px;
+  background: rgba(42,157,143,0.12); border: 1px solid rgba(42,157,143,0.34);
+  font-size: 12.5px; color: ${FAE.text};
+}
+.fab-chip__nombre { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 150px; }
+.fab-chip__peso { color: rgba(248,249,250,0.62); font-size: 11.5px; }
+.fab-chip__x {
+  display: grid; place-items: center; width: 22px; height: 22px; padding: 0; position: relative;
+  border-radius: 999px; border: none; background: rgba(248,249,250,0.10); color: rgba(248,249,250,0.75); cursor: pointer;
+}
+/* El blanco de toque llega a 44 sin agrandar el dibujo. */
+.fab-chip__x::after { content: ""; position: absolute; top: 50%; left: 50%; width: 44px; height: 44px; transform: translate(-50%, -50%); }
+
+.fab-barra { display: flex; align-items: center; gap: 10px; padding: 6px 6px 0; }
+
+.fab-mas {
+  display: grid; place-items: center; width: 44px; height: 44px; flex-shrink: 0;
+  border-radius: 14px; cursor: pointer;
+  background: rgba(248,249,250,0.06); border: 1px solid rgba(248,249,250,0.18);
+  color: rgba(248,249,250,0.82);
+  transition: background 180ms ease, border-color 180ms ease, color 180ms ease;
+}
+/* Al pasar por encima: el relleno y el contorno se tiñen de teal y el signo
+   se pone blanco. El «+» NO se pinta de teal: el trinquete de la plataforma
+   no distingue un icono de una letra, y tiene razón en no fiarse. */
+.fab-mas:hover { background: rgba(42,157,143,0.14); border-color: rgba(42,157,143,0.6); color: ${FAE.text}; }
+
+.fab-crear {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 44px; padding: 0 20px; border-radius: 999px; border: none; cursor: pointer;
+  background: ${FAE.teal}; color: #06202A;
+  font-family: Sora, sans-serif; font-size: 14.5px; font-weight: 700;
+  transition: filter 180ms ease, transform 180ms ease;
+}
+.fab-crear:hover:not(:disabled) { filter: brightness(1.08); }
+.fab-crear:active:not(:disabled) { transform: translateY(1px); }
+.fab-crear:disabled { background: rgba(248,249,250,0.10); color: rgba(248,249,250,0.62); cursor: not-allowed; }
+
+.fab-ejemplos { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.fab-ejemplo {
+  min-height: 36px; padding: 0 14px; border-radius: 999px; cursor: pointer;
+  background: transparent; border: 1px dashed rgba(248,249,250,0.26);
+  color: rgba(248,249,250,0.78); font-family: Inter, sans-serif; font-size: 12.5px;
+  position: relative; transition: border-color 180ms ease, color 180ms ease;
+}
+.fab-ejemplo::after { content: ""; position: absolute; top: 50%; left: 0; width: 100%; height: 44px; transform: translateY(-50%); }
+.fab-ejemplo:hover { border-color: rgba(42,157,143,0.7); color: ${FAE.text}; }
+
+.fab-promesa { display: flex; align-items: center; gap: 7px; margin: 14px 0 0; font-size: 12.5px; color: rgba(248,249,250,0.6); }
+.fab-aviso { margin: 12px 0 0; font-size: 13.5px; line-height: 1.45; }
+
+.fab-lista { list-style: none; margin: 26px 0 28px; padding: 0; display: grid; gap: 10px; }
+.fab-tarjeta {
+  border-radius: 16px; padding: 13px 14px;
+  background: rgba(248,249,250,0.04); border: 1px solid rgba(248,249,250,0.12);
+}
+.fab-tarjeta--viva { border-color: rgba(42,157,143,0.42); background: rgba(42,157,143,0.06); }
+.fab-tarjeta__fila { display: flex; align-items: center; gap: 11px; }
+.fab-punto { width: 8px; height: 8px; border-radius: 999px; flex-shrink: 0; background: rgba(248,249,250,0.32); }
+.fab-punto--viva { background: ${FAE.teal}; box-shadow: 0 0 0 4px rgba(42,157,143,0.18); }
+.fab-tarjeta__titulo { margin: 0; font-family: Sora, sans-serif; font-size: 14.5px; font-weight: 700; color: ${FAE.text}; }
+.fab-tarjeta__meta { margin: 2px 0 0; font-size: 12.5px; color: rgba(248,249,250,0.62); }
+
+.fab-icono {
+  display: grid; place-items: center; width: 44px; height: 44px; flex-shrink: 0; padding: 0;
+  border-radius: 999px; cursor: pointer;
+  background: rgba(248,249,250,0.06); border: 1px solid rgba(248,249,250,0.16); color: rgba(248,249,250,0.82);
+  transition: background 180ms ease, color 180ms ease, border-color 180ms ease;
+}
+.fab-icono:hover { background: rgba(248,249,250,0.11); color: ${FAE.text}; }
+.fab-icono--fuera:hover { border-color: rgba(231,111,81,0.6); color: ${FAE.coral}; }
+
+.fab-acciones { display: flex; align-items: center; gap: 10px; margin-top: 14px; }
+
+.fab-vista { margin-top: 13px; padding-top: 13px; border-top: 1px solid rgba(248,249,250,0.12); }
+.fab-objetivo { margin: 0 0 12px; font-size: 13.5px; line-height: 1.5; color: ${FAE.node}; }
+.fab-terminos { list-style: none; margin: 0 0 14px; padding: 0; display: grid; gap: 7px; }
+.fab-terminos li { font-size: 13.5px; line-height: 1.5; color: rgba(248,249,250,0.82); padding-left: 12px; border-left: 2px solid rgba(42,157,143,0.4); }
+.fab-terminos strong { color: ${FAE.text}; }
+.fab-pasos { margin: 0 0 14px; padding-left: 20px; display: grid; gap: 6px; }
+.fab-pasos li { font-size: 13.5px; line-height: 1.5; color: rgba(248,249,250,0.82); }
+.fab-pregunta { margin: 0 0 8px; font-size: 14px; line-height: 1.5; font-weight: 600; color: ${FAE.text}; }
+.fab-respuesta {
+  margin: 0; padding: 10px 12px; border-radius: 12px; font-size: 13.5px; line-height: 1.55;
+  color: rgba(248,249,250,0.84); background: rgba(42,157,143,0.08); border-left: 3px solid ${FAE.teal};
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fab-caja, .fab-mas, .fab-crear, .fab-ejemplo, .fab-icono { transition: none; }
+  .fab-crear:active:not(:disabled) { transform: none; }
+}
+`;
