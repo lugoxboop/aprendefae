@@ -200,7 +200,10 @@ export default function Fabrica({ materia, nombreMateria, onVolver, cliente = su
         <p
           role={aviso.tipo === "error" ? "alert" : "status"}
           className="fab-aviso"
-          style={{ color: aviso.tipo === "error" ? FAE.coral : aviso.tipo === "bien" ? FAE.teal : V1.texto2 }}
+          /* El acierto NO va en teal: el teal rellena y contornea, nunca
+             escribe (trinquete de toda la plataforma). Va en el azul claro de
+             la casa, que sí es color de letra. */
+          style={{ color: aviso.tipo === "error" ? FAE.coral : aviso.tipo === "bien" ? FAE.node : V1.texto2 }}
         >
           {aviso.texto}
         </p>
@@ -329,7 +332,10 @@ const CSS = `
   color: rgba(248,249,250,0.82);
   transition: background 180ms ease, border-color 180ms ease, color 180ms ease;
 }
-.fab-mas:hover { background: rgba(42,157,143,0.14); border-color: rgba(42,157,143,0.6); color: ${FAE.teal}; }
+/* Al pasar por encima: el relleno y el contorno se tiñen de teal y el signo
+   se pone blanco. El «+» NO se pinta de teal: el trinquete de la plataforma
+   no distingue un icono de una letra, y tiene razón en no fiarse. */
+.fab-mas:hover { background: rgba(42,157,143,0.14); border-color: rgba(42,157,143,0.6); color: ${FAE.text}; }
 
 .fab-crear {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
