@@ -22,6 +22,7 @@ import ListaEstudiantes from "./ListaEstudiantes.jsx";
 import ListaActividades from "./ListaActividades.jsx";
 import FraseDeHoy from "./FraseDeHoy.jsx";
 import EsfuerzoResultado from "./EsfuerzoResultado.jsx";
+import Fabrica from "./Fabrica.jsx";
 import BloqueRiesgo from "./BloqueRiesgo.jsx";
 import ListaRiesgo from "./ListaRiesgo.jsx";
 import VistaEstudiante from "./VistaEstudiante.jsx";
@@ -526,6 +527,19 @@ export default function PanelDocente({ actividadInicial = null, onBack }) {
         </section>
       </section>
     );
+  } else if (vista.tipo === "fabrica") {
+    /*
+      * La fábrica. No depende de que haya estudiantes ni de que nadie haya
+      * jugado: un profesor puede preparar su material antes de que empiece el
+      * curso, y de hecho es cuando más falta le hace.
+      */
+    cuerpo = (
+      <Fabrica
+        materia={materia}
+        nombreMateria={nombreMateria}
+        onVolver={() => ir({ tipo: "inicio" })}
+      />
+    );
   } else if (vista.tipo === "estudiantes") {
     cuerpo = (
       <ListaEstudiantes
@@ -667,6 +681,24 @@ export default function PanelDocente({ actividadInicial = null, onBack }) {
               {x.texto}
             </button>
           ))}
+          {/*
+            * La fábrica va aparte de las tres de arriba y NO se apaga sin
+            * estudiantes: las otras tres enseñan lo que hizo el curso y sin
+            * curso no enseñan nada, pero preparar material se hace antes de
+            * que empiece. Lleva el relleno teal porque es lo único de esta
+            * fila que crea algo en vez de mirar.
+            */}
+          <button
+            type="button"
+            onClick={() => ir({ tipo: "fabrica" })}
+            data-ir="fabrica"
+            style={{
+              ...volverV1, marginBottom: 0, cursor: "pointer",
+              background: FAE.teal, border: "none", color: "#06202A", fontWeight: 700,
+            }}
+          >
+            Crear actividades
+          </button>
         </nav>
         {sinEstudiantes && <p style={{ ...notaV1, marginTop: "8px" }} data-razon-apagado>Se abre cuando alguien haga su primera actividad.</p>}
       </>
