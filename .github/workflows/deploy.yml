@@ -254,16 +254,26 @@ jobs:
           # «Installing Supabase CLI as a global module is not supported»— y
           # ese fue el primer intento de este paso, que murió ahí. `npx` es la
           # forma que la propia documentación usa en integración continua.
-          CLI="npx --yes supabase@latest"
+          # LA VERSIÓN VA FIJADA AL 3, no a `latest`. Fijarla a `latest` es
+          # pedir que un día cualquiera una versión nueva cambie una bandera y
+          # el despliegue se caiga sin que nadie haya tocado nada — y ya pasó
+          # aquí: la 3 deprecó `--project-ref` a favor de `--remote`.
+          CLI="npx --yes supabase@3"
           $CLI --version || { echo "No se pudo preparar la CLI de Supabase"; exit 1; }
 
           # Una por una, para que el registro diga cuál falló si falla alguna.
+          #
+          # `--yes`: la CLI pide confirmación antes de publicar y en un
+          # despliegue no hay nadie para dársela. Sin esto se queda esperando
+          # una respuesta que no va a llegar y aborta sin cambiar nada
+          # —exactamente lo que hizo en su primera ejecución de verdad—.
+          #
           # Sin --no-verify-jwt NUNCA: esa bandera apaga la comprobación de
           # sesión que hace Supabase antes de invocar.
           for d in supabase/functions/*/; do
             nombre=$(basename "$d")
             echo "──► publicando $nombre"
-            $CLI functions deploy "$nombre" --project-ref "$REF"
+            $CLI functions deploy "$nombre" --remote "$REF" --yes
           done
 
       - name: Subir a Hostinger por FTP
