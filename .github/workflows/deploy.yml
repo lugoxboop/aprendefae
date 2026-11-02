@@ -249,7 +249,13 @@ jobs:
           fi
           echo "Proyecto: $REF"
 
-          npm i -g supabase@latest >/dev/null 2>&1 || { echo "No se pudo instalar la CLI de Supabase"; exit 1; }
+          # CON npx Y NO CON `npm i -g`. La CLI de Supabase RECHAZA a
+          # propósito instalarse como módulo global —el paquete aborta con
+          # «Installing Supabase CLI as a global module is not supported»— y
+          # ese fue el primer intento de este paso, que murió ahí. `npx` es la
+          # forma que la propia documentación usa en integración continua.
+          CLI="npx --yes supabase@latest"
+          $CLI --version || { echo "No se pudo preparar la CLI de Supabase"; exit 1; }
 
           # Una por una, para que el registro diga cuál falló si falla alguna.
           # Sin --no-verify-jwt NUNCA: esa bandera apaga la comprobación de
@@ -257,7 +263,7 @@ jobs:
           for d in supabase/functions/*/; do
             nombre=$(basename "$d")
             echo "──► publicando $nombre"
-            supabase functions deploy "$nombre" --project-ref "$REF"
+            $CLI functions deploy "$nombre" --project-ref "$REF"
           done
 
       - name: Subir a Hostinger por FTP
