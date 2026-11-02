@@ -273,7 +273,11 @@ jobs:
           for d in supabase/functions/*/; do
             nombre=$(basename "$d")
             echo "──► publicando $nombre"
-            $CLI functions deploy "$nombre" --remote "$REF" --yes
+            # `--remote=` pegado con el igual, no separado por un espacio: la
+            # CLI 3 trata lo que va suelto detrás como el nombre de otra
+            # función y se queja. Lo dice ella misma en el error, y aquí está
+            # escrito para que nadie vuelva a separarlo por costumbre.
+            $CLI functions deploy "$nombre" --remote="$REF" --yes
           done
 
       - name: Subir a Hostinger por FTP
