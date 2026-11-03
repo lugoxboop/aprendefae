@@ -40,6 +40,10 @@
 /* El largo del rótulo de una parte. No es una preferencia: a 320 px la lámina
  * de 360 unidades se ve a 0,89, y más de esto se sale de su caja o encoge la
  * letra por debajo del piso de 10,5 px del sitio. */
+import {
+  limpiarLienzo, instruccionesDeLienzo, LIENZO_ALTO_MIN, LIENZO_ALTO_MAX,
+} from "./lienzo.js";
+
 export const MAX_ETIQUETA = 24;
 /*
  * Dos figuras llevan la cifra en el mismo renglón que el rótulo, y ahí no
@@ -51,6 +55,9 @@ export const MAX_ETIQUETA = 24;
 export const MAX_ETIQUETA_POR_ARQUETIPO = { cuentaT: 15, balanza: 18 };
 export const topeEtiqueta = (arquetipo) => MAX_ETIQUETA_POR_ARQUETIPO[arquetipo] ?? MAX_ETIQUETA;
 export const MAX_NOTA = 48;
+/* El pie no es una nota dentro de la figura: es el renglón de debajo, en HTML
+ * y a todo el ancho, así que se parte solo. 48 lo cortaba a media frase. */
+export const MAX_PIE = 110;
 export const MAX_PARTES = 7;
 export const MIN_PARTES = 2;
 
@@ -78,6 +85,11 @@ export const ARQUETIPOS = {
     cuando: "niveles que se apilan uno sobre otro, o cantidades que se comparan de mayor a menor",
     forma: '{ "arquetipo":"escalones", "modo":"pila"|"barras", "partes":[{"id","etiqueta","valor":número,"nota"?}] }',
     nota: "En «pila» van de abajo (el primero) hacia arriba. En «barras», de mayor a menor.",
+  },
+  lienzo: {
+    cuando: "cualquier otra cosa: un plano con ejes y curvas, un flujo circular, un organigrama, un mapa — lo que ninguna de las otras dibuja",
+    forma: '{ "arquetipo":"lienzo", "alto":número, "trazos":[ … ] }',
+    nota: "Es el papel en blanco. Se explica entero más abajo. Úsalo cuando forzar otra figura saldría mal, no por variar.",
   },
   linea: {
     cuando: "momentos en orden: antes, durante, después",
@@ -126,6 +138,8 @@ export function instruccionesDeEscena() {
     "- Ningún paso puede llevar el array vacío. Si un paso no tiene nada que encender,",
     "  es que ese paso sobra o que la escena está mal elegida.",
     "- Los pasos tienen que recorrer la escena entera: ninguna parte se queda sin su paso.",
+    "",
+    instruccionesDeLienzo(),
   );
 
   return lineas.join("\n");
@@ -158,6 +172,10 @@ export function limpiarEscena(cruda) {
 
   const arquetipo = NOMBRES_ARQUETIPO.includes(cruda.arquetipo) ? cruda.arquetipo : null;
   if (!arquetipo) return null;
+
+  /* El lienzo no tiene «partes» con rótulo y lado: tiene trazos con
+     coordenadas, y se valida aparte. */
+  if (arquetipo === "lienzo") return limpiarLienzo(cruda, limpiarId);
 
   const vistos = new Set();
   const partes = [];
@@ -225,7 +243,7 @@ export function limpiarEscena(cruda) {
     }
   }
 
-  const pie = texto(cruda.pie, MAX_NOTA);
+  const pie = texto(cruda.pie, MAX_PIE);
   if (pie) escena.pie = pie;
 
   return escena;
@@ -235,9 +253,31 @@ export function limpiarEscena(cruda) {
  * Amarra los pasos a la escena. Devuelve los pasos con `resaltar` ya limpio,
  * o null si la pieza no se sostiene: aquí es donde se cae «puro texto».
  */
+/*
+ * Los ids que un paso puede encender, y cuáles son obligatorios.
+ *
+ * En las cinco figuras armadas toda parte es protagonista, así que todas
+ * tienen que encenderse en algún paso. En el lienzo no: los ejes, las guías
+ * rayadas y los rótulos sueltos son el ESCENARIO. Exigirles su paso obligaría
+ * a escribir «y aquí está el eje horizontal», que es justo el relleno que no
+ * queremos. Protagonista es lo que lleva el argumento: curvas, cajas y
+ * puntos.
+ */
+const PROTAGONISTAS = new Set(["curva", "caja", "punto"]);
+
+export function piezasDe(escena) {
+  if (escena?.arquetipo === "lienzo") {
+    const trazos = Array.isArray(escena.trazos) ? escena.trazos : [];
+    return { todas: trazos, obligatorias: trazos.filter((t) => PROTAGONISTAS.has(t.tipo)) };
+  }
+  const partes = Array.isArray(escena?.partes) ? escena.partes : [];
+  return { todas: partes, obligatorias: partes };
+}
+
 export function amarrarPasos(pasos, escena) {
   if (!escena) return null;
-  const ids = new Set(escena.partes.map((p) => p.id));
+  const { todas, obligatorias } = piezasDe(escena);
+  const ids = new Set(todas.map((p) => p.id));
 
   const limpios = [];
   for (const p of Array.isArray(pasos) ? pasos : []) {
@@ -261,7 +301,7 @@ export function amarrarPasos(pasos, escena) {
   /* Una parte que ningún paso enciende es una parte que el estudiante nunca
      mira: o sobra en la escena, o falta el paso que la explica. */
   const encendidas = new Set(limpios.flatMap((p) => p.resaltar));
-  if (encendidas.size < escena.partes.length) return null;
+  if (obligatorias.some((p) => !encendidas.has(p.id))) return null;
 
   return limpios;
 }
