@@ -14,11 +14,24 @@
  * las comprobaciones baratas a propósito: cobrarle una invocación a quien
  * mandó un archivo de 40 MB sería cobrarle por un error que no llegó a costar
  * nada.
+ *
+ * ═══════════ DOS PASADAS, DOS PUERTAS ═══════════
+ *
+ * Desde el 3-nov un encargo son varias llamadas y no una: «plan» lee el
+ * material y devuelve la lectura más el plan; «pieza» escribe UNA actividad
+ * y la guarda. El archivo viaja solo en la primera.
+ *
+ * Partirlo era obligatorio, no una preferencia: una función de Supabase muere
+ * a los 400 s —150 s en plan gratuito— y la generación buena tarda minutos.
+ *
+ * Cada pasada guarda lo suyo en cuanto lo tiene. Si el profesor cierra el
+ * navegador en la tercera actividad, las dos primeras ya están en sus
+ * borradores. Antes, un encargo interrumpido se perdía entero.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 import {
   MAX_MENSAJE, MODELO_POR_DEFECTO, MAX_TOKENS, MOTIVOS, PIEZAS_POR_LOTE,
-  construirPeticion, leerPiezas, revisarArchivos, leerLimite,
+  peticionPlan, peticionPieza, leerPlan, leerPieza, revisarArchivos, leerLimite,
 } from "./fabrica.js";
 
 const JSON_CABECERAS = { "Content-Type": "application/json; charset=utf-8" };
@@ -57,14 +70,31 @@ export async function manejar(peticion, deps) {
   const materia = typeof cuerpo?.materia === "string" ? cuerpo.materia.trim().slice(0, 60) : "";
   if (!materia) return responder(400, { error: MOTIVOS.sinEncargo });
 
+  const pasada = cuerpo?.pasada === "pieza" ? "pieza" : "plan";
   const mensaje = typeof cuerpo?.mensaje === "string" ? cuerpo.mensaje.trim().slice(0, MAX_MENSAJE) : "";
-  const revision = revisarArchivos(cuerpo?.archivos);
-  if (!revision.ok) return responder(400, { error: revision.motivo });
 
-  /* Hace falta algo de lo que partir: o lo que escribió, o lo que adjuntó. */
-  if (!mensaje && revision.archivos.length === 0) return responder(400, { error: MOTIVOS.sinEncargo });
+  /* Lo que cada pasada necesita para arrancar. */
+  let peticionAlModelo;
+  if (pasada === "plan") {
+    const revision = revisarArchivos(cuerpo?.archivos);
+    if (!revision.ok) return responder(400, { error: revision.motivo });
+    /* Hace falta algo de lo que partir: o lo que escribió, o lo que adjuntó. */
+    if (!mensaje && revision.archivos.length === 0) return responder(400, { error: MOTIVOS.sinEncargo });
+    peticionAlModelo = () => peticionPlan({ materia, mensaje, archivos: revision.archivos });
+  } else {
+    const lectura = cuerpo?.lectura;
+    const actividad = cuerpo?.actividad;
+    /* La lectura es lo que sustituye al archivo: sin ella la pasada escribiría
+       del aire, y el resultado sería justo la actividad tosca que esto vino a
+       arreglar. */
+    if (!lectura || typeof lectura !== "object" || !actividad || typeof actividad !== "object") {
+      return responder(400, { error: MOTIVOS.sinEncargo });
+    }
+    peticionAlModelo = () => peticionPieza({ materia, lectura, actividad, mensaje });
+  }
 
-  /* El cupo. Lo decide la base: es la única que puede contar bien. */
+  /* El cupo. Lo decide la base: es la única que puede contar bien. Cuenta
+     LLAMADAS al modelo, no encargos, porque es la llamada lo que cuesta. */
   const { limite, fuente } = leerLimite(env);
   let cupo;
   try {
@@ -80,7 +110,7 @@ export async function manejar(peticion, deps) {
   }
 
   const modelo = env.FABRICA_MODELO || MODELO_POR_DEFECTO;
-  const { system, messages } = construirPeticion({ materia, mensaje, archivos: revision.archivos });
+  const { system, messages } = peticionAlModelo();
 
   let crudo;
   try {
@@ -91,29 +121,31 @@ export async function manejar(peticion, deps) {
     return responder(502, { error: MOTIVOS.modelo });
   }
 
-  const { piezas, descartadas, ilegible } = leerPiezas(crudo, PIEZAS_POR_LOTE);
-  if (ilegible) registrar("error", "La respuesta del modelo no traía JSON legible");
-  if (descartadas) registrar("info", `${descartadas} pieza(s) descartadas por no encajar en el molde`);
-  if (piezas.length === 0) return responder(422, { error: MOTIVOS.vacio });
+  const cuenta = { usadas: cupo.usadas, limite: cupo.limite, limiteFuente: fuente, modelo };
 
-  let guardadas = piezas.length;
+  if (pasada === "plan") {
+    const { plan, ilegible } = leerPlan(crudo, PIEZAS_POR_LOTE);
+    if (ilegible) registrar("error", "El plan del modelo no traía JSON legible");
+    if (!plan) return responder(422, { error: MOTIVOS.vacio });
+    return responder(200, { pasada, plan, ...cuenta });
+  }
+
+  const { pieza, ilegible } = leerPieza(crudo);
+  if (ilegible) registrar("error", "La pieza del modelo no traía JSON legible");
+  /* Una pieza sin escena, o con pasos que no encienden nada, no se guarda. El
+     cliente decide si la vuelve a pedir; aquí no se publica a medias. */
+  if (!pieza) return responder(422, { error: MOTIVOS.vacio });
+
+  let guardadas = 1;
   try {
-    const n = await guardar({ materia, piezas, encargo: mensaje, modelo });
+    const n = await guardar({ materia, piezas: [pieza], encargo: mensaje, modelo });
     if (Number.isInteger(n)) guardadas = n;
   } catch (e) {
     if (e?.code === "42501") return responder(403, { error: MOTIVOS.noDocente });
-    registrar("error", "No se pudieron guardar los borradores: " + (e?.message ?? e));
+    registrar("error", "No se pudo guardar el borrador: " + (e?.message ?? e));
     return responder(503, { error: MOTIVOS.modelo });
   }
 
-  return responder(200, {
-    creadas: guardadas,
-    /* Se devuelven también para poder enseñarlas sin otra vuelta a la base. */
-    piezas,
-    descartadas,
-    modelo,
-    usadas: cupo.usadas,
-    limite: cupo.limite,
-    limiteFuente: fuente,
-  });
+  /* Se devuelve también para poder enseñarla sin otra vuelta a la base. */
+  return responder(200, { pasada, pieza, creadas: guardadas, ...cuenta });
 }
