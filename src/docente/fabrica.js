@@ -12,6 +12,14 @@
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
+/*
+ * Las fases de un encargo, en orden. El número es el índice de la fase en
+ * `FASES` de FermiTrabajando, que es lo que el profesor lee mientras espera.
+ * Viven aquí, en la capa que las produce, y no en el componente que las
+ * pinta: lo contrario obligaría a la lógica a importar JSX.
+ */
+export const FASE = { leyendo: 0, planeando: 1, escribiendo: 2, dibujando: 3, revisando: 4 };
+
 export const MAX_ARCHIVOS = 3;
 export const MAX_BYTES = 8 * 1024 * 1024;
 
@@ -93,7 +101,38 @@ export async function empaquetar(archivos, leer = aBase64) {
  * El encargo. Devuelve siempre un objeto con `ok`, nunca lanza: un fallo de
  * red no puede tumbarle el panel a nadie.
  */
-export async function encargar(cliente, { materia, mensaje, archivos } = {}) {
+/* Una llamada a la función, con el motivo que ella misma manda. */
+async function llamar(cliente, cuerpo) {
+  const { data, error } = await cliente.functions.invoke("fabrica", { body: cuerpo });
+  if (!error) return { ok: true, data };
+  /* La función contesta con su propio motivo en el cuerpo; supabase-js lo
+     envuelve en un error genérico, así que se intenta sacar el de dentro. */
+  let motivo = "No pude crear las actividades. Inténtalo otra vez.";
+  try { motivo = (await error.context?.json?.())?.error ?? motivo; } catch { /* se queda el genérico */ }
+  return { ok: false, motivo };
+}
+
+/**
+ * ═══════════ EL ENCARGO, DE PRINCIPIO A FIN ═══════════
+ *
+ * Varias llamadas y no una. La primera lee el material y planea; cada una de
+ * las siguientes escribe UNA actividad entera con su figura.
+ *
+ * Partirlo era obligatorio: una función de Supabase muere a los 400 s (150 s
+ * en plan gratuito) y la generación buena tarda minutos. Y sale gratis una
+ * cosa que no teníamos: `avisar` recibe la fase de verdad, así que lo que ve
+ * el profesor mientras espera deja de ser una estimación por reloj.
+ *
+ * La lectura la sostiene esta función entre llamada y llamada. No se guarda
+ * en ningún sitio: cuando el profesor cierra, se fue — que es exactamente la
+ * promesa que la fábrica le hace sobre su archivo.
+ *
+ * Las actividades se devuelven según salen. Si la tercera falla, las dos
+ * primeras ya están guardadas y se enseñan igual.
+ *
+ * @param {Function} [avisar] (fase, {hechas, total}) mientras avanza
+ */
+export async function encargar(cliente, { materia, mensaje, archivos, avisar = () => {} } = {}) {
   const texto = String(mensaje ?? "").trim();
   const lista = Array.from(archivos ?? []);
   if (!texto && lista.length === 0) return { ok: false, motivo: MOTIVOS.vacio };
@@ -102,17 +141,35 @@ export async function encargar(cliente, { materia, mensaje, archivos } = {}) {
   if (!cliente) return { ok: false, motivo: "Sin conexión con el servidor." };
 
   try {
-    const { data, error } = await cliente.functions.invoke("fabrica", {
-      body: { materia, mensaje: texto, archivos: await empaquetar(lista) },
+    avisar(FASE.leyendo, { hechas: 0, total: 0 });
+    const plan = await llamar(cliente, {
+      pasada: "plan", materia, mensaje: texto, archivos: await empaquetar(lista),
     });
-    if (error) {
-      /* La función contesta con su propio motivo en el cuerpo; supabase-js lo
-         envuelve en un error genérico, así que se intenta sacar el de dentro. */
-      let motivo = "No pude crear las actividades. Inténtalo otra vez.";
-      try { motivo = (await error.context?.json?.())?.error ?? motivo; } catch { /* se queda el genérico */ }
-      return { ok: false, motivo };
+    if (!plan.ok) return { ok: false, motivo: plan.motivo };
+
+    const actividades = plan.data?.plan?.actividades ?? [];
+    const lectura = plan.data?.plan?.lectura ?? null;
+    if (!lectura || actividades.length === 0) return { ok: false, motivo: MOTIVOS.vacio };
+
+    avisar(FASE.planeando, { hechas: 0, total: actividades.length });
+
+    const piezas = [];
+    const fallos = [];
+    for (const [i, actividad] of actividades.entries()) {
+      /* Escribir es el grueso; dibujar va dentro de la misma llamada, así que
+         la fase se parte en dos para que el profesor vea movimiento. */
+      avisar(i === actividades.length - 1 ? FASE.dibujando : FASE.escribiendo, { hechas: i, total: actividades.length });
+      const r = await llamar(cliente, { pasada: "pieza", materia, mensaje: texto, lectura, actividad });
+      if (r.ok && r.data?.pieza) piezas.push(r.data.pieza);
+      else fallos.push(actividad.titulo || "una actividad");
     }
-    return { ok: true, creadas: Number(data?.creadas ?? 0), piezas: data?.piezas ?? [], descartadas: Number(data?.descartadas ?? 0) };
+
+    avisar(FASE.revisando, { hechas: piezas.length, total: actividades.length });
+
+    if (piezas.length === 0) {
+      return { ok: false, motivo: fallos.length ? MOTIVOS.vacio : "No pude crear las actividades." };
+    }
+    return { ok: true, creadas: piezas.length, piezas, fallos };
   } catch (e) {
     return { ok: false, motivo: String(e?.message ?? "No pude crear las actividades.") };
   }

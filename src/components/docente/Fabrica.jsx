@@ -3,9 +3,10 @@ import { Plus, Sparkles, FileText, X, ShieldCheck, Eye, Check, Trash2 } from "lu
 import { FAE } from "../../theme.js";
 import { supabase } from "../../lib/supabase.js";
 import { V1, tarjetaV1, notaV1, volverV1 } from "./estiloV1.js";
-import { MAX_ARCHIVOS, revisar, formatearPeso, encargar, misBorradores, cambiarEstado } from "../../docente/fabrica.js";
+import { MAX_ARCHIVOS, FASE, revisar, formatearPeso, encargar, misBorradores, cambiarEstado } from "../../docente/fabrica.js";
 import Robot, { CSS_ROBOT } from "../../bruno/Robot.jsx";
-import FermiTrabajando, { CSS_FERMI } from "./FermiTrabajando.jsx";
+import FermiTrabajando, { CSS_FERMI, DURACION_UNA_PASADA_MS } from "./FermiTrabajando.jsx";
+import EscenaGenerada, { CSS_ESCENA } from "../mecanicas/maquinas/EscenaGenerada.jsx";
 import { EstiloEntrada, entrada } from "../shared/Entrada.jsx";
 
 /*
@@ -47,8 +48,6 @@ const EJEMPLOS = [
   "Repaso de lo que falló en el parcial",
 ];
 
-const AVISO_ESPERA = "Dame menos de un minuto…";
-
 /*
  * `cliente` entra por parámetro y no se importa a secas para poder montar esta
  * pantalla sin base: con un cliente de mentira se la puede fotografiar con
@@ -59,6 +58,7 @@ export default function Fabrica({ materia, nombreMateria, onVolver, cliente = su
   const [mensaje, setMensaje] = useState("");
   const [archivos, setArchivos] = useState([]);
   const [trabajando, setTrabajando] = useState(false);
+  const [fase, setFase] = useState(FASE.leyendo);
   const [aviso, setAviso] = useState(null);
   const [borradores, setBorradores] = useState([]);
   const [abierto, setAbierto] = useState(null);
@@ -92,11 +92,18 @@ export default function Fabrica({ materia, nombreMateria, onVolver, cliente = su
   const enviar = async () => {
     if (trabajando) return;
     setTrabajando(true);
-    setAviso({ tipo: "espera", texto: AVISO_ESPERA });
-    const r = await encargar(cliente, { materia, mensaje, archivos });
+    setFase(FASE.leyendo);
+    /* El aviso de espera se fue: lo decía todo en una línea («dame menos de un
+       minuto») y había dejado de ser verdad. Ahora lo cuenta Fermi, con la
+       fase en la que va y el reloj corriendo. */
+    setAviso(null);
+    const r = await encargar(cliente, { materia, mensaje, archivos, avisar: (f) => setFase(f) });
     setTrabajando(false);
     if (!r.ok) { setAviso({ tipo: "error", texto: r.motivo }); return; }
-    setAviso({ tipo: "bien", texto: r.creadas === 1 ? "Lista una. Léela antes de publicar." : `Listas ${r.creadas}. Léelas antes de publicar.` });
+    /* Si alguna actividad se cayó se dice, en vez de celebrar un número que no
+       cuadra con lo que el profesor pidió. */
+    const base = r.creadas === 1 ? "Lista una. Léela antes de publicar." : `Listas ${r.creadas}. Léelas antes de publicar.`;
+    setAviso({ tipo: "bien", texto: r.fallos?.length ? `${base} Una no salió y la puedes volver a pedir.` : base });
     setParpadeo((n) => n + 1);
     setMensaje("");
     setArchivos([]);
@@ -116,6 +123,7 @@ export default function Fabrica({ materia, nombreMateria, onVolver, cliente = su
       <style>{CSS}</style>
       <style>{CSS_ROBOT}</style>
       <style>{CSS_FERMI}</style>
+      <style>{CSS_ESCENA}</style>
       <EstiloEntrada />
       <button type="button" style={volverV1} onClick={onVolver} data-volver>‹ Volver al resumen</button>
 
@@ -211,7 +219,7 @@ export default function Fabrica({ materia, nombreMateria, onVolver, cliente = su
         * franja no hay nada más que mirar, y así la pantalla no da un salto
         * al aparecer. Los ejemplos vuelven solos cuando termina.
         */}
-      {trabajando && <FermiTrabajando />}
+      {trabajando && <FermiTrabajando fase={fase} duracion={DURACION_UNA_PASADA_MS * 5} />}
 
       {/* ── LOS EJEMPLOS, EN VEZ DE INSTRUCCIONES ────────────────────── */}
       {!mensaje && !trabajando && (
@@ -306,19 +314,68 @@ export default function Fabrica({ materia, nombreMateria, onVolver, cliente = su
 
 /* La actividad entera, para leerla antes de decidir. Sin rótulos en mayúscula:
    la jerarquía ya la dan el tamaño y el espacio. */
+/*
+ * ═══════════ LA VISTA PREVIA ═══════════
+ *
+ * Antes volcaba la pieza como texto: objetivo, lista de términos, lista de
+ * pasos, pregunta. Esa es la pantalla que Mateo fotografió el 3-nov, y tenía
+ * razón en las tres cosas que dijo — ruido visual, no se entiende, no guía la
+ * mirada. Era un volcado, no una vista previa.
+ *
+ * Ahora enseña la actividad como la verá el estudiante: la figura arriba y
+ * los pasos debajo, y al tocar un paso se enciende lo suyo en la figura. El
+ * profesor juzga lo que va a publicar, no un resumen de ello.
+ */
 function Vista({ pieza }) {
+  const [paso, setPaso] = useState(0);
   if (!pieza) return null;
+
+  const pasos = pieza.pasos ?? [];
+  const actual = pasos[Math.min(paso, Math.max(0, pasos.length - 1))];
+
   return (
     <div className="fab-vista" data-vista-borrador>
       {pieza.objetivo && <p className="fab-objetivo">{pieza.objetivo}</p>}
+
+      <p className="fab-capa">CAPA 1 — PRIMERO, LOS NOMBRES</p>
       <ul className="fab-terminos">
         {(pieza.nombres ?? []).map((n, i) => (
           <li key={i}><strong>{n.termino}</strong> {n.definicion}</li>
         ))}
       </ul>
-      <ol className="fab-pasos">
-        {(pieza.pasos ?? []).map((p, i) => <li key={i}>{p.texto}</li>)}
+
+      {pieza.escena && (
+        <>
+          <p className="fab-capa">CAPA 2 — MÍRELO FUNCIONAR</p>
+          <div className="fab-escena">
+            <EscenaGenerada escena={pieza.escena} resaltar={actual?.resaltar ?? []} />
+          </div>
+        </>
+      )}
+
+      {/*
+        * Los pasos son botones, no renglones. Tocar uno enciende su parte de
+        * la figura: es la única forma de que el profesor compruebe que cada
+        * paso de verdad señala algo antes de publicarlo.
+        */}
+      <ol className="fab-pasos" data-pasos-vivos={pieza.escena ? "" : undefined}>
+        {pasos.map((p, i) => (
+          <li key={i}>
+            {pieza.escena ? (
+              <button
+                type="button"
+                className={`fab-paso${i === paso ? " fab-paso--vivo" : ""}`}
+                onClick={() => setPaso(i)}
+                aria-current={i === paso || undefined}
+              >
+                {p.texto}
+              </button>
+            ) : p.texto}
+          </li>
+        ))}
       </ol>
+
+      <p className="fab-capa">CAPA 4 — EN UNA FRASE</p>
       <p className="fab-pregunta">{pieza.pregunta}</p>
       {pieza.respuesta && <p className="fab-respuesta">{pieza.respuesta}</p>}
     </div>
@@ -331,6 +388,41 @@ function Vista({ pieza }) {
  * estilo en línea no sabe expresar, y eran justo lo que le faltaba.
  */
 const CSS = `
+.fab-capa {
+  margin: 16px 0 8px; font-family: Sora, sans-serif; font-size: 10.5px; font-weight: 700;
+  letter-spacing: 0.14em; color: rgba(42,157,143,0.95);
+}
+.fab-vista .fab-capa:first-child { margin-top: 8px; }
+.fab-escena {
+  padding: 14px 10px; border-radius: 14px;
+  border: 1px solid rgba(248,249,250,0.08); background: rgba(14,27,46,0.55);
+}
+.fab-pasos[data-pasos-vivos] { list-style: none; padding: 0; margin: 12px 0 0; counter-reset: paso; }
+.fab-pasos[data-pasos-vivos] li { counter-increment: paso; }
+.fab-paso {
+  display: flex; gap: 10px; width: 100%; text-align: left;
+  /* 44 px de alto mínimo: es un control, y los controles del sitio se tocan
+     con el pulgar. */
+  min-height: 44px; align-items: center;
+  padding: 9px 12px; margin: 0 0 6px;
+  border: 1px solid transparent; border-radius: 10px;
+  background: rgba(248,249,250,0.04); color: rgba(248,249,250,0.78);
+  font-family: Inter, sans-serif; font-size: 13px; line-height: 1.5;
+  cursor: pointer; transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+.fab-paso::before {
+  content: counter(paso); flex-shrink: 0;
+  width: 20px; height: 20px; border-radius: 50%;
+  display: grid; place-items: center;
+  font-family: Sora, sans-serif; font-size: 11px; font-weight: 700;
+  background: rgba(248,249,250,0.10); color: rgba(248,249,250,0.72);
+}
+.fab-paso:hover { background: rgba(248,249,250,0.07); color: ${FAE.text}; }
+.fab-paso--vivo {
+  border-color: rgba(42,157,143,0.55); background: rgba(42,157,143,0.12); color: ${FAE.text};
+}
+.fab-paso--vivo::before { background: ${FAE.teal}; color: #06202A; }
+
 .fab-solo-lector { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 
 .fab-caja {
