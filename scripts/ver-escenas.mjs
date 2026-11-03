@@ -97,6 +97,42 @@ const CASOS = [
       ],
     },
   },
+  {
+    nombre: "lienzo · demanda agregada",
+    paso: ["da2"],
+    cruda: {
+      arquetipo: "lienzo",
+      alto: 250,
+      trazos: [
+        { tipo: "eje", id: "ejex", hacia: "derecha", x: 48, y: 206, largo: 276, etiqueta: "Producción" },
+        { tipo: "eje", id: "ejey", hacia: "arriba", x: 48, y: 206, largo: 176, etiqueta: "Nivel de precios" },
+        { tipo: "curva", id: "da", puntos: [[66, 54], [170, 128], [308, 192]], etiqueta: "DA" },
+        { tipo: "linea", id: "guia", x1: 48, y1: 104, x2: 196, y2: 104, rayada: true },
+        { tipo: "linea", id: "guiav", x1: 196, y1: 104, x2: 196, y2: 206, rayada: true },
+        { tipo: "punto", id: "eq", x: 196, y: 104, etiqueta: "Aquí estábamos", donde: "derecha" },
+        { tipo: "curva", id: "da2", puntos: [[66, 100], [150, 150], [250, 196]], etiqueta: "DA'", rayada: true },
+        { tipo: "linea", id: "salto", x1: 196, y1: 128, x2: 150, y2: 156, punta: true, etiqueta: "se desplaza" },
+      ],
+      pie: "El precio sube: la cantidad demandada cae por los tres canales.",
+    },
+  },
+  {
+    nombre: "lienzo · flujo circular",
+    paso: ["hogares"],
+    cruda: {
+      arquetipo: "lienzo",
+      alto: 210,
+      trazos: [
+        { tipo: "caja", id: "hogares", x: 20, y: 24, ancho: 130, alto: 46, etiqueta: "Hogares" },
+        { tipo: "caja", id: "empresas", x: 210, y: 24, ancho: 130, alto: 46, etiqueta: "Empresas" },
+        { tipo: "curva", id: "trabajo", puntos: [[150, 38], [180, 14], [210, 38]], punta: true, etiqueta: "trabajo" },
+        { tipo: "curva", id: "salarios", puntos: [[210, 58], [180, 84], [150, 58]], punta: true, etiqueta: "salarios" },
+        { tipo: "caja", id: "mercado", x: 115, y: 138, ancho: 130, alto: 46, etiqueta: "Mercado de bienes" },
+        { tipo: "linea", id: "gasto", x1: 85, y1: 70, x2: 150, y2: 138, punta: true, etiqueta: "gasto" },
+        { tipo: "linea", id: "ingreso", x1: 215, y1: 138, x2: 275, y2: 70, punta: true, etiqueta: "ingreso" },
+      ],
+    },
+  },
 ];
 
 const bloques = CASOS.map(({ nombre, cruda, paso }) => {

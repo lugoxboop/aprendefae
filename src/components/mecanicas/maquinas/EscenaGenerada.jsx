@@ -517,9 +517,175 @@ function Linea({ escena, resaltar }) {
   );
 }
 
+/* ═══════════════════════ 6 · LIENZO ═══════════════════════ */
+
+/*
+ * El papel en blanco. Las cinco de arriba son figuras armadas: el modelo
+ * elige una y la llena. Esta es la de abajo — los trazos sueltos con los que
+ * se arma cualquier otra cosa, cuando ninguna de las cinco sirve.
+ *
+ * Lo que se dibuja sigue siendo DATOS. Aquí no se evalúa nada que venga del
+ * modelo: cada tipo de trazo tiene su rama escrita a mano, y un tipo que no
+ * esté en esta lista simplemente no se pinta.
+ */
+
+/* Un trazo que pasa por los puntos, suavizado. Catmull-Rom convertido a
+ * bézier: pasa POR los puntos, que es lo que hace falta aquí — una curva de
+ * demanda tiene que tocar el equilibrio, no acercarse. */
+export function curvaPor(puntos) {
+  if (!puntos || puntos.length < 2) return "";
+  if (puntos.length === 2) return `M${puntos[0][0]} ${puntos[0][1]} L${puntos[1][0]} ${puntos[1][1]}`;
+
+  let d = `M${puntos[0][0]} ${puntos[0][1]}`;
+  for (let i = 0; i < puntos.length - 1; i += 1) {
+    const p0 = puntos[i - 1] ?? puntos[i];
+    const p1 = puntos[i];
+    const p2 = puntos[i + 1];
+    const p3 = puntos[i + 2] ?? p2;
+    const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6];
+    const c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
+    d += ` C${c1[0].toFixed(1)} ${c1[1].toFixed(1)}, ${c2[0].toFixed(1)} ${c2[1].toFixed(1)}, ${p2[0]} ${p2[1]}`;
+  }
+  return d;
+}
+
+const ANCLA_SVG = { izquierda: "start", centro: "middle", derecha: "end" };
+
+function Trazo({ t, encendida }) {
+  const color = encendida ? FAE.teal : LINEA;
+  const grosor = encendida ? 2.6 : 1.6;
+  const tinta = encendida ? FAE.node : SUAVE;
+
+  if (t.tipo === "eje") {
+    const horizontal = t.hacia === "derecha";
+    const x2 = horizontal ? t.x + t.largo : t.x;
+    const y2 = horizontal ? t.y : t.y - t.largo;
+    return (
+      <>
+        <line x1={t.x} y1={t.y} x2={x2} y2={y2} stroke={color} strokeWidth={grosor}
+          markerEnd="url(#fae-eg-punta)" strokeLinecap="round" />
+        {t.etiqueta && (horizontal ? (
+          <Texto x={x2} y={t.y + 17} cuerpo={11} ancla="end" color={tinta}>
+            {repartir(t.etiqueta, t.largo, 1, 11)[0]}
+          </Texto>
+        ) : (
+          /* El rótulo del eje vertical va girado sobre él: puesto en
+             horizontal necesita un margen que se come el papel. */
+          <text
+            x={t.x - 9} y={y2 + t.largo / 2}
+            transform={`rotate(-90 ${t.x - 9} ${y2 + t.largo / 2})`}
+            textAnchor="middle"
+            style={{ fontFamily: FUENTE, fontSize: "11px", fill: tinta }}
+          >
+            {repartir(t.etiqueta, t.largo, 1, 11)[0]}
+          </text>
+        ))}
+      </>
+    );
+  }
+
+  if (t.tipo === "curva") {
+    const fin = t.puntos[t.puntos.length - 1];
+    return (
+      <>
+        <path d={curvaPor(t.puntos)} fill="none" stroke={color} strokeWidth={grosor}
+          strokeLinecap="round" strokeDasharray={t.rayada ? "6 4" : undefined}
+          markerEnd={t.punta ? "url(#fae-eg-punta)" : undefined} />
+        {t.etiqueta && (
+          <Texto x={fin[0] + 6} y={fin[1] - 6} cuerpo={11.5} ancla="start" peso={encendida ? 700 : 400} color={tinta}>
+            {repartir(t.etiqueta, 96, 1, 11.5)[0]}
+          </Texto>
+        )}
+      </>
+    );
+  }
+
+  if (t.tipo === "linea") {
+    const vertical = Math.abs(t.y2 - t.y1) > Math.abs(t.x2 - t.x1);
+    return (
+      <>
+        <line x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2} stroke={color} strokeWidth={grosor}
+          strokeLinecap="round" strokeDasharray={t.rayada ? "5 4" : undefined}
+          markerEnd={t.punta ? "url(#fae-eg-punta)" : undefined} />
+        {t.etiqueta && (
+          <Texto
+            x={(t.x1 + t.x2) / 2 + (vertical ? 7 : 0)}
+            y={(t.y1 + t.y2) / 2 + (vertical ? 4 : -7)}
+            cuerpo={11} ancla={vertical ? "start" : "middle"} color={tinta}
+          >
+            {repartir(t.etiqueta, vertical ? 90 : 120, 1, 11)[0]}
+          </Texto>
+        )}
+      </>
+    );
+  }
+
+  if (t.tipo === "caja") {
+    return <Caja x={t.x} y={t.y} w={t.ancho} h={t.alto} texto={t.etiqueta} nota={t.nota} encendida={encendida} />;
+  }
+
+  if (t.tipo === "punto") {
+    const r = encendida ? 6.5 : 4.5;
+    const sitio = {
+      arriba: { x: t.x, y: t.y - 11, ancla: "middle" },
+      abajo: { x: t.x, y: t.y + 19, ancla: "middle" },
+      derecha: { x: t.x + 10, y: t.y + 4, ancla: "start" },
+      izquierda: { x: t.x - 10, y: t.y + 4, ancla: "end" },
+    }[t.donde ?? "arriba"];
+    return (
+      <>
+        <circle cx={t.x} cy={t.y} r={r} fill={encendida ? FAE.teal : FAE.navy}
+          stroke={encendida ? FAE.teal : LINEA} strokeWidth={2} />
+        {t.etiqueta && (
+          <Texto x={sitio.x} y={sitio.y} cuerpo={11} ancla={sitio.ancla} peso={encendida ? 700 : 400} color={tinta}>
+            {repartir(t.etiqueta, 110, 1, 11)[0]}
+          </Texto>
+        )}
+      </>
+    );
+  }
+
+  if (t.tipo === "texto") {
+    return (
+      <Texto x={t.x} y={t.y} cuerpo={12} ancla={ANCLA_SVG[t.ancla] ?? "middle"} peso={encendida ? 700 : 400} color={tinta}>
+        {repartir(t.texto, 150, 1, 12)[0]}
+      </Texto>
+    );
+  }
+
+  return null;
+}
+
+function Lienzo({ escena, resaltar }) {
+  const trazos = Array.isArray(escena.trazos) ? escena.trazos : [];
+  /* El escenario primero y los protagonistas encima: una curva tapada por su
+     propia guía rayada se lee peor que al revés. */
+  const orden = [...trazos].sort((a, b) => peso(a) - peso(b));
+
+  return (
+    <Lamina alto={escena.alto ?? 220} pie={escena.pie}>
+      <defs>
+        <marker id="fae-eg-punta" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0 0 L8 4 L0 8 z" fill={LINEA} />
+        </marker>
+      </defs>
+      {orden.map((t, i) => (
+        <Parte key={t.id} id={t.id} resaltar={resaltar}>
+          <g className="fae-eg-entra" style={{ animationDelay: `${i * 55}ms` }}>
+            <Trazo t={t} encendida={resaltar.includes(t.id)} />
+          </g>
+        </Parte>
+      ))}
+    </Lamina>
+  );
+}
+
+const ORDEN_TRAZO = { eje: 0, texto: 1, linea: 2, caja: 3, curva: 4, punto: 5 };
+const peso = (t) => ORDEN_TRAZO[t.tipo] ?? 3;
+
 /* ═══════════════════════ EL DESPACHO ═══════════════════════ */
 
-export const FIGURAS = { flujo: Flujo, balanza: Balanza, cuentaT: CuentaT, escalones: Escalones, linea: Linea };
+export const FIGURAS = { flujo: Flujo, balanza: Balanza, cuentaT: CuentaT, escalones: Escalones, linea: Linea, lienzo: Lienzo };
 
 /**
  * @param {object} p
@@ -530,7 +696,8 @@ export default function EscenaGenerada({ escena, resaltar }) {
   const Figura = escena && FIGURAS[escena.arquetipo];
   /* Una pieza vieja con una forma que ya no existe no tumba la pantalla: se
      queda sin capa 2 y el resto de la actividad se lee igual. */
-  if (!Figura || !Array.isArray(escena.partes) || escena.partes.length === 0) return null;
+  const piezas = escena?.arquetipo === "lienzo" ? escena.trazos : escena?.partes;
+  if (!Figura || !Array.isArray(piezas) || piezas.length === 0) return null;
 
   const encendidas = Array.isArray(resaltar) ? resaltar : resaltar ? [resaltar] : [];
   return <Figura escena={escena} resaltar={encendidas} />;
