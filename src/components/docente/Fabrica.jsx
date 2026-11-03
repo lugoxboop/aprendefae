@@ -5,6 +5,7 @@ import { supabase } from "../../lib/supabase.js";
 import { V1, tarjetaV1, notaV1, volverV1 } from "./estiloV1.js";
 import { MAX_ARCHIVOS, revisar, formatearPeso, encargar, misBorradores, cambiarEstado } from "../../docente/fabrica.js";
 import Robot, { CSS_ROBOT } from "../../bruno/Robot.jsx";
+import FermiTrabajando, { CSS_FERMI } from "./FermiTrabajando.jsx";
 import { EstiloEntrada, entrada } from "../shared/Entrada.jsx";
 
 /*
@@ -114,6 +115,7 @@ export default function Fabrica({ materia, nombreMateria, onVolver, cliente = su
     <section data-vista="fabrica">
       <style>{CSS}</style>
       <style>{CSS_ROBOT}</style>
+      <style>{CSS_FERMI}</style>
       <EstiloEntrada />
       <button type="button" style={volverV1} onClick={onVolver} data-volver>‹ Volver al resumen</button>
 
@@ -133,7 +135,7 @@ export default function Fabrica({ materia, nombreMateria, onVolver, cliente = su
           <h2 style={{ margin: 0, fontFamily: "Sora, sans-serif", fontSize: "18px", fontWeight: 700, color: FAE.text }}>
             Crear actividades
           </h2>
-          <p style={{ ...notaV1, fontSize: "13px" }}>De tu material, para {nombreMateria || materia}</p>
+          <p style={{ ...notaV1, fontSize: "13px" }}>Fermi las arma con tu material, para {nombreMateria || materia}</p>
         </div>
       </div>
 
@@ -202,8 +204,17 @@ export default function Fabrica({ materia, nombreMateria, onVolver, cliente = su
         </div>
       </div>
 
+      {/*
+        * ── FERMI, TRABAJANDO ─────────────────────────────────────────
+        *
+        * Ocupa el sitio de los ejemplos mientras dura el encargo: en esa
+        * franja no hay nada más que mirar, y así la pantalla no da un salto
+        * al aparecer. Los ejemplos vuelven solos cuando termina.
+        */}
+      {trabajando && <FermiTrabajando />}
+
       {/* ── LOS EJEMPLOS, EN VEZ DE INSTRUCCIONES ────────────────────── */}
-      {!mensaje && (
+      {!mensaje && !trabajando && (
         <div {...entrada(2, "sube")} className={`fab-ejemplos ${entrada(2, "sube").className ?? ""}`} style={entrada(2, "sube").style}>
           {EJEMPLOS.map((e) => (
             <button key={e} type="button" className="fab-ejemplo" onClick={() => setMensaje(e)}>
