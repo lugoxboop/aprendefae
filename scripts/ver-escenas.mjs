@@ -7,7 +7,7 @@
 import { writeFileSync } from "node:fs";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import EscenaGenerada, { CSS_ESCENA } from "../src/components/shared/EscenaGenerada.jsx";
+import EscenaGenerada, { CSS_ESCENA } from "../src/components/mecanicas/maquinas/EscenaGenerada.jsx";
 import { CSS_MAQUINAS } from "../src/components/mecanicas/maquinas/salaDeMaquinas.jsx";
 import { limpiarEscena } from "../supabase/functions/fabrica/escena.js";
 

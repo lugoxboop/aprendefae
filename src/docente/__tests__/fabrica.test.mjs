@@ -57,17 +57,27 @@ test("un archivo que no pasa la revisión tampoco sale", async () => {
   assert.equal(llamo, false);
 });
 
-test("el camino bueno manda materia, mensaje y archivos", async () => {
-  let cuerpo = null;
+test("el camino bueno manda materia y mensaje, y el archivo solo en el plan", async () => {
+  /* Desde el 3-nov el encargo son varias llamadas: una de plan y una por
+     actividad. El detalle de la coreografía se prueba en fabrica-fases; aquí
+     solo que lo que escribió el profesor llega bien a la primera. */
+  const cuerpos = [];
+  const plan = { lectura: { tema: "t" }, actividades: [{ titulo: "Una", terminos: ["a", "b"] }] };
   const cliente = {
-    functions: { invoke: async (_n, o) => { cuerpo = o.body; return { data: { creadas: 3, piezas: [1, 2, 3], descartadas: 1 }, error: null }; } },
+    functions: {
+      invoke: async (_n, o) => {
+        cuerpos.push(o.body);
+        return { data: cuerpos.length === 1 ? { plan } : { pieza: { titulo: "Una" } }, error: null };
+      },
+    },
   };
   const r = await encargar(cliente, { materia: "contabilidad", mensaje: " capítulo 3 ", archivos: [] });
   assert.equal(r.ok, true);
-  assert.equal(r.creadas, 3);
-  assert.equal(r.descartadas, 1);
-  assert.equal(cuerpo.materia, "contabilidad");
-  assert.equal(cuerpo.mensaje, "capítulo 3", "se manda recortado");
+  assert.equal(r.creadas, 1);
+  assert.equal(cuerpos[0].pasada, "plan");
+  assert.equal(cuerpos[0].materia, "contabilidad");
+  assert.equal(cuerpos[0].mensaje, "capítulo 3", "se manda recortado");
+  assert.equal(cuerpos[1].pasada, "pieza");
 });
 
 test("el motivo que escribió el servidor le llega al profesor, no uno genérico", async () => {

@@ -4,7 +4,7 @@ import {
   ARQUETIPOS, NOMBRES_ARQUETIPO, MAX_ETIQUETA, MAX_PARTES,
   instruccionesDeEscena, limpiarId, limpiarEscena, amarrarPasos,
 } from "../escena.js";
-import { FIGURAS } from "../../../../src/components/shared/EscenaGenerada.jsx";
+import { FIGURAS } from "../../../../src/components/mecanicas/maquinas/EscenaGenerada.jsx";
 
 /*
  * El contrato de la escena tiene dos extremos que no se tocan: el validador

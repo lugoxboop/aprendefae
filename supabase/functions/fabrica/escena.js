@@ -140,7 +140,9 @@ const numero = (v) => (Number.isFinite(Number(v)) ? Number(v) : null);
 export function limpiarId(v) {
   return String(v ?? "")
     .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
+    /* \p{M} y no la clase de marcas escrita a mano: escribirla mete marcas
+       combinantes de verdad en el fuente, y hay un trinquete que las caza. */
+    .replace(/\p{M}/gu, "")
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "")
     .slice(0, 16);

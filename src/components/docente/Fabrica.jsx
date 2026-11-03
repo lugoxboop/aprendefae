@@ -6,7 +6,7 @@ import { V1, tarjetaV1, notaV1, volverV1 } from "./estiloV1.js";
 import { MAX_ARCHIVOS, FASE, revisar, formatearPeso, encargar, misBorradores, cambiarEstado } from "../../docente/fabrica.js";
 import Robot, { CSS_ROBOT } from "../../bruno/Robot.jsx";
 import FermiTrabajando, { CSS_FERMI, DURACION_UNA_PASADA_MS } from "./FermiTrabajando.jsx";
-import EscenaGenerada, { CSS_ESCENA } from "../shared/EscenaGenerada.jsx";
+import EscenaGenerada, { CSS_ESCENA } from "../mecanicas/maquinas/EscenaGenerada.jsx";
 import { EstiloEntrada, entrada } from "../shared/Entrada.jsx";
 
 /*

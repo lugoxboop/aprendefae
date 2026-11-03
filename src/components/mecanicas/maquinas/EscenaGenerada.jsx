@@ -1,5 +1,5 @@
-import { FAE } from "../../theme.js";
-import { Parte, CSS_MAQUINAS } from "../mecanicas/maquinas/salaDeMaquinas.jsx";
+import { FAE } from "../../../theme.js";
+import { Parte, CSS_MAQUINAS } from "./salaDeMaquinas.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -16,6 +16,11 @@ import { Parte, CSS_MAQUINAS } from "../mecanicas/maquinas/salaDeMaquinas.jsx";
  * que llega del modelo se valida en el servidor, antes de guardarse. Aquí se
  * pinta lo que ya pasó por ahí, y aun así se pinta a la defensiva: una pieza
  * guardada hace un mes puede traer una forma que ya no existe.
+ *
+ * Vive con las escenas escritas a mano y no en `shared/`: es una máquina,
+ * usa su misma lámina y sus mismas primitivas. En `shared/` además rige el
+ * piso de 12 px para el texto, que aquí no aplica — las unidades del viewBox
+ * no son píxeles, y 13,5 de lámina son ~11 px en pantalla.
  *
  * ═══════════ LA LÁMINA DE 360 ═══════════
  *
