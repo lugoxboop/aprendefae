@@ -51,8 +51,8 @@ function barajar(lista, azar) {
 }
 
 /** Un ítem del banco, en la forma que guarda la sala: sin funciones y sin nada que no se pinte. */
-export function aPregunta(item, azar = Math.random) {
-  const opciones = (item.barajarOpciones ? barajar(item.opciones, azar) : item.opciones).map((o) => ({ id: String(o.id), texto: String(o.texto) }));
+export function aPregunta(item, azar = Math.random, siempreBarajar = false) {
+  const opciones = (item.barajarOpciones || siempreBarajar ? barajar(item.opciones, azar) : item.opciones).map((o) => ({ id: String(o.id), texto: String(o.texto) }));
   const p = { clave: item.clave, enunciado: String(item.enunciado), opciones, correcta: String(item.correcta) };
   if (item.pregunta) p.pregunta = String(item.pregunta);
   if (item.rotulo) p.rotulo = String(item.rotulo);
@@ -72,7 +72,12 @@ export function armarPreguntas(materia, tema, cantidad, azar = Math.random) {
   const todos = barajar(unidades(repaso.pool.filter((x) => x.materia === tema)), azar);
   const cortos = todos.filter((x) => x.opciones.length <= 6);
   const largos = todos.filter((x) => x.opciones.length > 6);
-  return [...cortos, ...largos].slice(0, cantidad).map((x) => aPregunta(x, azar));
+  /*
+   * En vivo las opciones se barajan SIEMPRE. En el banco muchas van en orden
+   * fijo y la correcta cae en la A más de un tercio de las veces: en una sala
+   * donde todos miran el mismo tablero, eso se aprende en dos preguntas.
+   */
+  return [...cortos, ...largos].slice(0, cantidad).map((x) => aPregunta(x, azar, true));
 }
 
 export { tituloDeTema };

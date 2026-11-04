@@ -14,20 +14,40 @@ export function useSala(salaId, { cliente = supabase, inicial = null } = {}) {
   const canal = useRef(null);
   const vivo = useRef(true);
 
+  /* La hora del servidor del último estado aplicado: uno más viejo que llegue tarde no lo pisa. */
+  const ultimaHora = useRef(inicial?.ahora ? Date.parse(inicial.ahora) : 0);
+  const enCurso = useRef(null);
+  const ultimaPeticion = useRef(0);
+
   const aplicar = useCallback((e) => {
     if (!e) return;
+    const hora = e.ahora ? Date.parse(e.ahora) : 0;
+    if (hora && hora < ultimaHora.current) return;
+    if (hora) ultimaHora.current = hora;
     desfase.current = desfaseDe(e);
     setEstadoCrudo(e);
     setError(null);
   }, []);
 
+  /*
+   * Una petición a la vez, y no más de una cada 800 ms: el canal de avisos es
+   * público, y sin este freno cualquiera que gritara «cambió» en bucle haría
+   * que cada celular de la clase golpeara la base sin parar.
+   */
   const refrescar = useCallback(async () => {
     if (!salaId) return null;
-    const { data, error: e } = await leerEstado(salaId, cliente);
-    if (!vivo.current) return null;
-    if (e) { setError(e); return null; }
-    aplicar(data);
-    return data;
+    if (enCurso.current) return enCurso.current;
+    const espera = Math.max(0, 800 - (Date.now() - ultimaPeticion.current));
+    enCurso.current = (async () => {
+      if (espera) await new Promise((r) => setTimeout(r, espera));
+      ultimaPeticion.current = Date.now();
+      const { data, error: e } = await leerEstado(salaId, cliente);
+      if (!vivo.current) return null;
+      if (e) { setError(e); return null; }
+      aplicar(data);
+      return data;
+    })();
+    try { return await enCurso.current; } finally { enCurso.current = null; }
   }, [salaId, cliente, aplicar]);
 
   useEffect(() => {
@@ -60,5 +80,6 @@ export function useReloj(activo, cada = 200) {
     const t = setInterval(() => setAhora(Date.now()), cada);
     return () => clearInterval(t);
   }, [activo, cada]);
-  return ahora;
+  /* Al reactivarse, el estado guardado es de antes: la hora real nunca va detrás. */
+  return activo ? Math.max(ahora, Date.now()) : ahora;
 }

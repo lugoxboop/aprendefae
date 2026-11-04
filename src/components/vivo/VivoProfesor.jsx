@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeft, Users, Play, BarChart3, ArrowRight, Trophy, ClipboardList, X } from "lucide-react";
 import { useAccesoDocente } from "../../docente/useAccesoDocente.js";
-import { crearSala, avanzar, leerConteo, leerPodio, leerAsistencia, leerEstado, mensajeDeError, restanteMs } from "../../vivo/datos.js";
+import { crearSala, avanzar, leerConteo, leerPodio, leerAsistencia, leerEstado, expulsar, mensajeDeError, restanteMs, vencidoMs, GRACIA_TABLERO_MS } from "../../vivo/datos.js";
 import { armarPreguntas, temasEnVivo, MATERIAS_EN_VIVO, CANTIDADES, DURACIONES } from "../../vivo/banco.js";
 import { useSala, useReloj } from "../../vivo/useSala.js";
 import { CSS_VIVO, V } from "../../vivo/estilo.js";
@@ -181,6 +181,7 @@ function Tablero({ inicial, onBack }) {
   const fase = estado?.estado;
   const ahora = useReloj(fase === "pregunta", 200);
   const restante = restanteMs(estado, desfase.current, ahora);
+  const vencida = vencidoMs(estado, desfase.current, ahora) >= GRACIA_TABLERO_MS;
 
   const mover = async (accion) => {
     if (moviendo.current) return;
@@ -218,9 +219,15 @@ function Tablero({ inicial, onBack }) {
   const todos = conteo && conteo.indice === estado?.indice && conteo.participantes > 0 && conteo.respondieron >= conteo.participantes;
   useEffect(() => {
     if (fase !== "pregunta") return;
-    if (restante <= 0 || todos) mover("resultados");
+    if (vencida || todos) mover("resultados");
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fase, restante <= 0, todos]);
+  }, [fase, vencida, todos]);
+
+  const sacar = async (p) => {
+    const { data } = await expulsar(inicial.sala_id, p.id);
+    if (data) setLista(data);
+  };
+  const presentes = lista.filter((p) => !p.expulsado);
 
   useEffect(() => {
     if (fase !== "final") return;
@@ -268,10 +275,17 @@ function Tablero({ inicial, onBack }) {
           <p className="vivo-nota vivo-entra-2" style={{ fontSize: "18px" }}>
             {estado.participantes === 0 ? "Esperando a que entre el primero…" : `${estado.participantes} ${estado.participantes === 1 ? "estudiante adentro" : "estudiantes adentro"}`}
           </p>
-          {lista.length > 0 && (
+          {presentes.length > 0 && (
             <div className="vivo-chips" style={{ justifyContent: "center", maxWidth: "900px" }} aria-label="Quiénes entraron">
-              {lista.map((p) => (
-                <span key={p.apodo + p.unido_en} className="vivo-pop" style={{ padding: "8px 14px", borderRadius: "999px", background: V.panel2, border: `1px solid ${V.linea}`, fontSize: "15px", fontWeight: 600 }}>{p.apodo}</span>
+              {presentes.map((p) => (
+                <span key={p.id} className="vivo-pop" style={{ display: "inline-flex", alignItems: "center", gap: "4px", padding: "4px 4px 4px 14px", borderRadius: "999px", background: V.panel2, border: `1px solid ${V.linea}`, fontSize: "15px", fontWeight: 600 }}>
+                  {p.apodo}
+                  {/* Para quien se coló sin ser de la clase. */}
+                  <button type="button" onClick={() => sacar(p)} aria-label={`Sacar a ${p.apodo} de la sala`} data-vivo-sacar
+                    style={{ width: "32px", height: "32px", borderRadius: "999px", border: "none", background: "transparent", color: V.dato, cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
+                    <X size={15} aria-hidden="true" />
+                  </button>
+                </span>
               ))}
             </div>
           )}
@@ -314,21 +328,21 @@ function Tablero({ inicial, onBack }) {
           <Podio lista={podio?.podio ?? []} />
           <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", justifyContent: "center" }}>
             <button type="button" className="vivo-boton vivo-boton--suave" onClick={() => setVerAsistencia((v) => !v)} aria-expanded={verAsistencia} data-vivo-ver-asistencia>
-              <ClipboardList size={18} aria-hidden="true" /> {verAsistencia ? "Ocultar asistencia" : `Asistencia (${lista.length})`}
+              <ClipboardList size={18} aria-hidden="true" /> {verAsistencia ? "Ocultar asistencia" : `Asistencia (${presentes.length})`}
             </button>
             <button type="button" className="vivo-boton" onClick={() => mover("cerrar")} data-vivo-terminar>
               <X size={18} aria-hidden="true" /> Terminar la clase
             </button>
           </div>
-          {verAsistencia && <Asistencia lista={lista} total={estado.total} />}
+          {verAsistencia && <Asistencia lista={presentes} total={estado.total} />}
         </section>
       )}
 
       {fase === "cerrada" && (
         <section className="vivo-tarjeta vivo-entra" style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
           <h2 className="vivo-titulo" style={{ fontSize: "24px" }}>La clase terminó</h2>
-          <p className="vivo-nota">Entraron {lista.length} estudiantes. Esta es la asistencia con lo que acertó cada uno.</p>
-          <Asistencia lista={lista} total={estado.total} />
+          <p className="vivo-nota">Entraron {presentes.length} estudiantes. Esta es la asistencia con lo que acertó cada uno.</p>
+          <Asistencia lista={presentes} total={estado.total} />
           <div><button type="button" className="vivo-boton" onClick={onBack}>Volver al panel</button></div>
         </section>
       )}

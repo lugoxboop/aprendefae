@@ -98,9 +98,9 @@ insert into res select 4, 'la asistencia tiene a A y a B, una vez cada uno', '2'
 -- ── 5. Un código que no existe no deja entrar ─────────────────────────────
 select pg_temp.como('c');
 set local role authenticated;
-do $$ begin
-  perform public.vivo_unirse('000000x');
-  perform set_config('vivo.p5', 'entró', true);
+do $$ declare e jsonb; begin
+  e := public.vivo_unirse('000000x');
+  perform set_config('vivo.p5', case when e ->> 'error' = 'codigo' then 'rechazado' else 'entró' end, true);
 exception when others then perform set_config('vivo.p5', 'rechazado', true);
 end $$;
 reset role;
@@ -305,6 +305,91 @@ exception when others then perform set_config('vivo.p20', 'rechazado', true);
 end $$;
 reset role;
 insert into res select 20, 'una pregunta con la correcta fuera de sus opciones no entra', 'rechazado', current_setting('vivo.p20'), current_setting('vivo.p20') = 'rechazado';
+
+
+-- ── 21. Lo que se guarda no trae la clave del banco ───────────────────────
+select pg_temp.como('docente');
+set local role authenticated;
+do $$ declare e jsonb; begin
+  e := public.vivo_crear('contabilidad', 'x', 'Clave', 30, '[{"clave":"t2-debe:caja","actividad":"t2-debe","enunciado":"z","opciones":[{"id":"a","texto":"A","extra":1},{"id":"b","texto":"B"}],"correcta":"a"}]'::jsonb);
+  perform set_config('vivo.sala2', e ->> 'sala_id', true);
+  perform set_config('vivo.codigo2', e ->> 'codigo', true);
+end $$;
+reset role;
+insert into res select 21, 'el contenido no lleva la clave ni nada que no se pinte', 'sin clave ni actividad ni extra',
+  (select contenido::text from public.vivo_preguntas where sala_id = current_setting('vivo.sala2')::uuid),
+  (select not (contenido ? 'clave') and not (contenido ? 'actividad') and not (contenido -> 'opciones' -> 0 ? 'extra')
+     from public.vivo_preguntas where sala_id = current_setting('vivo.sala2')::uuid);
+
+-- ── 22. Opciones con id repetido no entran ────────────────────────────────
+select pg_temp.como('docente');
+set local role authenticated;
+do $$ begin
+  perform public.vivo_crear('contabilidad', 'x', 'Mal', 30, '[{"enunciado":"z","opciones":[{"id":"a","texto":"A"},{"id":"a","texto":"B"}],"correcta":"a"}]'::jsonb);
+  perform set_config('vivo.p22', 'creó', true);
+exception when others then perform set_config('vivo.p22', 'rechazado', true);
+end $$;
+reset role;
+insert into res select 22, 'opciones con el id repetido no entran', 'rechazado', current_setting('vivo.p22'), current_setting('vivo.p22') = 'rechazado';
+
+-- ── 23. Expulsar: B sale del conteo y no puede responder ni volver ────────
+select pg_temp.como('a');
+set local role authenticated;
+do $$ begin perform public.vivo_unirse(current_setting('vivo.codigo2')); end $$;
+reset role;
+select pg_temp.como('b');
+set local role authenticated;
+do $$ begin perform public.vivo_unirse(current_setting('vivo.codigo2')); end $$;
+reset role;
+select pg_temp.como('docente');
+set local role authenticated;
+do $$ declare e jsonb; begin
+  perform public.vivo_expulsar(current_setting('vivo.sala2')::uuid, (select uid from quien where rol = 'b'));
+  e := public.vivo_avanzar(current_setting('vivo.sala2')::uuid, 'siguiente');
+  perform set_config('vivo.p23n', e ->> 'participantes', true);
+end $$;
+reset role;
+select pg_temp.como('b');
+set local role authenticated;
+do $$ declare e jsonb; begin
+  begin
+    perform public.vivo_responder(current_setting('vivo.sala2')::uuid, 0, 'a');
+    perform set_config('vivo.p23r', 'respondió', true);
+  exception when others then perform set_config('vivo.p23r', 'rechazado', true);
+  end;
+  e := public.vivo_unirse(current_setting('vivo.codigo2'));
+  perform set_config('vivo.p23v', coalesce(e ->> 'error', 'entró'), true);
+end $$;
+reset role;
+insert into res select 23, 'expulsado: fuera del conteo, sin responder, sin volver', '1/rechazado/expulsado',
+  current_setting('vivo.p23n') || '/' || current_setting('vivo.p23r') || '/' || current_setting('vivo.p23v'),
+  current_setting('vivo.p23n') = '1' and current_setting('vivo.p23r') = 'rechazado' and current_setting('vivo.p23v') = 'expulsado';
+
+-- ── 24. Del podio no se vuelve a una pregunta ─────────────────────────────
+select pg_temp.como('docente');
+set local role authenticated;
+do $$ declare e jsonb; begin
+  perform public.vivo_avanzar(current_setting('vivo.sala2')::uuid, 'final');
+  e := public.vivo_avanzar(current_setting('vivo.sala2')::uuid, 'siguiente');
+  perform set_config('vivo.p24', e ->> 'estado', true);
+end $$;
+reset role;
+insert into res select 24, 'en el podio, «siguiente» no reabre preguntas', 'final', current_setting('vivo.p24'), current_setting('vivo.p24') = 'final';
+
+-- ── 25. Diez códigos equivocados y hay que esperar ───────────────────────
+select pg_temp.como('c');
+set local role authenticated;
+do $$ declare k int; begin
+  -- C ya falló una vez en el paso 5: nueve más completan diez.
+  for k in 1 .. 9 loop perform public.vivo_unirse('99999' || k); end loop;
+  begin
+    perform public.vivo_unirse(current_setting('vivo.codigo2'));
+    perform set_config('vivo.p25', 'entró', true);
+  exception when others then perform set_config('vivo.p25', 'frenado', true);
+  end;
+end $$;
+reset role;
+insert into res select 25, 'tras 10 códigos equivocados, ni el correcto entra por un rato', 'frenado', current_setting('vivo.p25'), current_setting('vivo.p25') = 'frenado';
 
 -- ── Resumen. Única consulta que devuelve filas. ────────────────────────────
 select

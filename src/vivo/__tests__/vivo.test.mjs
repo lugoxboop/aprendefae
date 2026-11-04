@@ -97,3 +97,12 @@ test("★ el celular del estudiante no carga los bancos de preguntas (solo el ta
     assert.doesNotMatch(f, /banco\.js|VivoProfesor\.jsx|repaso\//);
   }
 });
+
+test("★ en vivo la correcta no se queda en la A: las opciones se barajan siempre", () => {
+  let enA = 0, total = 0;
+  for (const m of MATERIAS_EN_VIVO) for (const t of temasEnVivo(m)) for (const p of armarPreguntas(m, t.id, 30, semilla(5))) {
+    total++;
+    if (p.opciones[0].id === p.correcta) enA++;
+  }
+  assert.ok(enA / total < 0.33, `la correcta quedó en la A ${enA} de ${total} veces`);
+});

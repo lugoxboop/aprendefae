@@ -34,6 +34,8 @@ export function mensajeDeError(error) {
   if (/Sin sesión/i.test(m)) return "Necesitas iniciar sesión para entrar.";
   if (/No estás en esta sala/i.test(m)) return "Ya no estás en esta clase. Vuelve a entrar con el código.";
   if (/Solo un docente/i.test(m)) return "Solo una cuenta de docente puede abrir una clase en vivo.";
+  if (/Demasiados códigos/i.test(m)) return "Probaste demasiados códigos. Espera unos minutos y vuelve a intentarlo.";
+  if (m === "expulsado") return "Tu profesor te sacó de esta clase.";
   return "No se pudo conectar con la clase. Inténtalo otra vez.";
 }
 
@@ -45,13 +47,20 @@ async function rpc(nombre, args, cliente = supabase) {
 
 export const crearSala = ({ materia, tema, titulo, duracion, preguntas }, c) =>
   rpc("vivo_crear", { p_materia: materia, p_tema: tema, p_titulo: titulo, p_duracion: duracion, p_preguntas: preguntas }, c);
-export const unirse = (codigo, c) => rpc("vivo_unirse", { p_codigo: limpiarCodigo(codigo) }, c);
+/* Un código que no existe no es un error de la base (así puede anotar el intento): llega como dato. */
+export async function unirse(codigo, c) {
+  const r = await rpc("vivo_unirse", { p_codigo: limpiarCodigo(codigo) }, c);
+  if (r.data?.error === "codigo") return { error: new Error("No hay ninguna clase abierta con ese código") };
+  if (r.data?.error === "expulsado") return { error: new Error("expulsado") };
+  return r;
+}
 export const leerEstado = (sala, c) => rpc("vivo_estado", { p_sala: sala }, c);
 export const responder = (sala, indice, opcion, c) => rpc("vivo_responder", { p_sala: sala, p_indice: indice, p_opcion: opcion }, c);
 export const avanzar = (sala, accion, c) => rpc("vivo_avanzar", { p_sala: sala, p_accion: accion }, c);
 export const leerConteo = (sala, c) => rpc("vivo_conteo", { p_sala: sala }, c);
 export const leerPodio = (sala, limite = 5, c) => rpc("vivo_podio", { p_sala: sala, p_limite: limite }, c);
 export const leerAsistencia = (sala, c) => rpc("vivo_asistencia", { p_sala: sala }, c);
+export const expulsar = (sala, usuario, c) => rpc("vivo_expulsar", { p_sala: sala, p_user: usuario }, c);
 
 /**
  * El canal de avisos de una sala. Devuelve { avisar, cerrar }.
@@ -77,6 +86,17 @@ export function restanteMs(estado, desfase, ahora = Date.now()) {
   const fin = Date.parse(estado.inicio) + estado.duracion_s * 1000;
   return Math.max(0, fin - (ahora + desfase));
 }
+
+/**
+ * Cuánto hace que se acabó el tiempo (negativo si todavía no). El tablero no
+ * cierra en 0 sino 1,5 s después: el servidor da 2 s de gracia a la red del
+ * salón, y cerrar antes dejaría por fuera los toques del último segundo.
+ */
+export function vencidoMs(estado, desfase, ahora = Date.now()) {
+  if (!estado?.inicio || estado.estado !== "pregunta") return -Infinity;
+  return ahora + desfase - (Date.parse(estado.inicio) + estado.duracion_s * 1000);
+}
+export const GRACIA_TABLERO_MS = 1500;
 
 /** El desfase entre el reloj del servidor y el del celular, a partir de un estado. */
 export const desfaseDe = (estado, ahora = Date.now()) => (estado?.ahora ? Date.parse(estado.ahora) - ahora : 0);

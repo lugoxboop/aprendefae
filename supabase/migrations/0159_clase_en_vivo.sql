@@ -83,8 +83,22 @@ create table if not exists public.vivo_participantes (
   sala_id   uuid not null references public.vivo_salas (id) on delete cascade,
   user_id   uuid not null references auth.users (id) on delete cascade,
   unido_en  timestamptz not null default now(),
+  /* El profesor puede sacar a alguien que no es de su clase. No se borra: se marca. */
+  expulsado boolean not null default false,
   primary key (sala_id, user_id)
 );
+
+/*
+ * Intentos fallidos de entrar con un código. Sin esto, una cuenta podría
+ * probar el millón de códigos uno por uno y colarse en cualquier clase.
+ */
+create table if not exists public.vivo_intentos (
+  user_id  uuid not null references auth.users (id) on delete cascade,
+  creado   timestamptz not null default now()
+);
+create index if not exists vivo_intentos_user_idx on public.vivo_intentos (user_id, creado desc);
+alter table public.vivo_intentos enable row level security;
+revoke all on public.vivo_intentos from anon, authenticated;
 
 create table if not exists public.vivo_respuestas (
   sala_id   uuid not null references public.vivo_salas (id) on delete cascade,
@@ -121,6 +135,16 @@ as $$
   select exists (select 1 from public.vivo_salas s where s.id = p_sala and s.docente_id = auth.uid());
 $$;
 
+create or replace function public.vivo_dentro(p_sala uuid, p_uid uuid)
+returns boolean
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select exists (select 1 from public.vivo_participantes p where p.sala_id = p_sala and p.user_id = p_uid and not p.expulsado);
+$$;
+
 create or replace function public.vivo_estado(p_sala uuid)
 returns jsonb
 language plpgsql
@@ -141,7 +165,7 @@ begin
   select * into s from public.vivo_salas where id = p_sala;
   if not found then raise exception 'La sala no existe' using errcode = 'P0002'; end if;
   v_dueno := s.docente_id = v_uid;
-  v_dentro := exists (select 1 from public.vivo_participantes p where p.sala_id = p_sala and p.user_id = v_uid);
+  v_dentro := public.vivo_dentro(p_sala, v_uid);
   if not v_dueno and not v_dentro then raise exception 'No estás en esta sala' using errcode = '42501'; end if;
 
   if s.estado in ('pregunta', 'resultados') then
@@ -164,7 +188,7 @@ begin
     'inicio', s.inicio,
     'ahora', now(),
     'soy_dueno', v_dueno,
-    'participantes', (select count(*) from public.vivo_participantes p where p.sala_id = p_sala),
+    'participantes', (select count(*) from public.vivo_participantes p where p.sala_id = p_sala and not p.expulsado),
     'pregunta', case when v_preg.sala_id is null then null else v_preg.contenido end,
     'correcta', case when v_preg.sala_id is not null and v_ver then v_preg.correcta end,
     'mi_respuesta', case when v_mia.sala_id is null then null else jsonb_build_object(
@@ -219,6 +243,10 @@ begin
       raise exception 'La pregunta % necesita entre 2 y 8 opciones', v_i + 1 using errcode = '22023';
     end if;
     select array_agg(o ->> 'id') into v_ids from jsonb_array_elements(v_p -> 'opciones') o;
+    if (select count(distinct x) from unnest(v_ids) x) <> array_length(v_ids, 1)
+       or exists (select 1 from unnest(v_ids) x where coalesce(x, '') = '') then
+      raise exception 'La pregunta % tiene opciones sin id o con el id repetido', v_i + 1 using errcode = '22023';
+    end if;
     if not ((v_p ->> 'correcta') = any (v_ids)) then
       raise exception 'La correcta de la pregunta % no está entre sus opciones', v_i + 1 using errcode = '22023';
     end if;
@@ -241,7 +269,18 @@ begin
   returning id into v_sala;
 
   insert into public.vivo_preguntas (sala_id, indice, contenido, correcta)
-  select v_sala, (e.ord - 1)::integer, e.p - 'correcta', e.p ->> 'correcta'
+  /*
+   * Solo se guarda lo que se pinta. Nada que identifique el ítem del banco
+   * (su clave, su actividad): los bancos viajan en el sitio, y con la clave un
+   * programa buscaría la respuesta antes de que se cierre la pregunta.
+   */
+  select v_sala, (e.ord - 1)::integer,
+         jsonb_strip_nulls(jsonb_build_object(
+           'enunciado', e.p -> 'enunciado', 'pregunta', e.p -> 'pregunta', 'rotulo', e.p -> 'rotulo',
+           'subtema', e.p -> 'subtema', 'detalle', e.p -> 'detalle',
+           'opciones', (select jsonb_agg(jsonb_build_object('id', o -> 'id', 'texto', o -> 'texto') order by k)
+                          from jsonb_array_elements(e.p -> 'opciones') with ordinality as x(o, k)))),
+         e.p ->> 'correcta'
     from jsonb_array_elements(p_preguntas) with ordinality as e(p, ord);
 
   return public.vivo_estado(v_sala);
@@ -264,11 +303,21 @@ declare
   v_sala uuid;
 begin
   if v_uid is null then raise exception 'Sin sesión' using errcode = '28000'; end if;
+  if (select count(*) from public.vivo_intentos i where i.user_id = v_uid and i.creado > now() - interval '10 minutes') >= 10 then
+    raise exception 'Demasiados códigos equivocados. Espera unos minutos.' using errcode = '54000';
+  end if;
   select id into v_sala from public.vivo_salas
    where codigo = regexp_replace(coalesce(p_codigo, ''), '\D', '', 'g')
      and estado <> 'cerrada' and creada > now() - interval '8 hours'
    order by creada desc limit 1;
-  if v_sala is null then raise exception 'No hay ninguna clase abierta con ese código' using errcode = 'P0002'; end if;
+  if v_sala is null then
+    /* Se devuelve en vez de lanzar: un error desharía el registro del intento fallido. */
+    insert into public.vivo_intentos (user_id) values (v_uid);
+    return jsonb_build_object('error', 'codigo');
+  end if;
+  if exists (select 1 from public.vivo_participantes p where p.sala_id = v_sala and p.user_id = v_uid and p.expulsado) then
+    return jsonb_build_object('error', 'expulsado');
+  end if;
   insert into public.vivo_participantes (sala_id, user_id) values (v_sala, v_uid)
   on conflict do nothing;
   return public.vivo_estado(v_sala);
@@ -296,9 +345,10 @@ declare
   v_n     integer;
 begin
   if v_uid is null then raise exception 'Sin sesión' using errcode = '28000'; end if;
-  select * into s from public.vivo_salas where id = p_sala;
+  /* for share: espera a que termine un cierre en curso (vivo_avanzar toma for update). */
+  select * into s from public.vivo_salas where id = p_sala for share;
   if not found then raise exception 'La sala no existe' using errcode = 'P0002'; end if;
-  if not exists (select 1 from public.vivo_participantes p where p.sala_id = p_sala and p.user_id = v_uid) then
+  if not public.vivo_dentro(p_sala, v_uid) then
     raise exception 'No estás en esta sala' using errcode = '42501';
   end if;
   if s.estado <> 'pregunta' or s.indice <> p_indice then
@@ -349,6 +399,8 @@ begin
   if p_accion = 'siguiente' then
     if s.estado = 'pregunta' then
       raise exception 'Primero se cierra la pregunta abierta' using errcode = '55000';
+    elsif s.estado = 'final' then
+      null;  /* del podio no se vuelve a una pregunta */
     elsif s.indice + 1 >= s.total then
       update public.vivo_salas set estado = 'final' where id = p_sala;
     else
@@ -386,7 +438,7 @@ begin
   select * into s from public.vivo_salas where id = p_sala;
   if not found then raise exception 'La sala no existe' using errcode = 'P0002'; end if;
   if s.docente_id <> v_uid then
-    if not exists (select 1 from public.vivo_participantes p where p.sala_id = p_sala and p.user_id = v_uid) then
+    if not public.vivo_dentro(p_sala, v_uid) then
       raise exception 'No estás en esta sala' using errcode = '42501';
     end if;
     if s.estado not in ('resultados', 'final') then
@@ -395,11 +447,13 @@ begin
   end if;
   return jsonb_build_object(
     'indice', s.indice,
-    'participantes', (select count(*) from public.vivo_participantes p where p.sala_id = p_sala),
-    'respondieron', (select count(*) from public.vivo_respuestas r where r.sala_id = p_sala and r.indice = s.indice),
+    'participantes', (select count(*) from public.vivo_participantes p where p.sala_id = p_sala and not p.expulsado),
+    'respondieron', (select count(*) from public.vivo_respuestas r join public.vivo_participantes p using (sala_id, user_id)
+                      where r.sala_id = p_sala and r.indice = s.indice and not p.expulsado),
     'por_opcion', coalesce((select jsonb_object_agg(opcion, n) from (
         select r.opcion, count(*) as n from public.vivo_respuestas r
-         where r.sala_id = p_sala and r.indice = s.indice group by r.opcion) t), '{}'::jsonb)
+          join public.vivo_participantes p using (sala_id, user_id)
+         where r.sala_id = p_sala and r.indice = s.indice and not p.expulsado group by r.opcion) t), '{}'::jsonb)
   );
 end;
 $$;
@@ -426,7 +480,7 @@ begin
   if v_uid is null then raise exception 'Sin sesión' using errcode = '28000'; end if;
   select * into s from public.vivo_salas where id = p_sala;
   if not found then raise exception 'La sala no existe' using errcode = 'P0002'; end if;
-  if s.docente_id <> v_uid and not exists (select 1 from public.vivo_participantes p where p.sala_id = p_sala and p.user_id = v_uid) then
+  if s.docente_id <> v_uid and not public.vivo_dentro(p_sala, v_uid) then
     raise exception 'No estás en esta sala' using errcode = '42501';
   end if;
   v_tope := case when s.estado = 'pregunta' then s.indice - 1 else s.indice end;
@@ -440,7 +494,7 @@ begin
       from public.vivo_participantes p
       left join public.profiles pr on pr.user_id = p.user_id
       left join public.vivo_respuestas r on r.sala_id = p.sala_id and r.user_id = p.user_id and r.indice <= v_tope
-     where p.sala_id = p_sala
+     where p.sala_id = p_sala and not p.expulsado
      group by p.user_id, pr.nickname
   ), puestos as (
     select *, rank() over (order by puntos desc, aciertos desc) as puesto,
@@ -471,9 +525,10 @@ as $$
 begin
   if not public.vivo_es_dueno(p_sala) then raise exception 'Solo quien abrió la sala ve la asistencia' using errcode = '42501'; end if;
   return coalesce((
-    select jsonb_agg(jsonb_build_object('apodo', apodo, 'unido_en', unido_en, 'aciertos', aciertos, 'respondidas', respondidas, 'puntos', puntos) order by lower(apodo))
+    select jsonb_agg(jsonb_build_object('id', user_id, 'apodo', apodo, 'unido_en', unido_en, 'expulsado', expulsado,
+                                        'aciertos', aciertos, 'respondidas', respondidas, 'puntos', puntos) order by lower(apodo))
       from (
-        select coalesce(nullif(btrim(pr.nickname), ''), 'Estudiante') as apodo, p.unido_en,
+        select p.user_id, p.expulsado, coalesce(nullif(btrim(pr.nickname), ''), 'Estudiante') as apodo, p.unido_en,
                count(r.indice) filter (where r.correcta)::integer as aciertos,
                count(r.indice)::integer as respondidas,
                coalesce(sum(r.puntos), 0)::integer as puntos
@@ -481,12 +536,33 @@ begin
           left join public.profiles pr on pr.user_id = p.user_id
           left join public.vivo_respuestas r on r.sala_id = p.sala_id and r.user_id = p.user_id
          where p.sala_id = p_sala
-         group by p.user_id, pr.nickname, p.unido_en
+         group by p.user_id, pr.nickname, p.unido_en, p.expulsado
       ) t), '[]'::jsonb);
 end;
 $$;
 
+/*
+ * Sacar a alguien de la sala (alguien que no es de la clase y se coló con el
+ * código). No se borra nada: queda marcado, no cuenta en el conteo ni en el
+ * podio, y no puede volver a entrar a esta sala.
+ */
+create or replace function public.vivo_expulsar(p_sala uuid, p_user uuid)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public
+volatile
+as $$
+begin
+  if not public.vivo_es_dueno(p_sala) then raise exception 'Solo quien abrió la sala saca a alguien' using errcode = '42501'; end if;
+  update public.vivo_participantes set expulsado = true where sala_id = p_sala and user_id = p_user;
+  return public.vivo_asistencia(p_sala);
+end;
+$$;
+
 revoke all on function public.vivo_es_dueno(uuid) from public, anon;
+revoke all on function public.vivo_dentro(uuid, uuid) from public, anon, authenticated;
+revoke all on function public.vivo_expulsar(uuid, uuid) from public, anon;
 revoke all on function public.vivo_estado(uuid) from public, anon;
 revoke all on function public.vivo_crear(text, text, text, integer, jsonb) from public, anon;
 revoke all on function public.vivo_unirse(text) from public, anon;
@@ -505,10 +581,12 @@ grant execute on function public.vivo_avanzar(uuid, text) to authenticated;
 grant execute on function public.vivo_conteo(uuid) to authenticated;
 grant execute on function public.vivo_podio(uuid, integer) to authenticated;
 grant execute on function public.vivo_asistencia(uuid) to authenticated;
+grant execute on function public.vivo_expulsar(uuid, uuid) to authenticated;
 
 /*
  * Para deshacer (solo si nadie la ha usado todavía; borra asistencias):
  *
+ * drop function if exists public.vivo_expulsar(uuid, uuid);
  * drop function if exists public.vivo_asistencia(uuid);
  * drop function if exists public.vivo_podio(uuid, integer);
  * drop function if exists public.vivo_conteo(uuid);
@@ -518,5 +596,6 @@ grant execute on function public.vivo_asistencia(uuid) to authenticated;
  * drop function if exists public.vivo_crear(text, text, text, integer, jsonb);
  * drop function if exists public.vivo_estado(uuid);
  * drop function if exists public.vivo_es_dueno(uuid);
- * drop table if exists public.vivo_respuestas, public.vivo_participantes, public.vivo_preguntas, public.vivo_salas;
+ * drop function if exists public.vivo_dentro(uuid, uuid);
+ * drop table if exists public.vivo_intentos, public.vivo_respuestas, public.vivo_participantes, public.vivo_preguntas, public.vivo_salas;
  */

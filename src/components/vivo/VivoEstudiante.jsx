@@ -112,6 +112,8 @@ function Jugar({ inicial, onBack }) {
     const { data, error } = await responder(inicial.sala_id, estado.indice, opcion);
     if (error) { setElegida(null); setAviso(mensajeDeError(error)); return; }
     if (!data?.aceptada) {
+      /* Si no contó, no se muestra «enviada». Solo una repetida (ya había una antes) se queda marcada. */
+      if (data?.motivo !== "repetida") setElegida(null);
       if (data?.motivo === "tiempo" || data?.motivo === "cerrada") setAviso("Se acabó el tiempo de esta pregunta.");
       refrescar();
     }
