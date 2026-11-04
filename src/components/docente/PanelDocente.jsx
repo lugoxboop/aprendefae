@@ -24,6 +24,7 @@ import FraseDeHoy from "./FraseDeHoy.jsx";
 import EsfuerzoResultado from "./EsfuerzoResultado.jsx";
 import Fabrica from "./Fabrica.jsx";
 import LlamadoFabrica from "./LlamadoFabrica.jsx";
+import LlamadoVivo from "./LlamadoVivo.jsx";
 import BloqueRiesgo from "./BloqueRiesgo.jsx";
 import ListaRiesgo from "./ListaRiesgo.jsx";
 import VistaEstudiante from "./VistaEstudiante.jsx";
@@ -608,6 +609,8 @@ export default function PanelDocente({ actividadInicial = null, onBack }) {
           nombreMateria={nombreMateria}
           onIr={() => ir({ tipo: "fabrica" })}
         />
+        {/* La clase en vivo (0159): la segunda herramienta que el profesor usa en el salón. */}
+        <LlamadoVivo {...entrada(1, "crece")} materia={materia} />
         {sinEstudiantes ? (
           /*
            * Ukyo §7, 0 estudiantes, con el texto de Katsumi. No hay «código de
