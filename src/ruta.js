@@ -81,6 +81,9 @@ export const VISTAS = new Set([
   "perfil",
   "tienda",
   "docente",
+  /* La clase en vivo (0159): el celular del estudiante y el tablero del profesor. */
+  "vivo",
+  "vivo-profesor",
 ]);
 
 /*

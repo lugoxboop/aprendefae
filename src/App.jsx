@@ -49,6 +49,8 @@ const ContabilidadT7_3View = lazy(() => import("./components/ContabilidadT7_3Vie
 const RepasoCapitulo5View = lazy(() => import("./components/RepasoCapitulo5View.jsx"));
 const RepasoView = lazy(() => import("./components/repaso/RepasoView.jsx"));
 const PanelDocente = lazy(() => import("./components/docente/PanelDocente.jsx"));
+const VivoEstudiante = lazy(() => import("./components/vivo/VivoEstudiante.jsx"));
+const VivoProfesor = lazy(() => import("./components/vivo/VivoProfesor.jsx"));
 
 /*
  * Las dos mitades de Demanda Agregada. Cada una carga aparte: quien entra a
@@ -97,7 +99,7 @@ const VISTAS_CONTABILIDAD = new Set([
 ]);
 
 /* Bruno no sale en el inicio, los índices de materia ni las páginas de cuenta: ahí no hay actividad que orientar. */
-const VISTAS_SIN_BRUNO = new Set(["home", "macroeconomia", "pensamiento-estrategico", "contabilidad", "docente", "que-es", "perfil", "tienda"]);
+const VISTAS_SIN_BRUNO = new Set(["home", "macroeconomia", "pensamiento-estrategico", "contabilidad", "docente", "que-es", "perfil", "tienda", "vivo", "vivo-profesor"]);
 const VISTAS_PE = new Set(["pensamiento-sistemico", "modelo-iceberg", "fuerzas-porter"]);
 const materiaDeVista = (v) => (VISTAS_CONTABILIDAD.has(v) || v === "repaso-diario-contabilidad" ? "Contabilidad" : VISTAS_PE.has(v) ? "Pensamiento Estratégico" : "Macroeconomía");
 
@@ -439,6 +441,26 @@ export default function App() {
     /* Se vuelve a la portada y no al historial: se entra aquí desde el pie,
      * y el pie está en la portada. */
     return wrap(<QueEsView onBack={goHome} />);
+  }
+
+  /*
+   * La clase en vivo (0159). El estudiante entra por #/vivo, o por #/vivo/123456
+   * desde el QR del tablero; el profesor abre su tablero desde el panel.
+   */
+  if (view === "vivo") {
+    return wrap(
+      <Suspense fallback={siteFallback}>
+        <VivoEstudiante codigoInicial={ruta.extra} onBack={goHome} />
+      </Suspense>
+    );
+  }
+
+  if (view === "vivo-profesor") {
+    return wrap(
+      <Suspense fallback={siteFallback}>
+        <VivoProfesor materiaInicial={ruta.extra} onBack={() => setView("docente")} />
+      </Suspense>
+    );
   }
 
   if (view === "perfil") {

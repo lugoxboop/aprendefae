@@ -128,7 +128,7 @@ test("repetir una actividad paga 0 y el contador no se mueve", async () => {
 
 /* ─────────────────────── Part B: el menú ─────────────────────── */
 
-test("el menú trae la ficha de identidad y las cuatro opciones, en orden", () => {
+test("el menú trae la ficha de identidad y las cinco opciones, en orden (la clase en vivo, desde el 4-nov)", () => {
   const m = montar();
   try {
     abrir(m.caja);
@@ -140,7 +140,7 @@ test("el menú trae la ficha de identidad y las cuatro opciones, en orden", () =
     assert.match(ficha.textContent, /0/, "los Cristales");
     assert.match(ficha.textContent, /d[ií]as?/, "y la racha");
 
-    assert.deepEqual(opciones(m.caja), ["Mi perfil", "Mi avatar", "Tienda", "Cerrar sesión"]);
+    assert.deepEqual(opciones(m.caja), ["Clase en vivo", "Mi perfil", "Mi avatar", "Tienda", "Cerrar sesión"]);
   } finally { m.desmontar(); }
 });
 
@@ -227,7 +227,7 @@ test("la pastilla compacta sigue abriendo el mismo menú", () => {
   try {
     abrir(m.caja);
     assert.ok(m.caja.querySelector("[data-ficha-cuenta]"), "la ficha de identidad, igual que en la completa");
-    assert.deepEqual(opciones(m.caja), ["Mi perfil", "Mi avatar", "Tienda", "Cerrar sesión"]);
+    assert.deepEqual(opciones(m.caja), ["Clase en vivo", "Mi perfil", "Mi avatar", "Tienda", "Cerrar sesión"]);
   } finally { m.desmontar(); }
 });
 
