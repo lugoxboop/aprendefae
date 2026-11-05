@@ -7,6 +7,7 @@ import Logo from "./Logo.jsx";
 import Footer from "./shared/Footer.jsx";
 import Entrada, { EstiloEntrada } from "./shared/Entrada.jsx";
 import BotonOpinion from "./opinion/BotonOpinion.jsx";
+import PorQueFunciona from "./PorQueFunciona.jsx";
 
 /*
  * ⚑ La tarjeta de Pensamiento Estratégico en la portada. false = no se enseña
@@ -154,6 +155,14 @@ export default function HomeScreen({ onSelectSubject, onQueEs }) {
             <Footer onQueEs={onQueEs} />
           </div>
         </Entrada>
+
+        {/*
+          * LA EVIDENCIA, DEBAJO DE LA PORTADA. No entra en la coreografía (va
+          * bajo el pliegue): quien entra ve primero la marca y las materias;
+          * quien baja encuentra por qué usarla. Sección aparte, aditiva y
+          * reversible — se quita volviendo a borrar esta línea y su import.
+          */}
+        <PorQueFunciona />
       </div>
     </div>
   );
