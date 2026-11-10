@@ -1,0 +1,146 @@
+/* Planck — capa de marca. Generado desde tokens.json del sistema Planck
+ * (https://claude.ai/artifact/2ZfaKT5GYcCQ29UVFLhfbi). Cambia los tokens allí
+ * y regenera; no edites valores sueltos aquí.
+ *
+ * Uso: en src/styles/global.css, debajo de `@import "tailwindcss";`
+ *   @import "./planck.css";
+ * y reemplaza la línea de Google Fonts por la de abajo (Geist + Geist Mono;
+ * Sora e Inter siguen cargándose mientras dure la migración, ver migracion.md).
+ *
+ * Las fuentes y los radios se declaran como --planck-* y Tailwind los publica
+ * como --font-sans / --radius-md (si tuvieran el mismo nombre en :root y en
+ * @theme, Tailwind generaría una referencia circular).
+ *
+ * El sitio hoy es oscuro: pon `data-theme="dark"` en <html> para que la capa
+ * Planck salga en oscuro. Sin atributo, sale en claro (propuestas, sitio web).
+ */
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500&display=swap");
+
+:root, [data-theme="light"] {
+  --surface-0: #ffffff;
+  --surface-1: #f1f2f4;
+  --surface-2: #e4e6ea;
+  --border: #d3d7de;
+  --border-strong: #7f8591;
+  --ink: #121418;
+  --ink-2: #565c66;
+  --ink-3: #636973;
+  --accent: #2747f5;
+  --accent-hover: #1a33c2;
+  --accent-soft: #e6eaff;
+  --on-accent: #ffffff;
+  --success: #1f7a6e;
+  --success-soft: #e3f6f2;
+  --warning: #8a5a00;
+  --warning-soft: #fbefd0;
+  --error: #b8471f;
+  --error-soft: #fceae3;
+  --focus: #2747f5;
+  --product-debe: #1f7a6e;
+  --product-haber: #8a5a00;
+  --shadow-sm: 0 1px 2px rgba(18, 20, 24, 0.06);
+  --shadow-md: 0 6px 20px rgba(18, 20, 24, 0.10);
+}
+[data-theme="dark"] {
+  --surface-0: #121418;
+  --surface-1: #1b1e24;
+  --surface-2: #262a32;
+  --border: #3a3f49;
+  --border-strong: #6b7280;
+  --ink: #f4f5f7;
+  --ink-2: #b6bbc5;
+  --ink-3: #8e94a0;
+  --accent: #6f86ff;
+  --accent-hover: #8a9cff;
+  --accent-soft: #1e2550;
+  --on-accent: #121418;
+  --success: #4fc2b2;
+  --success-soft: #163b36;
+  --warning: #f2c14e;
+  --warning-soft: #3b2f0e;
+  --error: #f28b6a;
+  --error-soft: #45231a;
+  --focus: #f4f5f7;
+  --product-debe: #2a9d8f;
+  --product-haber: #e9c46a;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.5);
+}
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --planck-radius-0: 0px;
+  --planck-radius-sm: 4px;
+  --planck-radius-md: 8px;
+  --planck-radius-lg: 12px;
+  --planck-radius-xl: 22px;
+  --planck-font-sans: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --planck-font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --planck-ease: cubic-bezier(.3,.9,.4,1); /* la misma curva que ya usa el sitio */
+  --planck-dur: 280ms;
+}
+
+/* Tailwind 4: expone los tokens como utilidades (bg-accent, text-ink-2,
+ * rounded-lg, p-4, font-sans…). Las clases de Tailwind siguen leyendo las
+ * variables, así que cambian de tema con data-theme. */
+@theme inline {
+  --color-surface-0: var(--surface-0);
+  --color-surface-1: var(--surface-1);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-soft: var(--accent-soft);
+  --color-on-accent: var(--on-accent);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-error: var(--error);
+  --color-error-soft: var(--error-soft);
+  --color-focus: var(--focus);
+  --color-product-debe: var(--product-debe);
+  --color-product-haber: var(--product-haber);
+  --spacing-1: var(--space-1);
+  --spacing-2: var(--space-2);
+  --spacing-3: var(--space-3);
+  --spacing-4: var(--space-4);
+  --spacing-5: var(--space-5);
+  --spacing-6: var(--space-6);
+  --spacing-8: var(--space-8);
+  --spacing-12: var(--space-12);
+  --spacing-16: var(--space-16);
+  --radius-0: var(--planck-radius-0);
+  --radius-sm: var(--planck-radius-sm);
+  --radius-md: var(--planck-radius-md);
+  --radius-lg: var(--planck-radius-lg);
+  --radius-xl: var(--planck-radius-xl);
+  --font-sans: var(--planck-font-sans);
+  --font-mono: var(--planck-font-mono);
+}
+
+/* Estilos tipográficos del sistema, por nombre. */
+.planck-display{font:700 56px/58px var(--font-sans); letter-spacing:-0.045em;}
+.planck-h1{font:700 38px/40px var(--font-sans); letter-spacing:-0.04em;}
+.planck-h2{font:700 28px/32px var(--font-sans); letter-spacing:-0.035em;}
+.planck-h3{font:600 20px/26px var(--font-sans); letter-spacing:-0.02em;}
+.planck-body-lg{font:400 17px/26px var(--font-sans);}
+.planck-body{font:400 15px/22px var(--font-sans);}
+.planck-body-sm{font:400 13px/18px var(--font-sans);}
+.planck-button{font:600 15px/20px var(--font-sans);}
+.planck-label{font:500 12px/16px var(--font-mono); letter-spacing:0.06em; text-transform:uppercase;}
+.planck-data{font:500 15px/22px var(--font-mono);}
+
+/* Foco de la capa Planck. En las actividades sigue mandando el anillo #F8F9FA del canon. */
+.planck :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }

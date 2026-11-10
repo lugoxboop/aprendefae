@@ -8,6 +8,7 @@ import Footer from "./shared/Footer.jsx";
 import Entrada, { EstiloEntrada } from "./shared/Entrada.jsx";
 import BotonOpinion from "./opinion/BotonOpinion.jsx";
 import PorQueFunciona from "./PorQueFunciona.jsx";
+import RespaldoPlanck from "./RespaldoPlanck.jsx";
 
 /*
  * ⚑ La tarjeta de Pensamiento Estratégico en la portada. false = no se enseña
@@ -154,6 +155,12 @@ export default function HomeScreen({ onSelectSubject, onQueEs }) {
             </span>
             <Footer onQueEs={onQueEs} />
           </div>
+          {/*
+            * El respaldo de la empresa: "AprendeFAE es de planck". Única
+            * aparición de Planck que ve el estudiante (regla del libro de
+            * marca). Logo en imagen, tema oscuro porque el sitio es oscuro.
+            */}
+          <RespaldoPlanck theme="dark" style={{ marginTop: "2px" }} />
         </Entrada>
 
         {/*

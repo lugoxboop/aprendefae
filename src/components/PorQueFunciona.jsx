@@ -167,7 +167,7 @@ const CSS = `
 .pqf{ position:relative; max-width:880px; margin:0 auto; padding:clamp(48px,8vh,96px) 20px clamp(28px,5vh,52px); font-family:Inter,system-ui,sans-serif; color:#F8F9FA; }
 .pqf::before{ content:""; position:absolute; top:0; left:50%; transform:translateX(-50%); width:min(100%,520px); height:1px; background:linear-gradient(90deg,transparent,rgba(248,249,250,.14),transparent); }
 .pqf-sello{ display:inline-flex; align-items:center; gap:9px; font-family:Sora,sans-serif; font-size:10.5px; font-weight:700; letter-spacing:.2em; color:rgba(248,249,250,.55); margin:0 0 18px; }
-.pqf-sello i{ width:7px; height:7px; background:#2A9D8F; transform:rotate(45deg); display:block; }
+.pqf-sello i{ width:7px; height:7px; background:#6F86FF; transform:rotate(45deg); display:block; }
 .pqf-h1{ font-family:Sora,sans-serif; font-weight:800; letter-spacing:-.02em; line-height:1.05; font-size:clamp(30px,6vw,52px); margin:0 0 16px; max-width:16ch; }
 .pqf-h1 .res{ color:#F8F9FA; }
 .pqf-bajada{ margin:0; max-width:54ch; color:rgba(248,249,250,.74); font-size:clamp(14.5px,2.2vw,17px); line-height:1.58; }
@@ -175,7 +175,7 @@ const CSS = `
 .pqf-cabe{ display:flex; justify-content:space-between; align-items:baseline; gap:14px; flex-wrap:wrap; margin-bottom:4px; }
 .pqf-cabe h3{ font-family:Sora,sans-serif; font-weight:700; font-size:clamp(16px,2.6vw,20px); margin:0; letter-spacing:-.01em; }
 .pqf-replay{ appearance:none; border:1px solid rgba(248,249,250,.10); background:transparent; color:rgba(248,249,250,.74); font-family:Sora,sans-serif; font-weight:600; font-size:12px; padding:7px 13px; border-radius:999px; cursor:pointer; display:inline-flex; align-items:center; gap:7px; transition:border-color .18s ease,color .18s ease; }
-.pqf-replay:hover{ border-color:rgba(42,157,143,.55); color:#F8F9FA; }
+.pqf-replay:hover{ border-color:rgba(111,134,255,.55); color:#F8F9FA; }
 .pqf-replay svg{ width:13px; height:13px; }
 .pqf-leyenda{ display:inline-flex; align-items:center; gap:8px; margin:4px 0 0; font-family:Sora,sans-serif; font-size:12px; font-weight:600; color:rgba(248,249,250,.55); letter-spacing:.02em; }
 .pqf-leyenda i{ width:18px; border-top:1.5px dashed rgba(233,196,106,.8); display:block; flex:none; }
@@ -188,11 +188,11 @@ const CSS = `
 .pqf-barras{ position:absolute; left:38px; right:2px; top:30px; bottom:46px; display:grid; grid-template-columns:repeat(4,1fr); gap:clamp(8px,2.4vw,20px); align-items:end; }
 .pqf-col{ position:relative; height:100%; display:flex; flex-direction:column; justify-content:flex-end; align-items:center; }
 .pqf-barra{ width:100%; max-width:94px; border-radius:9px 9px 2px 2px; height:0; background:linear-gradient(180deg,rgba(203,220,242,.9),rgba(203,220,242,.45)); transition:height 1s cubic-bezier(.3,.9,.4,1); position:relative; }
-.pqf-col.clave .pqf-barra{ background:linear-gradient(180deg,#2A9D8F,rgba(42,157,143,.55)); box-shadow:0 0 0 1px rgba(42,157,143,.5),0 14px 34px -14px rgba(42,157,143,.8); }
+.pqf-col.clave .pqf-barra{ background:linear-gradient(180deg,#6F86FF,rgba(111,134,255,.55)); box-shadow:0 0 0 1px rgba(111,134,255,.5),0 14px 34px -14px rgba(111,134,255,.8); }
 .pqf-valor{ position:absolute; top:-30px; left:50%; transform:translateX(-50%); font-family:Sora,sans-serif; font-weight:800; font-size:clamp(17px,3vw,22px); white-space:nowrap; opacity:0; transition:opacity .4s ease; }
 .pqf-col.clave .pqf-valor{ color:#F8F9FA; }
 .pqf-col.visible .pqf-valor{ opacity:1; }
-.pqf-corona{ position:absolute; top:-52px; left:50%; transform:translateX(-50%); font-family:Sora,sans-serif; font-weight:700; font-size:10.5px; letter-spacing:.1em; color:#06202A; background:#2A9D8F; padding:3px 9px; border-radius:999px; white-space:nowrap; opacity:0; transition:opacity .5s ease .2s; }
+.pqf-corona{ position:absolute; top:-52px; left:50%; transform:translateX(-50%); font-family:Sora,sans-serif; font-weight:700; font-size:10.5px; letter-spacing:.1em; color:#121418; background:#6F86FF; padding:3px 9px; border-radius:999px; white-space:nowrap; opacity:0; transition:opacity .5s ease .2s; }
 .pqf-col.visible .pqf-corona{ opacity:1; }
 .pqf-etq{ position:absolute; top:calc(100% + 10px); left:0; right:0; text-align:center; }
 .pqf-etq b{ display:block; font-family:Sora,sans-serif; font-weight:600; font-size:clamp(12px,2vw,13px); line-height:1.25; }

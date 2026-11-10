@@ -71,6 +71,13 @@ export const FICHA_RESERVA = 84;
  * mirar a 375 px lo que esté dentro de un <svg>, que no se ve en el código—.
  */
 
+/*
+ * Capa de marca Planck (la empresa). Hermana de FAE y COLORS, no las reemplaza:
+ * FAE sigue siendo la paleta semántica de las actividades. Se reexporta aquí
+ * para importar todo desde el sitio de siempre. Fuente de verdad: theme.planck.js.
+ */
+export { PLANCK, PLANCK_CLARO, PLANCK_OSCURO, PLANCK_TIPO } from "./theme.planck.js";
+
 /* Paleta de DA-Learn (tema de Macroeconomía). */
 export const COLORS = {
   bg: "#0F1B2E",
