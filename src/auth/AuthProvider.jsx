@@ -151,7 +151,7 @@ export function AuthProvider({ children }) {
    * ¿Hay que pedirle la mascota? Va DESPUÉS del apodo: solo tiene sentido con
    * perfil ya creado. Un perfil sin mascota_especie es el que todavía no la
    * eligió —los nuevos, apenas crean el perfil; los activos de antes de la
-   * 0258, la próxima vez que entren—. Mismos resguardos de parpadeo que el
+   * 0160, la próxima vez que entren—. Mismos resguardos de parpadeo que el
    * apodo: mientras se lee el perfil, «no sé» no se pinta como «no tienes».
    */
   const necesitaMascota = Boolean(
@@ -252,7 +252,7 @@ export function AuthProvider({ children }) {
   }, [session, cargarPerfil]);
 
   /*
-   * Elegir y nombrar la mascota (0258). Como la combinación del avatar, la
+   * Elegir y nombrar la mascota (0160). Como la combinación del avatar, la
    * escribe una función security definer, no un update del cliente: mascota_elegir
    * valida la especie y el nombre y devuelve la fila ya cambiada, que aplicamos
    * sin viaje extra. El paso de registro llama a esto.

@@ -1,5 +1,12 @@
 -- ═══════════════════════════════════════════════════════════════════════════
--- 0258 — LA MASCOTA
+-- 0160 — LA MASCOTA
+--
+-- GUARDIAN: cambio de esquema a proposito
+--
+-- Va en el rango del coordinador (0150-0199) y no en el de una célula: añade
+-- columnas y una función al perfil —cambio de esquema compartido, no filas de
+-- una materia—. Por eso lleva la marca de arriba, la única que deja al guardián
+-- aceptar un «alter» en una migración.
 --
 -- La Etapa 1 del sistema de mascotas: cada estudiante elige una criatura
 -- (perro, gato, hámster o hurón) y le pone nombre. Es la evolución del avatar
@@ -14,7 +21,8 @@
 --     No hay grant de escritura por columna: igual que el avatar.
 --
 -- Esto NO toca los FP, ni los Cristales, ni el avatar: solo añade. Nada se
--- borra, así que es reversible. Va después de la 0257. Idempotente.
+-- borra, así que es reversible. Solo depende de profiles (0001), así que su
+-- orden en el rango no importa. Idempotente: se puede correr dos veces.
 --
 -- Las especies válidas son las mismas que ESPECIES de src/mascota/mascotas.js,
 -- y mascota.test.mjs LEE este archivo para que los dos lados no se separen —el
@@ -27,9 +35,9 @@ alter table public.profiles
   add column if not exists mascota_nombre  text;
 
 comment on column public.profiles.mascota_especie is
-'Especie de la mascota (0258): perro, gato, hamster o huron. NULL = el estudiante todavía no la ha elegido; la compuerta del registro lo detecta y se la pide. La escribe mascota_elegir(); el cliente no tiene grant sobre esta columna.';
+'Especie de la mascota (0160): perro, gato, hamster o huron. NULL = el estudiante todavía no la ha elegido; la compuerta del registro lo detecta y se la pide. La escribe mascota_elegir(); el cliente no tiene grant sobre esta columna.';
 comment on column public.profiles.mascota_nombre is
-'Nombre que el estudiante le puso a su mascota (0258). De 1 a 16 caracteres. NULL hasta que la elige.';
+'Nombre que el estudiante le puso a su mascota (0160). De 1 a 16 caracteres. NULL hasta que la elige.';
 
 do $$
 begin

@@ -55,7 +55,7 @@ export const CAMPOS_EDITABLES = ["nickname", "full_name"];
 export const COLUMNAS_PERFIL =
   "user_id, nickname, full_name, points, streak, best_streak, last_activity_day, created_at, " +
   "cristales_balance, avatar_shape, avatar_palette, avatar_level, avatar_unlocked_levels, " +
-  /* 0258: la mascota. NULL hasta que el estudiante la elige; se lee aquí, se
+  /* 0160: la mascota. NULL hasta que el estudiante la elige; se lee aquí, se
      escribe solo por mascota_elegir() —igual que el avatar—. */
   "mascota_especie, mascota_nombre";
 

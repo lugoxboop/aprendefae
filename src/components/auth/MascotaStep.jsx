@@ -5,7 +5,7 @@ import Mascota from "../Mascota.jsx";
 import { ESPECIES, NOMBRE_MAX } from "../../mascota/mascotas.js";
 
 /*
- * El segundo paso del primer ingreso, después del apodo (0258). Como el apodo,
+ * El segundo paso del primer ingreso, después del apodo (0160). Como el apodo,
  * es parte del login y no se puede saltar: mientras el perfil no tenga mascota,
  * este paso sigue en pantalla. Sale a:
  *   · los estudiantes nuevos, apenas crean su perfil;

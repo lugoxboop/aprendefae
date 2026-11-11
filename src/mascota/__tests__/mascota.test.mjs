@@ -8,7 +8,7 @@ import { JSDOM, VirtualConsole } from "jsdom";
  * ═══════════════════════════════════════════════════════════════════════════
  * LA MASCOTA no se separa de la base.
  *
- * ESPECIES (mascotas.js) y el check de mascota_especie (0258) son la misma
+ * ESPECIES (mascotas.js) y el check de mascota_especie (0160) son la misma
  * lista en dos sitios: el cliente ofrece un selector, la base rechaza lo que no
  * esté en el check. Si se separan, un botón del selector guardaría algo que la
  * base tira con un error feo. Esta prueba LEE la migración y los compara —el
@@ -17,13 +17,13 @@ import { JSDOM, VirtualConsole } from "jsdom";
  */
 
 const migracion = readFileSync(
-  fileURLToPath(new URL("../../../supabase/migrations/0258_mascota.sql", import.meta.url)),
+  fileURLToPath(new URL("../../../supabase/migrations/0160_mascota.sql", import.meta.url)),
   "utf8",
 );
 
 const { ESPECIES, IDS_ESPECIE, NOMBRE_MAX } = await import("../mascotas.js");
 
-test("las especies del selector son exactamente las del check de la 0258", () => {
+test("las especies del selector son exactamente las del check de la 0160", () => {
   /* Toma el primer `mascota_especie in ('…','…')` de la migración. */
   const m = migracion.match(/mascota_especie in \(([^)]+)\)/);
   assert.ok(m, "la migración declara el check de la especie");

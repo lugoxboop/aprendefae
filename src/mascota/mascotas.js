@@ -8,7 +8,7 @@
  * el dibujo es de la casa, y por eso es de Planck y se puede registrar.
  *
  * ESPECIES son las cuatro válidas, y son las mismas del check de la migración
- * 0258_mascota.sql. mascota.test.mjs lee esa migración y comprueba que no se
+ * 0160_mascota.sql. mascota.test.mjs lee esa migración y comprueba que no se
  * separen —igual que avatar.test.mjs con las formas del avatar—.
  *
  * El dibujo se arma sobre una geometría de cara COMPARTIDA (ojos en 57/83,
