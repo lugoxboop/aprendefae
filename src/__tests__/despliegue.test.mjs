@@ -66,7 +66,8 @@ test("NO se toca la caché de los archivos con hash, que es correcta como está"
     !/\b(js|css|woff2?|png|svg|jpe?g|gif|webp|avif)\b/i.test(DIRECTIVAS),
     "el .htaccess nombra tipos de archivo estáticos",
   );
-  assert.ok(!/max-age/.test(DIRECTIVAS), "el .htaccess está fijando max-age a algo");
+  /* La única max-age permitida es la de HTTPS estricto (auditoría 11-nov), que no es de caché. */
+  assert.ok(!/max-age/.test(DIRECTIVAS.replace(/^.*Strict-Transport-Security.*$/m, "")), "el .htaccess está fijando max-age a algo");
   assert.ok(!/ExpiresDefault|ExpiresByType/.test(DIRECTIVAS), "entró mod_expires sin que nadie lo pidiera");
 });
 

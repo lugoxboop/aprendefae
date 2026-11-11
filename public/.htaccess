@@ -52,24 +52,21 @@
     Header unset Expires
     Header unset Pragma
   </FilesMatch>
-</IfModule>
-
-# ═══════════════════════════════════════════════════════════════════════════
-# PROTECCIONES DEL NAVEGADOR (auditoría de seguridad, 11-nov, punto 7)
-#
-# · X-Frame-Options y frame-ancestors: ninguna otra página puede meter a
-#   AprendeFAE dentro de la suya para engañar al estudiante (clickjacking).
-# · Strict-Transport-Security: el navegador recuerda por un año que este sitio
-#   va siempre por HTTPS.
-# · nosniff, Referrer-Policy, Permissions-Policy: lo estándar.
-# · Content-Security-Policy: solo carga código de aquí y de los tres sitios que
-#   de verdad usa (Supabase, el botón de Google y YouTube sin cookies). El
-#   único script en línea de index.html (la guardia de arranque) va con su
-#   huella: si alguien lo cambia, la prueba
-#   src/__tests__/cabeceras-seguridad.test.mjs falla y avisa que hay que
-#   actualizar la huella aquí, antes de que se publique roto.
-# ═══════════════════════════════════════════════════════════════════════════
-<IfModule mod_headers.c>
+  # ═══════════════════════════════════════════════════════════════════════════
+  # PROTECCIONES DEL NAVEGADOR (auditoría de seguridad, 11-nov, punto 7)
+  #
+  # · X-Frame-Options y frame-ancestors: ninguna otra página puede meter a
+  #   AprendeFAE dentro de la suya para engañar al estudiante (clickjacking).
+  # · Strict-Transport-Security: el navegador recuerda por un año que este sitio
+  #   va siempre por HTTPS.
+  # · nosniff, Referrer-Policy, Permissions-Policy: lo estándar.
+  # · Content-Security-Policy: solo carga código de aquí y de los tres sitios que
+  #   de verdad usa (Supabase, el botón de Google y YouTube sin cookies). El
+  #   único script en línea de index.html (la guardia de arranque) va con su
+  #   huella: si alguien lo cambia, la prueba
+  #   src/__tests__/cabeceras-seguridad.test.mjs falla y avisa que hay que
+  #   actualizar la huella aquí, antes de que se publique roto.
+  # ═══════════════════════════════════════════════════════════════════════════
   Header always set X-Frame-Options "SAMEORIGIN"
   Header always set X-Content-Type-Options "nosniff"
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
