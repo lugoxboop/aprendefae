@@ -2,7 +2,7 @@ import { useState } from "react";
 import { FAE } from "../../theme.js";
 import { useAuth } from "../../auth/AuthProvider.jsx";
 import Mascota from "../Mascota.jsx";
-import { ESPECIES, NOMBRE_MAX } from "../../mascota/mascotas.js";
+import { ESPECIES, NOMBRE_MAX, PALETAS_MASCOTA } from "../../mascota/mascotas.js";
 
 /*
  * El segundo paso del primer ingreso, después del apodo (0160). Como el apodo,
@@ -22,6 +22,7 @@ export default function MascotaStep() {
   const { elegirMascota, cerrarSesion } = useAuth();
   const [especie, setEspecie] = useState(null);
   const [nombre, setNombre] = useState("");
+  const [color, setColor] = useState("natural");
   const [error, setError] = useState(null);
   const [enviando, setEnviando] = useState(false);
 
@@ -32,7 +33,7 @@ export default function MascotaStep() {
     if (!listo || enviando) return;
     setEnviando(true);
     setError(null);
-    const { error: err } = await elegirMascota(especie, limpio);
+    const { error: err } = await elegirMascota(especie, limpio, color);
     if (err) setError(err);
     setEnviando(false);
   };
@@ -64,10 +65,36 @@ export default function MascotaStep() {
                 transition: "border-color .15s, background .15s",
               }}
             >
-              <Mascota especie={e.id} tamano={62} />
+              <Mascota especie={e.id} paleta={color} tamano={62} />
               <span style={{ fontFamily: "Sora, sans-serif", fontWeight: 600, fontSize: "13.5px", color: FAE.text }}>{e.nombre}</span>
               <span style={{ fontSize: "12px", color: "rgba(248,249,250,0.45)" }}>{e.rasgo}</span>
             </button>
+          );
+        })}
+      </div>
+
+      <p style={{ fontFamily: "Sora, sans-serif", fontSize: "12.5px", color: "rgba(248,249,250,0.6)", margin: "0 0 8px" }}>
+        Su color
+      </p>
+      <div role="radiogroup" aria-label="Color de tu mascota" style={{ display: "flex", flexWrap: "wrap", gap: "9px", marginBottom: "18px" }}>
+        {PALETAS_MASCOTA.map((p) => {
+          const sel = color === p.id;
+          return (
+            <button
+              key={p.id}
+              type="button"
+              role="radio"
+              aria-checked={sel}
+              aria-label={p.nombre}
+              title={p.nombre}
+              onClick={() => setColor(p.id)}
+              style={{
+                width: "34px", height: "34px", borderRadius: "999px", cursor: "pointer", padding: 0,
+                background: p.muestra,
+                border: sel ? "2.5px solid #F8F9FA" : "2.5px solid rgba(248,249,250,0.18)",
+                boxShadow: sel ? "0 0 0 2px #6F86FF" : "none",
+              }}
+            />
           );
         })}
       </div>
