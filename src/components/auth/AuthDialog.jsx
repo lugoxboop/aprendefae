@@ -2,8 +2,10 @@ import { useEffect } from "react";
 import { X } from "lucide-react";
 import { FAE } from "../../theme.js";
 import { useAuth } from "../../auth/AuthProvider.jsx";
+import { useAccesoDocente } from "../../docente/useAccesoDocente.js";
 import GoogleSignInButton from "./GoogleSignInButton.jsx";
 import NicknameStep from "./NicknameStep.jsx";
+import MascotaStep from "./MascotaStep.jsx";
 
 /*
  * Diálogo de cuenta. Aparece solo cuando algo necesita guardarse o mirar datos
@@ -14,10 +16,19 @@ import NicknameStep from "./NicknameStep.jsx";
  * cuenta está a medio crear.
  */
 export default function AuthDialog() {
-  const { motivoLogin, necesitaApodo, cerrarDialogo } = useAuth();
+  const { motivoLogin, necesitaApodo, necesitaMascota, cerrarDialogo } = useAuth();
+  const acceso = useAccesoDocente();
 
-  const abierto = necesitaApodo || motivoLogin !== null;
-  const puedeCerrar = !necesitaApodo;
+  /*
+   * La mascota es cosa de estudiantes: a un docente no se le fuerza a crear una.
+   * Mientras no se sabe si lo es (`pendiente`) tampoco se muestra —el mismo
+   * defecto seguro que usa el atajo del panel: ante la duda, nada—.
+   */
+  const pedirMascota = necesitaMascota && !acceso.esDocente && !acceso.pendiente;
+
+  const abierto = necesitaApodo || pedirMascota || motivoLogin !== null;
+  /* Ni el apodo ni la mascota se pueden cerrar: la cuenta está a medio crear. */
+  const puedeCerrar = !necesitaApodo && !pedirMascota;
 
   useEffect(() => {
     if (!abierto) return;
@@ -37,7 +48,7 @@ export default function AuthDialog() {
     <div
       role="dialog"
       aria-modal="true"
-      aria-label={necesitaApodo ? "Elige tu apodo" : "Iniciar sesión"}
+      aria-label={necesitaApodo ? "Elige tu apodo" : pedirMascota ? "Elige tu mascota" : "Iniciar sesión"}
       onClick={() => puedeCerrar && cerrarDialogo()}
       style={{
         position: "fixed",
@@ -86,6 +97,8 @@ export default function AuthDialog() {
 
         {necesitaApodo ? (
           <NicknameStep />
+        ) : pedirMascota ? (
+          <MascotaStep />
         ) : (
           <>
             <h2
