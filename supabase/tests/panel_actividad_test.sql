@@ -151,8 +151,12 @@ select h.id, h.user_id, h.activity_id, i.item, i.ok, 1, case when i.ok then null
  where h.activity_id = 'zzz-pa-act' and ids.etiqueta in ('a', 'b', 'c');
 
 /* Sesión: el docente zzz. */
+/* (0160) es_docente() pide además una cuenta con ese correo CONFIRMADO. */
+insert into auth.users (id, email, encrypted_password, email_confirmed_at, created_at, updated_at,
+                        raw_app_meta_data, raw_user_meta_data, aud, role)
+values ('00000000-0000-4000-8000-0000000d0aa1', 'zzz-pa-doc@prueba.local', '', now(), now(), now(), '{}'::jsonb, '{}'::jsonb, 'authenticated', 'authenticated');
 select set_config('request.jwt.claims',
-                  json_build_object('sub', gen_random_uuid(),
+                  json_build_object('sub', '00000000-0000-4000-8000-0000000d0aa1'::uuid,
                                     'email', 'zzz-pa-doc@prueba.local',
                                     'role', 'authenticated')::text,
                   true);

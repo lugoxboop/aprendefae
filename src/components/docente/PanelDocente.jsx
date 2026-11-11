@@ -25,6 +25,7 @@ import EsfuerzoResultado from "./EsfuerzoResultado.jsx";
 import Fabrica from "./Fabrica.jsx";
 import LlamadoFabrica from "./LlamadoFabrica.jsx";
 import LlamadoVivo from "./LlamadoVivo.jsx";
+import AvisoSospechas from "./AvisoSospechas.jsx";
 import BloqueRiesgo from "./BloqueRiesgo.jsx";
 import ListaRiesgo from "./ListaRiesgo.jsx";
 import VistaEstudiante from "./VistaEstudiante.jsx";
@@ -611,6 +612,8 @@ export default function PanelDocente({ actividadInicial = null, onBack }) {
         />
         {/* La clase en vivo (0159): la segunda herramienta que el profesor usa en el salón. */}
         <LlamadoVivo {...entrada(1, "crece")} materia={materia} />
+        {/* Auditoría de seguridad (0160): resultados que no parecen jugados. Solo aparece si hay. */}
+        <AvisoSospechas materia={materia} />
         {sinEstudiantes ? (
           /*
            * Ukyo §7, 0 estudiantes, con el texto de Katsumi. No hay «código de

@@ -83,8 +83,12 @@ insert into public.fp_history
 select uid, 'zzz-otra-act', 'zzz-otra-materia', 10, 'facil', 'evaluativa', 100, now() from ids where etiqueta = 'b';
 
 /* Sesión: el docente zzz. es_docente() saca el correo del JWT, no de un parámetro. */
+/* (0160) es_docente() pide además una cuenta con ese correo CONFIRMADO. */
+insert into auth.users (id, email, encrypted_password, email_confirmed_at, created_at, updated_at,
+                        raw_app_meta_data, raw_user_meta_data, aud, role)
+values ('00000000-0000-4000-8000-0000000d0019', 'zzz-docente@prueba.local', '', now(), now(), now(), '{}'::jsonb, '{}'::jsonb, 'authenticated', 'authenticated');
 select set_config('request.jwt.claims',
-                  json_build_object('sub', gen_random_uuid(),
+                  json_build_object('sub', '00000000-0000-4000-8000-0000000d0019'::uuid,
                                     'email', 'zzz-docente@prueba.local',
                                     'role', 'authenticated')::text,
                   true);

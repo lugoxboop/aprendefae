@@ -53,3 +53,27 @@
     Header unset Pragma
   </FilesMatch>
 </IfModule>
+
+# ═══════════════════════════════════════════════════════════════════════════
+# PROTECCIONES DEL NAVEGADOR (auditoría de seguridad, 11-nov, punto 7)
+#
+# · X-Frame-Options y frame-ancestors: ninguna otra página puede meter a
+#   AprendeFAE dentro de la suya para engañar al estudiante (clickjacking).
+# · Strict-Transport-Security: el navegador recuerda por un año que este sitio
+#   va siempre por HTTPS.
+# · nosniff, Referrer-Policy, Permissions-Policy: lo estándar.
+# · Content-Security-Policy: solo carga código de aquí y de los tres sitios que
+#   de verdad usa (Supabase, el botón de Google y YouTube sin cookies). El
+#   único script en línea de index.html (la guardia de arranque) va con su
+#   huella: si alguien lo cambia, la prueba
+#   src/__tests__/cabeceras-seguridad.test.mjs falla y avisa que hay que
+#   actualizar la huella aquí, antes de que se publique roto.
+# ═══════════════════════════════════════════════════════════════════════════
+<IfModule mod_headers.c>
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Strict-Transport-Security "max-age=31536000"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'sha256-TAOxLNe1AkEgVF4xBMsZZga8lkws91+W6Br58t1EGh4=' https://accounts.google.com/gsi/client; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' data: blob:; connect-src 'self' https://nlebxuyxilmyrgergxrc.supabase.co wss://nlebxuyxilmyrgergxrc.supabase.co https://accounts.google.com/gsi/; frame-src https://accounts.google.com/gsi/ https://www.youtube-nocookie.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'"
+</IfModule>
