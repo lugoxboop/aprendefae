@@ -19,7 +19,8 @@ insert into quien values
   ('docente',  gen_random_uuid(), 'zzz-seg-docente@prueba.local', true),
   ('impostor', gen_random_uuid(), 'zzz-seg-docente2@prueba.local', false),
   ('a',        gen_random_uuid(), 'zzz-seg-a@prueba.local', true),
-  ('b',        gen_random_uuid(), 'zzz-seg-b@prueba.local', true);
+  ('b',        gen_random_uuid(), 'zzz-seg-b@prueba.local', true),
+  ('correo',   gen_random_uuid(), 'zzz-seg-docente3@prueba.local', true);
 
 insert into auth.users (id, email, encrypted_password, email_confirmed_at, created_at, updated_at,
                         raw_app_meta_data, raw_user_meta_data, aud, role)
@@ -27,7 +28,11 @@ select uid, email, '', case when confirmado then now() end, now(), now(), '{}'::
 insert into public.profiles (user_id, nickname) select uid, 'zzzseg' || rol from quien;
 insert into public.docentes (email, nombre, materias, activo) values
   ('zzz-seg-docente@prueba.local',  'Docente confirmado', '{pensamiento-estrategico}', true),
-  ('zzz-seg-docente2@prueba.local', 'Docente sin confirmar', '{pensamiento-estrategico}', true);
+  ('zzz-seg-docente2@prueba.local', 'Docente sin confirmar', '{pensamiento-estrategico}', true),
+  ('zzz-seg-docente3@prueba.local', 'Docente de correo y contraseña', '{pensamiento-estrategico}', true);
+/* (0161) La cuenta «correo» se registró con correo y contraseña: confirmada, pero no por Google. */
+update auth.users set raw_app_meta_data = '{"provider":"email","providers":["email"]}'::jsonb
+ where email = 'zzz-seg-docente3@prueba.local';
 
 create or replace function pg_temp.como(p_rol text) returns void language plpgsql as $$
 begin
@@ -48,6 +53,14 @@ reset role;
 insert into res select 1, 'docente confirmado sí; el mismo rol con correo sin confirmar, no', 'true/false',
   current_setting('seg.p1a') || '/' || current_setting('seg.p1b'),
   current_setting('seg.p1a') = 'true' and current_setting('seg.p1b') = 'false';
+
+-- ── 1b. (0161) Una cuenta de correo y contraseña no es docente, aunque esté confirmada ──
+select pg_temp.como('correo');
+set local role authenticated;
+do $$ begin perform set_config('seg.p1c', public.es_docente()::text, true); end $$;
+reset role;
+insert into res select 9, 'cuenta de correo y contraseña con el correo de un profesor: no es docente', 'false',
+  current_setting('seg.p1c'), current_setting('seg.p1c') = 'false';
 
 -- ── 2. Techo diario total de Bruno ────────────────────────────────────────
 update public.ajustes set valor = (
