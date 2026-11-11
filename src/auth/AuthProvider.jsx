@@ -148,6 +148,17 @@ export function AuthProvider({ children }) {
   const necesitaApodo = esPrimerIngreso({ session, perfil, errorPerfil, cargando, leyendoPerfil });
 
   /*
+   * ¿Hay que pedirle la mascota? Va DESPUÉS del apodo: solo tiene sentido con
+   * perfil ya creado. Un perfil sin mascota_especie es el que todavía no la
+   * eligió —los nuevos, apenas crean el perfil; los activos de antes de la
+   * 0160, la próxima vez que entren—. Mismos resguardos de parpadeo que el
+   * apodo: mientras se lee el perfil, «no sé» no se pinta como «no tienes».
+   */
+  const necesitaMascota = Boolean(
+    !cargando && !leyendoPerfil && session && perfil && !perfil.mascota_especie,
+  );
+
+  /*
    * Punto de entrada desde el resto de la app. Devuelve true si ya hay cuenta
    * utilizable; si no, abre el diálogo y devuelve false, sin bloquear nada.
    */
@@ -240,6 +251,26 @@ export function AuthProvider({ children }) {
     return p;
   }, [session, cargarPerfil]);
 
+  /*
+   * Elegir y nombrar la mascota (0160). Como la combinación del avatar, la
+   * escribe una función security definer, no un update del cliente: mascota_elegir
+   * valida la especie y el nombre y devuelve la fila ya cambiada, que aplicamos
+   * sin viaje extra. El paso de registro llama a esto.
+   */
+  const elegirMascota = useCallback(
+    async (especie, nombre) => {
+      if (!supabase || !session) return { error: "Sin sesión activa." };
+      const { data, error } = await supabase.rpc("mascota_elegir", {
+        p_especie: especie,
+        p_nombre: (nombre ?? "").trim(),
+      });
+      if (error) return { error: error.message };
+      aplicarPerfil(data);
+      return { data };
+    },
+    [session, aplicarPerfil],
+  );
+
   const apodoDisponible = useCallback(async (nickname) => {
     if (!supabase) return true;
     const { data, error } = await supabase.rpc("nickname_disponible", {
@@ -265,17 +296,19 @@ export function AuthProvider({ children }) {
       perfil,
       errorPerfil,
       necesitaApodo,
+      necesitaMascota,
       motivoLogin,
       pedirCuenta,
       cerrarDialogo,
       crearPerfil,
+      elegirMascota,
       guardarPerfil,
       aplicarPerfil,
       refrescarPerfil,
       apodoDisponible,
       cerrarSesion,
     }),
-    [cargando, leyendoPerfil, session, perfil, errorPerfil, necesitaApodo, motivoLogin, pedirCuenta, cerrarDialogo, crearPerfil, guardarPerfil, aplicarPerfil, refrescarPerfil, apodoDisponible, cerrarSesion]
+    [cargando, leyendoPerfil, session, perfil, errorPerfil, necesitaApodo, necesitaMascota, motivoLogin, pedirCuenta, cerrarDialogo, crearPerfil, elegirMascota, guardarPerfil, aplicarPerfil, refrescarPerfil, apodoDisponible, cerrarSesion]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
