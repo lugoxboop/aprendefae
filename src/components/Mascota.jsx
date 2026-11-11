@@ -13,9 +13,10 @@ import { cuerpoMascota } from "../mascota/mascotas.js";
  * hueco. El SVG es estático y de la casa, así que va por dangerouslySetInnerHTML
  * sin riesgo —no entra texto de nadie—.
  */
-export default function Mascota({ especie, perfil, puestos = [], tamano = 96, titulo }) {
+export default function Mascota({ especie, perfil, puestos = [], paleta, tamano = 96, titulo }) {
   const esp = especie ?? perfil?.mascota_especie ?? null;
   if (!esp) return null;
+  const pal = paleta ?? perfil?.mascota_paleta ?? null;
 
   const accesible = titulo
     ? { role: "img", "aria-label": titulo }
@@ -27,8 +28,9 @@ export default function Mascota({ especie, perfil, puestos = [], tamano = 96, ti
       height={Math.round((tamano * 150) / 140)}
       viewBox="0 0 140 150"
       data-mascota={esp}
+      data-paleta={pal || "natural"}
       {...accesible}
-      dangerouslySetInnerHTML={{ __html: cuerpoMascota(esp, puestos) }}
+      dangerouslySetInnerHTML={{ __html: cuerpoMascota(esp, { puestos, paleta: pal }) }}
     />
   );
 }

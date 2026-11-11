@@ -12,6 +12,7 @@ import { animosRecibidos } from "../social/animo.js";
 import Medallas from "./perfil/Medallas.jsx";
 import ResumenSemestre from "./perfil/ResumenSemestre.jsx";
 import EditarPerfil, { SECCIONES } from "./perfil/EditarPerfil.jsx";
+import SeccionMascota from "./perfil/SeccionMascota.jsx";
 import Avatar, { TAMANOS } from "./avatar/Avatar.jsx";
 import IconoCristal from "./shared/IconoCristal.jsx";
 import { combinacionDe, leyenda } from "../avatar/generador.js";
@@ -210,6 +211,9 @@ export default function PerfilView({ seccion = null, onBack }) {
             >
               Editar perfil
             </button>
+
+            {/* Tu mascota, con el selector de color (Etapa 1b). Solo si ya la tiene. */}
+            <SeccionMascota perfil={perfil} />
 
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: "12px", marginBottom: "26px" }}>
               <div style={dato}>

@@ -21,7 +21,12 @@ const migracion = readFileSync(
   "utf8",
 );
 
-const { ESPECIES, IDS_ESPECIE, NOMBRE_MAX } = await import("../mascotas.js");
+const migracionColor = readFileSync(
+  fileURLToPath(new URL("../../../supabase/migrations/0161_mascota_color.sql", import.meta.url)),
+  "utf8",
+);
+
+const { ESPECIES, IDS_ESPECIE, NOMBRE_MAX, IDS_PALETA, PALETAS_MASCOTA } = await import("../mascotas.js");
 
 test("las especies del selector son exactamente las del check de la 0160", () => {
   /* Toma el primer `mascota_especie in ('…','…')` de la migración. */
@@ -39,6 +44,28 @@ test("el largo máximo del nombre coincide con el de la base", () => {
   const m = migracion.match(/char_length\(mascota_nombre\) between 1 and (\d+)/);
   assert.ok(m, "la migración declara el largo del nombre");
   assert.equal(NOMBRE_MAX, Number(m[1]), "NOMBRE_MAX y el check del nombre tienen que coincidir");
+});
+
+test("las paletas de color son exactamente las del check de la 0161", () => {
+  const m = migracionColor.match(/mascota_paleta in \(([^)]+)\)/);
+  assert.ok(m, "la migración declara el check de la paleta");
+  const enLaBase = m[1].match(/'([^']+)'/g).map((s) => s.slice(1, -1));
+  assert.deepEqual(
+    [...IDS_PALETA].sort(),
+    [...enLaBase].sort(),
+    "IDS_PALETA (mascotas.js) y el check de la base tienen que coincidir",
+  );
+});
+
+test("el selector de color ofrece «natural» más las paletas de la base", () => {
+  const delSelector = PALETAS_MASCOTA.map((p) => p.id);
+  assert.equal(delSelector[0], "natural", "natural va primero");
+  assert.deepEqual(
+    [...delSelector.slice(1)].sort(),
+    [...IDS_PALETA].sort(),
+    "el selector ofrece natural + exactamente las paletas válidas",
+  );
+  for (const p of PALETAS_MASCOTA) assert.ok(p.nombre && p.muestra, `la paleta ${p.id} tiene nombre y muestra`);
 });
 
 test("cada especie tiene nombre y rasgo para el selector", () => {

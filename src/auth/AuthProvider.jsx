@@ -258,11 +258,33 @@ export function AuthProvider({ children }) {
    * sin viaje extra. El paso de registro llama a esto.
    */
   const elegirMascota = useCallback(
-    async (especie, nombre) => {
+    async (especie, nombre, paleta = "natural") => {
       if (!supabase || !session) return { error: "Sin sesión activa." };
       const { data, error } = await supabase.rpc("mascota_elegir", {
         p_especie: especie,
         p_nombre: (nombre ?? "").trim(),
+      });
+      if (error) return { error: error.message };
+      /* El color va en una segunda llamada (mascota_personalizar, 0161), solo
+         si eligió algo distinto de natural. Así el registro queda con todo. */
+      let fila = data;
+      if (paleta && paleta !== "natural") {
+        const r = await supabase.rpc("mascota_personalizar", { p_paleta: paleta });
+        if (r.error) return { error: r.error.message };
+        fila = r.data;
+      }
+      aplicarPerfil(fila);
+      return { data: fila };
+    },
+    [session, aplicarPerfil],
+  );
+
+  /* Cambiar el color de la mascota ya creada (0161). Para el selector del perfil. */
+  const personalizarMascota = useCallback(
+    async (paleta) => {
+      if (!supabase || !session) return { error: "Sin sesión activa." };
+      const { data, error } = await supabase.rpc("mascota_personalizar", {
+        p_paleta: paleta ?? "natural",
       });
       if (error) return { error: error.message };
       aplicarPerfil(data);
@@ -302,13 +324,14 @@ export function AuthProvider({ children }) {
       cerrarDialogo,
       crearPerfil,
       elegirMascota,
+      personalizarMascota,
       guardarPerfil,
       aplicarPerfil,
       refrescarPerfil,
       apodoDisponible,
       cerrarSesion,
     }),
-    [cargando, leyendoPerfil, session, perfil, errorPerfil, necesitaApodo, necesitaMascota, motivoLogin, pedirCuenta, cerrarDialogo, crearPerfil, elegirMascota, guardarPerfil, aplicarPerfil, refrescarPerfil, apodoDisponible, cerrarSesion]
+    [cargando, leyendoPerfil, session, perfil, errorPerfil, necesitaApodo, necesitaMascota, motivoLogin, pedirCuenta, cerrarDialogo, crearPerfil, elegirMascota, personalizarMascota, guardarPerfil, aplicarPerfil, refrescarPerfil, apodoDisponible, cerrarSesion]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
