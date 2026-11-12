@@ -33,6 +33,10 @@
 import { join } from "node:path";
 import { mkdirSync } from "node:fs";
 import { abrirPanel, chromium, hayFuentes } from "../t4/panel-docente/pagina.mjs";
+import { bancoDe } from "../../src/contabilidad/gastoOPago.js";
+
+/* GP: la casilla correcta de cada hecho, por su id (las dos versiones), para tocar bien o mal a propósito. */
+const TIPO_GP = Object.fromEntries(["A", "B"].flatMap((v) => bancoDe(v).banco.map((h) => [h.id, h.tipo])));
 
 const arg = (n) => { const i = process.argv.indexOf(n); return i > 0 ? process.argv[i + 1] : null; };
 const URL_BASE = process.argv[2]?.startsWith("http") ? process.argv[2] : "http://localhost:8099";
@@ -196,7 +200,51 @@ for (const ancho of [320, 375]) {
         await page.screenshot({ path: join(CAPTURAS, `${j.h.toLowerCase()}-tocado-${ETIQUETA}-${ancho}.png`) });
       }
     }
+    if (j.h === "H7") {
+      /* Una cuenta puesta y las demás sin poner: la primera del estante, al debe. */
+      await page.click("[data-estante] [data-sacar]").catch(() => {});
+      /* El ratón, fuera: con hover la cara sube 2 px y la captura no mostraría el reposo. */
+      await page.mouse.move(0, 0);
+      await page.waitForTimeout(500);
+      r.puesta = await page.evaluate(medir, j);
+      r.tocado = await page.evaluate(contrastes);
+      if (CAPTURAS) {
+        const devolver = await page.$("[data-estante] [data-devolver]");
+        if (devolver) await page.evaluate(() => document.querySelector("[data-estante]").scrollIntoView({ block: "start" }));
+        else await page.evaluate(() => document.querySelector("[data-devolver]")?.scrollIntoView({ block: "center" }));
+        await page.screenshot({ path: join(CAPTURAS, `h7-puesta-${ETIQUETA}-${ancho}.png`) });
+      }
+    }
     filas.push({ ancho, ...j, errores: errores.length, ...r });
+    if (j.h === "GP") {
+      /*
+       * La matriz en sus cuatro estados: reposo (la captura de siempre, abajo),
+       * elegida (el toque mal, antes de «Iba aquí»), acierto y con «Iba aquí».
+       * Cada toque en una carga nueva: un toque califica y no hay reintento.
+       */
+      const estadosGP = {};
+      for (const caso of ["elegida", "acierto", "iba-aqui"]) {
+        if (caso !== "elegida") {
+          await page.reload();
+          await page.waitForSelector("[data-matriz]", { timeout: 30000 }).catch(() => {});
+          await page.evaluate(() => document.fonts.ready);
+          await page.waitForTimeout(600);
+        }
+        const id = await page.$eval("[data-ficha]", (x) => x.getAttribute("data-ficha"));
+        const bien = TIPO_GP[id];
+        const destino = caso === "acierto" ? bien : ["gasto", "gasto-salida", "ninguno", "salida"].find((x) => x !== bien);
+        /* abrirPanel reduce el movimiento: así «Iba aquí» llega al instante. Para ver «elegida», sin reducir. */
+        await page.emulateMedia({ reducedMotion: caso === "elegida" ? "no-preference" : "reduce" });
+        await page.click(`[data-casilla="${destino}"]`);
+        await page.mouse.move(0, 0);
+        /* «Elegida»: lo tocado antes de que llegue «Iba aquí» (700 ms); la captura va primero, las medidas tardan. */
+        await page.evaluate(() => document.querySelector("[data-matriz]").scrollIntoView({ block: "center" }));
+        await page.waitForTimeout(caso === "elegida" ? 150 : 1400);
+        if (CAPTURAS) await page.screenshot({ path: join(CAPTURAS, `gp-${caso}-${ETIQUETA}-${ancho}.png`) });
+        estadosGP[caso] = { ...(await page.evaluate(contrastes)), matriz: await page.evaluate(() => Math.round(document.querySelector("[data-matriz]").getBoundingClientRect().height * 10) / 10), toque: (await page.evaluate(medir, j)).toque };
+      }
+      filas.at(-1).estadosGP = estadosGP;
+    }
     if (CAPTURAS) {
       const quien = { H4: "h4-banco", H5: "h5-banco", H6: "h6-pasos", H7: "h7-estante", H3: "h3-casillas", H1: "h1-grupos", H2: "h2-marcas", GP: "gp-matriz" }[j.h];
       const el = await page.$(j.h === "H7" ? "[data-estante]" : j.h === "H6" ? "[data-paso-corte]" : j.abajo.replace(":last-of-type", ""));
@@ -225,4 +273,14 @@ for (const f of filas) {
   const kk = [f.contraste, f.tocado, f.hoja?.contraste].filter(Boolean);
   const textoK = ` · contraste mín. ${kk.map((x) => x.min).join(" / ")}${kk.some((x) => x.malos.length) ? ` (**< 4,5:** ${kk.flatMap((x) => x.malos).join("; ")})` : ""}`;
   console.log(`- ${f.ancho} · ${f.h}: ${d}${textoK}${f.toque.length ? ` · **TOQUE < 44:** ${f.toque.join("; ")}` : " · toques ≥ 44"}`);
+}
+console.log("\n### H7 con una cuenta puesta y GP en sus estados\n");
+for (const f of filas) {
+  if (f.puesta?.estante) {
+    const e = f.puesta.estante;
+    console.log(`- ${f.ancho} · H7 con una cuenta puesta: estante ${e.alto} px, ${e.renglones} renglones; renglón/botón: ${[...new Set(e.libre.map((x) => `${x.renglon}/${x.boton}`))].join(" · ")} · contraste mín. ${f.tocado.min}${f.tocado.malos.length ? ` (**< 4,5:** ${f.tocado.malos.join("; ")})` : ""}${f.puesta.toque.length ? ` · **TOQUE < 44:** ${f.puesta.toque.join("; ")}` : " · toques ≥ 44"}`);
+  }
+  if (f.estadosGP) {
+    for (const [k, v] of Object.entries(f.estadosGP)) console.log(`- ${f.ancho} · GP ${k}: matriz ${v.matriz} · contraste mín. ${v.min}${v.malos.length ? ` (**< 4,5:** ${v.malos.join("; ")})` : ""}${v.toque.length ? ` · **TOQUE < 44:** ${v.toque.join("; ")}` : " · toques ≥ 44"}`);
+  }
 }

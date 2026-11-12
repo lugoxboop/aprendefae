@@ -15,6 +15,7 @@ import { Responder, useTanda } from "../piezas.jsx";
 import { SOLO_LECTOR } from "../verbos.jsx";
 import { Encabezado } from "../tema1/encabezado.jsx";
 import { TONO_ROTULO } from "../debeHaber/piezasDebeHaber.jsx";
+import { Relieve, CSS_RELIEVE, N1, N2 } from "./relieve.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -97,6 +98,54 @@ function Colector({ lado, total }) {
   );
 }
 
+/*
+ * EL RENGLÓN DEL ESTANTE (volumen, delta de Itagaki §2;
+ * orquestador/revisiones/volumen/e-volumen-forma-v1-delta.md).
+ *
+ *   relleno 4 arriba y abajo · nombre (el resto: 106 px a 320, 161 a 375) ·
+ *   8 · botones en 122 px: «Al debe» 56 · 4 · «Al haber» 62
+ *
+ * El delta suponía un estante de 258 a 320, y dentro de su sección mide 236
+ * (medido). Con sus 6 px a los lados y sus botones de 59 · 6 · 66, el nombre
+ * quedaba en 85 y «computación» y «mantenimiento» (88,6 y 101 en Inter
+ * 14/600) se salían de su caja. Para devolverle al nombre los ~107 px que
+ * pedía el delta: sin relleno a los lados (el renglón no tiene fondo; así el
+ * nombre arranca alineado con el rótulo del estante) y los botones en la
+ * dirección del arreglo del propio delta, «Al debe» a 56 (47,7 de texto) y
+ * «Al haber» a 62 (52,5 de texto), con 4 entre los dos. «Devolver al
+ * estante» (111,1 de texto en Inter 12/600) cabe en los 122.
+ *
+ * Cada botón es una cara N2 + filo de 44 px sobre canto N1 de 4 (E2): el
+ * bloque mide 48 y el renglón, 56 como mínimo. El hover sube la cara 2 px
+ * más y el relleno de arriba lo absorbe. Texto #F8F9FA, sin teal ni ámbar:
+ * el lado lo dicen la palabra y el orden (el debe a la izquierda).
+ *
+ * La cuenta que ya está en la mesa no sale del estante: en su renglón, en el
+ * mismo hueco de 131 px, «Devolver al estante» (letra 12, cara de 44). Así no
+ * cambia el orden del estante y ya no hay botón de 32 px con letra de 10.
+ *
+ * El saldo publicado sigue debajo del nombre (Sora 12/16): el renglón crece
+ * con él, máx(nombre + saldo + 8, 56).
+ */
+const ANCHO_BOTONES = 122;
+const ANCHO_DEBE = 56;
+const ANCHO_HABER = 62;
+const RENGLON = { display: "flex", gap: "8px", alignItems: "center", boxSizing: "border-box", minHeight: "56px", padding: "4px 0" };
+
+function BotonEstante({ ancho, letra, datos, etiqueta, onClick, children }) {
+  return (
+    <Relieve e={4} canto={N1} filo radio="10px" style={{ flex: "none", width: `${ancho}px` }}>
+      <button type="button" className="fae-rel-cara" {...datos} onClick={onClick} aria-label={etiqueta} style={{
+        display: "flex", alignItems: "center", justifyContent: "center", width: "100%", height: "44px", boxSizing: "border-box",
+        padding: "0 4px", borderRadius: "10px", border: "none", background: N2, cursor: "pointer", touchAction: "manipulation",
+        color: COLOR.blanco, fontFamily: INTER, fontSize: `${letra}px`, lineHeight: "16px", fontWeight: 600, whiteSpace: "nowrap",
+      }}>
+        {children}
+      </button>
+    </Relieve>
+  );
+}
+
 /* Un asiento: la mesa de dos columnas, su conector y (si está activo) el estante. */
 function Asiento({ parte, caso, mesa, onSacar, onCifra, onDevolver, activo, resultado, enEstante }) {
   const conValor = mesa.map((m) => ({ ...m, valor: leerCifra(m.texto) }));
@@ -113,14 +162,7 @@ function Asiento({ parte, caso, mesa, onSacar, onCifra, onDevolver, activo, resu
           <p style={{ margin: "0 0 5px", fontFamily: SORA, fontWeight: 700, fontSize: "11px", lineHeight: 1.25, color: COLOR.blanco, textAlign: "center" }}>{m.cuenta}</p>
           <Campo id={`${parte}:${m.cuenta}`} valor={m.texto} onCambio={(v) => onCifra(m.cuenta, v)} bloqueado={!activo}
             etiqueta={`Valor de ${m.cuenta}`} error={resultado?.error === "B" && leerCifra(m.texto) !== resultado.esperado.find((e) => e.cuenta === m.cuenta)?.valor} />
-          {activo && (
-            <button type="button" data-devolver={`${parte}:${m.cuenta}`} onClick={() => onDevolver(m.cuenta)} style={{
-              display: "block", width: "100%", minHeight: "32px", marginTop: "3px", background: "none", border: "none", cursor: "pointer",
-              color: COLOR.apagado, fontFamily: SORA, fontSize: "10px",
-            }}>
-              devolver al estante
-            </button>
-          )}
+          {/* «Devolver al estante» ya no va aquí (32 px, letra de 10): va en el renglón del estante (delta de volumen §2). */}
         </div>
       ))}
     </div>
@@ -156,23 +198,26 @@ function Asiento({ parte, caso, mesa, onSacar, onCifra, onDevolver, activo, resu
           <div data-estante={parte} style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
             {enEstante.map((c) => {
               const saldo = saldoDe(caso, c);
+              const puesta = mesa.find((m) => m.cuenta === c);
               return (
-                <div key={c} data-en-estante={c} style={{ display: "flex", gap: "6px", alignItems: "center" }}>
-                  <span style={{ flex: "1 1 auto", minWidth: 0, display: "flex", flexDirection: "column" }}>
-                    <span style={{ fontFamily: INTER, fontSize: "12.5px", fontWeight: 600, lineHeight: 1.25, color: COLOR.blanco }}>{c}</span>
-                    {saldo !== null && <span data-saldo-estante style={{ ...CIFRA, fontSize: "12px", color: COLOR.apagado }}>{pesos(saldo)}</span>}
+                <div key={c} data-en-estante={c} data-puesta={puesta ? puesta.lado : undefined} style={RENGLON}>
+                  <span data-nombre-estante style={{ flex: "1 1 auto", minWidth: 0, display: "flex", flexDirection: "column" }}>
+                    <span style={{ fontFamily: INTER, fontSize: "14px", lineHeight: "20px", fontWeight: 600, color: COLOR.blanco }}>{c}</span>
+                    {saldo !== null && <span data-saldo-estante style={{ ...CIFRA, fontSize: "12px", lineHeight: "16px", color: COLOR.apagado }}>{pesos(saldo)}</span>}
                   </span>
-                  {[DEBE, HABER].map((lado) => (
-                    <button key={lado} type="button" data-sacar={`${c}:${lado}`} onClick={() => onSacar(c, lado)}
-                      aria-label={`${c} ${lado === DEBE ? "al debe" : "al haber"}`}
-                      style={{
-                        flex: "none", minHeight: "40px", padding: "5px 8px", borderRadius: "8px", cursor: "pointer",
-                        background: `${COLOR_LADO[lado]}14`, border: `1px solid ${COLOR_LADO[lado]}66`,
-                        color: TONO_ROTULO[lado], fontFamily: SORA, fontSize: "9.5px", fontWeight: 700, letterSpacing: "0.08em",
-                      }}>
-                      {lado === DEBE ? "AL DEBE" : "AL HABER"}
-                    </button>
-                  ))}
+                  <span data-botones-estante style={{ flex: "none", width: `${ANCHO_BOTONES}px`, display: "flex", gap: "4px" }}>
+                    {puesta ? (
+                      <BotonEstante ancho={ANCHO_BOTONES} letra={12} datos={{ "data-devolver": `${parte}:${c}` }}
+                        etiqueta={`Devolver ${c} al estante`} onClick={() => onDevolver(c)}>
+                        Devolver al estante
+                      </BotonEstante>
+                    ) : [DEBE, HABER].map((lado) => (
+                      <BotonEstante key={lado} ancho={lado === DEBE ? ANCHO_DEBE : ANCHO_HABER} letra={13} datos={{ "data-sacar": `${c}:${lado}` }}
+                        etiqueta={`${c} ${lado === DEBE ? "al debe" : "al haber"}`} onClick={() => onSacar(c, lado)}>
+                        {lado === DEBE ? "Al debe" : "Al haber"}
+                      </BotonEstante>
+                    ))}
+                  </span>
                 </div>
               );
             })}
@@ -232,9 +277,12 @@ export default function ElCierreCompleto({
     );
   }
 
-  /* Lo que queda en el estante: sin lo que está en la mesa activa ni lo que ya se cerró en el asiento 1. */
+  /*
+   * El estante: sin lo que ya se cerró en el asiento 1. Lo que está en la mesa
+   * activa se queda en su renglón, con «Devolver al estante» (delta §2).
+   */
   const cerradas = s.resultados[1] ? esperadoDe(caso, 1).map((e) => e.cuenta).filter((c) => c !== GYP) : [];
-  const enEstanteDe = (parte) => estanteDe(caso).filter((c) => !s.mesas[parte].some((m) => m.cuenta === c) && !cerradas.includes(c));
+  const enEstanteDe = () => estanteDe(caso).filter((c) => !cerradas.includes(c));
 
   const cambiarMesa = (parte, f) => setS((x) => ({ ...x, mesas: { ...x.mesas, [parte]: f(x.mesas[parte]) } }));
   const sacar = (parte) => (cuenta, lado) => cambiarMesa(parte, (m) => (m.some((x) => x.cuenta === cuenta) ? m : [...m, { cuenta, lado, texto: "" }]));
@@ -284,6 +332,7 @@ export default function ElCierreCompleto({
   return (
     <Marco rotulo={rotulo} titulo={titulo} acento={acento}>
       <style>{CSS}</style>
+      <style>{CSS_RELIEVE}</style>
       <div className="fae-a7c" data-act7>
         {!modoDemo && (
           <>
