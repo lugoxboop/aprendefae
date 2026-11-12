@@ -15,7 +15,7 @@
         "subrayado": "underline"
       },
       {
-        "texto": "Ver quiénes van muy bien",
+        "texto": "1 van muy bien · Ver quiénes",
         "color": "rgb(248, 249, 250)",
         "subrayado": "underline"
       },
@@ -50,12 +50,12 @@
     "nombresActividad": [],
     "enlaces": [
       {
-        "texto": "Ver los 8",
+        "texto": "Ver todas las alertas",
         "color": "rgb(248, 249, 250)",
         "subrayado": "underline"
       },
       {
-        "texto": "Ver quiénes van muy bien",
+        "texto": "13 van muy bien · Ver quiénes",
         "color": "rgb(248, 249, 250)",
         "subrayado": "underline"
       },
@@ -83,19 +83,19 @@
       },
       {
         "texto": "Más de una semana sin actividad",
-        "renglones": 2,
+        "renglones": 0,
         "recortado": false
       }
     ],
     "nombresActividad": [],
     "enlaces": [
       {
-        "texto": "Ver los 16",
+        "texto": "Ver todas las alertas",
         "color": "rgb(248, 249, 250)",
         "subrayado": "underline"
       },
       {
-        "texto": "Ver quiénes van muy bien",
+        "texto": "34 van muy bien · Ver quiénes",
         "color": "rgb(248, 249, 250)",
         "subrayado": "underline"
       },
@@ -138,12 +138,12 @@
         "recortado": false
       },
       {
-        "texto": "¿Desde Dónde Preguntan?",
+        "texto": "¿Desde dónde preguntan?",
         "renglones": 2,
         "recortado": false
       },
       {
-        "texto": "¿Qué Entró y Qué Salió?",
+        "texto": "¿Qué entró y qué salió?",
         "renglones": 1,
         "recortado": false
       },
@@ -168,27 +168,37 @@
         "recortado": false
       },
       {
-        "texto": "¿Dónde se Rompió?",
+        "texto": "¿Quién pregunta esto?",
         "renglones": 1,
         "recortado": false
       },
       {
-        "texto": "¿Qué Le Pasa a Cada Uno?",
-        "renglones": 2,
-        "recortado": false
-      },
-      {
-        "texto": "La Ecuación en Movimiento",
-        "renglones": 2,
-        "recortado": false
-      },
-      {
-        "texto": "¿En Cuál Estado Aparece?",
+        "texto": "¿Dónde se rompió?",
         "renglones": 1,
         "recortado": false
       },
       {
-        "texto": "La Articulación",
+        "texto": "¿Qué le pasa a cada uno?",
+        "renglones": 1,
+        "recortado": false
+      },
+      {
+        "texto": "¿Un día, un año o dos fotos?",
+        "renglones": 2,
+        "recortado": false
+      },
+      {
+        "texto": "La ecuación en movimiento",
+        "renglones": 2,
+        "recortado": false
+      },
+      {
+        "texto": "¿En qué estado aparece?",
+        "renglones": 1,
+        "recortado": false
+      },
+      {
+        "texto": "La articulación",
         "renglones": 1,
         "recortado": false
       },
@@ -223,6 +233,11 @@
         "recortado": false
       },
       {
+        "texto": "¿Gasto o pago?",
+        "renglones": 1,
+        "recortado": false
+      },
+      {
         "texto": "Arma el ajuste acumulado",
         "renglones": 1,
         "recortado": false
@@ -240,6 +255,11 @@
       {
         "texto": "¿Qué le toca a este periodo?",
         "renglones": 2,
+        "recortado": false
+      },
+      {
+        "texto": "Del resultado a la caja",
+        "renglones": 1,
         "recortado": false
       },
       {
