@@ -52,6 +52,20 @@ sin deslizar el dedo. Estado guardado con clave `tema/pieza/caso`. Movimiento:
 entrada escalonada 0/80/160 ms, 280 ms, solo transform y opacity; sin parallax;
 con movimiento reducido, sin desplazamientos.
 
+**Lecciones de lo ya construido (v2, Ukyo, 24 oct).** Salen de revisar #491
+y #498 con capturas. (1) **Nunca cortes con «…» un nombre, un motivo ni un
+título**: a 320 y 375 px déjalo en dos líneas y que la fila crezca; no pongas
+alto fijo a una fila con texto. (2) En escritorio, tarjetas en fila **no se
+estiran al alto de la más alta** si una queda medio vacía: `align-items: start`
+o ajusta el contenido. (3) **Objetivo de la pieza (D2) = el titular de la
+pantalla 1**; el pie «Basado en el libro, pp. …» va una sola vez, en la línea
+de razón del Cierre. (4) Una pantalla de un solo control es Haz si exige
+respuesta válida para seguir y Míralo si solo explora; nunca es paso de una
+Apertura. (5) El alto de la figura es **propiedad de la pieza** (tope 220 a 320
+y 319 a 375), no tres valores fijos del contenedor. (6) Textos para el profesor
+o el estudiante en lenguaje de aula: nada de explicar la decisión del
+programador («es peor que no tener la sección»).
+
 **Panel docente** (`prompts/panel-docente-v1.md`). Primera pantalla = tres
 bloques: avance de la clase, quiénes necesitan atención (máx. 3, nombre y
 motivo), actividad con peor resultado. La lista de estudiantes nunca va primero.
