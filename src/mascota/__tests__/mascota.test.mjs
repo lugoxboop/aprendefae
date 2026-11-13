@@ -26,7 +26,12 @@ const migracionColor = readFileSync(
   "utf8",
 );
 
-const { ESPECIES, IDS_ESPECIE, NOMBRE_MAX, IDS_PALETA, PALETAS_MASCOTA } = await import("../mascotas.js");
+const migracionOjos = readFileSync(
+  fileURLToPath(new URL("../../../supabase/migrations/0163_mascota_ojos.sql", import.meta.url)),
+  "utf8",
+);
+
+const { ESPECIES, IDS_ESPECIE, NOMBRE_MAX, IDS_PALETA, PALETAS_MASCOTA, IDS_OJOS, OJOS_MASCOTA } = await import("../mascotas.js");
 
 test("las especies del selector son exactamente las del check de la 0160", () => {
   /* Toma el primer `mascota_especie in ('…','…')` de la migración. */
@@ -55,6 +60,28 @@ test("las paletas de color son exactamente las del check de la 0162", () => {
     [...enLaBase].sort(),
     "IDS_PALETA (mascotas.js) y el check de la base tienen que coincidir",
   );
+});
+
+test("los colores de ojos son exactamente los del check de la 0163", () => {
+  const m = migracionOjos.match(/mascota_ojos is null or mascota_ojos in \(([^)]+)\)/);
+  assert.ok(m, "la migración declara el check de los ojos");
+  const enLaBase = m[1].match(/'([^']+)'/g).map((s) => s.slice(1, -1));
+  assert.deepEqual(
+    [...IDS_OJOS].sort(),
+    [...enLaBase].sort(),
+    "IDS_OJOS (mascotas.js) y el check de la base tienen que coincidir",
+  );
+});
+
+test("el selector de ojos ofrece «natural» más los colores de la base", () => {
+  const delSelector = OJOS_MASCOTA.map((o) => o.id);
+  assert.equal(delSelector[0], "natural", "natural va primero");
+  assert.deepEqual(
+    [...delSelector.slice(1)].sort(),
+    [...IDS_OJOS].sort(),
+    "el selector ofrece natural + exactamente los ojos válidos",
+  );
+  for (const o of OJOS_MASCOTA) assert.ok(o.nombre && o.muestra, `los ojos ${o.id} tienen nombre y muestra`);
 });
 
 test("el selector de color ofrece «natural» más las paletas de la base", () => {

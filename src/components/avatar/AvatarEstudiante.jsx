@@ -19,11 +19,12 @@ import { mascotaDe } from "../../mascota/mascotas.js";
  * ═══════════════════════════════════════════════════════════════════════════
  */
 export default function AvatarEstudiante({ perfil, tamano = 56, titulo = null, style = null, ...resto }) {
-  const { especie, paleta } = mascotaDe(perfil);
+  const { especie, paleta, ojos } = mascotaDe(perfil);
   return (
     <Mascota
       especie={especie}
       paleta={paleta}
+      ojos={ojos}
       tamano={tamano}
       titulo={titulo}
       style={style}
