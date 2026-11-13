@@ -10,7 +10,7 @@ import { formatoFP } from "../../utils/formato.js";
 import { saldoDe } from "../../cristales/cristales.js";
 import { puntoDeTienda } from "../../tienda/novedades.js";
 import { useAccesoDocente, recordadoComoDocente } from "../../docente/useAccesoDocente.js";
-import Avatar from "../avatar/Avatar.jsx";
+import AvatarEstudiante from "../avatar/AvatarEstudiante.jsx";
 import IconoCristal from "../shared/IconoCristal.jsx";
 import IconoRacha from "../shared/IconoRacha.jsx";
 import GoogleSignInButton from "./GoogleSignInButton.jsx";
@@ -690,7 +690,7 @@ function ConSesion({ usuarioId, perfil, cerrarSesion, conTitulo = false }) {
           pastilla compacta no podría esconderlo sin recurrir a !important.
         */}
         <span className="fae-cuenta-avatar" style={{ flexShrink: 0 }}>
-          <Avatar perfil={perfil} tamano={28} />
+          <AvatarEstudiante perfil={perfil} tamano={28} />
         </span>
         {/*
           Y los FP, que es lo que esta pastilla viene a enseñar en todas las
@@ -746,7 +746,7 @@ function ConSesion({ usuarioId, perfil, cerrarSesion, conTitulo = false }) {
               data-ficha-cuenta
               style={{ display: "flex", alignItems: "center", gap: "10px", padding: "6px 10px 10px" }}
             >
-              <Avatar perfil={perfil} tamano={40} style={{ flexShrink: 0 }} />
+              <AvatarEstudiante perfil={perfil} tamano={40} style={{ flexShrink: 0 }} />
               <div style={{ minWidth: 0 }}>
                 <p
                   style={{

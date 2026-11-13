@@ -34,6 +34,7 @@ const { AuthContext } = await import("../../../auth/AuthProvider.jsx");
 const { NavigationContext } = await import("../../../navigation.js");
 const { default: PerfilView } = await import("../../PerfilView.jsx");
 const { CLAVE_AVISO, AVISO_AVATAR, avisoPendiente, descartarAviso } = await import("../avisoAvatar.js");
+const { mascotaDe } = await import("../../../mascota/mascotas.js");
 
 const PERFIL = {
   nickname: "Cami", full_name: "Camila", points: 4200, streak: 3, best_streak: 9,
@@ -58,14 +59,14 @@ function montar({ perfil = PERFIL } = {}) {
 
 const pulsar = async (el) => { await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); }); };
 
-test("el avatar del perfil sale a 96 px con la combinación guardada", () => {
+test("la cabecera del perfil muestra la mascota del estudiante a 96 px, y tocarla edita el perfil", () => {
   w.localStorage.clear();
   const m = montar();
   try {
-    const svg = m.caja.querySelector("[data-abrir-avatar] svg[data-avatar]");
-    assert.equal(svg.dataset.avatar, "nucleo-marea-2");
+    const svg = m.caja.querySelector("[data-abrir-avatar] svg[data-mascota]");
+    assert.equal(svg.dataset.mascota, mascotaDe(PERFIL).especie);
     assert.equal(svg.getAttribute("width"), "96");
-    assert.match(m.caja.querySelector("[data-abrir-avatar]").getAttribute("aria-label"), /Núcleo · Marea · Nivel II/);
+    assert.match(m.caja.querySelector("[data-abrir-avatar]").getAttribute("aria-label"), /Editar tu perfil/);
   } finally { m.desmontar(); }
 });
 

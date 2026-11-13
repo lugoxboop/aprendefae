@@ -81,7 +81,7 @@ test("la pastilla enseña el avatar y los FP, y ya NO el nombre del estudiante",
   const m = montar();
   try {
     const p = pastilla(m.caja);
-    assert.ok(p.querySelector("svg[data-avatar]"), "el avatar del estudiante va en la pastilla");
+    assert.ok(p.querySelector("svg[data-mascota]"), "la mascota del estudiante va en la pastilla");
     assert.equal(p.querySelector("[data-fp-pastilla]").textContent.trim(), "815 FP");
     /*
      * El nombre se fue al encabezado del menú. Si volviera aquí, la pastilla
@@ -134,7 +134,7 @@ test("el menú trae la ficha de identidad y las cinco opciones, en orden (la cla
     abrir(m.caja);
     const ficha = m.caja.querySelector("[data-ficha-cuenta]");
     assert.ok(ficha, "la ficha de identidad encabeza el menú");
-    assert.ok(ficha.querySelector("svg[data-avatar]"), "con el avatar");
+    assert.ok(ficha.querySelector("svg[data-mascota]"), "con la mascota");
     assert.match(ficha.textContent, /Mateo/, "y el nombre, que salió de la pastilla");
     assert.match(ficha.textContent, /815 FP/);
     assert.match(ficha.textContent, /0/, "los Cristales");

@@ -6,7 +6,8 @@ import { tableroDe, contextoDe, repartir, tieneLigas } from "../../ligas/ligas.j
 import CabeceraLiga from "./CabeceraLiga.jsx";
 import BotonAnimo from "../social/BotonAnimo.jsx";
 import { estadoDeAnimos } from "../../social/animo.js";
-import Avatar, { TAMANOS } from "../avatar/Avatar.jsx";
+import { TAMANOS } from "../avatar/Avatar.jsx";
+import AvatarEstudiante from "../avatar/AvatarEstudiante.jsx";
 import BandaDecoracion from "../decoracion/BandaDecoracion.jsx";
 import { estadoLiga } from "../decoracion/poses.js";
 
@@ -185,7 +186,7 @@ export default function LigaBoard({ subjectId, cargarTablero = tableroDe, cargar
               >
                 <Puesto n={f.posicion} destacado={f.es_tuyo} />
                 {/* A 24 px, el tamaño de liga. Forma, paleta y nivel llegan con la fila (0037). */}
-                <Avatar perfil={f} tamano={TAMANOS.liga} style={{ flexShrink: 0 }} />
+                <AvatarEstudiante perfil={f} tamano={TAMANOS.liga} style={{ flexShrink: 0 }} />
                 {/*
                   Dos renglones, como RankingFP (#570, gemelo de #556): el apodo
                   solo en el primero, con todo el ancho; FP y ánimo en el segundo.
