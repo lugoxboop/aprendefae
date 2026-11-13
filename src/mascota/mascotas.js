@@ -116,29 +116,43 @@ export const IDS_ACCESORIO = Object.keys(ACCESORIOS);
  * especie, no color que se tiñe.
  */
 const PARTES = {
-  perro: ({ fur, furDark }) => ({
-    orejas: `<path d="M42 38 q-26 -2 -26 34 q0 20 18 19 q13 -1 15 -19 q2 -22 -7 -34 z" fill="${furDark}"/>
-             <path d="M98 38 q26 -2 26 34 q0 20 -18 19 q-13 -1 -15 -19 q-2 -22 7 -34 z" fill="${furDark}"/>
-             <path d="M40 46 q-16 0 -16 24 q0 12 11 12 q8 -1 9 -12 q1 -14 -4 -24 z" fill="${fur}" opacity=".5"/>
-             <path d="M100 46 q16 0 16 24 q0 12 -11 12 q-8 -1 -9 -12 q-1 -14 4 -24 z" fill="${fur}" opacity=".5"/>`,
+  // PERRO: orejas largas y caídas que cuelgan por los lados, y hocico que sale.
+  perro: ({ fur, furDark, belly }) => ({
+    orejas: `<path d="M46 40 q-34 -2 -36 42 q-1 26 18 27 q16 1 19 -20 q3 -30 -1 -49 z" fill="${furDark}"/>
+             <path d="M94 40 q34 -2 36 42 q1 26 -18 27 q-16 1 -19 -20 q-3 -30 1 -49 z" fill="${furDark}"/>
+             <path d="M46 54 q-20 0 -22 32 q-1 15 11 16 q9 0 11 -13 q3 -21 0 -35 z" fill="${fur}" opacity=".4"/>
+             <path d="M94 54 q20 0 22 32 q1 15 -11 16 q-9 0 -11 -13 q-3 -21 0 -35 z" fill="${fur}" opacity=".4"/>`,
+    hocico: `<ellipse cx="70" cy="84" rx="19" ry="15" fill="${belly}"/>`,
+    nariz: `<ellipse cx="70" cy="74" rx="6.6" ry="4.8" fill="#2a2018"/>`,
+    boca: `<path d="M70 79 v6 M70 85 q-7 5 -13 1 M70 85 q7 5 13 1" fill="none" stroke="#6b4e34" stroke-width="2" stroke-linecap="round"/>`,
   }),
+  // GATO: orejas grandes y bien puntiagudas, bigotes largos, nariz y boca de gato.
   gato: ({ fur }) => ({
-    orejas: `<path d="M40 44 L34 20 L58 38 z" fill="${fur}"/><path d="M42 41 L39 28 L52 37 z" fill="#E89BB0"/>
-             <path d="M100 44 L106 20 L82 38 z" fill="${fur}"/><path d="M98 41 L101 28 L88 37 z" fill="#E89BB0"/>`,
-    cara: `<line x1="14" y1="72" x2="40" y2="74" stroke="rgba(255,255,255,.55)" stroke-width="1.6"/><line x1="14" y1="80" x2="40" y2="79" stroke="rgba(255,255,255,.55)" stroke-width="1.6"/>
-           <line x1="126" y1="72" x2="100" y2="74" stroke="rgba(255,255,255,.55)" stroke-width="1.6"/><line x1="126" y1="80" x2="100" y2="79" stroke="rgba(255,255,255,.55)" stroke-width="1.6"/>`,
-    nariz: `<path d="M66 69 h8 l-4 4 z" fill="#E89BB0"/>`,
+    orejas: `<path d="M40 46 L26 8 L66 36 z" fill="${fur}"/><path d="M43 42 L34 20 L58 35 z" fill="#E89BB0"/>
+             <path d="M100 46 L114 8 L74 36 z" fill="${fur}"/><path d="M97 42 L106 20 L82 35 z" fill="#E89BB0"/>`,
+    cara: `<line x1="8" y1="72" x2="42" y2="75" stroke="rgba(255,255,255,.6)" stroke-width="1.7"/><line x1="8" y1="82" x2="42" y2="80" stroke="rgba(255,255,255,.6)" stroke-width="1.7"/>
+           <line x1="132" y1="72" x2="98" y2="75" stroke="rgba(255,255,255,.6)" stroke-width="1.7"/><line x1="132" y1="82" x2="98" y2="80" stroke="rgba(255,255,255,.6)" stroke-width="1.7"/>`,
+    nariz: `<path d="M64 70 h12 l-6 6 z" fill="#E89BB0"/>`,
+    boca: `<path d="M70 76 v4 M70 80 q-6 5 -11 1 M70 80 q6 5 11 1" fill="none" stroke="#9a7b63" stroke-width="1.8" stroke-linecap="round"/>`,
   }),
+  // HÁMSTER: abazones ENORMES que ensanchan la cara, orejitas pequeñas y altas,
+  // hocico chiquito con dos dientes. El rasgo que lo hace hámster son los cachetes.
   hamster: ({ fur, furDark, belly }) => ({
-    orejas: `<circle cx="44" cy="40" r="11" fill="${furDark}"/><circle cx="44" cy="40" r="5.5" fill="${fur}"/>
-             <circle cx="96" cy="40" r="11" fill="${furDark}"/><circle cx="96" cy="40" r="5.5" fill="${fur}"/>`,
-    hocico: `<ellipse cx="54" cy="80" rx="12" ry="10" fill="${belly}"/><ellipse cx="86" cy="80" rx="12" ry="10" fill="${belly}"/><ellipse cx="70" cy="78" rx="14" ry="11" fill="${belly}"/>`,
-    nariz: `<ellipse cx="70" cy="71" rx="4" ry="3" fill="#c76b74"/>`,
+    orejas: `<circle cx="50" cy="32" r="10" fill="${furDark}"/><circle cx="50" cy="33" r="5" fill="#E89BB0"/>
+             <circle cx="90" cy="32" r="10" fill="${furDark}"/><circle cx="90" cy="33" r="5" fill="#E89BB0"/>`,
+    frente: `<ellipse cx="34" cy="84" rx="23" ry="20" fill="${fur}"/><ellipse cx="106" cy="84" rx="23" ry="20" fill="${fur}"/>`,
+    hocico: `<ellipse cx="70" cy="86" rx="14" ry="11" fill="${belly}"/>
+             <rect x="66.6" y="88" width="2.8" height="6" rx="1" fill="#fff"/><rect x="70.6" y="88" width="2.8" height="6" rx="1" fill="#fff"/>`,
+    nariz: `<ellipse cx="70" cy="80" rx="4" ry="3" fill="#c76b74"/>`,
+    cachetes: `<ellipse cx="36" cy="88" rx="13" ry="10" fill="rgba(233,120,128,.55)"/><ellipse cx="104" cy="88" rx="13" ry="10" fill="rgba(233,120,128,.55)"/>`,
   }),
-  huron: ({ furDark }) => ({
-    orejas: `<circle cx="46" cy="42" r="9" fill="${furDark}"/><circle cx="94" cy="42" r="9" fill="${furDark}"/>`,
-    cara: `<path d="M44 58 q26 -16 52 0 q-4 12 -26 12 q-22 0 -26 -12 z" fill="#6E6150" opacity=".85"/>`,
-    nariz: `<ellipse cx="70" cy="70" rx="4.4" ry="3.2" fill="#c98f86"/>`,
+  // HURÓN: carita estrecha con parche claro y antifaz oscuro marcado, orejas chicas.
+  huron: ({ furDark, belly }) => ({
+    orejas: `<circle cx="50" cy="40" r="8" fill="${furDark}"/><circle cx="50" cy="40" r="3.6" fill="${belly}"/>
+             <circle cx="90" cy="40" r="8" fill="${furDark}"/><circle cx="90" cy="40" r="3.6" fill="${belly}"/>`,
+    frente: `<ellipse cx="70" cy="76" rx="27" ry="24" fill="${belly}" opacity=".7"/>`,
+    cara: `<path d="M38 56 q32 -22 64 0 q-7 18 -32 18 q-25 0 -32 -18 z" fill="#5A4E3E" opacity=".92"/>`,
+    nariz: `<ellipse cx="70" cy="76" rx="5" ry="3.6" fill="#c98f86"/>`,
   }),
 };
 
@@ -168,14 +182,14 @@ export function cuerpoMascota(especie, opts = {}) {
     ${bajo}
     ${partes.orejas}
     <circle cx="70" cy="64" r="37" fill="${col.fur}"/>
+    ${partes.frente || ""}
     ${partes.cara || ""}
-    ${partes.hocico || `<ellipse cx="70" cy="76" rx="19" ry="14" fill="${col.belly}"/>`}
-    <ellipse cx="48" cy="74" rx="7" ry="5" fill="rgba(233,120,128,.45)"/>
-    <ellipse cx="92" cy="74" rx="7" ry="5" fill="rgba(233,120,128,.45)"/>
-    <g data-ojo><ellipse cx="57" cy="62" rx="5.2" ry="6.4" fill="${iris}"/><ellipse cx="57" cy="62.5" rx="2.7" ry="4" fill="#130d0a"/><circle cx="59" cy="59.5" r="1.7" fill="#fff"/></g>
-    <g data-ojo><ellipse cx="83" cy="62" rx="5.2" ry="6.4" fill="${iris}"/><ellipse cx="83" cy="62.5" rx="2.7" ry="4" fill="#130d0a"/><circle cx="85" cy="59.5" r="1.7" fill="#fff"/></g>
-    ${partes.nariz || `<ellipse cx="70" cy="70" rx="4.6" ry="3.4" fill="#2a2018"/>`}
-    <path d="M63 76 q7 6 14 0" fill="none" stroke="#6b4e34" stroke-width="2" stroke-linecap="round"/>
+    ${partes.hocico || `<ellipse cx="70" cy="78" rx="19" ry="14" fill="${col.belly}"/>`}
+    ${partes.cachetes || `<ellipse cx="46" cy="78" rx="9.5" ry="6.8" fill="rgba(233,120,128,.5)"/><ellipse cx="94" cy="78" rx="9.5" ry="6.8" fill="rgba(233,120,128,.5)"/>`}
+    <g data-ojo><ellipse cx="56" cy="63" rx="6.6" ry="8" fill="${iris}"/><ellipse cx="56" cy="63.5" rx="3.3" ry="5" fill="#130d0a"/><circle cx="58.6" cy="60" r="2.1" fill="#fff"/></g>
+    <g data-ojo><ellipse cx="84" cy="63" rx="6.6" ry="8" fill="${iris}"/><ellipse cx="84" cy="63.5" rx="3.3" ry="5" fill="#130d0a"/><circle cx="86.6" cy="60" r="2.1" fill="#fff"/></g>
+    ${partes.nariz || `<ellipse cx="70" cy="72" rx="4.6" ry="3.4" fill="#2a2018"/>`}
+    ${partes.boca || `<path d="M63 78 q7 6 14 0" fill="none" stroke="#6b4e34" stroke-width="2" stroke-linecap="round"/>`}
     ${collar}
     ${sobre}`;
 }
