@@ -22,7 +22,7 @@ const migracion = readFileSync(
 );
 
 const migracionColor = readFileSync(
-  fileURLToPath(new URL("../../../supabase/migrations/0161_mascota_color.sql", import.meta.url)),
+  fileURLToPath(new URL("../../../supabase/migrations/0162_mascota_color_realista.sql", import.meta.url)),
   "utf8",
 );
 
@@ -46,8 +46,8 @@ test("el largo máximo del nombre coincide con el de la base", () => {
   assert.equal(NOMBRE_MAX, Number(m[1]), "NOMBRE_MAX y el check del nombre tienen que coincidir");
 });
 
-test("las paletas de color son exactamente las del check de la 0161", () => {
-  const m = migracionColor.match(/mascota_paleta in \(([^)]+)\)/);
+test("las paletas de color son exactamente las del check de la 0162", () => {
+  const m = migracionColor.match(/mascota_paleta is null or mascota_paleta in \(([^)]+)\)/);
   assert.ok(m, "la migración declara el check de la paleta");
   const enLaBase = m[1].match(/'([^']+)'/g).map((s) => s.slice(1, -1));
   assert.deepEqual(

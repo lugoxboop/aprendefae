@@ -13,9 +13,9 @@ import Medallas from "./perfil/Medallas.jsx";
 import ResumenSemestre from "./perfil/ResumenSemestre.jsx";
 import EditarPerfil, { SECCIONES } from "./perfil/EditarPerfil.jsx";
 import SeccionMascota from "./perfil/SeccionMascota.jsx";
-import Avatar, { TAMANOS } from "./avatar/Avatar.jsx";
+import { TAMANOS } from "./avatar/Avatar.jsx";
+import AvatarEstudiante from "./avatar/AvatarEstudiante.jsx";
 import IconoCristal from "./shared/IconoCristal.jsx";
-import { combinacionDe, leyenda } from "../avatar/generador.js";
 import { saldoDe } from "../cristales/cristales.js";
 import { AVISO_AVATAR, avisoPendiente, descartarAviso } from "./perfil/avisoAvatar.js";
 
@@ -152,13 +152,13 @@ export default function PerfilView({ seccion = null, onBack }) {
                 type="button"
                 data-abrir-avatar
                 onClick={() => setEditando(true)}
-                aria-label={`Cambiar tu avatar. Ahora: ${leyenda(combinacionDe(perfil))}`}
+                aria-label="Editar tu perfil"
                 style={{
                   padding: "6px", borderRadius: "999px", cursor: "pointer", flexShrink: 0,
                   background: "rgba(29,53,87,0.55)", border: "1px solid rgba(248,249,250,0.14)", lineHeight: 0,
                 }}
               >
-                <Avatar perfil={perfil} tamano={TAMANOS.perfil} />
+                <AvatarEstudiante perfil={perfil} tamano={TAMANOS.perfil} />
               </button>
               <p
                 data-apodo

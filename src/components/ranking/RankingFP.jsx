@@ -4,7 +4,8 @@ import { supabase } from "../../lib/supabase.js";
 import BotonAnimo from "../social/BotonAnimo.jsx";
 import { estadoDeAnimos } from "../../social/animo.js";
 import { useAuth } from "../../auth/AuthProvider.jsx";
-import Avatar, { TAMANOS } from "../avatar/Avatar.jsx";
+import { TAMANOS } from "../avatar/Avatar.jsx";
+import AvatarEstudiante from "../avatar/AvatarEstudiante.jsx";
 import { TARJETA_TABLA, ATENUADO_TABLA } from "./tarjeta.js";
 import BandaDecoracion from "../decoracion/BandaDecoracion.jsx";
 import { estadoRanking } from "../decoracion/poses.js";
@@ -107,7 +108,7 @@ function Fila({ entrada, destacada, animo }) {
         desde ranking_fp (0037). El retiro de halo y cuerdas por debajo de 40 px
         lo hace el generador: aquí solo se dice el tamaño.
       */}
-      <Avatar perfil={entrada} tamano={TAMANOS.ranking} style={{ flexShrink: 0 }} />
+      <AvatarEstudiante perfil={entrada} tamano={TAMANOS.ranking} style={{ flexShrink: 0 }} />
       <div style={{ flex: 1, minWidth: 0 }}>
         <span
           data-apodo

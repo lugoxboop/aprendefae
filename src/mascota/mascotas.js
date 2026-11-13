@@ -36,25 +36,31 @@ const NATURAL = {
   huron: { fur: "#EAE1CD", furDark: "#D8CDB2", belly: "#F6F1E4" },
 };
 
-/* Las paletas que se compran/eligen, encima de cualquier especie. */
+/*
+ * Las paletas que se eligen, encima de cualquier especie. Son colores de PELAJE
+ * REAL —los que de verdad tienen gatos, perros, hurones y hámsters—, no colores
+ * de fantasía: nada de un gato morado o un perro azul. Cada uno se ve bien en
+ * las cuatro especies. El vientre va un par de tonos más claro, como en el pelo
+ * de verdad.
+ */
 const TINTE = {
-  azul: { fur: "#7FA9E8", furDark: "#5E86C9", belly: "#E3EDFB" },
-  rosa: { fur: "#E89BBE", furDark: "#CF7BA0", belly: "#FCE6EF" },
-  menta: { fur: "#86CBB4", furDark: "#5FA891", belly: "#E2F4EE" },
-  lila: { fur: "#B49BE0", furDark: "#9476C9", belly: "#EEE7FA" },
-  durazno: { fur: "#E8A979", furDark: "#CE8655", belly: "#FBEADB" },
-  carbon: { fur: "#8A93A3", furDark: "#6B7280", belly: "#D7DCE4" },
+  arena: { fur: "#E3CFA6", furDark: "#C7AF82", belly: "#F4EAD6" },
+  canela: { fur: "#D59A54", furDark: "#B67D3C", belly: "#EFD9B8" },
+  chocolate: { fur: "#7E5436", furDark: "#5F3E27", belly: "#B99B7E" },
+  gris: { fur: "#9BA4AE", furDark: "#78808A", belly: "#DCE1E7" },
+  negro: { fur: "#45484F", furDark: "#2F3238", belly: "#797E88" },
+  jengibre: { fur: "#D97E3E", furDark: "#B9652A", belly: "#F2D2B2" },
 };
 
 /** El selector de color, en orden. «natural» primero; su muestra es un tono tierra. */
 export const PALETAS_MASCOTA = [
   { id: "natural", nombre: "Natural", muestra: "#D7A468" },
-  { id: "azul", nombre: "Azul", muestra: TINTE.azul.fur },
-  { id: "rosa", nombre: "Rosa", muestra: TINTE.rosa.fur },
-  { id: "menta", nombre: "Menta", muestra: TINTE.menta.fur },
-  { id: "lila", nombre: "Lila", muestra: TINTE.lila.fur },
-  { id: "durazno", nombre: "Durazno", muestra: TINTE.durazno.fur },
-  { id: "carbon", nombre: "Carbón", muestra: TINTE.carbon.fur },
+  { id: "arena", nombre: "Arena", muestra: TINTE.arena.fur },
+  { id: "canela", nombre: "Canela", muestra: TINTE.canela.fur },
+  { id: "chocolate", nombre: "Chocolate", muestra: TINTE.chocolate.fur },
+  { id: "gris", nombre: "Gris", muestra: TINTE.gris.fur },
+  { id: "negro", nombre: "Negro", muestra: TINTE.negro.fur },
+  { id: "jengibre", nombre: "Jengibre", muestra: TINTE.jengibre.fur },
 ];
 export const IDS_PALETA = Object.keys(TINTE);
 
@@ -142,4 +148,34 @@ export function cuerpoMascota(especie, opts = {}) {
     <path d="M63 76 q7 6 14 0" fill="none" stroke="#6b4e34" stroke-width="2" stroke-linecap="round"/>
     ${collar}
     ${sobre}`;
+}
+
+/*
+ * La mascota «de fábrica»: el estudiante que aún no eligió igual tiene cara.
+ * La especie sale de un hash estable de su identidad (id o apodo), no de un
+ * azar que cambie en cada carga: así siempre ve la misma, y dos personas
+ * distintas caen casi siempre en especies distintas. Es azar entre las cuatro,
+ * pero fijo por persona. No escribe nada en la base: es solo de pintar.
+ */
+export function especiePorDefecto(semilla) {
+  const s = String(semilla ?? "");
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 16777619) >>> 0;
+  }
+  return IDS_ESPECIE[h % IDS_ESPECIE.length];
+}
+
+/**
+ * La mascota con la que se pinta a un estudiante: la que eligió si la tiene, y
+ * si no, la de fábrica derivada de su identidad. Devuelve {especie, paleta}.
+ */
+export function mascotaDe(perfil) {
+  const elegida = perfil?.mascota_especie;
+  const especie = elegida && IDS_ESPECIE.includes(elegida)
+    ? elegida
+    : especiePorDefecto(perfil?.id ?? perfil?.apodo ?? perfil?.nickname ?? "");
+  const paleta = perfil?.mascota_paleta ?? "natural";
+  return { especie, paleta };
 }
