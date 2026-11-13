@@ -127,9 +127,12 @@ const PARTES = {
     boca: `<path d="M70 79 v6 M70 85 q-7 5 -13 1 M70 85 q7 5 13 1" fill="none" stroke="#6b4e34" stroke-width="2" stroke-linecap="round"/>`,
   }),
   // GATO: orejas grandes y bien puntiagudas, bigotes largos, nariz y boca de gato.
-  gato: ({ fur }) => ({
-    orejas: `<path d="M40 46 L26 8 L66 36 z" fill="${fur}"/><path d="M43 42 L34 20 L58 35 z" fill="#E89BB0"/>
-             <path d="M100 46 L114 8 L74 36 z" fill="${fur}"/><path d="M97 42 L106 20 L82 35 z" fill="#E89BB0"/>`,
+  gato: ({ fur, furDark }) => ({
+    // orejas grandes con la PUNTA DOBLADA hacia afuera (la solapa, más oscura).
+    orejas: `<path d="M41 47 L30 15 L64 37 z" fill="${fur}"/><path d="M45 43 L37 25 L56 35 z" fill="#E89BB0"/>
+             <path d="M30 15 Q23 13 21 23 L40 26 z" fill="${furDark}"/>
+             <path d="M99 47 L110 15 L76 37 z" fill="${fur}"/><path d="M95 43 L103 25 L84 35 z" fill="#E89BB0"/>
+             <path d="M110 15 Q117 13 119 23 L100 26 z" fill="${furDark}"/>`,
     cara: `<line x1="8" y1="72" x2="42" y2="75" stroke="rgba(255,255,255,.6)" stroke-width="1.7"/><line x1="8" y1="82" x2="42" y2="80" stroke="rgba(255,255,255,.6)" stroke-width="1.7"/>
            <line x1="132" y1="72" x2="98" y2="75" stroke="rgba(255,255,255,.6)" stroke-width="1.7"/><line x1="132" y1="82" x2="98" y2="80" stroke="rgba(255,255,255,.6)" stroke-width="1.7"/>`,
     nariz: `<path d="M64 70 h12 l-6 6 z" fill="#E89BB0"/>`,
@@ -140,19 +143,23 @@ const PARTES = {
   hamster: ({ fur, furDark, belly }) => ({
     orejas: `<circle cx="50" cy="32" r="10" fill="${furDark}"/><circle cx="50" cy="33" r="5" fill="#E89BB0"/>
              <circle cx="90" cy="32" r="10" fill="${furDark}"/><circle cx="90" cy="33" r="5" fill="#E89BB0"/>`,
-    frente: `<ellipse cx="34" cy="84" rx="23" ry="20" fill="${fur}"/><ellipse cx="106" cy="84" rx="23" ry="20" fill="${fur}"/>`,
-    hocico: `<ellipse cx="70" cy="86" rx="14" ry="11" fill="${belly}"/>
-             <rect x="66.6" y="88" width="2.8" height="6" rx="1" fill="#fff"/><rect x="70.6" y="88" width="2.8" height="6" rx="1" fill="#fff"/>`,
-    nariz: `<ellipse cx="70" cy="80" rx="4" ry="3" fill="#c76b74"/>`,
-    cachetes: `<ellipse cx="36" cy="88" rx="13" ry="10" fill="rgba(233,120,128,.55)"/><ellipse cx="104" cy="88" rx="13" ry="10" fill="rgba(233,120,128,.55)"/>`,
+    frente: `<ellipse cx="38" cy="82" rx="18" ry="16" fill="${fur}"/><ellipse cx="102" cy="82" rx="18" ry="16" fill="${fur}"/>`,
+    hocico: `<ellipse cx="70" cy="84" rx="12" ry="9.5" fill="${belly}"/>
+             <rect x="66.8" y="86" width="2.6" height="5.5" rx="1" fill="#fff"/><rect x="70.6" y="86" width="2.6" height="5.5" rx="1" fill="#fff"/>`,
+    nariz: `<ellipse cx="70" cy="79" rx="4" ry="3" fill="#c76b74"/>`,
+    // cachetes de verdad: dos bolas sonrosadas, redondas y marcadas, sobre las mejillas.
+    cachetes: `<circle cx="42" cy="80" r="9" fill="rgba(233,120,128,.6)"/><circle cx="98" cy="80" r="9" fill="rgba(233,120,128,.6)"/>`,
   }),
-  // HURÓN: carita estrecha con parche claro y antifaz oscuro marcado, orejas chicas.
+  // HURÓN: hocico claro abajo y máscara oscura SUAVE rodeando cada ojo (como de
+  // verdad), no una banda recta. Orejas pequeñas y redondas a los lados.
   huron: ({ furDark, belly }) => ({
-    orejas: `<circle cx="50" cy="40" r="8" fill="${furDark}"/><circle cx="50" cy="40" r="3.6" fill="${belly}"/>
-             <circle cx="90" cy="40" r="8" fill="${furDark}"/><circle cx="90" cy="40" r="3.6" fill="${belly}"/>`,
-    frente: `<ellipse cx="70" cy="76" rx="27" ry="24" fill="${belly}" opacity=".7"/>`,
-    cara: `<path d="M38 56 q32 -22 64 0 q-7 18 -32 18 q-25 0 -32 -18 z" fill="#5A4E3E" opacity=".92"/>`,
-    nariz: `<ellipse cx="70" cy="76" rx="5" ry="3.6" fill="#c98f86"/>`,
+    orejas: `<circle cx="48" cy="42" r="8.5" fill="${furDark}"/><circle cx="48" cy="42" r="4" fill="${belly}"/>
+             <circle cx="92" cy="42" r="8.5" fill="${furDark}"/><circle cx="92" cy="42" r="4" fill="${belly}"/>`,
+    // hocico claro: la parte baja de la cara, redondeada.
+    frente: `<ellipse cx="70" cy="82" rx="23" ry="19" fill="${belly}" opacity=".8"/>`,
+    // máscara: dos manchas oscuras alrededor de los ojos, unidas por un puente fino.
+    cara: `<ellipse cx="56" cy="62" rx="13" ry="13" fill="#4f4536" opacity=".6"/><ellipse cx="84" cy="62" rx="13" ry="13" fill="#4f4536" opacity=".6"/><path d="M64 60 q6 -5 12 0 q-6 4 -12 0 z" fill="#4f4536" opacity=".6"/>`,
+    nariz: `<ellipse cx="70" cy="78" rx="4.8" ry="3.4" fill="#c98f86"/>`,
   }),
 };
 
