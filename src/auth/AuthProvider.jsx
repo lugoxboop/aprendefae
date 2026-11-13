@@ -293,6 +293,19 @@ export function AuthProvider({ children }) {
     [session, aplicarPerfil],
   );
 
+  const cambiarOjos = useCallback(
+    async (ojos) => {
+      if (!supabase || !session) return { error: "Sin sesión activa." };
+      const { data, error } = await supabase.rpc("mascota_ojos_elegir", {
+        p_ojos: ojos ?? "natural",
+      });
+      if (error) return { error: error.message };
+      aplicarPerfil(data);
+      return { data };
+    },
+    [session, aplicarPerfil],
+  );
+
   const apodoDisponible = useCallback(async (nickname) => {
     if (!supabase) return true;
     const { data, error } = await supabase.rpc("nickname_disponible", {
@@ -325,13 +338,14 @@ export function AuthProvider({ children }) {
       crearPerfil,
       elegirMascota,
       personalizarMascota,
+      cambiarOjos,
       guardarPerfil,
       aplicarPerfil,
       refrescarPerfil,
       apodoDisponible,
       cerrarSesion,
     }),
-    [cargando, leyendoPerfil, session, perfil, errorPerfil, necesitaApodo, necesitaMascota, motivoLogin, pedirCuenta, cerrarDialogo, crearPerfil, elegirMascota, personalizarMascota, guardarPerfil, aplicarPerfil, refrescarPerfil, apodoDisponible, cerrarSesion]
+    [cargando, leyendoPerfil, session, perfil, errorPerfil, necesitaApodo, necesitaMascota, motivoLogin, pedirCuenta, cerrarDialogo, crearPerfil, elegirMascota, personalizarMascota, cambiarOjos, guardarPerfil, aplicarPerfil, refrescarPerfil, apodoDisponible, cerrarSesion]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

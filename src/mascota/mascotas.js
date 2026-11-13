@@ -64,6 +64,35 @@ export const PALETAS_MASCOTA = [
 ];
 export const IDS_PALETA = Object.keys(TINTE);
 
+/*
+ * El color de los OJOS, aparte del pelaje. Colores de ojos reales de animales
+ * —ámbar, azul, verde…—, para que un gato negro pueda tener ojos azules o un
+ * hurón jengibre ojos verdes. «natural» son los ojos oscuros de siempre.
+ */
+const IRIS = {
+  ambar: "#C8820F",
+  miel: "#B56A1E",
+  azul: "#3E7CC2",
+  verde: "#4E9E5C",
+  gris: "#8290A0",
+};
+
+/** El selector de ojos, en orden. «natural» primero (ojos oscuros). */
+export const OJOS_MASCOTA = [
+  { id: "natural", nombre: "Oscuros", muestra: "#241d17" },
+  { id: "ambar", nombre: "Ámbar", muestra: IRIS.ambar },
+  { id: "miel", nombre: "Miel", muestra: IRIS.miel },
+  { id: "azul", nombre: "Azules", muestra: IRIS.azul },
+  { id: "verde", nombre: "Verdes", muestra: IRIS.verde },
+  { id: "gris", nombre: "Grises", muestra: IRIS.gris },
+];
+export const IDS_OJOS = Object.keys(IRIS);
+
+/** El color del iris: el elegido, o el oscuro de siempre con «natural»/vacío. */
+export function irisDe(ojos) {
+  return ojos && ojos !== "natural" && IRIS[ojos] ? IRIS[ojos] : "#241d17";
+}
+
 /** Los tres tonos de una mascota. `natural` (o nada) devuelve el de la especie. */
 export function colorDe(especie, paleta) {
   if (paleta && paleta !== "natural" && TINTE[paleta]) return TINTE[paleta];
@@ -122,8 +151,9 @@ const TAG = "#6F86FF";
  *   · paleta  — id de PALETAS_MASCOTA; «natural»/vacío deja el color de la especie.
  */
 export function cuerpoMascota(especie, opts = {}) {
-  const { puestos = [], paleta = null } = opts;
+  const { puestos = [], paleta = null, ojos = null } = opts;
   const col = colorDe(especie, paleta);
+  const iris = irisDe(ojos);
   const partes = (PARTES[especie] || PARTES.perro)(col);
   const acc = Array.isArray(puestos) ? puestos.filter((k) => ACCESORIOS[k]) : [];
   const bufandaOn = acc.includes("bufanda");
@@ -142,8 +172,8 @@ export function cuerpoMascota(especie, opts = {}) {
     ${partes.hocico || `<ellipse cx="70" cy="76" rx="19" ry="14" fill="${col.belly}"/>`}
     <ellipse cx="48" cy="74" rx="7" ry="5" fill="rgba(233,120,128,.45)"/>
     <ellipse cx="92" cy="74" rx="7" ry="5" fill="rgba(233,120,128,.45)"/>
-    <g data-ojo><ellipse cx="57" cy="62" rx="5.2" ry="6.4" fill="#241d17"/><circle cx="59" cy="59.5" r="1.7" fill="#fff"/></g>
-    <g data-ojo><ellipse cx="83" cy="62" rx="5.2" ry="6.4" fill="#241d17"/><circle cx="85" cy="59.5" r="1.7" fill="#fff"/></g>
+    <g data-ojo><ellipse cx="57" cy="62" rx="5.2" ry="6.4" fill="${iris}"/><ellipse cx="57" cy="62.5" rx="2.7" ry="4" fill="#130d0a"/><circle cx="59" cy="59.5" r="1.7" fill="#fff"/></g>
+    <g data-ojo><ellipse cx="83" cy="62" rx="5.2" ry="6.4" fill="${iris}"/><ellipse cx="83" cy="62.5" rx="2.7" ry="4" fill="#130d0a"/><circle cx="85" cy="59.5" r="1.7" fill="#fff"/></g>
     ${partes.nariz || `<ellipse cx="70" cy="70" rx="4.6" ry="3.4" fill="#2a2018"/>`}
     <path d="M63 76 q7 6 14 0" fill="none" stroke="#6b4e34" stroke-width="2" stroke-linecap="round"/>
     ${collar}
@@ -177,5 +207,6 @@ export function mascotaDe(perfil) {
     ? elegida
     : especiePorDefecto(perfil?.id ?? perfil?.apodo ?? perfil?.nickname ?? "");
   const paleta = perfil?.mascota_paleta ?? "natural";
-  return { especie, paleta };
+  const ojos = perfil?.mascota_ojos ?? "natural";
+  return { especie, paleta, ojos };
 }
