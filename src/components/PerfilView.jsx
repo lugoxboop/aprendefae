@@ -13,6 +13,7 @@ import Medallas from "./perfil/Medallas.jsx";
 import ResumenSemestre from "./perfil/ResumenSemestre.jsx";
 import EditarPerfil, { SECCIONES } from "./perfil/EditarPerfil.jsx";
 import SeccionMascota from "./perfil/SeccionMascota.jsx";
+import PanelAmigos from "./social/PanelAmigos.jsx";
 import { TAMANOS } from "./avatar/Avatar.jsx";
 import AvatarEstudiante from "./avatar/AvatarEstudiante.jsx";
 import IconoCristal from "./shared/IconoCristal.jsx";
@@ -214,6 +215,9 @@ export default function PerfilView({ seccion = null, onBack }) {
 
             {/* Tu mascota, con el selector de color (Etapa 1b). Solo si ya la tiene. */}
             <SeccionMascota perfil={perfil} />
+
+            {/* Amigos: agregar por apodo, aceptar solicitudes y ver sus mascotas. */}
+            <PanelAmigos />
 
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: "12px", marginBottom: "26px" }}>
               <div style={dato}>
