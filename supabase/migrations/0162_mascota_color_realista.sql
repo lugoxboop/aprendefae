@@ -15,9 +15,15 @@
 -- check, para que ninguna fila quede fuera. Idempotente. Depende de la 0161.
 -- ═══════════════════════════════════════════════════════════════════════════
 
--- ── 1. Remapear los colores viejos al pelaje real más cercano ────────────────
--- Biyección: cada viejo cae en uno nuevo. Se hace ANTES de tocar el check, con
--- el check viejo aún puesto, para no chocar en el camino.
+-- ── 1. Quitar el check viejo PRIMERO ─────────────────────────────────────────
+-- El check viejo solo admite los colores viejos (azul, rosa, …). Si remapeáramos
+-- con él aún puesto, rechazaría cada valor nuevo (negro, gris, …) en pleno
+-- camino: con la tabla vacía (CI) no se nota, pero con filas reales revienta.
+-- Por eso el check se quita antes de tocar los datos.
+alter table public.profiles drop constraint if exists profiles_mascota_paleta_valida;
+
+-- ── 2. Remapear los colores viejos al pelaje real más cercano ────────────────
+-- Biyección: cada viejo cae en uno nuevo. Ya sin check que estorbe.
 update public.profiles set mascota_paleta = case mascota_paleta
     when 'azul'    then 'gris'
     when 'rosa'    then 'arena'
@@ -29,8 +35,7 @@ update public.profiles set mascota_paleta = case mascota_paleta
   end
   where mascota_paleta in ('azul', 'rosa', 'menta', 'lila', 'durazno', 'carbon');
 
--- ── 2. Cambiar el check a las paletas reales ─────────────────────────────────
-alter table public.profiles drop constraint if exists profiles_mascota_paleta_valida;
+-- ── 3. Poner el check nuevo, ya con los datos remapeados ─────────────────────
 alter table public.profiles add constraint profiles_mascota_paleta_valida
   check (mascota_paleta is null or mascota_paleta in ('arena', 'canela', 'chocolate', 'gris', 'negro', 'jengibre'));
 
