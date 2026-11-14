@@ -1,7 +1,23 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { JSDOM, VirtualConsole } from "jsdom";
 import { perfilDeTarjeta } from "../PanelAmigos.jsx";
+
+/* Amigos es un destino propio (#/amigos), no algo enterrado en el perfil: tiene
+   su vista registrada, App la pinta y el menú de cuenta sabe llegar. */
+test("«Amigos» es una vista con su hash, y App y el menú saben llegar", async () => {
+  const { VISTAS, interpretar, serializar } = await import("../../../ruta.js");
+  assert.ok(VISTAS.has("amigos"), "sin esto el hash caería en la portada");
+  assert.equal(interpretar(serializar("amigos", null)).vista, "amigos");
+
+  const app = readFileSync(new URL("../../../App.jsx", import.meta.url), "utf8");
+  assert.ok(app.includes('view === "amigos"'), "App tiene que pintarla");
+
+  const menu = readFileSync(new URL("../../auth/AccountControl.jsx", import.meta.url), "utf8");
+  assert.ok(menu.includes('nav?.irA?.("amigos")'), "el menú de cuenta tiene que llevar a Amigos");
+  assert.ok(/>Amigos<\/OpcionMenu>/.test(menu), "y mostrar la opción «Amigos»");
+});
 
 /*
  * El panel de amigos: sin base configurada (como en las pruebas) no hay datos,

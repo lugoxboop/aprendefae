@@ -31,6 +31,7 @@ const IcebergView = lazy(() => import("./components/IcebergView.jsx"));
 const PorterView = lazy(() => import("./components/PorterView.jsx"));
 const PerfilView = lazy(() => import("./components/PerfilView.jsx"));
 const TiendaView = lazy(() => import("./components/tienda/TiendaView.jsx"));
+const AmigosView = lazy(() => import("./components/social/AmigosView.jsx"));
 const PoliticaEconomicaView = lazy(() => import("./components/PoliticaEconomicaView.jsx"));
 /* "La Tesorería Nacional": los siete juegos de Política Fiscal. Solo tiene mitad Hacer. */
 const PoliticaFiscalView = lazy(() => import("./components/PoliticaFiscalView.jsx"));
@@ -486,6 +487,15 @@ export default function App() {
       <Suspense fallback={siteFallback}>
         {/* Se entra desde el perfil o desde el selector de avatar; vuelve a donde estaba. */}
         <TiendaView onBack={() => setView(prevView === "tienda" ? "perfil" : prevView)} />
+      </Suspense>
+    );
+  }
+
+  if (view === "amigos") {
+    return wrap(
+      <Suspense fallback={siteFallback}>
+        {/* Destino propio, desde el menú de cuenta; vuelve a donde estaba. */}
+        <AmigosView onBack={() => setView(prevView === "amigos" ? "home" : prevView)} />
       </Suspense>
     );
   }

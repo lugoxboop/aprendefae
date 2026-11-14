@@ -583,6 +583,7 @@ function ConSesion({ usuarioId, perfil, cerrarSesion, conTitulo = false }) {
   const irAPerfil = () => { setAbierto(false); nav?.irAPerfil?.(); };
   /* Directo a la sección del avatar, sin pasar por apodo y nombre real. */
   const irAMiAvatar = () => { setAbierto(false); nav?.irA?.("perfil", null, "avatar"); };
+  const irAAmigos = () => { setAbierto(false); nav?.irA?.("amigos"); };
   const irATienda = () => { setAbierto(false); nav?.irATienda?.(); };
   /* La clase en vivo: el estudiante entra con el código que proyecta su profesor. */
   const irAClaseEnVivo = () => { setAbierto(false); nav?.irA?.("vivo"); };
@@ -784,6 +785,7 @@ function ConSesion({ usuarioId, perfil, cerrarSesion, conTitulo = false }) {
 
           <OpcionMenu onClick={irAClaseEnVivo}>Clase en vivo</OpcionMenu>
           <OpcionMenu onClick={irAPerfil}>Mi perfil</OpcionMenu>
+          <OpcionMenu onClick={irAAmigos}>Amigos</OpcionMenu>
           <OpcionMenu onClick={irAMiAvatar}>Mi avatar</OpcionMenu>
           <OpcionMenu onClick={irATienda} punto={punto}>Tienda</OpcionMenu>
 
