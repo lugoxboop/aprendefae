@@ -39,6 +39,15 @@ escribir un texto de interfaz por necesidad, va marcado
 
 **Coral significa error, en todo el sitio, sin excepción.**
 
+**El movimiento es un sistema común, no un adorno por pieza** (Mateo, 14-nov).
+Los veinte principios que pidió (animación clásica más Fitts, Hick, Miller,
+Doherty, Postel, Jakob y frecuencia de uso) viven en `src/estilo/movimiento.js`
+y `src/styles/movimiento.css`, y cada uno está anotado ahí con dónde se cumple.
+Se suma una segunda curva, `RESORTE` `cubic-bezier(.34,1.56,.64,1)`, solo para
+asentarse; la de la casa sigue para entrar y salir. Una pieza recibe el
+movimiento marcando su retroalimentación con `data-estado` y sus avisos con
+`aria-live`; no lo reescribe.
+
 **Los FP nunca se restan.**
 
 **375 px manda.** Los estudiantes entran por teléfono.

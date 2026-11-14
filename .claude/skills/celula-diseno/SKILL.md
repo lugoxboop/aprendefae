@@ -25,9 +25,17 @@ cuentas, asientos y saldos en la pila monoespaciada publicada con tabular-nums.
 Dinero como $1.240.000. Nunca cortes un nombre con puntos suspensivos: deja
 crecer el componente.
 
-**Movimiento.** Curva `cubic-bezier(.3,.9,.4,1)` —la que ya usa el código 22
-veces, no inventes otra—. Solo `transform` y `opacity`. Nada nuevo en bucle.
-Toda animación con su versión de movimiento reducido.
+**Movimiento.** Dos curvas y no más: `CURVA` `cubic-bezier(.3,.9,.4,1)` para
+entrar y salir, y `RESORTE` `cubic-bezier(.34,1.56,.64,1)` para asentarse
+(se pasa un poco y vuelve). Solo `transform` (mejor las propiedades sueltas
+`scale`, `translate`, `rotate`, que no pisan el `transform` de nadie) y
+`opacity`. Interfaz ≤ 300 ms; solo una celebración rara pasa de ahí. Nada en
+bucle. Toda animación con su versión de movimiento reducido.
+**El suelo ya existe** (`src/estilo/movimiento.js`, orden de Mateo del 14-nov):
+pulsar, acierto, error, avisos y cambios de pantalla se animan solos en todo
+el sitio. Para que tu pieza lo reciba basta con marcar la retroalimentación
+con `data-estado` (o `data-retro`, `data-veredicto`…) y los avisos con
+`aria-live`. No reinventes esos movimientos dentro de la pieza: se duplicarían.
 
 **Cada cifra lleva su origen:** `[pantalla]` (medido por alguien con nombre,
 dónde y cuándo), `[fuente]`, `[calculado]` (con su fórmula) o `[supuesto]` (y

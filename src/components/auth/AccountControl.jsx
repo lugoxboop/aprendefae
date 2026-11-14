@@ -502,6 +502,8 @@ const ENVOLTORIO = {
   top: "clamp(14px, 2.4vh, 24px)",
   right: "clamp(14px, 2.4vw, 24px)",
   zIndex: 40,
+  /* En los cambios de pantalla se queda quieto en su esquina (movimiento.css). */
+  viewTransitionName: "fae-cuenta",
 };
 
 export default function AccountControl({ conTitulo = false }) {

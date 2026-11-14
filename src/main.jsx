@@ -8,6 +8,8 @@ import { instalarRecargaTrasDespliegue } from "./arranque/recargaTrasDespliegue.
 
 import "./styles/global.css";
 import "./styles/home.css";
+import "./styles/movimiento.css";
+import { instalarMovimiento } from "./estilo/movimiento.js";
 
 /*
  * /privacidad se compila como documento estático propio, pero algunos hosts
@@ -25,6 +27,8 @@ const navigation = { goHome: () => { window.location.href = "/"; } };
  * en blanco. Ver arranque/recargaTrasDespliegue.js.
  */
 instalarRecargaTrasDespliegue(window);
+/* El sistema de movimiento de todo el sitio (src/estilo/movimiento.js). */
+instalarMovimiento(document);
 
 /* Al llegar por el fallback, el título viene del index del SPA: se corrige. */
 if (isPrivacidad) document.title = "Política de privacidad · AprendeFAE";

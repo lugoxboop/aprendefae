@@ -27,7 +27,7 @@ con su fórmula · **[supuesto]** nadie lo ha medido y lleva parada de medición
 - Menos de la mitad de las pantallas de una pieza son de tipo Míralo o Haz (B3).
 - Una pantalla tiene más de una idea: su titular necesita una «y» para decirse.
 - Los titulares, leídos en orden y sin el resto, no cuentan la pieza (prueba del hilo, §3.4).
-- Aparece una curva distinta de `cubic-bezier(.3,.9,.4,1)`, o `ease`, o `linear`.
+- Aparece una curva distinta de `cubic-bezier(.3,.9,.4,1)` o de `RESORTE` `cubic-bezier(.34,1.56,.64,1)` (14-nov, ver decisiones), o `ease`, o `linear`.
 - Se anima algo que no sea `transform` u `opacity`, o algo nuevo queda en bucle.
 - Falta la versión de movimiento reducido de cualquier animación.
 - La figura empieza a más de 280 px del tope de la tarjeta a 320 px, o hay más de 40

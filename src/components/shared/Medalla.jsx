@@ -201,6 +201,7 @@ export default function Medalla({ nivel = "base", icono, numero, glifo, obtenida
       width={tamano}
       height={tamano}
       aria-hidden="true"
+      data-medalla={obtenida ? "obtenida" : "pendiente"}
       style={{ display: "block", overflow: "visible", opacity: obtenida ? 1 : 0.55 }}
     >
       <defs>

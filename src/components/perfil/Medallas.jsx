@@ -37,7 +37,7 @@ function Bloque({ nivel, medallas }) {
         </span>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(104px, 1fr))", gap: "14px" }}>
+      <div data-mv-fila style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(104px, 1fr))", gap: "14px" }}>
         {medallas.map((m) => (
           <div key={m.id} style={{ textAlign: "center" }}>
             <div style={{ display: "flex", justifyContent: "center", marginBottom: "8px" }}>
