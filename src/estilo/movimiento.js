@@ -1,4 +1,5 @@
 import { flushSync } from "react-dom";
+import { escucharFP } from "../fp/aviso.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -134,6 +135,27 @@ export const MOVIMIENTOS = {
     ],
     duracion: 300, curva: CURVA, sumar: true,
   },
+  /* La barra de avance crece: se estira hacia arriba y asienta. */
+  avance: {
+    fotogramas: [{ scale: "1" }, { scale: "1.02 1.35", offset: 0.3 }, { scale: ".995 .9", offset: 0.65 }, { scale: "1" }],
+    duracion: 260, curva: CURVA, sumar: true,
+  },
+  /*
+   * Ganar FP: la pastilla se encoge (anticipación), salta estirada y asienta
+   * con un rebote. Es el momento más raro del sitio, así que es el único que
+   * pasa de 300 ms.
+   */
+  ganar: {
+    fotogramas: [
+      { scale: "1", translate: "0 0" },
+      { scale: "1.06 .9", translate: "0 2px", offset: 0.16 },
+      { scale: ".94 1.12", translate: "0 -5px", offset: 0.42 },
+      { scale: "1.04 .96", translate: "0 0", offset: 0.66 },
+      { scale: ".99 1.01", translate: "0 0", offset: 0.84 },
+      { scale: "1", translate: "0 0" },
+    ],
+    duracion: 520, curva: CURVA, sumar: true, celebracion: true,
+  },
   /* Un aviso que cambia (aria-live): llega en arco desde abajo a la izquierda. */
   aviso: {
     fotogramas: [{ opacity: 0, translate: "-6px 8px" }, { opacity: 1, translate: "-1px 1px", offset: 0.6 }, { opacity: 1, translate: "0 0" }],
@@ -189,6 +211,35 @@ function anillo(el, color) {
 }
 
 const COLOR_ACIERTO = "#2A9D8F";
+const COLOR_FP = "#E9C46A";
+
+/* ═══════════ DE UN PUNTO AL SIGUIENTE DENTRO DE UNA ACTIVIDAD ═══════════
+ *
+ * «Siguiente alerta», «Siguiente hecho», «Continuar»… Cada mecánica cambia de
+ * punto a su manera, y antes el punto nuevo aparecía de golpe. Aquí se
+ * reconoce el botón por lo que dice, y el cambio pasa dentro de una
+ * transición de vista limitada a la tarjeta de la actividad: el punto viejo
+ * retrocede y se va a la izquierda (anticipación), el nuevo llega en arco
+ * desde la derecha y se pasa un pelo antes de asentar (follow through). El
+ * resto de la página no se mueve (staging). «Anterior» hace lo mismo al revés.
+ *
+ * Una pieza que ya coreografía su propio paso (la secuencia de Aprender, o
+ * cualquiera marcada con `data-mv-sin-paso`) queda fuera: dos movimientos
+ * encima del mismo cambio se estorban.
+ */
+export const SIGUIENTE = /^(siguiente|continuar|otra |otro |próxim|proxim|seguir|avanzar|pasar a|cerrar turno|ver resultado|ver cómo te fue|terminar|empezar|comenzar)/i;
+export const ANTERIOR = /^(anterior|atrás|atras|regresar)/i;
+const NO_ES_PASO = /google|sesión|cuenta|camino|inicio|tema|materia/i;
+const CAJA_ITEM = "[data-mv-item], [data-partida], section, article";
+
+/** Qué dirección tiene un botón por su texto: "adelante", "atras" o null. */
+export function direccionDePaso(texto) {
+  const t = String(texto ?? "").replace(/\s+/g, " ").trim();
+  if (!t || NO_ES_PASO.test(t)) return null;
+  if (SIGUIENTE.test(t)) return "adelante";
+  if (ANTERIOR.test(t)) return "atras";
+  return null;
+}
 
 /*
  * Cada célula nombró la retroalimentación a su manera: `data-estado`,
@@ -363,6 +414,16 @@ export function instalarMovimiento(doc = globalThis.document) {
         if (el.closest?.("[data-mv-quieto]")) continue;
         const nuevo = el.getAttribute(m.attributeName);
         if (nuevo === m.oldValue) continue;
+        if (m.attributeName === "aria-valuenow") {
+          if (Number(nuevo) > Number(m.oldValue)) encolar(el, "avance");
+          continue;
+        }
+        if (m.attributeName === "data-nodo") {
+          /* Los puntos del avance: el que se completa salta; el que toca, se marca. */
+          if (nuevo === "hecho") encolar(el, "acierto");
+          else if (nuevo === "actual") encolar(el, "elegido");
+          continue;
+        }
         if (m.attributeName.startsWith("data-")) {
           const tipo = tipoDeRetro(m.attributeName, nuevo);
           if (tipo) encolar(el, tipo);
@@ -391,7 +452,55 @@ export function instalarMovimiento(doc = globalThis.document) {
   obs.observe(doc.body ?? doc.documentElement, {
     subtree: true, childList: true, characterData: true,
     attributes: true, attributeOldValue: true,
-    attributeFilter: [...ATRIBUTOS_RETRO, "aria-pressed", "aria-checked", "aria-selected"],
+    attributeFilter: [...ATRIBUTOS_RETRO, "aria-pressed", "aria-checked", "aria-selected", "aria-valuenow", "data-nodo"],
+  });
+
+  /* ── De un punto al siguiente (ver direccionDePaso). ── */
+  const alClic = (e) => {
+    if (e.__mvReenviado || e.defaultPrevented || e.button > 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    if (!doc.startViewTransition || reducido() || enTransicion) return;
+    const boton = e.target?.closest?.("button, [role='button']");
+    if (!boton || boton.disabled || boton.getAttribute("aria-disabled") === "true" || boton.closest("a[href], [data-mv-quieto], [data-mv-sin-paso], [data-secuencia]")) return;
+    const dir = direccionDePaso(boton.getAttribute("aria-label") || boton.textContent);
+    if (!dir) return;
+    const caja = boton.closest(CAJA_ITEM);
+    if (!caja || caja === doc.body) return;
+
+    e.stopImmediatePropagation();
+    e.preventDefault();
+    const raiz = doc.documentElement;
+    const antes = caja.style.viewTransitionName;
+    caja.style.viewTransitionName = "mv-item";
+    raiz.dataset.mvTransicion = `item-${dir}`;
+    enTransicion = true;
+    let hecho = false;
+    const reenviar = () => {
+      if (hecho) return;
+      hecho = true;
+      const otro = new win.MouseEvent("click", { bubbles: true, cancelable: true, view: win, detail: e.detail, clientX: e.clientX, clientY: e.clientY });
+      otro.__mvReenviado = true;
+      try { flushSync(() => boton.dispatchEvent(otro)); } catch { boton.dispatchEvent(otro); }
+    };
+    const fin = () => {
+      enTransicion = false;
+      delete raiz.dataset.mvTransicion;
+      caja.style.viewTransitionName = antes;
+    };
+    let t;
+    try { t = doc.startViewTransition(reenviar); } catch { fin(); reenviar(); return; }
+    t.updateCallbackDone?.catch(() => reenviar());
+    (t.finished ?? Promise.resolve()).then(fin, fin);
+  };
+  doc.addEventListener("click", alClic, true);
+
+  /* ── Ganar FP: la pastilla de la cuenta celebra mientras el número sube. ── */
+  const dejarFP = escucharFP(({ fp } = {}) => {
+    if (!(Number(fp) > 0) || reducido()) return;
+    const pastilla = doc.querySelector("[data-fp-pastilla]");
+    const cuerpo = pastilla?.closest("button") ?? pastilla;
+    if (!cuerpo) return;
+    animar(cuerpo, "ganar");
+    win.setTimeout(() => anillo(cuerpo, COLOR_FP), 200);
   });
 
   /* ── Profundidad: solo con puntero que flota (ratón, lápiz), no con el dedo. ── */
@@ -445,6 +554,8 @@ export function instalarMovimiento(doc = globalThis.document) {
 
   return () => {
     obs.disconnect();
+    doc.removeEventListener("click", alClic, true);
+    dejarFP();
     doc.removeEventListener("pointermove", mover);
     doc.removeEventListener("pointerout", fuera);
     if (marco != null) win.cancelAnimationFrame(marco);
