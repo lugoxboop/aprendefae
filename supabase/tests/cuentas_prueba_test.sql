@@ -35,7 +35,10 @@ insert into auth.users (id, email, encrypted_password, email_confirmed_at,
 values (gen_random_uuid(), 'zzz-real@prueba.local', '', now(), now(), now(),
         '{}'::jsonb, '{}'::jsonb, 'authenticated', 'authenticated'),
        (gen_random_uuid(), 'zzz-tester@prueba.local', '', now(), now(), now(),
-        '{}'::jsonb, '{}'::jsonb, 'authenticated', 'authenticated');
+        '{}'::jsonb, '{}'::jsonb, 'authenticated', 'authenticated'),
+       /* (0160) el docente necesita su cuenta confirmada, entrada con Google */
+       ('00000000-0000-0000-0000-0000000d0c90', 'zzz-doc-prueba@prueba.local', '', now(), now(), now(),
+        '{"provider":"google","providers":["google"]}'::jsonb, '{}'::jsonb, 'authenticated', 'authenticated');
 
 insert into ids(etiqueta, uid)
 select 'real', id from auth.users where email = 'zzz-real@prueba.local'
@@ -63,7 +66,7 @@ union all
 select uid, 'zzz-act-2', 'zzz-materia', 200, 'medio', 'evaluativa', 20, now() from ids where etiqueta = 'test';
 
 select set_config('request.jwt.claims',
-                  json_build_object('sub', gen_random_uuid(),
+                  json_build_object('sub', '00000000-0000-0000-0000-0000000d0c90',
                                     'email', 'zzz-doc-prueba@prueba.local',
                                     'role', 'authenticated')::text,
                   true);
