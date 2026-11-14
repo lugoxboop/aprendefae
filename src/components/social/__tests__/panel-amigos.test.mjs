@@ -33,12 +33,14 @@ test("perfilDeTarjeta pasa especie, pelaje y ojos, y usa user_id como id", () =>
     mascota_especie: "gato",
     mascota_paleta: "negro",
     mascota_ojos: "azul",
+    mascota_puestos: ["gafas"],
   };
   assert.deepEqual(perfilDeTarjeta(t), {
     id: "u_9",
     mascota_especie: "gato",
     mascota_paleta: "negro",
     mascota_ojos: "azul",
+    mascota_puestos: ["gafas"],
   });
 });
 

@@ -46,6 +46,7 @@ export function perfilDeTarjeta(t) {
     mascota_especie: t.mascota_especie,
     mascota_paleta: t.mascota_paleta,
     mascota_ojos: t.mascota_ojos,
+    mascota_puestos: t.mascota_puestos,
   };
 }
 
@@ -128,11 +129,19 @@ function BotonChip({ onClick, children, tono = "neutro", etiqueta }) {
   );
 }
 
-export default function PanelAmigos() {
+export default function PanelAmigos({ onRetar = null }) {
   const { amigos, recibidas, enviadas, cargando, error, solicitar, responder, eliminar } = useAmigos();
   const [apodo, setApodo] = useState("");
   const [aviso, setAviso] = useState(null); // { tipo: "ok"|"error", texto }
   const [enviando, setEnviando] = useState(false);
+
+  const retar = async (userId, apodoAmigo) => {
+    if (!onRetar) return;
+    setAviso(null);
+    const r = await onRetar(userId);
+    if (r?.error) setAviso({ tipo: "error", texto: r.error });
+    else setAviso({ tipo: "ok", texto: `¡Reto enviado a ${apodoAmigo}! Cuando acepte, a estudiar juntos.` });
+  };
 
   const pedir = async (e) => {
     e.preventDefault();
@@ -226,6 +235,11 @@ export default function PanelAmigos() {
         ) : (
           amigos.map((t) => (
             <Fila key={t.amistad_id} tarjeta={t}>
+              {onRetar && (
+                <BotonChip tono="si" etiqueta={`Retar a ${t.apodo}`} onClick={() => retar(t.user_id, t.apodo)}>
+                  Retar
+                </BotonChip>
+              )}
               <BotonChip tono="no" etiqueta={`Quitar a ${t.apodo}`} onClick={() => eliminar(t.amistad_id)}>
                 Quitar
               </BotonChip>
