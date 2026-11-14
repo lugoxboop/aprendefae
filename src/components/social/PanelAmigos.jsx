@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { FAE } from "../../theme.js";
 import AvatarEstudiante from "../avatar/AvatarEstudiante.jsx";
 import { useAmigos } from "../../social/useAmigos.js";
@@ -130,10 +130,31 @@ function BotonChip({ onClick, children, tono = "neutro", etiqueta }) {
 }
 
 export default function PanelAmigos({ onRetar = null }) {
-  const { amigos, recibidas, enviadas, cargando, error, solicitar, responder, eliminar } = useAmigos();
+  const { amigos, recibidas, enviadas, cargando, error, solicitar, responder, eliminar, buscar } = useAmigos();
   const [apodo, setApodo] = useState("");
   const [aviso, setAviso] = useState(null); // { tipo: "ok"|"error", texto }
   const [enviando, setEnviando] = useState(false);
+  const [sugerencias, setSugerencias] = useState([]);
+  const tecleo = useRef(null);
+
+  /*
+   * Sugerencias mientras se escribe, como el buscador de siempre: a partir de
+   * dos letras, y con un respiro (debounce) para no consultar en cada tecla.
+   * No hace falta saber el apodo exacto.
+   */
+  useEffect(() => {
+    const q = apodo.trim();
+    if (tecleo.current) clearTimeout(tecleo.current);
+    if (q.length < 2) {
+      setSugerencias([]);
+      return;
+    }
+    tecleo.current = setTimeout(async () => {
+      const hallados = await buscar(q);
+      setSugerencias(hallados);
+    }, 220);
+    return () => tecleo.current && clearTimeout(tecleo.current);
+  }, [apodo, buscar]);
 
   const retar = async (userId, apodoAmigo) => {
     if (!onRetar) return;
@@ -143,19 +164,24 @@ export default function PanelAmigos({ onRetar = null }) {
     else setAviso({ tipo: "ok", texto: `¡Reto enviado a ${apodoAmigo}! Cuando acepte, a estudiar juntos.` });
   };
 
-  const pedir = async (e) => {
-    e.preventDefault();
+  const pedirA = async (valor) => {
     if (enviando) return;
     setEnviando(true);
     setAviso(null);
-    const r = await solicitar(apodo);
+    const r = await solicitar(valor);
     setEnviando(false);
     if (r.error) {
       setAviso({ tipo: "error", texto: r.error });
       return;
     }
     setApodo("");
-    setAviso({ tipo: "ok", texto: "¡Listo! Le llegó tu solicitud." });
+    setSugerencias([]);
+    setAviso({ tipo: "ok", texto: `¡Listo! Le llegó tu solicitud a ${valor.trim()}.` });
+  };
+
+  const pedir = (e) => {
+    e.preventDefault();
+    pedirA(apodo);
   };
 
   return (
@@ -189,6 +215,44 @@ export default function PanelAmigos({ onRetar = null }) {
           {enviando ? "…" : "Agregar"}
         </BotonChip>
       </form>
+
+      {/* ── Sugerencias mientras se escribe ─────────────────────────────── */}
+      {sugerencias.length > 0 && (
+        <div
+          data-sugerencias
+          role="listbox"
+          aria-label="Sugerencias"
+          style={{
+            marginBottom: "10px",
+            borderRadius: "12px",
+            background: "rgba(13,18,24,0.7)",
+            border: "1px solid rgba(248,249,250,0.12)",
+            overflow: "hidden",
+          }}
+        >
+          {sugerencias.map((s) => (
+            <button
+              key={s.user_id}
+              type="button"
+              role="option"
+              data-sugerencia={s.apodo}
+              onClick={() => pedirA(s.apodo)}
+              style={{
+                display: "flex", alignItems: "center", gap: "10px", width: "100%",
+                padding: "8px 11px", cursor: "pointer", textAlign: "left",
+                background: "transparent", border: "none",
+                borderTop: "1px solid rgba(248,249,250,0.06)",
+              }}
+            >
+              <AvatarEstudiante perfil={perfilDeTarjeta(s)} tamano={32} titulo={`Mascota de ${s.apodo}`} />
+              <span style={{ flex: 1, minWidth: 0, fontFamily: "Sora, sans-serif", fontSize: "14px", fontWeight: 600, color: FAE.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                {s.apodo}
+              </span>
+              <span style={{ fontSize: "12px", fontWeight: 700, color: "#A8B6C8", flexShrink: 0 }} aria-hidden="true">+ Agregar</span>
+            </button>
+          ))}
+        </div>
+      )}
 
       {aviso && (
         <p

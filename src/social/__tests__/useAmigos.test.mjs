@@ -13,17 +13,17 @@ import { mensajeAmistad } from "../useAmigos.js";
  */
 
 const fuenteHook = readFileSync(fileURLToPath(new URL("../useAmigos.js", import.meta.url)), "utf8");
-const migracion = readFileSync(
-  fileURLToPath(new URL("../../../supabase/migrations/0164_amigos.sql", import.meta.url)),
-  "utf8",
-);
+/* Las funciones de amigos viven en la 0164 (amistades) y la 0167 (buscar). */
+const migracion = ["0164_amigos.sql", "0167_amigos_buscar.sql"]
+  .map((f) => readFileSync(fileURLToPath(new URL(`../../../supabase/migrations/${f}`, import.meta.url)), "utf8"))
+  .join("\n");
 
-test("cada rpc que llama el hook existe como función en la 0164", () => {
+test("cada rpc que llama el hook existe como función en la base (0164/0167)", () => {
   const llamadas = [...fuenteHook.matchAll(/supabase\.rpc\("([^"]+)"/g)].map((m) => m[1]);
   assert.ok(llamadas.length >= 4, "el hook llama al menos a las cuatro funciones");
   for (const nombre of new Set(llamadas)) {
     const re = new RegExp(`create or replace function public\\.${nombre}\\b`);
-    assert.match(migracion, re, `la 0164 define ${nombre}`);
+    assert.match(migracion, re, `la base define ${nombre}`);
   }
 });
 
