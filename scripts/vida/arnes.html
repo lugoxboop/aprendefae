@@ -1,0 +1,88 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+*{box-sizing:border-box;margin:0}
+body{background:#0E1B2E;color:#F8F9FA;font:14px/1.4 system-ui;padding:12px}
+.fila{position:relative;background:#1C2939;border-radius:14px;padding:10px 12px;margin-bottom:8px;
+  border-bottom:4px solid #121D2E;display:flex;gap:10px;align-items:center;overflow:hidden}
+.pos{width:28px;height:28px;border-radius:50%;background:#243449;display:grid;place-items:center;font-weight:700}
+.deco{position:absolute;pointer-events:none}
+/* --- candidatas: solo transform/opacity --- */
+@keyframes flota{0%{transform:translate3d(0,0,0)}50%{transform:translate3d(0,-8px,0)}100%{transform:translate3d(0,0,0)}}
+@keyframes gira{to{transform:rotate(360deg)}}
+@keyframes pulso{0%,100%{opacity:.35}50%{opacity:.75}}
+.t-flota{animation:flota 4200ms cubic-bezier(.3,.9,.4,1) infinite}
+.t-gira{animation:gira 9000ms linear infinite}
+.t-pulso{animation:pulso 3000ms ease-in-out infinite}
+/* --- candidatas caras (para demostrar que se caen) --- */
+@keyframes desenfoca{0%,100%{filter:blur(2px)}50%{filter:blur(7px)}}
+@keyframes sombrea{0%,100%{box-shadow:0 0 10px 2px #2A9D8F}50%{box-shadow:0 0 26px 8px #2A9D8F}}
+.t-blur{animation:desenfoca 3000ms ease-in-out infinite}
+.t-shadow{animation:sombrea 3000ms ease-in-out infinite}
+</style></head><body>
+<div id="lista"></div>
+<canvas id="cv" width="320" height="120" style="display:none"></canvas>
+<script>
+const P = new URLSearchParams(location.search);
+const modo = P.get('modo') || 'base';
+const n = parseInt(P.get('n') || '0', 10);
+
+const lista = document.getElementById('lista');
+for (let i=0;i<10;i++){
+  const f=document.createElement('div'); f.className='fila';
+  f.innerHTML='<div class="pos">'+(i+1)+'</div><div style="flex:1">Estudiante '+(i+1)+'</div><div>'+(900-i*37)+' FP</div>';
+  lista.appendChild(f);
+}
+const filas=[...document.querySelectorAll('.fila')];
+
+function svgDeco(clase, extra){
+  const s=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  s.setAttribute('viewBox','0 0 40 40'); s.setAttribute('width','40'); s.setAttribute('height','40');
+  s.setAttribute('aria-hidden','true');
+  s.innerHTML='<g fill="none" stroke="#2A9D8F" stroke-width="1.5" opacity=".5">'+
+    '<polygon points="20,4 36,32 4,32"/><polygon points="20,4 20,32 4,32"/><circle cx="20" cy="20" r="14"/></g>';
+  s.className.baseVal='deco '+clase+(extra?' '+extra:'');
+  return s;
+}
+function colocar(k, clase, extra){
+  for(let i=0;i<k;i++){
+    const d=svgDeco(clase, extra);
+    d.style.right=(6+i*14)+'px'; d.style.top=(2+(i%3)*10)+'px';
+    (filas[i%filas.length]).appendChild(d);
+  }
+}
+if (modo==='css')   colocar(n,'t-flota');
+if (modo==='css3')  { colocar(Math.ceil(n/3),'t-flota'); colocar(Math.ceil(n/3),'t-gira'); colocar(Math.floor(n/3),'t-pulso'); }
+if (modo==='blur')  colocar(n,'t-flota','t-blur');
+if (modo==='shadow')colocar(n,'t-flota','t-shadow');
+function colocarEnvoltura(k, clase){
+  for(let i=0;i<k;i++){
+    const w=document.createElement('div'); w.className='deco '+clase;
+    w.style.right=(6+i*14)+'px'; w.style.top=(2+(i%3)*10)+'px'; w.style.willChange='transform';
+    const s=svgDeco(''); s.style.position='static';
+    w.appendChild(s); (filas[i%filas.length]).appendChild(w);
+  }
+}
+if (modo==='env')  colocarEnvoltura(n,'t-flota');
+if (modo==='env3') { colocarEnvoltura(Math.ceil(n/2),'t-flota'); colocarEnvoltura(Math.floor(n/2),'t-gira'); }
+if (modo==='pausa') { colocarEnvoltura(n,'t-flota'); document.querySelectorAll('.deco').forEach(d=>d.style.animationPlayState='paused'); }
+if (modo==='canvas'){
+  const cv=document.getElementById('cv'); cv.style.display='block';
+  const ctx=cv.getContext('2d'); let t=0;
+  (function loop(){ t+=.016; ctx.clearRect(0,0,320,120);
+    for(let i=0;i<n;i++){ ctx.beginPath(); ctx.strokeStyle='rgba(42,157,143,.5)'; ctx.lineWidth=1.5;
+      const x=20+i*30+Math.sin(t+i)*8, y=60+Math.cos(t*.7+i)*20;
+      ctx.moveTo(x,y-12); ctx.lineTo(x+12,y+10); ctx.lineTo(x-12,y+10); ctx.closePath(); ctx.stroke(); }
+    requestAnimationFrame(loop); })();
+}
+
+// medición: intervalos de cuadro durante DUR ms
+window.__medir = (DUR)=>new Promise(res=>{
+  const t=[]; let last=performance.now(); const fin=last+DUR;
+  (function f(now){ t.push(now-last); last=now; if(now<fin) requestAnimationFrame(f);
+    else { t.shift(); t.sort((a,b)=>a-b);
+      res({cuadros:t.length, fps:+(1000/(t.reduce((a,b)=>a+b,0)/t.length)).toFixed(1),
+           p50:+t[Math.floor(t.length*.5)].toFixed(1), p95:+t[Math.floor(t.length*.95)].toFixed(1),
+           malos:t.filter(x=>x>33).length}); } })(last);
+});
+</script></body></html>
