@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import AsiSeJuega from "./AsiSeJuega.jsx";
 import { ASI_SE_JUEGA } from "../../../data/asiSeJuega.js";
 import { yaLaVio, marcarVista } from "../../../hacer/asiSeJuega.js";
+import { conTransicion } from "../../../estilo/movimiento.js";
 
 /*
  * ═══════════ «ASÍ SE JUEGA» DELANTE DE LA PARTIDA ═══════════
@@ -40,8 +41,8 @@ export default function JuegoConTutorial({
   const [enfocar, setEnfocar] = useState(false);
   const siguiente = () => {
     marcarVista(juego.id, usuarioId);
-    setViendo(false);
-    setEnfocar(true);
+    /* Del ejemplo a la partida: la pantalla avanza (sistema de movimiento). */
+    conTransicion(() => { setViendo(false); setEnfocar(true); }, "avanza");
   };
   useEffect(() => {
     if (!enfocar || viendo) return;
@@ -54,7 +55,7 @@ export default function JuegoConTutorial({
   }, [enfocar, viendo]);
 
   const abrir = () => {
-    setViendo(true);
+    conTransicion(() => setViendo(true), "abre");
     try { globalThis.scrollTo?.(0, 0); } catch { /* sin ventana, nada que subir */ }
   };
 

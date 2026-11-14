@@ -6,6 +6,7 @@ import DecoracionCamino from "./DecoracionCamino.jsx";
 import PreviaActividad from "./previas/PreviaActividad.jsx";
 import { bloquesDe } from "../../hacer/bloques.js";
 import { registrarApertura } from "./contenidoNuevo.jsx";
+import { conTransicion } from "../../estilo/movimiento.js";
 
 /*
  * Camino de actividades para la mitad "Hacer" de cualquier tema.
@@ -451,7 +452,9 @@ const etiquetaAria = (nodo, marcas, prefijo = "") =>
  * sale la geometría, que vale para cualquier materia: así una vista nueva no
  * tiene que saber nada de esto para verse bien.
  */
-export default function CaminoHacer({ nodos = [], onAbrir, vacio, especial = null, resaltado = null, marcas = null, porBloques = false, tema = null }) {
+export default function CaminoHacer({ nodos = [], onAbrir: alAbrir, vacio, especial = null, resaltado = null, marcas = null, porBloques = false, tema = null }) {
+  /* Abrir una actividad acerca la pantalla (sistema de movimiento: «abre»). */
+  const onAbrir = alAbrir ? (id) => conTransicion(() => alAbrir(id), "abre") : undefined;
   const n = nodos.length;
   const caja = useRef(null);
 

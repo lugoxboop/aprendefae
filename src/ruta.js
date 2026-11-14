@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { conTransicion, hayTransicion } from "./estilo/movimiento.js";
 
 /*
  * La vista del sitio, en la URL.
@@ -168,6 +169,15 @@ export function interpretar(crudo) {
  * `reemplazar: true` cambia la ruta SIN empujar entrada, para los casos en que
  * volver atrás debería saltarse el estado intermedio.
  */
+/*
+ * Jakob: ir a algo más hondo (una materia → un tema) avanza; ir a algo más
+ * arriba (al inicio, al índice) vuelve. Se cuenta por los tramos de la ruta.
+ */
+const hondura = (h) => (h || "").split("/").filter((t) => t && t !== "#").length;
+export function tipoDeCambio(desde, hacia) {
+  return !hacia || hondura(hacia) < hondura(desde) ? "vuelve" : "avanza";
+}
+
 export function useRuta() {
   const [ruta, setRuta] = useState(() => interpretar(window.location.hash));
 
@@ -185,7 +195,21 @@ export function useRuta() {
      * Los dos apuntan a la misma función y esta lee la URL, así que dispararse
      * dos veces no hace nada: el estado queda igual.
      */
-    const alCambiar = () => setRuta(interpretar(window.location.hash));
+    /*
+     * Con el sistema de movimiento: si el cambio lo empezó `navegar`, ya va
+     * dentro de su transición y aquí no se hace nada (pintar antes de la foto
+     * de la pantalla vieja la estropearía). Si lo empezó el botón atrás o
+     * adelante del navegador, la dirección sale de la hondura de las rutas.
+     */
+    let previo = window.location.hash;
+    const alCambiar = () => {
+      const hash = window.location.hash;
+      const desde = previo;
+      previo = hash;
+      if (hayTransicion()) return;
+      const nueva = interpretar(hash);
+      conTransicion(() => setRuta(nueva), tipoDeCambio(desde, hash));
+    };
     window.addEventListener("hashchange", alCambiar);
     window.addEventListener("popstate", alCambiar);
     return () => {
@@ -203,6 +227,8 @@ export function useRuta() {
       setRuta(interpretar(destino));
       return;
     }
+
+    const tipo = tipoDeCambio(actual, destino);
 
     if (reemplazar) {
       /*
@@ -222,13 +248,14 @@ export function useRuta() {
        * pushState sí la quita. Empuja entrada igual, así que atrás funciona.
        */
       window.history.pushState(null, "", window.location.pathname);
-      setRuta(RUTA_INICIAL);
+      conTransicion(() => setRuta(RUTA_INICIAL), tipo);
       return;
     }
 
     /* Asignar el hash empuja la entrada y dispara hashchange, que sincroniza. */
+    const nueva = interpretar(destino);
+    conTransicion(() => setRuta(nueva), tipo);
     window.location.hash = destino;
-    setRuta(interpretar(destino));
   }, []);
 
   return [ruta, navegar];

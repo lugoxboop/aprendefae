@@ -1,0 +1,171 @@
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * MOVIMIENTO — la hoja del sistema (ver src/estilo/movimiento.js, que explica
+ * los veinte principios y dónde vive cada uno).
+ *
+ * Todo aquí va con `:where(...)`, que no pesa nada: cualquier estilo propio de
+ * una pieza le gana a esta hoja. Es un suelo, no un techo.
+ *
+ * Solo `opacity` y las propiedades sueltas `scale`, `translate`, `rotate`:
+ * se suman al `transform` de cada elemento en vez de reemplazarlo.
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+:root {
+  --mv-curva: cubic-bezier(.3, .9, .4, 1);     /* slow in & slow out */
+  --mv-resorte: cubic-bezier(.34, 1.56, .64, 1); /* follow through: se pasa y vuelve */
+  --mv-rapido: 120ms;
+  --mv-base: 220ms;
+  --mv-entrada: 280ms;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+
+  /* ═══════════ 1. PULSAR: squash al tocar, follow through al soltar ═══════════
+   *
+   * Lo más usado del sitio, así que es lo que MENOS se mueve (frecuencia de
+   * uso): un 4 % hacia adentro, un poco más aplastado que estrecho. Al
+   * soltar, la curva resorte lo pasa un pelo de largo y lo asienta. Empieza en
+   * el mismo cuadro del toque (Doherty).
+   *
+   * No entra lo que se arrastra (`draggable`, o lo que maneja el toque con
+   * `touch-action`): una escala durante el arrastre movería las medidas con
+   * las que la mecánica calcula dónde cae la ficha.
+   */
+  :where(button, [role="button"], summary, a[data-boton]) {
+    transition: scale 200ms var(--mv-resorte), translate 200ms var(--mv-resorte);
+  }
+  :where(button:not(:disabled):not([aria-disabled="true"]):not([draggable="true"]):not([style*="touch-action"]),
+         [role="button"]:not([aria-disabled="true"]):not([draggable="true"]):not([style*="touch-action"]),
+         summary, a[data-boton]):active {
+    scale: .97 .95;
+    transition-duration: 90ms;
+  }
+
+  /* ═══════════ 2. TRANSICIONES DE PANTALLA (Jakob · anticipación · arcos) ═══════════
+   *
+   * La foto de la pantalla que se va retrocede y se apaga en 160 ms; la nueva
+   * entra en 280 ms en arco: el desplazamiento vertical se acaba antes que el
+   * horizontal, así que el camino es una curva y no una diagonal.
+   * Avanzar entra desde la derecha y volver desde la izquierda, como en el
+   * celular. Abrir una actividad acerca; cerrarla aleja.
+   */
+  ::view-transition-old(root) { animation: mv-vt-sale 160ms var(--mv-curva) both; }
+  ::view-transition-new(root) { animation: mv-vt-entra 280ms var(--mv-curva) 40ms both; }
+  :root[data-mv-transicion="vuelve"]::view-transition-old(root) { animation-name: mv-vt-sale-der; }
+  :root[data-mv-transicion="vuelve"]::view-transition-new(root) { animation-name: mv-vt-entra-izq; }
+  :root[data-mv-transicion="abre"]::view-transition-old(root) { animation: mv-vt-abre-sale 180ms var(--mv-curva) both; }
+  :root[data-mv-transicion="abre"]::view-transition-new(root) { animation: mv-vt-abre-entra 300ms var(--mv-curva) 30ms both; }
+  :root[data-mv-transicion="cierra"]::view-transition-old(root) { animation: mv-vt-cierra-sale 180ms var(--mv-curva) both; }
+  :root[data-mv-transicion="cierra"]::view-transition-new(root) { animation: mv-vt-cierra-entra 280ms var(--mv-curva) 30ms both; }
+
+  /* El control de cuenta no viaja con la página: se queda quieto en su esquina. */
+  ::view-transition-group(fae-cuenta) { animation-duration: 0s; }
+
+  /* Mientras la foto se anima, la vista no se funde por debajo otra vez. */
+  :root[data-mv-transicion] .fae-vista-entra { animation: none; }
+
+  /* ═══════════ 3. ENTRAR A UNA ACTIVIDAD (staging · arcos · pose to pose) ═══════════
+   *
+   * El encabezado de una actividad se arma en orden de lectura: primero el
+   * título, luego la consigna, luego el resto, 60 ms uno detrás de otro y en
+   * arco. El ojo va a una cosa a la vez.
+   *
+   * Con relleno `backwards`: antes de empezar se ve el primer fotograma y al
+   * terminar el elemento vuelve a sus propios estilos, así la animación no se
+   * queda «agarrada» a su escala ni a su opacidad.
+   */
+  :where([data-encabezado], [data-asj-cuadro]) > * {
+    animation: mv-sube-arco var(--mv-entrada) var(--mv-curva) backwards;
+  }
+  :where([data-encabezado], [data-asj-cuadro]) > :nth-child(2) { animation-delay: 60ms; }
+  :where([data-encabezado], [data-asj-cuadro]) > :nth-child(3) { animation-delay: 120ms; }
+  :where([data-encabezado], [data-asj-cuadro]) > :nth-child(4) { animation-delay: 180ms; }
+  :where([data-encabezado], [data-asj-cuadro]) > :nth-child(n+5) { animation-delay: 240ms; }
+
+  /* «Así se juega»: el botón para empezar llega el último, con un rebote. */
+  :where([data-asj-siguiente]) { animation: mv-aterriza 360ms var(--mv-curva) 260ms backwards; }
+
+  /* ═══════════ 4. SALIR DE UNA ACTIVIDAD: el resumen (exageración · squash) ═══════════
+   *
+   * Es el momento raro de la partida, así que es el que más se mueve. La
+   * tarjeta se encoge un instante antes de abrirse (anticipación) y se pasa
+   * de largo al llegar; las cifras caen y se aplastan al tocar suelo; el
+   * mensaje y los botones llegan después, en ese orden.
+   */
+  :where([data-pantalla-resumen]) { animation: mv-anticipa-abre 380ms var(--mv-curva) backwards; }
+  :where([data-pantalla-resumen]) h3 { animation: mv-sube-arco var(--mv-entrada) var(--mv-curva) 90ms backwards; }
+  :where([data-pantalla-resumen] [data-cifra]) { animation: mv-aterriza 420ms var(--mv-curva) 170ms backwards; }
+  :where([data-pantalla-resumen] [data-cifra]) + [data-cifra] { animation-delay: 250ms; }
+  :where([data-pantalla-resumen]) [data-recuadro] { animation: mv-sube-arco var(--mv-entrada) var(--mv-curva) 330ms backwards; }
+  :where([data-pantalla-resumen]) [data-volver] { animation: mv-sube-arco var(--mv-entrada) var(--mv-curva) 410ms backwards; }
+  :where([data-pantalla-resumen]) [data-repetir] { animation: mv-sube-arco var(--mv-entrada) var(--mv-curva) 470ms backwards; }
+
+  /* ═══════════ 5. FILAS QUE ENTRAN (Miller · Hick) ═══════════
+   *
+   * Cualquier lista marcada con data-mv-fila entra escalonada, pero solo los
+   * siete primeros llevan retraso propio: del octavo en adelante entran
+   * juntos con el séptimo. Una fila de treinta no hace esperar a nadie.
+   */
+  :where([data-mv-fila]) > * { animation: mv-sube-arco var(--mv-entrada) var(--mv-curva) backwards; }
+  :where([data-mv-fila]) > :nth-child(2) { animation-delay: 45ms; }
+  :where([data-mv-fila]) > :nth-child(3) { animation-delay: 90ms; }
+  :where([data-mv-fila]) > :nth-child(4) { animation-delay: 135ms; }
+  :where([data-mv-fila]) > :nth-child(5) { animation-delay: 180ms; }
+  :where([data-mv-fila]) > :nth-child(6) { animation-delay: 225ms; }
+  :where([data-mv-fila]) > :nth-child(n+7) { animation-delay: 270ms; }
+
+  /* ═══════════ 6. PROFUNDIDAD (solid drawing) ═══════════
+   * El giro lo pone movimiento.js en `rotate`; aquí, que el giro sea en 3D y
+   * que la cara de atrás no se vea al inclinarse.
+   */
+  :where(.fae-card, [data-accesorio], [data-medalla], [data-mv-relieve]) { transform-style: preserve-3d; }
+}
+
+/* ═══════════ 7. ÁREAS DE TOQUE MÁS GRANDES QUE EL DIBUJO (Fitts) ═══════════
+ * Los botones de volver y cerrar suelen ser un círculo de 36 px en una
+ * esquina. Su zona de toque crece 8 px por cada lado sin que crezca el
+ * dibujo. No depende del movimiento: va siempre.
+ */
+:where(button[aria-label^="Volver"], button[aria-label^="Cerrar"], button[aria-label^="Atrás"], button[data-volver-circulo]) {
+  position: relative;
+}
+:where(button[aria-label^="Volver"], button[aria-label^="Cerrar"], button[aria-label^="Atrás"], button[data-volver-circulo])::after {
+  content: "";
+  position: absolute;
+  inset: -8px;
+  border-radius: 999px;
+}
+
+/* ═══════════ LOS FOTOGRAMAS CLAVE ═══════════ */
+
+@keyframes mv-sube-arco {
+  0%   { opacity: 0; translate: -6px 14px; }
+  55%  { opacity: 1; translate: -2px 1px; }
+  100% { opacity: 1; translate: 0 0; }
+}
+@keyframes mv-aterriza {
+  0%   { opacity: 0; translate: 0 -18px; scale: .96 1.06; }
+  55%  { opacity: 1; translate: 0 0; scale: 1.06 .92; }
+  78%  { scale: .98 1.03; }
+  100% { opacity: 1; translate: 0 0; scale: 1; }
+}
+@keyframes mv-anticipa-abre {
+  0%   { opacity: 0; scale: .9; }
+  20%  { opacity: .6; scale: .88; }
+  70%  { opacity: 1; scale: 1.015; }
+  100% { opacity: 1; scale: 1; }
+}
+@keyframes mv-vt-sale      { to { opacity: 0; translate: -18px 0; scale: .985; } }
+@keyframes mv-vt-entra     { 0% { opacity: 0; translate: 26px 12px; } 50% { opacity: 1; translate: 8px 0; } 100% { opacity: 1; translate: 0 0; } }
+@keyframes mv-vt-sale-der  { to { opacity: 0; translate: 18px 0; scale: .985; } }
+@keyframes mv-vt-entra-izq { 0% { opacity: 0; translate: -26px 12px; } 50% { opacity: 1; translate: -8px 0; } 100% { opacity: 1; translate: 0 0; } }
+@keyframes mv-vt-abre-sale  { to { opacity: 0; scale: 1.04; } }
+@keyframes mv-vt-abre-entra { 0% { opacity: 0; scale: .94; translate: 0 14px; } 60% { opacity: 1; scale: 1.008; translate: 0 0; } 100% { opacity: 1; scale: 1; } }
+@keyframes mv-vt-cierra-sale  { to { opacity: 0; scale: .95; translate: 0 10px; } }
+@keyframes mv-vt-cierra-entra { 0% { opacity: 0; scale: 1.03; } 100% { opacity: 1; scale: 1; } }
+
+/* Con movimiento reducido, ninguna transición de pantalla: el cambio es inmediato. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+}

@@ -5,6 +5,7 @@ import FiguraFacetada, { TAMANO as TAMANO_FIGURA } from "./FiguraFacetada.jsx";
 import { useAuthOpcional } from "../../auth/AuthProvider.jsx";
 import EstrellasActividad from "../opinion/EstrellasActividad.jsx";
 import { escucharFP } from "../../fp/aviso.js";
+import { conTransicion } from "../../estilo/movimiento.js";
 import {
   usaPantallaResumen, resumenDe, formatoDe, partidaValida, decidir, anunciarPartida,
   ROTULO_BIEN, ROTULO_PUNTOS, ROTULO_RESULTADO, NOTA_REPETICION,
@@ -127,7 +128,8 @@ export function useResumenDePartida(materiaId, celebrando = false) {
     partida: partida && partida.actividadId === actividadId ? partida : null,
     celebrando,
     limpiar,
-    onVolver: () => { limpiar(); onVolver?.(); },
+    /* Salir de la actividad aleja la pantalla (sistema de movimiento: «cierra»). */
+    onVolver: () => conTransicion(() => { limpiar(); onVolver?.(); }, "cierra"),
   });
 
   return { registrar, limpiar, contexto };
