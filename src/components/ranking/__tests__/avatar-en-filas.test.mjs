@@ -111,7 +111,8 @@ test("con la pantalla llena hay una mascota por fila: 30 + 30 + 12", async () =>
   try {
     const mascotas = [...m.caja.querySelectorAll("svg[data-mascota]")];
     assert.equal(mascotas.length, 30 + 30 + 12, "dos rankings de 30 y un podio de 12");
-    for (const svg of mascotas) assert.ok(svg.querySelector("circle"), "y cada una lleva dibujo dentro");
+    // Las dibujadas por código llevan círculos; las ilustradas, trazos (path).
+    for (const svg of mascotas) assert.ok(svg.querySelector("circle, path, ellipse"), "y cada una lleva dibujo dentro");
   } finally { m.desmontar(); }
 });
 
