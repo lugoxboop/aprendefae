@@ -306,6 +306,30 @@ export function AuthProvider({ children }) {
     [session, aplicarPerfil],
   );
 
+  /* Comprar un accesorio de la mascota (0165). Descuenta cristales en la base. */
+  const comprarAccesorio = useCallback(
+    async (clave) => {
+      if (!supabase || !session) return { error: "Sin sesión activa." };
+      const { data, error } = await supabase.rpc("mascota_accesorio_comprar", { p_clave: clave });
+      if (error) return { error: error.message };
+      aplicarPerfil(data);
+      return { data };
+    },
+    [session, aplicarPerfil],
+  );
+
+  /* Poner o quitar un accesorio ya comprado (0165). No cuesta cristales. */
+  const equiparAccesorio = useCallback(
+    async (clave, poner) => {
+      if (!supabase || !session) return { error: "Sin sesión activa." };
+      const { data, error } = await supabase.rpc("mascota_accesorio_equipar", { p_clave: clave, p_poner: Boolean(poner) });
+      if (error) return { error: error.message };
+      aplicarPerfil(data);
+      return { data };
+    },
+    [session, aplicarPerfil],
+  );
+
   const apodoDisponible = useCallback(async (nickname) => {
     if (!supabase) return true;
     const { data, error } = await supabase.rpc("nickname_disponible", {
@@ -339,13 +363,15 @@ export function AuthProvider({ children }) {
       elegirMascota,
       personalizarMascota,
       cambiarOjos,
+      comprarAccesorio,
+      equiparAccesorio,
       guardarPerfil,
       aplicarPerfil,
       refrescarPerfil,
       apodoDisponible,
       cerrarSesion,
     }),
-    [cargando, leyendoPerfil, session, perfil, errorPerfil, necesitaApodo, necesitaMascota, motivoLogin, pedirCuenta, cerrarDialogo, crearPerfil, elegirMascota, personalizarMascota, cambiarOjos, guardarPerfil, aplicarPerfil, refrescarPerfil, apodoDisponible, cerrarSesion]
+    [cargando, leyendoPerfil, session, perfil, errorPerfil, necesitaApodo, necesitaMascota, motivoLogin, pedirCuenta, cerrarDialogo, crearPerfil, elegirMascota, personalizarMascota, cambiarOjos, comprarAccesorio, equiparAccesorio, guardarPerfil, aplicarPerfil, refrescarPerfil, apodoDisponible, cerrarSesion]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -3,18 +3,14 @@ import { ChevronLeft } from "lucide-react";
 import { FAE } from "../../theme.js";
 import Logo from "../Logo.jsx";
 import IconoCristal from "../shared/IconoCristal.jsx";
-import Avatar from "../avatar/Avatar.jsx";
+import AvatarEstudiante from "../avatar/AvatarEstudiante.jsx";
+import Mascota from "../Mascota.jsx";
 import Entrada, { EstiloEntrada, entrada } from "../shared/Entrada.jsx";
 import { useAuth } from "../../auth/AuthProvider.jsx";
 import { marcarVisitada } from "../../tienda/novedades.js";
+import { mascotaDe, ACCESORIOS_META } from "../../mascota/mascotas.js";
 import {
-  combinacionDe, ETIQUETA_NIVEL, NIVELES, NOMBRE_NIVEL, NOMBRE_FORMA, NOMBRE_PALETA,
-  PALETA_COMPARACION, PALETTES, leyenda,
-} from "../../avatar/generador.js";
-import {
-  FORMAS_COMPRABLES, FUENTES, PALETAS_COMPRABLES,
-  comprarNivel, comprarPieza, estadoDeNivel, estadoDePieza, faltanPara, faltanParaPieza,
-  precioDe, precioDePieza, saldoDe,
+  FUENTES, comprarAccesorio, estadoDeAccesorio, faltanParaAccesorio, precioDeAccesorio, saldoDe,
 } from "../../cristales/cristales.js";
 
 /*
@@ -176,64 +172,27 @@ function Celda({ figura, titulo, pie, estado, children, ...resto }) {
   );
 }
 
-function CeldaNivel({ nivel, perfil, onComprar, comprando }) {
-  const { forma, paleta } = combinacionDe(perfil);
-  /* El I no se compra: es de todos desde el primer día. */
-  const estado = nivel === 1 ? "comprado" : estadoDeNivel(perfil, nivel);
+/*
+ * La celda de un accesorio. Arriba va la MASCOTA DEL ESTUDIANTE con ese
+ * accesorio puesto: se vende para su mascota, así que se enseña sobre ella —no
+ * un icono suelto— para que vea exactamente cómo le queda antes de comprar.
+ */
+function CeldaAccesorio({ meta, perfil, onComprar, comprando }) {
+  const estado = estadoDeAccesorio(perfil, meta.id);
   const alcanza = estado === "alcanzable";
+  const { especie, paleta, ojos } = mascotaDe(perfil);
   return (
     <Celda
-      data-nivel={nivel}
+      data-accesorio={meta.id}
       estado={estado}
-      figura={<Avatar forma={forma} paleta={paleta} nivel={nivel} tamano={72} />}
-      titulo={`${ETIQUETA_NIVEL(nivel)} · ${NOMBRE_NIVEL[nivel]}`}
+      figura={<Mascota especie={especie} paleta={paleta} ojos={ojos} puestos={[meta.id]} tamano={72} />}
+      titulo={meta.nombre}
       pie={estado === "comprado"
         ? <YaEsTuyo />
-        : <Precio precio={precioDe(nivel)} faltan={faltanPara(perfil, nivel)} alcanza={alcanza} />}
+        : <Precio precio={precioDeAccesorio(meta.id)} faltan={faltanParaAccesorio(perfil, meta.id)} alcanza={alcanza} />}
     >
       {estado !== "comprado" && (
-        <Boton data-comprar={nivel} alcanza={alcanza} ocupado={comprando === nivel} onClick={() => onComprar(nivel)} />
-      )}
-    </Celda>
-  );
-}
-
-/*
- * La celda de una pieza. Lo que se enseña arriba depende de qué se vende:
- *
- *   forma    la figura en la paleta de COMPARACIÓN, el gris de las
- *            miniaturas del selector. Se vende una geometría, no un color, y
- *            pintarla en teal haría creer que el teal viene incluido.
- *   paleta   solo el degradado, sin figura. Al revés, por la misma razón.
- */
-function CeldaPieza({ tipo, clave, perfil, onComprar, comprando }) {
-  const estado = estadoDePieza(perfil, tipo, clave);
-  const alcanza = estado === "alcanzable";
-  const id = `${tipo}-${clave}`;
-  return (
-    <Celda
-      data-pieza={id}
-      estado={estado}
-      figura={tipo === "forma" ? (
-        <Avatar forma={clave} paleta={PALETA_COMPARACION} nivel={2} tamano={72} />
-      ) : (
-        <span
-          aria-hidden="true"
-          data-muestra={clave}
-          style={{
-            width: "66px", height: "66px", borderRadius: "18px", display: "block",
-            background: `linear-gradient(135deg, ${PALETTES[clave].c1} 0%, ${PALETTES[clave].c2} 100%)`,
-            border: "1px solid rgba(248,249,250,0.14)",
-          }}
-        />
-      )}
-      titulo={tipo === "forma" ? NOMBRE_FORMA[clave] : NOMBRE_PALETA[clave]}
-      pie={estado === "comprado"
-        ? <YaEsTuyo genero="a" />
-        : <Precio precio={precioDePieza(tipo, clave)} faltan={faltanParaPieza(perfil, tipo, clave)} alcanza={alcanza} />}
-    >
-      {estado !== "comprado" && (
-        <Boton data-comprar-pieza={id} alcanza={alcanza} ocupado={comprando === id} onClick={() => onComprar(tipo, clave)} />
+        <Boton data-comprar-accesorio={meta.id} alcanza={alcanza} ocupado={comprando === meta.id} onClick={() => onComprar(meta.id)} />
       )}
     </Celda>
   );
@@ -263,7 +222,7 @@ function Fuente({ fuente }) {
 
 /* `onComprar` es inyectable por la misma razón que `onGuardar` en el selector:
  * la compra de verdad va contra la base y la pantalla se prueba sin ella. */
-export default function TiendaView({ onBack, onComprar = comprarNivel, onComprarPieza = comprarPieza }) {
+export default function TiendaView({ onBack, onComprarAccesorio = comprarAccesorio }) {
   const { perfil, session, pedirCuenta, aplicarPerfil, refrescarPerfil } = useAuth();
   const [comprando, setComprando] = useState(null);
   const [error, setError] = useState(null);
@@ -292,25 +251,14 @@ export default function TiendaView({ onBack, onComprar = comprarNivel, onComprar
     if (session) marcarVisitada(session.user?.id, perfil);
   }, [session, perfil]);
 
-  const comprar = async (nivel) => {
-    setComprando(nivel);
+  const comprarElAccesorio = async (clave) => {
+    setComprando(clave);
     setError(null);
-    const { perfil: fila, error: err } = (await onComprar(nivel)) ?? {};
+    const { perfil: fila, error: err } = (await onComprarAccesorio(clave)) ?? {};
     setComprando(null);
     if (err) setError(err);
     else if (fila) aplicarPerfil(fila);
   };
-
-  const comprarLaPieza = async (tipo, clave) => {
-    setComprando(`${tipo}-${clave}`);
-    setError(null);
-    const { perfil: fila, error: err } = (await onComprarPieza(tipo, clave)) ?? {};
-    setComprando(null);
-    if (err) setError(err);
-    else if (fila) aplicarPerfil(fila);
-  };
-
-  const combo = combinacionDe(perfil);
 
   return (
     <div
@@ -383,11 +331,11 @@ export default function TiendaView({ onBack, onComprar = comprarNivel, onComprar
                   background: "linear-gradient(135deg, rgba(42,157,143,0.14) 0%, rgba(29,53,87,0.55) 60%)",
                 }}
               >
-                <Avatar perfil={perfil} tamano={84} />
+                <AvatarEstudiante perfil={perfil} tamano={84} />
                 <div style={{ minWidth: 0 }}>
-                  <p style={ETIQUETA}>Tu avatar</p>
+                  <p style={ETIQUETA}>Tu mascota</p>
                   <p style={{ fontFamily: "Sora, sans-serif", fontWeight: 600, fontSize: "14.5px", margin: "0 0 10px", lineHeight: 1.3 }}>
-                    {leyenda(combo)}
+                    {perfil.mascota_nombre || "Tu mascota"}
                   </p>
                   <span data-saldo style={{ display: "inline-flex", alignItems: "center", gap: "7px" }}>
                     <IconoCristal tamano={20} />
@@ -441,38 +389,15 @@ export default function TiendaView({ onBack, onComprar = comprarNivel, onComprar
               </ul>
             </Entrada>
 
-            {/* ── los cuatro niveles, el I incluido ── */}
+            {/* ── los accesorios para la mascota ── */}
             <Entrada orden={3} modo="sube">
-              <h2 style={RUBRO}>NIVEL DE DETALLE</h2>
+              <h2 style={RUBRO}>ACCESORIOS</h2>
               <p style={PIE_RUBRO}>
-                Cuánto se dibuja tu avatar. Cada nivel suma algo al anterior y se queda para siempre, también
-                si cambias de forma o de paleta.
+                Para tu mascota. Lo que compres es tuyo para siempre; se lo pones y se lo quitas desde «Mi avatar».
               </p>
-              <div data-niveles style={{ ...REJILLA, marginBottom: "26px" }}>
-                {NIVELES.map((n) => (
-                  <CeldaNivel key={n} nivel={n} perfil={perfil} onComprar={comprar} comprando={comprando} />
-                ))}
-              </div>
-            </Entrada>
-
-            {/* ── las formas ── */}
-            <Entrada orden={4} modo="sube">
-              <h2 style={RUBRO}>FORMAS</h2>
-              <p style={PIE_RUBRO}>Geometrías nuevas. Las cinco de siempre siguen siendo tuyas y no se compran.</p>
-              <div data-formas style={{ ...REJILLA, marginBottom: "26px" }}>
-                {FORMAS_COMPRABLES.map((f) => (
-                  <CeldaPieza key={f} tipo="forma" clave={f} perfil={perfil} onComprar={comprarLaPieza} comprando={comprando} />
-                ))}
-              </div>
-            </Entrada>
-
-            {/* ── las paletas ── */}
-            <Entrada orden={5} modo="sube">
-              <h2 style={RUBRO}>PALETAS</h2>
-              <p style={PIE_RUBRO}>Los dos pares de color que faltaban. Van con cualquier forma y con cualquier nivel.</p>
-              <div data-paletas style={{ ...REJILLA, marginBottom: "30px" }}>
-                {PALETAS_COMPRABLES.map((p) => (
-                  <CeldaPieza key={p} tipo="paleta" clave={p} perfil={perfil} onComprar={comprarLaPieza} comprando={comprando} />
+              <div data-accesorios style={{ ...REJILLA, marginBottom: "30px" }}>
+                {ACCESORIOS_META.map((a) => (
+                  <CeldaAccesorio key={a.id} meta={a} perfil={perfil} onComprar={comprarElAccesorio} comprando={comprando} />
                 ))}
               </div>
             </Entrada>

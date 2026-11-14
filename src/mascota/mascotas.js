@@ -110,6 +110,19 @@ export const ACCESORIOS = {
 export const IDS_ACCESORIO = Object.keys(ACCESORIOS);
 
 /*
+ * Los accesorios de la Tienda, con su nombre y en el orden en que se muestran.
+ * El precio vive en cristales.js (PRECIO_ACCESORIO) y en la 0165; aquí solo el
+ * nombre para pintarlos. Si se añade uno, va aquí y en los dos sitios del precio.
+ */
+export const ACCESORIOS_META = [
+  { id: "gorro", nombre: "Gorro" },
+  { id: "gafas", nombre: "Gafas" },
+  { id: "bufanda", nombre: "Bufanda" },
+  { id: "mono", nombre: "Moño" },
+  { id: "bigote", nombre: "Bigote" },
+];
+
+/*
  * Las partes propias de cada especie, en función del color. Las orejas y las
  * sombras salen del tinte; los rasgos que NO son pelo —el rosa de la oreja del
  * gato, el antifaz del hurón, el hocico— se quedan fijos: son señas de la
@@ -229,5 +242,8 @@ export function mascotaDe(perfil) {
     : especiePorDefecto(perfil?.id ?? perfil?.apodo ?? perfil?.nickname ?? "");
   const paleta = perfil?.mascota_paleta ?? "natural";
   const ojos = perfil?.mascota_ojos ?? "natural";
-  return { especie, paleta, ojos };
+  const puestos = Array.isArray(perfil?.mascota_puestos)
+    ? perfil.mascota_puestos.filter((k) => typeof k === "string" && ACCESORIOS[k])
+    : [];
+  return { especie, paleta, ojos, puestos };
 }

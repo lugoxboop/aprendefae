@@ -2,7 +2,8 @@ import { useState } from "react";
 import { FAE } from "../../theme.js";
 import { useAuthOpcional } from "../../auth/AuthProvider.jsx";
 import Mascota from "../Mascota.jsx";
-import { ESPECIES, PALETAS_MASCOTA, OJOS_MASCOTA, mascotaDe } from "../../mascota/mascotas.js";
+import { ESPECIES, PALETAS_MASCOTA, OJOS_MASCOTA, ACCESORIOS_META, mascotaDe } from "../../mascota/mascotas.js";
+import { accesoriosDe, puestosDe } from "../../cristales/cristales.js";
 
 /*
  * «Tu mascota», en el perfil. Dos modos con el mismo componente:
@@ -104,6 +105,16 @@ export default function SeccionMascota({ perfil: perfilProp = null, completo = f
     if (err) { setEspecie(antes); setError(err); }
   };
 
+  /* Poner o quitar un accesorio ya comprado. La mascota se repinta sola al
+     actualizarse el perfil. */
+  const tieneAcc = accesoriosDe(perfil);
+  const puestosAcc = new Set(puestosDe(perfil));
+  const toggleAccesorio = async (clave) => {
+    setError(null);
+    const { error: err } = (await auth?.equiparAccesorio?.(clave, !puestosAcc.has(clave))) ?? {};
+    if (err) setError(err);
+  };
+
   /* Renombrar: guarda al salir del campo, con la especie actual. */
   const guardarNombre = async () => {
     const nom = (nombre || "").trim();
@@ -186,6 +197,42 @@ export default function SeccionMascota({ perfil: perfilProp = null, completo = f
 
           <FilaMuestras etiqueta="Su color" items={PALETAS_MASCOTA} valor={paleta} onElegir={elegirColor} attr="data-color" />
           <FilaMuestras etiqueta="Sus ojos" items={OJOS_MASCOTA} valor={ojos} onElegir={elegirOjos} attr="data-ojos" />
+
+          {/* ── Accesorios comprados: ponérselos o quitárselos ──────────── */}
+          {completo && (
+            <>
+              <p style={{ ...sub, marginTop: "14px" }}>Sus accesorios</p>
+              {tieneAcc.length === 0 ? (
+                <p style={{ fontSize: "12.5px", color: "rgba(248,249,250,0.45)", margin: 0, lineHeight: 1.5 }}>
+                  Todavía no tienes. Consíguelos en la Tienda con tus cristales.
+                </p>
+              ) : (
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "7px" }}>
+                  {ACCESORIOS_META.filter((a) => tieneAcc.includes(a.id)).map((a) => {
+                    const on = puestosAcc.has(a.id);
+                    return (
+                      <button
+                        key={a.id}
+                        type="button"
+                        aria-pressed={on}
+                        data-accesorio={a.id}
+                        onClick={() => toggleAccesorio(a.id)}
+                        style={{
+                          minHeight: "38px", padding: "0 13px", borderRadius: "999px", cursor: "pointer",
+                          fontFamily: "Sora, sans-serif", fontSize: "12.5px", fontWeight: 700,
+                          border: on ? "1px solid transparent" : "1px solid rgba(248,249,250,0.18)",
+                          background: on ? FAE.teal : "rgba(248,249,250,0.05)",
+                          color: on ? "#06202A" : "#A8B6C8",
+                        }}
+                      >
+                        {a.nombre}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </>
+          )}
         </div>
       </div>
 

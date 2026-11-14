@@ -13,11 +13,14 @@ import { cuerpoMascota } from "../mascota/mascotas.js";
  * hueco. El SVG es estático y de la casa, así que va por dangerouslySetInnerHTML
  * sin riesgo —no entra texto de nadie—.
  */
-export default function Mascota({ especie, perfil, puestos = [], paleta, ojos, tamano = 96, titulo, style = null, ...resto }) {
+export default function Mascota({ especie, perfil, puestos, paleta, ojos, tamano = 96, titulo, style = null, ...resto }) {
   const esp = especie ?? perfil?.mascota_especie ?? null;
   if (!esp) return null;
   const pal = paleta ?? perfil?.mascota_paleta ?? null;
   const oj = ojos ?? perfil?.mascota_ojos ?? null;
+  /* Los accesorios puestos: los explícitos, o —si se pintó desde el perfil— los
+     que la fila trae en mascota_puestos. */
+  const pst = Array.isArray(puestos) ? puestos : (Array.isArray(perfil?.mascota_puestos) ? perfil.mascota_puestos : []);
 
   const accesible = titulo
     ? { role: "img", "aria-label": titulo }
@@ -34,7 +37,7 @@ export default function Mascota({ especie, perfil, puestos = [], paleta, ojos, t
       style={{ display: "block", ...(style ?? {}) }}
       {...accesible}
       {...resto}
-      dangerouslySetInnerHTML={{ __html: cuerpoMascota(esp, { puestos, paleta: pal, ojos: oj }) }}
+      dangerouslySetInnerHTML={{ __html: cuerpoMascota(esp, { puestos: pst, paleta: pal, ojos: oj }) }}
     />
   );
 }

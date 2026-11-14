@@ -61,6 +61,24 @@ export const PRECIO_PIEZA = {
 export const FORMAS_COMPRABLES = ["vertice", "enlace", "astro", "orbita"];
 export const PALETAS_COMPRABLES = ["ascua", "arrecife"];
 
+/*
+ * ═══════════ LOS ACCESORIOS DE LA MASCOTA (0165) ═══════════
+ *
+ * Desde el paso a mascotas, la Tienda vende accesorios para la mascota en vez
+ * de formas de figura. Son nuevos: no se le quita nada a nadie. Los dibujos
+ * están en src/mascota/mascotas.js (ACCESORIOS); aquí solo viven sus precios,
+ * y EN SQL también (0165, precio_accesorio). cristales.test.mjs lee la
+ * migración y falla si los dos lados se separan.
+ */
+export const PRECIO_ACCESORIO = {
+  gorro: 60,
+  gafas: 40,
+  bufanda: 45,
+  mono: 50,
+  bigote: 35,
+};
+export const ACCESORIOS_COMPRABLES = Object.keys(PRECIO_ACCESORIO);
+
 /* ─────────────────────── lo que se gana ─────────────────────── */
 
 export const CRISTALES_RACHA = { 3: 5, 7: 10, 14: 20, 30: 50 };
@@ -178,6 +196,38 @@ export function faltanParaPieza(perfil, tipo, clave) {
 export function estadoDePieza(perfil, tipo, clave) {
   if (piezaDesbloqueada(perfil, tipo, clave)) return "comprado";
   return faltanParaPieza(perfil, tipo, clave) === 0 ? "alcanzable" : "falta";
+}
+
+/* ─────────────────────── los accesorios ─────────────────────── */
+
+/** Los accesorios que este perfil ya compró. */
+export function accesoriosDe(perfil) {
+  const crudo = perfil?.mascota_accesorios;
+  const lista = Array.isArray(crudo) ? crudo.filter((x) => typeof x === "string") : [];
+  return [...new Set(lista)];
+}
+
+/** Los accesorios que la mascota lleva puestos ahora (subconjunto de los comprados). */
+export function puestosDe(perfil) {
+  const comprados = new Set(accesoriosDe(perfil));
+  const crudo = perfil?.mascota_puestos;
+  const lista = Array.isArray(crudo) ? crudo.filter((x) => typeof x === "string") : [];
+  return [...new Set(lista)].filter((k) => comprados.has(k));
+}
+
+export const tieneAccesorio = (perfil, clave) => accesoriosDe(perfil).includes(clave);
+export const precioDeAccesorio = (clave) => PRECIO_ACCESORIO[clave] ?? 0;
+
+/** Cuántos cristales faltan para este accesorio. 0 = alcanza (o ya es suyo). */
+export function faltanParaAccesorio(perfil, clave) {
+  if (tieneAccesorio(perfil, clave)) return 0;
+  return Math.max(0, precioDeAccesorio(clave) - saldoDe(perfil));
+}
+
+/** comprado · alcanzable · falta — el mismo trío que las piezas. */
+export function estadoDeAccesorio(perfil, clave) {
+  if (tieneAccesorio(perfil, clave)) return "comprado";
+  return faltanParaAccesorio(perfil, clave) === 0 ? "alcanzable" : "falta";
 }
 
 export const precioDe = (nivel) => PRECIO_NIVEL[Math.floor(Number(nivel))] ?? 0;
@@ -309,6 +359,35 @@ export async function comprarPieza(tipo, clave) {
   if (error) {
     console.error("[aprendeFAE] Compra de pieza:", error.code ?? "", error.message);
     return { error: motivoDeError(error, tipo === "forma" ? "comprar esta forma" : "comprar esta paleta") };
+  }
+  return { perfil: Array.isArray(data) ? data[0] : data };
+}
+
+/*
+ * Comprar un accesorio de la mascota. Mismo trato que las piezas: el saldo lo
+ * descuenta la base en la misma sentencia que comprueba que alcanza y que no
+ * está repetido, así que dos toques seguidos no cobran dos veces.
+ */
+export async function comprarAccesorio(clave) {
+  if (!supabase) return { error: SIN_CONFIGURAR };
+  const { data, error } = await supabase.rpc("mascota_accesorio_comprar", { p_clave: clave });
+  if (error) {
+    console.error("[aprendeFAE] Compra de accesorio:", error.code ?? "", error.message);
+    return { error: motivoDeError(error, "comprar este accesorio") };
+  }
+  return { perfil: Array.isArray(data) ? data[0] : data };
+}
+
+/*
+ * Poner o quitar un accesorio ya comprado. No cuesta nada; solo cambia lo que
+ * la mascota lleva puesto. Devuelve la fila del perfil ya actualizada.
+ */
+export async function equiparAccesorio(clave, poner) {
+  if (!supabase) return { error: SIN_CONFIGURAR };
+  const { data, error } = await supabase.rpc("mascota_accesorio_equipar", { p_clave: clave, p_poner: Boolean(poner) });
+  if (error) {
+    console.error("[aprendeFAE] Equipar accesorio:", error.code ?? "", error.message);
+    return { error: motivoDeError(error, poner ? "ponerle el accesorio" : "quitarle el accesorio") };
   }
   return { perfil: Array.isArray(data) ? data[0] : data };
 }

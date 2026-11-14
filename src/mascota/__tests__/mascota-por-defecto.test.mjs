@@ -28,8 +28,8 @@ test("reparte entre varias especies, no todas al mismo cajón", () => {
 });
 
 test("mascotaDe respeta la elegida cuando existe, con pelaje y ojos", () => {
-  const perfil = { id: "u_1", mascota_especie: "huron", mascota_paleta: "gris", mascota_ojos: "azul" };
-  assert.deepEqual(mascotaDe(perfil), { especie: "huron", paleta: "gris", ojos: "azul" });
+  const perfil = { id: "u_1", mascota_especie: "huron", mascota_paleta: "gris", mascota_ojos: "azul", mascota_puestos: ["gafas"] };
+  assert.deepEqual(mascotaDe(perfil), { especie: "huron", paleta: "gris", ojos: "azul", puestos: ["gafas"] });
 });
 
 test("mascotaDe cae en la de fábrica cuando no hay elegida, con paleta y ojos natural", () => {
