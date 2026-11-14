@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { FAE } from "../../theme.js";
 import { CAMPO, ETIQUETA, AYUDA } from "../auth/estilosCampo.js";
-import SeccionAvatar from "./SeccionAvatar.jsx";
+import SeccionMascota from "./SeccionMascota.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -61,20 +61,29 @@ function SeccionIdentidad({ valores, cambiar }) {
 }
 
 /*
- * ═══════════ LA SEGUNDA SECCIÓN: EL AVATAR ═══════════
+ * ═══════════ LA SEGUNDA SECCIÓN: LA MASCOTA ═══════════
+ *
+ * Antes eran las figuras geométricas (SeccionAvatar); desde el paso a mascotas,
+ * «Mi avatar» edita la mascota entera: especie, nombre, color y ojos. Se usa el
+ * modo `completo` de SeccionMascota.
  *
  * Sin campos, y por tanto sin nada que el botón de guardar del panel tenga que
- * mandar. Cada toque del selector ESCRIBE SOLO, por su propia función de la
- * 0035 —el nivel hay que comprobar que esté comprado, y eso no lo hace un
- * update del cliente—. Así que aquí solo declara que existe y dónde va.
+ * mandar: cada toque ESCRIBE SOLO, por su propia función security definer
+ * (mascota_elegir / mascota_personalizar / mascota_ojos_elegir), no por un
+ * update del cliente. El id sigue siendo «avatar» para no tocar el enrutado de
+ * «Mi avatar» (#/perfil/avatar) ni la navegación.
  *
- * `campos: []` no es un hueco: hace que borradorDe, sePuedeGuardar y cambioDe
- * la ignoren sin un solo `if` en el panel. Lo que se guarda por el botón sigue
- * siendo el apodo y el nombre real, ni uno más.
+ * `campos: []` hace que borradorDe, sePuedeGuardar y cambioDe la ignoren sin un
+ * solo `if` en el panel. Lo que se guarda por el botón sigue siendo el apodo y
+ * el nombre real, ni uno más.
  */
+function SeccionMascotaCompleta() {
+  return <SeccionMascota completo />;
+}
+
 export const SECCIONES = [
   { id: "identidad", titulo: "Cómo te llamas aquí", campos: ["nickname", "full_name"], Componente: SeccionIdentidad },
-  { id: "avatar", titulo: "Tu avatar", campos: [], Componente: SeccionAvatar },
+  { id: "avatar", titulo: "Tu mascota", campos: [], Componente: SeccionMascotaCompleta },
 ];
 
 const vacio = (v) => typeof v !== "string" || v.trim() === "";

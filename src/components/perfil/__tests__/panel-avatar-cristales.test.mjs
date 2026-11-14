@@ -70,14 +70,14 @@ test("la cabecera del perfil muestra la mascota del estudiante a 96 px, y tocarl
   } finally { m.desmontar(); }
 });
 
-test("tocar el avatar abre Editar perfil, con el selector dentro", async () => {
+test("tocar el avatar abre Editar perfil, con el editor de mascota dentro", async () => {
   w.localStorage.clear();
   const m = montar();
   try {
-    assert.equal(m.caja.querySelector("[data-selector-avatar]"), null);
+    assert.equal(m.caja.querySelector("[data-seccion-mascota]"), null, "cerrado, no hay editor a la vista");
     await pulsar(m.caja.querySelector("[data-abrir-avatar]"));
     assert.ok(m.caja.querySelector("[data-editar-perfil]"), "se abrió el panel");
-    assert.ok(m.caja.querySelector("[data-seccion='avatar'] [data-selector-avatar]"), "con la sección del avatar");
+    assert.ok(m.caja.querySelector("[data-seccion='avatar'] [data-seccion-mascota]"), "con el editor de mascota en la sección del avatar");
   } finally { m.desmontar(); }
 });
 

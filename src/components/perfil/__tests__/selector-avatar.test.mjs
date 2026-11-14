@@ -259,8 +259,10 @@ test("el avatar es una sección de «Editar perfil», y no añade campos al guar
     perfil: PERFIL(), guardar: async () => ({}), onCancelar: () => {}, onGuardado: () => {},
   })));
   try {
-    /* Se monta dentro del panel, sin proveedor de cuenta, sin romper nada. */
-    assert.ok(caja.querySelector("[data-seccion='avatar'] [data-selector-avatar]"));
+    /* Se monta dentro del panel, sin proveedor de cuenta: la sección existe y
+       el editor de mascota (que necesita sesión con mascota) se queda vacío sin
+       romper nada. */
+    assert.ok(caja.querySelector("[data-seccion='avatar']"), "la sección del avatar está en el panel");
     assert.ok(caja.querySelector("[data-seccion='identidad'] #editar-apodo"));
     /* Y el único botón de guardar sigue siendo el del panel, para apodo y nombre. */
     const submit = [...caja.querySelectorAll("button")].filter((b) => b.type === "submit");
