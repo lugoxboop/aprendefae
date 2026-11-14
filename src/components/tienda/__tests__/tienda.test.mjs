@@ -176,6 +176,7 @@ test("CORAL NO APARECE en la Tienda, ni en un borde, ni en un texto, ni en un fo
     const coral = FAE.coral.toLowerCase();
     const sospechosos = [...m.caja.querySelectorAll("*")].filter((el) => {
       if (el.closest("svg[data-mascota]")) return false;
+      if (el.closest("[data-malla-animada]")) return false; // el fondo (manchas de color en movimiento), no un estado
       const estilo = (el.getAttribute("style") ?? "").toLowerCase();
       return estilo.includes(coral) || estilo.includes("231, 111, 81") || estilo.includes("231,111,81");
     });

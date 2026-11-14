@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ChevronLeft } from "lucide-react";
 import { FAE } from "../../theme.js";
 import Logo from "../Logo.jsx";
+import MeshGradientBackground from "../backgrounds/MeshGradientBackground.jsx";
 import Entrada, { EstiloEntrada, entrada } from "../shared/Entrada.jsx";
 import { useAuth } from "../../auth/AuthProvider.jsx";
 import PanelAmigos from "./PanelAmigos.jsx";
@@ -39,15 +40,16 @@ export default function AmigosView({ onBack }) {
   return (
     <div
       style={{
+        position: "relative",
         minHeight: "100vh",
         backgroundColor: FAE.bg,
         fontFamily: "Inter, sans-serif",
         color: FAE.text,
-        backgroundImage: "radial-gradient(circle at 50% -10%, rgba(42,157,143,0.16), transparent 55%)",
       }}
     >
+      <MeshGradientBackground />
       <EstiloEntrada />
-      <div style={{ maxWidth: "680px", margin: "0 auto", padding: "clamp(18px, 3vh, 30px) 24px 56px" }}>
+      <div style={{ position: "relative", zIndex: 1, maxWidth: "680px", margin: "0 auto", padding: "clamp(18px, 3vh, 30px) 24px 56px" }}>
         <div {...entrada(0, "baja")} style={{ ...entrada(0, "baja").style, display: "flex", alignItems: "center", gap: "10px", marginBottom: "22px" }}>
           <Logo variant="symbol" size={26} theme="dark" />
           <span aria-hidden="true" style={{ width: "1px", height: "22px", backgroundColor: "rgba(248,249,250,0.16)", margin: "0 4px" }} />

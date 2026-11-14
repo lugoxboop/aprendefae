@@ -102,5 +102,13 @@ export function useAmigos(activo = true) {
     [recargar],
   );
 
-  return { ...estado, cargando, error, recargar, solicitar, responder, eliminar };
+  /* Sugerencias mientras se escribe. Solo lee; no cambia el estado del panel. */
+  const buscar = useCallback(async (texto) => {
+    if (!supabase) return [];
+    const { data, error: err } = await supabase.rpc("amigos_buscar", { p_texto: texto });
+    if (err) return [];
+    return Array.isArray(data) ? data : [];
+  }, []);
+
+  return { ...estado, cargando, error, recargar, solicitar, responder, eliminar, buscar };
 }
