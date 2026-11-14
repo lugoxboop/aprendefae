@@ -16,14 +16,49 @@
  * color sale de una paleta de tres tonos (pelo, pelo-sombra, panza) para que
  * teñir a una especie no le rompa las orejas ni la panza.
  * ═══════════════════════════════════════════════════════════════════════════
+ *
+ * NOTA (nov-2026): estamos migrando de las criaturas DIBUJADAS por código a
+ * ILUSTRACIONES (Gemini → Recraft). Las especies con ilustración (abajo,
+ * ILUSTRADAS) se pintan con el asset recoloreado por pelaje.js; las que aún no
+ * la tienen siguen con el dibujo de código de este archivo. Nadie pierde su
+ * mascota: solo cambia cómo se pinta.
  */
 
-/** Las cuatro especies, en el orden del selector. El `id` es lo que guarda la base. */
+import { recolorarPelaje } from "./pelaje.js";
+import svgZorro from "./ilustradas/zorro.js";
+import svgConejo from "./ilustradas/conejo.js";
+import svgHamster from "./ilustradas/hamster.js";
+
+/** Las especies ILUSTRADAS: su dibujo sale del asset, no del código de abajo. */
+export const ILUSTRADAS = {
+  hamster: svgHamster,
+  zorro: svgZorro,
+  conejo: svgConejo,
+};
+export const esIlustrada = (especie) => Boolean(ILUSTRADAS[especie]);
+
+/*
+ * El dibujo de una especie ilustrada: su propio viewBox y el contenido ya
+ * recoloreado por pelaje. Se separa del <svg> exterior para que el componente
+ * Mascota lo meta en su propio <svg data-mascota> con el viewBox correcto.
+ */
+export function dibujoIlustrado(especie, paleta) {
+  const base = ILUSTRADAS[especie];
+  if (!base) return null;
+  const svg = recolorarPelaje(base, paleta, especie);
+  const viewBox = (svg.match(/viewBox="([^"]+)"/) || [, "0 0 100 100"])[1];
+  const inner = svg.replace(/^[\s\S]*?<svg[^>]*>/, "").replace(/<\/svg>\s*$/, "");
+  return { viewBox, inner };
+}
+
+/** Las especies, en el orden del selector. El `id` es lo que guarda la base. */
 export const ESPECIES = [
   { id: "perro", nombre: "Perro", rasgo: "Leal" },
   { id: "gato", nombre: "Gato", rasgo: "Curioso" },
   { id: "hamster", nombre: "Hámster", rasgo: "Glotón" },
   { id: "huron", nombre: "Hurón", rasgo: "Travieso" },
+  { id: "zorro", nombre: "Zorro", rasgo: "Astuto" },
+  { id: "conejo", nombre: "Conejo", rasgo: "Veloz" },
 ];
 export const IDS_ESPECIE = ESPECIES.map((e) => e.id);
 export const NOMBRE_MAX = 16;

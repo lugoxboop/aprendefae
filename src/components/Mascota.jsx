@@ -1,4 +1,4 @@
-import { cuerpoMascota } from "../mascota/mascotas.js";
+import { cuerpoMascota, esIlustrada, dibujoIlustrado } from "../mascota/mascotas.js";
 
 /*
  * La mascota, pintada. Hermana de Avatar.jsx: el mismo papel —la cara del
@@ -25,6 +25,29 @@ export default function Mascota({ especie, perfil, puestos, paleta, ojos, tamano
   const accesible = titulo
     ? { role: "img", "aria-label": titulo }
     : { "aria-hidden": "true" };
+
+  /*
+   * Especie ILUSTRADA: su dibujo sale del asset recoloreado, con su propio
+   * viewBox y proporción. Los accesorios no se pintan sobre la ilustración
+   * todavía (están dibujados para la geometría vieja); se reactivarán luego.
+   */
+  if (esIlustrada(esp)) {
+    const { viewBox, inner } = dibujoIlustrado(esp, pal);
+    const [, , vbW, vbH] = viewBox.split(/\s+/).map(Number);
+    return (
+      <svg
+        width={tamano}
+        height={Math.round((tamano * (vbH || 1)) / (vbW || 1))}
+        viewBox={viewBox}
+        data-mascota={esp}
+        data-paleta={pal || "natural"}
+        style={{ display: "block", ...(style ?? {}) }}
+        {...accesible}
+        {...resto}
+        dangerouslySetInnerHTML={{ __html: inner }}
+      />
+    );
+  }
 
   return (
     <svg

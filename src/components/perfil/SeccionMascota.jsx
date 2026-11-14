@@ -2,7 +2,7 @@ import { useState } from "react";
 import { FAE } from "../../theme.js";
 import { useAuthOpcional } from "../../auth/AuthProvider.jsx";
 import Mascota from "../Mascota.jsx";
-import { ESPECIES, PALETAS_MASCOTA, OJOS_MASCOTA, ACCESORIOS_META, mascotaDe } from "../../mascota/mascotas.js";
+import { ESPECIES, PALETAS_MASCOTA, OJOS_MASCOTA, ACCESORIOS_META, mascotaDe, esIlustrada } from "../../mascota/mascotas.js";
 import { accesoriosDe, puestosDe } from "../../cristales/cristales.js";
 
 /*
@@ -196,7 +196,11 @@ export default function SeccionMascota({ perfil: perfilProp = null, completo = f
           )}
 
           <FilaMuestras etiqueta="Su color" items={PALETAS_MASCOTA} valor={paleta} onElegir={elegirColor} attr="data-color" />
-          <FilaMuestras etiqueta="Sus ojos" items={OJOS_MASCOTA} valor={ojos} onElegir={elegirOjos} attr="data-ojos" />
+          {/* Los ojos solo se eligen en las mascotas dibujadas por código; las
+              ilustradas llevan sus ojos fijos (y se aclaran solos en pelajes oscuros). */}
+          {!esIlustrada(especie) && (
+            <FilaMuestras etiqueta="Sus ojos" items={OJOS_MASCOTA} valor={ojos} onElegir={elegirOjos} attr="data-ojos" />
+          )}
 
           {/* ── Accesorios comprados: ponérselos o quitárselos ──────────── */}
           {completo && (

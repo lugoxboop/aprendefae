@@ -21,6 +21,12 @@ const migracion = readFileSync(
   "utf8",
 );
 
+/* La lista de especies la amplió la 0168 (zorro, conejo): ese es el check vigente. */
+const migracionEspecies = readFileSync(
+  fileURLToPath(new URL("../../../supabase/migrations/0168_mascota_especies_ilustradas.sql", import.meta.url)),
+  "utf8",
+);
+
 const migracionColor = readFileSync(
   fileURLToPath(new URL("../../../supabase/migrations/0162_mascota_color_realista.sql", import.meta.url)),
   "utf8",
@@ -33,9 +39,9 @@ const migracionOjos = readFileSync(
 
 const { ESPECIES, IDS_ESPECIE, NOMBRE_MAX, IDS_PALETA, PALETAS_MASCOTA, IDS_OJOS, OJOS_MASCOTA } = await import("../mascotas.js");
 
-test("las especies del selector son exactamente las del check de la 0160", () => {
-  /* Toma el primer `mascota_especie in ('…','…')` de la migración. */
-  const m = migracion.match(/mascota_especie in \(([^)]+)\)/);
+test("las especies del selector son exactamente las del check vigente (0168)", () => {
+  /* Toma el `mascota_especie in ('…','…')` de la migración que amplía la lista. */
+  const m = migracionEspecies.match(/mascota_especie in \(([^)]+)\)/);
   assert.ok(m, "la migración declara el check de la especie");
   const enLaBase = m[1].match(/'([^']+)'/g).map((s) => s.slice(1, -1));
   assert.deepEqual(
