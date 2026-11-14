@@ -59,6 +59,23 @@
   :root[data-mv-transicion="cierra"]::view-transition-old(root) { animation: mv-vt-cierra-sale 180ms var(--mv-curva) both; }
   :root[data-mv-transicion="cierra"]::view-transition-new(root) { animation: mv-vt-cierra-entra 280ms var(--mv-curva) 30ms both; }
 
+  /* De un punto al siguiente dentro de una actividad (movimiento.js, «item»):
+   * la página no se mueve, solo la tarjeta. El punto viejo retrocede y sale
+   * a la izquierda; el nuevo llega en arco desde la derecha, se pasa 3 px y
+   * asienta. */
+  /* La foto vieja de la página se quita de una vez: si se quedara, taparía la
+   * nueva (y la página pudo desplazarse al cambiar de punto). */
+  :root[data-mv-transicion^="item"]::view-transition-old(root) { animation: none; opacity: 0; }
+  :root[data-mv-transicion^="item"]::view-transition-new(root) { animation: none; }
+  /* El marco se pone de una vez en su sitio nuevo: si la página se desplazó al
+   * cambiar de punto, viajar de un sitio a otro lo haría pasar por encima del
+   * texto de arriba. El movimiento lo llevan las dos fotos, no el marco. */
+  ::view-transition-group(mv-item) { animation: none; }
+  ::view-transition-old(mv-item) { animation: mv-item-sale 150ms var(--mv-curva) both; }
+  ::view-transition-new(mv-item) { animation: mv-item-entra 280ms var(--mv-curva) 50ms both; }
+  :root[data-mv-transicion="item-atras"]::view-transition-old(mv-item) { animation-name: mv-item-sale-der; }
+  :root[data-mv-transicion="item-atras"]::view-transition-new(mv-item) { animation-name: mv-item-entra-izq; }
+
   /* El control de cuenta no viaja con la página: se queda quieto en su esquina. */
   ::view-transition-group(fae-cuenta) { animation-duration: 0s; }
 
@@ -160,6 +177,10 @@
 @keyframes mv-vt-entra     { 0% { opacity: 0; translate: 26px 12px; } 50% { opacity: 1; translate: 8px 0; } 100% { opacity: 1; translate: 0 0; } }
 @keyframes mv-vt-sale-der  { to { opacity: 0; translate: 18px 0; scale: .985; } }
 @keyframes mv-vt-entra-izq { 0% { opacity: 0; translate: -26px 12px; } 50% { opacity: 1; translate: -8px 0; } 100% { opacity: 1; translate: 0 0; } }
+@keyframes mv-item-sale      { 0% { opacity: 1; } 30% { translate: 4px 0; scale: .99; } 100% { opacity: 0; translate: -28px 0; scale: .97; } }
+@keyframes mv-item-entra     { 0% { opacity: 0; translate: 34px 12px; } 55% { opacity: 1; translate: 4px 0; } 78% { translate: -3px 0; } 100% { opacity: 1; translate: 0 0; } }
+@keyframes mv-item-sale-der  { 0% { opacity: 1; } 30% { translate: -4px 0; scale: .99; } 100% { opacity: 0; translate: 28px 0; scale: .97; } }
+@keyframes mv-item-entra-izq { 0% { opacity: 0; translate: -34px 12px; } 55% { opacity: 1; translate: -4px 0; } 78% { translate: 3px 0; } 100% { opacity: 1; translate: 0 0; } }
 @keyframes mv-vt-abre-sale  { to { opacity: 0; scale: 1.04; } }
 @keyframes mv-vt-abre-entra { 0% { opacity: 0; scale: .94; translate: 0 14px; } 60% { opacity: 1; scale: 1.008; translate: 0 0; } 100% { opacity: 1; scale: 1; } }
 @keyframes mv-vt-cierra-sale  { to { opacity: 0; scale: .95; translate: 0 10px; } }

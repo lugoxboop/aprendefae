@@ -16,7 +16,8 @@ test("★ cada cambio de estado de una actividad recibe su movimiento, y lo neut
 
 test("★ los movimientos solo tocan opacidad y las propiedades sueltas, y la interfaz no pasa de 300 ms", () => {
   for (const [nombre, m] of Object.entries(MOVIMIENTOS)) {
-    assert.ok(m.duracion <= TIEMPO, `${nombre} dura ${m.duracion}`);
+    /* Solo una celebración rara (ganar FP) puede pasar del tope de la interfaz. */
+    assert.ok(m.duracion <= (m.celebracion ? 600 : TIEMPO), `${nombre} dura ${m.duracion}`);
     for (const f of m.fotogramas) for (const k of Object.keys(f)) assert.ok(PERMITIDAS.has(k), `${nombre} anima ${k}`);
     assert.ok(!/linear|^ease$/.test(m.curva), `${nombre} usa ${m.curva}`);
     /* Pose to pose: empieza y termina en reposo. */
@@ -107,4 +108,18 @@ test("★ la retroalimentación se oye con el nombre que cada célula le puso, s
   assert.equal(tipoDeRetro("data-marca", "bien"), "acierto");
   assert.equal(tipoDeRetro("data-panel", "activa"), null);
   assert.equal(tipoDeRetro("data-estado", "activa"), "elegido");
+});
+
+test("★ de un punto a otro: se reconoce el botón por lo que dice, y no se confunde con navegar o entrar", async () => {
+  const { direccionDePaso } = await import("../movimiento.js");
+  for (const t of ["Siguiente alerta", "Siguiente hecho", "Continuar", "Cerrar turno", "Ver resultado", "  Siguiente  "]) assert.equal(direccionDePaso(t), "adelante", t);
+  assert.equal(direccionDePaso("Anterior"), "atras");
+  for (const t of ["Continuar con Google", "Volver al camino", "Siguiente tema", "Colocar la ficha", "Grupo 1", "", null]) assert.equal(direccionDePaso(t), null, String(t));
+  assert.equal(MOVIMIENTOS.ganar.celebracion, true);
+});
+
+test("★ la hoja anima el paso de punto a punto solo en la tarjeta, no en la página", () => {
+  assert.match(CSS, /\[data-mv-transicion\^="item"\]::view-transition-old\(root\)/);
+  assert.match(CSS, /::view-transition-new\(mv-item\)/);
+  assert.match(CSS, /item-atras/);
 });
