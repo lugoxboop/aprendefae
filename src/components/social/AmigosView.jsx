@@ -1,9 +1,12 @@
+import { useState } from "react";
 import { ChevronLeft } from "lucide-react";
 import { FAE } from "../../theme.js";
 import Logo from "../Logo.jsx";
 import Entrada, { EstiloEntrada, entrada } from "../shared/Entrada.jsx";
 import { useAuth } from "../../auth/AuthProvider.jsx";
 import PanelAmigos from "./PanelAmigos.jsx";
+import PanelRetos from "./PanelRetos.jsx";
+import { useRetos } from "../../social/useRetos.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -16,7 +19,22 @@ import PanelAmigos from "./PanelAmigos.jsx";
  * ═══════════════════════════════════════════════════════════════════════════
  */
 export default function AmigosView({ onBack }) {
-  const { session, pedirCuenta } = useAuth();
+  const { session, pedirCuenta, refrescarPerfil } = useAuth();
+  const retos = useRetos(Boolean(session));
+  const [respondiendo, setRespondiendo] = useState(null);
+  const [cerrando, setCerrando] = useState(null);
+
+  const responderReto = async (id, aceptar) => {
+    setRespondiendo(id);
+    await retos.responder(id, aceptar);
+    setRespondiendo(null);
+  };
+  const cerrarReto = async (id) => {
+    setCerrando(id);
+    const r = await retos.cerrar(id);
+    setCerrando(null);
+    if (r?.ok) refrescarPerfil?.(); // el bono ya se pagó: refrescar el saldo
+  };
 
   return (
     <div
@@ -79,12 +97,23 @@ export default function AmigosView({ onBack }) {
           <>
             <Entrada orden={1} modo="sube">
               <p style={{ fontSize: "13.5px", lineHeight: 1.5, color: "rgba(248,249,250,0.6)", margin: "0 0 18px" }}>
-                Agrega a tus compañeros por su apodo y verás a cada uno con su mascota. Pronto podrán
-                competir y estudiar juntos.
+                Agrega a tus compañeros por su apodo, rétalos a estudiar juntos y verás a cada uno con su mascota.
               </p>
             </Entrada>
             <Entrada orden={2} modo="sube">
-              <PanelAmigos />
+              <PanelRetos
+                activos={retos.activos}
+                invitaciones={retos.invitaciones}
+                enviadas={retos.enviadas}
+                cargando={retos.cargando}
+                onResponder={responderReto}
+                onCerrar={cerrarReto}
+                respondiendo={respondiendo}
+                cerrando={cerrando}
+              />
+            </Entrada>
+            <Entrada orden={3} modo="sube">
+              <PanelAmigos onRetar={(userId) => retos.retar(userId)} />
             </Entrada>
           </>
         )}
