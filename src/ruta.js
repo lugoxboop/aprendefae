@@ -80,6 +80,7 @@ export const VISTAS = new Set([
   "que-es",
   "perfil",
   "tienda",
+  "amigos",
   "docente",
   /* La clase en vivo (0159): el celular del estudiante y el tablero del profesor. */
   "vivo",
