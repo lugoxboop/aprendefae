@@ -6,11 +6,12 @@ import { JSDOM, VirtualConsole } from "jsdom";
 /*
  * ═══════════════════════════════════════════════════════════════════════════
  * LA TIENDA: el saldo, la tabla de cómo ganar —siempre a la vista—, los tres
- * estados de un nivel y la ausencia de coral.
+ * estados de un accesorio y la ausencia de coral.
  *
- * Se monta con un proveedor de cuenta de mentira: la compra de verdad es una
- * función de la base y tiene su propia prueba en SQL (cristales_test.sql). Lo
- * que se comprueba aquí es la pantalla.
+ * Desde el paso a mascotas, la Tienda vende ACCESORIOS para la mascota (no
+ * formas de figura). Se monta con un proveedor de cuenta de mentira: la compra
+ * de verdad es una función de la base y tiene su propia prueba en SQL. Lo que se
+ * comprueba aquí es la pantalla.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -38,11 +39,12 @@ const { FAE } = await import("../../../theme.js");
 
 const PERFIL = (extra = {}) => ({
   nickname: "Cami", points: 4200, cristales_balance: 75,
-  avatar_shape: "nucleo", avatar_palette: "marea", avatar_level: 1, avatar_unlocked_levels: [1],
+  mascota_especie: "gato", mascota_nombre: "Pelusa", mascota_paleta: "negro", mascota_ojos: "azul",
+  mascota_accesorios: [], mascota_puestos: [],
   ...extra,
 });
 
-function montar({ perfil = PERFIL(), onComprar = async () => ({}), session = { user: { id: "u" } } } = {}) {
+function montar({ perfil = PERFIL(), onComprarAccesorio = async () => ({}), session = { user: { id: "u" } } } = {}) {
   const aplicados = [];
   const valor = {
     perfil, session, pedirCuenta: () => false,
@@ -54,13 +56,13 @@ function montar({ perfil = PERFIL(), onComprar = async () => ({}), session = { u
   const raiz = createRoot(caja);
   act(() => raiz.render(
     React.createElement(AuthContext.Provider, { value: valor },
-      React.createElement(TiendaView, { onBack: () => {}, onComprar })),
+      React.createElement(TiendaView, { onBack: () => {}, onComprarAccesorio })),
   ));
   return { caja, aplicados, desmontar: () => { act(() => raiz.unmount()); caja.remove(); } };
 }
 
 const pulsar = async (el) => { await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); }); };
-const tarjeta = (caja, n) => caja.querySelector(`[data-nivel="${n}"]`);
+const celda = (caja, id) => caja.querySelector(`[data-accesorio="${id}"]`);
 /* jsdom normaliza los colores a rgb(): #2A9D8F se lee 'rgb(42, 157, 143)'. */
 const rgb = (hex) => {
   const [, r, g, b] = /^#(..)(..)(..)$/.exec(hex);
@@ -78,6 +80,16 @@ test("el saldo va arriba, con su número grande y su ícono", () => {
   } finally { m.desmontar(); }
 });
 
+test("el escaparate muestra la mascota del estudiante, no una figura", () => {
+  const m = montar();
+  try {
+    const esc = m.caja.querySelector("[data-escaparate]");
+    assert.ok(esc.querySelector("svg[data-mascota]"), "la mascota, no un prisma");
+    assert.equal(esc.querySelector("svg[data-avatar]"), null, "nada de la figura vieja");
+    assert.match(esc.textContent, /Pelusa/);
+  } finally { m.desmontar(); }
+});
+
 test("la tabla de cómo ganar Cristales está siempre a la vista, con sus seis filas", () => {
   const m = montar();
   try {
@@ -90,63 +102,61 @@ test("la tabla de cómo ganar Cristales está siempre a la vista, con sus seis f
     assert.match(tabla.textContent, /\+5/);
     assert.match(tabla.textContent, /Cada 5 actividades distintas/);
     assert.match(tabla.textContent, /\+20/);
-    assert.match(tabla.textContent, /Podio semanal de tu liga/);
     assert.ok(!/medalla/i.test(tabla.textContent), "las medallas no se prometen todavía");
   } finally { m.desmontar(); }
 });
 
-test("con 75 Cristales: el II se puede desbloquear y el III y el IV dicen cuántos faltan", () => {
-  const m = montar();
+test("con 45 Cristales: unos accesorios se alcanzan y otros dicen cuánto falta", () => {
+  const m = montar({ perfil: PERFIL({ cristales_balance: 45 }) });
   try {
-    assert.equal(tarjeta(m.caja, 2).dataset.estado, "alcanzable");
-    assert.equal(tarjeta(m.caja, 2).querySelector("[data-comprar='2']").disabled, false);
-    assert.match(tarjeta(m.caja, 2).textContent, /60/);
+    /* gafas 40 · bigote 35 · bufanda 45 · mono 50 · gorro 60 */
+    assert.equal(celda(m.caja, "gafas").dataset.estado, "alcanzable");
+    assert.equal(celda(m.caja, "gafas").querySelector('[data-comprar-accesorio="gafas"]').disabled, false);
+    assert.match(celda(m.caja, "gafas").textContent, /40/);
 
-    assert.equal(tarjeta(m.caja, 3).dataset.estado, "falta");
-    assert.equal(tarjeta(m.caja, 3).querySelector("[data-faltan]").dataset.faltan, "75", "150 − 75");
-    assert.match(tarjeta(m.caja, 3).textContent, /te faltan 75/);
-    assert.equal(tarjeta(m.caja, 3).querySelector("[data-comprar='3']").disabled, true);
+    assert.equal(celda(m.caja, "bufanda").dataset.estado, "alcanzable", "45 alcanza justo");
 
-    assert.equal(tarjeta(m.caja, 4).querySelector("[data-faltan]").dataset.faltan, "225", "300 − 75");
+    assert.equal(celda(m.caja, "gorro").dataset.estado, "falta");
+    assert.equal(celda(m.caja, "gorro").querySelector("[data-faltan]").dataset.faltan, "15", "60 − 45");
+    assert.match(celda(m.caja, "gorro").textContent, /te faltan 15/);
+    assert.equal(celda(m.caja, "gorro").querySelector('[data-comprar-accesorio="gorro"]').disabled, true);
 
-    /* Y cada tarjeta enseña su miniatura con la forma y paleta del estudiante. */
-    assert.equal(tarjeta(m.caja, 2).querySelector("svg[data-avatar]").dataset.avatar, "nucleo-marea-2");
-    assert.equal(tarjeta(m.caja, 4).querySelector("svg[data-avatar]").dataset.avatar, "nucleo-marea-4");
+    assert.equal(celda(m.caja, "mono").querySelector("[data-faltan]").dataset.faltan, "5", "50 − 45");
   } finally { m.desmontar(); }
 });
 
-test("un nivel comprado se ve en teal, sin botón y sin precio", () => {
-  const m = montar({ perfil: PERFIL({ avatar_unlocked_levels: [1, 2], cristales_balance: 15 }) });
+test("un accesorio comprado se ve en teal, sin botón y sin precio", () => {
+  const m = montar({ perfil: PERFIL({ mascota_accesorios: ["gafas"], cristales_balance: 10 }) });
   try {
-    const dos = tarjeta(m.caja, 2);
-    assert.equal(dos.dataset.estado, "comprado");
-    assert.match(dos.textContent, /Ya es tuyo/);
-    assert.equal(dos.querySelector("[data-comprar='2']"), null);
-    assert.equal(dos.style.borderColor, rgb(FAE.teal));
-    assert.ok(!dos.textContent.includes("60"), "un precio ya pagado no se vuelve a enseñar");
+    const g = celda(m.caja, "gafas");
+    assert.equal(g.dataset.estado, "comprado");
+    assert.match(g.textContent, /Ya es tuyo/);
+    assert.equal(g.querySelector('[data-comprar-accesorio="gafas"]'), null);
+    assert.equal(g.style.borderColor, rgb(FAE.teal));
+    assert.ok(!g.textContent.includes("40"), "un precio ya pagado no se vuelve a enseñar");
   } finally { m.desmontar(); }
 });
 
 test("comprar aplica la fila que devuelve la base, sin recargar nada", async () => {
   const pedidos = [];
   const m = montar({
-    onComprar: async (n) => {
-      pedidos.push(n);
-      return { perfil: PERFIL({ cristales_balance: 15, avatar_unlocked_levels: [1, 2] }) };
+    onComprarAccesorio: async (clave) => {
+      pedidos.push(clave);
+      return { perfil: PERFIL({ cristales_balance: 35, mascota_accesorios: ["gafas"] }) };
     },
   });
   try {
-    await pulsar(m.caja.querySelector("[data-comprar='2']"));
-    assert.deepEqual(pedidos, [2]);
+    await pulsar(m.caja.querySelector('[data-comprar-accesorio="gafas"]'));
+    assert.deepEqual(pedidos, ["gafas"]);
     assert.equal(m.aplicados.length, 1);
-    assert.equal(m.aplicados[0].cristales_balance, 15);
+    assert.equal(m.aplicados[0].cristales_balance, 35);
   } finally { m.desmontar(); }
 });
 
 test("si la compra falla, se dice en palabras y en ámbar, nunca en coral", async () => {
-  const m = montar({ onComprar: async () => ({ error: "No se pudo comprar. Vuelve a mirar tu saldo." }) });
+  const m = montar({ onComprarAccesorio: async () => ({ error: "No se pudo comprar. Vuelve a mirar tu saldo." }) });
   try {
-    await pulsar(m.caja.querySelector("[data-comprar='2']"));
+    await pulsar(m.caja.querySelector('[data-comprar-accesorio="gafas"]'));
     const aviso = m.caja.querySelector("[role='alert']");
     assert.match(aviso.textContent, /No se pudo comprar/);
     assert.equal(aviso.style.color, rgb(FAE.ambar));
@@ -156,25 +166,16 @@ test("si la compra falla, se dice en palabras y en ámbar, nunca en coral", asyn
 
 test("CORAL NO APARECE en la Tienda, ni en un borde, ni en un texto, ni en un fondo", () => {
   /*
-   * Coral significa error en todo el sitio. Un nivel que todavía no alcanzas no
-   * es un error: es un precio.
-   *
-   * Los avatares quedan fuera de la búsqueda a propósito: el coral de un avatar
-   * es el color de sus nodos en las paletas Nocturno, Brasa y Aurora —parte de
-   * la identidad de la figura, definida en el kit— y no un estado de la pantalla.
-   *
-   * Y desde el 28-oct queda fuera también la MUESTRA de una paleta a la venta.
-   * Ascua y Arrecife llevan coral porque el coral ES lo que se está vendiendo:
-   * pintar la muestra sin él sería enseñar un producto que no existe. La
-   * exención es exacta —el propio [data-muestra] y nada más—, así que el
-   * borde, el texto y el fondo de esa misma tarjeta siguen vigilados: si
-   * alguien pinta de coral el precio de Ascua, esta prueba lo caza igual.
+   * Coral significa error en todo el sitio. Un accesorio que todavía no
+   * alcanzas no es un error: es un precio. Las mascotas quedan fuera de la
+   * búsqueda (sus colores viven en atributos `fill`, no en `style`, y son parte
+   * del dibujo, no un estado de la pantalla).
    */
   const m = montar({ perfil: PERFIL({ cristales_balance: 0 }) });
   try {
     const coral = FAE.coral.toLowerCase();
     const sospechosos = [...m.caja.querySelectorAll("*")].filter((el) => {
-      if (el.closest("svg[data-avatar]") || el.hasAttribute("data-muestra")) return false;
+      if (el.closest("svg[data-mascota]")) return false;
       const estilo = (el.getAttribute("style") ?? "").toLowerCase();
       return estilo.includes(coral) || estilo.includes("231, 111, 81") || estilo.includes("231,111,81");
     });
@@ -192,11 +193,11 @@ test("la Tienda es una vista con su hash, y App la pinta y sabe llegar a ella", 
   assert.ok(app.includes("irATienda"), "y la navegación tiene que poder llegar");
 });
 
-test("sin sesión, la Tienda invita a entrar y no enseña saldo ni niveles", () => {
+test("sin sesión, la Tienda invita a entrar y no enseña saldo ni accesorios", () => {
   const m = montar({ session: null, perfil: null });
   try {
     assert.equal(m.caja.querySelector("[data-saldo]"), null);
-    assert.equal(m.caja.querySelector("[data-nivel='2']"), null);
+    assert.equal(m.caja.querySelector("[data-accesorio]"), null);
     assert.match(m.caja.textContent, /Entra para ver tus Cristales/);
   } finally { m.desmontar(); }
 });

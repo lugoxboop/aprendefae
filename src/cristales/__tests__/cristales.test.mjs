@@ -5,7 +5,7 @@ import {
   PRECIO_NIVEL, NIVELES_COMPRABLES, CRISTALES_RACHA, ACTIVIDADES_POR_PREMIO, CRISTALES_POR_ACTIVIDADES,
   CRISTALES_PODIO, CRISTALES_PODIO_RESTO, cristalesDePuesto, PODIO_PROPORCION, PODIO_MINIMO, tamanoPodio,
   FUENTES, saldoDe, nivelesDesbloqueados, estaDesbloqueado, precioDe, faltanPara, estadoDeNivel,
-  motivoDeError,
+  motivoDeError, PRECIO_ACCESORIO, accesoriosDe, puestosDe, estadoDeAccesorio, faltanParaAccesorio,
 } from "../cristales.js";
 
 /*
@@ -35,6 +35,26 @@ test("los precios del cliente son los de la 0035, uno por uno", () => {
     assert.ok(new RegExp(`when ${nivel} then ${precio}\\b`).test(sql), `la 0035 debe cobrar ${precio} por el nivel ${nivel}`);
   }
   assert.ok(/when 1 then/.test(sql) === false, "el nivel I no puede tener precio en la base");
+});
+
+test("los precios de los accesorios del cliente son los de la 0165, uno por uno", () => {
+  assert.deepEqual(PRECIO_ACCESORIO, { gorro: 60, gafas: 40, bufanda: 45, mono: 50, bigote: 35 });
+  const sql = migracion("0165_mascota_accesorios.sql");
+  for (const [clave, precio] of Object.entries(PRECIO_ACCESORIO)) {
+    assert.ok(new RegExp(`when '${clave}'\\s+then ${precio}\\b`).test(sql), `la 0165 debe cobrar ${precio} por ${clave}`);
+  }
+});
+
+test("accesorios: comprados, puestos (solo los comprados) y los tres estados", () => {
+  const perfil = { cristales_balance: 45, mascota_accesorios: ["gafas", "gorro"], mascota_puestos: ["gafas", "bufanda"] };
+  assert.deepEqual(accesoriosDe(perfil).sort(), ["gafas", "gorro"]);
+  /* bufanda está en puestos pero NO comprada: no se pinta puesta. */
+  assert.deepEqual(puestosDe(perfil), ["gafas"]);
+  assert.equal(estadoDeAccesorio(perfil, "gafas"), "comprado");
+  assert.equal(estadoDeAccesorio(perfil, "bufanda"), "alcanzable", "45 alcanza los 45");
+  assert.equal(estadoDeAccesorio(perfil, "mono"), "falta");
+  assert.equal(faltanParaAccesorio(perfil, "mono"), 5, "50 − 45");
+  assert.equal(faltanParaAccesorio(perfil, "gafas"), 0, "ya es suya");
 });
 
 test("los hitos de racha son 5 / 10 / 20 / 50, y los mismos que paga la 0035", () => {
