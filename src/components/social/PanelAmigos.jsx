@@ -89,9 +89,14 @@ function Fila({ tarjeta, children }) {
 }
 
 function BotonChip({ onClick, children, tono = "neutro", etiqueta }) {
+  /*
+   * El teal nunca es color de texto (no llega a 4,5:1): el tono afirmativo es un
+   * RELLENO teal con texto oscuro #06202A encima, que es la regla de la casa
+   * (teal-no-es-texto). Los otros van en neutros que sí contrastan.
+   */
   const tonos = {
     neutro: { color: "#A8B6C8", border: "rgba(248,249,250,0.16)", fondo: "rgba(248,249,250,0.05)" },
-    si: { color: FAE.teal, border: "rgba(42,157,143,0.5)", fondo: "rgba(42,157,143,0.12)" },
+    si: { color: "#06202A", border: "transparent", fondo: FAE.teal },
     no: { color: "#A8B6C8", border: "rgba(248,249,250,0.14)", fondo: "transparent" },
   };
   const c = tonos[tono] || tonos.neutro;
@@ -181,7 +186,7 @@ export default function PanelAmigos() {
           style={{
             margin: "0 0 10px",
             fontSize: "12.5px",
-            color: aviso.tipo === "error" ? FAE.coral : FAE.teal,
+            color: aviso.tipo === "error" ? FAE.coral : "#A8B6C8",
           }}
         >
           {aviso.texto}
