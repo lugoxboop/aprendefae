@@ -22,7 +22,7 @@ archivo, y solo si vas a editarlo.** Quien cree, mueva o renombre un documento
 ## Protocolos y reglas
 | Archivo | Qué contiene | Cuándo leerlo |
 |---|---|---|
-| `orquestador/conocimiento/protocolo-de-eficiencia.md` | Reglas a–l de ahorro de tokens (buscar antes de abrir, una pasada, estado en el repo, índice y bitácora) | Antes de empezar a trabajar; es la vara de cómo se gasta |
+| `orquestador/conocimiento/protocolo-de-eficiencia.md` | Reglas a–m de ahorro de tokens (buscar antes de abrir, una pasada, estado en el repo, índice y bitácora, ingeniería de contexto) | Antes de empezar a trabajar; es la vara de cómo se gasta |
 | `orquestador/conocimiento/decisiones.md` | Decisiones ya cerradas, para no reabrirlas | Antes de proponer algo que suene a ya decidido |
 | `orquestador/conocimiento/nocturno.md` | Trabajo nocturno y «mapa de choques»: quién toca qué archivo, rangos y ramas | Antes de tocar un archivo compartido |
 
