@@ -17,4 +17,4 @@
 - 
 
 ## Lo que aprendí que no hay que repetir
-- 
+- 2026-11-15 — Regla m del protocolo (ingeniería de contexto): lo pesado a un subagente que devuelve ~15 líneas, texto y no capturas, un tema por chat, el modelo justo (Haiku lo mecánico), índice→buscador→archivo, comandos recortados, solo las herramientas en uso, memoria en caché para lo automático. Línea base de tokens por tarea tomada 15-nov; comparar en una semana.

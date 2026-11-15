@@ -152,3 +152,53 @@ hilo entre chats y lo reconstruían releyendo, o preguntándole a Mateo.
   `orquestador/memoria/archivo/<agente>-AAAA-MM.md`.
 - Hora real de Bogotá en cada entrada:
   `TZ=America/Bogota date "+%Y-%m-%d %H:%M"`.
+
+## m) Ingeniería de contexto: lo que no hace falta, no entra al chat
+
+Orden de Mateo del 15 de noviembre de 2026, vía Miku y Erwin. Siguiendo lo que
+Anthropic publica sobre ingeniería de contexto: lo que más gasta no es pensar,
+es cargar al contexto cosas que no hacían falta. Cada archivo, captura,
+resultado largo o herramienta conectada que entra se vuelve a pagar en cada
+mensaje que sigue.
+
+1. **Lo pesado lo hace un subagente.** Buscar en el repositorio, leer
+   documentos largos, revisar muchos archivos o investigar se delega a un
+   subagente que trabaja en su propio contexto y devuelve solo un resumen corto
+   (máximo ~15 líneas). Su lectura no ensucia el chat principal.
+2. **Texto, no capturas.** En Claude in Chrome, leer la página como texto
+   (leer página / extraer texto) en vez de capturar. Las capturas, solo para
+   verificar algo visual ya terminado (diseño, animación, que no se vea roto).
+3. **Un tema por chat, y chats cortos.** Al terminar una tarea: actualizar la
+   bitácora y empezar limpio (chat nuevo dentro del espacio, o contexto limpio),
+   no arrastrar lo anterior. Un chat que se alarga se compacta o se traspasa con
+   la bitácora al día.
+4. **El modelo justo.** Haiku para lo mecánico (mover, renombrar, revisar
+   formato, resumir); Sonnet por defecto; Opus solo para decisiones difíciles o
+   caras de deshacer. Los subagentes de búsqueda y lectura, en Haiku.
+5. **Índice → buscador → archivo.** Nunca abrir un archivo entero si basta un
+   fragmento. Primero el índice del canon, luego el buscador del canon o el mapa
+   del código, y abrir solo las líneas que hagan falta (refuerza las reglas i y k).
+6. **Resultados de comandos recortados.** Pruebas, compilaciones y registros en
+   modo silencioso o mostrando solo el final y los errores. Nunca volcar al chat
+   un registro o un archivo completo.
+7. **Solo las herramientas que se usan.** Cada conector y cada skill ocupa
+   espacio en cada mensaje. Desconectar o dejar en carga diferida lo que no se
+   usó en la última semana; mantener corto el archivo que se carga en cada
+   sesión, con el detalle en skills que cargan bajo demanda.
+8. **Respuestas cortas entre agentes.** Entre generales y hacia Mateo: resultado
+   + lo que falta, sin repetir lo que el otro ya sabe ni narrar los pasos. El
+   detalle va al repositorio (refuerza las reglas b y d).
+9. **Leer una vez, extraer todo.** Lo que llega (capítulo, auditoría, entrega)
+   se lee una sola vez, se extrae todo lo útil al repositorio y no se vuelve a
+   abrir (regla j, ya vigente).
+10. **Lo automático, con memoria barata.** En todo lo que corre por la API
+    (Bruno, Fermi, arreglo automático, turno de noche): activar el
+    almacenamiento en caché del prompt para las instrucciones y el material
+    fijo, que se cobra mucho más barato cuando se repite, y usar el modelo más
+    económico que haga bien la tarea.
+
+**Medir.** Cada sesión de código mira su gasto con el comando de costo de la
+sesión o con `ccusage` (resumen por día y por sesión). Línea base tomada el
+15-nov-2026 sobre una tarea típica (p. ej. «corregir una actividad» o «revisar
+el estado de las células»). En una semana se compara el gasto por tarea y se
+reporta en una línea cuánto bajó y qué regla ayudó más.
