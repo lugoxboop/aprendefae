@@ -121,3 +121,34 @@ esa misma pasada se saca todo lo que va a hacer falta.
 Vale igual para los materiales de Mateo que para las entregas entre agentes: el
 que recibe exprime, anota y decide. El que entrega escribe para que el otro no
 tenga que volver a la fuente.
+
+## k) Primero el índice, luego el buscador, y solo al final el archivo
+
+Orden de Mateo del 14 de noviembre de 2026, vía Miku. Los agentes estaban
+releyendo archivos enteros para encontrar algo que el índice ya ubica.
+
+- `orquestador/INDICE.md` es el mapa de TODO el canon: una línea por archivo o
+  carpeta, con qué contiene y cuándo leerlo. **Es la primera parada.**
+- El orden es: **índice → buscador (`node scripts/canon.mjs "<término>"`) →
+  abrir el archivo**, y abrirlo solo si vas a editarlo o si la búsqueda no
+  encontró lo que buscabas.
+- **Quien cree, mueva o renombre un documento actualiza su línea en el índice en
+  el mismo cambio.** Un índice desactualizado manda a leer de más, que es justo
+  lo que evita.
+
+## l) Cada agente lleva su bitácora, y la lee antes de empezar
+
+Orden de Mateo del 14 de noviembre de 2026, vía Miku. Los agentes perdían el
+hilo entre chats y lo reconstruían releyendo, o preguntándole a Mateo.
+
+- Cada agente tiene `orquestador/memoria/<su-nombre>.md`, corta (máximo ~60
+  líneas), con esta estructura fija: **Quién soy y mi alcance** (3 líneas) ·
+  **En qué estoy ahora** · **Decisiones tomadas y por qué** (con fecha) ·
+  **Pendientes** · **Lo que aprendí que no hay que repetir** (errores ya vividos).
+- **Al empezar cualquier chat, el agente lee su bitácora antes de hacer nada; al
+  cerrar un bloque de trabajo, la actualiza.** Al traspasarse a un chat nuevo, lo
+  primero es leerla.
+- Lo viejo se condensa: si pasa de ~60 líneas, se resume y lo histórico va a
+  `orquestador/memoria/archivo/<agente>-AAAA-MM.md`.
+- Hora real de Bogotá en cada entrada:
+  `TZ=America/Bogota date "+%Y-%m-%d %H:%M"`.
