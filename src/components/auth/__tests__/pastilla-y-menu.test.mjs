@@ -136,9 +136,11 @@ test("el menú trae la ficha de identidad y las seis opciones, en orden (la clas
     assert.ok(ficha, "la ficha de identidad encabeza el menú");
     assert.ok(ficha.querySelector("svg[data-mascota]"), "con la mascota");
     assert.match(ficha.textContent, /Mateo/, "y el nombre, que salió de la pastilla");
-    assert.match(ficha.textContent, /815 FP/);
+    /* Desde el 15-nov las cifras van en fichas: «815» con su etiqueta «Puntos FP». */
+    assert.match(ficha.textContent, /815/);
+    assert.match(ficha.textContent, /Puntos FP/);
     assert.match(ficha.textContent, /0/, "los Cristales");
-    assert.match(ficha.textContent, /d[ií]as?/, "y la racha");
+    assert.match(ficha.textContent, /Racha/, "y la racha");
 
     assert.deepEqual(opciones(m.caja), ["Clase en vivo", "Mi perfil", "Amigos", "Mi avatar", "Tienda", "Cerrar sesión"]);
   } finally { m.desmontar(); }
@@ -266,4 +268,62 @@ test("ninguna cabecera con título lleva la insignia dentro", async () => {
     if (trozo.includes("<ActivityBadge")) culpables.push(p.split(/[\/]/).pop());
   }
   assert.deepEqual(culpables, [], "la insignia es metadato de contenido, no de cabecera");
+});
+
+/* ─────────────────────── el panel lateral (15-nov) ─────────────────────── */
+
+const panelDe = (caja) => caja.querySelector("[data-panel-cuenta]");
+
+test("el menú es un panel lateral: entra animado, cada opción con su icono", () => {
+  const m = montar();
+  try {
+    assert.equal(panelDe(m.caja), null, "cerrado no se pinta");
+    abrir(m.caja);
+    const p = panelDe(m.caja);
+    assert.ok(p, "abre el panel");
+    assert.match(p.className, /fae-panel-cuenta/, "con la clase que lo desliza desde la izquierda");
+    assert.equal(p.style.left, "0px", "pegado al borde izquierdo");
+    assert.ok(m.caja.querySelector(".fae-velo-cuenta"), "y el velo que oscurece la página");
+    for (const b of m.caja.querySelectorAll("[data-opcion-menu]")) {
+      assert.ok(b.querySelector(".fae-opcion-icono svg"), `«${b.textContent.trim()}» lleva icono`);
+    }
+  } finally { m.desmontar(); }
+});
+
+test("la cuenta vive a la izquierda", () => {
+  const m = montar();
+  try {
+    const envoltorio = pastilla(m.caja).parentElement;
+    assert.ok(envoltorio.style.left, "fija a la izquierda");
+    assert.equal(envoltorio.style.right, "", "y ya no a la derecha");
+  } finally { m.desmontar(); }
+});
+
+test("se cierra con Escape, con el velo y con la X, y sale animado", async () => {
+  for (const como of ["escape", "velo", "x"]) {
+    const m = montar();
+    try {
+      abrir(m.caja);
+      act(() => {
+        if (como === "escape") document.dispatchEvent(new w.KeyboardEvent("keydown", { key: "Escape" }));
+        if (como === "velo") m.caja.querySelector(".fae-velo-cuenta").dispatchEvent(new w.MouseEvent("click", { bubbles: true }));
+        if (como === "x") m.caja.querySelector(".fae-cerrar-panel").dispatchEvent(new w.MouseEvent("click", { bubbles: true }));
+      });
+      assert.equal(pastilla(m.caja).getAttribute("aria-expanded"), "false", `${como}: cerrado`);
+      assert.match(panelDe(m.caja).className, /fae-saliendo/, `${como}: se le ve irse`);
+      await act(async () => { await new Promise((r) => w.setTimeout(r, 400)); });
+      assert.equal(panelDe(m.caja), null, `${como}: y al terminar se quita`);
+    } finally { m.desmontar(); }
+  }
+});
+
+test("las tres cifras del encabezado: FP, Cristales y racha", () => {
+  const m = montar({ perfil: { ...PERFIL, points: 12500, cristales_balance: 75 } });
+  try {
+    abrir(m.caja);
+    const ficha = m.caja.querySelector("[data-ficha-cuenta]");
+    assert.match(ficha.textContent, /12\.500/);
+    assert.match(ficha.textContent, /75/);
+    assert.match(ficha.textContent, /Racha/);
+  } finally { m.desmontar(); }
 });

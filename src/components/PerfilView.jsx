@@ -89,9 +89,8 @@ export default function PerfilView({ seccion = null, onBack }) {
       }}
     >
       <div data-mv-fila style={{ maxWidth: "680px", margin: "0 auto", padding: "clamp(18px, 3vh, 30px) 24px 56px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "26px" }}>
-          <Logo variant="symbol" size={26} theme="dark" />
-          <span aria-hidden="true" style={{ width: "1px", height: "22px", backgroundColor: "rgba(248,249,250,0.16)", margin: "0 4px" }} />
+        <div className="fae-cabecera" style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "26px" }}>
+          <span className="fae-cabecera-marca"><Logo variant="symbol" size={26} theme="dark" /></span>
           <button
             type="button"
             onClick={onBack}

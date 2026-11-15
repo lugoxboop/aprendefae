@@ -9,7 +9,7 @@ buscador (`node scripts/canon.mjs "<término>"`) → y solo al final abrir el
 archivo, y solo si vas a editarlo.** Quien cree, mueva o renombre un documento
 **actualiza su línea aquí en el mismo cambio**.
 
-Última actualización: 2026-11-14 (Miku).
+Última actualización: 2026-11-15 (Miku).
 
 ---
 
@@ -52,7 +52,7 @@ archivo, y solo si vas a editarlo.** Quien cree, mueva o renombre un documento
 |---|---|---|
 | `orquestador/conocimiento/paquetes/` (214) | Paquetes de material por actividad | Solo el que te toca, vía buscador con `--todo` |
 | `orquestador/conocimiento/fichas/` (20) | Fichas de actividades ya exprimidas | La de tu pieza |
-| `orquestador/conocimiento/revisiones/` | Revisiones con capturas (decoración, panel docente, t3, t4, volumen) | Solo la revisión nombrada |
+| `orquestador/conocimiento/revisiones/` | Revisiones con capturas (decoración, panel docente, t3, t4, volumen, sidebar-cuenta) | Solo la revisión nombrada |
 
 ## Prompts maestros y roles
 | Carpeta | Qué contiene | Cuándo leerlo |

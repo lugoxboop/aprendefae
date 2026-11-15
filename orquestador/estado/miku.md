@@ -1,4 +1,4 @@
-2026-10-27 08:19 (hora Bogotá)
+2026-11-15 14:39 (hora Bogotá)
 - Papel: general de generales. Las cinco células llevan en pausa desde el 26-oct por orden de Mateo (ahorro de cupo); Miku hace el trabajo a mano y reactiva por tareas concretas
 - Vigía: lo hace Miku, no un agente. El agente vigía del 25-oct se borró: preguntaba «continuar» a agentes ya trabados y eso costó cupo sin mover nada
 
@@ -33,3 +33,5 @@
 - Un verde que no midió lo que dice medir no es un verde: filtrar con ^not ok sobre un informe que no es TAP enseña vacío y parece éxito
 - Yo rompí main el 24-oct con marcas combinantes crudas en canon.mjs. Un general lo diagnosticó y dejó el arreglo de una línea; el rojo se heredó a todos los PR y costó un día
 - Dos veces fui yo el cuello de botella por no fusionar lo compartido a tiempo (#490/#491 y una pila de 6)
+
+10. Menú de cuenta como barra lateral a la izquierda, con iconos y cifras, y logo a la derecha: en curso (PR abierto, espera revisión de Mateo)

@@ -112,8 +112,8 @@ export default function PrivacidadView() {
       }}
     >
       <div style={{ maxWidth: "680px", margin: "0 auto", padding: "clamp(18px, 3vh, 30px) 24px 72px" }}>
-        <div style={{ marginBottom: "40px" }}>
-          <Logo variant="symbol" size={26} theme="dark" />
+        <div className="fae-cabecera" style={{ marginBottom: "40px", display: "flex", alignItems: "center", minHeight: "44px" }}>
+          <span className="fae-cabecera-marca"><Logo variant="symbol" size={26} theme="dark" /></span>
         </div>
 
         <h1

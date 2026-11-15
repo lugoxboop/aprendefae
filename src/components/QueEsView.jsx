@@ -43,9 +43,8 @@ export default function QueEsView({ onBack }) {
     <div style={{ minHeight: "100vh", backgroundColor: FAE.bg, color: FAE.text, fontFamily: "Inter, sans-serif" }}>
       <EstiloEntrada />
       <div style={{ maxWidth: "720px", margin: "0 auto", padding: "14px clamp(20px, 5vw, 28px) 72px" }}>
-        <div {...entrada(0, "baja")} style={{ ...entrada(0, "baja").style, display: "flex", alignItems: "center", gap: "10px", marginBottom: "32px" }}>
-          <Logo variant="symbol" size={26} theme="dark" />
-          <span aria-hidden="true" style={{ width: "1px", height: "22px", backgroundColor: "rgba(248,249,250,0.16)", margin: "0 4px" }} />
+        <div {...entrada(0, "baja")} className="fae-cabecera" style={{ ...entrada(0, "baja").style, display: "flex", alignItems: "center", gap: "10px", marginBottom: "32px" }}>
+          <span className="fae-cabecera-marca"><Logo variant="symbol" size={26} theme="dark" /></span>
           <button
             type="button"
             onClick={onBack}

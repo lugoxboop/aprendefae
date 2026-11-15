@@ -121,7 +121,6 @@ export default function ContabilidadT7_1View({ modo = null, nodoInicial = null, 
         <div style={{ maxWidth: "860px", margin: "0 auto", padding: "clamp(18px, 3vh, 30px) clamp(16px, 2vw, 24px) 56px" }}>
           <div className="fae-cabecera-titulo" style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "22px" }}>
             <span className="fae-cabecera-marca"><Logo variant="symbol" size={26} theme="dark" /></span>
-            <span aria-hidden="true" className="fae-cabecera-marca" style={{ width: "1px", height: "22px", backgroundColor: "rgba(248,249,250,0.16)", margin: "0 4px" }} />
             <button
               type="button"
               onClick={onBack}

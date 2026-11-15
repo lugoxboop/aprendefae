@@ -771,10 +771,8 @@ function Marco({ children, onBack }) {
           * elipsis en vez de pasar por debajo (Shibukawa, #498: a menos de
           * 360 px la tapaba).
           */}
-        <style>{`.pd1-barra { padding-right: 112px; } @media (min-width: 720px) { .pd1-barra { padding-right: 0; } }`}</style>
-        <div className="pd1-barra" style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px", minWidth: 0 }}>
-          <Logo variant="symbol" size={26} theme="dark" />
-          <span aria-hidden="true" style={{ width: "1px", height: "22px", backgroundColor: "rgba(248,249,250,0.16)", margin: "0 4px" }} />
+        <div className="pd1-barra fae-cabecera" style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px", minWidth: 0 }}>
+          <span className="fae-cabecera-marca"><Logo variant="symbol" size={26} theme="dark" /></span>
           <button
             type="button"
             onClick={onBack}

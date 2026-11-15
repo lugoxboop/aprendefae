@@ -380,7 +380,6 @@ export default function PorterView({ modo = null, nodoInicial = null, onBack }) 
         {/* Logo (salir al inicio) y volver (subir al índice de la materia) conviven. */}
         <div className="fae-cabecera-titulo" style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "22px" }}>
           <span className="fae-cabecera-marca"><Logo variant="symbol" size={26} theme="dark" /></span>
-          <span aria-hidden="true" className="fae-cabecera-marca" style={{ width: "1px", height: "22px", backgroundColor: "rgba(248,249,250,0.16)", margin: "0 4px" }} />
           <button
             type="button"
             onClick={onBack}
