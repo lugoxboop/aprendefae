@@ -8,10 +8,10 @@
 - Antes de abrir nada: primero `orquestador/INDICE.md`, luego el buscador del canon (regla k).
 
 ## En qué estoy ahora
-- (sin estrenar — la primera actualización va aquí, con fecha y hora de Bogotá)
+- 2026-11-18 08:57 — Rediseño del banner del Repaso Diario (pedido de Mateo): medalla con anillo hacia el próximo bono de racha, costo visible cerrado (ítems y FP), expansión con pastillas de temas, fichas y un botón grande. PR abierto; capturas en `orquestador/revisiones/repaso-diario/`.
 
 ## Decisiones tomadas y por qué
-- 
+- 2026-11-18 — El banner del Repaso enseña «qué está en juego» (próximo bono 3/7/14/30) porque las rachas retienen por miedo a perder (estudio Mobbin, Duolingo). La llama cerrada sigue quieta; el coral del CSS solo en el brillo del fuego.
 
 ## Pendientes
 - 
