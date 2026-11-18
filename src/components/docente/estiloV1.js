@@ -63,8 +63,9 @@ export const CSS_V1 = `
 @keyframes pd3-entra { from { opacity: 0; transform: translateX(-14px); } to { opacity: 1; transform: none; } }
 @keyframes pd3-brilla { from { opacity: 0; } to { opacity: 1; } }
 .pd1 button { transition: filter 160ms ease, transform 200ms cubic-bezier(.22,1,.36,1), background-color 160ms ease, border-color 160ms ease; }
-.pd1 button:not(:disabled):hover { filter: brightness(1.18); }
-.pd1 button:not(:disabled):active { transform: scale(0.98); }
+/* Las piezas de la portada (pdp-*, PortadaDocente) y las tarjetas de tema traen su propio movimiento. */
+.pd1 button:not(.fae-tema):not(.pdp-cifra):not(.pdp-fila):not(.pdp-ver-todos):not(:disabled):hover { filter: brightness(1.18); }
+.pd1 button:not(.fae-tema):not(.pdp-cifra):not(:disabled):active { transform: scale(0.98); }
 .pd3-titulo-icono { transition: transform 200ms cubic-bezier(.22,1,.36,1); }
 .pd1 section:hover .pd3-titulo-icono { transform: scale(1.08) rotate(-4deg); }
 .pd3-opcion { animation: pd3-entra 320ms cubic-bezier(.22,1,.36,1) both; animation-delay: calc(120ms + var(--i, 0) * 30ms); }

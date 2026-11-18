@@ -11,26 +11,20 @@ import { destacadosDe } from "../../docente/destacados.js";
 import { csvDelPanel, descargarCsv } from "../../docente/exportar.js";
 import { diagnosticoDelGrupo } from "../../docente/diagnosticos.js";
 import { esfuerzoContraResultado } from "../../docente/esfuerzoResultado.js";
-import { fraseDeHoy } from "../../docente/frase.js";
 import { alternarSilencio, guardarPreferencias, preferenciasDe, umbralesCon } from "../../docente/preferenciasDocente.js";
 import BloqueAlertas from "./BloqueAlertas.jsx";
 import Destacados from "./Destacados.jsx";
 import ResumenClase, { DesdeTuVisita, SelectorMateria } from "./ResumenClase.jsx";
-import AtencionAhora from "./AtencionAhora.jsx";
-import PeorActividad from "./PeorActividad.jsx";
 import ListaEstudiantes from "./ListaEstudiantes.jsx";
 import ListaActividades from "./ListaActividades.jsx";
-import FraseDeHoy from "./FraseDeHoy.jsx";
 import EsfuerzoResultado from "./EsfuerzoResultado.jsx";
 import Fabrica from "./Fabrica.jsx";
-import LlamadoFabrica from "./LlamadoFabrica.jsx";
-import LlamadoVivo from "./LlamadoVivo.jsx";
 import AvisoSospechas from "./AvisoSospechas.jsx";
-import BloqueRiesgo from "./BloqueRiesgo.jsx";
+import PortadaDocente from "./PortadaDocente.jsx";
 import ListaRiesgo from "./ListaRiesgo.jsx";
 import VistaEstudiante from "./VistaEstudiante.jsx";
 import { CSS_V1, V1, TONOS_PANEL, tarjetaV1, notaV1, volverV1 } from "./estiloV1.js";
-import Entrada, { EstiloEntrada, entrada } from "../shared/Entrada.jsx";
+import { EstiloEntrada } from "../shared/Entrada.jsx";
 
 /*
  * Panel docente.
@@ -54,17 +48,6 @@ import Entrada, { EstiloEntrada, entrada } from "../shared/Entrada.jsx";
  * antes, de las mismas funciones; solo cambian de sitio (P7). El rediseño no
  * agrega escrituras: panel_resumen y grupo_marcar siguen como estaban (P8).
  */
-
-/*
- * entrada() devuelve className y style; cuando además hace falta estilo propio
- * hay que fundir los dos objetos, y llamarla dos veces en la misma etiqueta
- * —una en el spread y otra dentro del style— se lee como un error aunque
- * funcione. Esto lo hace una vez.
- */
-function conEntrada(orden, modo, extra) {
-  const e = entrada(orden, modo);
-  return { className: e.className, style: { ...e.style, ...extra } };
-}
 
 const seccion = { fontFamily: "Sora, sans-serif", fontSize: "13px", fontWeight: 700, letterSpacing: "0.1em", color: "rgba(248,249,250,0.55)", margin: "0 0 12px" };
 const tarjeta = { padding: "14px 16px", borderRadius: "14px", background: "rgba(248,249,250,0.04)", border: "1px solid rgba(248,249,250,0.1)" };
@@ -396,10 +379,6 @@ export default function PanelDocente({ actividadInicial = null, onBack }) {
   const umbrales = useMemo(() => umbralesCon(prefs), [prefs]);
   const riesgo = useMemo(() => diagnosticoDelGrupo(cohorte, silenciados, umbrales), [cohorte, silenciados, umbrales]);
   const esfuerzo = useMemo(() => esfuerzoContraResultado(cohorte), [cohorte]);
-  const lineasFrase = useMemo(
-    () => fraseDeHoy({ cohorte, activos, peor: estadoPeor.peor, riesgo, sinGrupo: grupo.length === 0 }),
-    [cohorte, activos, estadoPeor.peor, riesgo, grupo.length]
-  );
   /* Guardar devuelve lo que quedó guardado, ya saneado: el estado nunca se
    * adelanta a lo que el almacenamiento aceptó. */
   const ajustar = (id, valor) => { if (materia) setPrefs(guardarPreferencias(materia, { [id]: valor })); };
@@ -561,7 +540,7 @@ export default function PanelDocente({ actividadInicial = null, onBack }) {
         subjectId={materia}
         posicion={estudianteAbierto ? posiciones.get(estudianteAbierto.user_id) : null}
         onMarcar={marcar}
-        textoVolver={desde === "estudiantes" ? "Mis estudiantes" : "Volver al resumen"}
+        textoVolver={{ estudiantes: "Mis estudiantes", riesgo: "A quién mirar", esfuerzo: "Esfuerzo y resultado" }[desde] ?? "Volver al resumen"}
         onVolver={() => ir({ tipo: desde })}
       />
     );
@@ -590,161 +569,58 @@ export default function PanelDocente({ actividadInicial = null, onBack }) {
         onVolver={() => ir({ tipo: "inicio" })}
       />
     );
-  } else {
+  } else if (vista.tipo === "clase") {
+    /* El avance por tema, que en la portada vieja era el desplegable de «Mi clase». */
     cuerpo = (
-      <>
-        {/*
-          * La fábrica, a la vista y FUERA del «si hay estudiantes». Estaba en
-          * la fila de botones del final, del mismo tamaño que «Mis
-          * estudiantes»; es lo único de esta pantalla que ofrece hacer algo
-          * nuevo y ahí no se encontraba.
-          *
-          * No se apaga con el curso vacío a propósito: las demás vistas
-          * enseñan lo que hizo el curso y sin curso no enseñan nada, pero
-          * preparar material se hace ANTES de que empiece el semestre — justo
-          * cuando el resto del panel está en blanco y esto es lo único que
-          * tiene sentido tocar.
-          */}
-        <LlamadoFabrica
-          {...entrada(0, "crece")}
-          nombreMateria={nombreMateria}
-          onIr={() => ir({ tipo: "fabrica" })}
+      <section data-vista="clase">
+        <button type="button" style={volverV1} onClick={() => ir({ tipo: "inicio" })} data-volver>‹ Volver al resumen</button>
+        <ResumenClase
+          avance={avance}
+          activos={activos}
+          nCohorte={cohorte.length}
+          singular={singular}
+          porTema={porTema}
+          pctEval={resumen.pctEval}
+          nEval={resumen.nEval}
+          abierto
+          onAlternar={() => {}}
         />
-        {/* La clase en vivo (0159): la segunda herramienta que el profesor usa en el salón. */}
-        <LlamadoVivo {...entrada(1, "crece")} materia={materia} />
-        {/* Auditoría de seguridad (0160): resultados que no parecen jugados. Solo aparece si hay. */}
-        <AvisoSospechas materia={materia} />
-        {sinEstudiantes ? (
-          /*
-           * Ukyo §7, 0 estudiantes, con el texto de Katsumi. No hay «código de
-           * curso» (decisión de Yujiro: esa función no existe). Las vistas
-           * aparte, apagadas con su razón.
-           */
-          <section style={{ ...tarjetaV1, maxWidth: "62ch" }} data-bloque="b1" data-vacio>
-            <p style={{ margin: 0, fontSize: "15px", lineHeight: 1.6, color: FAE.text }}>
-              Aún no hay nada que mostrar. Cuando tu clase haga su primera actividad, la verás aquí.
-            </p>
-          </section>
-        ) : (
-          <>
-            {/*
-              * Capa 0. Va antes que las tarjetas y es el único bloque con
-              * acento: lo primero que se lee es una oración con sujeto y un
-              * botón, no un número grande sin destinatario.
-              */}
-            <FraseDeHoy {...entrada(0, "sube")} lineas={lineasFrase} onIr={irDestino} />
-          <div className="pd1-rejilla">
-            <Entrada orden={1} modo="crece" estira>
-            <ResumenClase
-              avance={avance}
-              activos={activos}
-              nCohorte={cohorte.length}
-              singular={singular}
-              porTema={porTema}
-              pctEval={resumen.pctEval}
-              nEval={resumen.nEval}
-              abierto={temasAbiertos}
-              onAlternar={() => setTemasAbiertos((v) => !v)}
-            />
-            </Entrada>
-            <Entrada orden={2} modo="crece" estira>
-            <AtencionAhora
-              atencion={atencion}
-              nDestacados={destacados.length}
-              singular={singular}
-              onVerTodos={() => ir({ tipo: "atencion" })}
-              onAbrir={(id) => ir({ tipo: "estudiante", id, desde: "inicio" })}
-            />
-            </Entrada>
-            <div {...conEntrada(3, "crece", { minWidth: 0, display: "grid" })} data-ms-peor={msPeor ?? undefined}>
-              <PeorActividad
-                estado={estadoPeor}
-                singular={singular}
-                onAbrir={(id) => { elegirActividad(id); ir({ tipo: "actividades", actividad: id }); }}
-                onVerTodas={() => ir({ tipo: "actividades", actividad: null })}
-              />
-            </div>
-          </div>
-
-          {/*
-            * Capa 2, la franja que llenó la media pantalla que antes quedaba
-            * en blanco a 1280: a la izquierda el gráfico que separa al que se
-            * esfuerza y falla del que va rápido y falla, a la derecha las
-            * personas concretas con su diagnóstico y su botón. El concepto y
-            * la persona, uno al lado del otro.
-            */}
-          <div className="pd2-dos">
-            <EsfuerzoResultado
-              {...entrada(4, "crece")}
-              datos={esfuerzo}
-              onAbrir={(id) => ir({ tipo: "estudiante", id, desde: "inicio" })}
-            />
-            <div {...conEntrada(5, "crece", { display: "grid", gap: "12px", minWidth: 0 })}>
-              <BloqueRiesgo
-                riesgo={riesgo}
-                total={cohorte.length}
-                onAbrir={(id) => ir({ tipo: "estudiante", id, desde: "riesgo" })}
-                onSilenciar={silenciar}
-                onVerTodos={() => ir({ tipo: "riesgo" })}
-              />
-              {/* Lo que cambió desde la última visita cuelga de esta columna y no
-                * del final de la página: así la derecha acompaña a la izquierda
-                * en vez de dejar medio metro de fondo debajo. */}
-              <DesdeTuVisita resumen={resumenVisita} temaDe={temaDe} />
-            </div>
-          </div>
-          </>
-        )}
-        {/*
-          * Las vistas aparte, como las opciones de la barra lateral de la
-          * cuenta (#681): icono en su pastilla de color, el nombre con una
-          * línea de qué hay dentro y la flecha que asoma al pasar. Entran en
-          * fila desde la izquierda. Apiladas en el teléfono; tres en fila
-          * desde 720 px.
-          */}
-        <nav aria-label="Vistas del panel" style={{ ...tarjetaV1, marginTop: "16px", padding: "10px" }}>
-          <p style={{ margin: "4px 10px 8px", fontSize: "11px", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(248,249,250,0.5)" }}>
-            Ver más a fondo
-          </p>
-          <div className="pd3-vistas">
-            {[
-              { id: "riesgo", texto: "A quién mirar", sub: "Quién se está descolgando", icono: Eye, tono: TONOS_PANEL.mirar, ir: () => ir({ tipo: "riesgo" }) },
-              { id: "estudiantes", texto: "Mis estudiantes", sub: "Tu grupo, uno por uno", icono: Users, tono: TONOS_PANEL.estudiantes, ir: () => ir({ tipo: "estudiantes" }) },
-              { id: "actividades", texto: "Actividades", sub: "Cómo le fue a cada una", icono: ListChecks, tono: TONOS_PANEL.actividades, ir: () => ir({ tipo: "actividades", actividad: null }) },
-            ].map((x, i) => (
-              <button
-                key={x.id}
-                type="button"
-                className="pd3-opcion"
-                onClick={x.ir}
-                disabled={sinEstudiantes}
-                data-ir={x.id}
-                style={{
-                  "--i": i,
-                  width: "100%", display: "flex", alignItems: "center", gap: "12px", minHeight: "56px",
-                  padding: "8px 10px", borderRadius: "12px", textAlign: "left", font: "inherit",
-                  background: "transparent", border: "none", color: FAE.text,
-                  opacity: sinEstudiantes ? 0.55 : 1, cursor: sinEstudiantes ? "default" : "pointer",
-                }}
-              >
-                <span className="pd3-icono" aria-hidden="true" style={{ width: "36px", height: "36px", borderRadius: "10px", flexShrink: 0, display: "inline-flex", alignItems: "center", justifyContent: "center", backgroundColor: `${x.tono}1F`, color: x.tono }}>
-                  <x.icono size={18} strokeWidth={2} />
-                </span>
-                <span style={{ flex: 1, minWidth: 0 }}>
-                  <span style={{ display: "block", fontFamily: "Sora, sans-serif", fontSize: "14px", fontWeight: 600, lineHeight: 1.25 }}>{x.texto}</span>
-                  <span style={{ display: "block", fontSize: "12px", lineHeight: 1.35, color: V1.texto2, marginTop: "2px" }}>{x.sub}</span>
-                </span>
-                <ChevronRight className="pd3-flecha" size={16} aria-hidden="true" style={{ flexShrink: 0 }} />
-              </button>
-            ))}
-          </div>
-          {/* La fábrica ya no está aquí: subió al cuerpo del panel, encima de
-              las cifras (LlamadoFabrica). Dos entradas a lo mismo en la misma
-              pantalla no es el doble de visible, es una duda sobre cuál de las
-              dos hace otra cosa. */}
-        </nav>
-        {sinEstudiantes && <p style={{ ...notaV1, marginTop: "8px" }} data-razon-apagado>Se abre cuando alguien haga su primera actividad.</p>}
-      </>
+      </section>
+    );
+  } else if (vista.tipo === "esfuerzo") {
+    /* El gráfico de esfuerzo y resultado, que ocupaba media portada, ahora en su vista. */
+    cuerpo = (
+      <section data-vista="esfuerzo">
+        <button type="button" style={volverV1} onClick={() => ir({ tipo: "inicio" })} data-volver>‹ Volver al resumen</button>
+        <EsfuerzoResultado
+          datos={esfuerzo}
+          onAbrir={(id) => ir({ tipo: "estudiante", id, desde: "esfuerzo" })}
+        />
+      </section>
+    );
+  } else {
+    /*
+     * La portada, rehecha el 18-nov (PortadaDocente.jsx): tres pisos —cómo
+     * va la clase, a quién mirar hoy, qué quieres hacer— en vez de nueve
+     * bloques del mismo peso. Lo que antes estaba aquí vive a un toque.
+     */
+    cuerpo = (
+      <PortadaDocente
+        materia={materia}
+        nombreMateria={nombreMateria}
+        sinEstudiantes={sinEstudiantes}
+        nCohorte={cohorte.length}
+        activos={activos}
+        avance={avance}
+        riesgo={riesgo}
+        destacados={destacados.length}
+        estadoPeor={estadoPeor}
+        nActividades={actividadesMirables.length}
+        aviso={<AvisoSospechas materia={materia} />}
+        desdeTuVisita={sinEstudiantes ? null : <DesdeTuVisita resumen={resumenVisita} temaDe={temaDe} />}
+        ir={ir}
+        irActividad={(id) => { elegirActividad(id); ir({ tipo: "actividades", actividad: id }); }}
+      />
     );
   }
 
