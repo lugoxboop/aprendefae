@@ -5,6 +5,7 @@ import { historialDe } from "../../docente/datos.js";
 import { nombreDeActividad } from "../../data/subjects.js";
 import MarcaNivel, { NIVEL_MARCA } from "./MarcaNivel.jsx";
 import { MOTIVO_CORTO } from "../../docente/panelV1.js";
+import { Kpi } from "./VistaDocente.jsx";
 
 /*
  * ÍTEM 3 — El detalle que se abre DEBAJO de la fila, dentro de la misma fila.
@@ -36,8 +37,6 @@ import { MOTIVO_CORTO } from "../../docente/panelV1.js";
  * izquierda —que salen de lo que ya estaba cargado— se siguen viendo.
  */
 
-const rotulo = { margin: "0 0 3px", fontSize: "12px", letterSpacing: "0.07em", color: "rgba(248,249,250,0.45)" };
-const cifra = { margin: 0, fontFamily: "Sora, sans-serif", fontSize: "17px", fontWeight: 700, fontVariantNumeric: "tabular-nums", color: FAE.text };
 
 const COLOR_NIVEL = {
   /* Panel v1 (P6): sin coral; el nivel alto lo dicen la forma y la palabra. */
@@ -82,29 +81,33 @@ export default function DetalleEstudiante({ e, subjectId, posicion }) {
    */
   const alerta = alertasDe(e)[0] ?? null;
 
+  const pct = (v) => (v === null || v === undefined ? null : Math.round(Number(v)));
+  const pctEval = pct(e.pct_evaluativa);
+  const pctExpl = !Number(e.n_exploratorias) ? null : pct(e.pct_exploratoria);
+
   return (
-    <div style={{ padding: "4px 14px 14px" }}>
+    <div>
       {alerta && (
         <div
           style={{
-            display: "flex", alignItems: "flex-start", gap: "10px",
-            padding: "10px 13px", borderRadius: "11px", marginBottom: "14px",
+            display: "flex", alignItems: "flex-start", gap: "12px",
+            padding: "14px 16px", borderRadius: "16px", marginBottom: "16px",
             background: `${COLOR_NIVEL[alerta.nivel]}14`,
             border: `1px solid ${COLOR_NIVEL[alerta.nivel]}55`,
           }}
         >
-          <span aria-hidden="true" style={{ display: "flex", marginTop: "3px" }}>
-            <MarcaNivel nivel={MARCA_NIVEL[alerta.nivel]} />
+          <span aria-hidden="true" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: "32px", height: "32px", flexShrink: 0, borderRadius: "10px", background: `${COLOR_NIVEL[alerta.nivel]}22` }}>
+            <MarcaNivel nivel={MARCA_NIVEL[alerta.nivel]} tamano={14} />
           </span>
           <div style={{ minWidth: 0 }}>
-            <p style={{ margin: 0, fontFamily: "Sora, sans-serif", fontSize: "13px", fontWeight: 600, color: FAE.text }}>
+            <p style={{ margin: 0, fontFamily: "Sora, sans-serif", fontSize: "14px", fontWeight: 600, color: FAE.text }}>
               {/* La palabra del nivel acompaña al color: el tono nunca va solo. */}
               <span style={{ color: COLOR_NIVEL[alerta.nivel] }}>{PALABRA_NIVEL[alerta.nivel]}</span>
               {/* El motivo de textos.md, el mismo de B2 (Shibukawa, #525): una regla, un nombre. alertas.js no cambia. */}
               {" · "}{MOTIVO_CORTO[alerta.titulo] ?? alerta.titulo}
             </p>
             {alerta.detalle && (
-              <p style={{ margin: "3px 0 0", fontSize: "12.5px", lineHeight: 1.5, color: "rgba(248,249,250,0.66)" }}>
+              <p style={{ margin: "3px 0 0", fontSize: "13px", lineHeight: 1.5, color: "rgba(248,249,250,0.7)" }}>
                 {alerta.detalle}
               </p>
             )}
@@ -112,103 +115,70 @@ export default function DetalleEstudiante({ e, subjectId, posicion }) {
         </div>
       )}
 
-      <div className="fae-det-cuerpo">
-        {/* ── Cifras clave. En móvil, rejilla 2×2 compacta. ── */}
-        <div className="fae-det-cifras">
-          <div><p style={rotulo}>FP TOTAL</p><p style={cifra}>{e.fp_total}</p></div>
-          {/* En neutro (Shibukawa, #525): en Contabilidad el teal es el debe. */}
-          <div><p style={rotulo}>FP ESTE CICLO</p><p style={{ ...cifra, color: FAE.text }}>{e.fp_ciclo}</p></div>
-          <div>
-            <p style={rotulo}>ACIERTO EVALUATIVAS</p>
-            <p style={cifra}>
-              {e.pct_evaluativa === null || e.pct_evaluativa === undefined
-                ? "—"
-                : `${Math.round(Number(e.pct_evaluativa))}%`}
-            </p>
-          </div>
-          {/*
-            * Panel v1 (Ukyo §6.2): lo que antes iba en la fila cerrada o solo en
-            * el CSV vive aquí, con las mismas cifras de panel_estudiantes.
-            */}
-          <div>
-            <p style={rotulo}>EVALUATIVAS HECHAS</p>
-            <p style={cifra} data-cifra="n-evaluativas">{Number(e.n_evaluativas ?? 0)}</p>
-          </div>
-          <div>
-            <p style={rotulo}>ACIERTO EXPLORATORIAS</p>
-            <p style={{ ...cifra, color: "rgba(248,249,250,0.75)" }} data-cifra="pct-exploratoria">
-              {e.pct_exploratoria === null || e.pct_exploratoria === undefined || !Number(e.n_exploratorias)
-                ? "—"
-                : `${Math.round(Number(e.pct_exploratoria))}% · ${Number(e.n_exploratorias)}`}
-            </p>
-          </div>
-          <div>
-            <p style={rotulo}>TIEMPO MEDIO</p>
-            <p style={cifra} data-cifra="duracion">{e.duracion_media_ms === null || e.duracion_media_ms === undefined ? "—" : `${Math.round(Number(e.duracion_media_ms) / 1000)} s`}</p>
-          </div>
-          <div>
-            <p style={rotulo}>POSICIÓN</p>
-            <p style={cifra}>{posicion ? `#${posicion}` : "—"}</p>
-          </div>
-        </div>
+      {/* ── Las cifras, en fichas: lo que antes era una columna de rótulos. ── */}
+      <div className="pdv-kpis" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(min(46%, 210px), 1fr))" }}>
+        <Kpi i={0} rotulo="FP total" valor={e.fp_total} />
+        {/* En neutro (Shibukawa, #525): en Contabilidad el teal es el debe. */}
+        <Kpi i={1} rotulo="FP este ciclo" valor={e.fp_ciclo} />
+        <Kpi i={2} rotulo="Acierto evaluativas" valor={pctEval === null ? "—" : `${pctEval}%`} />
+        <Kpi i={3} rotulo="Evaluativas hechas" valor={<span data-cifra="n-evaluativas">{Number(e.n_evaluativas ?? 0)}</span>} />
+        <Kpi
+          i={4} rotulo="Acierto exploratorias"
+          valor={<span data-cifra="pct-exploratoria" style={{ color: "rgba(248,249,250,0.8)" }}>{pctExpl === null ? "—" : `${pctExpl}%`}</span>}
+          pie={pctExpl === null ? null : `${Number(e.n_exploratorias)} hechas · no mide dominio`}
+        />
+        <Kpi i={5} rotulo="Tiempo medio" valor={<span data-cifra="duracion">{e.duracion_media_ms === null || e.duracion_media_ms === undefined ? "—" : `${Math.round(Number(e.duracion_media_ms) / 1000)} s`}</span>} />
+        <Kpi i={6} rotulo="Posición" valor={posicion ? `#${posicion}` : "—"} />
+      </div>
 
-        {/* ── Historial agrupado por actividad ── */}
-        <div style={{ minWidth: 0 }}>
-          <p style={{ ...rotulo, margin: "0 0 8px" }}>HISTORIAL POR ACTIVIDAD</p>
+      {/* ── Historial agrupado por actividad ── */}
+      <p className="pdv-seccion">Historial por actividad</p>
 
-          {historial === null && !errorHist && (
-            <p style={{ margin: 0, fontSize: "12.5px", color: "rgba(248,249,250,0.5)" }}>Cargando…</p>
-          )}
+      {historial === null && !errorHist && (
+        <p style={{ margin: 0, fontSize: "13px", color: "rgba(248,249,250,0.55)" }}>Cargando…</p>
+      )}
 
-          {errorHist && (
-            <p style={{ margin: 0, fontSize: "12.5px", lineHeight: 1.5, color: "rgba(248,249,250,0.55)" }}>
-              El historial detallado no está disponible todavía. Las cifras de la izquierda sí.
-            </p>
-          )}
+      {errorHist && (
+        <p style={{ margin: 0, fontSize: "13px", lineHeight: 1.5, color: "rgba(248,249,250,0.6)" }}>
+          El historial detallado no está disponible todavía. Las cifras de arriba sí.
+        </p>
+      )}
 
-          {historial && historial.length === 0 && !errorHist && (
-            <p style={{ margin: 0, fontSize: "12.5px", color: "rgba(248,249,250,0.5)" }}>
-              Sin actividades registradas en esta materia.
-            </p>
-          )}
+      {historial && historial.length === 0 && !errorHist && (
+        <p style={{ margin: 0, fontSize: "13px", color: "rgba(248,249,250,0.55)" }}>
+          Sin actividades registradas en esta materia.
+        </p>
+      )}
 
-          {historial && historial.length > 0 && (
-            <div style={{ display: "flex", flexDirection: "column", gap: "1px" }}>
-              {historial.map((h) => (
-                <div
-                  key={h.activity_id}
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "minmax(0,1fr) auto auto",
-                    gap: "10px",
-                    alignItems: "baseline",
-                    padding: "7px 0",
-                    borderBottom: "1px solid rgba(248,249,250,0.07)",
-                  }}
-                >
-                  <span style={{ fontSize: "12.5px", color: "rgba(248,249,250,0.82)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+      {historial && historial.length > 0 && (
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 320px), 1fr))", gap: "8px" }}>
+          {historial.map((h, k) => {
+            const p = pct(h.mejor_pct);
+            return (
+              <div
+                key={h.activity_id}
+                className="pdv-entra"
+                style={{ "--i": k, padding: "12px 14px", borderRadius: "14px", background: "rgba(248,249,250,0.035)", border: "1px solid rgba(248,249,250,0.08)", minWidth: 0 }}
+              >
+                <div style={{ display: "flex", alignItems: "baseline", gap: "10px" }}>
+                  <span style={{ flex: 1, minWidth: 0, fontSize: "13.5px", fontWeight: 600, color: "rgba(248,249,250,0.9)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {nombreDeActividad(h.activity_id) ?? h.activity_id}
-                    {/* El "×3" va apagado y pequeño: es un matiz, no una insignia. */}
-                    {h.intentos > 1 && (
-                      <span style={{ marginLeft: "6px", fontSize: "12px", color: "rgba(248,249,250,0.4)", fontVariantNumeric: "tabular-nums" }}>
-                        ×{h.intentos}
-                      </span>
-                    )}
                   </span>
-                  <span style={{ fontFamily: "Sora, sans-serif", fontSize: "12.5px", fontWeight: 600, fontVariantNumeric: "tabular-nums", color: FAE.text, whiteSpace: "nowrap" }}>
-                    {h.mejor_pct === null || h.mejor_pct === undefined
-                      ? `${h.mejor_fp} FP`
-                      : `${Math.round(Number(h.mejor_pct))}%`}
-                  </span>
-                  <span style={{ fontSize: "12px", color: "rgba(248,249,250,0.45)", whiteSpace: "nowrap", fontVariantNumeric: "tabular-nums" }}>
-                    {fecha(h.ultimo_intento)}
+                  <span style={{ flexShrink: 0, fontFamily: "Sora, sans-serif", fontSize: "14px", fontWeight: 700, fontVariantNumeric: "tabular-nums", color: FAE.text }}>
+                    {p === null ? `${h.mejor_fp} FP` : `${p}%`}
                   </span>
                 </div>
-              ))}
-            </div>
-          )}
+                {p !== null && <div className="pdv-barra" style={{ marginTop: "8px", height: "5px" }} aria-hidden="true"><span style={{ width: `${p}%` }} /></div>}
+                <p style={{ margin: "7px 0 0", fontSize: "12px", color: "rgba(248,249,250,0.55)", fontVariantNumeric: "tabular-nums" }}>
+                  {fecha(h.ultimo_intento)}
+                  {/* El ×3 va apagado: es un matiz, no una insignia. */}
+                  {h.intentos > 1 && <> · {h.intentos} intentos</>}
+                </p>
+              </div>
+            );
+          })}
         </div>
-      </div>
+      )}
     </div>
   );
 }

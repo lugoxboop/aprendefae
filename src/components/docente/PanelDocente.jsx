@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { FAE } from "../../theme.js";
 import { SUBJECTS, HACER, actividadesDeTipo, desafioDe, ubicacionDeActividad } from "../../data/subjects.js";
 import Logo from "../Logo.jsx";
-import { BarChart2, ChevronLeft, ChevronRight, Download, Eye, ListChecks, Users } from "lucide-react";
+import { Activity, BarChart2, ChevronLeft, ChevronRight, Download, Eye, ListChecks, Sparkles, Star, Users } from "lucide-react";
 import { actividadDe, estudiantesDe, marcarEnGrupo, resumenDe } from "../../docente/datos.js";
 import { useAccesoDocente } from "../../docente/useAccesoDocente.js";
 import { alertasDelGrupo, avancePorTema, NIVEL } from "../../docente/alertas.js";
@@ -21,6 +21,8 @@ import EsfuerzoResultado from "./EsfuerzoResultado.jsx";
 import Fabrica from "./Fabrica.jsx";
 import AvisoSospechas from "./AvisoSospechas.jsx";
 import PortadaDocente from "./PortadaDocente.jsx";
+import VistaDocente, { Kpi } from "./VistaDocente.jsx";
+import AvanceClase from "./AvanceClase.jsx";
 import ListaRiesgo from "./ListaRiesgo.jsx";
 import VistaEstudiante from "./VistaEstudiante.jsx";
 import { CSS_V1, V1, TONOS_PANEL, tarjetaV1, notaV1, volverV1 } from "./estiloV1.js";
@@ -49,18 +51,8 @@ import { EstiloEntrada } from "../shared/Entrada.jsx";
  * agrega escrituras: panel_resumen y grupo_marcar siguen como estaban (P8).
  */
 
-const seccion = { fontFamily: "Sora, sans-serif", fontSize: "13px", fontWeight: 700, letterSpacing: "0.1em", color: "rgba(248,249,250,0.55)", margin: "0 0 12px" };
 const tarjeta = { padding: "14px 16px", borderRadius: "14px", background: "rgba(248,249,250,0.04)", border: "1px solid rgba(248,249,250,0.1)" };
 
-function Kpi({ rotulo, valor, nota, color = FAE.text }) {
-  return (
-    <div style={tarjeta}>
-      <p style={{ margin: "0 0 4px", fontSize: "11px", letterSpacing: "0.06em", color: "rgba(248,249,250,0.5)" }}>{rotulo}</p>
-      <p style={{ margin: 0, fontFamily: "Sora, sans-serif", fontSize: "26px", fontWeight: 700, fontVariantNumeric: "tabular-nums", color }}>{valor}</p>
-      {nota && <p style={{ margin: "4px 0 0", fontSize: "11.5px", lineHeight: 1.4, color: "rgba(248,249,250,0.5)" }}>{nota}</p>}
-    </div>
-  );
-}
 
 /*
  * `actividadInicial` llega del tercer segmento del hash: #/docente/proyecto-arca.
@@ -490,24 +482,27 @@ export default function PanelDocente({ actividadInicial = null, onBack }) {
     );
   } else if (vista.tipo === "atencion") {
     cuerpo = (
-      <section data-vista="atencion">
-        <button type="button" style={volverV1} onClick={() => ir({ tipo: "inicio" })} data-volver>‹ Volver al resumen</button>
-        <BloqueAlertas alertas={alertas} grupoVacio={grupo.length === 0} />
+      <VistaDocente
+        vista="atencion" data-vista="atencion" Glifo={Star} rotulo="Tu clase" titulo="Alertas y destacados"
+        sub="Quién se está quedando atrás y quién va muy bien esta semana."
+        onVolver={() => ir({ tipo: "inicio" })}
+      >
+        {/* Ukyo §8: lo que quedaba del «Resumen del periodo» que no está en B1, ahora en fichas. */}
+        <div className="pdv-kpis" style={{ marginBottom: "18px" }} data-resumen-periodo>
+          <Kpi
+            i={0} rotulo="En riesgo alto"
+            valor={<span data-cifra="en-riesgo">{urgentes}</span>}
+            pie="Tenían ritmo y llevan más de un ciclo sin entrar"
+          />
+          <Kpi
+            i={1} rotulo="Acierto exploratorias"
+            valor={<span data-cifra="acierto-exploratorias">{resumen.pctExpl === null ? "—" : `${Math.round(resumen.pctExpl)}%`}</span>}
+            pie={resumen.nExpl === 0 ? "Nadie ha hecho exploratorias aún" : "Se reintenta hasta acertar: no mide dominio"}
+          />
+        </div>
         <Destacados estudiantes={cohorte} />
-        {/* Ukyo §8: lo que quedaba del «Resumen del periodo» que no está en B1. */}
-        <section style={{ ...tarjetaV1, marginBottom: "28px" }} data-resumen-periodo>
-          <p style={{ margin: "0 0 4px", fontSize: "12px", letterSpacing: "0.06em", color: V1.texto2 }}>ACIERTO EXPLORATORIAS</p>
-          <p style={{ margin: 0, fontFamily: "Sora, sans-serif", fontSize: "26px", fontWeight: 700, color: "rgba(248,249,250,0.8)" }} data-cifra="acierto-exploratorias">
-            {resumen.pctExpl === null ? "—" : `${Math.round(resumen.pctExpl)}%`}
-          </p>
-          <p style={{ ...notaV1, marginTop: "4px" }}>
-            {resumen.nExpl === 0 ? "Nadie ha hecho exploratorias aún" : "Se puede reintentar hasta acertar: tiende a 100% y no mide dominio"}
-          </p>
-          <p style={{ margin: "14px 0 4px", fontSize: "12px", letterSpacing: "0.06em", color: V1.texto2 }}>EN RIESGO</p>
-          <p style={{ margin: 0, fontFamily: "Sora, sans-serif", fontSize: "26px", fontWeight: 700, color: FAE.text }} data-cifra="en-riesgo">{urgentes}</p>
-          <p style={{ ...notaV1, marginTop: "4px" }}>Tenían ritmo y llevan más de un ciclo sin entrar (riesgo alto)</p>
-        </section>
-      </section>
+        <BloqueAlertas alertas={alertas} grupoVacio={grupo.length === 0} />
+      </VistaDocente>
     );
   } else if (vista.tipo === "fabrica") {
     /*
@@ -516,11 +511,13 @@ export default function PanelDocente({ actividadInicial = null, onBack }) {
       * curso, y de hecho es cuando más falta le hace.
       */
     cuerpo = (
-      <Fabrica
-        materia={materia}
-        nombreMateria={nombreMateria}
+      <VistaDocente
+        vista="fabrica" data-vista="fabrica" Glifo={Sparkles} rotulo="Preparar material" titulo="Crear actividades"
+        sub={`Fermi arma tres actividades con tu material para ${nombreMateria}. Tú decides cuáles se publican.`}
         onVolver={() => ir({ tipo: "inicio" })}
-      />
+      >
+        <Fabrica materia={materia} nombreMateria={nombreMateria} onVolver={() => ir({ tipo: "inicio" })} />
+      </VistaDocente>
     );
   } else if (vista.tipo === "estudiantes") {
     cuerpo = (
@@ -540,7 +537,7 @@ export default function PanelDocente({ actividadInicial = null, onBack }) {
         subjectId={materia}
         posicion={estudianteAbierto ? posiciones.get(estudianteAbierto.user_id) : null}
         onMarcar={marcar}
-        textoVolver={{ estudiantes: "Mis estudiantes", riesgo: "A quién mirar", esfuerzo: "Esfuerzo y resultado" }[desde] ?? "Volver al resumen"}
+        textoVolver={{ estudiantes: "Mis estudiantes", riesgo: "A quién mirar", esfuerzo: "Esfuerzo y resultado" }[desde] ?? "Panel"}
         onVolver={() => ir({ tipo: desde })}
       />
     );
@@ -572,9 +569,12 @@ export default function PanelDocente({ actividadInicial = null, onBack }) {
   } else if (vista.tipo === "clase") {
     /* El avance por tema, que en la portada vieja era el desplegable de «Mi clase». */
     cuerpo = (
-      <section data-vista="clase">
-        <button type="button" style={volverV1} onClick={() => ir({ tipo: "inicio" })} data-volver>‹ Volver al resumen</button>
-        <ResumenClase
+      <VistaDocente
+        vista="clase" data-vista="clase" Glifo={BarChart2} rotulo={singular ? "Tu estudiante" : "Tu clase"} titulo="Avance por tema"
+        sub="Cuántos terminaron y cuántos empezaron cada tema. Cuenta solo las actividades que dan FP: la teoría no deja registro."
+        onVolver={() => ir({ tipo: "inicio" })}
+      >
+        <AvanceClase
           avance={avance}
           activos={activos}
           nCohorte={cohorte.length}
@@ -582,21 +582,23 @@ export default function PanelDocente({ actividadInicial = null, onBack }) {
           porTema={porTema}
           pctEval={resumen.pctEval}
           nEval={resumen.nEval}
-          abierto
-          onAlternar={() => {}}
         />
-      </section>
+      </VistaDocente>
     );
   } else if (vista.tipo === "esfuerzo") {
     /* El gráfico de esfuerzo y resultado, que ocupaba media portada, ahora en su vista. */
     cuerpo = (
-      <section data-vista="esfuerzo">
-        <button type="button" style={volverV1} onClick={() => ir({ tipo: "inicio" })} data-volver>‹ Volver al resumen</button>
+      <VistaDocente
+        vista="esfuerzo" data-vista="esfuerzo" Glifo={Activity} rotulo="Cómo trabajan" titulo="Esfuerzo y resultado"
+        sub="Cada punto es un estudiante: cuánto tiempo le dedica y cuánto acierta. Toca un grupo o un nombre para ver más."
+        onVolver={() => ir({ tipo: "inicio" })}
+      >
         <EsfuerzoResultado
+          sinTitulo
           datos={esfuerzo}
           onAbrir={(id) => ir({ tipo: "estudiante", id, desde: "esfuerzo" })}
         />
-      </section>
+      </VistaDocente>
     );
   } else {
     /*
