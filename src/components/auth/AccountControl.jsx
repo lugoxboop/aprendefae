@@ -477,6 +477,28 @@ const CSS_PANEL = `
 .fae-opcion-salir:hover .fae-opcion-icono, .fae-opcion-salir:focus-visible .fae-opcion-icono { background-color: rgba(231,111,81,0.16); color: #F4A28C; }
 .fae-cerrar-panel { transition: background-color 160ms ease; }
 .fae-cerrar-panel:hover { background-color: rgba(248,249,250,0.10) !important; }
+/*
+ * La barra de desplazamiento del panel. La del navegador era una franja gris
+ * clara de lado a lado, con flechas, pegada al borde redondeado: lo único del
+ * panel que no era del panel. Ahora es un hilo de 6 px sin carril, que respeta
+ * las esquinas de 22 px (margen arriba y abajo), casi invisible en reposo y
+ * que se aviva al pasar el puntero por el panel o al agarrarla.
+ *
+ * Chrome, Edge y Safari usan las reglas -webkit- (dan el margen y quitan las
+ * flechas). Las estándar van solo para Firefox: si Chrome las ve, ignora las
+ * -webkit- y vuelve a dibujar su barra con flechas.
+ */
+@supports not selector(::-webkit-scrollbar) {
+  .fae-panel-cuenta { scrollbar-width: thin; scrollbar-color: rgba(248,249,250,0.12) transparent; }
+  .fae-panel-cuenta:hover { scrollbar-color: rgba(248,249,250,0.24) transparent; }
+}
+.fae-panel-cuenta::-webkit-scrollbar { width: 6px; }
+.fae-panel-cuenta::-webkit-scrollbar-button { display: none; width: 0; height: 0; }
+.fae-panel-cuenta::-webkit-scrollbar-track { background: transparent; margin: 24px 0; }
+.fae-panel-cuenta::-webkit-scrollbar-thumb { background: rgba(248,249,250,0.12); border-radius: 999px; transition: background-color 160ms ease; }
+.fae-panel-cuenta:hover::-webkit-scrollbar-thumb { background: rgba(248,249,250,0.24); }
+.fae-panel-cuenta::-webkit-scrollbar-thumb:hover, .fae-panel-cuenta::-webkit-scrollbar-thumb:active { background: rgba(42,157,143,0.65); }
+.fae-panel-cuenta::-webkit-scrollbar-corner { background: transparent; }
 @media (prefers-reduced-motion: reduce) {
   .fae-panel-cuenta, .fae-panel-cuenta.fae-saliendo, .fae-velo-cuenta, .fae-velo-cuenta.fae-saliendo,
   .fae-panel-cuenta [data-entra] { animation: none; }
