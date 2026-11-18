@@ -1,4 +1,5 @@
 import { FAE } from "../theme.js";
+import { CaraTema, LucesTema, variablesDeTono } from "./shared/TarjetaTema.jsx";
 
 /*
  * Aspecto de tarjeta, compartido por la tarjeta simple y por la partida
@@ -25,7 +26,35 @@ export const CARD_SHELL = {
  * `icon` es el bloque gráfico propio de cada materia; `accent` tiñe la flecha y
  * el estado hover, que vive en home.css y lee las variables --fae-card-hover-*.
  */
-export default function SubjectCard({ icon, title, accent, hoverBg, hoverBorder, onClick, label, badges }) {
+export default function SubjectCard({ icon, title, accent, hoverBg, hoverBorder, onClick, label, badges, tema = null }) {
+  /*
+   * Con `tema` (el índice de temas lo pasa), la tarjeta lleva la identidad de
+   * su tema: pastilla, tono, luces y flecha en círculo (shared/TarjetaTema).
+   * Sin él —la portada— es exactamente la de siempre.
+   */
+  if (tema) {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        aria-label={label || title}
+        className="fae-card fae-tema"
+        data-tono={tema.nombreTono}
+        style={{
+          ...CARD_SHELL,
+          ...variablesDeTono(tema.tono),
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          gap: "clamp(18px, 3vh, 34px)",
+          cursor: "pointer",
+        }}
+      >
+        <LucesTema Glifo={tema.Glifo} />
+        <CaraTema pastilla={icon} badges={badges} numero={tema.numero} titulo={title} tema={tema.datos} />
+      </button>
+    );
+  }
   return (
     <button
       type="button"

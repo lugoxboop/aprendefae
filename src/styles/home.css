@@ -246,3 +246,236 @@
   color: #f8f9fa;
   border-color: rgba(248, 249, 250, 0.55);
 }
+
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * TARJETA DE TEMA CON IDENTIDAD (shared/TarjetaTema.jsx, 18 nov.).
+ *
+ * Cada tarjeta trae su tono en --tono / --tono-claro / --tono-rgb. Las capas
+ * de luz son hijos absolutos detrás del contenido; el contenido va encima.
+ * Lo mismo que la barra lateral y el panel docente: pastilla de color, brillo,
+ * sombra teñida, y movimiento que se apaga con movimiento reducido.
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+.fae-card.fae-tema {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    linear-gradient(160deg, rgba(var(--tono-rgb), 0.16) 0%, rgba(var(--tono-rgb), 0.04) 38%, rgba(248, 249, 250, 0.035) 100%);
+  border-color: rgba(var(--tono-rgb), 0.28);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset, 0 10px 28px -16px rgba(0, 0, 0, 0.7);
+  transition: transform 320ms cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 320ms ease, border-color 260ms ease, background 260ms ease;
+}
+.fae-card.fae-tema:hover,
+.fae-card.fae-tema:focus-within {
+  transform: translateY(-6px);
+  background:
+    linear-gradient(160deg, rgba(var(--tono-rgb), 0.24) 0%, rgba(var(--tono-rgb), 0.07) 42%, rgba(248, 249, 250, 0.045) 100%);
+  border-color: rgba(var(--tono-rgb), 0.7);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.08) inset,
+    0 22px 46px -18px rgba(var(--tono-rgb), 0.55),
+    0 0 0 1px rgba(var(--tono-rgb), 0.18);
+}
+.fae-card.fae-tema:active { transform: translateY(-2px); }
+.fae-split.fae-tema[data-abierta="true"]:hover { transform: none; }
+
+/* Todo lo que es contenido va por encima de las luces. */
+.fae-tema > :not(.fae-tema__brillo):not(.fae-tema__linea):not(.fae-tema__marca-agua):not(.fae-tema__destello) {
+  position: relative;
+  z-index: 1;
+}
+
+/* El halo de su color, arriba a la izquierda, detrás de la pastilla. */
+.fae-tema__brillo {
+  position: absolute;
+  inset: -40% auto auto -25%;
+  width: 85%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(var(--tono-rgb), 0.32), rgba(var(--tono-rgb), 0) 70%);
+  opacity: 0.75;
+  pointer-events: none;
+  transition: opacity 400ms ease, transform 600ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.fae-tema:hover .fae-tema__brillo,
+.fae-tema:focus-within .fae-tema__brillo { opacity: 1; transform: scale(1.15); }
+
+/* El filo de luz en el borde superior. */
+.fae-tema__linea {
+  position: absolute;
+  top: 0;
+  left: 14%;
+  right: 14%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(var(--tono-rgb), 0.9), transparent);
+  opacity: 0.55;
+  pointer-events: none;
+  transition: opacity 300ms ease, left 400ms ease, right 400ms ease;
+}
+.fae-tema:hover .fae-tema__linea { opacity: 1; left: 4%; right: 4%; }
+
+/* El dibujo grande y tenue, abajo a la derecha: la tarjeta se reconoce de lejos. */
+.fae-tema__marca-agua {
+  position: absolute;
+  right: -26px;
+  bottom: -34px;
+  color: var(--tono);
+  opacity: 0.08;
+  pointer-events: none;
+  transform: rotate(-12deg);
+  transition: transform 700ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity 400ms ease;
+}
+.fae-tema:hover .fae-tema__marca-agua { opacity: 0.15; transform: rotate(-4deg) scale(1.08) translate(-6px, -6px); }
+.fae-split.fae-tema[data-abierta="true"] .fae-tema__marca-agua { opacity: 0.04; }
+
+/* El destello que cruza la tarjeta al llegar el puntero. */
+.fae-tema__destello {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -60%;
+  width: 45%;
+  background: linear-gradient(105deg, transparent, rgba(255, 255, 255, 0.10), transparent);
+  transform: skewX(-18deg);
+  pointer-events: none;
+  opacity: 0;
+}
+.fae-tema:hover .fae-tema__destello { animation: fae-tema-destello 900ms ease forwards; }
+@keyframes fae-tema-destello {
+  0% { left: -60%; opacity: 0; }
+  20% { opacity: 1; }
+  100% { left: 130%; opacity: 0; }
+}
+
+.fae-tema__fila {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+
+/* La pastilla: el ícono sobre su color, con brillo interior y sombra teñida. */
+.fae-tema__pastilla {
+  position: relative;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 58px;
+  border-radius: 18px;
+  color: #fff;
+  background: linear-gradient(145deg, rgba(var(--tono-rgb), 0.95), rgba(var(--tono-rgb), 0.55));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    inset 0 -6px 14px rgba(0, 0, 0, 0.18),
+    0 10px 24px -8px rgba(var(--tono-rgb), 0.75);
+  animation: fae-tema-pastilla-entra 620ms cubic-bezier(0.34, 1.56, 0.64, 1) 260ms backwards;
+  transition: transform 420ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 300ms ease;
+}
+.fae-tema__pastilla svg { filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.25)); }
+.fae-tema__pastilla .fae-identificador { color: #fff; --fae-acento: #0E1B2E; }
+.fae-card.fae-tema:hover .fae-tema__pastilla .fae-identificador { color: #fff; }
+.fae-tema:hover .fae-tema__pastilla,
+.fae-tema:focus-within .fae-tema__pastilla {
+  transform: rotate(-6deg) scale(1.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    inset 0 -6px 14px rgba(0, 0, 0, 0.18),
+    0 14px 30px -8px rgba(var(--tono-rgb), 0.95);
+}
+/* Un aro que se expande desde la pastilla al pasar el puntero. */
+.fae-tema__pastilla-anillo {
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  border: 2px solid rgba(var(--tono-rgb), 0.7);
+  opacity: 0;
+  pointer-events: none;
+}
+.fae-tema:hover .fae-tema__pastilla-anillo { animation: fae-tema-anillo 1100ms ease-out; }
+@keyframes fae-tema-anillo {
+  0% { opacity: 0.9; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.55); }
+}
+@keyframes fae-tema-pastilla-entra {
+  0% { opacity: 0; transform: scale(0.4) rotate(-25deg); }
+  100% { opacity: 1; transform: none; }
+}
+
+.fae-tema__pie {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.fae-tema__base {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+}
+.fae-tema__rotulo {
+  margin: 0 0 6px;
+  font-family: Sora, sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tono-claro);
+}
+.fae-tema__titulo {
+  margin: 0;
+  font-family: Sora, sans-serif;
+  font-weight: 700;
+  font-size: clamp(24px, 2.6vw, 30px);
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  color: #f8f9fa;
+  text-shadow: 0 2px 18px rgba(var(--tono-rgb), 0.25);
+}
+.fae-tema__conteo {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.3;
+  color: rgba(248, 249, 250, 0.72);
+}
+
+/* La flecha en su círculo: se llena del tono y avanza. */
+.fae-tema__flecha {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  color: var(--tono-claro);
+  background: rgba(var(--tono-rgb), 0.12);
+  border: 1px solid rgba(var(--tono-rgb), 0.45);
+  transition: background 260ms ease, color 260ms ease, transform 320ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 260ms ease;
+}
+.fae-tema__flecha svg { transition: transform 320ms cubic-bezier(0.34, 1.56, 0.64, 1); }
+.fae-tema:hover .fae-tema__flecha,
+.fae-tema:focus-within .fae-tema__flecha {
+  background: var(--tono);
+  color: #0E1B2E;
+  box-shadow: 0 8px 20px -6px rgba(var(--tono-rgb), 0.9);
+}
+.fae-tema:hover .fae-tema__flecha svg { transform: translateX(3px); }
+
+@media (prefers-reduced-motion: reduce) {
+  .fae-card.fae-tema,
+  .fae-card.fae-tema:hover,
+  .fae-card.fae-tema:focus-within { transform: none; }
+  .fae-tema__pastilla,
+  .fae-tema:hover .fae-tema__pastilla { animation: none; transform: none; }
+  .fae-tema:hover .fae-tema__destello,
+  .fae-tema:hover .fae-tema__pastilla-anillo { animation: none; }
+  .fae-tema:hover .fae-tema__marca-agua { transform: rotate(-12deg); }
+  .fae-tema:hover .fae-tema__flecha svg { transform: none; }
+  .fae-tema:hover .fae-tema__brillo { transform: none; }
+}

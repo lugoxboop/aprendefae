@@ -4,6 +4,7 @@ import { FAE } from "../theme.js";
 import { APRENDER, HACER, ETIQUETAS, actividadesDeTipo } from "../data/subjects.js";
 import { CARD_SHELL } from "./SubjectCard.jsx";
 import { ConMarca } from "./shared/contenidoNuevo.jsx";
+import { CaraTema, LucesTema, variablesDeTono } from "./shared/TarjetaTema.jsx";
 
 /*
  * Tarjeta de tema que se parte en dos al tocarla.
@@ -126,6 +127,8 @@ export default function TopicSplitCard({
   onElegirModo,
   /* El aviso de contenido nuevo: opcional; sin él, la tarjeta es exactamente la de siempre. */
   marca = null,
+  /* La identidad del tema (tono, glifo, número). Sin ella, la tarjeta de siempre. */
+  tema = null,
 }) {
   const contenedor = useRef(null);
   const opciones = useRef(null);
@@ -158,8 +161,9 @@ export default function TopicSplitCard({
   const tarjeta = (
     <div
       ref={contenedor}
-      className="fae-card fae-split"
+      className={tema ? "fae-card fae-split fae-tema" : "fae-card fae-split"}
       data-abierta={abierta ? "true" : "false"}
+      data-tono={tema?.nombreTono}
       onKeyDown={(e) => {
         if (e.key === "Escape" && abierta) onCerrar();
       }}
@@ -168,8 +172,10 @@ export default function TopicSplitCard({
         display: "grid",
         "--fae-card-hover-bg": hoverBg,
         "--fae-card-hover-border": hoverBorder,
+        ...(tema ? variablesDeTono(tema.tono) : {}),
       }}
     >
+      {tema && <LucesTema Glifo={tema.Glifo} />}
       {/* ---------- cara cerrada: la tarjeta de siempre ---------- */}
       <button
         type="button"
@@ -192,28 +198,34 @@ export default function TopicSplitCard({
           cursor: "pointer",
         }}
       >
-        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "12px", width: "100%" }}>
-          {icon}
-          {badges && badges.length > 0 && (
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", justifyContent: "flex-end" }}>{badges}</div>
-          )}
-        </div>
-        <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: "16px" }}>
-          <h2
-            style={{
-              fontFamily: "Sora, sans-serif",
-              fontWeight: 600,
-              fontSize: "clamp(24px, 2.6vw, 30px)",
-              lineHeight: 1.12,
-              letterSpacing: "-0.025em",
-              margin: 0,
-              color: FAE.text,
-            }}
-          >
-            {topic.title}
-          </h2>
-          <span style={{ fontSize: "22px", lineHeight: 1, color: accent }}>→</span>
-        </div>
+        {tema ? (
+          <CaraTema pastilla={icon} badges={badges} numero={tema.numero} titulo={topic.title} tema={topic} />
+        ) : (
+          <>
+            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "12px", width: "100%" }}>
+              {icon}
+              {badges && badges.length > 0 && (
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", justifyContent: "flex-end" }}>{badges}</div>
+              )}
+            </div>
+            <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: "16px" }}>
+              <h2
+                style={{
+                  fontFamily: "Sora, sans-serif",
+                  fontWeight: 600,
+                  fontSize: "clamp(24px, 2.6vw, 30px)",
+                  lineHeight: 1.12,
+                  letterSpacing: "-0.025em",
+                  margin: 0,
+                  color: FAE.text,
+                }}
+              >
+                {topic.title}
+              </h2>
+              <span style={{ fontSize: "22px", lineHeight: 1, color: accent }}>→</span>
+            </div>
+          </>
+        )}
       </button>
 
       {/* ---------- cara abierta: la elección, en el mismo hueco ---------- */}

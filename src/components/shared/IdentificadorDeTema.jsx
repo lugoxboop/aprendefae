@@ -53,7 +53,13 @@ export const CSS_IDENTIFICADOR = `
 }
 `;
 
-export default function IdentificadorDeTema({ tema, materia, respaldo = null, acento = null }) {
+/* ¿Este tema tiene dibujo propio? La tarjeta de tema lo pregunta para elegir qué meter en su pastilla. */
+export function tieneIdentificador(materia, tema) {
+  return !!(tema && ICONO_POR_TEMA[`${materia}/${tema.id}`]);
+}
+
+/* `lado`: 64 por defecto (el del sistema); la pastilla de la tarjeta de tema lo pide más chico. */
+export default function IdentificadorDeTema({ tema, materia, respaldo = null, acento = null, lado = LADO_IDENTIFICADOR }) {
   const Dibujo = (tema && ICONO_POR_TEMA[`${materia}/${tema.id}`]) || null;
   if (!Dibujo) return respaldo;
   return (
@@ -61,9 +67,9 @@ export default function IdentificadorDeTema({ tema, materia, respaldo = null, ac
       className="fae-identificador"
       data-identificador={tema.id}
       aria-hidden="true"
-      style={{ width: `${LADO_IDENTIFICADOR}px`, height: `${LADO_IDENTIFICADOR}px`, ...(acento ? { "--fae-acento": acento } : {}) }}
+      style={{ width: `${lado}px`, height: `${lado}px`, ...(acento ? { "--fae-acento": acento } : {}) }}
     >
-      <Dibujo size={LADO_IDENTIFICADOR} />
+      <Dibujo size={lado} />
     </span>
   );
 }
