@@ -2,7 +2,7 @@ import { FAE } from "../theme.js";
 import MeshGradientBackground from "./backgrounds/MeshGradientBackground.jsx";
 import BackgroundVeil from "./shared/BackgroundVeil.jsx";
 import Hero from "./Hero.jsx";
-import SubjectCard, { MacroIcon, EstrategiaIcon, ContabilidadIcon } from "./SubjectCard.jsx";
+import SubjectCard from "./SubjectCard.jsx";
 import Logo from "./Logo.jsx";
 import Footer from "./shared/Footer.jsx";
 import Entrada, { EstiloEntrada } from "./shared/Entrada.jsx";
@@ -96,12 +96,9 @@ export default function HomeScreen({ onSelectSubject, onQueEs }) {
           >
             <Entrada orden={2} modo="crece" estira>
             <SubjectCard
-              icon={<MacroIcon />}
+              materia="macroeconomia"
               title="Macroeconomía"
               label="Card Macroeconomía"
-              accent={FAE.coral}
-              hoverBg="rgba(231,111,81,0.12)"
-              hoverBorder="rgba(231,111,81,0.7)"
               onClick={() => onSelectSubject("macroeconomia")}
             />
             </Entrada>
@@ -118,24 +115,18 @@ export default function HomeScreen({ onSelectSubject, onQueEs }) {
             {PORTADA_ESTRATEGICO && (
               <Entrada orden={4} modo="crece" estira>
               <SubjectCard
-                icon={<EstrategiaIcon />}
+                materia="pensamiento-estrategico"
                 title="Pensamiento Estratégico"
                 label="Card Pensamiento Estratégico"
-                accent={FAE.teal}
-                hoverBg="rgba(42,157,143,0.14)"
-                hoverBorder="rgba(42,157,143,0.75)"
                 onClick={() => onSelectSubject("pensamiento-estrategico")}
               />
               </Entrada>
             )}
             <Entrada orden={3} modo="crece" estira>
             <SubjectCard
-              icon={<ContabilidadIcon />}
+              materia="contabilidad"
               title="Contabilidad"
               label="Card Contabilidad"
-              accent={FAE.ambar}
-              hoverBg="rgba(233,196,106,0.12)"
-              hoverBorder="rgba(233,196,106,0.7)"
               onClick={() => onSelectSubject("contabilidad")}
             />
             </Entrada>
