@@ -100,7 +100,7 @@ export default function TopicIndexView({
           sexta: una materia de doce temas no puede hacer esperar medio
           segundo a la última.
         */}
-        <div {...entrada(0, "baja")} className="fae-cabecera-titulo fae-sin-volver" style={{ ...entrada(0, "baja").style, display: "flex", alignItems: "center", gap: "14px" }}>
+        <div {...entrada(0, "baja")} className="fae-cabecera-titulo fae-sin-volver fae-cabecera-ancha" style={{ ...entrada(0, "baja").style, display: "flex", alignItems: "center", gap: "14px" }}>
           <span className="fae-cabecera-marca"><Logo variant="symbol" size={28} theme="dark" /></span>
           <h1
             style={{

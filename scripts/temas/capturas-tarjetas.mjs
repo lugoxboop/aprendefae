@@ -30,7 +30,7 @@ const USER = { id: "00000000-0000-0000-0000-000000000002", aud: "authenticated",
 const hoy = new Date().toISOString().slice(0, 10);
 const PERFIL = {
   user_id: USER.id, id: USER.id, nickname: "Mateo", full_name: "Mateo de prueba",
-  points: 988, cristales_balance: 75, streak: 6, last_activity_day: hoy,
+  points: Number(process.env.FP ?? 988), cristales_balance: 75, streak: 6, last_activity_day: hoy,
   mascota_especie: "perro",
 };
 function sesion() {
@@ -90,7 +90,10 @@ async function abrir(nav, ancho, alto, ruta, docente = false, video = null) {
 
 function medir() {
   const tarjetas = [...document.querySelectorAll(".fae-card")];
+  const c = document.querySelector(".fae-cuenta-boton")?.getBoundingClientRect();
+  const h = document.querySelector("h1")?.getBoundingClientRect();
   return {
+    cuentaPisaTitulo: !!(c && h && c.left < h.right && h.left < c.right && c.top < h.bottom && h.top < c.bottom),
     barraHorizontal: document.documentElement.scrollWidth > innerWidth + 1,
     tarjetas: tarjetas.length,
     tituloCortado: tarjetas.some((t) => { const h = t.querySelector("h2"); return h && h.scrollWidth > h.clientWidth + 1; }),
@@ -102,7 +105,7 @@ const VISTAS = [
   { nombre: "macro", ruta: "#/macroeconomia" },
   { nombre: "conta", ruta: "#/contabilidad" },
 ];
-const ANCHOS = [[1280, 900], [375, 812], [320, 640]];
+const ANCHOS = [[1440, 900], [1280, 900], [1024, 768], [768, 1024], [561, 900], [375, 812], [320, 640]];
 const nav = await chromium.launch();
 
 /* --video: la entrada y el hover de las cuatro primeras, con movimiento real. */

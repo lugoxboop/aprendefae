@@ -317,6 +317,19 @@ const CSS_CUENTA = `
   .fae-cabecera, .fae-cabecera-titulo {
     padding-left: max(0px, calc(${ANCHO_PASTILLA + 12}px - max(0px, (100vw - 860px) / 2)));
   }
+  /*
+   * LA CABECERA QUE NO VIVE EN LA COLUMNA DE 860 (18-nov). El índice de temas
+   * de cada materia pone su cabecera a todo lo ancho, con 24 px de margen: la
+   * cuenta de arriba suponía la columna centrada y, a 1280, le daba 0 de
+   * hueco, así que la pastilla tapaba «Macroeconomía». Aquí el hueco es fijo:
+   * el de la pastilla COMPACTA (con título no lleva «FP»: avatar y cifra,
+   * 92 px con 988 y unos 130 con «112.500»), 140, más 12 de aire, menos los
+   * 24 que ya pone el contenedor. Con los 184 de la pastilla completa el
+   * título quedaba suelto en medio de la nada.
+   */
+  .fae-cabecera-titulo.fae-cabecera-ancha {
+    padding-left: ${140 + 12 - 24}px;
+  }
 }
 
 `;
