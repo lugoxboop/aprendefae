@@ -21,10 +21,12 @@ import { ajustarAlTamano, combinacionDe, computeAvatarProps, leyenda, POR_DEFECT
  *
  * Los tamaños de uso son 96 (perfil), 56 (superficies medianas) y 36 y 24
  * (ranking y liga), estos dos ya por debajo del umbral de detalle.
+ * `podio` (96) y `fila` (48) son los de las mascotas del ranking desde su
+ * rediseño (18-nov): allí ya no se pinta la figura, sino la mascota.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-export const TAMANOS = { perfil: 96, medio: 56, ranking: 36, liga: 24 };
+export const TAMANOS = { perfil: 96, medio: 56, podio: 96, fila: 48, ranking: 36, liga: 24 };
 
 /**
  * @param {object} p

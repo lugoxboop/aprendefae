@@ -5,7 +5,7 @@ import { JSDOM, VirtualConsole } from "jsdom";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
- * LA CARA DEL ESTUDIANTE EN LAS FILAS DEL RANKING (36 px) Y DE LA LIGA (24 px).
+ * LA CARA DEL ESTUDIANTE EN EL RANKING (podio a 96 px, filas a 48) Y EN LA LIGA (24 px).
  *
  * Desde que la mascota es el avatar, cada fila pinta la MASCOTA de ese
  * estudiante: la que eligió, o —en estas filas de prueba, que no traen mascota
@@ -77,16 +77,25 @@ async function montarPantalla() {
   return { caja, desmontar: () => { act(() => raiz.unmount()); caja.remove(); } };
 }
 
-test("cada fila del ranking lleva la mascota de ESE estudiante, a 36 px", async () => {
+test("cada fila del ranking lleva la mascota de ESE estudiante: 96 px en el podio, 48 en las filas", async () => {
   const m = await montarPantalla();
   try {
-    const rankings = [...m.caja.querySelectorAll("h3")].filter((h) => /Ranking/.test(h.textContent)).map((h) => h.closest("div").parentElement);
+    const rankings = [...m.caja.querySelectorAll("[data-ranking]")];
     assert.equal(rankings.length, 2);
-    const mascotas = [...rankings[0].querySelectorAll("svg[data-mascota]")];
-    assert.equal(mascotas.length, 30, "una por fila, las treinta");
-    mascotas.forEach((svg, i) => {
-      assert.equal(svg.dataset.mascota, mascotaDe(FILAS_RANKING[i]).especie, `fila ${i + 1}`);
-      assert.equal(svg.getAttribute("width"), "36");
+    /* El podio pinta en orden 2.º, 1.º, 3.º; se compara cada puesto con su fila. */
+    const puestos = [...rankings[0].querySelectorAll("[data-podio-puesto]")];
+    assert.equal(puestos.length, 3, "tres puestos en el podio");
+    for (const p of puestos) {
+      const i = Number(p.dataset.podioPuesto) - 1;
+      const svg = p.querySelector("svg[data-mascota]");
+      assert.equal(svg.dataset.mascota, mascotaDe(FILAS_RANKING[i]).especie, `podio ${i + 1}`);
+      assert.equal(svg.getAttribute("width"), "96");
+    }
+    const filas = [...rankings[0].querySelectorAll("[data-fila-ranking]:not([data-podio-puesto]) svg[data-mascota]")];
+    assert.equal(filas.length, 27, "una por fila, las veintisiete que no suben al podio");
+    filas.forEach((svg, k) => {
+      assert.equal(svg.dataset.mascota, mascotaDe(FILAS_RANKING[k + 3]).especie, `fila ${k + 4}`);
+      assert.equal(svg.getAttribute("width"), "48");
     });
   } finally { m.desmontar(); }
 });
@@ -135,6 +144,6 @@ test("las filas usan AvatarEstudiante con los tamaños de uso, y no tocan halo n
   for (const archivo of ["../RankingFP.jsx", "../../ligas/LigaBoard.jsx"]) {
     const fuente = readFileSync(new URL(archivo, import.meta.url), "utf8");
     assert.ok(!/showHalo|chords|UMBRAL_DETALLE|ajustarAlTamano/.test(fuente), `${archivo} no debe tocar halo ni cuerdas`);
-    assert.ok(/<AvatarEstudiante perfil=\{\w+\} tamano=\{TAMANOS\.(ranking|liga)\}/.test(fuente), `${archivo} usa los tamaños de uso`);
+    assert.ok(/<AvatarEstudiante perfil=\{\w+\} tamano=\{TAMANOS\.(podio|fila|liga)\}/.test(fuente), `${archivo} usa los tamaños de uso`);
   }
 });
