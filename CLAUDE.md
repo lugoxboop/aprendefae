@@ -69,6 +69,10 @@ diseño gráfico, landing pages y UI. Prueba, critica y define el estándar visu
 Erwin manda lo compartido: componentes comunes, choques entre células y datos
 de estudiantes. Nadie más los toca; se le pide por issue.
 
+**Magno** es un general nuevo (logo verde), con la misma autonomía que Erwin.
+Aún sin célula fija: su misión la define Mateo. Miku y Erwin se coordinan con él
+como con cualquier general.
+
 ## Las reglas que no se negocian
 
 1. **Hay estudiantes reales** en Macroeconomía y en Contabilidad. Solo se
