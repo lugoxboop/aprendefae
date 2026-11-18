@@ -4,6 +4,7 @@ import { FAE } from "../../theme.js";
 import { actividadDe, itemsDe, grupoDeActividad } from "../../docente/datos.js";
 import { preguntasDificiles } from "../../docente/repaso.js";
 import RepasoDeLasFalladas from "./RepasoDeLasFalladas.jsx";
+import { Inicial } from "./VistaDocente.jsx";
 import { BANDAS, bandaDe, CORTE_BAJO } from "../../docente/bandas.js";
 import { etiquetaDeItem } from "../../docente/etiquetasItem.js";
 import { NavigationContext } from "../../navigation.js";
@@ -52,14 +53,15 @@ import { ubicacionDeActividad } from "../../data/subjects.js";
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
+/* La ficha de cifra, con el acabado de las vistas (VistaDocente): toma el color de la vista. */
 const tarjeta = {
-  padding: "14px 16px",
-  borderRadius: "14px",
-  background: `${FAE.navy}59`,
-  border: "1px solid rgba(248,249,250,0.12)",
+  padding: "16px",
+  borderRadius: "18px",
+  background: "linear-gradient(165deg, rgba(var(--tono-rgb, 42,157,143), 0.07) 0%, rgba(var(--tono-rgb, 42,157,143), 0) 50%), rgba(248,249,250,0.04)",
+  border: "1px solid rgba(var(--tono-rgb, 248,249,250), 0.18)",
   minWidth: 0,
 };
-const rotulo = { margin: "0 0 6px", fontSize: "12px", letterSpacing: "0.06em", color: "rgba(248,249,250,0.5)" };
+const rotulo = { margin: "0 0 6px", fontSize: "11.5px", fontWeight: 600, letterSpacing: "0.08em", color: "#A8B6C8" };
 const cifra = { margin: 0, fontFamily: "Sora, sans-serif", fontSize: "28px", fontWeight: 700, fontVariantNumeric: "tabular-nums", lineHeight: 1 };
 const pie = { margin: "6px 0 0", fontSize: "12px", lineHeight: 1.4, color: "rgba(248,249,250,0.55)" };
 const nota = { margin: 0, fontSize: "12.5px", lineHeight: 1.55, color: "rgba(248,249,250,0.58)" };
@@ -217,24 +219,30 @@ function TablaEstudiantes({ estudiantes, hayGrupo, evaluativa }) {
           : "Todavía sin grupo armado — salen todos los que la hicieron, ordenados de menor a mayor acierto."}
       </p>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: "1px" }}>
-        {estudiantes.map((e) => {
+      <div style={{ display: "grid", gap: "6px" }}>
+        {estudiantes.map((e, k) => {
           const pct = e.mejor_pct === null || e.mejor_pct === undefined ? null : Math.round(Number(e.mejor_pct));
           const banda = bandaDe(e.mejor_pct);
           const intentos = Number(e.intentos ?? 0);
           return (
             <div
               key={e.user_id}
+              className="pdv-entra"
               style={{
+                "--i": k,
                 display: "grid",
                 /* En móvil el nombre manda y las cifras se aprietan a la derecha. */
-                gridTemplateColumns: "minmax(0, 1fr) auto auto",
+                gridTemplateColumns: "auto minmax(0, 1fr) auto auto",
                 gap: "10px",
-                alignItems: "baseline",
-                padding: "9px 0",
-                borderBottom: "1px solid rgba(248,249,250,0.07)",
+                alignItems: "center",
+                padding: "8px 12px",
+                borderRadius: "14px",
+                background: "rgba(248,249,250,0.035)",
+                border: "1px solid rgba(248,249,250,0.07)",
               }}
             >
+              {/* La inicial en el color de su banda: la misma lectura que las barras de arriba. */}
+              <Inicial nombre={e.full_name || e.nickname} color={banda ? COLOR_BANDA[banda] : "rgba(248,249,250,0.5)"} tamano={32} />
               {/*
                 * El nombre y la marca en bloques distintos, no en la misma línea.
                 * Estaban juntos en una celda con nowrap y a 375 px la marca salía
@@ -242,7 +250,7 @@ function TablaEstudiantes({ estudiantes, hayGrupo, evaluativa }) {
                 * poder leerse.
                 */}
               <span style={{ minWidth: 0 }}>
-                <span style={{ display: "block", fontSize: "13px", color: "rgba(248,249,250,0.85)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                <span style={{ display: "block", fontFamily: "Sora, sans-serif", fontSize: "13.5px", fontWeight: 600, color: "rgba(248,249,250,0.92)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                 {e.full_name || e.nickname}
                 {/* El ×3 va apagado: es un matiz, no una insignia. */}
                 {intentos > 1 && (
@@ -290,7 +298,7 @@ function TablaEstudiantes({ estudiantes, hayGrupo, evaluativa }) {
     </div>
   );
 }
-export default function VistaRendimiento({ subjectId, actividad, nombreMateria }) {
+export default function VistaRendimiento({ subjectId, actividad, nombreMateria, sinTitulo = false }) {
   /*
    * Sin actividad no hay nada que pedir ni que pintar. El panel ya no la monta
    * en ese estado, pero el componente no debe depender de que quien lo use se
@@ -414,11 +422,14 @@ export default function VistaRendimiento({ subjectId, actividad, nombreMateria }
     <div>
       {/* ── Quién es esta actividad ── */}
       <div style={{ marginBottom: "14px" }}>
-        <h3 style={{ fontFamily: "Sora, sans-serif", fontSize: "clamp(17px, 2.4vw, 20px)", fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 4px", color: FAE.text }}>
-          {actividad.nombre}
-        </h3>
+        {/* Dentro de su vista, el nombre ya va en grande en la cabecera (VistaDocente). */}
+        {!sinTitulo && (
+          <h3 style={{ fontFamily: "Sora, sans-serif", fontSize: "clamp(17px, 2.4vw, 20px)", fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 4px", color: FAE.text }}>
+            {actividad.nombre}
+          </h3>
+        )}
         <p style={{ margin: 0, fontSize: "12.5px", color: "rgba(248,249,250,0.5)" }}>
-          {actividad.tema} · {nombreMateria}
+          {sinTitulo ? nombreMateria : `${actividad.tema} · ${nombreMateria}`}
           {datos.difficulty && <> · {datos.difficulty}</>}
           {" · "}
           {evaluativa ? "evaluativa" : "exploratoria"}

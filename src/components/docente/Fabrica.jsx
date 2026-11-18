@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Plus, Sparkles, FileText, X, ShieldCheck, Eye, Check, Trash2 } from "lucide-react";
 import { FAE } from "../../theme.js";
 import { supabase } from "../../lib/supabase.js";
-import { V1, tarjetaV1, notaV1, volverV1 } from "./estiloV1.js";
+import { V1, tarjetaV1, notaV1 } from "./estiloV1.js";
 import { MAX_ARCHIVOS, FASE, revisar, formatearPeso, encargar, misBorradores, cambiarEstado } from "../../docente/fabrica.js";
 import Robot, { CSS_ROBOT } from "../../bruno/Robot.jsx";
 import FermiTrabajando, { CSS_FERMI, DURACION_UNA_PASADA_MS } from "./FermiTrabajando.jsx";
@@ -125,7 +125,7 @@ export default function Fabrica({ materia, nombreMateria, onVolver, cliente = su
       <style>{CSS_FERMI}</style>
       <style>{CSS_ESCENA}</style>
       <EstiloEntrada />
-      <button type="button" style={volverV1} onClick={onVolver} data-volver>‹ Volver al resumen</button>
+      {/* La vuelta y el título los pone el marco de la vista (VistaDocente), desde el 18-nov. */}
 
       {/*
         * ── CABECERA ──────────────────────────────────────────────────
@@ -140,10 +140,10 @@ export default function Fabrica({ materia, nombreMateria, onVolver, cliente = su
           <Robot tamano={42} estado={trabajando ? "pensando" : "quieto"} parpadeo={parpadeo} />
         </span>
         <div style={{ minWidth: 0 }}>
-          <h2 style={{ margin: 0, fontFamily: "Sora, sans-serif", fontSize: "18px", fontWeight: 700, color: FAE.text }}>
-            Crear actividades
-          </h2>
-          <p style={{ ...notaV1, fontSize: "13px" }}>Fermi las arma con tu material, para {nombreMateria || materia}</p>
+          <p style={{ margin: 0, fontFamily: "Sora, sans-serif", fontSize: "16px", fontWeight: 700, color: FAE.text }}>
+            ¿Qué te armo hoy?
+          </p>
+          <p style={{ ...notaV1, fontSize: "13px" }}>Escribe el encargo o suelta tu PDF, y elige entre las tres que salgan.</p>
         </div>
       </div>
 

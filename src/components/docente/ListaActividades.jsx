@@ -1,9 +1,9 @@
-import { ChevronRight, ListChecks } from "lucide-react";
+import { ChevronRight, ClipboardCheck, ListChecks } from "lucide-react";
 import { FAE } from "../../theme.js";
 import { ordenPeorPrimero } from "../../docente/panelV1.js";
 import VistaRendimiento from "./VistaRendimiento.jsx";
-import { V1, notaV1, volverV1, tituloConIcono, TONOS_PANEL } from "./estiloV1.js";
-import IconoBloque from "./IconoBloque.jsx";
+import { V1 } from "./estiloV1.js";
+import VistaDocente from "./VistaDocente.jsx";
 
 /*
  * «Actividades» (Ukyo §6.1): todas las actividades con FP de la materia
@@ -16,41 +16,28 @@ export default function ListaActividades({ filas, cargando, elegida, subjectId, 
   const actual = filas.find((f) => f.id === elegida) ?? null;
   if (actual) {
     return (
-      <section data-vista="actividad" data-actividad={actual.id}>
-        <button type="button" style={volverV1} onClick={() => onElegir(null)} data-volver>‹ Todas las actividades</button>
-        <VistaRendimiento key={`${subjectId}:${actual.id}`} subjectId={subjectId} nombreMateria={nombreMateria} actividad={actual} />
-      </section>
+      <VistaDocente
+        vista="actividad" data-vista="actividad" data-actividad={actual.id}
+        Glifo={ClipboardCheck} rotulo={actual.tema} titulo={actual.nombre}
+        textoVolver="Actividades" onVolver={() => onElegir(null)}
+      >
+        <VistaRendimiento sinTitulo key={`${subjectId}:${actual.id}`} subjectId={subjectId} nombreMateria={nombreMateria} actividad={actual} />
+      </VistaDocente>
     );
   }
   const ordenadas = ordenPeorPrimero(filas);
   return (
-    <section data-vista="actividades" aria-labelledby="pd1-actividades" aria-busy={cargando || undefined}>
-      <button type="button" style={volverV1} onClick={onVolver} data-volver>‹ Volver al resumen</button>
-      {/*
-        * Tres columnas de cifras junto al nombre; por debajo de 360 px las cifras
-        * bajan bajo el nombre, para que este quepa en dos renglones (Shibukawa, #498).
-        */}
-      <style>{`.pd1-act { grid-template-columns: minmax(0,1fr) 46px 62px 14px; }
-@media (max-width: 359px) {
-  .pd1-act { grid-template-columns: auto auto minmax(0,1fr) 14px; }
-  .pd1-act > :first-child { grid-column: 1 / 4; }
-  .pd1-act > [data-cifra] { text-align: left !important; }
-  .pd1-act > [data-cifra=acierto]::after { content: " acierto ·"; color: #A8B6C8; font-family: Inter, sans-serif; font-size: 12px; }
-  .pd1-act > [data-cifra=terminaron]::after { content: " terminaron"; color: #A8B6C8; font-family: Inter, sans-serif; font-size: 12px; }
-  .pd1-act > svg { grid-row: 1 / 3; grid-column: 4; }
-  .pd1-act-cab { display: none !important; }
-}`}</style>
-      <h2 id="pd1-actividades" style={{ ...tituloConIcono, fontSize: "18px" }}><IconoBloque icono={ListChecks} tono={TONOS_PANEL.actividades} tamano={34} />Actividades</h2>
-      <p style={{ ...notaV1, marginBottom: "12px" }}>
-        Solo las que otorgan FP; la teoría no deja registro. La de peor acierto, primero.
-      </p>
-      <div className="pd1-act pd1-act-cab" style={{ display: "grid", gap: "8px", padding: "0 12px 6px", fontSize: "12px", color: V1.texto2 }} aria-hidden="true">
-        <span>Actividad</span><span style={{ textAlign: "right" }}>Acierto</span><span style={{ textAlign: "right" }}>Terminaron</span><span />
-      </div>
-      <div style={{ display: "grid", gap: "8px" }}>
-        {ordenadas.map((f) => {
+    <VistaDocente
+      vista="actividades" data-vista="actividades" aria-labelledby="pd1-actividades" aria-busy={cargando || undefined}
+      Glifo={ListChecks} rotulo="Resultados" titulo="Actividades" tituloId="pd1-actividades"
+      sub="Solo las que otorgan FP; la teoría no deja registro. La de peor acierto, primero: toca una para ver pregunta por pregunta."
+      onVolver={onVolver}
+    >
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 300px), 1fr))", gap: "10px" }}>
+        {ordenadas.map((f, k) => {
           const c = f.cifras;
-          const pct = c?.pct === null || c?.pct === undefined ? "—" : `${Math.round(c.pct)}%`;
+          const pctNum = c?.pct === null || c?.pct === undefined ? null : Math.round(c.pct);
+          const pct = pctNum === null ? "—" : `${pctNum}%`;
           const term = !c ? "…" : c.de ? `${c.terminaron} de ${c.de}` : `${c.terminaron}`;
           return (
             <button
@@ -60,24 +47,27 @@ export default function ListaActividades({ filas, cargando, elegida, subjectId, 
               data-fila-actividad={f.id}
               aria-label={`${f.nombre}, ${f.tema}: acierto ${pct}, terminaron ${term}. Ver la actividad`}
               title={f.nombre}
-              className="pd1-act"
-              style={{
-                display: "grid", alignItems: "center", gap: "8px",
-                width: "100%", minHeight: "52px", padding: "6px 12px", borderRadius: "10px", textAlign: "left",
-                background: V1.tarjeta, border: V1.borde, color: "inherit", cursor: "pointer", font: "inherit",
-              }}
+              className="pdv-fila pdv-entra"
+              style={{ "--i": k, alignItems: "stretch", flexDirection: "column", gap: "10px", padding: "14px 16px" }}
             >
-              <span style={{ display: "grid", minWidth: 0 }}>
-                <span className="pd1-dos" style={{ fontSize: "13.5px", lineHeight: 1.3, fontWeight: 600, color: FAE.text }} data-nombre-actividad>{f.nombre}</span>
-                <span className="pd1-nombre" style={{ fontSize: "12px", color: V1.texto2 }}>{f.tema}</span>
+              <span style={{ display: "flex", alignItems: "flex-start", gap: "10px", width: "100%" }}>
+                <span style={{ display: "grid", flex: 1, minWidth: 0 }}>
+                  <span className="pd1-dos" style={{ fontFamily: "Sora, sans-serif", fontSize: "14.5px", lineHeight: 1.3, fontWeight: 600, color: FAE.text }} data-nombre-actividad>{f.nombre}</span>
+                  <span className="pd1-nombre" style={{ marginTop: "2px", fontSize: "12px", color: "var(--tono-claro)" }}>{f.tema}</span>
+                </span>
+                <ChevronRight className="pdv-fila__flecha" size={16} aria-hidden="true" style={{ marginTop: "2px" }} />
               </span>
-              <span style={{ textAlign: "right", fontFamily: "Sora, sans-serif", fontSize: "14px", fontVariantNumeric: "tabular-nums", color: FAE.text }} data-cifra="acierto">{pct}</span>
-              <span style={{ textAlign: "right", fontFamily: "Sora, sans-serif", fontSize: "14px", fontVariantNumeric: "tabular-nums", color: FAE.text }} data-cifra="terminaron">{term}</span>
-              <ChevronRight size={16} aria-hidden="true" color={V1.texto2} />
+              <span style={{ display: "flex", alignItems: "center", gap: "12px", width: "100%" }}>
+                <span className="pdv-barra" style={{ flex: 1 }} aria-hidden="true"><span style={{ width: `${pctNum ?? 0}%` }} /></span>
+                <span style={{ flexShrink: 0, fontFamily: "Sora, sans-serif", fontSize: "15px", fontWeight: 700, fontVariantNumeric: "tabular-nums", color: FAE.text }} data-cifra="acierto">{pct}</span>
+              </span>
+              <span style={{ fontSize: "12px", color: V1.texto2, fontVariantNumeric: "tabular-nums" }}>
+                <span data-cifra="terminaron">{term}</span> la terminaron
+              </span>
             </button>
           );
         })}
       </div>
-    </section>
+    </VistaDocente>
   );
 }

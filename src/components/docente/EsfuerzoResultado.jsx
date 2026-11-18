@@ -1,10 +1,11 @@
-import { Activity } from "lucide-react";
+import { Activity, ChevronRight } from "lucide-react";
 import { useMemo, useState } from "react";
 import { FAE } from "../../theme.js";
 import { BANDAS, CORTE_BAJO, bandaDe } from "../../docente/bandas.js";
 import { ORDENES, ordenar, porCuadrante } from "../../docente/esfuerzoResultado.js";
 import { V1, notaV1, tarjetaV1, tituloConIcono, TONOS_PANEL } from "./estiloV1.js";
 import IconoBloque from "./IconoBloque.jsx";
+import { Inicial } from "./VistaDocente.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -113,7 +114,7 @@ function Dispersion({ medidos, medianaMs, comparable }) {
  */
 export const FILAS_VISIBLES = 8;
 
-export default function EsfuerzoResultado({ datos, onAbrir, className, style }) {
+export default function EsfuerzoResultado({ datos, onAbrir, className, style, sinTitulo = false }) {
   const [orden, setOrden] = useState(ORDENES[0].id);
   const [cuadrante, setCuadrante] = useState(null);
   const [todas, setTodas] = useState(false);
@@ -131,7 +132,8 @@ export default function EsfuerzoResultado({ datos, onAbrir, className, style }) 
 
   return (
     <section className={className} style={{ ...tarjetaV1, ...style }} data-bloque="esfuerzo">
-      <h2 style={tituloConIcono}><IconoBloque icono={Activity} tono={TONOS_PANEL.esfuerzo} />Esfuerzo y resultado</h2>
+      {/* Dentro de su vista el título ya lo pone la cabecera (VistaDocente). */}
+      {!sinTitulo && <h2 style={tituloConIcono}><IconoBloque icono={Activity} tono={TONOS_PANEL.esfuerzo} />Esfuerzo y resultado</h2>}
       <p style={notaV1}>
         {medidos.length === 0
           ? "Todavía no hay nadie con tiempo y acierto medidos."
@@ -159,16 +161,10 @@ export default function EsfuerzoResultado({ datos, onAbrir, className, style }) 
               <button
                 key={c.id}
                 type="button"
-                className="pd1-toque pd1-foco"
+                className={`pdv-boton${activo ? "" : " pdv-boton--suave"}`}
                 aria-pressed={activo}
                 data-cuadrante={c.id}
                 onClick={() => setCuadrante(activo ? null : c.id)}
-                style={{
-                  padding: "0 12px", borderRadius: "999px", cursor: "pointer",
-                  background: activo ? "rgba(248,249,250,0.14)" : "transparent",
-                  border: `1px solid rgba(248,249,250,${activo ? 0.34 : 0.18})`,
-                  color: FAE.text, fontFamily: "Sora, sans-serif", fontSize: "12.5px", fontWeight: 600,
-                }}
               >
                 {c.nombre} · {c.n}
               </button>
@@ -191,33 +187,30 @@ export default function EsfuerzoResultado({ datos, onAbrir, className, style }) 
               onChange={(ev) => setOrden(ev.target.value)}
               data-orden
               style={{
-                minHeight: "44px", padding: "0 10px", borderRadius: "10px",
-                background: "rgba(248,249,250,0.06)", border: "1px solid rgba(248,249,250,0.2)",
-                color: FAE.text, fontFamily: "Inter, sans-serif", fontSize: "13px",
+                minHeight: "44px", padding: "0 14px", borderRadius: "999px",
+                background: "rgba(var(--tono-rgb, 248,249,250), 0.10)", border: "1px solid rgba(var(--tono-rgb, 248,249,250), 0.4)",
+                color: FAE.text, fontFamily: "Sora, sans-serif", fontSize: "13px", fontWeight: 600,
               }}
             >
               {ORDENES.map((o) => <option key={o.id} value={o.id} style={{ color: "#111" }}>{o.texto}</option>)}
             </select>
           </div>
 
-          <ul style={{ listStyle: "none", margin: "10px 0 0", padding: 0 }} data-tabla-esfuerzo={filas.length}>
-            {(todas ? filas : filas.slice(0, FILAS_VISIBLES)).map((m) => (
-              <li key={m.user_id} style={{ borderTop: "1px solid rgba(248,249,250,0.08)" }}>
+          <ul style={{ listStyle: "none", margin: "12px 0 0", padding: 0, display: "grid", gap: "6px" }} data-tabla-esfuerzo={filas.length}>
+            {(todas ? filas : filas.slice(0, FILAS_VISIBLES)).map((m, k) => (
+              <li key={m.user_id} className="pdv-entra" style={{ "--i": k }}>
                 <button
                   type="button"
-                  className="pd1-toque pd1-foco"
+                  className="pdv-fila"
                   onClick={() => onAbrir?.(m.user_id)}
                   data-fila-esfuerzo={m.user_id}
-                  style={{
-                    width: "100%", display: "flex", alignItems: "center", gap: "10px", padding: "8px 2px",
-                    background: "transparent", border: "none", cursor: "pointer", color: FAE.text, textAlign: "left",
-                  }}
                 >
-                  <span aria-hidden="true" style={{ flexShrink: 0, width: "10px", height: "10px", borderRadius: "999px", background: colorDe(m.acierto) }} />
-                  <span className="pd1-nombre" style={{ flex: 1, fontSize: "14px" }}>{m.nombre}</span>
-                  <span style={{ flexShrink: 0, fontSize: "13px", fontVariantNumeric: "tabular-nums", color: V1.texto2 }}>
-                    {Math.round(m.acierto)}% · {m.segundos}s
-                  </span>
+                  {/* La inicial lleva el color de su acierto, el mismo del punto en el gráfico. */}
+                  <Inicial nombre={m.nombre} color={colorDe(m.acierto)} tamano={34} />
+                  <span className="pd1-nombre" style={{ flex: 1, fontFamily: "Sora, sans-serif", fontSize: "14px", fontWeight: 600 }}>{m.nombre}</span>
+                  <span style={{ flexShrink: 0, fontFamily: "Sora, sans-serif", fontSize: "13.5px", fontWeight: 700, fontVariantNumeric: "tabular-nums" }}>{Math.round(m.acierto)}%</span>
+                  <span style={{ flexShrink: 0, fontSize: "12.5px", fontVariantNumeric: "tabular-nums", color: V1.texto2 }}>{m.segundos}s</span>
+                  <ChevronRight className="pdv-fila__flecha" size={16} aria-hidden="true" />
                 </button>
               </li>
             ))}
@@ -226,15 +219,11 @@ export default function EsfuerzoResultado({ datos, onAbrir, className, style }) 
           {filas.length > FILAS_VISIBLES && (
             <button
               type="button"
-              className="pd1-toque pd1-foco"
+              className="pdv-boton pdv-boton--suave"
               onClick={() => setTodas((v) => !v)}
               data-ver-todas-filas
               aria-expanded={todas}
-              style={{
-                marginTop: "4px", padding: "0 2px", background: "transparent", border: "none", cursor: "pointer",
-                color: FAE.text, fontFamily: "Sora, sans-serif", fontSize: "13px", fontWeight: 600,
-                textDecorationLine: "underline", textUnderlineOffset: "3px", textDecorationColor: "rgba(248,249,250,0.35)",
-              }}
+              style={{ marginTop: "10px" }}
             >
               {todas ? "Ver solo los primeros" : `Ver ${filas.length - FILAS_VISIBLES} más`}
             </button>

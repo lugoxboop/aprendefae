@@ -4,8 +4,8 @@ import { FAE } from "../../theme.js";
 import { NIVEL } from "../../docente/alertas.js";
 import { PALABRA_RIESGO, ordenEstudiantes } from "../../docente/panelV1.js";
 import MarcaNivel, { NIVEL_MARCA } from "./MarcaNivel.jsx";
-import { V1, notaV1, volverV1, tituloConIcono, TONOS_PANEL } from "./estiloV1.js";
-import IconoBloque from "./IconoBloque.jsx";
+import { V1, notaV1 } from "./estiloV1.js";
+import VistaDocente, { Inicial } from "./VistaDocente.jsx";
 
 /*
  * «Mis estudiantes» (Ukyo §6.2): la lista entera, en su propia vista. Cada
@@ -16,6 +16,7 @@ import IconoBloque from "./IconoBloque.jsx";
 
 export const POR_PAGINA = 25;
 
+const COLOR_NIVEL = { [NIVEL.URGENTE]: "#E9C46A", [NIVEL.ATENCION]: "#C39BD3", [NIVEL.INFO]: "#8FB8E8" };
 const MARCA = { [NIVEL.URGENTE]: NIVEL_MARCA.URGENTE, [NIVEL.ATENCION]: NIVEL_MARCA.ATENCION, [NIVEL.INFO]: NIVEL_MARCA.INFO };
 
 export function hace(dias) {
@@ -37,63 +38,58 @@ export default function ListaEstudiantes({ estudiantes, atencion, notaCohorte, o
   const mostrados = visibles.slice(0, pagina * POR_PAGINA);
 
   return (
-    <section data-vista="estudiantes" aria-labelledby="pd1-estudiantes">
-      <button type="button" style={volverV1} onClick={onVolver} data-volver>‹ Volver al resumen</button>
-      <h2 id="pd1-estudiantes" style={{ ...tituloConIcono, fontSize: "18px" }}><IconoBloque icono={Users} tono={TONOS_PANEL.estudiantes} tamano={34} />Mis estudiantes</h2>
+    <VistaDocente
+      vista="estudiantes" data-vista="estudiantes" aria-labelledby="pd1-estudiantes"
+      Glifo={Users} rotulo="Tu grupo" titulo="Mis estudiantes" tituloId="pd1-estudiantes"
+      sub={`${estudiantes.length} ${estudiantes.length === 1 ? "estudiante" : "estudiantes"}. Primero quien más necesita que lo mires; toca un nombre para ver su ficha.`}
+      onVolver={onVolver}
+    >
       <input
         type="search"
+        className="pdv-buscar"
         value={busqueda}
         onChange={(ev) => { setBusqueda(ev.target.value); setPagina(1); }}
         placeholder="Buscar por nombre o apodo"
         aria-label="Buscar por nombre o apodo"
-        style={{
-          width: "100%", minHeight: "44px", padding: "0 14px", borderRadius: "10px", marginBottom: "12px",
-          background: "rgba(248,249,250,0.06)", border: "1px solid rgba(248,249,250,0.16)",
-          color: FAE.text, fontFamily: "Inter, sans-serif", fontSize: "14px", boxSizing: "border-box",
-        }}
       />
-      <div style={{ display: "grid", gridTemplateColumns: "minmax(0,1fr) auto", padding: "0 12px 6px", fontSize: "12px", color: V1.texto2 }} aria-hidden="true">
-        <span>Nombre</span><span style={{ paddingRight: "26px" }}>Última vez</span>
-      </div>
-      <div style={{ display: "grid", gap: "8px" }}>
-        {mostrados.map((e) => {
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 340px), 1fr))", gap: "8px" }}>
+        {mostrados.map((e, k) => {
           const nivel = nivelDe.get(e.user_id) ?? null;
           const nombre = e.full_name || e.nickname;
           return (
             <button
               key={e.user_id}
               type="button"
+              className="pdv-fila pdv-entra"
               onClick={() => onAbrir(e.user_id)}
               data-estudiante={e.user_id}
               aria-label={`${nombre}${nivel ? `, riesgo ${PALABRA_RIESGO[nivel].toLowerCase()}` : ""}${e.es_prueba ? ", cuenta de prueba" : ""}, última vez ${hace(e.dias_inactivo)}. Ver detalle`}
               title={nombre}
-              style={{
-                display: "grid", gridTemplateColumns: "auto minmax(0,1fr) auto auto", alignItems: "center", gap: "10px",
-                width: "100%", minHeight: "48px", padding: "6px 12px", borderRadius: "10px", textAlign: "left",
-                background: V1.tarjeta, border: V1.borde, color: "inherit", cursor: "pointer", font: "inherit",
-              }}
+              style={{ "--i": k }}
             >
-              <MarcaNivel nivel={nivel ? MARCA[nivel] : NIVEL_MARCA.NINGUNO} tamano={12} />
-              <span style={{ display: "grid", minWidth: 0 }}>
-                <span className="pd1-nombre" style={{ fontFamily: "Sora, sans-serif", fontSize: "14px", fontWeight: 600, color: FAE.text }}>{nombre}</span>
-                {e.es_prueba && <span style={{ fontSize: "12px", color: V1.texto2 }}>cuenta de prueba · fuera de los promedios</span>}
+              <Inicial nombre={nombre} color={nivel ? COLOR_NIVEL[nivel] : "rgba(var(--tono-rgb), 0.85)"} tamano={38} />
+              <span style={{ display: "grid", flex: 1, minWidth: 0 }}>
+                <span className="pd1-nombre" style={{ fontFamily: "Sora, sans-serif", fontSize: "14.5px", fontWeight: 600, color: FAE.text }}>{nombre}</span>
+                {e.es_prueba
+                  ? <span style={{ fontSize: "12px", color: V1.texto2 }}>cuenta de prueba · fuera de los promedios</span>
+                  : nivel && <span style={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "12px", color: V1.texto2 }}><MarcaNivel nivel={MARCA[nivel]} tamano={10} />Riesgo {PALABRA_RIESGO[nivel].toLowerCase()}</span>}
               </span>
-              <span style={{ fontFamily: "Sora, sans-serif", fontSize: "14px", fontVariantNumeric: "tabular-nums", color: FAE.text, whiteSpace: "nowrap" }} data-cifra="ultima-vez">
+              <span style={{ flexShrink: 0, padding: "4px 10px", borderRadius: "999px", background: "rgba(248,249,250,0.06)", fontFamily: "Sora, sans-serif", fontSize: "12.5px", fontWeight: 600, fontVariantNumeric: "tabular-nums", color: FAE.text, whiteSpace: "nowrap" }} data-cifra="ultima-vez">
                 {hace(e.dias_inactivo)}
               </span>
-              <ChevronRight size={16} aria-hidden="true" color={V1.texto2} />
+              <ChevronRight className="pdv-fila__flecha" size={16} aria-hidden="true" />
             </button>
           );
         })}
         {visibles.length === 0 && <p style={notaV1}>Ningún estudiante coincide con esa búsqueda.</p>}
       </div>
       {visibles.length > mostrados.length && (
-        <button type="button" style={{ ...volverV1, marginTop: "12px" }} onClick={() => setPagina((n) => n + 1)} data-ver-mas>
+        <button type="button" className="pdv-boton pdv-boton--suave" style={{ marginTop: "14px" }} onClick={() => setPagina((n) => n + 1)} data-ver-mas>
           Ver más ({visibles.length - mostrados.length})
         </button>
       )}
       {/* Ukyo §8: el párrafo de cohorte y de cuentas de prueba, al pie y en gris. */}
       <p style={{ ...notaV1, marginTop: "16px" }} data-nota-cohorte>{notaCohorte}</p>
-    </section>
+    </VistaDocente>
   );
 }

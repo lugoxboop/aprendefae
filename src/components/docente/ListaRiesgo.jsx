@@ -1,4 +1,4 @@
-import { Eye } from "lucide-react";
+import { ChevronRight, Copy, Eye } from "lucide-react";
 import { useState } from "react";
 import { copiar } from "../../docente/copiar.js";
 import { FAE } from "../../theme.js";
@@ -6,8 +6,8 @@ import { NIVEL, REGLAS_SIN_DATOS } from "../../docente/alertas.js";
 import { DIAGNOSTICOS_SIN_DATOS } from "../../docente/diagnosticos.js";
 import { AJUSTABLES, claveSilencio } from "../../docente/preferenciasDocente.js";
 import MarcaNivel, { NIVEL_MARCA } from "./MarcaNivel.jsx";
-import { V1, notaV1, tarjetaV1, tituloBloque, volverV1, tituloConIcono, TONOS_PANEL } from "./estiloV1.js";
-import IconoBloque from "./IconoBloque.jsx";
+import { V1, notaV1, tarjetaV1, tituloBloque } from "./estiloV1.js";
+import VistaDocente, { Inicial } from "./VistaDocente.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -69,29 +69,38 @@ const botonFila = {
 /* La fila se exporta porque el resumen de la primera pantalla enseña estas
  * mismas, recortadas: dos maquetas distintas para el mismo dato acaban
  * discrepando, y la que discrepa es siempre la que nadie mira. */
-export function FilaRiesgo({ fila, silenciado, onAbrir, onSilenciar }) {
+/* El color de la inicial por nivel. La marca y la palabra van siempre al lado: el color nunca va solo. */
+const COLOR_INICIAL = { [NIVEL.URGENTE]: "#E9C46A", [NIVEL.ATENCION]: "#C39BD3", [NIVEL.INFO]: "#8FB8E8" };
+
+export function FilaRiesgo({ fila, silenciado, onAbrir, onSilenciar, indice = 0 }) {
   const { estudiante: e, principal, todos } = fila;
   return (
     <li
       data-riesgo={e.user_id}
       data-diagnostico={principal.id}
-      style={{ padding: "12px 0", borderTop: "1px solid rgba(248,249,250,0.08)" }}
+      className="pdv-entra"
+      style={{
+        "--i": indice, padding: "14px 16px", borderRadius: "18px",
+        background: "rgba(248,249,250,0.035)", border: "1px solid rgba(248,249,250,0.08)",
+      }}
     >
-      <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}>
-        <MarcaNivel nivel={MARCA[principal.nivel]} />
-        {/* El color nunca va solo: al lado del símbolo va siempre la palabra. */}
-        <span style={{ flexShrink: 0, fontSize: "11px", letterSpacing: "0.08em", color: V1.texto2 }}>
-          {PALABRA[principal.nivel]?.toUpperCase()}
-        </span>
-        <span className="pd1-nombre" style={{ flex: 1, fontFamily: "Sora, sans-serif", fontSize: "15px", fontWeight: 600 }}>
-          {nombreDe(e)}
-        </span>
+      <div style={{ display: "flex", alignItems: "center", gap: "12px", minWidth: 0 }}>
+        <Inicial nombre={nombreDe(e)} color={COLOR_INICIAL[principal.nivel] ?? "#8FB8E8"} tamano={42} />
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <span className="pd1-nombre" style={{ display: "block", fontFamily: "Sora, sans-serif", fontSize: "16px", fontWeight: 700 }}>
+            {nombreDe(e)}
+          </span>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "3px", padding: "2px 9px 2px 7px", borderRadius: "999px", background: "rgba(248,249,250,0.06)", fontSize: "11px", fontWeight: 700, letterSpacing: "0.08em", color: "#C9D3DF" }}>
+            <MarcaNivel nivel={MARCA[principal.nivel]} />
+            {PALABRA[principal.nivel]?.toUpperCase()}
+          </span>
+        </div>
       </div>
 
-      <p style={{ margin: "6px 0 0", fontFamily: "Sora, sans-serif", fontSize: "14px", fontWeight: 600, color: FAE.text }}>
+      <p style={{ margin: "12px 0 0", fontFamily: "Sora, sans-serif", fontSize: "15px", fontWeight: 600, color: FAE.text }}>
         {principal.nombre}
       </p>
-      <p style={{ ...notaV1, marginTop: "2px" }}>{principal.dice}</p>
+      <p style={{ ...notaV1, marginTop: "3px" }}>{principal.dice}</p>
 
       {/* Lo demás que le pasa, sin repetir el principal: dos diagnósticos no son dos filas. */}
       {todos.length > 1 && (
@@ -100,14 +109,13 @@ export function FilaRiesgo({ fila, silenciado, onAbrir, onSilenciar }) {
         </p>
       )}
 
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "8px" }}>
-        <button type="button" className="pd1-foco" style={botonFila} onClick={() => onAbrir?.(e.user_id)} data-ver={e.user_id}>
-          {principal.accion ?? "Ver al estudiante"}
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "12px" }}>
+        <button type="button" className="pdv-boton" onClick={() => onAbrir?.(e.user_id)} data-ver={e.user_id}>
+          {principal.accion ?? "Ver al estudiante"} <ChevronRight size={15} aria-hidden="true" />
         </button>
         <button
           type="button"
-          className="pd1-foco"
-          style={{ ...botonFila, color: V1.texto2 }}
+          className="pdv-boton pdv-boton--suave"
           onClick={() => onSilenciar?.(e.user_id, principal.id)}
           data-no-aplica={claveSilencio(e.user_id, principal.id)}
           aria-pressed={silenciado}
@@ -119,15 +127,6 @@ export function FilaRiesgo({ fila, silenciado, onAbrir, onSilenciar }) {
   );
 }
 
-/*
- * «Copiar los nombres» es, hoy, la acción de escribirles.
- *
- * El panel no puede mandar mensajes: no hay mensajería ni correo de estudiante
- * en la base. Lo que sí puede es dejar la lista lista para pegar donde el
- * profesor ya habla con su clase, con el motivo al lado de cada nombre para
- * que no tenga que volver a mirarlo. Es un clic de distancia de lo que hacen
- * Connect y Canvas, y la distancia que ahorra es la que decide si se hace.
- */
 function CopiarNombres({ riesgo }) {
   const [estado, setEstado] = useState("listo");
   if (riesgo.length === 0) return null;
@@ -138,15 +137,15 @@ function CopiarNombres({ riesgo }) {
     <div style={{ marginTop: "10px" }}>
       <button
         type="button"
-        className="pd1-toque pd1-foco"
+        className="pdv-boton pdv-boton--suave"
         data-copiar-nombres={riesgo.length}
         onClick={async () => {
           const ok = await copiar(texto);
           setEstado(ok ? "copiado" : "fallo");
           if (ok) setTimeout(() => setEstado("listo"), 2400);
         }}
-        style={{ ...botonFila, borderColor: "rgba(248,249,250,0.3)" }}
       >
+        <Copy size={15} aria-hidden="true" />
         {estado === "copiado" ? "Copiado" : `Copiar ${riesgo.length === 1 ? "el nombre" : `los ${riesgo.length} nombres`} con su motivo`}
       </button>
       <p aria-live="polite" style={{ ...notaV1, marginTop: "6px", marginBottom: 0 }}>
@@ -172,22 +171,20 @@ export default function ListaRiesgo({
   const faltan = [...DIAGNOSTICOS_SIN_DATOS, ...REGLAS_SIN_DATOS.map((r) => ({ id: r.titulo, nombre: r.titulo, necesita: r.necesita, porque: r.porque }))];
 
   return (
-    <section data-vista="riesgo">
-      <button type="button" style={volverV1} onClick={onVolver} data-volver>‹ Volver al resumen</button>
-
-      <section style={{ ...tarjetaV1, marginBottom: "12px", ...ANCHO_DE_LECTURA }}>
-        <h2 style={tituloConIcono}><IconoBloque icono={Eye} tono={TONOS_PANEL.mirar} />A quién mirar</h2>
-        <p style={notaV1}>
-          {riesgo.length === 0
-            ? "Ahora mismo nadie dispara ninguna señal. Es una buena noticia, no un error."
-            : `${riesgo.length} de ${cohorte.length} ${cohorte.length === 1 ? "estudiante" : "estudiantes"}, ordenados por urgencia. Cada uno con lo que le pasa y qué hacer.`}
-        </p>
-
+    <VistaDocente
+      vista="riesgo" data-vista="riesgo" Glifo={Eye} rotulo="Seguimiento" titulo="A quién mirar"
+      sub={riesgo.length === 0
+        ? "Ahora mismo nadie dispara ninguna señal. Es una buena noticia, no un error."
+        : `${riesgo.length} de ${cohorte.length} ${cohorte.length === 1 ? "estudiante" : "estudiantes"}, ordenados por urgencia. Cada uno con lo que le pasa y qué hacer.`}
+      onVolver={onVolver}
+    >
+      <section style={{ marginBottom: "16px" }}>
         {riesgo.length > 0 && (
-          <ul style={{ listStyle: "none", margin: "8px 0 0", padding: 0 }} data-lista-riesgo={riesgo.length}>
-            {riesgo.map((f) => (
+          <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 340px), 1fr))", gap: "12px", alignItems: "start" }} data-lista-riesgo={riesgo.length}>
+            {riesgo.map((f, k) => (
               <FilaRiesgo
                 key={f.estudiante.user_id}
+                indice={k}
                 fila={f}
                 silenciado={false}
                 onAbrir={onAbrir}
@@ -203,7 +200,7 @@ export default function ListaRiesgo({
       {/* Lo silenciado, visible y reversible. Esconderlo sería silenciarlo dos veces. */}
       {silenciados.length > 0 && (
         <section style={{ ...tarjetaV1, marginBottom: "12px", ...ANCHO_DE_LECTURA }} data-silenciados={silenciados.length}>
-          <h2 style={tituloBloque}>Marcadas como «no aplica» ({silenciados.length})</h2>
+          <h2 style={{ ...tituloBloque, fontSize: "15px" }}>Marcadas como «no aplica» ({silenciados.length})</h2>
           <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
             {silenciados.map((clave) => {
               const [userId, diagId] = clave.split("|");
@@ -257,7 +254,7 @@ export default function ListaRiesgo({
                     value={prefs?.[a.id] ?? a.porDefecto}
                     onChange={(ev) => onAjustar?.(a.id, Number(ev.target.value))}
                     data-ajuste={a.id}
-                    style={{ flex: 1, minWidth: 0, accentColor: FAE.teal, minHeight: "44px" }}
+                    style={{ flex: 1, minWidth: 0, accentColor: "var(--tono, #2A9D8F)", minHeight: "44px" }}
                   />
                   <span style={{ flexShrink: 0, minWidth: "64px", textAlign: "right", fontFamily: "Sora, sans-serif", fontSize: "14px", fontWeight: 700, fontVariantNumeric: "tabular-nums" }}>
                     {prefs?.[a.id] ?? a.porDefecto} {a.sufijo}
@@ -302,6 +299,6 @@ export default function ListaRiesgo({
           </ul>
         )}
       </section>
-    </section>
+    </VistaDocente>
   );
 }

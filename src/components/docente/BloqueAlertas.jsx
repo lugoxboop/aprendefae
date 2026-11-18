@@ -2,6 +2,7 @@ import { FAE } from "../../theme.js";
 import { NIVEL, REGLAS_SIN_DATOS } from "../../docente/alertas.js";
 import MarcaNivel, { NIVEL_MARCA } from "./MarcaNivel.jsx";
 import { TITULO_SIN_DATOS } from "../../docente/panelV1.js";
+import { Inicial } from "./VistaDocente.jsx";
 
 /*
  * Las alertas van arriba y ordenadas por urgencia, nunca dentro de la tabla.
@@ -21,26 +22,24 @@ function Alerta({ alerta }) {
   const e = alerta.estudiante;
   return (
     <div
+      className="pdv-entra"
       style={{
-        display: "flex",
-        alignItems: "flex-start",
-        gap: "12px",
-        padding: "12px 14px",
-        borderRadius: "12px",
-        background: s.fondo,
-        border: `1px solid ${s.borde}`,
+        display: "flex", alignItems: "flex-start", gap: "12px",
+        padding: "14px 16px", borderRadius: "16px",
+        background: s.fondo, border: `1px solid ${s.borde}`,
       }}
     >
-      {/* Barra de color, no icono: el sitio no usa iconografía de estado. */}
-      <span aria-hidden="true" style={{ width: "3px", alignSelf: "stretch", borderRadius: "2px", background: s.color, flexShrink: 0 }} />
+      {/* La inicial en el color del nivel; la marca y la palabra dicen lo mismo sin color. */}
+      <Inicial nombre={e.full_name || e.nickname} color={s.color} tamano={38} />
       <div style={{ minWidth: 0 }}>
-        <p style={{ margin: 0, display: "flex", alignItems: "center", gap: "6px", fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700, letterSpacing: "0.1em", color: s.color }}>
+        <p style={{ margin: 0, display: "flex", alignItems: "center", gap: "6px", fontFamily: "Sora, sans-serif", fontSize: "11.5px", fontWeight: 700, letterSpacing: "0.1em", color: s.color }}>
           <MarcaNivel nivel={s.marca} tamano={12} />{s.rotulo}
         </p>
-        <p style={{ margin: "3px 0 2px", fontFamily: "Sora, sans-serif", fontSize: "14.5px", fontWeight: 600, color: FAE.text }}>
-          {e.full_name || e.nickname} · {alerta.titulo}
+        <p style={{ margin: "4px 0 2px", fontFamily: "Sora, sans-serif", fontSize: "15px", fontWeight: 600, color: FAE.text }}>
+          {e.full_name || e.nickname}
         </p>
-        <p style={{ margin: 0, fontSize: "12.5px", lineHeight: 1.45, color: "rgba(248,249,250,0.62)" }}>{alerta.detalle}</p>
+        <p style={{ margin: 0, fontSize: "13px", fontWeight: 600, color: "rgba(248,249,250,0.86)" }}>{alerta.titulo}</p>
+        <p style={{ margin: "3px 0 0", fontSize: "12.5px", lineHeight: 1.45, color: "rgba(248,249,250,0.66)" }}>{alerta.detalle}</p>
       </div>
     </div>
   );
@@ -49,9 +48,7 @@ function Alerta({ alerta }) {
 export default function BloqueAlertas({ alertas, grupoVacio }) {
   return (
     <section style={{ marginBottom: "28px" }}>
-      <h2 style={{ fontFamily: "Sora, sans-serif", fontSize: "13px", fontWeight: 700, letterSpacing: "0.1em", color: "rgba(248,249,250,0.55)", margin: "0 0 12px" }}>
-        ALERTAS
-      </h2>
+      <h2 className="pdv-seccion">Alertas</h2>
 
       {alertas.length > 0 ? (
         <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>

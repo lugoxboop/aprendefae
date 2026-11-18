@@ -1,3 +1,4 @@
+import { Inicial } from "./VistaDocente.jsx";
 import { useState } from "react";
 import { FAE } from "../../theme.js";
 import { ICONOS } from "../shared/Medalla.jsx";
@@ -92,15 +93,15 @@ export default function Destacados({ estudiantes }) {
         {visibles.map(({ estudiante: e, motivos }) => (
           <div
             key={e.user_id}
+            className="pdv-entra"
             style={{
-              padding: "12px 14px",
-              borderRadius: "13px",
-              background: "rgba(42,157,143,0.07)",
-              border: `1px solid ${FAE.teal}44`,
-              minWidth: 0,
+              padding: "16px", borderRadius: "18px", minWidth: 0,
+              background: "linear-gradient(160deg, rgba(42,157,143,0.14), rgba(42,157,143,0.03) 60%)",
+              border: `1px solid ${FAE.teal}55`,
             }}
           >
-            <div style={{ display: "flex", alignItems: "center", gap: "9px", minWidth: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: 0 }}>
+              <Inicial nombre={e.full_name || e.nickname} color={FAE.teal} tamano={36} />
               <IconoTendencia />
               <p style={{ margin: 0, fontFamily: "Sora, sans-serif", fontSize: "14px", fontWeight: 600, color: FAE.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                 {e.full_name || e.nickname}
@@ -136,8 +137,8 @@ export default function Destacados({ estudiantes }) {
           onClick={() => setExpandido(true)}
           style={{
             marginTop: "10px", fontFamily: "Sora, sans-serif", fontSize: "12.5px", fontWeight: 600,
-            minHeight: "44px", padding: "0 14px", borderRadius: "999px", cursor: "pointer",
-            background: "transparent", border: `1px solid ${FAE.teal}55`, color: "#3FA69A",
+            minHeight: "44px", padding: "0 16px", borderRadius: "999px", cursor: "pointer",
+            background: "rgba(42,157,143,0.12)", border: `1px solid ${FAE.teal}66`, color: "#7FD3C7",
           }}
         >
           Ver los {ocultos} restantes
@@ -161,12 +162,5 @@ export default function Destacados({ estudiantes }) {
 }
 
 function Titulo() {
-  return (
-    <div style={{ display: "flex", alignItems: "center", gap: "9px", margin: "0 0 12px" }}>
-      <span style={{ width: "3px", height: "16px", borderRadius: "2px", background: FAE.teal, flexShrink: 0 }} />
-      <h2 style={{ fontFamily: "Sora, sans-serif", fontSize: "13px", fontWeight: 700, letterSpacing: "0.1em", color: "#3FA69A", margin: 0 }}>
-        DESTACADOS
-      </h2>
-    </div>
-  );
+  return <h2 className="pdv-seccion">Van muy bien</h2>;
 }
