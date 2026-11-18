@@ -1,10 +1,11 @@
 import { useMemo, useState } from "react";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Users } from "lucide-react";
 import { FAE } from "../../theme.js";
 import { NIVEL } from "../../docente/alertas.js";
 import { PALABRA_RIESGO, ordenEstudiantes } from "../../docente/panelV1.js";
 import MarcaNivel, { NIVEL_MARCA } from "./MarcaNivel.jsx";
-import { V1, tituloBloque, notaV1, volverV1 } from "./estiloV1.js";
+import { V1, notaV1, volverV1, tituloConIcono, TONOS_PANEL } from "./estiloV1.js";
+import IconoBloque from "./IconoBloque.jsx";
 
 /*
  * «Mis estudiantes» (Ukyo §6.2): la lista entera, en su propia vista. Cada
@@ -38,7 +39,7 @@ export default function ListaEstudiantes({ estudiantes, atencion, notaCohorte, o
   return (
     <section data-vista="estudiantes" aria-labelledby="pd1-estudiantes">
       <button type="button" style={volverV1} onClick={onVolver} data-volver>‹ Volver al resumen</button>
-      <h2 id="pd1-estudiantes" style={{ ...tituloBloque, fontSize: "18px" }}>Mis estudiantes</h2>
+      <h2 id="pd1-estudiantes" style={{ ...tituloConIcono, fontSize: "18px" }}><IconoBloque icono={Users} tono={TONOS_PANEL.estudiantes} tamano={34} />Mis estudiantes</h2>
       <input
         type="search"
         value={busqueda}

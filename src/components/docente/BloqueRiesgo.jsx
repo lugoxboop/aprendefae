@@ -1,5 +1,7 @@
+import { Eye } from "lucide-react";
 import { FilaRiesgo } from "./ListaRiesgo.jsx";
-import { enlaceV1, notaV1, tarjetaV1, tituloBloque } from "./estiloV1.js";
+import { enlaceV1, notaV1, tarjetaV1, tituloConIcono, TONOS_PANEL } from "./estiloV1.js";
+import IconoBloque from "./IconoBloque.jsx";
 
 /*
  * La columna derecha de la primera pantalla: a quién mirar hoy, con el
@@ -18,7 +20,7 @@ export default function BloqueRiesgo({ riesgo = [], total = 0, onAbrir, onSilenc
 
   return (
     <section className={className} style={{ ...tarjetaV1, ...style }} data-bloque="riesgo">
-      <h2 style={tituloBloque}>A quién mirar hoy</h2>
+      <h2 style={tituloConIcono}><IconoBloque icono={Eye} tono={TONOS_PANEL.mirar} />A quién mirar hoy</h2>
 
       {riesgo.length === 0 ? (
         <p style={notaV1}>Nadie dispara ninguna señal ahora mismo. Es una buena noticia, no un dato que falte.</p>

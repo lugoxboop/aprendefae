@@ -1,8 +1,10 @@
+import { Activity } from "lucide-react";
 import { useMemo, useState } from "react";
 import { FAE } from "../../theme.js";
 import { BANDAS, CORTE_BAJO, bandaDe } from "../../docente/bandas.js";
 import { ORDENES, ordenar, porCuadrante } from "../../docente/esfuerzoResultado.js";
-import { V1, notaV1, tarjetaV1, tituloBloque } from "./estiloV1.js";
+import { V1, notaV1, tarjetaV1, tituloConIcono, TONOS_PANEL } from "./estiloV1.js";
+import IconoBloque from "./IconoBloque.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -129,7 +131,7 @@ export default function EsfuerzoResultado({ datos, onAbrir, className, style }) 
 
   return (
     <section className={className} style={{ ...tarjetaV1, ...style }} data-bloque="esfuerzo">
-      <h2 style={tituloBloque}>Esfuerzo y resultado</h2>
+      <h2 style={tituloConIcono}><IconoBloque icono={Activity} tono={TONOS_PANEL.esfuerzo} />Esfuerzo y resultado</h2>
       <p style={notaV1}>
         {medidos.length === 0
           ? "Todavía no hay nadie con tiempo y acierto medidos."

@@ -48,13 +48,74 @@ export const CSS_V1 = `
  */
 .pd2-dos { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; margin-top: 12px; align-items: start; }
 @media (min-width: 1024px) { .pd2-dos { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 16px; } }
+
+/*
+ * ═══════════ LA ESTÉTICA DE LA BARRA LATERAL (Mateo, 18-nov) ═══════════
+ *
+ * El panel habla el mismo idioma que el menú de la cuenta (#681): iconos en
+ * su pastilla de color, flecha que asoma al pasar, entrada en fila desde la
+ * izquierda y un brillo teal y coral arriba. Misma curva que la barra
+ * (cubic-bezier(.22,1,.36,1)), mismos 30 ms entre hermanos.
+ *
+ * Todo botón del panel reacciona igual: sube un píxel y aclara. Con filter y
+ * transform, sin pisar el fondo que cada botón ya trae en línea.
+ */
+@keyframes pd3-entra { from { opacity: 0; transform: translateX(-14px); } to { opacity: 1; transform: none; } }
+@keyframes pd3-brilla { from { opacity: 0; } to { opacity: 1; } }
+.pd1 button { transition: filter 160ms ease, transform 200ms cubic-bezier(.22,1,.36,1), background-color 160ms ease, border-color 160ms ease; }
+.pd1 button:not(:disabled):hover { filter: brightness(1.18); }
+.pd1 button:not(:disabled):active { transform: scale(0.98); }
+.pd3-titulo-icono { transition: transform 200ms cubic-bezier(.22,1,.36,1); }
+.pd1 section:hover .pd3-titulo-icono { transform: scale(1.08) rotate(-4deg); }
+.pd3-opcion { animation: pd3-entra 320ms cubic-bezier(.22,1,.36,1) both; animation-delay: calc(120ms + var(--i, 0) * 30ms); }
+.pd3-opcion .pd3-icono { transition: transform 200ms cubic-bezier(.22,1,.36,1); }
+.pd3-opcion .pd3-flecha { opacity: 0.35; transform: translateX(-4px); transition: opacity 160ms ease, transform 200ms ease; }
+.pd3-opcion:not(:disabled):hover, .pd3-opcion:not(:disabled):focus-visible { background-color: rgba(248,249,250,0.06) !important; filter: none; }
+.pd3-opcion:not(:disabled):hover .pd3-icono, .pd3-opcion:not(:disabled):focus-visible .pd3-icono { transform: scale(1.08); }
+.pd3-opcion:not(:disabled):hover .pd3-flecha, .pd3-opcion:not(:disabled):focus-visible .pd3-flecha { opacity: 0.8; transform: none; }
+.pd3-vistas { display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; }
+@media (min-width: 720px) { .pd3-vistas { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; } }
+/* A menos de 420 px el anillo le quita a «Panel docente» el sitio para leerse entero. */
+@media (max-width: 419px) { .pd3-marca { display: none !important; } }
+.pd3-brillo { animation: pd3-brilla 600ms ease-out both; }
+@media (prefers-reduced-motion: reduce) {
+  .pd3-opcion, /* A menos de 420 px el anillo le quita a «Panel docente» el sitio para leerse entero. */
+@media (max-width: 419px) { .pd3-marca { display: none !important; } }
+.pd3-brillo { animation: none; }
+  .pd1 button, .pd3-titulo-icono, .pd3-opcion .pd3-icono, .pd3-opcion .pd3-flecha { transition: none; }
+}
 `;
 
+/*
+ * Los colores de icono de cada bloque, los mismos de la barra de la cuenta:
+ * teal es «tu clase», ámbar «aviso», el azul «mirar datos», el violeta
+ * «personas». Coral sigue reservado al error (P6): el bloque que más costó
+ * lleva el coral claro de «Cerrar sesión» en hover, no el de error.
+ */
+export const TONOS_PANEL = {
+  clase: "#2A9D8F",
+  atencion: "#E9C46A",
+  costo: "#F4A28C",
+  esfuerzo: "#8FB8E8",
+  mirar: "#C39BD3",
+  estudiantes: "#2A9D8F",
+  actividades: "#8FB8E8",
+};
+
+/* Un título de bloque con su icono delante. */
+export const tituloConIcono = { ...{ margin: "0 0 10px", fontFamily: "Sora, sans-serif", fontSize: "14px", fontWeight: 700, color: "#F8F9FA" }, display: "flex", alignItems: "center", gap: "10px" };
+
+/*
+ * La tarjeta, con el acabado de la barra lateral: un brillo teal apenas en la
+ * esquina de arriba (5 %: más que eso baja el teal de texto de 4,5:1 —
+ * medido— y deja de pasar AA) y una sombra larga que la despega del fondo.
+ */
 export const tarjetaV1 = {
-  padding: "14px",
-  borderRadius: "14px",
-  background: V1.tarjeta,
+  padding: "16px",
+  borderRadius: "18px",
+  background: `radial-gradient(120% 90% at 0% 0%, rgba(42,157,143,0.05), transparent 60%), ${V1.tarjeta}`,
   border: V1.borde,
+  boxShadow: "inset 0 1px 0 rgba(248,249,250,0.04), 0 14px 36px rgba(0,0,0,0.22)",
   minWidth: 0,
 };
 
@@ -71,7 +132,7 @@ export const enlaceV1 = {
 
 /* El botón de volver de cada vista aparte. */
 export const volverV1 = {
-  display: "inline-flex", alignItems: "center", minHeight: "44px", marginBottom: "14px", padding: "0 14px",
-  borderRadius: "999px", background: "rgba(248,249,250,0.06)", border: "1px solid rgba(248,249,250,0.14)",
+  display: "inline-flex", alignItems: "center", minHeight: "44px", marginBottom: "14px", padding: "0 16px",
+  borderRadius: "12px", background: "rgba(248,249,250,0.05)", border: "1px solid rgba(248,249,250,0.10)",
   color: FAE.text, cursor: "pointer", fontFamily: "Sora, sans-serif", fontSize: "13px",
 };

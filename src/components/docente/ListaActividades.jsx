@@ -1,8 +1,9 @@
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, ListChecks } from "lucide-react";
 import { FAE } from "../../theme.js";
 import { ordenPeorPrimero } from "../../docente/panelV1.js";
 import VistaRendimiento from "./VistaRendimiento.jsx";
-import { V1, tituloBloque, notaV1, volverV1 } from "./estiloV1.js";
+import { V1, notaV1, volverV1, tituloConIcono, TONOS_PANEL } from "./estiloV1.js";
+import IconoBloque from "./IconoBloque.jsx";
 
 /*
  * «Actividades» (Ukyo §6.1): todas las actividades con FP de la materia
@@ -39,7 +40,7 @@ export default function ListaActividades({ filas, cargando, elegida, subjectId, 
   .pd1-act > svg { grid-row: 1 / 3; grid-column: 4; }
   .pd1-act-cab { display: none !important; }
 }`}</style>
-      <h2 id="pd1-actividades" style={{ ...tituloBloque, fontSize: "18px" }}>Actividades</h2>
+      <h2 id="pd1-actividades" style={{ ...tituloConIcono, fontSize: "18px" }}><IconoBloque icono={ListChecks} tono={TONOS_PANEL.actividades} tamano={34} />Actividades</h2>
       <p style={{ ...notaV1, marginBottom: "12px" }}>
         Solo las que otorgan FP; la teoría no deja registro. La de peor acierto, primero.
       </p>

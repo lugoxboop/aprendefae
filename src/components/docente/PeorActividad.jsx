@@ -1,6 +1,7 @@
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Target } from "lucide-react";
 import { FAE } from "../../theme.js";
-import { V1, tarjetaV1, tituloBloque, notaV1, enlaceV1 } from "./estiloV1.js";
+import { V1, tarjetaV1, notaV1, enlaceV1, tituloConIcono, TONOS_PANEL } from "./estiloV1.js";
+import IconoBloque from "./IconoBloque.jsx";
 
 /*
  * B3 · «Actividad con peor resultado» (Ukyo §4, salida 2 que decidió Yujiro):
@@ -13,7 +14,7 @@ export default function PeorActividad({ estado, singular, onAbrir, onVerTodas })
   const { cargando, peor, nMirables } = estado;
   return (
     <section className="pd1-entrar" style={{ ...tarjetaV1, animationDelay: "160ms" }} data-bloque="b3" aria-labelledby="pd1-b3" aria-describedby="pd1-b3-nota" aria-busy={cargando || undefined}>
-      <h2 id="pd1-b3" style={tituloBloque}>La actividad que más costó</h2>
+      <h2 id="pd1-b3" style={tituloConIcono}><IconoBloque icono={Target} tono={TONOS_PANEL.costo} />La actividad que más costó</h2>
       {/* Ukyo §4: honesto con lo que mira (salida 2). Va para el lector; el texto a la vista es el de Katsumi. */}
       <span id="pd1-b3-nota" style={{ position: "absolute", width: "1px", height: "1px", overflow: "hidden", clip: "rect(0 0 0 0)", whiteSpace: "nowrap" }}>Entre las seis actividades más hechas.</span>
       {cargando ? (

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { FAE } from "../../theme.js";
 import { SUBJECTS, HACER, actividadesDeTipo, desafioDe, ubicacionDeActividad } from "../../data/subjects.js";
 import Logo from "../Logo.jsx";
-import { ChevronLeft, Download } from "lucide-react";
+import { BarChart2, ChevronLeft, ChevronRight, Download, Eye, ListChecks, Users } from "lucide-react";
 import { actividadDe, estudiantesDe, marcarEnGrupo, resumenDe } from "../../docente/datos.js";
 import { useAccesoDocente } from "../../docente/useAccesoDocente.js";
 import { alertasDelGrupo, avancePorTema, NIVEL } from "../../docente/alertas.js";
@@ -29,7 +29,7 @@ import AvisoSospechas from "./AvisoSospechas.jsx";
 import BloqueRiesgo from "./BloqueRiesgo.jsx";
 import ListaRiesgo from "./ListaRiesgo.jsx";
 import VistaEstudiante from "./VistaEstudiante.jsx";
-import { CSS_V1, V1, tarjetaV1, notaV1, volverV1 } from "./estiloV1.js";
+import { CSS_V1, V1, TONOS_PANEL, tarjetaV1, notaV1, volverV1 } from "./estiloV1.js";
 import Entrada, { EstiloEntrada, entrada } from "../shared/Entrada.jsx";
 
 /*
@@ -695,16 +695,49 @@ export default function PanelDocente({ actividadInicial = null, onBack }) {
           </div>
           </>
         )}
-        <nav aria-label="Vistas del panel" style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "16px" }}>
-          {[
-            { id: "riesgo", texto: "A quién mirar", ir: () => ir({ tipo: "riesgo" }) },
-            { id: "estudiantes", texto: "Mis estudiantes", ir: () => ir({ tipo: "estudiantes" }) },
-            { id: "actividades", texto: "Actividades", ir: () => ir({ tipo: "actividades", actividad: null }) },
-          ].map((x) => (
-            <button key={x.id} type="button" onClick={x.ir} disabled={sinEstudiantes} data-ir={x.id} style={{ ...volverV1, marginBottom: 0, opacity: sinEstudiantes ? 0.55 : 1, cursor: sinEstudiantes ? "default" : "pointer" }}>
-              {x.texto}
-            </button>
-          ))}
+        {/*
+          * Las vistas aparte, como las opciones de la barra lateral de la
+          * cuenta (#681): icono en su pastilla de color, el nombre con una
+          * línea de qué hay dentro y la flecha que asoma al pasar. Entran en
+          * fila desde la izquierda. Apiladas en el teléfono; tres en fila
+          * desde 720 px.
+          */}
+        <nav aria-label="Vistas del panel" style={{ ...tarjetaV1, marginTop: "16px", padding: "10px" }}>
+          <p style={{ margin: "4px 10px 8px", fontSize: "11px", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(248,249,250,0.5)" }}>
+            Ver más a fondo
+          </p>
+          <div className="pd3-vistas">
+            {[
+              { id: "riesgo", texto: "A quién mirar", sub: "Quién se está descolgando", icono: Eye, tono: TONOS_PANEL.mirar, ir: () => ir({ tipo: "riesgo" }) },
+              { id: "estudiantes", texto: "Mis estudiantes", sub: "Tu grupo, uno por uno", icono: Users, tono: TONOS_PANEL.estudiantes, ir: () => ir({ tipo: "estudiantes" }) },
+              { id: "actividades", texto: "Actividades", sub: "Cómo le fue a cada una", icono: ListChecks, tono: TONOS_PANEL.actividades, ir: () => ir({ tipo: "actividades", actividad: null }) },
+            ].map((x, i) => (
+              <button
+                key={x.id}
+                type="button"
+                className="pd3-opcion"
+                onClick={x.ir}
+                disabled={sinEstudiantes}
+                data-ir={x.id}
+                style={{
+                  "--i": i,
+                  width: "100%", display: "flex", alignItems: "center", gap: "12px", minHeight: "56px",
+                  padding: "8px 10px", borderRadius: "12px", textAlign: "left", font: "inherit",
+                  background: "transparent", border: "none", color: FAE.text,
+                  opacity: sinEstudiantes ? 0.55 : 1, cursor: sinEstudiantes ? "default" : "pointer",
+                }}
+              >
+                <span className="pd3-icono" aria-hidden="true" style={{ width: "36px", height: "36px", borderRadius: "10px", flexShrink: 0, display: "inline-flex", alignItems: "center", justifyContent: "center", backgroundColor: `${x.tono}1F`, color: x.tono }}>
+                  <x.icono size={18} strokeWidth={2} />
+                </span>
+                <span style={{ flex: 1, minWidth: 0 }}>
+                  <span style={{ display: "block", fontFamily: "Sora, sans-serif", fontSize: "14px", fontWeight: 600, lineHeight: 1.25 }}>{x.texto}</span>
+                  <span style={{ display: "block", fontSize: "12px", lineHeight: 1.35, color: V1.texto2, marginTop: "2px" }}>{x.sub}</span>
+                </span>
+                <ChevronRight className="pd3-flecha" size={16} aria-hidden="true" style={{ flexShrink: 0 }} />
+              </button>
+            ))}
+          </div>
           {/* La fábrica ya no está aquí: subió al cuerpo del panel, encima de
               las cifras (LlamadoFabrica). Dos entradas a lo mismo en la misma
               pantalla no es el doble de visible, es una duda sobre cuál de las
@@ -747,8 +780,8 @@ export default function PanelDocente({ actividadInicial = null, onBack }) {
             disabled={cohorte.length === 0}
             style={{
               flexShrink: 0, width: "44px", height: "44px", display: "inline-flex", alignItems: "center", justifyContent: "center",
-              borderRadius: "999px", background: "transparent", cursor: cohorte.length === 0 ? "default" : "pointer",
-              border: `1px solid ${cohorte.length === 0 ? "rgba(248,249,250,0.15)" : "rgba(248,249,250,0.3)"}`,
+              borderRadius: "12px", background: "rgba(248,249,250,0.05)", cursor: cohorte.length === 0 ? "default" : "pointer",
+              border: `1px solid ${cohorte.length === 0 ? "rgba(248,249,250,0.10)" : "rgba(248,249,250,0.18)"}`,
               opacity: cohorte.length === 0 ? 0.5 : 1,
             }}
           >
@@ -763,7 +796,20 @@ export default function PanelDocente({ actividadInicial = null, onBack }) {
 
 function Marco({ children, onBack }) {
   return (
-    <div style={{ minHeight: "100vh", backgroundColor: FAE.bg, fontFamily: "Inter, sans-serif", color: FAE.text }}>
+    /*
+     * El fondo lleva el brillo de la barra lateral de la cuenta: teal desde
+     * la esquina izquierda y, desde la derecha, azul en vez del coral de la
+     * barra: en el panel el coral es solo el error de carga (P6). Solo arriba, donde
+     * está la cabecera; las tarjetas de abajo quedan sobre el azul de siempre.
+     */
+    <div
+      style={{
+        minHeight: "100vh", fontFamily: "Inter, sans-serif", color: FAE.text,
+        backgroundColor: FAE.bg,
+        backgroundImage: "radial-gradient(900px 520px at 0% 0%, rgba(42,157,143,0.13), transparent 62%), radial-gradient(700px 420px at 100% 0%, rgba(143,184,232,0.07), transparent 65%)",
+        backgroundRepeat: "no-repeat",
+      }}
+    >
       {/*
         * La cuenta flota arriba a la IZQUIERDA desde el 15-nov. Esta columna
         * mide 1040 y no 860 como las demás, así que su reserva se calcula
@@ -785,10 +831,16 @@ function Marco({ children, onBack }) {
             type="button"
             onClick={onBack}
             aria-label="Volver"
-            style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "44px", height: "44px", padding: 0, borderRadius: "999px", background: "rgba(248,249,250,0.06)", border: "1px solid rgba(248,249,250,0.14)", cursor: "pointer" }}
+            style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "44px", height: "44px", padding: 0, borderRadius: "999px", background: "rgba(248,249,250,0.05)", border: "1px solid rgba(248,249,250,0.10)", cursor: "pointer" }}
           >
             <ChevronLeft size={20} color={FAE.text} />
           </button>
+          {/* El icono del panel en su anillo de colores, como el avatar en la barra de la cuenta (sin coral: P6). */}
+          <span className="pd3-marca" aria-hidden="true" style={{ flexShrink: 0, padding: "2px", borderRadius: "11px", background: `conic-gradient(from 210deg, ${FAE.teal}, #E9C46A, #8FB8E8, ${FAE.teal})` }}>
+            <span style={{ width: "30px", height: "30px", borderRadius: "9px", display: "flex", alignItems: "center", justifyContent: "center", background: "#17253F" }}>
+              <BarChart2 size={17} color={FAE.teal} strokeWidth={2.2} />
+            </span>
+          </span>
           <h2 className="pd1-nombre" style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "17px", letterSpacing: "-0.02em", margin: 0, lineHeight: 1.2, minWidth: 0 }}>
             Panel docente
           </h2>

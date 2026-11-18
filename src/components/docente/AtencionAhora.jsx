@@ -1,9 +1,10 @@
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, BellRing } from "lucide-react";
 import { FAE } from "../../theme.js";
 import { NIVEL } from "../../docente/alertas.js";
 import { PALABRA_RIESGO } from "../../docente/panelV1.js";
 import MarcaNivel, { NIVEL_MARCA } from "./MarcaNivel.jsx";
-import { V1, tarjetaV1, tituloBloque, notaV1, enlaceV1 } from "./estiloV1.js";
+import { V1, tarjetaV1, notaV1, enlaceV1, tituloConIcono, TONOS_PANEL } from "./estiloV1.js";
+import IconoBloque from "./IconoBloque.jsx";
 
 /*
  * B2 · «Necesitan atención» (Ukyo §4): ¿a quién miro? Como mucho tres filas,
@@ -55,7 +56,7 @@ export default function AtencionAhora({ atencion, nDestacados, singular, onVerTo
   const visibles = atencion.slice(0, TOPE_ATENCION);
   return (
     <section className="pd1-entrar" style={{ ...tarjetaV1, animationDelay: "80ms" }} data-bloque="b2" aria-labelledby="pd1-b2">
-      <h2 id="pd1-b2" style={tituloBloque}>Necesitan atención</h2>
+      <h2 id="pd1-b2" style={tituloConIcono}><IconoBloque icono={BellRing} tono={TONOS_PANEL.atencion} />Necesitan atención</h2>
       {visibles.length > 0 ? (
         <div style={{ display: "grid", gap: "8px" }}>
           {/* Por debajo de 400 px, dos filas (corrección de Shibukawa, #498 e): la tercera queda en «Ver todas las alertas». */}
