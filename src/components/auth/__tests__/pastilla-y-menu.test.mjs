@@ -128,7 +128,7 @@ test("repetir una actividad paga 0 y el contador no se mueve", async () => {
 
 /* ─────────────────────── Part B: el menú ─────────────────────── */
 
-test("el menú trae la ficha de identidad y las seis opciones, en orden (la clase en vivo, desde el 4-nov)", () => {
+test("el menú trae la ficha de identidad y sus opciones, en orden (la clase en vivo desde el 4-nov; Inicio, primero, desde el 18-nov)", () => {
   const m = montar();
   try {
     abrir(m.caja);
@@ -142,7 +142,7 @@ test("el menú trae la ficha de identidad y las seis opciones, en orden (la clas
     assert.match(ficha.textContent, /0/, "los Cristales");
     assert.match(ficha.textContent, /Racha/, "y la racha");
 
-    assert.deepEqual(opciones(m.caja), ["Clase en vivo", "Mi perfil", "Amigos", "Mi avatar", "Tienda", "Cerrar sesión"]);
+    assert.deepEqual(opciones(m.caja), ["Inicio", "Clase en vivo", "Mi perfil", "Amigos", "Mi avatar", "Tienda", "Cerrar sesión"]);
   } finally { m.desmontar(); }
 });
 
@@ -154,6 +154,33 @@ test("«Mi avatar» va directo al avatar, no al formulario entero", () => {
     const mi = [...m.caja.querySelectorAll("[data-opcion-menu]")].find((b) => b.textContent.trim() === "Mi avatar");
     act(() => mi.dispatchEvent(new w.MouseEvent("click", { bubbles: true })));
     assert.deepEqual(visitas, [["perfil", null, "avatar"]], "#/perfil/avatar, que es lo que abre solo el selector");
+  } finally { m.desmontar(); }
+});
+
+test("«Inicio» del menú lleva a la portada y cierra el menú (18-nov)", () => {
+  const visitas = [];
+  const m = montar({ navegacion: { goHome: () => visitas.push("inicio") } });
+  try {
+    abrir(m.caja);
+    const ini = [...m.caja.querySelectorAll("[data-opcion-menu]")].find((b) => b.textContent.trim() === "Inicio");
+    act(() => ini.dispatchEvent(new w.MouseEvent("click", { bubbles: true })));
+    assert.deepEqual(visitas, ["inicio"]);
+    assert.equal(pastilla(m.caja).getAttribute("aria-expanded"), "false", "y el menú se cierra");
+  } finally { m.desmontar(); }
+});
+
+/*
+ * La X del menú no respondía (Mateo, 18-nov): la fila animada del avatar, que
+ * va después en el código, se pintaba encima. jsdom no pinta, así que aquí se
+ * vigila la causa: que la X siga por encima de sus hermanos animados.
+ */
+test("la X del menú va por encima de la fila animada del avatar", () => {
+  const m = montar();
+  try {
+    abrir(m.caja);
+    const x = m.caja.querySelector(".fae-cerrar-panel");
+    assert.ok(x, "la X existe");
+    assert.ok(Number(x.style.zIndex) >= 2, "zIndex propio: sin él, la fila con data-entra la tapa entera");
   } finally { m.desmontar(); }
 });
 
@@ -229,7 +256,7 @@ test("la pastilla compacta sigue abriendo el mismo menú", () => {
   try {
     abrir(m.caja);
     assert.ok(m.caja.querySelector("[data-ficha-cuenta]"), "la ficha de identidad, igual que en la completa");
-    assert.deepEqual(opciones(m.caja), ["Clase en vivo", "Mi perfil", "Amigos", "Mi avatar", "Tienda", "Cerrar sesión"]);
+    assert.deepEqual(opciones(m.caja), ["Inicio", "Clase en vivo", "Mi perfil", "Amigos", "Mi avatar", "Tienda", "Cerrar sesión"]);
   } finally { m.desmontar(); }
 });
 

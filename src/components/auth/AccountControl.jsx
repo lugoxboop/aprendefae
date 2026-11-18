@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useContext, useCallback } from "react";
-import { BarChart2, Radio, UserRound, Users, PawPrint, ShoppingBag, LogOut, X, ChevronRight } from "lucide-react";
+import { BarChart2, Radio, UserRound, Users, PawPrint, ShoppingBag, LogOut, X, ChevronRight, House } from "lucide-react";
 import { FAE, ANCHO_ESTRECHO } from "../../theme.js";
 import { useAuth } from "../../auth/AuthProvider.jsx";
 import { NavigationContext } from "../../navigation.js";
@@ -508,6 +508,7 @@ const CSS_PANEL = `
 
 /* Cada opción tiene su color de icono: se reconoce de reojo, sin leer. */
 const TONOS = {
+  inicio: "#F8F9FA",
   vivo: "#E76F51",
   perfil: "#8FB8E8",
   amigos: "#2A9D8F",
@@ -783,6 +784,8 @@ function ConSesion({ usuarioId, perfil, cerrarSesion, conTitulo = false }) {
   const irAMiAvatar = () => { setAbierto(false); nav?.irA?.("perfil", null, "avatar"); };
   const irAAmigos = () => { setAbierto(false); nav?.irA?.("amigos"); };
   const irATienda = () => { setAbierto(false); nav?.irATienda?.(); };
+  /* Al inicio, desde cualquier pantalla: la salida que nunca cambia de sitio. */
+  const irAlInicio = () => { setAbierto(false); nav?.goHome?.(); };
   /* La clase en vivo: el estudiante entra con el código que proyecta su profesor. */
   const irAClaseEnVivo = () => { setAbierto(false); nav?.irA?.("vivo"); };
 
@@ -899,8 +902,21 @@ function ConSesion({ usuarioId, perfil, cerrarSesion, conTitulo = false }) {
                 className="fae-cerrar-panel"
                 onClick={cerrar}
                 aria-label="Cerrar el panel de la cuenta"
+                /*
+                 * zIndex 2, y NO es decorativo (18-nov, Mateo: «la X no da
+                 * clic»). La fila del avatar que va justo debajo en el código
+                 * entra animada (data-entra), y un elemento con una animación
+                 * de transform crea su propia capa y se pinta ENCIMA de los
+                 * hermanos posicionados que van antes que él. Su caja ocupa
+                 * todo el ancho —el paddingRight de 44 deja el hueco visual,
+                 * no el de toque—, así que tapaba la X entera: medido con
+                 * elementFromPoint en el centro y en cuatro puntos más, el
+                 * toque caía en la fila y no en la X, a 320, 375 y 1366 px.
+                 * Con «reducir movimiento» no hay animación y la X sí
+                 * funcionaba, por eso las capturas de la sonda no lo vieron.
+                 */
                 style={{
-                  position: "absolute", top: "10px", right: "10px",
+                  position: "absolute", top: "10px", right: "10px", zIndex: 2,
                   width: "44px", height: "44px", borderRadius: "999px",
                   display: "inline-flex", alignItems: "center", justifyContent: "center",
                   background: "rgba(248,249,250,0.05)", border: "none", cursor: "pointer", color: FAE.text,
@@ -963,7 +979,18 @@ function ConSesion({ usuarioId, perfil, cerrarSesion, conTitulo = false }) {
             </div>
 
             <div style={{ padding: "12px 10px", display: "flex", flexDirection: "column", gap: "2px", flex: 1 }}>
-              {/* El atajo al panel docente, primero: ya no flota fuera (18-nov). */}
+              {/*
+                INICIO, LO PRIMERO (18-nov, Mateo: «yo, que soy el
+                desarrollador, tenía problemas para entrar al hub principal»).
+                Desde un tema el inicio quedaba a dos pasos —volver a la
+                materia y luego tocar el logo, un símbolo de 28 px sin texto—.
+                Aquí está a dos toques desde CUALQUIER pantalla, con su nombre
+                escrito, en el mismo sitio siempre.
+              */}
+              <OpcionMenu indice={4} onClick={irAlInicio} icono={House} tono={TONOS.inicio}>Inicio</OpcionMenu>
+              <div data-entra style={{ "--i": 4, height: "6px" }} aria-hidden="true" />
+
+              {/* El atajo al panel docente: ya no flota fuera (18-nov). */}
               {esDocente && (
                 <button
                   type="button"

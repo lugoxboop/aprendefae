@@ -314,6 +314,19 @@ export default function TiendaView({ onBack, onComprarAccesorio = comprarAccesor
               Entrar
             </button>
           </div>
+        ) : !perfil ? (
+          /*
+           * La sesión llega antes que el perfil. Entrando directo a #/tienda
+           * —recargar, o un enlace guardado— hubo un momento con sesión y sin
+           * perfil, y leer perfil.mascota_nombre ahí rompía la página entera:
+           * pantalla en blanco (sonda del 18-nov, a 1280 px). Ese momento
+           * ahora dura lo que tarda el perfil, con un aviso en vez de nada.
+           */
+          <div style={TARJETA} data-tienda-cargando>
+            <p style={{ fontSize: "14.5px", lineHeight: 1.55, color: "rgba(248,249,250,0.7)", margin: 0 }}>
+              Cargando tu Tienda…
+            </p>
+          </div>
         ) : (
           <>
             {/*

@@ -50,7 +50,8 @@ export default function VivoEstudiante({ codigoInicial = null, onBack }) {
     <div className="vivo" data-vivo="estudiante">
       <style>{CSS_VIVO}</style>
       <div className="vivo-marco" style={{ maxWidth: "560px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "12px", minHeight: "44px" }}>
+        {/* fae-cabecera: reserva el hueco de la cuenta. Sin ella, a 375 px la pastilla de FP tapaba «Salir» (sonda del 18-nov). */}
+        <div className="fae-cabecera" style={{ display: "flex", alignItems: "center", gap: "12px", minHeight: "44px" }}>
           <button type="button" className="vivo-boton vivo-boton--suave" onClick={onBack} style={{ minHeight: "44px", padding: "0 16px" }}>
             <ChevronLeft size={18} aria-hidden="true" /> Salir
           </button>

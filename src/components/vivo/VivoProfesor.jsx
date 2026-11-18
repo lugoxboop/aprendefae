@@ -69,7 +69,8 @@ function Marco({ children, onBack, ancho = false }) {
     <div className="vivo" data-vivo="profesor">
       <style>{CSS_VIVO}</style>
       <div className="vivo-marco" style={ancho ? { maxWidth: "1280px" } : undefined}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", minHeight: "44px" }}>
+        {/* fae-cabecera: reserva el hueco de la cuenta, que en el teléfono tapaba el botón de volver (18-nov). */}
+        <div className="fae-cabecera" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", minHeight: "44px" }}>
           {onBack ? (
             <button type="button" className="vivo-boton vivo-boton--suave" onClick={onBack} style={{ minHeight: "44px", padding: "0 16px" }}>
               <ChevronLeft size={18} aria-hidden="true" /> Panel docente
