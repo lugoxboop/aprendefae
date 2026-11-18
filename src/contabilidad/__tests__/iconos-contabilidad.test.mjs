@@ -47,7 +47,7 @@ const I = await import("../iconos/iconos.jsx");
 const { ICONO_POR_ACTIVIDAD, conIcono } = await import("../../data/contabilidadIconos.js");
 const { SUBJECTS, HACER, actividadesDeTipo } = await import("../../data/subjects.js");
 const { nodosDe } = await import("../../hacer/completadas.js");
-const { default: CaminoHacer } = await import("../../components/shared/CaminoHacer.jsx");
+const { default: CaminoHacer, tonoDelCamino } = await import("../../components/shared/CaminoHacer.jsx");
 const { FAE } = await import("../../theme.js");
 
 const CARPETA = new URL("../iconos/", import.meta.url);
@@ -161,7 +161,9 @@ test("★★★ en el camino: el ícono va con el color del rótulo, el ✓ de h
           assert.ok(g.querySelector("text"), `${nodo.id}: sin ícono debe enseñar su número`);
           continue;
         }
-        const esperado = nodo.completada ? FAE.text : "rgba(248,249,250,0.72)";
+        /* El siguiente sugerido (18-nov) lleva el tono claro de su tema, igual que su rótulo. */
+        const sugerido = g.getAttribute("data-estado") === "siguiente";
+        const esperado = nodo.completada ? FAE.text : sugerido ? tonoDelCamino(con.nodos).claro : "rgba(248,249,250,0.72)";
         assert.equal(icono.style.color.replace(/\s/g, ""), (esperado.startsWith("#") ? hexARgb(esperado) : esperado).replace(/\s/g, ""), `${nodo.id}: el ícono no lleva el color del rótulo`);
         const svg = icono.querySelector("svg");
         assert.equal(svg.getAttribute("aria-hidden"), "true");
@@ -170,7 +172,7 @@ test("★★★ en el camino: el ícono va con el color del rótulo, el ✓ de h
         assert.equal(svg.querySelector("[fill]:not(svg)"), null, "una pieza lleva relleno");
         assert.equal(g.querySelector("text"), null, `${nodo.id}: el número sigue debajo del ícono`);
         /* El ✓ de hecha, igual que hoy en los nodos con ícono. */
-        if (nodo.completada) assert.ok(g.querySelector(":scope > g[aria-hidden='true'] > path"), `${nodo.id}: falta el ✓`);
+        if (nodo.completada) assert.ok(g.querySelector("g[aria-hidden='true'] > path"), `${nodo.id}: falta el ✓`);
       }
     } finally { con.desmontar(); }
   }

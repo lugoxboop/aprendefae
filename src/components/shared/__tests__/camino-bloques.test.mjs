@@ -33,7 +33,7 @@ const React = await import("react");
 const { createRoot } = await import("react-dom/client");
 const act = React.act ?? (await import("react-dom/test-utils")).act;
 
-const { default: CaminoHacer, disposicionPorBloques, tramosDe } = await import("../CaminoHacer.jsx");
+const { default: CaminoHacer, disposicionPorBloques, tramosDe, tonoDelCamino } = await import("../CaminoHacer.jsx");
 const { default: RecompensaCierre, recompensaDe } = await import("../RecompensaCierre.jsx");
 const { ICONOS_ACTIVIDAD, iconoDe } = await import("../iconosActividad.jsx");
 const { bloquesDe, BLOQUES } = await import("../../../hacer/bloques.js");
@@ -277,15 +277,26 @@ test("el anillo de cada bloque dice la fracción como texto y se pone al día co
   m.desmontar();
 });
 
-test("el color de los bloques es teal, nunca coral", () => {
-  const m = montar(camino(nodosDelTema("politica-economica", new Set(["diagnostico-en-vivo", "tablero-decisiones"]))));
+test("el color de los bloques es el de su tema (el de su tarjeta), nunca coral", () => {
+  const nodos = nodosDelTema("politica-economica", new Set(["diagnostico-en-vivo", "tablero-decisiones"]));
+  const m = montar(camino(nodos));
   /* Y el aro del nodo sugerido, que era coral y ahora cae sobre una Fácil. */
   assert.ok(m.cont.querySelector("[data-sugerido]"), "hay un nodo sugerido");
   const cromo = [...m.cont.querySelectorAll("[data-cabeza-bloque], path[data-recorrido], [data-sugerido]")].map((e) => e.outerHTML).join("");
   assert.ok(cromo.length > 0);
   assert.ok(!/E76F51|231,\s*111,\s*81/i.test(cromo), "coral en un título, un anillo o el recorrido");
-  assert.ok(/42,\s*157,\s*143|2A9D8F/i.test(cromo));
+  /* Política Económica es «cielo» en el índice: el mismo tono en su camino. */
+  const tono = tonoDelCamino(nodos);
+  assert.equal(tono.base, "#4CB8E8");
+  assert.ok(cromo.includes(tono.rgb) || cromo.includes(tono.base), "el tono del tema no está en el camino");
   m.desmontar();
+});
+
+test("cada camino toma el tono de la tarjeta de su tema; uno fuera del catálogo se queda en teal", () => {
+  assert.equal(tonoDelCamino([{ id: "cu-izquierda-o-derecha" }]).base, tonoDelCamino([{ id: "cu-arma-el-asiento" }]).base, "dos nodos del mismo tema, un tono");
+  assert.notEqual(tonoDelCamino([{ id: "cu-izquierda-o-derecha" }]).base, tonoDelCamino([{ id: "t1-desde-donde-preguntan" }]).base, "dos temas vecinos, dos tonos");
+  assert.equal(tonoDelCamino([{ id: "no-existe" }]).base, "#2A9D8F");
+  assert.equal(tonoDelCamino([]).base, "#2A9D8F");
 });
 
 /* ──────────────────────────────── el cierre ──────────────────────────────── */
