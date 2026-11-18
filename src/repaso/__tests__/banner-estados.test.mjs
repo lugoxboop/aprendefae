@@ -28,7 +28,7 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 const React = await import("react");
 const { createRoot } = await import("react-dom/client");
 const act = React.act;
-const { default: BannerRepaso, SUBTITULO_REPASO, copiaBloqueo } = await import("../../components/repaso/BannerRepaso.jsx");
+const { default: BannerRepaso, SUBTITULO_REPASO, copiaBloqueo, copiaHito, avanceHaciaHito } = await import("../../components/repaso/BannerRepaso.jsx");
 const { ACTIVIDADES_TRANSVERSALES } = await import("../../data/subjects.js");
 const { AuthProvider } = await import("../../auth/AuthProvider.jsx");
 
@@ -169,8 +169,12 @@ test("expansión pendiente: temas del día, cuenta de ítems y FP, y el botón",
   try {
     abrir(m.caja);
     const e = m.caja.querySelector("[data-expansion]");
-    assert.equal(e.querySelector("[data-temas]").textContent, "Hoy entran: Demanda Agregada · Política Fiscal");
-    assert.equal(e.querySelector("[data-cuenta]").textContent, "10 ítems · hasta 60 FP");
+    /* Rediseño 18-nov: los temas son pastillas y las cifras, fichas. */
+    assert.match(e.textContent, /Hoy entran/);
+    assert.deepEqual([...e.querySelectorAll("[data-temas] [data-tema]")].map((t) => t.textContent), ["Demanda Agregada", "Política Fiscal"]);
+    const cuenta = e.querySelector("[data-cuenta]").textContent;
+    assert.match(cuenta, /10ítems/);
+    assert.match(cuenta, /60FP como máximo/);
     assert.equal(e.querySelector("[data-empieza-racha]"), null, "con racha viva, esa línea no sale");
 
     const boton = e.querySelector("[data-empezar]");
@@ -245,4 +249,44 @@ test("el coral del banner está SOLO en el brillo del fuego", () => {
     /* El chip de pendiente es ámbar, no coral. */
     assert.equal(m.caja.querySelector("[data-chip]").style.background, "rgb(233, 196, 106)");
   } finally { m.desmontar(); }
+});
+
+/* ─────────────── rediseño 18-nov: lo que está en juego ─────────────── */
+
+test("cerrado ya dice cuánto cuesta y cuánto falta para el bono", () => {
+  const m = conEstado(PENDIENTE);
+  try {
+    const cab = m.caja.querySelector(".fae-repaso__cabecera");
+    assert.equal(cab.querySelector("[data-dato-cuenta]").textContent, "10 ítems");
+    assert.equal(cab.querySelector("[data-dato-fp]").textContent, "hasta 60 FP");
+    assert.equal(cab.querySelector("[data-dato-hito]").textContent, "Faltan 2 días para el bono de 7");
+    assert.ok(cab.querySelector("[data-medalla] [data-anillo]"), "con racha, el anillo hacia el bono se pinta");
+  } finally { m.desmontar(); }
+});
+
+test("hecho hoy: la cabecera no repite el costo, solo el bono", () => {
+  const m = conEstado(HECHO);
+  try {
+    const cab = m.caja.querySelector(".fae-repaso__cabecera");
+    assert.equal(cab.querySelector("[data-dato-cuenta]"), null);
+    assert.ok(cab.querySelector("[data-dato-hito]"));
+  } finally { m.desmontar(); }
+});
+
+test("sin racha, el anillo va vacío y la frase invita", () => {
+  const m = conEstado({ ...PENDIENTE, racha: 0 });
+  try {
+    assert.equal(m.caja.querySelector("[data-anillo]"), null, "un anillo con algo dentro sin racha mentiría");
+    assert.equal(m.caja.querySelector("[data-dato-hito]").textContent, "Primer bono de racha a los 3 días");
+  } finally { m.desmontar(); }
+});
+
+test("la frase y el avance del bono cuentan desde el hito anterior", () => {
+  assert.equal(copiaHito(6), "Mañana llegas al bono de 7 días");
+  assert.equal(copiaHito(10), "Faltan 4 días para el bono de 14");
+  assert.equal(copiaHito(30), "30 días seguidos. Racha legendaria.");
+  assert.equal(avanceHaciaHito(0), 0);
+  assert.equal(avanceHaciaHito(3), 0, "al cobrar el bono de 3, el anillo vuelve a empezar");
+  assert.equal(avanceHaciaHito(5), 0.5);
+  assert.equal(avanceHaciaHito(40), 1);
 });
