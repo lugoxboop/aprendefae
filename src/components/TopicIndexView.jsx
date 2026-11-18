@@ -19,7 +19,8 @@ import RankingFP from "./ranking/RankingFP.jsx";
 import LigaBoard from "./ligas/LigaBoard.jsx";
 import BannerRepaso from "./repaso/BannerRepaso.jsx";
 import { marcaDeTema } from "./shared/contenidoNuevo.jsx";
-import IdentificadorDeTema, { CSS_IDENTIFICADOR } from "./shared/IdentificadorDeTema.jsx";
+import { CSS_IDENTIFICADOR } from "./shared/IdentificadorDeTema.jsx";
+import { PastillaTema, identidadDeTema } from "./shared/TarjetaTema.jsx";
 
 /*
  * Plantilla del índice de temas, compartida por las dos materias.
@@ -166,17 +167,21 @@ export default function TopicIndexView({
                 const badges = tiposDeTema(topic).map((tipo) => (
                   <ActivityBadge key={tipo} tipo={tipo} size="sm" />
                 ));
+                /*
+                 * La identidad del tema (shared/TarjetaTema.jsx): su tono, su
+                 * dibujo y su número. El dibujo propio del tema si lo tiene
+                 * (identificadoresDeTema.js), el glifo elegido si no, y el
+                 * ícono de la materia como último recurso, ahora dentro de una
+                 * pastilla de su color.
+                 */
+                const identidad = identidadDeTema(subjectId, topic, i);
+                const tema = { ...identidad, numero: i + 1, datos: topic };
                 const comun = {
-                  /*
-                   * El identificador propio del tema si lo tiene, y el ícono de
-                   * la materia si no. Un solo sitio decide: ver
-                   * shared/IdentificadorDeTema.jsx.
-                   */
                   icon: (
-                    <IdentificadorDeTema
-                      tema={topic}
+                    <PastillaTema
                       materia={subjectId}
-                      acento={accent}
+                      tema={topic}
+                      Glifo={identidad.Glifo}
                       respaldo={renderTopicIcon(topic)}
                     />
                   ),
@@ -184,6 +189,7 @@ export default function TopicIndexView({
                   accent,
                   hoverBg,
                   hoverBorder,
+                  tema,
                 };
 
                 /*
