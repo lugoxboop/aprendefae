@@ -270,10 +270,23 @@ export default function Fabrica({ materia, nombreMateria, onVolver, cliente = su
                   <span className={`fab-punto${publicada ? " fab-punto--viva" : ""}`} aria-hidden="true" />
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <p className="fab-tarjeta__titulo">{b.titulo}</p>
-                    <p className="fab-tarjeta__meta">
-                      {publicada ? "Publicada" : "Borrador"}
-                      {b.pieza?.pasos ? ` · ${b.pieza.pasos.length} pasos` : ""}
-                    </p>
+                    {/*
+                      * El resumen va en la tarjeta cerrada, no dentro. Es lo
+                      * que el profesor necesita para decidir si abre o
+                      * descarta, y antes no estaba: la tarjeta decía el tema
+                      * —que él ya conoce, es el suyo— y no qué va a hacer el
+                      * estudiante, que es lo único que le sirve para escoger.
+                      */}
+                    {b.pieza?.resumen && (
+                      /* Tres renglones cerrada y entera abierta. Mateo pidió
+                         las dos cosas —saber de qué va la actividad y menos
+                         texto— y no se contradicen: la primera frase cuenta
+                         el qué, y el detalle se despliega si lo quiere. */
+                      <p className={`fab-tarjeta__resumen${abierto === b.id ? " fab-tarjeta__resumen--entera" : ""}`}>
+                        {b.pieza.resumen}
+                      </p>
+                    )}
+                    <p className="fab-tarjeta__meta">{fichaDe(b, publicada)}</p>
                   </div>
                   <button
                     type="button"
@@ -315,49 +328,61 @@ export default function Fabrica({ materia, nombreMateria, onVolver, cliente = su
 /* La actividad entera, para leerla antes de decidir. Sin rótulos en mayúscula:
    la jerarquía ya la dan el tamaño y el espacio. */
 /*
+ * La línea de datos duros de una tarjeta. Una sola, y con lo que de verdad
+ * cambia una decisión: cuánto dura y si paga.
+ *
+ * Lo de los puntos es una pregunta que hace todo profesor y la respuesta aquí
+ * es «ninguno»: las piezas de Aprender son material de estudio y el canon las
+ * deja fuera del catálogo de FP a propósito —sin dificultad y sin modalidad,
+ * equivocarse no puede costar—. Decirlo en la tarjeta es mejor que dejar que
+ * lo descubra después de publicar.
+ */
+export function fichaDe(borrador, publicada) {
+  const p = borrador?.pieza;
+  const partes = [publicada ? "Publicada" : "Borrador"];
+  if (p?.pasos?.length) partes.push(`${p.pasos.length} pasos`);
+  if (p?.nombres?.length) partes.push(`${p.nombres.length} términos`);
+  partes.push("Sin puntos");
+  return partes.join(" · ");
+}
+
+/*
  * ═══════════ LA VISTA PREVIA ═══════════
  *
- * Antes volcaba la pieza como texto: objetivo, lista de términos, lista de
- * pasos, pregunta. Esa es la pantalla que Mateo fotografió el 3-nov, y tenía
- * razón en las tres cosas que dijo — ruido visual, no se entiende, no guía la
- * mirada. Era un volcado, no una vista previa.
+ * Tercera versión. La primera volcaba la pieza como texto; la segunda le puso
+ * la figura y los pasos vivos. Mateo, 3-nov, sobre la segunda: «me mandas
+ * mucho párrafo, no queremos contaminación visual, pongamos el texto al
+ * mínimo».
  *
- * Ahora enseña la actividad como la verá el estudiante: la figura arriba y
- * los pasos debajo, y al tocar un paso se enciende lo suyo en la figura. El
- * profesor juzga lo que va a publicar, no un resumen de ello.
+ * Tenía razón otra vez, y el error era de criterio: estaba enseñando la pieza
+ * ENTERA, cuando lo que el profesor necesita es juzgarla. Para juzgarla hace
+ * falta ver la figura y comprobar que cada paso enciende lo que dice. Las
+ * definiciones de los términos y la respuesta de referencia son correctas o
+ * no, pero no se juzgan de un vistazo — y ocupaban la mitad de la pantalla.
+ *
+ * Así que ahora se abre con lo que se juzga, y lo demás se despliega si lo
+ * pide. La regla que uso: lo que se mira va visible, lo que se lee va dentro.
  */
 function Vista({ pieza }) {
   const [paso, setPaso] = useState(0);
+  const [verTerminos, setVerTerminos] = useState(false);
+  const [verRespuesta, setVerRespuesta] = useState(false);
   if (!pieza) return null;
 
   const pasos = pieza.pasos ?? [];
   const actual = pasos[Math.min(paso, Math.max(0, pasos.length - 1))];
+  const nombres = pieza.nombres ?? [];
 
   return (
     <div className="fab-vista" data-vista-borrador>
-      {pieza.objetivo && <p className="fab-objetivo">{pieza.objetivo}</p>}
-
-      <p className="fab-capa">CAPA 1 — PRIMERO, LOS NOMBRES</p>
-      <ul className="fab-terminos">
-        {(pieza.nombres ?? []).map((n, i) => (
-          <li key={i}><strong>{n.termino}</strong> {n.definicion}</li>
-        ))}
-      </ul>
-
       {pieza.escena && (
-        <>
-          <p className="fab-capa">CAPA 2 — MÍRELO FUNCIONAR</p>
-          <div className="fab-escena">
-            <EscenaGenerada escena={pieza.escena} resaltar={actual?.resaltar ?? []} />
-          </div>
-        </>
+        <div className="fab-escena">
+          <EscenaGenerada escena={pieza.escena} resaltar={actual?.resaltar ?? []} />
+        </div>
       )}
 
-      {/*
-        * Los pasos son botones, no renglones. Tocar uno enciende su parte de
-        * la figura: es la única forma de que el profesor compruebe que cada
-        * paso de verdad señala algo antes de publicarlo.
-        */}
+      {/* Los pasos son botones: tocar uno enciende su parte de la figura. Es
+          la única forma de comprobar que cada paso de verdad señala algo. */}
       <ol className="fab-pasos" data-pasos-vivos={pieza.escena ? "" : undefined}>
         {pasos.map((p, i) => (
           <li key={i}>
@@ -375,9 +400,29 @@ function Vista({ pieza }) {
         ))}
       </ol>
 
-      <p className="fab-capa">CAPA 4 — EN UNA FRASE</p>
       <p className="fab-pregunta">{pieza.pregunta}</p>
-      {pieza.respuesta && <p className="fab-respuesta">{pieza.respuesta}</p>}
+
+      <div className="fab-pliegues">
+        {nombres.length > 0 && (
+          <button type="button" className="fab-pliegue" onClick={() => setVerTerminos((v) => !v)} aria-expanded={verTerminos}>
+            {verTerminos ? "Ocultar" : "Ver"} los {nombres.length} términos
+          </button>
+        )}
+        {pieza.respuesta && (
+          <button type="button" className="fab-pliegue" onClick={() => setVerRespuesta((v) => !v)} aria-expanded={verRespuesta}>
+            {verRespuesta ? "Ocultar" : "Ver"} la respuesta
+          </button>
+        )}
+      </div>
+
+      {verTerminos && (
+        <ul className="fab-terminos">
+          {nombres.map((n, i) => (
+            <li key={i}><strong>{n.termino}</strong> {n.definicion}</li>
+          ))}
+        </ul>
+      )}
+      {verRespuesta && <p className="fab-respuesta">{pieza.respuesta}</p>}
     </div>
   );
 }
@@ -388,11 +433,23 @@ function Vista({ pieza }) {
  * estilo en línea no sabe expresar, y eran justo lo que le faltaba.
  */
 const CSS = `
-.fab-capa {
-  margin: 16px 0 8px; font-family: Sora, sans-serif; font-size: 10.5px; font-weight: 700;
-  letter-spacing: 0.14em; color: rgba(42,157,143,0.95);
+.fab-tarjeta__resumen {
+  margin: 6px 0 0; font-family: Inter, sans-serif; font-size: 13px; line-height: 1.55;
+  color: rgba(248,249,250,0.80);
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden;
 }
-.fab-vista .fab-capa:first-child { margin-top: 8px; }
+.fab-tarjeta__resumen--entera { -webkit-line-clamp: unset; overflow: visible; }
+.fab-pliegues { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.fab-pliegue {
+  min-height: 34px; padding: 7px 12px;
+  border: 1px solid rgba(248,249,250,0.14); border-radius: 999px;
+  background: transparent; color: rgba(248,249,250,0.72);
+  font-family: Sora, sans-serif; font-size: 12px; cursor: pointer;
+  transition: border-color 160ms ease, color 160ms ease;
+}
+.fab-pliegue:hover { border-color: rgba(42,157,143,0.55); color: ${FAE.text}; }
+.fab-pliegue::after { content: ""; display: block; }
+
 .fab-escena {
   padding: 14px 10px; border-radius: 14px;
   border: 1px solid rgba(248,249,250,0.08); background: rgba(14,27,46,0.55);
@@ -501,7 +558,10 @@ const CSS = `
   background: rgba(248,249,250,0.04); border: 1px solid rgba(248,249,250,0.12);
 }
 .fab-tarjeta--viva { border-color: rgba(42,157,143,0.42); background: rgba(42,157,143,0.06); }
-.fab-tarjeta__fila { display: flex; align-items: center; gap: 11px; }
+/* Arriba y no al centro: con el resumen en la tarjeta, el punto y el ojo
+   quedaban flotando a mitad del párrafo, lejos del título al que pertenecen. */
+.fab-tarjeta__fila { display: flex; align-items: flex-start; gap: 11px; }
+.fab-tarjeta__fila > .fab-punto { margin-top: 7px; }
 .fab-punto { width: 8px; height: 8px; border-radius: 999px; flex-shrink: 0; background: rgba(248,249,250,0.32); }
 .fab-punto--viva { background: ${FAE.teal}; box-shadow: 0 0 0 4px rgba(42,157,143,0.18); }
 .fab-tarjeta__titulo { margin: 0; font-family: Sora, sans-serif; font-size: 14.5px; font-weight: 700; color: ${FAE.text}; }
