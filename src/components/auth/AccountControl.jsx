@@ -69,38 +69,19 @@ import GoogleSignInButton from "./GoogleSignInButton.jsx";
  * divisor, con el título truncando el último—. Su orden de cesión está escrito
  * en el bloque de CSS de abajo, que es donde se aplica.
  *
- * ═══════════ EL ATAJO AL PANEL DOCENTE, Y POR QUÉ NO SIEMPRE ES PASTILLA ═══════════
+ * ═══════════ EL ATAJO AL PANEL DOCENTE VIVE DENTRO DEL PANEL (18-nov) ═══════════
  *
- * Un docente tiene una segunda pastilla, teal, a la derecha de la cuenta:
- * «Panel docente», un toque y se está dentro. Pero solo desde ANCHO_ATAJO.
- * Medido con la pastilla real puesta en su sitio, en las doce vistas:
- *
- *   · A 375 px no cabe de ninguna forma. La completa (147 px) tapaba el título
- *     en diez de las doce; solo el icono (40 px), la insignia «Hacer /
- *     Aprender» en seis temas y el título de Pensamiento Sistémico. Ensanchar
- *     la reserva no lo arregla: la fila no encoge por debajo de su contenido y
- *     se sigue metiendo debajo, y en Iceberg y Porter el título salta de línea
- *     y todo baja 13,4 px. Debajo del círculo tapaba «El camino de este tema».
- *   · Por encima de ANCHO_ESTRECHO la cuenta es la pastilla con el apodo, sin
- *     reserva. La cabecera más larga —Demanda Agregada, con «Hacer»— llega a
- *     343 px del borde de su columna, y el apodo admite 20 letras: con uno de
- *     20 (200 px de pastilla) la pareja deja de tocarla a partir de unos 740 px.
- *     De ahí el corte en 768.
- *
- * Por debajo, el atajo es la primera opción del menú de la cuenta: dos toques
- * en vez de tres —cuenta, perfil, buscar el bloque— y ni un píxel en la
- * cabecera. Lo elige una media query, como todo lo de este archivo.
+ * Hasta el 18 de noviembre un docente tenía además una pastilla teal flotante,
+ * «Panel docente», junto a la cuenta (desde 768 px). Mateo reportó que ese
+ * globo se quedaba encima estorbando al entrar a otras partes —en el propio
+ * panel docente tapaba las tarjetas de «Clase en vivo»—. Ahora el atajo es la
+ * PRIMERA opción de la barra lateral, a todos los anchos: dos toques, nada
+ * flotando de más, y la cabecera ya no tiene que reservarle hueco.
  *
  * La pregunta de si es docente es la misma de todo el sitio —useAccesoDocente,
  * una llamada por carga compartida con el perfil, el panel y las actividades—,
  * y un invitado no la hace: sin sesión este trozo ni se monta.
  */
-/*
- * El corte del círculo, ANCHO_ESTRECHO, vive en theme.js: es el mismo en que el
- * camino pasa a su forma de teléfono. Este otro solo le importa a este control.
- */
-const ANCHO_ATAJO = 768;
-
 /*
  * El hueco que la pastilla reserva en la cabecera de un tema, en el teléfono.
  *
@@ -143,39 +124,14 @@ const ANCHO_MINIMO_SUFIJO = 360;
  * tipografía real (scripts/cuenta/capturas-sidebar.mjs): la cuenta con avatar
  * mide 111 px con «988 FP» y unos 135 con «12.500 FP»; SIN sesión ahí va el
  * botón de Google, que mide 181. Se reserva para el más ancho de los dos —un
- * visitante tampoco puede tener el botón de volver tapado—. El atajo docente
- * mide 147.
+ * visitante tampoco puede tener el botón de volver tapado—.
  */
 const ANCHO_PASTILLA = 184;
-/* Un docente siempre tiene sesión: ahí la cuenta es la pastilla, no Google. */
-const ANCHO_PASTILLA_CON_SESION = 140;
-const ANCHO_ATAJO_PASTILLA = 152;
 
 const CSS_CUENTA = `
 .fae-gsi-icono { display: none; }
 /* Normal aquí, para que la regla que lo esconde viva también en la hoja. */
 .fae-cuenta-avatar { display: inline-flex; }
-.fae-atajo-pastilla { display: inline-flex; position: relative; }
-/*
- * El blanco de toque, sin tocar el dibujo: 44 px de alto y de ancho como
- * mínimo, centrados sobre la pastilla de 40. Si la pastilla ya es más grande,
- * el max() no la encoge. (Sin comillas invertidas aquí dentro: esto va en una
- * plantilla de CSS y una comilla invertida la cierra.)
- */
-.fae-atajo-pastilla::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: max(100%, 44px);
-  height: max(100%, 44px);
-  transform: translate(-50%, -50%);
-}
-.fae-atajo-menu { display: none; }
-@media (max-width: ${ANCHO_ATAJO - 1}px) {
-  .fae-atajo-pastilla { display: none; }
-  .fae-atajo-menu { display: flex; }
-}
 @media (max-width: ${ANCHO_ESTRECHO}px) {
   /*
    * ═══════════════════════════════════════════════════════════════════════
@@ -362,14 +318,7 @@ const CSS_CUENTA = `
     padding-left: max(0px, calc(${ANCHO_PASTILLA + 12}px - max(0px, (100vw - 860px) / 2)));
   }
 }
-@media (min-width: ${ANCHO_ATAJO}px) {
-  body:has(.fae-atajo-pastilla) .fae-cabecera, body:has(.fae-atajo-pastilla) .fae-cabecera-titulo {
-    padding-left: max(0px, calc(${ANCHO_PASTILLA_CON_SESION + 8 + ANCHO_ATAJO_PASTILLA + 12}px - max(0px, (100vw - 860px) / 2)));
-  }
-}
-@keyframes fae-atajo-entra { from { opacity: 0; transform: translateX(-6px); } to { opacity: 1; transform: none; } }
-.fae-atajo-entra { animation: fae-atajo-entra 0.2s ease-out; }
-@media (prefers-reduced-motion: reduce) { .fae-atajo-entra { animation: none; } }
+
 `;
 const EstiloCuenta = () => <style>{CSS_CUENTA}</style>;
 
@@ -735,7 +684,6 @@ function ConSesion({ usuarioId, perfil, cerrarSesion, conTitulo = false }) {
   const acceso = useAccesoDocente();
   const [presumido] = useState(() => recordadoComoDocente(usuarioId));
   const esDocente = acceso.pendiente ? presumido : acceso.esDocente;
-  const [estabaAlMontar] = useState(esDocente);
 
   /*
    * Abierto es lo que se pidió; montado, lo que se pinta. Al cerrar, el panel
@@ -807,66 +755,6 @@ function ConSesion({ usuarioId, perfil, cerrarSesion, conTitulo = false }) {
     /* Abierto, el control sube por encima de todo lo flotante (Bruno, avisos). */
     <div style={{ ...ENVOLTORIO, zIndex: montado ? 80 : ENVOLTORIO.zIndex }} ref={caja}>
       <EstiloCuenta />
-      {esDocente && (
-        <button
-          type="button"
-          className={`fae-atajo-pastilla${estabaAlMontar ? "" : " fae-atajo-entra"}`}
-          onClick={irAlPanel}
-          aria-label="Panel docente"
-          style={{
-            /*
-             * Fuera del flujo, a la derecha de la cuenta (desde el 15-nov la cuenta vive a la izquierda): su llegada no mueve
-             * la pastilla de la cuenta ni un píxel, ni para el docente ni para
-             * nadie. La pastilla que se ve lleva el relleno y la letra de la de
-             * la cuenta, así que mide lo mismo que ella: dos pastillas de
-             * distinta altura en la misma fila se leen como un error.
-             *
-             * SON 40 DE DIBUJO Y 44 DE TOQUE. Este comentario decía que 40 era
-             * «el mínimo para el dedo», y el mínimo es 44 (kit.md). Subir la
-             * caja a 44 rompería lo de arriba —dejaría de medir lo que la
-             * pastilla de la cuenta—, así que el toque lo da un ::after de
-             * max(100%, 44px) centrado, en la hoja de abajo: el dibujo no se
-             * mueve y el dedo acierta. Es la misma solución que el logo y la X
-             * del diálogo.
-             */
-            position: "absolute",
-            left: "calc(100% + 8px)",
-            top: 0,
-            bottom: 0,
-            margin: "auto 0",
-            height: "40px",
-            alignItems: "center",
-            padding: 0,
-            background: "transparent",
-            border: "none",
-            cursor: "pointer",
-          }}
-        >
-          <span
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "7px",
-              padding: "8px 14px",
-              borderRadius: "999px",
-              whiteSpace: "nowrap",
-              fontFamily: "Sora, sans-serif",
-              fontSize: "13px",
-              fontWeight: 600,
-              color: FAE.text,
-              /* El teal del bloque del perfil, a la intensidad de la pastilla de la cuenta, sobre fondo sólido. */
-              backgroundColor: FONDO_FLOTANTE,
-              backgroundImage: "linear-gradient(rgba(42,157,143,0.14), rgba(42,157,143,0.14))",
-              border: `1px solid ${FAE.teal}99`,
-              backdropFilter: "blur(8px)",
-              WebkitBackdropFilter: "blur(8px)",
-            }}
-          >
-            <BarChart2 size={15} color={FAE.teal} aria-hidden="true" />
-            Panel docente
-          </span>
-        </button>
-      )}
       <button
         type="button"
         ref={pastillaRef}
@@ -1040,17 +928,18 @@ function ConSesion({ usuarioId, perfil, cerrarSesion, conTitulo = false }) {
             </div>
 
             <div style={{ padding: "12px 10px", display: "flex", flexDirection: "column", gap: "2px", flex: 1 }}>
-              {/* Donde la pastilla no cabe, el atajo va aquí, primero. */}
+              {/* El atajo al panel docente, primero: ya no flota fuera (18-nov). */}
               {esDocente && (
                 <button
                   type="button"
                   className="fae-atajo-menu fae-opcion-cuenta"
+                  data-atajo-docente
                   onClick={irAlPanel}
                   aria-label="Panel docente"
                   data-entra
                   style={{
                     "--i": 4,
-                    width: "100%", alignItems: "center", gap: "12px", minHeight: "48px",
+                    width: "100%", display: "flex", alignItems: "center", gap: "12px", minHeight: "48px",
                     marginBottom: "8px", padding: "6px 10px", borderRadius: "12px", cursor: "pointer",
                     fontFamily: "Sora, sans-serif", fontSize: "14px", fontWeight: 600, textAlign: "left",
                     background: "rgba(42,157,143,0.14)", border: `1px solid ${FAE.teal}99`, color: FAE.text,

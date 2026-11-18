@@ -122,19 +122,21 @@ test("con sesión: la pastilla de la cuenta tapa lo de debajo", async () => {
   } finally { m.desmontar(); }
 });
 
-test("con sesión de docente: la pastilla «Panel docente» tapa lo de debajo", async () => {
+test("con sesión de docente: nada flota de más; el atajo vive en el panel lateral (18-nov)", async () => {
   /* Las pruebas de antes ya le preguntaron al servidor y guardaron «no es docente». */
   _olvidarAcceso();
   localStorage.setItem("fae:docente", USUARIO);
   const m = await montar({ conSesion: true, sincrono: true });
   try {
-    const atajo = m.caja.querySelector(".fae-atajo-pastilla");
-    assert.ok(atajo, "el atajo del docente sale (recordado de otra visita)");
-    const visible = atajo.querySelector("span");
-    assert.ok(
-      alfa(visible.style.backgroundColor) >= ALFA_MINIMO,
-      `la pastilla docente pinta «${visible.style.backgroundColor}»`,
-    );
+    /*
+     * El globo «Panel docente» flotaba junto a la cuenta y Mateo lo vio encima
+     * de las tarjetas al entrar a otras partes. Lo único que flota es la cuenta.
+     */
+    assert.equal(m.caja.querySelector(".fae-atajo-pastilla"), null, "sin globo flotante");
+    act(() => m.caja.querySelector(".fae-cuenta-boton").dispatchEvent(new w.MouseEvent("click", { bubbles: true })));
+    const atajo = m.caja.querySelector("[data-atajo-docente]");
+    assert.ok(atajo, "el atajo sale dentro del panel (recordado de otra visita)");
+    assert.match(atajo.textContent, /Panel docente/);
   } finally {
     m.desmontar();
     localStorage.removeItem("fae:docente");

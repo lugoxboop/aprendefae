@@ -125,6 +125,7 @@ const VISTAS = [
   { nombre: "tema", ruta: "#/introduccion-contabilidad" },
   { nombre: "perfil", ruta: "#/perfil" },
   { nombre: "tienda", ruta: "#/tienda" },
+  { nombre: "panel-docente", ruta: "#/docente" },
 ];
 const ANCHOS = [[1280, 800], [1024, 768], [768, 1024], [375, 667], [320, 568]];
 
