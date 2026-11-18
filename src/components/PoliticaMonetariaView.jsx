@@ -118,7 +118,6 @@ export default function PoliticaMonetariaView({ modo = null, nodoInicial = null,
         <div style={{ maxWidth: "860px", margin: "0 auto", padding: "clamp(18px, 3vh, 30px) clamp(16px, 2vw, 24px) 56px" }}>
           <div className="fae-cabecera-titulo" style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "22px" }}>
             <span className="fae-cabecera-marca"><Logo variant="symbol" size={26} theme="dark" /></span>
-            <span aria-hidden="true" className="fae-cabecera-marca" style={{ width: "1px", height: "22px", backgroundColor: "rgba(248,249,250,0.16)", margin: "0 4px" }} />
             <button type="button" onClick={onBack} aria-label="Volver a Macroeconomía" style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "8px", borderRadius: "999px", background: "rgba(248,249,250,0.06)", border: "1px solid rgba(248,249,250,0.14)", cursor: "pointer" }}>
               <ChevronLeft size={20} color={FAE.text} />
             </button>

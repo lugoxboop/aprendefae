@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useContext, useCallback } from "react";
-import { BarChart2 } from "lucide-react";
+import { BarChart2, Radio, UserRound, Users, PawPrint, ShoppingBag, LogOut, X, ChevronRight } from "lucide-react";
 import { FAE, ANCHO_ESTRECHO } from "../../theme.js";
 import { useAuth } from "../../auth/AuthProvider.jsx";
 import { NavigationContext } from "../../navigation.js";
@@ -16,7 +16,7 @@ import IconoRacha from "../shared/IconoRacha.jsx";
 import GoogleSignInButton from "./GoogleSignInButton.jsx";
 
 /*
- * Control de cuenta fijo arriba a la derecha, en todas las páginas.
+ * Control de cuenta fijo arriba a la IZQUIERDA (desde el 15-nov; antes a la derecha), en todas las páginas.
  *
  * Sin sesión muestra el botón oficial de Google; con sesión, el apodo y la
  * salida.
@@ -71,7 +71,7 @@ import GoogleSignInButton from "./GoogleSignInButton.jsx";
  *
  * ═══════════ EL ATAJO AL PANEL DOCENTE, Y POR QUÉ NO SIEMPRE ES PASTILLA ═══════════
  *
- * Un docente tiene una segunda pastilla, teal, a la izquierda de la cuenta:
+ * Un docente tiene una segunda pastilla, teal, a la derecha de la cuenta:
  * «Panel docente», un toque y se está dentro. Pero solo desde ANCHO_ATAJO.
  * Medido con la pastilla real puesta en su sitio, en las doce vistas:
  *
@@ -138,6 +138,19 @@ const RESERVA_MOVIL_COMPACTA = 88;
  */
 const ANCHO_MINIMO_SUFIJO = 360;
 
+/*
+ * Lo que miden las piezas de arriba a la izquierda en escritorio, con la
+ * tipografía real (scripts/cuenta/capturas-sidebar.mjs): la cuenta con avatar
+ * mide 111 px con «988 FP» y unos 135 con «12.500 FP»; SIN sesión ahí va el
+ * botón de Google, que mide 181. Se reserva para el más ancho de los dos —un
+ * visitante tampoco puede tener el botón de volver tapado—. El atajo docente
+ * mide 147.
+ */
+const ANCHO_PASTILLA = 184;
+/* Un docente siempre tiene sesión: ahí la cuenta es la pastilla, no Google. */
+const ANCHO_PASTILLA_CON_SESION = 140;
+const ANCHO_ATAJO_PASTILLA = 152;
+
 const CSS_CUENTA = `
 .fae-gsi-icono { display: none; }
 /* Normal aquí, para que la regla que lo esconde viva también en la hoja. */
@@ -192,7 +205,9 @@ const CSS_CUENTA = `
    * La reserva sube o baja con la pastilla: compacta ocupa ~76 px, así que
    * hace falta menos hueco que con el avatar puesto.
    */
-  .fae-cabecera-titulo { padding-right: ${RESERVA_MOVIL_COMPACTA}px; }
+  .fae-cabecera-titulo { padding-left: ${RESERVA_MOVIL_COMPACTA}px; }
+  /* Las cabeceras sin título llevan la pastilla completa, con avatar. */
+  .fae-cabecera { padding-left: ${RESERVA_MOVIL}px; }
 
   /*
    * Solo el título encoge. «min-width: 0» es imprescindible —un hijo flex no
@@ -316,7 +331,43 @@ const CSS_CUENTA = `
  * pastilla va compacta, que es exactamente cuando hay título.
  */
 .fae-cuenta-compacta .fae-cuenta-sufijo { display: none; }
-@keyframes fae-atajo-entra { from { opacity: 0; transform: translateX(6px); } to { opacity: 1; transform: none; } }
+
+/*
+ * ═══════════ LA CUENTA A LA IZQUIERDA, EL LOGO A LA DERECHA (15-nov) ═══════════
+ *
+ * Orden de Mateo: la cuenta —y el panel que abre— vive a la izquierda, como en
+ * casi toda aplicación; la marca pasa al otro extremo de la cabecera. Se hace
+ * aquí, con una regla, y no tocando el orden de veintiséis cabeceras: el logo
+ * lleva .fae-cabecera-marca en todas, y «order» + «margin-left: auto» lo
+ * mandan al final de su fila. El divisor que lo separaba del botón de volver
+ * ya no separa nada y se fue del marcado.
+ */
+.fae-cabecera-marca { order: 99; margin-left: auto; }
+
+/*
+ * Y el hueco, que ahora es a la izquierda. En escritorio la columna de las
+ * vistas mide 860 px y la pastilla vive fuera de ella mientras el margen
+ * alcance; cuando no, la cabecera se corre lo justo. La cuenta:
+ *
+ *   inicio de la cabecera = margen + relleno (24)
+ *   fin de la pastilla    = 24 + ancho de la pastilla
+ *   hueco pedido          = 12
+ *
+ * Con 860 de columna se sobra un poco en las de 680 o 720; sobrar es correr la
+ * cabecera unos píxeles, faltar es pisar el botón de volver. El ancho de las
+ * pastillas se midió con la tipografía real: ver scripts/cuenta/.
+ */
+@media (min-width: ${ANCHO_ESTRECHO + 1}px) {
+  .fae-cabecera, .fae-cabecera-titulo {
+    padding-left: max(0px, calc(${ANCHO_PASTILLA + 12}px - max(0px, (100vw - 860px) / 2)));
+  }
+}
+@media (min-width: ${ANCHO_ATAJO}px) {
+  body:has(.fae-atajo-pastilla) .fae-cabecera, body:has(.fae-atajo-pastilla) .fae-cabecera-titulo {
+    padding-left: max(0px, calc(${ANCHO_PASTILLA_CON_SESION + 8 + ANCHO_ATAJO_PASTILLA + 12}px - max(0px, (100vw - 860px) / 2)));
+  }
+}
+@keyframes fae-atajo-entra { from { opacity: 0; transform: translateX(-6px); } to { opacity: 1; transform: none; } }
 .fae-atajo-entra { animation: fae-atajo-entra 0.2s ease-out; }
 @media (prefers-reduced-motion: reduce) { .fae-atajo-entra { animation: none; } }
 `;
@@ -402,66 +453,196 @@ function useContadorFP(base) {
   return mostrado;
 }
 
-/* Las dos piezas repetidas del menú, para que sus medidas se toquen en un sitio. */
+/* Visible para lectores de pantalla y para nadie más. */
+const POSICION_LECTOR = {
+  position: "absolute", width: "1px", height: "1px", padding: 0, margin: "-1px",
+  overflow: "hidden", clip: "rect(0 0 0 0)", whiteSpace: "nowrap", border: 0,
+};
+
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * EL PANEL DE LA CUENTA — una barra lateral que entra desde la izquierda.
+ *
+ * Hasta el 15 de noviembre era un desplegable de 232 px que caía encima de la
+ * página desde la esquina derecha, solo texto. Mateo pidió lo que hace casi
+ * cualquier aplicación hoy: la cuenta a la izquierda, un panel que se DESLIZA
+ * desde ese borde —no una caja que aparece encima de otra— con el perfil y sus
+ * números arriba y un icono por opción. El logo pasa a la derecha de la
+ * cabecera, para que cada lado tenga un papel: a la izquierda, tú; a la
+ * derecha, la marca.
+ *
+ * Lo que se cuidó, y por qué:
+ *
+ *   · ENTRA Y SALE ANIMADO. 360 ms con una curva que frena al final
+ *     (cubic-bezier .22,1,.36,1): rápido al arrancar, suave al llegar. Las
+ *     opciones entran una detrás de otra, 30 ms de escalón, para que el ojo
+ *     las lea como lista. Al cerrar se queda montado lo que dura la salida
+ *     (MS_SALIDA) y luego se desmonta.
+ *   · CON «REDUCIR MOVIMIENTO» NO SE DESLIZA: aparece y desaparece. La
+ *     información es la misma; lo que se quita es el recorrido.
+ *   · UN VELO OSCURECE LA PÁGINA y es la forma más grande de cerrar: tocar
+ *     fuera. También cierran Escape y la X de arriba (44 px, el mínimo del
+ *     dedo según kit.md).
+ *   · EL FOCO ENTRA AL PANEL al abrir y vuelve a la pastilla al cerrar, para
+ *     quien navega con teclado.
+ *   · LOS NÚMEROS VAN EN TRES FICHAS: FP, Cristales y racha, con el cristal
+ *     facetado y la llama del sitio —nunca emojis—, cifras tabulares.
+ *   · EL PUNTO ÁMBAR DE LA TIENDA sigue igual, con su texto para lectores.
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+const MS_SALIDA = 260;
+
+const CSS_PANEL = `
+@keyframes fae-panel-entra { from { transform: translateX(-104%); } to { transform: none; } }
+@keyframes fae-panel-sale { from { transform: none; } to { transform: translateX(-104%); } }
+@keyframes fae-velo-entra { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fae-velo-sale { from { opacity: 1; } to { opacity: 0; } }
+@keyframes fae-opcion-entra { from { opacity: 0; transform: translateX(-14px); } to { opacity: 1; transform: none; } }
+.fae-panel-cuenta { animation: fae-panel-entra 360ms cubic-bezier(.22,1,.36,1) both; }
+.fae-panel-cuenta.fae-saliendo { animation: fae-panel-sale ${MS_SALIDA}ms cubic-bezier(.55,0,.75,.2) both; }
+.fae-velo-cuenta { animation: fae-velo-entra 280ms ease-out both; }
+.fae-velo-cuenta.fae-saliendo { animation: fae-velo-sale ${MS_SALIDA}ms ease-in both; }
+.fae-panel-cuenta [data-entra] { animation: fae-opcion-entra 320ms cubic-bezier(.22,1,.36,1) both; animation-delay: calc(90ms + var(--i, 0) * 30ms); }
+.fae-panel-cuenta.fae-saliendo [data-entra] { animation: none; }
+.fae-opcion-cuenta { transition: background-color 160ms ease, color 160ms ease; }
+.fae-opcion-cuenta .fae-opcion-icono { transition: background-color 160ms ease, color 160ms ease, transform 200ms cubic-bezier(.22,1,.36,1); }
+.fae-opcion-cuenta .fae-opcion-flecha { opacity: 0; transform: translateX(-4px); transition: opacity 160ms ease, transform 200ms ease; }
+.fae-opcion-cuenta:hover, .fae-opcion-cuenta:focus-visible { background-color: rgba(248,249,250,0.06); color: #F8F9FA; }
+.fae-opcion-cuenta:hover .fae-opcion-icono, .fae-opcion-cuenta:focus-visible .fae-opcion-icono { transform: scale(1.06); }
+.fae-opcion-cuenta:hover .fae-opcion-flecha, .fae-opcion-cuenta:focus-visible .fae-opcion-flecha { opacity: 0.55; transform: none; }
+.fae-opcion-cuenta:focus-visible, .fae-cerrar-panel:focus-visible { outline: 2px solid ${FAE.teal}; outline-offset: 2px; }
+.fae-opcion-salir:hover, .fae-opcion-salir:focus-visible { background-color: rgba(231,111,81,0.10); color: #F4A28C; }
+.fae-opcion-salir:hover .fae-opcion-icono, .fae-opcion-salir:focus-visible .fae-opcion-icono { background-color: rgba(231,111,81,0.16); color: #F4A28C; }
+.fae-cerrar-panel { transition: background-color 160ms ease; }
+.fae-cerrar-panel:hover { background-color: rgba(248,249,250,0.10) !important; }
+@media (prefers-reduced-motion: reduce) {
+  .fae-panel-cuenta, .fae-panel-cuenta.fae-saliendo, .fae-velo-cuenta, .fae-velo-cuenta.fae-saliendo,
+  .fae-panel-cuenta [data-entra] { animation: none; }
+  .fae-opcion-cuenta .fae-opcion-icono, .fae-opcion-cuenta .fae-opcion-flecha { transition: none; }
+}
+`;
+
+/* Cada opción tiene su color de icono: se reconoce de reojo, sin leer. */
+const TONOS = {
+  vivo: "#E76F51",
+  perfil: "#8FB8E8",
+  amigos: "#2A9D8F",
+  avatar: "#C39BD3",
+  tienda: "#E9C46A",
+  docente: "#2A9D8F",
+  salir: "rgba(248,249,250,0.6)",
+};
+
 function Divisor() {
   return (
     <div
       aria-hidden="true"
-      style={{ height: "1px", background: "rgba(248,249,250,0.10)", margin: "6px 4px" }}
+      style={{ height: "1px", background: "rgba(248,249,250,0.08)", margin: "10px 6px" }}
     />
   );
 }
 
 /*
- * Una opción del menú. `punto` pinta el aviso ámbar de la Tienda.
+ * Una opción del panel: icono en su pastilla de color, el texto y una flecha
+ * que asoma al pasar el ratón. `punto` pinta el aviso ámbar de la Tienda.
  *
  * EL PUNTO NO VA SOLO: lleva su propio texto para lectores de pantalla. Un
  * color sin palabra no informa a quien no lo ve, y aquí además es la única
  * diferencia entre «Tienda» y «Tienda, y hay algo que ya puedes comprar».
  *
- * Ámbar y no coral, y esto no es una excepción a la regla del sitio: el coral
- * significa error en toda la interfaz, y esto no es un error — es un aviso. El
- * ámbar ya existe en theme.js para exactamente este escalón.
+ * Ámbar y no coral: el coral significa error en toda la interfaz, y esto es
+ * un aviso. El ámbar ya existe en theme.js para exactamente este escalón.
  */
-function OpcionMenu({ onClick, punto = false, children }) {
+function OpcionMenu({ onClick, icono: Icono, tono, punto = false, salir = false, indice = 0, children }) {
   return (
     <button
       type="button"
       data-opcion-menu
+      data-entra
+      className={`fae-opcion-cuenta${salir ? " fae-opcion-salir" : ""}`}
       onClick={onClick}
       style={{
-        width: "100%", display: "flex", alignItems: "center", gap: "8px",
-        textAlign: "left", fontFamily: "Inter, sans-serif", fontSize: "13.5px",
-        /* 44 px, el mínimo que un dedo acierta (kit.md). Estaba en 40. Ocupa el
-           ancho entero del menú, así que crecer solo hace el menú 4 px más alto
-           por opción y no mueve nada de lado. */
-        minHeight: "44px", padding: "9px 10px", borderRadius: "9px", cursor: "pointer",
-        background: "transparent", border: "none", color: "rgba(248,249,250,0.8)",
+        "--i": indice,
+        width: "100%", display: "flex", alignItems: "center", gap: "12px",
+        textAlign: "left", fontFamily: "Inter, sans-serif", fontSize: "14.5px", fontWeight: 500,
+        /* 48 px: por encima de los 44 que un dedo acierta (kit.md). */
+        minHeight: "48px", padding: "6px 10px", borderRadius: "12px", cursor: "pointer",
+        background: "transparent", border: "none", color: "rgba(248,249,250,0.86)",
       }}
     >
-      {children}
+      <span
+        className="fae-opcion-icono"
+        aria-hidden="true"
+        style={{
+          width: "34px", height: "34px", borderRadius: "10px", flexShrink: 0,
+          display: "inline-flex", alignItems: "center", justifyContent: "center",
+          backgroundColor: salir ? "rgba(248,249,250,0.06)" : `${tono}1F`,
+          color: tono,
+        }}
+      >
+        <Icono size={18} strokeWidth={2} />
+      </span>
+      <span style={{ flex: 1, minWidth: 0 }}>{children}</span>
       {punto && (
         <>
           <span
             data-punto-tienda
             aria-hidden="true"
             style={{
-              width: "7px", height: "7px", borderRadius: "999px",
+              width: "8px", height: "8px", borderRadius: "999px",
               backgroundColor: FAE.ambar, flexShrink: 0,
+              boxShadow: `0 0 0 4px ${FAE.ambar}26`,
             }}
           />
           <span style={POSICION_LECTOR}>Hay algo que ya puedes comprar</span>
         </>
       )}
+      {!salir && <ChevronRight className="fae-opcion-flecha" size={16} aria-hidden="true" style={{ flexShrink: 0 }} />}
     </button>
   );
 }
 
-/* Visible para lectores de pantalla y para nadie más. */
-const POSICION_LECTOR = {
-  position: "absolute", width: "1px", height: "1px", padding: 0, margin: "-1px",
-  overflow: "hidden", clip: "rect(0 0 0 0)", whiteSpace: "nowrap", border: 0,
-};
+/* Una de las tres fichas de números del encabezado. */
+function Cifra({ valor, etiqueta, icono, indice }) {
+  return (
+    <div
+      data-entra
+      style={{
+        "--i": indice,
+        display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "4px",
+        padding: "10px 10px 9px", borderRadius: "12px", minWidth: 0,
+        background: "rgba(248,249,250,0.045)", border: "1px solid rgba(248,249,250,0.08)",
+      }}
+    >
+      <span
+        style={{
+          display: "inline-flex", alignItems: "center", gap: "5px",
+          fontFamily: "Sora, sans-serif", fontSize: "16px", fontWeight: 700, color: FAE.text,
+          fontVariantNumeric: "tabular-nums", lineHeight: 1.1, maxWidth: "100%", overflowWrap: "anywhere",
+        }}
+      >
+        {icono}
+        {valor}
+      </span>
+      <span style={{ fontSize: "11.5px", color: "rgba(248,249,250,0.6)", lineHeight: 1.2 }}>{etiqueta}</span>
+    </div>
+  );
+}
+
+/* La pastilla «FP» en ámbar, a la medida de las otras dos insignias. */
+function MarcaFP() {
+  return (
+    <span
+      aria-hidden="true"
+      style={{
+        fontFamily: "Sora, sans-serif", fontSize: "9.5px", fontWeight: 800, letterSpacing: "0.02em",
+        color: "#1A2236", background: FAE.ambar, borderRadius: "5px", padding: "2px 4px", lineHeight: 1,
+      }}
+    >
+      FP
+    </span>
+  );
+}
 
 /*
  * ═══════════ SE QUEDA FIJA, Y NUNCA TRANSPARENTE (Xeno, 15 oct.) ═══════════
@@ -500,7 +681,8 @@ export const FONDO_FLOTANTE = "rgba(22,35,58,0.97)";
 const ENVOLTORIO = {
   position: "fixed",
   top: "clamp(14px, 2.4vh, 24px)",
-  right: "clamp(14px, 2.4vw, 24px)",
+  /* A la izquierda desde el 15-nov (orden de Mateo): el panel sale de este lado. */
+  left: "clamp(14px, 2.4vw, 24px)",
   zIndex: 40,
   /* En los cambios de pantalla se queda quieto en su esquina (movimiento.css). */
   viewTransitionName: "fae-cuenta",
@@ -555,11 +737,42 @@ function ConSesion({ usuarioId, perfil, cerrarSesion, conTitulo = false }) {
   const esDocente = acceso.pendiente ? presumido : acceso.esDocente;
   const [estabaAlMontar] = useState(esDocente);
 
+  /*
+   * Abierto es lo que se pidió; montado, lo que se pinta. Al cerrar, el panel
+   * se queda MS_SALIDA en pantalla para que se le vea irse, y luego se quita.
+   * Con «reducir movimiento» se quita en el acto: no hay salida que mirar.
+   */
+  const [montado, setMontado] = useState(false);
+  const panel = useRef(null);
+  const pastillaRef = useRef(null);
+  const cerrar = useCallback(() => setAbierto(false), []);
+
   useEffect(() => {
-    if (!abierto) return;
-    const fuera = (e) => { if (caja.current && !caja.current.contains(e.target)) setAbierto(false); };
-    document.addEventListener("mousedown", fuera);
-    return () => document.removeEventListener("mousedown", fuera);
+    if (abierto) { setMontado(true); return undefined; }
+    if (!montado) return undefined;
+    const quieto = typeof window !== "undefined"
+      && window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+    if (quieto) { setMontado(false); return undefined; }
+    const t = setTimeout(() => setMontado(false), MS_SALIDA);
+    return () => clearTimeout(t);
+  }, [abierto, montado]);
+
+  /* Escape cierra; el foco entra al panel y, al cerrar, vuelve a la pastilla. */
+  useEffect(() => {
+    if (!abierto) return undefined;
+    const tecla = (e) => { if (e.key === "Escape") setAbierto(false); };
+    document.addEventListener("keydown", tecla);
+    panel.current?.focus?.({ preventScroll: true });
+    /* Con el panel abierto la página de debajo no se desplaza. */
+    const antes = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", tecla);
+      document.body.style.overflow = antes;
+      if (pastillaRef.current && document.activeElement && panel.current?.contains?.(document.activeElement)) {
+        pastillaRef.current.focus({ preventScroll: true });
+      }
+    };
   }, [abierto]);
 
   /* Con sesión pero sin perfil, el diálogo de apodo ya está encima. */
@@ -591,7 +804,8 @@ function ConSesion({ usuarioId, perfil, cerrarSesion, conTitulo = false }) {
   const irAClaseEnVivo = () => { setAbierto(false); nav?.irA?.("vivo"); };
 
   return (
-    <div style={ENVOLTORIO} ref={caja}>
+    /* Abierto, el control sube por encima de todo lo flotante (Bruno, avisos). */
+    <div style={{ ...ENVOLTORIO, zIndex: montado ? 80 : ENVOLTORIO.zIndex }} ref={caja}>
       <EstiloCuenta />
       {esDocente && (
         <button
@@ -601,7 +815,7 @@ function ConSesion({ usuarioId, perfil, cerrarSesion, conTitulo = false }) {
           aria-label="Panel docente"
           style={{
             /*
-             * Fuera del flujo, a la izquierda de la cuenta: su llegada no mueve
+             * Fuera del flujo, a la derecha de la cuenta (desde el 15-nov la cuenta vive a la izquierda): su llegada no mueve
              * la pastilla de la cuenta ni un píxel, ni para el docente ni para
              * nadie. La pastilla que se ve lleva el relleno y la letra de la de
              * la cuenta, así que mide lo mismo que ella: dos pastillas de
@@ -616,7 +830,7 @@ function ConSesion({ usuarioId, perfil, cerrarSesion, conTitulo = false }) {
              * del diálogo.
              */
             position: "absolute",
-            right: "calc(100% + 8px)",
+            left: "calc(100% + 8px)",
             top: 0,
             bottom: 0,
             margin: "auto 0",
@@ -655,6 +869,7 @@ function ConSesion({ usuarioId, perfil, cerrarSesion, conTitulo = false }) {
       )}
       <button
         type="button"
+        ref={pastillaRef}
         className={`fae-cuenta-boton${conTitulo ? " fae-cuenta-compacta" : ""}`}
         onClick={() => setAbierto((v) => !v)}
         aria-expanded={abierto}
@@ -709,92 +924,163 @@ function ConSesion({ usuarioId, perfil, cerrarSesion, conTitulo = false }) {
         </span>
       </button>
 
-      {abierto && (
-        <div
-          style={{
-            position: "absolute", top: "calc(100% + 8px)", right: 0, minWidth: "232px",
-            borderRadius: "14px", background: "#16233A",
-            border: "1px solid rgba(248,249,250,0.14)", padding: "8px",
-            boxShadow: "0 16px 40px rgba(0,0,0,0.4)",
-          }}
-        >
-          {/* Donde la pastilla no cabe, el atajo va aquí, primero. */}
-          {esDocente && (
-            <button
-              type="button"
-              className="fae-atajo-menu"
-              onClick={irAlPanel}
-              aria-label="Panel docente"
+      {montado && (
+        <>
+          <style>{CSS_PANEL}</style>
+          {/* El velo: oscurece la página y, tocándolo, cierra. */}
+          <div
+            className={`fae-velo-cuenta${abierto ? "" : " fae-saliendo"}`}
+            aria-hidden="true"
+            onClick={cerrar}
+            style={{
+              position: "fixed", inset: 0, zIndex: 0,
+              background: "rgba(6,12,24,0.58)",
+              backdropFilter: "blur(3px)", WebkitBackdropFilter: "blur(3px)",
+            }}
+          />
+          <nav
+            ref={panel}
+            data-panel-cuenta
+            className={`fae-panel-cuenta${abierto ? "" : " fae-saliendo"}`}
+            aria-label="Tu cuenta"
+            tabIndex={-1}
+            style={{
+              position: "fixed", top: 0, left: 0, bottom: 0, zIndex: 1,
+              width: "min(340px, 88vw)",
+              display: "flex", flexDirection: "column",
+              background: "linear-gradient(180deg, #1B2B47 0%, #142139 46%, #111C31 100%)",
+              borderRight: "1px solid rgba(248,249,250,0.10)",
+              borderRadius: "0 22px 22px 0",
+              boxShadow: "24px 0 64px rgba(0,0,0,0.45)",
+              overflowY: "auto", overscrollBehavior: "contain",
+              outline: "none",
+            }}
+          >
+            {/*
+              ═══════════ EL ENCABEZADO: QUIÉN ERES Y CUÁNTO LLEVAS ═══════════
+
+              El nombre vive aquí desde que la pastilla pasó a enseñar los FP.
+              Debajo, las tres cifras que se miran de reojo. Un brillo teal y
+              coral detrás, apenas, para que el encabezado se lea como la
+              tarjeta del estudiante y no como una fila más.
+            */}
+            <div
               style={{
-                width: "100%", alignItems: "center", gap: "8px", minHeight: "44px",
-                marginBottom: "6px", padding: "0 10px", borderRadius: "9px", cursor: "pointer",
-                fontFamily: "Sora, sans-serif", fontSize: "13.5px", fontWeight: 600, textAlign: "left",
-                background: "rgba(42,157,143,0.14)", border: `1px solid ${FAE.teal}99`, color: FAE.text,
+                position: "relative", padding: "18px 16px 16px",
+                background: "radial-gradient(120% 90% at 0% 0%, rgba(42,157,143,0.20), transparent 60%), radial-gradient(90% 70% at 100% 0%, rgba(231,111,81,0.12), transparent 65%)",
+                borderBottom: "1px solid rgba(248,249,250,0.07)",
               }}
             >
-              <BarChart2 size={16} color={FAE.teal} aria-hidden="true" />
-              Panel docente
-            </button>
-          )}
-          {/*
-            ═══════════ LA FICHA DE IDENTIDAD ═══════════
+              <button
+                type="button"
+                className="fae-cerrar-panel"
+                onClick={cerrar}
+                aria-label="Cerrar el panel de la cuenta"
+                style={{
+                  position: "absolute", top: "10px", right: "10px",
+                  width: "44px", height: "44px", borderRadius: "999px",
+                  display: "inline-flex", alignItems: "center", justifyContent: "center",
+                  background: "rgba(248,249,250,0.05)", border: "none", cursor: "pointer", color: FAE.text,
+                }}
+              >
+                <X size={18} aria-hidden="true" />
+              </button>
 
-            El nombre del estudiante vive AQUÍ desde que la pastilla pasó a
-            enseñar los FP. Debajo, las tres cifras que se miran de reojo:
-            FP, Cristales y racha. El cristal es el icono facetado del sitio,
-            nunca un emoji: es el mismo que se ve en la Tienda y en el perfil.
-          */}
-          {perfil && (
-            <div
-              data-ficha-cuenta
-              style={{ display: "flex", alignItems: "center", gap: "10px", padding: "6px 10px 10px" }}
-            >
-              <AvatarEstudiante perfil={perfil} tamano={40} style={{ flexShrink: 0 }} />
-              <div style={{ minWidth: 0 }}>
-                <p
-                  style={{
-                    fontFamily: "Sora, sans-serif", fontSize: "14px", fontWeight: 600, color: FAE.text,
-                    /* El apodo nunca se corta con «…» (#546, inventario de #573): se parte. */
-                    margin: "0 0 3px", overflowWrap: "anywhere",
-                  }}
-                >
-                  {etiqueta}
-                </p>
-                <p
-                  style={{
-                    display: "flex", alignItems: "center", gap: "5px", flexWrap: "wrap",
-                    fontSize: "12.5px", color: "rgba(248,249,250,0.72)", margin: 0,
-                    fontVariantNumeric: "tabular-nums",
-                  }}
-                >
-                  <span>{formatoFP(fp)} FP</span>
-                  <span aria-hidden="true" style={{ opacity: 0.45 }}>·</span>
-                  <span style={{ display: "inline-flex", alignItems: "center", gap: "3px" }}>
-                    {cristales}
-                    <IconoCristal tamano={11} />
-                  </span>
-                  <span aria-hidden="true" style={{ opacity: 0.45 }}>·</span>
-                  <span style={{ display: "inline-flex", alignItems: "center", gap: "3px" }}>
-                    <IconoRacha tamano={13} encendida={racha > 0} />
-                    {racha === 1 ? "1 día" : `${racha} días`}
-                  </span>
-                </p>
-              </div>
+              {perfil && (
+                <div data-ficha-cuenta>
+                  <div data-entra style={{ "--i": 0, display: "flex", alignItems: "center", gap: "12px", paddingRight: "44px" }}>
+                    <span
+                      style={{
+                        flexShrink: 0, padding: "3px", borderRadius: "999px",
+                        background: `conic-gradient(from 210deg, ${FAE.teal}, ${FAE.ambar}, ${FAE.coral}, ${FAE.teal})`,
+                      }}
+                    >
+                      <span style={{ display: "block", padding: "3px", borderRadius: "999px", background: "#17253F" }}>
+                        <AvatarEstudiante perfil={perfil} tamano={52} />
+                      </span>
+                    </span>
+                    <div style={{ minWidth: 0 }}>
+                      <p
+                        style={{
+                          fontFamily: "Sora, sans-serif", fontSize: "18px", fontWeight: 700, color: FAE.text,
+                          letterSpacing: "-0.02em", lineHeight: 1.15,
+                          /* El apodo nunca se corta con «…» (#546, inventario de #573): se parte. */
+                          margin: "0 0 4px", overflowWrap: "anywhere",
+                        }}
+                      >
+                        {etiqueta}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={irAPerfil}
+                        style={{
+                          display: "inline-flex", alignItems: "center", gap: "2px", padding: 0,
+                          background: "none", border: "none", cursor: "pointer",
+                          fontSize: "12.5px", fontWeight: 500, color: "#7FD3C7",
+                        }}
+                      >
+                        Ver mi perfil <ChevronRight size={14} aria-hidden="true" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: "8px", marginTop: "16px" }}>
+                    <Cifra indice={1} valor={formatoFP(fp)} etiqueta="Puntos FP" icono={<MarcaFP />} />
+                    <Cifra indice={2} valor={cristales} etiqueta="Cristales" icono={<IconoCristal tamano={13} />} />
+                    <Cifra
+                      indice={3}
+                      valor={racha}
+                      /* «Racha», corto: «días de racha» partía en dos renglones y descuadraba las tres fichas. */
+                      etiqueta="Racha"
+                      icono={<IconoRacha tamano={15} encendida={racha > 0} />}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
-          )}
 
-          <Divisor />
+            <div style={{ padding: "12px 10px", display: "flex", flexDirection: "column", gap: "2px", flex: 1 }}>
+              {/* Donde la pastilla no cabe, el atajo va aquí, primero. */}
+              {esDocente && (
+                <button
+                  type="button"
+                  className="fae-atajo-menu fae-opcion-cuenta"
+                  onClick={irAlPanel}
+                  aria-label="Panel docente"
+                  data-entra
+                  style={{
+                    "--i": 4,
+                    width: "100%", alignItems: "center", gap: "12px", minHeight: "48px",
+                    marginBottom: "8px", padding: "6px 10px", borderRadius: "12px", cursor: "pointer",
+                    fontFamily: "Sora, sans-serif", fontSize: "14px", fontWeight: 600, textAlign: "left",
+                    background: "rgba(42,157,143,0.14)", border: `1px solid ${FAE.teal}99`, color: FAE.text,
+                  }}
+                >
+                  <span aria-hidden="true" style={{ width: "34px", height: "34px", borderRadius: "10px", display: "inline-flex", alignItems: "center", justifyContent: "center", backgroundColor: "rgba(42,157,143,0.22)" }}>
+                    <BarChart2 size={18} color={FAE.teal} />
+                  </span>
+                  Panel docente
+                </button>
+              )}
 
-          <OpcionMenu onClick={irAClaseEnVivo}>Clase en vivo</OpcionMenu>
-          <OpcionMenu onClick={irAPerfil}>Mi perfil</OpcionMenu>
-          <OpcionMenu onClick={irAAmigos}>Amigos</OpcionMenu>
-          <OpcionMenu onClick={irAMiAvatar}>Mi avatar</OpcionMenu>
-          <OpcionMenu onClick={irATienda} punto={punto}>Tienda</OpcionMenu>
+              <p data-entra style={{ "--i": 4, margin: "2px 10px 6px", fontSize: "11px", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(248,249,250,0.42)" }}>
+                Tu espacio
+              </p>
+              <OpcionMenu indice={5} onClick={irAClaseEnVivo} icono={Radio} tono={TONOS.vivo}>Clase en vivo</OpcionMenu>
+              <OpcionMenu indice={6} onClick={irAPerfil} icono={UserRound} tono={TONOS.perfil}>Mi perfil</OpcionMenu>
+              <OpcionMenu indice={7} onClick={irAAmigos} icono={Users} tono={TONOS.amigos}>Amigos</OpcionMenu>
+              <OpcionMenu indice={8} onClick={irAMiAvatar} icono={PawPrint} tono={TONOS.avatar}>Mi avatar</OpcionMenu>
+              <OpcionMenu indice={9} onClick={irATienda} icono={ShoppingBag} tono={TONOS.tienda} punto={punto}>Tienda</OpcionMenu>
 
-          <Divisor />
+              <div style={{ flex: 1, minHeight: "8px" }} />
+              <Divisor />
 
-          <OpcionMenu onClick={() => { setAbierto(false); cerrarSesion(); }}>Cerrar sesión</OpcionMenu>
-        </div>
+              <OpcionMenu indice={10} salir icono={LogOut} tono={TONOS.salir} onClick={() => { cerrar(); cerrarSesion(); }}>
+                Cerrar sesión
+              </OpcionMenu>
+            </div>
+          </nav>
+        </>
       )}
     </div>
   );

@@ -274,9 +274,8 @@ export default function TiendaView({ onBack, onComprarAccesorio = comprarAccesor
       <MeshGradientBackground />
       <EstiloEntrada />
       <div style={{ position: "relative", zIndex: 1, maxWidth: "680px", margin: "0 auto", padding: "clamp(18px, 3vh, 30px) 24px 56px" }}>
-        <div {...entrada(0, "baja")} style={{ ...entrada(0, "baja").style, display: "flex", alignItems: "center", gap: "10px", marginBottom: "22px" }}>
-          <Logo variant="symbol" size={26} theme="dark" />
-          <span aria-hidden="true" style={{ width: "1px", height: "22px", backgroundColor: "rgba(248,249,250,0.16)", margin: "0 4px" }} />
+        <div {...entrada(0, "baja")} className="fae-cabecera" style={{ ...entrada(0, "baja").style, display: "flex", alignItems: "center", gap: "10px", marginBottom: "22px" }}>
+          <span className="fae-cabecera-marca"><Logo variant="symbol" size={26} theme="dark" /></span>
           <button
             type="button"
             onClick={onBack}

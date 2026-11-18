@@ -65,7 +65,8 @@ export default function HomeScreen({ onSelectSubject, onQueEs }) {
           * envoltorio animado le cambiaría el marco de referencia.
           */}
         {/* Marca de identidad, deliberadamente por debajo del titular y las tarjetas. */}
-        <Entrada orden={0} modo="baja">
+        {/* A la derecha desde el 15-nov: la izquierda es de la cuenta y su panel. */}
+        <Entrada orden={0} modo="baja" style={{ alignSelf: "flex-end" }}>
           <Logo variant="full" size={30} theme="dark" />
         </Entrada>
 

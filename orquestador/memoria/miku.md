@@ -8,6 +8,7 @@
 - Antes de abrir nada: primero `orquestador/INDICE.md`, luego el buscador del canon (regla k).
 
 ## En qué estoy ahora
+- 2026-11-15 14:39 — Menú de cuenta rehecho como barra lateral desde la izquierda (iconos, cifras FP/Cristales/racha, animada); cuenta a la izquierda y logo a la derecha en todas las cabeceras. PR abierto, esperando revisión de Mateo. Capturas en `revisiones/sidebar-cuenta/`; sonda en `scripts/cuenta/capturas-sidebar.mjs`.
 - 2026-11-14 20:48 — Montando la memoria de los agentes: creado INDICE.md, reglas k y l del protocolo, y bitácora semilla de los 27 agentes. Falta Graphify (pri. 2), complementos (pri. 3), la decisión de Mateo sobre proyectos de Claude (punto 5) y la verificación.
 
 ## Decisiones tomadas y por qué
@@ -17,4 +18,5 @@
 - 
 
 ## Lo que aprendí que no hay que repetir
+- Para ver la app con sesión sin Supabase: build con `VITE_SUPABASE_URL=http://fake.supabase.test`, sesión fingida en localStorage `aprendefae-auth` y rutas falsas (patrón de `scripts/t4/panel-docente/pagina.mjs` y `scripts/cuenta/`).
 - 2026-11-15 — Regla m del protocolo (ingeniería de contexto): lo pesado a un subagente que devuelve ~15 líneas, texto y no capturas, un tema por chat, el modelo justo (Haiku lo mecánico), índice→buscador→archivo, comandos recortados, solo las herramientas en uso, memoria en caché para lo automático. Línea base de tokens por tarea tomada 15-nov; comparar en una semana.
