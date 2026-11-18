@@ -1,6 +1,7 @@
 /*
  * Capturas del panel docente con la estética de la barra lateral de la cuenta
- * (18-nov). Inicio a 320, 375 y 1280, página entera, con el curso normal.
+ * (18-nov). Inicio y las vistas «clase» y «esfuerzo» a 320, 375 y 1280,
+ * página entera, con el curso normal.
  *
  *   node scripts/t4/panel-docente/capturas-estetica.mjs <carpeta> [http://localhost:8099]
  */
@@ -21,6 +22,16 @@ for (const ancho of [320, 375, 1280]) {
   R[ancho] = await page.evaluate(() => ({ desborde: document.documentElement.scrollWidth - innerWidth }));
   R[ancho].errores = errores;
   await page.screenshot({ path: join(DIR, `inicio-${ancho}.png`), fullPage: true });
+  /* Las vistas que salieron de la portada (18-nov): el avance por tema y esfuerzo y resultado. */
+  for (const v of ["clase", "esfuerzo"]) {
+    await page.click(`[data-ir=${v}]`);
+    await page.waitForSelector(`[data-vista=${v}]`);
+    await page.waitForTimeout(300);
+    R[ancho][v] = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+    await page.screenshot({ path: join(DIR, `${v}-${ancho}.png`), fullPage: true });
+    await page.click("[data-volver]");
+    await page.waitForSelector("[data-ir=clase]");
+  }
   await ctx.close();
 }
 await nav.close();

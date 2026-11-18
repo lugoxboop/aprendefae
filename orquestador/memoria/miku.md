@@ -8,6 +8,7 @@
 - Antes de abrir nada: primero `orquestador/INDICE.md`, luego el buscador del canon (regla k).
 
 ## En qué estoy ahora
+- 2026-11-18 16:55 — Portada del panel docente rehecha (PortadaDocente.jsx): tres pisos (cómo va la clase con 3 cifras tocables · «Para hoy» con las 3 personas más urgentes · «¿Qué quieres hacer?» con 6 tarjetas estilo temas #686). El avance por tema y Esfuerzo y resultado pasaron a vistas propias («clase», «esfuerzo»). FraseDeHoy, AtencionAhora, PeorActividad, BloqueRiesgo y los llamados ya no se usan en la portada; no se borraron.
 - 2026-11-18 13:59 — Tarjetas de temas con identidad propia: cada tema con su color y su dibujo en pastilla, brillo, sombra teñida, destello y flecha en círculo al pasar el puntero; rótulo «Tema n» y conteo de actividades. Macro, Contabilidad y Estrategia. Sonda `scripts/temas/capturas-tarjetas.mjs`. Visto: la pastilla de cuenta pisa el título de la materia a 1280 (ya pasaba antes).
 - 2026-11-18 10:12 — Panel docente con la estética de la barra lateral (#681): iconos en pastilla de color en cada bloque, tarjetas con brillo y sombra, «Ver más a fondo» como opciones del menú con entrada en fila, fondo con brillo. Sin tocar el botón flotante «Panel docente» (otro hilo). Sonda `scripts/t4/panel-docente/capturas-estetica.mjs`.
 - 2026-11-18 — La barra lateral de la cuenta (#681) ya está fusionada.
