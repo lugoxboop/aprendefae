@@ -269,14 +269,24 @@ const TOPE_RETRO_NUEVA = 3;
 export const RELIEVE = ".fae-card, [data-accesorio], [data-medalla], [data-mv-relieve]";
 const GRADOS = 7;
 
+/*
+ * Una pieza grande puede pedir menos giro con `data-mv-grados` (p. ej. el
+ * banner del Repaso: a 7° una franja de 760 px se ve dar vueltas y marea).
+ * Sin el atributo, los 7° de siempre.
+ */
+export function gradosDe(el) {
+  const g = Number(el?.dataset?.mvGrados);
+  return Number.isFinite(g) && g > 0 ? Math.min(g, GRADOS) : GRADOS;
+}
+
 /** El giro 3D para un puntero en (px, py) dentro de una caja: [eje x, eje y, grados]. */
-export function giroHacia(px, py, caja) {
+export function giroHacia(px, py, caja, grados = GRADOS) {
   const dx = (px - (caja.left + caja.width / 2)) / (caja.width / 2);
   const dy = (py - (caja.top + caja.height / 2)) / (caja.height / 2);
   const cx = Math.max(-1, Math.min(1, dx));
   const cy = Math.max(-1, Math.min(1, dy));
   const fuerza = Math.min(1, Math.hypot(cx, cy));
-  return [Number((-cy).toFixed(3)), Number(cx.toFixed(3)), Number((fuerza * GRADOS).toFixed(2))];
+  return [Number((-cy).toFixed(3)), Number(cx.toFixed(3)), Number((fuerza * grados).toFixed(2))];
 }
 
 /* ═══════════ POSTEL: entrada desordenada, número limpio ═══════════ */
@@ -540,7 +550,7 @@ export function instalarMovimiento(doc = globalThis.document) {
       pedido = win.requestAnimationFrame(() => {
         pedido = null;
         if (!actual || !ultimo) return;
-        const [x, y, g] = giroHacia(ultimo.clientX, ultimo.clientY, actual.getBoundingClientRect());
+        const [x, y, g] = giroHacia(ultimo.clientX, ultimo.clientY, actual.getBoundingClientRect(), gradosDe(actual));
         actual.style.rotate = `${x} ${y} 0 ${g}deg`;
         actual.style.translate = "0 -3px";
       });

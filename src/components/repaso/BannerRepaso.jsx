@@ -454,6 +454,8 @@ export default function BannerRepaso({ actividad, onEmpezar, repaso = null }) {
       data-banner={actividad.id}
       data-estado={bloqueado ? "bloqueado" : hecho ? "hecho" : "pendiente"}
       data-abierto={abierto ? "true" : "false"}
+      /* Es tres veces más ancha que un tema: con los 7° de las tarjetas, marea (Mateo, 18-nov). Se queda, pero suave. */
+      data-mv-grados="2.5"
       className={`fae-repaso${activo ? " fae-repaso--activo fae-card fae-tema" : ""}`}
       style={marco}
     >

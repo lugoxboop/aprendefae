@@ -123,3 +123,12 @@ test("★ la hoja anima el paso de punto a punto solo en la tarjeta, no en la p�
   assert.match(CSS, /::view-transition-new\(mv-item\)/);
   assert.match(CSS, /item-atras/);
 });
+
+test("una pieza grande puede pedir menos giro con data-mv-grados", async () => {
+  const { gradosDe } = await import("../movimiento.js");
+  assert.equal(gradosDe({ dataset: {} }), 7);
+  assert.equal(gradosDe({ dataset: { mvGrados: "2.5" } }), 2.5);
+  assert.equal(gradosDe({ dataset: { mvGrados: "20" } }), 7, "nunca más que el tope");
+  const caja = { left: 0, top: 0, width: 200, height: 100 };
+  assert.ok(giroHacia(9999, 9999, caja, 2.5)[2] <= 2.5);
+});
