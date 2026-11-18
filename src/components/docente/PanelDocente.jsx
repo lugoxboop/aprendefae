@@ -764,14 +764,22 @@ export default function PanelDocente({ actividadInicial = null, onBack }) {
 function Marco({ children, onBack }) {
   return (
     <div style={{ minHeight: "100vh", backgroundColor: FAE.bg, fontFamily: "Inter, sans-serif", color: FAE.text }}>
-      <div style={{ maxWidth: "1040px", margin: "0 auto", padding: "12px clamp(16px, 4vw, 24px) 64px" }}>
+      {/*
+        * La cuenta flota arriba a la IZQUIERDA desde el 15-nov. Esta columna
+        * mide 1040 y no 860 como las demás, así que su reserva se calcula
+        * aparte (la regla general de AccountControl se queda corta aquí), y
+        * el relleno de arriba es el de las otras vistas: con 12 px la barra
+        * quedaba más arriba que la pastilla y la pastilla pisaba el título.
+        */}
+      <style>{`@media (min-width: 561px) { .pd1-barra.fae-cabecera { padding-left: max(0px, calc(152px - max(0px, (100vw - 1040px) / 2))); } }`}</style>
+      <div style={{ maxWidth: "1040px", margin: "0 auto", padding: "clamp(18px, 3vh, 30px) clamp(16px, 4vw, 24px) 64px" }}>
         {/*
           * La pastilla de FP (AccountControl, de Erwin) flota arriba a la
-          * derecha. Esta barra le deja su hueco y el título se recorta con
+          * izquierda (desde el 15-nov). Esta barra le deja su hueco y el título se recorta con
           * elipsis en vez de pasar por debajo (Shibukawa, #498: a menos de
           * 360 px la tapaba).
           */}
-        <div className="pd1-barra fae-cabecera" style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px", minWidth: 0 }}>
+        <div className="pd1-barra fae-cabecera" style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "16px", minWidth: 0 }}>
           <span className="fae-cabecera-marca"><Logo variant="symbol" size={26} theme="dark" /></span>
           <button
             type="button"
