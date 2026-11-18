@@ -18,7 +18,14 @@ import { JSDOM, VirtualConsole } from "jsdom";
  * Para rehacer la foto contra otro CaminoHacer (solo si el cambio es a
  * propósito): CAMINO_MODULO=<ruta absoluta> FOTO=escribir node --test …
  *
- * La foto NO se ha rehecho nunca desde que se tomó de main. Lo que entra
+ * REHECHA UNA VEZ, A PROPÓSITO, EL 18-NOV: el camino tomó el color de su
+ * tema, la línea pendiente pasó a puntos y cada nodo ganó estado, brillo y
+ * movimiento (pedido de Mateo). La geometría —dónde cae cada nodo y cada
+ * rótulo— no se movió: lo vigilan camino-bloques y las medidas de
+ * scripts/temas/capturas-camino.mjs. Desde aquí, la foto vuelve a ser la
+ * prueba de que nada más cambia sin querer.
+ *
+ * Antes de eso la foto no se había rehecho nunca desde que se tomó de main. Lo que entra
  * encima del camino —la decoración, Fae, la entrada— se RECORTA antes de
  * pesar en vez de rehacerse, y por eso las 42 huellas siguen siendo la
  * prueba de que el recorrido no se ha movido. Rehacer la foto es cómodo y

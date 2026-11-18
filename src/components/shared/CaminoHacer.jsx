@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { FAE, ANCHO_ESTRECHO } from "../../theme.js";
 import { iconoDe } from "./iconosActividad.jsx";
@@ -7,6 +7,8 @@ import PreviaActividad from "./previas/PreviaActividad.jsx";
 import { bloquesDe } from "../../hacer/bloques.js";
 import { registrarApertura } from "./contenidoNuevo.jsx";
 import { conTransicion } from "../../estilo/movimiento.js";
+import { identidadDeTema } from "./TarjetaTema.jsx";
+import { SUBJECTS, temasVisibles, ubicacionDeActividad } from "../../data/subjects.js";
 
 /*
  * Camino de actividades para la mitad "Hacer" de cualquier tema.
@@ -206,6 +208,68 @@ export function trazo(p) {
 /* Un path por tramo: el recorrido se pinta de a un tramo, cada uno del tono de su bloque. */
 const tramosSueltos = (p) => tramosDe(p).map((t) => `M ${u(t.p1.x)} ${u(t.p1.y)} ${curva(t)}`);
 
+/*
+ * Qué tramos de la línea van encendidos: los que unen dos hechas, y el que
+ * lleva de una hecha al siguiente sugerido. Antes se encendía todo hasta el
+ * sugerido, y si la primera seguía sin hacer no se encendía nada aunque
+ * hubiera tres hechas más abajo: el avance real no se veía.
+ */
+export function tramosEncendidos(nodos, sugerido) {
+  const lista = [];
+  for (let i = 0; i < nodos.length - 1; i += 1) {
+    if (nodos[i].completada && (nodos[i + 1].completada || i + 1 === sugerido)) lista.push(i);
+  }
+  return lista;
+}
+
+/* ------------------------------ el color del tema ------------------------------ */
+
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * EL CAMINO LLEVA EL COLOR DE SU TEMA (Mateo, 18-nov: «dentro de los haceres,
+ * los caminos se ven súper sosos»).
+ *
+ * Las tarjetas de temas estrenaron ese mismo día una identidad por tema: un
+ * tono y un dibujo en pastilla (TarjetaTema.jsx). El camino era lo primero que
+ * se veía al entrar a una de esas tarjetas, y seguía todo en teal: pulsabas
+ * una tarjeta violeta y aterrizabas en un camino verde. Ahora el tono de la
+ * tarjeta es el del camino, y entrar se siente como seguir en el mismo sitio.
+ *
+ * EL TONO SALE DE LOS NODOS, NO DE UNA PROP NUEVA. Cada nodo es una actividad
+ * del catálogo, y el catálogo sabe en qué tema vive (ubicacionDeActividad).
+ * Con eso se pide la identidad igual que la pide el índice —mismo tema, misma
+ * posición entre los visibles—, así que la tarjeta y su camino no pueden
+ * quedar de colores distintos, y las diecisiete vistas que pintan un camino no
+ * tienen que cambiar ni una línea. Un camino cuyos nodos no estén en el
+ * catálogo se queda con el teal de siempre.
+ *
+ * Los tonos de tema ya excluyen el coral (es «error») y el teal (es «correcto»):
+ * esa regla viene heredada y no hay que vigilarla aquí.
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+export const TONO_RESPALDO = { base: "#2A9D8F", claro: "#7FD3C8", rgb: "42,157,143" };
+
+export function tonoDelCamino(nodos = []) {
+  for (const n of nodos) {
+    const donde = ubicacionDeActividad(n?.id);
+    const materia = donde && SUBJECTS[donde.materiaId];
+    if (!materia) continue;
+    const tema = materia.topics.find((t) => t.id === donde.temaId);
+    let i = temasVisibles(materia).findIndex((t) => t.id === donde.temaId);
+    if (i < 0) i = materia.topics.indexOf(tema);
+    return identidadDeTema(donde.materiaId, tema, Math.max(0, i)).tono;
+  }
+  return TONO_RESPALDO;
+}
+
+/* Un hex del tono, oscurecido: la base del relieve de un nodo hecho. */
+export function oscurecer(hex, f = 0.45) {
+  const v = parseInt(hex.slice(1), 16);
+  const c = (s) => Math.round(((v >> s) & 255) * (1 - f)).toString(16).padStart(2, "0");
+  return `#${c(16)}${c(8)}${c(0)}`;
+}
+const alfa = (tono, a) => `rgba(${tono.rgb},${a})`;
+
 /* ------------------------------ el nodo especial ------------------------------ */
 
 /*
@@ -237,8 +301,8 @@ const CSS_RESALTADO = `
 @keyframes fae-ch-aqui { 0%, 100% { opacity: .95; } 50% { opacity: .35; } }
 .fae-ch-aqui { animation: fae-ch-aqui 1.6s ease-in-out infinite; }
 @keyframes fae-ch-aqui-caja {
-  0%, 100% { box-shadow: 0 0 0 3px rgba(42,157,143,0.95); }
-  50%      { box-shadow: 0 0 0 3px rgba(42,157,143,0.3); }
+  0%, 100% { box-shadow: 0 0 0 3px rgba(var(--tono-rgb, 42,157,143),0.95); }
+  50%      { box-shadow: 0 0 0 3px rgba(var(--tono-rgb, 42,157,143),0.3); }
 }
 .fae-ch-aqui-caja { animation: fae-ch-aqui-caja 1.6s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) { .fae-ch-aqui, .fae-ch-aqui-caja { animation: none !important; } }
@@ -266,6 +330,52 @@ const CSS_VOLUMEN = `
 @media (prefers-reduced-motion: reduce) {
   .fae-ch-cara { transition: none; }
   [data-nodo]:active .fae-ch-cara { transform: none; }
+}
+`;
+
+/*
+ * ═══════════ LA VIDA DEL CAMINO (18-nov) ═══════════
+ *
+ * El mismo lenguaje que las tarjetas de temas y la barra lateral, llevado al
+ * nodo. Cada cosa dice algo; ninguna está solo de adorno:
+ *
+ *   · AL ENTRAR, los nodos aparecen uno tras otro con un pequeño rebote, de
+ *     arriba abajo, al ritmo del trazo del camino (CSS_ENTRADA). El retardo
+ *     se corta en el décimo: más abajo nadie lo está mirando todavía.
+ *   · EL SIGUIENTE SUGERIDO respira: una onda de su color sale de él cada
+ *     2,4 s, y su nombre lleva «Sigue aquí». Es la invitación, no una puerta.
+ *   · LO RECORRIDO lleva un destello que lo cruza de vez en cuando, como el
+ *     de las tarjetas al pasar el puntero: el avance brilla.
+ *   · AL PASAR EL PUNTERO el nodo se levanta, crece un poco, se ilumina de
+ *     su color y le sale un aro, igual que la pastilla de la tarjeta.
+ *
+ * Todo con transform y opacidad, salvo el destello, que mueve el desfase del
+ * trazo de UNA línea. Con movimiento reducido no se mueve nada: queda el
+ * dibujo quieto, con los tres estados igual de claros.
+ */
+const CSS_VIDA = `
+.fae-ch-nodo { animation: fae-ch-pop 460ms cubic-bezier(.2,.9,.3,1.25) both; animation-delay: calc(var(--i, 0) * 70ms + 220ms); transform-box: fill-box; transform-origin: center; }
+@keyframes fae-ch-pop { from { opacity: 0; transform: scale(.55); } }
+.fae-ch-alza { transform-box: fill-box; transform-origin: center; transition: transform 240ms cubic-bezier(.2,.8,.3,1.2), filter 240ms ease; }
+.fae-ch-aro { transform-box: fill-box; transform-origin: center; opacity: 0; transform: scale(.85); transition: opacity 240ms ease, transform 240ms cubic-bezier(.2,.8,.3,1); }
+@media (hover: hover) {
+  [data-nodo]:hover .fae-ch-alza, [data-nodo]:focus-visible .fae-ch-alza { transform: translateY(-3px) scale(1.07); filter: drop-shadow(0 8px 14px rgba(var(--tono-rgb),0.55)); }
+  [data-nodo]:hover .fae-ch-aro, [data-nodo]:focus-visible .fae-ch-aro { opacity: 1; transform: scale(1); }
+  .fae-ch-rotulo { transition: color 200ms ease; }
+}
+[data-nodo]:focus-visible { outline: none; }
+.fae-ch-onda { transform-box: fill-box; transform-origin: center; animation: fae-ch-onda 2.4s cubic-bezier(.2,.6,.3,1) infinite; }
+@keyframes fae-ch-onda { 0% { opacity: .6; transform: scale(.92); } 75%, 100% { opacity: 0; transform: scale(1.5); } }
+.fae-ch-sigue { animation: fae-ch-flota 2.4s ease-in-out infinite; }
+@keyframes fae-ch-flota { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+.fae-ch-destello { animation: fae-ch-destello 3.6s cubic-bezier(.45,.05,.35,1) 1.4s infinite; }
+@keyframes fae-ch-destello { from { stroke-dashoffset: 1100; } 60%, to { stroke-dashoffset: -60; } }
+.fae-ch-barra > span { transition: width 600ms cubic-bezier(.2,.8,.3,1); }
+@media (max-width: ${ANCHO_ESTRECHO}px) { .fae-ch-sigue-abajo { display: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .fae-ch-nodo, .fae-ch-onda, .fae-ch-sigue, .fae-ch-destello { animation: none !important; }
+  .fae-ch-destello { display: none; }
+  .fae-ch-alza, .fae-ch-aro { transition: none; }
 }
 `;
 
@@ -402,29 +512,51 @@ const alPulsar = (onAbrir, id) => ({
  * El color del rótulo de un nodo, por estado. El ícono de una actividad que
  * trae el suyo (`nodo.icono`, hoy solo Contabilidad) usa este mismo color.
  */
-const colorDelRotulo = (nodo) => (nodo.completada ? FAE.text : "rgba(248,249,250,0.72)");
+const colorDelRotulo = (nodo, sugerido = false, tono = null) =>
+  nodo.completada ? FAE.text : sugerido && tono ? tono.claro : "rgba(248,249,250,0.72)";
 
 /*
  * El contador del camino. Discreto a propósito: es una referencia, no un
  * marcador. Un número grande arriba convertiría el camino en una barra de
  * progreso, y lo que tiene que mirar el estudiante son los nodos.
  */
-function Progreso({ texto }) {
+function Progreso({ texto, hechas = 0, total = 0, tono = TONO_RESPALDO }) {
   if (!texto) return null;
+  /*
+   * El texto, igual que antes, y debajo una barra fina del color del tema:
+   * la misma cifra, dibujada. Sigue siendo discreta —4 px, sin número
+   * grande—; lo que tiene que mirar el estudiante son los nodos.
+   */
+  const lleno = total > 0 ? Math.round((hechas / total) * 100) : 0;
   return (
-    <p
-      data-progreso-camino
-      style={{
-        margin: "0 0 10px",
-        fontFamily: "Sora, sans-serif",
-        fontSize: "12.5px",
-        fontWeight: 600,
-        letterSpacing: "0.04em",
-        color: "rgba(248,249,250,0.52)",
-      }}
-    >
-      {texto}
-    </p>
+    <div style={{ margin: "0 0 14px", maxWidth: "260px" }}>
+      <p
+        data-progreso-camino
+        style={{
+          margin: "0 0 7px",
+          fontFamily: "Sora, sans-serif",
+          fontSize: "12.5px",
+          fontWeight: 600,
+          letterSpacing: "0.04em",
+          color: "rgba(248,249,250,0.6)",
+        }}
+      >
+        {texto}
+      </p>
+      <span
+        aria-hidden="true"
+        className="fae-ch-barra"
+        style={{ display: "block", height: "4px", borderRadius: "999px", background: "rgba(248,249,250,0.1)", overflow: "hidden" }}
+      >
+        <span
+          style={{
+            display: "block", height: "100%", width: `${lleno}%`, borderRadius: "inherit",
+            background: `linear-gradient(90deg, ${alfa(tono, 0.7)}, ${tono.claro})`,
+            boxShadow: `0 0 10px ${alfa(tono, 0.6)}`,
+          }}
+        />
+      </span>
+    </div>
   );
 }
 
@@ -495,7 +627,10 @@ export default function CaminoHacer({ nodos = [], onAbrir: alAbrir, vacio, espec
     );
   }
 
-  const comunes = { nodos, onAbrir, resaltado, marcas, tema };
+  const tono = tonoDelCamino(nodos);
+  const comunes = { nodos, onAbrir, resaltado, marcas, tema, tono };
+  /* Las variables del tono, para las reglas de CSS_VIDA y el aro del resaltado. */
+  const variables = { "--tono": tono.base, "--tono-claro": tono.claro, "--tono-rgb": tono.rgb };
 
   /*
    * CUÁNTO LLEVAS, QUE ES LO QUE SOSTIENE EL HÁBITO.
@@ -519,11 +654,12 @@ export default function CaminoHacer({ nodos = [], onAbrir: alAbrir, vacio, espec
 
   if (porBloques) {
     return (
-      <div ref={caja} className="fae-ch-entra">
+      <div ref={caja} className="fae-ch-entra" style={variables}>
         <style>{CSS_ENTRADA}</style>
-        <Progreso texto={progreso} />
+        <Progreso texto={progreso} hechas={hechas} total={nodos.length} tono={tono} />
         <style>{CSS_CAMINO}</style>
         <style>{CSS_VOLUMEN}</style>
+        <style>{CSS_VIDA}</style>
         {especial && <style>{CSS_ESPECIAL}</style>}
         {resaltado && <style>{CSS_RESALTADO}</style>}
         <CaminoPorBloques {...comunes} especial={especial} />
@@ -532,11 +668,12 @@ export default function CaminoHacer({ nodos = [], onAbrir: alAbrir, vacio, espec
   }
 
   return (
-    <div ref={caja} className="fae-ch-entra">
+    <div ref={caja} className="fae-ch-entra" style={variables}>
       <style>{CSS_ENTRADA}</style>
-      <Progreso texto={progreso} />
+      <Progreso texto={progreso} hechas={hechas} total={nodos.length} tono={tono} />
       <style>{CSS_CAMINO}</style>
       <style>{CSS_VOLUMEN}</style>
+      <style>{CSS_VIDA}</style>
       {especial && <style>{CSS_ESPECIAL}</style>}
       {resaltado && <style>{CSS_RESALTADO}</style>}
 
@@ -576,13 +713,15 @@ export function ladoLibreAlFinal(puntos, ancho = ANCHO) {
 
 /* -------------------------------- el lienzo -------------------------------- */
 
-function Lienzo({ nodos, onAbrir, especial, resaltado, marcas, tema = null }) {
+function Lienzo({ nodos, onAbrir, especial, resaltado, marcas, tema = null, tono = TONO_RESPALDO }) {
   const n = nodos.length;
   const m = medidas(n);
   const p = posiciones(n, m);
   const d = trazo(p);
   /* El siguiente sugerido: el primero sin hacer. Sugerencia, no puerta. */
   const sugerido = nodos.findIndex((x) => !x.completada);
+  const tramos = tramosSueltos(p);
+  const encendidos = tramosEncendidos(nodos, n > 1 ? sugerido : -1);
 
   /*
    * El desafío cuelga de un ramal a la derecha, a la altura del tercio superior
@@ -629,22 +768,22 @@ function Lienzo({ nodos, onAbrir, especial, resaltado, marcas, tema = null }) {
       <DecoracionCamino tema={tema} ladoFae={ladoLibreAlFinal(p, ANCHO)} />
       <svg viewBox={`0 0 ${anchoTotal} ${m.alto}`} width="100%" style={{ display: "block", overflow: "visible", position: "relative", zIndex: 1 }}>
         {/* La línea del recorrido, por debajo de todo. */}
-        {d && (
-          <path d={d} fill="none" stroke="rgba(248,249,250,0.22)" strokeWidth={m.grosor} strokeLinecap="round" />
-        )}
+        {d && <LineaPendiente d={d} grosor={m.grosor} tono={tono} />}
         {/*
-          El tramo ya recorrido, en teal encima del gris. Se dibuja hasta el
-          último nodo hecho: enseña avance real sin cerrarle el paso a nadie.
+          El tramo ya recorrido, del color del tema encima de los puntos. Se
+          dibuja hasta el siguiente sugerido: enseña avance real sin cerrarle
+          el paso a nadie.
         */}
-        {d && sugerido !== 0 && (
-          <path
-            d={trazo(p.slice(0, sugerido === -1 ? n : sugerido + 1))}
-            fill="none"
-            stroke={FAE.teal}
-            strokeWidth={m.grosor}
-            strokeLinecap="round"
-            opacity="0.75"
-          />
+        {d && encendidos.length > 0 && (
+          <LineaRecorrida d={encendidos.map((i) => tramos[i]).join(" ")} grosor={m.grosor} tono={tono}>
+            <path
+              d={encendidos.map((i) => tramos[i]).join(" ")}
+              fill="none"
+              stroke={tono.base}
+              strokeWidth={m.grosor}
+              strokeLinecap="round"
+            />
+          </LineaRecorrida>
         )}
 
         {nodos.map((nodo, i) => (
@@ -655,10 +794,12 @@ function Lienzo({ nodos, onAbrir, especial, resaltado, marcas, tema = null }) {
             y={p[i].y}
             m={m}
             numero={i + 1}
+            orden={i}
             sugerido={i === sugerido && n > 1}
             resaltado={resaltado}
             marcas={marcas}
             onAbrir={onAbrir}
+            tono={tono}
           />
         ))}
 
@@ -704,11 +845,13 @@ function Lienzo({ nodos, onAbrir, especial, resaltado, marcas, tema = null }) {
             position: "absolute",
             ...lugarDelRotulo(p[i]),
             fontFamily: "Inter, sans-serif",
+            fontWeight: i === sugerido && n > 1 ? 600 : 400,
             lineHeight: 1.3,
-            color: colorDelRotulo(nodo),
+            color: colorDelRotulo(nodo, i === sugerido && n > 1, tono),
             cursor: "pointer",
           }}
         >
+          {i === sugerido && n > 1 && <SigueAqui tono={tono} primero={!nodos.some((x) => x.completada)} />}
           {nodo.nombre}
           {marcas?.[nodo.id] && <span style={MARCA}>{marcas[nodo.id]}</span>}
         </span>
@@ -781,110 +924,220 @@ function alLado({ x, y }, radio, alto, anchoTotal = ANCHO) {
   };
 }
 
-/* Un nodo del camino. Lo usan las dos formas: la de siempre y la de bloques. */
-function NodoSvg({ nodo, x, y, m, numero, sugerido, resaltado, marcas, onAbrir, tono = null, bloqueId, prefijo = "" }) {
+/*
+ * LA LÍNEA PENDIENTE ES UNA HILERA DE PUNTOS, Y LA RECORRIDA ES SÓLIDA.
+ *
+ * Antes las dos eran trazos iguales que solo cambiaban de color, gris y teal:
+ * de lejos se confundían. Ahora lo que falta es un rastro de puntos del tono
+ * del tema, y lo hecho una línea entera y encendida, con un halo debajo y un
+ * destello que la recorre. Se distinguen aunque no se vean los colores.
+ */
+function LineaPendiente({ d, grosor, tono }) {
+  return (
+    <path
+      data-linea
+      d={d}
+      fill="none"
+      stroke={alfa(tono, 0.42)}
+      strokeWidth={grosor * 1.25}
+      strokeLinecap="round"
+      strokeDasharray={`0 ${(grosor * 3.2).toFixed(1)}`}
+    />
+  );
+}
+
+/*
+ * Lo recorrido: un halo ancho y tenue (un trazo más, que es más barato que un
+ * filtro de desenfoque), la línea —o los tramos, en el camino por bloques, que
+ * llegan como hijos— y el destello. El destello normaliza la longitud con
+ * pathLength para que cruce a la misma velocidad un tramo corto y uno largo.
+ */
+function LineaRecorrida({ d, grosor, tono, children }) {
+  return (
+    <g pointerEvents="none">
+      <path d={d} fill="none" stroke={alfa(tono, 0.22)} strokeWidth={grosor * 3.4} strokeLinecap="round" />
+      {children}
+      <path
+        className="fae-ch-destello"
+        d={d}
+        fill="none"
+        stroke="rgba(255,255,255,0.85)"
+        strokeWidth={Math.max(1.5, grosor * 0.6)}
+        strokeLinecap="round"
+        pathLength="1000"
+        strokeDasharray="60 1100"
+        strokeDashoffset="1100"
+      />
+    </g>
+  );
+}
+
+/*
+ * «Sigue aquí», sobre el nombre del siguiente sugerido: una pastilla del color
+ * del tema que flota despacio. Va DENTRO del rótulo y no encima del nodo
+ * porque encima está, muchas veces, el título del bloque: medido a 1280, la
+ * pastilla flotante pisaba «Fácil». Cuelga del rótulo hacia arriba, alineada
+ * con él, y el nombre sigue centrado con su nodo. Si el nodo es el primero de
+ * su bloque, el título del bloque queda justo encima —medido a 320, pisaba
+ * «Medio»—, y entonces cuelga hacia abajo. En el teléfono, ahí abajo ya
+ * empieza el nodo siguiente (a 320 lo rozaba), así que en ese caso no se
+ * pone: el aro, la onda y el nombre en color ya dicen cuál es.
+ * Dice cuál es la sugerencia sin cerrar ninguna otra: todos los nodos se
+ * siguen pudiendo pulsar. Antes de hacer nada dice «Empieza aquí».
+ */
+function SigueAqui({ tono, primero = false, abajo = false }) {
+  return (
+    <span className={abajo ? "fae-ch-sigue-abajo" : undefined} style={{ position: "absolute", left: 0, right: 0, whiteSpace: "nowrap", pointerEvents: "none", ...(abajo ? { top: "100%", paddingTop: "6px" } : { bottom: "100%", paddingBottom: "6px" }) }}>
+      <span
+        data-sigue-aqui
+        className="fae-ch-sigue"
+        style={{
+          display: "inline-block", padding: "3px 10px", borderRadius: "999px", whiteSpace: "nowrap",
+          fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "12px", letterSpacing: "0.04em", lineHeight: 1.35,
+          color: "#0E1B2E", background: `linear-gradient(145deg, ${tono.claro}, ${tono.base})`,
+          boxShadow: `0 6px 16px -4px ${alfa(tono, 0.8)}, inset 0 1px 0 rgba(255,255,255,0.45)`,
+        }}
+      >
+        {primero ? "Empieza aquí" : "Sigue aquí"}
+      </span>
+    </span>
+  );
+}
+
+/*
+ * Un nodo del camino. Lo usan las dos formas: la de siempre y la de bloques.
+ *
+ * TRES ESTADOS QUE SE LEEN SIN COLOR (data-estado):
+ *   · hecha: la pastilla llena con el degradado del tono, brillo arriba,
+ *     ícono blanco y el ✓ en la esquina.
+ *   · siguiente: oscura con aro grueso del tono, ícono del tono claro, una
+ *     onda que sale de ella y «Sigue aquí» encima.
+ *   · pendiente: oscura con aro tenue del tono y el ícono apagado. NO es un
+ *     candado: se pulsa igual que las otras (ver la nota de arriba del todo).
+ */
+function NodoSvg({ nodo, x, y, m, numero, orden = 0, sugerido, resaltado, marcas, onAbrir, tono = TONO_RESPALDO, nivel = 1, bloqueId, prefijo = "" }) {
   const Icono = iconoDe(nodo.id);
   const lado = Math.round(m.radio * 1.1);
+  const uid = useId().replace(/[^a-zA-Z0-9_-]/g, "");
+  const hecha = nodo.completada;
+  const estado = hecha ? "hecha" : sugerido ? "siguiente" : "pendiente";
+  /* El ícono va con el color del rótulo de su nodo (colorDelRotulo). */
+  const colorIcono = colorDelRotulo(nodo, sugerido, tono);
   return (
     <g
       data-nodo={nodo.id}
+      data-estado={estado}
       data-bloque-de={bloqueId}
+      className="fae-ch-nodo"
       {...alPulsar(onAbrir, nodo.id)}
       role="button"
       tabIndex={0}
       aria-label={etiquetaAria(nodo, marcas, prefijo)}
-      style={{ cursor: "pointer" }}
+      style={{ cursor: "pointer", "--i": Math.min(orden, 10) }}
     >
+      {hecha && (
+        <defs>
+          <linearGradient id={`fae-ch-g-${uid}`} x1="0" y1="0" x2="0.4" y2="1">
+            <stop offset="0" stopColor={tono.claro} />
+            <stop offset="1" stopColor={tono.base} />
+          </linearGradient>
+        </defs>
+      )}
       {/*
-        * Aro del sugerido: acento, no candado. Era coral, y el coral es error en
-        * todo el sitio; desde que el camino empieza en una Fácil, un aro coral en
-        * el primer nodo se leía como "aquí algo va mal". Teal, fino y quieto: el
-        * de "estás aquí" es más ancho, más separado y late.
+        * El siguiente sugerido: una onda de su color que sale de él, y un aro
+        * fino y quieto. Acento, no candado; nunca coral, que es error.
         */}
       {sugerido && (
-        <circle data-sugerido cx={x} cy={y} r={m.radio + 7} fill="none" stroke={FAE.teal} strokeWidth="2" opacity="0.75" />
+        <>
+          <circle className="fae-ch-onda" cx={x} cy={y} r={m.radio + 4} fill={alfa(tono, 0.28)} opacity="0.35" pointerEvents="none" />
+          <circle data-sugerido cx={x} cy={y} r={m.radio + 7} fill="none" stroke={tono.base} strokeWidth="2" opacity="0.8" />
+        </>
       )}
       {resaltado === nodo.id && (
-        <circle className="fae-ch-aqui" cx={x} cy={y} r={m.radio + 12} fill="none" stroke={FAE.teal} strokeWidth="3" />
+        <circle className="fae-ch-aqui" cx={x} cy={y} r={m.radio + 12} fill="none" stroke={tono.claro} strokeWidth="3" />
       )}
 
-      {/*
-        La base del relieve: el mismo disco, 4 px más abajo y oscurecido. Va
-        ANTES que la cara para quedar debajo, y no recibe el toque.
-      */}
-      <circle
-        cx={x}
-        cy={y + ALTURA_NODO}
-        r={m.radio}
-        fill={nodo.completada ? BASE_HECHA : BASE_PENDIENTE}
-        pointerEvents="none"
-      />
+      <g className="fae-ch-alza">
+        {/* El aro que aparece al pasar el puntero, como el de la pastilla de la tarjeta. */}
+        <circle className="fae-ch-aro" cx={x} cy={y} r={m.radio + 5} fill="none" stroke={alfa(tono, 0.7)} strokeWidth="1.5" pointerEvents="none" />
 
-      <circle
-        className="fae-ch-cara"
-        cx={x}
-        cy={y}
-        r={m.radio}
-        fill={nodo.completada ? FAE.teal : "rgba(14,27,46,0.85)"}
-        stroke={nodo.completada ? FAE.teal : tono?.nodo ?? "rgba(248,249,250,0.45)"}
-        strokeWidth={tono ? 2.5 : 2}
-        style={tono?.brillo && !nodo.completada ? { filter: tono.brillo } : undefined}
-      />
-
-      {/*
-        Dentro, el icono de la actividad; sin uno declarado, el número de
-        siempre, que orienta sin ordenar. Los dos se quedan en el SVG porque
-        aguantan la escala: a 320 px de ventana el número sigue en 16 px y el
-        icono en unos 22.
-
-        Hecha no es solo un color: además del relleno teal lleva un ✓ en su
-        esquina.
-      */}
-      {nodo.icono ? (
-        /*
-          El ícono propio de la actividad (Contabilidad): el SVG de Xeno tal
-          cual, en currentColor, con el color del rótulo del nodo. Lleva el ✓
-          de hecha igual que los demás íconos.
-        */
-        <>
-          <g transform={`translate(${(x - lado / 2).toFixed(1)} ${(y - lado / 2).toFixed(1)})`} pointerEvents="none" data-icono={nodo.id} data-icono-propio style={{ color: colorDelRotulo(nodo) }}>
-            <nodo.icono size={lado} />
-          </g>
-          {nodo.completada && <Hecha x={x + m.radio * 0.74} y={y - m.radio * 0.74} r={Math.max(7, m.radio * 0.36)} />}
-        </>
-      ) : Icono ? (
-        <>
-          <g transform={`translate(${(x - lado / 2).toFixed(1)} ${(y - lado / 2).toFixed(1)})`} pointerEvents="none" data-icono={nodo.id}>
-            <Icono size={lado} color={nodo.completada ? FAE.bg : "rgba(248,249,250,0.9)"} strokeWidth={2} aria-hidden="true" />
-          </g>
-          {nodo.completada && <Hecha x={x + m.radio * 0.74} y={y - m.radio * 0.74} r={Math.max(7, m.radio * 0.36)} />}
-        </>
-      ) : (
-        <text
-          x={x}
-          y={y + m.radio * 0.34}
-          textAnchor="middle"
-          fontFamily="Sora, sans-serif"
-          fontWeight="700"
-          fontSize={m.radio * 0.92}
-          fill={nodo.completada ? FAE.bg : "rgba(248,249,250,0.75)"}
+        {/*
+          La base del relieve: el mismo disco, 4 px más abajo y oscurecido. Va
+          ANTES que la cara para quedar debajo, y no recibe el toque.
+        */}
+        <circle
+          cx={x}
+          cy={y + ALTURA_NODO}
+          r={m.radio}
+          fill={hecha ? oscurecer(tono.base) : BASE_PENDIENTE}
           pointerEvents="none"
-        >
-          {numero}
-        </text>
-      )}
+        />
+
+        <circle
+          className="fae-ch-cara"
+          cx={x}
+          cy={y}
+          r={m.radio}
+          fill={hecha ? `url(#fae-ch-g-${uid})` : sugerido ? "#14243C" : "rgba(14,27,46,0.92)"}
+          stroke={hecha ? alfa(tono, 0.9) : sugerido ? tono.base : alfa(tono, 0.25 + 0.3 * nivel)}
+          strokeWidth={sugerido ? 3 : 2}
+          style={nivel >= 1.2 && !hecha ? { filter: `drop-shadow(0 0 5px ${alfa(tono, 0.7)})` } : undefined}
+        />
+        {/* El brillo de arriba: lo que convierte el disco en pastilla. */}
+        <ellipse
+          className="fae-ch-cara"
+          cx={x}
+          cy={y - m.radio * 0.48}
+          rx={m.radio * 0.62}
+          ry={m.radio * 0.3}
+          fill={hecha ? "rgba(255,255,255,0.32)" : "rgba(255,255,255,0.06)"}
+          pointerEvents="none"
+        />
+
+        {/*
+          Dentro, el icono de la actividad; sin uno declarado, el número de
+          siempre, que orienta sin ordenar. Los dos se quedan en el SVG porque
+          aguantan la escala: a 320 px de ventana el número sigue en 16 px y el
+          icono en unos 22.
+        */}
+        <g className="fae-ch-cara" pointerEvents="none">
+          {nodo.icono ? (
+            /* El ícono propio de la actividad (Contabilidad): el SVG de Xeno tal cual, en currentColor. */
+            <g transform={`translate(${(x - lado / 2).toFixed(1)} ${(y - lado / 2).toFixed(1)})`} data-icono={nodo.id} data-icono-propio style={{ color: colorIcono }}>
+              <nodo.icono size={lado} />
+            </g>
+          ) : Icono ? (
+            <g transform={`translate(${(x - lado / 2).toFixed(1)} ${(y - lado / 2).toFixed(1)})`} data-icono={nodo.id}>
+              <Icono size={lado} color={colorIcono} strokeWidth={2} aria-hidden="true" />
+            </g>
+          ) : (
+            <text
+              x={x}
+              y={y + m.radio * 0.34}
+              textAnchor="middle"
+              fontFamily="Sora, sans-serif"
+              fontWeight="700"
+              fontSize={m.radio * 0.92}
+              fill={colorIcono}
+            >
+              {numero}
+            </text>
+          )}
+        </g>
+        {hecha && <Hecha x={x + m.radio * 0.74} y={y - m.radio * 0.74} r={Math.max(7, m.radio * 0.36)} tono={tono} />}
+      </g>
     </g>
   );
 }
 
 /* El ✓ de un nodo hecho: una marca que no depende del color. */
-function Hecha({ x, y, r }) {
+function Hecha({ x, y, r, tono = TONO_RESPALDO }) {
   return (
     <g pointerEvents="none" aria-hidden="true">
-      <circle cx={x} cy={y} r={r} fill={FAE.bg} stroke={FAE.teal} strokeWidth="2" />
+      <circle cx={x} cy={y} r={r} fill="#0E1B2E" stroke={tono.claro} strokeWidth="2" />
       <path
         d={`M ${x - r * 0.45} ${y + r * 0.02} L ${x - r * 0.1} ${y + r * 0.38} L ${x + r * 0.48} ${y - r * 0.34}`}
-        fill="none" stroke={FAE.teal} strokeWidth={Math.max(2, r * 0.26)} strokeLinecap="round" strokeLinejoin="round"
+        fill="none" stroke={tono.claro} strokeWidth={Math.max(2, r * 0.26)} strokeLinecap="round" strokeLinejoin="round"
       />
     </g>
   );
@@ -893,23 +1146,28 @@ function Hecha({ x, y, r }) {
 /* ------------------------------ por bloques ------------------------------ */
 
 /*
- * El teal de cada bloque, de apagado a saturado: Cimientos y Aplicación
- * apagados, Análisis a medias, Maestría entero y con un brillo suave. NUNCA
- * CORAL: en el resto del sitio el coral es error, y usarlo para "más difícil"
- * haría que un bloque se leyera como algo que salió mal. El color no dice el
- * nivel solo: lo dicen el título del bloque y su dificultad escritos.
+ * El tono del tema en cada bloque, de suave a encendido: Cimientos y
+ * Aplicación suaves, Análisis más lleno, Maestría entero y con un brillo. Es
+ * la escala que antes se hacía con el teal, ahora con el color del tema. NUNCA
+ * CORAL: en el resto del sitio el coral es error, y los tonos de tema ya lo
+ * excluyen. El color no dice el nivel solo: lo dicen el título del bloque y su
+ * dificultad escritos.
  */
-const TONOS = {
-  cimientos: { acento: "rgba(42,157,143,0.5)", nodo: "rgba(42,157,143,0.55)", linea: "rgba(42,157,143,0.65)", brillo: null },
-  aplicacion: { acento: "rgba(42,157,143,0.5)", nodo: "rgba(42,157,143,0.55)", linea: "rgba(42,157,143,0.65)", brillo: null },
-  analisis: { acento: "rgba(42,157,143,0.8)", nodo: "rgba(42,157,143,0.8)", linea: "rgba(42,157,143,0.85)", brillo: null },
-  maestria: { acento: FAE.teal, nodo: FAE.teal, linea: FAE.teal, brillo: "drop-shadow(0 0 5px rgba(42,157,143,0.75))" },
-  otras: { acento: "rgba(248,249,250,0.4)", nodo: "rgba(248,249,250,0.45)", linea: "rgba(42,157,143,0.65)", brillo: null },
-};
+const NIVELES = { cimientos: 0.55, aplicacion: 0.7, analisis: 0.88, maestria: 1.2, otras: 0.55 };
+export function tonoDeBloque(tono, bloqueId) {
+  const nivel = NIVELES[bloqueId] ?? NIVELES.otras;
+  const a = Math.min(1, nivel);
+  return {
+    nivel,
+    acento: nivel >= 1 ? tono.base : alfa(tono, a),
+    linea: nivel >= 1 ? tono.base : alfa(tono, Math.min(1, a + 0.15)),
+    brillo: nivel > 1 ? `drop-shadow(0 0 6px ${alfa(tono, 0.75)})` : null,
+  };
+}
 
 const OCULTO = { position: "absolute", width: "1px", height: "1px", overflow: "hidden", clipPath: "inset(50%)", whiteSpace: "nowrap" };
 
-function CaminoPorBloques({ nodos, onAbrir, especial, resaltado, marcas, tema = null }) {
+function CaminoPorBloques({ nodos, onAbrir, especial, resaltado, marcas, tema = null, tono = TONO_RESPALDO }) {
   const bloques = bloquesDe(nodos);
   const orden = bloques.flatMap((b) => b.nodos);
   /*
@@ -926,13 +1184,14 @@ function CaminoPorBloques({ nodos, onAbrir, especial, resaltado, marcas, tema = 
       {especial && (
         <DesafioEnTarjeta especial={especial} onAbrir={onAbrir} resaltado={resaltado} marca={marcas?.[especial.id]} marcas={marcas} />
       )}
-      <LienzoPorBloques bloques={bloques} onAbrir={setDetalle} resaltado={resaltado} marcas={marcas} tema={tema} />
+      <LienzoPorBloques bloques={bloques} onAbrir={setDetalle} resaltado={resaltado} marcas={marcas} tema={tema} tono={tono} />
       {nodoDetalle && (
         <DetalleNodo
           key={nodoDetalle.id}
           nodo={nodoDetalle}
           bloque={bloqueDetalle}
           numero={orden.indexOf(nodoDetalle) + 1}
+          tono={tono}
           onCerrar={() => setDetalle(null)}
           onEmpezar={() => {
             setDetalle(null);
@@ -955,26 +1214,29 @@ function CaminoPorBloques({ nodos, onAbrir, especial, resaltado, marcas, tema = 
  * Cada nodo lleva en su nombre accesible el bloque y la dificultad —el título
  * ya no lo envuelve en el DOM, así que un lector de pantalla lo oye ahí—.
  */
-function LienzoPorBloques({ bloques, onAbrir, resaltado, marcas, tema = null }) {
+function LienzoPorBloques({ bloques, onAbrir, resaltado, marcas, tema = null, tono = TONO_RESPALDO }) {
   const orden = bloques.flatMap((b) => b.nodos);
   const { m, puntos, cabeceras } = disposicionPorBloques(bloques, orden.length);
   const bloqueDe = new Map(bloques.flatMap((b) => b.nodos.map((n) => [n.id, b])));
-  const tonoDe = (id) => TONOS[bloqueDe.get(id)?.id] ?? TONOS.otras;
+  const tonoDe = (id) => tonoDeBloque(tono, bloqueDe.get(id)?.id);
   /* El siguiente sugerido: el primero sin hacer en el orden del camino. */
   const sugerido = orden.findIndex((x) => !x.completada);
-  /* El recorrido llega hasta él, cada tramo del tono del bloque al que entra. */
-  const recorridos = sugerido === -1 ? orden.length - 1 : sugerido;
+  /* Lo recorrido, cada tramo del tono del bloque al que entra. */
+  const tramos = tramosSueltos(puntos);
+  const encendidos = tramosEncendidos(orden, orden.length > 1 ? sugerido : -1);
 
   return (
     <div data-camino-bloques style={{ position: "relative", width: "100%", maxWidth: `${ANCHO}px`, margin: "0 auto" }}>
       <DecoracionCamino tema={tema} ladoFae={ladoLibreAlFinal(puntos, ANCHO)} />
       <svg viewBox={`0 0 ${ANCHO} ${m.alto}`} width="100%" style={{ display: "block", overflow: "visible", position: "relative", zIndex: 1 }}>
-        {puntos.length > 1 && (
-          <path data-linea d={trazo(puntos)} fill="none" stroke="rgba(248,249,250,0.22)" strokeWidth={m.grosor} strokeLinecap="round" />
+        {puntos.length > 1 && <LineaPendiente d={trazo(puntos)} grosor={m.grosor} tono={tono} />}
+        {encendidos.length > 0 && (
+          <LineaRecorrida d={encendidos.map((i) => tramos[i]).join(" ")} grosor={m.grosor} tono={tono}>
+            {encendidos.map((i) => (
+              <path key={i} data-recorrido d={tramos[i]} fill="none" stroke={tonoDe(orden[i + 1].id).linea} strokeWidth={m.grosor} strokeLinecap="round" />
+            ))}
+          </LineaRecorrida>
         )}
-        {tramosSueltos(puntos).slice(0, Math.max(0, recorridos)).map((d, i) => (
-          <path key={i} data-recorrido d={d} fill="none" stroke={tonoDe(orden[i + 1].id).linea} strokeWidth={m.grosor} strokeLinecap="round" opacity="0.75" />
-        ))}
         {orden.map((nodo, i) => {
           const b = bloqueDe.get(nodo.id);
           return (
@@ -985,11 +1247,13 @@ function LienzoPorBloques({ bloques, onAbrir, resaltado, marcas, tema = null }) 
               y={puntos[i].y}
               m={m}
               numero={i + 1}
+              orden={i}
               sugerido={i === sugerido && orden.length > 1}
               resaltado={resaltado}
               marcas={marcas}
               onAbrir={onAbrir}
-              tono={tonoDe(nodo.id)}
+              tono={tono}
+              nivel={tonoDe(nodo.id).nivel}
               bloqueId={b.id}
               prefijo={`${b.nombre}, ${b.etiqueta.toLowerCase()}: `}
             />
@@ -1007,7 +1271,7 @@ function LienzoPorBloques({ bloques, onAbrir, resaltado, marcas, tema = null }) 
             aria-labelledby={`fae-cb-${c.id}`}
             style={{ position: "absolute", top: pct(c.y + 6, m.alto), maxWidth: "58%", ...(c.lado < 0 ? { left: 0 } : { right: 0 }) }}
           >
-            <CabezaBloque bloque={b} tono={TONOS[b.id] ?? TONOS.otras} alDerecha={c.lado > 0} />
+            <CabezaBloque bloque={b} tono={tono} tonoBloque={tonoDeBloque(tono, b.id)} alDerecha={c.lado > 0} />
           </section>
         );
       })}
@@ -1022,11 +1286,15 @@ function LienzoPorBloques({ bloques, onAbrir, resaltado, marcas, tema = null }) 
             position: "absolute",
             ...alLado(puntos[i], m.radio, m.alto),
             fontFamily: "Inter, sans-serif",
+            fontWeight: i === sugerido && orden.length > 1 ? 600 : 400,
             lineHeight: 1.3,
-            color: colorDelRotulo(nodo),
+            color: colorDelRotulo(nodo, i === sugerido && orden.length > 1, tono),
             cursor: "pointer",
           }}
         >
+          {i === sugerido && orden.length > 1 && (
+            <SigueAqui tono={tono} primero={!orden.some((x) => x.completada)} abajo={bloqueDe.get(nodo.id)?.nodos[0] === nodo} />
+          )}
           {nodo.nombre}
           {marcas?.[nodo.id] && <span style={MARCA}>{marcas[nodo.id]}</span>}
         </span>
@@ -1045,13 +1313,15 @@ const CSS_DETALLE = `
   transition: transform 180ms ease; animation: fae-dn-subir 180ms cubic-bezier(.2,.8,.3,1) backwards; }
 .fae-dn-agarre { display: none; }
 .fae-dn-previa { width: 144px; height: 108px; margin: 0 auto 14px; border-radius: 16px; display: grid; place-items: center; overflow: hidden;
-  background: #13233B; border: 1px solid rgba(248,249,250,0.14); }
-.fae-dn-bloque { margin: 0 0 4px; font-family: Sora, sans-serif; font-weight: 700; font-size: 12px; letter-spacing: 0.12em; color: rgba(248,249,250,0.72); }
+  background: radial-gradient(120% 90% at 50% 0%, rgba(var(--tono-rgb, 42,157,143),0.22), #13233B 70%); border: 1px solid rgba(var(--tono-rgb, 42,157,143),0.35); }
+.fae-dn-bloque { margin: 0 0 4px; font-family: Sora, sans-serif; font-weight: 700; font-size: 12px; letter-spacing: 0.12em; color: var(--tono-claro, rgba(248,249,250,0.72)); }
 .fae-dn-titulo { margin: 0 0 6px; font-family: Sora, sans-serif; font-weight: 700; font-size: 19px; line-height: 1.25; letter-spacing: -0.01em; }
 .fae-dn-hecha { margin: 0; font-size: 13.5px; color: rgba(248,249,250,0.85); }
 .fae-dn-botones { display: flex; gap: 10px; margin-top: 16px; }
 .fae-dn-botones button { flex: 1; font-family: Sora, sans-serif; font-weight: 600; font-size: 15px; padding: 13px 16px; border-radius: 999px; cursor: pointer; }
-.fae-dn-empezar { background: ${FAE.teal}; border: none; color: ${FAE.bg}; }
+.fae-dn-empezar { background: linear-gradient(145deg, var(--tono-claro, ${FAE.teal}), var(--tono, ${FAE.teal})); border: none; color: #0E1B2E;
+  box-shadow: 0 8px 20px -8px rgba(var(--tono-rgb, 42,157,143),0.9), inset 0 1px 0 rgba(255,255,255,0.35); transition: transform 160ms ease, box-shadow 160ms ease; }
+@media (hover: hover) { .fae-dn-empezar:hover { transform: translateY(-1px); box-shadow: 0 12px 26px -8px rgba(var(--tono-rgb, 42,157,143),1), inset 0 1px 0 rgba(255,255,255,0.4); } }
 .fae-dn-cerrar { background: transparent; border: 1px solid rgba(248,249,250,0.3); color: ${FAE.text}; }
 @keyframes fae-dn-fundido { from { opacity: 0; } }
 @keyframes fae-dn-subir { from { opacity: 0; transform: translateY(14px); } }
@@ -1066,14 +1336,15 @@ const CSS_DETALLE = `
 `;
 
 /* El icono quieto, en grande: lo que se ve antes de la animación, y en lugar de ella. */
-function IconoEstatico({ nodo, numero }) {
+function IconoEstatico({ nodo, numero, tono = TONO_RESPALDO }) {
   const Icono = iconoDe(nodo.id);
   return (
     <span
       data-estatico
       style={{
         width: "72px", height: "72px", borderRadius: "50%", display: "grid", placeItems: "center",
-        border: `2.5px solid ${FAE.teal}`, background: "rgba(14,27,46,0.85)", color: FAE.text,
+        border: `2.5px solid ${tono.base}`, background: "rgba(14,27,46,0.85)", color: FAE.text,
+        boxShadow: `0 0 0 6px ${alfa(tono, 0.12)}, 0 10px 24px -8px ${alfa(tono, 0.7)}`,
       }}
     >
       {nodo.icono ? (
@@ -1099,7 +1370,7 @@ function IconoEstatico({ nodo, numero }) {
  * desmonta y el bucle se acaba. Con "reducir movimiento" no se monta nunca:
  * se queda el icono quieto, sin excepciones.
  */
-function DetalleNodo({ nodo, bloque, numero, onCerrar, onEmpezar }) {
+function DetalleNodo({ nodo, bloque, numero, tono = TONO_RESPALDO, onCerrar, onEmpezar }) {
   const caja = useRef(null);
   const empezar = useRef(null);
   const cerrar = useRef(onCerrar);
@@ -1172,7 +1443,7 @@ function DetalleNodo({ nodo, bloque, numero, onCerrar, onEmpezar }) {
     };
   }, []);
 
-  const estatico = <IconoEstatico nodo={nodo} numero={numero} />;
+  const estatico = <IconoEstatico nodo={nodo} numero={numero} tono={tono} />;
 
   /*
    * ═══════════ POR QUÉ ESTE EMERGENTE VA EN UN PORTAL ═══════════
@@ -1196,7 +1467,7 @@ function DetalleNodo({ nodo, bloque, numero, onCerrar, onEmpezar }) {
    * contenido al que tapa.
    */
   return createPortal((
-    <div className="fae-dn-fondo" onClick={() => cerrar.current()}>
+    <div className="fae-dn-fondo" onClick={() => cerrar.current()} style={{ "--tono": tono.base, "--tono-claro": tono.claro, "--tono-rgb": tono.rgb }}>
       <style>{CSS_DETALLE}</style>
       <div
         ref={caja}
@@ -1245,8 +1516,9 @@ function DetalleNodo({ nodo, bloque, numero, onCerrar, onEmpezar }) {
  * sola al completar una actividad: los nodos vienen de useCompletadas, que
  * escucha el canal de FP.
  */
-function CabezaBloque({ bloque, tono, alDerecha = false }) {
+function CabezaBloque({ bloque, tono = TONO_RESPALDO, tonoBloque = tonoDeBloque(tono, bloque.id), alDerecha = false }) {
   const { hechas, total } = bloque;
+  const completo = total > 0 && hechas === total;
   const R = 17;
   const L = 2 * Math.PI * R;
   return (
@@ -1259,11 +1531,13 @@ function CabezaBloque({ bloque, tono, alDerecha = false }) {
         aria-label={`${hechas} de ${total} ${total === 1 ? "completada" : "completadas"}`}
         style={{ position: "relative", width: "44px", height: "44px", flexShrink: 0 }}
       >
-        <svg viewBox="0 0 44 44" width="44" height="44" aria-hidden="true" style={{ display: "block", overflow: "visible", filter: tono.brillo ?? undefined }}>
-          <circle cx="22" cy="22" r={R} fill="none" stroke="rgba(248,249,250,0.16)" strokeWidth="3" />
+        <svg viewBox="0 0 44 44" width="44" height="44" aria-hidden="true" style={{ display: "block", overflow: "visible", filter: tonoBloque.brillo ?? undefined }}>
+          {/* Dentro del anillo, un disco del tono: el anillo es su pastilla. Lleno cuando el bloque está completo. */}
+          <circle cx="22" cy="22" r={R - 3} fill={completo ? alfa(tono, 0.85) : alfa(tono, 0.13)} />
+          <circle cx="22" cy="22" r={R} fill="none" stroke={alfa(tono, 0.18)} strokeWidth="3" />
           {hechas > 0 && (
             <circle
-              cx="22" cy="22" r={R} fill="none" stroke={tono.acento} strokeWidth="3" strokeLinecap="round"
+              cx="22" cy="22" r={R} fill="none" stroke={completo ? tono.claro : tonoBloque.acento} strokeWidth="3" strokeLinecap="round"
               strokeDasharray={`${((L * hechas) / total).toFixed(2)} ${L.toFixed(2)}`}
               transform="rotate(-90 22 22)"
               style={{ transition: "stroke-dasharray 500ms ease" }}
@@ -1275,7 +1549,7 @@ function CabezaBloque({ bloque, tono, alDerecha = false }) {
           data-fraccion
           style={{
             position: "absolute", inset: 0, display: "grid", placeItems: "center",
-            fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "12px", color: FAE.text, fontVariantNumeric: "tabular-nums",
+            fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "12px", color: completo ? "#0E1B2E" : FAE.text, fontVariantNumeric: "tabular-nums",
           }}
         >
           {hechas}/{total}
@@ -1285,7 +1559,14 @@ function CabezaBloque({ bloque, tono, alDerecha = false }) {
         <h3 id={`fae-cb-${bloque.id}`} style={{ margin: 0, fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "16px", letterSpacing: "-0.01em", lineHeight: 1.2, color: FAE.text }}>
           {bloque.nombre}
         </h3>
-        <span style={{ display: "block", marginTop: "2px", fontFamily: "Inter, sans-serif", fontSize: "12.5px", lineHeight: 1.3, color: "rgba(248,249,250,0.66)" }}>
+        {/* La dificultad, en una pastilla del tono: la misma forma que «Tema n» en la tarjeta. */}
+        <span
+          style={{
+            display: "inline-block", marginTop: "4px", padding: "1px 8px", borderRadius: "999px",
+            fontFamily: "Sora, sans-serif", fontWeight: 600, fontSize: "12px", letterSpacing: "0.03em", lineHeight: 1.3,
+            color: tono.claro, background: alfa(tono, 0.14), border: `1px solid ${alfa(tono, 0.32)}`,
+          }}
+        >
           {bloque.etiqueta}
           <span style={OCULTO}>, {hechas} de {total} completadas</span>
         </span>
