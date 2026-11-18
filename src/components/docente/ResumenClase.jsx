@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, BarChart2 } from "lucide-react";
 import { FAE } from "../../theme.js";
-import { CSS_V1, V1, tarjetaV1, tituloBloque, notaV1 } from "./estiloV1.js";
+import { CSS_V1, V1, tarjetaV1, notaV1, tituloConIcono, TONOS_PANEL } from "./estiloV1.js";
+import IconoBloque from "./IconoBloque.jsx";
 
 /*
  * B1 · «Mi clase» (Ukyo §4): ¿cómo va? Una cifra grande, el avance de la
@@ -72,7 +73,7 @@ export default function ResumenClase({ avance, activos, nCohorte, singular, porT
         style={{ display: "block", width: "100%", textAlign: "left", padding: 0, background: "transparent", border: "none", color: "inherit", cursor: "pointer", font: "inherit" }}
       >
         <span style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" }}>
-          <span id="pd1-b1" role="heading" aria-level={2} style={{ ...tituloBloque, margin: 0 }}>{singular ? "Mi estudiante" : "Mi clase"}</span>
+          <span id="pd1-b1" role="heading" aria-level={2} style={{ ...tituloConIcono, margin: 0 }}><IconoBloque icono={BarChart2} tono={TONOS_PANEL.clase} />{singular ? "Mi estudiante" : "Mi clase"}</span>
           <ChevronDown size={18} aria-hidden="true" color={FAE.text} style={{ transform: abierto ? "rotate(180deg)" : "none", transition: "transform 200ms" }} />
         </span>
         <span style={{ display: "flex", alignItems: "center", gap: "14px", marginTop: "6px" }}>

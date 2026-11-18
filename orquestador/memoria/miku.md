@@ -8,7 +8,9 @@
 - Antes de abrir nada: primero `orquestador/INDICE.md`, luego el buscador del canon (regla k).
 
 ## En qué estoy ahora
-- 2026-11-15 14:39 — Menú de cuenta rehecho como barra lateral desde la izquierda (iconos, cifras FP/Cristales/racha, animada); cuenta a la izquierda y logo a la derecha en todas las cabeceras. PR abierto, esperando revisión de Mateo. Capturas en `revisiones/sidebar-cuenta/`; sonda en `scripts/cuenta/capturas-sidebar.mjs`.
+- 2026-11-18 10:12 — Panel docente con la estética de la barra lateral (#681): iconos en pastilla de color en cada bloque, tarjetas con brillo y sombra, «Ver más a fondo» como opciones del menú con entrada en fila, fondo con brillo. Sin tocar el botón flotante «Panel docente» (otro hilo). Sonda `scripts/t4/panel-docente/capturas-estetica.mjs`.
+- 2026-11-18 — La barra lateral de la cuenta (#681) ya está fusionada.
+- (fusionado 18-nov) 2026-11-15 14:39 — Menú de cuenta rehecho como barra lateral desde la izquierda (iconos, cifras FP/Cristales/racha, animada); cuenta a la izquierda y logo a la derecha en todas las cabeceras. PR abierto, esperando revisión de Mateo. Capturas en `revisiones/sidebar-cuenta/`; sonda en `scripts/cuenta/capturas-sidebar.mjs`.
 - 2026-11-14 20:48 — Montando la memoria de los agentes: creado INDICE.md, reglas k y l del protocolo, y bitácora semilla de los 27 agentes. Falta Graphify (pri. 2), complementos (pri. 3), la decisión de Mateo sobre proyectos de Claude (punto 5) y la verificación.
 
 ## Decisiones tomadas y por qué

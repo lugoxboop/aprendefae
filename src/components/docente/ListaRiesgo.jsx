@@ -1,3 +1,4 @@
+import { Eye } from "lucide-react";
 import { useState } from "react";
 import { copiar } from "../../docente/copiar.js";
 import { FAE } from "../../theme.js";
@@ -5,7 +6,8 @@ import { NIVEL, REGLAS_SIN_DATOS } from "../../docente/alertas.js";
 import { DIAGNOSTICOS_SIN_DATOS } from "../../docente/diagnosticos.js";
 import { AJUSTABLES, claveSilencio } from "../../docente/preferenciasDocente.js";
 import MarcaNivel, { NIVEL_MARCA } from "./MarcaNivel.jsx";
-import { V1, notaV1, tarjetaV1, tituloBloque, volverV1 } from "./estiloV1.js";
+import { V1, notaV1, tarjetaV1, tituloBloque, volverV1, tituloConIcono, TONOS_PANEL } from "./estiloV1.js";
+import IconoBloque from "./IconoBloque.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -174,7 +176,7 @@ export default function ListaRiesgo({
       <button type="button" style={volverV1} onClick={onVolver} data-volver>‹ Volver al resumen</button>
 
       <section style={{ ...tarjetaV1, marginBottom: "12px", ...ANCHO_DE_LECTURA }}>
-        <h2 style={tituloBloque}>A quién mirar</h2>
+        <h2 style={tituloConIcono}><IconoBloque icono={Eye} tono={TONOS_PANEL.mirar} />A quién mirar</h2>
         <p style={notaV1}>
           {riesgo.length === 0
             ? "Ahora mismo nadie dispara ninguna señal. Es una buena noticia, no un error."
