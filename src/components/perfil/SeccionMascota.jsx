@@ -4,6 +4,7 @@ import { useAuthOpcional } from "../../auth/AuthProvider.jsx";
 import Mascota from "../Mascota.jsx";
 import { ESPECIES, PALETAS_MASCOTA, OJOS_MASCOTA, ACCESORIOS_META, mascotaDe, esIlustrada } from "../../mascota/mascotas.js";
 import { accesoriosDe, puestosDe } from "../../cristales/cristales.js";
+import { tieneMarioneta } from "../../mascota/marionetas.js";
 
 /*
  * «Tu mascota», en el perfil. Dos modos con el mismo componente:
@@ -167,7 +168,7 @@ export default function SeccionMascota({ perfil: perfilProp = null, completo = f
 
       <div style={{ display: "flex", alignItems: "flex-start", gap: "16px", flexWrap: "wrap" }}>
         <div style={{ lineHeight: 0, flexShrink: 0 }}>
-          <Mascota especie={especie} perfil={perfil} paleta={paleta} ojos={ojos} tamano={96} titulo={`Tu mascota: ${nombre || ""}`} />
+          <Mascota especie={especie} perfil={perfil} paleta={paleta} ojos={ojos} tamano={96} animo="tranquila" titulo={`Tu mascota: ${nombre || ""}`} />
         </div>
         <div style={{ minWidth: 0, flex: 1 }}>
           {/* ── Nombre ── */}
@@ -198,7 +199,8 @@ export default function SeccionMascota({ perfil: perfilProp = null, completo = f
           <FilaMuestras etiqueta="Su color" items={PALETAS_MASCOTA} valor={paleta} onElegir={elegirColor} attr="data-color" />
           {/* Los ojos solo se eligen en las mascotas dibujadas por código; las
               ilustradas llevan sus ojos fijos (y se aclaran solos en pelajes oscuros). */}
-          {!esIlustrada(especie) && (
+          {/* Las marionetas tienen los ojos dibujados: todavía no cambian de color. */}
+          {!esIlustrada(especie) && !tieneMarioneta(especie) && (
             <FilaMuestras etiqueta="Sus ojos" items={OJOS_MASCOTA} valor={ojos} onElegir={elegirOjos} attr="data-ojos" />
           )}
 

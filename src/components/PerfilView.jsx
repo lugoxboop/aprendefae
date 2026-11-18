@@ -157,7 +157,7 @@ export default function PerfilView({ seccion = null, onBack }) {
                   background: "rgba(29,53,87,0.55)", border: "1px solid rgba(248,249,250,0.14)", lineHeight: 0,
                 }}
               >
-                <AvatarEstudiante perfil={perfil} tamano={TAMANOS.perfil} />
+                <AvatarEstudiante perfil={perfil} tamano={TAMANOS.perfil} animo="tranquila" />
               </button>
               <p
                 data-apodo
