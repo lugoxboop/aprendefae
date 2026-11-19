@@ -5,10 +5,23 @@
  */
 export const EVENTO_PIEZA = "fae-aprender:pieza";
 
-export function avisarPieza(p, total) {
+/* La portada pide ir a una pieza (la escucha el motor). */
+export const EVENTO_IR = "fae-aprender:ir";
+
+export function pedirPieza(p) {
   if (typeof window === "undefined") return;
   try {
-    window.dispatchEvent(new CustomEvent(EVENTO_PIEZA, { detail: { p, total } }));
+    window.dispatchEvent(new CustomEvent(EVENTO_IR, { detail: { p } }));
+  } catch {
+    /* nada */
+  }
+}
+
+/* «alcanzada»: la pieza más lejana a la que ya llegó; hasta ahí la ruta deja saltar. */
+export function avisarPieza(p, total, alcanzada = p) {
+  if (typeof window === "undefined") return;
+  try {
+    window.dispatchEvent(new CustomEvent(EVENTO_PIEZA, { detail: { p, total, alcanzada } }));
   } catch {
     /* Sin CustomEvent: la ruta solo no se mueve. */
   }

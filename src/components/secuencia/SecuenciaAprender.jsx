@@ -1,7 +1,7 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { Eye, Hand, Lightbulb, Sparkles, Star } from "lucide-react";
 import { FAE } from "../../theme.js";
-import { avisarPieza } from "../aprender/eventos.js";
+import { EVENTO_IR, avisarPieza } from "../aprender/eventos.js";
 import { sonar } from "../aprender/sonidos.js";
 import { lanzarChispas } from "../aprender/chispas.js";
 import { tituloDePieza } from "../aprender/titulos.js";
@@ -222,8 +222,23 @@ export default function SecuenciaAprender({ temaId, piezas, final = "tema", onFi
   const bandaRef = useRef(null);
 
   useEffect(() => { guardar(temaId, estado); }, [temaId, estado]);
-  /* La portada del Aprender sigue la pieza en su ruta. */
-  useEffect(() => { avisarPieza(estado.p, piezas.length); }, [estado.p, piezas.length]);
+  /*
+   * La portada del Aprender sigue la pieza en su ruta, y puede pedir volver a
+   * una pieza ya alcanzada (nunca saltar adelante: el orden de las piezas es
+   * el del tema). Lo alcanzado vive en el mismo guardado de la pestaña.
+   */
+  const alcanzada = Math.max(estado.p, estado.alcanzada ?? 0);
+  useEffect(() => { avisarPieza(estado.p, piezas.length, alcanzada); }, [estado.p, piezas.length, alcanzada]);
+  useEffect(() => {
+    const oir = (e) => {
+      const k = Number(e.detail?.p);
+      if (!Number.isInteger(k) || k < 0 || k >= piezas.length || k === estado.p || k > alcanzada) return;
+      sonar(k < estado.p ? "vuelve" : "avanza");
+      irA({ ...estado, p: k, s: 0, alcanzada }, k < estado.p ? "atras" : "adelante");
+    };
+    window.addEventListener(EVENTO_IR, oir);
+    return () => window.removeEventListener(EVENTO_IR, oir);
+  }); // eslint-disable-line react-hooks/exhaustive-deps
 
   const pieza = piezas[estado.p];
   const pantalla = pantallaActual(estado, piezas);
@@ -300,9 +315,11 @@ export default function SecuenciaAprender({ temaId, piezas, final = "tema", onFi
         return;
       }
       case "pantalla":
-      case "pieza":
+      case "pieza": {
         sonar("avanza");
-        return irA(avanzar(estado, piezas), "adelante");
+        const nuevo = avanzar(estado, piezas);
+        return irA({ ...nuevo, alcanzada: Math.max(nuevo.p, estado.alcanzada ?? 0) }, "adelante");
+      }
       case "final":
         sonar("logro");
         return onFinal?.();

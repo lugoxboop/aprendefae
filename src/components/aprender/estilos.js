@@ -184,6 +184,40 @@ button.fae-ap-ruta__paso:hover { transform: translateY(-2px); border-color: rgba
 }
 @keyframes fae-ap-aro { 0% { opacity: .9; transform: scale(.9); } 100% { opacity: 0; transform: scale(1.45); } }
 
+.fae-ap-ruta__paso[data-estado="bloqueada"] { opacity: .55; border-style: dashed; cursor: default; }
+.fae-ap-oculto { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+/* La portada compacta (Política Fiscal): solo la identidad, para que la presentación quepa en la pantalla. */
+.fae-ap-portada--compacta { padding: 10px 12px; }
+.fae-ap-portada--compacta .fae-tema__pastilla { width: 40px !important; height: 40px !important; border-radius: 12px !important; }
+.fae-ap-portada--compacta .fae-ap-portada__fila { align-items: center; }
+.fae-ap-portada--compacta .fae-ap-portada__titulo { font-size: 16px; line-height: 21px; }
+.fae-ap-portada--compacta .fae-ap-portada__sub, .fae-ap-portada--compacta .fae-ap-portada__agua { display: none; }
+
+/*
+ * La barra de la presentación (Política Fiscal) se queda pegada abajo mientras
+ * la presentación está en pantalla: con la portada encima, «Siguiente» quedaba
+ * debajo del borde en el celular y parecía que no había cómo avanzar (Mateo,
+ * 19 nov.). Proyectada a pantalla completa no cambia nada.
+ */
+.fae-ap .fae-pres:not(:fullscreen) .fae-pres-barra {
+  position: sticky; bottom: 0; z-index: 6;
+  margin: 0 calc(-1 * clamp(16px, 3vw, 72px)) calc(-1 * var(--pres-hueco));
+  padding: calc(var(--pres-hueco) * 0.7) clamp(16px, 3vw, 72px) var(--pres-hueco);
+  background: linear-gradient(180deg, rgba(14,27,46,0.88), #0E1B2E 40%);
+  border-radius: 0 0 18px 18px;
+}
+
+/*
+ * Bruno, en el celular, se hace más chico y se pega al borde mientras hay un
+ * Aprender abierto: a 56 px y 16 px del borde tapaba el extremo derecho de
+ * «Siguiente» y de las opciones de la derecha, y un toque ahí abría a Bruno en
+ * vez de avanzar (análisis de usabilidad, 19 nov.). Fuera del Aprender, igual.
+ */
+@media (max-width: 760px) {
+  body:has(.fae-ap) .fae-bruno-boton { width: 44px !important; height: 44px !important; right: 4px !important; }
+  body:has(.fae-ap) .fae-bruno-boton svg { width: 30px; height: 30px; }
+}
+
 /* ───────── dentro de la secuencia ───────── */
 .fae-ap .fae-ap-pieza-nombre {
   margin: 0 0 6px; font-family: Sora, sans-serif; font-size: 15px; font-weight: 700; line-height: 20px; color: var(--ap-claro);
@@ -216,6 +250,7 @@ button.fae-ap-ruta__paso:hover { transform: translateY(-2px); border-color: rgba
   .fae-ap-portada__sub { font-size: 12.5px; line-height: 18px; }
   .fae-ap-avance { margin-top: 10px; }
   .fae-ap-ruta { margin: 8px -14px 0; padding: 4px 14px 4px; }
+  .fae-ap-ruta__paso { max-width: 172px; }
 }
 @media (min-width: 760px) {
   .fae-ap-portada { padding: 22px 24px 16px; }
