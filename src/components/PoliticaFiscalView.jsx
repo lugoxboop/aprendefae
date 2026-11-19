@@ -298,7 +298,7 @@ export default function PoliticaFiscalView({ modo = null, nodoInicial = null, on
             y a 375 px se lo comía. Sale en TODOS los anchos, no solo en móvil.
           */}
           {esClase ? (
-            <PortadaAprender materia={MATERIA} temaId={TEMA} piezas={ESCENAS_POLITICA_FISCAL.map((e) => ({ id: e.id, titulo: e.titulo }))} modo="secuencia" />
+            <PortadaAprender materia={MATERIA} temaId={TEMA} piezas={ESCENAS_POLITICA_FISCAL.map((e) => ({ id: e.id, titulo: e.titulo }))} modo="secuencia" compacta />
           ) : (
             <div className="fae-insignia-actividad"><ActivityBadge tipo={esClase ? APRENDER : HACER} size="sm" /></div>
           )}

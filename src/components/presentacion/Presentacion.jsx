@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { avisarPieza } from "../aprender/eventos.js";
+import { EVENTO_IR, avisarPieza } from "../aprender/eventos.js";
 import { ChevronLeft, ChevronRight, Maximize2, Minimize2 } from "lucide-react";
 
 /*
@@ -349,7 +349,13 @@ export default function Presentacion({ escenas, clave, rotulo = "Presentación" 
   const { Componente } = escena;
 
   /* La portada del Aprender sigue la escena en su ruta. */
-  useEffect(() => { avisarPieza(i, n); }, [i, n]);
+  useEffect(() => { avisarPieza(i, n, n - 1); }, [i, n]);
+  /* En la presentación todas las escenas están abiertas: la ruta de la portada lleva a cualquiera. */
+  useEffect(() => {
+    const oir = (e) => { const k = Number(e.detail?.p); if (Number.isInteger(k) && k >= 0 && k < n) setI(k); };
+    window.addEventListener(EVENTO_IR, oir);
+    return () => window.removeEventListener(EVENTO_IR, oir);
+  }, [n]);
 
   return (
     <div

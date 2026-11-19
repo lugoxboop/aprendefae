@@ -1,13 +1,13 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { BookOpen, Check, Volume2, VolumeX } from "lucide-react";
+import { BookOpen, Check, Lock, Volume2, VolumeX } from "lucide-react";
 import { APRENDER, HACER, SUBJECTS, actividadesDeTipo, temasVisibles } from "../../data/subjects.js";
 import { PastillaTema, identidadDeTema, variablesDeTono } from "../shared/TarjetaTema.jsx";
 import { ESTILOS_APRENDER } from "./estilos.js";
 import { alCambiarSonido, ponerSonido, sonar, sonidoEncendido } from "./sonidos.js";
 import { lanzarChispas } from "./chispas.js";
-import { EVENTO_PIEZA } from "./eventos.js";
+import { EVENTO_PIEZA, pedirPieza } from "./eventos.js";
 
-export { EVENTO_PIEZA, avisarPieza } from "./eventos.js";
+export { EVENTO_PIEZA, EVENTO_IR, avisarPieza, pedirPieza } from "./eventos.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -59,7 +59,7 @@ const VENTANA_TOQUE_MS = 1600;
  * modo: "secuencia" (la pieza la avisa el motor), "lista" (piezas una debajo
  * de otra, con data-ap-pieza) o "auto" (lo decide mirando si hay anclas).
  */
-export default function PortadaAprender({ materia, temaId, piezas: piezasDadas = null, modo: modoPedido = "auto" }) {
+export default function PortadaAprender({ materia, temaId, piezas: piezasDadas = null, modo: modoPedido = "auto", compacta = false }) {
   const raiz = useRef(null);
   const ruta = useRef(null);
   const { tema, indice } = useMemo(() => datosDelTema(materia, temaId), [materia, temaId]);
@@ -79,6 +79,7 @@ export default function PortadaAprender({ materia, temaId, piezas: piezasDadas =
     setModo(zona?.querySelector("[data-ap-pieza]") ? "lista" : "secuencia");
   }, [modoPedido]);
   const [actual, setActual] = useState(0);
+  const [alcanzada, setAlcanzada] = useState(0);
   const [vistas, setVistas] = useState(() => new Set([0]));
   const [sonido, setSonido] = useState(() => sonidoEncendido());
 
@@ -164,6 +165,7 @@ export default function PortadaAprender({ materia, temaId, piezas: piezasDadas =
     const oir = (e) => {
       const p = Number(e.detail?.p) || 0;
       setActual(p);
+      setAlcanzada(Math.max(p, Number(e.detail?.alcanzada) || 0));
       setVistas((v) => (v.has(p) ? v : new Set(v).add(p)));
     };
     window.addEventListener(EVENTO_PIEZA, oir);
@@ -202,7 +204,8 @@ export default function PortadaAprender({ materia, temaId, piezas: piezasDadas =
     const lista = ruta.current;
     const li = lista?.children?.[actual];
     if (!lista || !li || lista.scrollWidth <= lista.clientWidth) return;
-    const destino = li.offsetLeft - 16;
+    /* Centrada: así se ve también la anterior, a la que se puede volver. */
+    const destino = Math.max(0, li.offsetLeft - (lista.clientWidth - li.offsetWidth) / 2);
     if (typeof lista.scrollTo === "function") lista.scrollTo({ left: destino, behavior: reducido() ? "auto" : "smooth" });
   }, [actual]);
 
@@ -210,6 +213,14 @@ export default function PortadaAprender({ materia, temaId, piezas: piezasDadas =
     const zona = raiz.current?.parentElement;
     const el = zona?.querySelector(`[data-ap-pieza="${pz.id}"]`);
     el?.scrollIntoView?.({ block: "start", behavior: reducido() ? "auto" : "smooth" });
+  };
+
+  /* En una secuencia: el motor salta a la pieza y la pantalla sube a la vista. */
+  const irASecuencia = (i) => {
+    if (i !== actual) pedirPieza(i);
+    const zona = raiz.current?.parentElement;
+    const motor = zona?.querySelector("[data-secuencia], .fae-pres");
+    motor?.scrollIntoView?.({ block: "start", behavior: reducido() ? "auto" : "smooth" });
   };
 
   const alternarSonido = (e) => {
@@ -231,7 +242,7 @@ export default function PortadaAprender({ materia, temaId, piezas: piezasDadas =
     : "Avanza a tu ritmo, una pieza a la vez.";
 
   return (
-    <section ref={raiz} className="fae-ap-portada" aria-label={`Aprender · Tema ${numero}`} data-ap-portada={temaId} style={variablesDeTono(tono)}>
+    <section ref={raiz} className={`fae-ap-portada${compacta ? " fae-ap-portada--compacta" : ""}`} aria-label={`Aprender · Tema ${numero}`} data-ap-portada={temaId} style={variablesDeTono(tono)}>
       <style>{ESTILOS_APRENDER}</style>
       <span className="fae-ap-portada__luz" aria-hidden="true" />
       <span className="fae-ap-portada__agua" aria-hidden="true">
@@ -258,7 +269,7 @@ export default function PortadaAprender({ materia, temaId, piezas: piezasDadas =
         </button>
       </div>
 
-      {total > 1 && (
+      {total > 1 && !compacta && (
         <>
           <div className="fae-ap-avance">
             <div
@@ -276,23 +287,34 @@ export default function PortadaAprender({ materia, temaId, piezas: piezasDadas =
 
           <ol ref={ruta} className="fae-ap-ruta" aria-label="Ruta del tema">
             {piezas.map((pz, i) => {
-              const estado = i === actual ? "actual" : (modo === "secuencia" ? i < actual : vistas.has(i)) ? "hecha" : "pendiente";
+              const estado = i === actual ? "actual" : (modo === "secuencia" ? i <= alcanzada : vistas.has(i)) ? "hecha" : "pendiente";
+              /* En una secuencia se salta solo a lo ya alcanzado; lo que falta lleva candado y no se ofrece como botón. */
+              const bloqueada = modo === "secuencia" && i > alcanzada;
               const contenido = (
                 <>
                   <span className="fae-ap-ruta__num" aria-hidden="true">
-                    {estado === "hecha" ? <Check size={16} strokeWidth={3} /> : i + 1}
+                    {bloqueada ? <Lock size={13} strokeWidth={2.6} /> : estado === "hecha" ? <Check size={16} strokeWidth={3} /> : i + 1}
                   </span>
                   <span className="fae-ap-ruta__texto">{pz.titulo}</span>
                 </>
               );
               return (
                 <li key={pz.id} aria-current={estado === "actual" ? "step" : undefined}>
-                  {modo === "lista" ? (
-                    <button type="button" className="fae-ap-ruta__paso" data-estado={estado} onClick={() => irA(pz)}>
+                  {bloqueada ? (
+                    <span className="fae-ap-ruta__paso" data-estado="bloqueada" title="Se abre al llegar">
+                      {contenido}
+                      <span className="fae-ap-oculto">, se abre al llegar</span>
+                    </span>
+                  ) : (
+                    <button
+                      type="button"
+                      className="fae-ap-ruta__paso"
+                      data-estado={estado}
+                      aria-label={`Pieza ${i + 1}: ${pz.titulo}${estado === "actual" ? " (estás aquí)" : ""}`}
+                      onClick={() => (modo === "lista" ? irA(pz) : irASecuencia(i))}
+                    >
                       {contenido}
                     </button>
-                  ) : (
-                    <span className="fae-ap-ruta__paso" data-estado={estado}>{contenido}</span>
                   )}
                 </li>
               );
