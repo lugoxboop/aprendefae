@@ -9,6 +9,7 @@
 - Antes de abrir nada: primero `orquestador/INDICE.md`, luego el buscador del canon (regla k).
 
 ## En qué estoy ahora
+- 2026-11-19 18:04 — Análisis de usabilidad de los Aprender (pedido de Mateo): ruta tocable, barra de Fiscal a la vista, Bruno sin tapar «Siguiente». PR #705 fusionado con su aprobación.
 - 2026-11-19 17:08 — Rediseño de TODOS los Aprender (Conta y Macro), pedido por Mateo: capa común src/components/aprender/ (portada con ruta del tema, tono por tema, botones con brillo, sonidos, festejos). PR #703 fusionado 2026-11-19 17:23 con aprobación de Mateo (tarjeta). Lo de Instagram/videos IA queda para después.
 - 2026-11-18 16:50 — Espacio recién creado. A la espera de la primera misión de Mateo.
 
