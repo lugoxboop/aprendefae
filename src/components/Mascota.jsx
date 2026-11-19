@@ -1,5 +1,5 @@
 import { cuerpoMascota, esIlustrada, dibujoIlustrado, tinteDe } from "../mascota/mascotas.js";
-import { svgMarioneta, tieneMarioneta, ANIMOS } from "../mascota/marionetas.js";
+import { svgMarioneta, tieneMarioneta, MOVIMIENTOS } from "../mascota/marionetas.js";
 import { asegurarEstiloMarioneta } from "../mascota/marioneta-estilo.js";
 
 /*
@@ -12,7 +12,8 @@ import { asegurarEstiloMarioneta } from "../mascota/marioneta-estilo.js";
  *
  * Las seis especies ya son MARIONETAS (src/mascota/marionetas.js): piezas
  * ilustradas que se mueven por ánimo. `animo` elige el movimiento
- * —tranquila, feliz, celebra, triste, racha— y por defecto es «quieta»: la pose
+ * —tranquila, feliz, celebra, triste, racha, y los festejos de cierre: colita,
+ * baila, canta, saltitos, saluda— y por defecto es «quieta»: la pose
  * neutra sin movimiento, para listas donde muchas mascotas a la vez cansan.
  * Si una especie no tuviera marioneta, cae al dibujo de cuerpoMascota().
  * Sin especie no pinta nada: un perfil sin mascota todavía usa el Avatar, no un
@@ -48,7 +49,7 @@ export default function Mascota({ especie, perfil, puestos, paleta, ojos, tamano
        un filtro idéntico, y el HTML no cambia entre un pintado y otro. */
     const busto = encuadre ? encuadre === "busto" : tamano <= 100;
     const { viewBox, inner } = svgMarioneta(esp, { tinte: tinteDe(pal), uid: `${esp}-${pal || "natural"}`, busto, puestos: pst });
-    const mov = ANIMOS.includes(animo) ? animo : "quieta";
+    const mov = MOVIMIENTOS.includes(animo) ? animo : "quieta";
     return (
       <svg
         width={tamano}

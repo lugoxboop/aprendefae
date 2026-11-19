@@ -4,6 +4,7 @@ import { FAE } from "../../../theme.js";
 import { barajar } from "../../../utils/barajar.js";
 import { porcentaje } from "../../../data/politicaFiscal.js";
 import { Pulsos } from "../corazon/juego.jsx";
+import MascotaFestejo from "../../shared/MascotaFestejo.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -206,6 +207,8 @@ export default function Memorama({ pares, Marco, rotulo, titulo, acento, onCompl
         })}
       </div>
 
+      {/* La mascota festeja (pedido de Mateo, 19-nov): este cierre es propio y no pasa por la pantalla de resumen. */}
+      {terminado && <div style={{ marginTop: "18px" }}><MascotaFestejo /></div>}
       {terminado && (
         <div className="fae-cz-entrar" role="status" style={{ marginTop: "16px", padding: "15px 17px", borderRadius: "16px", background: "rgba(42,157,143,0.09)", border: `1px solid ${FAE.teal}55` }}>
           <p style={{ margin: "0 0 4px", fontFamily: "Sora, sans-serif", fontSize: "11px", fontWeight: 700, letterSpacing: "0.14em", color: "rgba(248,249,250,0.55)" }}>
