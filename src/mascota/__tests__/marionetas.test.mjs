@@ -84,3 +84,44 @@ test("★ busto y cuerpo entero caben en la proporción del recuadro (140 × 150
     }
   }
 });
+
+/*
+ * LOS ACCESORIOS: cada uno que se vende tiene cómo ponerse, sus piezas existen,
+ * y puesto encima no rompe el recuadro.
+ */
+import { ACCESORIOS_META } from "../mascotas.js";
+import { ACCESORIOS_MARIONETA, PIEZAS_ACCESORIO, chocaCon } from "../accesorios-marioneta.js";
+import { PRECIO_ACCESORIO } from "../../cristales/cristales.js";
+
+test("★ todo accesorio de la tienda tiene precio, se pone en la marioneta y sus piezas existen", () => {
+  assert.deepEqual(ACCESORIOS_META.map((a) => a.id).sort(), Object.keys(PRECIO_ACCESORIO).sort());
+  for (const { id } of ACCESORIOS_META) {
+    const A = ACCESORIOS_MARIONETA[id];
+    assert.ok(A, `${id} no sabe ponerse`);
+    for (const pt of A.partes) {
+      assert.ok(PIEZAS_ACCESORIO[pt.pieza], `${id}: falta ${pt.pieza} en PIEZAS_ACCESORIO`);
+      assert.ok(existsSync(fileURLToPath(new URL(`../../../public/mascotas/accesorios/${pt.pieza}.webp`, import.meta.url))), `${id}: falta ${pt.pieza}.webp`);
+    }
+  }
+});
+
+test("★ puesto en cada especie, el accesorio se pinta y el recuadro sigue en 140 × 150", () => {
+  for (const { id: esp } of ESPECIES) {
+    for (const { id } of ACCESORIOS_META) {
+      for (const busto of [true, false]) {
+        const r = svgMarioneta(esp, { puestos: [id], busto });
+        assert.match(r.inner, new RegExp(`mta-acc-${id}"`), `${esp}: no se pinta ${id}`);
+        const [, , w, h] = r.viewBox.split(" ").map(Number);
+        assert.ok(Math.abs(w / h - 140 / 150) < 0.01, `${esp}/${id}: ${w}×${h}`);
+        assert.doesNotMatch(r.inner, /NaN|undefined/, `${esp}/${id}: coordenada rota`);
+      }
+    }
+    assert.doesNotMatch(svgMarioneta(esp, { puestos: ["no-existe"] }).inner, /mta-acc/);
+  }
+});
+
+test("★ dos sombreros no se llevan a la vez; un sombrero y unas gafas, sí", () => {
+  assert.deepEqual(chocaCon("pirata", ["gorro", "gafas", "capa"]), ["gorro"]);
+  assert.deepEqual(chocaCon("gafas_sol", ["gorro", "gafas"]), ["gafas"]);
+  assert.deepEqual(chocaCon("medalla", ["traje", "bufanda"]), []);
+});

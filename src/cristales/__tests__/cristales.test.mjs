@@ -37,12 +37,19 @@ test("los precios del cliente son los de la 0035, uno por uno", () => {
   assert.ok(/when 1 then/.test(sql) === false, "el nivel I no puede tener precio en la base");
 });
 
-test("los precios de los accesorios del cliente son los de la 0165, uno por uno", () => {
-  assert.deepEqual(PRECIO_ACCESORIO, { gorro: 60, gafas: 40, bufanda: 45, mono: 50, bigote: 35 });
-  const sql = migracion("0165_mascota_accesorios.sql");
-  for (const [clave, precio] of Object.entries(PRECIO_ACCESORIO)) {
-    assert.ok(new RegExp(`when '${clave}'\\s+then ${precio}\\b`).test(sql), `la 0165 debe cobrar ${precio} por ${clave}`);
+test("los precios de los accesorios del cliente son los de la base: 0165 los cinco primeros, 0169 todos", () => {
+  const primeros = { gorro: 60, gafas: 40, bufanda: 45, mono: 50, bigote: 35 };
+  for (const [clave, precio] of Object.entries(primeros)) assert.equal(PRECIO_ACCESORIO[clave], precio, `${clave} no puede cambiar de precio`);
+  const sql65 = migracion("0165_mascota_accesorios.sql");
+  for (const [clave, precio] of Object.entries(primeros)) {
+    assert.ok(new RegExp(`when '${clave}'\\s+then ${precio}\\b`).test(sql65), `la 0165 debe cobrar ${precio} por ${clave}`);
   }
+  const sql69 = migracion("0169_mascota_accesorios_nuevos.sql");
+  for (const [clave, precio] of Object.entries(PRECIO_ACCESORIO)) {
+    assert.ok(new RegExp(`when '${clave}'\\s+then ${precio}\\b`).test(sql69), `la 0169 debe cobrar ${precio} por ${clave}`);
+  }
+  const enSql = [...sql69.matchAll(/when '([a-z_]+)'/g)].map((m) => m[1]).sort();
+  assert.deepEqual(enSql, Object.keys(PRECIO_ACCESORIO).sort(), "la 0169 y el cliente venden lo mismo");
 });
 
 test("accesorios: comprados, puestos (solo los comprados) y los tres estados", () => {

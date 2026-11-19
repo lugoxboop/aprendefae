@@ -9,7 +9,7 @@ import MeshGradientBackground from "../backgrounds/MeshGradientBackground.jsx";
 import Entrada, { EstiloEntrada, entrada } from "../shared/Entrada.jsx";
 import { useAuth } from "../../auth/AuthProvider.jsx";
 import { marcarVisitada } from "../../tienda/novedades.js";
-import { mascotaDe, ACCESORIOS_META } from "../../mascota/mascotas.js";
+import { mascotaDe, ACCESORIOS_META, ZONAS_ACCESORIO } from "../../mascota/mascotas.js";
 import {
   FUENTES, comprarAccesorio, estadoDeAccesorio, faltanParaAccesorio, precioDeAccesorio, saldoDe,
 } from "../../cristales/cristales.js";
@@ -79,6 +79,7 @@ const RUBRO = {
 const PIE_RUBRO = { fontSize: "12.5px", lineHeight: 1.45, color: "rgba(248,249,250,0.5)", margin: "0 0 12px" };
 
 /* Dos columnas a cualquier ancho del teléfono: a 320 cada celda queda en 136 px. */
+const ZONA = { fontFamily: "Sora, sans-serif", fontSize: "12.5px", fontWeight: 600, color: "rgba(248,249,250,0.68)", margin: "0 0 8px" };
 const REJILLA = { display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: "10px" };
 
 /*
@@ -177,7 +178,11 @@ function Celda({ figura, titulo, pie, estado, children, ...resto }) {
  * La celda de un accesorio. Arriba va la MASCOTA DEL ESTUDIANTE con ese
  * accesorio puesto: se vende para su mascota, así que se enseña sobre ella —no
  * un icono suelto— para que vea exactamente cómo le queda antes de comprar.
+ * Lo de la cabeza, la cara y el cuello se ve en busto (de cerca); lo de la
+ * espalda, de cuerpo entero: una capa en busto no se ve. El conejo es la
+ * excepción del cuello: sus orejas llenan el busto y el pecho queda fuera.
  */
+const verDeCerca = (zona, especie) => zona === "cabeza" || zona === "cara" || (zona === "cuello" && especie !== "conejo");
 function CeldaAccesorio({ meta, perfil, onComprar, comprando }) {
   const estado = estadoDeAccesorio(perfil, meta.id);
   const alcanza = estado === "alcanzable";
@@ -186,7 +191,8 @@ function CeldaAccesorio({ meta, perfil, onComprar, comprando }) {
     <Celda
       data-accesorio={meta.id}
       estado={estado}
-      figura={<Mascota especie={especie} paleta={paleta} ojos={ojos} puestos={[meta.id]} tamano={72} />}
+      figura={<Mascota especie={especie} paleta={paleta} ojos={ojos} puestos={[meta.id]} tamano={72}
+        encuadre={verDeCerca(meta.zona, especie) ? "busto" : "cuerpo"} />}
       titulo={meta.nombre}
       pie={estado === "comprado"
         ? <YaEsTuyo />
@@ -409,9 +415,16 @@ export default function TiendaView({ onBack, onComprarAccesorio = comprarAccesor
               <p style={PIE_RUBRO}>
                 Para tu mascota. Lo que compres es tuyo para siempre; se lo pones y se lo quitas desde «Mi avatar».
               </p>
-              <div data-accesorios style={{ ...REJILLA, marginBottom: "30px" }}>
-                {ACCESORIOS_META.map((a) => (
-                  <CeldaAccesorio key={a.id} meta={a} perfil={perfil} onComprar={comprarElAccesorio} comprando={comprando} />
+              <div data-accesorios style={{ marginBottom: "30px" }}>
+                {ZONAS_ACCESORIO.map((z) => (
+                  <section key={z.id} data-zona-accesorio={z.id} style={{ marginBottom: "16px" }}>
+                    <h3 style={ZONA}>{z.nombre}</h3>
+                    <div style={REJILLA}>
+                      {ACCESORIOS_META.filter((a) => a.zona === z.id).map((a) => (
+                        <CeldaAccesorio key={a.id} meta={a} perfil={perfil} onComprar={comprarElAccesorio} comprando={comprando} />
+                      ))}
+                    </div>
+                  </section>
                 ))}
               </div>
             </Entrada>

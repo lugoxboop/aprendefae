@@ -1,6 +1,6 @@
-2026-11-18 19:49 (hora Bogotá)
-- Mascotas más grandes (pedido de Mateo): recuadro ajustado a cada mascota y busto hasta 100 px; perfil 112 px, tarjeta 150 px — PR abierto
-- Mascotas animadas: las 6 especies como marionetas con 5 ánimos y 7 pelajes — PR abierto (rama erwin/mascotas-animadas)
+2026-11-19 11:47 (hora Bogotá)
+- Accesorios de mascotas (pedido de Mateo): 25 accesorios ilustrados puestos sobre las 6 marionetas y en la tienda por grupos; migración 0169 solo suma precios — PR abierto (rama erwin/accesorios-mascotas)
+- Mascotas más grandes (#698) y mascotas animadas (#696): terminado — fusionados
 - #556 ranking a 320 sin nombres: terminado — #563 fusionado y en producción
 - Listos para que Miku fusione (PASA de Levi + CI verde): pila #564 → #575 → #590 → #600 (en ese orden; #600 sube la migración 0153); #580 y luego #598 (va encima); #573, #529, #581, #582
 - #576 pasos tras el Haz y Repaso de piezas de Aprender: PR #600 con PASA (reversión de la 0153 escrita y probada)
