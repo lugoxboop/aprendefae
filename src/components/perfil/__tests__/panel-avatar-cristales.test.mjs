@@ -59,13 +59,14 @@ function montar({ perfil = PERFIL } = {}) {
 
 const pulsar = async (el) => { await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); }); };
 
-test("la cabecera del perfil muestra la mascota del estudiante a 96 px, y tocarla edita el perfil", () => {
+test("la cabecera del perfil muestra la mascota del estudiante a 112 px y en busto, y tocarla edita el perfil", () => {
   w.localStorage.clear();
   const m = montar();
   try {
     const svg = m.caja.querySelector("[data-abrir-avatar] svg[data-mascota]");
     assert.equal(svg.dataset.mascota, mascotaDe(PERFIL).especie);
-    assert.equal(svg.getAttribute("width"), "96");
+    assert.equal(svg.getAttribute("width"), "112");
+    assert.equal(svg.style.overflow, "hidden", "en busto: cabeza y hombros, recortado");
     assert.match(m.caja.querySelector("[data-abrir-avatar]").getAttribute("aria-label"), /Editar tu perfil/);
   } finally { m.desmontar(); }
 });
