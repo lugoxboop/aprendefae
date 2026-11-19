@@ -30,6 +30,7 @@ import { useCompletadas, nodosDe } from "../hacer/completadas.js";
 import { registrarActividadCompletada } from "../fp/registrarActividad.js";
 import { useAuth } from "../auth/AuthProvider.jsx";
 import { SUBJECTS, APRENDER, HACER, clasificacionDe, actividadesDeTipo, nombreDeActividad } from "../data/subjects.js";
+import PortadaAprender from "./aprender/PortadaAprender.jsx";
 
 /*
  * Política Monetaria — "La Sala de Máquinas". Dos mitades:
@@ -132,13 +133,17 @@ export default function PoliticaMonetariaView({ modo = null, nodoInicial = null,
             tocó para entrar. En la cabecera competía por el ancho con el título,
             y a 375 px se lo comía. Sale en TODOS los anchos, no solo en móvil.
           */}
-          <div className="fae-insignia-actividad"><ActivityBadge tipo={esAprender ? APRENDER : HACER} size="sm" /></div>
+          {esAprender ? (
+            <PortadaAprender materia={MATERIA} temaId={TEMA} piezas={PIEZAS.map(({ pieza }) => ({ id: pieza.id, titulo: pieza.titulo }))} modo="lista" />
+          ) : (
+            <div className="fae-insignia-actividad"><ActivityBadge tipo={esAprender ? APRENDER : HACER} size="sm" /></div>
+          )}
 
           {esAprender && (
             <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
               {PIEZAS.map(({ pieza, Escena, Exploracion }, k) => (
-                <section key={pieza.id} data-pieza={pieza.id}>
-                  <p style={{ ...sectionLabel, marginBottom: "10px" }}>PIEZA {k + 1} DE {PIEZAS.length}</p>
+                <section key={pieza.id} data-pieza={pieza.id} data-ap-pieza={pieza.id}>
+                  <p style={{ ...sectionLabel, color: `var(--ap-claro, ${FAE.teal})`, marginBottom: "10px" }}>PIEZA {k + 1} DE {PIEZAS.length}</p>
                   <CuatroCapas pieza={pieza} Escena={Escena} Exploracion={Exploracion} />
                 </section>
               ))}

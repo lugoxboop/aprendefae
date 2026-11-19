@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { avisarPieza } from "../aprender/eventos.js";
 import { ChevronLeft, ChevronRight, Maximize2, Minimize2 } from "lucide-react";
 
 /*
@@ -155,7 +156,7 @@ const CSS_PRESENTACION = `
  * título —a 1024×768 tapaba «prestado»—; a pantalla completa no está.
  */
 .fae-pres:not(:fullscreen) .fae-pres-cabeza { padding-right: 160px; }
-.fae-pres-num { font-family: Sora, sans-serif; font-size: var(--pres-min); font-weight: 700; letter-spacing: 0.14em; color: #E9C46A; margin: 0; }
+.fae-pres-num { font-family: Sora, sans-serif; font-size: var(--pres-min); font-weight: 700; letter-spacing: 0.14em; color: var(--ap-claro, #E9C46A); margin: 0; }
 .fae-pres-titulo { font-family: Sora, sans-serif; font-size: var(--pres-titulo); font-weight: 700; letter-spacing: -0.02em; line-height: 1.08; margin: 0; }
 /* Crece hasta llenar, pero nunca por debajo de su contenido: si no cabe, la escena se desplaza en vez de pisar la barra. */
 .fae-pres-cuerpo { flex: 1 0 auto; display: flex; flex-direction: column; justify-content: center; }
@@ -167,14 +168,15 @@ const CSS_PRESENTACION = `
   border: var(--pres-borde) solid rgba(248,249,250,0.6); background: transparent; color: var(--pres-tinta);
 }
 .fae-pres-boton:disabled { opacity: 0.35; cursor: default; }
-.fae-pres-siguiente { background: #E9C46A; border-color: #E9C46A; color: #0E1B2E; }
+/* En un Aprender con portada, el tono del tema (aprender/estilos.js); sin ella, el ámbar de siempre. */
+.fae-pres-siguiente { background: var(--ap-sig-fondo, #E9C46A); border-color: var(--ap-sig-borde, #E9C46A); color: #0E1B2E; box-shadow: var(--ap-sig-sombra, none); }
 .fae-pres-puntos { display: flex; gap: 0.45em; }
 .fae-pres-punto {
   width: 2.1em; height: 2.1em; border-radius: 999px; cursor: pointer;
   font-family: Sora, sans-serif; font-weight: 700; font-size: var(--pres-min);
   border: var(--pres-borde) solid rgba(248,249,250,0.6); background: transparent; color: var(--pres-tinta);
 }
-.fae-pres-punto[aria-current="step"] { background: var(--pres-tinta); color: #0E1B2E; }
+.fae-pres-punto[aria-current="step"] { background: var(--ap-sig-fondo, var(--pres-tinta)); border-color: var(--ap-claro, var(--pres-tinta)); color: #0E1B2E; }
 /* La ayuda va la última y es lo único que cede: si no cabe, se parte ella, no la fila de botones. */
 .fae-pres-ayuda { flex: 1 1 9em; min-width: 0; text-align: right; font-size: var(--pres-min); color: var(--pres-tinta-2); margin: 0; }
 .fae-pres :focus-visible { outline: max(3px, 0.45vh) solid #E9C46A; outline-offset: 3px; }
@@ -346,6 +348,9 @@ export default function Presentacion({ escenas, clave, rotulo = "Presentación" 
 
   const { Componente } = escena;
 
+  /* La portada del Aprender sigue la escena en su ruta. */
+  useEffect(() => { avisarPieza(i, n); }, [i, n]);
+
   return (
     <div
       ref={escenario}
@@ -367,7 +372,7 @@ export default function Presentacion({ escenas, clave, rotulo = "Presentación" 
       </div>
 
       <nav className="fae-pres-barra" aria-label="Navegación de la presentación">
-        <button type="button" className="fae-pres-boton" onClick={anterior} disabled={i === 0}>
+        <button type="button" className="fae-pres-boton fae-ap-ant" data-ap-sonido="vuelve" onClick={anterior} disabled={i === 0}>
           <ChevronLeft size="1.1em" aria-hidden="true" /> Anterior
         </button>
         <div className="fae-pres-puntos">
@@ -386,7 +391,9 @@ export default function Presentacion({ escenas, clave, rotulo = "Presentación" 
         </div>
         <button
           type="button"
-          className="fae-pres-boton fae-pres-siguiente"
+          className="fae-pres-boton fae-pres-siguiente fae-ap-sig"
+          data-ap-sonido="avanza"
+          data-ap-sin-flecha
           onClick={siguiente}
           disabled={!textoSiguiente}
           aria-label={textoSiguiente ? `Siguiente: ${textoSiguiente}` : "No hay más"}

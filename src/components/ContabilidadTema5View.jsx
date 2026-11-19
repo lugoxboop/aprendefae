@@ -39,6 +39,8 @@ import LoQueElEjemploNoTrae from "./mecanicas/libros/t5/LoQueElEjemploNoTrae.jsx
 import { PIEZA_LO_QUE_EL_EJEMPLO_NO_TRAE } from "../data/contabilidadT5_n6.js";
 import AQueCuentaVa from "./mecanicas/libros/t5/AQueCuentaVa.jsx";
 import { N7 } from "../data/contabilidadT5_n7.js";
+import PortadaAprender from "./aprender/PortadaAprender.jsx";
+import { rutaDe } from "./aprender/titulos.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -144,15 +146,19 @@ export default function ContabilidadTema5View({ modo = null, nodoInicial = null,
           </div>
 
           {recompensa}
-          <div className="fae-insignia-actividad"><ActivityBadge tipo={esAprender ? APRENDER : HACER} size="sm" /></div>
+          {esAprender ? (
+            <PortadaAprender materia={MATERIA} temaId={TEMA} piezas={rutaDe(PIEZAS.map((x) => x.pieza))} modo={"lista"} />
+          ) : (
+            <div className="fae-insignia-actividad"><ActivityBadge tipo={esAprender ? APRENDER : HACER} size="sm" /></div>
+          )}
 
           {esAprender ? (
             <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
               {PIEZAS.map(({ pieza, Pieza }, k) => {
                 if (Pieza) {
                   return (
-                    <div key={pieza.id}>
-                      <p style={{ fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700, letterSpacing: "0.12em", color: FAE.ambar, margin: "0 0 10px" }}>
+                    <div key={pieza.id} data-ap-pieza={pieza.id}>
+                      <p style={{ fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700, letterSpacing: "0.12em", color: "var(--ap-claro, #E9C46A)", margin: "0 0 10px" }}>
                         PIEZA {k + 1} DE {PUBLICADAS}
                       </p>
                       <Pieza pieza={pieza} rotulo={rotulo} />
@@ -161,8 +167,8 @@ export default function ContabilidadTema5View({ modo = null, nodoInicial = null,
                 }
                 const { Capa2, Exploracion, Capa4, FiguraFinal } = ESCENAS_TEMA5[pieza.id];
                 return (
-                  <div key={pieza.id}>
-                    <p style={{ fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700, letterSpacing: "0.12em", color: FAE.ambar, margin: "0 0 10px" }}>
+                  <div key={pieza.id} data-ap-pieza={pieza.id}>
+                    <p style={{ fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700, letterSpacing: "0.12em", color: "var(--ap-claro, #E9C46A)", margin: "0 0 10px" }}>
                       PIEZA {k + 1} DE {PUBLICADAS}
                     </p>
                     <CuatroCapas pieza={pieza} Capa2={Capa2} Exploracion={EXPLORACION_C4_T5[pieza.id] ?? Exploracion} Capa4={Capa4} FiguraFinal={FiguraFinal} rotulo={rotulo} />

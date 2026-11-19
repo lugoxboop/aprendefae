@@ -58,14 +58,21 @@ export const CSS_SALA = `
  * Un panel de la sala. Es el contenedor con bisel que comparten las tres
  * piezas: borde doble, esquinas redondeadas y un rótulo grabado arriba.
  */
-export function Panel({ rotulo, titulo, children, acento = FAE.teal, style }) {
+export function Panel({ rotulo, titulo, children, acento, style }) {
+  /*
+   * Dentro de un Aprender con portada (aprender/estilos.js) la tarjeta toma el
+   * tono del tema por variables; fuera, el respaldo es el de siempre. Un
+   * acento pedido a propósito (el coral de una alarma) no se pisa.
+   */
+  const colorRotulo = acento ?? `var(--ap-rotulo, ${FAE.teal})`;
   return (
     <section
+      className="fae-panel"
       style={{
         borderRadius: "20px",
-        background: "linear-gradient(160deg, rgba(29,53,87,0.34), rgba(10,20,34,0.62))",
-        border: "1px solid rgba(248,249,250,0.14)",
-        boxShadow: "inset 0 1px 0 rgba(248,249,250,0.08)",
+        background: "var(--ap-panel-fondo, linear-gradient(160deg, rgba(29,53,87,0.34), rgba(10,20,34,0.62)))",
+        border: "1px solid var(--ap-panel-borde, rgba(248,249,250,0.14))",
+        boxShadow: "var(--ap-panel-sombra, inset 0 1px 0 rgba(248,249,250,0.08))",
         padding: "clamp(14px, 2.2vw, 20px)",
         ...style,
       }}
@@ -76,7 +83,7 @@ export function Panel({ rotulo, titulo, children, acento = FAE.teal, style }) {
             <p
               style={{
                 /* Jerarquía (src/estilo/jerarquia.js): el rótulo dice dónde estás, a 12 px. */
-                ...ROTULO, color: acento, margin: "0 0 6px",
+                ...ROTULO, color: colorRotulo, margin: "0 0 6px",
               }}
             >
               {rotulo}

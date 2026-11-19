@@ -35,6 +35,8 @@ import QueSeDebita from "./mecanicas/libros/tema6/QueSeDebita.jsx";
 import { T6_ACT4 } from "../data/contabilidadT6Act4.js";
 import ProvisionPorEdades from "./mecanicas/libros/tema6/ProvisionPorEdades.jsx";
 import { T6_ACT6 } from "../data/contabilidadT6Act6.js";
+import PortadaAprender from "./aprender/PortadaAprender.jsx";
+import { rutaDe } from "./aprender/titulos.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -132,15 +134,19 @@ export default function ContabilidadTema6View({ modo = null, nodoInicial = null,
           </div>
 
           {recompensa}
-          <div className="fae-insignia-actividad"><ActivityBadge tipo={esAprender ? APRENDER : HACER} size="sm" /></div>
+          {esAprender ? (
+            <PortadaAprender materia={MATERIA} temaId={TEMA} piezas={rutaDe(PIEZAS.map((x) => x.pieza))} modo={"lista"} />
+          ) : (
+            <div className="fae-insignia-actividad"><ActivityBadge tipo={esAprender ? APRENDER : HACER} size="sm" /></div>
+          )}
 
           {esAprender ? (
             <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
               {PIEZAS.map(({ pieza }, k) => {
                 const { Capa2, Exploracion, Capa4, FiguraFinal } = ESCENAS_TEMA6[pieza.id];
                 return (
-                  <div key={pieza.id}>
-                    <p style={{ fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700, letterSpacing: "0.12em", color: FAE.ambar, margin: "0 0 10px" }}>
+                  <div key={pieza.id} data-ap-pieza={pieza.id}>
+                    <p style={{ fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700, letterSpacing: "0.12em", color: "var(--ap-claro, #E9C46A)", margin: "0 0 10px" }}>
                       PIEZA {k + 1} DE {PUBLICADAS}
                     </p>
                     <CuatroCapas pieza={pieza} Capa2={Capa2} Exploracion={Exploracion} Capa4={Capa4} FiguraFinal={FiguraFinal} rotulo={rotulo} />

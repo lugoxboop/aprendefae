@@ -41,6 +41,8 @@ import { ESCENAS_TEMA3 } from "./mecanicas/libros/tema3/escenasTema3.jsx";
 import SecuenciaAprender from "./secuencia/SecuenciaAprender.jsx";
 import { PIEZAS_SECUENCIA_T3, TEMA_SECUENCIA_T3 } from "./mecanicas/libros/tema3/secuencia/index.js";
 import { secuenciaT3Activa } from "../data/banderasT3.js";
+import PortadaAprender from "./aprender/PortadaAprender.jsx";
+import { rutaDe } from "./aprender/titulos.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -138,7 +140,11 @@ export default function ContabilidadTema3View({ modo = null, nodoInicial = null,
           </div>
 
           {recompensa}
-          <div className="fae-insignia-actividad"><ActivityBadge tipo={esAprender ? APRENDER : HACER} size="sm" /></div>
+          {esAprender ? (
+            <PortadaAprender materia={MATERIA} temaId={TEMA} piezas={secuenciaT3Activa() ? rutaDe(PIEZAS_SECUENCIA_T3) : rutaDe(PIEZAS.map((x) => x.pieza))} modo={secuenciaT3Activa() ? "secuencia" : "lista"} />
+          ) : (
+            <div className="fae-insignia-actividad"><ActivityBadge tipo={esAprender ? APRENDER : HACER} size="sm" /></div>
+          )}
 
           {esAprender && secuenciaT3Activa() ? (
             /* Detrás de la bandera (banderasT3.js): las cuatro piezas en SecuenciaAprender, sin tocarlo. */
@@ -150,8 +156,8 @@ export default function ContabilidadTema3View({ modo = null, nodoInicial = null,
               {PIEZAS.map(({ pieza }, k) => {
                 const { Capa2, Exploracion, Capa4 } = ESCENAS_TEMA3[pieza.id];
                 return (
-                  <div key={pieza.id}>
-                    <p style={{ fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700, letterSpacing: "0.12em", color: FAE.ambar, margin: "0 0 10px" }}>
+                  <div key={pieza.id} data-ap-pieza={pieza.id}>
+                    <p style={{ fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700, letterSpacing: "0.12em", color: "var(--ap-claro, #E9C46A)", margin: "0 0 10px" }}>
                       PIEZA {k + 1} DE {PUBLICADAS}
                     </p>
                     <CuatroCapas pieza={pieza} Capa2={Capa2} Exploracion={Exploracion} Capa4={Capa4} rotulo="INGRESOS, GASTOS Y AJUSTES · APRENDER" />

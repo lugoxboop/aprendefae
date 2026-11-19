@@ -30,6 +30,7 @@ import SecuenciaAprender from "./secuencia/SecuenciaAprender.jsx";
 import { PIEZAS_SECUENCIA_T2 } from "./mecanicas/libros/t2/secuenciaT2.jsx";
 import { T2_APRENDER_EN_SECUENCIA } from "../data/contabilidadT2Secuencia.js";
 import { NavigationContext } from "../navigation.js";
+import PortadaAprender from "./aprender/PortadaAprender.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -154,7 +155,11 @@ export default function CuentasDebeHaberView({ modo = null, nodoInicial = null, 
           </div>
 
           {/* La insignia vive con el contenido, no en la cabecera: a 375 px se comía el título. */}
-          <div className="fae-insignia-actividad"><ActivityBadge tipo={esAprender ? APRENDER : HACER} size="sm" /></div>
+          {esAprender ? (
+            <PortadaAprender materia={MATERIA} temaId={TEMA} modo="auto" />
+          ) : (
+            <div className="fae-insignia-actividad"><ActivityBadge tipo={esAprender ? APRENDER : HACER} size="sm" /></div>
+          )}
 
           {/* En el mismo hueco del árbol que la página vieja: apagada, ni los id de React cambian. «Ir a Hacer» lleva al camino de Hacer de T2. */}
           {esAprender && T2_APRENDER_EN_SECUENCIA ? (
@@ -164,7 +169,7 @@ export default function CuentasDebeHaberView({ modo = null, nodoInicial = null, 
               {PIEZAS_APRENDER.map((pieza, k) => {
                 const { Escena, Exploracion, Capa2, Capa4 } = ESCENAS[pieza.id];
                 return (
-                  <section key={pieza.id} data-pieza={pieza.id}>
+                  <section key={pieza.id} data-pieza={pieza.id} data-ap-pieza={pieza.id}>
                     <p style={{ ...sectionLabel, marginBottom: "10px" }}>PIEZA {k + 1} DE {PIEZAS_APRENDER.length}</p>
                     <CuatroCapas pieza={pieza} Escena={Escena} Exploracion={Exploracion} Capa2={Capa2} Capa4={Capa4} rotulo="EL LIBRO MAYOR · APRENDER" />
                   </section>

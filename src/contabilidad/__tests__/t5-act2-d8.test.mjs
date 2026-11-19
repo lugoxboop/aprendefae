@@ -116,8 +116,12 @@ test("★★★ D8: la partida real, sin inyectar nada, baraja: el orden varía 
 
 /* ═══════════ SIN `mezclar`: LO DE MAIN ═══════════ */
 
-/* La huella del recorrido de T5 Act2 y T6 Act2 (Célula B) sin `mezclar`, tomada con el código de main (efa2501e). */
-const HUELLA_MAIN_MESA = "52409dd20e558d0abb3bafc93b36299a1732d24ce80ca80696e54d07091d782a";
+/*
+ * La huella del recorrido de T5 Act2 y T6 Act2 (Célula B) sin `mezclar`, tomada con el código de main (efa2501e).
+ * Retomada por Magno (#703): el Panel compartido lleva la clase fae-panel y sus colores por variable con el
+ * respaldo de siempre. Comprobado: con el marco.jsx de main sale la huella vieja. CierreConMesa no se tocó.
+ */
+const HUELLA_MAIN_MESA = "4ef116fb40d1b8876c161f80dda91dccb91f3349a0633a8c476e0b773e75918f";
 test("★★★ sin la prop `mezclar`, CierreConMesa pinta exactamente lo de main (T5 Act2 y T6 Act2, paso a paso)", async () => {
   assert.equal(await recorridoMesa(), HUELLA_MAIN_MESA);
   await con(h(CierreConDiario, { ...MARCO, onCompletar: () => {}, mezclar: null }), async (caja) => {

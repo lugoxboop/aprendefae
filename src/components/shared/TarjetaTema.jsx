@@ -54,6 +54,22 @@ const IDENTIDAD = {
   "pensamiento-estrategico/pensamiento-sistemico": { tono: "indigo", Glifo: Network },
   "pensamiento-estrategico/modelo-iceberg": { tono: "cielo", Glifo: Mountain },
   "pensamiento-estrategico/fuerzas-porter": { tono: "rosa", Glifo: Swords },
+  /*
+   * Contabilidad, fijos (Magno, 19 nov., rediseño de los Aprender). Por
+   * posición le tocaban ámbar a T3 y menta a T4, y en esta materia el ámbar
+   * es el HABER y el teal (que la menta imita) es el DEBE: un tema pintado de
+   * «haber» confunde justo donde se enseña el haber. Aquí ninguno los usa.
+   */
+  "contabilidad/introduccion-contabilidad": { tono: "violeta" },
+  "contabilidad/cuentas-debe-haber": { tono: "cielo" },
+  "contabilidad/ingresos-gastos-y-caja": { tono: "rosa" },
+  "contabilidad/efectivo-caja-menor-bancos": { tono: "indigo" },
+  "contabilidad/activos-financieros": { tono: "lima" },
+  "contabilidad/cuentas-por-cobrar": { tono: "violeta" },
+  "contabilidad/inventarios-periodico": { tono: "cielo" },
+  "contabilidad/inventarios-permanente": { tono: "rosa" },
+  "contabilidad/inventarios-descuentos-nic2": { tono: "indigo" },
+  "contabilidad/repaso-capitulo-5": { tono: "lima" },
 };
 
 export function identidadDeTema(materia, tema, indice = 0) {

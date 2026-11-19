@@ -1,5 +1,10 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
+import { Eye, Hand, Lightbulb, Sparkles, Star } from "lucide-react";
 import { FAE } from "../../theme.js";
+import { avisarPieza } from "../aprender/eventos.js";
+import { sonar } from "../aprender/sonidos.js";
+import { lanzarChispas } from "../aprender/chispas.js";
+import { tituloDePieza } from "../aprender/titulos.js";
 import { Panel } from "../mecanicas/salaDeControl/marco.jsx";
 import { Pulsos } from "../mecanicas/corazon/juego.jsx";
 import {
@@ -55,8 +60,17 @@ export const BOTON_NAV = {
   fontWeight: 600, cursor: "pointer", boxSizing: "border-box",
 };
 const NAV_DESACTIVADO = { background: "transparent", border: `2px solid ${QUIETO}`, color: SECUNDARIO, cursor: "default" };
-const NAV_ANTERIOR = { background: "transparent", border: `2px solid ${NEUTRO}`, color: "#FFFFFF" };
-const NAV_SIGUIENTE = { background: NEUTRO, border: `2px solid ${NEUTRO}`, color: FAE.navy };
+/*
+ * Dentro de un Aprender con portada (aprender/estilos.js) los botones toman el
+ * tono del tema por variables; sin ella, el respaldo es el gris de siempre.
+ */
+const NAV_ANTERIOR = { background: "transparent", border: `2px solid var(--ap-ant-borde, ${NEUTRO})`, color: "#FFFFFF" };
+const NAV_SIGUIENTE = {
+  background: `var(--ap-sig-fondo, ${NEUTRO})`, border: `2px solid var(--ap-sig-borde, ${NEUTRO})`,
+  color: `var(--ap-sig-texto, ${FAE.navy})`, boxShadow: "var(--ap-sig-sombra, none)",
+};
+/* El ícono de cada fase, en su cejilla: mirar, tocar, entender, cerrar. */
+const ICONO_FASE = { apertura: Lightbulb, miralo: Eye, haz: Hand, cierre: Star };
 
 /* La clase que una figura pone a lo que revela un paso: un grupo, 240 ms, opacidad + 8 px (§8.2). */
 export const CLASE_PASO = "fae-sec-paso";
@@ -208,6 +222,8 @@ export default function SecuenciaAprender({ temaId, piezas, final = "tema", onFi
   const bandaRef = useRef(null);
 
   useEffect(() => { guardar(temaId, estado); }, [temaId, estado]);
+  /* La portada del Aprender sigue la pieza en su ruta. */
+  useEffect(() => { avisarPieza(estado.p, piezas.length); }, [estado.p, piezas.length]);
 
   const pieza = piezas[estado.p];
   const pantalla = pantallaActual(estado, piezas);
@@ -217,6 +233,32 @@ export default function SecuenciaAprender({ temaId, piezas, final = "tema", onFi
   const totalPasos = pasosTotales(pantalla);
   const accion = queHaceSiguiente(estado, piezas);
   const espera = accion === "espera";
+
+  /* Cuando un Haz se resuelve, «Siguiente» se enciende con un destello (y suena). */
+  const [listo, setListo] = useState(false);
+  const esperaAntes = useRef(espera);
+  useEffect(() => {
+    if (esperaAntes.current && !espera) {
+      setListo(true);
+      sonar("listo");
+      const t = setTimeout(() => setListo(false), 900);
+      esperaAntes.current = espera;
+      return () => clearTimeout(t);
+    }
+    esperaAntes.current = espera;
+    return undefined;
+  }, [espera]);
+
+  /* Llegar al cierre de una pieza se celebra: sello, arpegio y chispas. */
+  const sello = useRef(null);
+  useEffect(() => {
+    if (pantalla.tipo !== "cierre" || direccion !== "adelante") return undefined;
+    const t = setTimeout(() => {
+      sonar("logro");
+      lanzarChispas(sello.current, { cantidad: 22, fuerza: 1.1 });
+    }, 380);
+    return () => clearTimeout(t);
+  }, [clave]); // eslint-disable-line react-hooks/exhaustive-deps
 
 
   /* La apertura arma su figura UNA vez al llegar (§8.3): la figura recibe primeraVez. */
@@ -249,6 +291,7 @@ export default function SecuenciaAprender({ temaId, piezas, final = "tema", onFi
     if (pendiente.current) return pendiente.current();
     switch (accion) {
       case "paso": {
+        sonar("avanza");
         const nuevo = avanzar(estado, piezas);
         setEstado(nuevo);
         const n = dados + 1;
@@ -258,8 +301,10 @@ export default function SecuenciaAprender({ temaId, piezas, final = "tema", onFi
       }
       case "pantalla":
       case "pieza":
+        sonar("avanza");
         return irA(avanzar(estado, piezas), "adelante");
       case "final":
+        sonar("logro");
         return onFinal?.();
       default:
         return; // "espera": apagado, con su razón visible
@@ -270,6 +315,7 @@ export default function SecuenciaAprender({ temaId, piezas, final = "tema", onFi
     /* Un toque durante la transición solo la completa: el estado de este cierre ya no es el actual. */
     if (pendiente.current) return pendiente.current();
     if (!puedeRetroceder(estado)) return;
+    sonar("vuelve");
     irA(retroceder(estado, piezas), "atras");
   };
 
@@ -284,7 +330,13 @@ export default function SecuenciaAprender({ temaId, piezas, final = "tema", onFi
       requestAnimationFrame(() => requestAnimationFrame(() => t.focus({ preventScroll: true })));
     }
     const z = zona.current;
-    if (z && z.getBoundingClientRect().top < 0) {
+    /*
+     * También sube cuando la pantalla no cabe debajo de lo que tiene encima
+     * (la portada del Aprender, la cabecera): así la pantalla nueva queda
+     * entera a la vista y el bloque pegado no tapa la figura.
+     */
+    const caja = z?.getBoundingClientRect();
+    if (z && (caja.top < 0 || (caja.top > 8 && caja.bottom > window.innerHeight))) {
       z.scrollIntoView?.({ block: "start", behavior: conMovimientoReducido() ? "auto" : "smooth" });
     }
   }, [estado.p, estado.s]);
@@ -393,6 +445,7 @@ export default function SecuenciaAprender({ temaId, piezas, final = "tema", onFi
             Pieza {estado.p + 1} de {piezas.length}
           </p>
         )}
+        {tituloDePieza(pieza) && <p className="fae-ap-pieza-nombre" data-nombre-pieza>{tituloDePieza(pieza)}</p>}
 
         <div id={`${id}-contador`} data-contador style={{ display: "flex", alignItems: "center", minHeight: "28px" }}>
           <Pulsos total={total} hechos={estado.s} enCurso={estado.s + 1} etiqueta="Pantalla" />
@@ -409,7 +462,8 @@ export default function SecuenciaAprender({ temaId, piezas, final = "tema", onFi
             data-tipo={pantalla.tipo}
           >
             <div className={g(1)}>
-              <p data-cejilla style={{ margin: "4px 0 0", fontFamily: "Inter, sans-serif", fontSize: "12px", lineHeight: "16px", color: SECUNDARIO }}>
+              <p data-cejilla className="fae-ap-cejilla" style={{ margin: "4px 0 0", fontFamily: "Inter, sans-serif", fontSize: "12px", lineHeight: "16px", color: SECUNDARIO }}>
+                {ICONO_FASE[pantalla.tipo] && (() => { const I = ICONO_FASE[pantalla.tipo]; return <I size={13} strokeWidth={2.4} aria-hidden="true" focusable="false" />; })()}
                 {pantalla.fase ?? FASES[pantalla.tipo]}
               </p>
               <h2
@@ -421,10 +475,16 @@ export default function SecuenciaAprender({ temaId, piezas, final = "tema", onFi
               >
                 {pantalla.titular}
               </h2>
+              {pantalla.tipo === "cierre" && (
+                <p ref={sello} className="fae-ap-sello" data-sello-pieza>
+                  <span className="fae-ap-sello__icono" aria-hidden="true"><Sparkles size={14} strokeWidth={2.6} /></span>
+                  {piezas.length > 1 ? `¡Pieza ${estado.p + 1} de ${piezas.length} lista!` : "¡Pieza lista!"}
+                </p>
+              )}
             </div>
 
             <figure
-              className={`fae-sec-figura ${g(2) ?? ""}`}
+              className={`fae-sec-figura fae-ap-escenario ${g(2) ?? ""}`}
               aria-label={pantalla.nombreFigura}
               style={{ margin: "12px 0 0", position: "relative" }}
             >
@@ -478,8 +538,9 @@ export default function SecuenciaAprender({ temaId, piezas, final = "tema", onFi
         >
           <button
             type="button"
-            className="fae-sec-nav"
+            className="fae-sec-nav fae-ap-ant"
             data-anterior
+            data-ap-sonido="propio"
             aria-disabled={primeraPantalla ? "true" : undefined}
             aria-describedby={primeraPantalla ? `${id}-contador` : undefined}
             onClick={anterior}
@@ -489,8 +550,10 @@ export default function SecuenciaAprender({ temaId, piezas, final = "tema", onFi
           </button>
           <button
             type="button"
-            className="fae-sec-nav"
+            className="fae-sec-nav fae-ap-sig"
             data-siguiente={accion}
+            data-ap-sonido="propio"
+            data-ap-listo={listo ? "si" : undefined}
             aria-disabled={espera ? "true" : undefined}
             aria-describedby={espera ? `${id}-razon` : undefined}
             onClick={siguiente}

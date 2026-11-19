@@ -8,6 +8,7 @@ import PulsoMemoria from "./mecanicas/corazon/PulsoMemoria.jsx";
 import DiagnosticoEstetoscopio from "./mecanicas/corazon/Estetoscopio.jsx";
 import VideoYouTube from "./shared/VideoYouTube.jsx";
 import { clasificacionDe } from "../data/subjects.js";
+import PortadaAprender from "./aprender/PortadaAprender.jsx";
 
 /*
  * Mitad "Aprender" de Demanda Agregada: EL CORAZÓN DE LA ECONOMÍA.
@@ -94,7 +95,7 @@ export default function DemandaAgregadaAprenderView({ onBack }) {
             tocó para entrar. En la cabecera competía por el ancho con el título,
             y a 375 px se lo comía. Sale en TODOS los anchos, no solo en móvil.
           */}
-          <div className="fae-insignia-actividad"><ActivityBadge tipo={CLAS_CORAZON?.tipo} size="sm" /></div>
+          <PortadaAprender materia={MATERIA} temaId={TEMA} modo="lista" />
 
           {/* La idea que une las tres piezas, dicha una sola vez y arriba. */}
           <p style={{ fontSize: "15px", lineHeight: 1.6, color: "rgba(248,249,250,0.62)", margin: "0 0 30px" }}>
@@ -108,8 +109,8 @@ export default function DemandaAgregadaAprenderView({ onBack }) {
           </p>
 
           {/* ─────────────── Mecánica 1: la cámara y sus arterias ─────────────── */}
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: "0 0 8px" }}>
-            <p style={sectionLabel}>MECÁNICA 1</p>
+          <div data-ap-pieza="grifos-da" style={{ display: "flex", alignItems: "center", gap: "10px", margin: "0 0 8px", scrollMarginTop: "16px" }}>
+            <p style={{ ...sectionLabel, color: "var(--ap-claro, #2A9D8F)" }}>MECÁNICA 1</p>
             <ActivityBadge tipo={CLAS_CORAZON?.tipo} size="sm" />
           </div>
           <h2 style={h2}>El corazón de la economía</h2>
@@ -124,8 +125,8 @@ export default function DemandaAgregadaAprenderView({ onBack }) {
           <CorazonEconomia />
 
           {/* ─────────────── Mecánica 2: el compás ─────────────── */}
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: "48px 0 8px" }}>
-            <p style={sectionLabel}>MECÁNICA 2</p>
+          <div data-ap-pieza="pulso-memoria" style={{ display: "flex", alignItems: "center", gap: "10px", margin: "48px 0 8px", scrollMarginTop: "16px" }}>
+            <p style={{ ...sectionLabel, color: "var(--ap-claro, #2A9D8F)" }}>MECÁNICA 2</p>
             <ActivityBadge tipo={CLAS_PULSO?.tipo} size="sm" />
           </div>
           <h2 style={h2}>Pulso de memoria</h2>
@@ -136,8 +137,8 @@ export default function DemandaAgregadaAprenderView({ onBack }) {
           <PulsoMemoria />
 
           {/* ─────────────── Mecánica 3: los casos ─────────────── */}
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: "48px 0 8px" }}>
-            <p style={sectionLabel}>MECÁNICA 3</p>
+          <div data-ap-pieza="estetoscopio-casos" style={{ display: "flex", alignItems: "center", gap: "10px", margin: "48px 0 8px", scrollMarginTop: "16px" }}>
+            <p style={{ ...sectionLabel, color: "var(--ap-claro, #2A9D8F)" }}>MECÁNICA 3</p>
             <ActivityBadge tipo={CLAS_ESTETOSCOPIO?.tipo} size="sm" />
           </div>
           <h2 style={h2}>Diagnóstico con estetoscopio</h2>
