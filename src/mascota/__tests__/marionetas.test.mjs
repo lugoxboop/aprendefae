@@ -98,9 +98,10 @@ test("★ todo accesorio de la tienda tiene precio, se pone en la marioneta y su
   for (const { id } of ACCESORIOS_META) {
     const A = ACCESORIOS_MARIONETA[id];
     assert.ok(A, `${id} no sabe ponerse`);
-    for (const pt of A.partes) {
-      assert.ok(PIEZAS_ACCESORIO[pt.pieza], `${id}: falta ${pt.pieza} en PIEZAS_ACCESORIO`);
-      assert.ok(existsSync(fileURLToPath(new URL(`../../../public/mascotas/accesorios/${pt.pieza}.webp`, import.meta.url))), `${id}: falta ${pt.pieza}.webp`);
+    /* Las piezas de sus partes y, si va armado (audífonos), las del armado. */
+    for (const pieza of [...A.partes.map((pt) => pt.pieza), ...(A.piezasRig || [])]) {
+      assert.ok(PIEZAS_ACCESORIO[pieza], `${id}: falta ${pieza} en PIEZAS_ACCESORIO`);
+      assert.ok(existsSync(fileURLToPath(new URL(`../../../public/mascotas/accesorios/${pieza}.webp`, import.meta.url))), `${id}: falta ${pieza}.webp`);
     }
   }
 });

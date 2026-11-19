@@ -20,7 +20,7 @@
  * ═══════════════════════════════════════════════════════════════════════════
  */
 import { PIEZAS } from "./marionetas-piezas.js";
-import { piezasAccesorios } from "./accesorios-marioneta.js";
+import { piezasAccesorios, orejasTapadas } from "./accesorios-marioneta.js";
 
 export const ANIMOS = ["tranquila", "feliz", "celebra", "triste", "racha"];
 
@@ -227,7 +227,8 @@ export function svgMarioneta(especie, { tinte = null, uid = "m", busto = false, 
   defs += `<radialGradient id="mta-aura-${uid}" cx="50%" cy="55%" r="50%"><stop offset="0" stop-color="#ffb347" stop-opacity=".85"/><stop offset=".55" stop-color="#ff7a1a" stop-opacity=".35"/><stop offset="1" stop-color="#ff5a00" stop-opacity="0"/></radialGradient>`;
 
   const [bi, bd] = M.brazos || [];
-  const [oi, od] = C.orejas || [];
+  /* Con un sombrero que las tapa, las orejas quedan dentro: no se pintan. */
+  const [oi, od] = orejasTapadas(especie, puestos) ? [] : C.orejas || [];
   const acc = piezasAccesorios(especie, M, P, puestos);
   /*
    * Los brazos van detrás del torso, salvo en las especies con
