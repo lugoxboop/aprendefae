@@ -4,6 +4,7 @@ import { FAE } from "../../theme.js";
 import FiguraFacetada, { TAMANO as TAMANO_FIGURA } from "./FiguraFacetada.jsx";
 import { useAuthOpcional } from "../../auth/AuthProvider.jsx";
 import EstrellasActividad from "../opinion/EstrellasActividad.jsx";
+import MascotaFestejo from "./MascotaFestejo.jsx";
 import { escucharFP } from "../../fp/aviso.js";
 import { conTransicion } from "../../estilo/movimiento.js";
 import {
@@ -350,6 +351,13 @@ export default function PantallaResumen({ texto = null, onRepetir = null, sinRec
     >
       <div style={{ position: "relative", zIndex: 1, display: "grid", gap: "18px" }}>
       <p role="status" data-lector style={SOLO_LECTOR}>{sinResultado ? r.lectorSoloPuntos : r.lector}</p>
+
+      {/*
+        * La mascota del estudiante festeja que terminó (pedido de Mateo,
+        * 19-nov): en grande y arriba, lo primero que se ve. Siempre feliz;
+        * con un resultado bajo solo cambia la frase (MascotaFestejo.jsx).
+        */}
+      <MascotaFestejo key={partida.id} franja={r.exploratoria ? null : r.franja} />
 
       <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
         <h3

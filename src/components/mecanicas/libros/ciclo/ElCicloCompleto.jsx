@@ -10,6 +10,7 @@ import {
   HiloDeLaBalanza, Superficie, HojaDelDiario, CuadriculaDelMayor, HojaDelEstado,
 } from "./Escritorio.jsx";
 import { EtapaDiario, EtapaMayor, EtapaSaldos, EtapaEstado } from "./EtapasDelCiclo.jsx";
+import MascotaFestejo from "../../../shared/MascotaFestejo.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -190,6 +191,8 @@ export default function ElCicloCompleto({ onCompletar }) {
       <div className="fae-cc-entrar">
         <style>{CSS}</style>
         <EstilosDeVerbos />
+        {/* La mascota festeja (pedido de Mateo, 19-nov): cierre propio, fuera de la pantalla de resumen. */}
+        <div style={{ marginBottom: "16px" }}><MascotaFestejo /></div>
         <HiloDeLaBalanza {...hilo} />
 
         <div style={{ display: "flex", flexDirection: "column", gap: "9px" }}>

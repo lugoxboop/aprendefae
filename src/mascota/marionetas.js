@@ -24,6 +24,22 @@ import { piezasAccesorios } from "./accesorios-marioneta.js";
 
 export const ANIMOS = ["tranquila", "feliz", "celebra", "triste", "racha"];
 
+/*
+ * LOS FESTEJOS: cómo celebra la mascota al terminar una actividad. Todos con
+ * la cara feliz; cambia el movimiento y lo que flota alrededor (corazones,
+ * notas, estrellas, confeti). «celebra» es la voltereta de siempre.
+ *   colita    menea la cola y el cuerpo, con corazones
+ *   baila     baila de lado a lado, brazo arriba y brazo abajo, con notas
+ *   canta     se mece con la cabeza en alto y el brazo abierto, con notas
+ *   saltitos  saltitos rápidos de emoción, con estrellas
+ *   saluda    saluda con la patita y da un brinco, con corazones
+ *   celebra   voltereta en el aire, con confeti y estrellas
+ */
+export const FESTEJOS = ["colita", "baila", "canta", "saltitos", "saluda", "celebra"];
+
+/* Todo lo que se puede pedir como `animo` a <Mascota>. */
+export const MOVIMIENTOS = [...ANIMOS, ...FESTEJOS.filter((f) => !ANIMOS.includes(f))];
+
 /* Dónde va cada pieza, por especie. */
 export const MARIONETAS = {
   zorro: {
@@ -242,6 +258,37 @@ export function svgMarioneta(especie, { tinte = null, uid = "m", busto = false, 
     ].map(([t, x, y, c]) => (t === "r" ? `<rect x="${x}" y="${y}" width="13" height="8" fill="${c}"/>` : `<circle cx="${x}" cy="${y}" r="6" fill="${c}"/>`)).join("") +
     `</g>`;
 
+  /*
+   * Lo que flota en los festejos. Cada adorno va en dos <g>: el de fuera lo
+   * UBICA (atributo transform) y el de dentro lo MUEVE (CSS). Si fueran el
+   * mismo, la animación pisaría la ubicación y todos saldrían del origen.
+   */
+  const adorno = (x, y, cls, dibujo) => `<g transform="translate(${x} ${y})"><g class="${cls}">${dibujo}</g></g>`;
+  const NOTA = (c, k = 2) => `<g transform="scale(${k})" fill="${c}" stroke="#0E1B2E" stroke-width="3" stroke-linejoin="round"><ellipse cx="0" cy="0" rx="15" ry="11" transform="rotate(-22)"/><path d="M11 -4 L11 -62 Q34 -50 30 -26 Q24 -42 15 -44 L15 -4 Z"/></g>`;
+  const CORAZON = (c, s = 1) => `<path transform="scale(${s})" d="M0 14 C-26 -4 -20 -30 0 -16 C20 -30 26 -4 0 14 Z" fill="${c}" stroke="#0E1B2E" stroke-width="3" stroke-linejoin="round"/>`;
+  const ESTRELLA = (c, s = 1) => `<path transform="scale(${s})" d="M0 -22 L6 -7 L22 -7 L9 3 L14 19 L0 9 L-14 19 L-9 3 L-22 -7 L-6 -7 Z" fill="${c}" stroke="#0E1B2E" stroke-width="2.5" stroke-linejoin="round"/>`;
+  /* Las notas salen del lado derecho de la cabeza; los corazones, por encima. */
+  const [cw0, ch0] = P.piezas[C.base[0]] || [220, 220];
+  const bordes = (C.orejas || []).map(([n, x]) => [x, x + (P.piezas[n]?.[0] || 0)]);
+  const derCabeza = hx + Math.max(cw0, ...bordes.map((b) => b[1])) * hs;
+  const izqCabeza = hx + Math.min(0, ...bordes.map((b) => b[0])) * hs;
+  const medioCabeza = hy + ch0 * hs * 0.45;
+  const notas =
+    `<g class="mta-notas">` +
+    [[10, 0, "#FFD166", 2.2], [70, 40, "#8FE3D6", 1.8], [30, 70, "#FFB3D1", 2]]
+      .map(([dx, dy, c, k]) => adorno(Math.round(derCabeza + dx), Math.round(medioCabeza + dy), "mta-nota", NOTA(c, k))).join("") +
+    `</g>`;
+  const corazones =
+    `<g class="mta-corazones">` +
+    [[izqCabeza - 30, medioCabeza - 20, "#FF8FB8", 2.1], [300, hy - 30, "#FF6FA0", 2.6], [derCabeza + 30, medioCabeza - 10, "#FFB3D1", 1.9]]
+      .map(([x, y, c, s]) => adorno(Math.round(x), Math.round(y), "mta-corazon", CORAZON(c, s))).join("") +
+    `</g>`;
+  const estrellas =
+    `<g class="mta-estrellas">` +
+    [[70, 140, 1.3], [540, 120, 1.1], [40, 430, 0.9], [565, 400, 1.3], [150, -10, 1], [460, -30, 1.4]]
+      .map(([x, y, s], i) => adorno(x, y, "mta-estrella", ESTRELLA(i % 2 ? "#FFD166" : "#FFF3B0", s))).join("") +
+    `</g>`;
+
   const inner =
     `<defs>${defs}</defs>` +
     `<ellipse class="mta-aura" cx="300" cy="380" rx="300" ry="360" fill="url(#mta-aura-${uid})"/>` +
@@ -256,7 +303,7 @@ export function svgMarioneta(especie, { tinte = null, uid = "m", busto = false, 
     cabeza +
     fuego +
     `</g>` +
-    confeti;
+    confeti + estrellas + corazones + notas;
 
   /* Las cajas de los accesorios, en px del escenario: el encuadre las cuenta
      para que un sombrero alto o unas alas no se salgan del recuadro. */

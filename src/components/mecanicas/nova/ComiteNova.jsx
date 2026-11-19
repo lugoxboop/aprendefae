@@ -9,6 +9,7 @@ import EtapaLinea from "./EtapaLinea.jsx";
 import EtapaIncidencia from "./EtapaIncidencia.jsx";
 import EtapaComite from "./EtapaComite.jsx";
 import CierreNova from "./CierreNova.jsx";
+import MascotaFestejo from "../../shared/MascotaFestejo.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -217,6 +218,8 @@ export default function ComiteNova({ onCompletar }) {
     return (
       <div className="fae-cn-entrar">
         <style>{CSS}</style>
+        {/* La mascota festeja (pedido de Mateo, 19-nov): cierre propio, fuera de la pantalla de resumen. */}
+        <div style={{ marginBottom: "16px" }}><MascotaFestejo /></div>
 
         {/* El estado sigue arriba: la ficha dice que no se oculta en ninguna transición. */}
         <div style={{ marginBottom: "16px" }}>

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { ChevronLeft } from "lucide-react";
 import { FAE } from "../../theme.js";
 import Logo from "../Logo.jsx";
@@ -11,6 +12,7 @@ import { ID_REPASO, MENSAJES } from "../../repaso/repaso.js";
 import { repasoDe } from "../../repaso/repasos.js";
 import { useRepaso } from "../../repaso/useRepaso.js";
 import PartidaRepaso from "./PartidaRepaso.jsx";
+import MascotaFestejo from "../shared/MascotaFestejo.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -61,8 +63,11 @@ export default function RepasoView({ onBack, idRepaso = ID_REPASO }) {
   const REPASO = ACTIVIDADES_TRANSVERSALES.find((a) => a.id === idRepaso);
   const { materiaId } = repasoDe(idRepaso);
   const { cargando, error, datos, estado, previa, marcarHechoHoy } = useRepaso(idRepaso);
+  /* Si lo acaba de terminar aquí mismo (y no volvió más tarde): la frase festeja el repaso. */
+  const [recienTerminado, setRecienTerminado] = useState(false);
 
   const terminar = async (pct, ms, detalle) => {
+    setRecienTerminado(true);
     celebrar(REPASO.clasificacion.dificultad, idRepaso);
     /* Hecho hoy desde ya: el mensaje de «vuelve mañana» no espera a la red. */
     marcarHechoHoy();
@@ -122,7 +127,44 @@ export default function RepasoView({ onBack, idRepaso = ID_REPASO }) {
             <PartidaRepaso items={previa.items} historial={datos.historial} onTerminar={terminar} />
           )}
 
-          {!cargando && !error && !jugando && mensaje && (
+          {/*
+            REPASO HECHO: la mascota festeja (pedido de Mateo, 19-nov). Antes
+            aquí solo quedaba «Ya hiciste el repaso de hoy», sin nada que
+            celebrar. Recién terminado, festeja; si vuelve más tarde, lo
+            recibe igual de feliz y lo cita para mañana.
+          */}
+          {!cargando && !error && !jugando && estado === "hecho-hoy" && (
+            <section
+              data-repaso-hecho
+              style={{
+                marginTop: "6px", padding: "22px 18px 20px", borderRadius: "18px", textAlign: "center",
+                background: "rgba(10,20,34,0.55)", border: "1px solid rgba(248,249,250,0.14)",
+              }}
+            >
+              <MascotaFestejo
+                tamano={176}
+                frase={recienTerminado ? null : "¡Hola otra vez! Hoy ya cumpliste"}
+              />
+              <h2 style={{ margin: "18px 0 6px", fontFamily: "Sora, sans-serif", fontSize: "20px", fontWeight: 700, lineHeight: 1.25 }}>
+                {recienTerminado ? "¡Repaso de hoy completado!" : "Repaso de hoy, listo"}
+              </h2>
+              <p data-mensaje-repaso={estado} style={{ margin: "0 0 18px", fontSize: "15px", lineHeight: 1.6, color: "rgba(248,249,250,0.82)" }}>
+                {mensaje}
+              </p>
+              <button
+                type="button"
+                onClick={onBack}
+                style={{
+                  width: "100%", maxWidth: "360px", minHeight: "44px", padding: "13px 18px", borderRadius: "999px", cursor: "pointer", border: "none",
+                  background: FAE.teal, color: "#06202A", fontFamily: "Sora, sans-serif", fontSize: "14px", fontWeight: 700,
+                }}
+              >
+                Volver a {NOMBRE_MATERIA[materiaId] ?? "la materia"}
+              </button>
+            </section>
+          )}
+
+          {!cargando && !error && !jugando && mensaje && estado !== "hecho-hoy" && (
             <p data-mensaje-repaso={estado} style={{ margin: 0, fontSize: "15px", lineHeight: 1.6, color: "rgba(248,249,250,0.82)" }}>
               {mensaje}
             </p>
