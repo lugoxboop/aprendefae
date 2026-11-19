@@ -32,6 +32,8 @@ import { ESCENAS_INTRO } from "./mecanicas/libros/intro/escenasIntro.jsx";
 import JuegoConTutorial from "./mecanicas/libros/JuegoConTutorial.jsx";
 import SecuenciaAprender from "./secuencia/SecuenciaAprender.jsx";
 import { PIEZAS_T1_SECUENCIA, secuenciaActiva } from "./mecanicas/libros/intro/secuencia/piezasT1.js";
+import PortadaAprender from "./aprender/PortadaAprender.jsx";
+import { rutaDe } from "./aprender/titulos.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -165,7 +167,11 @@ export default function IntroContabilidadView({ modo = null, nodoInicial = null,
           </div>
 
           {recompensa}
-          <div className="fae-insignia-actividad"><ActivityBadge tipo={esAprender ? APRENDER : HACER} size="sm" /></div>
+          {esAprender ? (
+            <PortadaAprender materia={MATERIA} temaId={TEMA} piezas={secuenciaActiva() ? rutaDe(PIEZAS_T1_SECUENCIA) : rutaDe(PIEZAS_INTRO)} modo={secuenciaActiva() ? "secuencia" : "lista"} />
+          ) : (
+            <div className="fae-insignia-actividad"><ActivityBadge tipo={esAprender ? APRENDER : HACER} size="sm" /></div>
+          )}
 
           {esAprender && secuenciaActiva() ? (
             /* Lote 6: el Aprender en secuencia, por defecto desde el PASA de Shoko (#559). `?aprender=capas` devuelve las cuatro capas. */
@@ -189,10 +195,10 @@ export default function IntroContabilidadView({ modo = null, nodoInicial = null,
               {PIEZAS_INTRO.map((pieza, k) => {
                 const { Capa2, Exploracion, Capa4 } = ESCENAS_INTRO[pieza.id];
                 return (
-                  <div key={pieza.id}>
+                  <div key={pieza.id} data-ap-pieza={pieza.id}>
                     <p style={{
                       fontFamily: "Sora, sans-serif", fontSize: "12px", fontWeight: 700,
-                      letterSpacing: "0.12em", color: FAE.ambar, margin: "0 0 10px",
+                      letterSpacing: "0.12em", color: "var(--ap-claro, #E9C46A)", margin: "0 0 10px",
                     }}>
                       PIEZA {k + 1} DE {PIEZAS_INTRO.length}
                     </p>

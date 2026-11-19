@@ -25,6 +25,7 @@ import { useNodoEnRuta } from "./shared/useNodoEnRuta.js";
 import { useCompletadas, nodosDe } from "../hacer/completadas.js";
 import { registrarActividadCompletada } from "../fp/registrarActividad.js";
 import { useAuth } from "../auth/AuthProvider.jsx";
+import PortadaAprender from "./aprender/PortadaAprender.jsx";
 
 /*
  * Tema "Política Económica" (Macroeconomía), con dos mecánicas:
@@ -191,13 +192,17 @@ export default function PoliticaEconomicaView({ modo = null, nodoInicial = null,
           tocó para entrar. En la cabecera competía por el ancho con el título,
           y a 375 px se lo comía. Sale en TODOS los anchos, no solo en móvil.
         */}
-        <div className="fae-insignia-actividad"><ActivityBadge tipo={modo} size="sm" /></div>
+        {muestraAprender ? (
+          <PortadaAprender materia={MATERIA} temaId={TEMA} modo="lista" />
+        ) : (
+          <div className="fae-insignia-actividad"><ActivityBadge tipo={modo} size="sm" /></div>
+        )}
 
         {muestraAprender && (
         <>
         {/* ------------- Sala de control · Panel 1: el diagnóstico ------------- */}
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
-          <p style={sectionLabel}>MECÁNICA 1</p>
+        <div data-ap-pieza="tablero-fallas" style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px", scrollMarginTop: "16px" }}>
+          <p style={{ ...sectionLabel, color: "var(--ap-claro, #2A9D8F)" }}>MECÁNICA 1</p>
           <ActivityBadge tipo={CLAS_TABLERO?.tipo} size="sm" />
         </div>
         <h2 style={h2}>El tablero de fallas</h2>
@@ -208,8 +213,8 @@ export default function PoliticaEconomicaView({ modo = null, nodoInicial = null,
         <TableroDeFallas />
 
         {/* ------------ Sala de control · Panel 2: la demostración ------------ */}
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: "48px 0 8px" }}>
-          <p style={sectionLabel}>MECÁNICA 2</p>
+        <div data-ap-pieza="autorregulacion-intervencion" style={{ display: "flex", alignItems: "center", gap: "10px", margin: "48px 0 8px", scrollMarginTop: "16px" }}>
+          <p style={{ ...sectionLabel, color: "var(--ap-claro, #2A9D8F)" }}>MECÁNICA 2</p>
           <ActivityBadge tipo={CLAS_AUTORREGULACION?.tipo} size="sm" />
         </div>
         <h2 style={h2}>¿Autorregulación o intervención?</h2>
@@ -220,8 +225,8 @@ export default function PoliticaEconomicaView({ modo = null, nodoInicial = null,
         <Autorregulacion />
 
         {/* ------------ Sala de control · Panel 3: los mandos ------------ */}
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: "48px 0 8px" }}>
-          <p style={sectionLabel}>MECÁNICA 3</p>
+        <div data-ap-pieza="maquina-da-palancas" style={{ display: "flex", alignItems: "center", gap: "10px", margin: "48px 0 8px", scrollMarginTop: "16px" }}>
+          <p style={{ ...sectionLabel, color: "var(--ap-claro, #2A9D8F)" }}>MECÁNICA 3</p>
           <ActivityBadge tipo={CLAS_MAQUINA?.tipo} size="sm" />
         </div>
         <h2 style={h2}>La máquina de la DA y sus palancas</h2>

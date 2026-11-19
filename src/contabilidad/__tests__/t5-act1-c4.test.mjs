@@ -191,8 +191,11 @@ test("★★★ C4-1: no hay cifra que escribir, así que nada se califica antes
  * La huella del recorrido de T6 Act1 (Célula B) y T5 Act1 sin C4, tomada con el código de main (efa2501e).
  * Retomada por Erwin en #580: el cierre compartido (cifra neutra, «RESULTADO» a 12 px) y el «¿Cómo se juega?»
  * de 44 px cambian el marcado de TODAS las piezas, con o sin C4. FichasUnNivel no se tocó.
+ * Retomada por Magno (rediseño de los Aprender, 19 nov.): el Panel compartido lleva ahora la clase
+ * fae-panel y sus colores por variable con el respaldo de siempre. Comprobado: con el marco.jsx de
+ * main la huella vieja sigue saliendo igual; el único cambio es ese marcado. FichasUnNivel no se tocó.
  */
-const HUELLA_MAIN_FICHAS = "e01330b11637c0ea950525c2818817862f777108309fe7068a373610a1f5d7b2";
+const HUELLA_MAIN_FICHAS = "68c7b80a4eb2533fcf48e8a2d19a878a6f18df4843f2557603a79af296468a42";
 test("★★★ sin la prop `c4`, FichasUnNivel pinta exactamente lo de main (T6 Act1 y T5 Act1, paso a paso)", async () => {
   assert.equal(await recorridoFichas(), HUELLA_MAIN_FICHAS);
 });

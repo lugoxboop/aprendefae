@@ -31,7 +31,7 @@ const ROTULO_DEL_LIBRO = "Así lo dice el libro";
 
 const ROTULO_CAPA = {
   fontFamily: "Sora, sans-serif", fontSize: "11px", fontWeight: 700, letterSpacing: "0.14em",
-  color: FAE.teal, margin: "0 0 10px",
+  color: `var(--ap-rotulo, ${FAE.teal})`, margin: "0 0 10px",
 };
 
 /*
@@ -181,8 +181,12 @@ const BOTON_NAV = {
   fontWeight: 600, cursor: "pointer", boxSizing: "border-box",
 };
 const NAV_DESACTIVADO = { background: "transparent", border: `2px solid ${QUIETO}`, color: SECUNDARIO, cursor: "default" };
-const NAV_ANTERIOR = { background: "transparent", border: `2px solid ${NEUTRO}`, color: "#FFFFFF" };
-const NAV_SIGUIENTE = { background: NEUTRO, border: `2px solid ${NEUTRO}`, color: FAE.navy };
+/* En un Aprender con portada toman el tono del tema (aprender/estilos.js); sin ella, el gris de siempre. */
+const NAV_ANTERIOR = { background: "transparent", border: `2px solid var(--ap-ant-borde, ${NEUTRO})`, color: "#FFFFFF" };
+const NAV_SIGUIENTE = {
+  background: `var(--ap-sig-fondo, ${NEUTRO})`, border: `2px solid var(--ap-sig-borde, ${NEUTRO})`,
+  color: `var(--ap-sig-texto, ${FAE.navy})`, boxShadow: "var(--ap-sig-sombra, none)",
+};
 
 /* El punto de un término: la forma dice el estado (actual · visto · sin-ver). */
 function Punto({ estado }) {
@@ -413,6 +417,8 @@ function CapaUnoPaginada({ nombres, capa, capa2, rotuloCapa2 }) {
           <button
             type="button"
             data-anterior
+            className="fae-ap-ant"
+            data-ap-sonido="vuelve"
             disabled={actual === 0}
             onClick={() => ir(actual - 1)}
             style={{ ...BOTON_NAV, ...(actual === 0 ? NAV_DESACTIVADO : NAV_ANTERIOR) }}
@@ -422,6 +428,8 @@ function CapaUnoPaginada({ nombres, capa, capa2, rotuloCapa2 }) {
           <button
             type="button"
             data-siguiente
+            className="fae-ap-sig"
+            data-ap-sonido="avanza"
             data-continuar={ultimo ? "" : undefined}
             onClick={ultimo ? continuar : () => ir(actual + 1)}
             style={{ ...BOTON_NAV, ...NAV_SIGUIENTE }}

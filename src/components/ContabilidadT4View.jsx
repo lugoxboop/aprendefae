@@ -52,6 +52,8 @@ import { CSS_SLIDES_A2, piezaSlidesA2 } from "./t4/slides/A2.jsx";
 import { CSS_SLIDES_A3, piezaSlidesA3 } from "./t4/slides/A3.jsx";
 import { CSS_SLIDES_A4, piezaSlidesA4 } from "./t4/slides/A4.jsx";
 import { CSS_SLIDES_A5, piezaSlidesA5 } from "./t4/slides/A5.jsx";
+import PortadaAprender from "./aprender/PortadaAprender.jsx";
+import { rutaDe } from "./aprender/titulos.js";
 
 export { cifra, EntraOSaleDeCaja, SeMueveLaCajaMenor, ElArqueo, ConciliaLaCuenta, SeAsientaONo };
 
@@ -187,7 +189,11 @@ export default function ContabilidadT4View({ modo = null, nodoInicial = null, on
           </div>
 
           {recompensa}
-          <div className="fae-insignia-actividad"><ActivityBadge tipo={esAprender ? APRENDER : HACER} size="sm" /></div>
+          {esAprender ? (
+            <PortadaAprender materia={MATERIA} temaId={TEMA_T4} piezas={rutaDe(slides)} modo={"secuencia"} />
+          ) : (
+            <div className="fae-insignia-actividad"><ActivityBadge tipo={esAprender ? APRENDER : HACER} size="sm" /></div>
+          )}
 
           {esAprender ? (
             <div className="t4-sec" data-slides-t4>

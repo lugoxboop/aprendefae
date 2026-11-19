@@ -16,7 +16,7 @@ import AgujeroFiscal from "./mecanicas/tesoreria/AgujeroFiscal.jsx";
 import ExpansivaContractiva from "./mecanicas/tesoreria/ExpansivaContractiva.jsx";
 import DisenaPresupuesto from "./mecanicas/tesoreria/DisenaPresupuesto.jsx";
 import DeficitVsDeuda from "./mecanicas/tesoreria/DeficitVsDeuda.jsx";
-import ClasePoliticaFiscal from "./mecanicas/tesoreria/clase/ClasePoliticaFiscal.jsx";
+import ClasePoliticaFiscal, { ESCENAS_POLITICA_FISCAL } from "./mecanicas/tesoreria/clase/ClasePoliticaFiscal.jsx";
 import ComiteNova from "./mecanicas/nova/ComiteNova.jsx";
 import MesaDeJuntas from "./mecanicas/nova/MesaDeJuntas.jsx";
 import { MemoramaTesoreria, CobraGastaOPide } from "./mecanicas/bloques/cimientos.jsx";
@@ -27,6 +27,7 @@ import { useCompletadas, nodosDe } from "../hacer/completadas.js";
 import { registrarActividadCompletada } from "../fp/registrarActividad.js";
 import { useAuth } from "../auth/AuthProvider.jsx";
 import { SUBJECTS, APRENDER, HACER, clasificacionDe, actividadesDeTipo, desafioDe } from "../data/subjects.js";
+import PortadaAprender from "./aprender/PortadaAprender.jsx";
 
 /*
  * Política Fiscal — "La Tesorería Nacional". Dos mitades:
@@ -296,7 +297,11 @@ export default function PoliticaFiscalView({ modo = null, nodoInicial = null, on
             tocó para entrar. En la cabecera competía por el ancho con el título,
             y a 375 px se lo comía. Sale en TODOS los anchos, no solo en móvil.
           */}
-          <div className="fae-insignia-actividad"><ActivityBadge tipo={esClase ? APRENDER : HACER} size="sm" /></div>
+          {esClase ? (
+            <PortadaAprender materia={MATERIA} temaId={TEMA} piezas={ESCENAS_POLITICA_FISCAL.map((e) => ({ id: e.id, titulo: e.titulo }))} modo="secuencia" />
+          ) : (
+            <div className="fae-insignia-actividad"><ActivityBadge tipo={esClase ? APRENDER : HACER} size="sm" /></div>
+          )}
 
           {esClase && <ClasePoliticaFiscal />}
 
