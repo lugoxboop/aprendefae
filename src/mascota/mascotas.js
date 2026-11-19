@@ -128,6 +128,11 @@ export function irisDe(ojos) {
   return ojos && ojos !== "natural" && IRIS[ojos] ? IRIS[ojos] : "#241d17";
 }
 
+/** El tinte de una paleta elegida, o null con «natural» (el arte tal cual). */
+export function tinteDe(paleta) {
+  return paleta && paleta !== "natural" && TINTE[paleta] ? TINTE[paleta] : null;
+}
+
 /** Los tres tonos de una mascota. `natural` (o nada) devuelve el de la especie. */
 export function colorDe(especie, paleta) {
   if (paleta && paleta !== "natural" && TINTE[paleta]) return TINTE[paleta];

@@ -1,4 +1,5 @@
-2026-10-25 06:01 (hora Bogotá)
+2026-11-18 17:42 (hora Bogotá)
+- Mascotas animadas: las 6 especies como marionetas con 5 ánimos y 7 pelajes — PR abierto (rama erwin/mascotas-animadas)
 - #556 ranking a 320 sin nombres: terminado — #563 fusionado y en producción
 - Listos para que Miku fusione (PASA de Levi + CI verde): pila #564 → #575 → #590 → #600 (en ese orden; #600 sube la migración 0153); #580 y luego #598 (va encima); #573, #529, #581, #582
 - #576 pasos tras el Haz y Repaso de piezas de Aprender: PR #600 con PASA (reversión de la 0153 escrita y probada)

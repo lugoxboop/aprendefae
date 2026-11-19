@@ -1,0 +1,272 @@
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * LAS MARIONETAS — las mascotas ilustradas, despiezadas y con ánimo.
+ *
+ * Cada especie es un kit de piezas sueltas dibujado en Gemini (torso, cabeza,
+ * orejas, cola, brazos, piernas, ojos y bocas por ánimo). Aquí se dice DÓNDE va
+ * cada pieza; el movimiento lo pone marioneta.css. Como las piezas son sueltas,
+ * la mascota parpadea, mueve la cola, salta o baja las orejas sin redibujarse.
+ *
+ * Coordenadas: px del kit, sobre un escenario de 640 × 770 (viewBox -20 -65).
+ * El suelo está en y = 684 y el centro en x = 300. Cada pieza es
+ * [nombre, x, y] o [nombre, x, y, { espejo, escala }]. La cabeza tiene su propio
+ * marco (traslado y escala) y la cara se ubica sobre la cabeza.
+ *
+ * El color: las piezas teñibles se guardan dos veces, el pelaje en grises (_p)
+ * y lo fijo (_f). El pelaje pasa por un filtro feComponentTransfer que cambia
+ * cada gris por su tono en la rampa de la paleta (sombra → pelo → panza). Con
+ * «natural» se pinta la pieza original, sin filtro: el arte tal cual.
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+import { PIEZAS } from "./marionetas-piezas.js";
+
+export const ANIMOS = ["tranquila", "feliz", "celebra", "triste", "racha"];
+
+/* Dónde va cada pieza, por especie. */
+export const MARIONETAS = {
+  zorro: {
+    cola: ["cola", 360, 392],
+    piernas: [["pierna", 178, 520], ["pierna", 318, 520, { espejo: true }]],
+    brazos: [["brazo_d", 104, 352], ["brazo_i", 386, 352]],
+    torso: ["torso", 166, 300],
+    cabeza: {
+      en: [109, 52, 1.35],
+      orejas: [["oreja_i", 10, -82], ["oreja_d", 140, -82]],
+      base: ["cabeza", 0, 0],
+      tranquila: { ojos: [["ojo_i", 44, 84], ["ojo_d", 167, 84]], resto: [] },
+      feliz: [["feliz_i", 46, 104], ["feliz_d", 170, 104], ["boca_abierta", 94, 146]],
+      triste: [["triste_i", 42, 72], ["triste_d", 166, 71], ["boca_triste", 111, 186]],
+      racha: [["racha_i", 50, 86], ["racha_d", 173, 86], ["boca_sonrisa", 101, 150]],
+      lagrima: [56, 146],
+    },
+  },
+  gato: {
+    cola: ["cola", 350, 420],
+    piernas: [["pierna_i", 195, 525], ["pierna_d", 327, 525]],
+    brazos: [["brazo", 148, 385], ["brazo", 372, 385, { espejo: true }]],
+    torso: ["torso", 178, 360],
+    cabeza: {
+      en: [118, 110, 1.35],
+      orejas: [["oreja_i", 20, -75], ["oreja_d", 140, -75]],
+      base: ["cabeza", 0, 0],
+      tranquila: { ojos: [["ojo_i", 45, 90], ["ojo_d", 150, 90]], resto: [["boca_sonrisa", 96, 140]] },
+      feliz: [["feliz_i", 48, 100], ["feliz_d", 155, 100], ["boca_feliz", 96, 140]],
+      triste: [["triste_i", 42, 75], ["triste_d", 152, 75], ["boca_triste", 102, 140]],
+      racha: [["racha_i", 45, 85], ["racha_d", 152, 85], ["boca_sonrisa", 96, 140]],
+      lagrima: [190, 150],
+    },
+  },
+  perro: {
+    cola: ["cola", 380, 470],
+    brazos: [["brazo_i", 140, 432], ["brazo_d", 364, 432]],
+    torso: ["torso", 164, 400],
+    cabeza: {
+      en: [123, 125, 1.35],
+      orejas: [["oreja_i", -55, 10], ["oreja_d", 195, 10]],
+      base: ["cabeza", 0, 0],
+      tranquila: { ojos: [["ojo_i", 42, 80], ["ojo_d", 147, 80]], resto: [["boca_sonrisa", 84, 175]] },
+      feliz: [["feliz", 45, 95], ["feliz", 150, 95, { espejo: true }], ["boca_abierta", 88, 168]],
+      triste: [["triste_i", 45, 60], ["triste_d", 148, 60], ["boca_triste", 105, 182]],
+      racha: [["racha_i", 48, 78], ["racha_d", 150, 78], ["boca_racha", 84, 175]],
+      lagrima: [70, 140],
+    },
+  },
+  hamster: {
+    cola: ["cola", 380, 560],
+    piernas: [["pierna_i", 195, 520], ["pierna_d", 325, 520]],
+    brazos: [["brazo_i", 170, 470], ["brazo_d", 363, 470]],
+    torso: ["torso", 186, 440],
+    cabeza: {
+      en: [106, 200, 1.35],
+      orejas: [["oreja_i", 30, -15], ["oreja_d", 175, -15]],
+      base: ["cabeza", 0, 0],
+      tranquila: { ojos: [["ojo_i", 62, 68], ["ojo_d", 160, 68]], resto: [] },
+      feliz: [["feliz_i", 62, 85], ["feliz_d", 160, 85], ["boca_abierta", 97, 122]],
+      triste: [["triste_i", 58, 60], ["triste_d", 157, 60], ["boca_triste", 102, 122]],
+      racha: [["racha", 64, 75], ["boca_sonrisa", 98, 122]],
+      lagrima: [75, 125],
+    },
+  },
+  conejo: {
+    cola: ["cola", 340, 580],
+    brazos: [["brazo_i", 190, 515], ["brazo_d", 340, 515]],
+    torso: ["torso", 215, 490],
+    cabeza: {
+      en: [147, 250, 1.35],
+      orejas: [["oreja_i", 40, -150], ["oreja_d", 100, -150]],
+      base: ["cabeza", 0, 0],
+      tranquila: { ojos: [["ojo_i", 35, 60], ["ojo_d", 125, 60]], resto: [] },
+      feliz: [["feliz_i", 37, 75], ["feliz_d", 122, 75], ["boca_abierta", 60, 104]],
+      triste: [["triste_i", 38, 40], ["triste_d", 124, 58], ["boca_triste", 65, 140]],
+      racha: [["racha_i", 30, 58], ["racha_d", 118, 58], ["boca_sonrisa", 64, 104]],
+      lagrima: [140, 110],
+    },
+  },
+  huron: {
+    cola: ["cola", 330, 520, { escala: 0.65 }],
+    piernas: [["pierna_i", 198, 550], ["pierna_d", 308, 550]],
+    brazos: [["brazo_i", 180, 430], ["brazo_d", 341, 430]],
+    torso: ["torso", 207, 385],
+    cabeza: {
+      en: [163, 190, 1.35],
+      orejas: [["oreja_i", 0, -10], ["oreja_d", 132, -10]],
+      base: ["cabeza", 0, 0],
+      tranquila: { ojos: [], resto: [["cara_tranquila", 11, 50], ["boca_tranquila", 58, 118]] },
+      feliz: [["cara_feliz", 8, 50]],
+      triste: [["cara_triste", 5, 50]],
+      racha: [["cara_racha", 5, 50], ["boca_tranquila", 58, 118]],
+      lagrima: [40, 110],
+    },
+  },
+};
+
+const BASE = "/mascotas";
+const url = (esp, n, suf = "") => `${BASE}/${esp}/${n}${suf}.webp`;
+
+/* ── Color ─────────────────────────────────────────────────────────────── */
+const hex = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16) / 255);
+const mezcla = (a, b, t) => a.map((x, i) => x + (b[i] - x) * t);
+
+/*
+ * Las tres tablas (R, G, B) del filtro: para cada gris L de 0 a 1, su color.
+ * Los puntos de la rampa salen de la especie (dónde cae su sombra, su pelo y su
+ * panza) y los colores, de la paleta.
+ */
+export function tablasPelaje(especie, tinte) {
+  const r = PIEZAS[especie]?.rampa || [0.32, 0.46, 0.58, 0.9];
+  const fur = hex(tinte.fur), dark = hex(tinte.furDark), belly = hex(tinte.belly);
+  const deep = mezcla(dark, [0.08, 0.05, 0.04], 0.42);
+  const paradas = [
+    [0, [0.05, 0.03, 0.02]],
+    [r[0] * 0.7, mezcla(deep, [0, 0, 0], 0.3)],
+    [r[0], deep],
+    [r[1], dark],
+    [r[2], fur],
+    [Math.min(r[3], 0.999), belly],
+    [1, mezcla(belly, [1, 1, 1], 0.5)],
+  ];
+  const N = 48, t = [[], [], []];
+  for (let i = 0; i < N; i++) {
+    const L = i / (N - 1);
+    let k = 0;
+    while (k < paradas.length - 2 && L > paradas[k + 1][0]) k++;
+    const [l0, c0] = paradas[k], [l1, c1] = paradas[k + 1];
+    const c = mezcla(c0, c1, Math.min(1, Math.max(0, (L - l0) / (l1 - l0 || 1))));
+    for (let j = 0; j < 3; j++) t[j].push(+c[j].toFixed(3));
+  }
+  return t.map((x) => x.join(" "));
+}
+
+/* ── Dibujo ────────────────────────────────────────────────────────────── */
+export const tieneMarioneta = (especie) => Boolean(MARIONETAS[especie] && PIEZAS[especie]);
+
+/**
+ * El SVG interior de una marioneta.
+ *   especie  — id de ESPECIES
+ *   tinte    — {fur, furDark, belly} o null para «natural» (el arte original)
+ *   uid      — sufijo único del filtro (varias mascotas en una pantalla)
+ *   busto    — true encuadra cabeza y hombros: para tamaños chicos (filas del
+ *              ranking, amigos), donde el cuerpo entero deja la cara diminuta.
+ * Devuelve { viewBox, inner }. El ánimo NO va aquí: es una clase en el <svg>
+ * (mta-<animo>), así cambiar de ánimo no vuelve a pintar nada.
+ */
+export function svgMarioneta(especie, { tinte = null, uid = "m", busto = false } = {}) {
+  const M = MARIONETAS[especie];
+  const P = PIEZAS[especie];
+  if (!M || !P) return null;
+  const fid = `mta-pel-${uid}`;
+
+  const img = (n, x, y, o = {}) => {
+    const d = P.piezas[n];
+    if (!d) return "";
+    const s = o.escala || 1;
+    const w = d[0] * s, h = d[1] * s;
+    const capas = tinte && d[2]
+      ? `<image href="${url(especie, n, "_p")}" width="${w}" height="${h}" filter="url(#${fid})"/><image href="${url(especie, n, "_f")}" width="${w}" height="${h}"/>`
+      : `<image href="${url(especie, n)}" width="${w}" height="${h}"/>`;
+    const tr = o.espejo ? `translate(${x + w} ${y}) scale(-1 1)` : `translate(${x} ${y})`;
+    return `<g transform="${tr}">${capas}</g>`;
+  };
+  const pieza = (p) => (p ? img(p[0], p[1], p[2], p[3]) : "");
+  const grupo = (cls, contenido) => `<g class="${cls}">${contenido}</g>`;
+
+  const C = M.cabeza;
+  const [hx, hy, hs] = C.en;
+  const caraDe = (lista) => lista.map(pieza).join("");
+
+  let defs = "";
+  if (tinte) {
+    const [tr, tg, tb] = tablasPelaje(especie, tinte);
+    defs += `<filter id="${fid}" color-interpolation-filters="sRGB" x="0" y="0" width="100%" height="100%"><feComponentTransfer><feFuncR type="table" tableValues="${tr}"/><feFuncG type="table" tableValues="${tg}"/><feFuncB type="table" tableValues="${tb}"/></feComponentTransfer></filter>`;
+  }
+  defs += `<radialGradient id="mta-aura-${uid}" cx="50%" cy="55%" r="50%"><stop offset="0" stop-color="#ffb347" stop-opacity=".85"/><stop offset=".55" stop-color="#ff7a1a" stop-opacity=".35"/><stop offset="1" stop-color="#ff5a00" stop-opacity="0"/></radialGradient>`;
+
+  const [bi, bd] = M.brazos || [];
+  const [oi, od] = C.orejas || [];
+  const lag = C.lagrima ? `<g class="mta-lagrima">${img("lagrima", C.lagrima[0], C.lagrima[1])}</g>` : "";
+
+  const cabeza =
+    `<g class="mta-cabeza"><g transform="translate(${hx} ${hy}) scale(${hs})">` +
+    (oi ? grupo("mta-oreja-i", pieza(oi)) : "") +
+    (od ? grupo("mta-oreja-d", pieza(od)) : "") +
+    pieza(C.base) +
+    grupo("mta-cara mta-c-tranquila", grupo("mta-ojos", caraDe(C.tranquila.ojos)) + caraDe(C.tranquila.resto || [])) +
+    grupo("mta-cara mta-c-feliz", caraDe(C.feliz)) +
+    grupo("mta-cara mta-c-triste", caraDe(C.triste) + lag) +
+    grupo("mta-cara mta-c-racha", caraDe(C.racha)) +
+    `</g></g>`;
+
+  /* La llama, centrada sobre la cabeza. */
+  const ll = P.piezas.llama || [73, 89];
+  const fx = 300;
+  const chica = 73 / ll[0], grande = 110 / ll[0];
+  const fuego =
+    `<g class="mta-fuego">` +
+    `<g class="mta-llama-2">${img("llama", fx - 104, hy + 17 - ll[1] * chica, { escala: chica })}</g>` +
+    `<g class="mta-llama-3">${img("llama", fx + 31, hy + 17 - ll[1] * chica, { escala: chica })}</g>` +
+    `<g class="mta-llama-1">${img("llama", fx - 55, hy + 24 - ll[1] * grande, { escala: grande })}</g>` +
+    `<g class="mta-chispas" fill="#ffb02e"><circle cx="210" cy="60" r="5"/><circle cx="390" cy="80" r="4"/><circle cx="300" cy="20" r="4"/><circle cx="150" cy="200" r="3"/><circle cx="450" cy="230" r="4"/></g>` +
+    `</g>`;
+
+  const confeti =
+    `<g class="mta-confeti">` +
+    [
+      ["r", 80, 0, "#14b8a6"], ["r", 170, -20, "#f59e0b"], ["c", 250, 0, "#ef4444"], ["r", 330, -10, "#6366f1"],
+      ["c", 420, 0, "#22c55e"], ["r", 500, -30, "#ec4899"], ["r", 40, -40, "#f59e0b"], ["c", 540, -10, "#14b8a6"],
+      ["r", 290, -50, "#22c55e"], ["r", 130, -30, "#ef4444"],
+    ].map(([t, x, y, c]) => (t === "r" ? `<rect x="${x}" y="${y}" width="13" height="8" fill="${c}"/>` : `<circle cx="${x}" cy="${y}" r="6" fill="${c}"/>`)).join("") +
+    `</g>`;
+
+  const inner =
+    `<defs>${defs}</defs>` +
+    `<ellipse class="mta-aura" cx="300" cy="380" rx="300" ry="360" fill="url(#mta-aura-${uid})"/>` +
+    `<ellipse class="mta-sombra" cx="300" cy="684" rx="150" ry="18" fill="#000" opacity=".22"/>` +
+    `<g class="mta-todo">` +
+    (M.cola ? grupo("mta-cola", pieza(M.cola)) : "") +
+    (M.piernas || []).map(pieza).join("") +
+    (bi ? grupo("mta-brazo-i", pieza(bi)) : "") +
+    (bd ? grupo("mta-brazo-d", pieza(bd)) : "") +
+    grupo("mta-cuerpo", pieza(M.torso)) +
+    cabeza +
+    fuego +
+    `</g>` +
+    confeti;
+
+  return { viewBox: busto ? encuadreBusto(M, P) : "-20 -65 640 770", inner };
+}
+
+/* El recuadro de cabeza y hombros, en la proporción del <svg> (140 × 150). */
+function encuadreBusto(M, P) {
+  const C = M.cabeza;
+  const [hx, hy, hs] = C.en;
+  const [cw, ch] = P.piezas[C.base[0]];
+  const orejas = (C.orejas || []).map(([n, x, y]) => [x, y, x + (P.piezas[n]?.[0] || 0)]);
+  const arriba = hy + Math.min(0, ...orejas.map((o) => o[1])) * hs;
+  const izq = hx + Math.min(0, ...orejas.map((o) => o[0])) * hs;
+  const der = hx + Math.max(cw, ...orejas.map((o) => o[2])) * hs;
+  const abajo = hy + ch * hs;
+  const alto = Math.max(abajo - arriba + 110, (der - izq + 24) * (150 / 140));
+  const ancho = alto * (140 / 150);
+  const cx = (izq + der) / 2;
+  return `${Math.round(cx - ancho / 2)} ${Math.round(arriba - 12)} ${Math.round(ancho)} ${Math.round(alto)}`;
+}
