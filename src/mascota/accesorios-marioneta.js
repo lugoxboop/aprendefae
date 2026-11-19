@@ -46,7 +46,7 @@ export const ACCESORIOS_MARIONETA = {
   mago: { ranura: "sombrero", partes: [{ pieza: "mago", en: "coronilla", w: 1.0, p: [0.5, 0.86] }] },
   vaquero: { ranura: "sombrero", partes: [{ pieza: "vaquero", en: "coronilla", w: 1.08, p: [0.5, 0.82] }] },
   corona: { ranura: "sombrero", partes: [{ pieza: "corona", en: "coronilla", w: 0.78, p: [0.5, 0.62], dy: 0.04 }] },
-  casco: { ranura: "sombrero", partes: [{ pieza: "casco", en: "centro", w: 1.42, p: [0.5, 0.52] }] },
+  casco: { ranura: "sombrero", partes: [{ pieza: "casco", en: "centro", w: 1.42, p: [0.5, 0.52], dy: 0.05 }] },
   audifonos: { ranura: "sombrero", partes: [{ pieza: "audifonos", en: "coronilla", w: 1.12, p: [0.5, 0.06], dy: -0.02 }] },
   mono: { ranura: "lazo", partes: [{ pieza: "mono", en: "coronilla", w: 0.4, p: [0.5, 0.5], dx: 0.27, dy: 0.08 }] },
   /* ── la cara ── */
@@ -54,7 +54,7 @@ export const ACCESORIOS_MARIONETA = {
   gafas_sol: { ranura: "ojos", partes: [{ pieza: "gafas_sol", en: "ojos", w: 1.95, p: [0.5, 0.45] }] },
   antifaz: { ranura: "ojos", partes: [{ pieza: "antifaz", en: "ojos", w: 1.95, p: [0.5, 0.5] }] },
   parche: { ranura: "ojos", partes: [{ pieza: "parche", en: "ojo_d", w: 1.5, p: [0.7, 0.64] }] },
-  bigote: { ranura: "bigote", partes: [{ pieza: "bigote", en: "hocico", w: 1.1, p: [0.5, 0.3] }] },
+  bigote: { ranura: "bigote", partes: [{ pieza: "bigote", en: "hocico", w: 1.1, p: [0.5, 0.22] }] },
   /* ── cuello y pecho ── */
   bufanda: { ranura: "cuello", partes: [{ pieza: "bufanda", en: "cuello", w: 0.92, p: [0.5, 0.12] }] },
   collar: { ranura: "cuello", partes: [{ pieza: "collar", en: "cuello", w: 0.74, p: [0.5, 0.3], dy: 0.06 }] },
@@ -80,27 +80,83 @@ export const ACCESORIOS_MARIONETA = {
 const CAPA_DE_ANCLA = { coronilla: "cabeza", centro: "cabeza", ojos: "cabeza", ojo_d: "cabeza", hocico: "cabeza", cuello: "pecho", pecho: "pecho", espalda: "espalda" };
 
 /*
- * Lo que cada especie corrige a mano: el hocico (donde va el bigote, en
- * fracción del ancho y alto de la cabeza) y ajustes finos por accesorio
- * [dx, dy, escala] cuando la forma de la cabeza lo pide.
+ * LO QUE CADA ESPECIE CORRIGE A MANO (19-nov, Mateo: «no todos los animales
+ * miden lo mismo»). Las anclas ponen cada pieza en su sitio aproximado; aquí se
+ * afina por animal y por accesorio, auditado con la rejilla
+ * (scripts/mascota/rejilla-accesorios.mjs):
+ *   hocico      — dónde va el bigote: justo debajo de la nariz, en fracción
+ *                 del ancho y alto de la cabeza
+ *   coronilla   — dónde empieza el cráneo, en fracción del alto de la cabeza
+ *   tapaOrejas  — sombreros que tapan las orejas: con ellos puestos las orejas
+ *                 no se pintan (quedan dentro del gorro). Sin esto, las orejas
+ *                 altas del zorro y del gato asomaban por debajo del ala y el
+ *                 sombrero parecía flotar encima.
+ *   ajustes     — por accesorio [dx, dy, escala, giro]: corrimiento en veces
+ *                 el ancho del ancla, escala extra y giro en grados.
  */
-/* Perro y hámster tienen la cabeza más ancha que alta: el sombrero, un poco menor. */
-const SOMBREROS_CHICOS = Object.fromEntries(
-  ["gorro", "gorra", "pirata", "birrete", "mago", "vaquero", "corona"].map((k) => [k, [0, 0.02, 0.84]]),
-);
+const SOMBREROS = ["gorro", "gorra", "pirata", "birrete", "mago", "vaquero"];
 const ESPECIE = {
-  zorro: { hocico: [0.5, 0.6], coronilla: 0.1, ajustes: {} },
-  gato: { hocico: [0.49, 0.62], coronilla: 0.1, ajustes: {} },
-  perro: { hocico: [0.5, 0.72], coronilla: 0.08, ajustes: SOMBREROS_CHICOS },
-  hamster: { hocico: [0.5, 0.56], coronilla: 0.1, ajustes: SOMBREROS_CHICOS },
-  /* El conejo: el casco crece para que las orejas queden dentro de la burbuja. */
-  conejo: { hocico: [0.5, 0.52], coronilla: 0.1, ajustes: {
-    casco: [0, -0.15, 1.34],
-    /* Su cabeza tapa casi todo el pecho: lo del cuello baja un poco. */
-    bufanda: [0, 0.14, 1], collar: [0, 0.14, 1], corbatin: [0, 0.1, 1], corbata: [0, 0.1, 1], medalla: [0, 0.1, 1], traje: [0, 0.06, 1],
-  } },
-  huron: { hocico: [0.5, 0.66], coronilla: 0.1, ojos: [[0.33, 0.55], [0.68, 0.55]], ajustes: {} },
+  zorro: {
+    hocico: [0.5, 0.72], coronilla: 0.1, tapaOrejas: SOMBREROS,
+    ajustes: {
+      gorro: [0, 0.04, 1.06], gorra: [0, 0.04, 1.06], pirata: [0, 0.05, 1], birrete: [0, 0.05, 1],
+      vaquero: [0, 0.05, 1], mago: [0, 0.05, 1.08], parche: [0, 0, 0.88],
+      collar: [0, -0.04, 1], corbatin: [0, -0.06, 1], medalla: [0, -0.02, 1.15],
+      jetpack: [0, 0, 1.12],
+    },
+  },
+  gato: {
+    hocico: [0.49, 0.72], coronilla: 0.1, tapaOrejas: SOMBREROS,
+    ajustes: {
+      gorro: [0, 0.04, 1.06], gorra: [0, 0.04, 1.06], pirata: [0, 0.05, 1], birrete: [0, 0.05, 1],
+      vaquero: [0, 0.05, 1], mago: [0, 0.05, 1.08],
+      parche: [0, 0, 0.88],
+      collar: [0, -0.04, 1], corbatin: [0, -0.06, 1], medalla: [0, -0.02, 1.15],
+      jetpack: [0, 0, 1.12],
+    },
+  },
+  /* Perro: cabeza más ancha que alta y orejas caídas que salen por los lados. */
+  perro: {
+    hocico: [0.5, 0.79], coronilla: 0.08,
+    ajustes: {
+      gorro: [0, 0.03, 0.88], gorra: [0, 0.03, 0.88], pirata: [0, 0.03, 0.88], birrete: [0, 0.03, 0.88],
+      mago: [0, 0.03, 0.9], vaquero: [0, 0.03, 0.9], corona: [0, 0.15, 1.08],
+      casco: [0, -0.02, 1.2], audifonos: [0, 0.02, 1.02], mono: [-0.04, 0.06, 0.9],
+      bufanda: [0, 0, 0.8], capa: [0, 0, 0.8], mochila: [0, 0.02, 0.72], alas: [0, 0, 0.9],
+    },
+  },
+  /* Hámster: los cachetes lo hacen ancho abajo; la cabeza tapa casi todo el pecho. */
+  hamster: {
+    hocico: [0.5, 0.6], coronilla: 0.1,
+    ajustes: {
+      gorro: [0, 0.03, 0.9], gorra: [0, 0.03, 0.9], pirata: [0, 0.03, 0.9], birrete: [0, 0.03, 0.9],
+      mago: [0, 0.03, 0.9], vaquero: [0, 0.03, 0.9], corona: [0, 0.03, 0.9],
+      audifonos: [0, -0.03, 1.12], mono: [-0.02, 0.04, 0.8], parche: [0, 0, 0.88],
+      bufanda: [0, 0.04, 0.9], capa: [0, 0, 0.85], mochila: [0, 0.03, 0.8], alas: [0, -0.04, 0.8],
+    },
+  },
+  /* Conejo: cabeza grande sobre un cuerpo chico; las orejas pasan por el sombrero. */
+  conejo: {
+    hocico: [0.5, 0.69], coronilla: 0.1,
+    ajustes: {
+      /* El casco crece para que las orejas queden dentro de la burbuja. */
+      casco: [0, -0.15, 1.34], vaquero: [0, 0.02, 1.12], corona: [0, -0.02, 1.25], mago: [0, 0, 1.08],
+      bufanda: [0, 0.06, 1.1], collar: [0, 0.05, 1.15], corbatin: [0, 0.1, 1.3], corbata: [0, 0.06, 1.3],
+      medalla: [0, 0.02, 1.2], traje: [0, 0.02, 1.05],
+      capa: [0, -0.04, 1.35], jetpack: [0, -0.04, 1.5], alas: [0, -0.06, 1.3], mochila: [0, -0.02, 1.45],
+    },
+  },
+  huron: {
+    hocico: [0.5, 0.8], coronilla: 0.1, ojos: [[0.33, 0.55], [0.68, 0.55]],
+    ajustes: { mono: [-0.08, 0.06, 0.85], parche: [0, 0, 0.82] },
+  },
 };
+
+/* ¿Lleva un sombrero que le tapa las orejas? Entonces no se pintan. */
+export function orejasTapadas(especie, puestos) {
+  const t = ESPECIE[especie]?.tapaOrejas;
+  return Boolean(t && (puestos || []).some((k) => t.includes(k)));
+}
 
 const centroDe = (P, p) => {
   const d = P.piezas[p[0]];
@@ -162,7 +218,7 @@ export function piezasAccesorios(especie, M, P, puestos) {
   /* Orden fijo: lo que va abajo primero (de la tabla), no el orden de compra. */
   const orden = Object.keys(ACCESORIOS_MARIONETA).filter((k) => lista.includes(k));
   for (const id of orden) {
-    const [ax = 0, ay = 0, as = 1] = aj[id] || [];
+    const [ax = 0, ay = 0, as = 1, giro = 0] = aj[id] || [];
     let trozos = { cabeza: "", pecho: "", espalda: "" };
     for (const pt of ACCESORIOS_MARIONETA[id].partes) {
       const d = PIEZAS_ACCESORIO[pt.pieza];
@@ -173,7 +229,8 @@ export function piezasAccesorios(especie, M, P, puestos) {
       const py = y + ((pt.dy || 0) + ay) * ref - h * pt.p[1];
       const capa = pt.capa || CAPA_DE_ANCLA[pt.en];
       out.cajas.push([px, py, px + w, py + h, capa === "cabeza"]);
-      trozos[capa] += `<image href="/mascotas/accesorios/${pt.pieza}.webp" x="${+px.toFixed(1)}" y="${+py.toFixed(1)}" width="${+w.toFixed(1)}" height="${+h.toFixed(1)}"/>`;
+      const rot = giro ? ` transform="rotate(${giro} ${+(px + w / 2).toFixed(1)} ${+(py + h / 2).toFixed(1)})"` : "";
+      trozos[capa] += `<image href="/mascotas/accesorios/${pt.pieza}.webp" x="${+px.toFixed(1)}" y="${+py.toFixed(1)}" width="${+w.toFixed(1)}" height="${+h.toFixed(1)}"${rot}/>`;
     }
     for (const c of ["cabeza", "pecho", "espalda"]) {
       if (trozos[c]) out[c] += `<g class="mta-acc mta-acc-${id}">${trozos[c]}</g>`;
