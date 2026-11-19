@@ -44,7 +44,7 @@ const PERFIL = (extra = {}) => ({
   ...extra,
 });
 
-function montar({ perfil = PERFIL(), onComprarAccesorio = async () => ({}), session = { user: { id: "u" } } } = {}) {
+function montar({ perfil = PERFIL(), onComprarAccesorio = async () => ({}), onEquiparAccesorio = async () => ({}), session = { user: { id: "u" } } } = {}) {
   const aplicados = [];
   const valor = {
     perfil, session, pedirCuenta: () => false,
@@ -56,7 +56,7 @@ function montar({ perfil = PERFIL(), onComprarAccesorio = async () => ({}), sess
   const raiz = createRoot(caja);
   act(() => raiz.render(
     React.createElement(AuthContext.Provider, { value: valor },
-      React.createElement(TiendaView, { onBack: () => {}, onComprarAccesorio })),
+      React.createElement(TiendaView, { onBack: () => {}, onComprarAccesorio, onEquiparAccesorio })),
   ));
   return { caja, aplicados, desmontar: () => { act(() => raiz.unmount()); caja.remove(); } };
 }
@@ -201,4 +201,62 @@ test("sin sesión, la Tienda invita a entrar y no enseña saldo ni accesorios", 
     assert.equal(m.caja.querySelector("[data-accesorio]"), null);
     assert.match(m.caja.textContent, /Entra para ver tus Cristales/);
   } finally { m.desmontar(); }
+});
+
+/* ═══════════ EL VESTIDOR (19-nov): probar antes de comprar, filtros ═══════════ */
+
+test("tocar un accesorio que no es tuyo lo PRUEBA: va al vestidor con su precio, sin comprar nada", async () => {
+  const compras = [];
+  const m = montar({ perfil: PERFIL({ cristales_balance: 45 }), onComprarAccesorio: async (c) => { compras.push(c); return {}; } });
+  try {
+    assert.equal(m.caja.querySelector("[data-probando]"), null, "al entrar no se prueba nada");
+    await pulsar(m.caja.querySelector('[data-probar="gafas"]'));
+    const prob = m.caja.querySelector("[data-probando]");
+    assert.ok(prob, "el vestidor dice qué se está probando");
+    assert.match(prob.textContent, /Gafas de leer/);
+    assert.match(prob.textContent, /40/);
+    assert.equal(m.caja.querySelector('[data-probar="gafas"]').getAttribute("aria-pressed"), "true");
+    assert.deepEqual(compras, [], "probar no compra");
+    /* Dos de la misma ranura no: probarse unas gafas de sol quita las de leer. */
+    await pulsar(m.caja.querySelector('[data-probar="gafas_sol"]'));
+    assert.doesNotMatch(m.caja.querySelector("[data-probando]").textContent, /Gafas de leer/);
+    assert.match(m.caja.querySelector("[data-probando]").textContent, /Gafas de sol/);
+    /* Otro toque lo quita. */
+    await pulsar(m.caja.querySelector('[data-probar="gafas_sol"]'));
+    assert.equal(m.caja.querySelector("[data-probando]"), null);
+  } finally { m.desmontar(); }
+});
+
+test("lo que ya es tuyo se pone y se quita de verdad, quitando antes lo de su ranura", async () => {
+  const pedidos = [];
+  const m = montar({
+    perfil: PERFIL({ mascota_accesorios: ["gorro", "gorra"], mascota_puestos: ["gorro"] }),
+    onEquiparAccesorio: async (clave, poner) => { pedidos.push([clave, poner]); return {}; },
+  });
+  try {
+    assert.match(m.caja.querySelector("[data-puestos]").textContent, /Gorro de lana/);
+    await pulsar(m.caja.querySelector('[data-poner-accesorio="gorra"]'));
+    assert.deepEqual(pedidos, [["gorro", false], ["gorra", true]]);
+  } finally { m.desmontar(); }
+});
+
+test("las pestañas filtran por zona y «Míos» deja solo lo comprado", async () => {
+  const m = montar({ perfil: PERFIL({ mascota_accesorios: ["gafas", "capa"] }) });
+  try {
+    const ids = () => [...m.caja.querySelectorAll("[data-accesorio]")].map((c) => c.dataset.accesorio);
+    assert.ok(ids().length >= 25, "en «Todo» se ven todos de una vez");
+    await pulsar(m.caja.querySelector('[data-zona="espalda"]'));
+    assert.deepEqual(ids().sort(), ["alas", "capa", "jetpack", "mochila"]);
+    await pulsar(m.caja.querySelector('[data-zona="todo"]'));
+    await pulsar(m.caja.querySelector('[data-filtro="mios"]'));
+    assert.deepEqual(ids().sort(), ["capa", "gafas"]);
+  } finally { m.desmontar(); }
+});
+
+test("la rareza sale solo del precio", async () => {
+  const { rarezaDe } = await import("../TiendaView.jsx");
+  assert.equal(rarezaDe(35).id, "comun");
+  assert.equal(rarezaDe(50).id, "raro");
+  assert.equal(rarezaDe(90).id, "epico");
+  assert.equal(rarezaDe(150).id, "legendario");
 });
