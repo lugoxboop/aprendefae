@@ -10,7 +10,7 @@
  * Coordenadas: px del kit, sobre un escenario de 640 × 770 (x de -20 a 620,
  * y de -65 a 705); al pintar, el recuadro se ajusta a cada mascota.
  * El suelo está en y = 684 y el centro en x = 300. Cada pieza es
- * [nombre, x, y] o [nombre, x, y, { espejo, escala }]. La cabeza tiene su propio
+ * [nombre, x, y] o [nombre, x, y, { espejo, escala, giro }]. La cabeza tiene su propio
  * marco (traslado y escala) y la cara se ubica sobre la cabeza.
  *
  * El color: las piezas teñibles se guardan dos veces, el pelaje en grises (_p)
@@ -45,7 +45,7 @@ export const MARIONETAS = {
   zorro: {
     cola: ["cola", 360, 392],
     piernas: [["pierna", 178, 520], ["pierna", 318, 520, { espejo: true }]],
-    brazos: [["brazo_d", 104, 352], ["brazo_i", 386, 352]],
+    brazos: [["brazo_d", 145, 380, { giro: -8 }], ["brazo_i", 345, 380, { giro: 8 }]],
     torso: ["torso", 166, 300],
     cabeza: {
       en: [109, 52, 1.35],
@@ -61,7 +61,7 @@ export const MARIONETAS = {
   gato: {
     cola: ["cola", 350, 420],
     piernas: [["pierna_i", 195, 525], ["pierna_d", 327, 525]],
-    brazos: [["brazo", 148, 385], ["brazo", 372, 385, { espejo: true }]],
+    brazos: [["brazo", 166, 385, { espejo: true }], ["brazo", 352, 385]],
     torso: ["torso", 178, 360],
     cabeza: {
       en: [118, 110, 1.35],
@@ -76,7 +76,7 @@ export const MARIONETAS = {
   },
   perro: {
     cola: ["cola", 380, 470],
-    brazos: [["brazo_i", 140, 432], ["brazo_d", 364, 432]],
+    brazos: [["brazo_d", 163, 440, { giro: -22 }], ["brazo_i", 341, 440, { giro: 22 }]],
     torso: ["torso", 164, 400],
     cabeza: {
       en: [123, 125, 1.35],
@@ -92,7 +92,7 @@ export const MARIONETAS = {
   hamster: {
     cola: ["cola", 380, 560],
     piernas: [["pierna_i", 195, 520], ["pierna_d", 325, 520]],
-    brazos: [["brazo_i", 170, 470], ["brazo_d", 363, 470]],
+    brazos: [["brazo_d", 168, 470], ["brazo_i", 365, 470]],
     torso: ["torso", 186, 440],
     cabeza: {
       en: [106, 200, 1.35],
@@ -107,7 +107,7 @@ export const MARIONETAS = {
   },
   conejo: {
     cola: ["cola", 340, 580],
-    brazos: [["brazo_i", 190, 515], ["brazo_d", 340, 515]],
+    brazos: [["brazo_d", 190, 515], ["brazo_i", 340, 515]],
     torso: ["torso", 215, 490],
     cabeza: {
       en: [147, 250, 1.35],
@@ -123,7 +123,7 @@ export const MARIONETAS = {
   huron: {
     cola: ["cola", 330, 520, { escala: 0.65 }],
     piernas: [["pierna_i", 198, 550], ["pierna_d", 308, 550]],
-    brazos: [["brazo_i", 180, 430], ["brazo_d", 341, 430]],
+    brazos: [["brazo_i", 188, 452, { espejo: true }], ["brazo_i", 333, 452]],
     torso: ["torso", 207, 385],
     cabeza: {
       en: [163, 190, 1.35],
@@ -203,7 +203,9 @@ export function svgMarioneta(especie, { tinte = null, uid = "m", busto = false, 
     const capas = tinte && d[2]
       ? `<image href="${url(especie, n, "_p")}" width="${w}" height="${h}" filter="url(#${fid})"/><image href="${url(especie, n, "_f")}" width="${w}" height="${h}"/>`
       : `<image href="${url(especie, n)}" width="${w}" height="${h}"/>`;
-    const tr = o.espejo ? `translate(${x + w} ${y}) scale(-1 1)` : `translate(${x} ${y})`;
+    /* `giro`: la pieza girada en su sitio, sobre su borde de arriba (el hombro). */
+    const giro = o.giro ? ` rotate(${o.giro} ${w / 2} ${h * 0.08})` : "";
+    const tr = (o.espejo ? `translate(${x + w} ${y}) scale(-1 1)` : `translate(${x} ${y})`) + giro;
     return `<g transform="${tr}">${capas}</g>`;
   };
   const pieza = (p) => (p ? img(p[0], p[1], p[2], p[3]) : "");

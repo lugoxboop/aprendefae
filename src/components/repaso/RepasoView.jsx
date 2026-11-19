@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronLeft } from "lucide-react";
+import { ArrowRight, ChevronLeft, Sparkles } from "lucide-react";
 import { FAE } from "../../theme.js";
 import Logo from "../Logo.jsx";
 import FondoMateria from "../shared/FondoMateria.jsx";
@@ -13,6 +13,7 @@ import { repasoDe } from "../../repaso/repasos.js";
 import { useRepaso } from "../../repaso/useRepaso.js";
 import PartidaRepaso from "./PartidaRepaso.jsx";
 import MascotaFestejo from "../shared/MascotaFestejo.jsx";
+import { CSS_RESUMEN } from "../shared/PantallaResumen.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -134,33 +135,46 @@ export default function RepasoView({ onBack, idRepaso = ID_REPASO }) {
             recibe igual de feliz y lo cita para mañana.
           */}
           {!cargando && !error && !jugando && estado === "hecho-hoy" && (
-            <section
-              data-repaso-hecho
-              style={{
-                marginTop: "6px", padding: "22px 18px 20px", borderRadius: "18px", textAlign: "center",
-                background: "rgba(10,20,34,0.55)", border: "1px solid rgba(248,249,250,0.14)",
-              }}
-            >
-              <MascotaFestejo
-                tamano={176}
-                frase={recienTerminado ? null : "¡Hola otra vez! Hoy ya cumpliste"}
-              />
-              <h2 style={{ margin: "18px 0 6px", fontFamily: "Sora, sans-serif", fontSize: "20px", fontWeight: 700, lineHeight: 1.25 }}>
-                {recienTerminado ? "¡Repaso de hoy completado!" : "Repaso de hoy, listo"}
-              </h2>
-              <p data-mensaje-repaso={estado} style={{ margin: "0 0 18px", fontSize: "15px", lineHeight: 1.6, color: "rgba(248,249,250,0.82)" }}>
-                {mensaje}
-              </p>
-              <button
-                type="button"
-                onClick={onBack}
-                style={{
-                  width: "100%", maxWidth: "360px", minHeight: "44px", padding: "13px 18px", borderRadius: "999px", cursor: "pointer", border: "none",
-                  background: FAE.teal, color: "#06202A", fontFamily: "Sora, sans-serif", fontSize: "14px", fontWeight: 700,
-                }}
-              >
-                Volver a {NOMBRE_MATERIA[materiaId] ?? "la materia"}
-              </button>
+            <section data-repaso-hecho className="fae-rs" style={{ marginTop: "6px" }}>
+              <style>{CSS_RESUMEN}</style>
+              <span className="fae-rs-luz" aria-hidden="true" />
+              <span className="fae-rs-rayos" aria-hidden="true" />
+              <div className="fae-rs-escena">
+                <MascotaFestejo
+                  tamano={176}
+                  frase={recienTerminado ? null : "¡Hola otra vez! Hoy ya cumpliste"}
+                />
+              </div>
+              <div className="fae-rs-cuerpo" style={{ textAlign: "center" }}>
+                <div className="fae-rs-entra">
+                  <p className="fae-rs-ceja" style={{ margin: "0 0 6px", color: "#86E0C3" }}>
+                    {recienTerminado ? "Repaso completado" : "Listo por hoy"}
+                  </p>
+                  <h2 style={{ margin: 0, fontFamily: "Sora, sans-serif", fontSize: "clamp(22px, 5.6vw, 26px)", fontWeight: 700, lineHeight: 1.15, letterSpacing: "-0.02em" }}>
+                    {recienTerminado ? "¡Repaso de hoy completado!" : "Repaso de hoy, listo"}
+                  </h2>
+                  <div className="fae-rs-pastillas" style={{ justifyContent: "center" }}>
+                    <span className="fae-rs-pastilla">{REPASO.nombre}</span>
+                    <span className="fae-rs-pastilla">Vuelve mañana</span>
+                  </div>
+                </div>
+                <div className="fae-rs-mensaje" style={{ textAlign: "left" }}>
+                  <span className="fae-rs-icono" aria-hidden="true"><Sparkles size={16} strokeWidth={2.2} /></span>
+                  <p data-mensaje-repaso={estado} style={{ margin: 0 }}>{mensaje}</p>
+                </div>
+                <button
+                  type="button"
+                  className="fae-rs-volver"
+                  onClick={onBack}
+                  style={{
+                    width: "100%", minHeight: "44px", padding: "14px 22px", borderRadius: "14px", cursor: "pointer",
+                    color: "#06202A", fontFamily: "Sora, sans-serif", fontSize: "15px", fontWeight: 700,
+                  }}
+                >
+                  Volver a {NOMBRE_MATERIA[materiaId] ?? "la materia"}
+                  <ArrowRight size={18} strokeWidth={2.4} aria-hidden="true" />
+                </button>
+              </div>
             </section>
           )}
 

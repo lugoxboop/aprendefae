@@ -7,6 +7,8 @@ import EstrellasActividad from "../opinion/EstrellasActividad.jsx";
 import MascotaFestejo from "./MascotaFestejo.jsx";
 import { escucharFP } from "../../fp/aviso.js";
 import { conTransicion } from "../../estilo/movimiento.js";
+import { ArrowRight, RotateCcw, Sparkles } from "lucide-react";
+import { nombreDeActividad } from "../../data/subjects.js";
 import {
   usaPantallaResumen, resumenDe, formatoDe, partidaValida, decidir, anunciarPartida,
   ROTULO_BIEN, ROTULO_PUNTOS, ROTULO_RESULTADO, NOTA_REPETICION,
@@ -243,17 +245,18 @@ function Cifra({ rotulo, children, dato, centrada = false, nota = null }) {
     <div data-cifra={dato} style={{ position: "relative", flex: "1 1 0", minWidth: 0, textAlign: centrada ? "center" : "left" }}>
       <div
         data-tarjeta
+        className="fae-rs-ficha"
         style={{
-          height: "100%", boxSizing: "border-box", padding: "12px 14px", borderRadius: "14px",
-          background: FONDO_TARJETA, border: "1px solid rgba(248,249,250,0.12)",
+          height: "100%", boxSizing: "border-box", padding: "14px 16px", borderRadius: "16px",
+          background: FONDO_TARJETA, border: "1px solid rgba(134,224,195,0.22)",
         }}
       >
-      <p style={{ margin: "0 0 4px", fontSize: "13px", lineHeight: 1.3, color: ATENUADO }}>{rotulo}</p>
+      <p className="fae-rs-ceja" style={{ margin: "0 0 6px", color: ATENUADO }}>{rotulo}</p>
       <p
         data-valor
         style={{
           margin: 0, fontFamily: SORA, fontSize: "36px", fontWeight: 700, lineHeight: 1.05,
-          color: BLANCO, fontVariantNumeric: "tabular-nums", letterSpacing: "-0.01em",
+          color: BLANCO, fontVariantNumeric: "tabular-nums", letterSpacing: "-0.01em", whiteSpace: "nowrap",
         }}
       >
         {children}
@@ -264,14 +267,65 @@ function Cifra({ rotulo, children, dato, centrada = false, nota = null }) {
   );
 }
 
+/*
+ * ═══════════ EL ESTILO DEL REDISEÑO (19-nov) ═══════════
+ *
+ * La misma familia que el banner del Repaso Diario, el ranking y el panel
+ * docente: tarjeta de cristal con luz de tono arriba, cejilla en mayúsculas
+ * espaciadas, fichas con filo de luz, pastillas, y el botón principal lleno
+ * con su flecha. El tono es la menta del «terminaste» (#86E0C3 de texto,
+ * teal solo en formas: el teal nunca es color de texto).
+ */
+export const CSS_RESUMEN = `
+.fae-rs { position: relative; overflow: hidden; scroll-margin-top: 88px; margin-top: 18px; border-radius: 22px;
+  background: linear-gradient(170deg, rgba(42,157,143,0.20) 0%, rgba(20,38,58,0.92) 34%, rgba(12,23,40,0.96) 100%);
+  border: 1px solid rgba(134,224,195,0.30);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 24px 48px -28px rgba(42,157,143,0.65); }
+.fae-rs--sin-recuadro { margin-top: 22px; }
+.fae-rs-luz { position: absolute; left: 50%; top: -120px; width: 520px; height: 360px; transform: translateX(-50%); pointer-events: none;
+  background: radial-gradient(closest-side, rgba(134,224,195,0.26), rgba(134,224,195,0.06) 60%, transparent); }
+.fae-rs-rayos { position: absolute; left: 50%; top: 40px; width: 560px; height: 560px; margin-left: -280px; pointer-events: none; opacity: .5;
+  background: repeating-conic-gradient(from 0deg, rgba(248,249,250,0.05) 0deg 6deg, transparent 6deg 22deg);
+  -webkit-mask-image: radial-gradient(closest-side, #000 20%, transparent 72%); mask-image: radial-gradient(closest-side, #000 20%, transparent 72%);
+  animation: fae-rs-girar 40s linear infinite; }
+@keyframes fae-rs-girar { to { transform: rotate(360deg); } }
+.fae-rs-escena { position: relative; padding: 22px 16px 4px; }
+.fae-rs-cuerpo { position: relative; z-index: 1; display: grid; gap: 16px; padding: 4px 18px 20px; }
+.fae-rs-ceja { font-family: Sora, sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; line-height: 1.3; }
+.fae-rs-pastillas { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.fae-rs-pastilla { display: inline-flex; align-items: center; gap: 6px; padding: 4px 11px; border-radius: 999px; max-width: 100%; box-sizing: border-box;
+  background: rgba(134,224,195,0.10); border: 1px solid rgba(134,224,195,0.32); font-size: 12px; font-weight: 600; line-height: 1.4; color: rgba(248,249,250,0.92); }
+.fae-rs-ficha { position: relative; overflow: hidden; }
+.fae-rs-ficha::before { content: ""; position: absolute; top: 0; left: 14%; right: 14%; height: 1px; background: linear-gradient(90deg, transparent, rgba(134,224,195,0.75), transparent); }
+.fae-rs-mensaje { display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border-radius: 16px; font-size: 14px; line-height: 1.55; color: #F8F9FA;
+  background: rgba(14,27,46,0.55); border: 1px solid rgba(134,224,195,0.20); box-shadow: inset 0 1px 0 rgba(255,255,255,0.05); }
+.fae-rs-mensaje p { margin: 0; }
+.fae-rs-icono { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 10px; color: #0E1B2E;
+  background: linear-gradient(145deg, #86E0C3, #2A9D8F); box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), 0 6px 14px -6px rgba(42,157,143,0.9); }
+.fae-rs-volver { position: relative; overflow: hidden; display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  background: linear-gradient(180deg, #4FC3AE 0%, #2A9D8F 100%); border: 1px solid #2A9D8F;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), 0 14px 28px -14px rgba(42,157,143,1);
+  transition: transform 220ms cubic-bezier(0.34,1.56,0.64,1), box-shadow 220ms ease, filter 180ms ease; }
+.fae-rs-volver svg { transition: transform 320ms cubic-bezier(0.34,1.56,0.64,1); }
+.fae-rs-volver:hover { transform: translateY(-2px); filter: brightness(1.05); }
+.fae-rs-volver:hover svg { transform: translateX(4px); }
+.fae-rs-volver:focus-visible, .fae-rs-repetir:focus-visible { outline: 2px solid #F8F9FA; outline-offset: 3px; }
+.fae-rs-repetir { display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: background 180ms ease, border-color 180ms ease; }
+.fae-rs-repetir:hover { background: rgba(248,249,250,0.06) !important; border-color: rgba(248,249,250,0.5) !important; }
+.fae-rs-entra { animation: fae-rs-entra 520ms cubic-bezier(0.2,0.8,0.2,1) both; }
+@keyframes fae-rs-entra { from { opacity: 0; transform: translateY(10px); } }
+@media (prefers-reduced-motion: reduce) { .fae-rs, .fae-rs * { animation: none !important; transition: none !important; } }
+`;
+
 function FiguraBien({ bien, n }) {
   const x = useConteo(bien);
-  return <>{x} de {n}</>;
+  /* «de N» debajo y más chico: el número que importa es el de aciertos, y así no se parte a 320 px. */
+  return <>{x}<span style={{ display: "block", marginTop: "4px", fontSize: "15px", fontWeight: 600, letterSpacing: 0, color: "rgba(248,249,250,0.72)" }}> de {n}</span></>;
 }
 
 function FiguraPorcentaje({ p }) {
   const x = useConteo(p);
-  return <>{x} %</>;
+  return <>{x}<span style={{ fontSize: "22px", fontWeight: 600, color: "rgba(248,249,250,0.72)" }}> %</span></>;
 }
 
 function FiguraPuntos({ fp }) {
@@ -334,6 +388,8 @@ export default function PantallaResumen({ texto = null, onRepetir = null, sinRec
     </p>
   ) : null;
 
+  const nombre = nombreDeActividad(partida.actividadId);
+
   return (
     <section
       ref={caja}
@@ -341,34 +397,43 @@ export default function PantallaResumen({ texto = null, onRepetir = null, sinRec
       data-franja={r.exploratoria ? "exploratoria" : r.franja}
       data-repeticion={r.repeticion ? "si" : "no"}
       aria-labelledby="fae-resumen-titulo"
-      style={{
-        position: "relative", overflow: "hidden",
-        /* Al desplazarse hasta aquí, el título queda por debajo del control de cuenta fijo. */
-        scrollMarginTop: "88px",
-        marginTop: "18px", padding: "20px 18px", borderRadius: "18px",
-        background: "rgba(10,20,34,0.55)", border: "1px solid rgba(248,249,250,0.14)",
-      }}
+      className={`fae-rs${sinRecuadro ? " fae-rs--sin-recuadro" : ""}`}
     >
-      <div style={{ position: "relative", zIndex: 1, display: "grid", gap: "18px" }}>
+      <style>{CSS_RESUMEN}</style>
+      <span className="fae-rs-luz" aria-hidden="true" />
+      <span className="fae-rs-rayos" aria-hidden="true" />
       <p role="status" data-lector style={SOLO_LECTOR}>{sinResultado ? r.lectorSoloPuntos : r.lector}</p>
 
       {/*
         * La mascota del estudiante festeja que terminó (pedido de Mateo,
-        * 19-nov): en grande y arriba, lo primero que se ve. Siempre feliz;
-        * con un resultado bajo solo cambia la frase (MascotaFestejo.jsx).
+        * 19-nov): en grande y arriba, en su escenario con luz y rayos. Siempre
+        * feliz; con un resultado bajo solo cambia la frase (MascotaFestejo.jsx).
         */}
-      <MascotaFestejo key={partida.id} franja={r.exploratoria ? null : r.franja} />
+      <div className="fae-rs-escena">
+        <MascotaFestejo key={partida.id} franja={r.exploratoria ? null : r.franja} tamano={168} />
+      </div>
 
+      <div className="fae-rs-cuerpo">
+      <div className="fae-rs-entra">
+        <p className="fae-rs-ceja" style={{ margin: "0 0 6px", color: "#86E0C3" }}>
+          {r.repeticion ? "Repetición terminada" : "Actividad completada"}
+        </p>
       <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
         <h3
           id="fae-resumen-titulo"
           ref={titulo}
           tabIndex={-1}
-          style={{ flex: "1 1 0", minWidth: 0, margin: 0, fontFamily: SORA, fontSize: "20px", fontWeight: 700, lineHeight: 1.25, color: BLANCO, outline: "none" }}
+          style={{ flex: "1 1 0", minWidth: 0, margin: 0, fontFamily: SORA, fontSize: "clamp(22px, 5.6vw, 26px)", fontWeight: 700, lineHeight: 1.15, letterSpacing: "-0.02em", color: BLANCO, outline: "none" }}
         >
           {r.titulo}
         </h3>
         {POSICION_FIGURA === "titulo" && figura}
+      </div>
+      {nombre && (
+        <div className="fae-rs-pastillas">
+          <span className="fae-rs-pastilla" data-pastilla-actividad>{nombre}</span>
+        </div>
+      )}
       </div>
 
       <div aria-hidden="true" style={{ display: "flex", alignItems: "stretch", gap: "12px" }}>
@@ -390,14 +455,11 @@ export default function PantallaResumen({ texto = null, onRepetir = null, sinRec
       </div>
 
       {!sinRecuadro && (
-        <div
-          data-recuadro
-          style={{
-            padding: "13px 15px", borderRadius: "12px", fontSize: "13.5px", lineHeight: 1.55, color: BLANCO,
-            background: "rgba(248,249,250,0.05)", border: "1px solid rgba(248,249,250,0.12)",
-          }}
-        >
-          {conTexto ? texto : <p style={{ margin: 0 }}>{r.mensaje}</p>}
+        <div data-recuadro className="fae-rs-mensaje">
+          <span className="fae-rs-icono" aria-hidden="true"><Sparkles size={16} strokeWidth={2.2} /></span>
+          <div style={{ minWidth: 0, flex: "1 1 0" }}>
+            {conTexto ? texto : <p style={{ margin: 0 }}>{r.mensaje}</p>}
+          </div>
         </div>
       )}
 
@@ -415,10 +477,11 @@ export default function PantallaResumen({ texto = null, onRepetir = null, sinRec
         <EstrellasActividad actividadId={partida.actividadId} materiaId={ctx.materiaId} />
       )}
 
-      <div style={{ display: "grid", gap: "10px", marginTop: "18px" }}>
+      <div style={{ display: "grid", gap: "10px", marginTop: "4px" }}>
         <button
           type="button"
           data-volver
+          className="fae-rs-volver"
           onClick={ctx.onVolver}
           style={{
             /*
@@ -431,24 +494,27 @@ export default function PantallaResumen({ texto = null, onRepetir = null, sinRec
              * Ocupan el ancho entero de una rejilla con hueco, así que crecer
              * uno o tres píxeles no mueve nada de lado.
              */
-            width: "100%", minHeight: "44px", padding: "13px 18px", borderRadius: "999px", cursor: "pointer", border: "none",
-            background: FAE.teal, color: "#06202A", fontFamily: SORA, fontSize: "14px", fontWeight: 700,
+            width: "100%", minHeight: "44px", padding: "14px 22px", borderRadius: "14px", cursor: "pointer",
+            color: "#06202A", fontFamily: SORA, fontSize: "15px", fontWeight: 700,
           }}
         >
           {BOTON_VOLVER}
+          <ArrowRight size={18} strokeWidth={2.4} aria-hidden="true" />
         </button>
         {onRepetir && (
           <div style={{ display: "grid", gap: "6px", justifyItems: "center" }}>
             <button
               type="button"
               data-repetir
+              className="fae-rs-repetir"
               onClick={() => { ctx.limpiar?.(); onRepetir(); }}
               style={{
-                width: "100%", minHeight: "44px", padding: "12px 18px", borderRadius: "999px", cursor: "pointer",
-                background: "transparent", border: "1px solid rgba(248,249,250,0.32)", color: BLANCO,
+                width: "100%", minHeight: "44px", padding: "12px 18px", borderRadius: "14px", cursor: "pointer",
+                background: "rgba(248,249,250,0.03)", border: "1px solid rgba(248,249,250,0.28)", color: BLANCO,
                 fontFamily: SORA, fontSize: "14px", fontWeight: 600,
               }}
             >
+              <RotateCcw size={15} strokeWidth={2.2} aria-hidden="true" />
               {BOTON_REPETIR}
             </button>
             <p data-nota-repetir style={{ margin: 0, fontSize: "12.5px", color: ATENUADO }}>{NOTA_REPETIR}</p>

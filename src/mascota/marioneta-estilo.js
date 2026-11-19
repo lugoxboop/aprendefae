@@ -16,7 +16,9 @@ export const ESTILO_MARIONETA = `.mta * { transform-box: fill-box; }
 .mta-saltitos .mta-c-feliz, .mta-saluda .mta-c-feliz,
 .mta-triste .mta-c-triste, .mta-racha .mta-c-racha { display: inline; }
 
-/* Bisagras: dónde gira cada pieza */
+/* Bisagras: dónde gira cada pieza.
+   Los brazos están dibujados colgando: girados más de ~50° se ven postizos
+   (Mateo, 19-nov: «los brazos están como disconformes, bájalos»). */
 .mta .mta-cola { transform-origin: 5% 85%; }
 .mta .mta-brazo-i { transform-origin: 90% 8%; }
 .mta .mta-brazo-d { transform-origin: 10% 8%; }
@@ -100,8 +102,8 @@ export const ESTILO_MARIONETA = `.mta * { transform-box: fill-box; }
 /* SALTITOS: brinquitos cortos y seguidos, orejas que rebotan; estrellas */
 .mta-saltitos .mta-todo { animation: mta-saltito .52s cubic-bezier(.3,0,.5,1) infinite; }
 .mta-saltitos .mta-sombra { animation: mta-sombra .52s cubic-bezier(.3,0,.5,1) infinite; }
-.mta-saltitos .mta-brazo-i { animation: mta-brazo-arriba-i .52s ease-in-out infinite; }
-.mta-saltitos .mta-brazo-d { animation: mta-brazo-arriba-d .52s ease-in-out infinite; }
+.mta-saltitos .mta-brazo-i { animation: mta-patita-i .26s ease-in-out infinite alternate; }
+.mta-saltitos .mta-brazo-d { animation: mta-patita-d .26s ease-in-out infinite alternate; }
 .mta-saltitos .mta-oreja-i { animation: mta-oreja-rebote-i .52s ease-in-out infinite; }
 .mta-saltitos .mta-oreja-d { animation: mta-oreja-rebote-d .52s ease-in-out infinite; }
 .mta-saltitos .mta-cola { animation: mta-cola-loca .26s ease-in-out infinite; }
@@ -186,10 +188,10 @@ export const ESTILO_MARIONETA = `.mta * { transform-box: fill-box; }
 @keyframes mta-sombra { 0%,80%,100% { transform: scale(1); opacity: .28; } 45% { transform: scale(.6); opacity: .12; } }
 @keyframes mta-super-salto { 0% { transform: translateY(0) scale(1.1,.88) rotate(0); } 10% { transform: translateY(0) scale(.92,1.1) rotate(0); } 45% { transform: translateY(-130px) scale(1,1) rotate(-180deg); } 75% { transform: translateY(0) scale(1,1) rotate(-360deg); } 82% { transform: translateY(0) scale(1.12,.86) rotate(-360deg); } 100% { transform: translateY(0) scale(1,1) rotate(-360deg); } }
 @keyframes mta-sombra-grande { 0%,75%,100% { transform: scale(1); opacity: .28; } 45% { transform: scale(.45); opacity: .08; } }
-@keyframes mta-brazo-arriba-i { 0%,100% { transform: rotate(40deg); } 50% { transform: rotate(150deg); } }
-@keyframes mta-brazo-arriba-d { 0%,100% { transform: rotate(-40deg); } 50% { transform: rotate(-150deg); } }
-@keyframes mta-brazos-v-i { from { transform: rotate(140deg); } to { transform: rotate(165deg); } }
-@keyframes mta-brazos-v-d { from { transform: rotate(-140deg); } to { transform: rotate(-165deg); } }
+@keyframes mta-brazo-arriba-i { 0%,100% { transform: rotate(8deg); } 50% { transform: rotate(40deg); } }
+@keyframes mta-brazo-arriba-d { 0%,100% { transform: rotate(-8deg); } 50% { transform: rotate(-40deg); } }
+@keyframes mta-brazos-v-i { from { transform: rotate(20deg); } to { transform: rotate(48deg); } }
+@keyframes mta-brazos-v-d { from { transform: rotate(-20deg); } to { transform: rotate(-48deg); } }
 @keyframes mta-ladea { 0%,100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg); } }
 @keyframes mta-lagrima { 0% { transform: translateY(0) scale(.3); opacity: 0; } 15% { transform: translateY(0) scale(1); opacity: 1; } 80% { transform: translateY(60px) scale(1); opacity: 1; } 100% { transform: translateY(75px) scale(.8); opacity: 0; } }
 @keyframes mta-aura { 0%,100% { transform: scale(.95); opacity: .55; } 50% { transform: scale(1.06); opacity: .9; } }
@@ -207,21 +209,21 @@ export const ESTILO_MARIONETA = `.mta * { transform-box: fill-box; }
 @keyframes mta-ladea-tierno { 0%,100% { transform: rotate(-8deg); } 50% { transform: rotate(8deg); } }
 @keyframes mta-oreja-rebote-i { 0%,100% { transform: rotate(0); } 50% { transform: rotate(-12deg); } }
 @keyframes mta-oreja-rebote-d { 0%,100% { transform: rotate(0); } 50% { transform: rotate(12deg); } }
-@keyframes mta-patita-i { from { transform: rotate(14deg); } to { transform: rotate(44deg); } }
-@keyframes mta-patita-d { from { transform: rotate(-14deg); } to { transform: rotate(-44deg); } }
+@keyframes mta-patita-i { from { transform: rotate(6deg); } to { transform: rotate(24deg); } }
+@keyframes mta-patita-d { from { transform: rotate(-6deg); } to { transform: rotate(-24deg); } }
 @keyframes mta-baile { 0%,100% { transform: translate(0,0) rotate(0); } 25% { transform: translate(-24px,8px) rotate(-8deg) scale(1.03,.96); } 50% { transform: translate(0,-18px) rotate(0) scale(.97,1.04); } 75% { transform: translate(24px,8px) rotate(8deg) scale(1.03,.96); } }
 @keyframes mta-baile-sombra { 0%,50%,100% { transform: translateX(0) scale(1); } 25% { transform: translateX(-24px) scale(1.05); } 75% { transform: translateX(24px) scale(1.05); } }
-@keyframes mta-baile-brazo-i { 0%,50%,100% { transform: rotate(30deg); } 25% { transform: rotate(165deg); } 75% { transform: rotate(55deg); } }
-@keyframes mta-baile-brazo-d { 0%,50%,100% { transform: rotate(-30deg); } 25% { transform: rotate(-55deg); } 75% { transform: rotate(-165deg); } }
+@keyframes mta-baile-brazo-i { 0%,50%,100% { transform: rotate(8deg); } 25% { transform: rotate(48deg); } 75% { transform: rotate(18deg); } }
+@keyframes mta-baile-brazo-d { 0%,50%,100% { transform: rotate(-8deg); } 25% { transform: rotate(-18deg); } 75% { transform: rotate(-48deg); } }
 @keyframes mta-baile-cabeza { from { transform: rotate(-9deg); } to { transform: rotate(9deg); } }
 @keyframes mta-mece { 0%,100% { transform: translateX(-6px) rotate(-4deg); } 50% { transform: translateX(6px) rotate(4deg); } }
 @keyframes mta-canta-cabeza { 0%,100% { transform: rotate(-5deg) translateY(0); } 50% { transform: rotate(-11deg) translateY(-8px); } }
-@keyframes mta-canta-brazo { 0%,100% { transform: rotate(-112deg); } 50% { transform: rotate(-140deg); } }
-@keyframes mta-canta-pecho { 0%,100% { transform: rotate(58deg); } 50% { transform: rotate(70deg); } }
+@keyframes mta-canta-brazo { 0%,100% { transform: rotate(-30deg); } 50% { transform: rotate(-50deg); } }
+@keyframes mta-canta-pecho { 0%,100% { transform: rotate(10deg); } 50% { transform: rotate(20deg); } }
 @keyframes mta-saltito { 0% { transform: translateY(0) scale(1.08,.9); } 15% { transform: translateY(0) scale(.95,1.07); } 50% { transform: translateY(-46px) scale(.99,1.02); } 85% { transform: translateY(0) scale(1,1); } 100% { transform: translateY(0) scale(1.08,.9); } }
 @keyframes mta-brinco { 0%,55%,100% { transform: translateY(0) scale(1,1); } 62% { transform: translateY(0) scale(1.07,.92); } 75% { transform: translateY(-40px) scale(.97,1.04); } 88% { transform: translateY(0) scale(1.06,.93); } 94% { transform: translateY(0) scale(1,1); } }
 @keyframes mta-sombra-brinco { 0%,62%,88%,100% { transform: scale(1); opacity: .28; } 75% { transform: scale(.7); opacity: .14; } }
-@keyframes mta-saludo { 0%,50%,100% { transform: rotate(-128deg); } 25%,75% { transform: rotate(-168deg); } }
+@keyframes mta-saludo { 0%,50%,100% { transform: rotate(-30deg); } 25%,75% { transform: rotate(-58deg); } }
 @keyframes mta-nota { 0% { transform: translate(0,0) rotate(-12deg) scale(.3); opacity: 0; } 15% { transform: translate(12px,-26px) rotate(8deg) scale(1); opacity: 1; } 50% { transform: translate(-14px,-100px) rotate(-8deg) scale(1); } 85% { opacity: 1; } 100% { transform: translate(16px,-190px) rotate(12deg) scale(.85); opacity: 0; } }
 @keyframes mta-corazon { 0% { transform: translateY(0) scale(0); opacity: 0; } 15% { transform: translateY(-6px) scale(1.25); opacity: 1; } 28% { transform: translateY(-14px) scale(1); } 80% { opacity: 1; } 100% { transform: translateY(-130px) scale(.85); opacity: 0; } }
 @keyframes mta-estrella { 0%,100% { transform: scale(0) rotate(0); opacity: 0; } 45% { transform: scale(1.25) rotate(80deg); opacity: 1; } 70% { transform: scale(1) rotate(130deg); opacity: 1; } }
