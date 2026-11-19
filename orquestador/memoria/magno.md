@@ -9,7 +9,7 @@
 - Antes de abrir nada: primero `orquestador/INDICE.md`, luego el buscador del canon (regla k).
 
 ## En qué estoy ahora
-- 2026-11-18 16:50 — Espacio recién creado. A la espera de la primera misión de Mateo.
+- 2026-11-18 17:54 — Auditoría de navegación (pedida por Mateo): X del menú muerta, sin botón visible a Inicio en las materias, «Salir» de Clase en vivo tapado en celular, Tienda en blanco al entrar directo. Arreglado en el PR de la rama claude/project-thread-ewtc9p; espera aprobación de Mateo para fusionar.
 
 ## Decisiones tomadas y por qué
 - 2026-11-18 — El nombre iba a ser «Levi», pero Levi ya es el paso de revisión del motor (Gen→Levi→Xeno) incrustado en el código; para evitar choques, el general se llama Magno.
@@ -18,4 +18,4 @@
 - 
 
 ## Lo que aprendí que no hay que repetir
-- 
+- Las sondas de captura usan «reducir movimiento»: así NO se ven los fallos que solo existen con la animación puesta (la X tapada por la fila animada). Para probar toques, sonda con movimiento normal y elementFromPoint.

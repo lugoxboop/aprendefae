@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { ChevronLeft } from "lucide-react";
+import { NavigationContext } from "../navigation.js";
 import { FAE } from "../theme.js";
 import { ACTIVIDADES_TRANSVERSALES, APRENDER, EMPTY_TOPICS_MESSAGE, HACER, tieneContenidoDe, tiposDeTema } from "../data/subjects.js";
 import SubjectCard from "./SubjectCard.jsx";
@@ -52,11 +54,20 @@ export default function TopicIndexView({
    * abiertas en la misma rejilla convierten una decisión en un formulario.
    */
   const [abierta, setAbierta] = useState(null);
+  const nav = useContext(NavigationContext);
 
   return (
     <>
       {/* Una vez por página, no una por tarjeta: el movimiento y sus colores. */}
       <style>{CSS_IDENTIFICADOR}</style>
+      {/*
+        Por debajo de 360 px el botón «Inicio» se queda en la flecha sola, el
+        mismo círculo de 44 px que el volver de los temas. Medido a 320: con la
+        palabra puesta, a «Pensamiento Estratégico» le quedaban 82 px y se
+        partía a media palabra («Pensamie-nto»). Sin ella le quedan 128 y
+        entra en dos renglones. Para el lector, el nombre sigue en aria-label.
+      */}
+      <style>{`@media (max-width: 359px) { .fae-boton-inicio { width: 44px; padding: 0 !important; justify-content: center; } .fae-boton-inicio__texto { display: none; } }`}</style>
     <div
       style={{
         position: "relative",
@@ -100,8 +111,34 @@ export default function TopicIndexView({
           sexta: una materia de doce temas no puede hacer esperar medio
           segundo a la última.
         */}
-        <div {...entrada(0, "baja")} className="fae-cabecera-titulo fae-sin-volver fae-cabecera-ancha" style={{ ...entrada(0, "baja").style, display: "flex", alignItems: "center", gap: "14px" }}>
+        {/*
+          Y DESDE EL 18-NOV, UN BOTÓN «INICIO» DE VERDAD. Mateo no encontraba
+          cómo volver al inicio desde aquí: la única salida era el símbolo del
+          logo, 28 px sin texto, que nadie lee como «atrás». Ahora la cabecera
+          es la misma de cualquier tema —[‹ Inicio] Título— y el botón dice a
+          dónde lleva. Con él, la premisa de la regla compacta vuelve a
+          cumplirse («el botón de volver ya cubre la salida»), así que la
+          cabecera deja de llevar fae-sin-volver y en el teléfono el logo se
+          esconde como en los temas; en escritorio sigue a la derecha.
+        */}
+        <div {...entrada(0, "baja")} className="fae-cabecera-titulo fae-cabecera-ancha" style={{ ...entrada(0, "baja").style, display: "flex", alignItems: "center", gap: "12px" }}>
           <span className="fae-cabecera-marca"><Logo variant="symbol" size={28} theme="dark" /></span>
+          <button
+            type="button"
+            onClick={() => nav?.goHome?.()}
+            aria-label="Volver al inicio"
+            className="fae-boton-inicio"
+            style={{
+              display: "inline-flex", alignItems: "center", gap: "4px",
+              minHeight: "44px", padding: "0 16px 0 10px", flexShrink: 0,
+              borderRadius: "999px", cursor: "pointer",
+              fontFamily: "Sora, sans-serif", fontSize: "14px", fontWeight: 600, color: FAE.text,
+              background: "rgba(248,249,250,0.08)", border: "1px solid rgba(248,249,250,0.18)",
+            }}
+          >
+            <ChevronLeft size={20} aria-hidden="true" />
+            <span className="fae-boton-inicio__texto">Inicio</span>
+          </button>
           <h1
             style={{
               fontFamily: "Sora, sans-serif",
