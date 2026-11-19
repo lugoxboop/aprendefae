@@ -9,6 +9,7 @@
 - Antes de abrir nada: primero `orquestador/INDICE.md`, luego el buscador del canon (regla k).
 
 ## En qué estoy ahora
+- 2026-11-19 17:08 — Rediseño de TODOS los Aprender (Conta y Macro), pedido por Mateo: capa común src/components/aprender/ (portada con ruta del tema, tono por tema, botones con brillo, sonidos, festejos). PR #703, espera visto bueno de Mateo. Lo de Instagram/videos IA queda para después.
 - 2026-11-18 16:50 — Espacio recién creado. A la espera de la primera misión de Mateo.
 
 ## Decisiones tomadas y por qué
@@ -18,4 +19,5 @@
 - 
 
 ## Lo que aprendí que no hay que repetir
+- En Contabilidad el ámbar es HABER y el teal DEBE: nunca usarlos como tono de tema ni de acierto.
 - 
