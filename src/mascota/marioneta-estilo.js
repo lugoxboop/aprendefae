@@ -87,6 +87,18 @@ export const ESTILO_MARIONETA = `.mta * { transform-box: fill-box; }
 .mta-chispas circle:nth-child(4) { animation-delay: .4s; }
 .mta-chispas circle:nth-child(5) { animation-delay: 1.2s; }
 
+/* ACCESORIOS: los que cuelgan o vuelan se mueven solos cuando la mascota no está quieta */
+.mta .mta-acc-alas { transform-origin: 50% 60%; }
+.mta .mta-acc-capa { transform-origin: 50% 0%; }
+.mta .mta-acc-medalla { transform-origin: 50% 0%; }
+.mta-tranquila .mta-acc-alas, .mta-racha .mta-acc-alas { animation: mta-aleteo 1.6s ease-in-out infinite; }
+.mta-feliz .mta-acc-alas, .mta-celebra .mta-acc-alas { animation: mta-aleteo .35s ease-in-out infinite; }
+.mta-tranquila .mta-acc-capa { animation: mta-ondea 3.2s ease-in-out infinite; }
+.mta-feliz .mta-acc-capa, .mta-celebra .mta-acc-capa, .mta-racha .mta-acc-capa { animation: mta-ondea .9s ease-in-out infinite; }
+.mta-tranquila .mta-acc-medalla { animation: mta-pendulo 3.2s ease-in-out infinite; }
+.mta-feliz .mta-acc-medalla, .mta-celebra .mta-acc-medalla { animation: mta-pendulo .9s ease-in-out infinite; }
+.mta-feliz .mta-acc-jetpack, .mta-celebra .mta-acc-jetpack, .mta-racha .mta-acc-jetpack { animation: mta-motor .18s linear infinite alternate; }
+
 @media (prefers-reduced-motion: reduce) {
   .mta * { animation: none !important; transition: none !important; }
 }
@@ -113,6 +125,10 @@ export const ESTILO_MARIONETA = `.mta * { transform-box: fill-box; }
 @keyframes mta-puno { 0%,100% { transform: rotate(-120deg); } 50% { transform: rotate(-160deg); } }
 @keyframes mta-firme { 0%,100% { transform: scale(1,1); } 50% { transform: scale(1.02,1.035); } }
 @keyframes mta-cae { 0% { transform: translateY(-40px) rotate(0); opacity: 0; } 10% { opacity: 1; } 100% { transform: translateY(520px) rotate(540deg); opacity: 0; } }
+@keyframes mta-aleteo { 0%,100% { transform: scaleX(1); } 50% { transform: scaleX(.82); } }
+@keyframes mta-ondea { 0%,100% { transform: skewX(0) scaleY(1); } 50% { transform: skewX(4deg) scaleY(1.04); } }
+@keyframes mta-pendulo { 0%,100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
+@keyframes mta-motor { from { transform: translateY(0); } to { transform: translateY(3px); } }
 @keyframes mta-chispa { 0% { transform: translateY(0); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(-120px); opacity: 0; } }`;
 
 /** Mete el estilo una sola vez en la página (no hace nada fuera del navegador). */

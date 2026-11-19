@@ -4,6 +4,7 @@ import { useAuthOpcional } from "../../auth/AuthProvider.jsx";
 import Mascota from "../Mascota.jsx";
 import { ESPECIES, PALETAS_MASCOTA, OJOS_MASCOTA, ACCESORIOS_META, mascotaDe, esIlustrada } from "../../mascota/mascotas.js";
 import { accesoriosDe, puestosDe } from "../../cristales/cristales.js";
+import { chocaCon } from "../../mascota/accesorios-marioneta.js";
 import { tieneMarioneta } from "../../mascota/marionetas.js";
 
 /*
@@ -112,7 +113,17 @@ export default function SeccionMascota({ perfil: perfilProp = null, completo = f
   const puestosAcc = new Set(puestosDe(perfil));
   const toggleAccesorio = async (clave) => {
     setError(null);
-    const { error: err } = (await auth?.equiparAccesorio?.(clave, !puestosAcc.has(clave))) ?? {};
+    const poner = !puestosAcc.has(clave);
+    /* Dos sombreros a la vez no: al ponerse uno, se quita el que ocupa su
+       mismo sitio (sombrero, ojos, cuello, espalda…). Quitar no cuesta nada y
+       el accesorio sigue siendo suyo. */
+    if (poner) {
+      for (const otro of chocaCon(clave, [...puestosAcc])) {
+        const { error: e1 } = (await auth?.equiparAccesorio?.(otro, false)) ?? {};
+        if (e1) { setError(e1); return; }
+      }
+    }
+    const { error: err } = (await auth?.equiparAccesorio?.(clave, poner)) ?? {};
     if (err) setError(err);
   };
 

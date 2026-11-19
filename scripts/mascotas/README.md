@@ -18,3 +18,13 @@ De dónde salen `public/mascotas/` y `src/mascota/marionetas-piezas.js`.
 
 Dónde va cada pieza y cómo se mueve: `src/mascota/marionetas.js` y
 `src/mascota/marioneta-estilo.js`.
+
+## Accesorios (19-nov)
+
+Las cuatro hojas de accesorios de Gemini se recortan igual que los kits
+(`recortar.py`, una pieza por accesorio; las alas se unen en una). Después,
+`accesorios-huecos.py` vuelve transparentes los huecos blancos encerrados
+(lentes de las gafas de leer, ojos del antifaz, el interior del collar, la
+bufanda y la cinta de la medalla) y deja la cúpula del casco de astronauta
+translúcida. Las piezas van a `public/mascotas/accesorios/` y su ubicación
+sobre cada especie a `src/mascota/accesorios-marioneta.js`.

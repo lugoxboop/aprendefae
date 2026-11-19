@@ -39,14 +39,15 @@ export default function Mascota({ especie, perfil, puestos, paleta, ojos, tamano
    * Hasta 100 px se encuadra el busto (cabeza y hombros): de cuerpo entero, la
    * cara quedaría diminuta (ranking, podio, cabecera del perfil, tienda). El
    * cuerpo entero, ajustado a la mascota, queda para la tarjeta grande.
-   * Los accesorios y el color de ojos aún no se pintan sobre las marionetas.
+   * Los accesorios puestos van encima, ubicados sobre la cara y el cuerpo de
+   * cada especie (accesorios-marioneta.js), y se mueven con ella.
    */
   if (tieneMarioneta(esp)) {
     asegurarEstiloMarioneta();
     /* El id del filtro sale de especie + paleta: dos mascotas iguales comparten
        un filtro idéntico, y el HTML no cambia entre un pintado y otro. */
     const busto = encuadre ? encuadre === "busto" : tamano <= 100;
-    const { viewBox, inner } = svgMarioneta(esp, { tinte: tinteDe(pal), uid: `${esp}-${pal || "natural"}`, busto });
+    const { viewBox, inner } = svgMarioneta(esp, { tinte: tinteDe(pal), uid: `${esp}-${pal || "natural"}`, busto, puestos: pst });
     const mov = ANIMOS.includes(animo) ? animo : "quieta";
     return (
       <svg

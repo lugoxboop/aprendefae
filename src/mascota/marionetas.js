@@ -20,6 +20,7 @@
  * ═══════════════════════════════════════════════════════════════════════════
  */
 import { PIEZAS } from "./marionetas-piezas.js";
+import { piezasAccesorios } from "./accesorios-marioneta.js";
 
 export const ANIMOS = ["tranquila", "feliz", "celebra", "triste", "racha"];
 
@@ -168,10 +169,11 @@ export const tieneMarioneta = (especie) => Boolean(MARIONETAS[especie] && PIEZAS
  *   uid      — sufijo único del filtro (varias mascotas en una pantalla)
  *   busto    — true encuadra cabeza y hombros: para tamaños chicos (filas del
  *              ranking, amigos), donde el cuerpo entero deja la cara diminuta.
+ *   puestos  — ids de accesorios (accesorios-marioneta.js) que lleva encima.
  * Devuelve { viewBox, inner }. El ánimo NO va aquí: es una clase en el <svg>
  * (mta-<animo>), así cambiar de ánimo no vuelve a pintar nada.
  */
-export function svgMarioneta(especie, { tinte = null, uid = "m", busto = false } = {}) {
+export function svgMarioneta(especie, { tinte = null, uid = "m", busto = false, puestos = [] } = {}) {
   const M = MARIONETAS[especie];
   const P = PIEZAS[especie];
   if (!M || !P) return null;
@@ -204,6 +206,7 @@ export function svgMarioneta(especie, { tinte = null, uid = "m", busto = false }
 
   const [bi, bd] = M.brazos || [];
   const [oi, od] = C.orejas || [];
+  const acc = piezasAccesorios(especie, M, P, puestos);
   const lag = C.lagrima ? `<g class="mta-lagrima">${img("lagrima", C.lagrima[0], C.lagrima[1])}</g>` : "";
 
   const cabeza =
@@ -215,6 +218,7 @@ export function svgMarioneta(especie, { tinte = null, uid = "m", busto = false }
     grupo("mta-cara mta-c-feliz", caraDe(C.feliz)) +
     grupo("mta-cara mta-c-triste", caraDe(C.triste) + lag) +
     grupo("mta-cara mta-c-racha", caraDe(C.racha)) +
+    acc.cabeza +
     `</g></g>`;
 
   /* La llama, centrada sobre la cabeza. */
@@ -243,17 +247,22 @@ export function svgMarioneta(especie, { tinte = null, uid = "m", busto = false }
     `<ellipse class="mta-aura" cx="300" cy="380" rx="300" ry="360" fill="url(#mta-aura-${uid})"/>` +
     `<ellipse class="mta-sombra" cx="300" cy="684" rx="150" ry="18" fill="#000" opacity=".22"/>` +
     `<g class="mta-todo">` +
+    acc.espalda +
     (M.cola ? grupo("mta-cola", pieza(M.cola)) : "") +
     (M.piernas || []).map(pieza).join("") +
     (bi ? grupo("mta-brazo-i", pieza(bi)) : "") +
     (bd ? grupo("mta-brazo-d", pieza(bd)) : "") +
-    grupo("mta-cuerpo", pieza(M.torso)) +
+    grupo("mta-cuerpo", pieza(M.torso) + acc.pecho) +
     cabeza +
     fuego +
     `</g>` +
     confeti;
 
-  return { viewBox: busto ? encuadreBusto(M, P) : encuadreCuerpo(M, P), inner };
+  /* Las cajas de los accesorios, en px del escenario: el encuadre las cuenta
+     para que un sombrero alto o unas alas no se salgan del recuadro. */
+  const extra = acc.cajas.map(([x0, y0, x1, y1, enCabeza]) =>
+    enCabeza ? [hx + x0 * hs, hy + y0 * hs, hx + x1 * hs, hy + y1 * hs, true] : [x0, y0, x1, y1, false]);
+  return { viewBox: busto ? encuadreBusto(M, P, extra) : encuadreCuerpo(M, P, extra), inner };
 }
 
 /*
@@ -261,7 +270,7 @@ export function svgMarioneta(especie, { tinte = null, uid = "m", busto = false }
  * todas sus piezas (y la sombra), con poco margen y en la proporción del <svg>.
  * Así la mascota llena su recuadro en vez de flotar en un escenario con aire.
  */
-function encuadreCuerpo(M, P) {
+function encuadreCuerpo(M, P, extra = []) {
   const cajas = [];
   const caja = (p, tx = 0, ty = 0, s = 1) => {
     if (!p) return;
@@ -274,6 +283,7 @@ function encuadreCuerpo(M, P) {
   const [hx, hy, hs] = M.cabeza.en;
   [...(M.cabeza.orejas || []), M.cabeza.base].forEach((p) => caja(p, hx, hy, hs));
   cajas.push([150, 666, 450, 702]); // la sombra
+  extra.forEach((c) => cajas.push(c));
   const izq = Math.min(...cajas.map((c) => c[0])) - 10;
   const arr = Math.min(...cajas.map((c) => c[1])) - 10;
   const der = Math.max(...cajas.map((c) => c[2])) + 10;
@@ -285,14 +295,16 @@ function encuadreCuerpo(M, P) {
 }
 
 /* El recuadro de cabeza y hombros, en la proporción del <svg> (140 × 150). */
-function encuadreBusto(M, P) {
+function encuadreBusto(M, P, extra = []) {
   const C = M.cabeza;
   const [hx, hy, hs] = C.en;
   const [cw, ch] = P.piezas[C.base[0]];
   const orejas = (C.orejas || []).map(([n, x, y]) => [x, y, x + (P.piezas[n]?.[0] || 0)]);
-  const arriba = hy + Math.min(0, ...orejas.map((o) => o[1])) * hs;
-  const izq = hx + Math.min(0, ...orejas.map((o) => o[0])) * hs;
-  const der = hx + Math.max(cw, ...orejas.map((o) => o[2])) * hs;
+  /* Solo lo de la cabeza cuenta en el busto: unas alas no lo ensanchan. */
+  const sobre = extra.filter((c) => c[4]);
+  const arriba = Math.min(hy + Math.min(0, ...orejas.map((o) => o[1])) * hs, ...sobre.map((c) => c[1]));
+  const izq = Math.min(hx + Math.min(0, ...orejas.map((o) => o[0])) * hs, ...sobre.map((c) => c[0]));
+  const der = Math.max(hx + Math.max(cw, ...orejas.map((o) => o[2])) * hs, ...sobre.map((c) => c[2]));
   const abajo = hy + ch * hs;
   const alto = Math.max(abajo - arriba + 110, (der - izq + 24) * (150 / 140));
   const ancho = alto * (140 / 150);

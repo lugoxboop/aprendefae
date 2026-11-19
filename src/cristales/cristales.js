@@ -67,7 +67,7 @@ export const PALETAS_COMPRABLES = ["ascua", "arrecife"];
  * Desde el paso a mascotas, la Tienda vende accesorios para la mascota en vez
  * de formas de figura. Son nuevos: no se le quita nada a nadie. Los dibujos
  * están en src/mascota/mascotas.js (ACCESORIOS); aquí solo viven sus precios,
- * y EN SQL también (0165, precio_accesorio). cristales.test.mjs lee la
+ * y EN SQL también (0165 y 0169, precio_accesorio). cristales.test.mjs lee la
  * migración y falla si los dos lados se separan.
  */
 export const PRECIO_ACCESORIO = {
@@ -76,6 +76,28 @@ export const PRECIO_ACCESORIO = {
   bufanda: 45,
   mono: 50,
   bigote: 35,
+  /* 0169: los veinte nuevos, dibujados como piezas de las marionetas. Lo
+     sencillo cuesta como lo de antes; lo vistoso (casco, alas, jetpack), más. */
+  gorra: 50,
+  corona: 55,
+  audifonos: 70,
+  vaquero: 75,
+  pirata: 80,
+  birrete: 85,
+  mago: 90,
+  casco: 150,
+  gafas_sol: 50,
+  parche: 45,
+  antifaz: 55,
+  collar: 40,
+  corbatin: 35,
+  corbata: 50,
+  medalla: 100,
+  traje: 120,
+  mochila: 65,
+  capa: 110,
+  alas: 130,
+  jetpack: 150,
 };
 export const ACCESORIOS_COMPRABLES = Object.keys(PRECIO_ACCESORIO);
 

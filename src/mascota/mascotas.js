@@ -150,17 +150,48 @@ export const ACCESORIOS = {
 export const IDS_ACCESORIO = Object.keys(ACCESORIOS);
 
 /*
- * Los accesorios de la Tienda, con su nombre y en el orden en que se muestran.
- * El precio vive en cristales.js (PRECIO_ACCESORIO) y en la 0165; aquí solo el
- * nombre para pintarlos. Si se añade uno, va aquí y en los dos sitios del precio.
+ * Los accesorios de la Tienda, con su nombre, su zona (para agruparlos y para
+ * elegir cómo se enseñan: lo de la cabeza en busto, lo del cuerpo entero) y en
+ * el orden en que se muestran. El precio vive en cristales.js
+ * (PRECIO_ACCESORIO) y en la base (0165 los cinco primeros, 0169 el resto);
+ * cómo se ponen sobre cada mascota, en accesorios-marioneta.js. Si se añade
+ * uno, va en los cuatro sitios.
  */
-export const ACCESORIOS_META = [
-  { id: "gorro", nombre: "Gorro" },
-  { id: "gafas", nombre: "Gafas" },
-  { id: "bufanda", nombre: "Bufanda" },
-  { id: "mono", nombre: "Moño" },
-  { id: "bigote", nombre: "Bigote" },
+export const ZONAS_ACCESORIO = [
+  { id: "cabeza", nombre: "Para la cabeza" },
+  { id: "cara", nombre: "Para la cara" },
+  { id: "cuello", nombre: "Cuello y pecho" },
+  { id: "espalda", nombre: "Para la espalda" },
 ];
+export const ACCESORIOS_META = [
+  { id: "gorro", nombre: "Gorro de lana", zona: "cabeza" },
+  { id: "gorra", nombre: "Gorra", zona: "cabeza" },
+  { id: "corona", nombre: "Corona de flores", zona: "cabeza" },
+  { id: "mono", nombre: "Moño", zona: "cabeza" },
+  { id: "audifonos", nombre: "Audífonos", zona: "cabeza" },
+  { id: "vaquero", nombre: "Sombrero vaquero", zona: "cabeza" },
+  { id: "pirata", nombre: "Sombrero pirata", zona: "cabeza" },
+  { id: "birrete", nombre: "Birrete de grado", zona: "cabeza" },
+  { id: "mago", nombre: "Sombrero de mago", zona: "cabeza" },
+  { id: "casco", nombre: "Casco de astronauta", zona: "cabeza" },
+  { id: "gafas", nombre: "Gafas de leer", zona: "cara" },
+  { id: "gafas_sol", nombre: "Gafas de sol", zona: "cara" },
+  { id: "bigote", nombre: "Bigote", zona: "cara" },
+  { id: "parche", nombre: "Parche pirata", zona: "cara" },
+  { id: "antifaz", nombre: "Antifaz", zona: "cara" },
+  { id: "bufanda", nombre: "Bufanda", zona: "cuello" },
+  { id: "collar", nombre: "Collar con campanita", zona: "cuello" },
+  { id: "corbatin", nombre: "Corbatín", zona: "cuello" },
+  { id: "corbata", nombre: "Corbata", zona: "cuello" },
+  { id: "medalla", nombre: "Medalla de oro", zona: "cuello" },
+  { id: "traje", nombre: "Traje de gala", zona: "cuello" },
+  { id: "mochila", nombre: "Mochila", zona: "espalda" },
+  { id: "capa", nombre: "Capa de héroe", zona: "espalda" },
+  { id: "alas", nombre: "Alas de hada", zona: "espalda" },
+  { id: "jetpack", nombre: "Jetpack", zona: "espalda" },
+];
+const ID_ACCESORIO_VALIDO = new Set(ACCESORIOS_META.map((a) => a.id));
+export const esAccesorio = (k) => typeof k === "string" && ID_ACCESORIO_VALIDO.has(k);
 
 /*
  * Las partes propias de cada especie, en función del color. Las orejas y las
@@ -283,7 +314,7 @@ export function mascotaDe(perfil) {
   const paleta = perfil?.mascota_paleta ?? "natural";
   const ojos = perfil?.mascota_ojos ?? "natural";
   const puestos = Array.isArray(perfil?.mascota_puestos)
-    ? perfil.mascota_puestos.filter((k) => typeof k === "string" && ACCESORIOS[k])
+    ? perfil.mascota_puestos.filter(esAccesorio)
     : [];
   return { especie, paleta, ojos, puestos };
 }
