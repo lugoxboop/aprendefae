@@ -32,7 +32,7 @@ const detalle = [
 ];
 const registro = { id: 1, fp_awarded: 40, repeat_index: 0, correct_pct: pct };
 const partida = {
-  id: 1, actividadId: "x", listo: true, valida: true, pct, detalle, registro,
+  id: 1, actividadId: "cu-cuadro-dinamicas", listo: true, valida: true, pct, detalle, registro,
   clasificacion: { tipo: "hacer", modalidad: "evaluativa", dificultad: "medio" },
   aviso: { fp: 40, repetida: false, actividadId: "x", materiaId: "contabilidad", pctGuardado: pct },
 };
