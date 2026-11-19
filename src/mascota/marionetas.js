@@ -45,13 +45,14 @@ export const MARIONETAS = {
   zorro: {
     cola: ["cola", 360, 392],
     piernas: [["pierna", 178, 520], ["pierna", 318, 520, { espejo: true }]],
-    brazos: [["brazo_d", 145, 380, { giro: -8 }], ["brazo_i", 345, 380, { giro: 8 }]],
+    brazos: [["brazo_d", 168, 385, { giro: -6 }], ["brazo_i", 322, 385, { giro: 6 }]],
+    brazosDelante: true,
     torso: ["torso", 166, 300],
     cabeza: {
       en: [109, 52, 1.35],
       orejas: [["oreja_i", 10, -82], ["oreja_d", 140, -82]],
       base: ["cabeza", 0, 0],
-      tranquila: { ojos: [["ojo_i", 44, 84], ["ojo_d", 167, 84]], resto: [] },
+      tranquila: { ojos: [["ojo_i", 44, 84], ["ojo_d", 167, 84]], resto: [["boca_sonrisa", 101, 150]] },
       feliz: [["feliz_i", 46, 104], ["feliz_d", 170, 104], ["boca_abierta", 94, 146]],
       triste: [["triste_i", 42, 72], ["triste_d", 166, 71], ["boca_triste", 111, 186]],
       racha: [["racha_i", 50, 86], ["racha_d", 173, 86], ["boca_sonrisa", 101, 150]],
@@ -76,7 +77,8 @@ export const MARIONETAS = {
   },
   perro: {
     cola: ["cola", 380, 470],
-    brazos: [["brazo_d", 163, 440, { giro: -22 }], ["brazo_i", 341, 440, { giro: 22 }]],
+    brazos: [["brazo_d", 178, 450, { giro: -8 }], ["brazo_i", 326, 450, { giro: 8 }]],
+    brazosDelante: true,
     torso: ["torso", 164, 400],
     cabeza: {
       en: [123, 125, 1.35],
@@ -92,7 +94,8 @@ export const MARIONETAS = {
   hamster: {
     cola: ["cola", 380, 560],
     piernas: [["pierna_i", 195, 520], ["pierna_d", 325, 520]],
-    brazos: [["brazo_d", 168, 470], ["brazo_i", 365, 470]],
+    brazos: [["brazo_d", 190, 480, { giro: -8 }], ["brazo_i", 343, 480, { giro: 8 }]],
+    brazosDelante: true,
     torso: ["torso", 186, 440],
     cabeza: {
       en: [106, 200, 1.35],
@@ -113,7 +116,7 @@ export const MARIONETAS = {
       en: [147, 250, 1.35],
       orejas: [["oreja_i", 40, -150], ["oreja_d", 100, -150]],
       base: ["cabeza", 0, 0],
-      tranquila: { ojos: [["ojo_i", 35, 60], ["ojo_d", 125, 60]], resto: [] },
+      tranquila: { ojos: [["ojo_i", 35, 60], ["ojo_d", 125, 60]], resto: [["boca_sonrisa", 64, 104]] },
       feliz: [["feliz_i", 37, 75], ["feliz_d", 122, 75], ["boca_abierta", 60, 104]],
       triste: [["triste_i", 38, 40], ["triste_d", 124, 58], ["boca_triste", 65, 140]],
       racha: [["racha_i", 30, 58], ["racha_d", 118, 58], ["boca_sonrisa", 64, 104]],
@@ -123,7 +126,8 @@ export const MARIONETAS = {
   huron: {
     cola: ["cola", 330, 520, { escala: 0.65 }],
     piernas: [["pierna_i", 198, 550], ["pierna_d", 308, 550]],
-    brazos: [["brazo_i", 188, 452, { espejo: true }], ["brazo_i", 333, 452]],
+    brazos: [["brazo_i", 205, 455, { espejo: true, giro: -10 }], ["brazo_i", 316, 455, { giro: 10 }]],
+    brazosDelante: true,
     torso: ["torso", 207, 385],
     cabeza: {
       en: [163, 190, 1.35],
@@ -225,6 +229,13 @@ export function svgMarioneta(especie, { tinte = null, uid = "m", busto = false, 
   const [bi, bd] = M.brazos || [];
   const [oi, od] = C.orejas || [];
   const acc = piezasAccesorios(especie, M, P, puestos);
+  /*
+   * Los brazos van detrás del torso, salvo en las especies con
+   * `brazosDelante`: ahí el hombro asoma por fuera del cuerpo si va detrás
+   * (Mateo, 19-nov: «los hombros están como salidos»), así que se pintan
+   * encima, con el hombro dentro de la silueta.
+   */
+  const brazos = (bi ? grupo("mta-brazo-i", pieza(bi)) : "") + (bd ? grupo("mta-brazo-d", pieza(bd)) : "");
   const lag = C.lagrima ? `<g class="mta-lagrima">${img("lagrima", C.lagrima[0], C.lagrima[1])}</g>` : "";
 
   const cabeza =
@@ -299,9 +310,9 @@ export function svgMarioneta(especie, { tinte = null, uid = "m", busto = false, 
     acc.espalda +
     (M.cola ? grupo("mta-cola", pieza(M.cola)) : "") +
     (M.piernas || []).map(pieza).join("") +
-    (bi ? grupo("mta-brazo-i", pieza(bi)) : "") +
-    (bd ? grupo("mta-brazo-d", pieza(bd)) : "") +
+    (M.brazosDelante ? "" : brazos) +
     grupo("mta-cuerpo", pieza(M.torso) + acc.pecho) +
+    (M.brazosDelante ? brazos : "") +
     cabeza +
     fuego +
     `</g>` +
