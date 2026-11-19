@@ -13,7 +13,6 @@ import Medallas from "./perfil/Medallas.jsx";
 import ResumenSemestre from "./perfil/ResumenSemestre.jsx";
 import EditarPerfil, { SECCIONES } from "./perfil/EditarPerfil.jsx";
 import SeccionMascota from "./perfil/SeccionMascota.jsx";
-import { TAMANOS } from "./avatar/Avatar.jsx";
 import AvatarEstudiante from "./avatar/AvatarEstudiante.jsx";
 import IconoCristal from "./shared/IconoCristal.jsx";
 import { saldoDe } from "../cristales/cristales.js";
@@ -142,7 +141,7 @@ export default function PerfilView({ seccion = null, onBack }) {
         ) : (
           <>
             {/*
-              El avatar, a 96 px, con el apodo al lado. TOCARLO ABRE EDITAR
+              La mascota, a 112 px y en busto, con el apodo al lado. TOCARLO ABRE EDITAR
               PERFIL: es el atajo directo al selector, además del botón de
               abajo. Lo que se toca para cambiar algo es la cosa misma.
             */}
@@ -157,7 +156,7 @@ export default function PerfilView({ seccion = null, onBack }) {
                   background: "rgba(29,53,87,0.55)", border: "1px solid rgba(248,249,250,0.14)", lineHeight: 0,
                 }}
               >
-                <AvatarEstudiante perfil={perfil} tamano={TAMANOS.perfil} animo="tranquila" />
+                <AvatarEstudiante perfil={perfil} tamano={112} animo="tranquila" encuadre="busto" />
               </button>
               <p
                 data-apodo

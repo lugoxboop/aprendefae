@@ -19,7 +19,7 @@ import { asegurarEstiloMarioneta } from "../mascota/marioneta-estilo.js";
  * hueco. El SVG es estático y de la casa, así que va por dangerouslySetInnerHTML
  * sin riesgo —no entra texto de nadie—.
  */
-export default function Mascota({ especie, perfil, puestos, paleta, ojos, tamano = 96, titulo, animo = "quieta", style = null, ...resto }) {
+export default function Mascota({ especie, perfil, puestos, paleta, ojos, tamano = 96, titulo, animo = "quieta", encuadre = null, style = null, ...resto }) {
   const esp = especie ?? perfil?.mascota_especie ?? null;
   if (!esp) return null;
   const pal = paleta ?? perfil?.mascota_paleta ?? null;
@@ -36,15 +36,16 @@ export default function Mascota({ especie, perfil, puestos, paleta, ojos, tamano
    * MARIONETA: el mismo recuadro que siempre (ancho × alto 150/140), así nada
    * de la página se mueve; la figura se ajusta dentro. overflow visible para
    * que el salto y las llamas no se corten (el busto sí se recorta).
-   * Hasta 64 px se encuadra el busto (cabeza y hombros): de cuerpo entero, la
-   * cara quedaría diminuta en una fila del ranking.
+   * Hasta 100 px se encuadra el busto (cabeza y hombros): de cuerpo entero, la
+   * cara quedaría diminuta (ranking, podio, cabecera del perfil, tienda). El
+   * cuerpo entero, ajustado a la mascota, queda para la tarjeta grande.
    * Los accesorios y el color de ojos aún no se pintan sobre las marionetas.
    */
   if (tieneMarioneta(esp)) {
     asegurarEstiloMarioneta();
     /* El id del filtro sale de especie + paleta: dos mascotas iguales comparten
        un filtro idéntico, y el HTML no cambia entre un pintado y otro. */
-    const busto = tamano <= 64;
+    const busto = encuadre ? encuadre === "busto" : tamano <= 100;
     const { viewBox, inner } = svgMarioneta(esp, { tinte: tinteDe(pal), uid: `${esp}-${pal || "natural"}`, busto });
     const mov = ANIMOS.includes(animo) ? animo : "quieta";
     return (

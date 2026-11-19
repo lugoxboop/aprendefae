@@ -7,7 +7,8 @@
  * cada pieza; el movimiento lo pone marioneta.css. Como las piezas son sueltas,
  * la mascota parpadea, mueve la cola, salta o baja las orejas sin redibujarse.
  *
- * Coordenadas: px del kit, sobre un escenario de 640 × 770 (viewBox -20 -65).
+ * Coordenadas: px del kit, sobre un escenario de 640 × 770 (x de -20 a 620,
+ * y de -65 a 705); al pintar, el recuadro se ajusta a cada mascota.
  * El suelo está en y = 684 y el centro en x = 300. Cada pieza es
  * [nombre, x, y] o [nombre, x, y, { espejo, escala }]. La cabeza tiene su propio
  * marco (traslado y escala) y la cara se ubica sobre la cabeza.
@@ -252,7 +253,35 @@ export function svgMarioneta(especie, { tinte = null, uid = "m", busto = false }
     `</g>` +
     confeti;
 
-  return { viewBox: busto ? encuadreBusto(M, P) : "-20 -65 640 770", inner };
+  return { viewBox: busto ? encuadreBusto(M, P) : encuadreCuerpo(M, P), inner };
+}
+
+/*
+ * El recuadro de cuerpo entero, AJUSTADO a la mascota: la caja que encierra
+ * todas sus piezas (y la sombra), con poco margen y en la proporción del <svg>.
+ * Así la mascota llena su recuadro en vez de flotar en un escenario con aire.
+ */
+function encuadreCuerpo(M, P) {
+  const cajas = [];
+  const caja = (p, tx = 0, ty = 0, s = 1) => {
+    if (!p) return;
+    const d = P.piezas[p[0]];
+    if (!d) return;
+    const e = p[3]?.escala || 1;
+    cajas.push([tx + p[1] * s, ty + p[2] * s, tx + (p[1] + d[0] * e) * s, ty + (p[2] + d[1] * e) * s]);
+  };
+  [M.cola, M.torso, ...(M.piernas || []), ...(M.brazos || [])].forEach((p) => caja(p));
+  const [hx, hy, hs] = M.cabeza.en;
+  [...(M.cabeza.orejas || []), M.cabeza.base].forEach((p) => caja(p, hx, hy, hs));
+  cajas.push([150, 666, 450, 702]); // la sombra
+  const izq = Math.min(...cajas.map((c) => c[0])) - 10;
+  const arr = Math.min(...cajas.map((c) => c[1])) - 10;
+  const der = Math.max(...cajas.map((c) => c[2])) + 10;
+  const aba = Math.max(...cajas.map((c) => c[3])) + 6;
+  let w = der - izq, h = aba - arr;
+  if (w / h > 140 / 150) h = w * (150 / 140); else w = h * (140 / 150);
+  const cx = (izq + der) / 2;
+  return `${Math.round(cx - w / 2)} ${Math.round(aba - h)} ${Math.round(w)} ${Math.round(h)}`;
 }
 
 /* El recuadro de cabeza y hombros, en la proporción del <svg> (140 × 150). */

@@ -168,7 +168,7 @@ export default function SeccionMascota({ perfil: perfilProp = null, completo = f
 
       <div style={{ display: "flex", alignItems: "flex-start", gap: "16px", flexWrap: "wrap" }}>
         <div style={{ lineHeight: 0, flexShrink: 0 }}>
-          <Mascota especie={especie} perfil={perfil} paleta={paleta} ojos={ojos} tamano={96} animo="tranquila" titulo={`Tu mascota: ${nombre || ""}`} />
+          <Mascota especie={especie} perfil={perfil} paleta={paleta} ojos={ojos} tamano={150} animo="tranquila" titulo={`Tu mascota: ${nombre || ""}`} />
         </div>
         <div style={{ minWidth: 0, flex: 1 }}>
           {/* ── Nombre ── */}

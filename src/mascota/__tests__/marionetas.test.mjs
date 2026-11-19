@@ -76,9 +76,11 @@ test("★ cada ánimo tiene su cara, y las tablas del filtro son colores válido
   }
 });
 
-test("★ el busto cabe en la proporción del recuadro (140 × 150)", () => {
+test("★ busto y cuerpo entero caben en la proporción del recuadro (140 × 150)", () => {
   for (const { id } of ESPECIES) {
-    const [, , w, h] = svgMarioneta(id, { busto: true }).viewBox.split(" ").map(Number);
-    assert.ok(Math.abs(w / h - 140 / 150) < 0.01, `${id}: busto ${w}×${h}`);
+    for (const busto of [true, false]) {
+      const [, , w, h] = svgMarioneta(id, { busto }).viewBox.split(" ").map(Number);
+      assert.ok(Math.abs(w / h - 140 / 150) < 0.01, `${id}: ${busto ? "busto" : "cuerpo"} ${w}×${h}`);
+    }
   }
 });
