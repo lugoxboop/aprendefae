@@ -22,8 +22,8 @@ export const PIEZAS_ACCESORIO = {
   alas: [340, 232], antifaz: [223, 91], audifonos: [245, 208], bigote: [221, 74], birrete: [284, 172],
   bufanda: [236, 259], capa: [314, 249], casco: [246, 247], collar: [217, 157], corbata: [202, 202],
   corbatin: [184, 98], corona: [238, 102], gafas: [240, 106], gafas_sol: [235, 98], gorra: [221, 166],
-  gorro: [236, 205], jetpack: [226, 262], mago: [274, 208], medalla: [149, 230], mochila: [464, 406],
-  mono: [217, 169], parche: [210, 132], pirata: [290, 156], tirante_d: [130, 400], tirante_i: [125, 401],
+  gorro: [236, 205], jetpack: [226, 262], mago: [274, 208], medalla: [149, 230], mochila: [527, 480],
+  mono: [217, 169], parche: [210, 132], pirata: [290, 156], tirante_d: [128, 393], tirante_i: [123, 394],
   traje: [232, 212], vaquero: [287, 154],
 };
 
@@ -69,7 +69,7 @@ export const ACCESORIOS_MARIONETA = {
   mochila: {
     ranura: "espalda",
     partes: [
-      { pieza: "mochila", en: "cuello", capa: "espalda", w: 1.25, p: [0.5, 0.1], dy: -0.06 },
+      { pieza: "mochila", en: "cuello", capa: "espalda", w: 1.2, p: [0.5, 0.3], dy: 0.02 },
       { pieza: "tirante_i", en: "cuello", w: 0.2, p: [0.5, 0.04], dx: -0.25, dy: 0.0 },
       { pieza: "tirante_d", en: "cuello", w: 0.2, p: [0.5, 0.04], dx: 0.25, dy: 0.0 },
     ],
