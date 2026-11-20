@@ -73,7 +73,7 @@ test("una invitación recibida ofrece aceptar y rechazar", () => {
   let respondido = null;
   const m = montar({ invitaciones: [{ id: "i1", meta: 6, bono: 25, otro }], onResponder: (id, ok) => { respondido = [id, ok]; } });
   try {
-    assert.match(m.caja.textContent, /Te retaron/);
+    assert.match(m.caja.textContent, /Nico te retó/);
     assert.match(m.caja.textContent, /bono \+25/);
   } finally { m.desmontar(); }
 });

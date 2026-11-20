@@ -1,155 +1,202 @@
+import { Swords, Check, X, Clock, Gem, Trophy } from "lucide-react";
 import { FAE } from "../../theme.js";
-import AvatarEstudiante from "../avatar/AvatarEstudiante.jsx";
-import { perfilDeTarjeta } from "./PanelAmigos.jsx";
 import { tiempoRestante } from "../../social/useRetos.js";
+import { perfilDeTarjeta, tonoDe, Escenario, Carita, Boton, TituloSeccion, PANEL } from "./amigos-comun.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
- * LOS RETOS EN COMPAÑÍA, en pantalla. Presentacional: recibe los datos y las
- * acciones; useRetos y el refresco del saldo viven en AmigosView.
+ * LOS RETOS EN COMPAÑÍA, en pantalla — rehechos el 20-nov como un duelo de
+ * juego, pero en equipo: tu mascota a un lado, la de tu amigo al otro, frente a
+ * frente, y entre las dos la barra de lo que llevan JUNTOS, partida en el
+ * color de cada uno. Cuando llegan a la meta, el botón de reclamar brilla en
+ * dorado.
  *
- * Tres bloques por lo que pide atención:
+ * Presentacional: recibe los datos y las acciones; useRetos y el refresco del
+ * saldo viven en AmigosView. Por lo que pide atención:
  *   · invitaciones que me llegaron (aceptar / rechazar);
- *   · retos activos, con la barra de progreso de los dos y el botón de reclamar
- *     el bono cuando ya cumplieron la meta entre ambos;
- *   · invitaciones que mandé y siguen esperando.
+ *   · retos en curso;
+ *   · retos que mandé y siguen esperando.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-const caja = {
-  borderRadius: "16px",
-  background: "rgba(248,249,250,0.04)",
-  border: "1px solid rgba(248,249,250,0.12)",
-  padding: "18px 18px 16px",
-  marginBottom: "26px",
-};
-const sub = {
-  fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "12.5px",
-  letterSpacing: "0.02em", color: "rgba(248,249,250,0.6)", margin: "0 0 10px",
-};
-
-function Chip({ onClick, children, tono = "neutro", etiqueta }) {
-  const estilos = {
-    si: { color: "#06202A", border: "transparent", fondo: FAE.teal },
-    neutro: { color: "#A8B6C8", border: "rgba(248,249,250,0.16)", fondo: "rgba(248,249,250,0.05)" },
-  };
-  const c = estilos[tono] || estilos.neutro;
+function BarraJuntos({ mio, otro, meta, tonoMio, tonoOtro }) {
+  const m = Math.max(1, meta);
+  const pMio = Math.min(100, (mio / m) * 100);
+  const pOtro = Math.min(100 - pMio, (otro / m) * 100);
   return (
-    <button
-      type="button" onClick={onClick} aria-label={etiqueta} title={etiqueta}
-      style={{
-        minHeight: "38px", padding: "0 13px", borderRadius: "999px", cursor: "pointer", flexShrink: 0,
-        border: `1px solid ${c.border}`, background: c.fondo, color: c.color,
-        fontFamily: "Sora, sans-serif", fontSize: "12.5px", fontWeight: 700,
-      }}
+    <div
+      role="progressbar"
+      aria-valuemin={0}
+      aria-valuemax={meta}
+      aria-valuenow={Math.min(meta, mio + otro)}
+      aria-label="Actividades que llevan juntos"
+      style={{ position: "relative", height: "14px", borderRadius: "999px", background: "rgba(248,249,250,0.1)", overflow: "hidden", boxShadow: "inset 0 1px 3px rgba(0,0,0,0.4)" }}
     >
-      {children}
-    </button>
-  );
-}
-
-function Cabeza({ tarjeta, children, sufijo }) {
-  return (
-    <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: "8px 11px", padding: "4px 0" }}>
-      <AvatarEstudiante perfil={perfilDeTarjeta(tarjeta)} tamano={40} titulo={`Mascota de ${tarjeta.apodo}`} />
-      <div style={{ flex: "1 1 120px", minWidth: "100px" }}>
-        <p style={{ fontFamily: "Sora, sans-serif", fontSize: "14px", fontWeight: 700, color: FAE.text, margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-          {tarjeta.apodo}
-        </p>
-        {sufijo && <p style={{ fontSize: "12px", color: "rgba(248,249,250,0.55)", margin: "2px 0 0" }}>{sufijo}</p>}
-      </div>
-      {children && <div style={{ display: "flex", gap: "6px", marginLeft: "auto", flexShrink: 0 }}>{children}</div>}
+      <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${pMio}%`, background: `linear-gradient(90deg, rgba(${tonoMio},.85), rgb(${tonoMio}))`, transition: "width .5s ease" }} />
+      <div style={{ position: "absolute", left: `${pMio}%`, top: 0, bottom: 0, width: `${pOtro}%`, background: `linear-gradient(90deg, rgb(${tonoOtro}), rgba(${tonoOtro},.85))`, borderLeft: pMio > 0 && pOtro > 0 ? "2px solid #0E1B2E" : "none", transition: "width .5s ease" }} />
+      {pMio + pOtro > 0 && <span className="amg-barra-brillo" style={{ width: `${pMio + pOtro}%`, right: "auto" }} />}
     </div>
   );
 }
 
-function Barra({ hecho, meta }) {
-  const pct = Math.max(0, Math.min(100, Math.round((hecho / Math.max(1, meta)) * 100)));
+function Nombre({ children, sub }) {
   return (
-    <div style={{ height: "8px", borderRadius: "999px", background: "rgba(248,249,250,0.1)", overflow: "hidden", margin: "8px 0 6px" }}>
-      <div style={{ width: `${pct}%`, height: "100%", borderRadius: "999px", background: FAE.teal, transition: "width .4s ease" }} />
+    <div style={{ textAlign: "center", minWidth: 0 }}>
+      <p style={{ margin: 0, fontFamily: "Sora, sans-serif", fontSize: "13.5px", fontWeight: 800, color: FAE.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{children}</p>
+      {sub != null && <p style={{ margin: "1px 0 0", fontFamily: "Sora, sans-serif", fontSize: "20px", fontWeight: 800, color: FAE.text, lineHeight: 1.1 }}>{sub}</p>}
     </div>
   );
 }
 
-function RetoActivo({ reto, onCerrar, cerrando }) {
+function RetoActivo({ reto, yo, onCerrar, cerrando }) {
   const mio = reto.avance_mio ?? 0;
   const otro = reto.avance_otro ?? 0;
   const total = mio + otro;
   const lograble = total >= reto.meta && mio >= 1 && otro >= 1;
+  const amigo = perfilDeTarjeta(reto.otro ?? {});
+  const tonoMio = yo ? tonoDe(yo) : "42, 157, 143";
+  const tonoOtro = tonoDe(amigo);
+  const apodo = reto.otro?.apodo ?? "tu amigo";
   return (
-    <div data-reto={reto.id} style={{ padding: "10px 0", borderTop: "1px solid rgba(248,249,250,0.07)" }}>
-      <Cabeza tarjeta={reto.otro ?? {}} sufijo={`Meta: ${reto.meta} actividades juntos · quedan ${tiempoRestante(reto.vence)}`} />
-      <Barra hecho={total} meta={reto.meta} />
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px" }}>
-        <span style={{ fontSize: "12.5px", color: "rgba(248,249,250,0.6)" }} data-avance>
-          Tú {mio} · {reto.otro?.apodo ?? "tu amigo"} {otro} &nbsp;=&nbsp; {total}/{reto.meta}
+    <div
+      data-reto={reto.id}
+      style={{
+        ...PANEL, padding: "16px clamp(12px, 3vw, 22px) 16px",
+        background: lograble
+          ? "radial-gradient(90% 80% at 50% 0%, rgba(233,185,73,0.22), transparent 70%), linear-gradient(180deg, rgba(248,249,250,0.07), rgba(248,249,250,0.03))"
+          : PANEL.background,
+        borderColor: lograble ? "rgba(233,185,73,0.55)" : PANEL.border,
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px", marginBottom: "4px", flexWrap: "wrap" }}>
+        <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontSize: "12px", fontWeight: 700, color: "rgba(248,249,250,0.65)" }}>
+          <Clock size={13} /> Quedan {tiempoRestante(reto.vence)}
         </span>
-        {lograble ? (
-          <Chip tono="si" etiqueta="Reclamar el bono de cristales" onClick={() => onCerrar(reto.id)}>
-            {cerrando === reto.id ? "…" : `Reclamar +${reto.bono} 💎`}
-          </Chip>
-        ) : (
-          <span style={{ fontSize: "12px", color: "rgba(248,249,250,0.45)" }}>
-            {mio < 1 ? "Haz tú una actividad" : otro < 1 ? "Falta que tu amigo empiece" : `Faltan ${reto.meta - total}`}
-          </span>
-        )}
+        <span style={{ display: "inline-flex", alignItems: "center", gap: "5px", padding: "3px 10px", borderRadius: "999px", background: "rgba(111,134,255,0.16)", border: "1px solid rgba(111,134,255,0.35)", fontSize: "12px", fontWeight: 700, color: "#D6DCFF" }}>
+          <Gem size={13} /> +{reto.bono} para cada uno
+        </span>
       </div>
+
+      <div className="amg-duelo">
+        <div>
+          {yo && <Escenario perfil={yo} tamano={104} animo={lograble ? "celebra" : "tranquila"} titulo="Tu mascota" />}
+          <Nombre sub={mio}>Tú</Nombre>
+        </div>
+        <div style={{ alignSelf: "center", paddingBottom: "8px", minWidth: 0 }}>
+          <p style={{ margin: "0 0 8px", textAlign: "center", fontFamily: "Sora, sans-serif", fontSize: "clamp(22px, 5vw, 30px)", fontWeight: 800, letterSpacing: "-0.03em", color: FAE.text, lineHeight: 1 }} data-avance>
+            {total}<span style={{ color: "rgba(248,249,250,0.45)", fontSize: "0.6em", marginLeft: "3px" }}>/{reto.meta}</span>
+          </p>
+          <BarraJuntos mio={mio} otro={otro} meta={reto.meta} tonoMio={tonoMio} tonoOtro={tonoOtro} />
+          <p style={{ margin: "8px 0 0", textAlign: "center", fontSize: "12px", color: "rgba(248,249,250,0.6)", lineHeight: 1.35 }}>
+            {lograble ? "¡Lo lograron juntos!" : mio < 1 ? "Haz tú una actividad" : otro < 1 ? `Falta que ${apodo} empiece` : `Faltan ${reto.meta - total} actividades`}
+          </p>
+        </div>
+        <div className="amg-espejo">
+          <Escenario perfil={amigo} tamano={104} animo={lograble ? "celebra" : "tranquila"} titulo={`Mascota de ${apodo}`} />
+          <Nombre sub={otro}>{apodo}</Nombre>
+        </div>
+      </div>
+
+      {lograble && (
+        <div style={{ marginTop: "14px" }}>
+          <Boton tono="oro" grande ancho className="amg-listo" etiqueta="Reclamar el bono de cristales" onClick={() => onCerrar(reto.id)}>
+            <Trophy size={17} /> {cerrando === reto.id ? "…" : `Reclamar +${reto.bono} cristales`}
+          </Boton>
+        </div>
+      )}
     </div>
   );
 }
 
-export default function PanelRetos({ activos = [], invitaciones = [], enviadas = [], cargando = false, onResponder, onCerrar, respondiendo, cerrando }) {
+export default function PanelRetos({ activos = [], invitaciones = [], enviadas = [], cargando = false, onResponder, onCerrar, respondiendo, cerrando, yo = null, onElegirAmigo = null }) {
   const vacio = activos.length === 0 && invitaciones.length === 0 && enviadas.length === 0;
   return (
-    <section style={caja} data-panel-retos aria-label="Retos en compañía">
-      <h3 style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "15px", color: FAE.text, margin: "0 0 4px" }}>
-        Retos en compañía
-      </h3>
-      <p style={{ fontSize: "12.5px", color: "rgba(248,249,250,0.55)", margin: "0 0 14px", lineHeight: 1.5 }}>
-        Estudien juntos y los dos ganan cristales. Reta a un amigo desde la lista de abajo.
-      </p>
+    <section data-panel-retos aria-labelledby="amg-retos" style={{ marginTop: "34px" }}>
+      <TituloSeccion id="amg-retos" cuenta={activos.length || null}>Retos en compañía</TituloSeccion>
 
-      {cargando && <p style={{ fontSize: "13px", color: "rgba(248,249,250,0.5)", margin: 0 }}>Cargando…</p>}
+      {cargando && <p style={{ fontSize: "13px", color: "rgba(248,249,250,0.55)", margin: "0 0 12px" }}>Cargando…</p>}
 
       {invitaciones.length > 0 && (
-        <div style={{ marginBottom: "6px" }}>
-          <p style={sub}>Te retaron</p>
+        <div style={{ display: "grid", gap: "10px", marginBottom: "14px" }}>
           {invitaciones.map((r) => (
-            <div key={r.id} style={{ borderTop: "1px solid rgba(248,249,250,0.07)" }}>
-              <Cabeza tarjeta={r.otro ?? {}} sufijo={`${r.meta} actividades juntos · bono +${r.bono} 💎`}>
-                <Chip tono="si" etiqueta="Aceptar el reto" onClick={() => onResponder(r.id, true)}>
-                  {respondiendo === r.id ? "…" : "Aceptar"}
-                </Chip>
-                <Chip etiqueta="Rechazar el reto" onClick={() => onResponder(r.id, false)}>Rechazar</Chip>
-              </Cabeza>
+            <div
+              key={r.id}
+              data-invitacion-reto={r.id}
+              style={{ ...PANEL, display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap", padding: "12px 14px", borderColor: "rgba(233,185,73,0.5)", background: "linear-gradient(90deg, rgba(233,185,73,0.14), rgba(248,249,250,0.03))" }}
+            >
+              <Carita perfil={perfilDeTarjeta(r.otro ?? {})} tamano={52} titulo={`Mascota de ${r.otro?.apodo ?? ""}`} />
+              <div style={{ flex: "1 1 160px", minWidth: 0 }}>
+                <p style={{ margin: 0, fontFamily: "Sora, sans-serif", fontSize: "14.5px", fontWeight: 800, color: FAE.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  {r.otro?.apodo ?? "Un amigo"} te retó
+                </p>
+                <p style={{ margin: "2px 0 0", fontSize: "12.5px", color: "rgba(248,249,250,0.65)" }}>
+                  {r.meta} actividades entre los dos · bono +{r.bono} cristales cada uno
+                </p>
+              </div>
+              <div style={{ display: "flex", gap: "6px", marginLeft: "auto" }}>
+                <Boton tono="si" etiqueta="Aceptar el reto" onClick={() => onResponder(r.id, true)}>
+                  {respondiendo === r.id ? "…" : <><Check size={15} /> Aceptar</>}
+                </Boton>
+                <Boton tono="suave" etiqueta="Rechazar el reto" onClick={() => onResponder(r.id, false)}>
+                  <X size={15} />
+                </Boton>
+              </div>
             </div>
           ))}
         </div>
       )}
 
       {activos.length > 0 && (
-        <div style={{ marginTop: invitaciones.length > 0 ? "14px" : 0 }}>
-          <p style={sub}>En curso</p>
+        <div style={{ display: "grid", gap: "14px", gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 440px), 1fr))", alignItems: "start" }}>
           {activos.map((r) => (
-            <RetoActivo key={r.id} reto={r} onCerrar={onCerrar} cerrando={cerrando} />
+            <RetoActivo key={r.id} reto={r} yo={yo} onCerrar={onCerrar} cerrando={cerrando} />
           ))}
         </div>
       )}
 
       {enviadas.length > 0 && (
         <div style={{ marginTop: "14px" }}>
-          <p style={sub}>Esperando respuesta</p>
-          {enviadas.map((r) => (
-            <Cabeza key={r.id} tarjeta={r.otro ?? {}} sufijo={`Lo retaste · ${r.meta} actividades`} />
-          ))}
+          <p style={{ display: "flex", alignItems: "center", gap: "6px", margin: "0 0 10px", fontFamily: "Sora, sans-serif", fontSize: "13px", fontWeight: 700, color: "rgba(248,249,250,0.6)" }}>
+            <Clock size={14} /> Esperando que acepten tu reto
+          </p>
+          <div className="amg-fila">
+            {enviadas.map((r) => (
+              <div key={r.id} style={{ flex: "0 0 auto", display: "flex", alignItems: "center", gap: "10px", padding: "6px 14px 6px 8px", borderRadius: "999px", background: "rgba(248,249,250,0.05)", border: "1px dashed rgba(248,249,250,0.18)" }}>
+                <Carita perfil={perfilDeTarjeta(r.otro ?? {})} tamano={36} titulo={`Mascota de ${r.otro?.apodo ?? ""}`} />
+                <span style={{ fontFamily: "Sora, sans-serif", fontSize: "13px", fontWeight: 600, color: "rgba(248,249,250,0.85)", whiteSpace: "nowrap" }}>
+                  {r.otro?.apodo} · {r.meta} actividades
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
       {vacio && !cargando && (
-        <p style={{ fontSize: "13px", color: "rgba(248,249,250,0.5)", margin: "6px 0 0", lineHeight: 1.5 }}>
-          Todavía no tienes retos. Reta a un amigo de la lista de abajo y estudien juntos.
-        </p>
+        <div data-retos-vacio style={{ ...PANEL, display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap", padding: "16px clamp(14px, 3vw, 22px)" }}>
+          <div style={{ display: "flex", alignItems: "flex-end", gap: "4px", flexShrink: 0 }}>
+            {yo && <Escenario perfil={yo} tamano={72} titulo="Tu mascota" />}
+            <span aria-hidden="true" style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "34px", height: "34px", marginBottom: "30px", borderRadius: "50%", background: "rgba(111,134,255,0.18)", border: "1px solid rgba(111,134,255,0.4)" }}>
+              <Swords size={16} color="#C9D2FF" />
+            </span>
+            <span aria-hidden="true" style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "72px", height: "78px", marginBottom: "8px", borderRadius: "20px", border: "2px dashed rgba(248,249,250,0.22)", fontFamily: "Sora, sans-serif", fontSize: "28px", fontWeight: 800, color: "rgba(248,249,250,0.35)" }}>
+              ?
+            </span>
+          </div>
+          <div style={{ flex: "1 1 220px", minWidth: 0 }}>
+            <p style={{ margin: "0 0 4px", fontFamily: "Sora, sans-serif", fontSize: "16px", fontWeight: 800, color: FAE.text }}>
+              Estudien juntos y los dos ganan cristales
+            </p>
+            <p style={{ margin: "0 0 12px", fontSize: "13px", lineHeight: 1.5, color: "rgba(248,249,250,0.65)" }}>
+              Reta a un amigo: entre los dos completan una meta de actividades y cada uno se lleva su premio.
+            </p>
+            {onElegirAmigo && (
+              <Boton tono="si" onClick={onElegirAmigo} etiqueta="Elegir a un amigo para retarlo">
+                <Swords size={15} /> Elegir a quién retar
+              </Boton>
+            )}
+          </div>
+        </div>
       )}
     </section>
   );
