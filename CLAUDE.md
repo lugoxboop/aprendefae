@@ -85,12 +85,19 @@ como con cualquier general.
 5. **Decides tú todo lo reversible.** Solo se para ante lo irreversible: borrar
    o dañar datos de estudiantes, cambiar contenido que Mateo ya aprobó, o
    tumbar la plataforma. Eso se escala a tu general, que lo lleva a Miku.
+6. **Compatibilidad «Widely available».** Los estudiantes entran desde teléfonos
+   de todo tipo. El objetivo es que todo funcione en casi todos los navegadores
+   y celulares (Baseline ampliamente disponible), sin funciones experimentales.
+   Antes de tocar animaciones, transiciones, ventanas emergentes, formularios,
+   accesibilidad, rendimiento en celular o inicio de sesión, **consulta primero
+   la guía Modern Web Guidance y síguela** (regla n del protocolo).
 
 ## Dónde está cada cosa
 
 | Necesitas | Está en |
 |---|---|
 | Cómo gastamos poco sin verificar menos | `orquestador/conocimiento/protocolo-de-eficiencia.md` |
+| Qué técnica web usar (compatibilidad Baseline) | complemento **Modern Web Guidance**; regla n del protocolo |
 | El Kit de Calidad (D1 a D9) | `orquestador/conocimiento/kit-de-calidad.md` y `kit.md` |
 | Qué hace que una pieza enganche (E1 a E12) | `orquestador/conocimiento/enganche.md` |
 | Quién toca qué archivo, rangos y ramas | `orquestador/conocimiento/nocturno.md`, «El mapa de choques» |

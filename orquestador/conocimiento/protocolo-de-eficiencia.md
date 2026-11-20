@@ -202,3 +202,23 @@ sesión o con `ccusage` (resumen por día y por sesión). Línea base tomada el
 15-nov-2026 sobre una tarea típica (p. ej. «corregir una actividad» o «revisar
 el estado de las células»). En una semana se compara el gasto por tarea y se
 reporta en una línea cuánto bajó y qué regla ayudó más.
+
+## n) Guía web moderna antes de tocar la interfaz (Modern Web Guidance)
+
+Orden de Mateo del 20 de noviembre de 2026. Instalamos el complemento oficial de
+Google Chrome **Modern Web Guidance** (`GoogleChrome/modern-web-guidance`), que
+trae datos de compatibilidad **Baseline** en tiempo real sobre qué funciona en
+casi todos los navegadores y celulares. Los estudiantes entran desde teléfonos de
+todo tipo, así que la compatibilidad no es opcional.
+
+- **Antes de construir o corregir** animaciones, transiciones, ventanas
+  emergentes (diálogos/popovers), formularios, accesibilidad, rendimiento en
+  celular o inicio de sesión, **consulta primero la guía y síguela.** No es un
+  paso opcional: es la fuente de qué técnica usar.
+- **Objetivo de compatibilidad: «Widely available»** (Baseline ampliamente
+  disponible). Si algo solo es «Newly available» o más nuevo, se usa solo con un
+  respaldo que funcione en los navegadores viejos.
+- **Nada experimental:** no se activan funciones de Origin Trial ni de un solo
+  motor todavía inestables (el complemento las oculta por defecto; se deja así).
+- Vale para todos los agentes de **código y diseño**. La guía se mantiene sola
+  (actualizaciones automáticas activadas).
