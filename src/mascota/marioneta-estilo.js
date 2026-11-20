@@ -9,12 +9,20 @@
  */
 export const ESTILO_MARIONETA = `.mta * { transform-box: fill-box; }
 .mta .mta-cara, .mta .mta-aura, .mta .mta-fuego, .mta .mta-confeti,
-.mta .mta-notas, .mta .mta-corazones, .mta .mta-estrellas { display: none; }
+.mta .mta-notas, .mta .mta-corazones, .mta .mta-estrellas,
+.mta .mta-obj, .mta .mta-birrete { display: none; }
 .mta-quieta .mta-c-tranquila, .mta-tranquila .mta-c-tranquila,
-.mta-feliz .mta-c-feliz, .mta-celebra .mta-c-feliz,
-.mta-colita .mta-c-feliz, .mta-baila .mta-c-feliz, .mta-canta .mta-c-feliz,
-.mta-saltitos .mta-c-feliz, .mta-saluda .mta-c-feliz,
+.mta-feliz .mta-c-feliz, .mta-baila .mta-c-feliz, .mta-saltitos .mta-c-feliz,
 .mta-triste .mta-c-triste, .mta-racha .mta-c-racha { display: inline; }
+/* Las caras nuevas (CARAS y CARA_DE_FESTEJO en marionetas.js) */
+.mta-canta .mta-c-canta, .mta-karaoke .mta-c-canta,
+.mta-campeon .mta-c-estrellas, .mta-celebra .mta-c-estrellas,
+.mta-graduado .mta-c-risa, .mta-porra .mta-c-risa,
+.mta-fiesta .mta-c-guino, .mta-saluda .mta-c-guino,
+.mta-globo .mta-c-corazones, .mta-colita .mta-c-corazones { display: inline; }
+/* Cada objeto sale solo en su festejo */
+.mta-karaoke .mta-obj-karaoke, .mta-campeon .mta-obj-campeon, .mta-fiesta .mta-obj-fiesta,
+.mta-globo .mta-obj-globo, .mta-porra .mta-obj-porra, .mta-graduado .mta-birrete { display: inline; }
 
 /* Bisagras: dónde gira cada pieza.
    Los brazos están dibujados colgando: girados más de ~50° se ven postizos
@@ -118,6 +126,65 @@ export const ESTILO_MARIONETA = `.mta * { transform-box: fill-box; }
 .mta-saluda .mta-cola { animation: mta-cola-rapida .3s ease-in-out infinite; }
 .mta-saluda .mta-corazones { display: inline; }
 
+/* ═══ FESTEJOS CON OBJETO (20-nov) ═══ */
+
+/* KARAOKE: se mece con el micrófono en alto, cabeza que canta; notas */
+.mta-karaoke .mta-todo { animation: mta-mece 2.4s ease-in-out infinite; }
+.mta-karaoke .mta-cabeza { animation: mta-canta-cabeza 1.2s ease-in-out infinite; }
+.mta-karaoke .mta-brazo-d { animation: mta-micro 1.2s ease-in-out infinite; }
+.mta-karaoke .mta-brazo-i { animation: mta-canta-pecho 2.4s ease-in-out infinite; }
+.mta-karaoke .mta-cola { animation: mta-cola-lenta 1.2s ease-in-out infinite; }
+.mta-karaoke .mta-notas { display: inline; }
+
+/* CAMPEÓN: trofeo arriba, brinquitos de orgullo; estrellas */
+.mta-campeon .mta-todo { animation: mta-saltito .7s cubic-bezier(.3,0,.5,1) infinite; }
+.mta-campeon .mta-sombra { animation: mta-sombra .7s cubic-bezier(.3,0,.5,1) infinite; }
+.mta-campeon .mta-brazo-i { animation: mta-trofeo .7s ease-in-out infinite; }
+.mta-campeon .mta-brazo-d { animation: mta-patita-d .35s ease-in-out infinite alternate; }
+.mta-campeon .mta-pz-trofeo { animation: mta-brilla .7s ease-in-out infinite; transform-origin: 50% 90%; }
+.mta-campeon .mta-cola { animation: mta-cola-loca .35s ease-in-out infinite; }
+.mta-campeon .mta-estrellas { display: inline; }
+
+/* GRADUADO: lanza el birrete, que gira en el aire y vuelve a la cabeza; confeti */
+.mta-graduado .mta-todo { animation: mta-brinco 2s cubic-bezier(.3,0,.5,1) infinite; }
+.mta-graduado .mta-sombra { animation: mta-sombra-brinco 2s cubic-bezier(.3,0,.5,1) infinite; }
+.mta-graduado .mta-birrete-vuela { animation: mta-birrete 2s cubic-bezier(.35,0,.45,1) infinite; transform-origin: 50% 50%; }
+.mta-graduado .mta-brazo-i { animation: mta-lanza-i 2s ease-in-out infinite; }
+.mta-graduado .mta-brazo-d { animation: mta-lanza-d 2s ease-in-out infinite; }
+.mta-graduado .mta-cola { animation: mta-cola-rapida .3s ease-in-out infinite; }
+.mta-graduado .mta-confeti { display: inline; }
+.mta-graduado .mta-confeti > * { animation: mta-cae 2s linear infinite; transform-origin: 50% 50%; }
+
+/* FIESTA: baila soplando el cornetín, que se estira y se enrolla; confeti */
+.mta-fiesta .mta-todo { animation: mta-baile 1.2s ease-in-out infinite; }
+.mta-fiesta .mta-sombra { animation: mta-baile-sombra 1.2s ease-in-out infinite; }
+.mta-fiesta .mta-brazo-d { animation: mta-sopla 1.2s ease-in-out infinite; }
+.mta-fiesta .mta-brazo-i { animation: mta-patita-i .6s ease-in-out infinite alternate; }
+.mta-fiesta .mta-pz-cornetin { animation: mta-cornetin .6s ease-in-out infinite; transform-origin: 10% 90%; }
+.mta-fiesta .mta-cabeza { animation: mta-baile-cabeza .6s ease-in-out infinite alternate; }
+.mta-fiesta .mta-cola { animation: mta-cola-rapida .3s ease-in-out infinite; }
+.mta-fiesta .mta-confeti { display: inline; }
+.mta-fiesta .mta-confeti > * { animation: mta-cae 2.2s linear infinite; transform-origin: 50% 50%; }
+
+/* GLOBO: se mece suave con su globo, que flota y tira de la cuerda; corazones */
+.mta-globo .mta-todo { animation: mta-mece 3s ease-in-out infinite; }
+.mta-globo .mta-brazo-i { animation: mta-sostiene 3s ease-in-out infinite; }
+.mta-globo .mta-brazo-d { animation: mta-patita-d 1.5s ease-in-out infinite alternate; }
+.mta-globo .mta-pz-globo { animation: mta-flota 1.5s ease-in-out infinite; transform-origin: 56% 99%; }
+.mta-globo .mta-cabeza { animation: mta-ladea-tierno 3s ease-in-out infinite; }
+.mta-globo .mta-cola { animation: mta-cola-lenta 1.5s ease-in-out infinite; }
+.mta-globo .mta-corazones { display: inline; }
+
+/* PORRA: brinca agitando la maraca y la banderita; estrellas */
+.mta-porra .mta-todo { animation: mta-saltito .6s cubic-bezier(.3,0,.5,1) infinite; }
+.mta-porra .mta-sombra { animation: mta-sombra .6s cubic-bezier(.3,0,.5,1) infinite; }
+.mta-porra .mta-brazo-d { animation: mta-agita-d .3s ease-in-out infinite alternate; }
+.mta-porra .mta-brazo-i { animation: mta-agita-i .6s ease-in-out infinite alternate; }
+.mta-porra .mta-pz-maraca { animation: mta-maraca .15s ease-in-out infinite alternate; transform-origin: 30% 86%; }
+.mta-porra .mta-pz-banderita { animation: mta-ondea-bandera .6s ease-in-out infinite alternate; transform-origin: 8% 90%; }
+.mta-porra .mta-cola { animation: mta-cola-loca .3s ease-in-out infinite; }
+.mta-porra .mta-estrellas { display: inline; }
+
 /* La voltereta (celebra) también suelta estrellas */
 .mta-celebra .mta-estrellas { display: inline; }
 
@@ -166,11 +233,11 @@ export const ESTILO_MARIONETA = `.mta * { transform-box: fill-box; }
 .mta .mta-acc-capa { transform-origin: 50% 0%; }
 .mta .mta-acc-medalla { transform-origin: 50% 0%; }
 .mta-tranquila .mta-acc-alas, .mta-racha .mta-acc-alas { animation: mta-aleteo 1.6s ease-in-out infinite; }
-.mta-feliz .mta-acc-alas, .mta-celebra .mta-acc-alas, .mta-colita .mta-acc-alas, .mta-baila .mta-acc-alas, .mta-canta .mta-acc-alas, .mta-saltitos .mta-acc-alas, .mta-saluda .mta-acc-alas { animation: mta-aleteo .35s ease-in-out infinite; }
+.mta-feliz .mta-acc-alas, .mta-celebra .mta-acc-alas, .mta-colita .mta-acc-alas, .mta-baila .mta-acc-alas, .mta-canta .mta-acc-alas, .mta-saltitos .mta-acc-alas, .mta-saluda .mta-acc-alas, .mta-karaoke .mta-acc-alas, .mta-campeon .mta-acc-alas, .mta-graduado .mta-acc-alas, .mta-fiesta .mta-acc-alas, .mta-globo .mta-acc-alas, .mta-porra .mta-acc-alas { animation: mta-aleteo .35s ease-in-out infinite; }
 .mta-tranquila .mta-acc-capa { animation: mta-ondea 3.2s ease-in-out infinite; }
-.mta-feliz .mta-acc-capa, .mta-celebra .mta-acc-capa, .mta-racha .mta-acc-capa, .mta-colita .mta-acc-capa, .mta-baila .mta-acc-capa, .mta-canta .mta-acc-capa, .mta-saltitos .mta-acc-capa, .mta-saluda .mta-acc-capa { animation: mta-ondea .9s ease-in-out infinite; }
+.mta-feliz .mta-acc-capa, .mta-celebra .mta-acc-capa, .mta-racha .mta-acc-capa, .mta-colita .mta-acc-capa, .mta-baila .mta-acc-capa, .mta-canta .mta-acc-capa, .mta-saltitos .mta-acc-capa, .mta-saluda .mta-acc-capa, .mta-karaoke .mta-acc-capa, .mta-campeon .mta-acc-capa, .mta-graduado .mta-acc-capa, .mta-fiesta .mta-acc-capa, .mta-globo .mta-acc-capa, .mta-porra .mta-acc-capa { animation: mta-ondea .9s ease-in-out infinite; }
 .mta-tranquila .mta-acc-medalla { animation: mta-pendulo 3.2s ease-in-out infinite; }
-.mta-feliz .mta-acc-medalla, .mta-celebra .mta-acc-medalla, .mta-colita .mta-acc-medalla, .mta-baila .mta-acc-medalla, .mta-canta .mta-acc-medalla, .mta-saltitos .mta-acc-medalla, .mta-saluda .mta-acc-medalla { animation: mta-pendulo .9s ease-in-out infinite; }
+.mta-feliz .mta-acc-medalla, .mta-celebra .mta-acc-medalla, .mta-colita .mta-acc-medalla, .mta-baila .mta-acc-medalla, .mta-canta .mta-acc-medalla, .mta-saltitos .mta-acc-medalla, .mta-saluda .mta-acc-medalla, .mta-karaoke .mta-acc-medalla, .mta-campeon .mta-acc-medalla, .mta-graduado .mta-acc-medalla, .mta-fiesta .mta-acc-medalla, .mta-globo .mta-acc-medalla, .mta-porra .mta-acc-medalla { animation: mta-pendulo .9s ease-in-out infinite; }
 .mta-feliz .mta-acc-jetpack, .mta-celebra .mta-acc-jetpack, .mta-racha .mta-acc-jetpack, .mta-colita .mta-acc-jetpack, .mta-baila .mta-acc-jetpack, .mta-saltitos .mta-acc-jetpack, .mta-saluda .mta-acc-jetpack { animation: mta-motor .18s linear infinite alternate; }
 
 @media (prefers-reduced-motion: reduce) {
@@ -224,6 +291,20 @@ export const ESTILO_MARIONETA = `.mta * { transform-box: fill-box; }
 @keyframes mta-brinco { 0%,55%,100% { transform: translateY(0) scale(1,1); } 62% { transform: translateY(0) scale(1.07,.92); } 75% { transform: translateY(-40px) scale(.97,1.04); } 88% { transform: translateY(0) scale(1.06,.93); } 94% { transform: translateY(0) scale(1,1); } }
 @keyframes mta-sombra-brinco { 0%,62%,88%,100% { transform: scale(1); opacity: .28; } 75% { transform: scale(.7); opacity: .14; } }
 @keyframes mta-saludo { 0%,50%,100% { transform: rotate(-30deg); } 25%,75% { transform: rotate(-58deg); } }
+@keyframes mta-micro { 0%,100% { transform: rotate(-40deg); } 50% { transform: rotate(-46deg); } }
+@keyframes mta-trofeo { 0%,100% { transform: rotate(40deg); } 50% { transform: rotate(48deg); } }
+@keyframes mta-brilla { 0%,100% { transform: rotate(-4deg) scale(1); } 50% { transform: rotate(4deg) scale(1.08); } }
+@keyframes mta-birrete { 0%,8% { transform: translateY(0) rotate(0); } 45% { transform: translateY(-230px) rotate(-200deg); } 52% { transform: translateY(-245px) rotate(-260deg); } 88% { transform: translateY(0) rotate(-360deg); } 92% { transform: translateY(5px) rotate(-360deg) scale(1.06,.94); } 100% { transform: translateY(0) rotate(-360deg); } }
+@keyframes mta-lanza-i { 0%,100% { transform: rotate(8deg); } 20%,40% { transform: rotate(46deg); } 70% { transform: rotate(14deg); } }
+@keyframes mta-lanza-d { 0%,100% { transform: rotate(-8deg); } 20%,40% { transform: rotate(-46deg); } 70% { transform: rotate(-14deg); } }
+@keyframes mta-sopla { 0%,100% { transform: rotate(-36deg); } 50% { transform: rotate(-44deg); } }
+@keyframes mta-cornetin { 0%,100% { transform: scale(.82,1); } 40%,60% { transform: scale(1.12,1.04); } }
+@keyframes mta-sostiene { 0%,100% { transform: rotate(28deg); } 50% { transform: rotate(34deg); } }
+@keyframes mta-flota { 0%,100% { transform: rotate(-5deg) translateY(0); } 50% { transform: rotate(5deg) translateY(-6px); } }
+@keyframes mta-agita-d { from { transform: rotate(-30deg); } to { transform: rotate(-44deg); } }
+@keyframes mta-agita-i { from { transform: rotate(26deg); } to { transform: rotate(40deg); } }
+@keyframes mta-maraca { from { transform: rotate(-10deg); } to { transform: rotate(10deg); } }
+@keyframes mta-ondea-bandera { from { transform: rotate(-8deg) skewY(-3deg); } to { transform: rotate(8deg) skewY(3deg); } }
 @keyframes mta-nota { 0% { transform: translate(0,0) rotate(-12deg) scale(.3); opacity: 0; } 15% { transform: translate(12px,-26px) rotate(8deg) scale(1); opacity: 1; } 50% { transform: translate(-14px,-100px) rotate(-8deg) scale(1); } 85% { opacity: 1; } 100% { transform: translate(16px,-190px) rotate(12deg) scale(.85); opacity: 0; } }
 @keyframes mta-corazon { 0% { transform: translateY(0) scale(0); opacity: 0; } 15% { transform: translateY(-6px) scale(1.25); opacity: 1; } 28% { transform: translateY(-14px) scale(1); } 80% { opacity: 1; } 100% { transform: translateY(-130px) scale(.85); opacity: 0; } }
 @keyframes mta-estrella { 0%,100% { transform: scale(0) rotate(0); opacity: 0; } 45% { transform: scale(1.25) rotate(80deg); opacity: 1; } 70% { transform: scale(1) rotate(130deg); opacity: 1; } }

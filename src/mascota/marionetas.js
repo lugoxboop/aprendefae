@@ -20,6 +20,7 @@
  * ═══════════════════════════════════════════════════════════════════════════
  */
 import { PIEZAS } from "./marionetas-piezas.js";
+import { FIESTA } from "./fiesta-piezas.js";
 import { piezasAccesorios, orejasTapadas } from "./accesorios-marioneta.js";
 
 export const ANIMOS = ["tranquila", "feliz", "celebra", "triste", "racha"];
@@ -35,7 +36,58 @@ export const ANIMOS = ["tranquila", "feliz", "celebra", "triste", "racha"];
  *   saluda    saluda con la patita y da un brinco, con corazones
  *   celebra   voltereta en el aire, con confeti y estrellas
  */
-export const FESTEJOS = ["colita", "baila", "canta", "saltitos", "saluda", "celebra"];
+export const FESTEJOS = [
+  "colita", "baila", "canta", "saltitos", "saluda", "celebra",
+  "karaoke", "campeon", "graduado", "fiesta", "globo", "porra",
+];
+
+/*
+ * Los festejos con OBJETO (20-nov, piezas de fiesta de Gemini, comunes a las
+ * seis especies; Mateo: «necesitamos muchas animaciones»):
+ *   karaoke   canta con micrófono, boca en «o», notas
+ *   campeon   levanta el trofeo con ojos de estrella, estrellas
+ *   graduado  lanza el birrete al aire y lo vuelve a atrapar en la cabeza, confeti
+ *   fiesta    sopla el cornetín y guiña el ojo, confeti
+ *   globo     se mece con un globo, ojos de corazón, corazones
+ *   porra     agita maraca y banderita, ojos ><, estrellas
+ *
+ * Cada objeto va DENTRO del grupo de su brazo, en la patita: gira con él.
+ * [festejo, brazo, pieza, ancho en px del kit, agarre [fx, fy] en la pieza, giro, { detras }]
+ *   brazo  "i" = el que se ve a la izquierda de la pantalla, "d" = a la derecha
+ *   giro   lo que se gira el objeto en la patita: contrarresta el brazo
+ *          levantado para que el objeto quede derecho en el festejo
+ *   detras el objeto va con el brazo, por debajo de la cabeza (el globo: que no
+ *          le tape la cara). Los demás van encima, para que no los esconda.
+ */
+export const OBJETOS = [
+  ["karaoke", "d", "microfono", 136, [0.66, 0.62], 40],
+  ["campeon", "i", "trofeo", 136, [0.5, 0.88], -44],
+  ["fiesta", "d", "cornetin", 140, [0.14, 0.86], 36],
+  ["globo", "i", "globo", 172, [0.56, 0.99], -62, { detras: true }],
+  ["porra", "d", "maraca", 104, [0.3, 0.86], 36],
+  ["porra", "i", "banderita", 122, [0.08, 0.9], -34],
+];
+
+/*
+ * Las CARAS nuevas: qué ojos y qué boca pone cada una, sobre la cabeza sin cara.
+ *   ojos  "feliz" = los ^^ de la especie; "abierto" = su ojo de siempre;
+ *         o un par de piezas de fiesta [izquierda, derecha]
+ * Todas con rubor. El hurón trae la cara pintada en una pieza (antifaz): por
+ * debajo va su cara feliz y encima los ojos nuevos; su boca no se cambia.
+ */
+export const CARAS = {
+  canta: { ojos: "feliz", boca: "boca_o" },
+  estrellas: { ojos: ["estrella_i", "estrella_d"], boca: "boca_risa" },
+  corazones: { ojos: ["corazon_i", "corazon_d"], boca: "boca_risa" },
+  risa: { ojos: ["guino_i", "guino_d"], boca: "boca_risa" },
+  guino: { ojos: ["abierto", "feliz"], boca: "boca_risa" },
+};
+/* Qué cara pone cada festejo (el resto, la feliz de la especie). */
+export const CARA_DE_FESTEJO = {
+  canta: "canta", karaoke: "canta", campeon: "estrellas", celebra: "estrellas",
+  graduado: "risa", porra: "risa", fiesta: "guino", saluda: "guino",
+  globo: "corazones", colita: "corazones",
+};
 
 /* Todo lo que se puede pedir como `animo` a <Mascota>. */
 export const MOVIMIENTOS = [...ANIMOS, ...FESTEJOS.filter((f) => !ANIMOS.includes(f))];
@@ -87,6 +139,7 @@ export const MARIONETAS = {
       base: ["cabeza", 0, 0],
       tranquila: { ojos: [["ojo_i", 42, 80], ["ojo_d", 147, 80]], resto: [["boca_sonrisa", 84, 175]] },
       feliz: [["feliz", 45, 95], ["feliz", 150, 95, { espejo: true }], ["boca_abierta", 88, 168]],
+      bocaBaja: 0.45,
       triste: [["triste_i", 45, 60], ["triste_d", 148, 60], ["boca_triste", 105, 182]],
       racha: [["racha_i", 48, 78], ["racha_d", 150, 78], ["boca_racha", 84, 175]],
       lagrima: [70, 140],
@@ -138,6 +191,8 @@ export const MARIONETAS = {
       base: ["cabeza", 0, 0],
       tranquila: { ojos: [], resto: [["cara_tranquila", 11, 50], ["boca_tranquila", 58, 118]] },
       feliz: [["cara_feliz", 8, 50]],
+      /* Las caras nuevas: los ojos donde los mide accesorios-marioneta (0.33/0.68, 0.55). */
+      ojosEn: [[0.33, 0.55], [0.68, 0.55], 0.19],
       triste: [["cara_triste", 5, 50]],
       racha: [["cara_racha", 5, 50], ["boca_tranquila", 58, 118]],
       lagrima: [40, 110],
@@ -147,6 +202,41 @@ export const MARIONETAS = {
 
 const BASE = "/mascotas";
 const url = (esp, n, suf = "") => `${BASE}/${esp}/${n}${suf}.webp`;
+const urlFiesta = (n) => `${BASE}/fiesta/${n}.webp`;
+
+/* Una pieza de fiesta centrada en (cx, cy) con el ancho pedido. */
+function fiesta(n, cx, cy, ancho, extra = "") {
+  const d = FIESTA[n];
+  if (!d) return "";
+  const h = (ancho * d[1]) / d[0];
+  return `<image href="${urlFiesta(n)}" x="${+(cx - ancho / 2).toFixed(1)}" y="${+(cy - h / 2).toFixed(1)}" width="${+ancho.toFixed(1)}" height="${+h.toFixed(1)}"${extra}/>`;
+}
+
+/*
+ * Dónde están los ojos y la boca de cada especie, en px de su cabeza: se
+ * miden de sus propias piezas (los ojos de «tranquila», la boca de «feliz»,
+ * ya por debajo de la nariz), para que las caras nuevas caigan en su sitio.
+ */
+function anclasCara(M, P) {
+  const C = M.cabeza;
+  const centro = ([n, x, y]) => { const d = P.piezas[n] || [0, 0]; return [x + d[0] / 2, y + d[1] / 2, d[0]]; };
+  let ojos;
+  if (C.ojosEn) {
+    const [cw, ch] = P.piezas[C.base[0]];
+    const [a, b, k] = C.ojosEn;
+    ojos = { i: [a[0] * cw, a[1] * ch], d: [b[0] * cw, b[1] * ch], ancho: k * cw };
+  } else {
+    const [a, b] = C.tranquila.ojos.map(centro);
+    ojos = { i: [a[0], a[1]], d: [b[0], b[1]], ancho: (a[2] + b[2]) / 2 };
+  }
+  let boca = null;
+  if (C.bocaEn) boca = C.bocaEn;
+  else if (!C.ojosEn) {
+    const b = C.feliz.find(([n]) => n.startsWith("boca"));
+    if (b) { const d = P.piezas[b[0]]; boca = [b[1] + d[0] / 2, b[2] + d[1] * (C.bocaBaja ?? 0.62), d[0]]; }
+  }
+  return { ojos, boca };
+}
 
 /* ── Color ─────────────────────────────────────────────────────────────── */
 const hex = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16) / 255);
@@ -233,13 +323,74 @@ export function svgMarioneta(especie, { tinte = null, uid = "m", busto = false, 
   /* Con un sombrero que las tapa, las orejas quedan dentro: no se pintan. */
   const [oi, od] = orejasTapadas(especie, puestos) ? [] : C.orejas || [];
   const acc = piezasAccesorios(especie, M, P, puestos);
+  /* Las cajas de los accesorios, en px del escenario: el encuadre las cuenta
+     para que un sombrero alto o unas alas no se salgan del recuadro. */
+  const extra = acc.cajas.map(([x0, y0, x1, y1, enCabeza]) =>
+    enCabeza ? [hx + x0 * hs, hy + y0 * hs, hx + x1 * hs, hy + y1 * hs, true] : [x0, y0, x1, y1, false]);
+  const viewBox = busto ? encuadreBusto(M, P, extra) : encuadreCuerpo(M, P, extra);
+  /* La bisagra en view-box se mide desde la esquina del viewBox, no desde (0, 0). */
+  const [vbx, vby] = viewBox.split(" ").map(Number);
   /*
    * Los brazos van detrás del torso, salvo en las especies con
    * `brazosDelante`: ahí el hombro asoma por fuera del cuerpo si va detrás
    * (Mateo, 19-nov: «los hombros están como salidos»), así que se pintan
    * encima, con el hombro dentro de la silueta.
    */
-  const brazos = (bi ? grupo("mta-brazo-i", pieza(bi)) : "") + (bd ? grupo("mta-brazo-d", pieza(bd)) : "");
+  /*
+   * La bisagra del brazo va en px (view-box) y no en % de su caja: dentro del
+   * grupo del brazo va también el objeto del festejo, y con % la bisagra se
+   * correría a donde quedara el objeto.
+   */
+  const brazo = (lado, p) => {
+    if (!p) return ["", ""];
+    const d = P.piezas[p[0]] || [0, 0];
+    const e = p[3]?.escala || 1;
+    const w = d[0] * e, h = d[1] * e;
+    const bx = lado === "i" ? p[1] + w * 0.9 : p[1] + w * 0.1, by = p[2] + h * 0.08;
+    const pata = [p[1] + w / 2, p[2] + h * 0.88];
+    const objeto = ([f, , n, ancho, [gx, gy], giro]) => {
+      const fd = FIESTA[n];
+      if (!fd) return "";
+      const alto = (ancho * fd[1]) / fd[0];
+      return `<g class="mta-obj mta-obj-${f}" style="transform-box:view-box;transform-origin:0 0" transform="translate(${+pata[0].toFixed(1)} ${+pata[1].toFixed(1)}) rotate(${giro})"><g class="mta-pz-${n}"><image href="${urlFiesta(n)}" x="${+(-gx * ancho).toFixed(1)}" y="${+(-gy * alto).toFixed(1)}" width="${ancho}" height="${+alto.toFixed(1)}"/></g></g>`;
+    };
+    const mios = OBJETOS.filter((o) => o[1] === lado);
+    const detras = mios.filter((o) => o[6]?.detras).map(objeto).join("");
+    const objs = mios.filter((o) => !o[6]?.detras).map(objeto).join("");
+    const g = (dentro) => `<g class="mta-brazo-${lado}" style="transform-box:view-box;transform-origin:${+bx.toFixed(1)}px ${+by.toFixed(1)}px">${dentro}</g>`;
+    return [g(detras + pieza(p)), objs ? g(objs) : ""];
+  };
+  /*
+   * Los objetos van en una COPIA del grupo del brazo (misma clase, misma
+   * bisagra: se mueve igual) pintada sobre la cabeza: un globo o un trofeo
+   * levantado no se esconde detrás de la cara.
+   */
+  const [brazoI, objetosI] = brazo("i", bi);
+  const [brazoD, objetosD] = brazo("d", bd);
+  const brazos = brazoI + brazoD;
+  const objetos = objetosI + objetosD;
+  /* Las caras nuevas de los festejos (CARAS), con rubor. */
+  const A = anclasCara(M, P);
+  const ow = A.ojos.ancho;
+  const ojosFeliz = C.feliz.filter(([n]) => !n.startsWith("boca"));
+  const ojoDe = (lado, que) => {
+    const [x, y] = A.ojos[lado];
+    if (que === "feliz") {
+      if (C.ojosEn) return "";
+      const f = ojosFeliz.length === 2 ? ojosFeliz[lado === "i" ? 0 : 1] : ojosFeliz[0];
+      return f ? pieza(f) : "";
+    }
+    if (que === "abierto") return C.ojosEn ? "" : pieza(C.tranquila.ojos[lado === "i" ? 0 : 1]);
+    const k = que.startsWith("guino") ? 0.82 : que.startsWith("corazon") ? 1.12 : 1.18;
+    return fiesta(que, x, y, ow * k);
+  };
+  const rubor = ["i", "d"].map((l) => fiesta(`rubor_${l}`, A.ojos[l][0] + (l === "i" ? -1 : 1) * ow * 0.3, A.ojos[l][1] + ow * 0.66, ow * 0.82, ' opacity=".85"')).join("");
+  const carasNuevas = Object.entries(CARAS).map(([nombre, c]) => {
+    const [oi, od] = Array.isArray(c.ojos) ? c.ojos : [c.ojos, c.ojos];
+    const base = C.ojosEn ? caraDe(C.feliz) : "";
+    const boca = A.boca && c.boca ? fiesta(c.boca, A.boca[0], A.boca[1], A.boca[2] * (c.boca === "boca_o" ? 0.3 : 0.6)) : "";
+    return grupo(`mta-cara mta-c-${nombre}`, base + rubor + ojoDe("i", oi) + ojoDe("d", od) + boca);
+  }).join("");
   const lag = C.lagrima ? `<g class="mta-lagrima">${img("lagrima", C.lagrima[0], C.lagrima[1])}</g>` : "";
 
   const cabeza =
@@ -251,8 +402,13 @@ export function svgMarioneta(especie, { tinte = null, uid = "m", busto = false, 
     grupo("mta-cara mta-c-feliz", caraDe(C.feliz)) +
     grupo("mta-cara mta-c-triste", caraDe(C.triste) + lag) +
     grupo("mta-cara mta-c-racha", caraDe(C.racha)) +
+    carasNuevas +
     acc.cabeza +
     `</g></g>`;
+
+  /* El birrete del «graduado»: sobre la coronilla, sale volando y vuelve. */
+  const [cbw] = P.piezas[C.base[0]] || [220, 220];
+  const birrete = `<g class="mta-birrete"><g class="mta-birrete-vuela">${fiesta("birrete", hx + (cbw * hs) / 2, hy + 8, cbw * hs * 0.62)}</g></g>`;
 
   /* La llama, centrada sobre la cabeza. */
   const ll = P.piezas.llama || [73, 89];
@@ -320,15 +476,13 @@ export function svgMarioneta(especie, { tinte = null, uid = "m", busto = false, 
     (M.cola && M.colaDelante ? grupo("mta-cola", pieza(M.cola)) : "") +
     (M.brazosDelante ? brazos : "") +
     cabeza +
+    objetos +
+    birrete +
     fuego +
     `</g>` +
     confeti + estrellas + corazones + notas;
 
-  /* Las cajas de los accesorios, en px del escenario: el encuadre las cuenta
-     para que un sombrero alto o unas alas no se salgan del recuadro. */
-  const extra = acc.cajas.map(([x0, y0, x1, y1, enCabeza]) =>
-    enCabeza ? [hx + x0 * hs, hy + y0 * hs, hx + x1 * hs, hy + y1 * hs, true] : [x0, y0, x1, y1, false]);
-  return { viewBox: busto ? encuadreBusto(M, P, extra) : encuadreCuerpo(M, P, extra), inner };
+  return { viewBox, inner };
 }
 
 /*

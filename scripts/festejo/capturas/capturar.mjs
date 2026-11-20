@@ -24,6 +24,12 @@ const casos = [
   ["resumen-saltitos-conejo-375", 375, 900, "?festejo=saltitos&especie=conejo&pct=30"],
   ["resumen-saluda-huron-escritorio", 1280, 900, "?festejo=saluda&especie=huron"],
   ["resumen-celebra-hamster-320", 320, 900, "?festejo=celebra&especie=hamster"],
+  ["resumen-karaoke-zorro-320", 320, 900, "?festejo=karaoke&especie=zorro"],
+  ["resumen-globo-hamster-320", 320, 900, "?festejo=globo&especie=hamster"],
+  ["resumen-campeon-gato-375", 375, 900, "?festejo=campeon&especie=gato&paleta=gris"],
+  ["resumen-graduado-conejo-375", 375, 900, "?festejo=graduado&especie=conejo&pct=30"],
+  ["resumen-fiesta-perro-320", 320, 900, "?festejo=fiesta&especie=perro&puestos=gafas"],
+  ["resumen-porra-huron-375", 375, 900, "?festejo=porra&especie=huron"],
   ["repaso-hecho-375", 375, 812, "?vista=repaso&festejo=baila&especie=perro&paleta=canela"],
   ["repaso-hecho-320", 320, 700, "?vista=repaso&festejo=colita&especie=zorro"],
 ];

@@ -19,6 +19,10 @@ De dónde salen `public/mascotas/` y `src/mascota/marionetas-piezas.js`.
    de cada especie y el cuerpo nuevo del conejo. Va DESPUÉS de generar-piezas:
    añade sus medidas a ese archivo sin tocar la rampa.
 
+7. `fiesta.py <hojas> public/mascotas/fiesta` (20-nov) — los objetos de fiesta y
+   las piezas de cara nuevas, comunes a las seis especies; escribe
+   `src/mascota/fiesta-piezas.js`.
+
 Dónde va cada pieza y cómo se mueve: `src/mascota/marionetas.js` y
 `src/mascota/marioneta-estilo.js`.
 

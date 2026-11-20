@@ -15,7 +15,8 @@ import { FESTEJOS } from "../../mascota/marionetas.js";
  *
  * NO SIEMPRE EL MISMO BAILE. Cada cierre elige uno de los festejos
  * (FESTEJOS en mascota/marionetas.js: mover la colita, bailar, cantar,
- * saltitos, saludar, voltereta) y nunca repite el de la vez anterior. Lo
+ * saltitos, saludar, voltereta, y desde el 20-nov karaoke, trofeo, birrete,
+ * cornetín, globo y porra) y nunca repite el de la vez anterior. Lo
  * sorpresivo engancha más que lo previsible.
  *
  * SIEMPRE FELIZ, sea cual sea el resultado. Con un resultado bajo no cambia
@@ -36,6 +37,12 @@ export const FRASES = {
   saltitos: "¡Salto de la emoción!",
   saluda: "¡Bien hecho! Qué orgullo me das",
   celebra: "¡Esto merece una voltereta!",
+  karaoke: "♪ ¡Te dedico esta canción! ♪",
+  campeon: "¡Eres un campeón! Este trofeo es tuyo",
+  graduado: "¡Birrete al aire! Qué bien lo hiciste",
+  fiesta: "¡Esto hay que celebrarlo en grande!",
+  globo: "¡Me tienes flotando de la alegría!",
+  porra: "¡Vamos, vamos! ¡Lo lograste!",
 };
 
 /* Con un resultado bajo: la misma fiesta, otra frase. Celebra el esfuerzo. */

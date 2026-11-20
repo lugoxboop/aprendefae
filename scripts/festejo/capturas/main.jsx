@@ -10,6 +10,7 @@ import { mascotaDe } from "../../../src/mascota/mascotas.js";
  * Banco de CAPTURAS del festejo de cierre (la mascota celebra al terminar).
  *   ?vista=resumen&festejo=baila&especie=perro&paleta=canela&pct=90
  *   ?vista=repaso  (el Repaso Diario recién hecho; useRepaso va sustituido)
+ *   ?vista=todos[&nuevos=1]  los seis festejos (o los seis con objeto) a la vez
  *   ?vista=taller&animo=baila&puestos=collar  (las seis especies grandes, para revisar piezas)
  * Nada aquí escribe en ningún sitio.
  */
@@ -57,7 +58,9 @@ createRoot(document.getElementById("raiz")).render(
     ) : q.get("vista") === "todos" ? (
       /* Los seis festejos a la vez, cada uno con una especie (para el video). */
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "36px 12px", padding: "40px 16px", maxWidth: "900px", margin: "0 auto" }}>
-        {[["colita", "zorro"], ["baila", "gato"], ["canta", "perro"], ["saltitos", "conejo"], ["saluda", "huron"], ["celebra", "hamster"]].map(([f, e]) => (
+        {(q.get("nuevos")
+          ? [["karaoke", "zorro"], ["campeon", "gato"], ["fiesta", "perro"], ["graduado", "conejo"], ["porra", "huron"], ["globo", "hamster"]]
+          : [["colita", "zorro"], ["baila", "gato"], ["canta", "perro"], ["saltitos", "conejo"], ["saluda", "huron"], ["celebra", "hamster"]]).map(([f, e]) => (
           <MascotaFestejo key={f} variante={f} perfil={{ mascota_especie: e, mascota_paleta: "natural", mascota_puestos: [] }} />
         ))}
       </div>
