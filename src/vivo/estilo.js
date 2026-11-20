@@ -35,8 +35,8 @@ export const COLORES = ["#2A9D8F", "#E9C46A", "#E76F51", "#9B8CF0", "#4EA8DE", "
 
 export const CSS_VIVO = `
 .vivo, .vivo * { box-sizing: border-box; }
-.vivo { min-height: 100vh; background: radial-gradient(120% 80% at 50% -10%, #1A2F4D 0%, ${V.bg} 60%); color: ${V.texto}; font-family: Inter, system-ui, sans-serif; }
-.vivo-marco { max-width: 1120px; margin: 0 auto; padding: 24px max(16px, env(safe-area-inset-right, 0px)) 48px max(16px, env(safe-area-inset-left, 0px)); display: flex; flex-direction: column; gap: 22px; }
+.vivo { position: relative; min-height: 100vh; background: ${V.bg}; color: ${V.texto}; font-family: Inter, system-ui, sans-serif; }
+.vivo-marco { position: relative; z-index: 1; max-width: 1120px; margin: 0 auto; padding: 24px max(16px, env(safe-area-inset-right, 0px)) 48px max(16px, env(safe-area-inset-left, 0px)); display: flex; flex-direction: column; gap: 22px; }
 .vivo-titulo { margin: 0; font-family: Sora, sans-serif; font-weight: 700; letter-spacing: -0.02em; text-wrap: balance; }
 .vivo-cejilla { font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: ${V.teal}; }
 .vivo-nota { margin: 0; color: ${V.apoyo}; font-size: 14.5px; line-height: 1.55; }

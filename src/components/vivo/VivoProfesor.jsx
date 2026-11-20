@@ -5,6 +5,7 @@ import { crearSala, avanzar, leerConteo, leerPodio, leerAsistencia, leerEstado, 
 import { armarPreguntas, temasEnVivo, MATERIAS_EN_VIVO, CANTIDADES, DURACIONES } from "../../vivo/banco.js";
 import { useSala, useReloj } from "../../vivo/useSala.js";
 import { CSS_VIVO, V } from "../../vivo/estilo.js";
+import MeshGradientBackground from "../backgrounds/MeshGradientBackground.jsx";
 import { Enunciado, Opciones, Reloj, Podio, miles } from "./piezas.jsx";
 import qrcode from "qrcode-generator";
 
@@ -68,6 +69,8 @@ function Marco({ children, onBack, ancho = false }) {
   return (
     <div className="vivo" data-vivo="profesor">
       <style>{CSS_VIVO}</style>
+      {/* El fondo vivo de la portada (malla de color), el mismo de Inicio, Amigos y Tienda. */}
+      <MeshGradientBackground />
       <div className="vivo-marco" style={ancho ? { maxWidth: "1280px" } : undefined}>
         {/* fae-cabecera: reserva el hueco de la cuenta, que en el teléfono tapaba el botón de volver (18-nov). */}
         <div className="fae-cabecera" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", minHeight: "44px" }}>

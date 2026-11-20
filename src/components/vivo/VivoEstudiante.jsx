@@ -4,6 +4,7 @@ import { useAuthOpcional } from "../../auth/AuthProvider.jsx";
 import { unirse, responder, leerPodio, limpiarCodigo, mensajeDeError, restanteMs, LETRAS } from "../../vivo/datos.js";
 import { useSala, useReloj } from "../../vivo/useSala.js";
 import { CSS_VIVO, V, COLORES } from "../../vivo/estilo.js";
+import MeshGradientBackground from "../backgrounds/MeshGradientBackground.jsx";
 import { Enunciado, Opciones, Reloj, Podio, miles } from "./piezas.jsx";
 
 /*
@@ -49,6 +50,8 @@ export default function VivoEstudiante({ codigoInicial = null, onBack }) {
   return (
     <div className="vivo" data-vivo="estudiante">
       <style>{CSS_VIVO}</style>
+      {/* El fondo vivo de la portada (malla de color), el mismo de Inicio, Amigos y Tienda. */}
+      <MeshGradientBackground />
       <div className="vivo-marco" style={{ maxWidth: "560px" }}>
         {/* fae-cabecera: reserva el hueco de la cuenta. Sin ella, a 375 px la pastilla de FP tapaba «Salir» (sonda del 18-nov). */}
         <div className="fae-cabecera" style={{ display: "flex", alignItems: "center", gap: "12px", minHeight: "44px" }}>

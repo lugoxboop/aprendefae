@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { FAE } from "../../theme.js";
 import { SUBJECTS, HACER, actividadesDeTipo, desafioDe, ubicacionDeActividad } from "../../data/subjects.js";
 import Logo from "../Logo.jsx";
+import MeshGradientBackground from "../backgrounds/MeshGradientBackground.jsx";
 import { Activity, BarChart2, ChevronLeft, ChevronRight, Download, Eye, ListChecks, Sparkles, Star, Users } from "lucide-react";
 import { actividadDe, estudiantesDe, marcarEnGrupo, resumenDe } from "../../docente/datos.js";
 import { useAccesoDocente } from "../../docente/useAccesoDocente.js";
@@ -682,12 +683,13 @@ function Marco({ children, onBack }) {
      */
     <div
       style={{
+        position: "relative",
         minHeight: "100vh", fontFamily: "Inter, sans-serif", color: FAE.text,
         backgroundColor: FAE.bg,
-        backgroundImage: "radial-gradient(900px 520px at 0% 0%, rgba(42,157,143,0.13), transparent 62%), radial-gradient(700px 420px at 100% 0%, rgba(143,184,232,0.07), transparent 65%)",
-        backgroundRepeat: "no-repeat",
       }}
     >
+      {/* El fondo vivo de la portada (malla de color), el mismo de Inicio, Amigos y Tienda. */}
+      <MeshGradientBackground />
       {/*
         * La cuenta flota arriba a la IZQUIERDA desde el 15-nov. Esta columna
         * mide 1040 y no 860 como las demás, así que su reserva se calcula
@@ -696,7 +698,7 @@ function Marco({ children, onBack }) {
         * quedaba más arriba que la pastilla y la pastilla pisaba el título.
         */}
       <style>{`@media (min-width: 561px) { .pd1-barra.fae-cabecera { padding-left: max(0px, calc(152px - max(0px, (100vw - 1040px) / 2))); } }`}</style>
-      <div style={{ maxWidth: "1040px", margin: "0 auto", padding: "clamp(18px, 3vh, 30px) clamp(16px, 4vw, 24px) 64px" }}>
+      <div style={{ position: "relative", zIndex: 1, maxWidth: "1040px", margin: "0 auto", padding: "clamp(18px, 3vh, 30px) clamp(16px, 4vw, 24px) 64px" }}>
         {/*
           * La pastilla de FP (AccountControl, de Erwin) flota arriba a la
           * izquierda (desde el 15-nov). Esta barra le deja su hueco y el título se recorta con
