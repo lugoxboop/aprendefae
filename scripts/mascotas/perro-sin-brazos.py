@@ -1,38 +1,30 @@
-"""
-Le quita al cuerpo nuevo del perro los brazos que trae dibujados (20-nov).
-
-Mateo: «el perro tiene como cuatro brazos». La hoja perro_torso.png de Gemini
-trae los brazos pegados a los lados, y encima van los brazos sueltos (bc_d,
-bc_i) que se animan. Se corta cada brazo por su línea interior (prolongada
-hasta el hombro) y se borra con su contorno de fuera. Luego:
-
-  python3 scripts/mascotas/perro-sin-brazos.py <hoja-original> <carpeta>/perro_torso.png
-  python3 scripts/mascotas/brazos-colgando.py <carpeta> public/mascotas
-
-Ojo: el cuerpo queda más angosto; su x en marionetas.js se corrió para que
-no se mueva (181 → 207).
-"""
-import sys
-import cv2, numpy as np
-from scipy.ndimage import binary_fill_holes
-im=cv2.imread(sys.argv[1])
-work=im.copy()
-for a,b in [((417,179),(433,118)),((606,178),(591,118))]:
-    cv2.line(work,a,b,(0,0,0),7,cv2.LINE_AA)
-dark=(work.min(axis=2)<90).astype(np.uint8)
-n,lab,st,_=cv2.connectedComponentsWithStats(1-dark,connectivity=4)
-fondo=lab==lab[5,5]
-sil=binary_fill_holes(~fondo)
-cuerpo=lab[250,512]
-brazos=[i for i in range(1,n) if i not in (cuerpo,lab[5,5]) and st[i,1]<360 and (st[i,0]+st[i,2]<432 or st[i,0]>592)]
-print(len(brazos), "trozos de brazo borrados")
-A=np.isin(lab,brazos)
-otros=(~fondo)&(dark==0)&~A
-k=np.ones((15,15),np.uint8)
-Ad=cv2.dilate(A.astype(np.uint8),k)>0
-Bd=cv2.dilate(otros.astype(np.uint8),k)>0
-quitar=A|((dark>0)&Ad&~Bd)
-keep=sil&~quitar
-keep=cv2.morphologyEx(keep.astype(np.uint8),cv2.MORPH_OPEN,np.ones((3,3),np.uint8))>0
-out=np.where(keep[...,None],work,255).astype(np.uint8)
-cv2.imwrite(sys.argv[2],out)
+import numpy as np,cv2,sys
+from PIL import Image
+a=np.array(Image.open('perro/torso_conbrazos.png')).astype(np.float32)
+rgb=a[...,:3];al=a[...,3].copy()
+H,W=al.shape
+dark=(rgb.max(2)<110)&(al>100)
+def fit(xr,yr):
+  ys=[];xs=[]
+  for y in range(*yr):
+    c=np.where(dark[y,xr[0]:xr[1]])[0]
+    if len(c): ys.append(y); xs.append(c.mean()+xr[0])
+  return np.polyfit(ys,xs,1),min(ys),max(ys)
+out=a.copy()
+for side,xr,yr in [('L',(35,85),(72,140)),('R',(185,235),(92,140))]:
+  (m,b),y0,y1=fit(xr,yr); print(side,m,b,y0,y1)
+  ytop=None
+  for y in range(y1,-1,-1):
+    x=int(round(m*y+b))
+    if al[y,x]<30: ytop=y; break
+  for y in range(ytop,y1+12):
+    x=m*y+b
+    if side=='L': out[y,:max(0,int(x)-3),3]=0
+    else: out[y,int(x)+4:,3]=0
+  # contorno nuevo arriba del trazo original
+  pts=np.array([[m*y+b,y] for y in (ytop,y0+2)],np.int32)
+  cv2.polylines(out,[pts.reshape(-1,1,2)],False,(25,20,18,255),5,cv2.LINE_AA)
+# limpiar islas
+m2=(out[...,3]>20).astype(np.uint8); n,lab,st,_=cv2.connectedComponentsWithStats(m2)
+big=1+np.argmax(st[1:,4]); out[...,3]*=(lab==big)
+Image.fromarray(out.clip(0,255).astype(np.uint8)).save('perro/torso.png')
