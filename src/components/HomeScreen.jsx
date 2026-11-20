@@ -8,6 +8,7 @@ import Footer from "./shared/Footer.jsx";
 import Entrada, { EstiloEntrada } from "./shared/Entrada.jsx";
 import BotonOpinion from "./opinion/BotonOpinion.jsx";
 import PorQueFunciona from "./PorQueFunciona.jsx";
+import FilaAmigos from "./social/FilaAmigos.jsx";
 import RespaldoPlanck from "./RespaldoPlanck.jsx";
 
 /*
@@ -84,6 +85,13 @@ export default function HomeScreen({ onSelectSubject, onQueEs }) {
           <Entrada orden={1} modo="sube">
             <Hero />
           </Entrada>
+
+          {/*
+            * LOS AMIGOS, ENTRE EL TITULAR Y LAS MATERIAS (Mateo, 20-nov). Sin
+            * sesión no pinta nada y la portada queda como estaba. Sin amigos
+            * muestra sugerencias; con el primero, los amigos. Ver FilaAmigos.
+            */}
+          <FilaAmigos orden={2} />
 
           <div
             style={{
