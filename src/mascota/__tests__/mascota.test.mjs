@@ -51,6 +51,23 @@ test("las especies del selector son exactamente las del check vigente (0168)", (
   );
 });
 
+/*
+ * La 0168 amplió el check pero mascota_elegir guardaba su propia lista de
+ * cuatro: zorro y conejo salían en el selector y la base los rechazaba (20-nov).
+ * La función vigente (la última migración que la define) acepta las seis.
+ */
+test("mascota_elegir acepta todas las especies del selector (la función vigente)", async () => {
+  const { readdirSync } = await import("node:fs");
+  const dir = fileURLToPath(new URL("../../../supabase/migrations/", import.meta.url));
+  const conFuncion = readdirSync(dir).filter((f) => f.endsWith(".sql")).sort()
+    .filter((f) => /create or replace function public\.mascota_elegir\(/.test(readFileSync(dir + f, "utf8")));
+  const vigente = readFileSync(dir + conFuncion.at(-1), "utf8");
+  const m = vigente.match(/p_especie not in \(([^)]+)\)/);
+  assert.ok(m, `${conFuncion.at(-1)} valida la especie`);
+  const acepta = m[1].match(/'([^']+)'/g).map((s) => s.slice(1, -1));
+  assert.deepEqual([...acepta].sort(), [...IDS_ESPECIE].sort(), `mascota_elegir (${conFuncion.at(-1)}) y ESPECIES tienen que coincidir`);
+});
+
 test("el largo máximo del nombre coincide con el de la base", () => {
   const m = migracion.match(/char_length\(mascota_nombre\) between 1 and (\d+)/);
   assert.ok(m, "la migración declara el largo del nombre");
