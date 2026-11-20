@@ -9,7 +9,8 @@
 - Antes de abrir nada: primero `orquestador/INDICE.md`, luego el buscador del canon (regla k).
 
 ## En qué estoy ahora
-- 2026-11-20 17:05 — Salas de entrenamiento + duelo 1 vs 1 (pedido de Mateo): lobby estilo juego con mascotas, el creador elige tema y arranca, partida de preguntas que avanza sola, podio. Migración 0172 (tablas entreno_*, aparte de la Clase en vivo). Los amigos de demostración juegan como bots en la sala de su dueño. Rama claude/project-thread-0t154s; espera aprobación de Mateo para publicar.
+- 2026-11-20 17:05 — Salas de entrenamiento + duelo 1 vs 1 (pedido de Mateo): lobby estilo juego con mascotas, el creador elige tema y arranca, partida de preguntas que avanza sola, podio. Migración 0172 (tablas entreno_*, aparte de la Clase en vivo). Los amigos de demostración juegan como bots en la sala de su dueño. PR #714 fusionado y desplegado ~17:50 con el visto bueno de Mateo.
+- 2026-11-20 17:59 — Emotes en las salas (pedido de Mateo): botón Emotes en el lobby y el podio, bandeja con los 12 festejos que ya tiene la mascota (FESTEJOS de marionetas.js, nada dibujado nuevo), burbuja con el emoji 5 s, se ve en todos los celulares por la base. Los bots también hacen emotes. Migración 0173. Sonda scripts/entreno/emotes.mjs 21/21. Espera aprobación de Mateo para publicar.
 - 2026-11-20 12:52 — Fondo vivo en 6 pantallas planas. Fusionado y desplegado (#712).
 - 2026-11-20 10:00 — Amigos en el inicio: fila de mascotas, sugerencias, 11 amigos de demostración (0170). Fusionado y desplegado (#709).
 - 2026-11-18 17:54 — Auditoría de navegación (pedida por Mateo): X del menú muerta, sin botón visible a Inicio en las materias, «Salir» de Clase en vivo tapado en celular, Tienda en blanco al entrar directo. Fusionado (#697).

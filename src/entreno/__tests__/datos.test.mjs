@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { tabla, esDuelo, limpiarCodigo, restanteMs, faltaParaAbrir, faltaSiguiente, mensajeSala } from "../datos.js";
+import { tabla, esDuelo, limpiarCodigo, restanteMs, faltaParaAbrir, faltaSiguiente, mensajeSala, conEmoteLocal, EMOTES, emojiDe } from "../datos.js";
 
 test("la tabla ordena por puntos y los empates comparten puesto", () => {
   const t = tabla([
@@ -29,4 +29,20 @@ test("los relojes salen del reloj del servidor", () => {
 test("los errores de la base llegan en palabras de estudiante", () => {
   assert.match(mensajeSala(new Error("La partida ya empezó")), /ya empezó/);
   assert.match(mensajeSala(new Error("codigo")), /código/);
+});
+
+test("mi emote local se ve al instante y caduca a los 5 s", () => {
+  const js = [{ apodo: "yo", soy_yo: true, emote: null }, { apodo: "otro", soy_yo: false, emote: "karaoke" }];
+  const local = { emote: "baila", desde: "t", hasta: 10_000 };
+  const con = conEmoteLocal(js, local, 5_000);
+  assert.equal(con[0].emote, "baila");
+  assert.equal(con[1].emote, "karaoke");
+  assert.equal(conEmoteLocal(js, local, 10_001)[0].emote, null);
+});
+
+test("los doce emotes son los festejos de la mascota", () => {
+  assert.equal(EMOTES.length, 12);
+  assert.equal(new Set(EMOTES.map((e) => e.id)).size, 12);
+  assert.equal(emojiDe("baila"), "💃");
+  assert.equal(emojiDe("nada"), "");
 });
