@@ -78,9 +78,9 @@ export const MARIONETAS = {
   },
   perro: {
     cola: ["cola", 380, 470],
-    brazos: [["bc_d", 182, 446, { giro: 3 }], ["bc_i", 349, 446, { giro: -3 }]],
+    brazos: [["bc_d", 180, 446, { giro: 3 }], ["bc_i", 349, 446, { giro: -3 }]],
     brazosDelante: true,
-    torso: ["torso", 164, 400],
+    torso: ["torso_n", 181, 412],
     cabeza: {
       en: [123, 125, 1.35],
       orejas: [["oreja_i", -55, 10], ["oreja_d", 195, 10]],

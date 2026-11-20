@@ -9,7 +9,7 @@ con patitas redondas de frente (las de antes «se veían muy raras»).
 
   python3 scripts/mascotas/brazos-colgando.py <carpeta-con-las-hojas> public/mascotas
 
-Hojas esperadas en la carpeta: <especie>_brazos.jpg y conejo_torso.jpg.
+Hojas esperadas en la carpeta: <especie>_brazos.jpg, conejo_torso.jpg y perro_torso.png.
 Por pieza escribe, como separar-pelaje.py, el original, el pelaje en grises
 (_p, sin pérdida) y lo fijo (_f), al 50 %, y añade sus medidas a
 src/mascota/marionetas-piezas.js sin tocar la rampa de cada especie.
@@ -17,7 +17,7 @@ src/mascota/marionetas-piezas.js sin tocar la rampa de cada especie.
 Nombres nuevos (los de antes se quedan, no se borra nada):
   bc_d  el brazo que se ve a la IZQUIERDA de la pantalla (el derecho de la mascota)
   bc_i  el que se ve a la derecha
-  torso_n  el cuerpo nuevo del conejo
+  torso_n  el cuerpo nuevo del conejo y el del perro
 """
 import json, os, re, sys
 import cv2, numpy as np
@@ -36,7 +36,12 @@ BRAZOS = {
     "hamster": ("hamster_brazos.jpg", 112, False),
     "zorro": ("zorro_brazos.jpg", 150, False),
 }
-TORSOS = {"conejo": ("conejo_torso.jpg", "torso_n", 210, True)}  # alto en px del kit
+# Cuerpos nuevos, alto en px del kit. El del perro (20-nov): el primero era el
+# torso del kit con los brazos borrados a mano y quedó torcido.
+TORSOS = {
+    "conejo": ("conejo_torso.jpg", "torso_n", 210, True),
+    "perro": ("perro_torso.png", "torso_n", 270, False),
+}
 
 
 def componentes(path):

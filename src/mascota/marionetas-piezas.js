@@ -88,6 +88,7 @@ export const PIEZAS = {
       llama: [74, 88, 0],
       bc_d: [71, 150, 1],
       bc_i: [69, 150, 1],
+      torso_n: [238, 270, 1],
     },
   },
   hamster: {
