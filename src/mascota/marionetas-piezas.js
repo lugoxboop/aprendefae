@@ -30,6 +30,8 @@ export const PIEZAS = {
       boca_triste: [61, 28, 0],
       lagrima: [40, 58, 0],
       llama: [73, 89, 0],
+      bc_d: [71, 150, 1],
+      bc_i: [71, 150, 1],
     },
   },
   gato: {
@@ -57,6 +59,8 @@ export const PIEZAS = {
       boca_triste: [60, 59, 0],
       lagrima: [42, 62, 0],
       llama: [78, 97, 0],
+      bc_d: [71, 150, 1],
+      bc_i: [71, 150, 1],
     },
   },
   perro: {
@@ -82,6 +86,8 @@ export const PIEZAS = {
       boca_triste: [53, 29, 0],
       lagrima: [41, 60, 0],
       llama: [74, 88, 0],
+      bc_d: [71, 150, 1],
+      bc_i: [69, 150, 1],
     },
   },
   hamster: {
@@ -108,6 +114,8 @@ export const PIEZAS = {
       boca_triste: [86, 72, 0],
       lagrima: [52, 73, 0],
       llama: [82, 102, 0],
+      bc_d: [41, 112, 1],
+      bc_i: [41, 112, 1],
     },
   },
   conejo: {
@@ -133,6 +141,9 @@ export const PIEZAS = {
       boca_triste: [97, 39, 0],
       lagrima: [48, 71, 0],
       llama: [94, 120, 0],
+      bc_d: [56, 122, 1],
+      bc_i: [56, 122, 1],
+      torso_n: [215, 210, 1],
     },
   },
   huron: {
@@ -154,6 +165,8 @@ export const PIEZAS = {
       cara_feliz: [188, 118, 1],
       cara_triste: [194, 110, 1],
       cara_racha: [193, 73, 1],
+      bc_d: [51, 138, 1],
+      bc_i: [51, 138, 1],
     },
   },
 };
