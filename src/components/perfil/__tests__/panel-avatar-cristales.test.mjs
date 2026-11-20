@@ -6,7 +6,7 @@ import { JSDOM, VirtualConsole } from "jsdom";
  * ═══════════════════════════════════════════════════════════════════════════
  * EL PANEL DE PERFIL con avatar y Cristales.
  *
- *   · el avatar a 96 px, y tocarlo abre Editar perfil (el atajo directo)
+ *   · la mascota de cuerpo entero en la cabecera, y tocarla abre Editar perfil (el atajo directo)
  *   · los Cristales junto a los FP y la racha, y esa tarjeta es la entrada a la
  *     Tienda
  *   · el aviso de la primera vez: suave, descartable y no vuelve
@@ -59,14 +59,15 @@ function montar({ perfil = PERFIL } = {}) {
 
 const pulsar = async (el) => { await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); }); };
 
-test("la cabecera del perfil muestra la mascota del estudiante a 112 px y en busto, y tocarla edita el perfil", () => {
+test("la cabecera del perfil muestra la mascota del estudiante de cuerpo entero a 168 px, y tocarla edita el perfil", () => {
   w.localStorage.clear();
   const m = montar();
   try {
     const svg = m.caja.querySelector("[data-abrir-avatar] svg[data-mascota]");
     assert.equal(svg.dataset.mascota, mascotaDe(PERFIL).especie);
-    assert.equal(svg.getAttribute("width"), "112");
-    assert.equal(svg.style.overflow, "hidden", "en busto: cabeza y hombros, recortado");
+    /* Rediseño del 20-nov: la cabecera es el escenario de la mascota, entera y con sus accesorios. */
+    assert.equal(svg.getAttribute("width"), "168");
+    assert.notEqual(svg.style.overflow, "hidden", "de cuerpo entero: nada recortado");
     assert.match(m.caja.querySelector("[data-abrir-avatar]").getAttribute("aria-label"), /Editar tu perfil/);
   } finally { m.desmontar(); }
 });

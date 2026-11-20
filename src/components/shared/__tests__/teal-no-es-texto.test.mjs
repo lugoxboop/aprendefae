@@ -30,7 +30,6 @@ const PENDIENTES = {
   "src/components/DemandaAgregadaAprenderView.jsx": 2,
   "src/components/IcebergView.jsx": 1,
   "src/components/PensamientoSistemicoView.jsx": 1,
-  "src/components/PerfilView.jsx": 4,
   "src/components/PoliticaEconomicaView.jsx": 1,
   "src/components/PoliticaFiscalView.jsx": 1,
   "src/components/PoliticaMonetariaView.jsx": 1,
