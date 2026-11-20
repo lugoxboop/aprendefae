@@ -9,6 +9,7 @@
 - Antes de abrir nada: primero `orquestador/INDICE.md`, luego el buscador del canon (regla k).
 
 ## En qué estoy ahora
+- 2026-11-20 10:00 — Amigos en el inicio (pedido de Mateo): fila de círculos con mascotas entre el titular y las materias; sin amigos, sugerencias con «Añadir»; ficha del otro con «Enviar solicitud». Migración 0170 (tabla amigos_demo, 11 de demostración para Lugox173, función amigos_inicio). Rama claude/project-thread-ezl2nq; espera aprobación de Mateo para fusionar.
 - 2026-11-18 17:54 — Auditoría de navegación (pedida por Mateo): X del menú muerta, sin botón visible a Inicio en las materias, «Salir» de Clase en vivo tapado en celular, Tienda en blanco al entrar directo. Arreglado en el PR de la rama claude/project-thread-ewtc9p; espera aprobación de Mateo para fusionar.
 
 ## Decisiones tomadas y por qué
@@ -18,4 +19,6 @@
 - 
 
 ## Lo que aprendí que no hay que repetir
+- Los amigos de demostración NO son cuentas (tabla aparte): así no salen en ranking, ligas, panel docente ni búsqueda. Sembrar cuentas falsas en auth.users ensuciaría todo eso.
+- Las migraciones no llevan begin/commit: el despliegue las aplica con psql -1.
 - Las sondas de captura usan «reducir movimiento»: así NO se ven los fallos que solo existen con la animación puesta (la X tapada por la fila animada). Para probar toques, sonda con movimiento normal y elementFromPoint.
