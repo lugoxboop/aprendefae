@@ -1,6 +1,6 @@
 import { createPortal } from "react-dom";
 import { useContext, useEffect, useRef, useState, useCallback } from "react";
-import { ArrowRight, ChevronLeft, ChevronRight, Flame, Plus, UserPlus, Check, X } from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight, Flame, Plus, UserPlus, Check, X, Swords, Gamepad2 } from "lucide-react";
 import { FAE } from "../../theme.js";
 import { NavigationContext } from "../../navigation.js";
 import { AuthContext } from "../../auth/AuthProvider.jsx";
@@ -8,6 +8,7 @@ import AvatarEstudiante from "../avatar/AvatarEstudiante.jsx";
 import { useAmigosInicio } from "../../social/useAmigosInicio.js";
 import { perfilDeTarjeta } from "./PanelAmigos.jsx";
 import Entrada from "../shared/Entrada.jsx";
+import { useMisSalas } from "../../entreno/datos.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -107,6 +108,12 @@ function EstiloFila() {
 .fae-ficha-dato svg { color: ${FAE.ambar}; }
 .fae-ficha-boton { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 48px; border-radius: 14px; border: 0; font-family: Sora, sans-serif; font-weight: 700; font-size: 15px; cursor: pointer; }
 .fae-ficha-boton[data-tono="si"] { background: ${FAE.teal}; color: #06202A; }
+.fae-ficha-boton[data-tono="oro"] { background: linear-gradient(180deg, #FFE08A, #E9B949); color: #2A1A00; box-shadow: 0 6px 20px -6px rgba(233,185,73,.85); }
+.fae-amigo-sala .fae-amigo-circulo { background: radial-gradient(120% 120% at 30% 20%, rgba(159,180,255,0.4), rgba(111,134,255,0.12) 60%), rgba(29,53,87,0.7); box-shadow: inset 0 0 0 2px rgba(159,180,255,0.55), 0 6px 18px -8px rgba(0,0,0,0.6); }
+.fae-amigo-sala .fae-amigo-nombre { white-space: normal; text-align: center; color: #C9D2FF; }
+.fae-sala-aviso { display: flex; align-items: center; gap: 10px; margin: 0 0 10px; padding: 8px 8px 8px 14px; border-radius: 14px; background: linear-gradient(90deg, rgba(233,185,73,.18), rgba(248,249,250,.03)); border: 1px solid rgba(233,185,73,.5); color: ${FAE.text}; font-size: 13.5px; font-weight: 600; }
+.fae-sala-aviso span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fae-sala-aviso button { flex: none; min-height: 40px; padding: 0 14px; border-radius: 999px; border: 0; cursor: pointer; background: linear-gradient(180deg, #FFE08A, #E9B949); color: #2A1A00; font-family: Sora, sans-serif; font-weight: 800; font-size: 13px; }
 .fae-ficha-boton[data-tono="hecho"] { background: rgba(248,249,250,0.07); color: ${TEXTO_SUAVE}; cursor: default; }
 .fae-ficha-boton[data-tono="neutro"] { background: rgba(248,249,250,0.07); color: ${FAE.text}; box-shadow: inset 0 0 0 1px rgba(248,249,250,0.14); }
 .fae-ficha-error { margin: 10px 0 0; font-size: 13px; color: #F4A28C; }
@@ -181,7 +188,7 @@ function Sugerencia({ s, onAbrir, onPedir }) {
 }
 
 /* La ficha del otro: su mascota en grande y, si no es amigo, «Enviar solicitud». */
-function Ficha({ tarjeta, esAmigo, onCerrar, onPedir, onVerTodo }) {
+function Ficha({ tarjeta, esAmigo, onCerrar, onPedir, onVerTodo, onDuelo }) {
   const cerrarRef = useRef(null);
   const [error, setError] = useState(null);
   useEffect(() => {
@@ -216,6 +223,12 @@ function Ficha({ tarjeta, esAmigo, onCerrar, onPedir, onVerTodo }) {
           </span>
           {esAmigo && <span className="fae-ficha-dato" style={{ color: FAE.text }}>Tu amigo</span>}
         </div>
+        {esAmigo && onDuelo && (
+          <button type="button" className="fae-ficha-boton" data-tono="oro" onClick={() => onDuelo(tarjeta)} data-retar-duelo style={{ marginBottom: "8px" }}>
+            <Swords size={18} strokeWidth={2.4} aria-hidden="true" />
+            Retar a un duelo
+          </button>
+        )}
         {esAmigo ? (
           <button type="button" className="fae-ficha-boton" data-tono="neutro" onClick={onVerTodo}>
             Ver todos tus amigos
@@ -238,6 +251,7 @@ export default function FilaAmigos({ orden = 2 }) {
   const session = useContext(AuthContext)?.session ?? null;
   const nav = useContext(NavigationContext);
   const { amigos, total, sugerencias, cargando, solicitar, modo } = useAmigosInicio(Boolean(session));
+  const salas = useMisSalas(Boolean(session));
   const [abierta, setAbierta] = useState(null);
   const filaRef = useRef(null);
   const [bordes, setBordes] = useState({ i: false, d: false });
@@ -262,6 +276,9 @@ export default function FilaAmigos({ orden = 2 }) {
   if (!cargando && modo === "vacio") return null;
 
   const verTodo = () => nav?.irA?.("amigos");
+  const irSalas = (extra = null) => nav?.irA?.("salas", null, extra);
+  const duelo = (t) => irSalas(t.user_id ? `duelo-${t.user_id}` : `duelo-demo-${t.demo_id}`);
+  const invitacion = salas.invitaciones[0];
   const mover = (dir) => filaRef.current?.scrollBy({ left: dir * filaRef.current.clientWidth * 0.8, behavior: "smooth" });
 
   /* La ficha se lee de la lista viva, para que «Enviada» se vea al instante. */
@@ -302,6 +319,13 @@ export default function FilaAmigos({ orden = 2 }) {
         </div>
       </div>
 
+      {invitacion && (
+        <div className="fae-sala-aviso" data-aviso-sala>
+          <Gamepad2 size={18} aria-hidden="true" color="#FFE3A1" />
+          <span>{invitacion.de?.apodo} te {invitacion.duelo ? "retó a un duelo" : "invitó a su sala"}</span>
+          <button type="button" onClick={() => irSalas()}>Entrar</button>
+        </div>
+      )}
       <div className="fae-amigos-pista" data-borde-i={bordes.i ? "si" : "no"} data-borde-d={bordes.d ? "si" : "no"}>
         <div className="fae-amigos-fila" ref={filaRef} onScroll={medir}>
           {cargando ? (
@@ -321,6 +345,14 @@ export default function FilaAmigos({ orden = 2 }) {
                   <span className="fae-amigo-nombre">Añadir amigos</span>
                 </button>
               )}
+              {modo === "amigos" && (
+                <button type="button" className="fae-amigo fae-amigo-sala" onClick={() => irSalas()} aria-label="Salas de entrenamiento" data-ir-salas>
+                  <span className="fae-amigo-circulo">
+                    <Gamepad2 size={30} strokeWidth={2.1} color="#E4E9FF" aria-hidden="true" />
+                  </span>
+                  <span className="fae-amigo-nombre">Jugar en sala</span>
+                </button>
+              )}
               {modo === "amigos"
                 ? amigos.map((a) => <Circulo key={a.user_id || a.demo_id || a.apodo} tarjeta={a} onAbrir={setAbierta} />)
                 : sugerencias.map((s) => <Sugerencia key={s.user_id} s={s} onAbrir={setAbierta} onPedir={(x) => solicitar(x.apodo)} />)}
@@ -338,6 +370,7 @@ export default function FilaAmigos({ orden = 2 }) {
           esAmigo={modo === "amigos"}
           onCerrar={cerrarFicha}
           onPedir={(t) => solicitar(t.apodo)}
+          onDuelo={(t) => { setAbierta(null); duelo(t); }}
           onVerTodo={() => {
             setAbierta(null);
             verTodo();
