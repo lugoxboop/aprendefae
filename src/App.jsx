@@ -32,6 +32,7 @@ const PorterView = lazy(() => import("./components/PorterView.jsx"));
 const PerfilView = lazy(() => import("./components/PerfilView.jsx"));
 const TiendaView = lazy(() => import("./components/tienda/TiendaView.jsx"));
 const AmigosView = lazy(() => import("./components/social/AmigosView.jsx"));
+const SalasView = lazy(() => import("./components/entreno/SalasView.jsx"));
 const PoliticaEconomicaView = lazy(() => import("./components/PoliticaEconomicaView.jsx"));
 /* "La Tesorería Nacional": los siete juegos de Política Fiscal. Solo tiene mitad Hacer. */
 const PoliticaFiscalView = lazy(() => import("./components/PoliticaFiscalView.jsx"));
@@ -100,7 +101,7 @@ const VISTAS_CONTABILIDAD = new Set([
 ]);
 
 /* Bruno no sale en el inicio, los índices de materia ni las páginas de cuenta: ahí no hay actividad que orientar. */
-const VISTAS_SIN_BRUNO = new Set(["home", "macroeconomia", "pensamiento-estrategico", "contabilidad", "docente", "que-es", "perfil", "tienda", "vivo", "vivo-profesor"]);
+const VISTAS_SIN_BRUNO = new Set(["home", "macroeconomia", "pensamiento-estrategico", "contabilidad", "docente", "que-es", "perfil", "tienda", "vivo", "vivo-profesor", "salas"]);
 const VISTAS_PE = new Set(["pensamiento-sistemico", "modelo-iceberg", "fuerzas-porter"]);
 const materiaDeVista = (v) => (VISTAS_CONTABILIDAD.has(v) || v === "repaso-diario-contabilidad" ? "Contabilidad" : VISTAS_PE.has(v) ? "Pensamiento Estratégico" : "Macroeconomía");
 
@@ -496,6 +497,15 @@ export default function App() {
       <Suspense fallback={siteFallback}>
         {/* Destino propio, desde el menú de cuenta; vuelve a donde estaba. */}
         <AmigosView onBack={() => setView(prevView === "amigos" ? "home" : prevView)} />
+      </Suspense>
+    );
+  }
+
+  /* Las salas de entrenamiento (0172): #/salas, #/salas/<código>, #/salas/duelo-<amigo>. */
+  if (view === "salas") {
+    return wrap(
+      <Suspense fallback={siteFallback}>
+        <SalasView extra={ruta.extra} onBack={() => setView(prevView === "salas" ? "amigos" : prevView)} />
       </Suspense>
     );
   }

@@ -82,6 +82,8 @@ export const VISTAS = new Set([
   "perfil",
   "tienda",
   "amigos",
+  /* Las salas de entrenamiento (0172): lobby con mascotas y partida entre amigos. */
+  "salas",
   "docente",
   /* La clase en vivo (0159): el celular del estudiante y el tablero del profesor. */
   "vivo",

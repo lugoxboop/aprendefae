@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useContext } from "react";
 import { ChevronLeft } from "lucide-react";
 import { FAE } from "../../theme.js";
 import Logo from "../Logo.jsx";
@@ -9,6 +9,8 @@ import PanelAmigos from "./PanelAmigos.jsx";
 import PanelRetos from "./PanelRetos.jsx";
 import { ESTILO_AMIGOS, PANEL } from "./amigos-comun.jsx";
 import { useRetos } from "../../social/useRetos.js";
+import { NavigationContext } from "../../navigation.js";
+import BannerSalas from "../entreno/BannerSalas.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -26,6 +28,8 @@ import { useRetos } from "../../social/useRetos.js";
 export default function AmigosView({ onBack }) {
   const { session, perfil, pedirCuenta, refrescarPerfil } = useAuth();
   const retos = useRetos(Boolean(session));
+  const nav = useContext(NavigationContext);
+  const duelo = useCallback((t) => nav?.irA?.("salas", null, `duelo-${t.user_id}`), [nav]);
   const [respondiendo, setRespondiendo] = useState(null);
   const [cerrando, setCerrando] = useState(null);
 
@@ -126,7 +130,10 @@ export default function AmigosView({ onBack }) {
           </Entrada>
         ) : (
           <>
-            <PanelAmigos onRetar={(userId) => retos.retar(userId)} enReto={enReto} perfilPropio={perfil} />
+            <Entrada orden={1} modo="sube">
+              <BannerSalas yo={yo} />
+            </Entrada>
+            <PanelAmigos onRetar={(userId) => retos.retar(userId)} enReto={enReto} perfilPropio={perfil} onDuelo={duelo} />
             {panelRetos}
           </>
         )}

@@ -248,7 +248,7 @@ function TarjetaNueva({ onClick }) {
 }
 
 /* ── La ficha: el amigo en grande ─────────────────────────────────────────── */
-function Ficha({ t, onCerrar, onRetar, onQuitar, enReto }) {
+function Ficha({ t, onCerrar, onRetar, onQuitar, enReto, onDuelo = null }) {
   const [seguro, setSeguro] = useState(false);
   const cerrarRef = useRef(null);
   const perfil = perfilDeTarjeta(t);
@@ -301,6 +301,11 @@ function Ficha({ t, onCerrar, onRetar, onQuitar, enReto }) {
             </span>
           </div>
           <div style={{ display: "grid", gap: "8px" }}>
+            {onDuelo && (
+              <Boton tono="oro" grande ancho etiqueta={`Retar a ${t.apodo} a un duelo`} onClick={() => { onCerrar(); onDuelo(t); }} data-retar-duelo>
+                <Swords size={17} /> Duelo 1 vs 1
+              </Boton>
+            )}
             {enReto ? (
               <p style={{ margin: 0, fontSize: "13px", color: "#C9D2FF" }}>Ya tienen un reto juntos. ¡A estudiar!</p>
             ) : onRetar ? (
@@ -324,7 +329,7 @@ function Ficha({ t, onCerrar, onRetar, onQuitar, enReto }) {
 }
 
 /* ── El panel completo ─────────────────────────────────────────────────────── */
-export default function PanelAmigos({ onRetar = null, enReto = new Set(), perfilPropio = null }) {
+export default function PanelAmigos({ onRetar = null, enReto = new Set(), perfilPropio = null, onDuelo = null }) {
   const { amigos, recibidas, enviadas, cargando, error, solicitar, responder, eliminar, buscar } = useAmigos();
   const [apodo, setApodo] = useState("");
   const [aviso, setAviso] = useState(null); // { tipo: "ok"|"error", texto }
@@ -496,6 +501,7 @@ export default function PanelAmigos({ onRetar = null, enReto = new Set(), perfil
           onRetar={onRetar ? retar : null}
           onQuitar={(t) => eliminar(t.amistad_id)}
           enReto={enReto.has(abierto.user_id)}
+          onDuelo={onDuelo}
         />
       )}
     </div>

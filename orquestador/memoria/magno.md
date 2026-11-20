@@ -9,8 +9,9 @@
 - Antes de abrir nada: primero `orquestador/INDICE.md`, luego el buscador del canon (regla k).
 
 ## En qué estoy ahora
-- 2026-11-20 12:52 — Fondo vivo (malla del inicio) en las 6 pantallas que lo tenían plano: Perfil (y avatar), Panel docente, Qué es, Clase en vivo (estudiante y profesor). Sonda scripts/navegacion/fondos.mjs. Rama claude/project-thread-ypbvcc; espera aprobación de Mateo para fusionar.
-- 2026-11-20 10:00 — Amigos en el inicio (pedido de Mateo): fila de círculos con mascotas entre el titular y las materias; sin amigos, sugerencias con «Añadir»; ficha del otro con «Enviar solicitud». Migración 0170 (tabla amigos_demo, 11 de demostración para Lugox173, función amigos_inicio). Fusionado y desplegado (#709) el 2026-11-20 ~10:10.
+- 2026-11-20 17:05 — Salas de entrenamiento + duelo 1 vs 1 (pedido de Mateo): lobby estilo juego con mascotas, el creador elige tema y arranca, partida de preguntas que avanza sola, podio. Migración 0172 (tablas entreno_*, aparte de la Clase en vivo). Los amigos de demostración juegan como bots en la sala de su dueño. Rama claude/project-thread-0t154s; espera aprobación de Mateo para publicar.
+- 2026-11-20 12:52 — Fondo vivo en 6 pantallas planas. Fusionado y desplegado (#712).
+- 2026-11-20 10:00 — Amigos en el inicio: fila de mascotas, sugerencias, 11 amigos de demostración (0170). Fusionado y desplegado (#709).
 - 2026-11-18 17:54 — Auditoría de navegación (pedida por Mateo): X del menú muerta, sin botón visible a Inicio en las materias, «Salir» de Clase en vivo tapado en celular, Tienda en blanco al entrar directo. Fusionado (#697).
 
 ## Decisiones tomadas y por qué
@@ -22,4 +23,5 @@
 ## Lo que aprendí que no hay que repetir
 - Los amigos de demostración NO son cuentas (tabla aparte): así no salen en ranking, ligas, panel docente ni búsqueda. Sembrar cuentas falsas en auth.users ensuciaría todo eso.
 - Las migraciones no llevan begin/commit: el despliegue las aplica con psql -1.
+- Para probar una pantalla con la base DE VERDAD sin Supabase: Postgres local con todas las migraciones y un puente que ejecuta cada rpc/<fn> del navegador como el usuario (scripts/entreno/partida.mjs). Prueba la lógica real, no respuestas inventadas.
 - Las sondas de captura usan «reducir movimiento»: así NO se ven los fallos que solo existen con la animación puesta (la X tapada por la fila animada). Para probar toques, sonda con movimiento normal y elementFromPoint.
