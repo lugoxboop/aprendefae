@@ -1,4 +1,4 @@
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, ArrowRight, Flame, Heart, Trophy, Zap } from "lucide-react";
 import { FAE } from "../theme.js";
 import Logo from "./Logo.jsx";
 import RankingFP from "./ranking/RankingFP.jsx";
@@ -7,16 +7,16 @@ import { useAuth } from "../auth/AuthProvider.jsx";
 import { useContext, useEffect, useState } from "react";
 import { NavigationContext } from "../navigation.js";
 import { useAccesoDocente } from "../docente/useAccesoDocente.js";
-import { rachaVigente, proximoHito, enRiesgoHoy } from "../fp/racha.js";
+import { rachaVigente, proximoHito, enRiesgoHoy, HITOS } from "../fp/racha.js";
 import { animosRecibidos } from "../social/animo.js";
-import Medallas from "./perfil/Medallas.jsx";
+import Medallas, { useMedallas } from "./perfil/Medallas.jsx";
+import HeroePerfil from "./perfil/HeroePerfil.jsx";
+import { CSS_PERFIL, MENTA } from "./perfil/estilo-perfil.js";
 import ResumenSemestre from "./perfil/ResumenSemestre.jsx";
 import EditarPerfil, { SECCIONES } from "./perfil/EditarPerfil.jsx";
-import SeccionMascota from "./perfil/SeccionMascota.jsx";
-import AvatarEstudiante from "./avatar/AvatarEstudiante.jsx";
 import IconoCristal from "./shared/IconoCristal.jsx";
 import { saldoDe } from "../cristales/cristales.js";
-import { AVISO_AVATAR, avisoPendiente, descartarAviso } from "./perfil/avisoAvatar.js";
+import { avisoPendiente, descartarAviso } from "./perfil/avisoAvatar.js";
 
 /*
  * Perfil del estudiante. Se llega desde el indicador de cuenta de la cabecera.
@@ -75,6 +75,10 @@ export default function PerfilView({ seccion = null, onBack }) {
 
   const racha = rachaVigente(perfil);
   const siguiente = proximoHito(racha);
+  /* Desde dónde se cuenta la barra hacia el próximo bono: el hito anterior. */
+  const previo = [...HITOS].reverse().find((h) => h <= racha) ?? 0;
+  /* Una sola carga de logros: la usan la vitrina de la cabecera y la colección. */
+  const medallas = useMedallas();
   const enRiesgo = enRiesgoHoy(perfil);
 
   return (
@@ -139,157 +143,99 @@ export default function PerfilView({ seccion = null, onBack }) {
             />
           </div>
         ) : (
-          <>
-            {/*
-              La mascota, a 112 px y en busto, con el apodo al lado. TOCARLO ABRE EDITAR
-              PERFIL: es el atajo directo al selector, además del botón de
-              abajo. Lo que se toca para cambiar algo es la cosa misma.
-            */}
-            <div style={{ display: "flex", alignItems: "center", gap: "14px", margin: "0 0 10px" }}>
-              <button
-                type="button"
-                data-abrir-avatar
-                onClick={() => setEditando(true)}
-                aria-label="Editar tu perfil"
-                style={{
-                  padding: "6px", borderRadius: "999px", cursor: "pointer", flexShrink: 0,
-                  background: "rgba(29,53,87,0.55)", border: "1px solid rgba(248,249,250,0.14)", lineHeight: 0,
-                }}
-              >
-                <AvatarEstudiante perfil={perfil} tamano={112} animo="tranquila" encuadre="busto" />
-              </button>
-              <p
-                data-apodo
-                style={{
-                  fontFamily: "Sora, sans-serif", fontWeight: 700,
-                  fontSize: "clamp(24px, 4vw, 34px)", letterSpacing: "-0.03em",
-                  lineHeight: 1.1, margin: 0, minWidth: 0, overflowWrap: "anywhere",
-                }}
-              >
-                {perfil?.nickname ?? "Tu cuenta"}
-              </p>
-            </div>
+          <div className="fae-pf-raiz">
+            <style>{CSS_PERFIL}</style>
+            <HeroePerfil
+              perfil={perfil}
+              racha={racha}
+              medallas={medallas}
+              aviso={aviso}
+              onDescartarAviso={() => { descartarAviso(); setAviso(false); }}
+              onEditar={() => setEditando(true)}
+            />
 
-            {aviso && (
-              <p
-                data-aviso-avatar
-                style={{
-                  display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap",
-                  fontSize: "13px", lineHeight: 1.5, color: "rgba(248,249,250,0.66)", margin: "0 0 12px",
-                }}
-              >
-                {AVISO_AVATAR}
-                <button
-                  type="button"
-                  data-descartar-aviso
-                  onClick={() => { descartarAviso(); setAviso(false); }}
-                  style={{
-                    background: "transparent", border: "none", padding: 0, cursor: "pointer",
-                    fontFamily: "Sora, sans-serif", fontSize: "12.5px", fontWeight: 600, color: FAE.teal,
-                  }}
-                >
-                  Entendido
-                </button>
+            {enRiesgo && (
+              <p data-racha-en-riesgo className="fae-pf-aviso" style={{ margin: "0 0 16px", color: FAE.ambar, borderColor: "rgba(233,196,106,0.45)" }}>
+                Tu racha de {racha} {racha === 1 ? "día" : "días"} se corta si hoy no completas nada.
               </p>
             )}
-            <p style={{ fontSize: "14px", color: "rgba(248,249,250,0.5)", margin: "0 0 4px" }}>
-              Este es el nombre que ven los demás en los rankings.
-            </p>
-            <p data-nombre-real style={{ fontSize: "14px", color: "rgba(248,249,250,0.5)", margin: "0 0 14px" }}>
-              Nombre real: {perfil?.full_name || "sin escribir"} · solo lo ve tu profesor.
-            </p>
-            <button
-              type="button"
-              onClick={() => setEditando(true)}
-              style={{
-                fontFamily: "Sora, sans-serif", fontSize: "13.5px", fontWeight: 600,
-                padding: "10px 18px", borderRadius: "999px", cursor: "pointer", margin: "0 0 22px",
-                background: "transparent", border: "1px solid rgba(248,249,250,0.22)", color: "rgba(248,249,250,0.72)",
-              }}
-            >
-              Editar perfil
-            </button>
 
-            {/* Tu mascota, con el selector de color (Etapa 1b). Solo si ya la tiene. */}
-            <SeccionMascota perfil={perfil} />
-
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: "12px", marginBottom: "26px" }}>
-              <div style={dato}>
-                <p style={{ fontSize: "12.5px", color: "rgba(248,249,250,0.5)", margin: "0 0 4px" }}>FP acumulados</p>
-                <p style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "24px", margin: 0, color: FAE.text, fontVariantNumeric: "tabular-nums" }}>
-                  {perfil?.points ?? 0}
+            {/*
+              Las fichas de números. La racha, ancha y con su barra hacia el
+              próximo bono: es la que se pierde si no vuelves, y lo que está en
+              juego se ve (el mismo criterio del banner del Repaso). La racha
+              que se enseña es la vigente, no la guardada.
+            */}
+            <div className="fae-pf-fichas" data-fichas-perfil>
+              <div className="fae-pf-ficha fae-pf-ficha--ancha">
+                <p className="fae-pf-rotulo">
+                  <span className="fae-pf-icono" style={{ background: "rgba(244,162,97,0.16)" }}><Flame size={14} strokeWidth={2.4} color={FAE.ambar} /></span>
+                  Racha
                 </p>
-              </div>
-              {/*
-                La racha que se enseña es la vigente, no la guardada: si pasó un
-                día entero sin entrar, se acabó, y mostrar el número viejo sería
-                el mismo dato falso que había antes.
-              */}
-              <div style={dato}>
-                <p style={{ fontSize: "12.5px", color: "rgba(248,249,250,0.5)", margin: "0 0 4px" }}>Racha</p>
-                <p style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "24px", margin: 0, color: FAE.text, fontVariantNumeric: "tabular-nums" }}>
-                  {racha} {racha === 1 ? "día" : "días"}
-                </p>
+                <p className="fae-pf-cifra">{racha} <small>{racha === 1 ? "día" : "días"}</small></p>
                 {siguiente && (
-                  <p style={{ fontSize: "11.5px", color: FAE.teal, margin: "4px 0 0" }}>
-                    {siguiente - racha === 1 ? "1 día" : `${siguiente - racha} días`} para el bono de {siguiente}
-                  </p>
+                  <>
+                    <div className="fae-pf-barra" aria-hidden="true">
+                      <span style={{ width: `${Math.max(4, Math.round(((racha - previo) / (siguiente - previo)) * 100))}%` }} />
+                    </div>
+                    <p className="fae-pf-nota">
+                      {siguiente - racha === 1 ? "1 día" : `${siguiente - racha} días`} para el bono de {siguiente}
+                    </p>
+                  </>
                 )}
               </div>
-              <div style={dato}>
-                <p style={{ fontSize: "12.5px", color: "rgba(248,249,250,0.5)", margin: "0 0 4px" }}>Récord de racha</p>
-                <p style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "24px", margin: 0, color: FAE.text, fontVariantNumeric: "tabular-nums" }}>
-                  {perfil?.best_streak ?? 0} {(perfil?.best_streak ?? 0) === 1 ? "día" : "días"}
+              <div className="fae-pf-ficha">
+                <p className="fae-pf-rotulo">
+                  <span className="fae-pf-icono" style={{ background: "rgba(134,224,195,0.14)" }}><Zap size={14} strokeWidth={2.4} color={MENTA} /></span>
+                  FP acumulados
                 </p>
+                <p className="fae-pf-cifra">{perfil?.points ?? 0}</p>
               </div>
-              {/*
-                * Ánimos recibidos: el número y nada más. Quién los dio no se
-                * guarda para mostrarse, y ninguna consulta lo devuelve.
-                */}
+              <div className="fae-pf-ficha">
+                <p className="fae-pf-rotulo">
+                  <span className="fae-pf-icono" style={{ background: "rgba(233,196,106,0.14)" }}><Trophy size={14} strokeWidth={2.4} color={FAE.ambar} /></span>
+                  Récord de racha
+                </p>
+                <p className="fae-pf-cifra">{perfil?.best_streak ?? 0} <small>{(perfil?.best_streak ?? 0) === 1 ? "día" : "días"}</small></p>
+              </div>
               {/*
                 * Los Cristales, junto a los FP y la racha, y la entrada
                 * principal a la Tienda: la moneda y el sitio donde se gasta son
-                * la misma tarjeta. FP y Cristales se ven al lado sin mezclarse
-                * —uno es el puntaje, el otro la moneda— y no hay forma de
-                * cambiar uno por el otro en ninguna dirección.
+                * la misma tarjeta. FP y Cristales se ven al lado sin mezclarse.
                 */}
               <button
                 type="button"
                 data-ir-tienda
+                className="fae-pf-ficha fae-pf-ficha--boton fae-pf-ficha--media"
                 onClick={() => nav?.irATienda?.()}
-                style={{ ...dato, textAlign: "left", cursor: "pointer", color: FAE.text, font: "inherit", border: `1px solid ${FAE.teal}`, background: "rgba(42,157,143,0.10)" }}
               >
-                <p style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12.5px", color: "rgba(248,249,250,0.5)", margin: "0 0 4px" }}>
-                  <IconoCristal tamano={12} />
+                <span className="fae-pf-rotulo">
+                  <span className="fae-pf-icono" style={{ background: "rgba(134,224,195,0.14)" }}><IconoCristal tamano={14} /></span>
                   Cristales
-                </p>
-                <p style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "24px", margin: 0, color: FAE.text, fontVariantNumeric: "tabular-nums" }}>
-                  {saldoDe(perfil)}
-                </p>
-                <p style={{ fontSize: "11.5px", color: FAE.teal, margin: "4px 0 0" }}>Ir a la Tienda →</p>
+                </span>
+                <span className="fae-pf-cifra" style={{ display: "block" }}>{saldoDe(perfil)}</span>
+                <span className="fae-pf-nota" style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
+                  Ir a la Tienda <ArrowRight size={13} strokeWidth={2.4} aria-hidden="true" />
+                </span>
               </button>
-              <div style={dato}>
-                <p style={{ fontSize: "12.5px", color: "rgba(248,249,250,0.5)", margin: "0 0 4px" }}>Ánimos recibidos</p>
-                <p style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "24px", margin: 0, color: FAE.coral, fontVariantNumeric: "tabular-nums" }}>
-                  {animos ?? "—"}
+              {/* Ánimos recibidos: el número y nada más. Quién los dio no se guarda para mostrarse. */}
+              <div className="fae-pf-ficha fae-pf-ficha--media">
+                <p className="fae-pf-rotulo">
+                  <span className="fae-pf-icono" style={{ background: "rgba(231,111,81,0.16)" }}><Heart size={14} strokeWidth={2.4} color={FAE.coral} /></span>
+                  Ánimos recibidos
                 </p>
+                <p className="fae-pf-cifra">{animos ?? "—"}</p>
               </div>
             </div>
 
-            <div style={{ marginBottom: "26px" }}>
-              <Medallas />
-            </div>
+            <Medallas estado={medallas} />
 
-            <div style={{ marginBottom: "26px" }}>
-              <ResumenSemestre apodo={perfil?.nickname} />
-            </div>
-
-            {enRiesgo && (
-              <p style={{ fontSize: "13px", lineHeight: 1.5, color: FAE.ambar, margin: "-14px 0 26px" }}>
-                Tu racha de {racha} {racha === 1 ? "día" : "días"} se corta si hoy no completas nada.
-              </p>
-            )}
-          </>
+            <section className="fae-pf-tarjeta" style={{ marginBottom: "16px" }}>
+              <div className="fae-pf-tarjeta-in">
+                <ResumenSemestre apodo={perfil?.nickname} />
+              </div>
+            </section>
+          </div>
         )}
 
         {esDocente && (
@@ -307,7 +253,7 @@ export default function PerfilView({ seccion = null, onBack }) {
               <span style={{ display: "block", fontFamily: "Sora, sans-serif", fontWeight: 600, fontSize: "15px" }}>Panel docente</span>
               <span style={{ display: "block", fontSize: "12.5px", color: "rgba(248,249,250,0.6)", marginTop: "2px" }}>El avance de tus estudiantes</span>
             </span>
-            <span style={{ fontSize: "20px", color: FAE.teal }}>→</span>
+            <span style={{ fontSize: "20px", color: MENTA }}>→</span>
           </button>
         )}
 

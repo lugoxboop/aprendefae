@@ -30,10 +30,10 @@ const dato = {
 
 const sub = { fontSize: "12.5px", color: "rgba(248,249,250,0.55)", margin: "0 0 9px" };
 
-function FilaMuestras({ etiqueta, items, valor, onElegir, attr }) {
+export function FilaMuestras({ etiqueta, items, valor, onElegir, attr, conEtiqueta = true }) {
   return (
     <>
-      <p style={{ ...sub, marginTop: "14px" }}>{etiqueta}</p>
+      {conEtiqueta && <p style={{ ...sub, marginTop: "14px" }}>{etiqueta}</p>}
       <div role="radiogroup" aria-label={etiqueta} style={{ display: "flex", flexWrap: "wrap", gap: "9px" }}>
         {items.map((it) => {
           const sel = valor === it.id;
@@ -59,6 +59,27 @@ function FilaMuestras({ etiqueta, items, valor, onElegir, attr }) {
       </div>
     </>
   );
+}
+
+/*
+ * El color del pelaje con pintado optimista: pinta ya, guarda después y, si la
+ * base dice que no, vuelve al de antes. Lo usan esta tarjeta y la cabecera del
+ * perfil (HeroePerfil), que enseña la mascota con el color recién elegido.
+ */
+export function useColorMascota(perfil) {
+  const auth = useAuthOpcional();
+  const [paleta, setPaleta] = useState(() => perfil?.mascota_paleta ?? "natural");
+  const [error, setError] = useState(null);
+  const elegir = async (id) => {
+    if (id === paleta) return false;
+    const antes = paleta;
+    setPaleta(id);
+    setError(null);
+    const { error: err } = (await auth?.personalizarMascota?.(id)) ?? {};
+    if (err) { setPaleta(antes); setError(err); return false; }
+    return true;
+  };
+  return { paleta, elegir, error };
 }
 
 export default function SeccionMascota({ perfil: perfilProp = null, completo = false }) {
