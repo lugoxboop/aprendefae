@@ -15,6 +15,9 @@ De dónde salen `public/mascotas/` y `src/mascota/marionetas-piezas.js`.
    en grises (`x_p.webp`, sin pérdida) y lo fijo (`x_f.webp`), al 50 %. Mide la
    rampa de luminancia de cada especie.
 5. `generar-piezas.py` — escribe `src/mascota/marionetas-piezas.js`.
+6. `brazos-colgando.py <hojas> public/mascotas` (20-nov) — los brazos colgando
+   de cada especie y el cuerpo nuevo del conejo. Va DESPUÉS de generar-piezas:
+   añade sus medidas a ese archivo sin tocar la rampa.
 
 Dónde va cada pieza y cómo se mueve: `src/mascota/marionetas.js` y
 `src/mascota/marioneta-estilo.js`.

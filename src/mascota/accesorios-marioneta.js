@@ -150,9 +150,10 @@ const ESPECIE = {
     ajustes: {
       /* El casco crece para que las orejas queden dentro de la burbuja. */
       casco: [0, -0.15, 1.34], corona: [0, -0.02, 1.25], mono: [0.05, -0.15, 1.05],
-      bufanda: [0, 0.06, 1.1], collar: [0, 0.05, 1.15], corbatin: [0, 0.1, 1.3], corbata: [0, 0.06, 1.3],
-      medalla: [0, 0.02, 1.2], traje: [0, 0.02, 1.05],
-      capa: [0, -0.04, 1.35], jetpack: [0, -0.04, 1.5], alas: [0, -0.06, 1.3], mochila: [0, -0.02, 1.45],
+      /* Lo del cuello y la espalda se mide sobre el cuerpo nuevo (20-nov), un 28 % más ancho. */
+      bufanda: [0, 0.06, 0.88], collar: [0, 0.05, 0.92], corbatin: [0, 0.1, 1.04], corbata: [0, 0.06, 1.04],
+      medalla: [0, 0.02, 0.96], traje: [0, 0.02, 0.88],
+      capa: [0, -0.04, 1.08], jetpack: [0, -0.04, 1.2], alas: [0, -0.06, 1.0], mochila: [0, -0.02, 1.16],
     },
   },
   huron: {

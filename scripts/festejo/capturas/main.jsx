@@ -3,11 +3,14 @@ import { AuthContext } from "../../../src/auth/AuthProvider.jsx";
 import PantallaResumen, { ContextoResumen } from "../../../src/components/shared/PantallaResumen.jsx";
 import RepasoView from "../../../src/components/repaso/RepasoView.jsx";
 import MascotaFestejo from "../../../src/components/shared/MascotaFestejo.jsx";
+import Mascota from "../../../src/components/Mascota.jsx";
+import { mascotaDe } from "../../../src/mascota/mascotas.js";
 
 /*
  * Banco de CAPTURAS del festejo de cierre (la mascota celebra al terminar).
  *   ?vista=resumen&festejo=baila&especie=perro&paleta=canela&pct=90
  *   ?vista=repaso  (el Repaso Diario recién hecho; useRepaso va sustituido)
+ *   ?vista=taller&animo=baila&puestos=collar  (las seis especies grandes, para revisar piezas)
  * Nada aquí escribe en ningún sitio.
  */
 const q = new URLSearchParams(location.search);
@@ -40,7 +43,18 @@ const valor = { activa: true, partida, celebrando: false, limpiar: () => {}, onV
 
 createRoot(document.getElementById("raiz")).render(
   <AuthContext.Provider value={auth}>
-    {q.get("vista") === "todos" ? (
+    {q.get("vista") === "taller" ? (
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "8px", padding: "12px", background: "#13233A" }}>
+        {["zorro", "gato", "perro", "hamster", "conejo", "huron"].map((e) => {
+          const m = mascotaDe({ mascota_especie: e, mascota_paleta: q.get("paleta") ?? "natural", mascota_puestos: perfil.mascota_puestos });
+          return (
+            <div key={e} style={{ display: "flex", justifyContent: "center" }}>
+              <Mascota especie={m.especie} paleta={m.paleta} ojos={m.ojos} puestos={m.puestos} tamano={Number(q.get("tamano") ?? 300)} encuadre="cuerpo" animo={q.get("animo") ?? "quieta"} />
+            </div>
+          );
+        })}
+      </div>
+    ) : q.get("vista") === "todos" ? (
       /* Los seis festejos a la vez, cada uno con una especie (para el video). */
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "36px 12px", padding: "40px 16px", maxWidth: "900px", margin: "0 auto" }}>
         {[["colita", "zorro"], ["baila", "gato"], ["canta", "perro"], ["saltitos", "conejo"], ["saluda", "huron"], ["celebra", "hamster"]].map(([f, e]) => (

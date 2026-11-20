@@ -45,7 +45,7 @@ export const MARIONETAS = {
   zorro: {
     cola: ["cola", 360, 392],
     piernas: [["pierna", 178, 520], ["pierna", 318, 520, { espejo: true }]],
-    brazos: [["brazo_d", 168, 385, { giro: -6 }], ["brazo_i", 322, 385, { giro: 6 }]],
+    brazos: [["bc_d", 186, 350, { giro: 3 }], ["bc_i", 344, 350, { giro: -3 }]],
     brazosDelante: true,
     torso: ["torso", 166, 300],
     cabeza: {
@@ -62,7 +62,8 @@ export const MARIONETAS = {
   gato: {
     cola: ["cola", 350, 420],
     piernas: [["pierna_i", 195, 525], ["pierna_d", 327, 525]],
-    brazos: [["brazo", 166, 385, { espejo: true }], ["brazo", 352, 385]],
+    brazos: [["bc_d", 186, 392, { giro: 4 }], ["bc_i", 343, 392, { giro: -4 }]],
+    brazosDelante: true,
     torso: ["torso", 178, 360],
     cabeza: {
       en: [118, 110, 1.35],
@@ -77,9 +78,9 @@ export const MARIONETAS = {
   },
   perro: {
     cola: ["cola", 380, 470],
-    brazos: [["brazo_d", 178, 450, { giro: -8 }], ["brazo_i", 326, 450, { giro: 8 }]],
+    brazos: [["bc_d", 180, 446, { giro: 3 }], ["bc_i", 349, 446, { giro: -3 }]],
     brazosDelante: true,
-    torso: ["torso", 164, 400],
+    torso: ["torso_n", 181, 412],
     cabeza: {
       en: [123, 125, 1.35],
       orejas: [["oreja_i", -55, 10], ["oreja_d", 195, 10]],
@@ -94,7 +95,7 @@ export const MARIONETAS = {
   hamster: {
     cola: ["cola", 380, 560],
     piernas: [["pierna_i", 195, 520], ["pierna_d", 325, 520]],
-    brazos: [["brazo_d", 190, 480, { giro: -8 }], ["brazo_i", 343, 480, { giro: 8 }]],
+    brazos: [["bc_d", 203, 468, { giro: 4 }], ["bc_i", 356, 468, { giro: -4 }]],
     brazosDelante: true,
     torso: ["torso", 186, 440],
     cabeza: {
@@ -109,9 +110,11 @@ export const MARIONETAS = {
     },
   },
   conejo: {
-    cola: ["cola", 340, 580],
-    brazos: [["brazo_d", 190, 515], ["brazo_i", 340, 515]],
-    torso: ["torso", 215, 490],
+    cola: ["cola", 359, 578, { escala: 0.62 }],
+    colaDelante: true,
+    brazos: [["bc_d", 205, 500, { giro: 4 }], ["bc_i", 339, 500, { giro: -4 }]],
+    brazosDelante: true,
+    torso: ["torso_n", 192, 470],
     cabeza: {
       en: [147, 250, 1.35],
       orejas: [["oreja_i", 40, -150], ["oreja_d", 100, -150]],
@@ -126,7 +129,7 @@ export const MARIONETAS = {
   huron: {
     cola: ["cola", 330, 520, { escala: 0.65 }],
     piernas: [["pierna_i", 198, 550], ["pierna_d", 308, 550]],
-    brazos: [["brazo_i", 205, 455, { espejo: true, giro: -10 }], ["brazo_i", 316, 455, { giro: 10 }]],
+    brazos: [["bc_d", 214, 440, { giro: 4 }], ["bc_i", 335, 440, { giro: -4 }]],
     brazosDelante: true,
     torso: ["torso", 207, 385],
     cabeza: {
@@ -309,10 +312,12 @@ export function svgMarioneta(especie, { tinte = null, uid = "m", busto = false, 
     `<ellipse class="mta-sombra" cx="300" cy="684" rx="150" ry="18" fill="#000" opacity=".22"/>` +
     `<g class="mta-todo">` +
     acc.espalda +
-    (M.cola ? grupo("mta-cola", pieza(M.cola)) : "") +
+    (M.cola && !M.colaDelante ? grupo("mta-cola", pieza(M.cola)) : "") +
     (M.piernas || []).map(pieza).join("") +
     (M.brazosDelante ? "" : brazos) +
     grupo("mta-cuerpo", pieza(M.torso) + acc.pecho) +
+    /* El conejo trae la colita dibujada en el cuerpo nuevo: la que se menea va encima, tapándola. */
+    (M.cola && M.colaDelante ? grupo("mta-cola", pieza(M.cola)) : "") +
     (M.brazosDelante ? brazos : "") +
     cabeza +
     fuego +
