@@ -1,6 +1,7 @@
 import { ChevronLeft } from "lucide-react";
 import { FAE } from "../theme.js";
 import Logo from "./Logo.jsx";
+import MeshGradientBackground from "./backgrounds/MeshGradientBackground.jsx";
 import { EstiloEntrada, entrada } from "./shared/Entrada.jsx";
 import Footer from "./shared/Footer.jsx";
 
@@ -40,9 +41,11 @@ const destacado = { color: FAE.text, fontWeight: 600 };
 
 export default function QueEsView({ onBack }) {
   return (
-    <div style={{ minHeight: "100vh", backgroundColor: FAE.bg, color: FAE.text, fontFamily: "Inter, sans-serif" }}>
+    <div style={{ position: "relative", minHeight: "100vh", backgroundColor: FAE.bg, color: FAE.text, fontFamily: "Inter, sans-serif" }}>
+      {/* El fondo vivo de la portada (malla de color), el mismo de Inicio, Amigos y Tienda. */}
+      <MeshGradientBackground />
       <EstiloEntrada />
-      <div style={{ maxWidth: "720px", margin: "0 auto", padding: "14px clamp(20px, 5vw, 28px) 72px" }}>
+      <div style={{ position: "relative", zIndex: 1, maxWidth: "720px", margin: "0 auto", padding: "14px clamp(20px, 5vw, 28px) 72px" }}>
         <div {...entrada(0, "baja")} className="fae-cabecera" style={{ ...entrada(0, "baja").style, display: "flex", alignItems: "center", gap: "10px", marginBottom: "32px" }}>
           <span className="fae-cabecera-marca"><Logo variant="symbol" size={26} theme="dark" /></span>
           <button

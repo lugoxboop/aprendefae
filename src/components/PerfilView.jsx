@@ -1,6 +1,7 @@
 import { ChevronLeft, ArrowRight, Flame, Heart, Trophy, Zap } from "lucide-react";
 import { FAE } from "../theme.js";
 import Logo from "./Logo.jsx";
+import MeshGradientBackground from "./backgrounds/MeshGradientBackground.jsx";
 import RankingFP from "./ranking/RankingFP.jsx";
 import { decoracionDe } from "../data/decoracionTablas.js";
 import { useAuth } from "../auth/AuthProvider.jsx";
@@ -84,14 +85,16 @@ export default function PerfilView({ seccion = null, onBack }) {
   return (
     <div
       style={{
+        position: "relative",
         minHeight: "100vh",
         backgroundColor: FAE.bg,
         fontFamily: "Inter, sans-serif",
         color: FAE.text,
-        backgroundImage: "radial-gradient(circle at 50% -10%, rgba(42,157,143,0.16), transparent 55%)",
       }}
     >
-      <div data-mv-fila style={{ maxWidth: "680px", margin: "0 auto", padding: "clamp(18px, 3vh, 30px) 24px 56px" }}>
+      {/* El fondo vivo de la portada (malla de color), el mismo de Inicio, Amigos y Tienda. */}
+      <MeshGradientBackground />
+      <div data-mv-fila style={{ position: "relative", zIndex: 1, maxWidth: "680px", margin: "0 auto", padding: "clamp(18px, 3vh, 30px) 24px 56px" }}>
         <div className="fae-cabecera" style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "26px" }}>
           <span className="fae-cabecera-marca"><Logo variant="symbol" size={26} theme="dark" /></span>
           <button

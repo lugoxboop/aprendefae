@@ -9,8 +9,9 @@
 - Antes de abrir nada: primero `orquestador/INDICE.md`, luego el buscador del canon (regla k).
 
 ## En qué estoy ahora
-- 2026-11-20 10:00 — Amigos en el inicio (pedido de Mateo): fila de círculos con mascotas entre el titular y las materias; sin amigos, sugerencias con «Añadir»; ficha del otro con «Enviar solicitud». Migración 0170 (tabla amigos_demo, 11 de demostración para Lugox173, función amigos_inicio). Rama claude/project-thread-ezl2nq; espera aprobación de Mateo para fusionar.
-- 2026-11-18 17:54 — Auditoría de navegación (pedida por Mateo): X del menú muerta, sin botón visible a Inicio en las materias, «Salir» de Clase en vivo tapado en celular, Tienda en blanco al entrar directo. Arreglado en el PR de la rama claude/project-thread-ewtc9p; espera aprobación de Mateo para fusionar.
+- 2026-11-20 12:52 — Fondo vivo (malla del inicio) en las 6 pantallas que lo tenían plano: Perfil (y avatar), Panel docente, Qué es, Clase en vivo (estudiante y profesor). Sonda scripts/navegacion/fondos.mjs. Rama claude/project-thread-ypbvcc; espera aprobación de Mateo para fusionar.
+- 2026-11-20 10:00 — Amigos en el inicio (pedido de Mateo): fila de círculos con mascotas entre el titular y las materias; sin amigos, sugerencias con «Añadir»; ficha del otro con «Enviar solicitud». Migración 0170 (tabla amigos_demo, 11 de demostración para Lugox173, función amigos_inicio). Fusionado y desplegado (#709) el 2026-11-20 ~10:10.
+- 2026-11-18 17:54 — Auditoría de navegación (pedida por Mateo): X del menú muerta, sin botón visible a Inicio en las materias, «Salir» de Clase en vivo tapado en celular, Tienda en blanco al entrar directo. Fusionado (#697).
 
 ## Decisiones tomadas y por qué
 - 2026-11-18 — El nombre iba a ser «Levi», pero Levi ya es el paso de revisión del motor (Gen→Levi→Xeno) incrustado en el código; para evitar choques, el general se llama Magno.
