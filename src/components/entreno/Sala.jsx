@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { Crown, Copy, Check, X as Equis, Play, UserPlus, LogOut, Clock, Repeat, BookOpen, Swords, Plus, Users } from "lucide-react";
+import { Crown, Copy, Check, X as Equis, Play, UserPlus, LogOut, Clock, Repeat, BookOpen, Swords, Plus, Users, Smile } from "lucide-react";
 import { FAE } from "../../theme.js";
 import { Escenario, Carita, Boton, perfilDeTarjeta, tonoDe, PANEL } from "../social/amigos-comun.jsx";
 import { Enunciado, Opciones, Reloj, miles } from "../vivo/piezas.jsx";
 import {
   useSalaEntreno, useReloj, avanzar, responder, marcarListo, salir, invitar, entrar, cambiarActividad, amigosParaInvitar,
   faltaParaAbrir, restanteMs, faltaSiguiente, tabla, esDuelo, mensajeSala, MAX_JUGADORES, PAUSA_RESULTADOS_MS,
+  EMOTES, EMOTE_MS, emojiDe, hacerEmote, conEmoteLocal,
 } from "../../entreno/datos.js";
 import { NOMBRE_MATERIA, ElegirActividad, ElegirAmigos, paqueteDeActividad, claveAmigo, separarElegidos, Confeti } from "./piezas-sala.jsx";
 import { ORO, VERDE } from "./estilo-salas.js";
@@ -55,7 +56,8 @@ function Puesto({ j, orden }) {
     <div className="sal-puesto sal-cae" style={{ animationDelay: `${orden * 90}ms`, "--tono": tonoDe(perfil) }} data-sal-jugador={j.apodo}>
       {j.anfitrion && <span className="sal-corona" title="Creó la sala"><Crown size={22} color={ORO} fill={ORO} aria-label="Anfitrión" /></span>}
       {j.demo && <span className="sal-demo">demo</span>}
-      <Escenario perfil={perfil} tamano={104} animo={j.listo ? "feliz" : "tranquila"} foco={j.soy_yo} titulo={`Mascota de ${j.apodo}`} />
+      {j.emote && <span key={`b${j.emote_en}`} className="sal-burbuja" aria-hidden="true" data-sal-emote={j.emote}>{emojiDe(j.emote)}</span>}
+      <Escenario key={j.emote ? `e${j.emote_en}` : "quieta"} perfil={perfil} tamano={104} animo={j.emote || (j.listo ? "feliz" : "tranquila")} foco={j.soy_yo} titulo={`Mascota de ${j.apodo}`} />
       <span className="sal-placa" data-yo={j.soy_yo ? "" : undefined}><span>{j.apodo}</span></span>
       <span className={`sal-estado ${j.listo ? "sal-estado--listo" : "sal-estado--espera"}`}>
         {j.listo ? <><Check size={11} strokeWidth={3.2} aria-hidden="true" /> Listo</> : "Preparándose"}
@@ -140,7 +142,59 @@ function CodigoSala({ codigo }) {
   );
 }
 
-function Lobby({ estado, hacer, refrescar, onSalir }) {
+/* Mi emote: se ve al instante en mi pantalla y se manda a la base para que lo vean los demás. */
+function useMiEmote(estado, hacer) {
+  const [local, setLocal] = useState(null);
+  const ahora = useReloj(Boolean(local), 500);
+  const enviar = (emote) => {
+    const desde = Date.now();
+    setLocal({ emote, desde, hasta: desde + EMOTE_MS });
+    hacer(hacerEmote(estado.sala_id, emote));
+  };
+  useEffect(() => { if (local && ahora > local.hasta) setLocal(null); }, [ahora, local]);
+  return { jugadores: conEmoteLocal(estado.jugadores, local, ahora), enviar, activo: local?.emote ?? null };
+}
+
+/*
+ * La bandeja de emotes: se abre sobre su botón, en la barra de abajo. Panel
+ * propio (no el atributo popover, que aún no es «ampliamente disponible»):
+ * Escape y tocar fuera la cierran; elegir un emote también.
+ */
+export function BotonEmotes({ onElegir, activo = null }) {
+  const [abierta, setAbierta] = useState(false);
+  const caja = useRef(null);
+  useEffect(() => {
+    if (!abierta) return undefined;
+    const tecla = (e) => e.key === "Escape" && setAbierta(false);
+    const fuera = (e) => { if (caja.current && !caja.current.contains(e.target)) setAbierta(false); };
+    window.addEventListener("keydown", tecla);
+    document.addEventListener("pointerdown", fuera);
+    return () => { window.removeEventListener("keydown", tecla); document.removeEventListener("pointerdown", fuera); };
+  }, [abierta]);
+  return (
+    <div ref={caja} className="sal-emotes-caja">
+      {abierta && (
+        <div className="sal-emotes" role="group" aria-label="Emotes" data-sal-bandeja>
+          <p className="sal-cejilla" style={{ margin: "0 0 8px", gridColumn: "1 / -1" }}>Haz un emote con tu mascota</p>
+          {EMOTES.map((e) => (
+            <button key={e.id} type="button" className="sal-emote" aria-pressed={activo === e.id} data-sal-hacer-emote={e.id}
+              onClick={() => { onElegir(e.id); setAbierta(false); }}>
+              <span aria-hidden="true">{e.emoji}</span>
+              <small>{e.nombre}</small>
+            </button>
+          ))}
+        </div>
+      )}
+      <Boton tono={abierta ? "si" : "neutro"} grande onClick={() => setAbierta((a) => !a)} etiqueta="Emotes" aria-expanded={abierta} data-sal-emotes>
+        <Smile size={18} /> <span className="sal-txt">Emotes</span>
+      </Boton>
+    </div>
+  );
+}
+
+function Lobby({ estado: crudo, hacer, refrescar, onSalir }) {
+  const emotes = useMiEmote(crudo, hacer);
+  const estado = { ...crudo, jugadores: emotes.jugadores };
   const [aviso, setAviso] = useState(null);
   const [hoja, setHoja] = useState(null); // "invitar" | "actividad"
   const [empezando, setEmpezando] = useState(false);
@@ -217,6 +271,7 @@ function Lobby({ estado, hacer, refrescar, onSalir }) {
             {yo?.listo ? <><Check size={17} /> ¡Listo! Esperando al anfitrión</> : <><Check size={17} /> Estoy listo</>}
           </Boton>
         )}
+        {estado.dentro && <BotonEmotes onElegir={emotes.enviar} activo={emotes.activo} />}
         <Boton tono="suave" grande onClick={irse} etiqueta="Salir de la sala"><LogOut size={16} /> <span className="sal-txt">Salir</span></Boton>
       </div>
 
@@ -472,7 +527,9 @@ const MEDALLA = [
   { fondo: "linear-gradient(180deg, #F0BE92, #C98A5A)", alto: 84 },
 ];
 
-function Final({ estado, hacer, onSalir }) {
+function Final({ estado: crudo, hacer, onSalir }) {
+  const emotes = useMiEmote(crudo, hacer);
+  const estado = { ...crudo, jugadores: emotes.jugadores };
   const lista = tabla(estado.jugadores);
   const [hoja, setHoja] = useState(false);
   const yo = lista.find((j) => j.soy_yo);
@@ -491,9 +548,10 @@ function Final({ estado, hacer, onSalir }) {
         <div className="sal-podio" data-sal-podio>
           {orden.map((j, k) => j ? (
             <div key={j.id} style={{ display: "flex", flexDirection: "column", alignItems: "center", minWidth: 0 }}>
-              <div className="sal-cae" style={{ animationDelay: `${[400, 900, 150][k]}ms`, width: "100%", display: "flex", flexDirection: "column", alignItems: "center", "--tono": tonoDe(perfilDeTarjeta(j)) }}>
+              <div className="sal-cae" style={{ animationDelay: `${[400, 900, 150][k]}ms`, position: "relative", width: "100%", display: "flex", flexDirection: "column", alignItems: "center", "--tono": tonoDe(perfilDeTarjeta(j)) }}>
                 {j.puesto === 1 && <Crown size={30} color={ORO} fill={ORO} aria-hidden="true" style={{ marginBottom: "-6px", filter: "drop-shadow(0 2px 8px rgba(233,185,73,.9))" }} />}
-                <Escenario perfil={perfilDeTarjeta(j)} tamano={118} animo={j.puesto === 1 ? "celebra" : "feliz"} foco={j.puesto === 1} titulo={`Mascota de ${j.apodo}`} />
+                {j.emote && <span key={`b${j.emote_en}`} className="sal-burbuja" aria-hidden="true">{emojiDe(j.emote)}</span>}
+                <Escenario key={j.emote ? `e${j.emote_en}` : "p"} perfil={perfilDeTarjeta(j)} tamano={118} animo={j.emote || (j.puesto === 1 ? "celebra" : "feliz")} foco={j.puesto === 1} titulo={`Mascota de ${j.apodo}`} />
                 <span className="sal-placa" style={{ marginBottom: "8px" }} data-yo={j.soy_yo ? "" : undefined}><span>{j.apodo}</span></span>
               </div>
               <div className="sal-bloque sal-sube" style={{ width: "100%", height: `${MEDALLA[medalla(j)].alto}px`, background: MEDALLA[medalla(j)].fondo, animationDelay: `${[300, 700, 0][k]}ms` }}>
@@ -517,6 +575,7 @@ function Final({ estado, hacer, onSalir }) {
         ) : (
           <p className="sal-nota" style={{ flex: "1 1 220px", textAlign: "center" }}>Quédate: si el anfitrión arma otra partida, vuelves al lobby solo.</p>
         )}
+        <BotonEmotes onElegir={emotes.enviar} activo={emotes.activo} />
         <Boton tono="suave" grande onClick={async () => { await hacer(salir(estado.sala_id)); onSalir(); }} etiqueta="Salir de la sala"><LogOut size={16} /> <span className="sal-txt">Salir</span></Boton>
       </div>
       {hoja && <HojaActividad estado={estado} hacer={hacer} titulo="¿Qué juegan ahora?" onCerrar={() => setHoja(false)} />}

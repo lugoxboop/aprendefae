@@ -171,6 +171,31 @@ button.sal-hueco:focus-visible { outline: 2px solid ${FAE.text}; outline-offset:
 .sal-confeti i { position: absolute; top: -20px; width: 9px; height: 14px; border-radius: 2px; animation: sal-cae-confeti linear infinite; }
 @keyframes sal-cae-confeti { to { transform: translateY(110vh) rotate(720deg); } }
 
+/* ── Los emotes (0173) ────────────────────────────────────────────────── */
+.sal-burbuja { position: absolute; top: -4px; left: 50%; z-index: 3; display: flex; align-items: center; justify-content: center;
+  width: 40px; height: 40px; margin-left: 8px; border-radius: 50% 50% 50% 8px; font-size: 22px; line-height: 1;
+  background: rgba(248,249,250,.96); box-shadow: 0 6px 16px -6px rgba(0,0,0,.7); }
+.sal-emotes-caja { flex: none; }
+/* Anclada a la barra (sticky = contexto de posición), no al botón: así nunca se sale por la izquierda. */
+.sal-emotes { position: absolute; right: clamp(16px, 3vw, 28px); bottom: calc(100% - 4px); z-index: 20; width: min(340px, calc(100vw - 32px));
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; padding: 12px;
+  border-radius: 20px; background: #13233A; border: 1px solid rgba(159,180,255,.35); box-shadow: 0 24px 48px -16px rgba(0,0,0,.85);
+  transform-origin: bottom right; }
+.sal-emote { all: unset; box-sizing: border-box; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  min-height: 64px; padding: 6px 2px; border-radius: 14px; background: rgba(248,249,250,.05); border: 1px solid rgba(248,249,250,.1); }
+.sal-emote > span { font-size: 26px; line-height: 1; }
+.sal-emote > small { font-size: 11px; font-weight: 700; color: rgba(248,249,250,.75); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sal-emote:hover, .sal-emote[aria-pressed="true"] { background: rgba(111,134,255,.2); border-color: rgba(159,180,255,.55); }
+.sal-emote:focus-visible { outline: 2px solid ${FAE.text}; outline-offset: 2px; }
+@media (prefers-reduced-motion: no-preference) {
+  .sal-burbuja { animation: sal-burbuja 5s cubic-bezier(.3,1.4,.5,1) both; }
+  .sal-emotes { animation: sal-bandeja .18s ease-out both; }
+  .sal-emote { transition: transform .12s ease, background .12s ease; }
+  .sal-emote:active { transform: scale(.94); }
+}
+@keyframes sal-burbuja { 0% { opacity: 0; transform: translateY(8px) scale(.4); } 8% { opacity: 1; transform: none; } 88% { opacity: 1; transform: none; } 100% { opacity: 0; transform: translateY(-6px) scale(.9); } }
+@keyframes sal-bandeja { from { opacity: 0; transform: scale(.85); } }
+
 @media (prefers-reduced-motion: reduce) {
   .sal-foco, .sal-cae, .sal-latido, .sal-brilla, .sal-numero, .sal-sube, .sal-confeti i { animation: none !important; }
   .sal-confeti { display: none; }

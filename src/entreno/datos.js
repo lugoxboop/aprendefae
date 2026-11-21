@@ -16,7 +16,7 @@ import { supabase } from "../lib/supabase.js";
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-export const RESPALDO_MS = { lobby: 3000, pregunta: 1500, otro: 2500 };
+export const RESPALDO_MS = { lobby: 2000, final: 2000, pregunta: 1500, otro: 2500 };
 export const PAUSA_RESULTADOS_MS = 7000;
 export const MAX_JUGADORES = 12;
 
@@ -51,6 +51,34 @@ export async function unirse(codigo, c) {
   return r;
 }
 export const rechazar = (sala, c) => rpc("entreno_rechazar", { p_sala: sala }, c);
+/*
+ * Los emotes (0173): los doce festejos que ya bailan las mascotas
+ * (FESTEJOS de mascota/marionetas.js). Se ven 5 s en todos los celulares.
+ */
+export const EMOTES = [
+  { id: "baila", emoji: "💃", nombre: "Bailar" },
+  { id: "saluda", emoji: "👋", nombre: "Saludar" },
+  { id: "celebra", emoji: "🤸", nombre: "Voltereta" },
+  { id: "saltitos", emoji: "⭐", nombre: "Saltitos" },
+  { id: "colita", emoji: "💖", nombre: "Colita" },
+  { id: "canta", emoji: "🎵", nombre: "Cantar" },
+  { id: "karaoke", emoji: "🎤", nombre: "Karaoke" },
+  { id: "campeon", emoji: "🏆", nombre: "Campeón" },
+  { id: "graduado", emoji: "🎓", nombre: "Birrete" },
+  { id: "fiesta", emoji: "🥳", nombre: "Fiesta" },
+  { id: "globo", emoji: "🎈", nombre: "Globo" },
+  { id: "porra", emoji: "📣", nombre: "Porra" },
+];
+export const EMOTE_MS = 5000;
+export const emojiDe = (id) => EMOTES.find((e) => e.id === id)?.emoji ?? "";
+export const hacerEmote = (sala, emote, c) => rpc("entreno_emote", { p_sala: sala, p_emote: emote }, c);
+
+/** Mezcla mi emote local (se ve al instante, sin esperar a la base) con lo que dice la base. */
+export function conEmoteLocal(jugadores = [], local, ahora = Date.now()) {
+  if (!local || ahora > local.hasta) return jugadores;
+  return jugadores.map((j) => (j.soy_yo ? { ...j, emote: local.emote, emote_en: local.desde } : j));
+}
+
 export const marcarListo = (sala, listo, c) => rpc("entreno_listo", { p_sala: sala, p_listo: listo }, c);
 export const salir = (sala, c) => rpc("entreno_salir", { p_sala: sala }, c);
 export const cambiarActividad = (sala, { materia, tema, temaTitulo, duracion, preguntas }, c) =>

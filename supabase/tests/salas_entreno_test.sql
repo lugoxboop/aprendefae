@@ -9,7 +9,8 @@
 --   · «siguiente» lo da el creador, o cualquiera pasados 7 s;
 --   · los amigos de demostración solo se sientan en la sala de SU dueño, y
 --     sortean su respuesta al abrir la pregunta;
---   · entrar con código solo en el lobby; si sale el creador, la sala pasa.
+--   · entrar con código solo en el lobby; si sale el creador, la sala pasa;
+--   · emotes (0173): se ven, y solo los de la lista y de quien está adentro.
 --
 -- No toca a nadie real: cuentas zzz-* y ROLLBACK al final.
 -- ---------------------------------------------------------------------------
@@ -246,6 +247,32 @@ exception when others then reset role; perform pg_temp.p('p18', 'rechazado');
 end $$;
 reset role;
 insert into res select 18, 'anon no puede llamar entreno_mis_salas', 'rechazado', pg_temp.g('p18'), pg_temp.g('p18') = 'rechazado';
+
+-- ── 10. Emotes (0173): se ven 5 s; uno desconocido o de alguien de fuera no entra ──
+select pg_temp.como('beto');
+set local role authenticated;
+do $$ declare e jsonb; begin
+  e := public.entreno_emote(pg_temp.g('sala')::uuid, 'baila');
+  perform pg_temp.p('p19', (select j->>'emote' from jsonb_array_elements(e->'jugadores') j where (j->>'soy_yo')::boolean));
+  begin
+    perform public.entreno_emote(pg_temp.g('sala')::uuid, 'drop table');
+    perform pg_temp.p('p20', 'entro');
+  exception when others then perform pg_temp.p('p20', 'rechazado');
+  end;
+end $$;
+reset role;
+insert into res select 19, 'Beto hace «baila» y su mascota lo muestra', 'baila', pg_temp.g('p19'), pg_temp.g('p19') = 'baila';
+insert into res select 20, 'un emote que no existe no entra', 'rechazado', pg_temp.g('p20'), pg_temp.g('p20') = 'rechazado';
+
+select pg_temp.como('cami');
+set local role authenticated;
+do $$ begin
+  perform pg_temp.p('p21', 'entro');
+  perform public.entreno_emote(pg_temp.g('sala')::uuid, 'baila');
+exception when others then perform pg_temp.p('p21', 'rechazado');
+end $$;
+reset role;
+insert into res select 21, 'alguien de fuera de la sala no hace emotes en ella', 'rechazado', pg_temp.g('p21'), pg_temp.g('p21') = 'rechazado';
 
 -- ── Resumen ────────────────────────────────────────────────────────────────
 select n::text as n, paso, esperado, obtenido, case when ok then 'OK' else 'FALLA' end as estado from res
