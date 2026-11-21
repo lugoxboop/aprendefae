@@ -222,3 +222,30 @@ todo tipo, así que la compatibilidad no es opcional.
   motor todavía inestables (el complemento las oculta por defecto; se deja así).
 - Vale para todos los agentes de **código y diseño**. La guía se mantiene sola
   (actualizaciones automáticas activadas).
+
+## o) Las herramientas oficiales y cuándo usarlas
+
+Orden de Mateo del 21 de noviembre de 2026. Instalamos, **solo desde fuentes
+oficiales**, un juego de complementos y conectores. Cada uno tiene su momento;
+usarlos no es opcional.
+
+- **Diseño (`frontend-design`) + Modern Web Guidance (regla n):** en TODO
+  trabajo visual. Antes de maquetar o rediseñar una pantalla, un componente, una
+  animación o un estilo.
+- **Skills de Supabase (`supabase/agent-skills`):** antes de tocar la base de
+  datos — migraciones, RLS, funciones, consultas. Primero la guía, luego el SQL.
+- **Context7:** antes de usar una librería. Trae la documentación de la versión
+  exacta que usamos, en vez de ir de memoria (que envejece).
+- **Playwright:** para el **turno de noche** y las **pruebas de Ukyo**, en lugar
+  de capturas sueltas: maneja el navegador de verdad, recorre la app, mide y
+  comprueba.
+- **`security-guidance`:** criterio de seguridad en autenticación, manejo de
+  secretos y, sobre todo, datos de estudiantes.
+- **Skills de Vercel (`vercel-labs/agent-skills`):** para el despliegue y la
+  configuración de Vercel.
+- **`claude-code-setup`:** configura la sesión de código; se corre una vez y se
+  aplica solo lo que acelera el trabajo sin agregar trámites.
+
+Todo se mantiene solo (fuentes oficiales, con actualización automática donde la
+haya). Un agente que vaya a hacer trabajo visual, tocar la base, usar una
+librería o probar la app abre primero la herramienta que le toca.
