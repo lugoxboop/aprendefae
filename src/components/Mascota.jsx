@@ -1,4 +1,4 @@
-import { cuerpoMascota, esIlustrada, dibujoIlustrado, tinteDe } from "../mascota/mascotas.js";
+import { cuerpoMascota, esIlustrada, dibujoIlustrado, tinteDe, irisDe, ajustesDe } from "../mascota/mascotas.js";
 import { svgMarioneta, tieneMarioneta, MOVIMIENTOS } from "../mascota/marionetas.js";
 import { asegurarEstiloMarioneta } from "../mascota/marioneta-estilo.js";
 
@@ -20,11 +20,15 @@ import { asegurarEstiloMarioneta } from "../mascota/marioneta-estilo.js";
  * hueco. El SVG es estático y de la casa, así que va por dangerouslySetInnerHTML
  * sin riesgo —no entra texto de nadie—.
  */
-export default function Mascota({ especie, perfil, puestos, paleta, ojos, tamano = 96, titulo, animo = "quieta", encuadre = null, style = null, ...resto }) {
+export default function Mascota({ especie, perfil, puestos, paleta, ojos, complexion, cabeza, tamano = 96, titulo, animo = "quieta", encuadre = null, style = null, ...resto }) {
   const esp = especie ?? perfil?.mascota_especie ?? null;
   if (!esp) return null;
   const pal = paleta ?? perfil?.mascota_paleta ?? null;
   const oj = ojos ?? perfil?.mascota_ojos ?? null;
+  /* El cuerpo a medida (0174): los explícitos, o los del perfil. */
+  const aj = ajustesDe(perfil);
+  const cpx = complexion ?? aj.complexion;
+  const cab = cabeza ?? aj.cabeza;
   /* Los accesorios puestos: los explícitos, o —si se pintó desde el perfil— los
      que la fila trae en mascota_puestos. */
   const pst = Array.isArray(puestos) ? puestos : (Array.isArray(perfil?.mascota_puestos) ? perfil.mascota_puestos : []);
@@ -48,7 +52,17 @@ export default function Mascota({ especie, perfil, puestos, paleta, ojos, tamano
     /* El id del filtro sale de especie + paleta: dos mascotas iguales comparten
        un filtro idéntico, y el HTML no cambia entre un pintado y otro. */
     const busto = encuadre ? encuadre === "busto" : tamano <= 100;
-    const { viewBox, inner } = svgMarioneta(esp, { tinte: tinteDe(pal), uid: `${esp}-${pal || "natural"}`, busto, puestos: pst });
+    const conOjos = oj && oj !== "natural";
+    const { viewBox, inner } = svgMarioneta(esp, {
+      tinte: tinteDe(pal),
+      uid: `${esp}-${pal || "natural"}-${conOjos ? oj : "o"}`,
+      busto,
+      puestos: pst,
+      iris: conOjos ? irisDe(oj) : null,
+      bicolor: oj === "bicolor",
+      complexion: cpx,
+      cabeza: cab,
+    });
     const mov = MOVIMIENTOS.includes(animo) ? animo : "quieta";
     return (
       <svg
@@ -58,6 +72,9 @@ export default function Mascota({ especie, perfil, puestos, paleta, ojos, tamano
         className={`mta mta-sp-${esp} mta-${mov}`}
         data-mascota={esp}
         data-paleta={pal || "natural"}
+        data-ojos={oj || "natural"}
+        data-complexion={cpx}
+        data-cabeza={cab}
         data-animo={mov}
         style={{ display: "block", overflow: busto ? "hidden" : "visible", ...(style ?? {}) }}
         {...accesible}

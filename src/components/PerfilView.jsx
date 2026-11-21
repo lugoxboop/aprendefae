@@ -94,8 +94,10 @@ export default function PerfilView({ seccion = null, onBack }) {
     >
       {/* El fondo vivo de la portada (malla de color), el mismo de Inicio, Amigos y Tienda. */}
       <MeshGradientBackground />
-      <div data-mv-fila style={{ position: "relative", zIndex: 1, maxWidth: "680px", margin: "0 auto", padding: "clamp(18px, 3vh, 30px) 24px 56px" }}>
-        <div className="fae-cabecera" style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "26px" }}>
+      <div data-mv-fila style={{ position: "relative", zIndex: 1, maxWidth: editando && session ? "1120px" : "680px", margin: "0 auto", padding: "clamp(18px, 3vh, 30px) 24px 56px" }}>
+        {/* El editor de la mascota va a lo ancho (1120): la cabecera reserva el
+            hueco de la pastilla de la cuenta, como la Tienda (.tnd-cabecera). */}
+        <div className="fae-cabecera" style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "26px", ...(editando && session ? { paddingLeft: "max(0px, calc(122px - max(0px, (100vw - 1120px) / 2)))" } : null) }}>
           <span className="fae-cabecera-marca"><Logo variant="symbol" size={26} theme="dark" /></span>
           <button
             type="button"

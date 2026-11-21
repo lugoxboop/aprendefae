@@ -2,7 +2,7 @@ import { useState } from "react";
 import { FAE } from "../../theme.js";
 import { useAuth } from "../../auth/AuthProvider.jsx";
 import Mascota from "../Mascota.jsx";
-import { ESPECIES, NOMBRE_MAX, PALETAS_MASCOTA } from "../../mascota/mascotas.js";
+import { ESPECIES, NOMBRE_MAX, razasDe } from "../../mascota/mascotas.js";
 
 /*
  * El segundo paso del primer ingreso, después del apodo (0160). Como el apodo,
@@ -77,7 +77,8 @@ export default function MascotaStep() {
         Su color
       </p>
       <div role="radiogroup" aria-label="Color de tu mascota" style={{ display: "flex", flexWrap: "wrap", gap: "9px", marginBottom: "18px" }}>
-        {PALETAS_MASCOTA.map((p) => {
+        {/* Las razas del animal elegido (sin elegir aún, las del perro). */}
+        {razasDe(especie ?? "perro", color).map((p) => {
           const sel = color === p.id;
           return (
             <button
@@ -86,7 +87,7 @@ export default function MascotaStep() {
               role="radio"
               aria-checked={sel}
               aria-label={p.nombre}
-              title={p.nombre}
+              title={`${p.nombre} · ${p.detalle}`}
               onClick={() => setColor(p.id)}
               style={{
                 width: "34px", height: "34px", borderRadius: "999px", cursor: "pointer", padding: 0,

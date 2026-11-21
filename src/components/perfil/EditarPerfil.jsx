@@ -36,7 +36,7 @@ import SeccionMascota from "./SeccionMascota.jsx";
 
 function SeccionIdentidad({ valores, cambiar }) {
   return (
-    <>
+    <div style={{ maxWidth: "560px" }}>
       <label htmlFor="editar-apodo" style={ETIQUETA}>Apodo</label>
       <input
         id="editar-apodo"
@@ -56,7 +56,7 @@ function SeccionIdentidad({ valores, cambiar }) {
         style={CAMPO}
       />
       <p style={{ ...AYUDA, marginBottom: 0 }}>Solo lo ve el profesor de tu curso, para saber cómo vas. No aparece en los rankings.</p>
-    </>
+    </div>
   );
 }
 
@@ -154,12 +154,17 @@ export default function EditarPerfil({ perfil, guardar, onCancelar, onGuardado, 
   return (
     <form data-editar-perfil onSubmit={enviar} noValidate>
       <h2 style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "22px", letterSpacing: "-0.025em", margin: "0 0 18px", color: FAE.text }}>
-        {titulo}
+        {hayCampos ? titulo : "Personaliza a tu mascota"}
       </h2>
 
       {secciones.map(({ id, titulo, campos, Componente }) => (
         <fieldset key={id} data-seccion={id} style={{ border: "none", padding: 0, margin: "0 0 22px", minWidth: 0 }}>
-          <legend style={{ padding: 0, marginBottom: "12px", fontFamily: "Sora, sans-serif", fontSize: "11px", fontWeight: 700, letterSpacing: "0.14em", color: FAE.teal }}>
+          {/* Con una sola sección («Mi avatar») el rótulo repetiría el título. */}
+          <legend
+            style={hayCampos
+              ? { padding: 0, marginBottom: "12px", fontFamily: "Sora, sans-serif", fontSize: "11px", fontWeight: 700, letterSpacing: "0.14em", color: FAE.teal }
+              : { position: "absolute", width: "1px", height: "1px", overflow: "hidden", clip: "rect(0 0 0 0)", whiteSpace: "nowrap" }}
+          >
             {titulo.toUpperCase()}
           </legend>
           <Componente valores={Object.fromEntries(campos.map((c) => [c, borrador[c]]))} cambiar={cambiar} />

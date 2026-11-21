@@ -22,6 +22,7 @@
 import { PIEZAS } from "./marionetas-piezas.js";
 import { FIESTA } from "./fiesta-piezas.js";
 import { piezasAccesorios, orejasTapadas } from "./accesorios-marioneta.js";
+import { IRIS_BICOLOR_OTRO } from "./mascotas.js";
 
 export const ANIMOS = ["tranquila", "feliz", "celebra", "triste", "racha"];
 
@@ -134,7 +135,15 @@ export const MARIONETAS = {
     brazosDelante: true,
     torso: ["torso_n", 207, 412],
     cabeza: {
-      en: [123, 125, 1.35],
+      /*
+       * 21-nov (Mateo: «el perro es todo torso y no tiene cuello»). La cabeza
+       * iba a 1,35 —1,9 veces el ancho del cuerpo; los demás andan en 1,4–1,7—
+       * y apenas tocaba el torso (26 px): entre la barbilla y el pecho asomaba
+       * el corte plano de arriba del torso, como un tubo. Ahora va a 1,2 y baja
+       * hasta montarse 58 px sobre los hombros, como el gato o el zorro: la
+       * barbilla tapa el corte y el mechón del pecho se lee como el cuello.
+       */
+      en: [143, 192, 1.2],
       orejas: [["oreja_i", -55, 10], ["oreja_d", 195, 10]],
       base: ["cabeza", 0, 0],
       tranquila: { ojos: [["ojo_i", 42, 80], ["ojo_d", 147, 80]], resto: [["boca_sonrisa", 84, 175]] },
@@ -290,6 +299,82 @@ export function tablasPelaje(especie, tinte) {
   return t.map((x) => x.join(" "));
 }
 
+/*
+ * Las tablas del filtro de los OJOS: el ojo pasa a gris (su luz) y cada gris
+ * toma su tono del iris elegido. El contorno y la pupila (lo más oscuro) se
+ * quedan oscuros, y el brillo (lo más claro) se queda blanco: solo cambia el
+ * color del iris, con su degradado.
+ */
+export function tablasIris(iris) {
+  const c = hex(iris);
+  const paradas = [
+    [0, [0.02, 0.02, 0.03]],
+    [0.12, mezcla(c, [0, 0, 0], 0.78)],
+    [0.24, mezcla(c, [0, 0, 0], 0.32)],
+    [0.36, c],
+    [0.55, mezcla(c, [1, 1, 1], 0.35)],
+    [0.85, mezcla(c, [1, 1, 1], 0.85)],
+    [1, [1, 1, 1]],
+  ];
+  const N = 32, t = [[], [], []];
+  for (let i = 0; i < N; i++) {
+    const L = i / (N - 1);
+    let k = 0;
+    while (k < paradas.length - 2 && L > paradas[k + 1][0]) k++;
+    const [l0, c0] = paradas[k], [l1, c1] = paradas[k + 1];
+    const v = mezcla(c0, c1, Math.min(1, Math.max(0, (L - l0) / (l1 - l0 || 1))));
+    for (let j = 0; j < 3; j++) t[j].push(+v[j].toFixed(3));
+  }
+  return t.map((x) => x.join(" "));
+}
+
+const filtroIris = (id, iris) => {
+  const [r, g, b] = tablasIris(iris);
+  return `<filter id="${id}" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values=".2126 .7152 .0722 0 0 .2126 .7152 .0722 0 0 .2126 .7152 .0722 0 0 0 0 0 1 0"/><feComponentTransfer><feFuncR type="table" tableValues="${r}"/><feFuncG type="table" tableValues="${g}"/><feFuncB type="table" tableValues="${b}"/></feComponentTransfer></filter>`;
+};
+
+/*
+ * EL CUERPO A MEDIDA (0174). Devuelve una copia de la marioneta con la cabeza
+ * del tamaño pedido —crece o encoge sobre su barbilla, sin despegarse de los
+ * hombros— y los brazos, piernas y cola corridos al ancho del torso. El torso
+ * no se toca aquí: se ensancha al pintarlo (escala en x sobre su centro).
+ *   complexion  -2 (flaquito) … 2 (gordito)
+ *   cabeza      -2 (pequeña) … 2 (cabezón)
+ */
+export const ANCHO_POR_PASO = 0.11;
+export const CABEZA_POR_PASO = 0.075;
+export function marionetaAjustada(M, P, { complexion = 0, cabeza = 0 } = {}) {
+  if (!complexion && !cabeza) return { M, ancho: 1, cx: 0 };
+  const [tn, tx, ty] = M.torso;
+  const [tw] = P.piezas[tn] || [200];
+  const cx = tx + tw / 2;
+  const ancho = 1 + complexion * ANCHO_POR_PASO;
+  const extra = ((ancho - 1) * tw) / 2;
+  const lado = (p, k) => {
+    if (!p) return p;
+    const w = (P.piezas[p[0]]?.[0] || 0) * (p[3]?.escala || 1);
+    const s = p[1] + w / 2 < cx ? -1 : 1;
+    return [p[0], p[1] + s * extra * k, p[2], p[3]].filter((x) => x !== undefined);
+  };
+  const C = M.cabeza;
+  const [hx, hy, hs] = C.en;
+  const [cw, ch] = P.piezas[C.base[0]] || [220, 220];
+  const k = 1 + cabeza * CABEZA_POR_PASO;
+  const hs2 = hs * k;
+  const en = [hx + (cw * hs) / 2 - (cw * hs2) / 2, hy + ch * hs - ch * hs2, hs2];
+  return {
+    M: {
+      ...M,
+      cola: lado(M.cola, 1),
+      piernas: (M.piernas || []).map((p) => lado(p, 0.7)),
+      brazos: (M.brazos || []).map((p) => lado(p, 0.95)),
+      cabeza: { ...C, en },
+    },
+    ancho,
+    cx,
+  };
+}
+
 /* ── Dibujo ────────────────────────────────────────────────────────────── */
 export const tieneMarioneta = (especie) => Boolean(MARIONETAS[especie] && PIEZAS[especie]);
 
@@ -304,11 +389,16 @@ export const tieneMarioneta = (especie) => Boolean(MARIONETAS[especie] && PIEZAS
  * Devuelve { viewBox, inner }. El ánimo NO va aquí: es una clase en el <svg>
  * (mta-<animo>), así cambiar de ánimo no vuelve a pintar nada.
  */
-export function svgMarioneta(especie, { tinte = null, uid = "m", busto = false, puestos = [] } = {}) {
-  const M = MARIONETAS[especie];
+export function svgMarioneta(especie, { tinte = null, uid = "m", busto = false, puestos = [], iris = null, bicolor = false, complexion = 0, cabeza: tamCabeza = 0 } = {}) {
+  const M0 = MARIONETAS[especie];
   const P = PIEZAS[especie];
-  if (!M || !P) return null;
+  if (!M0 || !P) return null;
+  const { M, ancho, cx: torsoCx } = marionetaAjustada(M0, P, { complexion, cabeza: tamCabeza });
   const fid = `mta-pel-${uid}`;
+  /* Los ojos de otro color: los ojos abiertos pasan por el filtro del iris. El
+     hurón trae los ojos pintados dentro de la cara (antifaz): no se tiñen. */
+  const conIris = Boolean(iris) && !M.cabeza.ojosEn;
+  const iid = `mta-iris-${uid}`;
 
   const img = (n, x, y, o = {}) => {
     const d = P.piezas[n];
@@ -317,7 +407,7 @@ export function svgMarioneta(especie, { tinte = null, uid = "m", busto = false, 
     const w = d[0] * s, h = d[1] * s;
     const capas = tinte && d[2]
       ? `<image href="${url(especie, n, "_p")}" width="${w}" height="${h}" filter="url(#${fid})"/><image href="${url(especie, n, "_f")}" width="${w}" height="${h}"/>`
-      : `<image href="${url(especie, n)}" width="${w}" height="${h}"/>`;
+      : `<image href="${url(especie, n)}" width="${w}" height="${h}"${o.filtro ? ` filter="url(#${o.filtro})"` : ""}/>`;
     /* `giro`: la pieza girada en su sitio, sobre su borde de arriba (el hombro). */
     const giro = o.giro ? ` rotate(${o.giro} ${w / 2} ${h * 0.08})` : "";
     const tr = (o.espejo ? `translate(${x + w} ${y}) scale(-1 1)` : `translate(${x} ${y})`) + giro;
@@ -335,6 +425,10 @@ export function svgMarioneta(especie, { tinte = null, uid = "m", busto = false, 
     const [tr, tg, tb] = tablasPelaje(especie, tinte);
     defs += `<filter id="${fid}" color-interpolation-filters="sRGB" x="0" y="0" width="100%" height="100%"><feComponentTransfer><feFuncR type="table" tableValues="${tr}"/><feFuncG type="table" tableValues="${tg}"/><feFuncB type="table" tableValues="${tb}"/></feComponentTransfer></filter>`;
   }
+  if (conIris) {
+    defs += filtroIris(iid, iris);
+    if (bicolor) defs += filtroIris(`${iid}-2`, IRIS_BICOLOR_OTRO);
+  }
   if (M.ojosClaros) defs += `<filter id="mta-claro-${uid}" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="0 0 0 0 .98 0 0 0 0 .95 0 0 0 0 .88 0 0 0 1 0"/></filter>`;
   defs += `<radialGradient id="mta-aura-${uid}" cx="50%" cy="55%" r="50%"><stop offset="0" stop-color="#ffb347" stop-opacity=".85"/><stop offset=".55" stop-color="#ff7a1a" stop-opacity=".35"/><stop offset="1" stop-color="#ff5a00" stop-opacity="0"/></radialGradient>`;
 
@@ -346,6 +440,12 @@ export function svgMarioneta(especie, { tinte = null, uid = "m", busto = false, 
      para que un sombrero alto o unas alas no se salgan del recuadro. */
   const extra = acc.cajas.map(([x0, y0, x1, y1, enCabeza]) =>
     enCabeza ? [hx + x0 * hs, hy + y0 * hs, hx + x1 * hs, hy + y1 * hs, true] : [x0, y0, x1, y1, false]);
+  /* El torso ensanchado también cuenta en el encuadre. */
+  if (ancho !== 1) {
+    const [tn, tx, ty] = M.torso;
+    const [tw, th] = P.piezas[tn] || [0, 0];
+    extra.push([torsoCx - (tw * ancho) / 2, ty, torsoCx + (tw * ancho) / 2, ty + th, false]);
+  }
   const viewBox = busto ? encuadreBusto(M, P, extra) : encuadreCuerpo(M, P, extra);
   /* La bisagra en view-box se mide desde la esquina del viewBox, no desde (0, 0). */
   const [vbx, vby] = viewBox.split(" ").map(Number);
@@ -390,6 +490,9 @@ export function svgMarioneta(especie, { tinte = null, uid = "m", busto = false, 
   const objetos = objetosI + objetosD;
   /* Las caras nuevas de los festejos (CARAS), con rubor. */
   const A = anclasCara(M, P);
+  /* Un ojo abierto, con el iris elegido (y el segundo color si es bicolor). */
+  const filtroDe = (i) => (conIris ? (bicolor && i === 1 ? `${iid}-2` : iid) : null);
+  const ojoAbierto = (p, i) => (p ? img(p[0], p[1], p[2], { ...(p[3] || {}), filtro: filtroDe(i) }) : "");
   const ow = A.ojos.ancho;
   const ojosFeliz = C.feliz.filter(([n]) => !n.startsWith("boca"));
   const ojoDe = (lado, que) => {
@@ -399,7 +502,7 @@ export function svgMarioneta(especie, { tinte = null, uid = "m", busto = false, 
       const f = ojosFeliz.length === 2 ? ojosFeliz[lado === "i" ? 0 : 1] : ojosFeliz[0];
       return f ? pieza(f) : "";
     }
-    if (que === "abierto") return C.ojosEn ? "" : pieza(C.tranquila.ojos[lado === "i" ? 0 : 1]);
+    if (que === "abierto") return C.ojosEn ? "" : ojoAbierto(C.tranquila.ojos[lado === "i" ? 0 : 1], lado === "i" ? 0 : 1);
     const k = que.startsWith("guino") ? 0.82 : que.startsWith("corazon") ? 1.12 : 1.18;
     /* Sobre la mancha negra del panda, la rayita café del guiño no se ve: va crema. */
     const claro = M.ojosClaros && que.startsWith("guino") ? ` filter="url(#mta-claro-${uid})"` : "";
@@ -419,7 +522,7 @@ export function svgMarioneta(especie, { tinte = null, uid = "m", busto = false, 
     (oi ? grupo("mta-oreja-i", pieza(oi)) : "") +
     (od ? grupo("mta-oreja-d", pieza(od)) : "") +
     pieza(C.base) +
-    grupo("mta-cara mta-c-tranquila", grupo("mta-ojos", caraDe(C.tranquila.ojos)) + caraDe(C.tranquila.resto || [])) +
+    grupo("mta-cara mta-c-tranquila", grupo("mta-ojos", C.tranquila.ojos.map(ojoAbierto).join("")) + caraDe(C.tranquila.resto || [])) +
     grupo("mta-cara mta-c-feliz", caraDe(C.feliz)) +
     grupo("mta-cara mta-c-triste", caraDe(C.triste) + lag) +
     grupo("mta-cara mta-c-racha", caraDe(C.racha)) +
@@ -492,7 +595,9 @@ export function svgMarioneta(especie, { tinte = null, uid = "m", busto = false, 
     (M.cola && !M.colaDelante ? grupo("mta-cola", pieza(M.cola)) : "") +
     (M.piernas || []).map(pieza).join("") +
     (M.brazosDelante ? "" : brazos) +
-    grupo("mta-cuerpo", pieza(M.torso) + acc.pecho) +
+    (ancho !== 1
+      ? `<g transform="translate(${+torsoCx.toFixed(1)} 0) scale(${+ancho.toFixed(3)} 1) translate(${-torsoCx.toFixed(1)} 0)">${grupo("mta-cuerpo", pieza(M.torso) + acc.pecho)}</g>`
+      : grupo("mta-cuerpo", pieza(M.torso) + acc.pecho)) +
     /* El conejo trae la colita dibujada en el cuerpo nuevo: la que se menea va encima, tapándola. */
     (M.cola && M.colaDelante ? grupo("mta-cola", pieza(M.cola)) : "") +
     (M.brazosDelante ? brazos : "") +
