@@ -93,11 +93,26 @@ export const CARA_DE_FESTEJO = {
 /* Todo lo que se puede pedir como `animo` a <Mascota>. */
 export const MOVIMIENTOS = [...ANIMOS, ...FESTEJOS.filter((f) => !ANIMOS.includes(f))];
 
-/* Dónde va cada pieza, por especie. */
+/*
+ * Dónde va cada pieza, por especie.
+ *
+ * PROPORCIONES (21-nov, Mateo: «todos tienen errores de proporción, ponle
+ * lógica»). Reglas comunes, medidas sobre la silueta real de cada pieza y
+ * fijadas en marionetas.test.mjs:
+ *   · los pies en el suelo (y = 684): el panda se hundía 42 px bajo su sombra;
+ *   · la barbilla montada 40–50 px sobre los hombros: el hurón apenas tocaba
+ *     (16 px) y se le veía el corte del cuello;
+ *   · la cabeza 1,4–1,6 veces el ancho del cuerpo (el perro iba en 1,69 y el
+ *     hámster en 1,73: cabezones), centrada sobre el torso;
+ *   · el conejo, de cuerpo diminuto (cabeza = 59 % del alto), con el torso
+ *     a 1,15 y los brazos a su tamaño;
+ *   · las piernas bajo el cuerpo y simétricas: el zorro las abría hacia fuera
+ *     y el hurón tenía una de caminar y otra de pie (ahora la misma, en espejo).
+ */
 export const MARIONETAS = {
   zorro: {
     cola: ["cola", 360, 392],
-    piernas: [["pierna", 178, 520], ["pierna", 318, 520, { espejo: true }]],
+    piernas: [["pierna", 192, 521], ["pierna", 300, 521, { espejo: true }]],
     brazos: [["bc_d", 186, 350, { giro: 3 }], ["bc_i", 344, 350, { giro: -3 }]],
     brazosDelante: true,
     torso: ["torso", 166, 300],
@@ -143,7 +158,7 @@ export const MARIONETAS = {
        * hasta montarse 58 px sobre los hombros, como el gato o el zorro: la
        * barbilla tapa el corte y el mechón del pecho se lee como el cuello.
        */
-      en: [143, 192, 1.2],
+      en: [159.8, 224.2, 1.07],
       orejas: [["oreja_i", -55, 10], ["oreja_d", 195, 10]],
       base: ["cabeza", 0, 0],
       tranquila: { ojos: [["ojo_i", 42, 80], ["ojo_d", 147, 80]], resto: [["boca_sonrisa", 84, 175]] },
@@ -161,7 +176,7 @@ export const MARIONETAS = {
     brazosDelante: true,
     torso: ["torso", 186, 440],
     cabeza: {
-      en: [106, 200, 1.35],
+      en: [121.6, 236.3, 1.24],
       orejas: [["oreja_i", 30, -15], ["oreja_d", 175, -15]],
       base: ["cabeza", 0, 0],
       tranquila: { ojos: [["ojo_i", 62, 68], ["ojo_d", 160, 68]], resto: [] },
@@ -172,13 +187,13 @@ export const MARIONETAS = {
     },
   },
   conejo: {
-    cola: ["cola", 359, 578, { escala: 0.62 }],
+    cola: ["cola", 368, 570, { escala: 0.71 }],
     colaDelante: true,
-    brazos: [["bc_d", 205, 500, { giro: 4 }], ["bc_i", 339, 500, { giro: -4 }]],
+    brazos: [["bc_d", 199, 481, { giro: 4, escala: 1.1 }], ["bc_i", 337, 481, { giro: -4, escala: 1.1 }]],
     brazosDelante: true,
-    torso: ["torso_n", 192, 470],
+    torso: ["torso_n", 176, 446, { escala: 1.15 }],
     cabeza: {
-      en: [147, 250, 1.35],
+      en: [152.1, 246, 1.3],
       orejas: [["oreja_i", 40, -150], ["oreja_d", 100, -150]],
       base: ["cabeza", 0, 0],
       tranquila: { ojos: [["ojo_i", 35, 60], ["ojo_d", 125, 60]], resto: [["boca_sonrisa", 64, 104]] },
@@ -190,12 +205,12 @@ export const MARIONETAS = {
   },
   huron: {
     cola: ["cola", 330, 520, { escala: 0.65 }],
-    piernas: [["pierna_i", 198, 550], ["pierna_d", 308, 550]],
+    piernas: [["pierna_d", 207, 548, { espejo: true }], ["pierna_d", 302, 548]],
     brazos: [["bc_d", 214, 440, { giro: 4 }], ["bc_i", 335, 440, { giro: -4 }]],
     brazosDelante: true,
     torso: ["torso", 207, 385],
     cabeza: {
-      en: [163, 190, 1.35],
+      en: [163, 213.6, 1.35],
       orejas: [["oreja_i", 0, -10], ["oreja_d", 132, -10]],
       base: ["cabeza", 0, 0],
       tranquila: { ojos: [], resto: [["cara_tranquila", 11, 50], ["boca_tranquila", 58, 118]] },
@@ -209,13 +224,13 @@ export const MARIONETAS = {
   },
   /* El panda (21-nov): la cara va sobre las manchas negras de su cabeza. */
   panda: {
-    cola: ["cola", 395, 630],
-    brazos: [["bc_d", 143, 425, { giro: 3 }], ["bc_i", 375, 425, { giro: -3 }]],
+    cola: ["cola", 395, 588],
+    brazos: [["bc_d", 165, 397, { giro: 3 }], ["bc_i", 355, 397, { giro: -3 }]],
     brazosDelante: true,
     ojosClaros: true,
-    torso: ["torso", 173, 412],
+    torso: ["torso", 173, 370],
     cabeza: {
-      en: [101, 119, 1.12],
+      en: [115.4, 117.4, 1.04],
       orejas: [["oreja_i", 20, -30], ["oreja_d", 226, -30]],
       base: ["cabeza", 0, 0],
       tranquila: { ojos: [["ojo_i", 58, 126], ["ojo_d", 209, 127]], resto: [["boca_sonrisa", 146, 206]] },
@@ -346,7 +361,7 @@ export const CABEZA_POR_PASO = 0.075;
 export function marionetaAjustada(M, P, { complexion = 0, cabeza = 0 } = {}) {
   if (!complexion && !cabeza) return { M, ancho: 1, cx: 0 };
   const [tn, tx, ty] = M.torso;
-  const [tw] = P.piezas[tn] || [200];
+  const tw = (P.piezas[tn]?.[0] || 200) * (M.torso[3]?.escala || 1);
   const cx = tx + tw / 2;
   const ancho = 1 + complexion * ANCHO_POR_PASO;
   const extra = ((ancho - 1) * tw) / 2;
@@ -443,7 +458,8 @@ export function svgMarioneta(especie, { tinte = null, uid = "m", busto = false, 
   /* El torso ensanchado también cuenta en el encuadre. */
   if (ancho !== 1) {
     const [tn, tx, ty] = M.torso;
-    const [tw, th] = P.piezas[tn] || [0, 0];
+    const e = M.torso[3]?.escala || 1;
+    const [tw, th] = (P.piezas[tn] || [0, 0]).map((v) => v * e);
     extra.push([torsoCx - (tw * ancho) / 2, ty, torsoCx + (tw * ancho) / 2, ty + th, false]);
   }
   const viewBox = busto ? encuadreBusto(M, P, extra) : encuadreCuerpo(M, P, extra);

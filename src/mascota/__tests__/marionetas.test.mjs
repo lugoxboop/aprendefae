@@ -166,3 +166,29 @@ test("★ el perro lleva la cabeza montada sobre los hombros, como los demás (2
   assert.ok(solape >= 45, `la barbilla tapa el corte del torso (solape ${solape.toFixed(0)} px)`);
   assert.ok(proporcion <= 1.75, `cabeza no más de 1,75 veces el cuerpo (${proporcion.toFixed(2)})`);
 });
+
+/*
+ * Proporciones (21-nov, Mateo: «todos tienen errores de proporción»). Reglas
+ * comunes a las siete: los pies en el suelo (el panda se hundía 42 px bajo su
+ * sombra), la barbilla montada sobre los hombros (el hurón apenas tocaba) y
+ * la cabeza entre 1,1 y 1,75 veces el ancho del cuerpo.
+ */
+test("★ proporciones: pies en el suelo, cabeza montada y de un ancho razonable", async () => {
+  const { PIEZAS } = await import("../marionetas-piezas.js");
+  for (const { id } of ESPECIES) {
+    const M = MARIONETAS[id], P = PIEZAS[id].piezas;
+    const e = M.torso[3]?.escala || 1;
+    const [tw, th] = P[M.torso[0]].map((v) => v * e);
+    let pies = M.torso[2] + th;
+    for (const p of M.piernas || []) pies = Math.max(pies, p[2] + P[p[0]][1] * (p[3]?.escala || 1));
+    assert.ok(pies <= 692 && pies >= 640, `${id}: los pies en el suelo (684), no ${Math.round(pies)}`);
+    const [hx, hy, hs] = M.cabeza.en;
+    const [cw, ch] = P[M.cabeza.base[0]];
+    const solape = hy + ch * hs - M.torso[2];
+    assert.ok(solape >= 30, `${id}: la barbilla monta sobre los hombros (${Math.round(solape)} px)`);
+    const r = (cw * hs) / tw;
+    assert.ok(r >= 1.1 && r <= 1.75, `${id}: cabeza ${r.toFixed(2)} veces el cuerpo`);
+    const centroCabeza = hx + (cw * hs) / 2, centroTorso = M.torso[1] + tw / 2;
+    assert.ok(Math.abs(centroCabeza - centroTorso) < 12, `${id}: cabeza centrada sobre el cuerpo`);
+  }
+});

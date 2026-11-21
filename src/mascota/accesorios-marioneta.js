@@ -204,7 +204,8 @@ export function anclasDe(especie, M, P) {
   }
   const sep = Math.abs(od[0] - oi[0]);
   const [tx, ty] = [M.torso[1], M.torso[2]];
-  const [tw, th] = P.piezas[M.torso[0]];
+  /* El torso puede ir escalado (el conejo, 21-nov): las anclas, a su tamaño real. */
+  const [tw, th] = P.piezas[M.torso[0]].map((v) => v * (M.torso[3]?.escala || 1));
   const [hx, hy, hs] = C.en;
   const cuelloY = Math.max(ty + th * 0.04, hy + chh * hs - th * 0.1);
   /* La frente: justo encima de los ojos, con el ancho real de la cabeza ahí. */
