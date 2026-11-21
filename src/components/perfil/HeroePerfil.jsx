@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { ArrowRight, Flame, Award, Pencil } from "lucide-react";
 import AvatarEstudiante from "../avatar/AvatarEstudiante.jsx";
 import Medalla from "../shared/Medalla.jsx";
-import { ESPECIES, PALETAS_MASCOTA, mascotaDe } from "../../mascota/mascotas.js";
+import { ESPECIES, razasDe, mascotaDe } from "../../mascota/mascotas.js";
 import { AVISO_AVATAR } from "./avisoAvatar.js";
 import { FilaMuestras, useColorMascota } from "./SeccionMascota.jsx";
 import { mejoresGanadas } from "./Medallas.jsx";
@@ -117,7 +117,7 @@ export default function HeroePerfil({ perfil, racha = 0, medallas, aviso, onDesc
           {tieneMascota && (
             <div className="fae-pf-colores" data-colores-heroe>
               <p className="fae-pf-sub">Color de {nombreMascota || "tu mascota"}</p>
-              <FilaMuestras etiqueta={`Color de ${nombreMascota || "tu mascota"}`} conEtiqueta={false} items={PALETAS_MASCOTA} valor={paleta} onElegir={cambiarColor} attr="data-color" />
+              <FilaMuestras etiqueta={`Color de ${nombreMascota || "tu mascota"}`} conEtiqueta={false} items={razasDe(especie, paleta)} valor={paleta} onElegir={cambiarColor} attr="data-color" />
               {error && <p role="alert" style={{ fontSize: "13px", color: FAE.ambar, margin: 0 }}>{error}</p>}
             </div>
           )}

@@ -32,15 +32,16 @@ const migracionEspecies = (await import("node:fs")).readdirSync(dirMigraciones)
   .filter((t) => /add constraint profiles_mascota_especie_valida/.test(t))
   .at(-1);
 
-const migracionColor = readFileSync(
-  fileURLToPath(new URL("../../../supabase/migrations/0162_mascota_color_realista.sql", import.meta.url)),
-  "utf8",
-);
-
-const migracionOjos = readFileSync(
-  fileURLToPath(new URL("../../../supabase/migrations/0163_mascota_ojos.sql", import.meta.url)),
-  "utf8",
-);
+const fsMod = await import("node:fs");
+/* Los checks vigentes del color y de los ojos: la última migración que los
+   define (0162 y 0163; la 0174 los amplió con razas y ojos reales). */
+const ultimaCon = (re) => fsMod.readdirSync(dirMigraciones)
+  .filter((f) => f.endsWith(".sql")).sort()
+  .map((f) => readFileSync(dirMigraciones + f, "utf8"))
+  .filter((t) => re.test(t))
+  .at(-1);
+const migracionColor = ultimaCon(/add constraint profiles_mascota_paleta_valida/);
+const migracionOjos = ultimaCon(/add constraint profiles_mascota_ojos_valida/);
 
 const { ESPECIES, IDS_ESPECIE, NOMBRE_MAX, IDS_PALETA, PALETAS_MASCOTA, IDS_OJOS, OJOS_MASCOTA } = await import("../mascotas.js");
 
@@ -79,7 +80,7 @@ test("el largo máximo del nombre coincide con el de la base", () => {
   assert.equal(NOMBRE_MAX, Number(m[1]), "NOMBRE_MAX y el check del nombre tienen que coincidir");
 });
 
-test("las paletas de color son exactamente las del check de la 0162", () => {
+test("las paletas de color son exactamente las del check vigente", () => {
   const m = migracionColor.match(/mascota_paleta is null or mascota_paleta in \(([^)]+)\)/);
   assert.ok(m, "la migración declara el check de la paleta");
   const enLaBase = m[1].match(/'([^']+)'/g).map((s) => s.slice(1, -1));
@@ -90,7 +91,7 @@ test("las paletas de color son exactamente las del check de la 0162", () => {
   );
 });
 
-test("los colores de ojos son exactamente los del check de la 0163", () => {
+test("los colores de ojos son exactamente los del check vigente", () => {
   const m = migracionOjos.match(/mascota_ojos is null or mascota_ojos in \(([^)]+)\)/);
   assert.ok(m, "la migración declara el check de los ojos");
   const enLaBase = m[1].match(/'([^']+)'/g).map((s) => s.slice(1, -1));
@@ -187,4 +188,28 @@ test("sin título es decorativa; con título es una imagen con nombre", () => {
     assert.equal(conNombre.getAttribute("role"), "img");
     assert.equal(conNombre.getAttribute("aria-label"), "Tu mascota: Pelusa");
   } finally { m.desmontar(); }
+});
+
+/*
+ * 0174: las funciones vigentes aceptan exactamente lo mismo que el check (una
+ * lista propia desfasada ya pasó con mascota_elegir, 20-nov).
+ */
+test("mascota_personalizar y mascota_ojos_elegir aceptan lo mismo que sus checks", () => {
+  const lista = (t, re) => t.match(re)[1].match(/'([^']+)'/g).map((x) => x.slice(1, -1)).sort();
+  const fun = ultimaCon(/create or replace function public\.mascota_personalizar\(/);
+  assert.deepEqual(lista(fun, /v_paleta not in \(([^)]+)\)/), [...IDS_PALETA].sort());
+  const ojos = ultimaCon(/create or replace function public\.mascota_ojos_elegir\(/);
+  assert.deepEqual(lista(ojos, /v_ojos not in \(([^)]+)\)/), [...IDS_OJOS].sort());
+});
+
+test("cada especie ofrece razas reales: natural primero y solo pelajes válidos", async () => {
+  const { RAZAS, razasDe } = await import("../mascotas.js");
+  for (const { id } of ESPECIES) {
+    const r = RAZAS[id];
+    assert.ok(r && r.length >= 3, `${id} tiene al menos tres razas`);
+    assert.equal(r[0][0], "natural", `${id}: natural va primero`);
+    for (const [p, nombre] of r.slice(1)) assert.ok(IDS_PALETA.includes(p) && nombre, `${id}/${p} es un pelaje válido con nombre`);
+  }
+  /* Un color que venía de otra especie sigue en la lista, para verse elegido. */
+  assert.ok(razasDe("panda", "jengibre").some((x) => x.id === "jengibre"));
 });

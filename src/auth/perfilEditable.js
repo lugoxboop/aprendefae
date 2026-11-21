@@ -58,7 +58,9 @@ export const COLUMNAS_PERFIL =
   /* 0160/0161: la mascota y su color. NULL hasta que el estudiante la elige y la
      tiñe; se lee aquí, se escribe solo por mascota_elegir()/mascota_personalizar()
      —igual que el avatar—. */
-  "mascota_especie, mascota_nombre, mascota_paleta, mascota_ojos";
+  "mascota_especie, mascota_nombre, mascota_paleta, mascota_ojos, " +
+  /* 0174: el cuerpo a medida (complexión y cabeza, de -2 a 2). */
+  "mascota_complexion, mascota_cabeza";
 
 /** Solo las columnas editables del cambio, con los textos sin espacios en los extremos. */
 export function cambioPermitido(cambio) {

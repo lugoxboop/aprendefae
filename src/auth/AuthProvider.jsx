@@ -319,6 +319,21 @@ export function AuthProvider({ children }) {
   );
 
   /* Poner o quitar un accesorio ya comprado (0165). No cuesta cristales. */
+  /* 0174: complexión y tamaño de cabeza, juntos (mascota_ajustar). */
+  const ajustarMascota = useCallback(
+    async (complexion, cabeza) => {
+      if (!supabase || !session) return { error: "Sin sesión activa." };
+      const { data, error } = await supabase.rpc("mascota_ajustar", {
+        p_complexion: complexion ?? 0,
+        p_cabeza: cabeza ?? 0,
+      });
+      if (error) return { error: error.message };
+      aplicarPerfil(data);
+      return { data };
+    },
+    [session, aplicarPerfil],
+  );
+
   const equiparAccesorio = useCallback(
     async (clave, poner) => {
       if (!supabase || !session) return { error: "Sin sesión activa." };
@@ -363,6 +378,7 @@ export function AuthProvider({ children }) {
       elegirMascota,
       personalizarMascota,
       cambiarOjos,
+      ajustarMascota,
       comprarAccesorio,
       equiparAccesorio,
       guardarPerfil,
@@ -371,7 +387,7 @@ export function AuthProvider({ children }) {
       apodoDisponible,
       cerrarSesion,
     }),
-    [cargando, leyendoPerfil, session, perfil, errorPerfil, necesitaApodo, necesitaMascota, motivoLogin, pedirCuenta, cerrarDialogo, crearPerfil, elegirMascota, personalizarMascota, cambiarOjos, comprarAccesorio, equiparAccesorio, guardarPerfil, aplicarPerfil, refrescarPerfil, apodoDisponible, cerrarSesion]
+    [cargando, leyendoPerfil, session, perfil, errorPerfil, necesitaApodo, necesitaMascota, motivoLogin, pedirCuenta, cerrarDialogo, crearPerfil, elegirMascota, personalizarMascota, cambiarOjos, ajustarMascota, comprarAccesorio, equiparAccesorio, guardarPerfil, aplicarPerfil, refrescarPerfil, apodoDisponible, cerrarSesion]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
