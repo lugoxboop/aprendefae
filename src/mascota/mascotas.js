@@ -79,11 +79,14 @@ const NATURAL = {
 };
 
 /*
- * Las paletas que se eligen, encima de cualquier especie. Son colores de PELAJE
- * REAL —los que de verdad tienen gatos, perros, hurones y hámsters—, no colores
- * de fantasía: nada de un gato morado o un perro azul. Cada uno se ve bien en
- * las cuatro especies. El vientre va un par de tonos más claro, como en el pelo
- * de verdad.
+ * LOS PELAJES (21-nov, rehecho con el editor estilo videojuego). Mateo: «los
+ * colores son demasiado generales; más razas». Cada pelaje es el de una raza o
+ * capa REAL, con su sombra (furDark), su pelo (fur) y su panza/hocico (belly).
+ * La panza puede ser de otro tono que el lomo —el pecho fuego del rottweiler,
+ * la panza blanca del husky—, que es lo que hace que una raza se reconozca.
+ *
+ * Los seis primeros son los de siempre (0162): nadie pierde su color. Los
+ * demás los suma la 0174. Las claves son las del check de la base.
  */
 const TINTE = {
   arena: { fur: "#E3CFA6", furDark: "#C7AF82", belly: "#F4EAD6" },
@@ -92,24 +95,144 @@ const TINTE = {
   gris: { fur: "#9BA4AE", furDark: "#78808A", belly: "#DCE1E7" },
   negro: { fur: "#45484F", furDark: "#2F3238", belly: "#797E88" },
   jengibre: { fur: "#D97E3E", furDark: "#B9652A", belly: "#F2D2B2" },
+  /* 0174 — razas y capas nuevas */
+  crema: { fur: "#EAD7B4", furDark: "#D2BA8F", belly: "#FBF4E6" },
+  blanco: { fur: "#F3EFE8", furDark: "#DAD3C7", belly: "#FFFFFF" },
+  setter: { fur: "#A9472A", furDark: "#80301A", belly: "#D27C55" },
+  rojizo: { fur: "#CC6A2C", furDark: "#A44F1C", belly: "#F6E6D3" },
+  negro_fuego: { fur: "#2E2926", furDark: "#1D1917", belly: "#C27A3A" },
+  husky: { fur: "#7E848D", furDark: "#565B63", belly: "#F4F5F7" },
+  plata: { fur: "#ABA59C", furDark: "#87817A", belly: "#D3CEC6" },
+  azul: { fur: "#7D8898", furDark: "#5F6A7A", belly: "#AAB4C2" },
+  lila: { fur: "#AFA2A9", furDark: "#8E8289", belly: "#D6CDD1" },
+  bengali: { fur: "#CD9A45", furDark: "#9C6B25", belly: "#F1DDB0" },
+  champan: { fur: "#DCC29E", furDark: "#BFA37C", belly: "#F5ECDD" },
+  plateado: { fur: "#46444A", furDark: "#28272B", belly: "#C9C8CC" },
+  aguti: { fur: "#8E7A64", furDark: "#6A5847", belly: "#DCCFBF" },
+  qinling: { fur: "#7A563E", furDark: "#5A3C2A", belly: "#F3EADB" },
 };
-
-/** El selector de color, en orden. «natural» primero; su muestra es un tono tierra. */
-export const PALETAS_MASCOTA = [
-  { id: "natural", nombre: "Natural", muestra: "#D7A468" },
-  { id: "arena", nombre: "Arena", muestra: TINTE.arena.fur },
-  { id: "canela", nombre: "Canela", muestra: TINTE.canela.fur },
-  { id: "chocolate", nombre: "Chocolate", muestra: TINTE.chocolate.fur },
-  { id: "gris", nombre: "Gris", muestra: TINTE.gris.fur },
-  { id: "negro", nombre: "Negro", muestra: TINTE.negro.fur },
-  { id: "jengibre", nombre: "Jengibre", muestra: TINTE.jengibre.fur },
-];
 export const IDS_PALETA = Object.keys(TINTE);
 
 /*
+ * Las RAZAS de cada especie: qué pelajes le quedan bien y cómo se llaman en
+ * ese animal. «natural» es el arte tal cual (su raza de nacimiento). Un mismo
+ * pelaje se llama distinto según el animal: «negro_fuego» es Rottweiler en el
+ * perro; «blanco» es Samoyedo en el perro y Ártico en el zorro.
+ */
+export const RAZAS = {
+  perro: [
+    ["natural", "Golden", "Dorado de siempre"],
+    ["arena", "Labrador", "Amarillo claro"],
+    ["chocolate", "Labrador chocolate", "Café oscuro"],
+    ["negro", "Labrador negro", "Negro brillante"],
+    ["negro_fuego", "Rottweiler", "Negro con pecho fuego"],
+    ["husky", "Husky", "Gris lobo, panza blanca"],
+    ["blanco", "Samoyedo", "Blanco nube"],
+    ["plata", "Weimaraner", "Gris plata"],
+    ["setter", "Setter irlandés", "Caoba"],
+    ["rojizo", "Shiba inu", "Rojizo con crema"],
+    ["crema", "Caniche crema", "Crema suave"],
+  ],
+  gato: [
+    ["natural", "Atigrado gris", "El de siempre"],
+    ["jengibre", "Naranja", "Atigrado naranja"],
+    ["negro", "Negro", "Negro azabache"],
+    ["blanco", "Angora", "Blanco"],
+    ["azul", "Azul ruso", "Gris azulado"],
+    ["lila", "Británico lila", "Gris rosado"],
+    ["crema", "Persa crema", "Crema"],
+    ["chocolate", "Havana", "Chocolate"],
+    ["bengali", "Bengalí", "Dorado salvaje"],
+  ],
+  hamster: [
+    ["natural", "Sirio dorado", "El de siempre"],
+    ["crema", "Crema", "Crema suave"],
+    ["blanco", "Blanco", "Blanco nieve"],
+    ["gris", "Ruso", "Gris perla"],
+    ["canela", "Canela", "Canela"],
+    ["chocolate", "Chocolate", "Café"],
+    ["negro", "Oso negro", "Negro"],
+  ],
+  huron: [
+    ["natural", "Sable", "El de siempre"],
+    ["champan", "Champán", "Beige claro"],
+    ["canela", "Canela", "Canela"],
+    ["chocolate", "Chocolate", "Café"],
+    ["negro", "Sable negro", "Casi negro"],
+    ["blanco", "Albino", "Blanco"],
+  ],
+  zorro: [
+    ["natural", "Zorro rojo", "El de siempre"],
+    ["blanco", "Ártico", "Blanco de invierno"],
+    ["plateado", "Plateado", "Negro con plata"],
+    ["arena", "Fennec", "Arena del desierto"],
+    ["gris", "Zorro gris", "Gris"],
+    ["chocolate", "Marrón", "Café"],
+  ],
+  conejo: [
+    ["natural", "Blanco", "El de siempre"],
+    ["aguti", "Agutí", "Silvestre"],
+    ["gris", "Chinchilla", "Gris claro"],
+    ["azul", "Azul de Viena", "Gris azulado"],
+    ["canela", "Canela", "Canela"],
+    ["crema", "Crema", "Crema"],
+    ["chocolate", "Chocolate", "Café"],
+    ["negro", "Negro", "Negro"],
+  ],
+  panda: [
+    ["natural", "Panda gigante", "Blanco y negro"],
+    ["qinling", "Qinling", "Café y crema"],
+    ["blanco", "Albino", "Todo blanco"],
+  ],
+};
+
+/** El color propio de cada especie con «natural», para la muestra del selector. */
+const MUESTRA_NATURAL = {
+  perro: "#D7A468", gato: "#A7AEBB", hamster: "#E8B86A", huron: "#EAE1CD",
+  zorro: "#E0783A", conejo: "#F2F0EC", panda: "#F4F0E8",
+};
+
+/**
+ * Las razas que se ofrecen para una especie, con su muestra de color. Si la
+ * paleta guardada no está en la lista de esa especie (venía de otro animal),
+ * se añade al final con su nombre genérico, para que siga viéndose elegida.
+ */
+export function razasDe(especie, actual = null) {
+  const lista = (RAZAS[especie] || RAZAS.perro).map(([id, nombre, detalle]) => ({
+    id, nombre, detalle,
+    muestra: id === "natural" ? MUESTRA_NATURAL[especie] || "#D7A468" : TINTE[id].fur,
+    panza: id === "natural" ? null : TINTE[id].belly,
+  }));
+  if (actual && actual !== "natural" && TINTE[actual] && !lista.some((r) => r.id === actual)) {
+    const gen = PALETAS_MASCOTA.find((p) => p.id === actual);
+    lista.push({ id: actual, nombre: gen?.nombre ?? actual, detalle: "Tu color actual", muestra: TINTE[actual].fur, panza: TINTE[actual].belly });
+  }
+  return lista;
+}
+
+/** El nombre de la raza elegida, para la ficha del editor. */
+export function nombreRaza(especie, paleta) {
+  return razasDe(especie, paleta).find((r) => r.id === (paleta || "natural"))?.nombre ?? "";
+}
+
+/** El selector genérico (cabecera del perfil): «natural» + todos los pelajes. */
+const NOMBRE_PELAJE = {
+  arena: "Arena", canela: "Canela", chocolate: "Chocolate", gris: "Gris", negro: "Negro",
+  jengibre: "Jengibre", crema: "Crema", blanco: "Blanco", setter: "Caoba",
+  rojizo: "Rojizo", negro_fuego: "Negro y fuego", husky: "Lobo", plata: "Plata", azul: "Azul",
+  lila: "Lila", bengali: "Bengalí", champan: "Champán", plateado: "Plateado", aguti: "Agutí",
+  qinling: "Café y crema",
+};
+export const PALETAS_MASCOTA = [
+  { id: "natural", nombre: "Natural", muestra: "#D7A468" },
+  ...IDS_PALETA.map((id) => ({ id, nombre: NOMBRE_PELAJE[id], muestra: TINTE[id].fur })),
+];
+
+/*
  * El color de los OJOS, aparte del pelaje. Colores de ojos reales de animales
- * —ámbar, azul, verde…—, para que un gato negro pueda tener ojos azules o un
- * hurón jengibre ojos verdes. «natural» son los ojos oscuros de siempre.
+ * —café, avellana, ámbar, verde, azul hielo de husky, rubí de albino…— y la
+ * heterocromía (un ojo de cada color), que tienen de verdad gatos y huskies.
+ * «natural» son los ojos de la ilustración. Los nuevos los suma la 0174.
  */
 const IRIS = {
   ambar: "#C8820F",
@@ -117,18 +240,64 @@ const IRIS = {
   azul: "#3E7CC2",
   verde: "#4E9E5C",
   gris: "#8290A0",
+  avellana: "#8A6A2E",
+  dorado: "#D9A21B",
+  cobre: "#B4532A",
+  hielo: "#7FC4E8",
+  esmeralda: "#1F9A6E",
+  rubi: "#C2415B",
+  bicolor: "#3E7CC2",
 };
+/* La heterocromía: el ojo derecho de la pantalla va con este otro color. */
+export const IRIS_BICOLOR_OTRO = "#8A5A2B";
 
-/** El selector de ojos, en orden. «natural» primero (ojos oscuros). */
+/** El selector de ojos, en orden. «natural» primero (los de la ilustración). */
 export const OJOS_MASCOTA = [
-  { id: "natural", nombre: "Oscuros", muestra: "#241d17" },
-  { id: "ambar", nombre: "Ámbar", muestra: IRIS.ambar },
+  { id: "natural", nombre: "Café", muestra: "#5a3518" },
+  { id: "avellana", nombre: "Avellana", muestra: IRIS.avellana },
   { id: "miel", nombre: "Miel", muestra: IRIS.miel },
-  { id: "azul", nombre: "Azules", muestra: IRIS.azul },
+  { id: "ambar", nombre: "Ámbar", muestra: IRIS.ambar },
+  { id: "dorado", nombre: "Dorado", muestra: IRIS.dorado },
+  { id: "cobre", nombre: "Cobre", muestra: IRIS.cobre },
   { id: "verde", nombre: "Verdes", muestra: IRIS.verde },
+  { id: "esmeralda", nombre: "Esmeralda", muestra: IRIS.esmeralda },
+  { id: "azul", nombre: "Azules", muestra: IRIS.azul },
+  { id: "hielo", nombre: "Azul hielo", muestra: IRIS.hielo },
   { id: "gris", nombre: "Grises", muestra: IRIS.gris },
+  { id: "rubi", nombre: "Rubí", muestra: IRIS.rubi },
+  { id: "bicolor", nombre: "Uno de cada color", muestra: `linear-gradient(90deg, ${IRIS.azul} 50%, ${IRIS_BICOLOR_OTRO} 50%)` },
 ];
 export const IDS_OJOS = Object.keys(IRIS);
+
+/*
+ * EL CUERPO (0174): complexión y tamaño de cabeza, de -2 a 2 (0 = como viene).
+ * La complexión ensancha o estrecha el torso; la cabeza crece o encoge sobre
+ * el cuello, sin despegarse de los hombros.
+ */
+export const AJUSTE_MIN = -2;
+export const AJUSTE_MAX = 2;
+export const COMPLEXIONES = [
+  { valor: -2, nombre: "Flaquito" },
+  { valor: -1, nombre: "Delgado" },
+  { valor: 0, nombre: "Normal" },
+  { valor: 1, nombre: "Rellenito" },
+  { valor: 2, nombre: "Gordito" },
+];
+export const CABEZAS = [
+  { valor: -2, nombre: "Pequeña" },
+  { valor: -1, nombre: "Chica" },
+  { valor: 0, nombre: "Normal" },
+  { valor: 1, nombre: "Grande" },
+  { valor: 2, nombre: "Cabezón" },
+];
+const entero = (v) => {
+  const n = Math.round(Number(v));
+  return Number.isFinite(n) ? Math.max(AJUSTE_MIN, Math.min(AJUSTE_MAX, n)) : 0;
+};
+/** Los ajustes del cuerpo de un perfil, siempre enteros entre -2 y 2. */
+export function ajustesDe(perfil) {
+  return { complexion: entero(perfil?.mascota_complexion ?? 0), cabeza: entero(perfil?.mascota_cabeza ?? 0) };
+}
 
 /** El color del iris: el elegido, o el oscuro de siempre con «natural»/vacío. */
 export function irisDe(ojos) {

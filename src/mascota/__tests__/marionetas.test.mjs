@@ -126,3 +126,43 @@ test("★ dos sombreros no se llevan a la vez; un sombrero y unas gafas, sí", (
   assert.deepEqual(chocaCon("gafas_sol", ["gorro", "gafas"]), ["gafas"]);
   assert.deepEqual(chocaCon("medalla", ["traje", "bufanda"]), []);
 });
+
+/* 0174: los ojos de otro color y el cuerpo a medida. */
+test("★ los ojos elegidos pasan por el filtro del iris (menos el hurón, que los lleva en la cara)", () => {
+  for (const { id } of ESPECIES) {
+    const t = svgMarioneta(id, { uid: "o", iris: "#3E7CC2", bicolor: true }).inner;
+    if (id === "huron") { assert.doesNotMatch(t, /mta-iris-o/, "el hurón no se tiñe"); continue; }
+    assert.match(t, /<filter id="mta-iris-o"/, `${id}: sin filtro de iris`);
+    assert.match(t, /<filter id="mta-iris-o-2"/, `${id}: bicolor sin segundo filtro`);
+    assert.match(t, /filter="url\(#mta-iris-o-2\)"/, `${id}: ningún ojo usa el segundo color`);
+  }
+  assert.doesNotMatch(svgMarioneta("gato", { uid: "o" }).inner, /mta-iris/, "sin ojos elegidos, sin filtro");
+});
+
+test("★ el cuerpo a medida ensancha el torso y crece la cabeza sin despegarla del cuello", async () => {
+  const { marionetaAjustada } = await import("../marionetas.js");
+  const { PIEZAS } = await import("../marionetas-piezas.js");
+  for (const { id } of ESPECIES) {
+    const M = MARIONETAS[id], P = PIEZAS[id];
+    const gordo = svgMarioneta(id, { uid: "c", complexion: 2 }).inner;
+    assert.match(gordo, /scale\(1\.22 1\)/, `${id}: gordito ensancha el torso`);
+    const { M: G } = marionetaAjustada(M, P, { cabeza: 2 });
+    const [cw, ch] = P.piezas[M.cabeza.base[0]];
+    const barbilla = (m) => m.cabeza.en[1] + ch * m.cabeza.en[2];
+    const centro = (m) => m.cabeza.en[0] + (cw * m.cabeza.en[2]) / 2;
+    assert.ok(Math.abs(barbilla(G) - barbilla(M)) < 0.01, `${id}: la barbilla no se mueve`);
+    assert.ok(Math.abs(centro(G) - centro(M)) < 0.01, `${id}: la cabeza sigue centrada`);
+    assert.ok(G.cabeza.en[2] > M.cabeza.en[2], `${id}: cabezón es más grande`);
+  }
+});
+
+test("★ el perro lleva la cabeza montada sobre los hombros, como los demás (21-nov)", async () => {
+  const { PIEZAS } = await import("../marionetas-piezas.js");
+  const M = MARIONETAS.perro, P = PIEZAS.perro;
+  const [cw, ch] = P.piezas[M.cabeza.base[0]];
+  const [, , hy, hs] = [0, ...M.cabeza.en];
+  const solape = hy + ch * hs - M.torso[2];
+  const proporcion = (cw * hs) / P.piezas[M.torso[0]][0];
+  assert.ok(solape >= 45, `la barbilla tapa el corte del torso (solape ${solape.toFixed(0)} px)`);
+  assert.ok(proporcion <= 1.75, `cabeza no más de 1,75 veces el cuerpo (${proporcion.toFixed(2)})`);
+});
