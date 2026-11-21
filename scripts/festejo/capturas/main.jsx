@@ -11,9 +11,11 @@ import { mascotaDe } from "../../../src/mascota/mascotas.js";
  *   ?vista=resumen&festejo=baila&especie=perro&paleta=canela&pct=90
  *   ?vista=repaso  (el Repaso Diario recién hecho; useRepaso va sustituido)
  *   ?vista=todos[&nuevos=1]  los seis festejos (o los seis con objeto) a la vez
- *   ?vista=taller&animo=baila&puestos=collar  (las seis especies grandes, para revisar piezas)
+ *   ?vista=taller&animo=baila&puestos=collar  (las especies grandes, para revisar piezas; &especies=panda,perro)
+ *   ?vista=selector&especie=panda  (el editor «Mi avatar», para medir a 320 y 375)
  * Nada aquí escribe en ningún sitio.
  */
+import SeccionMascota from "../../../src/components/perfil/SeccionMascota.jsx";
 const q = new URLSearchParams(location.search);
 const festejo = q.get("festejo");
 import { FESTEJOS } from "../../../src/mascota/marionetas.js";
@@ -44,9 +46,11 @@ const valor = { activa: true, partida, celebrando: false, limpiar: () => {}, onV
 
 createRoot(document.getElementById("raiz")).render(
   <AuthContext.Provider value={auth}>
-    {q.get("vista") === "taller" ? (
+    {q.get("vista") === "selector" ? (
+      <div style={{ padding: "12px", background: "#13233A" }}><SeccionMascota perfil={{ ...perfil, mascota_nombre: "Bambú" }} completo /></div>
+    ) : q.get("vista") === "taller" ? (
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "8px", padding: "12px", background: "#13233A" }}>
-        {["zorro", "gato", "perro", "hamster", "conejo", "huron"].map((e) => {
+        {(q.get("especies")?.split(",") ?? ["zorro", "gato", "perro", "hamster", "conejo", "huron", "panda"]).map((e) => {
           const m = mascotaDe({ mascota_especie: e, mascota_paleta: q.get("paleta") ?? "natural", mascota_puestos: perfil.mascota_puestos });
           return (
             <div key={e} style={{ display: "flex", justifyContent: "center" }}>

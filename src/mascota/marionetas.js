@@ -198,6 +198,24 @@ export const MARIONETAS = {
       lagrima: [40, 110],
     },
   },
+  /* El panda (21-nov): la cara va sobre las manchas negras de su cabeza. */
+  panda: {
+    cola: ["cola", 395, 630],
+    brazos: [["bc_d", 143, 425, { giro: 3 }], ["bc_i", 375, 425, { giro: -3 }]],
+    brazosDelante: true,
+    ojosClaros: true,
+    torso: ["torso", 173, 412],
+    cabeza: {
+      en: [101, 119, 1.12],
+      orejas: [["oreja_i", 20, -30], ["oreja_d", 226, -30]],
+      base: ["cabeza", 0, 0],
+      tranquila: { ojos: [["ojo_i", 56, 120], ["ojo_d", 207, 120]], resto: [["boca_sonrisa", 146, 206]] },
+      feliz: [["feliz_i", 67, 143], ["feliz_d", 218, 143], ["boca_abierta", 142, 207]],
+      triste: [["triste_i", 58, 121], ["triste_d", 210, 121], ["boca_triste", 151, 212]],
+      racha: [["racha_i", 55, 131], ["racha_d", 203, 131], ["boca_sonrisa", 146, 206]],
+      lagrima: [90, 190],
+    },
+  },
 };
 
 const BASE = "/mascotas";
@@ -317,6 +335,7 @@ export function svgMarioneta(especie, { tinte = null, uid = "m", busto = false, 
     const [tr, tg, tb] = tablasPelaje(especie, tinte);
     defs += `<filter id="${fid}" color-interpolation-filters="sRGB" x="0" y="0" width="100%" height="100%"><feComponentTransfer><feFuncR type="table" tableValues="${tr}"/><feFuncG type="table" tableValues="${tg}"/><feFuncB type="table" tableValues="${tb}"/></feComponentTransfer></filter>`;
   }
+  if (M.ojosClaros) defs += `<filter id="mta-claro-${uid}" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="0 0 0 0 .98 0 0 0 0 .95 0 0 0 0 .88 0 0 0 1 0"/></filter>`;
   defs += `<radialGradient id="mta-aura-${uid}" cx="50%" cy="55%" r="50%"><stop offset="0" stop-color="#ffb347" stop-opacity=".85"/><stop offset=".55" stop-color="#ff7a1a" stop-opacity=".35"/><stop offset="1" stop-color="#ff5a00" stop-opacity="0"/></radialGradient>`;
 
   const [bi, bd] = M.brazos || [];
@@ -382,7 +401,9 @@ export function svgMarioneta(especie, { tinte = null, uid = "m", busto = false, 
     }
     if (que === "abierto") return C.ojosEn ? "" : pieza(C.tranquila.ojos[lado === "i" ? 0 : 1]);
     const k = que.startsWith("guino") ? 0.82 : que.startsWith("corazon") ? 1.12 : 1.18;
-    return fiesta(que, x, y, ow * k);
+    /* Sobre la mancha negra del panda, la rayita café del guiño no se ve: va crema. */
+    const claro = M.ojosClaros && que.startsWith("guino") ? ` filter="url(#mta-claro-${uid})"` : "";
+    return fiesta(que, x, y, ow * k, claro);
   };
   const rubor = ["i", "d"].map((l) => fiesta(`rubor_${l}`, A.ojos[l][0] + (l === "i" ? -1 : 1) * ow * 0.3, A.ojos[l][1] + ow * 0.66, ow * 0.82, ' opacity=".85"')).join("");
   const carasNuevas = Object.entries(CARAS).map(([nombre, c]) => {

@@ -136,6 +136,10 @@ const ESPECIE = {
     },
   },
   /* Hámster: los cachetes lo hacen ancho abajo; la cabeza tapa casi todo el pecho. */
+  panda: {
+    hocico: [0.49, 0.66], coronilla: 0.1,
+    ajustes: {},
+  },
   hamster: {
     hocico: [0.5, 0.6], coronilla: 0.1,
     ajustes: {

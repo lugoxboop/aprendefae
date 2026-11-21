@@ -12,7 +12,7 @@ import numpy as np, re, json, pathlib
 raiz = pathlib.Path(__file__).resolve().parents[2]
 piezas = (raiz / "src/mascota/marionetas-piezas.js").read_text()
 out = {}
-for esp in ["zorro", "gato", "perro", "hamster", "conejo", "huron"]:
+for esp in ["zorro", "gato", "perro", "hamster", "conejo", "huron", "panda"]:
     kw, kh = map(int, re.search(esp + r": \{[\s\S]*?cabeza: \[(\d+), (\d+)", piezas).groups())
     im = np.array(Image.open(raiz / f"public/mascotas/{esp}/cabeza.webp").convert("RGBA"))
     a = im[:, :, 3] > 60
