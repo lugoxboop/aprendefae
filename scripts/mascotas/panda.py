@@ -77,6 +77,45 @@ for n in CUERPO + CARA:
         Ls.append(L[fur & (al > .9)])
     piezas[n] = [int(W), int(H), 1 if tin else 0]
 
+# LOS OJOS (21-nov). Mateo: los de Gemini «muy realistas y muy chiquitos»; los
+# quiere grandes y tiernos, de anime, como los de la familia. Se usan los ojos
+# del perrito (café brillante, dos brillos) a 80 px, casi del ancho de la
+# mancha, y los párpados del panda son de la MISMA mancha: triste, el párpado
+# cae hacia afuera; en racha, recto y un poco bajado hacia adentro.
+MANCHA = np.array([67, 66, 62]) / 255
+ANCHO_OJO = 80
+
+
+def ojo_grande(lado):
+    im = Image.open(os.path.join(os.path.dirname(OUT), "perro", f"ojo_{lado}.webp")).convert("RGBA")
+    w = ANCHO_OJO
+    h = round(im.height * w / im.width)
+    return np.array(im.resize((round(w * K), round(h * K)), Image.LANCZOS)).astype(np.float32) / 255, w, h
+
+
+def parpado(a, y_fuera, y_dentro, lado):
+    """Pinta de mancha lo que queda por encima de la línea del párpado."""
+    h, w = a.shape[:2]
+    xs = np.arange(w)[None, :] / max(1, w - 1)
+    t = xs if lado == "i" else 1 - xs  # 0 = lado de afuera
+    linea = (y_fuera + (y_dentro - y_fuera) * t) * h
+    ys = np.arange(h)[:, None]
+    tapa = np.clip(linea - ys + 0.5, 0, 1)  # borde suave de un px
+    b = a.copy()
+    b[..., :3] = b[..., :3] * (1 - tapa[..., None]) + MANCHA * tapa[..., None]
+    borde = np.clip(1 - np.abs(ys - linea) / 1.2, 0, 1) * (a[..., 3] > .5)
+    b[..., :3] = b[..., :3] * (1 - .7 * borde[..., None]) + np.array([.1, .1, .1]) * .7 * borde[..., None]
+    return b
+
+
+for lado in ("i", "d"):
+    a, w, h = ojo_grande(lado)
+    caras = {"ojo": a, "triste": parpado(a, .5, .08, lado), "racha": parpado(a, .12, .34, lado)}
+    for cara, arr in caras.items():
+        Image.fromarray(np.clip(arr * 255, 0, 255).astype(np.uint8), "RGBA").save(
+            f"{OUT}/{cara}_{lado}.webp", "WEBP", quality=90, method=6)
+        piezas[f"{cara}_{lado}"] = [w, h, 0]
+
 # La llama de la racha es la misma de todas: la del perro.
 shutil.copy(os.path.join(os.path.dirname(OUT), "perro", "llama.webp"), f"{OUT}/llama.webp")
 piezas["llama"] = [74, 88, 0]
