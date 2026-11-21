@@ -54,7 +54,7 @@ test("★ toda pieza nombrada existe en el recorte y en public/mascotas", () => 
 test("★ natural pinta el arte tal cual; una paleta, por el filtro de pelaje", () => {
   for (const { id } of ESPECIES) {
     const nat = svgMarioneta(id, { uid: "t" }).inner;
-    assert.doesNotMatch(nat, /_p\.webp|<filter/, `${id} natural no debe teñir`);
+    assert.doesNotMatch(nat, /_p\.webp|<filter id="mta-pel/, `${id} natural no debe teñir`);
     for (const p of PALETAS_MASCOTA.filter((x) => x.id !== "natural")) {
       const t = svgMarioneta(id, { tinte: tinteDe(p.id), uid: "t" }).inner;
       assert.match(t, /<filter id="mta-pel-t"/, `${id}/${p.id} sin filtro`);

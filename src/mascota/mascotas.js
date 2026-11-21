@@ -59,8 +59,15 @@ export const ESPECIES = [
   { id: "huron", nombre: "Hurón", rasgo: "Travieso" },
   { id: "zorro", nombre: "Zorro", rasgo: "Astuto" },
   { id: "conejo", nombre: "Conejo", rasgo: "Veloz" },
+  { id: "panda", nombre: "Panda", rasgo: "Tranquilo" },
 ];
 export const IDS_ESPECIE = ESPECIES.map((e) => e.id);
+/*
+ * Las especies de FÁBRICA: entre estas sale la mascota de quien aún no eligió.
+ * Es una lista fija aparte: si se calculara sobre IDS_ESPECIE, cada especie
+ * nueva (el panda, 21-nov) le cambiaría la mascota a quien ya la tiene asignada.
+ */
+const DE_FABRICA = ["perro", "gato", "hamster", "huron", "zorro", "conejo"];
 export const NOMBRE_MAX = 16;
 
 /* El color propio de cada especie: lo que se ve con la paleta «natural». */
@@ -299,7 +306,7 @@ export function especiePorDefecto(semilla) {
     h ^= s.charCodeAt(i);
     h = Math.imul(h, 16777619) >>> 0;
   }
-  return IDS_ESPECIE[h % IDS_ESPECIE.length];
+  return DE_FABRICA[h % DE_FABRICA.length];
 }
 
 /**

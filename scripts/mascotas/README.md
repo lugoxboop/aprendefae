@@ -23,6 +23,13 @@ De dónde salen `public/mascotas/` y `src/mascota/marionetas-piezas.js`.
    las piezas de cara nuevas, comunes a las seis especies; escribe
    `src/mascota/fiesta-piezas.js`.
 
+8. `panda.py <recortes> public/mascotas/panda` (21-nov) — la séptima especie.
+   Se recorta con `recortar.py` (los mapas de números están en su cabecera) y
+   este script hace el resto: reduce la cara y los brazos a su tamaño, separa
+   el pelaje (en el panda se tiñe lo NEGRO: con «chocolate» sale el panda café
+   del Qinling) y escribe su bloque en `marionetas-piezas.js`. Después,
+   `python3 scripts/mascota/medir-cabezas.py` para la silueta de su cabeza.
+
 Dónde va cada pieza y cómo se mueve: `src/mascota/marionetas.js` y
 `src/mascota/marioneta-estilo.js`.
 

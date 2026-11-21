@@ -21,11 +21,16 @@ const migracion = readFileSync(
   "utf8",
 );
 
-/* La lista de especies la amplió la 0168 (zorro, conejo): ese es el check vigente. */
-const migracionEspecies = readFileSync(
-  fileURLToPath(new URL("../../../supabase/migrations/0168_mascota_especies_ilustradas.sql", import.meta.url)),
-  "utf8",
-);
+/*
+ * El check vigente de la especie: el de la última migración que lo define
+ * (0168 sumó zorro y conejo; 0173, el panda).
+ */
+const dirMigraciones = fileURLToPath(new URL("../../../supabase/migrations/", import.meta.url));
+const migracionEspecies = (await import("node:fs")).readdirSync(dirMigraciones)
+  .filter((f) => f.endsWith(".sql")).sort()
+  .map((f) => readFileSync(dirMigraciones + f, "utf8"))
+  .filter((t) => /add constraint profiles_mascota_especie_valida/.test(t))
+  .at(-1);
 
 const migracionColor = readFileSync(
   fileURLToPath(new URL("../../../supabase/migrations/0162_mascota_color_realista.sql", import.meta.url)),
@@ -39,7 +44,7 @@ const migracionOjos = readFileSync(
 
 const { ESPECIES, IDS_ESPECIE, NOMBRE_MAX, IDS_PALETA, PALETAS_MASCOTA, IDS_OJOS, OJOS_MASCOTA } = await import("../mascotas.js");
 
-test("las especies del selector son exactamente las del check vigente (0168)", () => {
+test("las especies del selector son exactamente las del check vigente", () => {
   /* Toma el `mascota_especie in ('…','…')` de la migración que amplía la lista. */
   const m = migracionEspecies.match(/mascota_especie in \(([^)]+)\)/);
   assert.ok(m, "la migración declara el check de la especie");

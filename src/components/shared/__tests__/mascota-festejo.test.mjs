@@ -38,14 +38,14 @@ test("★★★ cada festejo tiene su frase, su movimiento y una cara alegre", (
   }
 });
 
-test("★★★ las caras nuevas y los objetos de fiesta están en las seis especies", () => {
+test("★★★ las caras nuevas y los objetos de fiesta están en las siete especies", () => {
   for (const [, , n] of OBJETOS) assert.ok(FIESTA[n], `${n} sin pieza en fiesta-piezas.js`);
   for (const c of Object.values(CARAS)) {
     for (const n of [c.boca, ...(Array.isArray(c.ojos) ? c.ojos : [])]) {
       if (n && !["feliz", "abierto"].includes(n)) assert.ok(FIESTA[n], `${n} sin pieza`);
     }
   }
-  for (const esp of ["zorro", "gato", "perro", "conejo", "huron", "hamster"]) {
+  for (const esp of ["zorro", "gato", "perro", "conejo", "huron", "hamster", "panda"]) {
     const { inner } = svgMarioneta(esp, { uid: esp });
     for (const c of Object.keys(CARAS)) assert.ok(inner.includes(`mta-c-${c}`), `${esp} sin la cara ${c}`);
     for (const [f, , n] of OBJETOS) {
@@ -58,8 +58,8 @@ test("★★★ las caras nuevas y los objetos de fiesta están en las seis espe
   }
 });
 
-test("★★ las seis especies llevan notas, corazones y estrellas para festejar", () => {
-  for (const esp of ["zorro", "gato", "perro", "conejo", "huron", "hamster"]) {
+test("★★ las siete especies llevan notas, corazones y estrellas para festejar", () => {
+  for (const esp of ["zorro", "gato", "perro", "conejo", "huron", "hamster", "panda"]) {
     const { inner } = svgMarioneta(esp, { uid: esp });
     for (const cls of ["mta-notas", "mta-corazones", "mta-estrellas"]) assert.ok(inner.includes(cls), `${esp} sin ${cls}`);
   }
