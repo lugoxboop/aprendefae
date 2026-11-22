@@ -36,3 +36,6 @@
 
 ### Etapa 2 — Por tema: plan, especificación, construcción, video
 (se llena al cerrar cada ficha; cada pieza es una casilla)
+
+## Decisiones de Mateo
+- 2026-11-22 17:36 — Lo viejo se quita **al publicar lo nuevo**: el retiro queda listo pero sale en el mismo cambio que el primer lote aprobado. No fusionar el retiro solo.
