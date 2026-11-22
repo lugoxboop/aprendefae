@@ -249,3 +249,25 @@ usarlos no es opcional.
 Todo se mantiene solo (fuentes oficiales, con actualización automática donde la
 haya). Un agente que vaya a hacer trabajo visual, tocar la base, usar una
 librería o probar la app abre primero la herramienta que le toca.
+
+## p) Regla de evidencia visual (obligatoria, sin excepciones)
+
+Orden de Mateo del 21 de noviembre de 2026. Un agente no ve una animación
+leyendo el código: los errores de movimiento (saltos, parpadeos, objetos que se
+teletransportan, cortes, desfases) solo se ven en movimiento. Por eso:
+
+1. **Prohibido decir «listo», «corregido» o «ya está»** en cualquier animación,
+   transición o arreglo visual sin evidencia: grabar video de esa parte en la
+   página real a 320 y 375 px (con Playwright) y revisar los cuadros uno por uno.
+   La entrega incluye el video.
+2. **Antes de corregir un error, grabarlo reproducido** tal como lo describió
+   Mateo. Después del arreglo, grabar otra vez y comparar. Si no se logra
+   reproducir el error, decirlo; no declarar arreglado lo que no se vio.
+3. **Quien construye no aprueba:** un agente distinto (Ukyo u otro verificador)
+   revisa el video y la descripción del error, sin mirar el código, y da PASA o
+   NO PASA. Solo con PASA se le dice a Mateo que está listo.
+4. **Si tras 2 intentos sigue fallando, no parchear una tercera vez:** cambiar de
+   técnica (rehacer la animación o usar una herramienta especializada) y usar el
+   modelo más potente.
+5. **Si Mateo reporta que algo sigue mal después de un «listo»**, se trata como
+   falla grave: se anota en la bitácora la causa y la regla que la evita.
