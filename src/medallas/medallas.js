@@ -55,6 +55,41 @@ const AGREGADAS_DESPUES = new Set([
   "el-freno-del-encaje",
 ]);
 
+/*
+ * ═══════ LAS QUE SALIERON (retiro de Macroeconomía, 22-nov-2026) ═══════
+ *
+ * El filo de arriba, al revés: el 22-nov-2026 Macroeconomía se retiró entera
+ * para rehacerla desde cero (0258), y su total de hoy es cero. Con la regla de
+ * arriba sola, «Macroeconomía al día» se le apagaría a todo el que la ganó.
+ *
+ * Misma regla, mismo método: quien la ganó la CONSERVA, y se deduce de lo que
+ * la base ya sabe. Aquí están los juegos con los que se ganaba ANTES del
+ * retiro —los 54 que había antes de los tres de arriba, que con estos daban
+ * los 57—, y fp_history los sigue guardando: el retiro es blando y no borra
+ * filas. Quien los tiene todos, la conserva.
+ *
+ * Cuando el Macro nuevo declare sus actividades, quien no la tenía necesitará
+ * el total nuevo, como siempre.
+ */
+const GANADAS_ANTES_DEL_RETIRO = {
+  macroeconomia: [
+    /* Demanda Agregada */
+    "memorama-corazon", "cual-componente", "electrocardiograma", "termometro-reacciones", "banco-transfusiones", "biopsia-economica",
+    "triage-emergencias", "cirugia-reconstruccion", "sala-monitores", "quien-beneficia-auge", "explica-paciente", "sala-espera-llena",
+    /* Política Económica */
+    "memorama-tesoro", "que-rama-es", "diagnostico-en-vivo", "arma-grupo-logico", "quien-gana-quien-pierde", "corriente-titulares",
+    "explica-la-politica", "tablero-decisiones", "simulador-de-crisis", "se-acerca-o-se-aleja", "expediente-gabinete", "consejo-ministros",
+    /* Política Fiscal */
+    "memorama-tesoreria", "cobra-gasta-o-pide", "clasificador-tesoro", "directos-indirectos", "flujo-de-caja", "agujero-fiscal",
+    "expansiva-contractiva", "disena-presupuesto", "deficit-vs-deuda", "quien-afecta-ajuste", "explica-contribuyente", "comite-presupuesto",
+    /* Política Monetaria */
+    "memorama-banco-central", "quien-decide-esto", "en-que-talla-va", "volante-de-la-tasa", "caja-de-herramientas", "crea-o-cambia-de-manos",
+    "a-quien-le-pega-la-tasa", "las-dos-entradas", "que-toco-el-banco", "cadena-de-transmision", "por-cual-arteria-entra",
+    "explicaselo-a-un-deudor", "corriente-de-decisiones", "el-rezago", "la-escalera-del-encaje", "dilema-banquero-central",
+    "duelo-de-instrumentos", "disena-respuesta-monetaria",
+  ],
+};
+
 function materiaCompleta(hechasPorMateria) {
   return Object.values(SUBJECTS).map((materia) => {
     const necesarias = materia.topics.flatMap((t) => actividadesDeTipo(t, HACER)).map((a) => a.id);
@@ -67,7 +102,9 @@ function materiaCompleta(hechasPorMateria) {
      * la medalla ya era suya y se queda, aunque hoy el total sea mayor.
      */
     const antes = necesarias.filter((id) => !AGREGADAS_DESPUES.has(id));
-    const yaEraSuya = antes.length > 0 && antes.every((id) => hechas.has(id));
+    const delRetiro = GANADAS_ANTES_DEL_RETIRO[materia.id] ?? [];
+    const ganadaAntesDelRetiro = delRetiro.length > 0 && delRetiro.every((id) => hechas.has(id));
+    const yaEraSuya = (antes.length > 0 && antes.every((id) => hechas.has(id))) || ganadaAntesDelRetiro;
     const nuevas = necesarias.length - antes.length;
 
     return {
@@ -81,18 +118,25 @@ function materiaCompleta(hechasPorMateria) {
        */
       descripcion: completa || !yaEraSuya
         ? `Completaste los ${necesarias.length} juegos que dan FP de ${materia.name}.`
-        : `La ganaste con los ${antes.length} juegos que daban FP de ${materia.name}. Después entraron ${nuevas} más.`,
+        : ganadaAntesDelRetiro && !(antes.length > 0 && antes.every((id) => hechas.has(id)))
+          ? `La ganaste con los ${delRetiro.length} juegos que daban FP de ${materia.name} antes de que se rehiciera.`
+          : `La ganaste con los ${antes.length} juegos que daban FP de ${materia.name}. Después entraron ${nuevas} más.`,
       rareza: "media",
       subject_id: materia.id,
       obtenida: completa || yaEraSuya,
-      progreso: cuantas,
-      meta: necesarias.length,
+      /*
+       * Mientras la materia retirada no tenga actividades nuevas, la barra
+       * cuenta contra los juegos de antes del retiro: un «0 de 0» no le dice
+       * nada a nadie, y menos a quien la ganó.
+       */
+      progreso: necesarias.length === 0 && delRetiro.length > 0 ? delRetiro.filter((id) => hechas.has(id)).length : cuantas,
+      meta: necesarias.length === 0 && delRetiro.length > 0 ? delRetiro.length : necesarias.length,
     };
   });
 }
 
 /* Se exporta para la prueba: lo que hay que poder comprobar es la regla, no la consulta. */
-export { materiaCompleta, AGREGADAS_DESPUES };
+export { materiaCompleta, AGREGADAS_DESPUES, GANADAS_ANTES_DEL_RETIRO };
 
 /** Todas las medallas del estudiante, ganadas y por ganar. */
 export async function cargarMedallas() {
