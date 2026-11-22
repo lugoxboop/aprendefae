@@ -32,7 +32,7 @@
 - [x] Ficha 3 · Política fiscal → `fichas/3-politica-fiscal.md`
 - [x] Ficha 4 · Política monetaria → `fichas/4-politica-monetaria.md`
 - [x] Ficha 5 · Política cambiaria → `fichas/5-politica-cambiaria.md`
-- [ ] Mapa de temas (repeticiones y contradicciones) → `mapa.md`
+- [x] Mapa de temas (repeticiones y contradicciones) → `mapa.md`
 
 ### Etapa 2 — Por tema: plan, especificación, construcción, video
 (se llena al cerrar cada ficha; cada pieza es una casilla)
