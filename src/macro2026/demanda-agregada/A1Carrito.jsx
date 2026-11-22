@@ -18,13 +18,14 @@ const CSS = `
 .da26-a1-manos { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
 .da26-a1-mano { display: flex; align-items: center; gap: 8px; min-height: 64px; padding: 8px 10px; border-radius: 12px; border: 2px solid var(--mano); background: #0E1B2E; color: #f4f5f7; font: 600 14px/18px var(--planck-font-sans, system-ui, sans-serif); text-align: left; cursor: pointer; touch-action: manipulation; }
 .da26-a1-mano[aria-pressed="true"] { background: #1F3250; }
-.da26-a1-mano .da26-a1-letra { font: 700 16px/1 var(--planck-font-mono, monospace); color: var(--mano); }
+.da26-a1-mano .da26-a1-letra { font: 700 15px/1 var(--planck-font-mono, monospace); display: inline-block; min-width: 1.6em; padding: 2px 4px; border-radius: 4px; background: var(--mano); color: #121418; text-align: center; }
+.da26-letra { display: inline-block; min-width: 1.6em; padding: 2px 4px; border-radius: 4px; background: var(--c); color: #121418; text-align: center; }
 .da26-a1-formula { font: 600 17px/1.4 var(--planck-font-mono, monospace); text-align: center; margin-top: 6px; }
 .da26-a1-puerto { display: flex; justify-content: space-between; align-items: flex-end; gap: 8px; font-size: 13px; color: ${INK_2}; }
 `;
 
 function Formula() {
-  const L = ({ k, children }) => <span style={{ color: COMPONENTES[k].color }}>{children}</span>;
+  const L = ({ k, children }) => <span className="da26-letra" style={{ "--c": COMPONENTES[k].color }}>{children}</span>;
   return (
     <p className="da26-a1-formula da26-entra" data-formula aria-label="DA igual a C más I más G más, entre paréntesis, X menos M">
       DA = <L k="C">C</L> + <L k="I">I</L> + <L k="G">G</L> + <L k="XN">(X − M)</L>

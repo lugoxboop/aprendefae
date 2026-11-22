@@ -90,7 +90,7 @@ export function Carrito({ valores, alto = 180, escala = 0.4, total = null, sacud
               />
             )}
             {b.h > 0.5 && (
-              <text x={bx + bw + 8} y={b.y + Math.max(b.h, 12) / 2 + 5} fontSize={13} fontWeight={700} fill={b.v >= 0 ? COMPONENTES[b.k].color : INK_2}>
+              <text x={bx + bw + 8} y={b.y + Math.max(b.h, 12) / 2 + 5} fontSize={13} fontWeight={700} fill={b.v >= 0 ? INK : INK_2}>
                 {COMPONENTES[b.k].letra}
               </text>
             )}
@@ -106,7 +106,7 @@ export function Carrito({ valores, alto = 180, escala = 0.4, total = null, sacud
                   if (e.key === "ArrowUp" || e.key === "ArrowRight") { e.preventDefault(); onAgarre.tecla(b.k, 10); }
                 }}
               >
-                <rect x={bx} y={b.y - 10} width={bw} height={20} fill="transparent" />
+                <rect x={bx} y={b.y - 22} width={bw} height={44} fill="transparent" />
                 <rect x={bx + bw / 2 - 18} y={b.y - 3} width={36} height={6} rx={3} fill={INK} stroke="#0E1B2E" strokeWidth={1.5} />
               </g>
             )}

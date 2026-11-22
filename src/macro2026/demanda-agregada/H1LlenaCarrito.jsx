@@ -34,7 +34,7 @@ const CSS = `
 .da26-h1-mano { display: flex; align-items: center; gap: 8px; min-width: 120px; min-height: 64px; padding: 8px 10px; border-radius: 12px; border: 2px solid var(--mano); background: ${FONDO}; color: ${INK}; font: 600 14px/17px var(--planck-font-sans, system-ui, sans-serif); text-align: left; cursor: pointer; touch-action: manipulation; transition: transform 280ms cubic-bezier(.3,.9,.4,1); }
 .da26-h1-mano[data-agarra="1"] { transform: scale(1.04); }
 .da26-h1-mano[data-blanco="1"] { box-shadow: 0 0 0 3px var(--mano); }
-.da26-h1-mano .da26-h1-letra { font: 700 16px/1 var(--planck-font-mono, monospace); color: var(--mano); display: block; }
+.da26-h1-mano .da26-h1-letra { font: 700 15px/1 var(--planck-font-mono, monospace); display: inline-block; margin-bottom: 3px; min-width: 1.6em; padding: 2px 4px; border-radius: 4px; background: var(--mano); color: #121418; text-align: center; }
 @media (prefers-reduced-motion: reduce) { .da26-h1-ficha.da26-vuelve, .da26-h1-mano { transition: opacity 120ms linear; } }
 `;
 
@@ -185,7 +185,7 @@ export default function H1LlenaCarrito({ onTerminar, rng = null }) {
               aria-label={`Llevar a ${COMPONENTES[k].nombre}`}
             >
               <IconoMano id={k} size={30} />
-              <span><span className="da26-h1-letra">{COMPONENTES[k].letra}{agarra === k ? " ✓" : ""}</span>{COMPONENTES[k].nombre}</span>
+              <span><span className="da26-h1-letra">{COMPONENTES[k].letra}</span>{agarra === k ? " ✓" : ""}<br />{COMPONENTES[k].nombre}</span>
             </button>
           ))}
         </div>

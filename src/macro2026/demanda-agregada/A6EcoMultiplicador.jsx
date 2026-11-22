@@ -138,7 +138,7 @@ export default function A6EcoMultiplicador({ onTerminar }) {
     );
     controles = <Deslizador id="a6-c5" etiqueta="c" min={0.5} max={0.95} paso={0.05} valor={c5} onCambio={(v) => setC5(Math.round(v * 100) / 100)} formato={(v) => fmtDecimal(v, 2)} />;
   } else {
-    const L = ({ k, children }) => <span style={{ color: COMPONENTES[k].color }}>{children}</span>;
+    const L = ({ k, children }) => <span style={{ display: "inline-block", padding: "2px 4px", borderRadius: 4, background: COMPONENTES[k].color, color: "#121418" }}>{children}</span>;
     figura = (
       <div style={{ textAlign: "center", font: "600 18px/1.6 var(--planck-font-mono, monospace)" }} data-formula>
         <div>Y₀ = multiplicador ×</div>
