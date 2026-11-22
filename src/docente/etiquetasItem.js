@@ -1,39 +1,10 @@
 import {
-  RONDAS_GANADORES, BANCO_CORRIENTE, ESCENARIOS_EXPLICA, CASOS_CRISIS, NOMBRES_RANURA,
-} from "../data/juegosPolitica2.js";
-import { CASILLAS, CASOS_CADENA, TITULARES, BRECHAS, PREGUNTA_BRECHA } from "../data/juegosPolitica.js";
-import {
   BLIPS_RADAR, PREGUNTA_RESCATE, FRAGMENTOS_TRANSMISION, CORRIENTE,
   HIPOTESIS_TRIBUNAL, PREGUNTA_CRITERIO_TRIBUNAL,
 } from "../data/icebergActividades.js";
 import { CITAS_EXPEDIENTE, NIVELES, DECISIONES, PREGUNTA_DILUVIO } from "../data/arca.js";
-import {
-  COMUNICADOS, MEDIDAS_LINEA, MEDIDAS_INCIDENCIA, ESCENARIOS,
-} from "../data/nova.js";
 import { FUERZAS, CASOS as CASOS_ASEDIO } from "../data/asedio.js";
-import {
-  TERMINOS_ECG, FRAGMENTOS_ECG, REACCIONES, PASOS_TRANSFUSION,
-  CASOS_BIOPSIA, CASOS_TRIAGE, CASOS_CIRUGIA, ALERTAS_MONITOR,
-} from "../data/demandaAgregadaHacer.js";
 import { TEXTO as TEXTO_NODOS } from "../components/mecanicas/MapaCausal.jsx";
-import {
-  CLASIFICADOR, IMPUESTOS_SELLO, MEDIDAS_FLUJO, PREGUNTA_MULTIPLICADOR, PREGUNTA_AGUJERO,
-  CASOS_EXPANSIVA, CASILLAS_PRESUPUESTO, BANCO_DEFICIT,
-} from "../data/politicaFiscal.js";
-import { MEMORAMAS, CLASIFICACIONES } from "../data/cimientos.js";
-import { ESLABONES_ARTERIA, PREGUNTAS_DOS_ENTRADAS } from "../data/monetariaRepaso.js";
-import { hechoDeItemCreaOCambia, casillaDeItemEscalera } from "../data/pmFabricaDelDinero.js";
-import { etiquetaDeInstrumento } from "../data/pmInstrumentos.js";
-import { EN_QUE_TALLA_VA, QUE_TOCO_EL_BANCO } from "../data/pmAgregados.js";
-import {
-  CAMBIOS_ACERCA, CASO_GABINETE, CASO_CONSEJO, RONDAS_AUGE, RONDAS_AJUSTE,
-  EXPLICA_PACIENTE, EXPLICA_CONTRIBUYENTE, SALA_ESPERA, COMITE_PRESUPUESTO,
-} from "../data/bloquesAvanzados.js";
-import {
-  MEMORAMA_BANCO_CENTRAL, QUIEN_DECIDE, VOLANTE_DE_LA_TASA, CAJA_DE_HERRAMIENTAS, A_QUIEN_LE_PEGA,
-  CADENAS_TRANSMISION, EXPLICA_DEUDOR, CORRIENTE_DECISIONES, EL_REZAGO, DILEMA_BANQUERO,
-  DUELO_INSTRUMENTOS, DISENA_RESPUESTA, CASILLAS_RESPUESTA,
-} from "../data/politicaMonetaria.js";
 import {
   BANCO_IZQUIERDA_O_DERECHA, BANCO_DE_QUE_FAMILIA, BANCO_CUADRO_DINAMICAS,
   BANCO_DEBITA_O_ACREDITA, BANCO_CORRIENTE_DE_CUENTAS,
@@ -208,14 +179,6 @@ function sinPrefijo(texto, prefijo) {
 const porId = (lista, campo) => Object.fromEntries(lista.map((x) => [x.id, x[campo]]));
 
 /*
- * Los fragmentos de "Explica la política" viven dentro de cada escenario. Se
- * aplanan una vez, al cargar el módulo, y no en cada llamada.
- */
-const FRAGMENTOS_EXPLICA = Object.fromEntries(
-  ESCENARIOS_EXPLICA.flatMap((e) => (e.fragmentos ?? e.banco ?? []).map((f) => [f.id, f.texto]))
-);
-
-/*
  * ═══════════ LAS REGLAS ═══════════
  *
  * Una por actividad, con el mismo contrato: recibe el item_id tal como llegó
@@ -228,13 +191,9 @@ const FRAGMENTOS_EXPLICA = Object.fromEntries(
  */
 export const REGLAS = {
   /* ── Ids que ya son clave directa de un banco ── */
-  "corriente-titulares": (id) => porId(BANCO_CORRIENTE, "texto")[id] ?? null,
   "corriente-cruzada": (id) => porId(CORRIENTE, "texto")[id] ?? null,
   "radar-profundidad": (id) => porId(BLIPS_RADAR, "texto")[id] ?? null,
-  "sala-monitores": (id) => porId(ALERTAS_MONITOR, "texto")[id] ?? null,
-  "termometro-reacciones": (id) => porId(REACCIONES, "cambio")[id] ?? null,
   "transmision-superficie": (id) => porId(FRAGMENTOS_TRANSMISION, "texto")[id] ?? null,
-  "explica-la-politica": (id) => FRAGMENTOS_EXPLICA[id] ?? null,
 
   /*
    * En estas dos el id ES el texto: la cámara registra el término preguntado y
@@ -246,29 +205,6 @@ export const REGLAS = {
   "arquitecto-profundidades": (id) => (NIVELES.includes(id) ? id : null),
 
   /* ── Ids compuestos: contexto + clave ── */
-  "quien-gana-quien-pierde": (id) => {
-    const [ronda, quien] = String(id).split(":");
-    const r = RONDAS_GANADORES.find((x) => x.id === ronda);
-    if (!r) return null;
-    /* La etapa 2 de cada ronda: si la medida actúa directo o por rebote. */
-    if (quien === "directo") return `¿Directo o indirecto? — ${r.medida}`;
-    return r.personajes.find((x) => x.id === quien)?.nombre ?? null;
-  },
-
-  "arma-grupo-logico": (id) => {
-    const [caso, casilla] = String(id).split(":");
-    const c = CASOS_CADENA.find((x) => x.id === caso);
-    const k = CASILLAS.find((x) => x.id === casilla);
-    return c && k ? `${k.nombre} — caso ${c.titulo}` : null;
-  },
-
-  "simulador-de-crisis": (id) => {
-    const [caso, ranura] = String(id).split(":");
-    const c = CASOS_CRISIS.find((x) => x.id === caso);
-    const nombre = NOMBRES_RANURA[ranura];
-    return c && nombre ? `${nombre} — ${c.titulo ?? c.problema ?? caso}` : null;
-  },
-
   "asedio-estrategico": (id) => {
     const [caso, fuerza] = String(id).split(":");
     const c = CASOS_ASEDIO.find((x) => x.id === caso);
@@ -303,11 +239,6 @@ export const REGLAS = {
     return `${recortar(sinPrefijo(ha.texto, p), 40)} vs ${recortar(sinPrefijo(hb.texto, p), 40)}`;
   },
 
-  "diagnostico-en-vivo": (id) => {
-    if (id === "brecha") return PREGUNTA_BRECHA;
-    return porId(TITULARES, "texto")[id] ?? null;
-  },
-
   "expediente-rescate": (id) => (id === "diagnostico" ? PREGUNTA_RESCATE : null),
 
   "proyecto-arca": (id) => {
@@ -330,190 +261,20 @@ export const REGLAS = {
   },
 
   /*
-   * El Comité de NOVA, el segundo desafío. Mismo prefijo `etN:` y misma razón:
-   * son cuatro juegos dentro de una actividad, y sin él el panel no sabría de
-   * qué etapa viene una fila.
+   * ── Macroeconomía: sin reglas desde el 22-nov-2026 ──
+   *
+   * Aquí estaban las de Demanda Agregada, Política Económica, Política Fiscal
+   * y Política Monetaria. Salieron con sus bancos cuando Mateo mandó rehacer
+   * Macroeconomía desde cero (0258): sin el banco no hay de dónde leer, y esta
+   * lista no guarda copias. Las filas de fp_detalle de esos juegos siguen en
+   * el servidor; el panel las enseña con el id crudo, que es lo que hace con
+   * cualquier ítem sin regla. Para volver a nombrarlas, las reglas y sus
+   * bancos están en el commit de respaldo
+   * (orquestador/conocimiento/macro-2026/respaldo-retiro.md).
    */
-  "comite-nova": (id) => {
-    const [etapa, ...resto] = String(id).split(":");
-    const clave = resto.join(":");
-    if (etapa === "et1") return porId(COMUNICADOS, "texto")[clave] ?? null;
-    if (etapa === "et2") return porId(MEDIDAS_LINEA, "texto")[clave] ?? null;
-    if (etapa === "et3") {
-      /* `m1:gira` — la medida y cuál de sus dos preguntas. */
-      const [medidaId, fase] = clave.split(":");
-      const medida = MEDIDAS_INCIDENCIA.find((m) => m.id === medidaId);
-      if (!medida) return null;
-      return `${recortar(medida.titulo, 46)} · ${fase === "gira" ? "quién gira" : "quién lo soporta"}`;
-    }
-    if (etapa === "et4") {
-      /* `a:a1` — el escenario y su decisión. */
-      const [escenarioId, decisionId] = clave.split(":");
-      const escenario = ESCENARIOS.find((e) => e.id === escenarioId);
-      const decision = escenario?.decisiones.find((d) => d.id === decisionId);
-      if (!decision) return null;
-      return `${escenario.titulo} · ${recortar(decision.pregunta, 46)}`;
-    }
-    return null;
-  },
-
-  /* ── Demanda Agregada ── */
-  "electrocardiograma": (id) => {
-    const [tipo, resto] = String(id).split(":");
-    if (tipo === "def") return porId(TERMINOS_ECG, "nombre")[resto] ?? null;
-    if (tipo === "frag") return porId(FRAGMENTOS_ECG, "fragmento")[resto] ?? null;
-    return null;
-  },
-
-  "banco-transfusiones": (id) => {
-    const [ronda, paso] = String(id).split(":");
-    const p = PASOS_TRANSFUSION.find((x) => x.id === paso);
-    if (!p) return null;
-    const ayuda = ronda === "r2" ? "con fórmula" : ronda === "r3" ? "sin ayuda" : null;
-    return ayuda ? `${p.rotulo} — ${ayuda}` : null;
-  },
-
-  "biopsia-economica": (id) => {
-    const [, caso] = String(id).split(":");
-    return CASOS_BIOPSIA.find((x) => x.id === caso)?.caso ?? null;
-  },
-
-  "triage-emergencias": (id) => {
-    const [caso, duelo] = String(id).split(":");
-    const c = CASOS_TRIAGE.find((x) => x.id === caso);
-    const d = c?.duelos.find((x) => x.id === duelo);
-    return c && d ? `${c.medidas[d.par[0]]} vs ${c.medidas[d.par[1]]}` : null;
-  },
-
-  "cirugia-reconstruccion": (id) => {
-    const [caso, papel] = String(id).split(":");
-    const c = CASOS_CIRUGIA.find((x) => x.id === caso);
-    if (!c || (papel !== "primero" && papel !== "segundo")) return null;
-    const orden = papel === "primero" ? "Primer orden" : "Segundo orden";
-    return `${orden} — ${c.caso}`;
-  },
-
-  /* ── Política Fiscal ── */
-  "clasificador-tesoro": (id) => porId(CLASIFICADOR, "concepto")[id] ?? null,
-  "directos-indirectos": (id) => porId(IMPUESTOS_SELLO, "concepto")[id] ?? null,
-  "deficit-vs-deuda": (id) => porId(BANCO_DEFICIT, "texto")[id] ?? null,
-
-  "flujo-de-caja": (id) => {
-    /* `canal:<medida>` en la etapa 1; `multiplicador`, la etapa 2. */
-    if (id === "multiplicador") return PREGUNTA_MULTIPLICADOR;
-    const [etapa, medida] = String(id).split(":");
-    return etapa === "canal" ? porId(MEDIDAS_FLUJO, "medida")[medida] ?? null : null;
-  },
-
-  "agujero-fiscal": (id) => (id === "por-que-renta" ? PREGUNTA_AGUJERO : null),
-
-  "expansiva-contractiva": (id) => {
-    const [caso, duelo] = String(id).split(":");
-    const c = CASOS_EXPANSIVA.find((x) => x.id === caso);
-    const d = c?.duelos.find((x) => x.id === duelo);
-    if (!c || !d) return null;
-    /* Mismo tratamiento que los otros duelos: cada lado por su cuenta. */
-    const [a, b] = d.par.map((letra) => c.medidas[letra]);
-    const p = prefijoComun([a, b]);
-    return `${recortar(sinPrefijo(a, p), 33)} vs ${recortar(sinPrefijo(b, p), 33)}`;
-  },
-
-  "disena-presupuesto": (id) => CASILLAS_PRESUPUESTO.find((x) => x.id === id)?.ayuda ?? null,
-
-  /* ── Los quince de la 0030 ── */
-  /* Memorama: el ítem es la pareja, y la pareja se lee como término y definición. */
-  "memorama-tesoro": (id) => pareja("memorama-tesoro", id),
-  "memorama-corazon": (id) => pareja("memorama-corazon", id),
-  "memorama-tesoreria": (id) => pareja("memorama-tesoreria", id),
-
-  "que-rama-es": (id) => porId(CLASIFICACIONES["que-rama-es"].items, "texto")[id] ?? null,
-  "cual-componente": (id) => porId(CLASIFICACIONES["cual-componente"].items, "texto")[id] ?? null,
-  "cobra-gasta-o-pide": (id) => porId(CLASIFICACIONES["cobra-gasta-o-pide"].items, "texto")[id] ?? null,
-
-  "se-acerca-o-se-aleja": (id) => {
-    const f = CAMBIOS_ACERCA.find((x) => x.id === id);
-    /* El cambio recortado deja sitio al objetivo: sin él, la fila no dice la pregunta. */
-    return f ? `${recortar(f.cambio, 36)} → ${f.objetivo}` : null;
-  },
-
-  "expediente-gabinete": (id) => (id === CASO_GABINETE.id ? CASO_GABINETE.pregunta : null),
-
-  "consejo-ministros": (id) => {
-    const d = CASO_CONSEJO.duelos.find((x) => x.id === id);
-    if (!d) return null;
-    const [a, b] = d.par.map((letra) => CASO_CONSEJO.medidas[letra]);
-    const p = prefijoComun([a, b]);
-    return `${recortar(sinPrefijo(a, p), 33)} vs ${recortar(sinPrefijo(b, p), 33)}`;
-  },
-
-  /* El reparto de actores: `<ronda>:<personaje>`, como ¿Quién gana, quién pierde? */
-  "quien-beneficia-auge": (id) => actorDe(RONDAS_AUGE, id),
-  "quien-afecta-ajuste": (id) => actorDe(RONDAS_AJUSTE, id),
-
-  "explica-paciente": (id) => porId(EXPLICA_PACIENTE.fragmentos, "texto")[id] ?? null,
-  "explica-contribuyente": (id) => porId(EXPLICA_CONTRIBUYENTE.fragmentos, "texto")[id] ?? null,
-
-  /* La frontera: cada uno de los catorce datos, relevante o señuelo. */
-  "sala-espera-llena": (id) => porId([...SALA_ESPERA.relevantes, ...SALA_ESPERA.senuelos], "texto")[id] ?? null,
-  "comite-presupuesto": (id) => porId([...COMITE_PRESUPUESTO.relevantes, ...COMITE_PRESUPUESTO.senuelos], "texto")[id] ?? null,
 };
 
-/* ── Política Monetaria (0031) ── */
 Object.assign(REGLAS, {
-  "memorama-banco-central": (id) => {
-    const p = MEMORAMA_BANCO_CENTRAL.pares.find((x) => x.id === id);
-    return p ? `${p.termino} — ${p.definicion}` : null;
-  },
-  "quien-decide-esto": (id) => porId(QUIEN_DECIDE.items, "texto")[id] ?? null,
-  "volante-de-la-tasa": (id) => porId(VOLANTE_DE_LA_TASA.escenarios, "texto")[id] ?? null,
-  "caja-de-herramientas": (id) => porId(CAJA_DE_HERRAMIENTAS.items, "texto")[id] ?? null,
-  "a-quien-le-pega-la-tasa": (id) => actorDe(A_QUIEN_LE_PEGA.rondas, id),
-  /* `<cadena>:eslabon-N`: el eslabón que va en esa casilla de esa cadena. */
-  "cadena-de-transmision": (id) => {
-    const [cadena, casilla] = String(id).split(":");
-    const c = CADENAS_TRANSMISION.cadenas.find((x) => x.id === cadena);
-    const n = Number(/^eslabon-(\d)$/.exec(casilla ?? "")?.[1]);
-    return c && n >= 2 && n <= c.eslabones.length ? c.eslabones[n - 1].texto : null;
-  },
-  "explicaselo-a-un-deudor": (id) => porId(EXPLICA_DEUDOR.escenarios.flatMap((e) => e.fragmentos), "texto")[id] ?? null,
-  "corriente-de-decisiones": (id) => porId(CORRIENTE_DECISIONES.items, "texto")[id] ?? null,
-  /* Las dos nuevas: cada ítem es su eslabón o su pregunta, por id. */
-  "por-cual-arteria-entra": (id) => porId(ESLABONES_ARTERIA, "texto")[id] ?? null,
-  "las-dos-entradas": (id) => porId(PREGUNTAS_DOS_ENTRADAS, "texto")[id] ?? null,
-  "crea-o-cambia-de-manos": (id) => hechoDeItemCreaOCambia(id),
-  "la-escalera-del-encaje": (id) => casillaDeItemEscalera(id),
-  /*
-   * Los tres instrumentos (Célula A). El id es «caso:decision», y la etiqueta,
-   * el caso y el rótulo corto de la decisión: sin el caso, las tres lecturas
-   * de Aurora y Sierra se leerían igual en la tabla del profesor.
-   */
-  "la-tasa-que-muerde": (id) => etiquetaDeInstrumento("la-tasa-que-muerde", id),
-  "repo-o-definitiva": (id) => etiquetaDeInstrumento("repo-o-definitiva", id),
-  "el-freno-del-encaje": (id) => etiquetaDeInstrumento("el-freno-del-encaje", id),
-  "en-que-talla-va": (id) => porId(EN_QUE_TALLA_VA.items, "texto")[id] ?? null,
-  "que-toco-el-banco": (id) => porId(QUE_TOCO_EL_BANCO.items, "texto")[id] ?? null,
-  "el-rezago": (id) => {
-    if (id === "cierre") return EL_REZAGO.cierre.pregunta;
-    const [caso, hecho] = String(id).split(":");
-    return EL_REZAGO.casos.find((x) => x.id === caso)?.hechos.find((h) => h.id === hecho)?.texto ?? null;
-  },
-  "dilema-banquero-central": (id) => (id === DILEMA_BANQUERO.id ? DILEMA_BANQUERO.pregunta : null),
-  "duelo-de-instrumentos": (id) => {
-    const [caso, duelo] = String(id).split(":");
-    const c = DUELO_INSTRUMENTOS.casos.find((x) => x.id === caso);
-    const d = c?.duelos.find((x) => x.id === duelo);
-    if (!c || !d) return null;
-    const [a, b] = d.par.map((letra) => c.medidas[letra]);
-    const p = prefijoComun([a, b]);
-    return `${recortar(sinPrefijo(a, p), 33)} vs ${recortar(sinPrefijo(b, p), 33)}`;
-  },
-  "disena-respuesta-monetaria": (id) => {
-    const [caso, casilla] = String(id).split(":");
-    const c = DISENA_RESPUESTA.casos.find((x) => x.id === caso);
-    const k = CASILLAS_RESPUESTA.find((x) => x.id === casilla);
-    return c && k ? `${k.rotulo} — ${c.caso}` : null;
-  },
-
   /*
    * ═══════════ CONTABILIDAD · LAS CUENTAS, EL DEBE Y EL HABER ═══════════
    *
@@ -850,16 +611,6 @@ REGLAS["repaso-diario"] = (id) => {
 
 /* El de Contabilidad (0152) guarda su detalle igual: la misma lectura. */
 REGLAS["repaso-diario-contabilidad"] = REGLAS["repaso-diario"];
-
-function pareja(memorama, id) {
-  const p = MEMORAMAS[memorama].pares.find((x) => x.id === id);
-  return p ? `${p.termino} — ${p.definicion}` : null;
-}
-
-function actorDe(rondas, id) {
-  const [ronda, quien] = String(id).split(":");
-  return rondas.find((r) => r.id === ronda)?.personajes.find((p) => p.id === quien)?.nombre ?? null;
-}
 
 /** Corta por palabras, sin partir una a la mitad. */
 export function recortar(texto, tope = 70) {
