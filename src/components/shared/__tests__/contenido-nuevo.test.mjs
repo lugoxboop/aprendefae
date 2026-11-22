@@ -49,7 +49,19 @@ const { default: TopicSplitCard } = await import("../../TopicSplitCard.jsx");
 const { SUBJECTS, HACER, actividadesDeTipo } = await import("../../../data/subjects.js");
 const { nodosDe } = await import("../../../hacer/completadas.js");
 
-const MACRO = SUBJECTS.macroeconomia;
+/*
+ * LOS TEMAS DE PRUEBA. Hasta el 22-nov-2026 eran los cuatro de Macroeconomía,
+ * que salieron con la materia (0258). El gancho sigue encendido para Macro
+ * (MATERIAS_CON_GANCHO), que es donde lo usará el Macro nuevo, y su lógica no
+ * mira el catálogo: compara materia, tema e ids como texto. Así que los temas
+ * de prueba son temas de Macro inventados que toman prestadas las actividades
+ * de cuatro temas de Contabilidad, para que el camino y la tarjeta se monten
+ * con nodos y datos reales.
+ */
+const MACRO = {
+  topics: ["introduccion-contabilidad", "cuentas-debe-haber", "ingresos-gastos-y-caja", "efectivo-caja-menor-bancos"]
+    .map((id, k) => ({ ...SUBJECTS.contabilidad.topics.find((t) => t.id === id), id: ["politica-monetaria", "politica-fiscal", "politica-economica", "demanda-agregada"][k] })),
+};
 const MONETARIA = MACRO.topics.find((t) => t.id === "politica-monetaria");
 const idsHacer = (tema) => actividadesDeTipo(tema, HACER).map((a) => a.id);
 const [A, B] = idsHacer(MONETARIA);
@@ -241,7 +253,7 @@ test("★★★ tocar el nodo sin pulsar «Empezar» no cambia la cuenta; pulsar
   });
 });
 
-test("★★★ con el registro forzado a fallar, «Empezar» abre la actividad igual en los 4 temas de Macro", async () => {
+test("★★★ con el registro forzado a fallar, «Empezar» abre la actividad igual en los 4 temas de prueba", async () => {
   const temas = MACRO.topics.filter((t) => idsHacer(t).length > 0);
   assert.equal(temas.length, 4);
   for (const modo of ["almacen", "codigo"]) {

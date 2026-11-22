@@ -175,29 +175,11 @@ test("★★ avance: toda actividad que suma el ítem cerrado le pasa `enCurso`,
   assert.deepEqual(faltan, [], "hay avances que saltan al siguiente ítem al cerrar el actual");
 });
 
-test("★★★ memorama: el contador cuenta las parejas encontradas — «Parejas 0 de N» y sube de a una", async () => {
-  const Memorama = (await import("../bloques/Memorama.jsx")).default;
-  const pares = [
-    { id: "p1", termino: "Uno-T", definicion: "Uno-D" },
-    { id: "p2", termino: "Dos-T", definicion: "Dos-D" },
-    { id: "p3", termino: "Tres-T", definicion: "Tres-D" },
-  ];
-  const Marco = ({ children }) => React.createElement("div", null, children);
-  const m = montar(React.createElement(Memorama, { pares, Marco, onCompletar: () => {} }));
-  try {
-    const rotulo = () => m.caja.querySelector("[data-avance]").textContent.trim();
-    const carta = (texto) => [...m.caja.querySelectorAll("button")].find((b) => b.textContent.includes(texto));
-    const tocar = (b) => act(() => { b.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
-    assert.equal(rotulo(), "Parejas 0 de 3", "al empezar no cuenta desde 0");
-    for (const [k, p] of pares.entries()) {
-      tocar(carta(p.termino));
-      tocar(carta(p.definicion));
-      assert.equal(rotulo(), `Parejas ${k + 1} de 3`, `tras la pareja ${k + 1} el contador no subió de a una`);
-    }
-  } finally {
-    m.desmontar();
-  }
-});
+/*
+ * Aquí estaba la prueba del contador del Memorama («Parejas 0 de N»). El
+ * Memorama era solo de Macroeconomía y salió con la materia el 22-nov-2026
+ * (0258); su excepción, la de arriba, queda sin nadie que la use.
+ */
 
 /* ─────────────────────────────── La opción ─────────────────────────────── */
 
@@ -251,41 +233,13 @@ test("opción: la buena que no se eligió va en anillo teal, sin llenar y con «
 
 /* ─────────────────────────── Las pantallas ─────────────────────────── */
 
-/* Las 36 actividades que usan el avance o la opción compartidos —con el Repaso Diario, 37 pantallas—: la lista del reporte. */
-const PANTALLAS = [
-  ["bloques/cimientos.jsx", ["MemoramaTesoro", "MemoramaCorazon", "MemoramaTesoreria", "QueRamaEs", "CualComponente", "CobraGastaOPide"]],
-  ["bloques/avanzados.jsx", ["SeAcerca", "ExpedienteGabinete", "ConsejoMinistros", "QuienBeneficiaAuge", "QuienAfectaAjuste"]],
-  ["maquinas/actividades.jsx", [
-    "MemoramaBancoCentral", "QuienDecideEsto", "VolanteDeLaTasa", "CajaDeHerramientas", "AQuienLePegaLaTasa", "CadenaDeTransmision",
-    "CorrienteDeDecisiones", "ElRezago", "DilemaBanqueroCentral", "DueloDeInstrumentos", "DisenaRespuestaMonetaria",
-  ]],
-  ["maquinas/instrumentosPM.jsx", ["LaTasaQueMuerde", "RepoODefinitiva", "ElFrenoDelEncaje"]],
-  ["corazon/BancoTransfusiones.jsx", ["default"]], ["corazon/Biopsia.jsx", ["default"]], ["corazon/Cirugia.jsx", ["default"]],
-  ["corazon/Electrocardiograma.jsx", ["default"]], ["corazon/SalaMonitores.jsx", ["default"]], ["corazon/Termometro.jsx", ["default"]],
-  ["corazon/Triage.jsx", ["default"]],
-  ["tesoreria/AgujeroFiscal.jsx", ["default"]], ["tesoreria/ClasificadorTesoro.jsx", ["default"]], ["tesoreria/DeficitVsDeuda.jsx", ["default"]],
-  ["tesoreria/DirectosIndirectos.jsx", ["default"]], ["tesoreria/DisenaPresupuesto.jsx", ["default"]],
-  ["tesoreria/ExpansivaContractiva.jsx", ["default"]], ["tesoreria/FlujoDeCaja.jsx", ["default"]],
-];
-
-test("antes de responder, ninguna de las pantallas enseña coral: ni marcos, ni rótulos, ni bandejas, ni líneas", async () => {
-  let n = 0;
-  for (const [ruta, nombres] of PANTALLAS) {
-    const modulo = await import(`../${ruta}`);
-    for (const nombre of nombres) {
-      const m = montar(React.createElement(modulo[nombre], { onCompletar: () => {} }));
-      try {
-        const html = m.caja.innerHTML;
-        const trozo = html.match(CORAL);
-        assert.equal(trozo, null, `${ruta} · ${nombre}: coral antes de responder, cerca de «${trozo ? html.slice(Math.max(0, trozo.index - 120), trozo.index + 20) : ""}»`);
-        n++;
-      } finally {
-        m.desmontar();
-      }
-    }
-  }
-  assert.equal(n, 39);
-});
+/*
+ * Aquí estaba la lista de las 36 pantallas de Macroeconomía que usaban el
+ * avance o la opción compartidos, y la prueba que las montaba una a una para
+ * comprobar que ninguna enseñaba coral antes de responder. Salieron con la
+ * materia el 22-nov-2026 (0258). La prueba del Repaso Diario, más abajo, sigue
+ * guardando lo mismo en la pantalla que queda.
+ */
 
 test("ninguna pantalla lleva su propia copia del avance o de la opción", () => {
   const raiz = new URL("../../", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1");
@@ -304,12 +258,14 @@ test("ninguna pantalla lleva su propia copia del avance o de la opción", () => 
 
 test("Repaso Diario: después de fallar, el coral está SOLO en la opción incorrecta y en su devolución", async () => {
   const { default: PartidaRepaso } = await import("../../repaso/PartidaRepaso.jsx");
-  const { POOL } = await import("../../../repaso/items.js");
-  const item = POOL.find((x) => x.clave === "sala-monitores:hospital");
+  /* Era un ítem del Repaso de Macro, retirado en la 0258; ahora, el primero del de Contabilidad. */
+  const { POOL_CONTABILIDAD } = await import("../../../repaso/contabilidad/index.js");
+  const item = POOL_CONTABILIDAD[0];
+  const textoMalo = item.opciones.find((o) => o.id !== item.correcta).texto;
   const m = montar(React.createElement(PartidaRepaso, { items: [item], historial: new Map(), onTerminar: () => {} }));
   try {
     assert.doesNotMatch(m.caja.innerHTML, CORAL, "antes de responder, nada");
-    const mala = [...m.caja.querySelectorAll("button")].find((b) => b.textContent.includes("Inversión"));
+    const mala = [...m.caja.querySelectorAll("button")].find((b) => b.textContent.trim().endsWith(textoMalo));
     act(() => { mala.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
 
     const conCoral = [...m.caja.querySelectorAll("*")].filter((el) =>
@@ -321,7 +277,9 @@ test("Repaso Diario: después de fallar, el coral está SOLO en la opción incor
       assert.ok(enLaIncorrecta || enLaDevolucion, `coral fuera del error: <${el.tagName.toLowerCase()}> ${el.textContent.slice(0, 40)}`);
     }
     /* Y la explicación va junto al veredicto. */
-    assert.ok(m.caja.querySelector('p[role="status"]').textContent.includes("Esto afecta Gasto público, no Inversión."));
+    const retro = item.devolucion(item.opciones.find((o) => o.texto === textoMalo).id).find((b) => b.tipo === "retro");
+    assert.ok(retro, "la opción incorrecta trae su devolución");
+    assert.ok(m.caja.querySelector('p[role="status"]').textContent.includes(retro.texto.slice(2).trim()));
     assert.equal(m.caja.querySelectorAll('[data-estado="revelada"]').length, 1, "la buena, señalada en teal");
   } finally {
     m.desmontar();
@@ -333,12 +291,8 @@ test("ningún marco ni rótulo de estas pantallas declara un acento coral, tampo
    * El render de arriba solo ve la primera ronda. El Banco de transfusiones,
    * por ejemplo, cambia de acento en la ronda sin ayuda: eso solo lo ve el código.
    */
-  const archivos = [
-    ...new Set(PANTALLAS.map(([ruta]) => ruta)),
-    "bloques/CasoUnico.jsx", "bloques/DuelosRanking.jsx", "bloques/Memorama.jsx", "bloques/PrimeraClasificacion.jsx",
-    "bloques/RolDeActores.jsx", "bloques/SeAcercaOSeAleja.jsx", "maquinas/CasillasEnOrden.jsx", "maquinas/LineaDeTiempo.jsx",
-    "maquinas/PrediccionTasa.jsx", "../repaso/PartidaRepaso.jsx",
-  ];
+  /* Las pantallas de Macroeconomía que estaban aquí salieron con la materia (0258). */
+  const archivos = ["../repaso/PartidaRepaso.jsx"];
   const culpables = archivos.filter((ruta) =>
     /acento=\{[^}]*(FAE\.coral|#E76F51)/i.test(readFileSync(new URL(`../${ruta}`, import.meta.url), "utf8")));
   assert.deepEqual(culpables, []);

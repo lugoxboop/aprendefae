@@ -103,7 +103,8 @@ test("★★★ interruptor por materia: encendido en Contabilidad y Macroeconom
   assert.equal(R.pantallaResumenEncendida("macroeconomia"), true);
   assert.equal(R.pantallaResumenEncendida("pensamiento-estrategico"), false, "una materia que no está en la lista debe quedar apagada");
   assert.equal(R.pantallaResumenEncendida("inventada"), false);
-  assert.equal(R.usaPantallaResumen("macroeconomia", "cual-componente"), true);
+  /* Una actividad cualquiera del Macro nuevo, que aún no existe: la línea está encendida. */
+  assert.equal(R.usaPantallaResumen("macroeconomia", "una-actividad-de-macro"), true);
   /* Una línea por materia: apagarla es poner su línea en false. */
   const fuente = readFileSync(new URL("../../../hacer/pantallaResumen.js", import.meta.url), "utf8");
   assert.match(fuente, /^  macroeconomia: true,$/m);
@@ -112,10 +113,9 @@ test("★★★ interruptor por materia: encendido en Contabilidad y Macroeconom
   assert.equal(R.usaPantallaResumen("contabilidad", "t1-desde-donde-preguntan"), true);
 });
 
-test("★★ las seis actividades con panel propio no cambian, aunque su materia esté encendida", () => {
-  assert.deepEqual([...R.CON_PANEL_PROPIO].sort(), [
-    "ciclo-completo", "comite-nova", "memorama-banco-central", "memorama-corazon", "memorama-tesoreria", "memorama-tesoro",
-  ]);
+test("★★ la actividad con panel propio no cambia, aunque su materia esté encendida", () => {
+  /* Eran seis; las cinco de Macroeconomía salieron con la materia el 22-nov-2026 (0258). */
+  assert.deepEqual([...R.CON_PANEL_PROPIO].sort(), ["ciclo-completo"]);
   assert.equal(R.usaPantallaResumen("contabilidad", "ciclo-completo"), false);
 });
 
@@ -769,45 +769,45 @@ test("★★★ los puntos de la pantalla son siempre los del aviso de FP, y la 
   }
 }));
 
-test("★★★ ninguna de las 55 actividades de Macroeconomía queda sin formato", () => {
+test("★★★ ninguna actividad de Macroeconomía queda sin formato", () => {
+  /*
+   * Eran 58, cada una con su formato fijo. Salieron con la materia el
+   * 22-nov-2026 (0258) y hoy no hay ninguna: la prueba queda para el Macro
+   * nuevo, que tendrá que declarar el formato de cada actividad que añada.
+   */
   const ids = SUBJECTS.macroeconomia.topics.flatMap((t) => (t.actividades ?? t.activities ?? [])
     .filter((a) => a.clasificacion?.tipo === HACER).map((a) => a.id));
-  assert.equal(ids.length, 58, `hay ${ids.length} actividades de Hacer en Macro`);
   const validos = new Set(Object.values(R.FORMATO));
   for (const id of ids) {
     assert.ok(validos.has(R.FORMATO_MACRO[id]), `${id} no tiene formato`);
     assert.equal(R.formatoDe(id), R.FORMATO_MACRO[id]);
   }
   assert.deepEqual(Object.keys(R.FORMATO_MACRO).sort(), [...ids].sort(), "hay formatos para actividades que no existen");
-  /* Los cinco paneles propios de Macro, como tales. */
-  for (const id of ["memorama-corazon", "memorama-tesoro", "memorama-tesoreria", "memorama-banco-central", "comite-nova"]) {
-    assert.equal(R.FORMATO_MACRO[id], R.FORMATO.PANEL_PROPIO, id);
-  }
-  assert.equal(R.FORMATO_MACRO["tablero-decisiones"], R.FORMATO.PORCENTAJE);
 });
 
-test("★★★ las 6 actividades con panel propio no cambian: sin pantalla, sin partida y con su aviso", async () => {
+test("★★★ la actividad con panel propio no cambia: sin pantalla, sin partida y con su aviso", async () => {
   for (const id of R.CON_PANEL_PROPIO) {
     assert.equal(R.usaPantallaResumen("macroeconomia", id), false, id);
     assert.equal(R.usaPantallaResumen("contabilidad", id), false, id);
   }
   /* Su registro pasa tal cual, y el aviso sale como siempre. */
   let resumen = null;
-  function Arnes() { resumen = useResumenDePartida("macroeconomia", false); return h(AvisoFP); }
+  /* Era el Memorama de Macro, retirado en la 0258; ahora, El ciclo completo de Contabilidad. */
+  function Arnes() { resumen = useResumenDePartida("contabilidad", false); return h(AvisoFP); }
   const m = montar(h(AuthContext.Provider, { value: CON_CUENTA }, h(Arnes)));
   try {
     await act(async () => {
-      await resumen.registrar({ actividadId: "memorama-corazon", clasificacion: CLAS_EXPLORATORIA, pct: 100, detalle: filas(4, 0) }, async () => {
-        emitirFP({ fp: 10, repetida: false, actividadId: "memorama-corazon", materiaId: "macroeconomia" });
+      await resumen.registrar({ actividadId: "ciclo-completo", clasificacion: CLAS_EXPLORATORIA, pct: 100, detalle: filas(4, 0) }, async () => {
+        emitirFP({ fp: 10, repetida: false, actividadId: "ciclo-completo", materiaId: "contabilidad" });
         return { ok: true, fp: 10 };
       });
     });
-    assert.equal(resumen.contexto("memorama-corazon", () => {}).activa, false);
-    assert.equal(resumen.contexto("memorama-corazon", () => {}).partida, null);
+    assert.equal(resumen.contexto("ciclo-completo", () => {}).activa, false);
+    assert.equal(resumen.contexto("ciclo-completo", () => {}).partida, null);
     assert.ok(m.caja.textContent.includes("+10 FP"));
   } finally { m.desmontar(); }
   /* Ninguno de sus cierres pasa por la pantalla: no usan el envoltorio. */
-  for (const archivo of ["../../mecanicas/bloques/Memorama.jsx", "../../mecanicas/libros/ciclo/ElCicloCompleto.jsx"]) {
+  for (const archivo of ["../../mecanicas/libros/ciclo/ElCicloCompleto.jsx"]) {
     const fuente = readFileSync(new URL(archivo, import.meta.url), "utf8");
     assert.doesNotMatch(fuente, /CierreConResumen/, archivo);
   }

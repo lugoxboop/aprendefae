@@ -25,6 +25,16 @@ import { JSDOM, VirtualConsole } from "jsdom";
  * scripts/temas/capturas-camino.mjs. Desde aquí, la foto vuelve a ser la
  * prueba de que nada más cambia sin querer.
  *
+ * EL 22-NOV-2026 SALIERON DE LA FOTO LAS VARIANTES DE MACROECONOMÍA, y no se
+ * rehízo a ojo: la materia se retiró entera (0258) y sus temas ya no tienen
+ * camino. Las 18 de Pensamiento Estratégico se volvieron a pesar CONTRA EL
+ * CaminoHacer DE MAIN (d3716a5d, con CAMINO_MODULO), no contra el de la rama.
+ * Doce huellas cambiaron solo porque los ids de los degradados salen de
+ * useId, que cuenta las raíces montadas antes: sin las 24 variantes de Macro
+ * delante, el contador empieza en otro número («r0» en vez de «rg7»).
+ * Comprobado con el HTML de una variante, idéntico salvo esos ids. Y el
+ * CaminoHacer de la rama da las mismas 18 huellas que el de main.
+ *
  * Antes de eso la foto no se había rehecho nunca desde que se tomó de main. Lo que entra
  * encima del camino —la decoración, Fae, la entrada— se RECORTA antes de
  * pesar en vez de rehacerse, y por eso las 42 huellas siguen siendo la
@@ -70,7 +80,7 @@ const { nodosDe } = await import("../../../hacer/completadas.js");
 
 const FOTO = new URL("./camino-sin-cambios.foto.json", import.meta.url);
 
-/* Todas las variantes de cada tema de Macro y Pensamiento Estratégico. */
+/* Todas las variantes de cada tema de Macro y Pensamiento Estratégico (Macro, hoy sin temas). */
 function casos() {
   const lista = [];
   for (const materia of ["macroeconomia", "pensamiento-estrategico"]) {
@@ -216,7 +226,8 @@ async function fotografiar({ props }) {
 
 test("★★★ el camino de Macro y de Pensamiento Estratégico es idéntico al de main (cada nodo y su ventana previa)", async () => {
   const lista = casos();
-  assert.ok(lista.length >= 40, `solo ${lista.length} variantes`);
+  /* Seis variantes por cada uno de los tres temas de Pensamiento Estratégico; Macro, retirada, no aporta. */
+  assert.ok(lista.length >= 18, `solo ${lista.length} variantes`);
   const ahora = {};
   for (const c of lista) ahora[c.nombre] = huella(await fotografiar(c));
   if (process.env.FOTO === "escribir") {

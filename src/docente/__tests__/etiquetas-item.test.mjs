@@ -4,34 +4,17 @@ import assert from "node:assert/strict";
 import { SUBJECTS, HACER, actividadesDeTipo, desafioDe, nombreDeActividad } from "../../data/subjects.js";
 import { etiquetaDeItem, hayReglaPara, recortar, prefijoComun, REGLAS } from "../etiquetasItem.js";
 
-import { RONDAS_GANADORES, BANCO_CORRIENTE, ESCENARIOS_EXPLICA, CASOS_CRISIS, RANURAS_CRISIS } from "../../data/juegosPolitica2.js";
-import { CASILLAS, CASOS_CADENA, TITULARES } from "../../data/juegosPolitica.js";
 import {
   BLIPS_RADAR, DEFINICIONES, FRAGMENTOS_TRANSMISION, CORRIENTE, RANURAS, ORDEN_TRIBUNAL,
 } from "../../data/icebergActividades.js";
 import { CITAS_EXPEDIENTE, NIVELES, ORDEN_DECISIONES } from "../../data/arca.js";
 import { FUERZAS, CASOS as CASOS_ASEDIO } from "../../data/asedio.js";
 import { REFERENCIA, clave } from "../../components/mecanicas/MapaCausal.jsx";
-import {
-  TERMINOS_ECG, FRAGMENTOS_ECG, REACCIONES, PASOS_TRANSFUSION,
-  CASOS_BIOPSIA, CASOS_TRIAGE, CASOS_CIRUGIA, ALERTAS_MONITOR,
-} from "../../data/demandaAgregadaHacer.js";
 import { parejasDe } from "../../utils/orden.js";
-import {
-  CLASIFICADOR, IMPUESTOS_SELLO, MEDIDAS_FLUJO, CASOS_EXPANSIVA, CASILLAS_PRESUPUESTO, BANCO_DEFICIT,
-} from "../../data/politicaFiscal.js";
-import { MEMORAMAS, CLASIFICACIONES } from "../../data/cimientos.js";
-import * as PM from "../../data/politicaMonetaria.js";
-import * as PMI from "../../data/pmInstrumentos.js";
 import * as CU from "../../contabilidad/bancos.js";
 import * as CUA from "../../data/contabilidadActividades.js";
 import { transaccionesDe, renglonesDe } from "../../components/mecanicas/libros/LaMayorizacion.jsx";
 import { mayorConSaldos } from "../../data/contabilidad.js";
-import {
-  CAMBIOS_ACERCA, CASO_GABINETE, CASO_CONSEJO, RONDAS_AUGE, RONDAS_AJUSTE,
-  EXPLICA_PACIENTE, EXPLICA_CONTRIBUYENTE, SALA_ESPERA, COMITE_PRESUPUESTO,
-} from "../../data/bloquesAvanzados.js";
-
 /*
  * ═══════════════════════════════════════════════════════════════════════════
  * QUE TODO ITEM SE PUEDA NOMBRAR, Y QUE NINGUNA ACTIVIDAD SE QUEDE SIN REGLA.
@@ -66,31 +49,25 @@ import {
  * Los ids que cada actividad puede emitir, derivados de sus bancos igual que en
  * detalle-ids.test.mjs.
  */
+/*
+ * Desde el 22-nov-2026 no hay ids de Macroeconomía aquí: la materia se retiró
+ * entera (0258) y sus bancos salieron con ella. El Macro nuevo añade aquí los
+ * suyos cuando tenga actividades.
+ */
 const IDS = {
-  "corriente-titulares": BANCO_CORRIENTE.map((x) => x.id),
   "corriente-cruzada": CORRIENTE.map((x) => x.id),
   "radar-profundidad": BLIPS_RADAR.map((b) => b.id),
-  "sala-monitores": ALERTAS_MONITOR.map((a) => a.id),
-  "termometro-reacciones": REACCIONES.map((r) => r.id),
   "transmision-superficie": FRAGMENTOS_TRANSMISION.map((f) => f.id),
-  "explica-la-politica": ESCENARIOS_EXPLICA.flatMap((e) => (e.fragmentos ?? e.banco ?? []).map((f) => f.id)),
   "camara-presion": DEFINICIONES.map((d) => d.termino),
   "camara-presion-experto": DEFINICIONES.map((d) => d.termino),
   "arquitecto-profundidades": [...RANURAS],
 
-  "quien-gana-quien-pierde": RONDAS_GANADORES.flatMap((r) => [
-    ...r.personajes.map((p) => `${r.id}:${p.id}`),
-    `${r.id}:directo`,
-  ]),
-  "arma-grupo-logico": CASOS_CADENA.flatMap((c) => CASILLAS.map((k) => `${c.id}:${k.id}`)),
-  "simulador-de-crisis": CASOS_CRISIS.flatMap((c) => RANURAS_CRISIS.map((r) => `${c.id}:${r}`)),
   "asedio-estrategico": CASOS_ASEDIO.flatMap((c) => FUERZAS.map((f) => `${c.id}:${f.id}`)),
   "constructor-mapa-causal": REFERENCIA.map((c) => `ref:${clave(c.de, c.a)}`),
   "tribunal-profundidad": [
     ...parejasDe(ORDEN_TRIBUNAL).map(([a, b]) => `par:${a}-${b}`),
     "criterio",
   ],
-  "diagnostico-en-vivo": [...TITULARES.map((t) => t.id), "brecha"],
   "expediente-rescate": ["diagnostico"],
   "proyecto-arca": [
     ...CITAS_EXPEDIENTE.map((c) => `et1:${c.id}`),
@@ -98,55 +75,6 @@ const IDS = {
     ...parejasDe(ORDEN_DECISIONES).map(([a, b]) => `et3:par:${a}-${b}`),
     "et4:momento",
   ],
-
-  "electrocardiograma": [
-    ...TERMINOS_ECG.map((t) => `def:${t.id}`),
-    ...FRAGMENTOS_ECG.map((f) => `frag:${f.id}`),
-  ],
-  "banco-transfusiones": ["r2", "r3"].flatMap((r) => PASOS_TRANSFUSION.map((p) => `${r}:${p.id}`)),
-  "biopsia-economica": CASOS_BIOPSIA.map((c) => `biopsia:${c.id}`),
-  "triage-emergencias": CASOS_TRIAGE.flatMap((c) => c.duelos.map((d) => `${c.id}:${d.id}`)),
-  "cirugia-reconstruccion": CASOS_CIRUGIA.flatMap((c) => [`${c.id}:primero`, `${c.id}:segundo`]),
-
-  "clasificador-tesoro": CLASIFICADOR.map((t) => t.id),
-  "directos-indirectos": IMPUESTOS_SELLO.map((x) => x.id),
-  "flujo-de-caja": [...MEDIDAS_FLUJO.map((m) => `canal:${m.id}`), "multiplicador"],
-  "agujero-fiscal": ["por-que-renta"],
-  "expansiva-contractiva": CASOS_EXPANSIVA.flatMap((c) => c.duelos.map((d) => `${c.id}:${d.id}`)),
-  "disena-presupuesto": CASILLAS_PRESUPUESTO.map((c) => c.id),
-  "deficit-vs-deuda": BANCO_DEFICIT.map((x) => x.id),
-
-  /* Los quince de la 0030. */
-  ...Object.fromEntries(Object.entries(MEMORAMAS).map(([id, m]) => [id, m.pares.map((p) => p.id)])),
-  ...Object.fromEntries(Object.entries(CLASIFICACIONES).map(([id, b]) => [id, b.items.map((x) => x.id)])),
-  "se-acerca-o-se-aleja": CAMBIOS_ACERCA.map((f) => f.id),
-  "expediente-gabinete": [CASO_GABINETE.id],
-  "consejo-ministros": CASO_CONSEJO.duelos.map((d) => d.id),
-  "quien-beneficia-auge": RONDAS_AUGE.flatMap((r) => r.personajes.map((p) => `${r.id}:${p.id}`)),
-  "quien-afecta-ajuste": RONDAS_AJUSTE.flatMap((r) => r.personajes.map((p) => `${r.id}:${p.id}`)),
-  "explica-paciente": EXPLICA_PACIENTE.fragmentos.map((f) => f.id),
-  "explica-contribuyente": EXPLICA_CONTRIBUYENTE.fragmentos.map((f) => f.id),
-  "sala-espera-llena": [...SALA_ESPERA.relevantes, ...SALA_ESPERA.senuelos].map((d) => d.id),
-  "comite-presupuesto": [...COMITE_PRESUPUESTO.relevantes, ...COMITE_PRESUPUESTO.senuelos].map((d) => d.id),
-
-  /* Política Monetaria (0031) */
-  "memorama-banco-central": PM.MEMORAMA_BANCO_CENTRAL.pares.map((p) => p.id),
-  "quien-decide-esto": PM.QUIEN_DECIDE.items.map((x) => x.id),
-  "volante-de-la-tasa": PM.VOLANTE_DE_LA_TASA.escenarios.map((x) => x.id),
-  "caja-de-herramientas": PM.CAJA_DE_HERRAMIENTAS.items.map((x) => x.id),
-  "a-quien-le-pega-la-tasa": PM.A_QUIEN_LE_PEGA.rondas.flatMap((r) => r.personajes.map((p) => `${r.id}:${p.id}`)),
-  "cadena-de-transmision": PM.CADENAS_TRANSMISION.cadenas.flatMap((c) => c.eslabones.slice(1).map((_, k) => `${c.id}:eslabon-${k + 2}`)),
-  "explicaselo-a-un-deudor": PM.EXPLICA_DEUDOR.escenarios.flatMap((e) => e.fragmentos.map((f) => f.id)),
-  "corriente-de-decisiones": PM.CORRIENTE_DECISIONES.items.map((x) => x.id),
-  "el-rezago": [...PM.EL_REZAGO.casos.flatMap((c) => c.hechos.map((h) => `${c.id}:${h.id}`)), "cierre"],
-  "dilema-banquero-central": [PM.DILEMA_BANQUERO.id],
-  "duelo-de-instrumentos": PM.DUELO_INSTRUMENTOS.casos.flatMap((c) => c.duelos.map((d) => `${c.id}:${d.id}`)),
-  "disena-respuesta-monetaria": PM.DISENA_RESPUESTA.casos.flatMap((c) => PM.CASILLAS_RESPUESTA.map((k) => `${c.id}:${k.id}`)),
-
-  /* Política monetaria · los tres instrumentos (Célula A): «caso:decision». */
-  "la-tasa-que-muerde": PMI.itemsDe("la-tasa-que-muerde"),
-  "repo-o-definitiva": PMI.itemsDe("repo-o-definitiva"),
-  "el-freno-del-encaje": PMI.itemsDe("el-freno-del-encaje"),
 
   /*
    * Contabilidad · Las cuentas, el debe y el haber (0042). Las cinco que ya
@@ -318,11 +246,11 @@ test("el prefijo compartido se quita solo cuando vale la pena", () => {
 
 test("una actividad desconocida o un id raro devuelven null, no basura", () => {
   assert.equal(etiquetaDeItem("actividad-que-no-existe", "x"), null);
-  assert.equal(etiquetaDeItem("sala-monitores", "id-que-no-esta-en-el-banco"), null);
-  assert.equal(etiquetaDeItem("sala-monitores", null), null);
-  assert.equal(etiquetaDeItem("sala-monitores", undefined), null);
+  assert.equal(etiquetaDeItem("radar-profundidad", "id-que-no-esta-en-el-banco"), null);
+  assert.equal(etiquetaDeItem("radar-profundidad", null), null);
+  assert.equal(etiquetaDeItem("radar-profundidad", undefined), null);
   assert.equal(etiquetaDeItem("proyecto-arca", "et9:loquesea"), null);
-  assert.equal(etiquetaDeItem("banco-transfusiones", "r9:T"), null);
+  assert.equal(etiquetaDeItem("cu-izquierda-o-derecha", "id-que-no-esta-en-el-banco"), null);
 });
 
 test("el recorte no parte palabras y marca que cortó", () => {
@@ -360,6 +288,21 @@ const RETIRADAS_DE_CONTABILIDAD = [
   "t7-3-que-entra-al-costo",
 ];
 
+/*
+ * EL REPASO DIARIO DE MACRO (retirado en la 0258) conserva su regla por otra
+ * vía: es la misma función que usa el de Contabilidad (`REGLAS[
+ * "repaso-diario-contabilidad"] = REGLAS["repaso-diario"]`), que delega en la
+ * regla de la actividad de origen de cada ítem.
+ *
+ * LAS 58 DE MACROECONOMÍA NO CONSERVAN LA SUYA, y es una excepción decidida,
+ * no un olvido: sus reglas leían los bancos de src/data/* que salieron con la
+ * materia (22-nov-2026, 0258), y mantener los bancos solo por las etiquetas
+ * era mantener Macro entero. Sus filas de fp_detalle siguen intactas en el
+ * servidor; el panel las enseñaría con el id crudo. Por eso no están en la
+ * lista de arriba: la prueba de abajo las exigiría.
+ */
+const RETIRADAS_CON_REGLA_COMPARTIDA = ["repaso-diario"];
+
 test("ninguna regla sobra, salvo las de las actividades retiradas", () => {
   /*
    * "Vive" es lo que nombreDeActividad() sabe nombrar, no lo que está en el
@@ -373,7 +316,8 @@ test("ninguna regla sobra, salvo las de las actividades retiradas", () => {
    */
   const sobran = Object.keys(REGLAS)
     .filter((id) => nombreDeActividad(id) === null)
-    .filter((id) => !RETIRADAS_DE_CONTABILIDAD.includes(id));
+    .filter((id) => !RETIRADAS_DE_CONTABILIDAD.includes(id))
+    .filter((id) => !RETIRADAS_CON_REGLA_COMPARTIDA.includes(id));
   assert.deepEqual(sobran, [], `reglas de actividades que ya no existen: ${sobran.join(", ")}`);
 });
 
@@ -382,4 +326,11 @@ test("★ las nueve retiradas conservan su regla, para las respuestas que ya exi
     assert.ok(REGLAS[id], `${id} perdió su regla y el panel enseñaría el id crudo`);
     assert.equal(nombreDeActividad(id), null, `${id} sigue en el camino: esta lista sobra`);
   }
+});
+
+test("★ el Repaso Diario retirado comparte regla con el de Contabilidad", () => {
+  for (const id of RETIRADAS_CON_REGLA_COMPARTIDA) {
+    assert.equal(nombreDeActividad(id), null, `${id} sigue en el camino: esta lista sobra`);
+  }
+  assert.equal(REGLAS["repaso-diario"], REGLAS["repaso-diario-contabilidad"]);
 });
