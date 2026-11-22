@@ -105,7 +105,6 @@ function medir() {
 }
 
 const VISTAS = [
-  { nombre: "politica-economica", ruta: "#/politica-economica/hacer" },
   { nombre: "debe-haber", ruta: "#/cuentas-debe-haber/hacer" },
   { nombre: "iceberg", ruta: "#/modelo-iceberg/hacer" },
   { nombre: "intro-conta", ruta: "#/introduccion-contabilidad/hacer" },
