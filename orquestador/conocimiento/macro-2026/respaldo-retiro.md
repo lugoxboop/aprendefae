@@ -1,4 +1,4 @@
-2026-11-22 17:45 (America/Bogota)
+2026-11-22 18:34 (America/Bogota)
 
 # Respaldo del retiro de Macroeconomía
 
@@ -10,32 +10,49 @@ materia están en construcción.».
 
 ## El código viejo entero está en un commit
 
-**Commit padre del retiro: `71b32adf6f2dfbb24afa44eb6f7527a6a4c315ed`**
-(«Panel docente: portada rehecha en tres pisos, con tarjetas estilo temas
-(#689)», rama `main`).
+**Commit padre del retiro: `d3716a5d0d75453c9b686971b023d01f5969925b`**
+(«Gen skill: bloque de material grande y trabajo por etapas (#730)», la punta
+de `origin/main` sobre la que se rebasó la rama `retiro-macro`).
 
 Ese commit es el respaldo completo: vistas, mecánicas, datos, pool del Repaso
 y pruebas de Macro tal como estaban publicados. Para recuperar algo:
 
 ```sh
-git show 71b32adf:src/data/politicaMonetaria.js                  # leer un archivo
-git checkout 71b32adf -- src/components/PoliticaFiscalView.jsx   # traerlo de vuelta
-git diff 71b32adf retiro-macro --stat                            # qué salió
+git show d3716a5d:src/data/politicaMonetaria.js                  # leer un archivo
+git checkout d3716a5d -- src/components/PoliticaFiscalView.jsx   # traerlo de vuelta
+git diff d3716a5d retiro-macro --stat                            # qué salió
 ```
 
 ## Lo que pasa en el servidor
 
 Ninguna fila se borra. Las 59 actividades de Macro con fila en
 `actividad_catalogo` quedan como lápida (`retirada = true`) en la migración
-**0169_retiro_macroeconomia.sql**. `fp_history`, `fp_detalle`, rachas, ligas
+**0258_retiro_macroeconomia.sql**. `fp_history`, `fp_detalle`, rachas, ligas
 y progreso de los estudiantes no se tocan: el FP ganado se conserva y el panel
 docente sigue nombrando cada actividad por el nombre que vio el estudiante
 (`src/data/retiradas.js`).
+
+El número 0258 cae en el rango de la Célula E y es a propósito: tiene que
+correr después de la 0255, que crea tres de las filas retiradas. La cabecera
+de la migración lo explica.
 
 Las 12 de Aprender no tienen fila (Aprender no da FP ni entra al catálogo), así
 que solo salen del cliente.
 
 `dashboard-economico` ya estaba retirada desde la 0015 y no se repite aquí.
+
+## Lo que ve quien ya jugó Macro
+
+- **El FP y las rachas**, intactos: salen de `fp_history`, que no se toca.
+- **La medalla «Macroeconomía al día»** se conserva para quien completó los 54
+  juegos que la daban antes del retiro (`GANADAS_ANTES_DEL_RETIRO` en
+  `src/medallas/medallas.js`). Sin eso, con el total de Macro en cero, se le
+  habría apagado a todos.
+- **El panel docente** nombra cada actividad retirada por su nombre
+  (`retiradas.js`), pero ya no cada pregunta: las reglas de etiqueta leían los
+  bancos de `src/data/*` que salieron, así que el desglose por ítem de una
+  partida vieja de Macro enseña el id interno. Se recupera trayendo la regla y
+  su banco del commit padre.
 
 ## Las 71 actividades retiradas
 
