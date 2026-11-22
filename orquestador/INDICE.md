@@ -9,7 +9,7 @@ buscador (`node scripts/canon.mjs "<término>"`) → y solo al final abrir el
 archivo, y solo si vas a editarlo.** Quien cree, mueva o renombre un documento
 **actualiza su línea aquí en el mismo cambio**.
 
-Última actualización: 2026-11-15 (Miku).
+Última actualización: 2026-11-22 (Miku).
 
 ---
 
@@ -25,6 +25,7 @@ archivo, y solo si vas a editarlo.** Quien cree, mueva o renombre un documento
 | `orquestador/conocimiento/protocolo-de-eficiencia.md` | Reglas a–p de ahorro de tokens, interfaz, herramientas y evidencia visual (buscar antes de abrir, una pasada, estado en el repo, índice y bitácora, ingeniería de contexto, guía web moderna, herramientas oficiales, y nada de «listo» en lo visual sin video a 320/375) | Antes de empezar a trabajar; es la vara de cómo se gasta |
 | `orquestador/conocimiento/decisiones.md` | Decisiones ya cerradas, para no reabrirlas | Antes de proponer algo que suene a ya decidido |
 | `orquestador/conocimiento/nocturno.md` | Trabajo nocturno y «mapa de choques»: quién toca qué archivo, rangos y ramas | Antes de tocar un archivo compartido |
+| `orquestador/conocimiento/cola-de-tareas.md` | La cola de tareas de Mateo (Issues con `cola-mateo`, prioridad y estado) y el turno automático cada 5 h: cómo se anota una orden, cómo la toma el turno, qué es irreversible | Al anotar una orden de Mateo o al correr el turno |
 
 ## Calidad y enganche
 | Archivo | Qué contiene | Cuándo leerlo |
