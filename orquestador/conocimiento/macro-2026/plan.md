@@ -48,5 +48,5 @@
 - [ ] T2 · construcción (empieza sobre la rama de T1: reutiliza sus módulos comunes)
 - [ ] T2 · video y verificación
 - [x] T3 Política fiscal · diseño (11 piezas) → `disenos/t3-politica-fiscal.md`
-- [ ] T4 Política monetaria · diseño
+- [x] T4 Política monetaria · diseño (13 piezas) → `disenos/t4-politica-monetaria.md`
 - [ ] T5 Política cambiaria · diseño
