@@ -7,8 +7,13 @@
  *   · el panel sale primero, con el icono quieto, y la animación después;
  *   · solo hay una previsualización montada, y se va al cerrar o al empezar;
  *   · con "reducir movimiento", icono quieto, sin excepciones;
- *   · Biopsia y El agujero fiscal se quedan quietas a propósito;
- *   · ninguna enseña texto, y el coral solo aparece donde es de error.
+ *   · sin previsualización registrada, el icono se queda quieto.
+ *
+ * DESDE EL 22-NOV-2026 NO HAY NINGUNA PREVISUALIZACIÓN REGISTRADA. Las 57 eran
+ * de Macroeconomía y salieron con la materia (0258), y con ellas las pruebas
+ * que las recorrían (texto, coral, parejas, el medidor del tablero). El panel
+ * es el mismo para todas las materias, así que sus pruebas siguen aquí con un
+ * camino de Contabilidad.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 import { test } from "node:test";
@@ -45,8 +50,8 @@ const { default: PreviaActividad, PREVIAS } = await import("../previas/PreviaAct
 const { nodosDe } = await import("../../../hacer/completadas.js");
 const { SUBJECTS, HACER, actividadesDeTipo } = await import("../../../data/subjects.js");
 
-const TEMAS = ["politica-economica", "demanda-agregada", "politica-fiscal", "politica-monetaria"];
-const temaDe = (id) => SUBJECTS.macroeconomia.topics.find((t) => t.id === id);
+const TEMAS = ["cuentas-debe-haber"];
+const temaDe = (id) => SUBJECTS.contabilidad.topics.find((t) => t.id === id);
 const nodosDelTema = (id) => nodosDe(actividadesDeTipo(temaDe(id), HACER), new Set());
 const temaDeActividad = (actividadId) => TEMAS.find((t) => actividadesDeTipo(temaDe(t), HACER).some((a) => a.id === actividadId));
 
@@ -67,41 +72,19 @@ function abrirPanel(actividadId, onAbrir = () => {}) {
   return m;
 }
 
-const GESTOS = [
-  "arma-grupo-logico", "quien-gana-quien-pierde", "simulador-de-crisis",
-  "electrocardiograma", "termometro-reacciones", "banco-transfusiones", "triage-emergencias", "cirugia-reconstruccion", "sala-monitores",
-  "flujo-de-caja", "expansiva-contractiva", "disena-presupuesto",
-  /* Los quince de la 0030 */
-  "memorama-tesoro", "que-rama-es", "se-acerca-o-se-aleja", "consejo-ministros",
-  "memorama-corazon", "cual-componente", "quien-beneficia-auge", "explica-paciente", "sala-espera-llena",
-  "memorama-tesoreria", "cobra-gasta-o-pide", "quien-afecta-ajuste", "explica-contribuyente", "comite-presupuesto",
-  /* Política Monetaria (0031) */
-  "memorama-banco-central", "quien-decide-esto", "volante-de-la-tasa", "caja-de-herramientas", "a-quien-le-pega-la-tasa",
-  "cadena-de-transmision", "explicaselo-a-un-deudor", "corriente-de-decisiones", "el-rezago", "duelo-de-instrumentos", "disena-respuesta-monetaria",
-  "las-dos-entradas", "por-cual-arteria-entra",
-  /* Fábrica del Dinero (0073) */
-  "crea-o-cambia-de-manos", "la-escalera-del-encaje",
-  /* «Las tallas del dinero» (0091) */
-  "en-que-talla-va", "que-toco-el-banco",
-  /* Los tres instrumentos (Célula A) */
-  "la-tasa-que-muerde", "repo-o-definitiva", "el-freno-del-encaje",
-];
-
 /* ─────────────────────────────── el registro ─────────────────────────────── */
 
-/* Las cuatro de una sola decisión: mismo criterio, las cuatro quietas. */
-const QUIETAS = ["agujero-fiscal", "biopsia-economica", "dilema-banquero-central", "expediente-gabinete"];
-
-test("las 57 tienen su previsualización decidida: 46 gestos, el clip del tablero y cuatro quietas con su razón", () => {
-  const ids = TEMAS.flatMap((t) => actividadesDeTipo(temaDe(t), HACER).map((a) => a.id));
-  assert.deepEqual(Object.keys(PREVIAS).sort(), [...ids].sort());
-  assert.deepEqual(Object.entries(PREVIAS).filter(([, p]) => p.tipo === "gesto").map(([id]) => id).sort(), [...GESTOS].sort());
-  assert.equal(PREVIAS["tablero-decisiones"].tipo, "clip");
-  for (const id of QUIETAS) {
-    assert.equal(PREVIAS[id].tipo, "estatica", id);
-    assert.ok(PREVIAS[id].razon?.length > 60, `${id}: la razón va escrita`);
+test("toda previsualización registrada es de una actividad de Hacer que existe; sin registro, el respaldo", () => {
+  const hacer = new Set(Object.values(SUBJECTS).flatMap((m) => m.topics.flatMap((t) => actividadesDeTipo(t, HACER).map((a) => a.id))));
+  for (const [id, p] of Object.entries(PREVIAS)) {
+    assert.ok(hacer.has(id), `${id}: previsualización de una actividad que no existe`);
+    assert.ok(["gesto", "clip", "estatica"].includes(p.tipo), `${id}: tipo desconocido`);
+    if (p.tipo === "estatica") assert.ok(p.razon?.length > 60, `${id}: la razón va escrita`);
   }
-  assert.deepEqual(Object.entries(PREVIAS).filter(([, p]) => p.tipo === "estatica").map(([id]) => id).sort(), QUIETAS);
+  const respaldo = React.createElement("i", { "data-respaldo": true });
+  const m = montar(React.createElement(PreviaActividad, { actividadId: "cu-arma-el-asiento", respaldo }));
+  assert.ok(m.cont.querySelector("[data-respaldo]"), "una actividad sin previsualización enseña su respaldo");
+  m.desmontar();
 });
 
 /* ──────────────────────────────── el panel ──────────────────────────────── */
@@ -109,7 +92,7 @@ test("las 57 tienen su previsualización decidida: 46 gestos, el clip del tabler
 test("tocar un nodo abre su panel con el icono quieto; la animación llega después; «Empezar» abre la actividad", async () => {
   reducirMovimiento = false;
   const abiertas = [];
-  const m = abrirPanel("flujo-de-caja", (id) => abiertas.push(id));
+  const m = abrirPanel("cu-arma-el-asiento", (id) => abiertas.push(id));
   /*
    * Desde el 30-oct el panel se cuelga del body, no del camino: la máscara
    * con la que el camino se revela recortaba el pintado de su velo y el fondo
@@ -121,7 +104,7 @@ test("tocar un nodo abre su panel con el icono quieto; la animación llega despu
 
   assert.ok(panel(), "el toque abre el panel");
   assert.equal(m.cont.querySelector('[role="dialog"]'), null, "el panel no puede colgar del camino: la máscara le recorta el velo");
-  assert.equal(panel().querySelector("h3").textContent, "Flujo de caja: ¿a quién afecta?");
+  assert.equal(panel().querySelector("h3").textContent, "Arma el Asiento");
   assert.deepEqual(abiertas, [], "el toque ya no entra directo");
   assert.ok(panel().querySelector("[data-estatico]"), "el panel sale con el icono quieto");
   assert.equal(document.querySelectorAll("[data-previa]").length, 0, "y sin animación todavía");
@@ -129,11 +112,12 @@ test("tocar un nodo abre su panel con el icono quieto; la animación llega despu
 
   await esperar();
   await esperar();
-  assert.ok(panel().querySelector('[data-previa="flujo-de-caja"]'), "después, la animación");
-  assert.equal(document.querySelectorAll("[data-previa]").length, 1, "una sola previsualización montada");
+  /* Sin previsualización registrada, el icono se queda quieto aunque se permita el movimiento. */
+  assert.ok(panel().querySelector("[data-estatico]"), "sin previsualización, el icono sigue quieto");
+  assert.equal(document.querySelectorAll("[data-previa]").length, 0, "y no se monta nada");
 
   tocar([...panel().querySelectorAll("button")].find((b) => b.textContent === "Empezar"));
-  assert.deepEqual(abiertas, ["flujo-de-caja"]);
+  assert.deepEqual(abiertas, ["cu-arma-el-asiento"]);
   assert.equal(document.querySelector('[role="dialog"]'), null);
   assert.equal(document.querySelectorAll("[data-previa]").length, 0, "al empezar, el bucle se acaba");
   m.desmontar();
@@ -141,15 +125,15 @@ test("tocar un nodo abre su panel con el icono quieto; la animación llega despu
 
 test("Escape y «Cerrar» cierran el panel y desmontan la animación", async () => {
   reducirMovimiento = false;
-  const m = abrirPanel("sala-monitores");
+  const m = abrirPanel("cu-cuadro-dinamicas");
   await esperar();
   await esperar();
-  assert.ok(document.querySelector('[data-previa="sala-monitores"]'));
+  assert.ok(document.querySelector('[role="dialog"]'));
   act(() => { document.dispatchEvent(new w.KeyboardEvent("keydown", { key: "Escape", bubbles: true })); });
   assert.equal(document.querySelector('[role="dialog"]'), null);
   assert.equal(document.querySelectorAll("[data-previa]").length, 0);
 
-  tocar(m.cont.querySelector('g[data-nodo="triage-emergencias"]'));
+  tocar(m.cont.querySelector('g[data-nodo="cu-saldo-de-la-cuenta"]'));
   tocar([...document.querySelectorAll('[role="dialog"] button')].find((b) => b.textContent === "Cerrar"));
   assert.equal(document.querySelector('[role="dialog"]'), null);
   m.desmontar();
@@ -160,7 +144,7 @@ test("en el teléfono, deslizar la hoja hacia abajo la cierra; un roce corto sig
   estrecho = true;
   try {
     const abiertas = [];
-    const m = abrirPanel("triage-emergencias", (id) => abiertas.push(id));
+    const m = abrirPanel("cu-saldo-de-la-cuenta", (id) => abiertas.push(id));
     const hoja = () => document.querySelector('[role="dialog"]');
 
     puntero(hoja(), "pointerdown", 500);
@@ -181,7 +165,7 @@ test("en el teléfono, deslizar la hoja hacia abajo la cierra; un roce corto sig
     estrecho = false;
   }
 
-  const m = abrirPanel("triage-emergencias");
+  const m = abrirPanel("cu-saldo-de-la-cuenta");
   const hoja = document.querySelector('[role="dialog"]');
   puntero(hoja, "pointerdown", 500);
   puntero(hoja, "pointermove", 640);
@@ -195,7 +179,7 @@ test("en el teléfono, deslizar la hoja hacia abajo la cierra; un roce corto sig
 test("con «reducir movimiento», icono quieto y ninguna animación montada", async () => {
   reducirMovimiento = true;
   try {
-    const m = abrirPanel("cirugia-reconstruccion");
+    const m = abrirPanel("cu-debita-o-acredita");
     await esperar();
     await esperar();
     assert.ok(document.querySelector('[role="dialog"] [data-estatico]'));
@@ -206,79 +190,11 @@ test("con «reducir movimiento», icono quieto y ninguna animación montada", as
   }
 });
 
-test("Las cuatro de una sola decisión se quedan quietas aunque se permita el movimiento", async () => {
-  reducirMovimiento = false;
-  for (const id of QUIETAS) {
-    const m = abrirPanel(id);
-    await esperar();
-    await esperar();
-    assert.ok(document.querySelector('[role="dialog"] [data-estatico]'), id);
-    assert.equal(document.querySelectorAll("[data-previa]").length, 0, id);
-    m.desmontar();
-  }
-});
-
-/* ──────────────────────── lo que una previsualización no hace ──────────────────────── */
-
-const sinEstilos = (el) => {
-  const copia = el.cloneNode(true);
-  copia.querySelectorAll("style").forEach((s) => s.remove());
-  return copia;
-};
-
-test("ninguna previsualización enseña texto, y el coral solo aparece donde es de error", async () => {
-  const animadas = Object.entries(PREVIAS).filter(([, p]) => p.tipo !== "estatica").map(([id]) => id);
-  assert.equal(animadas.length, 53);
-  for (const id of animadas) {
-    const m = montar(React.createElement(PreviaActividad, { actividadId: id, respaldo: React.createElement("i", { "data-respaldo": true }) }));
-    await esperar(120);
-    const previa = m.cont.querySelector(`[data-previa="${id}"]`);
-    assert.ok(previa, `${id}: se monta`);
-    assert.equal(sinEstilos(previa).textContent.trim(), "", `${id}: sin texto`);
-    /*
-     * El coral es error en todo el sitio. Solo la onda de Explica la política
-     * lo lleva, y es la de la actividad real cuando el mensaje sale con ruido:
-     * retroalimentación de error, no un gesto neutro.
-     */
-    if (id !== "explica-la-politica") {
-      assert.ok(!/E76F51|231,\s*111,\s*81/i.test(previa.outerHTML), `${id}: coral en un gesto neutro`);
-    }
-    m.desmontar();
-  }
-});
-
 /*
- * LAS PAREJAS QUE COMPARTEN GESTO, A PROPÓSITO: misma mecánica, mismo gesto.
- * Se comprueba que de verdad son el mismo dibujo —cambiando solo el id—, y
- * que lo que las separa, el icono, es distinto.
+ * Aquí seguían cuatro pruebas que recorrían las previsualizaciones de
+ * Macroeconomía: las cuatro quietas de una sola decisión, la de que ninguna
+ * enseña texto ni coral, la de las tres parejas que comparten gesto y la del
+ * medidor del tablero de decisiones. Salieron con la materia el 22-nov-2026
+ * (0258): no queda ninguna previsualización que recorrer. Cuando el Macro
+ * nuevo registre las suyas, vuelven con ellas.
  */
-test("las tres parejas de DA y PF comparten gesto y se distinguen por el icono", async () => {
-  const { ICONOS_ACTIVIDAD } = await import("../iconosActividad.jsx");
-  const pares = [
-    ["quien-beneficia-auge", "quien-afecta-ajuste"],
-    ["explica-paciente", "explica-contribuyente"],
-    ["sala-espera-llena", "comite-presupuesto"],
-  ];
-  const dibujo = async (id) => {
-    const m = montar(React.createElement(PreviaActividad, { actividadId: id }));
-    await esperar(120);
-    const html = m.cont.querySelector(`[data-previa="${id}"]`).outerHTML.split(id).join("X");
-    m.desmontar();
-    return html;
-  };
-  for (const [a, b] of pares) {
-    assert.equal(await dibujo(a), await dibujo(b), `${a} y ${b}: el mismo gesto`);
-    assert.notEqual(ICONOS_ACTIVIDAD[a], ICONOS_ACTIVIDAD[b], `${a} y ${b}: iconos distintos`);
-  }
-});
-
-test("el tablero de decisiones usa su propio medidor: la aguja se mueve sola, sin cifras ni meta", async () => {
-  const m = montar(React.createElement(PreviaActividad, { actividadId: "tablero-decisiones" }));
-  await esperar(80);
-  const aguja = () => m.cont.querySelector(".fae-td-aguja").style.transform;
-  const antes = aguja();
-  await esperar(1200);
-  assert.notEqual(aguja(), antes, "la aguja cambió de posición");
-  assert.equal(sinEstilos(m.cont).textContent.trim(), "");
-  m.desmontar();
-});

@@ -40,9 +40,16 @@ const { bloquesDe, BLOQUES } = await import("../../../hacer/bloques.js");
 const { nodosDe, useCompletadas } = await import("../../../hacer/completadas.js");
 const { emitirFP } = await import("../../../fp/aviso.js");
 const { SUBJECTS, HACER, actividadesDeTipo } = await import("../../../data/subjects.js");
+const { conIcono } = await import("../../../data/contabilidadIconos.js");
 
-const TEMAS = ["politica-economica", "demanda-agregada", "politica-fiscal", "politica-monetaria"];
-const temaDe = (id) => SUBJECTS.macroeconomia.topics.find((t) => t.id === id);
+/*
+ * Hasta el 22-nov-2026 estas pruebas recorrían los cuatro caminos de
+ * Macroeconomía, que salieron con la materia (0258). Ahora recorren tres de
+ * Contabilidad con los cuatro bloques: el camino por bloques es el mismo
+ * componente, y Las cuentas, el debe y el haber lo pinta así en producción.
+ */
+const TEMAS = ["introduccion-contabilidad", "cuentas-debe-haber", "ingresos-gastos-y-caja"];
+const temaDe = (id) => SUBJECTS.contabilidad.topics.find((t) => t.id === id);
 const nodosDelTema = (id, hechas = new Set()) => nodosDe(actividadesDeTipo(temaDe(id), HACER), hechas);
 
 /* Las frases de los separadores que se quitaron: no pueden volver a aparecer en el camino. */
@@ -98,8 +105,7 @@ test("Cimientos se pinta en los tres temas; quitarle sus Fácil del catálogo lo
     assert.deepEqual(bloquesPintados(m.cont), LOS_CUATRO, `${temaId}: los cuatro bloques`);
     assert.equal(m.cont.querySelector('[data-bloque="cimientos"] h3').textContent, "Cimientos");
     const faciles = tema.actividades.filter((a) => a.clasificacion?.tipo === HACER && a.clasificacion.dificultad === "facil");
-    /* Monetaria tiene tres desde la 0091: «¿En qué talla va?» entra a Cimientos. */
-    assert.equal(faciles.length, temaId === "politica-monetaria" ? 3 : 2, `${temaId}: sus Fácil`);
+    assert.equal(faciles.length, 2, `${temaId}: sus Fácil`);
     for (const f of faciles) {
       assert.ok(m.cont.querySelector(`g[data-nodo="${f.id}"][data-bloque-de="cimientos"]`), `${temaId}: ${f.id} en Cimientos`);
     }
@@ -199,43 +205,37 @@ test("ninguna línea ni ningún nodo cae en la franja de un título, con los blo
   }
 
   /*
-   * Con el reparto de hoy (2-3-4-3) los tres primeros títulos van a la
-   * izquierda y el de Maestría a la DERECHA: Análisis tiene cuatro nodos y
-   * acaba en el lado izquierdo, y el título va siempre al lado contrario del
-   * nodo que lo precede. Es la regla, no una excepción; se fija aquí para que
-   * un cambio de lado no pase sin que nadie lo vea.
+   * El lado de cada título, fijado para que un cambio no pase sin que nadie lo
+   * vea. La regla es la de siempre: el título va al lado contrario del nodo
+   * que lo precede. Con los repartos de hoy de los tres temas (2-4-2-1,
+   * 2-2-2-1 y 2-2-4-1, medidos, no supuestos) el de Análisis va a la DERECHA
+   * y los otros tres a la izquierda.
    *
-   * Política Monetaria va 2-4-5-3 desde sus dos actividades nuevas: Aplicación
-   * acaba ahora en el lado izquierdo, así que el título de Análisis pasa a la
-   * DERECHA. Misma regla.
+   * Los lados de los cuatro caminos de Macroeconomía que se fijaban aquí
+   * salieron con la materia el 22-nov-2026 (0258).
    */
-  /*
-   * Con las cuatro nuevas (0073 y 0091) el reparto quedó 3-6-6-3, y con los
-   * tres instrumentos (Célula A) queda 3-8-7-3: medido, no supuesto. Con ese
-   * reparto el título de Maestría vuelve a la DERECHA, porque Análisis acaba
-   * ahora en el lado izquierdo. Misma regla de siempre —el título va al lado
-   * contrario del nodo que lo precede—, otro resultado.
-   */
-const LADOS = { "politica-monetaria": [-1, -1, 1, 1] };
+  const LADOS = {};
   for (const temaId of TEMAS) {
     const nodos = nodosDelTema(temaId);
-    assert.deepEqual(disposicionPorBloques(bloquesDe(nodos), nodos.length).cabeceras.map((c) => c.lado), LADOS[temaId] ?? [-1, -1, -1, 1], temaId);
+    assert.deepEqual(disposicionPorBloques(bloquesDe(nodos), nodos.length).cabeceras.map((c) => c.lado), LADOS[temaId] ?? [-1, -1, 1, -1], temaId);
   }
 });
 
 /* ─────────────────────────────── los iconos ─────────────────────────────── */
 
-test("las 57 actividades tienen icono y lo pintan; una sin icono enseña su número y no rompe el camino", () => {
-  const ids = TEMAS.flatMap((t) => actividadesDeTipo(temaDe(t), HACER).map((a) => a.id));
-  assert.equal(ids.length, 57);
-  for (const id of ids) assert.ok(iconoDe(id), `${id} sin icono`);
-  assert.deepEqual(Object.keys(ICONOS_ACTIVIDAD).sort(), [...ids].sort(), "ni iconos de más ni de menos");
-  assert.equal(new Set(Object.values(ICONOS_ACTIVIDAD)).size, 57, "ningún icono repetido entre dos actividades");
-
-  for (const temaId of TEMAS) {
-    const m = montar(camino(nodosDelTema(temaId)));
-    /* Uno por nodo del tema, sin número fijo: Política Monetaria tiene 14 desde sus dos actividades nuevas. */
-    assert.equal(m.cont.querySelectorAll("[data-icono]").length, nodosDelTema(temaId).length, temaId);
+test("los nodos con icono propio lo pintan; una sin icono enseña su número y no rompe el camino", () => {
+  /*
+   * Las 57 de Macroeconomía tenían su icono en ICONOS_ACTIVIDAD; salieron con
+   * la materia el 22-nov-2026 (0258) y el registro quedó vacío. Contabilidad
+   * trae el suyo en el nodo (contabilidadIconos.js), y eso es lo que se pinta.
+   */
+  const nodos = conIcono(nodosDelTema("cuentas-debe-haber"));
+  for (const n of nodos) assert.ok(n.icono, `${n.id} sin icono`);
+  assert.equal(new Set(nodos.map((n) => n.icono)).size, nodos.length, "ningún icono repetido en el camino");
+  {
+    const m = montar(camino(nodos));
+    assert.equal(m.cont.querySelectorAll("[data-icono]").length, nodos.length);
+    assert.equal(m.cont.querySelectorAll("[data-icono-propio]").length, nodos.length);
     m.desmontar();
   }
 
@@ -254,23 +254,23 @@ test("las 57 actividades tienen icono y lo pintan; una sin icono enseña su núm
 test("el anillo de cada bloque dice la fracción como texto y se pone al día con el canal de FP, sin recargar", () => {
   function Arnes() {
     const hechas = useCompletadas();
-    return camino(nodosDelTema("politica-fiscal", hechas));
+    return camino(nodosDelTema("cuentas-debe-haber", hechas));
   }
   const m = montar(React.createElement(Arnes));
   const anillo = (id) => m.cont.querySelector(`[data-cabeza-bloque="${id}"] [role="img"]`);
-  assert.equal(anillo("aplicacion").getAttribute("aria-label"), "0 de 3 completadas");
-  assert.equal(anillo("aplicacion").querySelector("[data-fraccion]").textContent, "0/3");
-  assert.equal(anillo("analisis").querySelector("[data-fraccion]").textContent, "0/4");
+  assert.equal(anillo("aplicacion").getAttribute("aria-label"), "0 de 2 completadas");
+  assert.equal(anillo("aplicacion").querySelector("[data-fraccion]").textContent, "0/2");
+  assert.equal(anillo("analisis").querySelector("[data-fraccion]").textContent, "0/2");
   assert.equal(anillo("cimientos").querySelector("[data-fraccion]").textContent, "0/2");
 
   /* Lo que emite otorgarFP cuando el servidor confirma. */
-  act(() => emitirFP({ actividadId: "clasificador-tesoro", fp: 25, repetida: false }));
-  assert.equal(anillo("aplicacion").querySelector("[data-fraccion]").textContent, "1/3");
-  assert.equal(anillo("aplicacion").getAttribute("aria-label"), "1 de 3 completadas");
-  assert.equal(anillo("analisis").querySelector("[data-fraccion]").textContent, "0/4", "solo cambia su bloque");
+  act(() => emitirFP({ actividadId: "cu-cuadro-dinamicas", fp: 25, repetida: false }));
+  assert.equal(anillo("aplicacion").querySelector("[data-fraccion]").textContent, "1/2");
+  assert.equal(anillo("aplicacion").getAttribute("aria-label"), "1 de 2 completadas");
+  assert.equal(anillo("analisis").querySelector("[data-fraccion]").textContent, "0/2", "solo cambia su bloque");
 
   /* Y una Fácil llena su anillo como cualquier otra. */
-  act(() => emitirFP({ actividadId: "memorama-tesoreria", fp: 10, repetida: false }));
+  act(() => emitirFP({ actividadId: "cu-izquierda-o-derecha", fp: 10, repetida: false }));
   assert.equal(anillo("cimientos").querySelector("[data-fraccion]").textContent, "1/2");
   /* Y el tramo recorrido de la línea llega al siguiente nodo. */
   assert.equal(m.cont.querySelectorAll("path[data-recorrido]").length, 1);
@@ -278,14 +278,14 @@ test("el anillo de cada bloque dice la fracción como texto y se pone al día co
 });
 
 test("el color de los bloques es el de su tema (el de su tarjeta), nunca coral", () => {
-  const nodos = nodosDelTema("politica-economica", new Set(["diagnostico-en-vivo", "tablero-decisiones"]));
+  const nodos = nodosDelTema("cuentas-debe-haber", new Set(["cu-cuadro-dinamicas", "cu-debita-o-acredita"]));
   const m = montar(camino(nodos));
   /* Y el aro del nodo sugerido, que era coral y ahora cae sobre una Fácil. */
   assert.ok(m.cont.querySelector("[data-sugerido]"), "hay un nodo sugerido");
   const cromo = [...m.cont.querySelectorAll("[data-cabeza-bloque], path[data-recorrido], [data-sugerido]")].map((e) => e.outerHTML).join("");
   assert.ok(cromo.length > 0);
   assert.ok(!/E76F51|231,\s*111,\s*81/i.test(cromo), "coral en un título, un anillo o el recorrido");
-  /* Política Económica es «cielo» en el índice: el mismo tono en su camino. */
+  /* Las cuentas, el debe y el haber es «cielo» en el índice: el mismo tono en su camino. */
   const tono = tonoDelCamino(nodos);
   assert.equal(tono.base, "#4CB8E8");
   assert.ok(cromo.includes(tono.rgb) || cromo.includes(tono.base), "el tono del tema no está en el camino");
@@ -313,7 +313,7 @@ test("el cierre crece con la dificultad, no atrapa a nadie y se va solo", (t) =>
   let css = "";
   for (const [dificultad, deberia] of Object.entries(esperado)) {
     let terminado = 0;
-    const m = montar(React.createElement(RecompensaCierre, { dificultad, actividadId: "flujo-de-caja", onFin: () => terminado++ }));
+    const m = montar(React.createElement(RecompensaCierre, { dificultad, actividadId: "cu-arma-el-asiento", onFin: () => terminado++ }));
     css ||= [...m.cont.querySelectorAll("style")].map((s) => s.textContent).join("");
     const hay = piezas(m.cont);
     for (const [pieza, si] of Object.entries(deberia)) assert.equal(hay.has(pieza), si, `${dificultad}: ${pieza}`);

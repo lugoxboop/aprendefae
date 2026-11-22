@@ -4,12 +4,22 @@ import {
   diaBogota, diasEntre, actividadesDelPool, materiasCompletadas, unidadesDe, estadoRepaso, categoriaDe, seleccionarRepaso, estabaFallado,
 } from "../seleccion.js";
 import { MENSAJES, topePorMateria } from "../repaso.js";
-import { poolDe } from "../items.js";
+import { ubicacionDeActividad } from "../../data/subjects.js";
+import { REPASOS } from "../repasos.js";
+import { ID_REPASO_CONTABILIDAD } from "../repaso.js";
+import { FUERA_DEL_POOL_CONTABILIDAD } from "../contabilidad/index.js";
 
 /*
  * El sorteo (B4) y el desbloqueo (B5), con fechas fijas y sin azar: `mezclar`
  * se inyecta como la identidad salvo donde se prueba el orden.
+ *
+ * Hasta el 22-nov-2026 el desbloqueo se probaba con el Repaso de Macro, que
+ * se retiró con la materia (0258). Ahora se prueba con el de Contabilidad, el
+ * único que queda, y lo que dependía de un banco de Macro (las dos lecturas
+ * del Electrocardiograma) se prueba con un pool de mentira que tiene la misma
+ * forma: dos variantes por clave.
  */
+const CONTA = REPASOS[ID_REPASO_CONTABILIDAD];
 
 const AHORA = new Date("2026-09-16T17:00:00Z"); // mediodía en Bogotá
 const haceDias = (n, horas = 0) => new Date(AHORA.getTime() - n * 86400000 - horas * 3600000).toISOString();
@@ -38,27 +48,36 @@ test("el día es el de Bogotá: las 23:30 del 16 allá ya son el 17 en UTC", () 
   assert.equal(diasEntre(new Date("2026-09-17T04:59:00Z"), new Date("2026-09-17T05:01:00Z")), 1, "dos minutos, pero cruzan la medianoche de Bogotá");
 });
 
-test("desbloqueo: 3 actividades de Macro y al menos 10 claves en el pool", () => {
-  assert.equal(estadoRepaso({ hechas: new Set(["corriente-titulares", "sala-monitores"]), hechoHoy: false }), "pocas-actividades");
-  /* Lo que no es de las cuatro materias no cuenta, ni el propio Repaso. */
-  assert.equal(estadoRepaso({ hechas: new Set(["corriente-titulares", "sala-monitores", "modelo-iceberg", "repaso-diario"]), hechoHoy: false }), "pocas-actividades");
+test("desbloqueo: 3 actividades de sus temas y al menos 10 claves en el pool", () => {
+  const estado = (ids, hechoHoy = false) => estadoRepaso({ hechas: new Set(ids), hechoHoy }, CONTA);
+  assert.equal(estado(["t1-un-dia-o-un-ano", "t4-entra-o-sale-de-caja"]), "pocas-actividades");
+  /* Lo que no es de sus temas no cuenta, ni el propio Repaso. */
+  assert.equal(estado(["t1-un-dia-o-un-ano", "t4-entra-o-sale-de-caja", "modelo-iceberg", ID_REPASO_CONTABILIDAD]), "pocas-actividades");
   /* Tres actividades de una sola pregunta: desbloquea el conteo, pero el pool no llega a diez. */
-  assert.equal(estadoRepaso({ hechas: new Set(["expediente-gabinete", "agujero-fiscal", "dilema-banquero-central"]), hechoHoy: false }), "pool-corto");
+  assert.equal(estado(["t3-a1-vender-no-es-cobrar", "t3-a3-lo-que-ya-paso", "t3-a4-lo-que-ya-se-pago"]), "pool-corto");
   /* Una actividad que no aporta cuenta para las tres, no para el pool. */
-  assert.equal(estadoRepaso({ hechas: new Set(["memorama-tesoro", "expediente-gabinete", "agujero-fiscal"]), hechoHoy: false }), "pool-corto");
-  assert.equal(estadoRepaso({ hechas: new Set(["memorama-tesoro", "arma-grupo-logico", "corriente-titulares"]), hechoHoy: false }), "listo");
-  assert.equal(estadoRepaso({ hechas: new Set(["memorama-tesoro", "arma-grupo-logico", "corriente-titulares"]), hechoHoy: true }), "hecho-hoy");
+  const noAporta = FUERA_DEL_POOL_CONTABILIDAD.map((f) => f.id).find((id) => CONTA.temas.includes(ubicacionDeActividad(id)?.temaId));
+  assert.ok(noAporta, "hace falta una actividad de los temas del pool que no aporte ítems");
+  assert.equal(estado([noAporta, "t3-a1-vender-no-es-cobrar", "t3-a3-lo-que-ya-paso"]), "pool-corto");
+  assert.equal(estado([noAporta, "t1-en-cual-estado-aparece", "cu-de-que-familia"]), "listo");
+  assert.equal(estado([noAporta, "t1-en-cual-estado-aparece", "cu-de-que-familia"], true), "hecho-hoy");
 });
 
 test("el pool se mide en claves: las dos lecturas de un término cuentan una vez", () => {
-  const ecg = poolDe(new Set(["electrocardiograma"]));
-  assert.equal(ecg.length, 22);
-  assert.equal(unidadesDe(ecg).length, 14);
+  /* Catorce claves: ocho con dos lecturas y seis con una, veintidós ítems. */
+  const dosLecturas = Array.from({ length: 14 }, (_, k) => (k < 8
+    ? [{ ...it("a", k), variante: "definicion" }, { ...it("a", k), variante: "fragmento" }]
+    : [it("a", k)])).flat();
+  assert.equal(dosLecturas.length, 22);
+  assert.equal(unidadesDe(dosLecturas).length, 14);
 });
 
 test("materias completadas, en orden fijo y sin contar el Repaso", () => {
-  assert.deepEqual(materiasCompletadas(new Set(["el-rezago", "repaso-diario", "que-rama-es", "modelo-iceberg"])), ["politica-economica", "politica-monetaria"]);
-  assert.deepEqual(actividadesDelPool(new Set(["repaso-diario", "modelo-iceberg"])), []);
+  assert.deepEqual(
+    materiasCompletadas(new Set(["t4-entra-o-sale-de-caja", ID_REPASO_CONTABILIDAD, "t1-un-dia-o-un-ano", "modelo-iceberg"]), CONTA),
+    ["introduccion-contabilidad", "efectivo-caja-menor-bancos"],
+  );
+  assert.deepEqual(actividadesDelPool(new Set([ID_REPASO_CONTABILIDAD, "modelo-iceberg"]), CONTA), []);
 });
 
 test("tope por materia: sin tope con una, 5 con dos, 4 con tres o cuatro", () => {
@@ -158,8 +177,12 @@ test("si el tope deja el repaso corto, se relaja y se dice", () => {
   assert.equal(r.topeRelajado, true);
 });
 
-test("nunca dos ítems con la misma clave: las variantes del Electrocardiograma salen de a una", () => {
-  const pool = poolDe(new Set(["electrocardiograma"]));
+test("nunca dos ítems con la misma clave: las variantes de una clave salen de a una", () => {
+  /* Catorce claves con dos lecturas cada una, como era el Electrocardiograma. */
+  const pool = Array.from({ length: 14 }, (_, k) => [
+    { ...it("a", k), variante: 1 },
+    { ...it("a", k), variante: 2 },
+  ]).flat();
   for (let k = 0; k < 30; k++) {
     const r = seleccionarRepaso({ pool, historial: new Map(), ahora: AHORA });
     assert.equal(r.items.length, 10);

@@ -5,7 +5,7 @@
  */
 import { chromium, abrir, tapados } from "./base.mjs";
 const URL_BASE = process.argv[2] ?? "http://localhost:8099";
-const RUTAS = process.argv[3] ? process.argv[3].split(",") : ["", "#/macroeconomia", "#/contabilidad", "#/pensamiento-estrategico", "#/politica-fiscal", "#/introduccion-contabilidad", "#/perfil", "#/tienda", "#/amigos", "#/vivo", "#/docente", "#/que-es", "#/camino-da"];
+const RUTAS = process.argv[3] ? process.argv[3].split(",") : ["", "#/macroeconomia", "#/contabilidad", "#/pensamiento-estrategico", "#/introduccion-contabilidad", "#/perfil", "#/tienda", "#/amigos", "#/vivo", "#/docente", "#/que-es"];
 const nav = await chromium.launch();
 for (const [w,h] of [[375,667],[1280,800]]) for (const ruta of RUTAS) {
   const { ctx, page } = await abrir(nav, URL_BASE, w, h, ruta);

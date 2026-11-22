@@ -23,8 +23,8 @@ import { repasoDe } from "./repasos.js";
 
 const VACIO = { hechas: new Set(), historial: new Map(), hechoHoy: false };
 
-/* `idRepaso`: cuál de los repasos (repasos.js). Sin decirlo, el de Macro, como siempre. */
-export function useRepaso(idRepaso = null) {
+/* `idRepaso`: cuál de los repasos (repasos.js). Es obligatorio: sin él repasoDe() revienta. */
+export function useRepaso(idRepaso) {
   const repaso = repasoDe(idRepaso);
   const { session, cargando: cargandoSesion } = useAuth();
   const [datos, setDatos] = useState(null);

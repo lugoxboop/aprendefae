@@ -48,12 +48,12 @@ export const VISTAS = new Set([
   "macroeconomia",
   "pensamiento-estrategico",
   "contabilidad",
-  /* Temas */
-  "camino-da",
-  "grifos-da",
-  "politica-economica",
-  "politica-fiscal",
-  "politica-monetaria",
+  /*
+   * Temas. Los cinco de Macroeconomía —camino-da, grifos-da,
+   * politica-economica, politica-fiscal y politica-monetaria— salieron el
+   * 22-nov-2026 con todo su material (0258). Igual que con DA-Learn, quien
+   * tenga uno de esos enlaces guardado cae en la portada.
+   */
   "pensamiento-sistemico",
   "modelo-iceberg",
   "fuerzas-porter",
@@ -68,8 +68,8 @@ export const VISTAS = new Set([
   "inventarios-descuentos-nic2",
   /* El repaso del capítulo 5 (Célula E): siempre el último tema de Contabilidad. */
   "repaso-capitulo-5",
-  /* Transversales: no son un tema, pero se entra igual desde el índice. */
-  "repaso-diario",
+  /* Transversales: no son un tema, pero se entra igual desde el índice. El de
+     Macro, «repaso-diario», salió con su pool el 22-nov-2026. */
   "repaso-diario-contabilidad",
   /*
    * Aquí estaban las seis vistas de DA-Learn —dashboard, consumo, inversion,
@@ -93,17 +93,18 @@ export const VISTAS = new Set([
 /*
  * De un tema del catálogo a la vista que lo pinta.
  *
- * Son el mismo nombre salvo Demanda Agregada, que tiene una vista por mitad:
- * "Aprender" al corazón de la economía y "Hacer" al camino de los siete juegos.
- * Esa excepción estaba escrita dentro de App.jsx y ahora la usan dos sitios
- * —App y el enlace de vuelta del panel—, así que vive aquí, que es donde están
- * los nombres de vista.
+ * Hoy son el mismo nombre. La única excepción era Demanda Agregada, con una
+ * vista por mitad, y salió con todo Macroeconomía el 22-nov-2026. La función
+ * se queda —la usan App y el enlace de vuelta del panel— porque es el sitio
+ * donde vive una excepción así si vuelve a hacer falta: dos copias de una
+ * excepción se separan en la primera edición.
  *
  * Devuelve null si el tema no tiene vista propia: quien llame decide si eso es
  * un enlace que no se pinta o una navegación que no se hace.
+ *
+ * `modo` no se usa hoy; se conserva en la firma para no tocar a quien llama.
  */
 export function vistaDeTema(topicId, modo = null) {
-  if (topicId === "demanda-agregada") return modo === "aprender" ? "grifos-da" : "camino-da";
   return VISTAS.has(topicId) ? topicId : null;
 }
 

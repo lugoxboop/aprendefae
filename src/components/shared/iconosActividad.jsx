@@ -1,12 +1,3 @@
-import {
-  Link, Gauge, Scale, Siren,
-  Activity, Thermometer, Droplet, Microscope, Cross,
-  Stamp, Sheet, FileStack, ToggleLeft, ArrowRightLeft,
-  Folder, MessageSquarePlus, Split, EqualNot,
-  HandCoins, Layers, Target,
-  Ruler, Repeat, Dam,
-} from "lucide-react";
-
 /*
  * ═══════════════════════════════════════════════════════════════════════════
  * EL ICONO DE CADA ACTIVIDAD, para su nodo del camino y su insignia.
@@ -415,88 +406,22 @@ export const PanelPalanca = propio("PanelPalanca", (c) => (
   </>
 ));
 
-/* Cada actividad de los tres temas, con su icono. */
-export const ICONOS_ACTIVIDAD = {
-  /* Política Monetaria (0031) */
-  "memorama-banco-central": MonedasFlecha,
-  "quien-decide-esto": DosEdificios,
-  "volante-de-la-tasa": VolanteGiro,
-  "caja-de-herramientas": VolanteTresEngranajes,
-  "a-quien-le-pega-la-tasa": SiluetaFlechas,
-  "cadena-de-transmision": TresCorreas,
-  "explicaselo-a-un-deudor": GloboPorcentaje,
-  "corriente-de-decisiones": CorreaEnMovimiento,
-  /*
-   * Las dos nuevas (Xeno). Ninguna es una flecha: dos flechas opuestas ya son
-   * de «flujo-de-caja» (ArrowRightLeft) y a 24 px se confunden aunque estén
-   * giradas. Respaldos, en orden, si alguna dejara de existir: Route y
-   * GitFork para la primera; GitCompare para la segunda.
-   */
-  "por-cual-arteria-entra": Split,
-  "las-dos-entradas": EqualNot,
-  "el-rezago": RelojCorrea,
-  "crea-o-cambia-de-manos": HandCoins,
-  "la-escalera-del-encaje": EscaleraDescendente,
-  /*
-   * Los tres instrumentos (Célula A). Ruler es la regla con la que se mide la
-   * distancia entre la tasa y la inflación; Repeat es la operación que vuelve
-   * atrás, que es lo único que separa un repo de una compra; Dam es el muro
-   * que retiene, que es lo que hace el encaje. Las tres estaban libres entre
-   * las del sitio. Respaldos, en orden, si alguna dejara de existir: Percent y
-   * SlidersHorizontal para la primera, Undo2 para la segunda, Shield para la
-   * tercera.
-   */
-  "la-tasa-que-muerde": Ruler,
-  "repo-o-definitiva": Repeat,
-  "el-freno-del-encaje": Dam,
-  /* «Las tallas del dinero» (0091), de lucide mientras Watari no dibuje los suyos. */
-  "en-que-talla-va": Layers,
-  "que-toco-el-banco": Target,
-  "dilema-banquero-central": BalanzaVolante,
-  "duelo-de-instrumentos": EngranajesEnfrentados,
-  "disena-respuesta-monetaria": PanelPalanca,
-  /* Cimientos (0030) */
-  "memorama-tesoro": CartasVolteo,
-  "que-rama-es": CuatroPuertas,
-  "memorama-corazon": CartasPulso,
-  "cual-componente": CuatroEtiquetas,
-  "memorama-tesoreria": MonedasVolteo,
-  "cobra-gasta-o-pide": TresBandejas,
-  /* Aplicación, Análisis y Maestría (0030) */
-  "se-acerca-o-se-aleja": AgujaMeta,
-  "expediente-gabinete": Folder,
-  "consejo-ministros": MesaTresSillas,
-  "quien-beneficia-auge": SiluetaMasMenos,
-  "explica-paciente": MessageSquarePlus,
-  "sala-espera-llena": LupaPuntos,
-  "quien-afecta-ajuste": SiluetaMoneda,
-  "explica-contribuyente": GloboPeso,
-  "comite-presupuesto": LupaRenglones,
-  /* Política Económica */
-  "diagnostico-en-vivo": ConsolaRadar,
-  "arma-grupo-logico": Link,
-  "tablero-decisiones": Gauge,
-  "quien-gana-quien-pierde": Scale,
-  "corriente-titulares": CintaTransportadora,
-  "explica-la-politica": MicrofonoOnda,
-  "simulador-de-crisis": Siren,
-  /* Demanda Agregada */
-  "electrocardiograma": Activity,
-  "termometro-reacciones": Thermometer,
-  "banco-transfusiones": Droplet,
-  "biopsia-economica": Microscope,
-  "triage-emergencias": Cross,
-  "cirugia-reconstruccion": Bisturi,
-  "sala-monitores": PulsoAlerta,
-  /* Política Fiscal */
-  "clasificador-tesoro": ContadoraBilletes,
-  "directos-indirectos": Stamp,
-  "flujo-de-caja": ArrowRightLeft,
-  "agujero-fiscal": GrietaFiscal,
-  "expansiva-contractiva": ToggleLeft,
-  "disena-presupuesto": Sheet,
-  "deficit-vs-deuda": FileStack,
-};
+/*
+ * Cada actividad con su icono.
+ *
+ * VACÍO DESDE EL 22-NOV-2026. Las 57 entradas eran todas de Macroeconomía
+ * (los cuatro temas) y salieron con la materia, que se rehace desde cero
+ * (0258). Sin entrada, el nodo enseña su número, que es lo que ya hacía
+ * Contabilidad.
+ *
+ * LOS DIBUJOS DE ARRIBA SE QUEDAN. Son glifos ya dibujados y reservados
+ * (ConsolaRadar, CartasPulso, BalanzaVolante…): el Macro nuevo puede
+ * reusarlos o no, pero antes de dibujar uno parecido hay que mirar aquí, que
+ * es justo lo que la reserva existe para evitar. Qué actividad usaba cada uno
+ * está en el commit de respaldo (orquestador/conocimiento/macro-2026/
+ * respaldo-retiro.md).
+ */
+export const ICONOS_ACTIVIDAD = {};
 
 /** El icono de una actividad, o null si no tiene uno declarado: el nodo enseña entonces su número. */
 export function iconoDe(actividadId) {

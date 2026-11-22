@@ -22,16 +22,12 @@ export const PANTALLA_RESUMEN = {
 };
 
 /*
- * Las seis actividades con panel de cierre propio. No usan el recuadro
+ * Las actividades con panel de cierre propio (hoy una; eran seis). No usan el recuadro
  * compartido, así que la pantalla no las toca, y su aviso de FP sigue saliendo
  * aunque su materia tenga el interruptor encendido.
  */
 export const CON_PANEL_PROPIO = new Set([
-  "memorama-corazon",
-  "memorama-tesoro",
-  "memorama-tesoreria",
-  "memorama-banco-central",
-  "comite-nova",
+  /* Los cuatro memoramas de Macro y «El Comité de NOVA» salieron el 22-nov-2026 con la materia. */
   "ciclo-completo",
 ]);
 
@@ -113,8 +109,9 @@ export const NOTA_REPETIR = "Repetir no suma puntos nuevos.";
  *   solo-puntos   solo la cifra de puntos (exploratorias).
  *   panel-propio  la actividad tiene su propio cierre; no cambia.
  *
- * Macroeconomía, fijo y actividad por actividad: las 49. Hay una prueba que
- * recorre subjects.js y falla si alguna queda sin formato.
+ * Macroeconomía, fijo y actividad por actividad (hoy ninguna: la materia se
+ * rehace). Hay una prueba que recorre subjects.js y falla si alguna queda sin
+ * formato.
  */
 export const FORMATO = {
   X_DE_N: "x-de-n",
@@ -127,72 +124,13 @@ const X = FORMATO.X_DE_N;
 const P = FORMATO.PORCENTAJE;
 const PANEL = FORMATO.PANEL_PROPIO;
 
-export const FORMATO_MACRO = {
-  /* Demanda agregada */
-  "memorama-corazon": PANEL,
-  "cual-componente": X,
-  "electrocardiograma": X,
-  "termometro-reacciones": X,
-  "banco-transfusiones": X,
-  "biopsia-economica": X,
-  "triage-emergencias": X,
-  "cirugia-reconstruccion": P,
-  "sala-monitores": X,
-  "quien-beneficia-auge": X,
-  "explica-paciente": P,
-  "sala-espera-llena": P,
-  /* Política económica */
-  "memorama-tesoro": PANEL,
-  "que-rama-es": X,
-  /* Levi: su resultado es el porcentaje guardado (las dos etapas), no X de N. */
-  "diagnostico-en-vivo": P,
-  "arma-grupo-logico": P,
-  "quien-gana-quien-pierde": X,
-  "corriente-titulares": X,
-  "explica-la-politica": P,
-  "tablero-decisiones": P,
-  "simulador-de-crisis": P,
-  "se-acerca-o-se-aleja": X,
-  "expediente-gabinete": X,
-  "consejo-ministros": X,
-  /* Política fiscal */
-  "memorama-tesoreria": PANEL,
-  "cobra-gasta-o-pide": X,
-  "clasificador-tesoro": X,
-  "directos-indirectos": X,
-  "flujo-de-caja": X,
-  "agujero-fiscal": X,
-  "expansiva-contractiva": X,
-  "disena-presupuesto": P,
-  "deficit-vs-deuda": X,
-  "quien-afecta-ajuste": X,
-  "explica-contribuyente": P,
-  "comite-presupuesto": P,
-  "comite-nova": PANEL,
-  /* Política monetaria */
-  "memorama-banco-central": PANEL,
-  "quien-decide-esto": X,
-  "volante-de-la-tasa": X,
-  "caja-de-herramientas": X,
-  "a-quien-le-pega-la-tasa": X,
-  "las-dos-entradas": X,
-  "cadena-de-transmision": P,
-  "explicaselo-a-un-deudor": P,
-  "corriente-de-decisiones": X,
-  "por-cual-arteria-entra": X,
-  "crea-o-cambia-de-manos": X,
-  "la-escalera-del-encaje": X,
-  /* Los tres instrumentos (Célula A): seis decisiones calificadas, X de N. */
-  "la-tasa-que-muerde": X,
-  "repo-o-definitiva": X,
-  "el-freno-del-encaje": X,
-  "en-que-talla-va": X,
-  "que-toco-el-banco": X,
-  "el-rezago": P,
-  "dilema-banquero-central": X,
-  "duelo-de-instrumentos": X,
-  "disena-respuesta-monetaria": P,
-};
+/*
+ * VACÍO DESDE EL 22-NOV-2026. Aquí estaban las 57 de Macroeconomía, fijas y
+ * una por una. Salieron con la materia, que se rehace desde cero (0258). El
+ * Macro nuevo declara aquí el formato de cada actividad suya: lo que no está
+ * se deduce como en Contabilidad (exploratoria → solo puntos; si no, X de N).
+ */
+export const FORMATO_MACRO = {};
 
 /**
  * El formato de una actividad. Fuera de Macroeconomía (Contabilidad) se

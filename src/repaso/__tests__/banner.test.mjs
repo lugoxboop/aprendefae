@@ -51,16 +51,17 @@ function indice(subjectId) {
   return { ...m, abiertos };
 }
 
-const REPASO = ACTIVIDADES_TRANSVERSALES.find((a) => a.id === "repaso-diario");
+/* Hasta el 22-nov-2026 se probaba en Macroeconomía, cuyo Repaso se retiró con la materia (0258). */
+const REPASO = ACTIVIDADES_TRANSVERSALES.find((a) => a.id === "repaso-diario-contabilidad");
 
-test("Macroeconomía: el banner va encima de la rejilla de temas y fuera de ella", () => {
-  const m = indice("macroeconomia");
+test("Contabilidad: el banner va encima de la rejilla de temas y fuera de ella", () => {
+  const m = indice("contabilidad");
   try {
-    const banners = m.caja.querySelectorAll('[data-banner="repaso-diario"]');
+    const banners = m.caja.querySelectorAll('[data-banner="repaso-diario-contabilidad"]');
     assert.equal(banners.length, 1);
     const banner = banners[0];
     /* La tarjeta de un tema cualquiera, y su rejilla. */
-    const titulo = SUBJECTS.macroeconomia.topics[0].title;
+    const titulo = SUBJECTS.contabilidad.topics[0].title;
     const tarjeta = [...m.caja.querySelectorAll("button")].find((b) => b !== banner && b.textContent.includes(titulo));
     assert.ok(tarjeta, "hay tarjetas de tema");
     const rejilla = tarjeta.closest('div[style*="grid"]');
@@ -81,6 +82,10 @@ test("Macroeconomía: el banner va encima de la rejilla de temas y fuera de ella
   } finally {
     m.desmontar();
   }
+});
+
+test("Macroeconomía, retirada, ya no tiene banner: su Repaso salió con la materia", () => {
+  assert.equal(ACTIVIDADES_TRANSVERSALES.filter((a) => a.indice === "macroeconomia").length, 0);
 });
 
 test("es por materia: Pensamiento Estratégico no tiene banner ni hueco para uno", () => {

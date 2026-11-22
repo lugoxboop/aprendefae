@@ -42,8 +42,13 @@ const h = React.createElement;
 const { default: TopicSplitCard } = await import("../TopicSplitCard.jsx");
 const { SUBJECTS, HACER } = await import("../../data/subjects.js");
 
-const MONETARIA = SUBJECTS.macroeconomia.topics.find((t) => t.id === "politica-monetaria");
-const SIN_HACER = { ...MONETARIA, actividades: MONETARIA.actividades.filter((a) => a.clasificacion?.tipo !== HACER) };
+/*
+ * La tarjeta de muestra era Política Monetaria, que salió con todo
+ * Macroeconomía el 22-nov-2026 (0258). Ahora es un tema de Contabilidad con
+ * Aprender y Hacer: la tarjeta es la misma para las dos materias.
+ */
+const TEMA = SUBJECTS.contabilidad.topics.find((t) => t.id === "cuentas-debe-haber");
+const SIN_HACER = { ...TEMA, actividades: TEMA.actividades.filter((a) => a.clasificacion?.tipo !== HACER) };
 
 const abrir = async (topic) => {
   const caja = document.createElement("div");
@@ -57,7 +62,7 @@ const abrir = async (topic) => {
 };
 
 test("★★★ las dos opciones pesan igual: mismo fondo y mismo borde", async () => {
-  const t = await abrir(MONETARIA);
+  const t = await abrir(TEMA);
   try {
     assert.ok(t.aprender && t.hacer, "hay dos botones de modo");
     assert.equal(t.aprender.style.background, t.hacer.style.background);
@@ -68,7 +73,7 @@ test("★★★ las dos opciones pesan igual: mismo fondo y mismo borde", async 
 });
 
 test("★★★ se distinguen por forma: dibujo de contorno contra dibujo lleno, y la palabra", async () => {
-  const t = await abrir(MONETARIA);
+  const t = await abrir(TEMA);
   try {
     const ga = t.aprender.querySelector("svg");
     const gh = t.hacer.querySelector("svg");
@@ -84,7 +89,7 @@ test("★★★ se distinguen por forma: dibujo de contorno contra dibujo lleno,
 });
 
 test("★★ ni teal ni coral en la cara abierta: ninguno rotula una mitad", async () => {
-  const t = await abrir(MONETARIA);
+  const t = await abrir(TEMA);
   try {
     const html = [t.aprender, t.hacer].map((b) => b.outerHTML).join("");
     assert.doesNotMatch(html, /2a9d8f|42,\s*157,\s*143|e76f51|231,\s*111,\s*81/i);

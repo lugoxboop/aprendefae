@@ -5,14 +5,14 @@ import { ACTIVIDADES_TRANSVERSALES, SUBJECTS, nombreDeTema } from "../../data/su
 import { useAuth } from "../../auth/AuthProvider.jsx";
 import { rachaVigente, proximoHito, HITOS } from "../../fp/racha.js";
 import { useRepaso } from "../../repaso/useRepaso.js";
-import { ID_REPASO, ITEMS_POR_REPASO } from "../../repaso/repaso.js";
+import { ID_REPASO_CONTABILIDAD, ITEMS_POR_REPASO } from "../../repaso/repaso.js";
 import { NAVY_CLARO } from "../backgrounds/MeshGradientBackground.jsx";
 import IconoRacha from "../shared/IconoRacha.jsx";
 import { CARD_SHELL } from "../SubjectCard.jsx";
 import { TONOS, identidadDeTema, variablesDeTono } from "../shared/TarjetaTema.jsx";
 
-/* La ficha del Repaso, de donde salen su nombre y sus FP base. */
-const REPASO = ACTIVIDADES_TRANSVERSALES.find((a) => a.id === ID_REPASO);
+/* La ficha de un Repaso, de donde salen sus FP base si la tarjeta no los trae. Hoy solo queda el de Contabilidad (el de Macro salió el 22-nov-2026). */
+const REPASO = ACTIVIDADES_TRANSVERSALES.find((a) => a.id === ID_REPASO_CONTABILIDAD);
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -418,7 +418,7 @@ const ROTULO = "Cada día · todos los temas";
  */
 export default function BannerRepaso({ actividad, onEmpezar, repaso = null }) {
   const { perfil } = useAuth();
-  /* El repaso de ESTA tarjeta: el de Macro o el de Contabilidad, según `actividad`. */
+  /* El repaso de ESTA tarjeta, según `actividad`. */
   const delHook = useRepaso(actividad?.id);
   const [abierto, setAbierto] = useState(false);
 

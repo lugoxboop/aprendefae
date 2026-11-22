@@ -35,8 +35,9 @@
  * esta prueba podría dejar de jugar una actividad —por un botón renombrado,
  * por un paso nuevo— y seguir en verde sin haberla probado.
  *
- * Y tres pruebas dirigidas, con la secuencia exacta de cada fallo conocido,
- * para que no dependan de que el mono los encuentre.
+ * Y una prueba dirigida, con la secuencia exacta del fallo conocido, para que
+ * no dependa de que el mono la encuentre. Eran tres; las otras dos eran de
+ * Macroeconomía y salieron con la materia (0258).
  * ═══════════════════════════════════════════════════════════════════════════
  */
 import { test, mock } from "node:test";
@@ -111,9 +112,8 @@ const MECANICAS = "../../components/mecanicas/";
  * Son todas las que mandan detalle —tablero-decisiones no manda—, con la firma
  * con la que las monta su vista.
  *
- * `archivo#Nombre` para las que viven como export con nombre: los quince de la
- * 0030 comparten seis mecánicas y cada actividad es un export de
- * bloques/cimientos.jsx o bloques/avanzados.jsx.
+ * `archivo#Nombre` para las que viven como export con nombre (así vivían los
+ * quince de la 0030 de Macro, retirados en la 0258).
  */
 const ACTIVIDADES = [
   ["camara-presion", "CamaraPresion.jsx", 3],
@@ -124,56 +124,13 @@ const ACTIVIDADES = [
   ["transmision-superficie", "TransmisionSuperficie.jsx", 2],
   ["corriente-cruzada", "CorrienteCruzada.jsx", 2],
   ["proyecto-arca", "arca/ProyectoArca.jsx", 2],
-  ["diagnostico-en-vivo", "DiagnosticoEnVivo.jsx", 2],
-  ["arma-grupo-logico", "ArmaGrupoLogico.jsx", 2],
-  ["quien-gana-quien-pierde", "QuienGanaQuienPierde.jsx", 2],
-  ["corriente-titulares", "CorrienteTitulares.jsx", 2],
-  ["explica-la-politica", "ExplicaLaPolitica.jsx", 2],
-  ["simulador-de-crisis", "SimuladorDeCrisis.jsx", 2],
   ["constructor-mapa-causal", "MapaCausal.jsx", 1],
   ["asedio-estrategico", "AsedioEstrategico.jsx", 2],
-  ["electrocardiograma", "corazon/Electrocardiograma.jsx", 2],
-  ["termometro-reacciones", "corazon/Termometro.jsx", 2],
-  ["banco-transfusiones", "corazon/BancoTransfusiones.jsx", 2],
-  ["biopsia-economica", "corazon/Biopsia.jsx", 2],
-  ["triage-emergencias", "corazon/Triage.jsx", 2],
-  ["cirugia-reconstruccion", "corazon/Cirugia.jsx", 2],
-  ["sala-monitores", "corazon/SalaMonitores.jsx", 2],
-  ["clasificador-tesoro", "tesoreria/ClasificadorTesoro.jsx", 2],
-  ["directos-indirectos", "tesoreria/DirectosIndirectos.jsx", 2],
-  ["flujo-de-caja", "tesoreria/FlujoDeCaja.jsx", 2],
-  ["agujero-fiscal", "tesoreria/AgujeroFiscal.jsx", 2],
-  ["expansiva-contractiva", "tesoreria/ExpansivaContractiva.jsx", 2],
-  ["disena-presupuesto", "tesoreria/DisenaPresupuesto.jsx", 2],
-  ["deficit-vs-deuda", "tesoreria/DeficitVsDeuda.jsx", 2],
-  ["memorama-tesoro", "bloques/cimientos.jsx#MemoramaTesoro", 2],
-  ["memorama-corazon", "bloques/cimientos.jsx#MemoramaCorazon", 2],
-  ["memorama-tesoreria", "bloques/cimientos.jsx#MemoramaTesoreria", 2],
-  ["que-rama-es", "bloques/cimientos.jsx#QueRamaEs", 2],
-  ["cual-componente", "bloques/cimientos.jsx#CualComponente", 2],
-  ["cobra-gasta-o-pide", "bloques/cimientos.jsx#CobraGastaOPide", 2],
-  ["se-acerca-o-se-aleja", "bloques/avanzados.jsx#SeAcerca", 2],
-  ["expediente-gabinete", "bloques/avanzados.jsx#ExpedienteGabinete", 2],
-  ["consejo-ministros", "bloques/avanzados.jsx#ConsejoMinistros", 2],
-  ["quien-beneficia-auge", "bloques/avanzados.jsx#QuienBeneficiaAuge", 2],
-  ["quien-afecta-ajuste", "bloques/avanzados.jsx#QuienAfectaAjuste", 2],
-  ["explica-paciente", "bloques/avanzados.jsx#ExplicaPaciente", 2],
-  ["explica-contribuyente", "bloques/avanzados.jsx#ExplicaContribuyente", 2],
-  ["sala-espera-llena", "bloques/avanzados.jsx#SalaEsperaLlena", 2],
-  ["comite-presupuesto", "bloques/avanzados.jsx#ComitePresupuesto", 2],
-  /* Política Monetaria (0031) */
-  ["memorama-banco-central", "maquinas/actividades.jsx#MemoramaBancoCentral", 2],
-  ["quien-decide-esto", "maquinas/actividades.jsx#QuienDecideEsto", 2],
-  ["volante-de-la-tasa", "maquinas/actividades.jsx#VolanteDeLaTasa", 2],
-  ["caja-de-herramientas", "maquinas/actividades.jsx#CajaDeHerramientas", 2],
-  ["a-quien-le-pega-la-tasa", "maquinas/actividades.jsx#AQuienLePegaLaTasa", 2],
-  ["cadena-de-transmision", "maquinas/actividades.jsx#CadenaDeTransmision", 2],
-  ["explicaselo-a-un-deudor", "maquinas/actividades.jsx#ExplicaseloADeudor", 2],
-  ["corriente-de-decisiones", "maquinas/actividades.jsx#CorrienteDeDecisiones", 2],
-  ["el-rezago", "maquinas/actividades.jsx#ElRezago", 2],
-  ["dilema-banquero-central", "maquinas/actividades.jsx#DilemaBanqueroCentral", 2],
-  ["duelo-de-instrumentos", "maquinas/actividades.jsx#DueloDeInstrumentos", 2],
-  ["disena-respuesta-monetaria", "maquinas/actividades.jsx#DisenaRespuestaMonetaria", 2],
+  /*
+   * Las 45 de Macroeconomía que estaban aquí (Política Económica, Demanda
+   * Agregada, Política Fiscal y Política Monetaria) salieron con la materia el
+   * 22-nov-2026 (0258): sus mecánicas ya no existen y no hay nada que jugar.
+   */
 ];
 
 /*
@@ -356,149 +313,13 @@ const dejarCorrer = (ms = 1000) => act(() => { mock.timers.tick(ms); });
  * dejaba `intentos` en 1 para el siguiente, y acertarlo a la primera se
  * registraba como ok:false, intentos:2.
  */
-test("diagnostico-en-vivo: un titular cerrado no acepta más toques, ni le hereda intentos al siguiente", async () => {
-  const { default: Diagnostico } = await import(MECANICAS + "DiagnosticoEnVivo.jsx");
-  const { PROBLEMAS, sortearTitulares } = await import("../../data/juegosPolitica.js");
-  /* Todos los titulares del banco, sacados del propio sorteo: cada uno por su texto. */
-  const banco = new Map();
-  for (let k = 0; k < 400; k++) for (const t of sortearTitulares()) banco.set(t.texto, t);
-
-  let detalle = null;
-  const { caja, desmontar } = await montar(Diagnostico, { onCompletar: (_p, _ms, d) => { detalle = d; } }, 2026);
-  const titularEnPantalla = () => {
-    const texto = [...banco.keys()].find((t) => caja.textContent.includes(t));
-    return texto ? banco.get(texto) : null;
-  };
-  const boton = (problemaId) => {
-    const p = PROBLEMAS.find((x) => x.id === problemaId);
-    return caja.querySelector(`button[aria-label="Clasificar como ${p.nombre}"]`);
-  };
-  const otroQue = (problemaId, salvo = null) => PROBLEMAS.find((x) => x.id !== problemaId && x.id !== salvo).id;
-
-  try {
-    const vistos = [];
-    for (let n = 0; n < 8; n++) {
-      const t = titularEnPantalla();
-      assert.ok(t, `no hay titular en pantalla en la vuelta ${n + 1}`);
-      vistos.push(t.id);
-
-      if (n === 0) {
-        /* Dos fallos —se cierra— y el correcto antes de que avance: el fallo de producción. */
-        click(boton(otroQue(t.problema)));
-        click(boton(otroQue(t.problema, otroQue(t.problema))));
-        const correcto = boton(t.problema);
-        if (!correcto.disabled) click(correcto);
-      } else if (n === 1) {
-        /* Dos fallos —se cierra— y un TERCER fallo antes de que avance: la variante de intentos. */
-        const a = otroQue(t.problema);
-        const b = otroQue(t.problema, a);
-        click(boton(a));
-        click(boton(b));
-        if (!boton(a).disabled) click(boton(a));
-      } else {
-        /* El resto, a la primera. */
-        click(boton(t.problema));
-      }
-      dejarCorrer();
-    }
-
-    assert.equal(new Set(vistos).size, 8, `salieron titulares repetidos o se saltó alguno: ${vistos.join(", ")}`);
-
-    /* Etapa 2: cualquier respuesta cierra la partida. */
-    click([...caja.querySelectorAll("button")].find((b) => b.getAttribute("aria-label")?.includes("brecha")));
-    await act(async () => {});
-
-    assert.ok(detalle, "la partida no llegó a registrarse");
-    const titulares = detalle.filter((f) => f.item !== "brecha");
-    assert.deepEqual(repetidos(detalle), [], "ítems repetidos en el detalle");
-    assert.equal(titulares.length, 8, "tienen que registrarse los ocho titulares, uno por fila");
-    assert.deepEqual(titulares.map((f) => f.item), vistos, "el detalle tiene que seguir el orden en que se vieron");
-    assert.deepEqual(
-      { ok: titulares[0].ok, intentos: titulares[0].intentos },
-      { ok: false, intentos: 2 },
-      "el primer titular se cerró con dos fallos: el toque de después no lo convierte en acierto",
-    );
-    assert.deepEqual(
-      { ok: titulares[2].ok, intentos: titulares[2].intentos },
-      { ok: true, intentos: 1 },
-      "el tercer titular se acertó a la primera: no puede heredar el intento del toque de más del segundo",
-    );
-  } finally {
-    desmontar();
-  }
-});
-
 /*
- * ═══════════ DIRIGIDA: corriente-titulares Y SU VENTANA DE 240 ms ═══════════
- *
- * Lo mismo con otra forma. Una carta cerrada por dos fallos sigue en la cinta
- * 240 ms: un toque equivocado en ese hueco le dejaba el reintento a la carta
- * SIGUIENTE —que salía con un solo intento y se registraba ok:false,
- * intentos:2 aunque se acertara a la primera—, y uno correcto sumaba un
- * acierto que el detalle no tenía.
+ * Aquí había dos pruebas dirigidas más, la de `diagnostico-en-vivo` (el
+ * fallo de producción que dio origen a esta prueba) y la de
+ * `corriente-titulares`. Salieron el 22-nov-2026 con Macroeconomía (0258):
+ * sus mecánicas ya no existen.
  */
-test("corriente-titulares: una carta cerrada no le deja el reintento a la siguiente, ni suma aciertos", async () => {
-  const { default: Corriente } = await import(MECANICAS + "CorrienteTitulares.jsx");
-  const { CATEGORIAS, BANCO_CORRIENTE } = await import("../../data/juegosPolitica2.js");
 
-  let fin = null;
-  const { caja, desmontar } = await montar(Corriente, { onCompletar: (pct, _ms, d) => { fin = { pct, d }; } }, 77);
-  const cartaEnPantalla = () => BANCO_CORRIENTE.find((x) => caja.textContent.includes(x.texto));
-  const boton = (catId) => {
-    const c = CATEGORIAS.find((x) => x.id === catId);
-    return caja.querySelector(`button[aria-label="Clasificar como ${c.nombre}"]`);
-  };
-  const otras = (catId) => CATEGORIAS.filter((x) => x.id !== catId).map((x) => x.id);
-
-  try {
-    click([...caja.querySelectorAll("button")].find((b) => b.textContent.includes("Encender")));
-    for (let n = 0; n < 40 && !fin; n++) {
-      const carta = cartaEnPantalla();
-      assert.ok(carta, `no hay carta en la cinta en la vuelta ${n + 1}`);
-      const [a, b] = otras(carta.categoria);
-      if (n === 0) {
-        /* Se cierra por dos fallos, y un tercero en el hueco. */
-        click(boton(a));
-        click(boton(b));
-        if (!boton(a).disabled) click(boton(a));
-      } else if (n === 2) {
-        /* Se cierra por dos fallos, y el correcto en el hueco: no puede sumar. */
-        click(boton(a));
-        click(boton(b));
-        if (!boton(carta.categoria).disabled) click(boton(carta.categoria));
-      } else {
-        click(boton(carta.categoria));
-      }
-      dejarCorrer();
-    }
-    await act(async () => {});
-
-    assert.ok(fin, "la tanda no terminó");
-    const filas = fin.d;
-    assert.deepEqual(repetidos(filas), [], "ítems repetidos en el detalle");
-    assert.deepEqual(
-      { ok: filas[1].ok, intentos: filas[1].intentos, respuesta: filas[1].respuesta },
-      { ok: true, intentos: 1, respuesta: null },
-      "la segunda carta se acertó a la primera: no puede heredar el reintento de la primera",
-    );
-    assert.deepEqual({ ok: filas[2].ok, intentos: filas[2].intentos }, { ok: false, intentos: 2 }, "la tercera se cerró con dos fallos");
-    assert.equal(
-      fin.pct,
-      Math.round((filas.filter((f) => f.ok).length * 100) / filas.length),
-      "el porcentaje tiene que salir de las mismas cartas que el detalle: un toque tardío no suma",
-    );
-  } finally {
-    desmontar();
-  }
-});
-
-/*
- * ═══════════ DIRIGIDA: corriente-cruzada, LA FRASE QUE SE VA CON UN TOQUE ENCIMA ═══════════
- *
- * La frase sale por el borde (animationend) y el toque en la red llega antes
- * del pintado: los dos resolvían la MISMA frase. Dos filas, el índice
- * avanzaba dos y la frase siguiente no salía nunca. Gana lo que llegó primero.
- */
 test("corriente-cruzada: una frase que se va y un toque sin pintado en medio cuentan una sola vez", async () => {
   const { default: Cruzada } = await import(MECANICAS + "CorrienteCruzada.jsx");
   const { CORRIENTE } = await import("../../data/icebergActividades.js");

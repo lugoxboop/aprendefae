@@ -2,8 +2,6 @@ import { ASI_SE_JUEGA as BLOQUE_1 } from "./asiSeJuegaBloque1.js";
 import { ASI_SE_JUEGA_BLOQUE2 as BLOQUE_2 } from "./asiSeJuegaBloque2.js";
 import { ASI_SE_JUEGA_BLOQUE3 as BLOQUE_3 } from "./asiSeJuegaBloque3.js";
 import { ASI_SE_JUEGA_TEMA3 as TEMA_3 } from "./asiSeJuegaTema3.js";
-import { ASI_SE_JUEGA_MONETARIA as MONETARIA } from "./asiSeJuegaMonetaria.js";
-import { ASI_SE_JUEGA_FABRICA as FABRICA } from "./pmFabricaDelDinero.js";
 import { ASI_SE_JUEGA_TEMA5 as TEMA_5 } from "./asiSeJuegaTema5.js";
 import { ASI_SE_JUEGA_TEMA6 as TEMA_6 } from "./asiSeJuegaTema6.js";
 import { ASI_SE_JUEGA_T4 as T4 } from "./asiSeJuegaT4.js";
@@ -12,6 +10,8 @@ import { ASI_SE_JUEGA_T4 as T4 } from "./asiSeJuegaT4.js";
  * Todas las actividades que tienen «Así se juega», por id. Cada bloque vive en
  * su archivo; las vistas las leen de aquí. Una actividad que no está aquí no
  * tiene pantalla ni botón «¿Cómo se juega?». Con el bloque 3 están las
- * catorce: las siete del Tema 1 y las siete del Tema 2.
+ * catorce: las siete del Tema 1 y las siete del Tema 2. Las cuatro de Política
+ * Monetaria (arteria, dos entradas, crea o cambia, escalera) salieron el
+ * 22-nov-2026 con todo Macroeconomía.
  */
-export const ASI_SE_JUEGA = { ...BLOQUE_1, ...BLOQUE_2, ...BLOQUE_3, ...TEMA_3, ...MONETARIA, ...FABRICA, ...TEMA_5, ...TEMA_6, ...T4 };
+export const ASI_SE_JUEGA = { ...BLOQUE_1, ...BLOQUE_2, ...BLOQUE_3, ...TEMA_3, ...TEMA_5, ...TEMA_6, ...T4 };

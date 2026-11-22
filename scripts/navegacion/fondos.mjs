@@ -8,7 +8,7 @@
 import { chromium, abrir } from "./base.mjs";
 import { mkdirSync } from "node:fs";
 const [U, DIR = "capturas-fondos", ...solo] = process.argv.slice(2); mkdirSync(DIR, { recursive: true });
-const VISTAS = solo.length ? solo : ["", "macroeconomia", "contabilidad", "pensamiento-estrategico", "camino-da", "grifos-da", "politica-economica", "politica-fiscal", "politica-monetaria", "pensamiento-sistemico", "modelo-iceberg", "fuerzas-porter", "introduccion-contabilidad", "cuentas-debe-haber", "ingresos-gastos-y-caja", "efectivo-caja-menor-bancos", "activos-financieros", "cuentas-por-cobrar", "inventarios-periodico", "inventarios-permanente", "inventarios-descuentos-nic2", "repaso-capitulo-5", "repaso-diario", "repaso-diario-contabilidad", "que-es", "perfil", "perfil/avatar", "tienda", "amigos", "docente", "vivo", "vivo-profesor"];
+const VISTAS = solo.length ? solo : ["", "macroeconomia", "contabilidad", "pensamiento-estrategico", "pensamiento-sistemico", "modelo-iceberg", "fuerzas-porter", "introduccion-contabilidad", "cuentas-debe-haber", "ingresos-gastos-y-caja", "efectivo-caja-menor-bancos", "activos-financieros", "cuentas-por-cobrar", "inventarios-periodico", "inventarios-permanente", "inventarios-descuentos-nic2", "repaso-capitulo-5", "repaso-diario", "repaso-diario-contabilidad", "que-es", "perfil", "perfil/avatar", "tienda", "amigos", "docente", "vivo", "vivo-profesor"];
 const nav = await chromium.launch();
 for (const [w, h] of [[1280, 800], [375, 667]]) for (const v of VISTAS) {
   const { ctx, page } = await abrir(nav, U, w, h, v ? `#/${v}` : "", { quieto: true });
