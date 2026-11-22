@@ -39,3 +39,14 @@
 
 ## Decisiones de Mateo
 - 2026-11-22 17:36 — Lo viejo se quita **al publicar lo nuevo**: el retiro queda listo pero sale en el mismo cambio que el primer lote aprobado. No fusionar el retiro solo.
+
+### Etapa 2 — casillas por tema
+- [x] T1 Demanda agregada · diseño (12 piezas) → `disenos/t1-demanda-agregada.md`
+- [ ] T1 · construcción (rama local `macro26-t1`) → `construccion-t1.md`
+- [ ] T1 · video y verificación de Gen
+- [x] T2 Política económica · diseño (10 piezas) → `disenos/t2-politica-economica.md`
+- [ ] T2 · construcción (empieza sobre la rama de T1: reutiliza sus módulos comunes)
+- [ ] T2 · video y verificación
+- [ ] T3 Política fiscal · diseño
+- [ ] T4 Política monetaria · diseño
+- [ ] T5 Política cambiaria · diseño
