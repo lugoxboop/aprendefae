@@ -27,4 +27,4 @@ T4 Política monetaria → T5 Política cambiaria (nuevo). Es el orden del profe
 8. Clave del taller de 43 enunciados (archivo 2): la armó Gen; el profesor no dio la suya.
 
 ## Conteo
-T1 12 piezas · T2 10 · T3 11 · T4 13 · T5 13 = **59 piezas** (28 Aprender, 31 Hacer).
+T1 12 piezas · T2 10 · T3 11 · T4 13 · T5 13 = **59 piezas** (30 Aprender, 29 Hacer).
