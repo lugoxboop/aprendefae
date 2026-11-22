@@ -86,6 +86,11 @@ export const VISTAS = new Set([
   /* La clase en vivo (0159): el celular del estudiante y el tablero del profesor. */
   "vivo",
   "vivo-profesor",
+  /*
+   * Macroeconomía 2026, VISTA PREVIA sin publicar (src/macro2026/VistaPrevia.jsx).
+   * Solo se entra escribiendo #/macro-2026 o #/macro-2026/<id>: nada la enlaza.
+   */
+  "macro-2026",
 ]);
 
 /*
