@@ -23,7 +23,8 @@
 - **Kit de Cliente completo:** NO está (solo el inicio, ver arriba).
 
 ## En qué estoy ahora
-- 2026-11-22 16:36 — Recién creado (encargo de Mateo). Espacio propio, skill en el repo, bitácora e índice. Esperando el primer encargo de diseño de contenido.
+- 2026-11-22 16:36 — Recién creado (encargo de Mateo). Espacio propio, skill en el repo, bitácora e índice.
+- 2026-11-22 17:40 — ENCARGO: rehacer Macroeconomía desde cero con 5 presentaciones del profesor (DA, Pol. económica, fiscal, monetaria, cambiaria). Mateo ordenó quitar todo lo piloto: se RETIRA (lápida en servidor), no se borran datos de estudiantes. Plan con casillas: `orquestador/conocimiento/macro-2026/plan.md`. Originales en el almacén privado del proyecto (`/mnt/project-files/macro-2026/`), nunca en el repo.
 
 ## Decisiones tomadas y por qué
 -
