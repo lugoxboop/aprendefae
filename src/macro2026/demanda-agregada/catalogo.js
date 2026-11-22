@@ -8,7 +8,12 @@
  * `SUBJECTS.macroeconomia.topics[demanda-agregada].actividades` con esta misma
  * `clasificacion`, y su migración (supabase/macro2026-pendientes/) pasa a
  * supabase/migrations en el mismo cambio. La prueba
- * src/macro2026/__tests__/migracion.test.mjs ata las dos copias.
+ * src/macro2026/__tests__/t1-modelo-y-bancos.test.mjs ata las dos copias.
+ *
+ * SE PUBLICA POR PARTES (Mateo, 22-nov): cada pieza entra sola, apenas está
+ * aprobada, anotando su id en PUBLICADAS_T1. Una Aprender no lleva fila en
+ * actividad_catalogo ni FP, así que puede publicarse sin ninguna Hacer; una
+ * Hacer necesita además su fila de catálogo en supabase/migrations.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -38,4 +43,15 @@ export const PIEZAS_T1 = [
 ];
 
 export const HACER_T1 = PIEZAS_T1.filter((p) => p.tipo === H);
+
+/*
+ * El interruptor de publicación, uno por pieza: los ids que Mateo aprobó.
+ * Vacío = nada visible para los estudiantes. Publicar las seis Aprender es
+ * anotar sus seis ids aquí y declararlas en subjects.js; las Hacer pueden
+ * seguir fuera. Las pruebas exigen que lo declarado en subjects.js y en
+ * supabase/migrations sea exactamente lo anotado aquí, ni más ni menos.
+ */
+export const PUBLICADAS_T1 = Object.freeze([]);
+export const estaPublicada = (id) => PUBLICADAS_T1.includes(id);
+export const piezasPublicadasT1 = () => PIEZAS_T1.filter((p) => estaPublicada(p.id));
 export const piezaT1 = (id) => PIEZAS_T1.find((p) => p.id === id) ?? null;

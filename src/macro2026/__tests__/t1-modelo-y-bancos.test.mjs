@@ -1,7 +1,7 @@
 /*
  * Macro 2026 · T1 Demanda agregada: el modelo numérico (A5, A6, H6), los
  * textos (longitud y fidelidad), los bancos (sorteo, orden aleatorio,
- * subtemas), la migración pendiente y que nada esté publicado todavía.
+ * subtemas), la migración pendiente y que lo publicado sea exactamente PUBLICADAS_T1.
  * Las cifras se MIDEN aquí contra las de la especificación de Gen; no se
  * copian de su tabla (§2 H6: «medir en la prueba del modelo»).
  */
@@ -18,7 +18,7 @@ import {
   APRENDER, BANCO_H1, BANCO_H3, BANCO_H4, BANCO_H5, CONSIGNAS, ETAPAS_H2, PARTIDA_H1, PARTIDA_H3, PARTIDA_H4,
   PARTIDA_H5, RETRO_A5_P5, RETRO_A6_P1, SUBTEMAS,
 } from "../demanda-agregada/textos.js";
-import { HACER_T1, PIEZAS_T1 } from "../demanda-agregada/catalogo.js";
+import { HACER_T1, PIEZAS_T1, PUBLICADAS_T1, estaPublicada } from "../demanda-agregada/catalogo.js";
 import { filasDeCatalogo, revisar } from "../../../scripts/guardian-migraciones.mjs";
 import { SUBJECTS } from "../../data/subjects.js";
 import { VISTAS } from "../../ruta.js";
@@ -283,10 +283,25 @@ test("migración: las 6 Hacer con la clasificación del catálogo, y el guardiá
   assert.deepEqual(revisar([{ nombre: "0270_da26_t1_demanda_agregada.sql", sql: SQL }], cliente), []);
 });
 
-test("nada publicado: ni las piezas en subjects.js ni la migración en supabase/migrations", () => {
+test("publicación por pieza: subjects.js y supabase/migrations llevan exactamente lo anotado en PUBLICADAS_T1", () => {
   const ids = new Set(PIEZAS_T1.map((p) => p.id));
-  for (const m of Object.values(SUBJECTS)) for (const t of m.topics ?? []) for (const a of t.actividades ?? []) assert.ok(!ids.has(a.id), a.id);
-  for (const f of readdirSync("supabase/migrations")) assert.ok(!readFileSync(`supabase/migrations/${f}`, "utf8").includes("da26-"), f);
+  for (const id of PUBLICADAS_T1) assert.ok(ids.has(id), `PUBLICADAS_T1 nombra una pieza que no existe: ${id}`);
+  const declaradas = new Set();
+  for (const m of Object.values(SUBJECTS)) for (const t of m.topics ?? []) for (const a of t.actividades ?? []) if (ids.has(a.id)) declaradas.add(a.id);
+  assert.deepEqual([...declaradas].sort(), [...PUBLICADAS_T1].sort(), "subjects.js = PUBLICADAS_T1");
+  /* Solo las Hacer publicadas tienen fila de catálogo; una Aprender nunca la lleva. */
+  for (const f of readdirSync("supabase/migrations")) {
+    const sql = readFileSync(`supabase/migrations/${f}`, "utf8");
+    for (const id of ids) {
+      if (!sql.includes(id)) continue;
+      assert.ok(estaPublicada(id), `${f} registra ${id} sin estar publicada`);
+      assert.equal(PIEZAS_T1.find((p) => p.id === id).tipo, "hacer", `${f}: ${id} es Aprender y no lleva fila`);
+    }
+  }
+  /* Publicar las Aprender no exige ninguna Hacer: el interruptor es por pieza. */
+  const soloAprender = PIEZAS_T1.filter((p) => p.tipo === "aprender");
+  assert.equal(soloAprender.length, 6);
+  assert.ok(soloAprender.every((p) => !p.clasificacion), "las Aprender no tienen clasificación de FP");
   assert.ok(VISTAS.has("macro-2026"), "la vista previa existe por dirección");
   /* Ningún índice ni tarjeta del sitio enlaza la vista previa. */
   const enlaces = [];
