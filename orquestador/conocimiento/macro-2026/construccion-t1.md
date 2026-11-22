@@ -11,7 +11,7 @@ Vista previa sin publicar: `#/macro-2026` (índice) y `#/macro-2026/<id>` (una p
 - [x] H1 · Llena el carrito
 - [x] A2 · El vaso de la renta
 - [x] A3 · El columpio de la tasa
-- [ ] A4 · Los que no miran la renta
+- [x] A4 · Los que no miran la renta
 - [x] H4 · Lo que oyó el empresario
 - [x] A5 · Bisagra y ascensor
 - [x] H3 · ¿Gira o sube?
