@@ -14,7 +14,7 @@ Vista previa sin publicar: `#/macro-2026` (índice) y `#/macro-2026/<id>` (una p
 - [ ] A4 · Los que no miran la renta
 - [ ] H4 · Lo que oyó el empresario
 - [x] A5 · Bisagra y ascensor
-- [ ] H3 · ¿Gira o sube?
+- [x] H3 · ¿Gira o sube?
 - [ ] A6 · El eco del multiplicador
 - [ ] H2 · Arma la fórmula
 - [ ] H5 · La libreta de la analista
