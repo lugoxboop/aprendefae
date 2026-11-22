@@ -6,7 +6,7 @@
  */
 import { useState } from "react";
 import { COMPONENTES, INK, INK_2, BORDE, FONDO, SUPERFICIE_2 } from "../comun/colores-da.js";
-import { BASE, ecos, fmtCorto, fmtDecimal, fmtEntero, modelo, multiplicador, pendiente } from "../comun/modelo-da.js";
+import { BASE, ecos, fmtCorto, fmtDecimal, fmtEco, fmtEntero, fmtLimpio, modelo, multiplicador, pendiente } from "../comun/modelo-da.js";
 import { Boton, Deslizador, MarcoAprender, Retro, useAncho, usePasos } from "../comun/ui.jsx";
 import { APRENDER, RETRO_A6_P1 } from "./textos.js";
 
@@ -37,7 +37,7 @@ function Eco({ p, mostrados, marcar = false, gasto = 100 }) {
             <g key={j} className="da26-entra" data-anillo={j}>
               <path d={`M${24 + r * Math.cos(-0.9)} ${96 + r * Math.sin(-0.9)} A ${r} ${r} 0 0 1 ${24 + r * Math.cos(0.9)} ${96 + r * Math.sin(0.9)}`}
                 fill="none" stroke={j === 0 ? COMPONENTES.G.color : INK} strokeWidth={1 + (v / gasto) * 6} opacity={0.35 + 0.65 * (v / gasto)} strokeLinecap="round" />
-              <text x={24 + r * Math.cos(j % 2 ? 1.05 : -1.05)} y={96 + r * Math.sin(j % 2 ? 1.05 : -1.05) + (j % 2 ? 16 : -6)} fontSize={12} fill={INK} textAnchor="middle" className="da26-mono">{fmtCorto(v)}</text>
+              <text x={24 + r * Math.cos(j % 2 ? 1.05 : -1.05)} y={96 + r * Math.sin(j % 2 ? 1.05 : -1.05) + (j % 2 ? 16 : -6)} fontSize={12} fill={INK} textAnchor="middle" className="da26-mono">{fmtEco(v)}</text>
             </g>
           );
         })}
@@ -45,7 +45,7 @@ function Eco({ p, mostrados, marcar = false, gasto = 100 }) {
           <text x={4} y={12} fontSize={12} fill={INK_2} data-quien>{QUIEN[mostrados - 1]}</text>
         )}
         {marcar && mostrados > 1 && (
-          <text x={24 + 35} y={150} fontSize={12} fill={INK} fontWeight={700}>× {fmtDecimal(k, 1)} = c(1 − t)</text>
+          <text x={24 + 35} y={150} fontSize={12} fill={INK} fontWeight={700}>× {fmtLimpio(k, 2)} = c(1 − t)</text>
         )}
         {/* la barra que apila */}
         <rect x={barX} y={barBase - barAlto} width={barW} height={barAlto} fill={FONDO} stroke={BORDE} />
@@ -132,7 +132,7 @@ export default function A6EcoMultiplicador({ onTerminar }) {
     );
     figura = (
       <div style={{ display: "flex", gap: 8 }}>
-        <Marcador id="inclinacion" rotulo="Inclinación c(1 − t)" valor={fmtDecimal(pendiente(p), 2)} />
+        <Marcador id="inclinacion" rotulo="Inclinación c(1 − t)" valor={fmtLimpio(pendiente(p), 2)} />
         <Marcador id="multiplicador" rotulo="Multiplicador" valor={fmtDecimal(multiplicador(p), 1)} />
       </div>
     );

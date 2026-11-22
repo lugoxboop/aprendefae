@@ -120,7 +120,7 @@ export const BANCO_H3 = [
   { id: "h3-4", suceso: "Sube la tasa del impuesto de renta, t.", tipo: "gira", sentido: -1, cambio: { t: 0.45 }, retro: { tipo: "t está en la inclinación, c(1 − t): gira.", sentido: "Más impuesto, menos renta disponible: se aplana." }, subtemas: ["da-grafica", "da-consumo"] },
   { id: "h3-5", suceso: "Crece la incertidumbre y cae la inversión autónoma.", tipo: "desplaza", sentido: -1, cambio: { Ibar: 80 }, retro: { tipo: "Ī es autónoma: desplaza la recta entera.", sentido: "Menos inversión, menos DA: baja." }, subtemas: ["da-grafica", "da-inversion"] },
   { id: "h3-6", suceso: "El dólar sube y crecen las exportaciones netas.", tipo: "desplaza", sentido: 1, cambio: { XN: 170 }, retro: { tipo: "XN no depende de la renta: desplaza.", sentido: "Más exportaciones netas, más DA: sube." }, subtemas: ["da-grafica", "da-exportaciones-netas"] },
-  { id: "h3-7", suceso: "Las familias ahorran una fracción mayor de cada peso.", tipo: "gira", sentido: -1, cambio: { c: 0.6 }, retro: { tipo: "Ahorrar más es bajar c: cambia la inclinación.", sentido: "Si s sube, c baja: la recta se aplana." }, subtemas: ["da-grafica", "da-consumo"] },
+  { id: "h3-7", suceso: "Las familias ahorran una fracción mayor de cada peso.", tipo: "gira", sentido: -1, cambio: { c: 0.65 }, retro: { tipo: "Ahorrar más es bajar c: cambia la inclinación.", sentido: "Si s sube, c baja: la recta se aplana." }, subtemas: ["da-grafica", "da-consumo"] },
   { id: "h3-8", suceso: "El Gobierno reduce los subsidios a familias.", tipo: "desplaza", sentido: -1, cambio: { TR: -100 }, retro: { tipo: "TR entra en el arranque, vía c·TR: desplaza.", sentido: "Menos subsidios, menos consumo: baja." }, subtemas: ["da-grafica", "da-consumo"] },
 ];
 export const PARTIDA_H3 = 6;

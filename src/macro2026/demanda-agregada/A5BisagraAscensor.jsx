@@ -6,7 +6,7 @@
  * Cada pantalla parte del modelo común y solo mueve sus propios controles.
  */
 import { useState } from "react";
-import { arranque, BASE, fmtDecimal, fmtEntero, modelo, pendiente, produccion } from "../comun/modelo-da.js";
+import { arranque, BASE, fmtDecimal, fmtEntero, fmtLimpio, modelo, pendiente, produccion } from "../comun/modelo-da.js";
 import GraficaDA from "../comun/GraficaDA.jsx";
 import { Boton, Deslizador, Interruptor, MarcoAprender, Retro, usePasos } from "../comun/ui.jsx";
 import { APRENDER, RETRO_A5_P5 } from "./textos.js";
@@ -25,7 +25,7 @@ const conFantasma = (p) => {
 function Lectura({ p }) {
   return (
     <p className="da26-rotulo da26-mono" style={{ margin: "4px 0 0", textAlign: "center" }} data-lectura-recta>
-      DA = {fmtEntero(arranque(p))} + {fmtDecimal(pendiente(p), 2)}·Y
+      DA = {fmtEntero(arranque(p))} + {fmtLimpio(pendiente(p), 2)}·Y
     </p>
   );
 }

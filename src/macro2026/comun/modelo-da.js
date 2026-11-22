@@ -70,6 +70,15 @@ export function fmtCorto(x, decimales = 1) {
   return Number.isInteger(r) ? fmtEntero(r) : fmtDecimal(r, decimales);
 }
 
+/** Un eco de A6: entero si lo es; si no, un decimal (21,6 · 13,0 · 7,8). */
+export const fmtEco = (x) => (Math.abs(x - Math.round(x)) < 1e-9 ? fmtEntero(x) : fmtDecimal(x, 1));
+
+/** Hasta `d` decimales, sin ceros sobrantes: 0,6 · 0,64 · 0,8. */
+export function fmtLimpio(x, d = 2) {
+  const t = fmtDecimal(x, d).replace(/0+$/, "");
+  return t.endsWith(",") ? t.slice(0, -1) : t;
+}
+
 export const fmtPct = (fraccion) => `${fmtCorto(fraccion * 100)} %`;
 
 /* ─── H6 · Lleva la economía a la meta ─────────────────────────────────── */
@@ -123,6 +132,7 @@ export const produccionH6 = (etapa, valor) => produccion(modelo(etapa.aModelo(va
 export function juzgarH6(etapa, valor) {
   const y = produccionH6(etapa, valor);
   const d = y - etapa.meta;
-  if (Math.abs(d) <= TOLERANCIA_H6) return { estado: "dentro", y };
+  /* 1e-9: (590 + 60 − 80) × 2,5 da 1425,0000000002 en coma flotante y es «dentro». */
+  if (Math.abs(d) <= TOLERANCIA_H6 + 1e-9) return { estado: "dentro", y };
   return { estado: d > 0 ? "arriba" : "abajo", y };
 }
