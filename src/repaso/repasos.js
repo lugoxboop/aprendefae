@@ -1,5 +1,4 @@
-import { ID_REPASO, MATERIAS_DEL_POOL, ID_REPASO_CONTABILIDAD, TEMAS_DEL_POOL_CONTABILIDAD } from "./repaso.js";
-import { POOL } from "./items.js";
+import { ID_REPASO_CONTABILIDAD, TEMAS_DEL_POOL_CONTABILIDAD } from "./repaso.js";
 import { POOL_CONTABILIDAD } from "./contabilidad/index.js";
 
 /*
@@ -7,27 +6,30 @@ import { POOL_CONTABILIDAD } from "./contabilidad/index.js";
  * LOS REPASOS DIARIOS QUE EXISTEN, Y DE DÓNDE SALE EL POOL DE CADA UNO.
  *
  * Hasta el 23-oct-2026 había uno, el de Macroeconomía, y el motor lo llevaba
- * escrito por dentro. Ahora el motor recibe el repaso como dato y cada función
- * que antes miraba a Macro toma `repaso` con Macro POR DEFECTO: quien no lo
- * pasa obtiene, línea por línea, el comportamiento de siempre. Macroeconomía
- * tiene estudiantes reales y su Repaso no cambia ni en la semilla del día.
+ * escrito por dentro. Desde entonces el motor recibe el repaso como dato.
+ *
+ * El 22-nov-2026 el de Macro salió con todo su material (orden de Mateo: la
+ * materia se rehace desde cero), así que hoy hay uno, el de Contabilidad. Con
+ * él se fue el «Macro por defecto»: las funciones del motor ya no suponen un
+ * repaso, lo reciben siempre, y repasoDe() sin id avisa en vez de elegir uno.
+ * Un default que apunta a otra materia es la forma más fácil de pintarle a un
+ * estudiante el pool equivocado sin que nada falle.
+ *
+ * Cuando el Macro nuevo tenga pool, entra aquí con su propio id (el viejo,
+ * «repaso-diario», es lápida desde la 0258).
  *
  *   id         la actividad transversal (ACTIVIDADES_TRANSVERSALES)
  *   materiaId  la materia a la que vuelve y cuyo fondo pinta
  *   temas      los temas que alimentan el pool, en su orden
- *   pool       los ítems (el de Macro en items.js; el de Contabilidad, por tema)
+ *   pool       los ítems (src/repaso/contabilidad/, por tema)
  * ═══════════════════════════════════════════════════════════════════════════
  */
 export const REPASOS = {
-  [ID_REPASO]: { id: ID_REPASO, materiaId: "macroeconomia", temas: MATERIAS_DEL_POOL, pool: POOL },
   [ID_REPASO_CONTABILIDAD]: { id: ID_REPASO_CONTABILIDAD, materiaId: "contabilidad", temas: TEMAS_DEL_POOL_CONTABILIDAD, pool: POOL_CONTABILIDAD },
 };
 
-export const REPASO_MACRO = REPASOS[ID_REPASO];
-
-/** El repaso de un id, o el de Macro si no se dice cuál. */
+/** El repaso de un id. Sin id, o con uno que no existe, revienta: no hay repaso por defecto. */
 export function repasoDe(id) {
-  if (!id) return REPASO_MACRO;
   const r = REPASOS[id];
   if (!r) throw new Error(`Repaso desconocido: ${id}`);
   return r;

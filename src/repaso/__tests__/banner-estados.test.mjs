@@ -32,7 +32,8 @@ const { default: BannerRepaso, SUBTITULO_REPASO, copiaBloqueo, copiaHito, avance
 const { ACTIVIDADES_TRANSVERSALES } = await import("../../data/subjects.js");
 const { AuthProvider } = await import("../../auth/AuthProvider.jsx");
 
-const REPASO = ACTIVIDADES_TRANSVERSALES.find((a) => a.id === "repaso-diario");
+/* Era el de Macro hasta el 22-nov-2026 (retirado en la 0258); el banner es el mismo. */
+const REPASO = ACTIVIDADES_TRANSVERSALES.find((a) => a.id === "repaso-diario-contabilidad");
 
 function montar(elemento) {
   const caja = document.createElement("div");
@@ -46,7 +47,7 @@ const conEstado = (repaso, onEmpezar = () => {}) =>
   montar(React.createElement(AuthProvider, null,
     React.createElement(BannerRepaso, { actividad: REPASO, onEmpezar, repaso })));
 
-const PREVIA = { items: new Array(10).fill(null), temas: ["demanda-agregada", "politica-fiscal"], cuantos: 10, topeRelajado: false };
+const PREVIA = { items: new Array(10).fill(null), temas: ["introduccion-contabilidad", "efectivo-caja-menor-bancos"], cuantos: 10, topeRelajado: false };
 const PENDIENTE = { cargando: false, error: false, estado: "listo", previa: PREVIA, faltan: 0, racha: 5 };
 const HECHO = { cargando: false, error: false, estado: "hecho-hoy", previa: null, faltan: 0, racha: 5 };
 const BLOQUEADO = { cargando: false, error: false, estado: "pocas-actividades", previa: null, faltan: 2, racha: 0 };
@@ -171,7 +172,7 @@ test("expansión pendiente: temas del día, cuenta de ítems y FP, y el botón",
     const e = m.caja.querySelector("[data-expansion]");
     /* Rediseño 18-nov: los temas son pastillas y las cifras, fichas. */
     assert.match(e.textContent, /Hoy entran/);
-    assert.deepEqual([...e.querySelectorAll("[data-temas] [data-tema]")].map((t) => t.textContent), ["Demanda Agregada", "Política Fiscal"]);
+    assert.deepEqual([...e.querySelectorAll("[data-temas] [data-tema]")].map((t) => t.textContent), ["Introducción a la contabilidad", "Efectivo, caja menor y bancos"]);
     const cuenta = e.querySelector("[data-cuenta]").textContent;
     assert.match(cuenta, /10ítems/);
     assert.match(cuenta, /60FP como máximo/);

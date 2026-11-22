@@ -1,5 +1,5 @@
 import { REPASOS } from "../repaso/repasos.js";
-import { ID_REPASO, ID_REPASO_CONTABILIDAD } from "../repaso/repaso.js";
+import { ID_REPASO_CONTABILIDAD } from "../repaso/repaso.js";
 import { SUBJECTS } from "../data/subjects.js";
 
 /*
@@ -16,7 +16,8 @@ import { SUBJECTS } from "../data/subjects.js";
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-const REPASO_DE_MATERIA = { macroeconomia: ID_REPASO, contabilidad: ID_REPASO_CONTABILIDAD };
+/* Macroeconomía salió el 22-nov-2026 con su Repaso: su banco de preguntas era ese pool. Vuelve cuando el Macro nuevo tenga el suyo. */
+const REPASO_DE_MATERIA = { contabilidad: ID_REPASO_CONTABILIDAD };
 
 export const MATERIAS_EN_VIVO = Object.keys(REPASO_DE_MATERIA);
 

@@ -7,18 +7,30 @@
  * cupos del sorteo y los mensajes, literales de Gen.
  *
  * DESACOPLADO DE DÓNDE APARECE. Bajo qué índice vive la entrada lo dice
- * ACTIVIDADES_TRANSVERSALES en subjects.js (`indice`). Qué materias alimentan
- * el pool lo dice MATERIAS_DEL_POOL, aquí. El día que Pensamiento Estratégico
- * salga de standby, se añaden sus temas a esta lista y la entrada se mueve de
- * índice, cada cosa por su lado: ni el banner ni el motor de selección saben
- * dónde está la entrada.
+ * ACTIVIDADES_TRANSVERSALES en subjects.js (`indice`). Qué temas alimentan
+ * el pool lo dice la lista de temas de cada repaso, aquí (y repasos.js los
+ * junta con su pool): ni el banner ni el motor de selección saben dónde está
+ * la entrada.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
+/*
+ * EL REPASO DE MACRO, RETIRADO (22-nov-2026). Su pool eran los juegos de los
+ * cuatro temas de Macroeconomía, que salieron enteros para rehacerse desde
+ * cero; su fila es lápida desde la 0258. El id se queda aquí y no es descuido:
+ *
+ *  · fp_history y repaso_historial lo guardan, y el panel docente lo sigue
+ *    leyendo (etiquetasItem.js).
+ *  · Dos reglas del motor preguntan «¿es el de Macro?»: la semilla del día
+ *    (seleccion.js) y la función del servidor que dice si ya se hizo hoy
+ *    (datos.js). La rama de Contabilidad es la otra y no cambia; si un día
+ *    se quita la de Macro, la de Contabilidad tiene que quedar idéntica (su
+ *    semilla lleva el id al final), o su mezcla del día cambia a quien ya
+ *    la vio.
+ *
+ * Lo que ya no existe es su lista de temas ni su pool.
+ */
 export const ID_REPASO = "repaso-diario";
-
-/* Los temas (materias, en el lenguaje de la ficha) cuyo contenido entra al pool. v1: solo Macro. */
-export const MATERIAS_DEL_POOL = ["politica-economica", "demanda-agregada", "politica-fiscal", "politica-monetaria"];
 
 /*
  * EL REPASO DE CONTABILIDAD (orden de Mateo del 23-oct-2026). El mismo motor,

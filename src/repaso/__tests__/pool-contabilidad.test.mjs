@@ -2,8 +2,8 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 
 import { SUBJECTS, HACER, actividadesDeTipo, temasVisibles, ACTIVIDADES_TRANSVERSALES, ubicacionDeActividad } from "../../data/subjects.js";
-import { ID_REPASO, ID_REPASO_CONTABILIDAD, TEMAS_DEL_POOL_CONTABILIDAD, MINIMO_POOL } from "../repaso.js";
-import { REPASOS, REPASO_MACRO, repasoDe, poolDel } from "../repasos.js";
+import { ID_REPASO_CONTABILIDAD, TEMAS_DEL_POOL_CONTABILIDAD, MINIMO_POOL } from "../repaso.js";
+import { REPASOS, repasoDe, poolDel } from "../repasos.js";
 import { POOL_CONTABILIDAD, FUERA_DEL_POOL_CONTABILIDAD } from "../contabilidad/index.js";
 import { itemDeRepaso, subtemaPorRegla } from "../contabilidad/forma.js";
 import { estadoRepaso, actividadesDelPool, faltanActividades, semillaDelDia, unidadesDe } from "../seleccion.js";
@@ -13,7 +13,8 @@ import { estadoRepaso, actividadesDelPool, faltanActividades, semillaDelDia, uni
  * EL REPASO DE CONTABILIDAD: el motor compartido y el pool por células.
  *
  * Lo que se cuida aquí, en orden de gravedad:
- *   1. Que el Repaso de Macro NO cambie: tiene estudiantes reales.
+ *   1. Que el motor no caiga a un repaso por defecto: desde el 22-nov-2026
+ *      el de Macro está retirado (0258) y el de Contabilidad es el único.
  *   2. Que el de Contabilidad mezcle exactamente los temas que el índice
  *      enseña este semestre, ni uno más.
  *   3. Que lo que entregue cada célula esté bien formado y completo.
@@ -24,22 +25,28 @@ import { estadoRepaso, actividadesDelPool, faltanActividades, semillaDelDia, uni
 const CONTA = REPASOS[ID_REPASO_CONTABILIDAD];
 const hacerDe = (temaId) => actividadesDeTipo(SUBJECTS.contabilidad.topics.find((t) => t.id === temaId), HACER).map((a) => a.id);
 
-test("★ sin decir cuál, el motor sigue siendo el de Macro", () => {
-  assert.equal(repasoDe(), REPASO_MACRO);
-  assert.equal(REPASO_MACRO.id, ID_REPASO);
-  assert.deepEqual(REPASO_MACRO.temas, ["politica-economica", "demanda-agregada", "politica-fiscal", "politica-monetaria"]);
-  /* La semilla de Macro es la de siempre: cambiarla le cambiaría la mezcla del día a quien ya la vio. */
+test("★ sin decir cuál, el motor no adivina: el de Macro ya no existe", () => {
+  /*
+   * Hasta el 22-nov-2026 el repaso por defecto era el de Macro. Se retiró con
+   * la materia (0258), y un motor que cayera a otro en silencio le daría a un
+   * estudiante el repaso equivocado: mejor que falle al desarrollar.
+   */
+  assert.deepEqual(Object.keys(REPASOS), [ID_REPASO_CONTABILIDAD]);
+  assert.equal(repasoDe(ID_REPASO_CONTABILIDAD), CONTA);
+  assert.throws(() => repasoDe(), /Repaso desconocido/);
+  assert.throws(() => repasoDe("repaso-diario"), /Repaso desconocido/);
+  /* La semilla de Contabilidad lleva su id: cambiarla le cambiaría la mezcla del día a quien ya la vio. */
   const ahora = new Date("2026-10-23T15:00:00Z");
-  assert.equal(semillaDelDia("u1", ahora), "u1:2026-10-23");
-  assert.notEqual(semillaDelDia("u1", ahora, CONTA), semillaDelDia("u1", ahora));
+  assert.equal(semillaDelDia("u1", ahora, CONTA), "u1:2026-10-23:repaso-diario-contabilidad");
 });
 
-test("★ lo de un repaso no desbloquea el otro", () => {
+test("★ solo desbloquea lo de sus temas: ni otra materia ni el propio Repaso", () => {
   const conta = new Set([...hacerDe("introduccion-contabilidad").slice(0, 2), hacerDe("cuentas-debe-haber")[0]]);
-  assert.equal(actividadesDelPool(conta).length, 0, "las de Contabilidad contaron para el de Macro");
   assert.equal(actividadesDelPool(conta, CONTA).length, 3);
-  assert.equal(estadoRepaso({ hechas: conta, hechoHoy: false }), "pocas-actividades");
+  assert.equal(estadoRepaso({ hechas: new Set([...conta].slice(0, 2)), hechoHoy: false }, CONTA), "pocas-actividades");
   assert.equal(faltanActividades(conta, CONTA), 0);
+  /* Pensamiento Estratégico no cuenta para el de Contabilidad. */
+  assert.equal(actividadesDelPool(new Set(["radar-profundidad", "proyecto-arca", "asedio-estrategico"]), CONTA).length, 0);
   /* Y hacer el propio Repaso no cuenta como actividad del pool. */
   assert.equal(actividadesDelPool(new Set([ID_REPASO_CONTABILIDAD]), CONTA).length, 0);
 });
@@ -100,8 +107,8 @@ test("★ el Repaso de Contabilidad no se publica con el pool a medias", () => {
   const entrada = ACTIVIDADES_TRANSVERSALES.find((a) => a.id === ID_REPASO_CONTABILIDAD);
   assert.ok(entrada, "no está registrado");
   assert.deepEqual(ubicacionDeActividad(ID_REPASO_CONTABILIDAD), { materiaId: "contabilidad", temaId: ID_REPASO_CONTABILIDAD });
-  /* La misma clasificación que el de Macro: el mismo juego, la misma paga. */
-  assert.deepEqual(entrada.clasificacion, ACTIVIDADES_TRANSVERSALES.find((a) => a.id === ID_REPASO).clasificacion);
+  /* La misma clasificación que tenía el de Macro (retirado en la 0258): el mismo juego, la misma paga. */
+  assert.deepEqual(entrada.clasificacion, { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 60, renovableDiario: true });
   if (entrada.publicado === false) return;
   for (const temaId of TEMAS_DEL_POOL_CONTABILIDAD) {
     assert.ok(POOL_CONTABILIDAD.some((x) => x.materia === temaId), `se publicó y «${temaId}» no aporta ni un ítem`);

@@ -1,9 +1,9 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { vistaPreviaDelDia, semillaDelDia, faltanActividades } from "../seleccion.js";
-import { poolDe } from "../items.js";
 import { unidadesDe } from "../seleccion.js";
-import { MINIMO_ACTIVIDADES } from "../repaso.js";
+import { MINIMO_ACTIVIDADES, ID_REPASO_CONTABILIDAD } from "../repaso.js";
+import { REPASOS, poolDel } from "../repasos.js";
 import { barajadorDe, hash32 } from "../../utils/barajar.js";
 
 /*
@@ -17,17 +17,24 @@ import { barajadorDe, hash32 } from "../../utils/barajar.js";
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
+/*
+ * Hasta el 22-nov-2026 esto se probaba con el Repaso de Macro, retirado con
+ * la materia (0258). Ahora, con el de Contabilidad: el motor es el mismo.
+ */
+const CONTA = REPASOS[ID_REPASO_CONTABILIDAD];
+const SUFIJO = `:${ID_REPASO_CONTABILIDAD}`;
+
 /* Seis actividades de tres temas distintos: pool de sobra y tres materias. */
 const HECHAS = new Set([
-  "memorama-corazon", "cual-componente", "electrocardiograma",
-  "memorama-tesoreria", "cobra-gasta-o-pide",
-  "memorama-banco-central",
+  "t1-un-dia-o-un-ano", "t1-en-cual-estado-aparece", "t1-que-entro-y-que-salio",
+  "cu-de-que-familia", "cu-cuadro-dinamicas",
+  "t4-entra-o-sale-de-caja",
 ]);
 
 const AHORA = new Date("2026-09-22T15:00:00Z"); // 10:00 en Bogotá
 const huella = (r) => r.items.map((x) => x.clave).join("|");
 const previa = (extra = {}) =>
-  vistaPreviaDelDia({ hechas: HECHAS, historial: new Map(), ahora: AHORA, usuarioId: "u1", ...extra });
+  vistaPreviaDelDia({ hechas: HECHAS, historial: new Map(), ahora: AHORA, usuarioId: "u1", repaso: CONTA, ...extra });
 
 test("dos llamadas del mismo día y estudiante dan EXACTAMENTE la misma mezcla", () => {
   assert.equal(huella(previa()), huella(previa()), "el banner y la partida tienen que coincidir");
@@ -43,12 +50,12 @@ test("otro día da otra mezcla, y otro estudiante también", () => {
 
 test("la semilla es el estudiante y el día de Bogotá, no la hora", () => {
   /* Las 23:00 UTC son todavía el mismo día en Bogotá: misma semilla. */
-  assert.equal(semillaDelDia("u1", new Date("2026-09-22T15:00:00Z")), "u1:2026-09-22");
-  assert.equal(semillaDelDia("u1", new Date("2026-09-22T23:00:00Z")), "u1:2026-09-22");
+  assert.equal(semillaDelDia("u1", new Date("2026-09-22T15:00:00Z"), CONTA), "u1:2026-09-22" + SUFIJO);
+  assert.equal(semillaDelDia("u1", new Date("2026-09-22T23:00:00Z"), CONTA), "u1:2026-09-22" + SUFIJO);
   /* Y las 02:00 UTC del 23 siguen siendo el 22 en Bogotá. */
-  assert.equal(semillaDelDia("u1", new Date("2026-09-23T02:00:00Z")), "u1:2026-09-22");
+  assert.equal(semillaDelDia("u1", new Date("2026-09-23T02:00:00Z"), CONTA), "u1:2026-09-22" + SUFIJO);
   /* Sin sesión, una semilla estable igualmente: el invitado no revienta. */
-  assert.equal(semillaDelDia(null, AHORA), "invitado:2026-09-22");
+  assert.equal(semillaDelDia(null, AHORA, CONTA), "invitado:2026-09-22" + SUFIJO);
 });
 
 test("devuelve diez ítems y los temas de los que salen, sin repetir tema", () => {
@@ -66,11 +73,11 @@ test("devuelve diez ítems y los temas de los que salen, sin repetir tema", () =
 
 test("NO tiene efectos secundarios: las entradas quedan intactas", () => {
   const hechas = new Set(HECHAS);
-  const historial = new Map([["sala-monitores:hospital", { ultimoEn: "2026-09-01T10:00:00Z", ultimoOk: false, veces: 1 }]]);
+  const historial = new Map([["t4-entra-o-sale-de-caja:x1", { ultimoEn: "2026-09-01T10:00:00Z", ultimoOk: false, veces: 1 }]]);
   const copiaHechas = new Set(hechas);
   const copiaHistorial = new Map(historial);
 
-  vistaPreviaDelDia({ hechas, historial, ahora: AHORA, usuarioId: "u1" });
+  vistaPreviaDelDia({ hechas, historial, ahora: AHORA, usuarioId: "u1", repaso: CONTA });
 
   assert.deepEqual([...hechas].sort(), [...copiaHechas].sort(), "no toca lo completado");
   assert.equal(historial.size, copiaHistorial.size, "no toca el historial");
@@ -78,12 +85,12 @@ test("NO tiene efectos secundarios: las entradas quedan intactas", () => {
 });
 
 test("faltanActividades cuenta hacia atrás y se queda en cero", () => {
-  assert.equal(faltanActividades(new Set()), MINIMO_ACTIVIDADES);
-  assert.equal(faltanActividades(new Set(["memorama-corazon"])), MINIMO_ACTIVIDADES - 1);
-  assert.equal(faltanActividades(new Set(["memorama-corazon", "cual-componente"])), MINIMO_ACTIVIDADES - 2);
-  assert.equal(faltanActividades(HECHAS), 0, "con seis ya no falta ninguna");
+  assert.equal(faltanActividades(new Set(), CONTA), MINIMO_ACTIVIDADES);
+  assert.equal(faltanActividades(new Set(["t1-un-dia-o-un-ano"]), CONTA), MINIMO_ACTIVIDADES - 1);
+  assert.equal(faltanActividades(new Set(["t1-un-dia-o-un-ano", "cu-de-que-familia"]), CONTA), MINIMO_ACTIVIDADES - 2);
+  assert.equal(faltanActividades(HECHAS, CONTA), 0, "con seis ya no falta ninguna");
   /* Las de fuera del pool no cuentan para desbloquearlo. */
-  assert.equal(faltanActividades(new Set(["asedio-estrategico", "mapa-causal"])), MINIMO_ACTIVIDADES);
+  assert.equal(faltanActividades(new Set(["asedio-estrategico", "mapa-causal"]), CONTA), MINIMO_ACTIVIDADES);
 });
 
 /* ─────────────────── el barajador sembrado ─────────────────── */
@@ -126,5 +133,5 @@ test("el hash es estable y reparte", () => {
 });
 
 test("el pool de prueba da para más de diez unidades: la mezcla elige de verdad", () => {
-  assert.ok(unidadesDe(poolDe(HECHAS)).length > 10, "si no, no habría nada que sortear");
+  assert.ok(unidadesDe(poolDel(CONTA, HECHAS)).length > 10, "si no, no habría nada que sortear");
 });
