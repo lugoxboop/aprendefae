@@ -83,3 +83,10 @@ de la corrida.
 **El código no decide la ruta.** Cada llamada a un agente termina pidiéndole que
 declare a quién le toca seguir. El script obedece. Si no puede leer esa
 declaración, se detiene — no adivina.
+
+## La cola de tareas
+
+Las órdenes de Mateo viven en la **cola de tareas** (Issues con la etiqueta
+`cola-mateo`, cada una con su prioridad y estado). Un turno automático las toma
+cada 5 horas. Cómo funciona: [`conocimiento/cola-de-tareas.md`](conocimiento/cola-de-tareas.md).
+Tablero: `https://github.com/lugoxboop/aprendefae/issues?q=is%3Aissue+label%3Acola-mateo`.
