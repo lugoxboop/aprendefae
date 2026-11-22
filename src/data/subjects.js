@@ -54,7 +54,30 @@ export const SUBJECTS = {
   macroeconomia: {
     id: "macroeconomia",
     name: "Macroeconomía",
-    topics: [],
+    topics: [
+      /*
+       * MACRO 2026 · T1 DEMANDA AGREGADA, PUBLICADA POR PARTES (Mateo, 22-nov).
+       * Lote 1: las seis Aprender. Son las piezas anotadas en PUBLICADAS_T1
+       * (src/macro2026/demanda-agregada/catalogo.js), con su mismo id y nombre;
+       * t1-modelo-y-bancos.test.mjs exige que las dos listas coincidan. Las
+       * Hacer entran después, cada una con su fila en supabase/migrations.
+       *
+       * El id del tema es el de siempre; los de las actividades son nuevos
+       * (da26-*): ninguno reusa un id retirado en la 0258.
+       */
+      {
+        id: "demanda-agregada",
+        title: "Demanda agregada",
+        actividades: [
+          { id: "da26-a1-carrito", nombre: "El carrito de la economía", clasificacion: { tipo: APRENDER } },
+          { id: "da26-a2-vaso-renta", nombre: "El vaso de la renta", clasificacion: { tipo: APRENDER } },
+          { id: "da26-a3-columpio-tasa", nombre: "El columpio de la tasa", clasificacion: { tipo: APRENDER } },
+          { id: "da26-a4-no-miran-renta", nombre: "Los que no miran la renta", clasificacion: { tipo: APRENDER } },
+          { id: "da26-a5-bisagra-ascensor", nombre: "Bisagra y ascensor", clasificacion: { tipo: APRENDER } },
+          { id: "da26-a6-eco-multiplicador", nombre: "El eco del multiplicador", clasificacion: { tipo: APRENDER } },
+        ],
+      },
+    ],
   },
   /*
    * ═══════════════════════ CONTABILIDAD ═══════════════════════

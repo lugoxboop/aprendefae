@@ -44,15 +44,38 @@ test("★★★ el archivo solo se importa a sí mismo: nada de vistas, mecánic
   }
 });
 
-test("★★★ ninguna actividad de Macro vuelve al catálogo ni a las rutas", async () => {
+/*
+ * Las 71 retiradas, leídas de la tabla del respaldo (las 59 con fila y las 12
+ * Aprender sin fila). Es la lista que ningún catálogo ni ruta puede volver a
+ * ofrecer: el Macro nuevo entra con ids nuevos.
+ */
+const VIEJAS = [...readFileSync(join(SRC, "..", "orquestador", "conocimiento", "macro-2026", "respaldo-retiro.md"), "utf8")
+  .matchAll(/^\| `([a-z0-9-]+)` \|/gm)].map((m) => m[1]);
+
+test("★★★ ningún id viejo de Macro vuelve al catálogo ni a las rutas", async () => {
   const { SUBJECTS, ACTIVIDADES_TRANSVERSALES, nombreDeActividad } = await import("../subjects.js");
   const { VISTAS } = await import("../../ruta.js");
-  assert.deepEqual(SUBJECTS.macroeconomia.topics, [], "Macro volvió a tener temas: esta prueba hay que revisarla con el Macro nuevo");
-  assert.equal(ACTIVIDADES_TRANSVERSALES.some((a) => a.materiaId === "macroeconomia"), false);
-  for (const id of ["sala-monitores", "el-rezago", "diagnostico-en-vivo", "repaso-diario", "comite-nova"]) {
+  assert.equal(VIEJAS.length, 71, "la tabla del respaldo tiene las 71");
+  const enCatalogo = new Set([
+    ...Object.values(SUBJECTS).flatMap((m) => m.topics.flatMap((t) => (t.actividades ?? []).map((a) => a.id))),
+    ...ACTIVIDADES_TRANSVERSALES.map((a) => a.id),
+  ]);
+  for (const id of VIEJAS) {
+    assert.ok(!enCatalogo.has(id), `${id} volvió al catálogo`);
     assert.equal(nombreDeActividad(id), null, `${id} volvió al catálogo`);
+    assert.equal(VISTAS.has(id), false, `la ruta ${id} volvió`);
   }
   for (const v of ["politica-economica", "politica-fiscal", "politica-monetaria", "camino-da", "grifos-da", "repaso-diario"]) {
     assert.equal(VISTAS.has(v), false, `la ruta ${v} volvió`);
   }
+});
+
+test("★★★ en el índice de Macro solo está Demanda agregada, con las seis Aprender del lote 1", async () => {
+  const { SUBJECTS, HACER, APRENDER, actividadesDeTipo } = await import("../subjects.js");
+  const { PUBLICADAS_T1 } = await import("../../macro2026/demanda-agregada/catalogo.js");
+  const temas = SUBJECTS.macroeconomia.topics;
+  assert.deepEqual(temas.map((t) => t.id), ["demanda-agregada"], "los otros temas viejos no aparecen");
+  const [da] = temas;
+  assert.deepEqual(actividadesDeTipo(da, APRENDER).map((a) => a.id), [...PUBLICADAS_T1]);
+  assert.deepEqual(actividadesDeTipo(da, HACER), [], "las Hacer siguen sin publicar");
 });

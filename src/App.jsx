@@ -49,6 +49,11 @@ const PanelDocente = lazy(() => import("./components/docente/PanelDocente.jsx"))
 const VivoEstudiante = lazy(() => import("./components/vivo/VivoEstudiante.jsx"));
 const VivoProfesor = lazy(() => import("./components/vivo/VivoProfesor.jsx"));
 
+/* Macroeconomía 2026: vista previa de lo que aún no se publica, solo por dirección (#/macro-2026). */
+const VistaPreviaMacro2026 = lazy(() => import("./macro2026/VistaPrevia.jsx"));
+/* Macroeconomía 2026 · T1, lo publicado: solo las piezas de PUBLICADAS_T1. */
+const TemaDemandaAgregada = lazy(() => import("./macro2026/TemaDemandaAgregada.jsx"));
+
 /*
  * ═══════════ QUÉ VISTAS LLEVAN TÍTULO EN LA CABECERA ═══════════
  *
@@ -71,12 +76,13 @@ const VISTAS_CONTABILIDAD = new Set([
 ]);
 
 /* Bruno no sale en el inicio, los índices de materia ni las páginas de cuenta: ahí no hay actividad que orientar. */
-const VISTAS_SIN_BRUNO = new Set(["home", "macroeconomia", "pensamiento-estrategico", "contabilidad", "docente", "que-es", "perfil", "tienda", "vivo", "vivo-profesor", "salas"]);
+const VISTAS_SIN_BRUNO = new Set(["home", "macroeconomia", "pensamiento-estrategico", "contabilidad", "docente", "que-es", "perfil", "tienda", "vivo", "vivo-profesor", "salas", "macro-2026"]);
 const VISTAS_PE = new Set(["pensamiento-sistemico", "modelo-iceberg", "fuerzas-porter"]);
 const materiaDeVista = (v) => (VISTAS_CONTABILIDAD.has(v) || v === "repaso-diario-contabilidad" ? "Contabilidad" : VISTAS_PE.has(v) ? "Pensamiento Estratégico" : "Macroeconomía");
 
 const VISTAS_CON_TITULO = new Set([
   "macroeconomia", "pensamiento-estrategico", "contabilidad",
+  "demanda-agregada",
   "pensamiento-sistemico", "modelo-iceberg", "fuerzas-porter",
   "introduccion-contabilidad",
   "cuentas-debe-haber",
@@ -195,14 +201,30 @@ export default function App() {
         <MacroTopicIndex
           onOpenTopic={(topicId, modo) => {
             /*
-             * Macroeconomía está sin temas desde el 22-nov-2026 (se rehace
-             * desde cero), así que hoy esto no se llama. Se deja puesto para
-             * el material nuevo: si un tema tiene una vista por mitad, la
-             * excepción va en vistaDeTema(), la misma que usa el panel.
+             * Desde el 22-nov-2026 el único tema es Demanda agregada (Macro
+             * 2026, lote 1), con su vista propia «demanda-agregada». Si un
+             * tema nuevo tiene una vista por mitad, la excepción va en
+             * vistaDeTema(), la misma que usa el panel.
              */
             abrirTema(vistaDeTema(topicId, modo) ?? topicId, modo);
           }}
         />
+      </Suspense>
+    );
+  }
+
+  if (view === "macro-2026") {
+    return wrap(
+      <Suspense fallback={siteFallback}>
+        <VistaPreviaMacro2026 extra={ruta.extra} onBack={goHome} />
+      </Suspense>
+    );
+  }
+
+  if (view === "demanda-agregada") {
+    return wrap(
+      <Suspense fallback={siteFallback}>
+        <TemaDemandaAgregada extra={ruta.extra} onBack={() => setView("macroeconomia")} />
       </Suspense>
     );
   }
