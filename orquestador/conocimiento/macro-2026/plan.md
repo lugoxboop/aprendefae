@@ -50,3 +50,4 @@
 - [x] T3 Política fiscal · diseño (11 piezas) → `disenos/t3-politica-fiscal.md`
 - [x] T4 Política monetaria · diseño (13 piezas) → `disenos/t4-politica-monetaria.md`
 - [x] T5 Política cambiaria · diseño (13 piezas) → `disenos/t5-politica-cambiaria.md`
+- 2026-11-22 18:39 — Mateo: **publicar por partes**, apenas algo esté listo, y avisarle para revisar. El primer lote publicado (los Aprender de T1) sale junto con el retiro de lo viejo.
