@@ -15,7 +15,7 @@ Vista previa sin publicar: `#/macro-2026` (índice) y `#/macro-2026/<id>` (una p
 - [x] H4 · Lo que oyó el empresario
 - [x] A5 · Bisagra y ascensor
 - [x] H3 · ¿Gira o sube?
-- [ ] A6 · El eco del multiplicador
+- [x] A6 · El eco del multiplicador
 - [ ] H2 · Arma la fórmula
 - [ ] H5 · La libreta de la analista
 - [x] H6 · Lleva la economía a la meta
