@@ -33,6 +33,8 @@ const APRENDER = {
 /* Las piezas que se ven: publicadas, de Aprender y con componente. */
 export const piezasVisibles = () => piezasPublicadasT1().filter((p) => p.tipo === "aprender" && APRENDER[p.id]);
 
+/* Las filas de volver llevan .fae-cabecera-titulo: así reservan el hueco de la
+ * pastilla de FP (fija arriba a la izquierda) y no quedan debajo de ella. */
 const ir = (id) => { window.location.hash = serializar(TEMA, "aprender", id ?? null) || "#/"; };
 
 function Lista() {
@@ -65,7 +67,7 @@ function Pieza({ id }) {
   const siguiente = piezas[piezas.findIndex((p) => p.id === id) + 1] ?? null;
   return (
     <>
-      <div style={{ maxWidth: 640, margin: "0 auto 12px" }}>
+      <div className="fae-cabecera-titulo" style={{ display: "flex", alignItems: "center", maxWidth: 640, margin: "0 auto 12px" }}>
         <Boton onClick={() => ir(null)} data-volver-lista>‹ Demanda agregada</Boton>
       </div>
       {terminada ? (
@@ -95,7 +97,7 @@ export default function TemaDemandaAgregada({ extra = null, onBack }) {
       <Raiz data-macro2026-publicado>
         <div style={{ padding: "16px 16px 56px", maxWidth: 672, margin: "0 auto" }}>
           {!abierta && (
-            <div style={{ maxWidth: 640, margin: "0 auto 12px" }}>
+            <div className="fae-cabecera-titulo" style={{ display: "flex", alignItems: "center", maxWidth: 640, margin: "0 auto 12px" }}>
               <Boton onClick={onBack} data-volver-indice>‹ Macroeconomía</Boton>
             </div>
           )}
