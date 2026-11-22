@@ -27,11 +27,11 @@
 - [ ] PR de retiro de todo Macro (catálogo, vistas, rutas, repaso), sin tocar filas de estudiantes
 
 ### Etapa 1 — Fichas (una por archivo, en palabras propias)
-- [ ] Ficha 1 · Demanda agregada → `fichas/1-demanda-agregada.md`
-- [ ] Ficha 2 · Política económica → `fichas/2-politica-economica.md`
-- [ ] Ficha 3 · Política fiscal → `fichas/3-politica-fiscal.md`
-- [ ] Ficha 4 · Política monetaria → `fichas/4-politica-monetaria.md`
-- [ ] Ficha 5 · Política cambiaria → `fichas/5-politica-cambiaria.md`
+- [x] Ficha 1 · Demanda agregada → `fichas/1-demanda-agregada.md`
+- [x] Ficha 2 · Política económica → `fichas/2-politica-economica.md`
+- [x] Ficha 3 · Política fiscal → `fichas/3-politica-fiscal.md`
+- [x] Ficha 4 · Política monetaria → `fichas/4-politica-monetaria.md`
+- [x] Ficha 5 · Política cambiaria → `fichas/5-politica-cambiaria.md`
 - [ ] Mapa de temas (repeticiones y contradicciones) → `mapa.md`
 
 ### Etapa 2 — Por tema: plan, especificación, construcción, video
