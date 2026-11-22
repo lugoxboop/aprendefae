@@ -49,10 +49,11 @@ que solo salen del cliente.
   `src/medallas/medallas.js`). Sin eso, con el total de Macro en cero, se le
   habría apagado a todos.
 - **El panel docente** nombra cada actividad retirada por su nombre
-  (`retiradas.js`), pero ya no cada pregunta: las reglas de etiqueta leían los
-  bancos de `src/data/*` que salieron, así que el desglose por ítem de una
-  partida vieja de Macro enseña el id interno. Se recupera trayendo la regla y
-  su banco del commit padre.
+  (`retiradas.js`) y sigue leyendo cada pregunta de sus partidas viejas: las
+  reglas de etiqueta de Macro se quedan en `src/docente/etiquetasItem.js`, y
+  sus bancos están archivados sin cambios en `src/data/retiradas/macro-2025/`
+  (copia de `d3716a5d`). Ese archivo solo lo importa el etiquetado del panel;
+  `archivo-macro-2025.test.mjs` impide que vuelva al catálogo o a las rutas.
 
 ## Las 71 actividades retiradas
 
