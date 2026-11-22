@@ -13,7 +13,7 @@ Vista previa sin publicar: `#/macro-2026` (índice) y `#/macro-2026/<id>` (una p
 - [ ] A3 · El columpio de la tasa
 - [ ] A4 · Los que no miran la renta
 - [ ] H4 · Lo que oyó el empresario
-- [ ] A5 · Bisagra y ascensor
+- [x] A5 · Bisagra y ascensor
 - [ ] H3 · ¿Gira o sube?
 - [ ] A6 · El eco del multiplicador
 - [ ] H2 · Arma la fórmula

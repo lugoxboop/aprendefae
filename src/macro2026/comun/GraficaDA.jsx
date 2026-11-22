@@ -133,7 +133,7 @@ export default function GraficaDA({
           <text key={`td${t}`} x={M.izq - 4} y={sc.y(t) + 4} fontSize={12} fill={INK_2} textAnchor="end" className="da26-mono">{fmtEntero(t)}</text>
         ))}
         <text x={M.izq + 4} y={M.arr + 4} fontSize={13} fontWeight={700} fill={INK}>DA</text>
-        <text x={M.izq + sc.w} y={alto - 1} fontSize={13} fontWeight={700} fill={INK} textAnchor="end">Y</text>
+        <text x={M.izq + sc.w} y={M.arr + sc.h - 6} fontSize={13} fontWeight={700} fill={INK} textAnchor="end">Y</text>
 
         <g clipPath={`url(#${clip})`}>
           {bisectriz && (
