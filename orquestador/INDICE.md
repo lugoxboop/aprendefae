@@ -60,6 +60,7 @@ archivo, y solo si vas a editarlo.** Quien cree, mueva o renombre un documento
 |---|---|---|
 | `orquestador/conocimiento/prompts/` (7) | Prompts maestros v1 (construcción, auditores, pedagógicos, diseñadores, panel docente, aprender-secuencia, logitos) | Fuente de las skills; normalmente la skill se carga sola |
 | `orquestador/conocimiento/roles/` (5) | Definiciones de rol (células, compilación, gen, levi, xeno) | Al capacitar o revisar un rol |
+| `.claude/skills/gen-disenador-actividades/` | Skill de **Gen**, el diseñador de actividades: convierte un tema en Aprender y Hacer lúdicos y muy visuales. La cargan Miku, Erwin y Magno bajo demanda cuando llega trabajo de contenido | Al diseñar o rediseñar contenido/actividades |
 | `orquestador/conocimiento/herramientas.md` | Las herramientas y sondas de la casa (qué mide cada una) | Antes de medir |
 | `orquestador/conocimiento/herramientas-de-sesion.md` | Cómo instalar Graphify (mapa del código) y los complementos (Agent Skills, Ponytail) en una sesión de código | Un agente de código, una vez; y para consultar el mapa del código |
 
