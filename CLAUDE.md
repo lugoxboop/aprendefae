@@ -97,6 +97,7 @@ como con cualquier general.
 | Necesitas | Está en |
 |---|---|
 | Cómo gastamos poco sin verificar menos | `orquestador/conocimiento/protocolo-de-eficiencia.md` |
+| La cola de tareas de Mateo y el turno automático (dónde se anota cada orden) | `orquestador/conocimiento/cola-de-tareas.md` |
 | Qué técnica web usar (compatibilidad Baseline) | complemento **Modern Web Guidance**; regla n del protocolo |
 | Qué herramienta oficial usar y cuándo (diseño, Supabase, Context7, Playwright, seguridad, Vercel) | regla o del protocolo |
 | El Kit de Calidad (D1 a D9) | `orquestador/conocimiento/kit-de-calidad.md` y `kit.md` |
