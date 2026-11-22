@@ -57,12 +57,12 @@ export const CSS_DA = `
 .da26-solo-lector { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 
 /* Deslizador nativo con estilo (guía «slider»). */
-.da26-desl { position: relative; padding-top: 26px; }
+.da26-desl { position: relative; }
 .da26-desl-cab { display: flex; justify-content: space-between; gap: 8px; font-size: 14px; line-height: 18px; color: ${INK_2}; margin-bottom: 2px; }
-.da26-desl-burbuja { position: absolute; top: 18px; font: 500 14px/18px var(--planck-font-mono, "Geist Mono", ui-monospace, monospace); font-variant-numeric: tabular-nums; color: ${INK}; background: ${FONDO}; border: 1px solid ${BORDE}; border-radius: 6px; padding: 1px 6px; white-space: nowrap; pointer-events: none; }
+.da26-desl-burbuja { position: absolute; top: 20px; font: 500 14px/18px var(--planck-font-mono, "Geist Mono", ui-monospace, monospace); font-variant-numeric: tabular-nums; color: ${INK}; background: ${FONDO}; border: 1px solid ${BORDE}; border-radius: 6px; padding: 1px 6px; white-space: nowrap; pointer-events: none; }
 .da26-desl input[type="range"] {
   --pista: 6px; --pulgar: 44px; --relleno: ${INK}; --vacio: ${GRIS}; --pct: 50%;
-  appearance: none; -webkit-appearance: none; display: block; width: 100%; height: 44px; margin: 30px 0 0; padding: 0; border: 0; background: transparent; cursor: pointer; touch-action: pan-y;
+  appearance: none; -webkit-appearance: none; display: block; width: 100%; height: 44px; margin: 24px 0 0; padding: 0; border: 0; background: transparent; cursor: pointer; touch-action: pan-y;
 }
 .da26-desl input[type="range"]::-webkit-slider-runnable-track { height: var(--pista); border-radius: 999px; background: linear-gradient(to right, var(--relleno) var(--pct), var(--vacio) var(--pct)); }
 .da26-desl input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: var(--pulgar); height: var(--pulgar); margin-top: calc((var(--pista) - var(--pulgar)) / 2); border-radius: 50%; background: ${INK}; border: 6px solid ${FONDO}; box-shadow: 0 0 0 1px ${INK_2}; }
