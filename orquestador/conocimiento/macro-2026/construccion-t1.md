@@ -18,7 +18,7 @@ Vista previa sin publicar: `#/macro-2026` (índice) y `#/macro-2026/<id>` (una p
 - [ ] A6 · El eco del multiplicador
 - [ ] H2 · Arma la fórmula
 - [ ] H5 · La libreta de la analista
-- [ ] H6 · Lleva la economía a la meta
+- [x] H6 · Lleva la economía a la meta
 - [ ] Migración de las 6 Hacer
 - [ ] Pruebas
 - [ ] Videos a 320 y 375
