@@ -49,4 +49,4 @@
 - [ ] T2 · video y verificación
 - [x] T3 Política fiscal · diseño (11 piezas) → `disenos/t3-politica-fiscal.md`
 - [x] T4 Política monetaria · diseño (13 piezas) → `disenos/t4-politica-monetaria.md`
-- [ ] T5 Política cambiaria · diseño
+- [x] T5 Política cambiaria · diseño (13 piezas) → `disenos/t5-politica-cambiaria.md`
