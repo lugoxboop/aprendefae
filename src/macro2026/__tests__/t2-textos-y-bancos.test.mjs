@@ -52,7 +52,7 @@ test("los 43 enunciados del anexo, numerados del 1 al 43", () => {
 
 test("ramas: cuatro tonos distintos de C/I/G/XN, nunca coral, ≥ 3:1 sobre el fondo y ≥ 4,5:1 con la tinta de las pastillas", () => {
   const t1 = Object.values(COMPONENTES).map((c) => c.color.toLowerCase());
-  const tonos = ORDEN_RAMAS.map((r) => RAMAS[r].color.toLowerCase());
+  const tonos = ORDEN_RAMAS.map((r) => RAMAS[r].tono.toLowerCase());
   assert.equal(new Set(tonos).size, 4);
   for (const c of tonos) {
     assert.ok(!t1.includes(c), `${c} repite un tono de T1`);

@@ -57,7 +57,7 @@ const RAMA = {
 
 export function IconoRama({ id, size = 28, color = null, titulo = null }) {
   const r = RAMAS[id];
-  return <Caja size={size} color={color ?? r.color} titulo={titulo}>{RAMA[r.icono]}</Caja>;
+  return <Caja size={size} color={color ?? r.tono} titulo={titulo}>{RAMA[r.icono]}</Caja>;
 }
 
 /* ─── Los problemas (A2, A3) y su versión curada ─── */
