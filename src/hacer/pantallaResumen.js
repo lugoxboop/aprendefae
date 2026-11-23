@@ -130,7 +130,15 @@ const PANEL = FORMATO.PANEL_PROPIO;
  * Macro nuevo declara aquí el formato de cada actividad suya: lo que no está
  * se deduce como en Contabilidad (exploratoria → solo puntos; si no, X de N).
  */
-export const FORMATO_MACRO = {};
+export const FORMATO_MACRO = {
+  /* Macro 2026 · T1 «Demanda agregada» (lote 2): el % de cada una es aciertos / ítems. */
+  "da26-h1-llena-carrito": X,
+  "da26-h4-empresario": X,
+  "da26-h3-gira-o-sube": X,
+  "da26-h2-arma-formula": X,
+  "da26-h5-libreta": X,
+  "da26-h6-meta": X,
+};
 
 /**
  * El formato de una actividad. Fuera de Macroeconomía (Contabilidad) se
