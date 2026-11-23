@@ -67,3 +67,11 @@ Cuando Mateo te pase varios archivos (PDF, notas, presentaciones):
 5. SI SE ACABAN LOS TOKENS: no pasa nada. Al volver (tú, o el turno automático de cada 5 horas), lee la bitácora y el plan, y sigue en la primera casilla sin marcar. Nunca empezar de cero ni releer lo ya extraído.
 6. DERECHOS DE AUTOR: el repositorio es público. Los archivos originales (libros, PDFs del profesor) NUNCA se suben ahí: se guardan en el almacenamiento privado del equipo. Al repositorio solo van las fichas en palabras propias.
 7. Al terminar cada etapa grande (inventario, fichas, mapa de temas, cada lote de diseños), una sola línea a Mateo con el avance.
+
+### Imágenes con Gemini
+Puedes pedirle imágenes a Gemini desde el navegador de los agentes (sin que Mateo descargue nada). Flujo:
+a. Pide la imagen en Gemini con una descripción precisa y una GUÍA DE ESTILO fija por personaje (misma descripción del personaje, paleta del kit de marca, mismo estilo de trazo en todas), guardada en el repositorio (`orquestador/conocimiento/guia-estilo-imagenes.md`) para que todas salgan coherentes. Antes de pedir, lee esa guía; cuando fijes la descripción de un personaje, anótala ahí.
+b. Para mascotas que se animan: pide el personaje POR PARTES (cabeza, cuerpo, patas, cola) o en varias poses, con fondo transparente o liso, NO una sola foto.
+c. Descarga desde Gemini, toma la imagen de la carpeta (Descargas/Imagenes-agentes), revísala (que se vea bien y respete el estilo) y súbela al proyecto con un nombre claro.
+d. Si Gemini falla o la página cambia: reintenta 2 veces; si sigue fallando, avisa en una línea y sigue con otra tarea.
+Derechos de autor: al repositorio público solo van las imágenes propias generadas, nunca originales de terceros.
