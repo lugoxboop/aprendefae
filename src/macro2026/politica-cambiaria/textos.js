@@ -306,11 +306,19 @@ export const H3 = {
     igual: "Sin cambio real, su competitividad queda igual.",
   },
 };
-/** Diagnostica la aguja (§2 H3): bien, signo invertido, olvidó el nominal u otro. */
+/** El dial va de −TOPE_DIAL a +TOPE_DIAL puntos (comun-pc.jsx lo usa). */
+export const TOPE_DIAL = 6;
+const alDial = (x) => Math.max(-TOPE_DIAL, Math.min(TOPE_DIAL, x));
+/**
+ * Diagnostica la aguja (§2 H3): bien, signo invertido, olvidó el nominal u
+ * otro. Cada error se compara con el punto donde quedaría EN EL DIAL: un
+ * signo invertido que se sale (r5: +8) se queda en el tope y sigue siendo
+ * «signo», con su retro.
+ */
 export function juzgarAguja(r, valor) {
   if (Math.abs(valor - r.delta) <= TOLERANCIA_H3) return "bien";
-  if (Math.abs(valor - (r.aqui - r.afuera + r.nominal)) <= TOLERANCIA_H3) return "signo";
-  if (Math.abs(valor - (r.afuera - r.aqui)) <= TOLERANCIA_H3) return "nominal";
+  if (Math.abs(valor - alDial(r.aqui - r.afuera + r.nominal)) <= TOLERANCIA_H3) return "signo";
+  if (Math.abs(valor - alDial(r.afuera - r.aqui)) <= TOLERANCIA_H3) return "nominal";
   return "otro";
 }
 

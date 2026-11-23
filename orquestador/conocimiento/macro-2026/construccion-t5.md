@@ -63,9 +63,12 @@ hora de Bogotá): Mateo pidió publicar a medida que se termina.
 6. **H3.** La aguja empieza vacía (sin marcar) y se arrastra sobre el dial
    o se mueve con ← → de a 0,5. Tolerancia ± 0,5. Diagnóstico: signo
    invertido, olvido del nominal u otro, cada uno con su retro; al revisar
-   aparece la aguja correcta punteada y el ITCR. El dial va de −6 a +6: un
-   signo invertido que se sale (ronda r5: +8) queda en el tope y cuenta
-   como «otro».
+   aparece la aguja correcta punteada y el ITCR. El dial va de −6 a +6
+   (`TOPE_DIAL`). Lote 7: cada error se compara con el punto donde queda
+   EN EL DIAL, así que un signo invertido que se sale (ronda r5: +8) se
+   queda en el tope y sigue recibiendo la retro del signo. Se prefirió a
+   ensanchar el dial a ±10, que habría apretado las marcas de A3 y A4 a
+   320 px.
 7. **H5.** No hay consigna general: el encabezado muestra la consigna de
    cada decisión (la de la primera es la de `CONSIGNAS`). Las seis van en
    orden fijo (ahorro y luego crédito). Las barras dan lo calculado

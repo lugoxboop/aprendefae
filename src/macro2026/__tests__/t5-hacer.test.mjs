@@ -252,6 +252,23 @@ test("H3: la aguja empieza vacía; signo invertido, olvido del nominal y otro er
   await m.desmontar();
 });
 
+test("H3: en r5 el signo invertido (+8) se queda en el tope del dial y aun así da la retro del signo", async () => {
+  const { prepararH3 } = await modulo("pc26-h3-aguja");
+  /* Se busca una semilla que arranque en r5 (no depende de un número fijo). */
+  let semilla = 1;
+  while (prepararH3(conSemilla(semilla))[0].id !== "r5") semilla += 1;
+  const r5 = T.BANCO_H3.find((r) => r.id === "r5");
+  const m = await montar(await cargar("pc26-h3-aguja"), { rng: conSemilla(semilla), onTerminar: () => {} });
+  assert.equal(m.q("[data-ronda]").dataset.ronda, "r5");
+  for (let i = 0; i < 20; i += 1) await m.tecla("[data-dial]", "ArrowRight");
+  assert.equal(Number(m.q("[data-dial]").dataset.valor), T.TOPE_DIAL, "la aguja se queda en el tope");
+  await m.clic(`[data-exportador="${r5.exportador}"]`);
+  await m.clic("[data-revisar]");
+  assert.equal(m.q("[data-figura]").dataset.juicio, "signo");
+  assert.equal(m.q('[data-retro-aguja="signo"]').textContent, T.H3.retroSigno);
+  await m.desmontar();
+});
+
 test("H4: la exportadora (recibe-billete) y la importadora (paga-billete) a 120 px; el lado equivocado da coral y la retro; reintentar no suma; puntaje / 6", async () => {
   const { prepararH4 } = await modulo("pc26-h4-a-quien-sirve");
   const noticias = prepararH4(conSemilla(8));

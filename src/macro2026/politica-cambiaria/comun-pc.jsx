@@ -15,7 +15,7 @@ import { colorRama } from "../comun/ramas.js";
 import { DOLAR, PESO } from "../comun/monedas.js";
 import { fmtDecimal, fmtEntero } from "../comun/modelo-da.js";
 import { movimientoReducido } from "../comun/ui.jsx";
-import { A2, A3, A7, MODELO_DIVISAS, equilibrioDivisas, zonaDe } from "./textos.js";
+import { A2, A3, A7, MODELO_DIVISAS, TOPE_DIAL, equilibrioDivisas, zonaDe } from "./textos.js";
 
 export const CAMBIARIA = colorRama("cambiaria");
 
@@ -198,7 +198,7 @@ export function leerCurva(so, sd) {
 
 /* ─── El dial del cambio real ─────────────────────────────────────────── */
 
-const DCX = 150, DCY = 140, DR = 108, DMAX = 6;
+const DCX = 150, DCY = 140, DR = 108, DMAX = TOPE_DIAL;
 const anguloDe = (v) => Math.PI - ((Math.max(-DMAX, Math.min(DMAX, v)) + DMAX) / (2 * DMAX)) * Math.PI;
 const punto = (v, r) => [DCX + r * Math.cos(anguloDe(v)), DCY - r * Math.sin(anguloDe(v))];
 function arco(v0, v1, r) {

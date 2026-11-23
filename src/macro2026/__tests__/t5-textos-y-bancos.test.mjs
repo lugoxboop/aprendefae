@@ -151,10 +151,29 @@ test("H3: 6 rondas; delta e ITCR recalculados, exportador acorde a la zona y dia
     assert.ok(r.delta >= -6 && r.delta <= 6, `${r.id}: cabe en el dial`);
   }
   const r1 = T.BANCO_H3[0];
-  assert.equal(T.juzgarAguja(r1, r1.aqui - r1.afuera + r1.nominal), "signo");
+  /* r1: el signo invertido da +9,5; en el dial es el tope. */
+  assert.equal(T.juzgarAguja(r1, Math.min(T.TOPE_DIAL, r1.aqui - r1.afuera + r1.nominal)), "signo");
   assert.equal(T.juzgarAguja(r1, r1.afuera - r1.aqui), "nominal");
-  assert.equal(T.juzgarAguja(r1, 6), "otro");
+  assert.equal(T.juzgarAguja(r1, -6), "otro");
   for (const k of ["gana", "pierde", "igual"]) assert.ok(T.H3.retroExportador[k]);
+});
+
+test("H3: cada error tiene su retro aunque se salga del dial; r5 con el signo invertido (+8) queda en el tope y es «signo»", () => {
+  const alDial = (x) => Math.max(-T.TOPE_DIAL, Math.min(T.TOPE_DIAL, x));
+  const r5 = T.BANCO_H3.find((r) => r.id === "r5");
+  assert.equal(r5.aqui - r5.afuera + r5.nominal, 8, "el signo invertido de r5 se sale del dial");
+  assert.equal(T.juzgarAguja(r5, T.TOPE_DIAL), "signo");
+  assert.equal(T.juzgarAguja(r5, T.TOPE_DIAL - 0.5), "signo", "dentro de la tolerancia");
+  assert.equal(T.juzgarAguja(r5, -T.TOPE_DIAL), "otro");
+  for (const r of T.BANCO_H3) {
+    const signo = alDial(r.aqui - r.afuera + r.nominal), nominal = alDial(r.afuera - r.aqui);
+    assert.ok(Math.abs(r.delta) <= T.TOPE_DIAL, `${r.id}: la respuesta cabe en el dial`);
+    /* Cuando el error coincide con la respuesta (r6: afuera = aquí, nominal 0) manda «bien». */
+    assert.equal(T.juzgarAguja(r, signo), Math.abs(signo - r.delta) <= T.TOLERANCIA_H3 ? "bien" : "signo", `${r.id}: signo`);
+    if (Math.abs(nominal - r.delta) > T.TOLERANCIA_H3 && Math.abs(nominal - signo) > T.TOLERANCIA_H3) {
+      assert.equal(T.juzgarAguja(r, nominal), "nominal", `${r.id}: nominal`);
+    }
+  }
 });
 
 test("H4: 8 noticias, 4 para cada lado, cada una con su retro ≤ 12 palabras", () => {
