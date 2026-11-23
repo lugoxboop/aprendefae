@@ -8,6 +8,7 @@
  * la dirección correcta. Al final, un medidor «DA» sube o baja.
  * 5 titulares de 7; puntaje = eslabones correctos / 15.
  */
+import { FotoPersonaje } from "../comun/personajes.jsx";
 import { useEffect, useMemo, useState } from "react";
 import { BORDE, CORAL, FONDO, INK, INK_2, SUPERFICIE_2 } from "../comun/colores-da.js";
 import { Boton, MarcoHacer, Retro, movimientoReducido, useCronometro } from "../comun/ui.jsx";
@@ -40,12 +41,7 @@ const flecha = (d) => (d === 1 ? "↑" : d === -1 ? "↓" : "?");
 function Empresario({ titular }) {
   return (
     <div style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 10 }} data-titular>
-      <svg width="56" height="64" viewBox="0 0 56 64" aria-hidden="true" style={{ flex: "none" }}>
-        <circle cx="22" cy="14" r="9" fill="none" stroke={INK_2} strokeWidth="2.5" />
-        <path d="M6 62v-18a16 16 0 0 1 32 0v18" fill="none" stroke={INK_2} strokeWidth="2.5" />
-        <rect x="26" y="30" width="26" height="22" rx="2" fill={FONDO} stroke={INK} strokeWidth="2" transform="rotate(-8 39 41)" />
-        <path d="M30 36h17M30 41h17M30 46h11" stroke={INK} strokeWidth="1.6" transform="rotate(-8 39 41)" />
-      </svg>
+      <FotoPersonaje id="empresario" alto={72} />
       <div>
         <p className="da26-rotulo" style={{ margin: "0 0 2px" }}>El empresario oyó:</p>
         <p style={{ margin: 0, fontSize: 16, lineHeight: 1.35, fontWeight: 600 }}>{titular}</p>

@@ -12,7 +12,7 @@
  * solo figura.
  */
 import { BORDE, INK, INK_2, SUPERFICIE_2, FONDO } from "./colores-da.js";
-import { Personaje } from "./iconos-pe.jsx";
+import { FotoPersonaje } from "./personajes.jsx";
 
 export const PELDANOS = [
   { id: "problema", nombre: "Problema" },
@@ -39,7 +39,7 @@ button.pe26-caja { cursor: pointer; touch-action: manipulation; }
 .pe26-rot { font: 600 12px/16px var(--planck-font-sans, system-ui, sans-serif); color: ${INK_2}; letter-spacing: .02em; }
 .pe26-pel[data-resaltado="1"] .pe26-rot, .pe26-pel[data-iluminado="1"] .pe26-rot { color: ${INK}; }
 .pe26-cont { font-size: 14px; line-height: 1.3; overflow-wrap: anywhere; }
-.pe26-quien { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); transition: transform 280ms cubic-bezier(.3,.9,.4,1); }
+.pe26-quien { position: absolute; right: 4px; bottom: 2px; z-index: 3; pointer-events: none; }
 @keyframes pe26-parpadeo { 0%, 100% { opacity: 1; } 50% { opacity: .25; } }
 .pe26-parpadea { animation: pe26-parpadeo 560ms linear 1; }
 @media (prefers-reduced-motion: reduce) { .pe26-huella { transition: none; } .pe26-parpadea { animation: none; } }
@@ -76,13 +76,13 @@ export default function Escalera({
               data-caja-peldano={p.id}
               {...extra}
               onClick={(e) => { extra.onClick?.(e); onPeldano?.(p.id); }}
-              style={personaje === p.id ? { paddingRight: 38 } : undefined}
+              style={personaje === p.id ? { paddingRight: 80, minHeight: 76 } : undefined}
             >
               <span className="pe26-rot">{k + 1} · {p.nombre}</span>
               {cont != null && cont !== false && <span className="pe26-cont">{cont}</span>}
               {personaje === p.id && (
-                <span className="pe26-quien" data-personaje aria-label="La autoridad económica" role="img">
-                  <Personaje size={26} color={INK} />
+                <span className="pe26-quien da26-entra" data-personaje key={p.id}>
+                  <FotoPersonaje id="autoridad-economica" alto={72} />
                 </span>
               )}
             </Etq>
