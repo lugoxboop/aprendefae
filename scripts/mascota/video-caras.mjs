@@ -56,7 +56,7 @@ async function abrir(ctx, html) {
 for (const esp of ESPECIES) {
   for (const ancho of [320, 375]) {
     const dir = join(SALIDA, `tmp-${esp}-${ancho}`);
-    const ctx = await nav.newContext({ viewport: { width: ancho, height: 900 }, recordVideo: { dir, size: { width: ancho, height: 900 } } });
+    const ctx = await nav.newContext({ viewport: { width: ancho, height: 1000 }, recordVideo: { dir, size: { width: ancho, height: 1000 } } });
     const page = await abrir(ctx, pagina(esp, Math.floor((ancho - 16) / 3)));
     await page.waitForTimeout(SEG * 1000);
     await ctx.close();

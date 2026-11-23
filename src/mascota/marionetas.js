@@ -218,7 +218,7 @@ export const MARIONETAS = {
       en: [163, 213.6, 1.35],
       orejas: [["oreja_i", 0, -10], ["oreja_d", 132, -10]],
       base: ["cabeza", 0, 0],
-      nariz: ["nariz", 86, 100],
+      nariz: ["nariz", 87, 108],
       /* Sus ojos van sobre el antifaz café: el editor no les cambia el color. */
       sinIris: true,
       /*
@@ -228,8 +228,8 @@ export const MARIONETAS = {
        * el antifaz de la cabeza (recortados de esas caras, separar-caras.py).
        */
       tranquila: { ojos: [["ojo_i", 29, 68], ["ojo_d", 123, 68]], resto: [["boca_tranquila", 58, 118]] },
-      feliz: [["feliz_i", 28, 80], ["feliz_d", 128, 80], ["boca_abierta", 54, 118]],
-      triste: [["triste_i", 19, 56], ["triste_d", 107, 56], ["boca_triste", 77, 130]],
+      feliz: [["feliz_i", 28, 80], ["feliz_d", 128, 80], ["boca_abierta", 54, 124]],
+      triste: [["triste_i", 19, 56], ["triste_d", 123, 56], ["boca_triste", 77, 136]],
       racha: [["racha_i", 11, 56], ["racha_d", 109, 56], ["boca_tranquila", 58, 118]],
       lagrima: [40, 110],
     },

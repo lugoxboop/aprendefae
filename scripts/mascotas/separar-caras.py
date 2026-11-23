@@ -245,17 +245,20 @@ for cara, (ojo, boca) in HURON.items():
     rasgo &= sin_nariz
     n2, lb2, st2 = componentes(rasgo)
     rasgo &= np.isin(lb2, [k for k in range(1, n2) if st2[k, 4] >= 10])
+    # cerca de la nariz no hay ojo: lo que caiga ahí son restos del contorno
+    cerca = np.zeros((H, W), bool)
+    cerca[max(ny0 - 6, 0):, max(nx0 - 8, 0):nx1 + 8] = True
     oscuros = rasgo & (v < 0.45)
     for lado, (xa, xb) in (("i", (0, nx0 - 1)), ("d", (nx1 + 1, W))):
         zona = np.zeros((H, W), bool); zona[:ny0, xa:xb] = True
-        m = oscuros & zona
+        m = oscuros & zona & ~cerca
         ys, xs = np.nonzero(m)
         caja = np.zeros((H, W), bool); caja[max(ys.min() - 2, 0):ys.max() + 3, max(xs.min() - 2, 0):xs.max() + 3] = True
-        pz, x, y = recorte(a, caja & rasgo, pad=1)
+        pz, x, y = recorte(a, caja & rasgo & ~cerca, pad=1)
         guardar(pz, "huron", f"{ojo}_{lado}")
         hur[f"{ojo}_{lado}"] = [x * 2, y * 2]
     if boca:
-        zona = np.zeros((H, W), bool); zona[ny1:, max(int(nx0 - nw * 1.6), 0):int(nx1 + nw * 1.6)] = True
+        zona = np.zeros((H, W), bool); zona[ny1 + 3:, max(int(nx0 - nw * 1.6), 0):int(nx1 + nw * 1.6)] = True
         rojo = ((h >= 330) | (h < 30)) & (s > 0.2) & al
         lineas = (oscuros | rojo) & zona
         ys, xs = np.nonzero(lineas)
@@ -264,6 +267,16 @@ for cara, (ojo, boca) in HURON.items():
         pz, x, y = recorte(a, m, pad=1)
         guardar(pz, "huron", boca)
         hur[boca] = [x * 2, y * 2]
+    if cara == "cara_tranquila":
+        # la nariz del hurón: la de su cara (la de la cabeza era más chica y
+        # pálida); se pone donde estaba en esa cara
+        pts = cv2.findNonZero((lb == i).astype(np.uint8))
+        casco = np.zeros((H, W), np.uint8)
+        cv2.fillConvexPoly(casco, cv2.convexHull(pts), 1)
+        nm = cv2.dilate(casco, np.ones((3, 3), np.uint8), iterations=2).astype(bool) & al
+        pz, x, y = recorte(a, nm, pad=1)
+        guardar(pz, "huron", "nariz")
+        hur["nariz"] = [x * 2, y * 2]
 print("huron caras", json.dumps(hur))
 
 
