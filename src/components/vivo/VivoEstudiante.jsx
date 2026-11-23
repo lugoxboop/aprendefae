@@ -62,11 +62,15 @@ export default function VivoEstudiante({ codigoInicial = null, onBack }) {
         {inicial ? (
           <Jugar inicial={inicial} onBack={onBack} />
         ) : (
-          <section className="vivo-entra" style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-            <span className="vivo-cejilla">Clase en vivo</span>
-            <h1 className="vivo-titulo" style={{ fontSize: "clamp(26px, 7vw, 34px)" }}>Entra a la clase de tu profesor</h1>
+          <section className="vivo-portal" data-vivo-entra>
+            <Cartel />
+            <div className="vivo-portal__cabeza vivo-entra-2">
+              <span className="vivo-cejilla">Clase en vivo</span>
+              <h1 className="vivo-titulo" style={{ fontSize: "clamp(24px, 6.4vw, 32px)" }}>Entra a la clase de tu profesor</h1>
+              <p className="vivo-nota">Responde desde tu celular las preguntas que tu profesor pone en el tablero.</p>
+            </div>
             {!conSesion ? (
-              <div className="vivo-tarjeta" style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+              <div className="vivo-tarjeta vivo-entra-3" style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
                 <p className="vivo-nota">Para entrar necesitas tu cuenta: así tu profesor sabe que estuviste.</p>
                 <div>
                   <button type="button" className="vivo-boton" onClick={() => auth?.pedirCuenta?.("Inicia sesión para entrar a la clase en vivo.")}>
@@ -75,7 +79,7 @@ export default function VivoEstudiante({ codigoInicial = null, onBack }) {
                 </div>
               </div>
             ) : (
-              <form className="vivo-tarjeta" style={{ display: "flex", flexDirection: "column", gap: "14px" }}
+              <form className="vivo-tarjeta vivo-entra-3" style={{ display: "flex", flexDirection: "column", gap: "14px" }}
                 onSubmit={(e) => { e.preventDefault(); entrar(); }}>
                 <label htmlFor="vivo-codigo" className="vivo-nota">Escribe el código que está en el tablero</label>
                 <input id="vivo-codigo" className="vivo-campo" inputMode="numeric" autoComplete="one-time-code" placeholder="000000"
@@ -86,6 +90,9 @@ export default function VivoEstudiante({ codigoInicial = null, onBack }) {
                 </button>
               </form>
             )}
+            <p className="vivo-pasos vivo-entra-3" aria-label="Tres pasos para entrar">
+              <b>1. Tu cuenta</b> <span aria-hidden="true">·</span> <b>2. El código del tablero</b> <span aria-hidden="true">·</span> <b>3. A responder</b>
+            </p>
           </section>
         )}
       </div>
@@ -213,6 +220,32 @@ function Jugar({ inicial, onBack }) {
       <p className="vivo-nota">Gracias por participar. Tu asistencia quedó registrada.</p>
       <div><button type="button" className="vivo-boton" onClick={onBack}>Volver al inicio</button></div>
     </section>
+  );
+}
+
+/*
+ * El cartel de la entrada: el tablero de respuestas de la clase en vivo, en
+ * pequeño. No es funcional —es la portada de lo que viene— y por eso va
+ * aria-hidden: lo que el lector de pantalla necesita ya está en el título y los
+ * pasos. Cuatro letras de colores contra un reloj: se entiende sin leer nada.
+ */
+function Cartel() {
+  return (
+    <div className="vivo-cartel vivo-entra" aria-hidden="true" data-vivo-cartel>
+      <div className="vivo-cartel__fila">
+        <span className="vivo-cejilla">Pregunta 1 de 8</span>
+        <span className="vivo-cartel__pts">1 250 pts</span>
+      </div>
+      <div className="vivo-cartel__reloj"><span /></div>
+      <div className="vivo-cartel__grid">
+        {["A", "B", "C", "D"].map((l, k) => (
+          <div key={l} className="vivo-cartel__op vivo-pop" style={{ animationDelay: `${120 + k * 70}ms` }}>
+            <span className="vivo-cartel__letra" style={{ background: COLORES[k % COLORES.length] }}>{l}</span>
+            <span className="vivo-cartel__barra" />
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 

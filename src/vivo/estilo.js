@@ -101,6 +101,31 @@ button.vivo-opcion:active { transform: scale(.98); }
 .vivo-tabla td { padding: 10px; border-bottom: 1px solid ${V.linea}; color: ${V.apoyo}; font-variant-numeric: tabular-nums; }
 .vivo-tabla td:first-child { color: ${V.texto}; }
 
+/* ── La entrada: una composición centrada, no una tarjeta suelta arriba ── */
+.vivo-portal { flex: 1; min-height: calc(100dvh - 148px); display: flex; flex-direction: column; justify-content: center; gap: 20px; padding: 8px 0 24px; }
+.vivo-portal__cabeza { display: flex; flex-direction: column; gap: 10px; text-align: center; align-items: center; }
+.vivo-portal__cabeza .vivo-nota { max-width: 30ch; }
+
+/* El cartel: el tablero de respuestas de la clase en vivo, en pequeño. Dice qué es
+ * esto de un vistazo —A, B, C, D contra el reloj— sin una palabra de más. */
+.vivo-cartel { align-self: center; width: 100%; max-width: 288px; background: rgba(20,35,58,0.80); border: 1px solid rgba(248,249,250,0.12);
+  border-radius: 24px; padding: 16px; box-shadow: 0 24px 54px -30px rgba(0,0,0,0.8); }
+.vivo-cartel__fila { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+.vivo-cartel__pts { color: ${V.dato}; font-family: Sora, sans-serif; font-weight: 700; font-size: 13px; font-variant-numeric: tabular-nums; }
+.vivo-cartel__reloj { height: 7px; border-radius: 999px; background: rgba(248,249,250,0.10); overflow: hidden; margin-bottom: 14px; }
+.vivo-cartel__reloj > span { display: block; height: 100%; width: 64%; border-radius: inherit; background: ${V.teal}; }
+.vivo-cartel__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.vivo-cartel__op { display: flex; align-items: center; gap: 10px; min-height: 50px; padding: 0 12px; border-radius: 14px;
+  background: rgba(248,249,250,0.05); border: 1px solid rgba(248,249,250,0.08); }
+.vivo-cartel__letra { flex: none; width: 30px; height: 30px; border-radius: 9px; display: inline-flex; align-items: center; justify-content: center;
+  font-family: Sora, sans-serif; font-weight: 700; font-size: 15px; color: #0B1626; }
+.vivo-cartel__barra { flex: 1; height: 9px; border-radius: 999px; background: rgba(248,249,250,0.16); }
+
+/* Los tres pasos, en una línea: así el estudiante sabe qué sigue. Marca, no lectura. */
+.vivo-pasos { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px; color: ${V.dato}; font-size: 12.5px; }
+.vivo-pasos b { color: ${V.apoyo}; font-weight: 600; }
+.vivo-pasos span[aria-hidden] { color: ${V.linea}; }
+
 @media (max-width: 640px) {
   .vivo-opciones { grid-template-columns: minmax(0, 1fr); }
   .vivo-marco { gap: 18px; padding-top: 16px; }
