@@ -70,3 +70,15 @@ Aprender, a 320 y 375 px, tocando todo lo tocable de cada pantalla:
 | Toques < 44 px | 0 | 0 |
 | Desborde horizontal | 0 | 0 |
 | B1 máx. (figura − tarjeta) | 41 (A2: 43) | 41 (A2: 43) |
+
+## Lote 2 (23-nov-2026): las 5 Aprender, publicadas
+
+- `PUBLICADAS_T2` tiene las 5 Aprender. `subjects.js` declara «Política
+  económica» como tema 2 de Macro, con esas 5 y sin Hacer.
+- La ruta es `politica-economica`, la misma del tema retirado, ahora otra vez
+  en `VISTAS`. `archivo-macro-2025.test.mjs` la tenía vetada; deja de vetarla,
+  pero sigue rechazando todo id viejo. La pinta `TemaMacro2026`, la misma
+  vista que T1. Todos sus ids empiezan por `pe26-`, así que ninguna actividad
+  vieja vuelve.
+- La clave `color` de `ramas.js` se llama ahora `tono`. La prueba del teal
+  como texto (`color: "#2A9D8F"`) no distingue un dato de un estilo.
