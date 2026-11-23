@@ -264,11 +264,11 @@ test("colores C, I, G, XN: distintos, ≥ 3:1 contra el fondo y ninguno es coral
   for (const c of Object.values(COMPONENTES)) assert.ok(planck.toLowerCase().includes(c.color.toLowerCase()), `${c.id} sale de planck.css`);
 });
 
-/* ─── La migración pendiente y la publicación ─── */
+/* ─── La migración (publicada en el lote 2) y la publicación ─── */
 
-const SQL = readFileSync("supabase/macro2026-pendientes/0270_da26_t1_demanda_agregada.sql", "utf8");
+const SQL = readFileSync("supabase/migrations/0270_da26_t1_demanda_agregada.sql", "utf8");
 
-test("migración: las 6 Hacer con la clasificación del catálogo, y el guardián no la reprocharía al publicar", () => {
+test("migración: las 6 Hacer con la clasificación del catálogo, y el guardián no la reprocha", () => {
   const filas = filasDeCatalogo(SQL);
   assert.equal(filas.length, 6);
   const cliente = new Map(HACER_T1.map((a) => [a.id, {

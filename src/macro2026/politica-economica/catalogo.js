@@ -36,7 +36,14 @@ export const PIEZAS_T2 = [
 export const HACER_T2 = PIEZAS_T2.filter((p) => p.tipo === H);
 export const piezaT2 = (id) => PIEZAS_T2.find((p) => p.id === id) ?? null;
 
-/* El interruptor de publicación, uno por pieza. Vacío = nada visible. */
-export const PUBLICADAS_T2 = Object.freeze([]);
+/* El interruptor de publicación, uno por pieza. */
+export const PUBLICADAS_T2 = Object.freeze([
+  /* Lote 2 (23-nov-2026): las cinco Aprender. Las Hacer siguen sin publicar. */
+  "pe26-a1-mecanico",
+  "pe26-a2-fiebre",
+  "pe26-a3-problema-resuelto",
+  "pe26-a4-perillas",
+  "pe26-a5-escalera",
+]);
 export const estaPublicadaT2 = (id) => PUBLICADAS_T2.includes(id);
 export const piezasPublicadasT2 = () => PIEZAS_T2.filter((p) => estaPublicadaT2(p.id));

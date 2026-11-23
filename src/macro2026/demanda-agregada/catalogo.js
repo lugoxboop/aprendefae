@@ -2,13 +2,11 @@
  * ═══════════════════════════════════════════════════════════════════════════
  * MACRO 2026 · T1 DEMANDA AGREGADA — EL CATÁLOGO DE LAS 12 PIEZAS
  *
- * En el orden del camino (§1 de la especificación de Gen). NO está en
- * src/data/subjects.js a propósito: nada nuevo se ve hasta que Mateo apruebe
- * (plan.md, 22-nov). Cuando se publique, las seis Hacer entran a
- * `SUBJECTS.macroeconomia.topics[demanda-agregada].actividades` con esta misma
- * `clasificacion`, y su migración (supabase/macro2026-pendientes/) pasa a
- * supabase/migrations en el mismo cambio. La prueba
- * src/macro2026/__tests__/t1-modelo-y-bancos.test.mjs ata las dos copias.
+ * En el orden del camino (§1 de la especificación de Gen). Lo publicado
+ * (PUBLICADAS_T1) está además declarado en src/data/subjects.js con esta
+ * misma `clasificacion`; las seis Hacer tienen su fila en
+ * supabase/migrations/0270_*. La prueba
+ * src/macro2026/__tests__/t1-modelo-y-bancos.test.mjs ata las copias.
  *
  * SE PUBLICA POR PARTES (Mateo, 22-nov): cada pieza entra sola, apenas está
  * aprobada, anotando su id en PUBLICADAS_T1. Una Aprender no lleva fila en
@@ -52,13 +50,20 @@ export const HACER_T1 = PIEZAS_T1.filter((p) => p.tipo === H);
  * supabase/migrations sea exactamente lo anotado aquí, ni más ni menos.
  */
 export const PUBLICADAS_T1 = Object.freeze([
-  /* Lote 1 (22-nov-2026): las seis Aprender. Las Hacer siguen sin publicar. */
+  /* Lote 1 (22-nov-2026): las seis Aprender. */
   "da26-a1-carrito",
   "da26-a2-vaso-renta",
   "da26-a3-columpio-tasa",
   "da26-a4-no-miran-renta",
   "da26-a5-bisagra-ascensor",
   "da26-a6-eco-multiplicador",
+  /* Lote 2 (23-nov-2026): las seis Hacer, con su fila en la 0270. */
+  "da26-h1-llena-carrito",
+  "da26-h4-empresario",
+  "da26-h3-gira-o-sube",
+  "da26-h2-arma-formula",
+  "da26-h5-libreta",
+  "da26-h6-meta",
 ]);
 export const estaPublicada = (id) => PUBLICADAS_T1.includes(id);
 export const piezasPublicadasT1 = () => PIEZAS_T1.filter((p) => estaPublicada(p.id));

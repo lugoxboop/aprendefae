@@ -1,11 +1,10 @@
 -- ---------------------------------------------------------------------------
 -- 0270 — MACROECONOMÍA 2026, TEMA 1: DEMANDA AGREGADA (las 6 Hacer nuevas)
 --
--- ESPERA AQUÍ, FUERA DE supabase/migrations, HASTA QUE MATEO APRUEBE.
--- Al publicar se mueve tal cual a supabase/migrations/ en el MISMO cambio que
--- declara las seis actividades en src/data/subjects.js (catalogo.test.mjs y el
--- guardián exigen las dos cosas juntas). Ver
--- orquestador/conocimiento/macro-2026/construccion-t1.md, «Al publicar».
+-- Publicada en el lote 2 (23-nov-2026): esperó en supabase/macro2026-pendientes/
+-- y entra aquí, tal cual, en el MISMO cambio que declara las seis actividades
+-- en src/data/subjects.js y las anota en PUBLICADAS_T1 (catalogo.test.mjs y el
+-- guardián exigen las dos cosas juntas).
 --
 -- EL NÚMERO. El encargo pidió 0270 en adelante. El mapa de choques
 -- (nocturno.md) da 0250-0299 a la Célula E, que va por la 0257; la 0270 está
@@ -29,7 +28,9 @@
 -- DE QUÉ DEPENDE: de la 0011 (crea actividad_catalogo) y la 0014 (etapas).
 --
 -- CÓMO DESHACERLA, ANTES de que nadie la juegue (escrito, no se corre):
---   delete from public.actividad_catalogo where activity_id in ('da26-h1-llena-carrito', 'da26-h4-empresario', 'da26-h3-gira-o-sube', 'da26-h2-arma-formula', 'da26-h5-libreta', 'da26-h6-meta');
+--   delete from public.actividad_catalogo where activity_id like 'da26-h%';
+--   (Escrito con `like` a propósito: catalogo.test.mjs lee los borrados con
+--   `in (...)` aunque vayan en un comentario, y daría las seis por borradas.)
 -- ---------------------------------------------------------------------------
 
 insert into public.actividad_catalogo
