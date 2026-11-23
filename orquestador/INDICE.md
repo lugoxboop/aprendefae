@@ -39,7 +39,7 @@ archivo, y solo si vas a editarlo.** Quien cree, mueva o renombre un documento
 | Archivo | Qué contiene | Cuándo leerlo |
 |---|---|---|
 | `orquestador/conocimiento/marca-planck.md` | Kit de marca Planck (color, tipografía, logo) | Diseño, landing, UI |
-| `orquestador/conocimiento/guia-estilo-imagenes.md` | Guía de estilo fija para las imágenes que Gen pide a Gemini (paleta, trazo, fondo; mascotas por partes; descripción bloqueada por especie) | Antes de pedirle una imagen a Gemini |
+| `orquestador/conocimiento/guia-estilo-imagenes.md` | Flujo + guía de estilo fija para las imágenes que Gen y los generales (Miku, Erwin, Magno) piden a Gemini (paleta, trazo, fondo; mascotas por partes; descripción bloqueada por personaje) | Antes de pedirle una imagen a Gemini |
 
 ## Contenido de Contabilidad (la materia)
 | Archivo | Qué contiene | Cuándo leerlo |
