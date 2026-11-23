@@ -51,8 +51,8 @@ const VivoProfesor = lazy(() => import("./components/vivo/VivoProfesor.jsx"));
 
 /* Macroeconomía 2026: vista previa de lo que aún no se publica, solo por dirección (#/macro-2026). */
 const VistaPreviaMacro2026 = lazy(() => import("./macro2026/VistaPrevia.jsx"));
-/* Macroeconomía 2026 · T1, lo publicado: solo las piezas de PUBLICADAS_T1. */
-const TemaDemandaAgregada = lazy(() => import("./macro2026/TemaDemandaAgregada.jsx"));
+/* Macroeconomía 2026, lo publicado de cada tema: solo las piezas de PUBLICADAS_T1 / PUBLICADAS_T2. */
+const TemaMacro2026 = lazy(() => import("./macro2026/TemaMacro2026.jsx"));
 
 /*
  * ═══════════ QUÉ VISTAS LLEVAN TÍTULO EN LA CABECERA ═══════════
@@ -83,6 +83,7 @@ const materiaDeVista = (v) => (VISTAS_CONTABILIDAD.has(v) || v === "repaso-diari
 const VISTAS_CON_TITULO = new Set([
   "macroeconomia", "pensamiento-estrategico", "contabilidad",
   "demanda-agregada",
+  "politica-economica",
   "pensamiento-sistemico", "modelo-iceberg", "fuerzas-porter",
   "introduccion-contabilidad",
   "cuentas-debe-haber",
@@ -201,8 +202,9 @@ export default function App() {
         <MacroTopicIndex
           onOpenTopic={(topicId, modo) => {
             /*
-             * Desde el 22-nov-2026 el único tema es Demanda agregada (Macro
-             * 2026, lote 1), con su vista propia «demanda-agregada». Si un
+             * Desde el 22-nov-2026 los temas son los de Macro 2026 (Demanda
+             * agregada y Política económica), cada uno con su vista
+             * (TemaMacro2026, por mitad: aprender u hacer). Si un
              * tema nuevo tiene una vista por mitad, la excepción va en
              * vistaDeTema(), la misma que usa el panel.
              */
@@ -221,10 +223,10 @@ export default function App() {
     );
   }
 
-  if (view === "demanda-agregada") {
+  if (view === "demanda-agregada" || view === "politica-economica") {
     return wrap(
       <Suspense fallback={siteFallback}>
-        <TemaDemandaAgregada extra={ruta.extra} onBack={() => setView("macroeconomia")} />
+        <TemaMacro2026 key={view} temaId={view} modo={modoTema} extra={ruta.extra} onBack={() => setView("macroeconomia")} onIr={(vista, modo, extra) => navegar(vista, modo, { extra })} />
       </Suspense>
     );
   }

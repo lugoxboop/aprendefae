@@ -57,7 +57,7 @@ export const SUBJECTS = {
     topics: [
       /*
        * MACRO 2026 · T1 DEMANDA AGREGADA, PUBLICADA POR PARTES (Mateo, 22-nov).
-       * Lote 1: las seis Aprender. Son las piezas anotadas en PUBLICADAS_T1
+       * Lote 1: las seis Aprender. Lote 2: las seis Hacer. Son las piezas anotadas en PUBLICADAS_T1
        * (src/macro2026/demanda-agregada/catalogo.js), con su mismo id y nombre;
        * t1-modelo-y-bancos.test.mjs exige que las dos listas coincidan. Las
        * Hacer entran después, cada una con su fila en supabase/migrations.
@@ -75,6 +75,36 @@ export const SUBJECTS = {
           { id: "da26-a4-no-miran-renta", nombre: "Los que no miran la renta", clasificacion: { tipo: APRENDER } },
           { id: "da26-a5-bisagra-ascensor", nombre: "Bisagra y ascensor", clasificacion: { tipo: APRENDER } },
           { id: "da26-a6-eco-multiplicador", nombre: "El eco del multiplicador", clasificacion: { tipo: APRENDER } },
+          /*
+           * Lote 2: las seis Hacer, en el orden del camino, con la misma
+           * clasificación que su fila de la 0270 (catalogo.test.mjs y el
+           * guardián lo vigilan) y que src/macro2026/demanda-agregada/catalogo.js.
+           */
+          { id: "da26-h1-llena-carrito", nombre: "Llena el carrito", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
+          { id: "da26-h4-empresario", nombre: "Lo que oyó el empresario", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
+          { id: "da26-h3-gira-o-sube", nombre: "¿Gira o sube?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          { id: "da26-h2-arma-formula", nombre: "Arma la fórmula", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25, etapas: 3 } },
+          { id: "da26-h5-libreta", nombre: "La libreta de la analista", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
+          { id: "da26-h6-meta", nombre: "Lleva la economía a la meta", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25, etapas: 3 } },
+        ],
+      },
+      /*
+       * MACRO 2026 · T2 POLÍTICA ECONÓMICA (lote 2): las cinco Aprender de
+       * PUBLICADAS_T2 (src/macro2026/politica-economica/catalogo.js), con su
+       * mismo id y nombre; t2-textos-y-bancos.test.mjs exige que coincidan.
+       * Las Hacer entran después, cada una con su fila en supabase/migrations.
+       * El id del tema es el de siempre; los de las actividades son nuevos
+       * (pe26-*): ninguno reusa un id retirado en la 0258.
+       */
+      {
+        id: "politica-economica",
+        title: "Política económica",
+        actividades: [
+          { id: "pe26-a1-mecanico", nombre: "¿Mecánico o te arreglas solo?", clasificacion: { tipo: APRENDER } },
+          { id: "pe26-a2-fiebre", nombre: "La economía con fiebre", clasificacion: { tipo: APRENDER } },
+          { id: "pe26-a3-problema-resuelto", nombre: "El problema, resuelto", clasificacion: { tipo: APRENDER } },
+          { id: "pe26-a4-perillas", nombre: "Las perillas de la demanda", clasificacion: { tipo: APRENDER } },
+          { id: "pe26-a5-escalera", nombre: "La escalera de la política", clasificacion: { tipo: APRENDER } },
         ],
       },
     ],

@@ -35,6 +35,12 @@ import { JSDOM, VirtualConsole } from "jsdom";
  * Comprobado con el HTML de una variante, idéntico salvo esos ids. Y el
  * CaminoHacer de la rama da las mismas 18 huellas que el de main.
  *
+ * EL 23-NOV-2026 (LOTE 2) ENTRARON LAS 6 VARIANTES DEL MACRO NUEVO (T1
+ * «Demanda agregada», sus seis Hacer). CaminoHacer no se tocó (igual a main).
+ * Antes de rehacer la foto se pesaron SOLO las 18 de Pensamiento Estratégico
+ * y dieron las 18 huellas de antes, idénticas. Con Macro delante, las mismas
+ * doce cambian por lo mismo que el 22-nov: los ids de useId.
+ *
  * Antes de eso la foto no se había rehecho nunca desde que se tomó de main. Lo que entra
  * encima del camino —la decoración, Fae, la entrada— se RECORTA antes de
  * pesar en vez de rehacerse, y por eso las 42 huellas siguen siendo la
@@ -226,7 +232,7 @@ async function fotografiar({ props }) {
 
 test("★★★ el camino de Macro y de Pensamiento Estratégico es idéntico al de main (cada nodo y su ventana previa)", async () => {
   const lista = casos();
-  /* Seis variantes por cada uno de los tres temas de Pensamiento Estratégico; Macro, retirada, no aporta. */
+  /* Seis variantes por cada tema con Hacer: los tres de Pensamiento Estratégico y, desde el lote 2, «Demanda agregada» de Macro. */
   assert.ok(lista.length >= 18, `solo ${lista.length} variantes`);
   const ahora = {};
   for (const c of lista) ahora[c.nombre] = huella(await fotografiar(c));

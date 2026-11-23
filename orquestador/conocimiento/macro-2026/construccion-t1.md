@@ -102,3 +102,49 @@ la vista del tema. No llevan migración.
 3. Montar las piezas en la vista del tema y conectar `onTerminar` a
    `registrarActividadCompletada` (el resultado ya trae `pct`, `detalle` con
    `item`/`ok`/`subtemas` y `duracionMs`).
+
+## Lote 2 (23-nov-2026): las 6 Hacer, publicadas
+
+Hecho en la rama `macro26-lote2` (desde main, con `macro26-t2` fusionada).
+
+- `0270_da26_t1_demanda_agregada.sql` pasó entera a `supabase/migrations/`.
+  Su línea de deshacer, comentada, dice `like 'da26-h%'`: con la lista de ids
+  la prueba del catálogo la leía como un borrado real, aunque esté en un
+  comentario.
+- `PUBLICADAS_T1` tiene las 12. `subjects.js` declara las 6 Hacer con la
+  `clasificacion` del catálogo.
+- **Vista única `src/macro2026/TemaMacro2026.jsx`** para todo tema del Macro
+  nuevo; sustituye a `TemaDemandaAgregada.jsx`. Aprender es una lista y luego
+  la pieza. Hacer usa `CaminoHacer`, que es compartido y no se tocó, más
+  `useCompletadas`. El reto llama a `registrarActividadCompletada` como en
+  Contabilidad, y el FP lo da el servidor, una sola vez. Al cerrar sale
+  `PantallaResumen`. Sin cuenta, `pedirCuenta`. Si la pantalla no se puede
+  enseñar, sale el cierre de siempre (`data-cierre-macro2026`).
+- Las filas de volver usan `fae-cabecera-titulo`.
+- `FORMATO_MACRO` pone las 6 en X de N: el % de cada una es aciertos entre
+  ítems del `detalle`.
+- Las etiquetas del panel docente están en `src/macro2026/etiquetas.js`, junto
+  a los bancos. `etiquetasItem.js` las suma a `REGLAS`.
+- Medallas: las 6 **no** van a `AGREGADAS_DESPUES`. Son la materia nueva, no
+  un añadido a la de antes. Quien ganó «Macroeconomía al día» antes del retiro
+  la conserva por `GANADAS_ANTES_DEL_RETIRO`. Quien no, necesita las 6. La
+  prueba ahora cuenta las cifras en vez de fijarlas.
+- `camino-sin-cambios`: la foto se rehízo con las 6 variantes nuevas. Antes se
+  pesaron solo las 18 de Pensamiento Estratégico, que dieron las mismas huellas.
+  Las 12 que cambian lo hacen por los ids de `useId`, igual que el 22-nov.
+- **Navegación.** La vista usa el `navegar` de App, que le llega por la prop
+  `onIr`. No cambia el hash a mano. CaminoHacer abre cada nodo dentro de una
+  transición, y mientras esta dura `useRuta` no atiende `hashchange`: con el
+  hash a mano, la dirección cambiaba y la pantalla no (el reto no abría desde
+  el camino). Lo fija `src/macro2026/__tests__/tema-navega.test.mjs`.
+- La fila de volver del reto dice «‹ Retos». Con «‹ Retos de Demanda
+  agregada» (252 px) la página desbordaba 36 px a 320.
+- **Medido** con `sonda-cabecera.mjs`, a 320 y 375, en 7 pantallas: las dos
+  listas, el camino, A1, H1, H5 y A5 de T2. Ninguna fila de volver queda bajo
+  la pastilla de FP; el hueco es de 53 px en todas. Desborde 0. Ningún aviso
+  de carga.
+- **Video** `/mnt/project-files/macro-2026/videos/lote2-portada-375.webm`,
+  con la sesión de prueba. Recorre la portada, Macro y T1: abre A1 y completa
+  H1 con un error al principio. Sale 7 de 8 (88 %) y 9 FP: base 10 × 0,875 =
+  8,75, que redondea a 9, igual que `calcularFP`. Luego va a T2 y completa
+  A1. Sin errores de página.
