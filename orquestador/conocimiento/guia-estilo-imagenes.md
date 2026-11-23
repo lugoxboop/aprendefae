@@ -80,6 +80,28 @@ del personaje no se pierde porque queda encerrado por el contorno.
 Se guardan en `public/macro2026/personajes/`. Pesan como máximo 120 KB cada
 uno y miden 512 × 512 px.
 
+
+### Tamaños mínimos (orden de Mateo, 23-nov: «quedan muy chiquitas»)
+- **Nunca a 72 px.** Si el espacio es compacto, va el **busto** (`personajes/busto/`, 384 px) a 120 px como mínimo, o 140 px desde 375.
+- Si el personaje protagoniza la pantalla, va de **cuerpo entero a 180 px de alto como mínimo**, sin disco.
+- La familia va siempre de cuerpo entero.
+
+### Kit de animación (Gemini, 23-nov)
+Las piezas salen de hojas de recursos, todas con el mismo estilo, y se recortan con fondo transparente.
+- `public/macro2026/objetos/`, 36 piezas:
+  - **Demanda agregada:** carrito, bolsa-mercado, fabrica, edificio-gobierno, barco, billetes.
+  - **Política económica:** termometro, caja-herramientas, llave-inglesa, escalera, lupa, engranajes.
+  - **Fiscal:** alcancia, recibo, carretera, hospital, escuela, balanza.
+  - **Monetaria:** banco-central, boveda, grifo, billetes-alas, ancla, cajero.
+  - **Cambiaria:** billete-dolar, moneda, avion-carga, contenedor, celular, flores.
+  - **Transiciones:** flecha-curva, flecha-arriba, flecha-abajo, nube, reloj-arena, bombilla.
+- `public/macro2026/personajes/poses/`, para animar entradas y pasos:
+  - empresario-camina, empresario-lee, empresario-senala;
+  - analista-camina, analista-escribe, analista-senala;
+  - autoridad-sube, autoridad-camina, autoridad-tarjeta.
+
+Cómo se piden más: «HOJA DE RECURSOS» con el bloque de estilo, seis objetos separados en una cuadrícula de 3 × 2 con mucho espacio blanco y fondo blanco liso. Para las poses: «HOJA DE POSES» del mismo personaje, tres poses en fila. Los objetos miden unos 270 px de origen. Si una pieza va a mostrarse a más de 270 px, se pide sola, en grande.
+
 ## Dónde quedan las imágenes
 - Gemini descarga a la carpeta **Descargas/Imagenes-agentes** del computador.
 - Gen revisa la imagen (que se vea bien y respete esta guía) y la sube al
