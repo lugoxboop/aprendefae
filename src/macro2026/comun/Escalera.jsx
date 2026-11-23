@@ -54,9 +54,10 @@ export default function Escalera({
       <style>{CSS}</style>
       {PELDANOS.map((p, k) => {
         const cont = contenido[p.id];
-        const interactivo = Boolean(onPeldano || destino);
-        const Etq = interactivo ? "button" : "div";
         const extra = destino ? destino(p.id) : {};
+        /* Un peldaño sin destino (H2: los que no son el actual) es solo figura, no un botón de 36 px. */
+        const interactivo = Boolean(onPeldano) || Object.keys(extra).length > 0;
+        const Etq = interactivo ? "button" : "div";
         return (
           <div
             key={p.id}
