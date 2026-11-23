@@ -19,15 +19,15 @@
  */
 
 export const RAMAS = {
-  fiscal: { id: "fiscal", nombre: "Fiscal", largo: "Política fiscal", color: "#8a9cff", token: "--accent-hover", icono: "alcancia" },
-  monetaria: { id: "monetaria", nombre: "Monetaria", largo: "Política monetaria", color: "#2a9d8f", token: "--product-debe", icono: "moneda" },
-  cambiaria: { id: "cambiaria", nombre: "Cambiaria", largo: "Política cambiaria", color: "#e9c46a", token: "--product-haber", icono: "billete" },
-  comercial: { id: "comercial", nombre: "Comercial", largo: "Política comercial", color: "#cbdcf2", token: "theme.js · node", icono: "contenedor" },
+  fiscal: { id: "fiscal", nombre: "Fiscal", largo: "Política fiscal", tono: "#8a9cff", token: "--accent-hover", icono: "alcancia" },
+  monetaria: { id: "monetaria", nombre: "Monetaria", largo: "Política monetaria", tono: "#2a9d8f", token: "--product-debe", icono: "moneda" },
+  cambiaria: { id: "cambiaria", nombre: "Cambiaria", largo: "Política cambiaria", tono: "#e9c46a", token: "--product-haber", icono: "billete" },
+  comercial: { id: "comercial", nombre: "Comercial", largo: "Política comercial", tono: "#cbdcf2", token: "theme.js · node", icono: "contenedor" },
 };
 
 export const ORDEN_RAMAS = ["fiscal", "monetaria", "cambiaria", "comercial"];
 
-export const colorRama = (id) => RAMAS[id]?.color ?? "#f4f5f7";
+export const colorRama = (id) => RAMAS[id]?.tono ?? "#f4f5f7";
 
 /* Los términos de la DA que mueve cada rama (H3, A4). */
 export const TERMINOS_RAMA = {
