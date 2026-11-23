@@ -134,3 +134,34 @@ el FP de H5 una sola vez, y FP 25/25/150/50/25. `t2-textos-y-bancos` ata la
   vieja vuelve.
 - La clave `color` de `ramas.js` se llama ahora `tono`. La prueba del teal
   como texto (`color: "#2A9D8F"`) no distingue un dato de un estilo.
+
+## Lote 3 (23-nov-2026): las 5 Hacer, publicadas, y el elenco
+
+- La 0271 pasa a `supabase/migrations/`. `PUBLICADAS_T2` tiene las 10.
+  `subjects.js` declara las 5 Hacer con la clasificación del catálogo.
+  `TemaMacro2026` las monta.
+- `FORMATO_MACRO`: las cuatro evaluativas en X de N y H5 en solo puntos (es
+  exploratoria).
+- Las etiquetas del panel docente están en `src/macro2026/etiquetas.js`.
+  - Los ítems son: H3, el instrumento; H1, `e<n>`; H2, `<grupo>-<peldaño>`;
+    H4, la escalera; H5, `<paso>-<opción>` y `final-<a>+<b>`.
+  - Los nombres de peldaño se copian allí, porque Escalera.jsx es JSX.
+- `supabase/tests/etapas_test.sql`: `pe26-h2-grupo-logico` queda fuera del
+  chequeo 2. El chequeo 15 le exige 3 etapas y base 50.
+- `camino-sin-cambios`: entran las 6 variantes de T2. Las de T1 dan las
+  mismas huellas. Las 12 de Pensamiento Estratégico cambian solo por los ids
+  de `useId`.
+- **El elenco de Gen** (commit 85b95557, traído con cherry-pick):
+  - `comun/personajes.jsx` con `FotoPersonaje`: `<img>` con alt igual al
+    nombre, 72 × 72 fijo, sobre un disco #C9D1E4 al 18 %, porque el contorno
+    oscuro se pierde sobre el navy.
+  - Sustituye las siluetas de T1 H4 (el empresario), T1 H5 (la analista) y
+    la escalera (la autoridad económica). La escalera es un solo componente,
+    así que el cambio alcanza a A5 y H2.
+  - En la escalera, el peldaño donde está el personaje crece a 76 px y la
+    autoridad entra con `da26-entra` en cada peldaño nuevo: sigue subiendo.
+  - En H5 de T1, la hoja reserva 86 px arriba para la analista.
+  - Medido con `sonda-elenco.mjs` a 320 y 375: las cuatro imágenes miden
+    72 px de alto y cargan (naturalWidth 512), sin desborde. La sonda de T2
+    sobre A5 y H2 da 0 fallos de contraste, 0 toques chicos y 0 de desborde.
+  - Prueba: `__tests__/personajes.test.mjs`.
