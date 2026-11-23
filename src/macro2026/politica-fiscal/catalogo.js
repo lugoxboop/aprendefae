@@ -4,8 +4,8 @@
  *
  * En el orden del camino (§1 de la especificación de Gen). Igual que T1 y T2:
  * nada se ve hasta que Mateo apruebe cada pieza, y el id aprobado se anota en
- * PUBLICADAS_T3. Una Hacer necesita además su fila
- * (supabase/macro2026-pendientes/0272_*.sql → supabase/migrations).
+ * PUBLICADAS_T3. Las Hacer llevan su fila en
+ * supabase/migrations/0272_pf26_t3_politica_fiscal.sql.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -35,7 +35,20 @@ export const PIEZAS_T3 = [
 export const HACER_T3 = PIEZAS_T3.filter((p) => p.tipo === H);
 export const piezaT3 = (id) => PIEZAS_T3.find((p) => p.id === id) ?? null;
 
-/* El interruptor de publicación, uno por pieza. Vacío hasta que Mateo apruebe. */
-export const PUBLICADAS_T3 = Object.freeze([]);
+/* El interruptor de publicación, uno por pieza. */
+export const PUBLICADAS_T3 = Object.freeze([
+  /* Lote 4 (23-nov-2026): T3 completo, aprobado por Mateo. Las Hacer con su fila en la 0272. */
+  "pf26-a1-lupa",
+  "pf26-a2-buzones",
+  "pf26-h1-moneda",
+  "pf26-a3-cajeros",
+  "pf26-h2-cajero",
+  "pf26-h3-factura",
+  "pf26-a4-tanque",
+  "pf26-h5-montanas",
+  "pf26-a5-balanza",
+  "pf26-h4-expande",
+  "pf26-h6-memo",
+]);
 export const estaPublicadaT3 = (id) => PUBLICADAS_T3.includes(id);
 export const piezasPublicadasT3 = () => PIEZAS_T3.filter((p) => estaPublicadaT3(p.id));

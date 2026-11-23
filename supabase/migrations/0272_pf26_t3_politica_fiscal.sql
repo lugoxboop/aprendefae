@@ -1,13 +1,11 @@
 -- ---------------------------------------------------------------------------
 -- 0272 — MACROECONOMÍA 2026, TEMA 3: POLÍTICA FISCAL (las 6 Hacer)
 --
--- PENDIENTE: espera en supabase/macro2026-pendientes/ hasta que Mateo apruebe
--- las piezas. Entra a supabase/migrations/, tal cual, en el MISMO cambio que
--- declara las seis actividades en src/data/subjects.js y las anota en
--- PUBLICADAS_T3 (catalogo.test.mjs y el guardián exigen las dos cosas juntas).
--- pf26-h3-factura, la única por etapas, entra ese día en
--- supabase/tests/etapas_test.sql (excluida del chequeo 2 y con un chequeo que
--- exija 3 etapas y base 25).
+-- Publicada en el lote 4 (23-nov-2026): esperó en supabase/macro2026-pendientes/
+-- y entra aquí, tal cual, en el MISMO cambio que declara las seis actividades
+-- en src/data/subjects.js y las anota en PUBLICADAS_T3 (catalogo.test.mjs y el
+-- guardián exigen las dos cosas juntas). pf26-h3-factura, la única por
+-- etapas, entra en supabase/tests/etapas_test.sql (chequeos 2 y 16).
 --
 -- EL NÚMERO: la siguiente a la 0271, en el rango 0250-0299 (nocturno.md).
 --

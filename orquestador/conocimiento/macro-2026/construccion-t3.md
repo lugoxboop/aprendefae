@@ -27,7 +27,7 @@ Vista previa sin publicar: `#/macro-2026` (índice T1–T3) y
 - [x] Migración de las 6 Hacer (`supabase/macro2026-pendientes/0272_*.sql`)
 - [x] Pruebas de las Hacer (`__tests__/t3-hacer.test.mjs`)
 - [x] Sondas y videos de las Hacer a 320 y 375
-- [x] Interruptor de publicación por pieza (`PUBLICADAS_T3`, vacío)
+- [x] Publicación (lote 4): `PUBLICADAS_T3` con las 11, 0272 en `migrations/`
 
 ## Decisiones reversibles tomadas al construir
 
@@ -86,9 +86,12 @@ Vista previa sin publicar: `#/macro-2026` (índice T1–T3) y
 12. **H6.** Las frases se barajan por memo. Tocar una verdadera da su retro
     (coral 300 ms y luego «✓ correcta») y el memo ya no puntúa. Subtemas por
     memo como §2 (memo 3 suma `pf-deuda-casos`; memo 5 `pf-instrumentos`).
-13. **0272 queda pendiente** en `supabase/macro2026-pendientes/`, igual que la
-    0271: entra a `migrations/` el día que se publique T3, con `subjects.js`,
-    `PUBLICADAS_T3` y `etapas_test.sql` (H3, 3 etapas, base 25).
+13. **T3 publicado en el lote 4** (aprobado por Mateo): la 0272 pasó de
+    `supabase/macro2026-pendientes/` a `migrations/` en el mismo cambio que
+    `subjects.js` (tema «politica-fiscal»), `PUBLICADAS_T3` (las 11),
+    `TemaMacro2026`, la ruta, `FORMATO_MACRO`, las etiquetas del panel
+    docente y `etapas_test.sql` (H3 fuera del chequeo 2; chequeo 16: 3 etapas,
+    base 25).
 14. **Personajes (orden de Mateo, 23-nov).** Nada de personas
     (`FotoPersonaje`): todos los personajes son mascotas de
     `comun/mascotas.jsx` (≥ 120 px; 180 si protagonizan). El hueco provisional

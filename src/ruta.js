@@ -54,7 +54,8 @@ export const VISTAS = new Set([
    * 22-nov-2026 con todo su material (0258). Igual que con DA-Learn, quien
    * tenga uno de esos enlaces guardado cae en la portada. «politica-economica»
    * vuelve en el lote 2 como la vista NUEVA de Macro 2026 · T2 (más abajo):
-   * mismo tema, solo material nuevo con ids pe26-*.
+   * mismo tema, solo material nuevo con ids pe26-*. «politica-fiscal» vuelve
+   * igual en el lote 4, como T3, con ids pf26-*.
    */
   "pensamiento-sistemico",
   "modelo-iceberg",
@@ -97,11 +98,12 @@ export const VISTAS = new Set([
   "macro-2026",
   /*
    * Macroeconomía 2026, lo PUBLICADO (src/macro2026/TemaMacro2026.jsx): las
-   * piezas de PUBLICADAS_T1 y PUBLICADAS_T2. #/<tema>/aprender[/<id>] y
+   * piezas de PUBLICADAS_T1, PUBLICADAS_T2 y PUBLICADAS_T3. #/<tema>/aprender[/<id>] y
    * #/<tema>/hacer[/<id>].
    */
   "demanda-agregada",
   "politica-economica",
+  "politica-fiscal",
 ]);
 
 /*
