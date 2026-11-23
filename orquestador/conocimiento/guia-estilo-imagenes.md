@@ -80,6 +80,26 @@ Dentro de un mismo tema ninguna especie repite rol salvo la familia.
 - Situaciones de macro: `public/macro2026/mascotas/<rol>-<accion>.png`, pedidas
   en ese mismo chat para que el estilo no cambie.
 
+### Situaciones ya hechas (23-nov, 36 piezas, WebP transparente, 440–560 px de alto)
+En `public/macro2026/mascotas/`:
+- **empresario** (zorro, corbata): carrito, periodico, explica.
+- **analista** (gato, gafas): libreta, lupa, grafica.
+- **autoridad** (panda, saco y corbata): timon, grifo (salen monedas), carpeta.
+- **profesor** (perro, corbatín): pregunta, pizarra, libro.
+- **familia** (conejos): mercado, alcancia, recibo.
+- **inversionista** (hurón, corbata): tableta, ladrillo, monedas.
+- **exportadora** (hámster, gorra): flores, avion, recibe-billete.
+- **importadora** (conejo, casco): celulares, contenedor, paga-billete.
+- **viajero** (perro, mochila): maleta, cambio, avion.
+- **deudor** (zorro, corbatín gris): sobre, monedas, balanza. Ojo: la cara salió algo
+  pensativa; no usarla donde la pregunta sea si al deudor le va bien o mal.
+- **interaccion-**: analista-empresario, autoridad-empresario,
+  inversionista-empresario, exportadora-importadora, viajero-banco-central,
+  familia-carrito.
+
+Ojo con `analista-grafica` (barras que suben) y `inversionista-tableta` (línea
+que sube): no ponerlas donde la respuesta sea «baja».
+
 ### Cómo se pide una situación (pegar en ese chat)
 > HOJA DE SITUACIONES. Este mismo <especie> chibi exacto de esta conversación
 > (mismo estilo, mismos colores, mismo contorno negro grueso), con <accesorio>.
