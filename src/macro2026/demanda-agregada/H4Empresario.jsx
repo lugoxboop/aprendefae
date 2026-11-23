@@ -8,7 +8,7 @@
  * la dirección correcta. Al final, un medidor «DA» sube o baja.
  * 5 titulares de 7; puntaje = eslabones correctos / 15.
  */
-import { FotoPersonaje } from "../comun/personajes.jsx";
+import { MascotaRol } from "../comun/mascotas.jsx";
 import { useEffect, useMemo, useState } from "react";
 import { BORDE, CORAL, FONDO, INK, INK_2, SUPERFICIE_2 } from "../comun/colores-da.js";
 import { Boton, MarcoHacer, Retro, movimientoReducido, useCronometro } from "../comun/ui.jsx";
@@ -40,8 +40,8 @@ const flecha = (d) => (d === 1 ? "↑" : d === -1 ? "↓" : "?");
 
 function Empresario({ titular }) {
   return (
-    <div style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 10 }} data-titular>
-      <FotoPersonaje id="empresario" alto={72} />
+    <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 10 }} data-titular>
+      <MascotaRol id="empresario" pose="periodico" alto={140} />
       <div>
         <p className="da26-rotulo" style={{ margin: "0 0 2px" }}>El empresario oyó:</p>
         <p style={{ margin: 0, fontSize: 16, lineHeight: 1.35, fontWeight: 600 }}>{titular}</p>

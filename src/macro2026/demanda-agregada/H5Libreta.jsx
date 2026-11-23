@@ -10,7 +10,7 @@
  * líneas aleatorio en cada página. El margen de la libreta es gris: el coral
  * es solo para el error.
  */
-import { FotoPersonaje } from "../comun/personajes.jsx";
+import { MascotaRol } from "../comun/mascotas.jsx";
 import { useEffect, useMemo, useState } from "react";
 import { BORDE, CORAL, FONDO, INK, INK_2 } from "../comun/colores-da.js";
 import { Boton, MarcoHacer, Retro, movimientoReducido, useCronometro } from "../comun/ui.jsx";
@@ -24,7 +24,7 @@ export function prepararH5(rng = Math.random) {
 }
 
 const CSS = `
-.da26-h5-hoja { position: relative; border-radius: 10px; border: 1px solid ${BORDE}; background: ${FONDO}; padding: 86px 10px 12px 30px;
+.da26-h5-hoja { position: relative; border-radius: 10px; border: 1px solid ${BORDE}; background: ${FONDO}; padding: 14px 10px 12px 30px;
   background-image: repeating-linear-gradient(to bottom, transparent 0 31px, rgba(182,187,197,.16) 31px 32px); }
 .da26-h5-hoja::before { content: ""; position: absolute; left: 20px; top: 0; bottom: 0; width: 2px; background: rgba(182,187,197,.45); }
 .da26-h5-linea { position: relative; display: block; width: 100%; min-height: 48px; margin: 0 0 6px; padding: 10px 10px; border-radius: 8px; border: 2px solid transparent; background: transparent; color: ${INK}; font: 500 16px/1.35 var(--planck-font-sans, system-ui, sans-serif); text-align: left; cursor: pointer; touch-action: manipulation; }
@@ -96,11 +96,10 @@ export default function H5Libreta({ onTerminar, rng = null }) {
   return (
     <MarcoHacer id={ID} consigna={CONSIGNAS[ID]} progreso={`${n + 1} / ${paginas.length}`}>
       <style>{CSS}</style>
+      <div style={{ display: "flex", justifyContent: "center", marginBottom: 8, color: INK_2 }}>
+        <MascotaRol id="analista" pose="libreta" alto={140} />
+      </div>
       <div className="da26-h5-hoja da26-entra" key={pg.id} data-figura data-pagina={pg.id}>
-        <div style={{ position: "absolute", top: 6, right: 8, display: "flex", alignItems: "center", gap: 8, color: INK_2, fontSize: 12 }}>
-          <span aria-hidden="true">La analista</span>
-          <FotoPersonaje id="analista" alto={72} />
-        </div>
         {pg.lineas.map((l, k) => {
           const tocada = tocadas.includes(l.id);
           const tachada = tocada && l.falsa;
