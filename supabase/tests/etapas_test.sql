@@ -75,9 +75,9 @@ insert into res select 1, 'una fila sin etapas declaradas vale 1', '1',
 insert into res select 2, 'las actividades reales que no son desafío siguen en 1 etapa', '0 con etapas>1',
   (select count(*)::text || ' con etapas>1'
      from public.actividad_catalogo
-    where etapas > 1 and activity_id not in ('proyecto-arca', 'comite-nova', 'ciclo-completo') and activity_id not like 'zzz-%'),
+    where etapas > 1 and activity_id not in ('proyecto-arca', 'comite-nova', 'ciclo-completo', 'da26-h2-arma-formula', 'da26-h6-meta') and activity_id not like 'zzz-%'),
   (select count(*) = 0 from public.actividad_catalogo
-    where etapas > 1 and activity_id not in ('proyecto-arca', 'comite-nova', 'ciclo-completo') and activity_id not like 'zzz-%');
+    where etapas > 1 and activity_id not in ('proyecto-arca', 'comite-nova', 'ciclo-completo', 'da26-h2-arma-formula', 'da26-h6-meta') and activity_id not like 'zzz-%');
 
 -- ── 13. Y los tres desafíos declaran sus cuatro etapas ─────────────────────
 -- El complemento del chequeo de arriba: excluirlos de la cuenta no puede
@@ -88,6 +88,17 @@ insert into res select 13, 'los tres desafíos declaran 4 etapas y base 90', '3 
     where activity_id in ('proyecto-arca', 'comite-nova', 'ciclo-completo') and etapas = 4 and fp_base = 90),
   (select count(*) = 3 from public.actividad_catalogo
     where activity_id in ('proyecto-arca', 'comite-nova', 'ciclo-completo') and etapas = 4 and fp_base = 90);
+
+-- ── 14. Macro 2026: las dos Hacer por etapas de Demanda agregada ──────────
+-- «Arma la fórmula» y «Lleva la economía a la meta» son Medio (25) × 3 etapas
+-- por diseño de Gen (macro-2026/disenos/t1-demanda-agregada.md). Se excluyen
+-- de la cuenta del chequeo 2 y se miran aquí, igual que los desafíos.
+insert into res select 14, 'las dos Hacer por etapas de Macro 2026 declaran 3 etapas y base 25', '2 filas',
+  (select count(*)::text || ' filas'
+     from public.actividad_catalogo
+    where activity_id in ('da26-h2-arma-formula', 'da26-h6-meta') and etapas = 3 and fp_base = 25),
+  (select count(*) = 2 from public.actividad_catalogo
+    where activity_id in ('da26-h2-arma-formula', 'da26-h6-meta') and etapas = 3 and fp_base = 25);
 
 -- ── 3. Lo de siempre sigue pagando lo de siempre ───────────────────────────
 -- EL CHEQUEO MÁS IMPORTANTE DEL ARCHIVO. registrar_fp se reemplazó entera; si
