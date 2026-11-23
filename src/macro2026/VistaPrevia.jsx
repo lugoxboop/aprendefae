@@ -2,8 +2,8 @@
  * ═══════════════════════════════════════════════════════════════════════════
  * MACRO 2026 · LA VISTA PREVIA (NO PUBLICADA)
  *
- * Se abre SOLO escribiendo la dirección: #/macro-2026 (el índice de las 12
- * piezas de T1) o #/macro-2026/<id> (una pieza). Ningún índice, tarjeta ni
+ * Se abre SOLO escribiendo la dirección: #/macro-2026 (el índice de las
+ * piezas de cada tema: T1 y T2) o #/macro-2026/<id> (una pieza). Ningún índice, tarjeta ni
  * camino del sitio enlaza aquí: nada nuevo se ve para los estudiantes hasta que
  * Mateo apruebe (plan.md, 22-nov).
  *
@@ -19,7 +19,8 @@ import { lazy, Suspense, useMemo, useState } from "react";
 import { calcularFP } from "../fp/motor.js";
 import PantallaResumen, { ContextoResumen } from "../components/shared/PantallaResumen.jsx";
 import { FORMATO } from "../hacer/pantallaResumen.js";
-import { PIEZAS_T1, piezaT1 } from "./demanda-agregada/catalogo.js";
+import { PIEZAS_T1 } from "./demanda-agregada/catalogo.js";
+import { PIEZAS_T2 } from "./politica-economica/catalogo.js";
 import { Raiz, Boton } from "./comun/ui.jsx";
 import { FONDO, INK, INK_2, BORDE } from "./comun/colores-da.js";
 
@@ -36,7 +37,19 @@ const COMPONENTES = {
   "da26-h2-arma-formula": lazy(() => import("./demanda-agregada/H2ArmaFormula.jsx")),
   "da26-h5-libreta": lazy(() => import("./demanda-agregada/H5Libreta.jsx")),
   "da26-h6-meta": lazy(() => import("./demanda-agregada/H6Meta.jsx")),
+  "pe26-a1-mecanico": lazy(() => import("./politica-economica/A1Mecanico.jsx")),
+  "pe26-a2-fiebre": lazy(() => import("./politica-economica/A2Fiebre.jsx")),
+  "pe26-a3-problema-resuelto": lazy(() => import("./politica-economica/A3ProblemaResuelto.jsx")),
+  "pe26-a4-perillas": lazy(() => import("./politica-economica/A4Perillas.jsx")),
+  "pe26-a5-escalera": lazy(() => import("./politica-economica/A5Escalera.jsx")),
 };
+
+export const TEMAS = [
+  { id: "t1", titulo: "T1 · Demanda agregada", piezas: PIEZAS_T1 },
+  { id: "t2", titulo: "T2 · Política económica", piezas: PIEZAS_T2 },
+];
+const temaDe = (id) => TEMAS.find((t) => t.piezas.some((p) => p.id === id)) ?? null;
+const piezaDe = (id) => temaDe(id)?.piezas.find((p) => p.id === id) ?? null;
 
 export const ID_DE_EXTRA = (extra) => (extra ? String(extra).split("?")[0] : null);
 
@@ -64,26 +77,31 @@ function Indice() {
   return (
     <div className="da26-tarjeta" data-indice-previa>
       <p className="da26-rotulo da26-mono" style={{ margin: 0 }}>VISTA PREVIA · NO PUBLICADO</p>
-      <h1 style={{ font: "700 22px/28px var(--planck-font-sans, system-ui)", margin: "6px 0 4px" }}>T1 · Demanda agregada</h1>
-      <p style={{ margin: "0 0 12px", color: INK_2, fontSize: 14 }}>Macroeconomía 2026. Las 12 piezas en el orden del camino.</p>
-      <ol style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 8 }}>
-        {PIEZAS_T1.map((p, k) => (
-          <li key={p.id}>
-            <button type="button" className="da26-boton" data-abrir={p.id} onClick={() => ir(p.id)}
-              style={{ width: "100%", display: "flex", gap: 10, alignItems: "center", textAlign: "left", borderRadius: 12 }}>
-              <span className="da26-mono" style={{ color: INK_2, width: 22, flex: "none" }}>{k + 1}</span>
-              <span style={{ flex: 1 }}>{p.nombre}</span>
-              <span className="da26-rotulo" style={{ flex: "none" }}>{p.tipo === "hacer" ? "Hacer" : "Aprender"}</span>
-            </button>
-          </li>
-        ))}
-      </ol>
+      <p style={{ margin: "6px 0 4px", color: INK_2, fontSize: 14 }}>Macroeconomía 2026. Las piezas de cada tema en el orden del camino.</p>
+      {TEMAS.map((t) => (
+        <section key={t.id} data-tema-previa={t.id}>
+          <h2 style={{ font: "700 20px/26px var(--planck-font-sans, system-ui)", margin: "14px 0 8px" }}>{t.titulo}</h2>
+          <ol style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 8 }}>
+            {t.piezas.map((p, k) => (
+              <li key={p.id}>
+                <button type="button" className="da26-boton" data-abrir={p.id} onClick={() => ir(p.id)}
+                  style={{ width: "100%", display: "flex", gap: 10, alignItems: "center", textAlign: "left", borderRadius: 12 }}>
+                  <span className="da26-mono" style={{ color: INK_2, width: 22, flex: "none" }}>{k + 1}</span>
+                  <span style={{ flex: 1 }}>{p.nombre}</span>
+                  <span className="da26-rotulo" style={{ flex: "none" }}>{p.tipo === "hacer" ? "Hacer" : "Aprender"}</span>
+                </button>
+              </li>
+            ))}
+          </ol>
+        </section>
+      ))}
     </div>
   );
 }
 
 function Pieza({ id }) {
-  const pieza = piezaT1(id);
+  const pieza = piezaDe(id);
+  const tema = temaDe(id);
   const Componente = COMPONENTES[id];
   const [intento, setIntento] = useState(0);
   const [partida, setPartida] = useState(null);
@@ -94,13 +112,13 @@ function Pieza({ id }) {
     onVolver: () => ir(null),
   }), [partida]);
   if (!pieza || !Componente) return <Indice />;
-  const siguiente = PIEZAS_T1[PIEZAS_T1.indexOf(pieza) + 1];
+  const siguiente = tema.piezas[tema.piezas.indexOf(pieza) + 1];
   const repetir = () => { setPartida(null); setAprendido(false); setIntento((n) => n + 1); };
 
   return (
     <>
       <div style={{ display: "flex", justifyContent: "space-between", gap: 8, alignItems: "center", maxWidth: 640, margin: "0 auto 12px" }}>
-        <Boton onClick={() => ir(null)} data-volver-previa>‹ Las 12 piezas</Boton>
+        <Boton onClick={() => ir(null)} data-volver-previa>‹ Las piezas</Boton>
         <span className="da26-rotulo da26-mono">VISTA PREVIA</span>
       </div>
       {partida ? (
@@ -114,7 +132,7 @@ function Pieza({ id }) {
           <p style={{ margin: "0 0 12px", fontSize: 16 }}>Terminaste «{pieza.nombre}».</p>
           <div className="da26-nav">
             <Boton onClick={repetir}>Repetir</Boton>
-            {siguiente ? <Boton primario onClick={() => ir(siguiente.id)}>Siguiente pieza</Boton> : <Boton primario onClick={() => ir(null)}>Las 12 piezas</Boton>}
+            {siguiente ? <Boton primario onClick={() => ir(siguiente.id)}>Siguiente pieza</Boton> : <Boton primario onClick={() => ir(null)}>Las piezas</Boton>}
           </div>
         </div>
       ) : (
