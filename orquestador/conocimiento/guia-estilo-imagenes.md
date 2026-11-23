@@ -1,9 +1,26 @@
 # Guía de estilo de imágenes (Gemini)
 
-Para que todas las imágenes que pida Gen a Gemini salgan **coherentes entre sí**.
-Es la referencia fija: antes de pedir una imagen, Gen lee esta guía y la cumple;
-cuando cierra la descripción definitiva de un personaje, la **anota aquí** para
-que la próxima vez salga igual.
+Para que todas las imágenes que pidan a Gemini **Gen y los generales (Miku,
+Erwin, Magno)** salgan **coherentes entre sí**. Es la referencia fija: antes de
+pedir una imagen, el agente lee esta guía y la cumple; cuando cierra la
+descripción definitiva de un personaje, la **anota aquí** para que la próxima
+vez salga igual.
+
+## Flujo (cualquier agente)
+Gen y los generales pueden pedirle imágenes a Gemini desde el navegador de los
+agentes, sin que Mateo descargue nada:
+1. **Pide** en Gemini con una descripción precisa + el **estilo bloqueado** de
+   esta guía (misma paleta de marca, mismo trazo, misma descripción por
+   personaje), para que todas salgan iguales.
+2. **Mascotas que se animan:** pídelas **por partes** (cabeza, cuerpo, patas,
+   cola) o en varias poses, con fondo transparente o liso, **no una foto**.
+3. **Descarga** desde Gemini, saca la imagen de `Descargas/Imagenes-agentes`,
+   **revísala** (que se vea bien y respete el estilo) y **súbela** al proyecto
+   con un nombre claro.
+4. Si **Gemini falla** o la página cambia: reintenta 2 veces; si sigue, avisa en
+   una línea y sigue con otra tarea.
+5. En lo **animado**, se mantiene la regla de evidencia visual (video a 320 y
+   375 px, verificador aparte).
 
 ## Reglas fijas para todas las imágenes
 - **Paleta:** la del kit de marca (`orquestador/conocimiento/marca-planck.md`):
