@@ -252,7 +252,17 @@ test("renovable a diario: las mismas en el cliente y en el servidor, y solo los 
       for (const act of tema.actividades ?? []) if (act.clasificacion?.renovableDiario) cliente.add(act.id);
   for (const act of ACTIVIDADES_TRANSVERSALES) if (act.clasificacion?.renovableDiario) cliente.add(act.id);
 
-  assert.deepEqual([...renovablesDelServidor()].sort(), [...cliente].sort());
-  /* Los dos Repasos Diarios (0033 y 0152), y nada más. */
-  assert.deepEqual([...cliente], ["repaso-diario", "repaso-diario-contabilidad"]);
+  /*
+   * Lo que el servidor tiene retirado ya no lo ofrece el cliente: se compara
+   * lo vivo. El Repaso de Macro (0033) se retiró el 22-nov-2026 con la materia
+   * (0258) y conserva su marca en el servidor —el retiro es blando—, pero ya
+   * nadie puede jugarlo.
+   */
+  const retiradas = retiradasDelServidor();
+  const vivas = [...renovablesDelServidor()].filter((id) => !retiradas.has(id));
+  assert.deepEqual(vivas.sort(), [...cliente].sort());
+  assert.ok(renovablesDelServidor().has("repaso-diario") && retiradas.has("repaso-diario"),
+    "el Repaso de Macro tiene que seguir marcado y retirado en el servidor");
+  /* El Repaso Diario de Contabilidad (0152), y nada más. */
+  assert.deepEqual([...cliente], ["repaso-diario-contabilidad"]);
 });

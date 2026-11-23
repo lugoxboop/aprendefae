@@ -31,441 +31,50 @@ export const ETIQUETAS = {
 };
 
 export const SUBJECTS = {
+  /*
+   * ═══════════════════════ MACROECONOMÍA — EN CONSTRUCCIÓN ═══════════════════════
+   *
+   * Sin temas desde el 22-nov-2026, por orden de Mateo: todo el material de
+   * Demanda Agregada, Política Económica, Política Fiscal y Política Monetaria
+   * se retiró para rehacerlo desde cero con material nuevo. La materia sigue
+   * en la portada con su tarjeta y su índice, y el índice, al no tener temas,
+   * dice EMPTY_TOPICS_MESSAGE.
+   *
+   * LO QUE SE RETIRÓ NO SE BORRÓ DEL SERVIDOR. Las 59 actividades con fila
+   * quedaron como lápida (`retirada = true`) en la 0258, y el FP que los
+   * estudiantes ganaron con ellas sigue entero en fp_history. Sus nombres
+   * viven en src/data/retiradas.js para que el panel docente no enseñe ids
+   * crudos. La tabla completa y el commit que guarda el código viejo están en
+   * orquestador/conocimiento/macro-2026/respaldo-retiro.md.
+   *
+   * EL MATERIAL NUEVO ENTRA CON IDS NUEVOS. Reusar un id retirado haría que el
+   * historial viejo contara como si fuera de la pieza nueva, y que la lápida
+   * tuviera que «resucitar» —catalogo.test.mjs no deja ofrecer una retirada—.
+   */
   macroeconomia: {
     id: "macroeconomia",
     name: "Macroeconomía",
     topics: [
+      /*
+       * MACRO 2026 · T1 DEMANDA AGREGADA, PUBLICADA POR PARTES (Mateo, 22-nov).
+       * Lote 1: las seis Aprender. Son las piezas anotadas en PUBLICADAS_T1
+       * (src/macro2026/demanda-agregada/catalogo.js), con su mismo id y nombre;
+       * t1-modelo-y-bancos.test.mjs exige que las dos listas coincidan. Las
+       * Hacer entran después, cada una con su fila en supabase/migrations.
+       *
+       * El id del tema es el de siempre; los de las actividades son nuevos
+       * (da26-*): ninguno reusa un id retirado en la 0258.
+       */
       {
         id: "demanda-agregada",
-        title: "Demanda Agregada",
+        title: "Demanda agregada",
         actividades: [
-          {
-            /*
-             * Las tres piezas de "El corazón de la economía". Exploración
-             * libre: no hay preguntas ni condición de término, así que no hay
-             * nada que puntuar. Material, no juego.
-             *
-             * EL ID SE CONSERVA A PROPÓSITO. La pieza se rehízo entera y
-             * cambió de nombre, pero "grifos-da" es también el nombre de la
-             * vista en el hash (#/grifos-da) y de la rama del enrutador.
-             * Renombrarlo rompería los enlaces que ya circulan y no arreglaría
-             * nada: el id no se le enseña a nadie.
-             */
-            id: "grifos-da",
-            nombre: "El corazón de la economía",
-            clasificacion: { tipo: APRENDER },
-          },
-          {
-            id: "pulso-memoria",
-            nombre: "Pulso de memoria",
-            clasificacion: { tipo: APRENDER },
-          },
-          {
-            id: "estetoscopio-casos",
-            nombre: "Diagnóstico con estetoscopio",
-            clasificacion: { tipo: APRENDER },
-          },
-          /*
-           * ═══════════ LOS SIETE JUEGOS DEL CORAZÓN ═══════════
-           *
-           * Sustituyen al "Simulador de los 4 canales" (id simulador-da), que
-           * era la única actividad Hacer del tema y se retiró entero: su
-           * exploración con diales es hoy "El corazón de la economía", en la
-           * mitad Aprender y con el mismo modelo, y sus veintidós preguntas de
-           * recordar y comprender las cubren la 1, la 2 y la 7 con banco más
-           * grande y sorteo por partida. Analizar, evaluar y crear no los tenía
-           * de ninguna forma; los añaden la 4, la 5 y la 6.
-           *
-           * Las siete son evaluativas: se contesta una vez por ítem y el
-           * porcentaje mide desempeño, no constancia. Era justamente lo que el
-           * simulador no podía sostener, por eso él era exploratoria.
-           */
-          /*
-           * ═══════════ CIMIENTOS (0030) ═══════════
-           *
-           * Los dos juegos Fácil. La mecánica es la misma en las tres materias
-           * a propósito: la entrada del camino se siente igual se abra la que
-           * se abra. El Memorama es exploratoria —paga por terminar— y la
-           * primera clasificación, evaluativa. Los dos a 10 FP, la base de
-           * Fácil de motor.js: con 18, una Fácil pagaba casi lo que una Media
-           * (25, o 21 con cinco de seis) y la escala de dificultad dejaba de
-           * decir nada. Ver la 0030.
-           */
-          {
-            id: "memorama-corazon",
-            nombre: "Memorama del Corazón",
-            clasificacion: { tipo: HACER, modalidad: "exploratoria", dificultad: "facil", fpBase: 10 },
-          },
-          {
-            /* La versión sin reloj de la Sala de monitores. */
-            id: "cual-componente",
-            nombre: "¿Cuál componente?",
-            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 },
-          },
-          {
-            /* Recordar. Ocho definiciones de dieciséis y cuatro fragmentos de seis. */
-            id: "electrocardiograma",
-            nombre: "Lectura de electrocardiograma",
-            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 },
-          },
-          {
-            /* Comprender. Doce cambios en el banco, seis por partida. */
-            id: "termometro-reacciones",
-            nombre: "El termómetro de reacciones",
-            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 },
-          },
-          {
-            /* Aplicar. Ejemplos que se desvanecen: resuelto, guiado, solo. */
-            id: "banco-transfusiones",
-            nombre: "Banco de transfusiones",
-            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 },
-          },
-          {
-            /* Analizar. Dos fuerzas opuestas y una sola decisión, todo o nada. */
-            id: "biopsia-economica",
-            nombre: "Biopsia económica",
-            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 },
-          },
-          {
-            /* Evaluar. Duelos por parejas: cuál va primero y por qué. */
-            id: "triage-emergencias",
-            nombre: "Triage de emergencias",
-            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 },
-          },
-          {
-            /* Crear. Reconstruir la cadena de un golpe: primer y segundo orden. */
-            id: "cirugia-reconstruccion",
-            nombre: "Cirugía de reconstrucción",
-            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 },
-          },
-          {
-            /* Aplicar, intercalado. Doce alertas de veinticuatro, mezcladas. */
-            id: "sala-monitores",
-            nombre: "Sala de monitores",
-            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 },
-          },
-          /*
-           * Los tres que completan Aplicación, Análisis y Maestría (0030). Cada
-           * uno comparte mecánica con su par de Política Fiscal: el reparto de
-           * actores, el efecto protégé y la frontera de señales.
-           */
-          {
-            id: "quien-beneficia-auge",
-            nombre: "¿A quién beneficia el auge?",
-            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 },
-          },
-          {
-            id: "explica-paciente",
-            nombre: "Explícaselo a un paciente nuevo",
-            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 },
-          },
-          {
-            id: "sala-espera-llena",
-            nombre: "La sala de espera llena",
-            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 },
-          },
-        ],
-      },
-      {
-        id: "politica-economica",
-        title: "Política Económica",
-        actividades: [
-          {
-            /*
-             * Los tres paneles de "La sala de control de la economía". Material
-             * teórico: exploración libre, sin preguntas, sin condición de
-             * término y sin FP, así que no entran al catálogo del servidor.
-             */
-            id: "tablero-fallas",
-            nombre: "El tablero de fallas",
-            clasificacion: { tipo: APRENDER },
-          },
-          {
-            id: "autorregulacion-intervencion",
-            nombre: "¿Autorregulación o intervención?",
-            clasificacion: { tipo: APRENDER },
-          },
-          {
-            id: "maquina-da-palancas",
-            nombre: "La máquina de la DA y sus palancas",
-            clasificacion: { tipo: APRENDER },
-          },
-          /* Cimientos (0030): los mismos dos juegos Fácil que en los otros dos temas. */
-          {
-            id: "memorama-tesoro",
-            nombre: "Memorama del Tesoro",
-            clasificacion: { tipo: HACER, modalidad: "exploratoria", dificultad: "facil", fpBase: 10 },
-          },
-          {
-            id: "que-rama-es",
-            nombre: "¿Qué rama es?",
-            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 },
-          },
-          {
-            /*
-             * Recordar. Ocho titulares reales caen uno a uno y hay que
-             * clasificarlos antes de que crucen la línea de archivo.
-             */
-            id: "diagnostico-en-vivo",
-            nombre: "Diagnóstico en vivo",
-            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 },
-          },
-          {
-            /*
-             * Aplicar. Seis casillas del grupo lógico y doce enunciados, seis
-             * de ellos de otras cadenas del profesor: obligan a leer.
-             */
-            id: "arma-grupo-logico",
-            nombre: "Arma el grupo lógico",
-            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 },
-          },
-          {
-            /* Rol de actor: quién gana y quién pierde con cada medida. */
-            id: "quien-gana-quien-pierde",
-            nombre: "¿Quién gana, quién pierde?",
-            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 },
-          },
-          {
-            /* Práctica intercalada: dieciocho enunciados en una cinta que acelera. */
-            id: "corriente-titulares",
-            nombre: "Corriente de titulares",
-            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 },
-          },
-          {
-            /*
-             * Efecto protégé. La ficha pedía "media-alta", que no es un nivel
-             * de este sistema —las gradas son fácil/medio/difícil/experto— así
-             * que va a difícil: elegir cuatro frases de ocho y ordenarlas, con
-             * jerga y falsedades mezcladas, está más cerca de eso que de medio.
-             */
-            id: "explica-la-politica",
-            nombre: "Explica la política",
-            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 },
-          },
-          {
-            /*
-             * Reconstrucción del dashboard retirado: hereda su modelo
-             * verificado —coeficientes y tramos— y nada de su interfaz.
-             *
-             * SIN ÍTEMS, Y ES UNA PROPIEDAD DE LA MECÁNICA. No hay preguntas
-             * que acertar o fallar: se mueven tres palancas y se lee a dónde
-             * llegan los indicadores, así que no hay nada que registrar en
-             * fp_detalle y nunca lo habrá mientras la mecánica sea esta.
-             *
-             * Lo declara para que la vista por actividad OMITA la sección de
-             * diagnóstico entera en vez de enseñarla vacía. Un vacío por "no
-             * hay ítems" y uno por "todavía no hay bastantes intentos" son dos
-             * cosas distintas y el docente tiene que poder distinguirlas.
-             */
-            id: "tablero-decisiones",
-            nombre: "El tablero de decisiones",
-            sinItems: true,
-            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 },
-          },
-          {
-            /* Construir la cadena entera desde un problema nuevo. La más dura. */
-            id: "simulador-de-crisis",
-            nombre: "El simulador de crisis",
-            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 },
-          },
-          /* Los tres que completan Aplicación, Análisis y Maestría (0030). */
-          {
-            /* Predecir antes de ver: el cambio acerca o aleja el objetivo. */
-            id: "se-acerca-o-se-aleja",
-            nombre: "¿Se acerca o se aleja?",
-            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 },
-          },
-          {
-            /* Un caso y una decisión, todo o nada, como Biopsia y El agujero fiscal. */
-            id: "expediente-gabinete",
-            nombre: "El expediente del gabinete",
-            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 },
-          },
-          {
-            /* Tres propuestas y tres duelos: un orden sin pedirlo de golpe. */
-            id: "consejo-ministros",
-            nombre: "El consejo de ministros",
-            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 },
-          },
-        ],
-      },
-      {
-        /*
-         * ═══════════ POLÍTICA FISCAL — "LA TESORERÍA NACIONAL" ═══════════
-         *
-         * Siete juegos, uno por peldaño de Bloom más uno intercalado, sobre el
-         * PPTX del profesor, y una presentación de cuatro escenas para
-         * proyectar en clase. Con las dos mitades, el índice parte la
-         * tarjeta. Los bancos de los juegos viven en src/data/politicaFiscal.js;
-         * el texto de la presentación, en src/data/politicaFiscalClase.js.
-         *
-         * OJO CON UNA CONSECUENCIA: "Macroeconomía al día" (medallas.js) exige
-         * TODOS los juegos Hacer de la materia y se calcula al vuelo. Con estos
-         * siete, quien la tuviera vuelve a 14 de 21 hasta hacerlos. Es el
-         * comportamiento que la medalla declara —"al día"—, no un efecto
-         * secundario, pero conviene saberlo antes de que un estudiante pregunte.
-         */
-        id: "politica-fiscal",
-        title: "Política Fiscal",
-        actividades: [
-          {
-            /*
-             * La mitad Aprender: la presentación que el profesor proyecta y
-             * avanza con el mando (ClasePoliticaFiscal). Material, no juego:
-             * no otorga FP, no entra en actividad_catalogo y no llama a
-             * registrar_fp.
-             */
-            id: "clase-politica-fiscal",
-            nombre: "La política fiscal en cuatro escenas",
-            clasificacion: { tipo: APRENDER },
-          },
-          /* Cimientos (0030): los mismos dos juegos Fácil que en los otros dos temas. */
-          {
-            id: "memorama-tesoreria",
-            nombre: "Memorama de la Tesorería",
-            clasificacion: { tipo: HACER, modalidad: "exploratoria", dificultad: "facil", fpBase: 10 },
-          },
-          {
-            id: "cobra-gasta-o-pide",
-            nombre: "¿Cobra, gasta o pide prestado?",
-            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 },
-          },
-          {
-            /* Recordar. Las tarjetas del profesor: doce de dieciocho, a tres ranuras. */
-            id: "clasificador-tesoro",
-            nombre: "El clasificador del Tesoro",
-            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 },
-          },
-          {
-            /* Comprender. Ocho impuestos, cuatro sellos: sobre qué recae cada uno. */
-            id: "directos-indirectos",
-            nombre: "Directos e indirectos",
-            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 },
-          },
-          {
-            /* Aplicar. Por qué canal llega cada medida a la DA, y el multiplicador. */
-            id: "flujo-de-caja",
-            nombre: "Flujo de caja: ¿a quién afecta?",
-            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 },
-          },
-          {
-            /* Analizar. Un caso de prensa y una sola decisión, todo o nada. */
-            id: "agujero-fiscal",
-            nombre: "El agujero fiscal",
-            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 },
-          },
-          {
-            /* Evaluar. Duelos por parejas en recesión o en sobrecalentamiento. */
-            id: "expansiva-contractiva",
-            nombre: "Expansiva o contractiva",
-            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 },
-          },
-          {
-            /* Crear. Dos casillas y ocho señuelos: cómo se paga un acueducto. */
-            id: "disena-presupuesto",
-            nombre: "Diseña el presupuesto",
-            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 },
-          },
-          {
-            /* Aplicar, intercalado. Déficit (flujo) contra deuda (saldo), cada vez más rápido. */
-            id: "deficit-vs-deuda",
-            nombre: "Déficit vs deuda",
-            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 },
-          },
-          /*
-           * Los tres que completan Aplicación, Análisis y Maestría (0030), con
-           * la mecánica de su par de Demanda Agregada.
-           *
-           * Y la misma consecuencia que la nota de arriba, más grande: con los
-           * quince de la 0030, "Macroeconomía al día" y "Materia completa"
-           * pasan de exigir 21 juegos a exigir 36.
-           */
-          {
-            id: "quien-afecta-ajuste",
-            nombre: "¿A quién afecta el ajuste?",
-            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 },
-          },
-          {
-            id: "explica-contribuyente",
-            nombre: "Explícaselo a un contribuyente",
-            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 },
-          },
-          {
-            id: "comite-presupuesto",
-            nombre: "El comité de presupuesto",
-            clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 },
-          },
-          {
-            /*
-             * EL DESAFÍO DEL TEMA, el segundo del sitio tras El Proyecto del
-             * Arca, y con la misma estructura por la misma regla.
-             *
-             * `desafio: true` lo saca de actividadesDeTipo(), que es lo que
-             * dibuja el camino y lo que cuenta para «tema completo» y para las
-             * medallas. Va AL LADO del camino: si contara, un desafío opcional
-             * de cuatro etapas se volvería obligatorio para cerrar el tema.
-             *
-             * `etapas: 4` dispara la regla del Kit para desafíos compuestos:
-             * base × etapas = 90 × 4 = 360. La multiplicación la hace el
-             * servidor (migración 0041); aquí solo se declara, y
-             * catalogo.test.mjs comprueba que los dos digan lo mismo.
-             */
-            id: "comite-nova",
-            nombre: "El Comité de NOVA",
-            clasificacion: {
-              tipo: HACER,
-              modalidad: "evaluativa",
-              dificultad: "experto",
-              fpBase: 90,
-              etapas: 4,
-              desafio: true,
-            },
-          },
-        ],
-      },
-      {
-        /*
-         * ═══════════ POLÍTICA MONETARIA — "LA SALA DE MÁQUINAS" ═══════════
-         *
-         * Tercer cuarto del edificio: un volante —la tasa de intervención— y
-         * tres correas —crédito, ahorro y cambiario—. Tres piezas de Aprender
-         * en cuatro capas (cero FP) y doce juegos, 2-3-4-3 como los otros tres
-         * temas. Contenido de Gen, en src/data/politicaMonetaria.js. Catálogo
-         * del servidor: 0031.
-         */
-        id: "politica-monetaria",
-        title: "Política Monetaria",
-        actividades: [
-          { id: "quien-manda-aqui", nombre: "¿Quién Manda Aquí?", clasificacion: { tipo: APRENDER } },
-          { id: "los-cuatro-instrumentos", nombre: "Los Cuatro Instrumentos", clasificacion: { tipo: APRENDER } },
-          { id: "las-tres-transmisiones", nombre: "Las Tres Transmisiones", clasificacion: { tipo: APRENDER } },
-          { id: "la-fabrica-del-dinero", nombre: "La Fábrica del Dinero", clasificacion: { tipo: APRENDER } },
-          { id: "las-tallas-del-dinero", nombre: "Las Tallas del Dinero", clasificacion: { tipo: APRENDER } },
-          /* Cimientos */
-          { id: "memorama-banco-central", nombre: "Memorama del Banco Central", clasificacion: { tipo: HACER, modalidad: "exploratoria", dificultad: "facil", fpBase: 10 } },
-          { id: "quien-decide-esto", nombre: "¿Quién Decide Esto?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
-          { id: "en-que-talla-va", nombre: "¿En Qué Talla Va?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
-          /* Aplicación */
-          { id: "volante-de-la-tasa", nombre: "El Volante de la Tasa", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
-          { id: "la-tasa-que-muerde", nombre: "La Tasa que Muerde", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
-          { id: "caja-de-herramientas", nombre: "La Caja de Herramientas", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
-          { id: "crea-o-cambia-de-manos", nombre: "¿Crea o Cambia de Manos?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
-          { id: "el-freno-del-encaje", nombre: "El Freno del Encaje", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
-          { id: "a-quien-le-pega-la-tasa", nombre: "¿A Quién Le Pega la Tasa?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
-          { id: "las-dos-entradas", nombre: "Las Dos Entradas", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
-          { id: "que-toco-el-banco", nombre: "¿Qué Tocó el Banco?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
-          /* Análisis */
-          { id: "cadena-de-transmision", nombre: "La Cadena de Transmisión", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
-          { id: "por-cual-arteria-entra", nombre: "¿Por Cuál Arteria Entra?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
-          { id: "explicaselo-a-un-deudor", nombre: "Explícaselo a un Deudor", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
-          { id: "corriente-de-decisiones", nombre: "Corriente de Decisiones", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
-          { id: "el-rezago", nombre: "El Rezago", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
-          { id: "la-escalera-del-encaje", nombre: "La Escalera del Encaje", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
-          { id: "repo-o-definitiva", nombre: "¿Repo o Definitiva?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
-          /* Maestría */
-          { id: "dilema-banquero-central", nombre: "El Dilema del Banquero Central", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
-          { id: "duelo-de-instrumentos", nombre: "Duelo de Instrumentos", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
-          { id: "disena-respuesta-monetaria", nombre: "Diseña la Respuesta Monetaria", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "experto", fpBase: 90 } },
+          { id: "da26-a1-carrito", nombre: "El carrito de la economía", clasificacion: { tipo: APRENDER } },
+          { id: "da26-a2-vaso-renta", nombre: "El vaso de la renta", clasificacion: { tipo: APRENDER } },
+          { id: "da26-a3-columpio-tasa", nombre: "El columpio de la tasa", clasificacion: { tipo: APRENDER } },
+          { id: "da26-a4-no-miran-renta", nombre: "Los que no miran la renta", clasificacion: { tipo: APRENDER } },
+          { id: "da26-a5-bisagra-ascensor", nombre: "Bisagra y ascensor", clasificacion: { tipo: APRENDER } },
+          { id: "da26-a6-eco-multiplicador", nombre: "El eco del multiplicador", clasificacion: { tipo: APRENDER } },
         ],
       },
     ],
@@ -1193,17 +802,13 @@ const ALIAS = { "camara-presion-experto": "Cámara de presión · modo experto" 
  * MÁS: qué materias alimentan su pool se decide en src/repaso/repaso.js,
  * aparte, para que moverla de índice el día que entre Pensamiento Estratégico
  * no toque ni el banner ni el motor de selección.
+ *
+ * EL REPASO DIARIO DE MACRO (`repaso-diario`, 0033) SALIÓ EL 22-NOV-2026 con
+ * todo Macroeconomía: su pool eran los juegos retirados y se quedó sin un solo
+ * ítem. Su fila es lápida desde la 0258 y su nombre está en retiradas.js. El
+ * Macro nuevo, cuando tenga pool, entra con un id nuevo.
  */
 export const ACTIVIDADES_TRANSVERSALES = [
-  {
-    id: "repaso-diario",
-    nombre: "El Repaso Diario",
-    materiaId: "macroeconomia",
-    temaId: "repaso-diario",
-    indice: "macroeconomia",
-    /* Medio fija el tiempo mínimo antes de recortar FP; la base de 60 anula la de Medio. */
-    clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 60, renovableDiario: true },
-  },
   /*
    * El Repaso Diario de Contabilidad (orden de Mateo del 23-oct-2026). El
    * mismo motor y la misma clasificación que el de Macro; su pool son los

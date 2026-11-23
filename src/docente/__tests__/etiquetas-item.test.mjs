@@ -4,8 +4,8 @@ import assert from "node:assert/strict";
 import { SUBJECTS, HACER, actividadesDeTipo, desafioDe, nombreDeActividad } from "../../data/subjects.js";
 import { etiquetaDeItem, hayReglaPara, recortar, prefijoComun, REGLAS } from "../etiquetasItem.js";
 
-import { RONDAS_GANADORES, BANCO_CORRIENTE, ESCENARIOS_EXPLICA, CASOS_CRISIS, RANURAS_CRISIS } from "../../data/juegosPolitica2.js";
-import { CASILLAS, CASOS_CADENA, TITULARES } from "../../data/juegosPolitica.js";
+import { RONDAS_GANADORES, BANCO_CORRIENTE, ESCENARIOS_EXPLICA, CASOS_CRISIS, RANURAS_CRISIS } from "../../data/retiradas/macro-2025/juegosPolitica2.js";
+import { CASILLAS, CASOS_CADENA, TITULARES } from "../../data/retiradas/macro-2025/juegosPolitica.js";
 import {
   BLIPS_RADAR, DEFINICIONES, FRAGMENTOS_TRANSMISION, CORRIENTE, RANURAS, ORDEN_TRIBUNAL,
 } from "../../data/icebergActividades.js";
@@ -15,14 +15,14 @@ import { REFERENCIA, clave } from "../../components/mecanicas/MapaCausal.jsx";
 import {
   TERMINOS_ECG, FRAGMENTOS_ECG, REACCIONES, PASOS_TRANSFUSION,
   CASOS_BIOPSIA, CASOS_TRIAGE, CASOS_CIRUGIA, ALERTAS_MONITOR,
-} from "../../data/demandaAgregadaHacer.js";
+} from "../../data/retiradas/macro-2025/demandaAgregadaHacer.js";
 import { parejasDe } from "../../utils/orden.js";
 import {
   CLASIFICADOR, IMPUESTOS_SELLO, MEDIDAS_FLUJO, CASOS_EXPANSIVA, CASILLAS_PRESUPUESTO, BANCO_DEFICIT,
-} from "../../data/politicaFiscal.js";
-import { MEMORAMAS, CLASIFICACIONES } from "../../data/cimientos.js";
-import * as PM from "../../data/politicaMonetaria.js";
-import * as PMI from "../../data/pmInstrumentos.js";
+} from "../../data/retiradas/macro-2025/politicaFiscal.js";
+import { MEMORAMAS, CLASIFICACIONES } from "../../data/retiradas/macro-2025/cimientos.js";
+import * as PM from "../../data/retiradas/macro-2025/politicaMonetaria.js";
+import * as PMI from "../../data/retiradas/macro-2025/pmInstrumentos.js";
 import * as CU from "../../contabilidad/bancos.js";
 import * as CUA from "../../data/contabilidadActividades.js";
 import { transaccionesDe, renglonesDe } from "../../components/mecanicas/libros/LaMayorizacion.jsx";
@@ -30,7 +30,7 @@ import { mayorConSaldos } from "../../data/contabilidad.js";
 import {
   CAMBIOS_ACERCA, CASO_GABINETE, CASO_CONSEJO, RONDAS_AUGE, RONDAS_AJUSTE,
   EXPLICA_PACIENTE, EXPLICA_CONTRIBUYENTE, SALA_ESPERA, COMITE_PRESUPUESTO,
-} from "../../data/bloquesAvanzados.js";
+} from "../../data/retiradas/macro-2025/bloquesAvanzados.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -65,6 +65,11 @@ import {
 /*
  * Los ids que cada actividad puede emitir, derivados de sus bancos igual que en
  * detalle-ids.test.mjs.
+ *
+ * LOS DE MACROECONOMÍA SIGUEN AQUÍ aunque la materia se retiró el 22-nov-2026
+ * (0258): fp_detalle guarda las respuestas que estudiantes reales dieron a esas
+ * preguntas, y el panel docente las tiene que poder leer. Sus bancos se leen
+ * del archivo src/data/retiradas/macro-2025/, copia de los de d3716a5d.
  */
 const IDS = {
   "corriente-titulares": BANCO_CORRIENTE.map((x) => x.id),
@@ -360,6 +365,34 @@ const RETIRADAS_DE_CONTABILIDAD = [
   "t7-3-que-entra-al-costo",
 ];
 
+/*
+ * LAS DE MACROECONOMÍA, retiradas enteras el 22-nov-2026 (0258), por la misma
+ * razón: sus partidas viejas siguen en fp_detalle. Son las 58 de Hacer que
+ * tenían fila; «El tablero de decisiones» nunca mandó detalle y no tiene regla.
+ * El Repaso Diario de Macro conserva la suya, que es la misma función que la
+ * del de Contabilidad y delega en la actividad de origen de cada ítem.
+ */
+const SIN_DETALLE = ["tablero-decisiones"];
+const RETIRADAS_DE_MACRO = [
+  /* Demanda Agregada */
+  "memorama-corazon", "cual-componente", "electrocardiograma", "termometro-reacciones", "banco-transfusiones", "biopsia-economica",
+  "triage-emergencias", "cirugia-reconstruccion", "sala-monitores", "quien-beneficia-auge", "explica-paciente", "sala-espera-llena",
+  /* Política Económica */
+  "memorama-tesoro", "que-rama-es", "diagnostico-en-vivo", "arma-grupo-logico", "quien-gana-quien-pierde", "corriente-titulares",
+  "explica-la-politica", "simulador-de-crisis", "se-acerca-o-se-aleja", "expediente-gabinete", "consejo-ministros",
+  /* Política Fiscal */
+  "memorama-tesoreria", "cobra-gasta-o-pide", "clasificador-tesoro", "directos-indirectos", "flujo-de-caja", "agujero-fiscal",
+  "expansiva-contractiva", "disena-presupuesto", "deficit-vs-deuda", "quien-afecta-ajuste", "explica-contribuyente", "comite-presupuesto",
+  "comite-nova",
+  /* Política Monetaria */
+  "memorama-banco-central", "quien-decide-esto", "en-que-talla-va", "volante-de-la-tasa", "caja-de-herramientas", "crea-o-cambia-de-manos",
+  "a-quien-le-pega-la-tasa", "las-dos-entradas", "que-toco-el-banco", "cadena-de-transmision", "por-cual-arteria-entra",
+  "explicaselo-a-un-deudor", "corriente-de-decisiones", "el-rezago", "la-escalera-del-encaje", "dilema-banquero-central",
+  "duelo-de-instrumentos", "disena-respuesta-monetaria", "la-tasa-que-muerde", "repo-o-definitiva", "el-freno-del-encaje",
+  /* El Repaso Diario de Macro */
+  "repaso-diario",
+];
+
 test("ninguna regla sobra, salvo las de las actividades retiradas", () => {
   /*
    * "Vive" es lo que nombreDeActividad() sabe nombrar, no lo que está en el
@@ -373,7 +406,8 @@ test("ninguna regla sobra, salvo las de las actividades retiradas", () => {
    */
   const sobran = Object.keys(REGLAS)
     .filter((id) => nombreDeActividad(id) === null)
-    .filter((id) => !RETIRADAS_DE_CONTABILIDAD.includes(id));
+    .filter((id) => !RETIRADAS_DE_CONTABILIDAD.includes(id))
+    .filter((id) => !RETIRADAS_DE_MACRO.includes(id));
   assert.deepEqual(sobran, [], `reglas de actividades que ya no existen: ${sobran.join(", ")}`);
 });
 
@@ -382,4 +416,22 @@ test("★ las nueve retiradas conservan su regla, para las respuestas que ya exi
     assert.ok(REGLAS[id], `${id} perdió su regla y el panel enseñaría el id crudo`);
     assert.equal(nombreDeActividad(id), null, `${id} sigue en el camino: esta lista sobra`);
   }
+});
+
+test("★★★ las de Macroeconomía, retiradas, conservan su regla: el panel sigue leyendo sus partidas viejas", () => {
+  assert.equal(RETIRADAS_DE_MACRO.length + SIN_DETALLE.length, 59, "las 59 filas que retiró la 0258");
+  for (const id of RETIRADAS_DE_MACRO) {
+    assert.ok(REGLAS[id], `${id} perdió su regla y el panel enseñaría el id crudo`);
+    assert.equal(nombreDeActividad(id), null, `${id} volvió al camino: esta lista sobra`);
+  }
+  for (const id of SIN_DETALLE) assert.equal(REGLAS[id], undefined, `${id} nunca mandó detalle`);
+});
+
+test("★★★ tres preguntas viejas de Macro se siguen leyendo en el panel, literales", () => {
+  /* Ids reales de fp_detalle: actividad · item_id, tal como los escribían las mecánicas. */
+  assert.equal(etiquetaDeItem("sala-monitores", "hospital"), "El gobierno construye un nuevo hospital público.");
+  assert.equal(etiquetaDeItem("el-rezago", "sube-enero:interbancario"), "La tasa del mercado interbancario se ajusta");
+  assert.match(etiquetaDeItem("diagnostico-en-vivo", "brecha"), /^De estos 3 problemas con meta numérica clara, ¿cuál tiene la brecha/);
+  /* Y por el Repaso Diario de Macro, que guardaba `actividad:item_id`. */
+  assert.equal(etiquetaDeItem("repaso-diario", "sala-monitores:hospital"), "El gobierno construye un nuevo hospital público.");
 });

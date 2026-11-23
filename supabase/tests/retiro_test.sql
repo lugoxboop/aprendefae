@@ -88,11 +88,18 @@ select 1, 'retirada es boolean y una fila nueva nace en false', 'boolean/false',
 -- 0076 b5-t6-a7 y 0077 b5-t6-a5 (Célula B); 0208 t4-el-control-que-se-saltaron,
 -- t4-al-empleado-o-al-gasto y t4-quien-se-entero-primero (Célula D); 0115
 -- t7-2-debe-o-haber, t7-2-periodico-o-permanente, t7-3-comercial-o-condicionado
--- y t7-3-que-entra-al-costo (Célula C).
-insert into res select 2, 'solo están retiradas las retiradas a propósito', 'b5-t6-a5, b5-t6-a7, dashboard-economico, t4-al-empleado-o-al-gasto, t4-el-control-que-se-saltaron, t4-quien-se-entero-primero, t7-2-debe-o-haber, t7-2-periodico-o-permanente, t7-3-comercial-o-condicionado, t7-3-que-entra-al-costo',
-  coalesce((select string_agg(activity_id, ', ' order by activity_id)
+-- y t7-3-que-entra-al-costo (Célula C); 0258 las 59 de Macroeconomía, todo lo
+-- que tenía fila (orden de Mateo, tabla en macro-2026/respaldo-retiro.md).
+--
+-- EL ORDEN VA EN COLLATE "C" desde la 0258. Con las de Macro entran ids como
+-- «el-freno-del-encaje» y «electrocardiograma», que una intercalación que
+-- ignora los guiones (en_US) ordena al revés que la de bytes. La lista se
+-- escribe en orden de bytes y la consulta ordena igual, sea cual sea la
+-- intercalación de la base.
+insert into res select 2, 'solo están retiradas las retiradas a propósito', 'a-quien-le-pega-la-tasa, agujero-fiscal, arma-grupo-logico, b5-t6-a5, b5-t6-a7, banco-transfusiones, biopsia-economica, cadena-de-transmision, caja-de-herramientas, cirugia-reconstruccion, clasificador-tesoro, cobra-gasta-o-pide, comite-nova, comite-presupuesto, consejo-ministros, corriente-de-decisiones, corriente-titulares, crea-o-cambia-de-manos, cual-componente, dashboard-economico, deficit-vs-deuda, diagnostico-en-vivo, dilema-banquero-central, directos-indirectos, disena-presupuesto, disena-respuesta-monetaria, duelo-de-instrumentos, el-freno-del-encaje, el-rezago, electrocardiograma, en-que-talla-va, expansiva-contractiva, expediente-gabinete, explica-contribuyente, explica-la-politica, explica-paciente, explicaselo-a-un-deudor, flujo-de-caja, la-escalera-del-encaje, la-tasa-que-muerde, las-dos-entradas, memorama-banco-central, memorama-corazon, memorama-tesoreria, memorama-tesoro, por-cual-arteria-entra, que-rama-es, que-toco-el-banco, quien-afecta-ajuste, quien-beneficia-auge, quien-decide-esto, quien-gana-quien-pierde, repaso-diario, repo-o-definitiva, sala-espera-llena, sala-monitores, se-acerca-o-se-aleja, simulador-de-crisis, t4-al-empleado-o-al-gasto, t4-el-control-que-se-saltaron, t4-quien-se-entero-primero, t7-2-debe-o-haber, t7-2-periodico-o-permanente, t7-3-comercial-o-condicionado, t7-3-que-entra-al-costo, tablero-decisiones, termometro-reacciones, triage-emergencias, volante-de-la-tasa',
+  coalesce((select string_agg(activity_id, ', ' order by activity_id collate "C")
               from public.actividad_catalogo where retirada), 'ninguna'),
-  (select coalesce(string_agg(activity_id, ',' order by activity_id), '') = 'b5-t6-a5,b5-t6-a7,dashboard-economico,t4-al-empleado-o-al-gasto,t4-el-control-que-se-saltaron,t4-quien-se-entero-primero,t7-2-debe-o-haber,t7-2-periodico-o-permanente,t7-3-comercial-o-condicionado,t7-3-que-entra-al-costo'
+  (select coalesce(string_agg(activity_id, ',' order by activity_id collate "C"), '') = 'a-quien-le-pega-la-tasa,agujero-fiscal,arma-grupo-logico,b5-t6-a5,b5-t6-a7,banco-transfusiones,biopsia-economica,cadena-de-transmision,caja-de-herramientas,cirugia-reconstruccion,clasificador-tesoro,cobra-gasta-o-pide,comite-nova,comite-presupuesto,consejo-ministros,corriente-de-decisiones,corriente-titulares,crea-o-cambia-de-manos,cual-componente,dashboard-economico,deficit-vs-deuda,diagnostico-en-vivo,dilema-banquero-central,directos-indirectos,disena-presupuesto,disena-respuesta-monetaria,duelo-de-instrumentos,el-freno-del-encaje,el-rezago,electrocardiograma,en-que-talla-va,expansiva-contractiva,expediente-gabinete,explica-contribuyente,explica-la-politica,explica-paciente,explicaselo-a-un-deudor,flujo-de-caja,la-escalera-del-encaje,la-tasa-que-muerde,las-dos-entradas,memorama-banco-central,memorama-corazon,memorama-tesoreria,memorama-tesoro,por-cual-arteria-entra,que-rama-es,que-toco-el-banco,quien-afecta-ajuste,quien-beneficia-auge,quien-decide-esto,quien-gana-quien-pierde,repaso-diario,repo-o-definitiva,sala-espera-llena,sala-monitores,se-acerca-o-se-aleja,simulador-de-crisis,t4-al-empleado-o-al-gasto,t4-el-control-que-se-saltaron,t4-quien-se-entero-primero,t7-2-debe-o-haber,t7-2-periodico-o-permanente,t7-3-comercial-o-condicionado,t7-3-que-entra-al-costo,tablero-decisiones,termometro-reacciones,triage-emergencias,volante-de-la-tasa'
      from public.actividad_catalogo where retirada);
 
 -- ── 3. La lápida sigue ahí: retirada NO es lo mismo que borrada ────────────
@@ -102,16 +109,22 @@ insert into res select 3, 'la fila del dashboard sigue existiendo', 'existe',
   (select count(*) = 1 from public.actividad_catalogo where activity_id = 'dashboard-economico');
 
 -- ── 4 y 5. Los dos juegos nuevos, con su dificultad y sus puntos ───────────
+-- Antes también exigían `not retirada`. La 0258 retiró TODO Macroeconomía
+-- (orden de Mateo, 22-nov-2026), estos dos incluidos, así que hoy están en la
+-- lista del paso 2 y su lápida la vigila ese paso. Lo que la 0015 les dio
+-- —modalidad, dificultad y puntos— sigue igual y se sigue comprobando aquí: la
+-- lápida conserva la fila tal cual, que es lo que hace que el FP ya ganado
+-- valga lo mismo.
 insert into res select 4, 'diagnostico-en-vivo entró como medio con 25', 'evaluativa/medio/25',
   coalesce((select modalidad || '/' || dificultad || '/' || fp_base
               from public.actividad_catalogo where activity_id = 'diagnostico-en-vivo'), 'NO ESTÁ'),
-  (select modalidad = 'evaluativa' and dificultad = 'medio' and fp_base = 25 and not retirada
+  (select modalidad = 'evaluativa' and dificultad = 'medio' and fp_base = 25
      from public.actividad_catalogo where activity_id = 'diagnostico-en-vivo');
 
 insert into res select 5, 'arma-grupo-logico entró como difícil con 50', 'evaluativa/dificil/50',
   coalesce((select modalidad || '/' || dificultad || '/' || fp_base
               from public.actividad_catalogo where activity_id = 'arma-grupo-logico'), 'NO ESTÁ'),
-  (select modalidad = 'evaluativa' and dificultad = 'dificil' and fp_base = 50 and not retirada
+  (select modalidad = 'evaluativa' and dificultad = 'dificil' and fp_base = 50
      from public.actividad_catalogo where activity_id = 'arma-grupo-logico');
 
 -- ── 6 y 7. Los juegos nuevos pagan lo que dicen ────────────────────────────

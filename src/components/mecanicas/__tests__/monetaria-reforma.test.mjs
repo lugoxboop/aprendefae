@@ -53,7 +53,6 @@ const S = await import("../maquinas/salaDeMaquinas.jsx");
 const D = await import("../../../data/politicaMonetaria.js");
 
 const FUENTE = readFileSync("src/components/mecanicas/maquinas/salaDeMaquinas.jsx", "utf8");
-const VISTA = readFileSync("src/components/PoliticaMonetariaView.jsx", "utf8");
 
 function montar(el) {
   const caja = document.createElement("div");
@@ -122,15 +121,10 @@ test("ExploraMargen usa la escena de su propia pieza y lleva la tasa hasta el bo
   } finally { m.desmontar(); }
 });
 
-/* ─────────────── 3 · la prueba no copia el cableado ─────────────── */
-
-test("la vista cablea la pieza 1 a ExploraMargen: si cambia, esta prueba se pone roja", () => {
-  assert.ok(VISTA.includes("APRENDER_QUIEN_MANDA") && VISTA.includes("APRENDER_INSTRUMENTOS") && VISTA.includes("APRENDER_TRANSMISIONES"),
-    "¿se leyó PoliticaMonetariaView.jsx? no están las tres piezas");
-  assert.match(VISTA, /\{ pieza: APRENDER_QUIEN_MANDA, Escena: EscenaQuienManda, Exploracion: ExploraMargen \}/);
-  assert.ok(!/APRENDER_QUIEN_MANDA[^\n]*ExploraVolante/.test(VISTA),
-    "la pieza 1 volvió a la máquina de las transmisiones");
-});
+/* ─────────────── 3 · (retirada el 22-nov-2026) ───────────────
+ * Comparaba el cableado de PoliticaMonetariaView.jsx, que salió con todo
+ * Macroeconomía (0258). salaDeMaquinas.jsx se queda porque lo usa la Fábrica
+ * del panel docente, y las pruebas 1, 2 y 4 siguen guardando su dibujo. */
 
 /* ─────────────── 4 · las transmisiones llegan al bolsillo ─────────────── */
 

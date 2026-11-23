@@ -1,7 +1,14 @@
+/*
+ * LAS REGLAS DE MACROECONOMÍA SE QUEDAN AUNQUE LA MATERIA SE RETIRÓ
+ * (22-nov-2026, 0258). fp_detalle guarda las respuestas de estudiantes reales
+ * a esas preguntas, y el panel docente tiene que seguir leyéndolas. Sus bancos
+ * viven en src/data/retiradas/macro-2025/, un archivo que solo importa este
+ * módulo: no vuelven al catálogo ni a las rutas.
+ */
 import {
   RONDAS_GANADORES, BANCO_CORRIENTE, ESCENARIOS_EXPLICA, CASOS_CRISIS, NOMBRES_RANURA,
-} from "../data/juegosPolitica2.js";
-import { CASILLAS, CASOS_CADENA, TITULARES, BRECHAS, PREGUNTA_BRECHA } from "../data/juegosPolitica.js";
+} from "../data/retiradas/macro-2025/juegosPolitica2.js";
+import { CASILLAS, CASOS_CADENA, TITULARES, BRECHAS, PREGUNTA_BRECHA } from "../data/retiradas/macro-2025/juegosPolitica.js";
 import {
   BLIPS_RADAR, PREGUNTA_RESCATE, FRAGMENTOS_TRANSMISION, CORRIENTE,
   HIPOTESIS_TRIBUNAL, PREGUNTA_CRITERIO_TRIBUNAL,
@@ -9,31 +16,31 @@ import {
 import { CITAS_EXPEDIENTE, NIVELES, DECISIONES, PREGUNTA_DILUVIO } from "../data/arca.js";
 import {
   COMUNICADOS, MEDIDAS_LINEA, MEDIDAS_INCIDENCIA, ESCENARIOS,
-} from "../data/nova.js";
+} from "../data/retiradas/macro-2025/nova.js";
 import { FUERZAS, CASOS as CASOS_ASEDIO } from "../data/asedio.js";
 import {
   TERMINOS_ECG, FRAGMENTOS_ECG, REACCIONES, PASOS_TRANSFUSION,
   CASOS_BIOPSIA, CASOS_TRIAGE, CASOS_CIRUGIA, ALERTAS_MONITOR,
-} from "../data/demandaAgregadaHacer.js";
+} from "../data/retiradas/macro-2025/demandaAgregadaHacer.js";
 import { TEXTO as TEXTO_NODOS } from "../components/mecanicas/MapaCausal.jsx";
 import {
   CLASIFICADOR, IMPUESTOS_SELLO, MEDIDAS_FLUJO, PREGUNTA_MULTIPLICADOR, PREGUNTA_AGUJERO,
   CASOS_EXPANSIVA, CASILLAS_PRESUPUESTO, BANCO_DEFICIT,
-} from "../data/politicaFiscal.js";
-import { MEMORAMAS, CLASIFICACIONES } from "../data/cimientos.js";
-import { ESLABONES_ARTERIA, PREGUNTAS_DOS_ENTRADAS } from "../data/monetariaRepaso.js";
-import { hechoDeItemCreaOCambia, casillaDeItemEscalera } from "../data/pmFabricaDelDinero.js";
-import { etiquetaDeInstrumento } from "../data/pmInstrumentos.js";
-import { EN_QUE_TALLA_VA, QUE_TOCO_EL_BANCO } from "../data/pmAgregados.js";
+} from "../data/retiradas/macro-2025/politicaFiscal.js";
+import { MEMORAMAS, CLASIFICACIONES } from "../data/retiradas/macro-2025/cimientos.js";
+import { ESLABONES_ARTERIA, PREGUNTAS_DOS_ENTRADAS } from "../data/retiradas/macro-2025/monetariaRepaso.js";
+import { hechoDeItemCreaOCambia, casillaDeItemEscalera } from "../data/retiradas/macro-2025/pmFabricaDelDinero.js";
+import { etiquetaDeInstrumento } from "../data/retiradas/macro-2025/pmInstrumentos.js";
+import { EN_QUE_TALLA_VA, QUE_TOCO_EL_BANCO } from "../data/retiradas/macro-2025/pmAgregados.js";
 import {
   CAMBIOS_ACERCA, CASO_GABINETE, CASO_CONSEJO, RONDAS_AUGE, RONDAS_AJUSTE,
   EXPLICA_PACIENTE, EXPLICA_CONTRIBUYENTE, SALA_ESPERA, COMITE_PRESUPUESTO,
-} from "../data/bloquesAvanzados.js";
+} from "../data/retiradas/macro-2025/bloquesAvanzados.js";
 import {
   MEMORAMA_BANCO_CENTRAL, QUIEN_DECIDE, VOLANTE_DE_LA_TASA, CAJA_DE_HERRAMIENTAS, A_QUIEN_LE_PEGA,
   CADENAS_TRANSMISION, EXPLICA_DEUDOR, CORRIENTE_DECISIONES, EL_REZAGO, DILEMA_BANQUERO,
   DUELO_INSTRUMENTOS, DISENA_RESPUESTA, CASILLAS_RESPUESTA,
-} from "../data/politicaMonetaria.js";
+} from "../data/retiradas/macro-2025/politicaMonetaria.js";
 import {
   BANCO_IZQUIERDA_O_DERECHA, BANCO_DE_QUE_FAMILIA, BANCO_CUADRO_DINAMICAS,
   BANCO_DEBITA_O_ACREDITA, BANCO_CORRIENTE_DE_CUENTAS,

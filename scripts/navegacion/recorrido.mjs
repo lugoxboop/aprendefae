@@ -16,7 +16,7 @@ const hash = (p) => p.evaluate(() => location.hash || "#/");
 for (const [w,h] of [[320,568],[375,667],[1280,800]]) {
   // Menú: cada opción lleva a su sitio
   for (const [opcion, esperado] of [["Inicio","#/"],["Panel docente","#/docente"],["Clase en vivo","#/vivo"],["Mi perfil","#/perfil"],["Amigos","#/amigos"],["Mi avatar","#/perfil/avatar"],["Tienda","#/tienda"]]) {
-    const { ctx, page } = await abrir(nav, U, w, h, "#/politica-fiscal");
+    const { ctx, page } = await abrir(nav, U, w, h, "#/cuentas-debe-haber");
     await page.click(".fae-cuenta-boton"); await page.waitForTimeout(900);
     await page.locator("[data-panel-cuenta] button", { hasText: opcion }).first().click(); await page.waitForTimeout(900);
     const hh = await hash(page); const cerrado = !(await page.$("[data-panel-cuenta]"));
@@ -42,7 +42,7 @@ for (const [w,h] of [[320,568],[375,667],[1280,800]]) {
     const hh = await hash(page); ok(`${w}px «‹ Inicio» en ${m} (${Math.round(b.width)}×${Math.round(b.height)} px) → ${hh}`, hh==="#/"||hh===""||hh==="#/home");
     await ctx.close();
   }
-  for (const [t, m] of [["politica-fiscal","#/macroeconomia"],["introduccion-contabilidad","#/contabilidad"],["fuerzas-porter","#/pensamiento-estrategico"]]) {
+  for (const [t, m] of [["introduccion-contabilidad","#/contabilidad"],["fuerzas-porter","#/pensamiento-estrategico"]]) {
     const { ctx, page } = await abrir(nav, U, w, h, `#/${t}`);
     const b = await page.locator("button[aria-label^='Volver a']").first().boundingBox();
     await page.mouse.click(b.x+b.width/2, b.y+b.height/2); await page.waitForTimeout(800);

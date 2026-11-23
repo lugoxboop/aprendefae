@@ -33,11 +33,6 @@ const PerfilView = lazy(() => import("./components/PerfilView.jsx"));
 const TiendaView = lazy(() => import("./components/tienda/TiendaView.jsx"));
 const AmigosView = lazy(() => import("./components/social/AmigosView.jsx"));
 const SalasView = lazy(() => import("./components/entreno/SalasView.jsx"));
-const PoliticaEconomicaView = lazy(() => import("./components/PoliticaEconomicaView.jsx"));
-/* "La Tesorería Nacional": los siete juegos de Política Fiscal. Solo tiene mitad Hacer. */
-const PoliticaFiscalView = lazy(() => import("./components/PoliticaFiscalView.jsx"));
-/* "La Sala de Máquinas": Política Monetaria, con sus dos mitades. */
-const PoliticaMonetariaView = lazy(() => import("./components/PoliticaMonetariaView.jsx"));
 const IntroContabilidadView = lazy(() => import("./components/IntroContabilidadView.jsx"));
 const CuentasDebeHaberView = lazy(() => import("./components/CuentasDebeHaberView.jsx"));
 const ContabilidadTema3View = lazy(() => import("./components/ContabilidadTema3View.jsx"));
@@ -54,30 +49,10 @@ const PanelDocente = lazy(() => import("./components/docente/PanelDocente.jsx"))
 const VivoEstudiante = lazy(() => import("./components/vivo/VivoEstudiante.jsx"));
 const VivoProfesor = lazy(() => import("./components/vivo/VivoProfesor.jsx"));
 
-/*
- * Las dos mitades de Demanda Agregada. Cada una carga aparte: quien entra a
- * "Aprender" no descarga los siete juegos, y al revés.
- *
- * ═══════════ AQUÍ VIVÍA DA-LEARN, Y YA NO ═══════════
- *
- * El simulador de los cuatro canales —dashboard, consumo, inversion, gasto, xn
- * y final— era la única actividad "Hacer" del tema y ocupaba la mitad de este
- * archivo: su progreso por canal, su primer intento por pregunta, su detalle
- * por ítem y su registro de FP. Se retiró entero, junto con su fila del
- * catálogo del servidor.
- *
- * Lo sustituyen dos cosas que ya existen. "El corazón de la economía" hereda su
- * mismo modelo y es la exploración con diales, en la mitad Aprender. Y los
- * siete juegos del camino de "Hacer" cubren lo que él preguntaba —recordar y
- * comprender, con banco más grande y sorteo por partida— y añaden analizar,
- * evaluar y crear, que no tenía de ninguna forma.
- *
- * Con él se fue el último estado de actividad que vivía en App. Hoy ninguna
- * mecánica guarda su avance aquí: cada una lo lleva dentro y entrega el
- * resultado a la vista de su tema, que es la que llama al motor de FP.
- */
-const DemandaAgregadaAprenderView = lazy(() => import("./components/DemandaAgregadaAprenderView.jsx"));
-const DemandaAgregadaHacerView = lazy(() => import("./components/DemandaAgregadaHacerView.jsx"));
+/* Macroeconomía 2026: vista previa de lo que aún no se publica, solo por dirección (#/macro-2026). */
+const VistaPreviaMacro2026 = lazy(() => import("./macro2026/VistaPrevia.jsx"));
+/* Macroeconomía 2026 · T1, lo publicado: solo las piezas de PUBLICADAS_T1. */
+const TemaDemandaAgregada = lazy(() => import("./macro2026/TemaDemandaAgregada.jsx"));
 
 /*
  * ═══════════ QUÉ VISTAS LLEVAN TÍTULO EN LA CABECERA ═══════════
@@ -101,14 +76,13 @@ const VISTAS_CONTABILIDAD = new Set([
 ]);
 
 /* Bruno no sale en el inicio, los índices de materia ni las páginas de cuenta: ahí no hay actividad que orientar. */
-const VISTAS_SIN_BRUNO = new Set(["home", "macroeconomia", "pensamiento-estrategico", "contabilidad", "docente", "que-es", "perfil", "tienda", "vivo", "vivo-profesor", "salas"]);
+const VISTAS_SIN_BRUNO = new Set(["home", "macroeconomia", "pensamiento-estrategico", "contabilidad", "docente", "que-es", "perfil", "tienda", "vivo", "vivo-profesor", "salas", "macro-2026"]);
 const VISTAS_PE = new Set(["pensamiento-sistemico", "modelo-iceberg", "fuerzas-porter"]);
 const materiaDeVista = (v) => (VISTAS_CONTABILIDAD.has(v) || v === "repaso-diario-contabilidad" ? "Contabilidad" : VISTAS_PE.has(v) ? "Pensamiento Estratégico" : "Macroeconomía");
 
 const VISTAS_CON_TITULO = new Set([
   "macroeconomia", "pensamiento-estrategico", "contabilidad",
-  "camino-da", "grifos-da",
-  "politica-economica", "politica-fiscal", "politica-monetaria",
+  "demanda-agregada",
   "pensamiento-sistemico", "modelo-iceberg", "fuerzas-porter",
   "introduccion-contabilidad",
   "cuentas-debe-haber",
@@ -120,7 +94,6 @@ const VISTAS_CON_TITULO = new Set([
   "inventarios-permanente",
   "inventarios-descuentos-nic2",
   "repaso-capitulo-5",
-  "repaso-diario",
   "repaso-diario-contabilidad",
 ]);
 
@@ -228,10 +201,10 @@ export default function App() {
         <MacroTopicIndex
           onOpenTopic={(topicId, modo) => {
             /*
-             * Casi todos los temas se llaman igual que su vista; Demanda
-             * Agregada tiene una por mitad. Esa excepción vive en vistaDeTema()
-             * porque el enlace de vuelta del panel necesita la misma respuesta,
-             * y dos copias de una excepción se separan en la primera edición.
+             * Desde el 22-nov-2026 el único tema es Demanda agregada (Macro
+             * 2026, lote 1), con su vista propia «demanda-agregada». Si un
+             * tema nuevo tiene una vista por mitad, la excepción va en
+             * vistaDeTema(), la misma que usa el panel.
              */
             abrirTema(vistaDeTema(topicId, modo) ?? topicId, modo);
           }}
@@ -240,18 +213,18 @@ export default function App() {
     );
   }
 
-  if (view === "camino-da") {
+  if (view === "macro-2026") {
     return wrap(
       <Suspense fallback={siteFallback}>
-        <DemandaAgregadaHacerView nodoInicial={ruta.extra} onBack={() => setView("macroeconomia")} />
+        <VistaPreviaMacro2026 extra={ruta.extra} onBack={goHome} />
       </Suspense>
     );
   }
 
-  if (view === "grifos-da") {
+  if (view === "demanda-agregada") {
     return wrap(
       <Suspense fallback={siteFallback}>
-        <DemandaAgregadaAprenderView onBack={() => setView("macroeconomia")} />
+        <TemaDemandaAgregada extra={ruta.extra} onBack={() => setView("macroeconomia")} />
       </Suspense>
     );
   }
@@ -383,38 +356,6 @@ export default function App() {
     return wrap(
       <Suspense fallback={siteFallback}>
         <IcebergView modo={modoTema} nodoInicial={ruta.extra} onBack={() => setView("pensamiento-estrategico")} />
-      </Suspense>
-    );
-  }
-
-  if (view === "politica-economica") {
-    return wrap(
-      <Suspense fallback={siteFallback}>
-        <PoliticaEconomicaView modo={modoTema} nodoInicial={ruta.extra} onBack={() => setView("macroeconomia")} />
-      </Suspense>
-    );
-  }
-
-  if (view === "politica-fiscal") {
-    return wrap(
-      <Suspense fallback={siteFallback}>
-        <PoliticaFiscalView modo={modoTema} nodoInicial={ruta.extra} onBack={() => setView("macroeconomia")} />
-      </Suspense>
-    );
-  }
-
-  if (view === "politica-monetaria") {
-    return wrap(
-      <Suspense fallback={siteFallback}>
-        <PoliticaMonetariaView modo={modoTema} nodoInicial={ruta.extra} onBack={() => setView("macroeconomia")} />
-      </Suspense>
-    );
-  }
-
-  if (view === "repaso-diario") {
-    return wrap(
-      <Suspense fallback={siteFallback}>
-        <RepasoView onBack={() => setView("macroeconomia")} />
       </Suspense>
     );
   }

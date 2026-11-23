@@ -8,7 +8,7 @@ import { useRecompensa } from "../shared/RecompensaCierre.jsx";
 import { useAuth } from "../../auth/AuthProvider.jsx";
 import { registrarActividadCompletada } from "../../fp/registrarActividad.js";
 import { ACTIVIDADES_TRANSVERSALES, HACER } from "../../data/subjects.js";
-import { ID_REPASO, MENSAJES } from "../../repaso/repaso.js";
+import { MENSAJES } from "../../repaso/repaso.js";
 import { repasoDe } from "../../repaso/repasos.js";
 import { useRepaso } from "../../repaso/useRepaso.js";
 import PartidaRepaso from "./PartidaRepaso.jsx";
@@ -43,8 +43,6 @@ import { CSS_RESUMEN } from "../shared/PantallaResumen.jsx";
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-export const REPASO = ACTIVIDADES_TRANSVERSALES.find((a) => a.id === ID_REPASO);
-
 /* Los nombres de las materias, para el «Volver a …» de la cabecera. */
 const NOMBRE_MATERIA = { macroeconomia: "Macroeconomía", contabilidad: "Contabilidad" };
 
@@ -55,10 +53,11 @@ const MENSAJE_DE_ESTADO = {
 };
 
 /*
- * `idRepaso`: cuál de los repasos. Sin pasarlo, el de Macro, exactamente como
- * antes; el de Contabilidad entra por su propia ruta (App.jsx).
+ * `idRepaso`: cuál de los repasos, siempre dicho por quien la monta (App.jsx).
+ * Hasta el 22-nov-2026 sin pasarlo era el de Macro; ese salió con todo
+ * Macroeconomía y ya no hay uno por defecto.
  */
-export default function RepasoView({ onBack, idRepaso = ID_REPASO }) {
+export default function RepasoView({ onBack, idRepaso }) {
   const { pedirCuenta } = useAuth();
   const [recompensa, celebrar] = useRecompensa();
   const REPASO = ACTIVIDADES_TRANSVERSALES.find((a) => a.id === idRepaso);

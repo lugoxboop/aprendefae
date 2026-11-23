@@ -35,8 +35,11 @@ import { useEffect, useRef, useState } from "react";
  * que se publiquen las actividades nuevas, en su mismo PR.
  */
 export const NOVEDADES = [
-  /* Las dos de Política Monetaria. Aprobadas por escrito por Mateo el 13 de octubre de 2026 (Bogotá); el aviso se apaga solo 14 días después. */
-  { materia: "macroeconomia", tema: "politica-monetaria", tipo: "actividad", ids: ["las-dos-entradas", "por-cual-arteria-entra"], publicada: "2026-10-13" },
+  /*
+   * Aquí estaba la de Política Monetaria (las-dos-entradas y
+   * por-cual-arteria-entra, 13-oct-2026). Su aviso ya se había apagado solo y
+   * las dos salieron el 22-nov-2026 con todo Macroeconomía (0258).
+   */
 ];
 
 /*

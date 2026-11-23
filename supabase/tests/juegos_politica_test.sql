@@ -54,34 +54,40 @@ select set_config('request.jwt.claims',
                   true);
 
 -- ── 1 a 5. Las cinco filas, tal como la 0016 debía dejarlas ────────────────
+-- Hasta la 0258 también exigían `not retirada`. La 0258 retiró todo
+-- Macroeconomía (orden de Mateo, 22-nov-2026), estas cinco incluidas: su
+-- lápida la vigila el paso 2 de retiro_test.sql. Aquí se sigue comprobando lo
+-- que la 0016 les dio —modalidad, dificultad y puntos—, que la lápida conserva
+-- tal cual y que los pasos siguientes demuestran que registrar_fp sigue
+-- pagando a un cliente con caché vieja.
 insert into res select 1, 'quien-gana-quien-pierde: evaluativa / medio / 25', 'evaluativa/medio/25',
   coalesce((select modalidad || '/' || dificultad || '/' || fp_base
               from public.actividad_catalogo where activity_id = 'quien-gana-quien-pierde'), 'NO ESTÁ'),
-  (select modalidad = 'evaluativa' and dificultad = 'medio' and fp_base = 25 and not retirada
+  (select modalidad = 'evaluativa' and dificultad = 'medio' and fp_base = 25
      from public.actividad_catalogo where activity_id = 'quien-gana-quien-pierde');
 
 insert into res select 2, 'corriente-titulares: evaluativa / dificil / 50', 'evaluativa/dificil/50',
   coalesce((select modalidad || '/' || dificultad || '/' || fp_base
               from public.actividad_catalogo where activity_id = 'corriente-titulares'), 'NO ESTÁ'),
-  (select modalidad = 'evaluativa' and dificultad = 'dificil' and fp_base = 50 and not retirada
+  (select modalidad = 'evaluativa' and dificultad = 'dificil' and fp_base = 50
      from public.actividad_catalogo where activity_id = 'corriente-titulares');
 
 insert into res select 3, 'explica-la-politica: evaluativa / dificil / 50', 'evaluativa/dificil/50',
   coalesce((select modalidad || '/' || dificultad || '/' || fp_base
               from public.actividad_catalogo where activity_id = 'explica-la-politica'), 'NO ESTÁ'),
-  (select modalidad = 'evaluativa' and dificultad = 'dificil' and fp_base = 50 and not retirada
+  (select modalidad = 'evaluativa' and dificultad = 'dificil' and fp_base = 50
      from public.actividad_catalogo where activity_id = 'explica-la-politica');
 
 insert into res select 4, 'tablero-decisiones: evaluativa / experto / 90', 'evaluativa/experto/90',
   coalesce((select modalidad || '/' || dificultad || '/' || fp_base
               from public.actividad_catalogo where activity_id = 'tablero-decisiones'), 'NO ESTÁ'),
-  (select modalidad = 'evaluativa' and dificultad = 'experto' and fp_base = 90 and not retirada
+  (select modalidad = 'evaluativa' and dificultad = 'experto' and fp_base = 90
      from public.actividad_catalogo where activity_id = 'tablero-decisiones');
 
 insert into res select 5, 'simulador-de-crisis: evaluativa / experto / 90', 'evaluativa/experto/90',
   coalesce((select modalidad || '/' || dificultad || '/' || fp_base
               from public.actividad_catalogo where activity_id = 'simulador-de-crisis'), 'NO ESTÁ'),
-  (select modalidad = 'evaluativa' and dificultad = 'experto' and fp_base = 90 and not retirada
+  (select modalidad = 'evaluativa' and dificultad = 'experto' and fp_base = 90
      from public.actividad_catalogo where activity_id = 'simulador-de-crisis');
 
 -- ── 6. Las cinco son de Política Económica ────────────────────────────────

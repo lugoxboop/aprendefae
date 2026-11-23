@@ -25,8 +25,8 @@ const { createRoot } = await import("react-dom/client");
 const act = React.act ?? (await import("react-dom/test-utils")).act;
 
 const { default: PartidaRepaso } = await import("../../components/repaso/PartidaRepaso.jsx");
-const { POOL } = await import("../items.js");
-const { MENSAJES } = await import("../repaso.js");
+const { POOL_CONTABILIDAD: POOL } = await import("../contabilidad/index.js");
+const { MENSAJES, ID_REPASO_CONTABILIDAD } = await import("../repaso.js");
 const { SUBJECTS, ACTIVIDADES_TRANSVERSALES, ubicacionDeActividad } = await import("../../data/subjects.js");
 const { VISTAS, vistaDeTema } = await import("../../ruta.js");
 
@@ -46,28 +46,37 @@ const botones = (caja) => [...caja.querySelectorAll("button")];
 
 /* ─────────────────────────── Dónde vive la entrada ─────────────────────────── */
 
-test("el Repaso no está en ningún camino ni bloque: su entrada es del índice de Macroeconomía", () => {
+test("el Repaso no está en ningún camino ni bloque: su entrada es del índice de Contabilidad", () => {
   for (const materia of Object.values(SUBJECTS))
     for (const tema of materia.topics)
-      assert.ok(!(tema.actividades ?? []).some((a) => a.id === "repaso-diario"), `${tema.id} lo tiene en su camino`);
-  const repaso = ACTIVIDADES_TRANSVERSALES.find((a) => a.id === "repaso-diario");
-  assert.equal(repaso.indice, "macroeconomia");
-  assert.deepEqual(ubicacionDeActividad("repaso-diario"), { materiaId: "macroeconomia", temaId: "repaso-diario" });
-  assert.ok(VISTAS.has("repaso-diario"));
-  assert.equal(vistaDeTema("repaso-diario"), "repaso-diario");
+      assert.ok(!(tema.actividades ?? []).some((a) => a.id === ID_REPASO_CONTABILIDAD), `${tema.id} lo tiene en su camino`);
+  const repaso = ACTIVIDADES_TRANSVERSALES.find((a) => a.id === ID_REPASO_CONTABILIDAD);
+  assert.equal(repaso.indice, "contabilidad");
+  assert.deepEqual(ubicacionDeActividad(ID_REPASO_CONTABILIDAD), { materiaId: "contabilidad", temaId: ID_REPASO_CONTABILIDAD });
+  assert.ok(VISTAS.has(ID_REPASO_CONTABILIDAD));
+  assert.equal(vistaDeTema(ID_REPASO_CONTABILIDAD), ID_REPASO_CONTABILIDAD);
   assert.deepEqual(repaso.clasificacion, { tipo: "hacer", modalidad: "evaluativa", dificultad: "medio", fpBase: 60, renovableDiario: true });
+});
+
+test("el Repaso de Macro está retirado: sin entrada, sin vista, y un enlace viejo no abre nada", () => {
+  /* Salió con la materia el 22-nov-2026 (0258); sus filas siguen en el servidor. */
+  assert.equal(ACTIVIDADES_TRANSVERSALES.find((a) => a.id === "repaso-diario"), undefined);
+  assert.equal(ubicacionDeActividad("repaso-diario"), null);
+  assert.ok(!VISTAS.has("repaso-diario"));
+  assert.equal(vistaDeTema("repaso-diario"), null);
 });
 
 /* ─────────────────────────────── La partida ─────────────────────────────── */
 
-/* Diez ítems de formas distintas, en un orden fijo. */
-const CLAVES = [
-  "sala-monitores:hospital", "que-rama-es:" + POOL.find((x) => x.actividad === "que-rama-es").itemId,
-  "triage-emergencias:a:b-vs-c", "a-quien-le-pega-la-tasa:sube-a-12:cdt-renovar", "el-rezago:sube-enero:interbancario",
-  "diagnostico-en-vivo:brecha", "flujo-de-caja:multiplicador", "se-acerca-o-se-aleja:sube-tasa",
-  "electrocardiograma:frag:c-barra", "dilema-banquero-central:dilema",
-];
+/*
+ * Diez ítems de diez actividades distintas, en un orden fijo: el primero de
+ * cada una. Hasta el 22-nov-2026 eran del pool de Macro, retirado con la
+ * materia (0258); la partida es la misma para los dos.
+ */
+const ACTIVIDADES = [...new Set(POOL.map((x) => x.actividad))].slice(0, 10);
+const CLAVES = ACTIVIDADES.map((a) => POOL.find((x) => x.actividad === a).clave);
 const ITEMS = CLAVES.map((c) => POOL.find((x) => x.clave === c));
+assert.equal(new Set(CLAVES).size, 10, "hacen falta diez actividades con ítems en el pool");
 
 function jugar({ historial = new Map(), bien = () => true, alTocar = null }) {
   const fin = [];
@@ -132,14 +141,14 @@ test("un intento: tras elegir, las opciones quedan bloqueadas y un segundo toque
 
 test("la devolución de origen se ve tal cual, y 🎯 va DESPUÉS solo si estaba fallado y ahora sale bien", () => {
   const historial = new Map([
-    ["sala-monitores:hospital", { ultimoEn: "2026-09-01T12:00:00Z", ultimoOk: false, veces: 1 }],
-    ["triage-emergencias:a:b-vs-c", { ultimoEn: "2026-09-01T12:00:00Z", ultimoOk: false, veces: 1 }],
-    ["el-rezago:sube-enero:interbancario", { ultimoEn: "2026-09-01T12:00:00Z", ultimoOk: true, veces: 1 }],
+    [CLAVES[0], { ultimoEn: "2026-09-01T12:00:00Z", ultimoOk: false, veces: 1 }],
+    [CLAVES[2], { ultimoEn: "2026-09-01T12:00:00Z", ultimoOk: false, veces: 1 }],
+    [CLAVES[4], { ultimoEn: "2026-09-01T12:00:00Z", ultimoOk: true, veces: 1 }],
   ]);
   const vistos = {};
   const m = jugar({
     historial,
-    /* El triage se falla: estaba fallado y sigue fallado, no hay 🎯. */
+    /* El tercero se falla: estaba fallado y sigue fallado, no hay 🎯. */
     bien: (k) => k !== 2,
     alTocar: (mm, item, k, id) => {
       const texto = mm.caja.textContent;
@@ -154,9 +163,9 @@ test("la devolución de origen se ve tal cual, y 🎯 va DESPUÉS solo si estaba
     },
   });
   try {
-    assert.equal(vistos["sala-monitores:hospital"], true);
-    assert.equal(vistos["triage-emergencias:a:b-vs-c"], false);
-    assert.equal(vistos["el-rezago:sube-enero:interbancario"], false);
+    assert.equal(vistos[CLAVES[0]], true);
+    assert.equal(vistos[CLAVES[2]], false);
+    assert.equal(vistos[CLAVES[4]], false);
     assert.equal(Object.values(vistos).filter(Boolean).length, 1);
   } finally {
     m.desmontar();

@@ -28,7 +28,7 @@ const check = (caso, esperado, obtenido) => {
 /* ── Lo que sí es una ruta ── */
 check("#/modelo-iceberg", { vista: "modelo-iceberg", modo: null, extra: null }, interpretar("#/modelo-iceberg"));
 check("#/modelo-iceberg/hacer", { vista: "modelo-iceberg", modo: "hacer", extra: null }, interpretar("#/modelo-iceberg/hacer"));
-check("#/politica-economica/aprender", { vista: "politica-economica", modo: "aprender", extra: null }, interpretar("#/politica-economica/aprender"));
+check("#/cuentas-debe-haber/aprender", { vista: "cuentas-debe-haber", modo: "aprender", extra: null }, interpretar("#/cuentas-debe-haber/aprender"));
 /*
  * Este caso comprobaba que "#/consumo" abría la subvista de DA-Learn. El
  * simulador se retiró entero y sus seis hashes salieron de VISTAS, así que
@@ -83,7 +83,7 @@ check("segundo segmento que no es modo -> extra", { vista: "modelo-iceberg", mod
     ["home", null],
     ["modelo-iceberg", null],
     ["modelo-iceberg", "hacer"],
-    ["politica-economica", "aprender"],
+    ["cuentas-debe-haber", "aprender"],
     ["perfil", null],
   ];
   const rotos = casos.filter(([v, m]) => {
@@ -109,7 +109,7 @@ check("la portada serializa a vacío", "", serializar("home", null));
    * Y sobreviven llevando un extra encima. Se prueba con las vistas que hoy lo
    * usan, en sus dos formas.
    */
-  const conExtra = [["docente", null], ["modelo-iceberg", "hacer"], ["camino-da", "hacer"]]
+  const conExtra = [["docente", null], ["modelo-iceberg", "hacer"], ["cuentas-debe-haber", "hacer"]]
     .filter(([v]) => VISTAS.has(v))
     .filter(([v, m]) => {
       const r = interpretar(serializar(v, m, "una-actividad"));

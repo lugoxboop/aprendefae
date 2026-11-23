@@ -82,9 +82,6 @@ const RUTAS = [
   ["macroeconomía", "/#/macroeconomia"],
   ["pensamiento sistémico", "/#/pensamiento-sistemico"],
   ["modelo iceberg", "/#/modelo-iceberg"],
-  ["política fiscal", "/#/politica-fiscal"],
-  ["política monetaria", "/#/politica-monetaria"],
-  ["repaso diario", "/#/repaso-diario"],
   ["perfil", "/#/perfil"],
   ["tienda", "/#/tienda"],
 ].filter(([n]) => !solo || n.toLowerCase().includes(solo.toLowerCase()));

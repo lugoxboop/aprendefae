@@ -4,7 +4,7 @@ import {
   ID_REPASO, ITEMS_POR_REPASO, MINIMO_ACTIVIDADES, MINIMO_POOL,
   CUPOS, DIAS_PARA_OLVIDO, topePorMateria,
 } from "./repaso.js";
-import { REPASO_MACRO, poolDel } from "./repasos.js";
+import { poolDel } from "./repasos.js";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -41,8 +41,8 @@ import { REPASO_MACRO, poolDel } from "./repasos.js";
  * ═══════════ CUÁL REPASO ═══════════
  *
  * Las funciones que dependen del pool reciben `repaso` (repasos.js) como
- * último argumento, con el de Macro por defecto. Sin pasarlo, cada una hace
- * exactamente lo de antes del 23-oct-2026: Macro tiene estudiantes reales.
+ * último argumento, SIEMPRE. Hasta el 22-nov-2026 el de Macro iba por
+ * defecto; ese repaso salió con todo Macroeconomía y ya no hay default.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -64,12 +64,12 @@ export function diasEntre(a, b) {
 }
 
 /** Las actividades completadas que cuentan para el desbloqueo: las de las materias del pool. */
-export function actividadesDelPool(hechas, repaso = REPASO_MACRO) {
+export function actividadesDelPool(hechas, repaso) {
   return [...hechas].filter((id) => id !== repaso.id && repaso.temas.includes(ubicacionDeActividad(id)?.temaId));
 }
 
-/** Las materias con al menos una actividad completada, en el orden de MATERIAS_DEL_POOL. */
-export function materiasCompletadas(hechas, repaso = REPASO_MACRO) {
+/** Las materias con al menos una actividad completada, en el orden de los temas del repaso. */
+export function materiasCompletadas(hechas, repaso) {
   const temas = new Set(actividadesDelPool(hechas, repaso).map((id) => ubicacionDeActividad(id).temaId));
   return repaso.temas.filter((m) => temas.has(m));
 }
@@ -96,7 +96,7 @@ export function categoriaDe(entrada, ahora) {
  * En qué punto está el Repaso para este estudiante.
  *   "hecho-hoy" · "pocas-actividades" · "pool-corto" · "listo"
  */
-export function estadoRepaso({ hechas, hechoHoy }, repaso = REPASO_MACRO) {
+export function estadoRepaso({ hechas, hechoHoy }, repaso) {
   if (hechoHoy) return "hecho-hoy";
   if (actividadesDelPool(hechas, repaso).length < MINIMO_ACTIVIDADES) return "pocas-actividades";
   if (unidadesDe(poolDel(repaso, hechas)).length < MINIMO_POOL) return "pool-corto";
@@ -189,7 +189,7 @@ export const estabaFallado = (historial, clave) => historial.get(clave)?.ultimoO
  */
 
 /** La semilla del día para un estudiante. Sin sesión, una estable igualmente. */
-export const semillaDelDia = (usuarioId, ahora, repaso = REPASO_MACRO) =>
+export const semillaDelDia = (usuarioId, ahora, repaso) =>
   /* La de Macro se queda como era: cambiarla le cambiaría la mezcla del día a quien ya la vio. */
   repaso.id === ID_REPASO
     ? `${usuarioId ?? "invitado"}:${diaBogota(ahora)}`
@@ -201,7 +201,7 @@ export const semillaDelDia = (usuarioId, ahora, repaso = REPASO_MACRO) =>
  * @returns {{ items, temas, cuantos, topeRelajado }}
  *   `temas` son los ids de tema de la mezcla, en el orden del pool.
  */
-export function vistaPreviaDelDia({ hechas, historial, ahora = new Date(), usuarioId = null, repaso = REPASO_MACRO }) {
+export function vistaPreviaDelDia({ hechas, historial, ahora = new Date(), usuarioId = null, repaso }) {
   const { items, topeRelajado } = seleccionarRepaso({
     pool: poolDel(repaso, hechas),
     historial,
@@ -221,6 +221,6 @@ export function vistaPreviaDelDia({ hechas, historial, ahora = new Date(), usuar
  * Cuántas actividades le faltan para desbloquear el Repaso por número.
  * Cero cuando ya no es esa la razón del bloqueo.
  */
-export function faltanActividades(hechas, repaso = REPASO_MACRO) {
+export function faltanActividades(hechas, repaso) {
   return Math.max(0, MINIMO_ACTIVIDADES - actividadesDelPool(hechas, repaso).length);
 }
