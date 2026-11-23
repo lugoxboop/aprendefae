@@ -42,7 +42,74 @@ para que no cambie entre pedidos:
 | Perro |  |
 | Hámster |  |
 
-## Elenco de Macroeconomía 2026 (fijado por Gen el 23-nov)
+## Elenco de mascotas de Macroeconomía 2026 (orden de Mateo, 23-nov, 02:38)
+
+**Manda sobre el elenco de personas de abajo.** Mateo: las personas se sienten
+muy serias; los Aprender se explican con las mascotas y sus interacciones.
+Los objetos (lupa, flechas, celulares…) se conservan.
+
+Reglas:
+- Cada mascota lleva **siempre** su rol escrito debajo («Empresario»), porque el
+  rol objetivo es lo que importa, no el animal.
+- **Tierno sí, infantil no:** cara tranquila (`animo="quieta"` o
+  `"tranquila"`), sin corazones, sin diminutivos en el texto. Son universitarios.
+- Tamaño: **nunca menos de 120 px** de alto; si protagoniza, 180 px o más.
+- En código se usa la marioneta: `<Mascota especie="zorro" puestos={["corbata"]} animo="quieta" tamano={160} />`.
+  Las imágenes de situación (abajo) se usan cuando la escena pide un objeto en
+  la mano o una acción que la marioneta no hace.
+
+| Rol | Especie | Accesorio (marioneta) | Temas |
+|---|---|---|---|
+| Empresario | zorro | `corbata` | T1 |
+| Analista | gato | `gafas` | T1 |
+| Autoridad económica / banco central | panda | `traje` | T2, T4 |
+| Profesor | perro | `corbatin` | T3 |
+| Familia | conejo ×2 + conejo pequeño | — | T3 |
+| Inversionista | hurón | `corbata` | T3, T5 |
+| Exportadora de flores | hámster | `gorra` | T5 |
+| Importadora de celulares | conejo | `casco` | T5 |
+| Viajero | perro | `mochila` | T5 |
+| Quien paga deuda externa | zorro | `corbatin` | T5 |
+
+Dentro de un mismo tema ninguna especie repite rol salvo la familia.
+
+### Origen y archivos
+- Chat de Gemini **«Chibi Fox Model Sheet»**: ahí nacieron las 7 mascotas. Sus
+  32 imágenes (hojas de modelo, piezas, brazos, cuerpos, caras) quedan en
+  `public/mascotas/origen-gemini/` como referencia y para recortar piezas nuevas.
+- Situaciones de macro: `public/macro2026/mascotas/<rol>-<accion>.png`, pedidas
+  en ese mismo chat para que el estilo no cambie.
+
+### Situaciones ya hechas (23-nov, 36 piezas, WebP transparente, 440–560 px de alto)
+En `public/macro2026/mascotas/`:
+- **empresario** (zorro, corbata): carrito, periodico, explica.
+- **analista** (gato, gafas): libreta, lupa, grafica.
+- **autoridad** (panda, saco y corbata): timon, grifo (salen monedas), carpeta.
+- **profesor** (perro, corbatín): pregunta, pizarra, libro.
+- **familia** (conejos): mercado, alcancia, recibo.
+- **inversionista** (hurón, corbata): tableta, ladrillo, monedas.
+- **exportadora** (hámster, gorra): flores, avion, recibe-billete.
+- **importadora** (conejo, casco): celulares, contenedor, paga-billete.
+- **viajero** (perro, mochila): maleta, cambio, avion.
+- **deudor** (zorro, corbatín gris): sobre, monedas, balanza. Ojo: la cara salió algo
+  pensativa; no usarla donde la pregunta sea si al deudor le va bien o mal.
+- **interaccion-**: analista-empresario, autoridad-empresario,
+  inversionista-empresario, exportadora-importadora, viajero-banco-central,
+  familia-carrito.
+
+Ojo con `analista-grafica` (barras que suben) y `inversionista-tableta` (línea
+que sube): no ponerlas donde la respuesta sea «baja».
+
+### Cómo se pide una situación (pegar en ese chat)
+> HOJA DE SITUACIONES. Este mismo <especie> chibi exacto de esta conversación
+> (mismo estilo, mismos colores, mismo contorno negro grueso), con <accesorio>.
+> Tres poses separadas en una fila, de cuerpo entero: <acción 1>; <acción 2>;
+> <acción 3>. Expresión tranquila, boca pequeña, sin lágrimas ni corazones.
+> Accesorios y objetos en azul #2747F5, azul claro #6F86FF y gris azulado
+> #C9D1E4. Sin texto, sin letras, sin números. Fondo blanco liso, sin suelo ni
+> sombra, mucho espacio entre poses.
+
+## Elenco de personas de Macroeconomía 2026 (fijado por Gen el 23-nov, **reemplazado por las mascotas**)
 
 Los personajes de las piezas `da26-`, `pe26-`, `pf26-`, `pm26-` y `pc26-`.
 Sus nombres dicen **qué son**, nunca qué opinan: por eso la cara es
@@ -79,6 +146,28 @@ del personaje no se pierde porque queda encerrado por el contorno.
 
 Se guardan en `public/macro2026/personajes/`. Pesan como máximo 120 KB cada
 uno y miden 512 × 512 px.
+
+
+### Tamaños mínimos (orden de Mateo, 23-nov: «quedan muy chiquitas»)
+- **Nunca a 72 px.** Si el espacio es compacto, va el **busto** (`personajes/busto/`, 384 px) a 120 px como mínimo, o 140 px desde 375.
+- Si el personaje protagoniza la pantalla, va de **cuerpo entero a 180 px de alto como mínimo**, sin disco.
+- La familia va siempre de cuerpo entero.
+
+### Kit de animación (Gemini, 23-nov)
+Las piezas salen de hojas de recursos, todas con el mismo estilo, y se recortan con fondo transparente.
+- `public/macro2026/objetos/`, 36 piezas:
+  - **Demanda agregada:** carrito, bolsa-mercado, fabrica, edificio-gobierno, barco, billetes.
+  - **Política económica:** termometro, caja-herramientas, llave-inglesa, escalera, lupa, engranajes.
+  - **Fiscal:** alcancia, recibo, carretera, hospital, escuela, balanza.
+  - **Monetaria:** banco-central, boveda, grifo, billetes-alas, ancla, cajero.
+  - **Cambiaria:** billete-dolar, moneda, avion-carga, contenedor, celular, flores.
+  - **Transiciones:** flecha-curva, flecha-arriba, flecha-abajo, nube, reloj-arena, bombilla.
+- `public/macro2026/personajes/poses/`, para animar entradas y pasos:
+  - empresario-camina, empresario-lee, empresario-senala;
+  - analista-camina, analista-escribe, analista-senala;
+  - autoridad-sube, autoridad-camina, autoridad-tarjeta.
+
+Cómo se piden más: «HOJA DE RECURSOS» con el bloque de estilo, seis objetos separados en una cuadrícula de 3 × 2 con mucho espacio blanco y fondo blanco liso. Para las poses: «HOJA DE POSES» del mismo personaje, tres poses en fila. Los objetos miden unos 270 px de origen. Si una pieza va a mostrarse a más de 270 px, se pide sola, en grande.
 
 ## Dónde quedan las imágenes
 - Gemini descarga a la carpeta **Descargas/Imagenes-agentes** del computador.

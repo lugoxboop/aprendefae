@@ -32,14 +32,5 @@ test("FotoPersonaje: alt con el nombre, tamaño fijo, perezosa si se pide, sobre
   assert.ok(html.includes(DISCO.replace(/\s/g, "").slice(0, 10)) || html.includes("201, 209, 228"), "va sobre el disco");
 });
 
-test("las piezas publicadas usan su personaje a 72 px: H4 el empresario, H5 la analista, la escalera la autoridad", () => {
-  const usa = {
-    "../demanda-agregada/H4Empresario.jsx": "empresario",
-    "../demanda-agregada/H5Libreta.jsx": "analista",
-    "../comun/Escalera.jsx": "autoridad-economica",
-  };
-  for (const [f, id] of Object.entries(usa)) {
-    const src = readFileSync(new URL(f, import.meta.url), "utf8");
-    assert.ok(src.includes(`<FotoPersonaje id="${id}" alto={72}`), `${f} → ${id}`);
-  }
-});
+// Desde el 23-nov las piezas usan las mascotas (mascotas.test.mjs); los PNG
+// de personas se conservan (solo se agrega, nunca se borra).
