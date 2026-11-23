@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import { BORDE, FONDO, INK, INK_2, SUPERFICIE_2 } from "../comun/colores-da.js";
 import { MarcoAprender, usePasos } from "../comun/ui.jsx";
 import { Carrito } from "../comun/carrito.jsx";
-import { IconoRama } from "../comun/iconos-pe.jsx";
+import { Objeto } from "../comun/kit.jsx";
 import { colorRama } from "../comun/ramas.js";
 import { IconoTrazo } from "../comun/iconos-pf.jsx";
 import { APRENDER, A1, CARAS_A1 } from "./textos.js";
@@ -42,7 +42,7 @@ function Lente({ cara, objetivo, setObjetivo }) {
   if (cara === "naturaleza") {
     return (
       <>
-        <IconoRama id="fiscal" size={44} />
+        <Objeto id="alcancia" alto={56} nombre="Alcancía del Estado" />
         <div className="pf26-a1-flechas">
           {A1.flechas.map((f, k) => (
             <span key={f} className="pf26-a1-flecha" data-flecha={f}>

@@ -17,14 +17,16 @@ import { BASE, modelo, produccion, multiplicador, fmtEntero, fmtDecimal } from "
 import { Deslizador, MarcoAprender, usePasos, useAnimado } from "../comun/ui.jsx";
 import { useArrastre } from "../comun/arrastre.js";
 import { colorRama } from "../comun/ramas.js";
-import { IconoTrazo } from "../comun/iconos-pf.jsx";
-import { FotoPersonaje, DISCO } from "../comun/personajes.jsx";
+import Mascota from "../comun/Mascota.jsx";
+import { Objeto } from "../comun/kit.jsx";
 import { APRENDER, A5 } from "./textos.js";
 
 export const ID = "pf26-a5-balanza";
 const TEXTOS = APRENDER[ID];
 const FISCAL = colorRama("fiscal");
 const Y_BASE = produccion(BASE);
+/* Empresa y región con los objetos del kit (Gen): la fábrica y la carretera. */
+const OBJETO_IMPACTO = { empresa: "fabrica", region: "carretera" };
 const TODAS = [...A5.fichasExpansivas, ...A5.fichasContraccionistas];
 const GRADOS_POR_FICHA = 7;
 const ANCHO = 260;
@@ -66,10 +68,11 @@ const CSS = `
 @keyframes pf26-a5-cae { from { transform: translateY(-30px); opacity: 0; } to { transform: none; opacity: 1; } }
 .pf26-a5-lupa { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 76px; font: 600 14px/1.2 var(--planck-font-sans, system-ui, sans-serif); }
 .pf26-a5-lupa svg { transition: transform 280ms cubic-bezier(.3,.9,.4,1); }
-.pf26-a5-gente { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
-.pf26-a5-quien { display: flex; flex-direction: column; align-items: center; gap: 6px; min-height: 120px; padding: 8px 6px; border-radius: 12px; border: 2px solid ${BORDE}; background: ${FONDO}; color: ${INK}; font: 600 14px/1.3 var(--planck-font-sans, system-ui, sans-serif); cursor: pointer; touch-action: manipulation; text-align: center; }
-.pf26-a5-quien[aria-expanded="true"] { border-color: ${INK}; background: ${SUPERFICIE_2}; }
-.pf26-a5-quien p { margin: 0; font: 500 13px/1.35 var(--planck-font-sans, system-ui, sans-serif); }
+.pf26-a5-gente { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.pf26-a5-quien { min-height: 44px; padding: 6px 8px; border-radius: 999px; border: 2px solid ${BORDE}; background: ${FONDO}; color: ${INK}; font: 600 14px/1.2 var(--planck-font-sans, system-ui, sans-serif); cursor: pointer; touch-action: manipulation; }
+.pf26-a5-quien[aria-pressed="true"] { border-color: ${INK}; background: ${SUPERFICIE_2}; }
+.pf26-a5-escenario { min-height: 200px; margin-top: 10px; }
+.pf26-a5-impacto { margin: 0; max-width: 300px; text-align: center; font: 500 15px/1.35 var(--planck-font-sans, system-ui, sans-serif); }
 @media (prefers-reduced-motion: reduce) { .pf26-a5-viga, .pf26-a5-globo, .pf26-a5-plato, .pf26-a5-lupa svg { transition: none; } .pf26-a5-cae { animation: none; } }
 `;
 
@@ -136,7 +139,10 @@ export default function A5Balanza({ onTerminar }) {
   const [puestas, setPuestas] = useState([]);
   const [reforma, setReforma] = useState(false);
   const [v, setV] = useState({ G: BASE.G, t: BASE.t });
-  const [quien, setQuien] = useState(null);
+  /* P6: la familia abre la pantalla; los demás, al tocarlos. */
+  const [quien, setQuienBase] = useState("familia");
+  const [vistos, setVistos] = useState(new Set(["familia"]));
+  const setQuien = (id) => { setQuienBase(id); setVistos((v) => new Set(v).add(id)); };
   useEffect(() => { setPuestas([]); setReforma(false); setV({ G: BASE.G, t: BASE.t }); }, [paso]);
 
   const enJuego = paso === 1 ? A5.fichasExpansivas : paso === 2 ? A5.fichasContraccionistas : [];
@@ -205,18 +211,27 @@ export default function A5Balanza({ onTerminar }) {
       </>
     );
   } else {
+    const q = A5.impactos.find((x) => x.id === quien);
     figura = (
-      <div className="pf26-a5-gente" role="group" aria-label="A quién le llega">
-        {A5.impactos.map((q) => (
-          <button key={q.id} type="button" className="pf26-a5-quien" data-impacto={q.id} aria-expanded={quien === q.id} onClick={() => setQuien(q.id)}>
-            {q.personaje
-              ? <FotoPersonaje id={q.personaje} alto={72} perezosa />
-              : <span style={{ display: "inline-grid", placeItems: "center", width: 72, height: 72, borderRadius: "50%", background: DISCO }}><IconoTrazo id={q.id} size={40} color={INK} /></span>}
-            <span>{q.nombre}</span>
-            {quien === q.id && <p className="da26-entra" data-texto-impacto>{q.texto}</p>}
-          </button>
-        ))}
-      </div>
+      <>
+        <div className="pf26-a5-gente" role="group" aria-label="A quién le llega">
+          {A5.impactos.map((x) => (
+            <button key={x.id} type="button" className="pf26-a5-quien" data-impacto={x.id} aria-pressed={quien === x.id} onClick={() => setQuien(x.id)}>
+              {x.nombre}{vistos.has(x.id) ? " ✓" : ""}
+            </button>
+          ))}
+        </div>
+        <div className="pf26-a5-escenario" aria-live="polite" data-escenario={q?.id ?? ""}>
+          {q && (
+            <div className="da26-entra" key={q.id} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+              {q.personaje
+                ? <Mascota rol={q.personaje} alto={120} />
+                : <span data-objeto-impacto={q.id} style={{ display: "grid", placeItems: "center", height: 120 }}><Objeto id={OBJETO_IMPACTO[q.id]} alto={110} nombre={q.nombre} /></span>}
+              <p className="pf26-a5-impacto" data-texto-impacto>{q.texto}</p>
+            </div>
+          )}
+        </div>
+      </>
     );
   }
 

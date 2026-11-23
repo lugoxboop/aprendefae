@@ -23,6 +23,7 @@ import { PIEZAS_T1 } from "./demanda-agregada/catalogo.js";
 import { PIEZAS_T2 } from "./politica-economica/catalogo.js";
 import { PIEZAS_T3 } from "./politica-fiscal/catalogo.js";
 import { Raiz, Boton } from "./comun/ui.jsx";
+import CierreAprender from "./comun/CierreAprender.jsx";
 import { FONDO, INK, INK_2, BORDE } from "./comun/colores-da.js";
 
 const COMPONENTES = {
@@ -140,13 +141,10 @@ function Pieza({ id }) {
           </ContextoResumen.Provider>
         </div>
       ) : aprendido ? (
-        <div className="da26-tarjeta" data-cierre-previa>
-          <p style={{ margin: "0 0 12px", fontSize: 16 }}>Terminaste «{pieza.nombre}».</p>
-          <div className="da26-nav">
-            <Boton onClick={repetir}>Repetir</Boton>
-            {siguiente ? <Boton primario onClick={() => ir(siguiente.id)}>Siguiente pieza</Boton> : <Boton primario onClick={() => ir(null)}>Las piezas</Boton>}
-          </div>
-        </div>
+        <CierreAprender
+          data-cierre-previa nombre={pieza.nombre} onRepetir={repetir}
+          onSiguiente={() => ir(siguiente ? siguiente.id : null)} textoSiguiente={siguiente ? "Siguiente pieza" : "Las piezas"} hayFlecha={Boolean(siguiente)}
+        />
       ) : (
         <Suspense fallback={<div className="da26-tarjeta" style={{ minHeight: 320 }} />}>
           <Componente

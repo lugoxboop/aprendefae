@@ -16,6 +16,7 @@ import { fmtEntero } from "../comun/modelo-da.js";
 import { Deslizador, MarcoAprender, usePasos } from "../comun/ui.jsx";
 import { colorRama } from "../comun/ramas.js";
 import { IconoTrazo } from "../comun/iconos-pf.jsx";
+import { Objeto } from "../comun/kit.jsx";
 import { APRENDER, A4 } from "./textos.js";
 
 export const ID = "pf26-a4-tanque";
@@ -23,6 +24,8 @@ const TEXTOS = APRENDER[ID];
 const AGUA = colorRama("fiscal");
 const DESAGUE_DE_PASO = [null, "funcionamiento", "inversion", "servicio"];
 const ICONOS_DESTINO = { funcionamiento: ["nomina", "insumos", "servicios"], inversion: ["via", "escuela", "metro"], servicio: ["intereses"] };
+/* Los destinos que tienen objeto en el kit (Gen): la vía y la escuela. */
+const OBJETO_DESTINO = { via: "carretera", escuela: "escuela" };
 const BAJA = 20;
 const SUBE = 30;
 
@@ -130,7 +133,9 @@ export default function A4Tanque({ onTerminar }) {
           <div className="pf26-a4-destinos" aria-live="polite" data-destinos={ultimo ?? ""}>
             {desagueDestinos && desagueDestinos.destinos.map((n, j) => (
               <span key={`${ultimo}-${n}`} className="pf26-a4-destino da26-entra" data-destino-gasto={ICONOS_DESTINO[ultimo][j]}>
-                <IconoTrazo id={ICONOS_DESTINO[ultimo][j]} size={28} color={INK} />{n}
+                {OBJETO_DESTINO[ICONOS_DESTINO[ultimo][j]]
+                  ? <Objeto id={OBJETO_DESTINO[ICONOS_DESTINO[ultimo][j]]} alto={40} />
+                  : <IconoTrazo id={ICONOS_DESTINO[ultimo][j]} size={28} color={INK} />}{n}
               </span>
             ))}
           </div>

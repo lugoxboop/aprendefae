@@ -15,6 +15,7 @@ import { BORDE, FONDO, INK, INK_2, SUPERFICIE_2 } from "../comun/colores-da.js";
 import { Boton, MarcoAprender, usePasos } from "../comun/ui.jsx";
 import { barajar, azarDeLaPagina } from "../comun/azar.js";
 import { IconoBilletera, IconoCamisa, IconoDirecto, IconoIndirecto, IconoMoneda } from "../comun/iconos-pf.jsx";
+import { Objeto } from "../comun/kit.jsx";
 import { APRENDER, A3 } from "./textos.js";
 
 export const ID = "pf26-a3-cajeros";
@@ -147,7 +148,7 @@ export default function A3Cajeros({ onTerminar }) {
         <span className="da26-rotulo" style={{ display: "block", marginTop: 4 }}>{A3.caja} · {A3.retencion}</span>
         {mes === 12 && (
           <div className="pf26-a3-decl da26-entra" data-declaracion aria-live="polite">
-            <span style={{ gridColumn: "1 / -1" }}>{A3.declaracion}</span>
+            <span style={{ gridColumn: "1 / -1", display: "flex", alignItems: "center", gap: 8 }}><Objeto id="recibo" alto={40} />{A3.declaracion}</span>
             <span>{A3.impuestoAno}</span><span className="da26-mono">{A3.impuestoDelAno}</span>
             <span>{A3.caja}</span><span className="da26-mono">− {caja}</span>
             <span>{A3.saldo}</span><span className="da26-mono" data-saldo={saldo}>{saldo}</span>

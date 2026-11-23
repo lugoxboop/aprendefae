@@ -21,7 +21,7 @@ export const ID = "pf26-a2-buzones";
 const TEXTOS = APRENDER[ID];
 const BUZON_DE_PASO = [null, "impuesto", "tasa", "contribucion"];
 
-const CSS = `
+export const CSS_A2 = `
 .pf26-a2-moneda { display: inline-flex; align-items: center; gap: 6px; min-height: 48px; padding: 6px 14px; border-radius: 999px; border: 2px solid ${INK}; background: ${FONDO}; color: ${INK}; font: 600 14px/1 var(--planck-font-sans, system-ui, sans-serif); cursor: grab; touch-action: none; -webkit-user-select: none; user-select: none; transition: transform 280ms cubic-bezier(.3,.9,.4,1); }
 .pf26-a2-moneda[aria-pressed="true"] { box-shadow: 0 0 0 3px ${INK_2}; }
 .pf26-a2-moneda[data-arrastrando="1"] { transition: none; cursor: grabbing; }
@@ -36,7 +36,7 @@ const CSS = `
 @media (prefers-reduced-motion: reduce) { .pf26-a2-cae { animation: none; } .pf26-a2-barrera { transition: none; } }
 `;
 
-function Escena({ tipo }) {
+export function Escena({ tipo }) {
   const tono = tonoTributo(tipo);
   if (tipo === "impuesto") {
     return (
@@ -118,7 +118,7 @@ export default function A2Buzones({ onTerminar }) {
       paso={paso}
       total={TEXTOS.length}
       texto={TEXTOS[paso]}
-      figura={<><style>{CSS}</style>{figura}</>}
+      figura={<><style>{CSS_A2}</style>{figura}</>}
       puedeSeguir={!meta || echada === meta}
       onSiguiente={siguiente}
       onAnterior={anterior}

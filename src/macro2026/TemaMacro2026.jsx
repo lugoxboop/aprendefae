@@ -33,6 +33,7 @@ import { useAuth } from "../auth/AuthProvider.jsx";
 import * as T1 from "./demanda-agregada/catalogo.js";
 import * as T2 from "./politica-economica/catalogo.js";
 import { Raiz, Boton } from "./comun/ui.jsx";
+import CierreAprender from "./comun/CierreAprender.jsx";
 import { FONDO, INK, INK_2 } from "./comun/colores-da.js";
 
 const MATERIA = "macroeconomia";
@@ -142,15 +143,12 @@ function PiezaAprender({ temaId, id }) {
     <>
       <FilaVolver><Boton onClick={() => ir(temaId, APRENDER)} data-volver-lista>‹ {tema.titulo}</Boton></FilaVolver>
       {terminada ? (
-        <div className="da26-tarjeta" data-pieza-terminada={id}>
-          <p style={{ margin: "0 0 12px", fontSize: 16 }}>Terminaste «{pieza.nombre}».</p>
-          <div className="da26-nav">
-            <Boton onClick={() => { setTerminada(false); setIntento((n) => n + 1); }}>Repetir</Boton>
-            {siguiente
-              ? <Boton primario onClick={() => ir(temaId, APRENDER, siguiente.id)}>Siguiente pieza</Boton>
-              : <Boton primario onClick={() => ir(temaId, APRENDER)}>Volver al tema</Boton>}
-          </div>
-        </div>
+        <CierreAprender
+          data-pieza-terminada={id} nombre={pieza.nombre}
+          onRepetir={() => { setTerminada(false); setIntento((n) => n + 1); }}
+          onSiguiente={() => (siguiente ? ir(temaId, APRENDER, siguiente.id) : ir(temaId, APRENDER))}
+          textoSiguiente={siguiente ? "Siguiente pieza" : "Volver al tema"} hayFlecha={Boolean(siguiente)}
+        />
       ) : (
         <Suspense fallback={<div className="da26-tarjeta" style={{ minHeight: 320 }} />}>
           <Componente key={intento} onTerminar={() => setTerminada(true)} />

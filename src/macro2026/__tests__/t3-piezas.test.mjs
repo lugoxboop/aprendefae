@@ -262,9 +262,10 @@ test("A5: las fichas mueven Y₀ como el modelo de T1; la reforma cae en el cont
     await m.clic(`[data-impacto="${i.id}"]`);
     assert.equal(m.q("[data-texto-impacto]").textContent, i.texto);
     if (i.personaje) {
-      const img = m.q(`[data-impacto="${i.id}"] img`);
-      assert.equal(img.getAttribute("alt"), i.nombre);
-      assert.ok(Number(img.getAttribute("height")) >= 72);
+      /* El hueco de la mascota (Mateo: sin personajes humanos). */
+      assert.equal(m.q("[data-escenario] [data-mascota-rol]").dataset.mascotaRol, i.personaje);
+    } else {
+      assert.equal(m.q(`[data-objeto-impacto="${i.id}"] img`).getAttribute("alt"), i.nombre);
     }
   }
   assert.ok(fmtEntero(1194) === "1.194");
