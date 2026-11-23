@@ -44,7 +44,7 @@ export function cambiosDe(fichas) {
   return c;
 }
 
-const CSS = `
+export const CSS_A5 = `
 .pf26-a5-ec { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 4px 3px; padding: 12px 6px; border-radius: 12px; border: 1px solid ${BORDE}; background: ${FONDO}; font: 600 16px/1 var(--planck-font-mono, "Geist Mono", ui-monospace, monospace); }
 .pf26-a5-tok { padding: 4px 1px; color: ${INK_2}; }
 .pf26-a5-perilla { min-width: 44px; min-height: 44px; padding: 0 8px; border-radius: 999px; border: 2px solid ${FISCAL}; background: ${FISCAL}; color: ${TINTA_SOBRE_COLOR}; font: 700 16px/1 var(--planck-font-mono, "Geist Mono", ui-monospace, monospace); cursor: pointer; touch-action: manipulation; }
@@ -88,7 +88,7 @@ function Globo({ Y, dy }) {
   );
 }
 
-function Balanza({ exp, con, Y, destino, activos }) {
+export function Balanza({ exp, con, Y, destino, activos }) {
   const grados = GRADOS_POR_FICHA * (con - exp);
   const rad = (grados * Math.PI) / 180;
   const dy = Math.max(-26, Math.min(26, -(Y - Y_BASE) * 0.065));
@@ -119,7 +119,7 @@ function Balanza({ exp, con, Y, destino, activos }) {
   );
 }
 
-function Lupa({ m }) {
+export function Lupa({ m }) {
   const esc = Math.max(0.6, Math.min(1.7, m / multiplicador(BASE)));
   return (
     <div className="pf26-a5-lupa" data-multiplicador={m.toFixed(3)}>
@@ -241,7 +241,7 @@ export default function A5Balanza({ onTerminar }) {
       paso={paso}
       total={TEXTOS.length}
       texto={TEXTOS[paso]}
-      figura={<><style>{CSS}</style>{figura}</>}
+      figura={<><style>{CSS_A5}</style>{figura}</>}
       controles={controles}
       puedeSeguir={puedeSeguir}
       onSiguiente={siguiente}

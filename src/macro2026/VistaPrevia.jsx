@@ -54,6 +54,12 @@ const COMPONENTES = {
   "pf26-a3-cajeros": lazy(() => import("./politica-fiscal/A3Cajeros.jsx")),
   "pf26-a4-tanque": lazy(() => import("./politica-fiscal/A4Tanque.jsx")),
   "pf26-a5-balanza": lazy(() => import("./politica-fiscal/A5Balanza.jsx")),
+  "pf26-h1-moneda": lazy(() => import("./politica-fiscal/H1Moneda.jsx")),
+  "pf26-h2-cajero": lazy(() => import("./politica-fiscal/H2Cajero.jsx")),
+  "pf26-h3-factura": lazy(() => import("./politica-fiscal/H3Factura.jsx")),
+  "pf26-h5-montanas": lazy(() => import("./politica-fiscal/H5Montanas.jsx")),
+  "pf26-h4-expande": lazy(() => import("./politica-fiscal/H4Expande.jsx")),
+  "pf26-h6-memo": lazy(() => import("./politica-fiscal/H6Memo.jsx")),
 };
 
 export const TEMAS = [
