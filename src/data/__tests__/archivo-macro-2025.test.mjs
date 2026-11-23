@@ -75,10 +75,10 @@ test("★★★ ningún id viejo de Macro vuelve al catálogo ni a las rutas", a
   }
 });
 
-test("★★★ en el índice de Macro: T1 con sus Aprender y Hacer publicadas, y T2 con sus Aprender", async () => {
+test("★★★ en el índice de Macro: T1 y T2, cada uno con sus Aprender y sus Hacer publicadas", async () => {
   const { SUBJECTS, HACER, APRENDER, actividadesDeTipo } = await import("../subjects.js");
   const { PIEZAS_T1, PUBLICADAS_T1 } = await import("../../macro2026/demanda-agregada/catalogo.js");
-  const { PUBLICADAS_T2 } = await import("../../macro2026/politica-economica/catalogo.js");
+  const { PIEZAS_T2, PUBLICADAS_T2 } = await import("../../macro2026/politica-economica/catalogo.js");
   const temas = SUBJECTS.macroeconomia.topics;
   assert.deepEqual(temas.map((t) => t.id), ["demanda-agregada", "politica-economica"], "los otros temas viejos no aparecen");
   const [da, pe] = temas;
@@ -86,7 +86,9 @@ test("★★★ en el índice de Macro: T1 con sus Aprender y Hacer publicadas, 
   assert.deepEqual(actividadesDeTipo(da, APRENDER).map((a) => a.id), PUBLICADAS_T1.filter((id) => tipo(id) === APRENDER));
   assert.deepEqual(actividadesDeTipo(da, HACER).map((a) => a.id), PUBLICADAS_T1.filter((id) => tipo(id) === HACER));
   assert.equal(actividadesDeTipo(da, HACER).length, 6, "las seis Hacer de T1");
-  assert.deepEqual(actividadesDeTipo(pe, APRENDER).map((a) => a.id), [...PUBLICADAS_T2]);
-  assert.deepEqual(actividadesDeTipo(pe, HACER), [], "las Hacer de T2 siguen sin publicar");
+  const tipo2 = (id) => PIEZAS_T2.find((p) => p.id === id).tipo;
+  assert.deepEqual(actividadesDeTipo(pe, APRENDER).map((a) => a.id), PUBLICADAS_T2.filter((id) => tipo2(id) === APRENDER));
+  assert.deepEqual(actividadesDeTipo(pe, HACER).map((a) => a.id), PUBLICADAS_T2.filter((id) => tipo2(id) === HACER));
+  assert.equal(actividadesDeTipo(pe, HACER).length, 5, "las cinco Hacer de T2 (lote 3)");
   for (const a of [...da.actividades, ...pe.actividades]) assert.match(a.id, /^(da26|pe26)-/, `${a.id}: id nuevo`);
 });

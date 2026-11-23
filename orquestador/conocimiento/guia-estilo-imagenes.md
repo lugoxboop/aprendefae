@@ -42,6 +42,44 @@ para que no cambie entre pedidos:
 | Perro |  |
 | Hámster |  |
 
+## Elenco de Macroeconomía 2026 (fijado por Gen el 23-nov)
+
+Los personajes de las piezas `da26-`, `pe26-`, `pf26-`, `pm26-` y `pc26-`.
+Sus nombres dicen **qué son**, nunca qué opinan: por eso la cara es
+**neutra** (sin sonrisa ni ceño). Una expresión podría regalar la respuesta.
+
+### Estilo bloqueado (se pega igual al inicio de cada pedido)
+> Ilustración vectorial plana de un solo personaje, de cuerpo entero, de pie y
+> de frente, ligeramente de tres cuartos. Proporciones adultas realistas pero
+> simplificadas (cabeza = 1/7 del cuerpo), universitario, nada infantil.
+> Contorno uniforme y redondeado de grosor medio en azul muy oscuro #121418.
+> Rellenos planos, sin degradados, sin sombras, sin texturas. Paleta
+> restringida: azul #2747F5, azul claro #6F86FF, gris azulado #C9D1E4, blanco
+> #FFFFFF, piel en tonos planos variados. Sin rojo ni coral. Expresión facial
+> neutra y tranquila, boca recta, sin sonrisa ni ceño. Sin texto, sin logos,
+> sin marcas. Fondo blanco liso #FFFFFF, sin suelo ni sombra proyectada, con
+> margen alrededor. Formato cuadrado.
+
+Gen quita el fondo blanco al revisar y guarda un PNG transparente. El blanco
+del personaje no se pierde porque queda encerrado por el contorno.
+
+### Descripción bloqueada por personaje (se agrega tras el estilo)
+| Archivo | Personaje | Descripción para Gemini | Dónde aparece |
+|---|---|---|---|
+| `empresario.png` | El empresario | Hombre de unos 45 años, camisa azul #2747F5 remangada y pantalón gris azulado. Sostiene un periódico doblado bajo el brazo. | T1 H4 |
+| `analista.png` | La analista | Mujer de unos 30 años, cabello recogido, blazer azul claro #6F86FF y blusa blanca. Sostiene una libreta abierta y un lápiz. | T1 H5 |
+| `autoridad-economica.png` | La autoridad económica | Persona de unos 50 años, de género ambiguo, traje sobrio gris azulado y corbata azul #2747F5. Sostiene una carpeta cerrada. | T2 A5 |
+| `profesor.png` | El profesor | Hombre de unos 55 años con gafas, suéter azul #2747F5 sobre camisa blanca. Una mano levantada, como quien hace una pregunta. | T3 H |
+| `familia.png` | Familia | Una madre, un padre y una niña de unos 8 años, de pie juntos. Ropa casual en azul, azul claro y blanco. | T3 A |
+| `inversionista.png` | Inversionista | Mujer de unos 40 años, traje azul #2747F5, sostiene una tableta. | T3 A, T5 |
+| `exportadora-flores.png` | Exportadora de flores | Mujer de unos 35 años, delantal azul claro #6F86FF, carga una caja de cartón abierta con flores blancas y azules. | T5 H4, T5 A |
+| `importadora-celulares.png` | Importadora de celulares | Hombre de unos 30 años, chaqueta gris azulada, carga una caja de cartón con celulares. | T5 H4, T5 A |
+| `viajero.png` | Viajero | Persona joven con mochila y maleta de ruedas azul #2747F5. | T5 A |
+| `deudor-externo.png` | Quien paga deuda externa | Hombre de unos 50 años, camisa blanca y corbata azul, sostiene un sobre grande. | T5 A |
+
+Se guardan en `public/macro2026/personajes/`. Pesan como máximo 120 KB cada
+uno y miden 512 × 512 px.
+
 ## Dónde quedan las imágenes
 - Gemini descarga a la carpeta **Descargas/Imagenes-agentes** del computador.
 - Gen revisa la imagen (que se vea bien y respete esta guía) y la sube al

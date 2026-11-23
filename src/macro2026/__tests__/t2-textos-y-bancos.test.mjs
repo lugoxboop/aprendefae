@@ -88,3 +88,26 @@ test("publicación T2: subjects.js y supabase/migrations llevan exactamente lo a
   }
   assert.ok(PIEZAS_T2.filter((p) => p.tipo === "aprender").every((p) => !p.clasificacion), "las Aprender no tienen FP");
 });
+
+/* ─── La migración de las 5 Hacer ─── */
+const { filasDeCatalogo, revisar } = await import("../../../scripts/guardian-migraciones.mjs");
+const RUTA_0271 = ["supabase/migrations", "supabase/macro2026-pendientes"]
+  .map((d) => `${d}/0271_pe26_t2_politica_economica.sql`)
+  .find((r) => { try { readFileSync(r); return true; } catch { return false; } });
+
+test("migración 0271: las 5 Hacer con la clasificación del catálogo, y el guardián no la reprocharía", () => {
+  const sql = readFileSync(RUTA_0271, "utf8");
+  const hacer = PIEZAS_T2.filter((p) => p.tipo === "hacer");
+  const filas = filasDeCatalogo(sql);
+  assert.equal(filas.length, 5);
+  const cliente = new Map(hacer.map((a) => [a.id, {
+    activity_id: a.id, subject_id: "macroeconomia", topic_id: "politica-economica",
+    modalidad: a.clasificacion.modalidad, dificultad: a.clasificacion.dificultad, fp_base: a.clasificacion.fpBase,
+  }]));
+  for (const f of filas) {
+    const a = hacer.find((x) => x.id === f.activity_id);
+    assert.ok(a, f.activity_id);
+    assert.equal(f.etapas, a.clasificacion.etapas ?? 1, f.activity_id);
+  }
+  assert.deepEqual(revisar([{ nombre: "0271_pe26_t2_politica_economica.sql", sql }], cliente), []);
+});

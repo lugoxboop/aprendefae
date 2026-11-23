@@ -92,7 +92,7 @@ export const SUBJECTS = {
        * MACRO 2026 · T2 POLÍTICA ECONÓMICA (lote 2): las cinco Aprender de
        * PUBLICADAS_T2 (src/macro2026/politica-economica/catalogo.js), con su
        * mismo id y nombre; t2-textos-y-bancos.test.mjs exige que coincidan.
-       * Las Hacer entran después, cada una con su fila en supabase/migrations.
+       * Las Hacer entraron en el lote 3, cada una con su fila en la 0271.
        * El id del tema es el de siempre; los de las actividades son nuevos
        * (pe26-*): ninguno reusa un id retirado en la 0258.
        */
@@ -105,6 +105,16 @@ export const SUBJECTS = {
           { id: "pe26-a3-problema-resuelto", nombre: "El problema, resuelto", clasificacion: { tipo: APRENDER } },
           { id: "pe26-a4-perillas", nombre: "Las perillas de la demanda", clasificacion: { tipo: APRENDER } },
           { id: "pe26-a5-escalera", nombre: "La escalera de la política", clasificacion: { tipo: APRENDER } },
+          /*
+           * Lote 3: las cinco Hacer, en el orden del camino. Cada una con la
+           * misma clasificación que su fila de la 0271 (catalogo.test.mjs y el
+           * guardián lo vigilan) y que src/macro2026/politica-economica/catalogo.js.
+           */
+          { id: "pe26-h3-cables", nombre: "Conecta los cables", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          { id: "pe26-h1-seis-cajones", nombre: "Seis peldaños", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          { id: "pe26-h2-grupo-logico", nombre: "Arma el grupo lógico", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50, etapas: 3 } },
+          { id: "pe26-h4-expediente", nombre: "El peldaño que no encaja", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
+          { id: "pe26-h5-dos-fiebres", nombre: "Un paciente, dos fiebres", clasificacion: { tipo: HACER, modalidad: "exploratoria", dificultad: "medio", fpBase: 25 } },
         ],
       },
     ],

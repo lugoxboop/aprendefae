@@ -41,6 +41,10 @@ import { JSDOM, VirtualConsole } from "jsdom";
  * y dieron las 18 huellas de antes, idénticas. Con Macro delante, las mismas
  * doce cambian por lo mismo que el 22-nov: los ids de useId.
  *
+ * EL 23-NOV-2026 (LOTE 3) ENTRARON LAS 6 DE «POLÍTICA ECONÓMICA» (T2). Las 6
+ * de «Demanda agregada», que van delante, dieron las mismas huellas. Las doce
+ * de Pensamiento Estratégico vuelven a cambiar solo por los ids de useId.
+ *
  * Antes de eso la foto no se había rehecho nunca desde que se tomó de main. Lo que entra
  * encima del camino —la decoración, Fae, la entrada— se RECORTA antes de
  * pesar en vez de rehacerse, y por eso las 42 huellas siguen siendo la
@@ -232,7 +236,7 @@ async function fotografiar({ props }) {
 
 test("★★★ el camino de Macro y de Pensamiento Estratégico es idéntico al de main (cada nodo y su ventana previa)", async () => {
   const lista = casos();
-  /* Seis variantes por cada tema con Hacer: los tres de Pensamiento Estratégico y, desde el lote 2, «Demanda agregada» de Macro. */
+  /* Seis variantes por cada tema con Hacer: los tres de Pensamiento Estratégico y los dos del Macro nuevo (lotes 2 y 3). */
   assert.ok(lista.length >= 18, `solo ${lista.length} variantes`);
   const ahora = {};
   for (const c of lista) ahora[c.nombre] = huella(await fotografiar(c));

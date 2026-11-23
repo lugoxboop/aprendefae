@@ -71,6 +71,11 @@ export const TEMAS_2026 = {
       "pe26-a3-problema-resuelto": lazy(() => import("./politica-economica/A3ProblemaResuelto.jsx")),
       "pe26-a4-perillas": lazy(() => import("./politica-economica/A4Perillas.jsx")),
       "pe26-a5-escalera": lazy(() => import("./politica-economica/A5Escalera.jsx")),
+      "pe26-h3-cables": lazy(() => import("./politica-economica/H3Cables.jsx")),
+      "pe26-h1-seis-cajones": lazy(() => import("./politica-economica/H1SeisCajones.jsx")),
+      "pe26-h2-grupo-logico": lazy(() => import("./politica-economica/H2GrupoLogico.jsx")),
+      "pe26-h4-expediente": lazy(() => import("./politica-economica/H4Expediente.jsx")),
+      "pe26-h5-dos-fiebres": lazy(() => import("./politica-economica/H5DosFiebres.jsx")),
     },
   },
 };
