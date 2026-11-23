@@ -17,7 +17,7 @@ import { BASE, modelo, produccion, multiplicador, fmtEntero, fmtDecimal } from "
 import { Deslizador, MarcoAprender, usePasos, useAnimado } from "../comun/ui.jsx";
 import { useArrastre } from "../comun/arrastre.js";
 import { colorRama } from "../comun/ramas.js";
-import Mascota from "../comun/Mascota.jsx";
+import { MascotaRol } from "../comun/mascotas.jsx";
 import { Objeto } from "../comun/kit.jsx";
 import { APRENDER, A5 } from "./textos.js";
 
@@ -27,6 +27,9 @@ const FISCAL = colorRama("fiscal");
 const Y_BASE = produccion(BASE);
 /* Empresa y región con los objetos del kit (Gen): la fábrica y la carretera. */
 const OBJETO_IMPACTO = { empresa: "fabrica", region: "carretera" };
+/* La pose de cada mascota en P6: la familia con el mercado (capacidad de compra), el
+ * inversionista con el ladrillo; nunca la tableta, cuya línea que sube regala «atraer». */
+const POSE_IMPACTO = { familia: "mercado", inversionista: "ladrillo" };
 const TODAS = [...A5.fichasExpansivas, ...A5.fichasContraccionistas];
 const GRADOS_POR_FICHA = 7;
 const ANCHO = 260;
@@ -71,7 +74,7 @@ export const CSS_A5 = `
 .pf26-a5-gente { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
 .pf26-a5-quien { min-height: 44px; padding: 6px 8px; border-radius: 999px; border: 2px solid ${BORDE}; background: ${FONDO}; color: ${INK}; font: 600 14px/1.2 var(--planck-font-sans, system-ui, sans-serif); cursor: pointer; touch-action: manipulation; }
 .pf26-a5-quien[aria-pressed="true"] { border-color: ${INK}; background: ${SUPERFICIE_2}; }
-.pf26-a5-escenario { min-height: 200px; margin-top: 10px; }
+.pf26-a5-escenario { min-height: 290px; margin-top: 10px; }
 .pf26-a5-impacto { margin: 0; max-width: 300px; text-align: center; font: 500 15px/1.35 var(--planck-font-sans, system-ui, sans-serif); }
 @media (prefers-reduced-motion: reduce) { .pf26-a5-viga, .pf26-a5-globo, .pf26-a5-plato, .pf26-a5-lupa svg { transition: none; } .pf26-a5-cae { animation: none; } }
 `;
@@ -225,8 +228,8 @@ export default function A5Balanza({ onTerminar }) {
           {q && (
             <div className="da26-entra" key={q.id} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
               {q.personaje
-                ? <Mascota rol={q.personaje} alto={120} />
-                : <span data-objeto-impacto={q.id} style={{ display: "grid", placeItems: "center", height: 120 }}><Objeto id={OBJETO_IMPACTO[q.id]} alto={110} nombre={q.nombre} /></span>}
+                ? <MascotaRol id={q.personaje} pose={POSE_IMPACTO[q.id]} alto={180} />
+                : <span data-objeto-impacto={q.id} style={{ display: "grid", placeItems: "center", height: 200 }}><Objeto id={OBJETO_IMPACTO[q.id]} alto={150} nombre={q.nombre} /></span>}
               <p className="pf26-a5-impacto" data-texto-impacto>{q.texto}</p>
             </div>
           )}

@@ -2,8 +2,8 @@
  * H3 · La factura con lupa (pf26-h3-factura, Hacer, Medio, 25 × 3 = 75 FP × %).
  * Especificación de Gen, t3 §2 H3. Un documento con aspecto de recibo real
  * (papel, renglones, totales), sin logos ni nombres de empresas. Arriba, el
- * profesor con su pregunta (hueco de mascota: Mateo retiró los personajes
- * humanos). Tocar una línea abre, DEBAJO de ella, cinco fichas en dos filas
+ * profesor con su pregunta: la mascota del profesor (perro, corbatín),
+ * pose «pregunta», 120 px (no protagoniza: el documento sí). Tocar una línea abre, DEBAJO de ella, cinco fichas en dos filas
  * (3 + 2), nunca una ventana que tape el documento. Correcto: la línea se
  * pinta del color de su tributo con ✓ (directo e indirecto con su marca de
  * forma). Incorrecto: coral breve, la retro del par, y la línea queda abierta
@@ -19,7 +19,7 @@ import { azarDeLaPagina, sortear } from "../comun/azar.js";
 import { tonoTributo } from "../comun/tributos.js";
 import { IconoDirecto, IconoIndirecto } from "../comun/iconos-pf.jsx";
 import { Objeto } from "../comun/kit.jsx";
-import Mascota from "../comun/Mascota.jsx";
+import { MascotaRol } from "../comun/mascotas.jsx";
 import { CONSIGNAS, DOCUMENTOS_H3, FICHAS_H3, H3, PARTIDA_H3, RETRO_H3 } from "./textos.js";
 
 export const ID = "pf26-h3-factura";
@@ -114,7 +114,7 @@ export default function H3Factura({ onTerminar, rng = null }) {
     <MarcoHacer id={ID} consigna={CONSIGNAS[ID]} progreso={`${n + 1} / ${docs.length}`}>
       <style>{CSS}</style>
       <div className="pf26-h3-pregunta da26-entra" key={`q-${doc.id}`} data-pregunta>
-        <Mascota rol="profesor" alto={96} />
+        <MascotaRol id="profesor" pose="pregunta" alto={120} />
         <div>
           <span className="da26-rotulo">{H3.profesor}</span>
           <p>{doc.pregunta}</p>
