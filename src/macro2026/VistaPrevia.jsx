@@ -21,6 +21,7 @@ import PantallaResumen, { ContextoResumen } from "../components/shared/PantallaR
 import { FORMATO } from "../hacer/pantallaResumen.js";
 import { PIEZAS_T1 } from "./demanda-agregada/catalogo.js";
 import { PIEZAS_T2 } from "./politica-economica/catalogo.js";
+import { PIEZAS_T3 } from "./politica-fiscal/catalogo.js";
 import { Raiz, Boton } from "./comun/ui.jsx";
 import { FONDO, INK, INK_2, BORDE } from "./comun/colores-da.js";
 
@@ -47,11 +48,17 @@ const COMPONENTES = {
   "pe26-h2-grupo-logico": lazy(() => import("./politica-economica/H2GrupoLogico.jsx")),
   "pe26-h4-expediente": lazy(() => import("./politica-economica/H4Expediente.jsx")),
   "pe26-h5-dos-fiebres": lazy(() => import("./politica-economica/H5DosFiebres.jsx")),
+  "pf26-a1-lupa": lazy(() => import("./politica-fiscal/A1Lupa.jsx")),
+  "pf26-a2-buzones": lazy(() => import("./politica-fiscal/A2Buzones.jsx")),
+  "pf26-a3-cajeros": lazy(() => import("./politica-fiscal/A3Cajeros.jsx")),
+  "pf26-a4-tanque": lazy(() => import("./politica-fiscal/A4Tanque.jsx")),
+  "pf26-a5-balanza": lazy(() => import("./politica-fiscal/A5Balanza.jsx")),
 };
 
 export const TEMAS = [
   { id: "t1", titulo: "T1 · Demanda agregada", piezas: PIEZAS_T1 },
   { id: "t2", titulo: "T2 · Política económica", piezas: PIEZAS_T2 },
+  { id: "t3", titulo: "T3 · Política fiscal", piezas: PIEZAS_T3 },
 ];
 const temaDe = (id) => TEMAS.find((t) => t.piezas.some((p) => p.id === id)) ?? null;
 const piezaDe = (id) => temaDe(id)?.piezas.find((p) => p.id === id) ?? null;
