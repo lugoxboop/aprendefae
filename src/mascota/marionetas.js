@@ -120,10 +120,11 @@ export const MARIONETAS = {
       en: [109, 52, 1.35],
       orejas: [["oreja_i", 10, -82], ["oreja_d", 140, -82]],
       base: ["cabeza", 0, 0],
-      tranquila: { ojos: [["ojo_i", 44, 84], ["ojo_d", 167, 84]], resto: [["boca_sonrisa", 101, 150]] },
-      feliz: [["feliz_i", 46, 104], ["feliz_d", 170, 104], ["boca_abierta", 94, 146]],
+      nariz: ["nariz", 120, 144],
+      tranquila: { ojos: [["ojo_i", 44, 84], ["ojo_d", 167, 84]], resto: [["boca_sonrisa", 102, 142]] },
+      feliz: [["feliz_i", 46, 104], ["feliz_d", 170, 104], ["boca_abierta", 95, 140]],
       triste: [["triste_i", 42, 72], ["triste_d", 166, 71], ["boca_triste", 111, 186]],
-      racha: [["racha_i", 50, 86], ["racha_d", 173, 86], ["boca_sonrisa", 101, 150]],
+      racha: [["racha_i", 50, 86], ["racha_d", 173, 86], ["boca_sonrisa", 102, 142]],
       lagrima: [56, 146],
     },
   },
@@ -137,10 +138,11 @@ export const MARIONETAS = {
       en: [118, 110, 1.35],
       orejas: [["oreja_i", 20, -75], ["oreja_d", 140, -75]],
       base: ["cabeza", 0, 0],
-      tranquila: { ojos: [["ojo_i", 45, 90], ["ojo_d", 150, 90]], resto: [["boca_sonrisa", 96, 140]] },
-      feliz: [["feliz_i", 48, 100], ["feliz_d", 155, 100], ["boca_feliz", 96, 140]],
-      triste: [["triste_i", 42, 75], ["triste_d", 152, 75], ["boca_triste", 102, 140]],
-      racha: [["racha_i", 45, 85], ["racha_d", 152, 85], ["boca_sonrisa", 96, 140]],
+      nariz: ["nariz", 114, 138],
+      tranquila: { ojos: [["ojo_i", 45, 90], ["ojo_d", 150, 90]], resto: [["boca_sonrisa", 100, 134]] },
+      feliz: [["feliz_i", 48, 100], ["feliz_d", 155, 100], ["boca_feliz", 100, 138]],
+      triste: [["triste_i", 42, 75], ["triste_d", 152, 75], ["boca_triste", 104, 138]],
+      racha: [["racha_i", 45, 85], ["racha_d", 152, 85], ["boca_sonrisa", 100, 134]],
       lagrima: [190, 150],
     },
   },
@@ -161,6 +163,7 @@ export const MARIONETAS = {
       en: [159.8, 224.2, 1.07],
       orejas: [["oreja_i", -55, 10], ["oreja_d", 195, 10]],
       base: ["cabeza", 0, 0],
+      nariz: ["nariz", 94, 136],
       tranquila: { ojos: [["ojo_i", 42, 80], ["ojo_d", 147, 80]], resto: [["boca_sonrisa", 84, 175]] },
       feliz: [["feliz", 45, 95], ["feliz", 150, 95, { espejo: true }], ["boca_abierta", 88, 168]],
       bocaBaja: 0.45,
@@ -179,10 +182,11 @@ export const MARIONETAS = {
       en: [121.6, 236.3, 1.24],
       orejas: [["oreja_i", 30, -15], ["oreja_d", 175, -15]],
       base: ["cabeza", 0, 0],
-      tranquila: { ojos: [["ojo_i", 62, 68], ["ojo_d", 160, 68]], resto: [] },
-      feliz: [["feliz_i", 62, 85], ["feliz_d", 160, 85], ["boca_abierta", 97, 122]],
-      triste: [["triste_i", 58, 60], ["triste_d", 157, 60], ["boca_triste", 102, 122]],
-      racha: [["racha", 64, 75], ["boca_sonrisa", 98, 122]],
+      nariz: ["nariz", 126, 104],
+      tranquila: { ojos: [["ojo_i", 62, 68], ["ojo_d", 160, 68]], resto: [["boca_tranquila", 118, 124]] },
+      feliz: [["feliz_i", 62, 85], ["feliz_d", 160, 85], ["boca_abierta", 96, 102]],
+      triste: [["triste_i", 58, 60], ["triste_d", 157, 60], ["boca_triste", 102, 102]],
+      racha: [["racha", 64, 75], ["boca_sonrisa", 96, 102]],
       lagrima: [75, 125],
     },
   },
@@ -196,8 +200,9 @@ export const MARIONETAS = {
       en: [152.1, 246, 1.3],
       orejas: [["oreja_i", 40, -150], ["oreja_d", 100, -150]],
       base: ["cabeza", 0, 0],
+      nariz: ["nariz", 94, 108],
       tranquila: { ojos: [["ojo_i", 35, 60], ["ojo_d", 125, 60]], resto: [["boca_sonrisa", 64, 104]] },
-      feliz: [["feliz_i", 37, 75], ["feliz_d", 122, 75], ["boca_abierta", 60, 104]],
+      feliz: [["feliz_i", 37, 75], ["feliz_d", 122, 75], ["boca_abierta", 62, 102]],
       triste: [["triste_i", 38, 40], ["triste_d", 124, 58], ["boca_triste", 65, 140]],
       racha: [["racha_i", 30, 58], ["racha_d", 118, 58], ["boca_sonrisa", 64, 104]],
       lagrima: [140, 110],
@@ -213,12 +218,19 @@ export const MARIONETAS = {
       en: [163, 213.6, 1.35],
       orejas: [["oreja_i", 0, -10], ["oreja_d", 132, -10]],
       base: ["cabeza", 0, 0],
-      tranquila: { ojos: [], resto: [["cara_tranquila", 11, 50], ["boca_tranquila", 58, 118]] },
-      feliz: [["cara_feliz", 8, 50]],
-      /* Las caras nuevas: los ojos donde los mide accesorios-marioneta (0.33/0.68, 0.55). */
-      ojosEn: [[0.33, 0.55], [0.68, 0.55], 0.19],
-      triste: [["cara_triste", 5, 50]],
-      racha: [["cara_racha", 5, 50], ["boca_tranquila", 58, 118]],
+      nariz: ["nariz", 86, 100],
+      /* Sus ojos van sobre el antifaz café: el editor no les cambia el color. */
+      sinIris: true,
+      /*
+       * 23-nov: el hurón traía la cara ENTERA por ánimo (antifaz, ojos, nariz
+       * y boca en una pieza) sobre una cabeza que ya tenía antifaz y nariz: se
+       * veían dos narices. Ahora, como las demás, ojos y boca sueltos sobre
+       * el antifaz de la cabeza (recortados de esas caras, separar-caras.py).
+       */
+      tranquila: { ojos: [["ojo_i", 29, 68], ["ojo_d", 123, 68]], resto: [["boca_tranquila", 58, 118]] },
+      feliz: [["feliz_i", 28, 80], ["feliz_d", 128, 80], ["boca_abierta", 54, 118]],
+      triste: [["triste_i", 19, 56], ["triste_d", 107, 56], ["boca_triste", 77, 130]],
+      racha: [["racha_i", 11, 56], ["racha_d", 109, 56], ["boca_tranquila", 58, 118]],
       lagrima: [40, 110],
     },
   },
@@ -233,6 +245,7 @@ export const MARIONETAS = {
       en: [115.4, 117.4, 1.04],
       orejas: [["oreja_i", 20, -30], ["oreja_d", 226, -30]],
       base: ["cabeza", 0, 0],
+      nariz: ["nariz", 152, 182],
       tranquila: { ojos: [["ojo_i", 58, 126], ["ojo_d", 209, 127]], resto: [["boca_sonrisa", 146, 206]] },
       feliz: [["feliz_i", 67, 143], ["feliz_d", 218, 143], ["boca_abierta", 142, 207]],
       triste: [["triste_i", 58, 126], ["triste_d", 209, 127], ["boca_triste", 151, 212]],
@@ -277,7 +290,9 @@ function anclasCara(M, P) {
     const b = C.feliz.find(([n]) => n.startsWith("boca"));
     if (b) { const d = P.piezas[b[0]]; boca = [b[1] + d[0] / 2, b[2] + d[1] * (C.bocaBaja ?? 0.62), d[0]]; }
   }
-  return { ojos, boca };
+  /* El pie de la nariz (su borde de abajo): de ahí cuelgan las bocas nuevas. */
+  const pieNariz = C.nariz ? C.nariz[2] + (P.piezas[C.nariz[0]] || [0, 0])[1] * 0.85 : null;
+  return { ojos, boca, pieNariz };
 }
 
 /* ── Color ─────────────────────────────────────────────────────────────── */
@@ -411,8 +426,8 @@ export function svgMarioneta(especie, { tinte = null, uid = "m", busto = false, 
   const { M, ancho, cx: torsoCx } = marionetaAjustada(M0, P, { complexion, cabeza: tamCabeza });
   const fid = `mta-pel-${uid}`;
   /* Los ojos de otro color: los ojos abiertos pasan por el filtro del iris. El
-     hurón trae los ojos pintados dentro de la cara (antifaz): no se tiñen. */
-  const conIris = Boolean(iris) && !M.cabeza.ojosEn;
+     hurón los lleva sobre el antifaz (sinIris): no se tiñen. */
+  const conIris = Boolean(iris) && !M.cabeza.ojosEn && !M.cabeza.sinIris;
   const iid = `mta-iris-${uid}`;
 
   const img = (n, x, y, o = {}) => {
@@ -528,7 +543,14 @@ export function svgMarioneta(especie, { tinte = null, uid = "m", busto = false, 
   const carasNuevas = Object.entries(CARAS).map(([nombre, c]) => {
     const [oi, od] = Array.isArray(c.ojos) ? c.ojos : [c.ojos, c.ojos];
     const base = C.ojosEn ? caraDe(C.feliz) : "";
-    const boca = A.boca && c.boca ? fiesta(c.boca, A.boca[0], A.boca[1], A.boca[2] * (c.boca === "boca_o" ? 0.3 : 0.6)) : "";
+    /* La boca cuelga bajo la nariz (capa aparte): nunca se monta sobre ella. */
+    let boca = "";
+    if (A.boca && c.boca && FIESTA[c.boca]) {
+      const w = A.boca[2] * (c.boca === "boca_o" ? 0.3 : 0.6);
+      const h = (w * FIESTA[c.boca][1]) / FIESTA[c.boca][0];
+      const cy = A.pieNariz == null ? A.boca[1] : Math.max(A.boca[1], A.pieNariz + h / 2 + 2);
+      boca = fiesta(c.boca, A.boca[0], cy, w);
+    }
     return grupo(`mta-cara mta-c-${nombre}`, base + rubor + ojoDe("i", oi) + ojoDe("d", od) + boca);
   }).join("");
   const lag = C.lagrima ? `<g class="mta-lagrima">${img("lagrima", C.lagrima[0], C.lagrima[1])}</g>` : "";
@@ -543,6 +565,8 @@ export function svgMarioneta(especie, { tinte = null, uid = "m", busto = false, 
     grupo("mta-cara mta-c-triste", caraDe(C.triste) + lag) +
     grupo("mta-cara mta-c-racha", caraDe(C.racha)) +
     carasNuevas +
+    /* La nariz, una sola y siempre la misma: va encima de cualquier boca. */
+    (C.nariz ? grupo("mta-nariz", pieza(C.nariz)) : "") +
     acc.cabeza +
     `</g></g>`;
 
