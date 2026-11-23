@@ -117,6 +117,32 @@ export const SUBJECTS = {
           { id: "pe26-h5-dos-fiebres", nombre: "Un paciente, dos fiebres", clasificacion: { tipo: HACER, modalidad: "exploratoria", dificultad: "medio", fpBase: 25 } },
         ],
       },
+      /*
+       * MACRO 2026 · T3 POLÍTICA FISCAL (lote 4): las once piezas de
+       * PUBLICADAS_T3 (src/macro2026/politica-fiscal/catalogo.js), con su
+       * mismo id y nombre, en el orden del camino; t3-textos-y-bancos.test.mjs
+       * exige que coincidan. Cada Hacer con la misma clasificación que su fila
+       * de la 0272 (catalogo.test.mjs y el guardián lo vigilan). El id del
+       * tema es el de siempre; los de las actividades son nuevos (pf26-*):
+       * ninguno reusa un id retirado en la 0258.
+       */
+      {
+        id: "politica-fiscal",
+        title: "Política fiscal",
+        actividades: [
+          { id: "pf26-a1-lupa", nombre: "La lupa de seis caras", clasificacion: { tipo: APRENDER } },
+          { id: "pf26-a2-buzones", nombre: "Tres buzones", clasificacion: { tipo: APRENDER } },
+          { id: "pf26-a3-cajeros", nombre: "Dos cajeros", clasificacion: { tipo: APRENDER } },
+          { id: "pf26-a4-tanque", nombre: "El tanque del Estado", clasificacion: { tipo: APRENDER } },
+          { id: "pf26-a5-balanza", nombre: "La balanza fiscal", clasificacion: { tipo: APRENDER } },
+          { id: "pf26-h1-moneda", nombre: "Echa la moneda", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
+          { id: "pf26-h2-cajero", nombre: "¿Qué cajero te cobra?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
+          { id: "pf26-h3-factura", nombre: "La factura con lupa", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25, etapas: 3 } },
+          { id: "pf26-h5-montanas", nombre: "Las dos montañas", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          { id: "pf26-h4-expande", nombre: "¿Expande o contrae?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          { id: "pf26-h6-memo", nombre: "El memo de la gerencia", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
+        ],
+      },
     ],
   },
   /*

@@ -144,6 +144,13 @@ export const FORMATO_MACRO = {
   "pe26-h2-grupo-logico": X,
   "pe26-h4-expediente": X,
   "pe26-h5-dos-fiebres": FORMATO.SOLO_PUNTOS,
+  /* T3 «Política fiscal» (lote 4): las seis evaluativas, aciertos / ítems. */
+  "pf26-h1-moneda": X,
+  "pf26-h2-cajero": X,
+  "pf26-h3-factura": X,
+  "pf26-h5-montanas": X,
+  "pf26-h4-expande": X,
+  "pf26-h6-memo": X,
 };
 
 /**

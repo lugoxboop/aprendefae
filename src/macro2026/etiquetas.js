@@ -10,6 +10,8 @@
 import { BANCO_H1, ETAPAS_H2, BANCO_H3, BANCO_H4, BANCO_H5 } from "./demanda-agregada/textos.js";
 import { ETAPAS_H6 } from "./comun/modelo-da.js";
 import * as PE from "./politica-economica/textos.js";
+import * as PF from "./politica-fiscal/textos.js";
+import { TRIBUTOS } from "./comun/tributos.js";
 import { RAMAS } from "./comun/ramas.js";
 
 /* Los nombres de los peldaños, como los rotula Escalera.jsx (que es JSX y aquí no se importa). */
@@ -82,5 +84,38 @@ export const REGLAS_MACRO2026 = {
     const m = /^([a-z]+)-([a-z]+)$/.exec(String(id));
     const paso = m && PE.PASOS_H5.find((p) => p.id === m[1]);
     return paso?.opciones.find((o) => o.id === m[2])?.texto ?? null;
+  },
+
+  /* ─── T3 «Política fiscal» (lote 4) ─── */
+  /* H1: un ítem por pago; se nombra con su buzón. */
+  "pf26-h1-moneda": (id) => {
+    const t = PF.BANCO_H1.find((x) => x.id === id);
+    return t ? `${t.texto} → ${TRIBUTOS[t.correcta].nombre}` : null;
+  },
+  /* H2: un ítem por tributo; se nombra con su cajero. */
+  "pf26-h2-cajero": (id) => {
+    const t = PF.BANCO_H2.find((x) => x.id === id);
+    return t ? `${t.texto} → ${t.correcta === "directo" ? "Directo" : "Indirecto"}` : null;
+  },
+  /* H3: `<documento>-<línea>`, un ítem por línea de cada documento. */
+  "pf26-h3-factura": (id) => {
+    const m = /^([a-z]+)-([a-z]+)$/.exec(String(id));
+    const d = m && PF.DOCUMENTOS_H3.find((x) => x.id === m[1]);
+    const l = d?.lineas.find((x) => x.id === m[2]);
+    return l ? `${d.titulo}: ${l.texto} (${PF.FICHAS_H3.find((f) => f.id === l.clave).nombre})` : null;
+  },
+  /* H5: un ítem por reto; se nombra con su consigna. */
+  "pf26-h5-montanas": (id) => PF.H5.retos.find((r) => r.id === id)?.consigna ?? null,
+  /* H4: `<medida>-plato` y `<medida>-entrada`, dos criterios por medida. */
+  "pf26-h4-expande": (id) => {
+    const m = /^(.+)-(plato|entrada)$/.exec(String(id));
+    const x = m && PF.BANCO_H4.find((e) => e.id === m[1]);
+    if (!x) return null;
+    return m[2] === "plato" ? `${x.texto}: ¿expande o contrae?` : `${x.texto}: ¿por dónde entra?`;
+  },
+  /* H6: un ítem por memo; se nombra con la frase que está mal. */
+  "pf26-h6-memo": (id) => {
+    const memo = PF.BANCO_H6.find((x) => x.id === id);
+    return memo ? `Memo: ${memo.frases.find((f) => f.falsa).texto}` : null;
   },
 };

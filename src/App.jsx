@@ -84,6 +84,7 @@ const VISTAS_CON_TITULO = new Set([
   "macroeconomia", "pensamiento-estrategico", "contabilidad",
   "demanda-agregada",
   "politica-economica",
+  "politica-fiscal",
   "pensamiento-sistemico", "modelo-iceberg", "fuerzas-porter",
   "introduccion-contabilidad",
   "cuentas-debe-haber",
@@ -223,7 +224,7 @@ export default function App() {
     );
   }
 
-  if (view === "demanda-agregada" || view === "politica-economica") {
+  if (view === "demanda-agregada" || view === "politica-economica" || view === "politica-fiscal") {
     return wrap(
       <Suspense fallback={siteFallback}>
         <TemaMacro2026 key={view} temaId={view} modo={modoTema} extra={ruta.extra} onBack={() => setView("macroeconomia")} onIr={(vista, modo, extra) => navegar(vista, modo, { extra })} />

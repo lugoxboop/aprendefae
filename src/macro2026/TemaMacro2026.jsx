@@ -32,7 +32,9 @@ import { registrarActividadCompletada } from "../fp/registrarActividad.js";
 import { useAuth } from "../auth/AuthProvider.jsx";
 import * as T1 from "./demanda-agregada/catalogo.js";
 import * as T2 from "./politica-economica/catalogo.js";
+import * as T3 from "./politica-fiscal/catalogo.js";
 import { Raiz, Boton } from "./comun/ui.jsx";
+import CierreAprender from "./comun/CierreAprender.jsx";
 import { FONDO, INK, INK_2 } from "./comun/colores-da.js";
 
 const MATERIA = "macroeconomia";
@@ -76,6 +78,24 @@ export const TEMAS_2026 = {
       "pe26-h2-grupo-logico": lazy(() => import("./politica-economica/H2GrupoLogico.jsx")),
       "pe26-h4-expediente": lazy(() => import("./politica-economica/H4Expediente.jsx")),
       "pe26-h5-dos-fiebres": lazy(() => import("./politica-economica/H5DosFiebres.jsx")),
+    },
+  },
+  "politica-fiscal": {
+    titulo: "Política fiscal",
+    piezas: T3.PIEZAS_T3,
+    publicada: T3.estaPublicadaT3,
+    componentes: {
+      "pf26-a1-lupa": lazy(() => import("./politica-fiscal/A1Lupa.jsx")),
+      "pf26-a2-buzones": lazy(() => import("./politica-fiscal/A2Buzones.jsx")),
+      "pf26-a3-cajeros": lazy(() => import("./politica-fiscal/A3Cajeros.jsx")),
+      "pf26-a4-tanque": lazy(() => import("./politica-fiscal/A4Tanque.jsx")),
+      "pf26-a5-balanza": lazy(() => import("./politica-fiscal/A5Balanza.jsx")),
+      "pf26-h1-moneda": lazy(() => import("./politica-fiscal/H1Moneda.jsx")),
+      "pf26-h2-cajero": lazy(() => import("./politica-fiscal/H2Cajero.jsx")),
+      "pf26-h3-factura": lazy(() => import("./politica-fiscal/H3Factura.jsx")),
+      "pf26-h5-montanas": lazy(() => import("./politica-fiscal/H5Montanas.jsx")),
+      "pf26-h4-expande": lazy(() => import("./politica-fiscal/H4Expande.jsx")),
+      "pf26-h6-memo": lazy(() => import("./politica-fiscal/H6Memo.jsx")),
     },
   },
 };
@@ -142,15 +162,12 @@ function PiezaAprender({ temaId, id }) {
     <>
       <FilaVolver><Boton onClick={() => ir(temaId, APRENDER)} data-volver-lista>‹ {tema.titulo}</Boton></FilaVolver>
       {terminada ? (
-        <div className="da26-tarjeta" data-pieza-terminada={id}>
-          <p style={{ margin: "0 0 12px", fontSize: 16 }}>Terminaste «{pieza.nombre}».</p>
-          <div className="da26-nav">
-            <Boton onClick={() => { setTerminada(false); setIntento((n) => n + 1); }}>Repetir</Boton>
-            {siguiente
-              ? <Boton primario onClick={() => ir(temaId, APRENDER, siguiente.id)}>Siguiente pieza</Boton>
-              : <Boton primario onClick={() => ir(temaId, APRENDER)}>Volver al tema</Boton>}
-          </div>
-        </div>
+        <CierreAprender
+          data-pieza-terminada={id} nombre={pieza.nombre}
+          onRepetir={() => { setTerminada(false); setIntento((n) => n + 1); }}
+          onSiguiente={() => (siguiente ? ir(temaId, APRENDER, siguiente.id) : ir(temaId, APRENDER))}
+          textoSiguiente={siguiente ? "Siguiente pieza" : "Volver al tema"} hayFlecha={Boolean(siguiente)}
+        />
       ) : (
         <Suspense fallback={<div className="da26-tarjeta" style={{ minHeight: 320 }} />}>
           <Componente key={intento} onTerminar={() => setTerminada(true)} />

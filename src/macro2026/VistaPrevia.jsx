@@ -21,7 +21,9 @@ import PantallaResumen, { ContextoResumen } from "../components/shared/PantallaR
 import { FORMATO } from "../hacer/pantallaResumen.js";
 import { PIEZAS_T1 } from "./demanda-agregada/catalogo.js";
 import { PIEZAS_T2 } from "./politica-economica/catalogo.js";
+import { PIEZAS_T3 } from "./politica-fiscal/catalogo.js";
 import { Raiz, Boton } from "./comun/ui.jsx";
+import CierreAprender from "./comun/CierreAprender.jsx";
 import { FONDO, INK, INK_2, BORDE } from "./comun/colores-da.js";
 
 const COMPONENTES = {
@@ -47,11 +49,23 @@ const COMPONENTES = {
   "pe26-h2-grupo-logico": lazy(() => import("./politica-economica/H2GrupoLogico.jsx")),
   "pe26-h4-expediente": lazy(() => import("./politica-economica/H4Expediente.jsx")),
   "pe26-h5-dos-fiebres": lazy(() => import("./politica-economica/H5DosFiebres.jsx")),
+  "pf26-a1-lupa": lazy(() => import("./politica-fiscal/A1Lupa.jsx")),
+  "pf26-a2-buzones": lazy(() => import("./politica-fiscal/A2Buzones.jsx")),
+  "pf26-a3-cajeros": lazy(() => import("./politica-fiscal/A3Cajeros.jsx")),
+  "pf26-a4-tanque": lazy(() => import("./politica-fiscal/A4Tanque.jsx")),
+  "pf26-a5-balanza": lazy(() => import("./politica-fiscal/A5Balanza.jsx")),
+  "pf26-h1-moneda": lazy(() => import("./politica-fiscal/H1Moneda.jsx")),
+  "pf26-h2-cajero": lazy(() => import("./politica-fiscal/H2Cajero.jsx")),
+  "pf26-h3-factura": lazy(() => import("./politica-fiscal/H3Factura.jsx")),
+  "pf26-h5-montanas": lazy(() => import("./politica-fiscal/H5Montanas.jsx")),
+  "pf26-h4-expande": lazy(() => import("./politica-fiscal/H4Expande.jsx")),
+  "pf26-h6-memo": lazy(() => import("./politica-fiscal/H6Memo.jsx")),
 };
 
 export const TEMAS = [
   { id: "t1", titulo: "T1 · Demanda agregada", piezas: PIEZAS_T1 },
   { id: "t2", titulo: "T2 · Política económica", piezas: PIEZAS_T2 },
+  { id: "t3", titulo: "T3 · Política fiscal", piezas: PIEZAS_T3 },
 ];
 const temaDe = (id) => TEMAS.find((t) => t.piezas.some((p) => p.id === id)) ?? null;
 const piezaDe = (id) => temaDe(id)?.piezas.find((p) => p.id === id) ?? null;
@@ -133,13 +147,10 @@ function Pieza({ id }) {
           </ContextoResumen.Provider>
         </div>
       ) : aprendido ? (
-        <div className="da26-tarjeta" data-cierre-previa>
-          <p style={{ margin: "0 0 12px", fontSize: 16 }}>Terminaste «{pieza.nombre}».</p>
-          <div className="da26-nav">
-            <Boton onClick={repetir}>Repetir</Boton>
-            {siguiente ? <Boton primario onClick={() => ir(siguiente.id)}>Siguiente pieza</Boton> : <Boton primario onClick={() => ir(null)}>Las piezas</Boton>}
-          </div>
-        </div>
+        <CierreAprender
+          data-cierre-previa nombre={pieza.nombre} onRepetir={repetir}
+          onSiguiente={() => ir(siguiente ? siguiente.id : null)} textoSiguiente={siguiente ? "Siguiente pieza" : "Las piezas"} hayFlecha={Boolean(siguiente)}
+        />
       ) : (
         <Suspense fallback={<div className="da26-tarjeta" style={{ minHeight: 320 }} />}>
           <Componente
