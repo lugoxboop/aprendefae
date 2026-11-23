@@ -143,6 +143,35 @@ export const SUBJECTS = {
           { id: "pf26-h6-memo", nombre: "El memo de la gerencia", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
         ],
       },
+      /*
+       * MACRO 2026 · T4 POLÍTICA MONETARIA (lote 5, publicado al terminar,
+       * como pidió Mateo): las trece piezas de PUBLICADAS_T4
+       * (src/macro2026/politica-monetaria/catalogo.js), con su mismo id y
+       * nombre, en el orden del camino; t4-textos-y-bancos.test.mjs exige que
+       * coincidan. Cada Hacer con la misma clasificación que su fila de la
+       * 0273 (catalogo.test.mjs y el guardián lo vigilan). El id del tema es
+       * el de siempre; los de las actividades son nuevos (pm26-*): ninguno
+       * reusa un id retirado en la 0258.
+       */
+      {
+        id: "politica-monetaria",
+        title: "Política monetaria",
+        actividades: [
+          { id: "pm26-a1-billetera", nombre: "Lo que llevas en la billetera", clasificacion: { tipo: APRENDER } },
+          { id: "pm26-a2-ventanilla", nombre: "La ventanilla del BanRep", clasificacion: { tipo: APRENDER } },
+          { id: "pm26-a3-cascada", nombre: "La cascada de vasos", clasificacion: { tipo: APRENDER } },
+          { id: "pm26-a4-cajas", nombre: "Bóveda y cajas", clasificacion: { tipo: APRENDER } },
+          { id: "pm26-a5-precio-dinero", nombre: "El precio del dinero", clasificacion: { tipo: APRENDER } },
+          { id: "pm26-a6-palancas", nombre: "Tres palancas", clasificacion: { tipo: APRENDER } },
+          { id: "pm26-a7-termostato", nombre: "El termostato", clasificacion: { tipo: APRENDER } },
+          { id: "pm26-h1-entra-sale", nombre: "¿Entra o sale dinero?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          { id: "pm26-h2-cascada-meta", nombre: "Ajusta la cascada", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10, etapas: 3 } },
+          { id: "pm26-h3-cajas", nombre: "Cada depósito a su caja", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          { id: "pm26-h4-mueve-tasa", nombre: "Mueve la curva, mira la tasa", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          { id: "pm26-h6-domino", nombre: "El dominó de la tasa", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          { id: "pm26-h5-junta", nombre: "La Junta decide", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
+        ],
+      },
     ],
   },
   /*

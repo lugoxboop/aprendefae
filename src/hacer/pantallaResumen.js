@@ -151,6 +151,13 @@ export const FORMATO_MACRO = {
   "pf26-h5-montanas": X,
   "pf26-h4-expande": X,
   "pf26-h6-memo": X,
+  /* T4 «Política monetaria» (lote 5): las seis evaluativas, aciertos / ítems. */
+  "pm26-h1-entra-sale": X,
+  "pm26-h2-cascada-meta": X,
+  "pm26-h3-cajas": X,
+  "pm26-h4-mueve-tasa": X,
+  "pm26-h6-domino": X,
+  "pm26-h5-junta": X,
 };
 
 /**

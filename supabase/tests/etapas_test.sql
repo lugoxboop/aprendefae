@@ -75,9 +75,9 @@ insert into res select 1, 'una fila sin etapas declaradas vale 1', '1',
 insert into res select 2, 'las actividades reales que no son desafío siguen en 1 etapa', '0 con etapas>1',
   (select count(*)::text || ' con etapas>1'
      from public.actividad_catalogo
-    where etapas > 1 and activity_id not in ('proyecto-arca', 'comite-nova', 'ciclo-completo', 'da26-h2-arma-formula', 'da26-h6-meta', 'pe26-h2-grupo-logico', 'pf26-h3-factura') and activity_id not like 'zzz-%'),
+    where etapas > 1 and activity_id not in ('proyecto-arca', 'comite-nova', 'ciclo-completo', 'da26-h2-arma-formula', 'da26-h6-meta', 'pe26-h2-grupo-logico', 'pf26-h3-factura', 'pm26-h2-cascada-meta') and activity_id not like 'zzz-%'),
   (select count(*) = 0 from public.actividad_catalogo
-    where etapas > 1 and activity_id not in ('proyecto-arca', 'comite-nova', 'ciclo-completo', 'da26-h2-arma-formula', 'da26-h6-meta', 'pe26-h2-grupo-logico', 'pf26-h3-factura') and activity_id not like 'zzz-%');
+    where etapas > 1 and activity_id not in ('proyecto-arca', 'comite-nova', 'ciclo-completo', 'da26-h2-arma-formula', 'da26-h6-meta', 'pe26-h2-grupo-logico', 'pf26-h3-factura', 'pm26-h2-cascada-meta') and activity_id not like 'zzz-%');
 
 -- ── 13. Y los tres desafíos declaran sus cuatro etapas ─────────────────────
 -- El complemento del chequeo de arriba: excluirlos de la cuenta no puede
@@ -121,6 +121,17 @@ insert into res select 16, 'la Hacer por etapas de Política fiscal declara 3 et
     where activity_id = 'pf26-h3-factura' and etapas = 3 and fp_base = 25),
   (select count(*) = 1 from public.actividad_catalogo
     where activity_id = 'pf26-h3-factura' and etapas = 3 and fp_base = 25);
+
+-- ── 17. Macro 2026: la Hacer por etapas de Política monetaria ─────────────
+-- «Ajusta la cascada» es Fácil (10) × 3 etapas (3 metas) por diseño de Gen
+-- (macro-2026/disenos/t4-politica-monetaria.md). Se excluye de la cuenta del
+-- chequeo 2 y se mira aquí, igual que las de T1, T2 y T3.
+insert into res select 17, 'la Hacer por etapas de Política monetaria declara 3 etapas y base 10', '1 fila',
+  (select count(*)::text || ' fila'
+     from public.actividad_catalogo
+    where activity_id = 'pm26-h2-cascada-meta' and etapas = 3 and fp_base = 10),
+  (select count(*) = 1 from public.actividad_catalogo
+    where activity_id = 'pm26-h2-cascada-meta' and etapas = 3 and fp_base = 10);
 
 -- ── 3. Lo de siempre sigue pagando lo de siempre ───────────────────────────
 -- EL CHEQUEO MÁS IMPORTANTE DEL ARCHIVO. registrar_fp se reemplazó entera; si

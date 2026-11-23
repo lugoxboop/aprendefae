@@ -11,6 +11,7 @@ import { BANCO_H1, ETAPAS_H2, BANCO_H3, BANCO_H4, BANCO_H5 } from "./demanda-agr
 import { ETAPAS_H6 } from "./comun/modelo-da.js";
 import * as PE from "./politica-economica/textos.js";
 import * as PF from "./politica-fiscal/textos.js";
+import * as PM from "./politica-monetaria/textos.js";
 import { TRIBUTOS } from "./comun/tributos.js";
 import { RAMAS } from "./comun/ramas.js";
 
@@ -117,5 +118,46 @@ export const REGLAS_MACRO2026 = {
   "pf26-h6-memo": (id) => {
     const memo = PF.BANCO_H6.find((x) => x.id === id);
     return memo ? `Memo: ${memo.frases.find((f) => f.falsa).texto}` : null;
+  },
+
+  /* ─── T4 «Política monetaria» (lote 5) ─── */
+  /* H1: `<operación>-<medidor>`, tres flechas por operación. */
+  "pm26-h1-entra-sale": (id) => {
+    const m = /^(.+)-(activos|bm|m2)$/.exec(String(id));
+    const op = m && PM.BANCO_H1.find((x) => x.id === m[1]);
+    const med = m && PM.MEDIDORES_H1.find((x) => x.id === m[2]);
+    return op && med ? `${op.texto} → ${med.nombre} ${PM.FLECHAS[op.correctas[med.id]]}` : null;
+  },
+  /* H2: una etapa por meta. */
+  "pm26-h2-cascada-meta": (id) => {
+    const e = PM.ETAPAS_H2.find((x) => x.id === id);
+    return e ? `Meta ${e.meta.toLocaleString("es-CO")}: encaje ${e.solucion} %` : null;
+  },
+  /* H3: una ficha por ítem; se nombra con su agregado. */
+  "pm26-h3-cajas": (id) => {
+    const f = PM.BANCO_H3.find((x) => x.id === id);
+    return f ? `${f.texto} → ${PM.CAJAS_H3.find((c) => c.id === f.correcta).nombre}` : null;
+  },
+  /* H4: `<suceso>-curva` y `<suceso>-direccion`. */
+  "pm26-h4-mueve-tasa": (id) => {
+    const m = /^(.+)-(curva|direccion)$/.exec(String(id));
+    const s = m && PM.BANCO_H4.find((x) => x.id === m[1]);
+    if (!s) return null;
+    return m[2] === "curva" ? `${s.texto}: ¿qué curva?` : `${s.texto}: ¿hacia dónde?`;
+  },
+  /* H6: una ficha de dominó por ítem; se nombra con su texto. */
+  "pm26-h6-domino": (id) => {
+    for (const c of PM.BANCO_H6) {
+      const f = c.fichas.find((x) => x.id === id);
+      if (f) return `${c.nombre}: ${f.texto} (${f.orden + 1}.º)`;
+    }
+    return null;
+  },
+  /* H5: `<ronda>-<palanca>`. */
+  "pm26-h5-junta": (id) => {
+    const m = /^(r\d)-(tasa|tes|encaje)$/.exec(String(id));
+    const r = m && PM.RONDAS_H5.find((x) => x.id === m[1]);
+    const p = m && PM.PALANCAS.find((x) => x.id === m[2]);
+    return r && p ? `${r.lectura} → ${p.nombre}: ${p.posiciones[r.correctas[p.id]]}` : null;
   },
 };

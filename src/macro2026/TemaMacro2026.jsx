@@ -33,6 +33,7 @@ import { useAuth } from "../auth/AuthProvider.jsx";
 import * as T1 from "./demanda-agregada/catalogo.js";
 import * as T2 from "./politica-economica/catalogo.js";
 import * as T3 from "./politica-fiscal/catalogo.js";
+import * as T4 from "./politica-monetaria/catalogo.js";
 import { Raiz, Boton } from "./comun/ui.jsx";
 import CierreAprender from "./comun/CierreAprender.jsx";
 import { FONDO, INK, INK_2 } from "./comun/colores-da.js";
@@ -96,6 +97,26 @@ export const TEMAS_2026 = {
       "pf26-h5-montanas": lazy(() => import("./politica-fiscal/H5Montanas.jsx")),
       "pf26-h4-expande": lazy(() => import("./politica-fiscal/H4Expande.jsx")),
       "pf26-h6-memo": lazy(() => import("./politica-fiscal/H6Memo.jsx")),
+    },
+  },
+  "politica-monetaria": {
+    titulo: "Política monetaria",
+    piezas: T4.PIEZAS_T4,
+    publicada: T4.estaPublicadaT4,
+    componentes: {
+      "pm26-a1-billetera": lazy(() => import("./politica-monetaria/A1Billetera.jsx")),
+      "pm26-a2-ventanilla": lazy(() => import("./politica-monetaria/A2Ventanilla.jsx")),
+      "pm26-h1-entra-sale": lazy(() => import("./politica-monetaria/H1EntraSale.jsx")),
+      "pm26-a3-cascada": lazy(() => import("./politica-monetaria/A3Cascada.jsx")),
+      "pm26-h2-cascada-meta": lazy(() => import("./politica-monetaria/H2CascadaMeta.jsx")),
+      "pm26-a4-cajas": lazy(() => import("./politica-monetaria/A4Cajas.jsx")),
+      "pm26-h3-cajas": lazy(() => import("./politica-monetaria/H3Cajas.jsx")),
+      "pm26-a5-precio-dinero": lazy(() => import("./politica-monetaria/A5PrecioDinero.jsx")),
+      "pm26-h4-mueve-tasa": lazy(() => import("./politica-monetaria/H4MueveTasa.jsx")),
+      "pm26-a6-palancas": lazy(() => import("./politica-monetaria/A6Palancas.jsx")),
+      "pm26-h6-domino": lazy(() => import("./politica-monetaria/H6Domino.jsx")),
+      "pm26-a7-termostato": lazy(() => import("./politica-monetaria/A7Termostato.jsx")),
+      "pm26-h5-junta": lazy(() => import("./politica-monetaria/H5Junta.jsx")),
     },
   },
 };
