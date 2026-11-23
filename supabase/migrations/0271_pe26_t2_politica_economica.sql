@@ -1,11 +1,11 @@
 -- ---------------------------------------------------------------------------
 -- 0271 — MACROECONOMÍA 2026, TEMA 2: POLÍTICA ECONÓMICA (las 5 Hacer)
 --
--- ESPERA AQUÍ, FUERA DE supabase/migrations, HASTA QUE SE PUBLIQUE.
--- Al publicar se mueve tal cual a supabase/migrations/ en el MISMO cambio que
--- declara las cinco actividades en src/data/subjects.js (catalogo.test.mjs y el
--- guardián exigen las dos cosas juntas), y pe26-h2-grupo-logico entra en la
--- lista de Hacer por etapas de supabase/tests/etapas_test.sql.
+-- Publicada en el lote 3 (23-nov-2026): esperó en supabase/macro2026-pendientes/
+-- y entra aquí, tal cual, en el MISMO cambio que declara las cinco actividades
+-- en src/data/subjects.js y las anota en PUBLICADAS_T2 (catalogo.test.mjs y el
+-- guardián exigen las dos cosas juntas). pe26-h2-grupo-logico, la única por
+-- etapas, entra en supabase/tests/etapas_test.sql (chequeos 2 y 15).
 --
 -- EL NÚMERO: la siguiente a la 0270, en el rango 0250-0299 (nocturno.md).
 --

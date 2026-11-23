@@ -75,9 +75,9 @@ insert into res select 1, 'una fila sin etapas declaradas vale 1', '1',
 insert into res select 2, 'las actividades reales que no son desafío siguen en 1 etapa', '0 con etapas>1',
   (select count(*)::text || ' con etapas>1'
      from public.actividad_catalogo
-    where etapas > 1 and activity_id not in ('proyecto-arca', 'comite-nova', 'ciclo-completo', 'da26-h2-arma-formula', 'da26-h6-meta') and activity_id not like 'zzz-%'),
+    where etapas > 1 and activity_id not in ('proyecto-arca', 'comite-nova', 'ciclo-completo', 'da26-h2-arma-formula', 'da26-h6-meta', 'pe26-h2-grupo-logico') and activity_id not like 'zzz-%'),
   (select count(*) = 0 from public.actividad_catalogo
-    where etapas > 1 and activity_id not in ('proyecto-arca', 'comite-nova', 'ciclo-completo', 'da26-h2-arma-formula', 'da26-h6-meta') and activity_id not like 'zzz-%');
+    where etapas > 1 and activity_id not in ('proyecto-arca', 'comite-nova', 'ciclo-completo', 'da26-h2-arma-formula', 'da26-h6-meta', 'pe26-h2-grupo-logico') and activity_id not like 'zzz-%');
 
 -- ── 13. Y los tres desafíos declaran sus cuatro etapas ─────────────────────
 -- El complemento del chequeo de arriba: excluirlos de la cuenta no puede
@@ -99,6 +99,17 @@ insert into res select 14, 'las dos Hacer por etapas de Macro 2026 declaran 3 et
     where activity_id in ('da26-h2-arma-formula', 'da26-h6-meta') and etapas = 3 and fp_base = 25),
   (select count(*) = 2 from public.actividad_catalogo
     where activity_id in ('da26-h2-arma-formula', 'da26-h6-meta') and etapas = 3 and fp_base = 25);
+
+-- ── 15. Macro 2026: la Hacer por etapas de Política económica ─────────────
+-- «Arma el grupo lógico» es Difícil (50) × 3 etapas (3 grupos lógicos) por
+-- diseño de Gen (macro-2026/disenos/t2-politica-economica.md). Se excluye de
+-- la cuenta del chequeo 2 y se mira aquí, igual que las de Demanda agregada.
+insert into res select 15, 'la Hacer por etapas de Política económica declara 3 etapas y base 50', '1 fila',
+  (select count(*)::text || ' fila'
+     from public.actividad_catalogo
+    where activity_id = 'pe26-h2-grupo-logico' and etapas = 3 and fp_base = 50),
+  (select count(*) = 1 from public.actividad_catalogo
+    where activity_id = 'pe26-h2-grupo-logico' and etapas = 3 and fp_base = 50);
 
 -- ── 3. Lo de siempre sigue pagando lo de siempre ───────────────────────────
 -- EL CHEQUEO MÁS IMPORTANTE DEL ARCHIVO. registrar_fp se reemplazó entera; si

@@ -9,7 +9,12 @@
  */
 import { BANCO_H1, ETAPAS_H2, BANCO_H3, BANCO_H4, BANCO_H5 } from "./demanda-agregada/textos.js";
 import { ETAPAS_H6 } from "./comun/modelo-da.js";
+import * as PE from "./politica-economica/textos.js";
+import { RAMAS } from "./comun/ramas.js";
 
+/* Los nombres de los peldaños, como los rotula Escalera.jsx (que es JSX y aquí no se importa). */
+const PELDANOS = { problema: "Problema", objetivo: "Objetivo", estrategia: "Estrategia", instrumento: "Instrumento", medida: "Medida", meta: "Meta" };
+const nombrePeldano = (id) => PELDANOS[id] ?? id;
 const sinComillas = (t) => t.replace(/^«|»$/g, "");
 
 export const REGLAS_MACRO2026 = {
@@ -46,5 +51,36 @@ export const REGLAS_MACRO2026 = {
   "da26-h6-meta": (id) => {
     const e = ETAPAS_H6.find((x) => `h6-${x.id}` === id);
     return e ? `Etapa «${e.nombre}»: llevar Y a la meta` : null;
+  },
+
+  /* ─── T2 «Política económica» (lote 3) ─── */
+  /* H3: un ítem por instrumento; se nombra con la rama que lo usa. */
+  "pe26-h3-cables": (id) => {
+    const x = PE.BANCO_H3.find((i) => i.id === id);
+    return x ? `${x.nombre} → ${RAMAS[x.rama].largo}` : null;
+  },
+  /* H1: `e<n>`, un ítem por enunciado del anexo; se nombra con su peldaño. */
+  "pe26-h1-seis-cajones": (id) => {
+    const e = PE.BANCO_H1.find((x) => x.id === id);
+    return e ? `${e.texto} (${nombrePeldano(e.correcta)})` : null;
+  },
+  /* H2: `<grupo>-<peldaño>`, un ítem por peldaño de cada grupo lógico. */
+  "pe26-h2-grupo-logico": (id) => {
+    const m = /^(g\d+)-([a-z]+)$/.exec(String(id));
+    const g = m && PE.BANCO_H2.find((x) => x.id === m[1]);
+    return g && g.pasos[m[2]] ? `${g.nombre}: ${nombrePeldano(m[2])}` : null;
+  },
+  /* H4: un ítem por escalera; se nombra por su problema y el peldaño errado. */
+  "pe26-h4-expediente": (id) => {
+    const e = PE.BANCO_H4.find((x) => x.id === id);
+    return e ? `${PE.textoPeldanoH4(e.peldanos.problema)}: no encaja ${nombrePeldano(e.errado)}` : null;
+  },
+  /* H5 (exploratoria): `<paso>-<opción>` y `final-<a>+<b>`. */
+  "pe26-h5-dos-fiebres": (id) => {
+    const f = /^final-(.+)$/.exec(String(id));
+    if (f) return PE.FINALES_H5[f[1]]?.lectura ?? null;
+    const m = /^([a-z]+)-([a-z]+)$/.exec(String(id));
+    const paso = m && PE.PASOS_H5.find((p) => p.id === m[1]);
+    return paso?.opciones.find((o) => o.id === m[2])?.texto ?? null;
   },
 };

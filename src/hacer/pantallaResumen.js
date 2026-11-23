@@ -138,6 +138,12 @@ export const FORMATO_MACRO = {
   "da26-h2-arma-formula": X,
   "da26-h5-libreta": X,
   "da26-h6-meta": X,
+  /* T2 «Política económica» (lote 3). H5 es exploratoria: solo puntos. */
+  "pe26-h3-cables": X,
+  "pe26-h1-seis-cajones": X,
+  "pe26-h2-grupo-logico": X,
+  "pe26-h4-expediente": X,
+  "pe26-h5-dos-fiebres": FORMATO.SOLO_PUNTOS,
 };
 
 /**
