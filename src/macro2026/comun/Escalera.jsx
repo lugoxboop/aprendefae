@@ -12,7 +12,7 @@
  * solo figura.
  */
 import { BORDE, INK, INK_2, SUPERFICIE_2, FONDO } from "./colores-da.js";
-import { FotoPersonaje } from "./personajes.jsx";
+import { MascotaRol } from "./mascotas.jsx";
 
 export const PELDANOS = [
   { id: "problema", nombre: "Problema" },
@@ -76,13 +76,13 @@ export default function Escalera({
               data-caja-peldano={p.id}
               {...extra}
               onClick={(e) => { extra.onClick?.(e); onPeldano?.(p.id); }}
-              style={personaje === p.id ? { paddingRight: 80, minHeight: 76 } : undefined}
+              style={personaje === p.id ? { paddingRight: 112, minHeight: 148 } : undefined}
             >
               <span className="pe26-rot">{k + 1} · {p.nombre}</span>
               {cont != null && cont !== false && <span className="pe26-cont">{cont}</span>}
               {personaje === p.id && (
                 <span className="pe26-quien da26-entra" data-personaje key={p.id}>
-                  <FotoPersonaje id="autoridad-economica" alto={72} />
+                  <MascotaRol id="autoridad-economica" pose="timon" alto={120} />
                 </span>
               )}
             </Etq>
