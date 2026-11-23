@@ -172,6 +172,34 @@ export const SUBJECTS = {
           { id: "pm26-h5-junta", nombre: "La Junta decide", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
         ],
       },
+      /*
+       * MACRO 2026 · T5 POLÍTICA CAMBIARIA (lote 6, publicado al terminar,
+       * como pidió Mateo): las trece piezas de PUBLICADAS_T5
+       * (src/macro2026/politica-cambiaria/catalogo.js), con su mismo id y
+       * nombre, en el orden del camino; t5-textos-y-bancos.test.mjs exige que
+       * coincidan. Cada Hacer con la misma clasificación que su fila de la
+       * 0274 (catalogo.test.mjs y el guardián lo vigilan). El tema es nuevo;
+       * los ids de las actividades también (pc26-*).
+       */
+      {
+        id: "politica-cambiaria",
+        title: "Política cambiaria",
+        actividades: [
+          { id: "pc26-a1-balanza", nombre: "La balanza del dólar", clasificacion: { tipo: APRENDER } },
+          { id: "pc26-a2-subasta", nombre: "La subasta de dólares", clasificacion: { tipo: APRENDER } },
+          { id: "pc26-a3-nominal-real", nombre: "Nominal no es real", clasificacion: { tipo: APRENDER } },
+          { id: "pc26-a4-banano", nombre: "La tonelada de banano", clasificacion: { tipo: APRENDER } },
+          { id: "pc26-a5-tuberias", nombre: "Dos tuberías", clasificacion: { tipo: APRENDER } },
+          { id: "pc26-a6-imanes", nombre: "Imanes de capital", clasificacion: { tipo: APRENDER } },
+          { id: "pc26-a7-correa", nombre: "La correa del dólar", clasificacion: { tipo: APRENDER } },
+          { id: "pc26-h1-quien-aprecia", nombre: "¿Quién se apreció?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
+          { id: "pc26-h2-empuja-curva", nombre: "Empuja la curva", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          { id: "pc26-h3-aguja", nombre: "La aguja del real", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
+          { id: "pc26-h4-a-quien-sirve", nombre: "¿A quién le sirve?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          { id: "pc26-h5-donde-ahorro", nombre: "¿Aquí o afuera?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
+          { id: "pc26-h6-correa", nombre: "Cada hecho a su correa", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+        ],
+      },
     ],
   },
   /*

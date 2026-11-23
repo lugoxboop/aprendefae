@@ -23,6 +23,7 @@ import { PIEZAS_T1 } from "./demanda-agregada/catalogo.js";
 import { PIEZAS_T2 } from "./politica-economica/catalogo.js";
 import { PIEZAS_T3 } from "./politica-fiscal/catalogo.js";
 import { PIEZAS_T4 } from "./politica-monetaria/catalogo.js";
+import { PIEZAS_T5 } from "./politica-cambiaria/catalogo.js";
 import { Raiz, Boton } from "./comun/ui.jsx";
 import CierreAprender from "./comun/CierreAprender.jsx";
 import { FONDO, INK, INK_2, BORDE } from "./comun/colores-da.js";
@@ -74,6 +75,19 @@ const COMPONENTES = {
   "pm26-h6-domino": lazy(() => import("./politica-monetaria/H6Domino.jsx")),
   "pm26-a7-termostato": lazy(() => import("./politica-monetaria/A7Termostato.jsx")),
   "pm26-h5-junta": lazy(() => import("./politica-monetaria/H5Junta.jsx")),
+  "pc26-a1-balanza": lazy(() => import("./politica-cambiaria/A1Balanza.jsx")),
+  "pc26-h1-quien-aprecia": lazy(() => import("./politica-cambiaria/H1QuienAprecia.jsx")),
+  "pc26-a2-subasta": lazy(() => import("./politica-cambiaria/A2Subasta.jsx")),
+  "pc26-h2-empuja-curva": lazy(() => import("./politica-cambiaria/H2EmpujaCurva.jsx")),
+  "pc26-a3-nominal-real": lazy(() => import("./politica-cambiaria/A3NominalReal.jsx")),
+  "pc26-a4-banano": lazy(() => import("./politica-cambiaria/A4Banano.jsx")),
+  "pc26-h3-aguja": lazy(() => import("./politica-cambiaria/H3Aguja.jsx")),
+  "pc26-h4-a-quien-sirve": lazy(() => import("./politica-cambiaria/H4AQuienSirve.jsx")),
+  "pc26-a5-tuberias": lazy(() => import("./politica-cambiaria/A5Tuberias.jsx")),
+  "pc26-a6-imanes": lazy(() => import("./politica-cambiaria/A6Imanes.jsx")),
+  "pc26-h5-donde-ahorro": lazy(() => import("./politica-cambiaria/H5DondeAhorro.jsx")),
+  "pc26-a7-correa": lazy(() => import("./politica-cambiaria/A7Correa.jsx")),
+  "pc26-h6-correa": lazy(() => import("./politica-cambiaria/H6Correa.jsx")),
 };
 
 export const TEMAS = [
@@ -81,6 +95,7 @@ export const TEMAS = [
   { id: "t2", titulo: "T2 · Política económica", piezas: PIEZAS_T2 },
   { id: "t3", titulo: "T3 · Política fiscal", piezas: PIEZAS_T3 },
   { id: "t4", titulo: "T4 · Política monetaria", piezas: PIEZAS_T4 },
+  { id: "t5", titulo: "T5 · Política cambiaria", piezas: PIEZAS_T5 },
 ];
 const temaDe = (id) => TEMAS.find((t) => t.piezas.some((p) => p.id === id)) ?? null;
 const piezaDe = (id) => temaDe(id)?.piezas.find((p) => p.id === id) ?? null;

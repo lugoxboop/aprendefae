@@ -56,7 +56,8 @@ export const VISTAS = new Set([
    * vuelve en el lote 2 como la vista NUEVA de Macro 2026 · T2 (más abajo):
    * mismo tema, solo material nuevo con ids pe26-*. «politica-fiscal» vuelve
    * igual en el lote 4, como T3, con ids pf26-*, y «politica-monetaria» en el
-   * lote 5, como T4, con ids pm26-*.
+   * lote 5, como T4, con ids pm26-*. «politica-cambiaria» (T5, lote 6, ids
+   * pc26-*) es un tema nuevo: no tuvo vista vieja.
    */
   "pensamiento-sistemico",
   "modelo-iceberg",
@@ -99,13 +100,14 @@ export const VISTAS = new Set([
   "macro-2026",
   /*
    * Macroeconomía 2026, lo PUBLICADO (src/macro2026/TemaMacro2026.jsx): las
-   * piezas de PUBLICADAS_T1 a PUBLICADAS_T4. #/<tema>/aprender[/<id>] y
+   * piezas de PUBLICADAS_T1 a PUBLICADAS_T5. #/<tema>/aprender[/<id>] y
    * #/<tema>/hacer[/<id>].
    */
   "demanda-agregada",
   "politica-economica",
   "politica-fiscal",
   "politica-monetaria",
+  "politica-cambiaria",
 ]);
 
 /*

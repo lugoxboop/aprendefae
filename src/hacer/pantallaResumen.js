@@ -158,6 +158,13 @@ export const FORMATO_MACRO = {
   "pm26-h4-mueve-tasa": X,
   "pm26-h6-domino": X,
   "pm26-h5-junta": X,
+  /* T5 «Política cambiaria» (lote 6): las seis evaluativas, aciertos / ítems. */
+  "pc26-h1-quien-aprecia": X,
+  "pc26-h2-empuja-curva": X,
+  "pc26-h3-aguja": X,
+  "pc26-h4-a-quien-sirve": X,
+  "pc26-h5-donde-ahorro": X,
+  "pc26-h6-correa": X,
 };
 
 /**

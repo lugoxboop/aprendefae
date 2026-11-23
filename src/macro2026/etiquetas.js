@@ -12,6 +12,7 @@ import { ETAPAS_H6 } from "./comun/modelo-da.js";
 import * as PE from "./politica-economica/textos.js";
 import * as PF from "./politica-fiscal/textos.js";
 import * as PM from "./politica-monetaria/textos.js";
+import * as PC from "./politica-cambiaria/textos.js";
 import { TRIBUTOS } from "./comun/tributos.js";
 import { RAMAS } from "./comun/ramas.js";
 
@@ -159,5 +160,43 @@ export const REGLAS_MACRO2026 = {
     const r = m && PM.RONDAS_H5.find((x) => x.id === m[1]);
     const p = m && PM.PALANCAS.find((x) => x.id === m[2]);
     return r && p ? `${r.lectura} → ${p.nombre}: ${p.posiciones[r.correctas[p.id]]}` : null;
+  },
+
+  /* ─── T5 «Política cambiaria» (lote 6) ─── */
+  /* H1: `<pregunta>-peso` y `<pregunta>-dolar`. */
+  "pc26-h1-quien-aprecia": (id) => {
+    const m = /^(q\d)-(peso|dolar)$/.exec(String(id));
+    const q = m && PC.BANCO_H1.find((x) => x.id === m[1]);
+    return q ? `$${q.a.toLocaleString("es-CO")} → $${q.b.toLocaleString("es-CO")}: el ${m[2] === "peso" ? "peso" : "dólar"} ${q.correctas[m[2]] === "aprecia" ? "se aprecia" : "se deprecia"}` : null;
+  },
+  /* H2: `<suceso>-curva` y `<suceso>-direccion`. */
+  "pc26-h2-empuja-curva": (id) => {
+    const m = /^(.+)-(curva|direccion)$/.exec(String(id));
+    const s = m && PC.BANCO_H2.find((x) => x.id === m[1]);
+    if (!s) return null;
+    return m[2] === "curva" ? `${s.texto}: ¿qué curva?` : `${s.texto}: ¿hacia dónde?`;
+  },
+  /* H3: `<ronda>-aguja` y `<ronda>-exportador`. */
+  "pc26-h3-aguja": (id) => {
+    const m = /^(r\d)-(aguja|exportador)$/.exec(String(id));
+    const r = m && PC.BANCO_H3.find((x) => x.id === m[1]);
+    if (!r) return null;
+    const datos = `afuera ${r.afuera} %, aquí ${r.aqui} %, dólar ${r.nominal} %`;
+    return m[2] === "aguja" ? `${datos}: la aguja` : `${datos}: ¿y el exportador?`;
+  },
+  /* H4: una noticia por ítem. */
+  "pc26-h4-a-quien-sirve": (id) => {
+    const n = PC.BANCO_H4.find((x) => x.id === id);
+    return n ? `${n.texto} → ${n.gana === "exportadora" ? "la exportadora" : "la importadora"}` : null;
+  },
+  /* H5: una decisión por ítem. */
+  "pc26-h5-donde-ahorro": (id) => {
+    const d = PC.CASOS_H5.flatMap((c) => c.decisiones).find((x) => x.id === id);
+    return d ? `${d.consigna} → ${d.correcta === "aqui" ? "aquí" : "afuera"}` : null;
+  },
+  /* H6: un hecho por ítem. */
+  "pc26-h6-correa": (id) => {
+    const h = PC.BANCO_H6.find((x) => x.id === id);
+    return h ? `${h.texto} → ${PC.REGIMENES.find((r) => r.id === h.regimen).nombre}` : null;
   },
 };
