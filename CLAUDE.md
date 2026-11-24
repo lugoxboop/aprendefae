@@ -100,6 +100,7 @@ como con cualquier general.
 | La cola de tareas de Mateo y el turno automático (dónde se anota cada orden) | `orquestador/conocimiento/cola-de-tareas.md` |
 | Qué técnica web usar (compatibilidad Baseline) | complemento **Modern Web Guidance**; regla n del protocolo |
 | Qué herramienta oficial usar y cuándo (diseño, Supabase, Context7, Playwright, seguridad, Vercel) | regla o del protocolo |
+| **Checklist de 5 por actividad** (contexto, papel, pregunta, visual grande con mascotas, interfaz): obligatorio en toda pieza | `orquestador/conocimiento/checklist-actividad.md` |
 | El Kit de Calidad (D1 a D9) | `orquestador/conocimiento/kit-de-calidad.md` y `kit.md` |
 | Qué hace que una pieza enganche (E1 a E12) | `orquestador/conocimiento/enganche.md` |
 | Quién toca qué archivo, rangos y ramas | `orquestador/conocimiento/nocturno.md`, «El mapa de choques» |
