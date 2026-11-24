@@ -435,7 +435,12 @@ function Registrar({ yo, turnos, corrigiendo, alEnviar, alCerrar }) {
             <div className="eh-horas">
               <label className="eh-campo">
                 <span>Empezaste</span>
-                <select value={f.inicio} onChange={(e) => pon("inicio", e.target.value)}>
+                <select value={f.inicio} onChange={(e) => {
+                  const v = e.target.value;
+                  /* Si el inicio pasa al fin, el fin se corre dos horas para no mostrar un error de paso. */
+                  setF((x) => (aMin(x.fin) > aMin(v) ? { ...x, inicio: v }
+                    : { ...x, inicio: v, fin: HORAS_FIN.find((h) => aMin(h) >= aMin(v) + 120) || HORAS_FIN.at(-1) }));
+                }}>
                   {HORAS_INICIO.map((h) => <option key={h} value={h}>{hora12(h)}</option>)}
                 </select>
               </label>
@@ -461,7 +466,7 @@ function Registrar({ yo, turnos, corrigiendo, alEnviar, alCerrar }) {
             <label className="eh-buscador">
               <Search size={17} aria-hidden="true" />
               <span className="eh-oculto">Buscar actividad</span>
-              <input type="search" placeholder="Busca: feria, llamadas, colegio…" value={busca} onChange={(e) => setBusca(e.target.value)} />
+              <input type="search" placeholder="Busca una actividad" value={busca} onChange={(e) => setBusca(e.target.value)} />
             </label>
             {encontradas ? (
               <div className="eh-actividades">
@@ -863,7 +868,8 @@ export default function App() {
     ? [["bandeja", "Por revisar", Inbox, pendientesJefa], ["equipo", "Equipo", Users]]
     : [["inicio", "Inicio", House], ["registrar", "Registrar", Plus], ["turnos", "Mis turnos", ListChecks]];
 
-  const irA = (v) => (v === "registrar" ? setRegistrando({}) : setVista(v));
+  const abrirRegistro = (turno) => { setAviso(null); setRegistrando(turno); };
+  const irA = (v) => (v === "registrar" ? abrirRegistro({}) : setVista(v));
 
   return (
     <div className={`eh-app${esJefa ? " eh-app--jefa" : ""}`}>
@@ -895,8 +901,8 @@ export default function App() {
             <button type="button" className="eh-enlace" onClick={reiniciar}><LogOut size={14} aria-hidden="true" /> Salir y reiniciar</button>
           </div>
         </div>
-        {vista === "inicio" && !esJefa && <InicioEmbajador yo={yo} turnos={turnos} irARegistrar={() => setRegistrando({})} irATurnos={() => setVista("turnos")} alCorregir={setRegistrando} />}
-        {vista === "turnos" && !esJefa && <MisTurnos yo={yo} turnos={turnos} alCorregir={setRegistrando} />}
+        {vista === "inicio" && !esJefa && <InicioEmbajador yo={yo} turnos={turnos} irARegistrar={() => abrirRegistro({})} irATurnos={() => setVista("turnos")} alCorregir={abrirRegistro} />}
+        {vista === "turnos" && !esJefa && <MisTurnos yo={yo} turnos={turnos} alCorregir={abrirRegistro} />}
         {vista === "bandeja" && esJefa && <Bandeja yo={yo} turnos={turnos} alDecidir={decidir} />}
         {vista === "equipo" && esJefa && <Equipo turnos={turnos} />}
       </div>
