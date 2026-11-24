@@ -37,7 +37,8 @@ import * as T4 from "./politica-monetaria/catalogo.js";
 import * as T5 from "./politica-cambiaria/catalogo.js";
 import { Raiz, Boton } from "./comun/ui.jsx";
 import CierreAprender from "./comun/CierreAprender.jsx";
-import { FONDO, INK, INK_2 } from "./comun/colores-da.js";
+import { INK, INK_2 } from "./comun/colores-da.js";
+import FondoPagina, { ESCENA_DE_TEMA } from "./comun/FondoPagina.jsx";
 
 const MATERIA = "macroeconomia";
 
@@ -305,7 +306,7 @@ export default function TemaMacro2026({ temaId, modo = null, extra = null, onBac
   const id = extra ? String(extra).split("?")[0] : null;
   const pieza = id && tema?.publicada(id) && tema.componentes[id] ? tema.piezas.find((p) => p.id === id && p.tipo === mitad) : null;
   return (
-    <div style={{ minHeight: "100vh", background: FONDO, color: INK }}>
+    <FondoPagina tema={pieza ? ESCENA_DE_TEMA[temaId] : null} style={{ color: INK }}>
       <IrContexto.Provider value={onIr ? (t, m, i = null) => onIr(t, m, i) : irPorHash}>
       <Raiz data-macro2026-publicado={temaId}>
         <div style={{ padding: "16px 16px 56px", maxWidth: 672, margin: "0 auto" }}>
@@ -317,6 +318,6 @@ export default function TemaMacro2026({ temaId, modo = null, extra = null, onBac
         </div>
       </Raiz>
       </IrContexto.Provider>
-    </div>
+    </FondoPagina>
   );
 }

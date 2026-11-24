@@ -22,7 +22,7 @@ export const MASCOTAS = {
     poses: { carrito: [441, 506], periodico: [279, 502], explica: [289, 502] } },
   analista: { nombre: "Analista", especie: "gato", accesorio: "gafas", pose: "libreta",
     poses: { libreta: [273, 480], lupa: [273, 480], grafica: [302, 480] } },
-  "autoridad-economica": { nombre: "Autoridad económica", especie: "panda", accesorio: "traje", pose: "timon", archivo: "autoridad",
+  "autoridad-economica": { nombre: "Autoridad económica", corto: "Autoridad", especie: "panda", accesorio: "traje", pose: "timon", archivo: "autoridad",
     poses: { timon: [341, 486], grifo: [376, 560], carpeta: [318, 486] } },
   profesor: { nombre: "Profesor", especie: "perro", accesorio: "corbatin", pose: "pregunta",
     poses: { pregunta: [292, 440], pizarra: [450, 440], libro: [286, 440] } },

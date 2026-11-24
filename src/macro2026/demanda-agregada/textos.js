@@ -91,7 +91,7 @@ export const CONSIGNAS = {
  */
 const plaza = (hora, lado, mascota, rol, contexto, porRonda = null) => ({ tema: "plaza", hora, lado, ...mascota, rol, contexto, porRonda });
 export const ESCENAS = {
-  "da26-a1-carrito": plaza("dia", "izq", { mascota: { id: "familia", pose: "mercado" } },
+  "da26-a1-carrito": plaza("dia", "izq", { mascota: { id: "empresario", pose: "carrito" } },
     "Te contratan en el DANE para medir cuánto compra el país entero.",
     "Fin de mes: familias, empresas, Gobierno y extranjeros compran a la vez. Todo cabe en un solo carrito."),
   "da26-a2-vaso-renta": plaza("tarde", "der", { mascota: { id: "familia", pose: "alcancia" } },
@@ -109,7 +109,7 @@ export const ESCENAS = {
   "da26-a6-eco-multiplicador": plaza("tarde", "izq", { mascota: { id: "autoridad-economica", pose: "grifo" } },
     "Te contratan en el Ministerio de Transporte para estimar el efecto de una obra.",
     "El Gobierno gasta 100 en una vía."),
-  "da26-h1-llena-carrito": plaza("dia", "der", { mascota: { id: "analista", pose: "libreta" } },
+  "da26-h1-llena-carrito": plaza("dia", "der", { mascota: { id: "familia", pose: "recibo" } },
     "Te contratan en el DANE para clasificar las compras del país.",
     "Llegaron los recibos del mes. Cada compra la hizo alguien: familias, empresas, Gobierno o extranjeros.",
     { todas: "Recibo nuevo sobre tu escritorio:" }),
@@ -125,7 +125,7 @@ export const ESCENAS = {
     "Eres el asesor del empresario: explícale qué le pasa a su negocio.",
     "Cada mañana el empresario lee un titular y te pregunta cómo llega hasta su negocio.",
     { etiqueta: "El empresario oyó:", texto: "titular" }),
-  "da26-h5-libreta": plaza("manana", "izq", { mascota: { id: "analista", pose: "libreta" } },
+  "da26-h5-libreta": plaza("manana", "izq", { mascota: { id: "inversionista", pose: "monedas" } },
     "Te contratan para revisar la libreta del analista antes de publicarla.",
     "El analista anotó paso a paso un cambio en la economía. Una línea tiene un error.",
     { todas: "Página nueva de la libreta:" }),
