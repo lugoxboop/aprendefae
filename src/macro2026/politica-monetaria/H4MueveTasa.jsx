@@ -11,7 +11,7 @@ import { useMemo, useState } from "react";
 import { Boton, MarcoHacer, Retro, useCronometro } from "../comun/ui.jsx";
 import { azarDeLaPagina, sortear } from "../comun/azar.js";
 import { CSS_PM, GraficaDinero } from "./comun-pm.jsx";
-import { BANCO_H4, CONSIGNAS, H4, MODELO_DINERO, PARTIDA_H4 } from "./textos.js";
+import { BANCO_H4, CONSIGNAS, H4, MODELO_DINERO, PARTIDA_H4, ESCENAS } from "./textos.js";
 
 export const ID = "pm26-h4-mueve-tasa";
 export const prepararH4 = (rng = Math.random) => sortear(BANCO_H4, PARTIDA_H4, rng);
@@ -68,9 +68,9 @@ export default function H4MueveTasa({ onTerminar, rng = null }) {
   };
 
   return (
-    <MarcoHacer id={ID} consigna={CONSIGNAS[ID]} progreso={`${n + 1} / ${sucesos.length}`}>
+    <MarcoHacer id={ID} escena={ESCENAS[ID]} mini={{ etiqueta: ESCENAS[ID].porRonda.etiqueta, texto: s.texto, datos: { "data-suceso": s.id } }} consigna={CONSIGNAS[ID]} progreso={`${n + 1} / ${sucesos.length}`}>
       <style>{CSS_PM}</style>
-      <p className="pm26-contador da26-entra" key={s.id} style={{ margin: "0 0 8px", fontSize: 16 }} data-suceso={s.id}>{s.texto}</p>
+      {/* Rediseño lote 3: el suceso de la ronda va en la franja de escena. */}
       <div data-figura data-respuesta={resp ? `${resp.curva}-${resp.direccion}` : ""}>
         <GraficaDinero M={M} Y={Y} fantasma={res ? { M: M0, Y: Y0 } : null} flecha={res ? s.tasa : null}
           asas={res ? {} : { oferta: { onCambio: setM }, demanda: { onCambio: setY } }} />

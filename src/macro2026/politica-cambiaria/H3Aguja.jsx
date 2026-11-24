@@ -9,15 +9,15 @@
  * Partida: 4 de 6. Puntaje = criterios correctos / 8. Tolerancia ± 0,5.
  */
 import { useMemo, useState } from "react";
-import { DOLAR, PESO } from "../comun/monedas.js";
 import { fmtDecimal } from "../comun/modelo-da.js";
 import { Boton, MarcoHacer, Retro, useCronometro } from "../comun/ui.jsx";
 import { azarDeLaPagina, sortear } from "../comun/azar.js";
-import { MascotaRol } from "../comun/mascotas.jsx";
-import { CAMBIARIA, CSS_PC, Dial, fmtVar } from "./comun-pc.jsx";
-import { BANCO_H3, CONSIGNAS, H3, PARTIDA_H3, juzgarAguja } from "./textos.js";
+import { CSS_PC, Dial, fmtVar } from "./comun-pc.jsx";
+import { BANCO_H3, CONSIGNAS, H3, PARTIDA_H3, juzgarAguja, ESCENAS } from "./textos.js";
 
 export const ID = "pc26-h3-aguja";
+/** El mini contexto de la ronda (rediseño lote 3): las tres cifras y la nota. */
+export const cifrasH3 = (r) => `${H3.afuera} ${fmtDecimal(r.afuera, 1)} % · ${H3.aqui} ${fmtDecimal(r.aqui, 1)} % · ${H3.nominal} ${fmtVar(r.nominal)}${r.nota ? ` · ${r.nota}` : ""}`;
 export const prepararH3 = (rng = Math.random) => sortear(BANCO_H3, PARTIDA_H3, rng);
 const RETRO_AGUJA = (r, j) => (j === "signo" ? H3.retroSigno : j === "nominal" ? H3.retroNominal : H3.retroOtro(fmtVar(r.delta)));
 
@@ -51,24 +51,16 @@ export default function H3Aguja({ onTerminar, rng = null }) {
     setRes(null);
   };
 
-  const fichas = [[H3.afuera, r.afuera, DOLAR], [H3.aqui, r.aqui, PESO], [H3.nominal, r.nominal, CAMBIARIA]];
   return (
-    <MarcoHacer id={ID} consigna={CONSIGNAS[ID]} progreso={`${n + 1} / ${rondas.length}`}>
+    <MarcoHacer id={ID} escena={ESCENAS[ID]} mini={{ texto: cifrasH3(r), datos: { "data-ronda": r.id } }} consigna={CONSIGNAS[ID]} progreso={`${n + 1} / ${rondas.length}`}>
       <style>{CSS_PC}</style>
-      <div className="da26-entra" key={r.id} style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0,1fr))", gap: 6, marginBottom: 6 }} data-ronda={r.id}>
-        {fichas.map(([t, x, tono]) => (
-          <div key={t} className="pc26-chip" style={{ display: "grid", justifyItems: "center", borderRadius: 10, borderColor: tono, borderWidth: 2, borderStyle: "solid" }} data-ficha-ronda={t}>
-            <span>{t}</span><b className="da26-mono">{t === H3.nominal ? fmtVar(x) : `${fmtDecimal(x, 1)} %`}</b>
-          </div>
-        ))}
-      </div>
+      {/* Rediseño lote 3: las tres cifras de la ronda van en la franja de escena. */}
       <div data-figura data-juicio={res?.j ?? ""}>
         <Dial valor={aguja} onCambio={res ? null : setAguja} fantasma={res && res.j !== "bien" ? r.delta : null}
           itcrTexto={res ? `ITCR ${fmtDecimal(r.itcr, 3)}` : null} nombre={H3.arrastra} />
         {aguja == null && !res && <p className="da26-rotulo" style={{ textAlign: "center", margin: "2px 0 0", fontSize: 14 }}>{H3.arrastra}</p>}
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "auto minmax(0,1fr)", gap: 8, alignItems: "center", marginTop: 8 }}>
-        <MascotaRol id="exportadora-flores" pose="flores" alto={120} rotulo={false} />
+      <div style={{ marginTop: 8 }}>
         <div role="radiogroup" aria-label={H3.exportador} style={{ display: "grid", gap: 6 }}>
           <span style={{ fontWeight: 700, fontSize: 15 }}>{H3.exportador}</span>
           {Object.entries(H3.opciones).map(([id, t]) => (

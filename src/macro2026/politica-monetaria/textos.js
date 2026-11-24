@@ -42,7 +42,8 @@ export const APRENDER = {
     "Ese dinero que sale de la ventanilla es la creación primaria: la base monetaria.",
   ],
   "pm26-a3-cascada": [
-    "Llevas 1.000 pesos al banco. El banco no los guarda todos quietos.",
+    /* «Llevas 1.000 pesos al banco.» pasó a la franja de escena (ESCENAS, rediseño lote 3). */
+    "El banco no los guarda todos quietos.",
     "Una parte, el encaje, la congela en el BanRep. Esa no se presta.",
     "El resto lo presta. Quien recibe el préstamo lo deposita en otro banco.",
     "Así, 1.000 pesos se vuelven muchos más. Es la creación secundaria.",
@@ -74,7 +75,8 @@ export const APRENDER = {
     "Sus efectos llegan al crédito, la inversión, el consumo, la deuda pública y los capitales.",
   ],
   "pm26-a7-termostato": [
-    "Inflación alta es una casa caliente. La tasa de interés es el aire acondicionado.",
+    /* «Inflación alta es una casa caliente.» pasó a la franja de escena (ESCENAS, rediseño lote 3). */
+    "La tasa de interés es el aire acondicionado.",
     "La meta: que la inflación quede entre 2 % y 4 %.",
     "Recorre los años: cuando la inflación se dispara, la tasa sube detrás.",
     "El aire tarda en enfriar: la tasa actúa con rezago de meses.",
@@ -85,11 +87,11 @@ export const APRENDER = {
 export const CONTEO_APRENDER = {
   "pm26-a1-billetera": [14, 10, 13, 15, 16],
   "pm26-a2-ventanilla": [9, 11, 6, 15, 15, 14],
-  "pm26-a3-cascada": [13, 13, 13, 12, 8],
+  "pm26-a3-cascada": [7, 13, 13, 12, 8],
   "pm26-a4-cajas": [13, 9, 15, 8, 14, 9],
   "pm26-a5-precio-dinero": [14, 14, 14, 12, 9, 16],
   "pm26-a6-palancas": [12, 9, 12, 15, 9, 14, 15],
-  "pm26-a7-termostato": [13, 10, 12, 11],
+  "pm26-a7-termostato": [8, 10, 12, 11],
 };
 
 /* ─── A1 · Lo que llevas en la billetera ─── */
@@ -384,4 +386,63 @@ export const CONSIGNAS = {
   "pm26-h4-mueve-tasa": "Mueve la curva que cambia, hacia donde crees.",
   "pm26-h6-domino": "Ordena las fichas para que caigan en orden.",
   "pm26-h5-junta": "Pon las tres palancas como lo haría la Junta.",
+};
+
+/* ─── Escenas (rediseño con la lista de 5, spec de Gen 24-nov §2, T4) ───
+ * La franja de arriba de cada pieza: tema boveda, hora, lado, mascota,
+ * TU PAPEL (≤ 15 palabras) y contexto (≤ 30). En las Hacer, `porRonda` da el
+ * mini contexto de la escena compacta (≤ 12): `todas` = el mismo en cada
+ * ronda; `etiqueta` + `texto` = la etiqueta fija y el campo de la ronda.
+ * escenas.test.mjs lo mide. Solo presentación: no toca ids ni puntajes. */
+const boveda = (hora, lado, mascota, rol, contexto, porRonda = null) => ({ tema: "boveda", hora, lado, ...mascota, rol, contexto, porRonda });
+export const ESCENAS = {
+  "pm26-a1-billetera": boveda("dia", "izq", { mascota: { id: "empresario", pose: "carrito" } },
+    "Eres el nuevo analista del Banco de la República.",
+    "Primer día: tu jefe te pide explicar para qué sirve el dinero en la economía."),
+  /* La autoridad de 180 que estaba en la figura de P1 sube a la franja. */
+  "pm26-a2-ventanilla": boveda("manana", "der", { mascota: { id: "autoridad-economica", pose: "grifo" } },
+    "Trabajas en la ventanilla del Banco de la República.",
+    "Un banco pide billetes nuevos. Solo una entidad en Colombia puede emitirlos."),
+  "pm26-a3-cascada": boveda("tarde", "izq", { mascota: { id: "familia", pose: "alcancia" } },
+    "Eres el analista que sigue el viaje de un depósito por los bancos.",
+    "Llevas 1.000 pesos al banco."),
+  "pm26-a4-cajas": boveda("noche", "der", { mascota: { id: "analista", pose: "libreta" } },
+    "Te contratan en el BanRep para contar todo el dinero del país.",
+    "Hay efectivo en bolsillos, reservas en bóvedas y depósitos en bancos. Hay que ordenarlo en cajas."),
+  "pm26-a5-precio-dinero": boveda("dia", "der", { mascota: { id: "profesor", pose: "pizarra" } },
+    "Eres el analista que explica de dónde sale la tasa de interés.",
+    "En la reunión de la Junta preguntan: ¿de dónde sale el precio del dinero?"),
+  "pm26-a6-palancas": boveda("manana", "izq", { mascota: { id: "autoridad-economica", pose: "timon" } },
+    "Te sientas en la Junta Directiva del BanRep.",
+    "La Junta tiene tres palancas para regular el dinero y el crédito."),
+  "pm26-a7-termostato": boveda("tarde", "der", { mascota: { id: "autoridad-economica", pose: "grifo" } },
+    "Eres el encargado del termostato de la economía.",
+    "Inflación alta es una casa caliente."),
+  "pm26-h1-entra-sale": boveda("noche", "izq", { mascota: { id: "analista", pose: "libreta" } },
+    "Eres el analista del BanRep que vigila el dinero en circulación.",
+    "Cada operación del Banco mueve la base monetaria. Anota qué sube y qué baja.",
+    { etiqueta: "Operación de hoy:", texto: "operacion" }),
+  "pm26-h2-cascada-meta": boveda("dia", "izq", { mascota: { id: "autoridad-economica", pose: "carpeta" } },
+    "Te contratan para ajustar el encaje y llegar a la meta de dinero.",
+    "La Junta fijó una meta de dinero total. Tú solo mueves el encaje.",
+    { etiqueta: "La Junta pide:", texto: "meta" }),
+  "pm26-h3-cajas": boveda("manana", "der", { mascota: { id: "inversionista", pose: "monedas" } },
+    "Eres el contador del dinero del BanRep.",
+    "Te llegan cosas sueltas: billetes, cuentas, CDT. Cada una va en su primera caja.",
+    { todas: "Llega a tu mesa:" }),
+  "pm26-h4-mueve-tasa": boveda("tarde", "izq", { mascota: { id: "analista", pose: "lupa" } },
+    "Eres el analista que actualiza la gráfica del mercado de dinero.",
+    "La gráfica de oferta y demanda de dinero está en pantalla. Cada noticia mueve una curva.",
+    { etiqueta: "Noticia de hoy:", texto: "suceso" }),
+  /* La tarjeta de inicio reemplaza el aviso que abría la pieza: el aviso es
+     ahora su contexto. La autoridad sube de 120 (carpeta) a 180 (timón). La
+     lectura va sin etiqueta: con «Lectura de la ronda» la franja medía 160 px a 320. */
+  "pm26-h5-junta": boveda("noche", "der", { mascota: { id: "autoridad-economica", pose: "timon" } },
+    "Ahora eres miembro de la Junta del BanRep: tú decides.",
+    H5.aviso,
+    { texto: "lectura" }),
+  "pm26-h6-domino": boveda("dia", "der", { mascota: { id: "profesor", pose: "libro" } },
+    "Eres el analista que explica cómo se propaga una decisión del BanRep.",
+    "La Junta acaba de decidir. Ordena cómo cae cada ficha en la economía.",
+    { etiqueta: "Decisión:", texto: "cadena" }),
 };

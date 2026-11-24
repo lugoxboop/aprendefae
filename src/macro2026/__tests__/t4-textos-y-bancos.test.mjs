@@ -15,16 +15,17 @@ const palabras = (t) => t.trim().split(/\s+/).filter(Boolean).length;
  * Varias pantallas no coinciden con el conteo de §4 (construccion-t4.md,
  * decisión 1): difieren en una o dos palabras. Los textos quedan tal cual
  * los escribió Gen en §2; lo que obliga es el ≤ 20, y todas lo cumplen. Aquí
- * va el conteo real, por espacios.
+ * va el conteo real, por espacios. Rediseño lote 3: la primera frase de P1
+ * de A3 y de A7 pasó a la franja de escena (P1 de A3: 7; P1 de A7: 8).
  */
 const CONTEO_REAL = {
   "pm26-a1-billetera": { 0: 15, 4: 17 },
   "pm26-a2-ventanilla": { 0: 10, 3: 16, 4: 16 },
-  "pm26-a3-cascada": { 0: 12, 3: 11 },
+  "pm26-a3-cascada": { 0: 7, 3: 11 },
   "pm26-a4-cajas": { 2: 14, 3: 9, 4: 13, 5: 10 },
   "pm26-a5-precio-dinero": { 2: 13, 4: 10, 5: 15 },
   "pm26-a6-palancas": { 3: 14, 4: 10 },
-  "pm26-a7-termostato": { 0: 14, 1: 12, 3: 12 },
+  "pm26-a7-termostato": { 0: 8, 1: 12, 3: 12 },
 };
 
 test("Aprender T4: cada pantalla ≤ 20 palabras, con el número de pantallas de §4 y su conteo real", () => {

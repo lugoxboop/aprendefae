@@ -15,10 +15,10 @@ import { BORDE, FONDO, INK, INK_2, SUPERFICIE_2 } from "../comun/colores-da.js";
 import { Boton, MarcoAprender, usePasos } from "../comun/ui.jsx";
 import { useArrastre } from "../comun/arrastre.js";
 import { Objeto } from "../comun/kit.jsx";
-import { EscenaMascotas, MascotaRol } from "../comun/mascotas.jsx";
+import { EscenaMascotas } from "../comun/mascotas.jsx";
 import { fmtEntero } from "../comun/modelo-da.js";
 import { CALIDO, CSS_PM, MONETARIA } from "./comun-pm.jsx";
-import { A2, APRENDER } from "./textos.js";
+import { A2, APRENDER, ESCENAS } from "./textos.js";
 
 export const ID = "pm26-a2-ventanilla";
 const TEXTOS = APRENDER[ID];
@@ -106,7 +106,7 @@ export default function A2Ventanilla({ onTerminar }) {
   if (paso === 0) {
     figura = (
       <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "center", gap: 10 }}>
-        <MascotaRol id="autoridad-economica" pose="grifo" alto={180} />
+        {/* Rediseño lote 3: la autoridad de 180 subió a la franja de escena. */}
         <Objeto id="banco-central" alto={110} nombre={A2.banco} />
       </div>
     );
@@ -150,7 +150,7 @@ export default function A2Ventanilla({ onTerminar }) {
 
   const puede = paso === 1 ? hechos.has("dolar") : paso === 2 ? hechos.has("pagare") : paso === 3 ? hechos.has("vende") : true;
   return (
-    <MarcoAprender id={ID} paso={paso} total={TEXTOS.length} texto={TEXTOS[paso]}
+    <MarcoAprender escena={ESCENAS[ID]} id={ID} paso={paso} total={TEXTOS.length} texto={TEXTOS[paso]}
       figura={<><style>{CSS_PM}{CSS_VENTANILLA}</style>{figura}</>}
       puedeSeguir={puede} onSiguiente={siguiente} onAnterior={anterior} onTerminar={() => onTerminar?.()} />
   );

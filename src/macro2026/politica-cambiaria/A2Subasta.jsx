@@ -12,7 +12,7 @@ import { DOLAR } from "../comun/monedas.js";
 import { Boton, MarcoAprender, usePasos } from "../comun/ui.jsx";
 import { MascotaRol } from "../comun/mascotas.jsx";
 import { CAMBIARIA, CSS_PC, GraficaDivisas } from "./comun-pc.jsx";
-import { A2, APRENDER, FILAS_A2, MODELO_DIVISAS } from "./textos.js";
+import { A2, APRENDER, FILAS_A2, MODELO_DIVISAS, ESCENAS } from "./textos.js";
 
 export const ID = "pc26-a2-subasta";
 const TEXTOS = APRENDER[ID];
@@ -77,7 +77,7 @@ export default function A2Subasta({ onTerminar }) {
   const total = FILAS_A2.oferta.length + FILAS_A2.demanda.length;
   const puede = paso === 0 ? vistos.size === total : paso === 2 ? llegan : paso === 3 ? importan : true;
   return (
-    <MarcoAprender id={ID} paso={paso} total={TEXTOS.length} texto={TEXTOS[paso]}
+    <MarcoAprender escena={ESCENAS[ID]} id={ID} paso={paso} total={TEXTOS.length} texto={TEXTOS[paso]}
       figura={<><style>{CSS_PC}{CSS}</style>{figura}</>} controles={controles}
       puedeSeguir={puede} onSiguiente={siguiente} onAnterior={anterior} onTerminar={() => onTerminar?.()} />
   );

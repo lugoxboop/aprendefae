@@ -13,10 +13,10 @@ import { BORDE, FONDO, INK, INK_2, SUPERFICIE_2 } from "../comun/colores-da.js";
 import { DOLAR } from "../comun/monedas.js";
 import { fmtEntero } from "../comun/modelo-da.js";
 import { Boton, MarcoAprender, usePasos } from "../comun/ui.jsx";
-import { EscenaMascotas, MascotaRol } from "../comun/mascotas.jsx";
+import { EscenaMascotas } from "../comun/mascotas.jsx";
 import { Objeto } from "../comun/kit.jsx";
 import { CAMBIARIA, CSS_PC, Correa } from "./comun-pc.jsx";
-import { A7, APRENDER, REGIMENES } from "./textos.js";
+import { A7, APRENDER, REGIMENES, ESCENAS } from "./textos.js";
 
 export const ID = "pc26-a7-correa";
 const TEXTOS = APRENDER[ID];
@@ -82,8 +82,8 @@ export default function A7Correa({ onTerminar }) {
   let figura;
   if (paso === 0) {
     figura = (
-      <div style={{ display: "grid", gridTemplateColumns: "auto minmax(0,1fr)", gap: 8, alignItems: "center" }}>
-        <MascotaRol id="autoridad-economica" pose="carpeta" alto={180} />
+      <div>
+        {/* Rediseño lote 3: la autoridad de 180 subió a la franja de escena. */}
         <div className="pc26-a7-metas">
           <div className="pc26-a7-meta" data-meta="estabilidad"><Objeto id="balanza" alto={48} />{A7.estabilidad}</div>
           <div className="pc26-a7-meta" data-meta="equilibrio"><span className="da26-mono" style={{ fontSize: 18, fontWeight: 800 }}>BP = 0</span>{A7.equilibrio}</div>
@@ -150,7 +150,7 @@ export default function A7Correa({ onTerminar }) {
 
   const puede = paso === 2 ? baldes.compra > 0 && baldes.vende > 0 : paso === 7 ? sucia : true;
   return (
-    <MarcoAprender id={ID} paso={paso} total={TEXTOS.length} texto={TEXTOS[paso]}
+    <MarcoAprender escena={ESCENAS[ID]} id={ID} paso={paso} total={TEXTOS.length} texto={TEXTOS[paso]}
       figura={<><style>{CSS_PC}{CSS}</style>{figura}</>} controles={controles}
       puedeSeguir={puede} onSiguiente={siguiente} onAnterior={anterior} onTerminar={() => onTerminar?.()} />
   );

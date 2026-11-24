@@ -12,7 +12,7 @@ import { BORDE, FONDO, INK, INK_2, SUPERFICIE_2, TINTA_SOBRE_COLOR } from "../co
 import { MarcoAprender, usePasos } from "../comun/ui.jsx";
 import { Objeto } from "../comun/kit.jsx";
 import { MONETARIA } from "./comun-pm.jsx";
-import { A1, APRENDER } from "./textos.js";
+import { A1, APRENDER, ESCENAS } from "./textos.js";
 
 export const ID = "pm26-a1-billetera";
 const TEXTOS = APRENDER[ID];
@@ -115,7 +115,7 @@ export default function A1Billetera({ onTerminar }) {
 
   const puede = paso === 0 ? abierta : paso === 1 ? vistas.size === A1.objetos.length : paso === 3 ? bolso : true;
   return (
-    <MarcoAprender id={ID} paso={paso} total={TEXTOS.length} texto={TEXTOS[paso]}
+    <MarcoAprender escena={ESCENAS[ID]} id={ID} paso={paso} total={TEXTOS.length} texto={TEXTOS[paso]}
       figura={<><style>{CSS}</style>{figura}</>}
       puedeSeguir={puede} onSiguiente={siguiente} onAnterior={anterior} onTerminar={() => onTerminar?.()} />
   );

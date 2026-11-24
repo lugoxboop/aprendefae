@@ -13,7 +13,7 @@ import { Boton, MarcoHacer, Retro, useCronometro } from "../comun/ui.jsx";
 import { azarDeLaPagina, sortear } from "../comun/azar.js";
 import { useArrastre } from "../comun/arrastre.js";
 import { CAMBIARIA, CSS_PC, Correa } from "./comun-pc.jsx";
-import { BANCO_H6, CONSIGNAS, H6, PARTIDA_H6, REGIMENES, RETRO_H6 } from "./textos.js";
+import { BANCO_H6, CONSIGNAS, H6, PARTIDA_H6, REGIMENES, RETRO_H6, ESCENAS } from "./textos.js";
 
 export const ID = "pc26-h6-correa";
 export const prepararH6 = (rng = Math.random) => sortear(BANCO_H6, PARTIDA_H6, rng);
@@ -70,7 +70,7 @@ export default function H6Correa({ onTerminar, rng = null }) {
   const { contenedor, pieza, destino } = useArrastre({ alSoltar: soltar, activo: !entro });
 
   return (
-    <MarcoHacer id={ID} consigna={CONSIGNAS[ID]} progreso={`${n + 1} / ${hechos.length}`}>
+    <MarcoHacer id={ID} escena={ESCENAS[ID]} mini={{ texto: ESCENAS[ID].porRonda.todas }} consigna={CONSIGNAS[ID]} progreso={`${n + 1} / ${hechos.length}`}>
       <style>{CSS_PC}{CSS}</style>
       <div data-figura ref={contenedor}>
         <div style={{ minHeight: 60 }}>

@@ -13,7 +13,7 @@ import { MarcoAprender, usePasos } from "../comun/ui.jsx";
 import { Objeto } from "../comun/kit.jsx";
 import { fmtDecimal } from "../comun/modelo-da.js";
 import { MONETARIA } from "./comun-pm.jsx";
-import { A4, APRENDER } from "./textos.js";
+import { A4, APRENDER, ESCENAS } from "./textos.js";
 
 export const ID = "pm26-a4-cajas";
 const TEXTOS = APRENDER[ID];
@@ -131,7 +131,7 @@ export default function A4Cajas({ onTerminar }) {
 
   const puede = paso === 2 ? cuasi : paso === 4 ? vistas.size === 4 : true;
   return (
-    <MarcoAprender id={ID} paso={paso} total={TEXTOS.length} texto={TEXTOS[paso]}
+    <MarcoAprender escena={ESCENAS[ID]} id={ID} paso={paso} total={TEXTOS.length} texto={TEXTOS[paso]}
       figura={<><style>{CSS}</style>{figura}</>}
       puedeSeguir={puede} onSiguiente={siguiente} onAnterior={anterior} onTerminar={() => onTerminar?.()} />
   );

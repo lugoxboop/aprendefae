@@ -55,6 +55,9 @@ async function montar(Componente, props = {}) {
   document.body.appendChild(el);
   const raiz = createRoot(el);
   await act(async () => { raiz.render(h(Componente, props)); });
+  /* Rediseño (escenas): las Hacer abren con la tarjeta de inicio; se pasa como el estudiante. */
+  const empezar = el.querySelector("[data-empezar]");
+  if (empezar) await act(async () => { empezar.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
   const q = (s) => el.querySelector(s);
   const clic = async (sel) => {
     await act(async () => {
@@ -84,9 +87,9 @@ test("las 6 Hacer montan, con su consigna (≤ 12 palabras) y figura, y sin cora
   for (const p of HACER_T4) {
     const m = await montar(await cargar(p.id), { onTerminar: () => {}, rng: conSemilla(3) });
     if (p.id === "pm26-h5-junta") {
-      assert.ok(m.q("[data-aviso]").textContent.includes(T.H5.aviso));
-      assert.equal(m.q('[data-mascota-rol="autoridad-economica"]').dataset.pose, "carpeta");
-      await m.clic("[data-empezar]");
+      /* Rediseño lote 3: el aviso es el contexto de la tarjeta de inicio (escenas.test.mjs);
+         en la ronda, la autoridad va en la franja con el timón. */
+      assert.equal(m.q('[data-escenario] [data-mascota-rol="autoridad-economica"]').dataset.pose, "timon");
     }
     assert.ok(m.q("[data-figura]"), `${p.id}: data-figura`);
     assert.equal(m.q("[data-consigna]").textContent, T.CONSIGNAS[p.id], `${p.id}: consigna`);
@@ -100,7 +103,6 @@ test("todas las reglas de estilo con coral de las Hacer T4 son de error", async 
   const hojas = [CSS_DA];
   for (const p of HACER_T4) {
     const m = await montar(await cargar(p.id), { onTerminar: () => {}, rng: conSemilla(1) });
-    if (p.id === "pm26-h5-junta") await m.clic("[data-empezar]");
     m.el.querySelectorAll("style").forEach((s) => hojas.push(s.textContent));
     await m.desmontar();
   }
@@ -343,7 +345,6 @@ test("H5: palanca errada en coral con su retro, las bien con ✓; todo bien y el
   const rondas = prepararH5(conSemilla(6));
   let res = null;
   const m = await montar(await cargar("pm26-h5-junta"), { rng: conSemilla(6), onTerminar: (r) => { res = r; } });
-  await m.clic("[data-empezar]");
   for (let n = 0; n < rondas.length; n += 1) {
     const r = rondas[n];
     assert.equal(m.q("[data-ronda]").dataset.ronda, r.id);

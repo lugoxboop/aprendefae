@@ -9,12 +9,12 @@
  * Partida: 6 de 8. Puntaje = aciertos al primer intento / 6.
  */
 import { useMemo, useRef, useState } from "react";
-import { FONDO, INK, INK_2 } from "../comun/colores-da.js";
+import { INK, INK_2 } from "../comun/colores-da.js";
 import { Boton, MarcoHacer, Retro, useCronometro } from "../comun/ui.jsx";
 import { azarDeLaPagina, sortear } from "../comun/azar.js";
 import { MascotaRol } from "../comun/mascotas.jsx";
 import { CAMBIARIA, CSS_PC } from "./comun-pc.jsx";
-import { BANCO_H4, CONSIGNAS, H4, PARTIDA_H4 } from "./textos.js";
+import { BANCO_H4, CONSIGNAS, H4, PARTIDA_H4, ESCENAS } from "./textos.js";
 
 export const ID = "pc26-h4-a-quien-sirve";
 export const prepararH4 = (rng = Math.random) => sortear(BANCO_H4, PARTIDA_H4, rng);
@@ -25,12 +25,11 @@ const CSS = `
 .pc26-h4-lado { display: grid; justify-items: center; gap: 2px; padding: 2px; border: 2px solid transparent; border-radius: 12px; background: none; color: ${INK}; cursor: pointer; touch-action: manipulation; transition: transform 380ms cubic-bezier(.3,.9,.4,1); }
 .pc26-h4-lado[data-tira="1"] { transform: translateX(var(--tira)); }
 .pc26-h4-lado:disabled { cursor: default; }
-.pc26-h4-cuerda { position: relative; height: 120px; }
-.pc26-h4-cuerda::before { content: ""; position: absolute; left: -6px; right: -6px; top: 76px; height: 4px; border-radius: 2px; background: ${INK_2}; }
-.pc26-h4-panuelo { position: absolute; left: 50%; top: 56px; width: 44px; height: 48px; margin-left: -22px; border-radius: 8px; border: 2px solid ${INK}; background: ${CAMBIARIA}; cursor: grab; touch-action: none; transition: transform 320ms cubic-bezier(.3,.9,.4,1); }
+.pc26-h4-cuerda { position: relative; height: 150px; }
+.pc26-h4-cuerda::before { content: ""; position: absolute; left: -6px; right: -6px; top: 95px; height: 4px; border-radius: 2px; background: ${INK_2}; }
+.pc26-h4-panuelo { position: absolute; left: 50%; top: 75px; width: 44px; height: 48px; margin-left: -22px; border-radius: 8px; border: 2px solid ${INK}; background: ${CAMBIARIA}; cursor: grab; touch-action: none; transition: transform 320ms cubic-bezier(.3,.9,.4,1); }
 .pc26-h4-panuelo[data-estado="mal"] { border-color: #E76F51; border-width: 3px; }
 .pc26-h4-panuelo[data-arrastre="1"] { transition: none; }
-.pc26-h4-noticia { margin: 0 0 8px; padding: 10px 12px; border-radius: 12px; border: 2px solid ${INK}; background: ${FONDO}; font: 600 16px/1.35 var(--planck-font-sans, system-ui, sans-serif); }
 .pc26-h4-nombre { font: 600 13px/1.2 var(--planck-font-sans, system-ui, sans-serif); text-align: center; max-width: 96px; }
 @media (prefers-reduced-motion: reduce) { .pc26-h4-lado, .pc26-h4-panuelo { transition: none; } }
 `;
@@ -85,14 +84,14 @@ export default function H4AQuienSirve({ onTerminar, rng = null }) {
   const lado = (id, mascota, pose, nombre, signo) => (
     <button type="button" className="pc26-h4-lado" data-lado={id} disabled={Boolean(gano)} aria-label={nombre}
       data-tira={gano === id ? "1" : "0"} style={{ "--tira": `${signo * 10}px` }} onClick={() => elegir(id)}>
-      <MascotaRol id={mascota} pose={pose} alto={120} rotulo={false} />
+      <MascotaRol id={mascota} pose={pose} alto={150} rotulo={false} />
       <span className="pc26-h4-nombre">{nombre}</span>
     </button>
   );
   return (
-    <MarcoHacer id={ID} consigna={CONSIGNAS[ID]} progreso={`${n + 1} / ${noticias.length}`}>
+    <MarcoHacer id={ID} escena={ESCENAS[ID]} mini={{ texto: x.texto, datos: { "data-noticia": x.id } }} consigna={CONSIGNAS[ID]} progreso={`${n + 1} / ${noticias.length}`}>
       <style>{CSS_PC}{CSS}</style>
-      <p className="pc26-h4-noticia da26-entra" key={x.id} data-noticia={x.id}>{x.texto}</p>
+      {/* Rediseño lote 3: la noticia de la ronda va en la franja de escena. */}
       <div data-figura data-gano={gano ?? ""}>
         <div className="pc26-h4-campo">
           {lado("exportadora", "exportadora-flores", "recibe-billete", H4.exportadora, -1)}

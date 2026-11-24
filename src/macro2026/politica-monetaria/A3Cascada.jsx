@@ -11,7 +11,7 @@ import { MarcoAprender, Boton, Deslizador, usePasos } from "../comun/ui.jsx";
 import { Objeto } from "../comun/kit.jsx";
 import { fmtEntero } from "../comun/modelo-da.js";
 import { Cascada, CSS_PM, MONETARIA, depositos } from "./comun-pm.jsx";
-import { A3, APRENDER, totalCascada } from "./textos.js";
+import { A3, APRENDER, totalCascada, ESCENAS } from "./textos.js";
 
 export const ID = "pm26-a3-cascada";
 const TEXTOS = APRENDER[ID];
@@ -62,7 +62,7 @@ export default function A3Cascada({ onTerminar }) {
 
   const puede = paso === 2 ? prestamos >= 3 : paso === 3 ? toda : true;
   return (
-    <MarcoAprender id={ID} paso={paso} total={TEXTOS.length} texto={TEXTOS[paso]}
+    <MarcoAprender escena={ESCENAS[ID]} id={ID} paso={paso} total={TEXTOS.length} texto={TEXTOS[paso]}
       figura={<><style>{CSS_PM}</style>{figura}</>} controles={controles}
       puedeSeguir={puede} onSiguiente={siguiente} onAnterior={anterior} onTerminar={() => onTerminar?.()} />
   );
