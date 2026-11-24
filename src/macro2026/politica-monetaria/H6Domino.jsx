@@ -14,7 +14,7 @@ import { BORDE, CORAL, FONDO, INK, INK_2, SUPERFICIE_2 } from "../comun/colores-
 import { Boton, MarcoHacer, Retro, useCronometro } from "../comun/ui.jsx";
 import { azarDeLaPagina, barajar, sortear } from "../comun/azar.js";
 import { MONETARIA } from "./comun-pm.jsx";
-import { BANCO_H6, CONSIGNAS, H6, PARTIDA_H6 } from "./textos.js";
+import { BANCO_H6, CONSIGNAS, H6, PARTIDA_H6, ESCENAS } from "./textos.js";
 
 export const ID = "pm26-h6-domino";
 /* Cada cadena sale revuelta y nunca ya ordenada. */
@@ -98,9 +98,9 @@ export default function H6Domino({ onTerminar, rng = null }) {
   };
 
   return (
-    <MarcoHacer id={ID} consigna={CONSIGNAS[ID]} progreso={`${n + 1} / ${cadenas.length}`}>
+    <MarcoHacer id={ID} escena={ESCENAS[ID]} mini={{ etiqueta: ESCENAS[ID].porRonda.etiqueta, texto: c.nombre, datos: { "data-cadena": c.id } }} consigna={CONSIGNAS[ID]} progreso={`${n + 1} / ${cadenas.length}`}>
       <style>{CSS}</style>
-      <p className="da26-rotulo" style={{ margin: "0 0 6px", fontSize: 14 }} data-cadena={c.id}>{c.nombre}</p>
+      {/* Rediseño lote 3: la decisión de la cadena va en la franja de escena. */}
       <div data-figura role="list" aria-label={c.nombre} key={c.id} className="da26-entra">
         {orden.map((f, i) => (
           <div key={f.id} className="pm26-h6-fila" role="listitem">

@@ -13,7 +13,7 @@ import { fmtDecimal, fmtEntero } from "../comun/modelo-da.js";
 import { MarcoAprender, Retro, usePasos } from "../comun/ui.jsx";
 import { Objeto } from "../comun/kit.jsx";
 import { Balanza, CAMBIARIA, CSS_PC, Dial } from "./comun-pc.jsx";
-import { A4, APRENDER, BANANO } from "./textos.js";
+import { A4, APRENDER, BANANO, ESCENAS } from "./textos.js";
 
 export const ID = "pc26-a4-banano";
 const TEXTOS = APRENDER[ID];
@@ -105,7 +105,7 @@ export default function A4Banano({ onTerminar }) {
   ) : null;
 
   return (
-    <MarcoAprender id={ID} paso={paso} total={TEXTOS.length} texto={TEXTOS[paso]}
+    <MarcoAprender escena={ESCENAS[ID]} id={ID} paso={paso} total={TEXTOS.length} texto={TEXTOS[paso]}
       figura={<><style>{CSS_PC}{CSS}</style>{figura}</>} controles={controles}
       puedeSeguir={paso === 3 ? apuesta != null : true} onSiguiente={siguiente} onAnterior={anterior} onTerminar={() => onTerminar?.()} />
   );

@@ -14,7 +14,7 @@ import { DOLAR } from "../comun/monedas.js";
 import { Boton, MarcoAprender, usePasos } from "../comun/ui.jsx";
 import { Objeto } from "../comun/kit.jsx";
 import { CAMBIARIA, CSS_PC } from "./comun-pc.jsx";
-import { A5, APRENDER } from "./textos.js";
+import { A5, APRENDER, ESCENAS } from "./textos.js";
 
 export const ID = "pc26-a5-tuberias";
 const TEXTOS = APRENDER[ID];
@@ -143,7 +143,7 @@ export default function A5Tuberias({ onTerminar }) {
 
   const puede = paso === 1 ? corre.corriente > 0 : paso === 2 ? corre.capital > 0 : paso === 3 ? trimestre : true;
   return (
-    <MarcoAprender id={ID} paso={paso} total={TEXTOS.length} texto={TEXTOS[paso]}
+    <MarcoAprender escena={ESCENAS[ID]} id={ID} paso={paso} total={TEXTOS.length} texto={TEXTOS[paso]}
       figura={<><style>{CSS_PC}{CSS}</style>{figura}</>} controles={controles}
       puedeSeguir={puede} onSiguiente={siguiente} onAnterior={anterior} onTerminar={() => onTerminar?.()} />
   );

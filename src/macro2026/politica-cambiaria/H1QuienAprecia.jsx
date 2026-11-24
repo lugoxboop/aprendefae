@@ -11,9 +11,11 @@ import { DOLAR, PESO } from "../comun/monedas.js";
 import { Boton, MarcoHacer, Retro, movimientoReducido, useCronometro } from "../comun/ui.jsx";
 import { azarDeLaPagina, sortear } from "../comun/azar.js";
 import { Balanza, CSS_PC, fmtTc } from "./comun-pc.jsx";
-import { BANCO_H1, CONSIGNAS, H1, PARTIDA_H1, retroH1 } from "./textos.js";
+import { BANCO_H1, CONSIGNAS, H1, PARTIDA_H1, retroH1, ESCENAS } from "./textos.js";
 
 export const ID = "pc26-h1-quien-aprecia";
+/** El mini contexto de la ronda (rediseño lote 3): «El tablero cambió:» + esto. */
+export const tableroH1 = (q) => `USD 1: $${fmtTc(q.a)} → $${fmtTc(q.b)}`;
 export const prepararH1 = (rng = Math.random) => sortear(BANCO_H1, PARTIDA_H1, rng);
 const MONEDAS_H1 = [{ id: "peso", nombre: H1.peso, tono: PESO, simbolo: "$" }, { id: "dolar", nombre: H1.dolar, tono: DOLAR, simbolo: "USD" }];
 
@@ -52,11 +54,9 @@ export default function H1QuienAprecia({ onTerminar, rng = null }) {
 
   const errados = revisado ? MONEDAS_H1.filter((m) => puestas[m.id] !== q.correctas[m.id]) : [];
   return (
-    <MarcoHacer id={ID} consigna={CONSIGNAS[ID]} progreso={`${n + 1} / ${items.length}`}>
+    <MarcoHacer id={ID} escena={ESCENAS[ID]} mini={{ etiqueta: ESCENAS[ID].porRonda.etiqueta, texto: tableroH1(q), datos: { "data-item": q.id } }} consigna={CONSIGNAS[ID]} progreso={`${n + 1} / ${items.length}`}>
       <style>{CSS_PC}</style>
-      <p className="pc26-contador da26-entra" key={q.id} style={{ margin: "0 0 6px" }} data-item={q.id}>
-        <span>USD 1</span><b>${fmtTc(q.a)} → ${fmtTc(q.b)}</b>
-      </p>
+      {/* Rediseño lote 3: el tablero de la ronda va en la franja de escena. */}
       <div data-figura>
         <Balanza tc={tc} />
       </div>

@@ -10,9 +10,8 @@
  */
 import { useState } from "react";
 import { Boton, MarcoHacer, Retro, useCronometro } from "../comun/ui.jsx";
-import { MascotaRol } from "../comun/mascotas.jsx";
 import { Barras, CSS_PC, Imanes } from "./comun-pc.jsx";
-import { A6, AHORRO, CASOS_H5, CREDITO, H5, afuera, aqui } from "./textos.js";
+import { A6, AHORRO, CASOS_H5, CREDITO, H5, afuera, aqui, ESCENAS } from "./textos.js";
 
 export const ID = "pc26-h5-donde-ahorro";
 const DATOS = { ahorro: AHORRO, credito: CREDITO };
@@ -20,6 +19,10 @@ const TOPE = { ahorro: 720, credito: 1260 };
 /** Lo que se ve al revelar: millones de pesos aquí y afuera. */
 export const resultadoH5 = (d) => ({ aqui: aqui(DATOS[d.caso]), afuera: afuera(DATOS[d.caso], d.dtc) });
 const DECISIONES = CASOS_H5.flatMap((c) => c.decisiones);
+
+/** El mini contexto de la decisión (rediseño lote 3): el caso y sus datos. */
+export const casoH5 = (caso) => `${caso.titulo}: ${caso.datos}`;
+export const POSE_H5 = { ahorro: "monedas", credito: "ladrillo" };
 
 export default function H5DondeAhorro({ onTerminar }) {
   const tiempo = useCronometro();
@@ -48,16 +51,12 @@ export default function H5DondeAhorro({ onTerminar }) {
   };
 
   return (
-    <MarcoHacer id={ID} consigna={d.consigna} progreso={`${k + 1} / ${DECISIONES.length}`}>
+    <MarcoHacer id={ID} escena={ESCENAS[ID]} mini={{ texto: casoH5(caso), datos: { "data-caso": caso.id }, mascota: { id: "inversionista", pose: POSE_H5[caso.id] } }} consigna={d.consigna} progreso={`${k + 1} / ${DECISIONES.length}`}>
       <style>{CSS_PC}</style>
-      <p className="pc26-contador da26-entra" key={caso.id} style={{ margin: "0 0 6px", display: "grid", gap: 2 }} data-caso={caso.id}>
-        <span style={{ fontWeight: 700 }}>{caso.titulo}</span>
-        <span className="da26-mono" style={{ fontSize: 14 }}>{caso.datos}</span>
-      </p>
+      {/* Rediseño lote 3: el caso va en la franja de escena, con el inversionista. */}
       <div data-figura data-decision={d.id}>
         <Imanes atraccion={r ? (d.correcta === "aqui" ? -0.8 : 0.8) : 0} nombres={[A6.colombia, A6.eeuu]} />
-        <div style={{ display: "grid", gridTemplateColumns: "auto minmax(0,1fr)", gap: 8, alignItems: "center", marginTop: 6 }}>
-          <MascotaRol id="inversionista" pose={caso.id === "ahorro" ? "monedas" : "ladrillo"} alto={120} />
+        <div style={{ marginTop: 6 }}>
           <div style={{ display: "grid", gap: 4 }}>
             <span style={{ fontWeight: 700, fontSize: 14 }}>{caso.id === "ahorro" ? H5.recibes : H5.pagas}</span>
             <Barras aqui={r?.aqui ?? null} afuera={r?.afuera ?? null} etiquetas={[H5.aqui, H5.afuera]} max={TOPE[caso.id]} gana={r ? d.correcta : null} />

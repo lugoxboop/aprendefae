@@ -15,7 +15,7 @@ import { Deslizador, MarcoAprender, usePasos } from "../comun/ui.jsx";
 import { MascotaRol } from "../comun/mascotas.jsx";
 import { Objeto } from "../comun/kit.jsx";
 import { CAMBIARIA, CSS_PC, Dial, fmtVar } from "./comun-pc.jsx";
-import { A3, APRENDER, deltaTcr, itcr } from "./textos.js";
+import { A3, APRENDER, deltaTcr, itcr, ESCENAS } from "./textos.js";
 
 export const ID = "pc26-a3-nominal-real";
 const TEXTOS = APRENDER[ID];
@@ -118,7 +118,7 @@ export default function A3NominalReal({ onTerminar }) {
 
   const puede = paso === 2 ? movidas.size === 3 : paso === 4 ? zonasVistas.has("devaluacion") && zonasVistas.has("revaluacion") : true;
   return (
-    <MarcoAprender id={ID} paso={paso} total={TEXTOS.length} texto={TEXTOS[paso]}
+    <MarcoAprender escena={ESCENAS[ID]} id={ID} paso={paso} total={TEXTOS.length} texto={TEXTOS[paso]}
       figura={<><style>{CSS_PC}{CSS}</style>{figura}</>} controles={controles}
       puedeSeguir={puede} onSiguiente={siguiente} onAnterior={anterior} onTerminar={() => onTerminar?.()} />
   );

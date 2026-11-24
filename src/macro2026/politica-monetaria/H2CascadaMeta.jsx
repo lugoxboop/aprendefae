@@ -13,9 +13,11 @@ import { INK } from "../comun/colores-da.js";
 import { Boton, Deslizador, MarcoHacer, Retro, movimientoReducido, useCronometro } from "../comun/ui.jsx";
 import { fmtEntero } from "../comun/modelo-da.js";
 import { Cascada, CSS_PM, MONETARIA } from "./comun-pm.jsx";
-import { CONSIGNAS, ETAPAS_H2, H2, totalCascada } from "./textos.js";
+import { CONSIGNAS, ETAPAS_H2, H2, totalCascada, ESCENAS } from "./textos.js";
 
 export const ID = "pm26-h2-cascada-meta";
+/** El mini contexto de la etapa (rediseño lote 3): «La Junta pide:» + esto. */
+export const pideH2 = (etapa) => `${fmtEntero(etapa.meta)} pesos en depósitos.`;
 
 export function juzgarH2(etapa, encaje) {
   if (encaje === etapa.solucion) return "bien";
@@ -95,7 +97,7 @@ export default function H2CascadaMeta({ onTerminar }) {
 
   const cerca = total >= etapa.meta;
   return (
-    <MarcoHacer id={ID} consigna={CONSIGNAS[ID]} progreso={`${k + 1} / ${ETAPAS_H2.length}`}>
+    <MarcoHacer id={ID} escena={ESCENAS[ID]} mini={{ etiqueta: ESCENAS[ID].porRonda.etiqueta, texto: pideH2(etapa), datos: { "data-pide": etapa.id } }} consigna={CONSIGNAS[ID]} progreso={`${k + 1} / ${ETAPAS_H2.length}`}>
       <style>{CSS_PM}</style>
       <div data-figura data-etapa={etapa.id}>
         <div className="pm26-contador" data-total={total}>

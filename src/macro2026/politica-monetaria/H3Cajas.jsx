@@ -16,7 +16,7 @@ import { azarDeLaPagina, sortear } from "../comun/azar.js";
 import { useArrastre } from "../comun/arrastre.js";
 import { Objeto } from "../comun/kit.jsx";
 import { MONETARIA } from "./comun-pm.jsx";
-import { BANCO_H3, CAJAS_H3, CONSIGNAS, PARTIDA_H3 } from "./textos.js";
+import { BANCO_H3, CAJAS_H3, CONSIGNAS, PARTIDA_H3, ESCENAS } from "./textos.js";
 
 export const ID = "pm26-h3-cajas";
 export const prepararH3 = (rng = Math.random) => sortear(BANCO_H3, PARTIDA_H3, rng);
@@ -79,7 +79,7 @@ export default function H3Cajas({ onTerminar, rng = null }) {
   const crece = (id) => `scale(${1 + 0.015 * (cuenta[id] ?? 0)})`;
 
   return (
-    <MarcoHacer id={ID} consigna={CONSIGNAS[ID]} progreso={`${n + 1} / ${fichas.length}`}>
+    <MarcoHacer id={ID} escena={ESCENAS[ID]} mini={{ texto: ESCENAS[ID].porRonda.todas }} consigna={CONSIGNAS[ID]} progreso={`${n + 1} / ${fichas.length}`}>
       <style>{CSS}</style>
       <div data-figura ref={contenedor}>
         <div style={{ minHeight: 60 }}>

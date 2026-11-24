@@ -5,8 +5,9 @@
  * del mismo tema no repiten hora + lado; el texto de la franja queda en
  * contraste AA sobre los cuatro degradados. Y montadas: la escena completa
  * con la mascota a 180 px y la compacta a 120 px con su mini contexto.
- * Lote 1: T1. Lote 2: T2 (despacho) y T3 (hacienda). T4 y T5 entran en el
- * lote 3 (la prueba «todo» lo dice).
+ * Lote 1: T1. Lote 2: T2 (despacho) y T3 (hacienda). Lote 3: T4 (boveda) y
+ * T5 (puerto). En T5, A2 y H4 van sin mascota en la franja: ya tienen varias
+ * en el cuerpo y no se duplican.
  */
 import { test } from "node:test";
 import assert from "node:assert/strict";
@@ -43,25 +44,53 @@ const T2 = await import("../politica-economica/textos.js");
 const { PIEZAS_T2, PUBLICADAS_T2 } = await import("../politica-economica/catalogo.js");
 const T3 = await import("../politica-fiscal/textos.js");
 const { PIEZAS_T3, PUBLICADAS_T3 } = await import("../politica-fiscal/catalogo.js");
+const T4 = await import("../politica-monetaria/textos.js");
+const { PIEZAS_T4, PUBLICADAS_T4 } = await import("../politica-monetaria/catalogo.js");
+const T5 = await import("../politica-cambiaria/textos.js");
+const { PIEZAS_T5, PUBLICADAS_T5 } = await import("../politica-cambiaria/catalogo.js");
+const { pideH2 } = await import("../politica-monetaria/H2CascadaMeta.jsx");
+const { tableroH1 } = await import("../politica-cambiaria/H1QuienAprecia.jsx");
+const { cifrasH3 } = await import("../politica-cambiaria/H3Aguja.jsx");
+const { casoH5 } = await import("../politica-cambiaria/H5DondeAhorro.jsx");
 
 /* Palabra = token con una letra o una cifra («%», «−» sueltos no cuentan). */
 const palabras = (t) => t.trim().split(/\s+/).filter((x) => /[\p{L}\p{N}]/u.test(x)).length;
 /* Los mini contextos reales de cada ronda, por el campo que nombra `porRonda.texto`
-   (los que vienen de un banco se miden todos). */
+   en cada tema (los que vienen de un banco se miden todos). */
 const CAMPOS = {
-  suceso: () => T1.BANCO_H3.map((s) => s.suceso),
-  titular: () => T1.BANCO_H4.map((x) => x.titular),
-  contexto: () => ETAPAS_H6.map((x) => x.contexto),
-  grupo: () => T2.BANCO_H2.map((g) => g.nombre),
-  lectura: () => [T2.ENTRADA_H5, ...T2.PASOS_H5.flatMap((p) => p.opciones.map((o) => o.narracion))],
-  pregunta: () => T3.DOCUMENTOS_H3.map((d) => d.pregunta),
-  consigna: () => T3.H5.retos.map((r) => r.consigna),
+  T1: {
+    suceso: () => T1.BANCO_H3.map((x) => x.suceso),
+    titular: () => T1.BANCO_H4.map((x) => x.titular),
+    contexto: () => ETAPAS_H6.map((x) => x.contexto),
+  },
+  T2: {
+    grupo: () => T2.BANCO_H2.map((g) => g.nombre),
+    lectura: () => [T2.ENTRADA_H5, ...T2.PASOS_H5.flatMap((p) => p.opciones.map((o) => o.narracion))],
+  },
+  T3: {
+    pregunta: () => T3.DOCUMENTOS_H3.map((d) => d.pregunta),
+    consigna: () => T3.H5.retos.map((r) => r.consigna),
+  },
+  T4: {
+    operacion: () => T4.BANCO_H1.map((o) => o.texto),
+    meta: () => T4.ETAPAS_H2.map(pideH2),
+    suceso: () => T4.BANCO_H4.map((x) => x.texto),
+    lectura: () => T4.RONDAS_H5.map((r) => r.lectura),
+    cadena: () => T4.BANCO_H6.map((c) => c.nombre),
+  },
+  T5: {
+    tablero: () => T5.BANCO_H1.map(tableroH1),
+    suceso: () => T5.BANCO_H2.map((x) => x.texto),
+    cifras: () => T5.BANCO_H3.map(cifrasH3),
+    noticia: () => T5.BANCO_H4.map((x) => x.texto),
+    caso: () => T5.CASOS_H5.map(casoH5),
+  },
 };
-function minis(id, e) {
+function minis(T, e) {
   const r = e.porRonda;
   if (!r) return [];
   if (r.todas) return [r.todas];
-  if (r.texto) return CAMPOS[r.texto]();
+  if (r.texto) return CAMPOS[T.nombre][r.texto]();
   return Object.values(r);
 }
 
@@ -82,9 +111,23 @@ const TEMAS = [
     "pf26-a5-balanza": "A5Balanza", "pf26-h1-moneda": "H1Moneda", "pf26-h2-cajero": "H2Cajero", "pf26-h3-factura": "H3Factura",
     "pf26-h4-expande": "H4Expande", "pf26-h5-montanas": "H5Montanas", "pf26-h6-memo": "H6Memo",
   } },
+  { nombre: "T4", tema: "boveda", piezas: PIEZAS_T4, publicadas: PUBLICADAS_T4, textos: T4, carpeta: "politica-monetaria", modulos: {
+    "pm26-a1-billetera": "A1Billetera", "pm26-a2-ventanilla": "A2Ventanilla", "pm26-a3-cascada": "A3Cascada", "pm26-a4-cajas": "A4Cajas",
+    "pm26-a5-precio-dinero": "A5PrecioDinero", "pm26-a6-palancas": "A6Palancas", "pm26-a7-termostato": "A7Termostato",
+    "pm26-h1-entra-sale": "H1EntraSale", "pm26-h2-cascada-meta": "H2CascadaMeta", "pm26-h3-cajas": "H3Cajas",
+    "pm26-h4-mueve-tasa": "H4MueveTasa", "pm26-h5-junta": "H5Junta", "pm26-h6-domino": "H6Domino",
+  } },
+  { nombre: "T5", tema: "puerto", piezas: PIEZAS_T5, publicadas: PUBLICADAS_T5, textos: T5, carpeta: "politica-cambiaria", modulos: {
+    "pc26-a1-balanza": "A1Balanza", "pc26-a2-subasta": "A2Subasta", "pc26-a3-nominal-real": "A3NominalReal", "pc26-a4-banano": "A4Banano",
+    "pc26-a5-tuberias": "A5Tuberias", "pc26-a6-imanes": "A6Imanes", "pc26-a7-correa": "A7Correa",
+    "pc26-h1-quien-aprecia": "H1QuienAprecia", "pc26-h2-empuja-curva": "H2EmpujaCurva", "pc26-h3-aguja": "H3Aguja",
+    "pc26-h4-a-quien-sirve": "H4AQuienSirve", "pc26-h5-donde-ahorro": "H5DondeAhorro", "pc26-h6-correa": "H6Correa",
+  } },
 ];
+/* Franja sin mascota: la pieza ya tiene varias en el cuerpo (pedido del coordinador). */
+const SIN_MASCOTA = new Set(["pc26-a2-subasta", "pc26-h4-a-quien-sirve"]);
 
-test("cada pieza publicada de T1, T2 y T3 tiene escena, con tema, hora, lado y mascota que existen", () => {
+test("cada pieza publicada de T1 a T5 tiene escena, con tema, hora, lado y mascota que existen", () => {
   for (const { tema, publicadas, textos } of TEMAS) {
     for (const id of publicadas) {
       const e = textos.ESCENAS[id];
@@ -92,6 +135,7 @@ test("cada pieza publicada de T1, T2 y T3 tiene escena, con tema, hora, lado y m
       assert.equal(e.tema, tema, id);
       assert.ok(TEMAS_ESCENA[e.tema] && HORAS[e.hora] && ["izq", "der"].includes(e.lado), id);
       if (e.escena) assert.ok(INTERACCIONES[e.escena], `${id}: escena ${e.escena}`);
+      else if (SIN_MASCOTA.has(id)) assert.equal(e.mascota, null, `${id}: sin mascota en la franja`);
       else {
         assert.ok(MASCOTAS[e.mascota?.id], `${id}: mascota ${e.mascota?.id}`);
         assert.ok(MASCOTAS[e.mascota.id].poses[e.mascota.pose], `${id}: pose ${e.mascota.pose}`);
@@ -102,14 +146,15 @@ test("cada pieza publicada de T1, T2 y T3 tiene escena, con tema, hora, lado y m
 });
 
 test("textos: tu papel ≤ 15 palabras, contexto ≤ 30, mini contexto ≤ 12, consigna ≤ 12", () => {
-  for (const { piezas, textos } of TEMAS) {
+  for (const T of TEMAS) {
+    const { piezas, textos } = T;
     for (const p of piezas) {
       const e = textos.ESCENAS[p.id];
       assert.ok(palabras(e.rol) <= 15, `${p.id}: rol ${palabras(e.rol)}`);
       assert.ok(palabras(e.contexto) <= 30, `${p.id}: contexto ${palabras(e.contexto)}`);
       if (p.tipo === "hacer") {
         assert.ok(palabras(textos.CONSIGNAS[p.id]) <= 12, `${p.id}: consigna`);
-        const m = minis(p.id, e);
+        const m = minis(T, e);
         assert.ok(m.length > 0, `${p.id}: las Hacer llevan mini contexto por ronda`);
         for (const t of m) assert.ok(palabras(t) <= 12, `${p.id}: mini «${t}» ${palabras(t)}`);
         if (e.porRonda.etiqueta) assert.ok(palabras(e.porRonda.etiqueta) <= 4, `${p.id}: etiqueta corta`);
@@ -171,7 +216,8 @@ for (const T of TEMAS) test(`Aprender ${T.nombre}: escena completa arriba en P1 
     assert.ok(esc, `${p.id}: escena`);
     assert.equal(esc.dataset.compacto, "0");
     assert.equal(esc.dataset.tema, T.tema);
-    assert.equal(altoMascota(esc), ALTO_ESCENA, `${p.id}: mascota protagonista a 180`);
+    if (SIN_MASCOTA.has(p.id)) assert.equal(esc.querySelector("img") === null, true, `${p.id}: franja sin mascota`);
+    else assert.equal(altoMascota(esc), ALTO_ESCENA, `${p.id}: mascota protagonista a 180`);
     assert.equal(m.q("[data-papel]").textContent, `TU PAPEL${e.rol}`);
     assert.equal(m.q("[data-contexto-escena]").textContent, e.contexto);
     /* La escena va antes de la figura y del texto de la pantalla. */
@@ -194,17 +240,18 @@ for (const T of TEMAS) test(`Hacer ${T.nombre}: tarjeta de inicio con la escena 
     try {
     assert.ok(m.q("[data-inicio-hacer]"), `${p.id}: tarjeta de inicio`);
     assert.equal(m.q("[data-escenario]").dataset.compacto, "0");
-    assert.equal(altoMascota(m.q("[data-escenario]")), ALTO_ESCENA);
+    if (!SIN_MASCOTA.has(p.id)) assert.equal(altoMascota(m.q("[data-escenario]")), ALTO_ESCENA, `${p.id}: inicio a 180`);
     assert.equal(m.q("[data-contexto-escena]").textContent, e.contexto);
     if (T.textos.CONSIGNAS[p.id]) assert.equal(m.q("[data-consigna]").textContent, T.textos.CONSIGNAS[p.id]);
     assert.equal(m.q("[data-figura]") === null, true, "la ronda empieza al tocar Empezar");
     await m.clic("[data-empezar]");
     const esc = m.q("[data-escenario]");
     assert.equal(esc.dataset.compacto, "1");
-    assert.equal(altoMascota(esc), ALTO_COMPACTO, `${p.id}: compacta a 120`);
+    if (SIN_MASCOTA.has(p.id)) assert.equal(esc.querySelector("img") === null, true, `${p.id}: compacta sin mascota`);
+    else assert.equal(altoMascota(esc), ALTO_COMPACTO, `${p.id}: compacta a 120`);
     assert.equal(m.q("[data-papel]") === null, true, "la compacta no repite tu papel");
     const mini = m.q("[data-contexto-escena]").textContent;
-    assert.ok(minis(p.id, e).some((t) => mini.endsWith(t)), `${p.id}: mini «${mini}»`);
+    assert.ok(minis(T, e).some((t) => mini.endsWith(t)), `${p.id}: mini «${mini}»`);
     if (e.porRonda.etiqueta) assert.ok(mini.startsWith(e.porRonda.etiqueta));
     assert.ok(m.q("[data-figura]"), `${p.id}: la ronda`);
     } finally { await m.desmontar(); }
@@ -225,6 +272,21 @@ test("pe26-h5: la autoridad lleva el timón con la tasa (fiebre 1) y el grifo co
   } finally { await m.desmontar(); }
 });
 
-test("T4 y T5 llevan escena (lote 3 del rediseño)", { todo: "lote 3: T4 + T5" }, () => {
-  assert.fail("pendiente");
+test("pc26-h4: sin mascota en la franja; las dos del cuerpo a 150 px", async () => {
+  const m = await montar(TEMAS[4], "pc26-h4-a-quien-sirve");
+  try {
+    await m.clic("[data-empezar]");
+    assert.equal(m.q("[data-escenario] img") === null, true);
+    const altos = [...m.el.querySelectorAll("[data-lado] img")].map((i) => Number(i.getAttribute("height")));
+    assert.deepEqual(altos, [150, 150]);
+  } finally { await m.desmontar(); }
+});
+
+test("pc26-h5: el inversionista cambia de pose con el caso (monedas al ahorrar, ladrillo con el crédito)", async () => {
+  const m = await montar(TEMAS[4], "pc26-h5-donde-ahorro");
+  try {
+    await m.clic("[data-empezar]");
+    assert.equal(m.q("[data-escenario] [data-mascota-rol]").getAttribute("data-pose"), "monedas");
+    assert.equal(m.q("[data-caso]").dataset.caso, "ahorro");
+  } finally { await m.desmontar(); }
 });

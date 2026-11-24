@@ -48,7 +48,8 @@ export const APRENDER = {
     "El ITCR lo calcula con índices: mayor que 1, devaluación real; menor, revaluación.",
   ],
   "pc26-a4-banano": [
-    "Tropical Fruits vende banano a US Foods. Producir una tonelada cuesta $2.127.250.",
+    /* «Tropical Fruits vende banano a US Foods.» pasó a la franja de escena (ESCENAS, rediseño lote 3). */
+    "Producir una tonelada cuesta $2.127.250.",
     "Con el dólar a $3.175, ese costo son USD 670: justo el precio de mercado.",
     "Pasa un año: inflación aquí 5 %, allá 1,5 %. El dólar sube 1,5 %.",
     "¿US Foods le sigue comprando? Apuesta.",
@@ -89,7 +90,7 @@ export const CONTEO_APRENDER = {
   "pc26-a1-balanza": [13, 10, 14, 13, 13],
   "pc26-a2-subasta": [13, 14, 11, 12],
   "pc26-a3-nominal-real": [14, 11, 11, 12, 11, 13],
-  "pc26-a4-banano": [12, 14, 12, 6, 15, 13],
+  "pc26-a4-banano": [5, 14, 12, 6, 15, 13],
   "pc26-a5-tuberias": [13, 6, 8, 13, 14, 9],
   "pc26-a6-imanes": [9, 7, 4, 13, 12, 14, 14],
   "pc26-a7-correa": [12, 10, 12, 13, 10, 12, 11, 16, 9],
@@ -473,4 +474,65 @@ export const CONSIGNAS = {
   /* H5 no tiene consigna general: cada decisión trae la suya (§2 H5); arranca con la primera. */
   "pc26-h5-donde-ahorro": "Sin cambios en el dólar: ¿dónde ahorras?",
   "pc26-h6-correa": "Arrastra cada hecho al régimen que describe.",
+};
+
+/* ─── Escenas (rediseño con la lista de 5, spec de Gen 24-nov §2, T5) ───
+ * La franja de arriba de cada pieza: tema puerto, hora, lado, mascota,
+ * TU PAPEL (≤ 15 palabras) y contexto (≤ 30). En las Hacer, `porRonda` da el
+ * mini contexto de la escena compacta (≤ 12): `todas` = el mismo en cada
+ * ronda; `etiqueta` + `texto` = la etiqueta fija y el campo de la ronda.
+ * `mascota: null` = franja sin mascota: A2 y H4 ya tienen varias en el cuerpo
+ * y no se duplican. escenas.test.mjs lo mide. Solo presentación. */
+const puerto = (hora, lado, mascota, rol, contexto, porRonda = null) => ({ tema: "puerto", hora, lado, ...mascota, rol, contexto, porRonda });
+export const ESCENAS = {
+  "pc26-a1-balanza": puerto("dia", "izq", { mascota: { id: "viajero", pose: "cambio" } },
+    "Te contratan como analista de una casa de cambio.",
+    "Esta semana llegaron cuatro noticias. Cada una empuja el precio del dólar."),
+  "pc26-a2-subasta": puerto("manana", "der", { mascota: null },
+    "Eres el subastador del mercado de dólares.",
+    "Unos llegan con dólares para vender; otros necesitan comprarlos. Tú juntas a los dos."),
+  "pc26-a3-nominal-real": puerto("tarde", "izq", { mascota: { id: "exportadora-flores", pose: "flores" } },
+    "Eres el asesor de la exportadora de flores.",
+    "El cartel de hoy marca el dólar en pesos. Tu clienta quiere saber si eso la ayuda."),
+  "pc26-a4-banano": puerto("noche", "der", { mascota: { id: "exportadora-flores", pose: "avion" } },
+    "Te contratan como asesor de Tropical Fruits.",
+    "Tropical Fruits vende banano a US Foods."),
+  "pc26-a5-tuberias": puerto("dia", "der", { mascota: { id: "analista", pose: "libreta" } },
+    "Te contratan para llevar las cuentas del país con el exterior.",
+    "Este año entraron dólares por exportaciones e inversión, y salieron por importaciones y deudas."),
+  "pc26-a6-imanes": puerto("manana", "izq", { mascota: { id: "inversionista", pose: "monedas" } },
+    "Eres el asesor de un inversionista que tiene ahorros.",
+    "Tu cliente puede dejar su plata en Colombia o llevarla afuera. Quiere entender qué la atrae."),
+  /* La autoridad de 180 que estaba en la figura de P1 sube a la franja. */
+  "pc26-a7-correa": puerto("tarde", "der", { mascota: { id: "autoridad-economica", pose: "carpeta" } },
+    "Te sientas en la Junta del BanRep a cuidar el dólar.",
+    "El dólar se movió fuerte esta semana. La Junta decide cuánto dejarlo moverse."),
+  "pc26-h1-quien-aprecia": puerto("noche", "izq", { mascota: { id: "viajero", pose: "cambio" } },
+    "Eres el analista que lee el tablero de la casa de cambio.",
+    "El tablero muestra el dólar de antes y el de ahora. Di quién ganó valor.",
+    { etiqueta: "El tablero cambió:", texto: "tablero" }),
+  "pc26-h2-empuja-curva": puerto("dia", "izq", { mascota: { id: "analista", pose: "lupa" } },
+    "Eres el analista que mueve la gráfica del dólar cuando llega una noticia.",
+    "La gráfica de oferta y demanda de dólares está en pantalla. Cada noticia empuja una curva.",
+    { etiqueta: "Noticia de hoy:", texto: "suceso" }),
+  /* La exportadora sube del cuerpo (120) a la franja; las tres cifras de la
+     ronda y su nota van en el mini contexto. */
+  "pc26-h3-aguja": puerto("manana", "der", { mascota: { id: "exportadora-flores", pose: "flores" } },
+    "Eres el asesor de la exportadora: dile si este año ganó.",
+    "Cambiaron el dólar y los precios aquí y allá. Lleva la aguja al cambio real.",
+    { texto: "cifras" }),
+  /* Sin mascota en la franja: las dos del cuerpo suben a 150 cada una. */
+  "pc26-h4-a-quien-sirve": puerto("tarde", "izq", { mascota: null },
+    "Eres el asesor de dos empresas: dile a cada una quién gana.",
+    "Cada noticia mueve el dólar. Una empresa exporta flores; la otra importa celulares.",
+    { texto: "noticia" }),
+  /* El inversionista sube del cuerpo (120) a la franja, con la pose de su caso. */
+  "pc26-h5-donde-ahorro": puerto("noche", "der", { mascota: { id: "inversionista", pose: "monedas" } },
+    "Eres el asesor financiero del inversionista.",
+    "Tu cliente tiene ahorros y necesita un crédito. Aquí o afuera: el dólar decide qué conviene.",
+    { texto: "caso" }),
+  "pc26-h6-correa": puerto("dia", "der", { mascota: { id: "viajero", pose: "maleta" } },
+    "Te contratan para clasificar cómo cada país maneja su moneda.",
+    "Cada país amarra su moneda de una forma: fija, suelta o a medias.",
+    { todas: "País de hoy:" }),
 };

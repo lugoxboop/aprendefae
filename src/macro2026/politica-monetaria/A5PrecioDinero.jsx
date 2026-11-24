@@ -13,7 +13,7 @@ import { useState } from "react";
 import { Boton, Deslizador, MarcoAprender, usePasos } from "../comun/ui.jsx";
 import { fmtDecimal, fmtEntero } from "../comun/modelo-da.js";
 import { CSS_PM, GraficaDinero, MONETARIA } from "./comun-pm.jsx";
-import { A5, APRENDER, MODELO_DINERO } from "./textos.js";
+import { A5, APRENDER, MODELO_DINERO, ESCENAS } from "./textos.js";
 
 export const ID = "pm26-a5-precio-dinero";
 const TEXTOS = APRENDER[ID];
@@ -68,7 +68,7 @@ export default function A5PrecioDinero({ onTerminar }) {
 
   const puede = paso === 2 ? movioY : paso === 4 ? movioM : paso === 5 ? precios : true;
   return (
-    <MarcoAprender id={ID} paso={paso} total={TEXTOS.length} texto={TEXTOS[paso]}
+    <MarcoAprender escena={ESCENAS[ID]} id={ID} paso={paso} total={TEXTOS.length} texto={TEXTOS[paso]}
       figura={<><style>{CSS_PM}</style>{figura}</>} controles={controles}
       puedeSeguir={puede} onSiguiente={siguiente} onAnterior={anterior} onTerminar={() => onTerminar?.()} />
   );

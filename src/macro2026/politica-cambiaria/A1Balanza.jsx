@@ -12,7 +12,7 @@ import { DOLAR, PESO } from "../comun/monedas.js";
 import { Deslizador, MarcoAprender, usePasos } from "../comun/ui.jsx";
 import { EscenaMascotas } from "../comun/mascotas.jsx";
 import { Balanza, CAMBIARIA, CSS_PC, fmtTc } from "./comun-pc.jsx";
-import { A1, APRENDER } from "./textos.js";
+import { A1, APRENDER, ESCENAS } from "./textos.js";
 
 export const ID = "pc26-a1-balanza";
 const TEXTOS = APRENDER[ID];
@@ -75,7 +75,7 @@ export default function A1Balanza({ onTerminar }) {
 
   const puede = paso === 0 ? tocadas.size === A1.noticias.length : paso === 2 ? tc >= A1.deprecia : paso === 3 ? tc <= A1.aprecia : true;
   return (
-    <MarcoAprender id={ID} paso={paso} total={TEXTOS.length} texto={TEXTOS[paso]}
+    <MarcoAprender escena={ESCENAS[ID]} id={ID} paso={paso} total={TEXTOS.length} texto={TEXTOS[paso]}
       figura={<><style>{CSS_PC}{CSS}</style>{figura}</>} controles={controles}
       puedeSeguir={puede} onSiguiente={siguiente} onAnterior={anterior} onTerminar={() => onTerminar?.()} />
   );

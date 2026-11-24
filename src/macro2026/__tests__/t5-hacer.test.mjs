@@ -55,6 +55,9 @@ async function montar(Componente, props = {}) {
   document.body.appendChild(el);
   const raiz = createRoot(el);
   await act(async () => { raiz.render(h(Componente, props)); });
+  /* Rediseño (escenas): las Hacer abren con la tarjeta de inicio; se pasa como el estudiante. */
+  const empezar = el.querySelector("[data-empezar]");
+  if (empezar) await act(async () => { empezar.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
   const q = (s) => el.querySelector(s);
   const clic = async (sel) => {
     await act(async () => {

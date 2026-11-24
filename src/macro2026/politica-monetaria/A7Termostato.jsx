@@ -12,7 +12,7 @@ import { BORDE, FONDO, INK, INK_2 } from "../comun/colores-da.js";
 import { Boton, Deslizador, MarcoAprender, usePasos } from "../comun/ui.jsx";
 import { fmtDecimal } from "../comun/modelo-da.js";
 import { CALIDO, CSS_PM, MONETARIA, Termostato } from "./comun-pm.jsx";
-import { A7, APRENDER, SERIE_A7 } from "./textos.js";
+import { A7, APRENDER, SERIE_A7, ESCENAS } from "./textos.js";
 
 export const ID = "pm26-a7-termostato";
 const TEXTOS = APRENDER[ID];
@@ -102,7 +102,7 @@ export default function A7Termostato({ onTerminar }) {
 
   const puede = paso === 0 ? fresca : paso === 2 ? recorridos.size >= 4 : true;
   return (
-    <MarcoAprender id={ID} paso={paso} total={TEXTOS.length} texto={TEXTOS[paso]}
+    <MarcoAprender escena={ESCENAS[ID]} id={ID} paso={paso} total={TEXTOS.length} texto={TEXTOS[paso]}
       figura={<><style>{CSS_PM}{CSS}</style>{figura}</>} controles={controles}
       puedeSeguir={puede} onSiguiente={siguiente} onAnterior={anterior} onTerminar={() => onTerminar?.()} />
   );

@@ -13,7 +13,7 @@ import { DOLAR, PESO } from "../comun/monedas.js";
 import { Boton, Deslizador, MarcoAprender, Retro, usePasos } from "../comun/ui.jsx";
 import { MascotaRol } from "../comun/mascotas.jsx";
 import { Barras, CAMBIARIA, CSS_PC, Imanes } from "./comun-pc.jsx";
-import { A6, AHORRO, APRENDER, afuera, aqui } from "./textos.js";
+import { A6, AHORRO, APRENDER, afuera, aqui, ESCENAS } from "./textos.js";
 
 export const ID = "pc26-a6-imanes";
 const TEXTOS = APRENDER[ID];
@@ -84,7 +84,7 @@ export default function A6Imanes({ onTerminar }) {
 
   const puede = paso === 1 ? movio && tAqui !== tAlla : paso === 2 ? riesgo : paso === 4 ? apuesta != null : true;
   return (
-    <MarcoAprender id={ID} paso={paso} total={TEXTOS.length} texto={TEXTOS[paso]}
+    <MarcoAprender escena={ESCENAS[ID]} id={ID} paso={paso} total={TEXTOS.length} texto={TEXTOS[paso]}
       figura={<><style>{CSS_PC}</style>{figura}</>} controles={controles}
       puedeSeguir={puede} onSiguiente={siguiente} onAnterior={anterior} onTerminar={() => onTerminar?.()} />
   );

@@ -17,7 +17,7 @@ import { Objeto } from "../comun/kit.jsx";
 import { EscenaMascotas, MascotaRol } from "../comun/mascotas.jsx";
 import { BASE, fmtEntero, modelo, produccion } from "../comun/modelo-da.js";
 import { Cascada, CSS_PM, Letrero, MONETARIA, Tablero, medidaDe } from "./comun-pm.jsx";
-import { A6, APRENDER, PALANCAS } from "./textos.js";
+import { A6, APRENDER, PALANCAS, ESCENAS } from "./textos.js";
 
 export const ID = "pm26-a6-palancas";
 const TEXTOS = APRENDER[ID];
@@ -126,7 +126,7 @@ export default function A6Palancas({ onTerminar }) {
         : paso === 5 ? tasa !== "igual"
           : paso === 6 ? impactos.size >= 3 : true;
   return (
-    <MarcoAprender id={ID} paso={paso} total={TEXTOS.length} texto={TEXTOS[paso]}
+    <MarcoAprender escena={ESCENAS[ID]} id={ID} paso={paso} total={TEXTOS.length} texto={TEXTOS[paso]}
       figura={<><style>{CSS_PM}{CSS}</style>{figura}</>}
       puedeSeguir={puede} onSiguiente={siguiente} onAnterior={anterior} onTerminar={() => onTerminar?.()} />
   );

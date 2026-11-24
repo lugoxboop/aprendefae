@@ -13,7 +13,7 @@ import { azarDeLaPagina, sortear } from "../comun/azar.js";
 import { MascotaRol } from "../comun/mascotas.jsx";
 import { Objeto } from "../comun/kit.jsx";
 import { CSS_PC, GraficaDivisas, leerCurva } from "./comun-pc.jsx";
-import { BANCO_H2, CONSIGNAS, H2, MODELO_DIVISAS, PARTIDA_H2 } from "./textos.js";
+import { BANCO_H2, CONSIGNAS, H2, MODELO_DIVISAS, PARTIDA_H2, ESCENAS } from "./textos.js";
 
 export const ID = "pc26-h2-empuja-curva";
 export const prepararH2 = (rng = Math.random) => sortear(BANCO_H2, PARTIDA_H2, rng);
@@ -67,9 +67,9 @@ export default function H2EmpujaCurva({ onTerminar, rng = null }) {
   };
 
   return (
-    <MarcoHacer id={ID} consigna={CONSIGNAS[ID]} progreso={`${n + 1} / ${sucesos.length}`}>
+    <MarcoHacer id={ID} escena={ESCENAS[ID]} mini={{ etiqueta: ESCENAS[ID].porRonda.etiqueta, texto: s.texto, datos: { "data-suceso": s.id } }} consigna={CONSIGNAS[ID]} progreso={`${n + 1} / ${sucesos.length}`}>
       <style>{CSS_PC}</style>
-      <p className="pc26-contador da26-entra" key={s.id} style={{ margin: "0 0 8px", fontSize: 16 }} data-suceso={s.id}>{s.texto}</p>
+      {/* Rediseño lote 3: el suceso de la ronda va en la franja de escena. */}
       <div data-figura data-respuesta={resp ? `${resp.curva}-${resp.direccion}` : ""}>
         <GraficaDivisas so={so} sd={sd} fantasma={res ? { so: 0, sd: 0 } : null} flecha={res ? s.tc : null}
           asas={res ? {} : { oferta: setSo, demanda: setSd }} />

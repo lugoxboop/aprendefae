@@ -14,7 +14,7 @@ import { Boton, MarcoHacer, Retro, useCronometro } from "../comun/ui.jsx";
 import { azarDeLaPagina, sortear } from "../comun/azar.js";
 import { Cascada, CSS_PM, MONETARIA } from "./comun-pm.jsx";
 import { CSS_VENTANILLA, Ventanilla } from "./A2Ventanilla.jsx";
-import { BANCO_H1, CONSIGNAS, FLECHAS, H1, MEDIDORES_H1, NOMBRE_FLECHA, ORDEN_FLECHAS, PARTIDA_H1 } from "./textos.js";
+import { BANCO_H1, CONSIGNAS, FLECHAS, H1, MEDIDORES_H1, NOMBRE_FLECHA, ORDEN_FLECHAS, PARTIDA_H1, ESCENAS } from "./textos.js";
 
 export const ID = "pm26-h1-entra-sale";
 export const prepararH1 = (rng = Math.random) => sortear(BANCO_H1, PARTIDA_H1, rng);
@@ -22,7 +22,6 @@ const siguienteFlecha = (f) => ORDEN_FLECHAS[(ORDEN_FLECHAS.indexOf(f) + 1) % OR
 const ACTIVO_DE = { "compra-dolares": "dolar", "vende-dolares": "dolar", "vende-oro": "oro", "compra-tes": "tes", "vende-tes": "tes", presta: "pagare", "paga-credito": "pagare" };
 
 const CSS = `
-.pm26-h1-op { margin: 0 0 8px; padding: 10px 12px; border-radius: 12px; border: 2px solid ${INK}; background: ${SUPERFICIE_2}; font: 600 16px/1.35 var(--planck-font-sans, system-ui, sans-serif); }
 .pm26-h1-medidores { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-top: 10px; }
 .pm26-h1-medidor { display: grid; justify-items: center; gap: 4px; padding: 6px 4px; border-radius: 12px; border: 2px solid ${BORDE}; background: ${FONDO}; text-align: center; font: 600 12px/1.2 var(--planck-font-sans, system-ui, sans-serif); }
 .pm26-h1-medidor[data-estado="mal"] { border-color: #E76F51; }
@@ -64,9 +63,9 @@ export default function H1EntraSale({ onTerminar, rng = null }) {
   const errados = revelado ? MEDIDORES_H1.filter((m) => puestas[m.id] !== op.correctas[m.id]) : [];
 
   return (
-    <MarcoHacer id={ID} consigna={CONSIGNAS[ID]} progreso={`${n + 1} / ${ops.length}`}>
+    <MarcoHacer id={ID} escena={ESCENAS[ID]} mini={{ etiqueta: ESCENAS[ID].porRonda.etiqueta, texto: op.texto, datos: { "data-operacion": op.id } }} consigna={CONSIGNAS[ID]} progreso={`${n + 1} / ${ops.length}`}>
       <style>{CSS_PM}{CSS_VENTANILLA}{CSS}</style>
-      <p className="pm26-h1-op da26-entra" key={op.id} data-operacion={op.id}>{op.texto}</p>
+      {/* Rediseño lote 3: la operación de la ronda va en la franja de escena. */}
       <div data-figura data-revelado={revelado ? "1" : "0"}>
         {op.tipo === "cascada"
           ? <div data-mini-cascada><Cascada encaje={revelado ? 30 : 10} visibles={7} mini etiqueta={revelado ? "La cascada se acorta" : "La cascada"} /></div>
