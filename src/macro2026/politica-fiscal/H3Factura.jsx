@@ -19,8 +19,7 @@ import { azarDeLaPagina, sortear } from "../comun/azar.js";
 import { tonoTributo } from "../comun/tributos.js";
 import { IconoDirecto, IconoIndirecto } from "../comun/iconos-pf.jsx";
 import { Objeto } from "../comun/kit.jsx";
-import { MascotaRol } from "../comun/mascotas.jsx";
-import { CONSIGNAS, DOCUMENTOS_H3, FICHAS_H3, H3, PARTIDA_H3, RETRO_H3 } from "./textos.js";
+import { CONSIGNAS, DOCUMENTOS_H3, FICHAS_H3, H3, PARTIDA_H3, RETRO_H3, ESCENAS } from "./textos.js";
 
 export const ID = "pf26-h3-factura";
 export const prepararH3 = (rng = Math.random) => sortear(DOCUMENTOS_H3, PARTIDA_H3, rng);
@@ -28,8 +27,6 @@ const ficha = (id) => FICHAS_H3.find((f) => f.id === id);
 const esTributo = (clave) => clave !== "no";
 
 const CSS = `
-.pf26-h3-pregunta { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-.pf26-h3-pregunta p { margin: 0; font: 600 15px/1.35 var(--planck-font-sans, system-ui, sans-serif); }
 .pf26-h3-doc { display: grid; grid-template-columns: minmax(0, 1fr) 18px; gap: 8px; }
 .pf26-h3-papel { position: relative; padding: 10px 8px 8px; border-radius: 6px; background: #f4f1ea; color: #1c2230; box-shadow: 0 2px 0 rgba(0,0,0,.25);
   background-image: repeating-linear-gradient(to bottom, transparent 0 47px, rgba(28,34,48,.08) 47px 48px); }
@@ -111,15 +108,9 @@ export default function H3Factura({ onTerminar, rng = null }) {
   };
 
   return (
-    <MarcoHacer id={ID} consigna={CONSIGNAS[ID]} progreso={`${n + 1} / ${docs.length}`}>
+    <MarcoHacer id={ID} escena={ESCENAS[ID]} mini={{ etiqueta: ESCENAS[ID].porRonda.etiqueta, texto: doc.pregunta, datos: { "data-pregunta": doc.id } }} consigna={CONSIGNAS[ID]} progreso={`${n + 1} / ${docs.length}`}>
       <style>{CSS}</style>
-      <div className="pf26-h3-pregunta da26-entra" key={`q-${doc.id}`} data-pregunta>
-        <MascotaRol id="profesor" pose="pregunta" alto={120} />
-        <div>
-          <span className="da26-rotulo">{H3.profesor}</span>
-          <p>{doc.pregunta}</p>
-        </div>
-      </div>
+      {/* Rediseño lote 2: el profesor y su pregunta pasaron a la franja de escena (mini contexto). */}
       <p className="pf26-h3-estado" aria-hidden="true">{H3.alEstado}</p>
       <div className="pf26-h3-doc da26-entra" key={doc.id} data-figura data-documento={doc.id}>
         <div className="pf26-h3-papel">

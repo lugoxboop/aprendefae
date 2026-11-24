@@ -16,7 +16,7 @@ import { Boton, MarcoAprender, usePasos } from "../comun/ui.jsx";
 import { barajar, azarDeLaPagina } from "../comun/azar.js";
 import { IconoBilletera, IconoCamisa, IconoDirecto, IconoIndirecto, IconoMoneda } from "../comun/iconos-pf.jsx";
 import { Objeto } from "../comun/kit.jsx";
-import { APRENDER, A3 } from "./textos.js";
+import { APRENDER, A3, ESCENAS } from "./textos.js";
 
 export const ID = "pf26-a3-cajeros";
 const TEXTOS = APRENDER[ID];
@@ -184,7 +184,7 @@ export default function A3Cajeros({ onTerminar }) {
   }
 
   return (
-    <MarcoAprender
+    <MarcoAprender escena={ESCENAS[ID]}
       id={ID}
       paso={paso}
       total={TEXTOS.length}

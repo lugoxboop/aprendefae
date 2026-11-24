@@ -16,7 +16,7 @@ import { BASE, modelo, produccion, multiplicador, fmtEntero, fmtDecimal } from "
 import { Deslizador, MarcoAprender, usePasos, useAnimado } from "../comun/ui.jsx";
 import { RAMAS, ORDEN_RAMAS, colorRama } from "../comun/ramas.js";
 import { IconoRama, IconoSector } from "../comun/iconos-pe.jsx";
-import { APRENDER, HERRAMIENTAS, SECTORES, A4 } from "./textos.js";
+import { APRENDER, HERRAMIENTAS, SECTORES, A4, ESCENAS } from "./textos.js";
 
 export const ID = "pe26-a4-perillas";
 const TEXTOS = APRENDER[ID];
@@ -165,7 +165,7 @@ export default function A4Perillas({ onTerminar }) {
   }
 
   return (
-    <MarcoAprender
+    <MarcoAprender escena={ESCENAS[ID]}
       id={ID}
       paso={paso}
       total={TEXTOS.length}

@@ -14,7 +14,7 @@ import { barajar, azarDeLaPagina } from "../comun/azar.js";
 import { useArrastre } from "../comun/arrastre.js";
 import Escalera, { ORDEN_PELDANOS, nombrePeldano } from "../comun/Escalera.jsx";
 import { IconoRama } from "../comun/iconos-pe.jsx";
-import { APRENDER, A5_EJEMPLO, A5_P9 } from "./textos.js";
+import { APRENDER, A5_EJEMPLO, A5_P9, ESCENAS } from "./textos.js";
 
 export const ID = "pe26-a5-escalera";
 const TEXTOS = APRENDER[ID];
@@ -90,7 +90,7 @@ export default function A5Escalera({ onTerminar }) {
   }
 
   return (
-    <MarcoAprender
+    <MarcoAprender escena={ESCENAS[ID]}
       id={ID}
       paso={paso}
       total={TEXTOS.length}

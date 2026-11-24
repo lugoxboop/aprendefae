@@ -22,7 +22,7 @@ import { Boton, MarcoHacer, Retro, useCronometro, movimientoReducido } from "../
 import { barajar, sortear, azarDeLaPagina } from "../comun/azar.js";
 import { useArrastre } from "../comun/arrastre.js";
 import Escalera, { ORDEN_PELDANOS } from "../comun/Escalera.jsx";
-import { BANCO_H2, CONSIGNAS, ENUNCIADOS, H2, PARTIDA_H2 } from "./textos.js";
+import { BANCO_H2, CONSIGNAS, ENUNCIADOS, H2, PARTIDA_H2, ESCENAS } from "./textos.js";
 
 export const ID = "pe26-h2-grupo-logico";
 const SUBEN = ORDEN_PELDANOS.slice(1);
@@ -124,7 +124,7 @@ export default function H2GrupoLogico({ onTerminar, rng = null }) {
   const personaje = completo ? "meta" : ORDEN_PELDANOS[k];
 
   return (
-    <MarcoHacer id={ID} consigna={CONSIGNAS[ID]} progreso={`${g + 1} / ${grupos.length}`}>
+    <MarcoHacer id={ID} escena={ESCENAS[ID]} mini={{ etiqueta: ESCENAS[ID].porRonda.etiqueta, texto: grupos[g]?.nombre, datos: { "data-grupo-escena": grupos[g]?.id } }} consigna={CONSIGNAS[ID]} progreso={`${g + 1} / ${grupos.length}`}>
       <style>{CSS}</style>
       <div data-figura ref={contenedor} data-grupo={grupo.id}>
         <div className="pe26-h2-cab"><span>Grupo {g + 1}: {grupo.nombre}</span></div>

@@ -55,6 +55,9 @@ async function montar(Componente, props = {}) {
   document.body.appendChild(el);
   const raiz = createRoot(el);
   await act(async () => { raiz.render(h(Componente, props)); });
+  /* Rediseño (escenas): las Hacer abren con la tarjeta de inicio; se pasa como el estudiante. */
+  const empezar = el.querySelector("[data-empezar]");
+  if (empezar) await act(async () => { empezar.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
   const q = (s) => el.querySelector(s);
   const clic = async (sel) => {
     await act(async () => {
@@ -204,8 +207,9 @@ test("H3: la línea abre cinco fichas debajo; el error da la retro del par y dej
   let lineas = 0;
   for (let d = 0; d < 3; d += 1) {
     const doc = T.DOCUMENTOS_H3.find((x) => x.id === m.q("[data-documento]").dataset.documento);
-    assert.ok(m.q("[data-pregunta] [data-mascota-rol='profesor']"), "el hueco del profesor");
-    assert.ok(m.el.textContent.includes(doc.pregunta));
+    /* Rediseño lote 2: el profesor y su pregunta van en la escena compacta. */
+    assert.ok(m.q("[data-escenario] [data-mascota-rol='profesor']"), "el profesor en la escena");
+    assert.equal(m.q("[data-pregunta]").textContent, `${T.H3.profesor}${doc.pregunta}`);
     for (const [i, l] of doc.lineas.entries()) {
       lineas += 1;
       await m.clic(`[data-linea="${l.id}"]`);

@@ -12,7 +12,7 @@ import { Carrito } from "../comun/carrito.jsx";
 import { Objeto } from "../comun/kit.jsx";
 import { colorRama } from "../comun/ramas.js";
 import { IconoTrazo } from "../comun/iconos-pf.jsx";
-import { APRENDER, A1, CARAS_A1 } from "./textos.js";
+import { APRENDER, A1, CARAS_A1, ESCENAS } from "./textos.js";
 
 export const ID = "pf26-a1-lupa";
 const TEXTOS = APRENDER[ID];
@@ -122,7 +122,7 @@ export default function A1Lupa({ onTerminar }) {
   );
 
   return (
-    <MarcoAprender
+    <MarcoAprender escena={ESCENAS[ID]}
       id={ID}
       paso={paso}
       total={TEXTOS.length}

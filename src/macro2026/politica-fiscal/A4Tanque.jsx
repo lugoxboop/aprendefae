@@ -17,7 +17,7 @@ import { Deslizador, MarcoAprender, usePasos } from "../comun/ui.jsx";
 import { colorRama } from "../comun/ramas.js";
 import { IconoTrazo } from "../comun/iconos-pf.jsx";
 import { Objeto } from "../comun/kit.jsx";
-import { APRENDER, A4 } from "./textos.js";
+import { APRENDER, A4, ESCENAS } from "./textos.js";
 
 export const ID = "pf26-a4-tanque";
 const TEXTOS = APRENDER[ID];
@@ -193,7 +193,7 @@ export default function A4Tanque({ onTerminar }) {
   }
 
   return (
-    <MarcoAprender
+    <MarcoAprender escena={ESCENAS[ID]}
       id={ID}
       paso={paso}
       total={TEXTOS.length}

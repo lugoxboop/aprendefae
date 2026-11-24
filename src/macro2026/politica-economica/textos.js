@@ -26,7 +26,8 @@ export const SUBTEMAS = {
 /* ─── Aprender: el texto exacto de cada pantalla (§2) ─── */
 export const APRENDER = {
   "pe26-a1-mecanico": [
-    "Se te vara el carro. ¿Lo arreglas tú o llamas al mecánico?",
+    /* «Se te vara el carro.» pasó a la franja de escena (ESCENAS, rediseño lote 2). */
+    "¿Lo arreglas tú o llamas al mecánico?",
     "Arreglarlo tú es autorregulación. Llamar al mecánico es intervención externa.",
     "La economía igual: a veces el mercado se ajusta solo; a veces interviene el Estado.",
     "Cuando el mercado falla, el Estado interviene. Pero el Estado también puede fallar.",
@@ -64,7 +65,7 @@ export const APRENDER = {
 
 /* §4: conteo de palabras que declara la especificación. */
 export const CONTEO_APRENDER = {
-  "pe26-a1-mecanico": [12, 10, 15, 13],
+  "pe26-a1-mecanico": [7, 10, 15, 13],
   "pe26-a2-fiebre": [13, 10, 10, 10],
   "pe26-a3-problema-resuelto": [12, 10, 13],
   "pe26-a4-perillas": [13, 10, 10, 11, 10],
@@ -457,3 +458,52 @@ export const FINALES_H5 = {
 export const CIERRE_H5 = "Ningún remedio sale gratis. Por eso las políticas se coordinan.";
 export const OTRO_H5 = "Probar otro tratamiento";
 export const SUBTEMAS_CIERRE_H5 = ["pe-da-ramas", "pe-objetivos"];
+
+/* ─── Escenas (rediseño con la lista de 5, spec de Gen 24-nov §2, T2) ───
+ * La franja de arriba de cada pieza: tema despacho, hora, lado, mascota,
+ * TU PAPEL (≤ 15 palabras) y contexto (≤ 30). En las Hacer, `porRonda` da el
+ * mini contexto de la escena compacta (≤ 12): `todas` = el mismo en cada
+ * ronda; `etiqueta` + `texto` = la etiqueta fija y el campo de la ronda.
+ * escenas.test.mjs lo mide. Solo presentación: no toca ids ni puntajes. */
+const despacho = (hora, lado, mascota, rol, contexto, porRonda = null) => ({ tema: "despacho", hora, lado, ...mascota, rol, contexto, porRonda });
+/* H5: el Banco de la República lleva el timón (fiebre 1, la tasa) y el Gobierno el grifo (fiebre 2, el gasto). */
+export const POSES_H5 = { tasa: "timon", gasto: "grifo" };
+export const ESCENAS = {
+  "pe26-a1-mecanico": despacho("dia", "izq", { mascota: { id: "profesor", pose: "pregunta" } },
+    "Imagina que eres el mecánico de la economía de un país.",
+    "Se te vara el carro."),
+  "pe26-a2-fiebre": despacho("manana", "der", { mascota: { id: "analista", pose: "lupa" } },
+    "Te contratan como médico de la economía: detecta la fiebre.",
+    "Hogares, empresas, Estado y exterior se pasan dinero todo el día. A veces el circuito se enferma."),
+  "pe26-a3-problema-resuelto": despacho("tarde", "izq", { mascota: { id: "autoridad-economica", pose: "carpeta" } },
+    "Eres el asesor del DNP que redacta los objetivos del plan.",
+    "El país tiene un problema: los precios suben demasiado. El plan debe decir a dónde quiere llegar."),
+  "pe26-a4-perillas": despacho("noche", "der", { mascota: { id: "autoridad-economica", pose: "timon" } },
+    "Te sientas frente al tablero de control del Estado.",
+    "La economía necesita un ajuste. El Estado tiene cuatro perillas y cada una la maneja un equipo distinto."),
+  /* La escalera conserva su panda (Escalera.jsx, personaje en el peldaño). */
+  "pe26-a5-escalera": despacho("dia", "der", { mascota: { id: "profesor", pose: "pizarra" } },
+    "Eres el asesor que arma, paso a paso, una política para el Gobierno.",
+    "El Gobierno quiere bajar la inflación. Antes de actuar, el plan tiene que subir seis peldaños."),
+  "pe26-h1-seis-cajones": despacho("manana", "izq", { mascota: { id: "analista", pose: "libreta" } },
+    "Te contratan en el DNP para ordenar el plan contra la inflación.",
+    "Te llegaron las notas sueltas del plan. Cada una va en un peldaño de la escalera.",
+    { todas: "Nota suelta del plan:" }),
+  /* La analista y no la autoridad: el panda ya sube por la escalera de la pieza. */
+  "pe26-h2-grupo-logico": despacho("tarde", "der", { mascota: { id: "analista", pose: "libreta" } },
+    "Eres el asesor que completa la política antes de presentarla al ministro.",
+    "A la escalera le faltan tarjetas. El ministro la revisa en una hora.",
+    { etiqueta: "Tema de la reunión:", texto: "grupo" }),
+  "pe26-h3-cables": despacho("noche", "izq", { mascota: { id: "profesor", pose: "libro" } },
+    "Eres el técnico que conecta cada herramienta con el equipo que la usa.",
+    "El Estado tiene muchas herramientas, pero cada una la maneja una sola rama de política.",
+    { todas: "Herramienta sin conectar:" }),
+  "pe26-h4-expediente": despacho("dia", "izq", { mascota: { id: "analista", pose: "lupa" } },
+    "Te contratan como auditor de políticas del Gobierno.",
+    "Llegó el expediente de una política. Alguien coló un peldaño que no pertenece a esta escalera.",
+    { todas: "Expediente nuevo:" }),
+  "pe26-h5-dos-fiebres": despacho("tarde", "izq", { mascota: { id: "autoridad-economica", pose: POSES_H5.tasa } },
+    "Primero eres el Banco de la República; después, el Gobierno.",
+    ENTRADA_H5,
+    { texto: "lectura" }),
+};

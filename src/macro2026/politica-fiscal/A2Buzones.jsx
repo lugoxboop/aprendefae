@@ -15,7 +15,7 @@ import { MarcoAprender, usePasos } from "../comun/ui.jsx";
 import { useArrastre } from "../comun/arrastre.js";
 import { ORDEN_TRIBUTOS, TRIBUTOS, tonoTributo } from "../comun/tributos.js";
 import { IconoBuzon, IconoMoneda } from "../comun/iconos-pf.jsx";
-import { APRENDER, A2 } from "./textos.js";
+import { APRENDER, A2, ESCENAS } from "./textos.js";
 
 export const ID = "pf26-a2-buzones";
 const TEXTOS = APRENDER[ID];
@@ -113,7 +113,7 @@ export default function A2Buzones({ onTerminar }) {
   );
 
   return (
-    <MarcoAprender
+    <MarcoAprender escena={ESCENAS[ID]}
       id={ID}
       paso={paso}
       total={TEXTOS.length}

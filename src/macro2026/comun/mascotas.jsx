@@ -30,13 +30,13 @@ export const MASCOTAS = {
     poses: { mercado: [400, 365], alcancia: [309, 366], recibo: [314, 395] } },
   inversionista: { nombre: "Inversionista", especie: "huron", accesorio: "corbata", pose: "ladrillo",
     poses: { tableta: [316, 448], ladrillo: [445, 447], monedas: [379, 451] } },
-  "exportadora-flores": { nombre: "Exportadora de flores", especie: "hamster", accesorio: "gorra", pose: "flores", archivo: "exportadora",
+  "exportadora-flores": { nombre: "Exportadora de flores", corto: "Exportadora", especie: "hamster", accesorio: "gorra", pose: "flores", archivo: "exportadora",
     poses: { flores: [246, 425], avion: [432, 424], "recibe-billete": [227, 425] } },
-  "importadora-celulares": { nombre: "Importadora de celulares", especie: "conejo", accesorio: "casco", pose: "celulares", archivo: "importadora",
+  "importadora-celulares": { nombre: "Importadora de celulares", corto: "Importadora", especie: "conejo", accesorio: "casco", pose: "celulares", archivo: "importadora",
     poses: { celulares: [270, 482], contenedor: [342, 481], "paga-billete": [336, 483] } },
   viajero: { nombre: "Viajero", especie: "perro", accesorio: "mochila", pose: "maleta",
     poses: { maleta: [293, 438], cambio: [388, 436], avion: [377, 467] } },
-  "deudor-externo": { nombre: "Quien paga deuda externa", especie: "zorro", accesorio: "corbatin", pose: "sobre", archivo: "deudor",
+  "deudor-externo": { nombre: "Quien paga deuda externa", corto: "Deudor externo", especie: "zorro", accesorio: "corbatin", pose: "sobre", archivo: "deudor",
     poses: { sobre: [415, 480], monedas: [364, 502], balanza: [415, 502] } },
 };
 
@@ -64,9 +64,11 @@ const ROTULO = { margin: 0, font: "600 12px/16px var(--planck-font-sans, system-
 
 /**
  * La mascota de un rol, de cuerpo entero, con su rol escrito debajo.
- * `alto` nunca baja de 120 px aunque se pida menos.
+ * `alto` nunca baja de 120 px aunque se pida menos. `corto`: el rótulo en su
+ * forma corta (si la mascota la tiene), para la escena compacta, donde un
+ * nombre de dos líneas la haría pasar de 150 px.
  */
-export function MascotaRol({ id, pose, alto = 140, rotulo = true, perezosa = false, decorativa = false, style = null, ...resto }) {
+export function MascotaRol({ id, pose, alto = 140, rotulo = true, corto = false, perezosa = false, decorativa = false, style = null, ...resto }) {
   const m = MASCOTAS[id];
   const { src, tam, pose: p } = rutaMascota(id, pose);
   const h = Math.max(ALTO_MINIMO, alto);
@@ -88,7 +90,7 @@ export function MascotaRol({ id, pose, alto = 140, rotulo = true, perezosa = fal
         draggable={false}
         style={{ display: "block", width: w, height: h, objectFit: "contain" }}
       />
-      {rotulo && <figcaption style={ROTULO}>{m.nombre}</figcaption>}
+      {rotulo && <figcaption style={ROTULO}>{corto ? m.corto ?? m.nombre : m.nombre}</figcaption>}
     </figure>
   );
 }

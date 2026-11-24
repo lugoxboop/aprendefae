@@ -13,7 +13,7 @@ import { CORAL } from "../comun/colores-da.js";
 import { Boton, MarcoHacer, Retro, movimientoReducido, useCronometro } from "../comun/ui.jsx";
 import { azarDeLaPagina, barajar, sortear } from "../comun/azar.js";
 import { Objeto } from "../comun/kit.jsx";
-import { BANCO_H6, CONSIGNAS, H6, PARTIDA_H6 } from "./textos.js";
+import { BANCO_H6, CONSIGNAS, H6, PARTIDA_H6, ESCENAS } from "./textos.js";
 
 export const ID = "pf26-h6-memo";
 export function prepararH6(rng = Math.random) {
@@ -96,7 +96,7 @@ export default function H6Memo({ onTerminar, rng = null }) {
   };
 
   return (
-    <MarcoHacer id={ID} consigna={CONSIGNAS[ID]} progreso={`${n + 1} / ${memos.length}`}>
+    <MarcoHacer id={ID} escena={ESCENAS[ID]} mini={{ texto: ESCENAS[ID].porRonda.todas }} consigna={CONSIGNAS[ID]} progreso={`${n + 1} / ${memos.length}`}>
       <style>{CSS}</style>
       <div className="pf26-h6-memo da26-entra" key={memo.id} data-figura data-memo={memo.id}>
         <div className="pf26-h6-membrete">
