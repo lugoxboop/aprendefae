@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   House, Plus, ListChecks, Clock, Users, CircleCheck, CircleAlert, Pencil, Undo2, Download, LogOut,
-  School, Megaphone, Camera, Sparkles, Footprints, Phone, Database, Search, X, Check, ChevronRight,
+  CalendarDays, School, Megaphone, Camera, Sparkles, Footprints, Phone, Database, Search, X, Check, ChevronRight,
   Inbox, RotateCcw, Hourglass, Minus, Send, FileSpreadsheet, MessageSquareText, CheckCheck, ArrowRight,
 } from "lucide-react";
 import {
@@ -427,9 +427,12 @@ function Registrar({ yo, turnos, corrigiendo, alEnviar, alCerrar }) {
               {fechas.map(([v, t]) => (
                 <button key={v} type="button" className={`eh-chip${f.fecha === v ? " es-activo" : ""}`} onClick={() => pon("fecha", v)}>{t}</button>
               ))}
-              <label className="eh-chip eh-chip--fecha">
-                <span className="eh-oculto">Otra fecha</span>
-                <input type="date" value={f.fecha} min="2026-11-01" max={HOY} onChange={(e) => e.target.value && pon("fecha", e.target.value)} />
+              <label className={`eh-chip eh-chip--fecha${fechas.some(([v]) => v === f.fecha) ? "" : " es-activo"}`}>
+                <CalendarDays size={15} aria-hidden="true" />
+                {fechas.some(([v]) => v === f.fecha) ? "Otra fecha" : fechaLegible(f.fecha)}
+                <input type="date" value={f.fecha} min="2026-11-01" max={HOY} aria-label="Otra fecha"
+                  onClick={(e) => { try { e.currentTarget.showPicker(); } catch { /* el navegador abre su selector */ } }}
+                  onChange={(e) => e.target.value && pon("fecha", e.target.value)} />
               </label>
             </div>
             <div className="eh-horas">
@@ -466,7 +469,8 @@ function Registrar({ yo, turnos, corrigiendo, alEnviar, alCerrar }) {
             <label className="eh-buscador">
               <Search size={17} aria-hidden="true" />
               <span className="eh-oculto">Buscar actividad</span>
-              <input type="search" placeholder="Busca una actividad" value={busca} onChange={(e) => setBusca(e.target.value)} />
+              <input type="search" placeholder="Busca una actividad" value={busca} onChange={(e) => setBusca(e.target.value)}
+                onFocus={(e) => e.target.closest(".eh-buscador").scrollIntoView({ block: "start" })} />
             </label>
             {encontradas ? (
               <div className="eh-actividades">
@@ -592,7 +596,7 @@ function OpcionActividad({ a, f, pon }) {
 
 /* ════════════════ Coordinadora: bandeja ════════════════ */
 
-function Bandeja({ yo, turnos, alDecidir }) {
+function Bandeja({ yo, turnos, alDecidir, alMarcar }) {
   const [alcance, setAlcance] = useState("mios");
   const [marcados, setMarcados] = useState([]);
   const [abierto, setAbierto] = useState(null); // { id, modo: 'ajustar' | 'devolver' }
@@ -608,6 +612,7 @@ function Bandeja({ yo, turnos, alDecidir }) {
   };
 
   return (
+    <>
     <div className="eh-pagina">
       <header className="eh-saludo">
         <p className="eh-saludo__mes">Bandeja de revisión</p>
@@ -628,7 +633,7 @@ function Bandeja({ yo, turnos, alDecidir }) {
         </div>
         {pendientes.length > 0 && (
           <label className="eh-marcar-todo">
-            <input type="checkbox" checked={todosMarcados} onChange={() => setMarcados(todosMarcados ? [] : pendientes.map((x) => x.id))} />
+            <input type="checkbox" checked={todosMarcados} onChange={() => alMarcar() || setMarcados(todosMarcados ? [] : pendientes.map((x) => x.id))} />
             Marcar todos
           </label>
         )}
@@ -644,14 +649,15 @@ function Bandeja({ yo, turnos, alDecidir }) {
           return (
             <article key={x.id} className={`eh-revision${marcado ? " es-marcado" : ""}`} style={{ "--g": g.color }}>
               <label className="eh-revision__check">
-                <input type="checkbox" checked={marcado} onChange={() => setMarcados(marcado ? marcados.filter((m) => m !== x.id) : [...marcados, x.id])} />
+                <input type="checkbox" checked={marcado} onChange={() => alMarcar() || setMarcados(marcado ? marcados.filter((m) => m !== x.id) : [...marcados, x.id])} />
                 <span className="eh-oculto">Marcar turno de {p.nombre}</span>
               </label>
               <div className="eh-revision__cab">
                 <Avatar persona={p} tam={40} />
                 <div>
                   <b>{p.nombre}</b>
-                  <span>{fechaLegible(x.fecha)} · {hora12(x.inicio)} – {hora12(x.fin)}</span>
+                  <span>{fechaLegible(x.fecha)}</span>
+                  <span>{hora12(x.inicio)} – {hora12(x.fin)}</span>
                 </div>
                 <span className="eh-revision__horas">{formatoHoras(horasDeclaradas(x))}</span>
               </div>
@@ -690,13 +696,15 @@ function Bandeja({ yo, turnos, alDecidir }) {
         )}
       </div>
 
-      {marcados.length > 0 && (
-        <div className="eh-flotante">
-          <span>{marcados.length} marcados</span>
-          <button type="button" className="eh-btn" onClick={aprobarMarcados}><CheckCheck size={17} aria-hidden="true" /> Aprobar {marcados.length}</button>
-        </div>
-      )}
     </div>
+    {/* Fuera de .eh-pagina: su animación de entrada crea un marco que rompe el «fixed». */}
+    {marcados.length > 0 && (
+      <div className="eh-flotante">
+        <span>{marcados.length} marcados</span>
+        <button type="button" className="eh-btn" onClick={aprobarMarcados}><CheckCheck size={17} aria-hidden="true" /> Aprobar {marcados.length}</button>
+      </div>
+    )}
+    </>
   );
 }
 
@@ -903,7 +911,7 @@ export default function App() {
         </div>
         {vista === "inicio" && !esJefa && <InicioEmbajador yo={yo} turnos={turnos} irARegistrar={() => abrirRegistro({})} irATurnos={() => setVista("turnos")} alCorregir={abrirRegistro} />}
         {vista === "turnos" && !esJefa && <MisTurnos yo={yo} turnos={turnos} alCorregir={abrirRegistro} />}
-        {vista === "bandeja" && esJefa && <Bandeja yo={yo} turnos={turnos} alDecidir={decidir} />}
+        {vista === "bandeja" && esJefa && <Bandeja yo={yo} turnos={turnos} alDecidir={decidir} alMarcar={() => setAviso(null)} />}
         {vista === "equipo" && esJefa && <Equipo turnos={turnos} />}
       </div>
 
