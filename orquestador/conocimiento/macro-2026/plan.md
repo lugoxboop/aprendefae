@@ -51,3 +51,9 @@
 - [x] T4 Política monetaria · diseño (13 piezas) → `disenos/t4-politica-monetaria.md`
 - [x] T5 Política cambiaria · diseño (13 piezas) → `disenos/t5-politica-cambiaria.md`
 - 2026-11-22 18:39 — Mateo: **publicar por partes**, apenas algo esté listo, y avisarle para revisar. El primer lote publicado (los Aprender de T1) sale junto con el retiro de lo viejo.
+
+### Repaso Diario de Macro 2026 (orden de Mateo, 24-nov)
+- [x] Diseño «la ronda del economista» (14 plantillas, datos que cambian) → `disenos/repaso-diario.md`
+- [x] Construcción en vista previa (`#/macro-2026/repaso`, sin servidor) · `src/macro2026/repaso/`
+- [x] Video a 320 y 375 px para Mateo
+- [ ] Visto bueno de Mateo → publicar (pasos al final del diseño; migración en `supabase/macro2026-pendientes/`)
