@@ -8,7 +8,7 @@ import { useState } from "react";
 import { COMPONENTES, INK, INK_2, BORDE, FONDO, SUPERFICIE_2 } from "../comun/colores-da.js";
 import { BASE, ecos, fmtCorto, fmtDecimal, fmtEco, fmtEntero, fmtLimpio, modelo, multiplicador, pendiente } from "../comun/modelo-da.js";
 import { Boton, Deslizador, MarcoAprender, Retro, useAncho, usePasos } from "../comun/ui.jsx";
-import { APRENDER, RETRO_A6_P1 } from "./textos.js";
+import { APRENDER, ESCENAS, RETRO_A6_P1 } from "./textos.js";
 
 export const ID = "da26-a6-eco-multiplicador";
 const TX = APRENDER[ID];
@@ -156,7 +156,7 @@ export default function A6EcoMultiplicador({ onTerminar }) {
   }
 
   return (
-    <MarcoAprender
+    <MarcoAprender escena={ESCENAS[ID]}
       id={ID} paso={paso} total={6} texto={TX[paso]} figura={figura} controles={controles}
       puedeSeguir={puede} onSiguiente={siguiente} onAnterior={anterior} onTerminar={onTerminar}
     />

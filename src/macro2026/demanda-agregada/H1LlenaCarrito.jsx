@@ -15,7 +15,7 @@ import { COMPONENTES, ORDEN_COMPONENTES, CORAL, INK, FONDO } from "../comun/colo
 import { Carrito, IconoMano } from "../comun/carrito.jsx";
 import { MarcoHacer, Retro, useCronometro } from "../comun/ui.jsx";
 import { sortear, azarDeLaPagina } from "../comun/azar.js";
-import { BANCO_H1, CONSIGNAS, PARTIDA_H1 } from "./textos.js";
+import { BANCO_H1, CONSIGNAS, ESCENAS, PARTIDA_H1 } from "./textos.js";
 
 export const ID = "da26-h1-llena-carrito";
 const UNIDAD = 30;
@@ -144,7 +144,7 @@ export default function H1LlenaCarrito({ onTerminar, rng = null }) {
     : { transform: "translate(0, 0)" };
 
   return (
-    <MarcoHacer id={ID} consigna={CONSIGNAS[ID]} progreso={`${Math.min(n + 1, fichas.length)} / ${fichas.length}`}>
+    <MarcoHacer id={ID} consigna={CONSIGNAS[ID]} escena={ESCENAS[ID]} mini={{ texto: ESCENAS[ID].porRonda.todas }} progreso={`${Math.min(n + 1, fichas.length)} / ${fichas.length}`}>
       <style>{CSS}</style>
       <div data-figura>
         {ficha && (

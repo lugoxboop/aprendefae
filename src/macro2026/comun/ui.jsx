@@ -17,6 +17,7 @@
  */
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { BORDE, CORAL, FONDO, GRIS, INK, INK_2, SUPERFICIE, SUPERFICIE_2, TINTA_SOBRE_COLOR } from "./colores-da.js";
+import { CSS_ESCENA, Escenario } from "./Escenario.jsx";
 
 export const CURVA = "cubic-bezier(.3,.9,.4,1)";
 export const DUR = 280;
@@ -55,6 +56,7 @@ export const CSS_DA = `
 .da26-marca-mal, [data-estado="mal"].da26-marcable { border-color: ${CORAL} !important; }
 .da26-marcable[data-estado="bien"] { border-color: ${INK} !important; }
 .da26-solo-lector { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+${CSS_ESCENA}
 
 /* Deslizador nativo con estilo (guía «slider»). */
 .da26-desl { position: relative; }
@@ -243,10 +245,17 @@ export function Retro({ estado = "info", children, ...resto }) {
  * Una pantalla a la vez: los puntos de avance, la figura (data-figura, arriba:
  * B1), el texto de lectura (data-texto-pantalla), los controles y «Siguiente».
  */
-export function MarcoAprender({ id, paso, total, texto, figura, controles = null, puedeSeguir = true, onSiguiente, onAnterior, onTerminar, pie = null }) {
+/**
+ * `escena` (rediseño, lista de 5): los datos de <Escenario> de la pieza. Se
+ * pinta completa en P1, arriba de todo; P2 en adelante va sin escena salvo
+ * que la pieza pase `escenaPaso` (compacta, cuando cambia la situación).
+ */
+export function MarcoAprender({ id, paso, total, texto, figura, controles = null, puedeSeguir = true, onSiguiente, onAnterior, onTerminar, pie = null, escena = null, escenaPaso = null }) {
   const ultima = paso === total - 1;
   return (
     <div className="da26-tarjeta" data-pieza={id} data-pantalla={paso + 1}>
+      {escena && paso === 0 && <Escenario {...escena} compacto={false} />}
+      {escena && paso > 0 && escenaPaso && <Escenario {...escena} {...escenaPaso} compacto />}
       <div className="da26-cabeza">
         <div className="da26-puntos" aria-hidden="true">
           {Array.from({ length: total }, (_, k) => (
@@ -278,9 +287,29 @@ export function usePasos(total) {
 
 /* ─── El marco de una Hacer ─────────────────────────────────────────────── */
 
-export function MarcoHacer({ id, consigna, progreso = null, children }) {
+/**
+ * `escena` (rediseño, lista de 5): con ella, la Hacer abre con una tarjeta de
+ * inicio (escena completa: mascota de 180 px, tu papel y el contexto, y la
+ * consigna) y cada ronda lleva la escena compacta con su mini contexto
+ * (`mini` = { texto, etiqueta?, datos? }). Sin `escena`, como antes.
+ */
+export function MarcoHacer({ id, consigna, progreso = null, children, escena = null, mini = null }) {
+  const [empezado, setEmpezado] = useState(false);
+  if (escena && !empezado) {
+    return (
+      <div className="da26-tarjeta" data-pieza={id} data-inicio-hacer>
+        <Escenario {...escena} compacto={false} />
+        <h2 className="da26-consigna" data-consigna>{consigna}</h2>
+        <div className="da26-nav">
+          <span />
+          <Boton primario onClick={() => setEmpezado(true)} data-empezar>Empezar</Boton>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="da26-tarjeta" data-pieza={id}>
+      {escena && <Escenario {...escena} compacto mini={mini?.texto ?? null} etiqueta={mini?.etiqueta ?? null} datos={mini?.datos ?? null} />}
       <div className="da26-cabeza">
         <h2 className="da26-consigna" data-consigna style={{ margin: 0 }}>{consigna}</h2>
         {progreso && <span className="da26-rotulo da26-mono" data-progreso style={{ flex: "none" }}>{progreso}</span>}

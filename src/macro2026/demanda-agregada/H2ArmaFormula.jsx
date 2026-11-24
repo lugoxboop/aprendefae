@@ -13,7 +13,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { BORDE, COMPONENTES, CORAL, FONDO, INK, INK_2, SUPERFICIE_2 } from "../comun/colores-da.js";
 import { Boton, MarcoHacer, Retro, movimientoReducido, useCronometro } from "../comun/ui.jsx";
 import { azarDeLaPagina, barajar } from "../comun/azar.js";
-import { CONSIGNAS, ETAPAS_H2, FICHAS_H2 } from "./textos.js";
+import { CONSIGNAS, ESCENAS, ETAPAS_H2, FICHAS_H2 } from "./textos.js";
 
 export const ID = "da26-h2-arma-formula";
 
@@ -206,7 +206,7 @@ export default function H2ArmaFormula({ onTerminar, rng = null }) {
   };
 
   return (
-    <MarcoHacer id={ID} consigna={CONSIGNAS[ID]} progreso={`${k + 1} / ${etapas.length}`}>
+    <MarcoHacer id={ID} consigna={CONSIGNAS[ID]} escena={ESCENAS[ID]} mini={{ texto: ESCENAS[ID].porRonda[e.id] }} progreso={`${k + 1} / ${etapas.length}`}>
       <style>{CSS}</style>
       <p className="da26-rotulo da26-mono" style={{ margin: "0 0 2px" }} data-etapa={e.id}>ETAPA {k + 1} · {e.nombre.toUpperCase()}</p>
       <div data-figura className="da26-entra" key={e.id}>

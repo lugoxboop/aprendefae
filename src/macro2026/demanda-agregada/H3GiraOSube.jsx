@@ -15,8 +15,7 @@ import { arranque, modelo, pendiente, produccion } from "../comun/modelo-da.js";
 import GraficaDA from "../comun/GraficaDA.jsx";
 import { Boton, MarcoHacer, Retro, useAnimado, useCronometro } from "../comun/ui.jsx";
 import { azarDeLaPagina, sortear } from "../comun/azar.js";
-import { BANCO_H3, CONSIGNAS, PARTIDA_H3 } from "./textos.js";
-import { BORDE, FONDO } from "../comun/colores-da.js";
+import { BANCO_H3, CONSIGNAS, ESCENAS, PARTIDA_H3 } from "./textos.js";
 
 export const ID = "da26-h3-gira-o-sube";
 const P0 = modelo();
@@ -85,11 +84,8 @@ export default function H3GiraOSube({ onTerminar, rng = null }) {
     ];
 
   return (
-    <MarcoHacer id={ID} consigna={CONSIGNAS[ID]} progreso={`${n + 1} / ${sucesos.length}`}>
-      <div className="da26-entra" key={s.id} data-suceso={s.id}
-        style={{ border: `1px solid ${BORDE}`, background: FONDO, borderRadius: 12, padding: "10px 12px", marginBottom: 8, fontSize: 16, lineHeight: 1.35 }}>
-        {s.suceso}
-      </div>
+    <MarcoHacer id={ID} consigna={CONSIGNAS[ID]} escena={ESCENAS[ID]}
+      mini={{ etiqueta: ESCENAS[ID].porRonda.etiqueta, texto: s.suceso, datos: { "data-suceso": s.id } }} progreso={`${n + 1} / ${sucesos.length}`}>
       <div data-figura>
         <GraficaDA
           lineas={lineas}

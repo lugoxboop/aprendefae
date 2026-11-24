@@ -49,7 +49,8 @@ export const APRENDER = {
     "La economía produce donde lo producido iguala lo demandado: Y = DA.",
   ],
   "da26-a6-eco-multiplicador": [
-    "El Gobierno gasta 100 en una vía. ¿Cuánto sube la producción?",
+    /* «El Gobierno gasta 100 en una vía.» pasó a la franja de escena (ESCENAS, rediseño lote 1). */
+    "¿Cuánto sube la producción?",
     "Los obreros cobran y gastan una parte. Quien les vende cobra y gasta otra parte.",
     "Cada eco es más débil. Sumados, dan el multiplicador: 1 / [1 − c(1 − t)].",
     "Con c = 0,8 y t = 25 %, cada 100 de gasto se vuelven 250.",
@@ -77,6 +78,61 @@ export const CONSIGNAS = {
   "da26-h4-empresario": "Arma la cadena: toca cada flecha para subirla o bajarla.",
   "da26-h5-libreta": "Toca la línea que tiene el error.",
   "da26-h6-meta": "Mueve la palanca hasta que la producción llegue a la meta.",
+};
+
+/*
+ * ─── Escenas (rediseño con la lista de 5, spec de Gen 24-nov, §2 T1) ─────
+ * Tema «plaza» para las doce. id → hora, lado, mascota (o escena de varias),
+ * tu papel (≤ 15 palabras), contexto (≤ 30) y, en las Hacer, el mini
+ * contexto de cada ronda (≤ 12; la etiqueta, como «Noticia de hoy:», va
+ * aparte y no cuenta: ver construccion del rediseño). escenas.test.mjs mide
+ * todo. Las tarjetas de inicio de H4 y H6 llevan un contexto general nuevo:
+ * el de Gen («(actual)») es el de cada ronda y va en el mini contexto.
+ */
+const plaza = (hora, lado, mascota, rol, contexto, porRonda = null) => ({ tema: "plaza", hora, lado, ...mascota, rol, contexto, porRonda });
+export const ESCENAS = {
+  "da26-a1-carrito": plaza("dia", "izq", { mascota: { id: "familia", pose: "mercado" } },
+    "Te contratan en el DANE para medir cuánto compra el país entero.",
+    "Fin de mes: familias, empresas, Gobierno y extranjeros compran a la vez. Todo cabe en un solo carrito."),
+  "da26-a2-vaso-renta": plaza("tarde", "der", { mascota: { id: "familia", pose: "alcancia" } },
+    "Eres el asesor financiero de una familia que acaba de recibir su sueldo.",
+    "Llegó la quincena. Una parte se va al mercado y otra se guarda en la alcancía."),
+  "da26-a3-columpio-tasa": plaza("manana", "izq", { escena: "analista-empresario" },
+    "Eres el analista de una fábrica que quiere comprar una máquina a crédito.",
+    "La empresa quiere crecer, pero la máquina se paga con préstamo. El banco acaba de anunciar su tasa."),
+  "da26-a4-no-miran-renta": plaza("dia", "der", { mascota: { id: "autoridad-economica", pose: "carpeta" } },
+    "Te contratan en el Ministerio de Hacienda para revisar el presupuesto.",
+    "Este año la renta del país subió, pero el presupuesto del Gobierno ya estaba aprobado desde diciembre."),
+  "da26-a5-bisagra-ascensor": plaza("noche", "izq", { mascota: { id: "analista", pose: "grafica" } },
+    "Eres el analista que dibuja la economía para el noticiero.",
+    "El noticiero quiere mostrar en una gráfica cómo cambian las compras del país cuando sube la renta."),
+  "da26-a6-eco-multiplicador": plaza("tarde", "izq", { mascota: { id: "autoridad-economica", pose: "grifo" } },
+    "Te contratan en el Ministerio de Transporte para estimar el efecto de una obra.",
+    "El Gobierno gasta 100 en una vía."),
+  "da26-h1-llena-carrito": plaza("dia", "der", { mascota: { id: "analista", pose: "libreta" } },
+    "Te contratan en el DANE para clasificar las compras del país.",
+    "Llegaron los recibos del mes. Cada compra la hizo alguien: familias, empresas, Gobierno o extranjeros.",
+    { todas: "Recibo nuevo sobre tu escritorio:" }),
+  "da26-h2-arma-formula": plaza("manana", "der", { mascota: { id: "profesor", pose: "pizarra" } },
+    "Eres el economista que arma la ecuación para el informe del Banco.",
+    "El informe necesita una sola cuenta con todo lo que compra el país.",
+    { consumo: "Primero, las familias: ¿de qué depende su gasto?", inversion: "Ahora las empresas: ¿de qué depende invertir?", equilibrio: "Falta juntar todo en una cuenta." }),
+  "da26-h3-gira-o-sube": plaza("noche", "der", { mascota: { id: "analista", pose: "lupa" } },
+    "Eres el analista que actualiza la gráfica cada vez que llega una noticia.",
+    "La gráfica de la demanda agregada está en pantalla. Cada noticia puede moverla o girarla.",
+    { etiqueta: "Noticia de hoy:", texto: "suceso" }),
+  "da26-h4-empresario": plaza("tarde", "der", { mascota: { id: "empresario", pose: "periodico" } },
+    "Eres el asesor del empresario: explícale qué le pasa a su negocio.",
+    "Cada mañana el empresario lee un titular y te pregunta cómo llega hasta su negocio.",
+    { etiqueta: "El empresario oyó:", texto: "titular" }),
+  "da26-h5-libreta": plaza("manana", "izq", { mascota: { id: "analista", pose: "libreta" } },
+    "Te contratan para revisar la libreta del analista antes de publicarla.",
+    "El analista anotó paso a paso un cambio en la economía. Una línea tiene un error.",
+    { todas: "Página nueva de la libreta:" }),
+  "da26-h6-meta": plaza("noche", "izq", { mascota: { id: "autoridad-economica", pose: "timon" } },
+    "Eres el ministro de Hacienda: lleva la producción a la meta.",
+    "La producción del país se aleja de la meta. En cada etapa tienes una sola herramienta.",
+    { texto: "contexto" }),
 };
 
 /* ─── H1 · Llena el carrito (8 de 10) ──────────────────────────────────── */

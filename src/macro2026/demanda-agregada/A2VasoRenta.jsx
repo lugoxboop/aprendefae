@@ -10,7 +10,7 @@ import { useState } from "react";
 import { COMPONENTES, INK, INK_2, FONDO } from "../comun/colores-da.js";
 import { fmtDecimal, fmtEntero, rentaDisponible } from "../comun/modelo-da.js";
 import { Boton, Deslizador, Interruptor, MarcoAprender, useAncho, usePasos } from "../comun/ui.jsx";
-import { APRENDER } from "./textos.js";
+import { APRENDER, ESCENAS } from "./textos.js";
 
 export const ID = "da26-a2-vaso-renta";
 const T = APRENDER[ID];
@@ -118,7 +118,7 @@ export default function A2VasoRenta({ onTerminar }) {
   ][paso];
 
   return (
-    <MarcoAprender
+    <MarcoAprender escena={ESCENAS[ID]}
       id={ID} paso={paso} total={6} texto={T[paso]}
       figura={(
         <>
