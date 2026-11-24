@@ -41,6 +41,17 @@ animan por partes. Por eso, para una mascota:
 - Cada parte/pose debe encajar con las demás (misma escala, mismo trazo, misma
   paleta de la especie).
 
+### Caras en capas: ojos, nariz y boca (23-nov)
+Cada cara se arma con capas sueltas sobre la **cabeza sin rasgos**: ojos (por
+ánimo), **una sola nariz** (`nariz.webp`, la misma en todos los ánimos, va
+encima de la boca) y boca (por ánimo, **sin nariz**). Nunca pedir ni usar una
+pieza que traiga la cara entera o una boca con la nariz pintada: al cambiar de
+ánimo se ven dos narices o dos bocas (el error del hámster). Al pedir a Gemini:
+«cabeza SIN ojos, SIN nariz y SIN boca; nariz sola; bocas SIN nariz». Si lo que
+devuelve cambia la cabeza o el trazo, las piezas se recortan del arte original
+con `scripts/mascotas/separar-caras.py` (así se hizo el 23-nov; la hoja de
+Gemini del hámster quedó en `public/mascotas/origen-gemini/hamster-piezas-cara.webp`).
+
 ### Las 7 especies
 Panda · conejo · hurón · zorro · gato · perro · hámster.
 

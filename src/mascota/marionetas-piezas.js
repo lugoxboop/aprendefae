@@ -9,6 +9,7 @@ export const PIEZAS = {
   zorro: {
     rampa: [0.318, 0.462, 0.577, 0.892],
     piezas: {
+      nariz: [44, 32, 0],
       torso: [268, 315, 1],
       cabeza: [283, 232, 1],
       oreja_i: [134, 164, 1],
@@ -37,6 +38,7 @@ export const PIEZAS = {
   gato: {
     rampa: [0.366, 0.533, 0.666, 0.908],
     piezas: {
+      nariz: [42, 32, 0],
       torso: [244, 303, 1],
       cabeza: [270, 223, 1],
       oreja_i: [109, 149, 1],
@@ -66,6 +68,7 @@ export const PIEZAS = {
   perro: {
     rampa: [0.362, 0.526, 0.658, 0.898],
     piezas: {
+      nariz: [72, 48, 0],
       torso: [272, 277, 1],
       cabeza: [262, 232, 1],
       oreja_i: [123, 204, 1],
@@ -94,6 +97,8 @@ export const PIEZAS = {
   hamster: {
     rampa: [0.386, 0.562, 0.702, 0.919],
     piezas: {
+      boca_tranquila: [52, 28, 0],
+      nariz: [38, 28, 0],
       torso: [227, 220, 1],
       cabeza: [287, 209, 1],
       oreja_i: [82, 81, 1],
@@ -122,6 +127,7 @@ export const PIEZAS = {
   conejo: {
     rampa: [0.507, 0.737, 0.921, 1.0],
     piezas: {
+      nariz: [40, 28, 0],
       torso: [169, 190, 1],
       cabeza: [227, 197, 1],
       oreja_i: [89, 185, 1],
@@ -150,6 +156,17 @@ export const PIEZAS = {
   huron: {
     rampa: [0.192, 0.279, 0.349, 0.877],
     piezas: {
+      boca_triste: [48, 20, 0],
+      boca_abierta: [84, 40, 0],
+      racha_d: [82, 42, 0],
+      racha_i: [82, 42, 0],
+      triste_d: [60, 66, 0],
+      triste_i: [60, 66, 0],
+      feliz_d: [50, 22, 0],
+      feliz_i: [48, 22, 0],
+      ojo_d: [48, 48, 0],
+      ojo_i: [48, 48, 0],
+      nariz: [28, 24, 0],
       torso: [186, 265, 1],
       cabeza: [203, 167, 1],
       oreja_i: [71, 73, 1],
@@ -173,6 +190,7 @@ export const PIEZAS = {
   panda: {
     rampa: [0.142, 0.207, 0.259, 0.319],
     piezas: {
+      nariz: [44, 28, 0],
       torso: [254, 320, 1],
       cabeza: [355, 297, 1],
       oreja_i: [109, 114, 1],

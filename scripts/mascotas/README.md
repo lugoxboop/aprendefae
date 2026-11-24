@@ -42,3 +42,14 @@ Las cuatro hojas de accesorios de Gemini se recortan igual que los kits
 bufanda y la cinta de la medalla) y deja la cúpula del casco de astronauta
 translúcida. Las piezas van a `public/mascotas/accesorios/` y su ubicación
 sobre cada especie a `src/mascota/accesorios-marioneta.js`.
+
+## Caras en capas (23-nov)
+
+9. `separar-caras.py public/mascotas` — deja cada rasgo en su capa, recortado
+   del mismo arte: `nariz.webp` (sacada de la cabeza, que queda sin nariz), las
+   bocas sin la nariz que traían encima, la boca del hámster que venía en su
+   cabeza (`boca_tranquila`) y los ojos y bocas sueltos del hurón (de sus caras
+   enteras). Imprime dónde va la nariz y cuánto correr cada boca; escribe las
+   medidas nuevas en `marionetas-piezas.js`. Se corre UNA vez sobre las piezas
+   originales (si hay que repetir, primero `git checkout` de esas piezas).
+   Video de todas las caras a 320/375: `node scripts/mascota/video-caras.mjs <carpeta>`.
