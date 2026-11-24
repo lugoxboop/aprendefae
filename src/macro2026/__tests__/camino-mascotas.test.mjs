@@ -110,8 +110,9 @@ test("montado: una de cada dos desde el nodo que toca, decorativas (aria-hidden,
       assert.equal(capa.querySelectorAll("[tabindex], button, a").length, 0, "nada enfocable");
     }
     const css = m.el.innerHTML;
-    assert.match(css, /prefers-reduced-motion: reduce\) \{\s*\.fae-ch-masc-mueve, \.fae-ch-masc-cuerpo\.fae-ch-menea, \.fae-ch-globo \{ animation: none !important; \}/);
+    assert.match(css, /prefers-reduced-motion: reduce\) \{\s*\.fae-ch-masc-mueve, \.fae-ch-masc-cuerpo\.fae-ch-menea \{ animation: none !important; \}/);
     assert.doesNotMatch(css, /E76F51/i, "sin coral");
+    assert.doesNotMatch(css, /fae-ch-globo|Te toca/, "sin globo (Mateo, 24-nov)");
   } finally { await m.desmontar(); }
 });
 
