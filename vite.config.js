@@ -17,6 +17,11 @@ export default defineConfig({
       input: {
         main: resolve(import.meta.dirname, "index.html"),
         privacidad: resolve(import.meta.dirname, "privacidad/index.html"),
+        /*
+         * Prototipo de horas de embajadores: página aparte en una ruta que no
+         * sale en ningún menú (/turnos-7k/). No comparte nada con el SPA.
+         */
+        turnos: resolve(import.meta.dirname, "turnos-7k/index.html"),
       },
     },
   },
