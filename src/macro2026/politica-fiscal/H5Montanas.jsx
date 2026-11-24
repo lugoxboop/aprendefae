@@ -16,7 +16,7 @@ import { fmtEntero } from "../comun/modelo-da.js";
 import { Boton, Deslizador, MarcoHacer, Retro, useCronometro } from "../comun/ui.jsx";
 import { useArrastre } from "../comun/arrastre.js";
 import { colorRama } from "../comun/ramas.js";
-import { CONSIGNAS, H5 } from "./textos.js";
+import { CONSIGNAS, H5, ESCENAS } from "./textos.js";
 
 export const ID = "pf26-h5-montanas";
 const AGUA = colorRama("fiscal");
@@ -24,7 +24,6 @@ const TOTAL = 1194;
 
 const CSS = `
 .pf26-h5-montes { display: block; width: 100%; max-width: 320px; margin: 0 auto; }
-.pf26-h5-reto { font: 600 15px/1.35 var(--planck-font-sans, system-ui, sans-serif); margin: 10px 0 8px; }
 .pf26-h5-fila { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
 .pf26-h5-ficha { min-height: 44px; padding: 6px 12px; border-radius: 999px; border: 2px solid ${INK_2}; background: ${SUPERFICIE_2}; color: ${INK}; font: 600 14px/1.2 var(--planck-font-sans, system-ui, sans-serif); cursor: grab; touch-action: none; -webkit-user-select: none; user-select: none; }
 .pf26-h5-ficha[aria-pressed="true"] { box-shadow: 0 0 0 3px ${INK}; }
@@ -222,11 +221,11 @@ export default function H5Montanas({ onTerminar }) {
   }
 
   return (
-    <MarcoHacer id={ID} consigna={CONSIGNAS[ID]} progreso={`${k + 1} / ${H5.retos.length}`}>
+    <MarcoHacer id={ID} escena={ESCENAS[ID]} mini={{ texto: reto.consigna, datos: { "data-consigna-reto": reto.id } }} consigna={CONSIGNAS[ID]} progreso={`${k + 1} / ${H5.retos.length}`}>
       <style>{CSS}</style>
       <div data-figura ref={contenedor} data-reto={reto.id}>
         <Montanas interna={interna} externa={externa} etiquetas={etiquetas} />
-        <p className="pf26-h5-reto da26-entra" key={reto.id} data-consigna-reto>{reto.consigna}</p>
+        {/* Rediseño lote 2: la consigna del reto pasó a la franja de escena (mini contexto). */}
         {cuerpo}
       </div>
       <Retro estado="mal" key={`r${mal}`}>{retro}</Retro>

@@ -13,7 +13,7 @@ import { useEffect, useRef, useState } from "react";
 import { BORDE, FONDO, INK, INK_2, SUPERFICIE_2, GRIS } from "../comun/colores-da.js";
 import { MarcoAprender, usePasos, useAncho, movimientoReducido, Boton } from "../comun/ui.jsx";
 import { IconoProblema } from "../comun/iconos-pe.jsx";
-import { APRENDER, VIRUS, FUERA_DEL_CIRCUITO, CIRCUITO, A2, DATO_DE_CLASE } from "./textos.js";
+import { APRENDER, VIRUS, FUERA_DEL_CIRCUITO, CIRCUITO, A2, DATO_DE_CLASE, ESCENAS } from "./textos.js";
 
 export const ID = "pe26-a2-fiebre";
 const TEXTOS = APRENDER[ID];
@@ -186,7 +186,7 @@ export default function A2Fiebre({ onTerminar }) {
   }
 
   return (
-    <MarcoAprender
+    <MarcoAprender escena={ESCENAS[ID]}
       id={ID}
       paso={paso}
       total={TEXTOS.length}

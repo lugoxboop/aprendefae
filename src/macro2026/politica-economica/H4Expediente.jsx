@@ -14,7 +14,7 @@ import { CORAL, INK_2 } from "../comun/colores-da.js";
 import { Boton, MarcoHacer, Retro, useCronometro } from "../comun/ui.jsx";
 import { sortear, azarDeLaPagina } from "../comun/azar.js";
 import Escalera, { ORDEN_PELDANOS } from "../comun/Escalera.jsx";
-import { BANCO_H4, CONSIGNAS, ENUNCIADOS, PARTIDA_H4, textoPeldanoH4 } from "./textos.js";
+import { BANCO_H4, CONSIGNAS, ENUNCIADOS, PARTIDA_H4, textoPeldanoH4, ESCENAS } from "./textos.js";
 
 export const ID = "pe26-h4-expediente";
 
@@ -89,7 +89,7 @@ export default function H4Expediente({ onTerminar, rng = null }) {
   const estados = Object.fromEntries(ORDEN_PELDANOS.map((p) => [p, rojo === p ? "mal" : vistos.has(p) ? "visto" : hallada && p === e.errado && cayo ? "bien" : undefined]));
 
   return (
-    <MarcoHacer id={ID} consigna={CONSIGNAS[ID]} progreso={`${n + 1} / ${escaleras.length}`}>
+    <MarcoHacer id={ID} escena={ESCENAS[ID]} mini={{ texto: ESCENAS[ID].porRonda.todas }} consigna={CONSIGNAS[ID]} progreso={`${n + 1} / ${escaleras.length}`}>
       <style>{CSS}</style>
       <div data-figura className="pe26-h4" data-escalera-h4={e.id} key={e.id}>
         <Escalera

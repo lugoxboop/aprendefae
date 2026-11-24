@@ -390,3 +390,55 @@ export const BANCO_H6 = [
     ["d", "El ICA que pagamos es un impuesto directo.", "Correcta: depende de nuestros ingresos."],
   ], "El peaje es una tasa: pago por usar un servicio."),
 ];
+
+/* ─── Escenas (rediseño con la lista de 5, spec de Gen 24-nov §2, T3) ───
+ * La franja de arriba de cada pieza: tema hacienda, hora, lado, mascota,
+ * TU PAPEL (≤ 15 palabras) y contexto (≤ 30). En las Hacer, `porRonda` da el
+ * mini contexto de la escena compacta (≤ 12): `todas` = el mismo en cada
+ * ronda; `etiqueta` + `texto` = la etiqueta fija y el campo de la ronda.
+ * escenas.test.mjs lo mide. Solo presentación: no toca ids ni puntajes. */
+const hacienda = (hora, lado, mascota, rol, contexto, porRonda = null) => ({ tema: "hacienda", hora, lado, ...mascota, rol, contexto, porRonda });
+export const ESCENAS = {
+  "pf26-a1-lupa": hacienda("dia", "der", { mascota: { id: "analista", pose: "lupa" } },
+    "Eres el analista que revisa la política fiscal con una lupa de seis caras.",
+    "El Gobierno presentó su plan de impuestos y gasto. Antes de opinar, hay que mirarlo por todos los lados."),
+  "pf26-a2-buzones": hacienda("manana", "izq", { mascota: { id: "familia", pose: "recibo" } },
+    "Te contratan en la DIAN para clasificar lo que entra al Estado.",
+    "Cada día llegan pagos al Estado: el IVA de un café, un peaje, el aporte a salud."),
+  "pf26-a3-cajeros": hacienda("tarde", "der", { mascota: { id: "familia", pose: "mercado" } },
+    "Trabajas en la DIAN y atiendes dos ventanillas distintas.",
+    "A una ventanilla llega quien declara su renta; a la otra, quien compra un celular con IVA."),
+  "pf26-a4-tanque": hacienda("noche", "izq", { mascota: { id: "autoridad-economica", pose: "grifo" } },
+    "Te contratan para cuidar el tanque del presupuesto nacional.",
+    "Este año entraron tributos y préstamos. Salieron pagos de funcionamiento, inversión y deuda."),
+  /* Los impactos de la última pantalla conservan su mascota de 180 (A5Balanza.jsx). */
+  "pf26-a5-balanza": hacienda("dia", "izq", { mascota: { id: "autoridad-economica", pose: "timon" } },
+    "Eres el asesor del ministro: dile qué hace cada perilla.",
+    "El ministro tiene tres perillas fiscales y quiere saber cómo mueve cada una la demanda."),
+  "pf26-h1-moneda": hacienda("manana", "der", { mascota: { id: "familia", pose: "alcancia" } },
+    "Trabajas en la DIAN: cada pago entra a su buzón.",
+    "Abriste la ventanilla. Los pagos del día llegan uno por uno.",
+    { todas: "Siguiente pago:" }),
+  "pf26-h2-cajero": hacienda("tarde", "izq", { mascota: { id: "empresario", pose: "explica" } },
+    "Eres el jefe de cajeros de la DIAN.",
+    "Cada tributo se cobra en una caja: la de directos o la de indirectos.",
+    { todas: "Llega un tributo:" }),
+  /* El profesor sube del hueco de 120 a la franja (180 en la tarjeta de inicio);
+     su pregunta de cada documento es el mini contexto de la ronda. */
+  "pf26-h3-factura": hacienda("noche", "der", { mascota: { id: "profesor", pose: "pregunta" } },
+    "Eres el asistente del profesor; él te muestra un documento real.",
+    "Cada documento trae su precio desglosado. Algunas líneas van al Estado; otras, no.",
+    { etiqueta: H3.profesor, texto: "pregunta" }),
+  "pf26-h4-expande": hacienda("dia", "der", { mascota: { id: "autoridad-economica", pose: "carpeta" } },
+    "Eres el asesor del ministro de Hacienda.",
+    "Llega una medida nueva. Di si expande o contrae, y por dónde entra a la demanda.",
+    { todas: "Medida sobre la mesa:" }),
+  "pf26-h5-montanas": hacienda("manana", "izq", { mascota: { id: "deudor-externo", pose: "sobre" } },
+    "Te contratan como analista de deuda pública del Ministerio de Hacienda.",
+    "La deuda de Colombia es una cordillera: una montaña interna y otra externa.",
+    { texto: "consigna" }),
+  "pf26-h6-memo": hacienda("tarde", "der", { mascota: { id: "empresario", pose: "periodico" } },
+    "Te contratan como asesor de NOVA S. A. para revisar su memo.",
+    "La gerencia escribe memos sobre la política fiscal. En cada uno se coló una frase equivocada.",
+    { todas: "Memo nuevo de la gerencia:" }),
+};

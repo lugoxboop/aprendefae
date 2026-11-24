@@ -16,7 +16,7 @@ import { BORDE, CORAL, FONDO, INK, INK_2, SUPERFICIE_2 } from "../comun/colores-
 import { Boton, MarcoHacer, Retro, useCronometro } from "../comun/ui.jsx";
 import { azarDeLaPagina, sortear } from "../comun/azar.js";
 import { IconoDirecto, IconoIndirecto } from "../comun/iconos-pf.jsx";
-import { A3, BANCO_H2, CONSIGNAS, PARTIDA_H2 } from "./textos.js";
+import { A3, BANCO_H2, CONSIGNAS, PARTIDA_H2, ESCENAS } from "./textos.js";
 
 export const ID = "pf26-h2-cajero";
 export const prepararH2 = (rng = Math.random) => sortear(BANCO_H2, PARTIDA_H2, rng);
@@ -116,7 +116,7 @@ export default function H2Cajero({ onTerminar, rng = null }) {
 
   const desplazada = recibe ? LADO[recibe] * 140 : dx;
   return (
-    <MarcoHacer id={ID} consigna={CONSIGNAS[ID]} progreso={`${n + 1} / ${tarjetas.length}`}>
+    <MarcoHacer id={ID} escena={ESCENAS[ID]} mini={{ texto: ESCENAS[ID].porRonda.todas }} consigna={CONSIGNAS[ID]} progreso={`${n + 1} / ${tarjetas.length}`}>
       <style>{CSS}</style>
       <div data-figura>
         <div className="da26-entra" key={t.id} style={{ overflow: "hidden", padding: "2px" }}>

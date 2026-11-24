@@ -19,10 +19,10 @@
  */
 import { useEffect, useState } from "react";
 import { BORDE, INK, INK_2, SUPERFICIE_2 } from "../comun/colores-da.js";
-import { Boton, MarcoHacer, Retro, useCronometro, movimientoReducido } from "../comun/ui.jsx";
+import { Boton, MarcoHacer, useCronometro, movimientoReducido } from "../comun/ui.jsx";
 import { RAMAS, colorRama } from "../comun/ramas.js";
 import { IconoRama } from "../comun/iconos-pe.jsx";
-import { CIERRE_H5, ENTRADA_H5, FINALES_H5, INICIO_H5, MEDIDORES_H5, OTRO_H5, PASOS_H5, SUBTEMAS_CIERRE_H5 } from "./textos.js";
+import { CIERRE_H5, ENTRADA_H5, FINALES_H5, INICIO_H5, MEDIDORES_H5, OTRO_H5, PASOS_H5, SUBTEMAS_CIERRE_H5, ESCENAS, POSES_H5 } from "./textos.js";
 
 export const ID = "pe26-h5-dos-fiebres";
 const CLAVE = "aprendefae-pe26-h5-finales";
@@ -111,11 +111,19 @@ export default function H5DosFiebres({ onTerminar }) {
     onTerminar?.({ pct: 100, detalle, duracionMs: tiempo() });
   };
 
+  /* Rediseño lote 2: la escena compacta lee el paso. Antes de elegir, la
+     entrada; después, la narración de lo elegido (antes iba en una Retro del
+     cuerpo). La autoridad cambia de pose: timón con la tasa, grifo con el gasto. */
+  const mini = {
+    texto: narracion ?? ENTRADA_H5,
+    datos: narracion ? { "data-retro": "", role: "status" } : { "data-entrada": "" },
+    mascota: { id: "autoridad-economica", pose: POSES_H5[(paso ?? PASOS_H5[1]).id] },
+  };
+
   return (
-    <MarcoHacer id={ID} consigna={(paso ?? PASOS_H5[1]).consigna} progreso={`${Math.min(elecciones.length + 1, 2)} / 2`}>
+    <MarcoHacer id={ID} escena={ESCENAS[ID]} mini={mini} consigna={(paso ?? PASOS_H5[1]).consigna} progreso={`${Math.min(elecciones.length + 1, 2)} / 2`}>
       <style>{CSS}</style>
       <div data-figura>
-        {elecciones.length === 0 && <p className="pe26-h5-cierre" data-entrada style={{ marginBottom: 10 }}>{ENTRADA_H5}</p>}
         <div className="pe26-h5-cuerpo" data-circuito>
           <div className="pe26-h5-meds">
             {MEDIDORES_H5.map((m) => (
@@ -129,7 +137,6 @@ export default function H5DosFiebres({ onTerminar }) {
             ))}
           </div>
         </div>
-        {narracion && <Retro estado="info" key={narracion}>{narracion}</Retro>}
         {paso && (
           <div className="da26-entra" key={paso.id}>
             <p className="pe26-h5-quien">

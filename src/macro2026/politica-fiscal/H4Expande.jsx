@@ -16,7 +16,7 @@ import { azarDeLaPagina, sortear } from "../comun/azar.js";
 import { useArrastre } from "../comun/arrastre.js";
 import { colorRama } from "../comun/ramas.js";
 import { Balanza, CSS_A5, Lupa } from "./A5Balanza.jsx";
-import { A5, BANCO_H4, CONSIGNAS, ENTRADAS_H4, H4, PARTIDA_H4 } from "./textos.js";
+import { A5, BANCO_H4, CONSIGNAS, ENTRADAS_H4, H4, PARTIDA_H4, ESCENAS } from "./textos.js";
 
 export const ID = "pf26-h4-expande";
 export const prepararH4 = (rng = Math.random) => sortear(BANCO_H4, PARTIDA_H4, rng);
@@ -82,7 +82,7 @@ export default function H4Expande({ onTerminar, rng = null }) {
   const con = revelado && m.plato === "contraccionista" ? 1 : 0;
 
   return (
-    <MarcoHacer id={ID} consigna={CONSIGNAS[ID]} progreso={`${n + 1} / ${medidas.length}`}>
+    <MarcoHacer id={ID} escena={ESCENAS[ID]} mini={{ texto: ESCENAS[ID].porRonda.todas }} consigna={CONSIGNAS[ID]} progreso={`${n + 1} / ${medidas.length}`}>
       <style>{CSS_A5}{CSS}</style>
       <div data-figura ref={contenedor} data-revelado={revelado ? "1" : "0"}>
         <Balanza exp={exp} con={con} Y={Y} destino={(d) => destino(d, m.id)} activos={revelado ? [] : ["expansiva", "contraccionista"]} />

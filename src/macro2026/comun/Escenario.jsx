@@ -148,7 +148,7 @@ export function Escenario({ tema = "plaza", hora = "dia", lado = "izq", mascota 
         <div className="da26-escena-mascota da26-escena-entra" data-escena-alto={alto}>
           {escena
             ? <EscenaMascotas id={escena} alto={alto} perezosa={false} />
-            : mascota && <MascotaRol id={mascota.id} pose={mascota.pose} alto={alto} />}
+            : mascota && <MascotaRol id={mascota.id} pose={mascota.pose} alto={alto} corto={compacto} />}
         </div>
         <div className="da26-escena-texto">
           {!compacto && rol && (

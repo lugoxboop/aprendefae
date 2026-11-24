@@ -22,7 +22,7 @@ import { sortear, azarDeLaPagina } from "../comun/azar.js";
 import { useArrastre } from "../comun/arrastre.js";
 import { RAMAS, ORDEN_RAMAS, colorRama, TERMINOS_RAMA } from "../comun/ramas.js";
 import { IconoRama } from "../comun/iconos-pe.jsx";
-import { BANCO_H3, CONSIGNAS, PARTIDA_H3 } from "./textos.js";
+import { BANCO_H3, CONSIGNAS, PARTIDA_H3, ESCENAS } from "./textos.js";
 
 export const ID = "pe26-h3-cables";
 
@@ -140,7 +140,7 @@ export default function H3Cables({ onTerminar, rng = null }) {
 
   const hechos = Object.keys(conectados).length;
   return (
-    <MarcoHacer id={ID} consigna={CONSIGNAS[ID]} progreso={`${hechos} / ${instrumentos.length}`}>
+    <MarcoHacer id={ID} escena={ESCENAS[ID]} mini={{ texto: ESCENAS[ID].porRonda.todas }} consigna={CONSIGNAS[ID]} progreso={`${hechos} / ${instrumentos.length}`}>
       <style>{CSS}</style>
       <div data-figura ref={contenedor}>
         <Maquina late={late} />

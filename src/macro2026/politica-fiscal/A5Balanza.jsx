@@ -19,7 +19,7 @@ import { useArrastre } from "../comun/arrastre.js";
 import { colorRama } from "../comun/ramas.js";
 import { MascotaRol } from "../comun/mascotas.jsx";
 import { Objeto } from "../comun/kit.jsx";
-import { APRENDER, A5 } from "./textos.js";
+import { APRENDER, A5, ESCENAS } from "./textos.js";
 
 export const ID = "pf26-a5-balanza";
 const TEXTOS = APRENDER[ID];
@@ -239,7 +239,7 @@ export default function A5Balanza({ onTerminar }) {
   }
 
   return (
-    <MarcoAprender
+    <MarcoAprender escena={ESCENAS[ID]}
       id={ID}
       paso={paso}
       total={TEXTOS.length}

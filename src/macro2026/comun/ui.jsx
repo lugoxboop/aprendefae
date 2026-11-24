@@ -291,7 +291,8 @@ export function usePasos(total) {
  * `escena` (rediseño, lista de 5): con ella, la Hacer abre con una tarjeta de
  * inicio (escena completa: mascota de 180 px, tu papel y el contexto, y la
  * consigna) y cada ronda lleva la escena compacta con su mini contexto
- * (`mini` = { texto, etiqueta?, datos? }). Sin `escena`, como antes.
+ * (`mini` = { texto, etiqueta?, datos?, mascota? }; `mascota` cambia la pose de
+ * la ronda, p. ej. pe26-h5). Sin `escena`, como antes.
  */
 export function MarcoHacer({ id, consigna, progreso = null, children, escena = null, mini = null }) {
   const [empezado, setEmpezado] = useState(false);
@@ -309,7 +310,7 @@ export function MarcoHacer({ id, consigna, progreso = null, children, escena = n
   }
   return (
     <div className="da26-tarjeta" data-pieza={id}>
-      {escena && <Escenario {...escena} compacto mini={mini?.texto ?? null} etiqueta={mini?.etiqueta ?? null} datos={mini?.datos ?? null} />}
+      {escena && <Escenario {...escena} {...(mini?.mascota ? { mascota: mini.mascota } : {})} compacto mini={mini?.texto ?? null} etiqueta={mini?.etiqueta ?? null} datos={mini?.datos ?? null} />}
       <div className="da26-cabeza">
         <h2 className="da26-consigna" data-consigna style={{ margin: 0 }}>{consigna}</h2>
         {progreso && <span className="da26-rotulo da26-mono" data-progreso style={{ flex: "none" }}>{progreso}</span>}

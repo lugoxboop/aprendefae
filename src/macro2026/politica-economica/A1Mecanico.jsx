@@ -8,7 +8,7 @@
 import { useState } from "react";
 import { BORDE, FONDO, GRIS, INK, INK_2, SUPERFICIE_2 } from "../comun/colores-da.js";
 import { MarcoAprender, usePasos } from "../comun/ui.jsx";
-import { APRENDER, A1 } from "./textos.js";
+import { APRENDER, A1, ESCENAS } from "./textos.js";
 
 export const ID = "pe26-a1-mecanico";
 const TEXTOS = APRENDER[ID];
@@ -161,7 +161,7 @@ export default function A1Mecanico({ onTerminar }) {
   }
 
   return (
-    <MarcoAprender
+    <MarcoAprender escena={ESCENAS[ID]}
       id={ID}
       paso={paso}
       total={TEXTOS.length}

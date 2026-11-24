@@ -18,7 +18,7 @@ import { ORDEN_TRIBUTOS, TRIBUTOS, tonoTributo } from "../comun/tributos.js";
 import { IconoBuzon } from "../comun/iconos-pf.jsx";
 import { Objeto } from "../comun/kit.jsx";
 import { CSS_A2, Escena } from "./A2Buzones.jsx";
-import { BANCO_H1, CONSIGNAS, PARTIDA_H1 } from "./textos.js";
+import { BANCO_H1, CONSIGNAS, PARTIDA_H1, ESCENAS } from "./textos.js";
 
 export const ID = "pf26-h1-moneda";
 export const prepararH1 = (rng = Math.random) => sortear(BANCO_H1, PARTIDA_H1, rng);
@@ -79,7 +79,7 @@ export default function H1Moneda({ onTerminar, rng = null }) {
   const props = pieza(t.id);
 
   return (
-    <MarcoHacer id={ID} consigna={CONSIGNAS[ID]} progreso={`${n + 1} / ${pagos.length}`}>
+    <MarcoHacer id={ID} escena={ESCENAS[ID]} mini={{ texto: ESCENAS[ID].porRonda.todas }} consigna={CONSIGNAS[ID]} progreso={`${n + 1} / ${pagos.length}`}>
       <style>{CSS_A2}{CSS}</style>
       <div data-figura ref={contenedor}>
         <div className="pf26-h1-hueco">

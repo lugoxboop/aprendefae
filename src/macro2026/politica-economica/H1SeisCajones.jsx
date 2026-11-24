@@ -17,7 +17,7 @@ import { MarcoHacer, Retro, useCronometro } from "../comun/ui.jsx";
 import { barajar, sortear, azarDeLaPagina } from "../comun/azar.js";
 import { useArrastre } from "../comun/arrastre.js";
 import Escalera, { ORDEN_PELDANOS } from "../comun/Escalera.jsx";
-import { BANCO_H1, CONSIGNAS, PARTIDA_H1_POR_PELDANO, RETRO_H1 } from "./textos.js";
+import { BANCO_H1, CONSIGNAS, PARTIDA_H1_POR_PELDANO, RETRO_H1, ESCENAS } from "./textos.js";
 
 export const ID = "pe26-h1-seis-cajones";
 
@@ -87,7 +87,7 @@ export default function H1SeisCajones({ onTerminar, rng = null }) {
   const { contenedor, pieza, destino } = useArrastre({ alSoltar: soltar, activo: !encaja });
 
   return (
-    <MarcoHacer id={ID} consigna={CONSIGNAS[ID]} progreso={`${Math.min(n + 1, tarjetas.length)} / ${tarjetas.length}`}>
+    <MarcoHacer id={ID} escena={ESCENAS[ID]} mini={{ texto: ESCENAS[ID].porRonda.todas }} consigna={CONSIGNAS[ID]} progreso={`${Math.min(n + 1, tarjetas.length)} / ${tarjetas.length}`}>
       <style>{CSS}</style>
       <div data-figura ref={contenedor}>
         <div className="pe26-h1-hueco">
