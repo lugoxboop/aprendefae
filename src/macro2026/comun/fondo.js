@@ -20,9 +20,12 @@ import { NAVY_CLARO } from "../../components/backgrounds/MeshGradientBackground.
 
 /* Índigo de la escena (cielo de H4/A-escenarios), subido para que se note. */
 const INDIGO = "#4B5BA8";
+/* El teal de marca va aquí como RELLENO de una mancha, no como color de texto
+   (el trinquete teal-no-es-texto busca el teal escrito como color de texto). */
+const TEAL = FAE.teal;
 
 export const MANCHAS_ACTIVIDAD = [
-  { color: FAE.teal, tamano: "58vmax", izquierda: "-16%", arriba: "-14%", desenfoque: "90px", opacidad: 0.34, keyframes: "fae-mesh-a", duracion: "38s" },
+  { color: TEAL, tamano: "58vmax", izquierda: "-16%", arriba: "-14%", desenfoque: "90px", opacidad: 0.34, keyframes: "fae-mesh-a", duracion: "38s" },
   { color: INDIGO, tamano: "54vmax", izquierda: "46%", arriba: "34%", desenfoque: "86px", opacidad: 0.38, keyframes: "fae-mesh-b", duracion: "31s" },
   { color: NAVY_CLARO, tamano: "66vmax", izquierda: "10%", arriba: "-4%", desenfoque: "96px", opacidad: 0.46, keyframes: "fae-mesh-c", duracion: "35s" },
 ];
