@@ -437,7 +437,7 @@ export const ESCENAS = {
     "Te contratan como analista de deuda pública del Ministerio de Hacienda.",
     "La deuda de Colombia es una cordillera: una montaña interna y otra externa.",
     { texto: "consigna" }),
-  "pf26-h6-memo": hacienda("tarde", "der", { mascota: { id: "empresario", pose: "periodico" } },
+  "pf26-h6-memo": hacienda("tarde", "der", { mascota: { id: "profesor", pose: "libro" } },
     "Te contratan como asesor de NOVA S. A. para revisar su memo.",
     "La gerencia escribe memos sobre la política fiscal. En cada uno se coló una frase equivocada.",
     { todas: "Memo nuevo de la gerencia:" }),

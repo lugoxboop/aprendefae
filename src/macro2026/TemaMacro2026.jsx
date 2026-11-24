@@ -21,7 +21,7 @@
  * la pastilla de FP (fija arriba a la izquierda) y no quedan debajo de ella.
  * ═══════════════════════════════════════════════════════════════════════════
  */
-import { createContext, lazy, Suspense, useContext, useState } from "react";
+import { createContext, lazy, Suspense, useContext, useEffect, useMemo, useState } from "react";
 import { APRENDER, HACER, SUBJECTS, actividadesDeTipo, clasificacionDe } from "../data/subjects.js";
 import { serializar } from "../ruta.js";
 import CaminoHacer from "../components/shared/CaminoHacer.jsx";
@@ -39,6 +39,7 @@ import { Raiz, Boton } from "./comun/ui.jsx";
 import CierreAprender from "./comun/CierreAprender.jsx";
 import { INK, INK_2 } from "./comun/colores-da.js";
 import FondoPagina, { ESCENA_DE_TEMA } from "./comun/FondoPagina.jsx";
+import { MASCOTAS, rutaMascota } from "./comun/mascotas.jsx";
 
 const MATERIA = "macroeconomia";
 
@@ -222,17 +223,54 @@ function PiezaAprender({ temaId, id }) {
 
 /* ─── Hacer ─── */
 
+/*
+ * LAS MASCOTAS DEL CAMINO (24-nov, Mateo). Cada nodo lleva la mascota de la
+ * escena de su pieza (ESCENAS: mismo id y pose), así el camino anticipa a
+ * quién vas a encontrar y hereda la rotación de especies. Los textos de cada
+ * tema se piden aparte (son los mismos trozos que cargan sus piezas): el
+ * camino se dibuja ya con el sitio de las mascotas, y ellas aparecen al llegar.
+ */
+const TEXTOS_TEMA = {
+  "demanda-agregada": () => import("./demanda-agregada/textos.js"),
+  "politica-economica": () => import("./politica-economica/textos.js"),
+  "politica-fiscal": () => import("./politica-fiscal/textos.js"),
+  "politica-monetaria": () => import("./politica-monetaria/textos.js"),
+  "politica-cambiaria": () => import("./politica-cambiaria/textos.js"),
+};
+export const textosDelTema = (temaId) => TEXTOS_TEMA[temaId]?.() ?? Promise.resolve(null);
+
+/* { idNodo: { id, pose, especie, src, w, h } } para CaminoHacer; sin mascota en su escena, sin entrada. */
+export function mascotasDelCamino(ids, escenas) {
+  const out = {};
+  for (const id of ids) {
+    const m = escenas?.[id]?.mascota;
+    if (!m || !MASCOTAS[m.id]) continue;
+    const { src, tam, pose } = rutaMascota(m.id, m.pose);
+    out[id] = { id: m.id, pose, especie: MASCOTAS[m.id].especie, src, w: tam[0], h: tam[1] };
+  }
+  return out;
+}
+
 function CaminoRetos({ temaId }) {
   const ir = useContext(IrContexto);
   const hechas = useCompletadas();
   const tema = SUBJECTS[MATERIA].topics.find((t) => t.id === temaId);
   const visibles = new Set(piezasVisibles(temaId, HACER).map((p) => p.id));
   const nodos = nodosDe(actividadesDeTipo(tema, HACER).filter((a) => visibles.has(a.id)), hechas);
+  const [escenas, setEscenas] = useState(null);
+  useEffect(() => {
+    let vivo = true;
+    textosDelTema(temaId).then((T) => { if (vivo) setEscenas(T?.ESCENAS ?? {}); }).catch(() => {});
+    return () => { vivo = false; };
+  }, [temaId]);
+  const ids = nodos.map((n) => n.id).join(",");
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const mascotas = useMemo(() => mascotasDelCamino(ids ? ids.split(",") : [], escenas), [ids, escenas]);
   return (
     <div data-camino-macro2026={temaId}>
       <p className="da26-rotulo da26-mono" style={{ margin: "0 0 4px" }}>MACROECONOMÍA · HACER</p>
       <h1 style={{ font: "700 22px/28px var(--planck-font-sans, system-ui)", margin: "0 0 12px" }}>{TEMAS_2026[temaId].titulo}</h1>
-      <CaminoHacer nodos={nodos} onAbrir={(id) => ir(temaId, HACER, id)} vacio="Este tema todavía no tiene retos." />
+      <CaminoHacer nodos={nodos} onAbrir={(id) => ir(temaId, HACER, id)} vacio="Este tema todavía no tiene retos." mascotas={mascotas} />
     </div>
   );
 }
