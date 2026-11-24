@@ -8,12 +8,11 @@
  * la dirección correcta. Al final, un medidor «DA» sube o baja.
  * 5 titulares de 7; puntaje = eslabones correctos / 15.
  */
-import { MascotaRol } from "../comun/mascotas.jsx";
 import { useEffect, useMemo, useState } from "react";
 import { BORDE, CORAL, FONDO, INK, INK_2, SUPERFICIE_2 } from "../comun/colores-da.js";
 import { Boton, MarcoHacer, Retro, movimientoReducido, useCronometro } from "../comun/ui.jsx";
 import { azarDeLaPagina, sortear } from "../comun/azar.js";
-import { BANCO_H4, CONSIGNAS, PARTIDA_H4 } from "./textos.js";
+import { BANCO_H4, CONSIGNAS, ESCENAS, PARTIDA_H4 } from "./textos.js";
 
 export const ID = "da26-h4-empresario";
 export const prepararH4 = (rng = Math.random) => sortear(BANCO_H4, PARTIDA_H4, rng);
@@ -38,17 +37,6 @@ const CSS = `
 
 const flecha = (d) => (d === 1 ? "↑" : d === -1 ? "↓" : "?");
 
-function Empresario({ titular }) {
-  return (
-    <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 10 }} data-titular>
-      <MascotaRol id="empresario" pose="periodico" alto={140} />
-      <div>
-        <p className="da26-rotulo" style={{ margin: "0 0 2px" }}>El empresario oyó:</p>
-        <p style={{ margin: 0, fontSize: 16, lineHeight: 1.35, fontWeight: 600 }}>{titular}</p>
-      </div>
-    </div>
-  );
-}
 
 function Medidor({ dir }) {
   const alto = dir === 1 ? 0.78 : 0.22;
@@ -96,9 +84,9 @@ export default function H4Empresario({ onTerminar, rng = null }) {
   const daReal = h.eslabones.find(([nombre]) => nombre === "DA")?.[1] ?? 1;
 
   return (
-    <MarcoHacer id={ID} consigna={CONSIGNAS[ID]} progreso={`${n + 1} / ${titulares.length}`}>
+    <MarcoHacer id={ID} consigna={CONSIGNAS[ID]} escena={ESCENAS[ID]}
+      mini={{ etiqueta: ESCENAS[ID].porRonda.etiqueta, texto: h.titular, datos: { "data-titular": h.id } }} progreso={`${n + 1} / ${titulares.length}`}>
       <style>{CSS}</style>
-      <div className="da26-entra" key={h.id}><Empresario titular={h.titular} /></div>
       <div className="da26-h4-cadena" data-figura>
         {h.eslabones.map(([nombre, correcta], k) => {
           const encendido = revelados > k;

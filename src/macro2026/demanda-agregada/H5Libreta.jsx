@@ -10,12 +10,11 @@
  * líneas aleatorio en cada página. El margen de la libreta es gris: el coral
  * es solo para el error.
  */
-import { MascotaRol } from "../comun/mascotas.jsx";
 import { useEffect, useMemo, useState } from "react";
 import { BORDE, CORAL, FONDO, INK, INK_2 } from "../comun/colores-da.js";
 import { Boton, MarcoHacer, Retro, movimientoReducido, useCronometro } from "../comun/ui.jsx";
 import { azarDeLaPagina, barajar, sortear } from "../comun/azar.js";
-import { BANCO_H5, CONSIGNAS, PARTIDA_H5 } from "./textos.js";
+import { BANCO_H5, CONSIGNAS, ESCENAS, PARTIDA_H5 } from "./textos.js";
 
 export const ID = "da26-h5-libreta";
 
@@ -94,11 +93,8 @@ export default function H5Libreta({ onTerminar, rng = null }) {
   };
 
   return (
-    <MarcoHacer id={ID} consigna={CONSIGNAS[ID]} progreso={`${n + 1} / ${paginas.length}`}>
+    <MarcoHacer id={ID} consigna={CONSIGNAS[ID]} escena={ESCENAS[ID]} mini={{ texto: ESCENAS[ID].porRonda.todas }} progreso={`${n + 1} / ${paginas.length}`}>
       <style>{CSS}</style>
-      <div style={{ display: "flex", justifyContent: "center", marginBottom: 8, color: INK_2 }}>
-        <MascotaRol id="analista" pose="libreta" alto={140} />
-      </div>
       <div className="da26-h5-hoja da26-entra" key={pg.id} data-figura data-pagina={pg.id}>
         {pg.lineas.map((l, k) => {
           const tocada = tocadas.includes(l.id);

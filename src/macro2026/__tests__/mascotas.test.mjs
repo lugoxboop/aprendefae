@@ -50,11 +50,19 @@ test("MascotaRol: nunca menos de 120 px, proporción real y el rol escrito debaj
 });
 
 test("las piezas publicadas usan su mascota grande: H4 el empresario, H5 la analista, la escalera la autoridad", () => {
+  /*
+   * Rediseño lote 1: en H4 y H5 la mascota pasó a la franja de escena (180 px
+   * en la tarjeta de inicio, 120 px en cada ronda), declarada en ESCENAS de
+   * T1; la pieza la pide con escena={ESCENAS[ID]}.
+   */
   const usa = {
-    "../demanda-agregada/H4Empresario.jsx": /<MascotaRol id="empresario" pose="periodico" alto=\{140\}/,
-    "../demanda-agregada/H5Libreta.jsx": /<MascotaRol id="analista" pose="libreta" alto=\{140\}/,
+    "../demanda-agregada/H4Empresario.jsx": /escena=\{ESCENAS\[ID\]\}/,
+    "../demanda-agregada/H5Libreta.jsx": /escena=\{ESCENAS\[ID\]\}/,
     "../comun/Escalera.jsx": /<MascotaRol id="autoridad-economica" pose="timon" alto=\{120\}/,
   };
+  const t1 = readFileSync(new URL("../demanda-agregada/textos.js", import.meta.url), "utf8");
+  assert.match(t1, /"da26-h4-empresario": plaza\([^)]*mascota: \{ id: "empresario", pose: "periodico" \}/);
+  assert.match(t1, /"da26-h5-libreta": plaza\([^)]*mascota: \{ id: "analista", pose: "libreta" \}/);
   for (const [f, re] of Object.entries(usa)) {
     const src = readFileSync(new URL(f, import.meta.url), "utf8");
     assert.match(src, re, f);

@@ -14,7 +14,7 @@ import { COMPONENTES, ORDEN_COMPONENTES, INK_2 } from "../comun/colores-da.js";
 import { Carrito } from "../comun/carrito.jsx";
 import { Objeto } from "../comun/kit.jsx";
 import { Deslizador, MarcoAprender, usePasos } from "../comun/ui.jsx";
-import { APRENDER } from "./textos.js";
+import { APRENDER, ESCENAS } from "./textos.js";
 
 export const ID = "da26-a1-carrito";
 const T = APRENDER[ID];
@@ -176,7 +176,7 @@ export default function A1Carrito({ onTerminar }) {
     <>
       <style>{CSS}</style>
       <div>
-        <MarcoAprender
+        <MarcoAprender escena={ESCENAS[ID]}
           id={ID} paso={paso} total={4} texto={T[paso]} figura={figura} controles={controles}
           puedeSeguir={puede} onSiguiente={siguiente} onAnterior={anterior} onTerminar={onTerminar}
         />

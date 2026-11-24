@@ -8,7 +8,7 @@ import { useState } from "react";
 import { COMPONENTES, INK, INK_2, BORDE, FONDO } from "../comun/colores-da.js";
 import { BASE, fmtEntero } from "../comun/modelo-da.js";
 import { Boton, Deslizador, MarcoAprender, useAncho, usePasos } from "../comun/ui.jsx";
-import { APRENDER } from "./textos.js";
+import { APRENDER, ESCENAS } from "./textos.js";
 
 export const ID = "da26-a3-columpio-tasa";
 const TX = APRENDER[ID];
@@ -127,7 +127,7 @@ export default function A3ColumpioTasa({ onTerminar }) {
   }
 
   return (
-    <MarcoAprender
+    <MarcoAprender escena={ESCENAS[ID]}
       id={ID} paso={paso} total={4} texto={TX[paso]} figura={figura} controles={controles}
       onSiguiente={siguiente} onAnterior={anterior} onTerminar={onTerminar}
     />

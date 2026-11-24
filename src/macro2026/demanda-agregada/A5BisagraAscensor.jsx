@@ -9,7 +9,7 @@ import { useState } from "react";
 import { arranque, BASE, fmtDecimal, fmtEntero, fmtLimpio, modelo, pendiente, produccion } from "../comun/modelo-da.js";
 import GraficaDA from "../comun/GraficaDA.jsx";
 import { Boton, Deslizador, Interruptor, MarcoAprender, Retro, usePasos } from "../comun/ui.jsx";
-import { APRENDER, RETRO_A5_P5 } from "./textos.js";
+import { APRENDER, ESCENAS, RETRO_A5_P5 } from "./textos.js";
 
 export const ID = "da26-a5-bisagra-ascensor";
 const TX = APRENDER[ID];
@@ -96,7 +96,7 @@ export default function A5BisagraAscensor({ onTerminar }) {
   }
 
   return (
-    <MarcoAprender
+    <MarcoAprender escena={ESCENAS[ID]}
       id={ID} paso={paso} total={6} texto={TX[paso]} figura={figura} controles={controles}
       onSiguiente={siguiente} onAnterior={anterior} onTerminar={onTerminar}
     />

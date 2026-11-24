@@ -11,7 +11,7 @@ import { useState } from "react";
 import { COMPONENTES, GRIS, INK, INK_2, BORDE, FONDO, TINTA_SOBRE_COLOR } from "../comun/colores-da.js";
 import { fmtEntero } from "../comun/modelo-da.js";
 import { Deslizador, MarcoAprender, useAncho, usePasos } from "../comun/ui.jsx";
-import { APRENDER } from "./textos.js";
+import { APRENDER, ESCENAS } from "./textos.js";
 
 export const ID = "da26-a4-no-miran-renta";
 const TX = APRENDER[ID];
@@ -148,7 +148,7 @@ export default function A4NoMiranRenta({ onTerminar }) {
   }
 
   return (
-    <MarcoAprender
+    <MarcoAprender escena={ESCENAS[ID]}
       id={ID} paso={paso} total={5} texto={TX[paso]} figura={figura} controles={controles}
       onSiguiente={siguiente} onAnterior={anterior} onTerminar={onTerminar}
     />

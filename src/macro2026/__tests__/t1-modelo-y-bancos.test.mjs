@@ -157,7 +157,8 @@ test("Aprender: ≤ 20 palabras por pantalla, y el conteo coincide con el del di
     "da26-a3-columpio-tasa": [12, 9, 15, 15],
     "da26-a4-no-miran-renta": [13, 16, 10, 13, 13],
     "da26-a5-bisagra-ascensor": [11, 12, 14, 13, 13, 12],
-    "da26-a6-eco-multiplicador": [11, 15, 16, 16, 14, 10],
+    /* P1: «El Gobierno gasta 100 en una vía.» pasó a la franja de escena (rediseño lote 1): 11 → 4. */
+    "da26-a6-eco-multiplicador": [4, 15, 16, 16, 14, 10],
   };
   for (const [id, pantallas] of Object.entries(APRENDER)) {
     for (const t of pantallas) assert.ok(palabras(t) <= 20, `${id}: «${t}»`);

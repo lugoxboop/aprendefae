@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 import { ETAPAS_H6, FIJAR_MAX_H6, arranque, fmtEntero, juzgarH6, modelo, pendiente, produccion } from "../comun/modelo-da.js";
 import GraficaDA from "../comun/GraficaDA.jsx";
 import { Boton, Deslizador, MarcoHacer, Retro, movimientoReducido, useCronometro } from "../comun/ui.jsx";
-import { CONSIGNAS } from "./textos.js";
+import { CONSIGNAS, ESCENAS } from "./textos.js";
 import { INK_2 } from "../comun/colores-da.js";
 
 export const ID = "da26-h6-meta";
@@ -80,9 +80,9 @@ export default function H6Meta({ onTerminar }) {
   };
 
   return (
-    <MarcoHacer id={ID} consigna={CONSIGNAS[ID]} progreso={`${k + 1} / ${ETAPAS_H6.length}`}>
+    <MarcoHacer id={ID} consigna={CONSIGNAS[ID]} escena={ESCENAS[ID]}
+      mini={{ texto: e.contexto, datos: { "data-contexto": e.id } }} progreso={`${k + 1} / ${ETAPAS_H6.length}`}>
       <p className="da26-rotulo da26-mono" style={{ margin: "0 0 2px" }} data-etapa={e.id}>ETAPA {k + 1} · {e.nombre.toUpperCase()}</p>
-      <p className="da26-entra" key={e.id} style={{ margin: "0 0 6px", fontSize: 15, lineHeight: 1.35 }} data-contexto>{e.contexto}</p>
       <div data-figura>
         <GraficaDA lineas={[{ id: "da", arranque: arranque(p), pendiente: pendiente(p) }]} bisectriz y0={y0} meta={e.meta}
           titulo={`Producción de equilibrio ${fmtEntero(y0)}; meta ${fmtEntero(e.meta)}`} />
