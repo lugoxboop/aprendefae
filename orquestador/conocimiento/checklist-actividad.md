@@ -1,5 +1,8 @@
 # El checklist de 5 por actividad (orden de Mateo, 24-nov)
 
+> **Regla maestra** de las instrucciones del proyecto: prevalece sobre cualquier
+> otra regla del repo. Si algo de aquí choca con ella, manda ella.
+
 **Aplica a toda pieza, Aprender y Hacer, y a cada pregunta dentro de ella.**
 Nadie entrega, construye ni publica una pieza sin las 5 marcas. Reemplaza la
 costumbre de «mandar la pregunta sola»: Mateo vio que el estudiante no entiende
@@ -13,14 +16,15 @@ crecido…» en política fiscal, sin nada antes).
    acompaña. No tiene que ser A-B-C-D.
 2. **Contexto antes de la pregunta.** Una situación corta que diga de qué va
    esto: «El Gobierno decidió subir el IVA para tapar el hueco del
-   presupuesto». **Corto y sintetizado** (máximo 25 palabras), nunca un
+   presupuesto». **Corto y sintetizado** (máximo 30 palabras), nunca un
    párrafo. La pregunta misma puede llevar también su pedacito de contexto.
 3. **Poner al estudiante en un papel.** «Imagina que te contratan como
    economista del Ministerio de Hacienda…», «Eres el asesor de la
    exportadora…». Después del papel viene la pregunta o la problemática: qué
-   se espera que responda o haga.
+   se espera que responda o haga. **La pregunta: máximo 12 palabras**, y cada
+   opción lleva su propia retroalimentación (nunca una genérica).
 4. **Apartado visual grande.** Cada actividad y cada pregunta tiene su
-   imagen o animación: **las mascotas haciendo la acción** (el elenco por rol
+   imagen o animación: **las mascotas haciendo la acción, como protagonistas** (el elenco por rol
    está en `guia-estilo-imagenes.md`). Si falta una escena, se le pide a
    Gemini en el chat «Chibi Fox Model Sheet». **Nunca una cosita chiquita:**
    mínimo 120 px; si la mascota protagoniza, 180 px o más.
@@ -31,14 +35,14 @@ crecido…» en política fiscal, sin nada antes).
 ## La marca final (antes de pasar a la siguiente)
 - [ ] ¿Ya tiene **contexto**?
 - [ ] ¿Ya puse al estudiante en un **papel**?
-- [ ] ¿Ya tiene **pregunta** clara (qué debe responder o hacer)?
+- [ ] ¿Ya tiene **pregunta** clara (≤ 12 palabras) con retroalimentación por opción?
 - [ ] ¿Ya tiene su **apartado visual** grande, con las mascotas?
 - [ ] ¿Ya diseñé la **interfaz**?
 - [ ] ¿Es **fácil de entender**, intuitiva y lúdica? (Fácil de entender, no
       fácil de resolver.)
 
 ## Cómo convive con las reglas de longitud
-- El contexto (≤ 25 palabras) y el papel (≤ 15) van en su propio bloque,
+- El contexto (≤ 30 palabras) y el papel (≤ 15) van en su propio bloque,
   encima de la pregunta, y **no cuentan** dentro de las 12 palabras de la
   consigna ni de las 20 de una pantalla Aprender.
 - En una Aprender, el contexto va en la primera pantalla de la pieza; las
