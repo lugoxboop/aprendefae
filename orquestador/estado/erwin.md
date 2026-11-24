@@ -1,5 +1,5 @@
-2026-11-24 10:57 (hora Bogotá)
-- Prototipo de horas de embajadores (proyecto aparte, pedido de Mateo): en curso — PR abierto (rama erwin/horas-embajadores-prototipo), ruta oculta /turnos-7k/
+2026-11-24 11:16 (hora Bogotá)
+- Prototipo de horas de embajadores (proyecto aparte, pedido de Mateo): terminado — #745 fusionado y en vivo en aprendefae.com/turnos-7k/
 - Accesorios de mascotas (pedido de Mateo): 25 accesorios ilustrados puestos sobre las 6 marionetas y en la tienda por grupos; migración 0169 solo suma precios — PR abierto (rama erwin/accesorios-mascotas)
 - Mascotas más grandes (#698) y mascotas animadas (#696): terminado — fusionados
 - #556 ranking a 320 sin nombres: terminado — #563 fusionado y en producción
