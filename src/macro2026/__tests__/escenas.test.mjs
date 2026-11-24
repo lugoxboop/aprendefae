@@ -163,6 +163,35 @@ test("textos: tu papel ≤ 15 palabras, contexto ≤ 30, mini contexto ≤ 12, c
   }
 });
 
+/* Variedad de animales (pedido de Mateo): la especie es el rol, así que se
+   reparte cuál rol aparece. En el orden publicado de cada tema: dos piezas
+   seguidas no repiten especie; ninguna especie pasa de 1/4 de las piezas; y
+   aparecen al menos 5 especies. Una franja sin mascota corta la cadena. */
+const ESPECIES_ESCENA = { "analista-empresario": ["analista", "empresario"] };
+const especiesDe = (e) => {
+  if (e.escena) {
+    assert.ok(ESPECIES_ESCENA[e.escena], `escena ${e.escena} sin especies declaradas`);
+    return ESPECIES_ESCENA[e.escena].map((r) => MASCOTAS[r].especie);
+  }
+  return e.mascota ? [MASCOTAS[e.mascota.id].especie] : [];
+};
+test("variedad: dos piezas seguidas no repiten especie, ninguna pasa de 1/4 y hay al menos 5 especies por tema", () => {
+  for (const { nombre, publicadas, textos } of TEMAS) {
+    const cuenta = {};
+    let previa = [];
+    for (const id of publicadas) {
+      const esp = especiesDe(textos.ESCENAS[id]);
+      for (const x of esp) {
+        assert.ok(!previa.includes(x), `${nombre} ${id}: repite ${x} con la pieza anterior`);
+        cuenta[x] = (cuenta[x] ?? 0) + 1;
+      }
+      previa = esp;
+    }
+    for (const [x, n] of Object.entries(cuenta)) assert.ok(n <= publicadas.length / 4, `${nombre}: ${x} en ${n} de ${publicadas.length}`);
+    assert.ok(Object.keys(cuenta).length >= 5, `${nombre}: solo ${Object.keys(cuenta).length} especies`);
+  }
+});
+
 test("dos piezas seguidas del mismo tema no repiten hora + lado", () => {
   for (const { piezas, textos } of TEMAS) {
     for (let k = 1; k < piezas.length; k += 1) {
@@ -205,7 +234,7 @@ async function montar(T, id) {
   return { el, q: (s) => el.querySelector(s), clic, desmontar: () => act(async () => raiz.unmount()) };
 }
 /* Comparaciones con === null: un nodo de jsdom en el diff de assert agota la memoria. */
-const altoMascota = (esc) => Number(esc.querySelector("img").getAttribute("height"));
+const altoMascota = (esc) => Number(esc.querySelector("img:not([data-fondo-img])").getAttribute("height"));
 
 for (const T of TEMAS) test(`Aprender ${T.nombre}: escena completa arriba en P1 (mascota 180 px, tu papel y contexto antes del texto); P2 sin escena`, async () => {
   for (const p of T.piezas.filter((x) => x.tipo === "aprender")) {
@@ -216,7 +245,7 @@ for (const T of TEMAS) test(`Aprender ${T.nombre}: escena completa arriba en P1 
     assert.ok(esc, `${p.id}: escena`);
     assert.equal(esc.dataset.compacto, "0");
     assert.equal(esc.dataset.tema, T.tema);
-    if (SIN_MASCOTA.has(p.id)) assert.equal(esc.querySelector("img") === null, true, `${p.id}: franja sin mascota`);
+    if (SIN_MASCOTA.has(p.id)) assert.equal(esc.querySelector("img:not([data-fondo-img])") === null, true, `${p.id}: franja sin mascota`);
     else assert.equal(altoMascota(esc), ALTO_ESCENA, `${p.id}: mascota protagonista a 180`);
     assert.equal(m.q("[data-papel]").textContent, `TU PAPEL${e.rol}`);
     assert.equal(m.q("[data-contexto-escena]").textContent, e.contexto);
@@ -247,7 +276,7 @@ for (const T of TEMAS) test(`Hacer ${T.nombre}: tarjeta de inicio con la escena 
     await m.clic("[data-empezar]");
     const esc = m.q("[data-escenario]");
     assert.equal(esc.dataset.compacto, "1");
-    if (SIN_MASCOTA.has(p.id)) assert.equal(esc.querySelector("img") === null, true, `${p.id}: compacta sin mascota`);
+    if (SIN_MASCOTA.has(p.id)) assert.equal(esc.querySelector("img:not([data-fondo-img])") === null, true, `${p.id}: compacta sin mascota`);
     else assert.equal(altoMascota(esc), ALTO_COMPACTO, `${p.id}: compacta a 120`);
     assert.equal(m.q("[data-papel]") === null, true, "la compacta no repite tu papel");
     const mini = m.q("[data-contexto-escena]").textContent;
@@ -276,8 +305,8 @@ test("pc26-h4: sin mascota en la franja; las dos del cuerpo a 150 px", async () 
   const m = await montar(TEMAS[4], "pc26-h4-a-quien-sirve");
   try {
     await m.clic("[data-empezar]");
-    assert.equal(m.q("[data-escenario] img") === null, true);
-    const altos = [...m.el.querySelectorAll("[data-lado] img")].map((i) => Number(i.getAttribute("height")));
+    assert.equal(m.q("[data-escenario] img:not([data-fondo-img])") === null, true);
+    const altos = [...m.el.querySelectorAll("[data-lado] img:not([data-fondo-img])")].map((i) => Number(i.getAttribute("height")));
     assert.deepEqual(altos, [150, 150]);
   } finally { await m.desmontar(); }
 });
@@ -289,4 +318,44 @@ test("pc26-h5: el inversionista cambia de pose con el caso (monedas al ahorrar, 
     assert.equal(m.q("[data-escenario] [data-mascota-rol]").getAttribute("data-pose"), "monedas");
     assert.equal(m.q("[data-caso]").dataset.caso, "ahorro");
   } finally { await m.desmontar(); }
+});
+
+/* fondos-vida: el telón ilustrado de cada tema y el fondo de la página. */
+test("fondos-vida: cada tema pinta su telón (webp en public, perezoso, anclado a la derecha) y false deja las siluetas", async () => {
+  const { existsSync } = await import("node:fs");
+  const { renderToStaticMarkup } = await import("react-dom/server");
+  const { Escenario, FONDOS_TEMA, CSS_ESCENA } = await import("../comun/Escenario.jsx");
+  for (const tema of Object.keys(TEMAS_ESCENA)) {
+    const url = FONDOS_TEMA[tema];
+    assert.ok(url, `${tema}: tiene telón`);
+    assert.ok(existsSync(new URL(`../../../public${url}`, import.meta.url)), `${tema}: ${url} existe`);
+    const html = renderToStaticMarkup(h(Escenario, { tema, mascota: { id: "analista", pose: "lupa" }, contexto: "x" }));
+    assert.match(html, new RegExp(`<img[^>]*src="${url}"[^>]*loading="lazy"[^>]*decoding="async"`), `${tema}: img perezosa`);
+    assert.match(html, /da26-escena-velo/, `${tema}: velo`);
+    assert.doesNotMatch(html, /da26-escena-lejos/, `${tema}: sin siluetas detrás`);
+    const sin = renderToStaticMarkup(h(Escenario, { tema, fondo: false, contexto: "x" }));
+    assert.doesNotMatch(sin, /data-fondo-img/);
+    assert.match(sin, /data-capa="lejos"/);
+    assert.match(sin, /data-capa="cerca"/);
+  }
+  assert.match(CSS_ESCENA, /object-position: right center/);
+  assert.match(CSS_ESCENA, /prefers-reduced-motion[^}]*da26-escena-lejos/);
+});
+
+test("fondos-vida: el fondo de página lleva el resplandor y los iconos del tema, y se queda quieto con «reducir movimiento»", async () => {
+  const { renderToStaticMarkup } = await import("react-dom/server");
+  const { default: FondoPagina, ESCENA_DE_TEMA, teselaSvg, fondoAtmosfera } = await import("../comun/FondoPagina.jsx");
+  for (const t of TEMAS) assert.ok(ESCENA_DE_TEMA[t.carpeta], `${t.carpeta}: tiene escena`);
+  for (const tema of Object.keys(TEMAS_ESCENA)) {
+    const svg = teselaSvg(tema);
+    assert.ok(svg.includes(`stroke="${TEMAS_ESCENA[tema].acento}"`), `${tema}: iconos en su acento`);
+    assert.equal((svg.match(/<g /g) ?? []).length, 4, `${tema}: cuatro iconos por tesela`);
+    assert.match(fondoAtmosfera(tema), /radial-gradient[\s\S]*radial-gradient[\s\S]*#0E1B2E/);
+    const html = renderToStaticMarkup(h(FondoPagina, { tema }, "hola"));
+    assert.match(html, /da26-pagina-patron/);
+    assert.match(html, /opacity: ?\.07/);
+    assert.match(html, /prefers-reduced-motion: reduce\) \{ \.da26-pagina-patron \{ animation: none/);
+  }
+  const plano = renderToStaticMarkup(h(FondoPagina, { tema: null }, "hola"));
+  assert.doesNotMatch(plano, /da26-pagina-patron/);
 });

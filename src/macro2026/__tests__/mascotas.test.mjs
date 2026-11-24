@@ -62,7 +62,8 @@ test("las piezas publicadas usan su mascota grande: H4 el empresario, H5 la anal
   };
   const t1 = readFileSync(new URL("../demanda-agregada/textos.js", import.meta.url), "utf8");
   assert.match(t1, /"da26-h4-empresario": plaza\([^)]*mascota: \{ id: "empresario", pose: "periodico" \}/);
-  assert.match(t1, /"da26-h5-libreta": plaza\([^)]*mascota: \{ id: "analista", pose: "libreta" \}/);
+  /* Variedad de animales (fondos-vida): en H5 la libreta la revisa el inversionista. */
+  assert.match(t1, /"da26-h5-libreta": plaza\([^)]*mascota: \{ id: "inversionista", pose: "monedas" \}/);
   for (const [f, re] of Object.entries(usa)) {
     const src = readFileSync(new URL(f, import.meta.url), "utf8");
     assert.match(src, re, f);

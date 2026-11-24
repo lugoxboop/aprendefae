@@ -26,7 +26,8 @@ import { PIEZAS_T4 } from "./politica-monetaria/catalogo.js";
 import { PIEZAS_T5 } from "./politica-cambiaria/catalogo.js";
 import { Raiz, Boton } from "./comun/ui.jsx";
 import CierreAprender from "./comun/CierreAprender.jsx";
-import { FONDO, INK, INK_2, BORDE } from "./comun/colores-da.js";
+import { INK, INK_2, BORDE } from "./comun/colores-da.js";
+import FondoPagina, { ESCENA_DE_TEMA } from "./comun/FondoPagina.jsx";
 
 const COMPONENTES = {
   "da26-a1-carrito": lazy(() => import("./demanda-agregada/A1Carrito.jsx")),
@@ -199,7 +200,7 @@ function Pieza({ id }) {
 export default function VistaPrevia({ extra = null, onBack }) {
   const id = ID_DE_EXTRA(extra);
   return (
-    <div style={{ minHeight: "100vh", background: FONDO, color: INK }}>
+    <FondoPagina tema={id && piezaDe(id) ? ESCENA_DE_TEMA[temaDe(id).id] : null} style={{ color: INK }}>
       <Raiz data-vista-previa-macro2026>
         <div style={{ padding: "16px 16px 56px", maxWidth: 672, margin: "0 auto" }}>
           {!id && (
@@ -213,6 +214,6 @@ export default function VistaPrevia({ extra = null, onBack }) {
           </p>
         </div>
       </Raiz>
-    </div>
+    </FondoPagina>
   );
 }
