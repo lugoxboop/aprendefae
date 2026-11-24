@@ -38,6 +38,8 @@ import * as T5 from "./politica-cambiaria/catalogo.js";
 import { Raiz, Boton } from "./comun/ui.jsx";
 import CierreAprender from "./comun/CierreAprender.jsx";
 import { FONDO, INK, INK_2 } from "./comun/colores-da.js";
+import { MallaAnimada } from "../components/backgrounds/MeshGradientBackground.jsx";
+import { MANCHAS_ACTIVIDAD } from "./comun/fondo.js";
 
 const MATERIA = "macroeconomia";
 
@@ -305,10 +307,13 @@ export default function TemaMacro2026({ temaId, modo = null, extra = null, onBac
   const id = extra ? String(extra).split("?")[0] : null;
   const pieza = id && tema?.publicada(id) && tema.componentes[id] ? tema.piezas.find((p) => p.id === id && p.tipo === mitad) : null;
   return (
-    <div style={{ minHeight: "100vh", background: FONDO, color: INK }}>
+    <div style={{ position: "relative", minHeight: "100vh", background: FONDO, color: INK }}>
+      {/* El fondo vivo del sitio (la malla de Inicio, Perfil y Amigos), con las
+          manchas de actividad: sin coral, que en Macro significa error. */}
+      <MallaAnimada manchas={MANCHAS_ACTIVIDAD} fondo={FONDO} />
       <IrContexto.Provider value={onIr ? (t, m, i = null) => onIr(t, m, i) : irPorHash}>
       <Raiz data-macro2026-publicado={temaId}>
-        <div style={{ padding: "16px 16px 56px", maxWidth: 672, margin: "0 auto" }}>
+        <div data-fondo-actividad style={{ position: "relative", zIndex: 1, padding: "16px 16px 56px", maxWidth: 672, margin: "0 auto" }}>
           {!pieza && <FilaVolver><Boton onClick={onBack} data-volver-indice>‹ Macroeconomía</Boton></FilaVolver>}
           {pieza && mitad === HACER && <RetoHacer key={pieza.id} temaId={temaId} id={pieza.id} />}
           {pieza && mitad === APRENDER && <PiezaAprender key={pieza.id} temaId={temaId} id={pieza.id} />}
