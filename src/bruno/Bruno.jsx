@@ -108,7 +108,7 @@ const CSS = `
   .fae-bruno-entra, .fae-bruno-entra-propia, .fae-bruno-palabra, .fae-bruno-punto, .fae-bruno-asoma, .fae-bruno-luz { animation: none !important; }
 }
 .fae-bruno-escenario { width: 84px; height: 84px; }
-@media (max-width: 360px) { .fae-bruno-escenario { width: 68px; height: 68px; } .fae-bruno-boton { width: 52px !important; height: 52px !important; right: 10px !important; } }
+@media (max-width: 360px) { .fae-bruno-panel { height: min(90vh, 600px) !important; } .fae-bruno-sugerencias { padding-left: 0 !important; } .fae-bruno-escenario { width: 68px; height: 68px; } .fae-bruno-boton { width: 52px !important; height: 52px !important; right: 10px !important; } }
 @media (min-width: 640px) { .fae-bruno-panel { left: auto !important; width: 400px; right: 16px !important; } }
 `;
 
@@ -292,7 +292,7 @@ export default function Bruno({ materia = "", tema = "", preguntar = preguntarAB
             <Saludo nombre={nombre} />
           </Turno>
           {turnos.length === 0 && (
-            <div key={`chips-${aperturas}`} style={{ display: "flex", flexWrap: "wrap", gap: "8px", paddingLeft: "40px" }}>
+            <div key={`chips-${aperturas}`} className="fae-bruno-sugerencias" style={{ display: "flex", flexWrap: "wrap", gap: "8px", paddingLeft: "40px" }}>
               {SUGERENCIAS.map(({ texto: s, Icono }, k) => (
                 <span key={s} className="fae-bruno-entra" style={{ animationDelay: `${300 + k * 80}ms`, maxWidth: "100%" }}>
                   <button type="button" data-bruno-sugerencia onClick={() => enviar(s)} className="fae-bruno-chip"
