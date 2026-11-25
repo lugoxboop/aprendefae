@@ -2,13 +2,13 @@
 id: microvideo-ley-demanda
 titulo: Microvideo de prueba — La ley de la demanda (Macroeconomía)
 procedencia: encargo de Mateo, 2026-11-25; Jane
-estado: v5 en revisión de Mateo. NO publicado, no visible a estudiantes.
+estado: aprobado por Mateo (25-nov, 13:12 Bogotá) con la voz em_alex; publicación pendiente de dónde alojar el video.
 ---
 
 # La ley de la demanda (prueba)
 
 - **Video:** no vive en el repo. Está en el almacenamiento del proyecto:
-  `/mnt/project-files/jane/microvideos/ley-demanda-v5.mp4` (1080 × 1920, 30 fps, 44 s, H.264 + AAC).
+  `/mnt/project-files/jane/microvideos/ley-demanda-v6-alex.mp4` (1080 × 1920, 30 fps, 44,7 s, H.264 + AAC).
 - **Una idea:** si el precio sube, baja la cantidad demandada (ceteris
   paribus); y eso es moverse **sobre** la curva, no mover la curva.
 - **Fuente:** el material de Macro 2026 del profesor (fichas 1–5) no trae la
@@ -64,7 +64,7 @@ cd fuente && npm install
 node gen-mascotas.mjs           # SVG de las marionetas del repo → src/mascotas.json
 cp -r ../../../../../../public/mascotas public/   # piezas de las mascotas
 # voz: ver ../../voz-narrador.md; luego, desde fuente/voz:
-python3 tts2.py ef_dora ../public/audio 1.0 && cp ../public/audio/frases.json ../src/
+python3 tts2.py em_alex ../public/audio 1.0 && cp ../public/audio/frases.json ../src/
 # fuentes: copiar a public/fonts los woff2 de @fontsource/inter (500, 600, 700) y @fontsource/sora (600, 700)
 npx remotion render src/index.jsx LeyDemanda salida/ley-demanda.mp4 --codec=h264 --crf=20 \
   --browser-executable=/opt/pw-browsers/chromium_headless_shell-1243/chrome-headless-shell-linux64/chrome-headless-shell

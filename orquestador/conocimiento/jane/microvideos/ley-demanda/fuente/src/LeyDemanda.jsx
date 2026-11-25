@@ -40,8 +40,8 @@ const HOJA = "#4fc2b2"; // --success
 const EASE = Easing.bezier(0.3, 0.9, 0.4, 1); // la curva del sitio
 
 /* ── Tiempos: salen del audio real (frases.json = duración medida de cada frase) ── */
-const PRE = [0.25, 1.0, 0.5, 0.45, 0.45, 0.55, 0.45, 0.5, 0.45];
-const COLA = 1.4;
+const PRE = [0.25, 0.9, 0.4, 0.4, 0.4, 0.5, 0.4, 0.45, 0.4];
+const COLA = 0.9;
 const INICIO = [];
 {
   let t = 0;
