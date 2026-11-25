@@ -46,7 +46,9 @@ const CARPETA = "supabase/migrations";
  * desde la 0014, unas etapas opcionales al final. Las filas viejas no la traen
  * y valen 1, que es el valor por defecto de la columna.
  */
-const FILA = /\(\s*'([^']+)',\s*'([^']+)',\s*'([^']+)',\s*'(exploratoria|evaluativa)',\s*'(facil|medio|dificil|experto)',\s*(\d+)\s*(?:,\s*(\d+)\s*)?\)/g;
+const FILA = /\(\s*'([^']+)',\s*'([^']+)',\s*'([^']+)',\s*'(exploratoria|evaluativa)',\s*'(facil|medio|dificil|experto)',\s*(\d+)\s*(?:,\s*(\d+)\s*)?(?:,\s*(true|false)\s*)?\)/g;
+/* El último valor opcional es renovable_diario puesto en el mismo insert (0275):
+   en el rango de una célula el guardián no deja escribir el update aparte. */
 
 /*
  * Un borrado del catálogo. Se escribe con `in (...)` incluso para un solo id
@@ -161,6 +163,11 @@ function renovablesDelServidor() {
   const salida = new Set();
   for (const archivo of readdirSync(CARPETA).filter((f) => f.endsWith(".sql")).sort()) {
     const sql = readFileSync(join(CARPETA, archivo), "utf8");
+    /* La marca puesta en el propio insert (desde la 0275). */
+    for (const ins of sql.matchAll(/insert\s+into\s+(?:public\.)?actividad_catalogo\b/gi)) {
+      const fin = sql.indexOf(";", ins.index);
+      for (const m of sql.slice(ins.index, fin === -1 ? undefined : fin).matchAll(FILA)) if (m[8] === "true") salida.add(m[1]);
+    }
     const updates = sql.matchAll(
       /update\s+(?:public\.)?actividad_catalogo\s+set\s+renovable_diario\s*=\s*(true|false)\s+where\s+activity_id\s+in\s*\(([^)]*)\)/gi
     );
