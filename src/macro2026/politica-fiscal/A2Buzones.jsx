@@ -14,7 +14,8 @@ import { BORDE, FONDO, INK, INK_2 } from "../comun/colores-da.js";
 import { MarcoAprender, usePasos } from "../comun/ui.jsx";
 import { useArrastre } from "../comun/arrastre.js";
 import { ORDEN_TRIBUTOS, TRIBUTOS, tonoTributo } from "../comun/tributos.js";
-import { IconoBuzon, IconoMoneda } from "../comun/iconos-pf.jsx";
+import { IconoMoneda } from "../comun/iconos-pf.jsx";
+import { BuzonIlustrado, Ilustrado } from "../comun/ilustrados.jsx";
 import { APRENDER, A2, ESCENAS } from "./textos.js";
 
 export const ID = "pf26-a2-buzones";
@@ -31,46 +32,33 @@ export const CSS_A2 = `
 .pf26-a2-escena { margin-top: 10px; min-height: 120px; border: 1px solid ${BORDE}; border-radius: 12px; display: grid; place-items: center; padding: 8px; }
 @keyframes pf26-a2-cae { from { transform: translateY(-40px); opacity: 0; } to { transform: none; opacity: 1; } }
 .pf26-a2-cae { animation: pf26-a2-cae 420ms cubic-bezier(.3,.9,.4,1) both 1; }
+@keyframes ilu-salta { 0%, 100% { transform: none; } 40% { transform: translateY(-6px) scale(1.06); } }
+.ilu-salta { animation: ilu-salta 420ms cubic-bezier(.3,.9,.4,1) 1; }
 .pf26-a2-barrera { transform-origin: 24px 70px; transition: transform 520ms cubic-bezier(.3,.9,.4,1) 200ms; }
 .pf26-a2-escena[data-escena="tasa"] .pf26-a2-barrera { transform: rotate(-70deg); }
-@media (prefers-reduced-motion: reduce) { .pf26-a2-cae { animation: none; } .pf26-a2-barrera { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .pf26-a2-cae, .ilu-salta { animation: none; } .pf26-a2-barrera { transition: none; } }
 `;
 
+/* Qué pasa con la moneda, ilustrado (Gemini, 25-nov; familia 12): el pozo
+ * común lleno de monedas (impuesto), la barrera del parqueadero que se abre
+ * con el tiquete (tasa) y la casa con su andén nuevo (contribución). La
+ * moneda que cae sigue en vivo encima. */
 export function Escena({ tipo }) {
   const tono = tonoTributo(tipo);
-  if (tipo === "impuesto") {
-    return (
-      <svg viewBox="0 0 220 110" style={{ width: 220, height: 110 }} role="img" aria-label={A2.pozo}>
-        <ellipse cx="110" cy="80" rx="90" ry="24" fill="none" stroke={tono} strokeWidth="3" />
-        {[50, 72, 94, 118, 140, 162, 84, 130, 106].map((x, k) => (
-          <circle key={k} cx={x} cy={k > 5 ? 74 : 84} r="8" fill="none" stroke={INK_2} strokeWidth="2" />
-        ))}
-        <circle className="pf26-a2-cae" cx="110" cy="62" r="9" fill={tono} />
-        <text x="110" y="24" textAnchor="middle" fill={INK} fontSize="14" fontWeight="600">{A2.pozo}</text>
-      </svg>
-    );
-  }
-  if (tipo === "tasa") {
-    return (
-      <svg viewBox="0 0 220 110" style={{ width: 220, height: 110 }} role="img" aria-label={`${A2.ticket} y barrera arriba`}>
-        <rect x="20" y="70" width="10" height="30" fill={INK_2} />
-        <g className="pf26-a2-barrera"><rect x="24" y="66" width="110" height="8" rx="3" fill={tono} /></g>
-        <rect className="pf26-a2-cae" x="150" y="40" width="54" height="36" rx="4" fill="none" stroke={tono} strokeWidth="2.5" strokeDasharray="5 3" />
-        <text x="177" y="63" textAnchor="middle" fill={INK} fontSize="13" fontWeight="600">{A2.ticket}</text>
-      </svg>
-    );
-  }
-  if (tipo === "contribucion") {
-    return (
-      <svg viewBox="0 0 220 110" style={{ width: 220, height: 110 }} role="img" aria-label={A2.anden}>
-        <path d="M70 70V40l40-26 40 26v30Z" fill="none" stroke={INK_2} strokeWidth="3" strokeLinejoin="round" />
-        <rect x="100" y="50" width="20" height="20" fill="none" stroke={INK_2} strokeWidth="2.5" />
-        <rect className="pf26-a2-cae" x="30" y="78" width="160" height="12" rx="2" fill={tono} />
-        <text x="110" y="106" textAnchor="middle" fill={INK} fontSize="13" fontWeight="600">{A2.anden}</text>
-      </svg>
-    );
-  }
-  return null;
+  const dibujo = { impuesto: ["pozo-monedas", A2.pozo], tasa: ["barrera-peaje", `${A2.ticket} y barrera arriba`], contribucion: ["casa-anden", A2.anden] }[tipo];
+  if (!dibujo) return null;
+  const rotulo = { impuesto: A2.pozo, tasa: A2.ticket, contribucion: A2.anden }[tipo];
+  return (
+    <div role="img" aria-label={dibujo[1]} data-escena-ilustrada={tipo} style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+      <span style={{ position: "relative", display: "block" }}>
+        <Ilustrado id={dibujo[0]} alto={96} />
+        <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true" className="pf26-a2-cae" style={{ position: "absolute", left: "50%", top: -6, marginLeft: -11, width: 22, height: 22 }}>
+          <circle cx="11" cy="11" r="9" fill={tono} stroke="#0E1B2E" strokeWidth="2" />
+        </svg>
+      </span>
+      <span style={{ font: "600 14px/1.2 var(--planck-font-sans, system-ui, sans-serif)", color: INK }}>{rotulo}</span>
+    </div>
+  );
 }
 
 export default function A2Buzones({ onTerminar }) {
@@ -98,7 +86,7 @@ export default function A2Buzones({ onTerminar }) {
           return (
             <Etq key={t} {...(paso > 0 ? { type: "button" } : {})} className="pf26-a2-buzon" data-buzon={t} style={{ "--tono": tonoTributo(t) }}
               aria-label={paso > 0 ? `Echar la moneda en ${TRIBUTOS[t].nombre}` : undefined} {...props}>
-              <IconoBuzon size={52} tono={tonoTributo(t)} abierto={echada === t} />
+              <BuzonIlustrado tributo={t} alto={62} abierto={echada === t} />
               <span>{TRIBUTOS[t].nombre}</span>
             </Etq>
           );

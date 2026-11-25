@@ -209,6 +209,10 @@ de rectángulos o líneas a mano como protagonistas. El kit plano de 36 objetos
   #2747F5, azul claro #6F86FF, gris azulado #C9D1E4. Sin texto, sin letras, sin
   números. Fondo verde croma plano #00FF00 que llena toda la imagen, sin sombra
   ni suelo. Objeto completo centrado con margen amplio.»
+- **Si Gemini responde «soy un modelo de lenguaje»** (pasa tras unas 7
+  imágenes en un chat): chat nuevo, estilo bloqueado completo al inicio.
+- **Un objeto en varios colores** (los buzones por tributo): se pide en gris
+  claro y se tiñe con `scripts/ilustrados/tenir.py entrada salida #rrggbb`.
 - **Lo que se llena en vivo** (agua, mercurio, compras): pedir el recipiente
   VACÍO y de vidrio o rejilla abierta («se ve el fondo a través»). En la pieza:
   el objeto detrás, lo que se llena en medio y una segunda copia del objeto

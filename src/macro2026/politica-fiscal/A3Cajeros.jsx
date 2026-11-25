@@ -16,6 +16,7 @@ import { Boton, MarcoAprender, usePasos } from "../comun/ui.jsx";
 import { barajar, azarDeLaPagina } from "../comun/azar.js";
 import { IconoBilletera, IconoCamisa, IconoDirecto, IconoIndirecto, IconoMoneda } from "../comun/iconos-pf.jsx";
 import { Objeto } from "../comun/kit.jsx";
+import { Ilustrado } from "../comun/ilustrados.jsx";
 import { APRENDER, A3, ESCENAS } from "./textos.js";
 
 export const ID = "pf26-a3-cajeros";
@@ -60,9 +61,11 @@ const Marca = ({ tipo, size = 28 }) => (tipo === "directo" ? <IconoDirecto size=
 function Cajero({ tipo }) {
   return (
     <div className="pf26-a3-cajero" data-cajero={tipo}>
-      <Marca tipo={tipo} size={36} />
+      {/* La ventanilla que mira tu renta (directo) y la caja registradora de
+          la tienda (indirecto), ilustradas (Gemini, 25-nov; familia 12). */}
+      <Ilustrado id={tipo === "directo" ? "ventanilla" : "caja-registradora"} alto={64} />
       <span>{tipo === "directo" ? A3.directo : A3.indirecto}</span>
-      {tipo === "indirecto" && <span style={{ marginLeft: "auto" }}><IconoCamisa size={32} /><span className="da26-solo-lector">{A3.camisa}</span></span>}
+      {tipo === "indirecto" && <span style={{ marginLeft: "auto" }}><IconoCamisa size={36} /><span className="da26-solo-lector">{A3.camisa}</span></span>}
     </div>
   );
 }

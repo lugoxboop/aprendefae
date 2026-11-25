@@ -34,6 +34,24 @@ export const ILUSTRADOS = {
   "deposito-reservas": [218, 300],
   "caja-bananos": [253, 220],
   candado: [162, 220],
+  "carro-varado": [528, 300],
+  grua: [450, 240],
+  "caja-herramientas": [280, 240],
+  fabrica: [197, 200],
+  "edificio-gobierno": [216, 200],
+  virus: [159, 160],
+  "globo-aerostatico": [184, 260],
+  "balanza-columna": [143, 300],
+  "balanza-viga": [610, 80],
+  "buzon-impuesto": [167, 240],
+  "buzon-tasa": [167, 240],
+  "buzon-contribucion": [167, 240],
+  "caja-registradora": [220, 220],
+  ventanilla: [239, 220],
+  montana: [407, 300],
+  "pozo-monedas": [238, 180],
+  "barrera-peaje": [265, 200],
+  "casa-anden": [251, 220],
 };
 
 export const rutaIlustrado = (id) => `/macro2026/ilustrados/${id}.webp`;
@@ -50,4 +68,33 @@ export function Ilustrado({ id, alto = 56, nombre = null, style = null, ...resto
     <img src={rutaIlustrado(id)} alt={nombre ?? ""} width={width} height={height} decoding="async" draggable={false}
       data-ilustrado={id} style={{ display: "block", flex: "none", width, height, ...style }} {...resto} />
   );
+}
+
+/* El termómetro de vidrio con su mercurio en vivo, para dentro de un <svg>
+ * (lote 3: el circuito con fiebre de pe26-a2 y pe26-h5). `nivel` de 0 a 1.
+ * Geometría del tubo medida en el WebP (la misma que usa el Termostato). */
+const TUBO = { x0: 0.39, x1: 0.625, cero: 0.66, tope: 0.12, bx: 0.5, by: 0.81, br: 0.3 };
+export const MERCURIO = "#f2994a";
+export function TermometroVidrio({ x = 0, y = 0, alto = 90, nivel = 0, ...resto }) {
+  const [w0, h0] = ILUSTRADOS["termometro-vidrio"];
+  const h = alto, w = (alto * w0) / h0, n = Math.max(0, Math.min(1, nivel));
+  const tuboX = x + w * TUBO.x0, tuboW = w * (TUBO.x1 - TUBO.x0);
+  const arriba = y + h * TUBO.tope, base = y + h * TUBO.by, cero = y + h * TUBO.cero;
+  const total = base - arriba, lleno = base - cero + n * (cero - arriba);
+  return (
+    <g aria-hidden="true" {...resto}>
+      <image href={rutaIlustrado("termometro-vidrio")} x={x} y={y} width={w} height={h} />
+      <circle cx={x + w * TUBO.bx} cy={y + h * TUBO.by} r={w * TUBO.br * 0.86} fill={MERCURIO} />
+      <rect x={tuboX + 0.5} y={arriba} width={tuboW - 1} height={total} rx={tuboW / 2 - 0.5} fill={MERCURIO}
+        style={{ transformBox: "fill-box", transformOrigin: "bottom", transform: `scaleY(${lleno / total})`, transition: "transform 400ms cubic-bezier(.3,.9,.4,1)" }} />
+      <image href={rutaIlustrado("termometro-vidrio")} x={x} y={y} width={w} height={h} opacity=".2" />
+    </g>
+  );
+}
+
+/* El buzón ilustrado de cada tributo (un buzón gris de Gemini teñido con
+ * scripts/ilustrados/tenir.py al tono del tributo). `abierto`: da un saltito
+ * cuando la moneda entra (clase .ilu-salta del CSS de la pieza). */
+export function BuzonIlustrado({ tributo, alto = 64, abierto = false }) {
+  return <Ilustrado id={`buzon-${tributo}`} alto={alto} className={abierto ? "ilu-salta" : undefined} key={abierto ? "a" : "c"} />;
 }

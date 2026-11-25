@@ -15,7 +15,7 @@ import { Boton, MarcoHacer, Retro, useCronometro } from "../comun/ui.jsx";
 import { azarDeLaPagina, sortear } from "../comun/azar.js";
 import { useArrastre } from "../comun/arrastre.js";
 import { ORDEN_TRIBUTOS, TRIBUTOS, tonoTributo } from "../comun/tributos.js";
-import { IconoBuzon } from "../comun/iconos-pf.jsx";
+import { BuzonIlustrado } from "../comun/ilustrados.jsx";
 import { Objeto } from "../comun/kit.jsx";
 import { CSS_A2, Escena } from "./A2Buzones.jsx";
 import { BANCO_H1, CONSIGNAS, PARTIDA_H1, ESCENAS } from "./textos.js";
@@ -104,7 +104,7 @@ export default function H1Moneda({ onTerminar, rng = null }) {
           {ORDEN_TRIBUTOS.map((b) => (
             <button key={b} type="button" className="pf26-a2-buzon" data-buzon={b} style={{ "--tono": tonoTributo(b) }}
               aria-label={`Echar en ${TRIBUTOS[b].nombre}`} disabled={Boolean(entro)} {...destino(b, t.id)}>
-              <IconoBuzon size={52} tono={tonoTributo(b)} abierto={entro === b} />
+              <BuzonIlustrado tributo={b} alto={62} abierto={entro === b} />
               <span>{TRIBUTOS[b].nombre}</span>
             </button>
           ))}
