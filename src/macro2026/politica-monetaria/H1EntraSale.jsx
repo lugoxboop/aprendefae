@@ -12,7 +12,7 @@ import { useMemo, useState } from "react";
 import { BORDE, FONDO, INK, INK_2, SUPERFICIE_2 } from "../comun/colores-da.js";
 import { Boton, MarcoHacer, Retro, useCronometro } from "../comun/ui.jsx";
 import { azarDeLaPagina, sortear } from "../comun/azar.js";
-import { Cascada, CSS_PM, MONETARIA } from "./comun-pm.jsx";
+import { Cascada, CSS_PM, FrascoNivel, MONETARIA } from "./comun-pm.jsx";
 import { CSS_VENTANILLA, Ventanilla } from "./A2Ventanilla.jsx";
 import { BANCO_H1, CONSIGNAS, FLECHAS, H1, MEDIDORES_H1, NOMBRE_FLECHA, ORDEN_FLECHAS, PARTIDA_H1, ESCENAS } from "./textos.js";
 
@@ -26,11 +26,8 @@ const CSS = `
 .pm26-h1-medidor { display: grid; justify-items: center; gap: 4px; padding: 6px 4px; border-radius: 12px; border: 2px solid ${BORDE}; background: ${FONDO}; text-align: center; font: 600 12px/1.2 var(--planck-font-sans, system-ui, sans-serif); }
 .pm26-h1-medidor[data-estado="mal"] { border-color: #E76F51; }
 .pm26-h1-medidor[data-estado="bien"] { border-color: ${INK}; }
-.pm26-h1-barra { position: relative; width: 22px; height: 54px; border-radius: 6px; border: 1.5px solid ${INK_2}; overflow: hidden; }
-.pm26-h1-barra > i { position: absolute; left: 0; right: 0; bottom: 0; height: 100%; background: ${MONETARIA}; transform-origin: bottom; transition: transform 520ms cubic-bezier(.3,.9,.4,1) 300ms; }
 .pm26-h1-flecha { min-width: 56px; min-height: 48px; border-radius: 12px; border: 2px solid ${INK}; background: ${SUPERFICIE_2}; color: ${INK}; font: 700 22px/1 var(--planck-font-sans, system-ui, sans-serif); cursor: pointer; touch-action: manipulation; }
 .pm26-h1-flecha[data-vacia="1"] { border-style: dashed; color: ${INK_2}; }
-@media (prefers-reduced-motion: reduce) { .pm26-h1-barra > i { transition: none; } }
 `;
 const NIVEL = { sube: 0.85, igual: 0.55, baja: 0.3 };
 
@@ -77,7 +74,7 @@ export default function H1EntraSale({ onTerminar, rng = null }) {
             return (
               <div key={m.id} className="pm26-h1-medidor" data-medidor={m.id} data-estado={revelado ? (ok ? "bien" : "mal") : undefined}>
                 <span style={{ minHeight: 30, display: "grid", placeItems: "center" }}>{m.nombre}</span>
-                <span className="pm26-h1-barra" aria-hidden="true"><i style={{ transform: `scaleY(${revelado ? NIVEL[op.correctas[m.id]] : NIVEL.igual})` }} /></span>
+                <FrascoNivel nivel={revelado ? NIVEL[op.correctas[m.id]] : NIVEL.igual} alto={66} />
                 <button type="button" className="pm26-h1-flecha" data-flecha={m.id} data-vacia={f ? "0" : "1"} disabled={revelado}
                   aria-label={`${m.nombre}: ${f ? NOMBRE_FLECHA[f] : "sin poner"}. Toca para cambiar.`}
                   onClick={() => setPuestas((p) => ({ ...p, [m.id]: p[m.id] ? siguienteFlecha(p[m.id]) : ORDEN_FLECHAS[0] }))}>

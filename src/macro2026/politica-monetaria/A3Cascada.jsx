@@ -1,6 +1,6 @@
 /*
  * A3 · La cascada de vasos (pm26-a3-cascada, Aprender).
- * Especificación de Gen, t4 §2 A3. El grifo (objeto del kit) llena el primer
+ * Especificación de Gen, t4 §2 A3. El grifo ilustrado (Gemini, 25-nov) llena el primer
  * vaso con 1.000; la franja gris del fondo es el encaje; el resto se vierte al
  * vaso siguiente. P3 «Siguiente préstamo» suma un vaso (900, 810, 729…), con
  * la fórmula del profesor al pie. P4 «Ver toda la cascada»: el contador llega
@@ -8,7 +8,6 @@
  */
 import { useState } from "react";
 import { MarcoAprender, Boton, Deslizador, usePasos } from "../comun/ui.jsx";
-import { Objeto } from "../comun/kit.jsx";
 import { fmtEntero } from "../comun/modelo-da.js";
 import { Cascada, CSS_PM, MONETARIA, depositos } from "./comun-pm.jsx";
 import { A3, APRENDER, totalCascada, ESCENAS } from "./textos.js";
@@ -30,12 +29,7 @@ export default function A3Cascada({ onTerminar }) {
 
   const figura = (
     <div>
-      <div style={{ display: "flex", alignItems: "flex-start", gap: 6 }}>
-        <Objeto id="grifo" alto={48} style={{ marginTop: -4 }} />
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <Cascada encaje={r} visibles={visibles} conEncaje={paso >= 1} />
-        </div>
-      </div>
+      <Cascada encaje={r} visibles={visibles} conEncaje={paso >= 1} grifo />
       <p className="pm26-cadena" data-cadena>
         {lista.map((x, k) => <span key={k}>{k > 0 ? "→ " : ""}{A3.personas[k]}·{A3.banco} {k + 1}: {x}</span>)}
         {visibles > 4 && <span>→ …</span>}

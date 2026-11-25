@@ -197,6 +197,34 @@ Las piezas salen de hojas de recursos, todas con el mismo estilo, y se recortan 
 
 Cómo se piden más: «HOJA DE RECURSOS» con el bloque de estilo, seis objetos separados en una cuadrícula de 3 × 2 con mucho espacio blanco y fondo blanco liso. Para las poses: «HOJA DE POSES» del mismo personaje, tres poses en fila. Los objetos miden unos 270 px de origen. Si una pieza va a mostrarse a más de 270 px, se pide sola, en grande.
 
+## Objetos ilustrados (paso 6, orden de Mateo del 25-nov)
+Todo objeto del visual que no sea mascota se pide a Gemini y se integra; nada
+de rectángulos o líneas a mano como protagonistas. El kit plano de 36 objetos
+(arriba) queda para iconos pequeños; lo grande y protagonista sale de aquí.
+- **Chat de Gemini «Frasco de Vidrio»** (25-nov): ahí nacen. Se pide uno por
+  imagen, grande, y en el mismo chat para que el estilo no cambie.
+- **Estilo bloqueado** (se pega al inicio): «Ilustración de UN solo objeto para
+  un juego educativo móvil. Estilo cartoon de juego móvil, a juego con mascotas
+  chibi: contorno oscuro grueso, sombreado suave, brillos blancos. Colores: azul
+  #2747F5, azul claro #6F86FF, gris azulado #C9D1E4. Sin texto, sin letras, sin
+  números. Fondo verde croma plano #00FF00 que llena toda la imagen, sin sombra
+  ni suelo. Objeto completo centrado con margen amplio.»
+- **Lo que se llena en vivo** (agua, mercurio, compras): pedir el recipiente
+  VACÍO y de vidrio o rejilla abierta («se ve el fondo a través»). En la pieza:
+  el objeto detrás, lo que se llena en medio y una segunda copia del objeto
+  encima al 30–40 % para que los brillos queden por delante.
+- **Recorte:** verde croma a alfa (clave por dominancia del verde, con quita de
+  derrame), recorte al contenido y WebP con alfa; el vidrio se vuelve neutro
+  azulado (si queda verdoso parece lleno). Original en
+  `/mnt/project-files/macro-2026/ilustrados-origen/`.
+- **Dónde:** `public/macro2026/ilustrados/<id>.webp`, registrado con sus medidas
+  en `src/macro2026/comun/ilustrados.jsx` (la prueba las mide).
+- **Revisión:** cada imagen se mira sola sobre el fondo navy antes de usarla; si
+  algo se ve raro o deforme, se regenera.
+
+Hechos (lote 1): frasco-banco, termometro-vidrio, grifo, casa-aire,
+tanque-estado, carrito-mercado, manguera.
+
 ## Dónde quedan las imágenes
 - Gemini descarga a la carpeta **Descargas/Imagenes-agentes** del computador.
 - Gen revisa la imagen (que se vea bien y respete esta guía) y la sube al

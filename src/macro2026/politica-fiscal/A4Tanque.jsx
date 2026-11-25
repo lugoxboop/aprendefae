@@ -17,6 +17,7 @@ import { Deslizador, MarcoAprender, usePasos } from "../comun/ui.jsx";
 import { colorRama } from "../comun/ramas.js";
 import { IconoTrazo } from "../comun/iconos-pf.jsx";
 import { Objeto } from "../comun/kit.jsx";
+import { ILUSTRADOS, rutaIlustrado } from "../comun/ilustrados.jsx";
 import { APRENDER, A4, ESCENAS } from "./textos.js";
 
 export const ID = "pf26-a4-tanque";
@@ -30,7 +31,7 @@ const BAJA = 20;
 const SUBE = 30;
 
 const CSS = `
-.pf26-a4-tanque { display: block; width: 100%; max-width: 280px; margin: 0 auto; }
+.pf26-a4-tanque { display: block; width: 100%; max-width: 320px; margin: 0 auto; }
 .pf26-a4-agua { transform-box: fill-box; transform-origin: bottom; transition: transform 520ms cubic-bezier(.3,.9,.4,1); }
 .pf26-a4-desagues { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, .8fr) minmax(0, 1fr); gap: 6px; margin-top: 8px; }
 .pf26-a4-desague { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 52px; padding: 4px 2px; border-radius: 12px; border: 2px solid ${BORDE}; background: ${FONDO}; color: ${INK}; font: 600 12px/1.2 var(--planck-font-sans, system-ui, sans-serif); cursor: pointer; touch-action: manipulation; text-align: center; min-width: 0; overflow-wrap: anywhere; }
@@ -48,22 +49,37 @@ const CSS = `
 @media (prefers-reduced-motion: reduce) { .pf26-a4-agua, .pf26-a4-monte { transition: none; } .pf26-a4-gota { animation: none; opacity: 0; } }
 `;
 
+/* El tanque del Estado ilustrado (Gemini, 25-nov; diagnostico-visual.md,
+ * familia 3), 296 × 400. Ventana de vidrio de x .09 a .91 y de y .225 a .76;
+ * llaves de salida en x .22, .5 y .78 (medido en el WebP). El agua se pinta en
+ * vivo detrás de una segunda copia translúcida del tanque (brillos delante). */
+const VENTANA = { x0: 0.09, x1: 0.91, y0: 0.225, y1: 0.76 };
+const LLAVES = [0.22, 0.5, 0.78];
+const TK_H = 140, TK_W = (TK_H * ILUSTRADOS["tanque-estado"][0]) / ILUSTRADOS["tanque-estado"][1], TK_X = (240 - TK_W) / 2, TK_Y = 30;
+const GRIFO_W = 46, GRIFO_H = (GRIFO_W * ILUSTRADOS.grifo[1]) / ILUSTRADOS.grifo[0];
+/* El grifo cae en la boca del tanque (x .3) y la boquilla de la manguera en x .7. */
+const GRIFO_X = TK_X + TK_W * 0.3 - GRIFO_W * 0.84;
+const MANG_W = 58, MANG_X = TK_X + TK_W * 0.7 - MANG_W * 0.05;
 function Tanque({ nivel, manguera, gota }) {
   const f = Math.max(0, Math.min(100, nivel)) / 100;
+  const vx = TK_X + TK_W * VENTANA.x0, vw = TK_W * (VENTANA.x1 - VENTANA.x0);
+  const vy = TK_Y + TK_H * VENTANA.y0, vh = TK_H * (VENTANA.y1 - VENTANA.y0);
+  const llaveX = LLAVES.map((x) => TK_X + TK_W * x);
   return (
-    <svg className="pf26-a4-tanque" viewBox="0 0 240 172" style={{ width: "100%", height: "auto" }} role="img" aria-label={`${A4.nivel}: ${Math.round(nivel)} %`} data-nivel={Math.round(nivel)}>
-      {/* Grifo de tributos. */}
-      <path d="M20 22h46v14" fill="none" stroke={INK_2} strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" />
-      <text x="18" y="14" fill={INK} fontSize="13" fontWeight="600">{A4.tributos}</text>
-      {/* Manguera del préstamo. */}
-      <path d="M222 22h-46v14" fill="none" stroke={manguera ? INK : BORDE} strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" strokeDasharray={manguera ? "none" : "4 4"} />
-      <text x="222" y="14" textAnchor="end" fill={manguera ? INK : INK_2} fontSize="13" fontWeight="600">{A4.prestamo}</text>
-      {/* Tanque. */}
-      <rect className="pf26-a4-agua" x="62" y="40" width="116" height="100" fill={AGUA} style={{ transform: `scaleY(${f})` }} />
-      <rect x="60" y="38" width="120" height="104" rx="6" fill="none" stroke={INK} strokeWidth="3" />
-      {/* Tres desagües. */}
-      {[86, 120, 154].map((x) => <path key={x} d={`M${x} 142v18`} stroke={INK_2} strokeWidth="6" strokeLinecap="round" />)}
-      {gota != null && <circle key={gota.n} className="pf26-a4-gota" cx={[86, 120, 154][gota.k]} cy="160" r="5" fill={AGUA} />}
+    <svg className="pf26-a4-tanque" viewBox="0 0 240 182" style={{ width: "100%", height: "auto" }} role="img" aria-label={`${A4.nivel}: ${Math.round(nivel)} %`} data-nivel={Math.round(nivel)}>
+      <image href={rutaIlustrado("tanque-estado")} x={TK_X} y={TK_Y} width={TK_W} height={TK_H} />
+      <rect className="pf26-a4-agua" x={vx} y={vy} width={vw} height={vh} rx="4" fill={AGUA} fillOpacity=".88" style={{ transform: `scaleY(${f})` }} />
+      <image href={rutaIlustrado("tanque-estado")} x={TK_X} y={TK_Y} width={TK_W} height={TK_H} opacity=".3" aria-hidden="true" />
+      {/* Grifo de tributos: cae dentro de la boca del tanque. */}
+      <path d={`M${GRIFO_X + GRIFO_W * 0.84} ${GRIFO_H + 12}V${TK_Y + 12}`} stroke={AGUA} strokeWidth="4" strokeLinecap="round" opacity={f > 0 ? 0.9 : 0} />
+      <image href={rutaIlustrado("grifo")} x={GRIFO_X} y="12" width={GRIFO_W} height={GRIFO_H} />
+      <text x="2" y="14" fill={INK} fontSize="13" fontWeight="600">{A4.tributos}</text>
+      {/* La manguera del préstamo: apagada hasta que el tanque se vacía. */}
+      <g opacity={manguera ? 1 : 0.35} data-manguera={manguera ? "1" : "0"}>
+        <image href={rutaIlustrado("manguera")} x={MANG_X} y="0" width={MANG_W} height={(MANG_W * ILUSTRADOS.manguera[1]) / ILUSTRADOS.manguera[0]} />
+      </g>
+      <text x="238" y="14" textAnchor="end" fill={manguera ? INK : INK_2} fontSize="13" fontWeight="600">{A4.prestamo}</text>
+      {gota != null && <circle key={gota.n} className="pf26-a4-gota" cx={llaveX[gota.k]} cy={TK_Y + TK_H - 2} r="5" fill={AGUA} />}
     </svg>
   );
 }

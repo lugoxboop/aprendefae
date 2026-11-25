@@ -12,7 +12,11 @@
  */
 import { useMemo, useRef, useState } from "react";
 import { COMPONENTES, ORDEN_COMPONENTES, CORAL, INK, FONDO } from "../comun/colores-da.js";
-import { Carrito, IconoMano } from "../comun/carrito.jsx";
+import { Carrito } from "../comun/carrito.jsx";
+import { Objeto } from "../comun/kit.jsx";
+
+/* Cada mano con su objeto de Gemini (los mismos de A1). */
+const OBJETO_MANO = { C: "bolsa-mercado", I: "fabrica", G: "edificio-gobierno", XN: "barco" };
 import { MarcoHacer, Retro, useCronometro } from "../comun/ui.jsx";
 import { sortear, azarDeLaPagina } from "../comun/azar.js";
 import { BANCO_H1, CONSIGNAS, ESCENAS, PARTIDA_H1 } from "./textos.js";
@@ -184,7 +188,7 @@ export default function H1LlenaCarrito({ onTerminar, rng = null }) {
               onClick={() => soltarEn(k)}
               aria-label={`Llevar a ${COMPONENTES[k].nombre}`}
             >
-              <IconoMano id={k} size={30} />
+              <Objeto id={OBJETO_MANO[k]} alto={34} />
               <span><span className="da26-h1-letra">{COMPONENTES[k].letra}</span>{agarra === k ? " ✓" : ""}<br />{COMPONENTES[k].nombre}</span>
             </button>
           ))}
