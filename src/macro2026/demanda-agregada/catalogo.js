@@ -26,6 +26,8 @@ const hacer = (dificultad, fpBase, etapas = 1) => ({
 });
 
 export const PIEZAS_T1 = [
+  /* A0 (25-nov-2026): el microvideo de la ley de la demanda abre el tema. */
+  { id: "da26-a0-ley-demanda", tipo: A, nombre: "La ley de la demanda en el mercado", subtemas: ["da-grafica"] },
   { id: "da26-a1-carrito", tipo: A, nombre: "El carrito de la economía", subtemas: ["da-componentes"] },
   { id: "da26-h1-llena-carrito", tipo: H, nombre: "Llena el carrito", subtemas: ["da-componentes", "da-exportaciones-netas"], clasificacion: hacer("facil", 10) },
   { id: "da26-a2-vaso-renta", tipo: A, nombre: "El vaso de la renta", subtemas: ["da-consumo"] },
@@ -50,6 +52,9 @@ export const HACER_T1 = PIEZAS_T1.filter((p) => p.tipo === H);
  * supabase/migrations sea exactamente lo anotado aquí, ni más ni menos.
  */
 export const PUBLICADAS_T1 = Object.freeze([
+  /* Lote 3 (25-nov-2026): el microvideo A0, aprobado por Mateo. Va primero
+     porque abre el camino (el orden de aquí es el del índice). */
+  "da26-a0-ley-demanda",
   /* Lote 1 (22-nov-2026): las seis Aprender. */
   "da26-a1-carrito",
   "da26-a2-vaso-renta",
