@@ -35,7 +35,7 @@
  * ═══════════════════════════════════════════════════════════════════════════
  */
 import Anthropic from "npm:@anthropic-ai/sdk@0.71.0";
-import { createClient } from "jsr:@supabase/supabase-js@2";
+import { createClient } from "jsr:@supabase/supabase-js@2.112.4";
 import { manejar } from "./manejador.js";
 import { opcionesDelModelo } from "./bruno.js";
 
