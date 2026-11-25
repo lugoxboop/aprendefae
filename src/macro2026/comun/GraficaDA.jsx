@@ -20,6 +20,7 @@ import { useId, useRef } from "react";
 import { BORDE, GRIS, INK, INK_2 } from "./colores-da.js";
 import { fmtEntero } from "./modelo-da.js";
 import { useAncho } from "./ui.jsx";
+import { Pizarra } from "./ilustrados.jsx";
 
 export const Y_MAX = 2000;
 export const DA_MAX = 2500;
@@ -118,6 +119,7 @@ export default function GraficaDA({
   const ticksDA = [0, 1000, 2000];
 
   return (
+    <Pizarra>
     <div ref={ref} style={{ width: "100%" }} data-grafica>
       <svg viewBox={`0 0 ${ancho} ${alto}`} width={ancho} height={alto} role="img" aria-label={titulo} style={{ width: "100%", height: `${alto}px` }}>
         <defs>
@@ -242,5 +244,6 @@ export default function GraficaDA({
         )}
       </svg>
     </div>
+    </Pizarra>
   );
 }
