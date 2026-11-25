@@ -2,7 +2,7 @@
 id: microvideo-ley-demanda-v2
 titulo: Microvideo — La ley de la demanda (estándar de video v2)
 procedencia: orden de Mateo del 2026-11-25 (rehacer con el estándar v2); Jane
-estado: guion y storyboard en revisión de Mateo. NO publicado. No se publica ni se fusiona nada visible a estudiantes sin su aprobación del video final exacto.
+estado: video terminado y entregado a Mateo para aprobar (2026-11-25). NO publicado. No se publica ni se fusiona nada visible a estudiantes sin su aprobación del video final exacto.
 ---
 
 # «El mango de Toby» — la ley de la demanda
@@ -83,7 +83,7 @@ Los tiempos son estimados; los definitivos salen del audio medido.
 - [x] Efecto de sonido en cada acción y música que baja con la voz
 - [x] Cierre que conecta con la actividad (¿se mueve la curva o te mueves sobre ella?)
 - [x] Nada conceptualmente falso
-- [ ] Voz humana: ElevenLabs, **la elige Mateo entre 3 muestras** (parada)
+- [x] Voz humana: ElevenLabs, Brian, elegida por Mateo entre 3 muestras
 - [ ] Revisado cuadro por cuadro y por otro agente (al final)
 - [ ] Prueba final: ¿lo vería entero alguien que no estudia el tema?
 

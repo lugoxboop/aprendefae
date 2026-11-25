@@ -1,0 +1,1000 @@
+{
+"audio": "narracion.mp3",
+"escenas": [
+{
+"ini": 0.0,
+"fin": 4.3,
+"texto": "Toby ama el mango. Y hoy solo se lleva uno. ¿Qué pasó?",
+"palabras": [
+{
+"w": "Toby",
+"ini": 0.0,
+"fin": 0.28
+},
+{
+"w": "ama",
+"ini": 0.28,
+"fin": 0.86
+},
+{
+"w": "el",
+"ini": 0.86,
+"fin": 1.06
+},
+{
+"w": "mango.",
+"ini": 1.06,
+"fin": 1.34
+},
+{
+"w": "Y",
+"ini": 1.8,
+"fin": 2.08
+},
+{
+"w": "hoy",
+"ini": 2.08,
+"fin": 2.32
+},
+{
+"w": "solo",
+"ini": 2.32,
+"fin": 2.78
+},
+{
+"w": "se",
+"ini": 2.78,
+"fin": 2.98
+},
+{
+"w": "lleva",
+"ini": 2.98,
+"fin": 3.22
+},
+{
+"w": "uno.",
+"ini": 3.22,
+"fin": 3.52
+},
+{
+"w": "¿Qué",
+"ini": 3.96,
+"fin": 4.06
+},
+{
+"w": "pasó?",
+"ini": 4.06,
+"fin": 4.3
+}
+]
+},
+{
+"ini": 5.06,
+"fin": 9.08,
+"texto": "Lunes. Toby llega al mercado: quiere mangos para su jugo.",
+"palabras": [
+{
+"w": "Lunes.",
+"ini": 5.06,
+"fin": 5.42
+},
+{
+"w": "Toby",
+"ini": 6.04,
+"fin": 6.3
+},
+{
+"w": "llega",
+"ini": 6.3,
+"fin": 6.56
+},
+{
+"w": "al",
+"ini": 6.56,
+"fin": 6.78
+},
+{
+"w": "mercado",
+"ini": 6.78,
+"fin": 7.1
+},
+{
+"w": "quiere",
+"ini": 7.58,
+"fin": 7.82
+},
+{
+"w": "mangos",
+"ini": 7.82,
+"fin": 8.3
+},
+{
+"w": "para",
+"ini": 8.3,
+"fin": 8.5
+},
+{
+"w": "su",
+"ini": 8.5,
+"fin": 8.66
+},
+{
+"w": "jugo.",
+"ini": 8.66,
+"fin": 9.08
+}
+]
+},
+{
+"ini": 9.5,
+"fin": 12.52,
+"texto": "En el puesto de Rufo, el mango está a mil pesos.",
+"palabras": [
+{
+"w": "En",
+"ini": 9.5,
+"fin": 9.6
+},
+{
+"w": "el",
+"ini": 9.6,
+"fin": 9.68
+},
+{
+"w": "puesto",
+"ini": 9.68,
+"fin": 9.9
+},
+{
+"w": "de",
+"ini": 9.9,
+"fin": 10.16
+},
+{
+"w": "Rufo,",
+"ini": 10.16,
+"fin": 10.58
+},
+{
+"w": "el",
+"ini": 10.82,
+"fin": 10.92
+},
+{
+"w": "mango",
+"ini": 10.92,
+"fin": 11.18
+},
+{
+"w": "está",
+"ini": 11.18,
+"fin": 11.5
+},
+{
+"w": "a",
+"ini": 11.5,
+"fin": 11.8
+},
+{
+"w": "mil",
+"ini": 11.8,
+"fin": 12.12
+},
+{
+"w": "pesos.",
+"ini": 12.12,
+"fin": 12.52
+}
+]
+},
+{
+"ini": 13.12,
+"fin": 16.34,
+"texto": "A ese precio, Toby ni lo piensa: se lleva cinco.",
+"palabras": [
+{
+"w": "A",
+"ini": 13.12,
+"fin": 13.3
+},
+{
+"w": "ese",
+"ini": 13.3,
+"fin": 13.46
+},
+{
+"w": "precio,",
+"ini": 13.46,
+"fin": 13.8
+},
+{
+"w": "Toby",
+"ini": 14.14,
+"fin": 14.32
+},
+{
+"w": "ni",
+"ini": 14.32,
+"fin": 14.6
+},
+{
+"w": "lo",
+"ini": 14.6,
+"fin": 14.74
+},
+{
+"w": "piensa",
+"ini": 14.74,
+"fin": 15.14
+},
+{
+"w": "se",
+"ini": 15.54,
+"fin": 15.66
+},
+{
+"w": "lleva",
+"ini": 15.66,
+"fin": 15.88
+},
+{
+"w": "cinco.",
+"ini": 15.88,
+"fin": 16.34
+}
+]
+},
+{
+"ini": 17.12,
+"fin": 22.54,
+"texto": "Martes. El camión llegó casi vacío, y Rufo sube el precio: dos mil.",
+"palabras": [
+{
+"w": "Martes.",
+"ini": 17.12,
+"fin": 17.62
+},
+{
+"w": "El",
+"ini": 18.02,
+"fin": 18.14
+},
+{
+"w": "camión",
+"ini": 18.14,
+"fin": 18.44
+},
+{
+"w": "llegó",
+"ini": 18.44,
+"fin": 18.72
+},
+{
+"w": "casi",
+"ini": 18.72,
+"fin": 19.16
+},
+{
+"w": "vacío,",
+"ini": 19.16,
+"fin": 19.66
+},
+{
+"w": "y",
+"ini": 20.1,
+"fin": 20.2
+},
+{
+"w": "Rufo",
+"ini": 20.2,
+"fin": 20.64
+},
+{
+"w": "sube",
+"ini": 20.64,
+"fin": 21.08
+},
+{
+"w": "el",
+"ini": 21.08,
+"fin": 21.18
+},
+{
+"w": "precio",
+"ini": 21.18,
+"fin": 21.52
+},
+{
+"w": "dos",
+"ini": 22.0,
+"fin": 22.18
+},
+{
+"w": "mil.",
+"ini": 22.18,
+"fin": 22.54
+}
+]
+},
+{
+"ini": 23.02,
+"fin": 25.72,
+"texto": "Toby hace cuentas... y se lleva tres.",
+"palabras": [
+{
+"w": "Toby",
+"ini": 23.02,
+"fin": 23.28
+},
+{
+"w": "hace",
+"ini": 23.28,
+"fin": 23.48
+},
+{
+"w": "cuentas",
+"ini": 23.48,
+"fin": 24.18
+},
+{
+"w": "y",
+"ini": 24.68,
+"fin": 24.96
+},
+{
+"w": "se",
+"ini": 24.96,
+"fin": 25.22
+},
+{
+"w": "lleva",
+"ini": 25.22,
+"fin": 25.44
+},
+{
+"w": "tres.",
+"ini": 25.44,
+"fin": 25.72
+}
+]
+},
+{
+"ini": 26.62,
+"fin": 28.52,
+"texto": "Miércoles: tres mil pesos.",
+"palabras": [
+{
+"w": "Miércoles",
+"ini": 26.62,
+"fin": 27.04
+},
+{
+"w": "tres",
+"ini": 27.56,
+"fin": 27.74
+},
+{
+"w": "mil",
+"ini": 27.74,
+"fin": 28.08
+},
+{
+"w": "pesos.",
+"ini": 28.08,
+"fin": 28.52
+}
+]
+},
+{
+"ini": 28.52,
+"fin": 32.72,
+"texto": "Toby quiere mango igual que el lunes. Pero se lleva solo uno.",
+"palabras": [
+{
+"w": "Toby",
+"ini": 28.52,
+"fin": 29.32
+},
+{
+"w": "quiere",
+"ini": 29.32,
+"fin": 29.56
+},
+{
+"w": "mango",
+"ini": 29.56,
+"fin": 29.88
+},
+{
+"w": "igual",
+"ini": 29.88,
+"fin": 30.32
+},
+{
+"w": "que",
+"ini": 30.32,
+"fin": 30.52
+},
+{
+"w": "el",
+"ini": 30.52,
+"fin": 30.66
+},
+{
+"w": "lunes.",
+"ini": 30.66,
+"fin": 30.9
+},
+{
+"w": "Pero",
+"ini": 31.28,
+"fin": 31.54
+},
+{
+"w": "se",
+"ini": 31.54,
+"fin": 31.7
+},
+{
+"w": "lleva",
+"ini": 31.7,
+"fin": 31.94
+},
+{
+"w": "solo",
+"ini": 31.94,
+"fin": 32.34
+},
+{
+"w": "uno.",
+"ini": 32.34,
+"fin": 32.72
+}
+]
+},
+{
+"ini": 33.2,
+"fin": 38.02,
+"texto": "El jueves, el mango baja a mil quinientos. Y Toby vuelve por cuatro.",
+"palabras": [
+{
+"w": "El",
+"ini": 33.2,
+"fin": 33.34
+},
+{
+"w": "jueves,",
+"ini": 33.34,
+"fin": 33.76
+},
+{
+"w": "el",
+"ini": 34.1,
+"fin": 34.18
+},
+{
+"w": "mango",
+"ini": 34.18,
+"fin": 34.46
+},
+{
+"w": "baja",
+"ini": 34.46,
+"fin": 34.8
+},
+{
+"w": "a",
+"ini": 34.8,
+"fin": 35.12
+},
+{
+"w": "mil",
+"ini": 35.12,
+"fin": 35.38
+},
+{
+"w": "quinientos.",
+"ini": 35.38,
+"fin": 35.96
+},
+{
+"w": "Y",
+"ini": 36.42,
+"fin": 36.54
+},
+{
+"w": "Toby",
+"ini": 36.54,
+"fin": 36.84
+},
+{
+"w": "vuelve",
+"ini": 36.84,
+"fin": 37.48
+},
+{
+"w": "por",
+"ini": 37.48,
+"fin": 37.64
+},
+{
+"w": "cuatro.",
+"ini": 37.64,
+"fin": 38.02
+}
+]
+},
+{
+"ini": 38.58,
+"fin": 43.88,
+"texto": "Rufo lo fue anotando todo en su pizarra: el precio, y los mangos que se llevó Toby.",
+"palabras": [
+{
+"w": "Rufo",
+"ini": 38.58,
+"fin": 39.0
+},
+{
+"w": "lo",
+"ini": 39.0,
+"fin": 39.12
+},
+{
+"w": "fue",
+"ini": 39.12,
+"fin": 39.3
+},
+{
+"w": "anotando",
+"ini": 39.3,
+"fin": 39.74
+},
+{
+"w": "todo",
+"ini": 39.74,
+"fin": 40.18
+},
+{
+"w": "en",
+"ini": 40.18,
+"fin": 40.38
+},
+{
+"w": "su",
+"ini": 40.38,
+"fin": 40.5
+},
+{
+"w": "pizarra",
+"ini": 40.5,
+"fin": 41.04
+},
+{
+"w": "el",
+"ini": 41.42,
+"fin": 41.54
+},
+{
+"w": "precio,",
+"ini": 41.54,
+"fin": 41.92
+},
+{
+"w": "y",
+"ini": 42.34,
+"fin": 42.4
+},
+{
+"w": "los",
+"ini": 42.4,
+"fin": 42.54
+},
+{
+"w": "mangos",
+"ini": 42.54,
+"fin": 42.96
+},
+{
+"w": "que",
+"ini": 42.96,
+"fin": 43.14
+},
+{
+"w": "se",
+"ini": 43.14,
+"fin": 43.26
+},
+{
+"w": "llevó",
+"ini": 43.26,
+"fin": 43.54
+},
+{
+"w": "Toby.",
+"ini": 43.54,
+"fin": 43.88
+}
+]
+},
+{
+"ini": 44.34,
+"fin": 48.4,
+"texto": "Une los puntos. Esa línea que baja es la curva de demanda.",
+"palabras": [
+{
+"w": "Une",
+"ini": 44.34,
+"fin": 44.52
+},
+{
+"w": "los",
+"ini": 44.52,
+"fin": 44.68
+},
+{
+"w": "puntos.",
+"ini": 44.68,
+"fin": 45.06
+},
+{
+"w": "Esa",
+"ini": 45.66,
+"fin": 45.92
+},
+{
+"w": "línea",
+"ini": 45.92,
+"fin": 46.12
+},
+{
+"w": "que",
+"ini": 46.12,
+"fin": 46.34
+},
+{
+"w": "baja",
+"ini": 46.34,
+"fin": 46.62
+},
+{
+"w": "es",
+"ini": 46.62,
+"fin": 47.06
+},
+{
+"w": "la",
+"ini": 47.06,
+"fin": 47.22
+},
+{
+"w": "curva",
+"ini": 47.22,
+"fin": 47.68
+},
+{
+"w": "de",
+"ini": 47.68,
+"fin": 47.86
+},
+{
+"w": "demanda.",
+"ini": 47.86,
+"fin": 48.4
+}
+]
+},
+{
+"ini": 48.64,
+"fin": 52.12,
+"texto": "Y lo que acabas de ver tiene nombre: la ley de la demanda.",
+"palabras": [
+{
+"w": "Y",
+"ini": 48.64,
+"fin": 48.74
+},
+{
+"w": "lo",
+"ini": 48.74,
+"fin": 48.84
+},
+{
+"w": "que",
+"ini": 48.84,
+"fin": 48.94
+},
+{
+"w": "acabas",
+"ini": 48.94,
+"fin": 49.28
+},
+{
+"w": "de",
+"ini": 49.28,
+"fin": 49.4
+},
+{
+"w": "ver",
+"ini": 49.4,
+"fin": 49.6
+},
+{
+"w": "tiene",
+"ini": 49.6,
+"fin": 49.96
+},
+{
+"w": "nombre",
+"ini": 49.96,
+"fin": 50.32
+},
+{
+"w": "la",
+"ini": 50.84,
+"fin": 50.94
+},
+{
+"w": "ley",
+"ini": 50.94,
+"fin": 51.3
+},
+{
+"w": "de",
+"ini": 51.3,
+"fin": 51.46
+},
+{
+"w": "la",
+"ini": 51.46,
+"fin": 51.58
+},
+{
+"w": "demanda.",
+"ini": 51.58,
+"fin": 52.12
+}
+]
+},
+{
+"ini": 52.46,
+"fin": 57.64,
+"texto": "Si el precio sube, la cantidad demandada baja. Si todo lo demás sigue igual.",
+"palabras": [
+{
+"w": "Si",
+"ini": 52.46,
+"fin": 52.62
+},
+{
+"w": "el",
+"ini": 52.62,
+"fin": 52.74
+},
+{
+"w": "precio",
+"ini": 52.74,
+"fin": 52.94
+},
+{
+"w": "sube,",
+"ini": 52.94,
+"fin": 53.44
+},
+{
+"w": "la",
+"ini": 53.74,
+"fin": 53.82
+},
+{
+"w": "cantidad",
+"ini": 53.82,
+"fin": 54.14
+},
+{
+"w": "demandada",
+"ini": 54.14,
+"fin": 54.9
+},
+{
+"w": "baja.",
+"ini": 54.9,
+"fin": 55.4
+},
+{
+"w": "Si",
+"ini": 55.82,
+"fin": 56.06
+},
+{
+"w": "todo",
+"ini": 56.06,
+"fin": 56.44
+},
+{
+"w": "lo",
+"ini": 56.44,
+"fin": 56.66
+},
+{
+"w": "demás",
+"ini": 56.66,
+"fin": 56.96
+},
+{
+"w": "sigue",
+"ini": 56.96,
+"fin": 57.34
+},
+{
+"w": "igual.",
+"ini": 57.34,
+"fin": 57.64
+}
+]
+},
+{
+"ini": 57.64,
+"fin": 62.52,
+"texto": "Ojo: la curva no se movió. Fue Toby quien se movió sobre ella.",
+"palabras": [
+{
+"w": "Ojo",
+"ini": 57.64,
+"fin": 58.48
+},
+{
+"w": "la",
+"ini": 58.86,
+"fin": 58.98
+},
+{
+"w": "curva",
+"ini": 58.98,
+"fin": 59.38
+},
+{
+"w": "no",
+"ini": 59.38,
+"fin": 59.7
+},
+{
+"w": "se",
+"ini": 59.7,
+"fin": 59.88
+},
+{
+"w": "movió.",
+"ini": 59.88,
+"fin": 60.28
+},
+{
+"w": "Fue",
+"ini": 60.68,
+"fin": 60.82
+},
+{
+"w": "Toby",
+"ini": 60.82,
+"fin": 61.18
+},
+{
+"w": "quien",
+"ini": 61.18,
+"fin": 61.48
+},
+{
+"w": "se",
+"ini": 61.48,
+"fin": 61.64
+},
+{
+"w": "movió",
+"ini": 61.64,
+"fin": 61.96
+},
+{
+"w": "sobre",
+"ini": 61.96,
+"fin": 62.18
+},
+{
+"w": "ella.",
+"ini": 62.18,
+"fin": 62.52
+}
+]
+},
+{
+"ini": 63.17,
+"fin": 69.85,
+"texto": "Ahora te toca. En la actividad, tú decides: ¿se mueve la curva, o te mueves sobre ella?",
+"palabras": [
+{
+"w": "Ahora",
+"ini": 63.17,
+"fin": 63.53
+},
+{
+"w": "te",
+"ini": 63.53,
+"fin": 63.75
+},
+{
+"w": "toca.",
+"ini": 63.75,
+"fin": 64.07
+},
+{
+"w": "En",
+"ini": 64.55,
+"fin": 64.67
+},
+{
+"w": "la",
+"ini": 64.67,
+"fin": 64.77
+},
+{
+"w": "actividad,",
+"ini": 64.77,
+"fin": 65.39
+},
+{
+"w": "tú",
+"ini": 65.39,
+"fin": 65.77
+},
+{
+"w": "decides",
+"ini": 65.77,
+"fin": 66.19
+},
+{
+"w": "¿se",
+"ini": 66.83,
+"fin": 67.07
+},
+{
+"w": "mueve",
+"ini": 67.07,
+"fin": 67.39
+},
+{
+"w": "la",
+"ini": 67.39,
+"fin": 67.51
+},
+{
+"w": "curva,",
+"ini": 67.51,
+"fin": 68.21
+},
+{
+"w": "o",
+"ini": 68.21,
+"fin": 68.47
+},
+{
+"w": "te",
+"ini": 68.47,
+"fin": 68.73
+},
+{
+"w": "mueves",
+"ini": 68.73,
+"fin": 69.19
+},
+{
+"w": "sobre",
+"ini": 69.19,
+"fin": 69.45
+},
+{
+"w": "ella?",
+"ini": 69.45,
+"fin": 69.85
+}
+]
+}
+]
+}
