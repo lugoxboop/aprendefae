@@ -15,7 +15,7 @@ import { useMemo, useRef, useState } from "react";
 import { BORDE, CORAL, FONDO, INK, INK_2, SUPERFICIE_2 } from "../comun/colores-da.js";
 import { Boton, MarcoHacer, Retro, useCronometro } from "../comun/ui.jsx";
 import { azarDeLaPagina, sortear } from "../comun/azar.js";
-import { IconoDirecto, IconoIndirecto } from "../comun/iconos-pf.jsx";
+import { Ilustrado } from "../comun/ilustrados.jsx";
 import { A3, BANCO_H2, CONSIGNAS, PARTIDA_H2, ESCENAS } from "./textos.js";
 
 export const ID = "pf26-h2-cajero";
@@ -138,7 +138,7 @@ export default function H2Cajero({ onTerminar, rng = null }) {
           {["directo", "indirecto"].map((c) => (
             <button key={c} type="button" className="pf26-h2-cajero" data-cajero={c} data-recibe={recibe === c ? "1" : "0"}
               disabled={Boolean(recibe)} aria-label={`Cajero ${c === "directo" ? A3.directo : A3.indirecto}`} onClick={() => elegir(c)}>
-              <span className="pf26-h2-gesto" style={{ display: "inline-block" }}>{c === "directo" ? <IconoDirecto size={44} /> : <IconoIndirecto size={44} />}</span>
+              <span className="pf26-h2-gesto" style={{ display: "inline-block" }}><Ilustrado id={c === "directo" ? "ventanilla" : "caja-registradora"} alto={70} /></span>
               <span>{c === "directo" ? A3.directo : A3.indirecto}</span>
               {recibe === c && <span className="pf26-h2-recibida da26-entra" data-recibida>{t.texto}</span>}
             </button>

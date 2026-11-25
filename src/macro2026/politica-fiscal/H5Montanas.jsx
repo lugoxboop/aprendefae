@@ -17,6 +17,7 @@ import { Boton, Deslizador, MarcoHacer, Retro, useCronometro } from "../comun/ui
 import { useArrastre } from "../comun/arrastre.js";
 import { colorRama } from "../comun/ramas.js";
 import { CONSIGNAS, H5, ESCENAS } from "./textos.js";
+import { rutaIlustrado } from "../comun/ilustrados.jsx";
 
 export const ID = "pf26-h5-montanas";
 const AGUA = colorRama("fiscal");
@@ -43,10 +44,12 @@ function Montanas({ interna, externa, etiquetas = {} }) {
     const h = alto(v);
     return (
       <g data-montana={id} data-valor={Math.round(v)}>
-        <path className="pf26-h5-monte" d={`M${cx - 66} 132 L${cx} ${132 - h} L${cx + 66} 132 Z`} fill="none" stroke={AGUA} strokeWidth="3" strokeLinejoin="round" />
-        <text x={cx} y={Math.max(16, 126 - h)} textAnchor="middle" fill={INK} fontSize="15" fontWeight="700" className="da26-mono">{fmtEntero(v)}</text>
+        {/* La montaña ilustrada (Gemini, 25-nov; familia 13) se estira a la
+            altura del saldo en vivo; el triángulo queda solo como contorno. */}
+        <image className="pf26-h5-monte" href={rutaIlustrado("montana")} x={cx - 66} y={132 - h} width="132" height={h} preserveAspectRatio="none" />
+        <text x={cx} y={Math.max(16, 128 - h)} textAnchor="middle" fill={INK} fontSize="15" fontWeight="700" className="da26-mono">{fmtEntero(v)}</text>
         <text x={cx} y="152" textAnchor="middle" fill={INK} fontSize="15" fontWeight="600">{nombre}</text>
-        {etiquetas[id] && <text x={cx} y={Math.max(34, 146 - h / 2)} textAnchor="middle" fill={INK} fontSize="13" fontWeight="700">{etiquetas[id]}</text>}
+        {etiquetas[id] && <text x={cx} y={Math.max(34, 146 - h / 2)} textAnchor="middle" fill="#0E1B2E" stroke="#fff" strokeWidth="3" paintOrder="stroke" fontSize="13" fontWeight="700">{etiquetas[id]}</text>}
       </g>
     );
   };

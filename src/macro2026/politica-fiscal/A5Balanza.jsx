@@ -19,6 +19,7 @@ import { useArrastre } from "../comun/arrastre.js";
 import { colorRama } from "../comun/ramas.js";
 import { MascotaRol } from "../comun/mascotas.jsx";
 import { Objeto } from "../comun/kit.jsx";
+import { ILUSTRADOS, rutaIlustrado } from "../comun/ilustrados.jsx";
 import { APRENDER, A5, ESCENAS } from "./textos.js";
 
 export const ID = "pf26-a5-balanza";
@@ -79,14 +80,18 @@ export const CSS_A5 = `
 @media (prefers-reduced-motion: reduce) { .pf26-a5-viga, .pf26-a5-globo, .pf26-a5-plato, .pf26-a5-lupa svg { transition: none; } .pf26-a5-cae { animation: none; } }
 `;
 
+/* El globo de la demanda agregada es un globo aerostático ilustrado (Gemini,
+ * 25-nov; familia 11): sube y baja con Y₀. El rótulo va en vivo sobre su
+ * franja crema (medida en el WebP: del 25 % al 46 % del alto). */
+const GLOBO_H = 100, GLOBO_W = (GLOBO_H * ILUSTRADOS["globo-aerostatico"][0]) / ILUSTRADOS["globo-aerostatico"][1];
 function Globo({ Y, dy }) {
   const y = useAnimado(Y);
+  const banda = GLOBO_H * 0.25;
   return (
     <g className="pf26-a5-globo" style={{ transform: `translateY(${dy}px)` }} data-globo={Math.round(Y)}>
-      <path d={`M${PIVOTE.x} 66 L${PIVOTE.x} 86`} stroke={INK_2} strokeWidth="1.5" />
-      <ellipse cx={PIVOTE.x} cy="44" rx="40" ry="24" fill={SUPERFICIE_2} stroke={INK} strokeWidth="2.5" />
-      <text x={PIVOTE.x} y="40" textAnchor="middle" fill={INK} fontSize="13" fontWeight="700">{A5.globo}</text>
-      <text x={PIVOTE.x} y="56" textAnchor="middle" fill={INK} fontSize="12" fontWeight="600" className="da26-mono">Y₀ {fmtEntero(y)}</text>
+      <image href={rutaIlustrado("globo-aerostatico")} x={PIVOTE.x - GLOBO_W / 2} y="0" width={GLOBO_W} height={GLOBO_H} />
+      <text x={PIVOTE.x} y={banda + 9} textAnchor="middle" fill="#0E1B2E" fontSize="10" fontWeight="800">{A5.globo}</text>
+      <text x={PIVOTE.x} y={banda + 19} textAnchor="middle" fill="#0E1B2E" fontSize="10" fontWeight="700" className="da26-mono">Y₀ {fmtEntero(y)}</text>
     </g>
   );
 }
@@ -94,7 +99,7 @@ function Globo({ Y, dy }) {
 export function Balanza({ exp, con, Y, destino, activos }) {
   const grados = GRADOS_POR_FICHA * (con - exp);
   const rad = (grados * Math.PI) / 180;
-  const dy = Math.max(-26, Math.min(26, -(Y - Y_BASE) * 0.065));
+  const dy = Math.max(-26, Math.min(14, -(Y - Y_BASE) * 0.065));
   const extremo = (lado) => ({ x: PIVOTE.x + lado * BRAZO * Math.cos(rad), y: PIVOTE.y + lado * BRAZO * Math.sin(rad) });
   const plato = (id, lado, nombre) => {
     const e = extremo(lado);
@@ -110,11 +115,13 @@ export function Balanza({ exp, con, Y, destino, activos }) {
     <div className="pf26-a5-balanza" data-balanza data-inclinacion={grados}>
       <svg viewBox={`0 0 ${ANCHO} 226`} aria-hidden="true">
         <Globo Y={Y} dy={dy} />
-        <path d={`M${PIVOTE.x} ${PIVOTE.y}l-22 56h44Z`} fill="none" stroke={INK_2} strokeWidth="3" strokeLinejoin="round" />
+        {/* Columna y brazo ilustrados (Gemini, 25-nov; familia 11). El pivote
+            de la columna (y 22 de 300 en el WebP) y el aro del brazo (centro
+            del WebP) caen sobre PIVOTE; el brazo gira en vivo. */}
+        <image href={rutaIlustrado("balanza-columna")} x={PIVOTE.x - (71 * 92) / 300} y={PIVOTE.y - (22 * 92) / 300} width={(143 * 92) / 300} height="92" />
         <g className="pf26-a5-viga" style={{ transform: `rotate(${grados}deg)` }}>
-          <rect x={PIVOTE.x - BRAZO - 4} y={PIVOTE.y - 4} width={2 * BRAZO + 8} height="8" rx="4" fill={INK} />
+          <image href={rutaIlustrado("balanza-viga")} x={PIVOTE.x - 85} y={PIVOTE.y - (80 * 170) / 610 / 2} width="170" height={(80 * 170) / 610} />
         </g>
-        <circle cx={PIVOTE.x} cy={PIVOTE.y} r="5" fill={FONDO} stroke={INK} strokeWidth="2" />
       </svg>
       {plato("expansiva", -1, A5.expansiva)}
       {plato("contraccionista", 1, A5.contraccionista)}

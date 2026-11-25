@@ -2,7 +2,8 @@
  * H5 · Un paciente, dos fiebres (pe26-h5-dos-fiebres, Hacer, Medio, 25 FP, exploratoria).
  * Especificación de Gen, t2 §2 H5. El circuito de A2, con tres medidores
  * grandes de 5 rayas: Precios, Producción y Déficit fiscal. Cada decisión
- * mueve las rayas (280 ms por raya).
+ * mueve las rayas (280 ms por raya). Desde el lote 3 de ilustrados (25-nov)
+ * cada medidor es un termómetro de vidrio: el mercurio sube de 1 a 5.
  * - Paso 1: el Banco de la República decide sobre la tasa.
  * - Paso 2: el Gobierno decide sobre el gasto.
  * Los medidores se recortan a 1–5. El final se lee bajo los medidores y
@@ -22,6 +23,7 @@ import { BORDE, INK, INK_2, SUPERFICIE_2 } from "../comun/colores-da.js";
 import { Boton, MarcoHacer, useCronometro, movimientoReducido } from "../comun/ui.jsx";
 import { RAMAS, colorRama } from "../comun/ramas.js";
 import { IconoRama } from "../comun/iconos-pe.jsx";
+import { TermometroVidrio } from "../comun/ilustrados.jsx";
 import { CIERRE_H5, ENTRADA_H5, FINALES_H5, INICIO_H5, MEDIDORES_H5, OTRO_H5, PASOS_H5, SUBTEMAS_CIERRE_H5, ESCENAS, POSES_H5 } from "./textos.js";
 
 export const ID = "pe26-h5-dos-fiebres";
@@ -128,9 +130,9 @@ export default function H5DosFiebres({ onTerminar }) {
           <div className="pe26-h5-meds">
             {MEDIDORES_H5.map((m) => (
               <div key={m.id} className="pe26-h5-med" data-medidor={m.id} data-valor={objetivo[m.id]} role="img" aria-label={`${m.nombre}: ${objetivo[m.id]} de 5`}>
-                <div className="pe26-h5-rayas" aria-hidden="true">
-                  {[1, 2, 3, 4, 5].map((r) => <span key={r} className="pe26-h5-raya" data-llena={r <= v[m.id] ? "1" : "0"} />)}
-                </div>
+                <svg width="44" height="104" viewBox="0 0 44 104" aria-hidden="true" style={{ width: 44, height: 104, display: "block" }} data-termo-h5={v[m.id]}>
+                  <TermometroVidrio x={2} y={0} alto={104} nivel={(v[m.id] - 1) / 4} />
+                </svg>
                 <span className="pe26-h5-num" aria-hidden="true">{v[m.id]}</span>
                 <span>{m.nombre}</span>
               </div>

@@ -58,5 +58,13 @@ que lo usan. Por eso los lotes van por **familia de visual**, de peor a mejor.
   publicado el 25-nov con visto bueno de Mateo (#758). Lote 2 hecho el 25-nov;
   video en `/mnt/project-files/macro-2026/videos/ilustrados-lote2/`. De paso:
   caja de bananos y carrito ilustrados en pc26-a4, candado en pc26-a7.
-- **Lote 3:** familias 9 a 13 (11 piezas).
+- **Lote 3:** familias 9 a 13 (pe26-a1, a2, h5; pf26-a5, h4, a2, h1, a3, h2,
+  h5). Lote 2 publicado el 25-nov con visto bueno de Mateo (#759). Lote 3 hecho
+  el 25-nov; video en `/mnt/project-files/macro-2026/videos/ilustrados-lote3/`.
+  16 objetos nuevos (carro varado, grúa, caja de herramientas, fábrica, edificio
+  de gobierno, virus, globo aerostático, columna y brazo de balanza, buzón
+  teñido por tributo, caja registradora, ventanilla, montaña, pozo, barrera,
+  casa con andén). El termómetro de vidrio pasó a `TermometroVidrio` común.
+  Gemini deja de crear imágenes tras unas 7 en un chat («soy un modelo de
+  lenguaje»): se abre un chat nuevo y se pega el estilo bloqueado completo.
 - **Lote 4:** familias 14 a 20.

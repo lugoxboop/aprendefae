@@ -9,6 +9,7 @@ import { useState } from "react";
 import { BORDE, FONDO, GRIS, INK, INK_2, SUPERFICIE_2 } from "../comun/colores-da.js";
 import { MarcoAprender, usePasos } from "../comun/ui.jsx";
 import { APRENDER, A1, ESCENAS } from "./textos.js";
+import { Ilustrado, ILUSTRADOS, medidaIlustrado, rutaIlustrado } from "../comun/ilustrados.jsx";
 
 export const ID = "pe26-a1-mecanico";
 const TEXTOS = APRENDER[ID];
@@ -21,7 +22,7 @@ const CSS = `
 .pe26-a1-salida { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 100%; max-width: 150px; min-height: 64px; padding: 8px 6px; border-radius: 12px; border: 2px solid ${BORDE}; background: ${FONDO}; color: ${INK}; cursor: pointer; touch-action: manipulation; font: 600 12px/15px var(--planck-font-sans, system-ui, sans-serif); text-align: center; }
 .pe26-a1-salida[aria-pressed="true"] { border-color: ${INK}; background: ${SUPERFICIE_2}; }
 .pe26-a1-centro { position: relative; display: flex; justify-content: center; }
-.pe26-a1-centro svg { width: 100%; max-width: 250px; height: auto; display: block; }
+.pe26-a1-centro svg { width: 100%; max-width: 330px; height: auto; display: block; }
 @keyframes pe26-a1-gira { from { transform: rotate(0deg); } to { transform: rotate(300deg); } }
 @keyframes pe26-a1-llega { from { transform: translateX(70px); opacity: 0; } to { transform: none; opacity: 1; } }
 @keyframes pe26-a1-humo { from { transform: translateY(4px); opacity: 0; } 50% { opacity: .9; } to { transform: translateY(-8px); opacity: .5; } }
@@ -42,46 +43,54 @@ const CSS = `
 `;
 
 /* ─── Dibujos ─── */
+/* El carro varado, la grúa y la caja, ilustrados (Gemini, 25-nov; familia 9
+ * del diagnóstico visual). El humo del capó viene en la imagen; encima sale
+ * un soplo en vivo. Al tocar la caja, la caja aparece junto al carro y la
+ * llave gira; al tocar la grúa, la grúa llega desde la derecha. */
+const CARRO_W = 172, CARRO_H = (CARRO_W * ILUSTRADOS["carro-varado"][1]) / ILUSTRADOS["carro-varado"][0];
+const GRUA_W = 108, GRUA_H = (GRUA_W * ILUSTRADOS.grua[1]) / ILUSTRADOS.grua[0];
+const CAJA_W = 46, CAJA_H = (CAJA_W * ILUSTRADOS["caja-herramientas"][1]) / ILUSTRADOS["caja-herramientas"][0];
+const PISO = 128;
 function Carro({ llave, grua }) {
   return (
-    <svg viewBox="0 0 170 110" aria-hidden="true">
-      {/* humo del capó */}
-      <g fill={GRIS} className="pe26-a1-humo" key={`h${llave}`}>
-        <circle cx="38" cy="30" r="7" /><circle cx="48" cy="22" r="9" /><circle cx="34" cy="16" r="6" />
+    <svg viewBox="0 0 330 136" aria-hidden="true" data-carro-ilustrado>
+      <ellipse cx="88" cy={PISO + 2} rx="84" ry="5" fill="#0E1B2E" opacity=".35" />
+      <image href={rutaIlustrado("carro-varado")} x="2" y={PISO - CARRO_H} width={CARRO_W} height={CARRO_H} />
+      <g fill={GRIS} className="pe26-a1-humo" key={`h${llave}`} opacity=".8">
+        <circle cx="146" cy="18" r="8" /><circle cx="158" cy="10" r="6" />
       </g>
-      {/* carro */}
-      <g stroke={INK} strokeWidth="2.5" strokeLinejoin="round" fill="none">
-        <path d="M14 76V62l14-4 16-16h44l18 16 20 3v15Z" fill={SUPERFICIE_2} />
-        <path d="M50 46h16v12H38ZM72 46h14l12 12H72Z" />
-      </g>
-      <circle cx="40" cy="78" r="10" fill={FONDO} stroke={INK} strokeWidth="2.5" />
-      <circle cx="104" cy="78" r="10" fill={FONDO} stroke={INK} strokeWidth="2.5" />
-      {/* la llave que aprieta la tuerca */}
       {llave > 0 && (
-        <g key={`l${llave}`} className="pe26-a1-llave" stroke={INK} strokeWidth="3" strokeLinecap="round" fill="none">
-          <path d="M28 52l10-10" /><circle cx="41" cy="39" r="4.5" />
+        <g key={`l${llave}`} data-caja-junto>
+          <image href={rutaIlustrado("caja-herramientas")} x="174" y={PISO - CAJA_H} width={CAJA_W} height={CAJA_H} className="pe26-a1-salta" />
+          <g className="pe26-a1-llave" stroke={INK} strokeWidth="3" strokeLinecap="round" fill="none">
+            <path d="M134 62l10-10" /><circle cx="147" cy="49" r="4.5" />
+          </g>
         </g>
       )}
-      {/* la grúa que llega */}
       {grua > 0 && (
-        <g key={`g${grua}`} className="pe26-a1-grua" stroke={INK} strokeWidth="2.5" strokeLinejoin="round" fill="none">
-          <path d="M150 88V64h-12l-6 10v14Z" fill={SUPERFICIE_2} />
-          <path d="M138 64l-10-22M128 42l-6 22" />
-          <circle cx="144" cy="92" r="6" fill={FONDO} />
+        <g key={`g${grua}`} className="pe26-a1-grua" data-grua-llega>
+          <image href={rutaIlustrado("grua")} x={330 - GRUA_W} y={PISO - GRUA_H} width={GRUA_W} height={GRUA_H} />
         </g>
       )}
-      <path d="M4 92h162" stroke={BORDE} strokeWidth="2" />
+      <path d={`M2 ${PISO + 4}h326`} stroke={BORDE} strokeWidth="2" />
     </svg>
   );
 }
 
+/* El carro pasa a ser el circuito: los hogares y las empresas, ilustrados,
+ * con el dinero dando la vuelta (familia 9-10 del diagnóstico visual). */
 function Circuito() {
+  const casa = medidaIlustrado("casa-pais", 44), fab = medidaIlustrado("fabrica", 44);
   return (
-    <svg viewBox="0 0 170 110" aria-hidden="true">
-      <ellipse cx="85" cy="55" rx="62" ry="38" fill="none" stroke={INK_2} strokeWidth="2.5" strokeDasharray="6 6" />
-      <path d="M140 46l7 9 7-9" fill="none" stroke={INK} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M30 64l-7-9-7 9" fill="none" stroke={INK} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx="85" cy="17" r="5" fill={INK} /><circle cx="85" cy="93" r="5" fill={INK} />
+    <svg viewBox="0 0 220 120" aria-hidden="true" data-circuito-ilustrado>
+      <ellipse cx="110" cy="60" rx="78" ry="44" fill="none" stroke={INK_2} strokeWidth="3" />
+      <path d="M180 48l8 10 8-10" fill="none" stroke={INK} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M40 72l-8-10-8 10" fill="none" stroke={INK} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+      <image href={rutaIlustrado("casa-pais")} x={32 - casa.width / 2} y={60 - casa.height / 2} width={casa.width} height={casa.height} />
+      <image href={rutaIlustrado("fabrica")} x={188 - fab.width / 2} y={60 - fab.height / 2} width={fab.width} height={fab.height} />
+      {[[110, 16], [110, 104]].map(([x, y]) => (
+        <image key={y} href={rutaIlustrado("moneda-oro")} x={x - 10} y={y - 10} width="20" height="20" />
+      ))}
     </svg>
   );
 }
@@ -92,7 +101,9 @@ const ICONO = {
   mercado: <path d="M12 32v-9l-3-6c-.8-1.6 1.4-2.8 2.4-1.3L14 19V8c0-1.8 2.6-1.8 2.6 0v8-10c0-1.8 2.6-1.8 2.6 0v10-9c0-1.8 2.6-1.8 2.6 0v9-7c0-1.8 2.6-1.8 2.6 0v12c0 4-2 6-3 7v5Z" />,
   estado: <path d="M6 32h28M8 32V17h24v15M5 17l15-9 15 9M12 20v9M18 20v9M24 20v9M30 20v9" />,
 };
+const ILUSTRADA = { caja: ["caja-herramientas", 40], grua: ["grua", 34], estado: ["edificio-gobierno", 40] };
 function IconoSalida({ id, salta }) {
+  if (ILUSTRADA[id]) return <Ilustrado id={ILUSTRADA[id][0]} alto={ILUSTRADA[id][1]} className={salta ? "pe26-a1-salta" : undefined} key={salta} />;
   return (
     <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true" style={{ width: 40, height: 40 }} className={salta ? "pe26-a1-salta" : undefined} key={salta}>
       <g fill="none" stroke={INK} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">{ICONO[id]}</g>

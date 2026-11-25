@@ -13,6 +13,7 @@ import { useEffect, useRef, useState } from "react";
 import { BORDE, FONDO, INK, INK_2, SUPERFICIE_2, GRIS } from "../comun/colores-da.js";
 import { MarcoAprender, usePasos, useAncho, movimientoReducido, Boton } from "../comun/ui.jsx";
 import { IconoProblema } from "../comun/iconos-pe.jsx";
+import { Ilustrado, TermometroVidrio } from "../comun/ilustrados.jsx";
 import { APRENDER, VIRUS, FUERA_DEL_CIRCUITO, CIRCUITO, A2, DATO_DE_CLASE, ESCENAS } from "./textos.js";
 
 export const ID = "pe26-a2-fiebre";
@@ -24,6 +25,9 @@ const NODO = {
   bienes: [0.5, 0.06], hogares: [0.13, 0.5], empresas: [0.87, 0.5],
   factores: [0.5, 0.94], estado: [0.5, 0.5], exterior: [0.87, 0.06],
 };
+/* Hogares, empresas y Estado con su dibujo (Gemini, 25-nov; familia 10). El
+ * desplazamiento en px deja libre el sitio de los virus. */
+const NODO_ILU = { hogares: ["casa-pais", -36], empresas: ["fabrica", -36], estado: ["edificio-gobierno", 36] };
 const VIRUS_EN = {
   inflacion: [0.5, 0.19], desempleo: [0.13, 0.64], recesion: [0.5, 0.8],
   deficitFiscal: [0.5, 0.34], deficitExterno: [0.87, 0.19],
@@ -33,8 +37,11 @@ const CSS = `
 .pe26-a2-mapa { position: relative; width: 100%; height: ${ALTO}px; }
 .pe26-a2-mapa svg { position: absolute; inset: 0; width: 100%; height: 100%; }
 .pe26-a2-nodo { position: absolute; transform: translate(-50%, -50%); padding: 3px 8px; border-radius: 999px; border: 1px solid ${BORDE}; background: ${FONDO}; font: 600 12px/16px var(--planck-font-sans, system-ui, sans-serif); color: ${INK}; white-space: nowrap; }
-.pe26-a2-virus { position: absolute; transform: translate(-50%, -50%); width: 46px; height: 46px; border-radius: 50%; border: 2px dashed ${INK_2}; background: ${SUPERFICIE_2}; color: ${INK}; display: grid; place-items: center; cursor: pointer; touch-action: manipulation; padding: 0; }
-.pe26-a2-virus[data-abierto="1"] { border-style: solid; border-color: ${INK}; }
+.pe26-a2-virus { position: absolute; transform: translate(-50%, -50%); width: 48px; height: 48px; border-radius: 50%; border: 2px solid transparent; background: transparent; color: #0E1B2E; display: grid; place-items: center; cursor: pointer; touch-action: manipulation; padding: 0; }
+.pe26-a2-virus > img { width: 44px; height: 44px; }
+.pe26-a2-virus-sello { position: absolute; right: -4px; bottom: -4px; width: 22px; height: 22px; border-radius: 50%; background: #fff; border: 1.5px solid #0E1B2E; display: grid; place-items: center; }
+.pe26-a2-virus[data-abierto="1"] { border-color: ${INK}; background: ${SUPERFICIE_2}; }
+.pe26-a2-nodo-ilu { position: absolute; transform: translate(-50%, -50%); pointer-events: none; }
 .pe26-a2-virus[aria-pressed="true"] { box-shadow: 0 0 0 3px ${INK_2}; }
 .pe26-a2-fuera { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
 .pe26-a2-fuera button { min-height: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 4px; border-radius: 12px; border: 2px dashed ${INK_2}; background: ${SUPERFICIE_2}; color: ${INK}; font: 600 12px/15px var(--planck-font-sans, system-ui, sans-serif); cursor: pointer; touch-action: manipulation; }
@@ -48,16 +55,10 @@ const CSS = `
 .pe26-a2-maletin { display: flex; flex-direction: column; align-items: center; gap: 4px; margin-top: 6px; font: 700 15px/20px var(--planck-font-sans, system-ui, sans-serif); }
 `;
 
+/* El termómetro de vidrio ilustrado (Gemini; familia 10): sube un grado por
+ * cada virus abierto. */
 function Termometro({ grados, x }) {
-  const h = 70, nivel = Math.min(5, grados) / 5;
-  return (
-    <g transform={`translate(${x}, 10)`} aria-hidden="true" data-termometro={grados}>
-      <rect x="0" y="0" width="14" height={h} rx="7" fill={FONDO} stroke={INK} strokeWidth="2" />
-      <rect x="4" y={4 + (h - 8) * (1 - nivel)} width="6" height={(h - 8) * nivel + 4} rx="3" fill={INK} style={{ transition: "y 280ms cubic-bezier(.3,.9,.4,1), height 280ms cubic-bezier(.3,.9,.4,1)" }} />
-      <circle cx="7" cy={h + 6} r="9" fill={INK} stroke={INK} strokeWidth="2" />
-      {[1, 2, 3, 4].map((k) => <path key={k} d={`M16 ${4 + ((h - 8) * k) / 5}h5`} stroke={INK_2} strokeWidth="1.5" />)}
-    </g>
-  );
+  return <TermometroVidrio x={x} y={4} alto={96} nivel={Math.min(5, grados) / 5} data-termometro={grados} />;
 }
 
 function Ficha({ v }) {
@@ -123,8 +124,12 @@ export default function A2Fiebre({ onTerminar }) {
         <path d={`M${cx} ${cy - 14}V${ALTO * 0.1}M${cx} ${cy + 14}V${ALTO * 0.9}`} stroke={BORDE} strokeWidth="2" strokeDasharray="4 5" />
         <path d={`M${ancho * 0.87} ${ALTO * 0.1}V${ALTO * 0.46}`} stroke={BORDE} strokeWidth="2" strokeDasharray="4 5" />
         {paso === 0 && puntos.map(([x, y], k) => <circle key={k} cx={x} cy={y} r="5" fill={INK} data-punto-dinero />)}
-        {paso === 1 && <Termometro grados={grados} x={6} />}
+        {paso === 1 && <Termometro grados={grados} x={0} />}
       </svg>
+      {CIRCUITO.filter((n) => NODO_ILU[n.id]).map((n) => (
+        <Ilustrado key={`i-${n.id}`} id={NODO_ILU[n.id][0]} alto={34} className="pe26-a2-nodo-ilu" data-nodo-ilu={n.id}
+          style={{ position: "absolute", left: `${NODO[n.id][0] * 100}%`, top: `calc(${NODO[n.id][1] * 100}% + ${NODO_ILU[n.id][1]}px)` }} />
+      ))}
       {CIRCUITO.map((n) => (
         <span key={n.id} className="pe26-a2-nodo" data-nodo={n.id} style={{ left: `${NODO[n.id][0] * 100}%`, top: `${NODO[n.id][1] * 100}%` }}>{n.nombre}</span>
       ))}
@@ -140,7 +145,8 @@ export default function A2Fiebre({ onTerminar }) {
           style={{ left: `${VIRUS_EN[v.id][0] * 100}%`, top: `${VIRUS_EN[v.id][1] * 100}%` }}
           onClick={() => abrir(v)}
         >
-          <IconoProblema id={v.id} size={26} />
+          <Ilustrado id="virus" alto={44} />
+          <span className="pe26-a2-virus-sello"><IconoProblema id={v.id} size={16} /></span>
         </button>
       ))}
     </div>
