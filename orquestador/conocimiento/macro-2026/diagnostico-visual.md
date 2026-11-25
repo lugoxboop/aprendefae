@@ -54,6 +54,9 @@ que lo usan. Por eso los lotes van por **familia de visual**, de peor a mejor.
   `/mnt/project-files/macro-2026/videos/ilustrados-lote1/`. Visible solo tras el
   visto bueno de Mateo (el PR no se fusiona antes). Además se cambió el grifo
   de A3 (el viejo salía cortado) y los iconos a mano de H1 por los objetos de A1.
-- **Lote 2:** familias 5 a 8 (7 piezas).
+- **Lote 2:** familias 5 a 8 (7 piezas: pc26-a1, h1, a4, a6, h5, a5, a7). Lote 1
+  publicado el 25-nov con visto bueno de Mateo (#758). Lote 2 hecho el 25-nov;
+  video en `/mnt/project-files/macro-2026/videos/ilustrados-lote2/`. De paso:
+  caja de bananos y carrito ilustrados en pc26-a4, candado en pc26-a7.
 - **Lote 3:** familias 9 a 13 (11 piezas).
 - **Lote 4:** familias 14 a 20.
