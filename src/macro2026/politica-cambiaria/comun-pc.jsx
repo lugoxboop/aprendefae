@@ -12,6 +12,7 @@
 import { useEffect, useRef, useState } from "react";
 import { BORDE, FONDO, GRIS, INK, INK_2, SUPERFICIE_2, TINTA_SOBRE_COLOR } from "../comun/colores-da.js";
 import { colorRama } from "../comun/ramas.js";
+import { ILUSTRADOS, rutaIlustrado } from "../comun/ilustrados.jsx";
 import { DOLAR, PESO } from "../comun/monedas.js";
 import { fmtDecimal, fmtEntero } from "../comun/modelo-da.js";
 import { movimientoReducido } from "../comun/ui.jsx";
@@ -37,7 +38,8 @@ export const CSS_PC = `
 .pc26-plato { transition: transform 420ms cubic-bezier(.3,.9,.4,1); }
 .pc26-medalla { transition: transform 420ms cubic-bezier(.3,.9,.4,1); transform-box: fill-box; transform-origin: center; }
 .pc26-moneda-cap { transition: transform 700ms cubic-bezier(.3,.9,.4,1), opacity 300ms linear; }
-@media (prefers-reduced-motion: reduce) { .pc26-aguja, .pc26-plato, .pc26-medalla, .pc26-moneda-cap { transition: none; } }
+.pc26-reservas-nivel { transform-box: fill-box; transform-origin: bottom; transition: transform 700ms cubic-bezier(.3,.9,.4,1); }
+@media (prefers-reduced-motion: reduce) { .pc26-aguja, .pc26-plato, .pc26-medalla, .pc26-moneda-cap, .pc26-reservas-nivel { transition: none; } }
 `;
 
 /** Pesos por dólar: 4.000 o 4.329,90 (dos decimales solo si hacen falta). */
@@ -71,37 +73,48 @@ export function Balanza({ tc, inclina = 0, rotulos = null }) {
   );
 }
 
+/* La balanza ilustrada (Gemini, 25-nov; diagnostico-visual.md, familia 5):
+ * pie fijo y brazo con platos que se inclina. Brazo 596 × 372 con el pivote en
+ * (.5, .08) y los platos centrados en x .2 y .8 con el borde en y .79; pie
+ * 221 × 360 con la bola en (.5, .05) (medido en el WebP). Encima, en vivo: los
+ * fajos de pesos (uno por cada $250), el billete de USD 1 y las medallas. */
+const BRAZO = { w: 240, piv: [0.5, 0.08], platos: [0.2, 0.8], borde: 0.79 };
 function BalanzaSvg({ tc, inclina }) {
   const n = Math.round(tc / 250);
   const sD = Math.max(0.7, Math.min(1.35, tc / 4000));
   const sP = Math.max(0.7, Math.min(1.35, 4000 / tc));
+  const [bw0, bh0] = ILUSTRADOS["balanza-brazo"], [pw0, ph0] = ILUSTRADOS["balanza-pie"];
+  const BW = BRAZO.w, BH = (BW * bh0) / bw0, PX = 150, PY = 52;
+  const bx = PX - BW * BRAZO.piv[0], by = PY - BH * BRAZO.piv[1];
+  const PH = 160, PW = (PH * pw0) / ph0;
+  const [fw0, fh0] = ILUSTRADOS["fajo-pesos"], FW = 24, FH = (FW * fh0) / fw0;
+  const [uw0, uh0] = ILUSTRADOS["billete-usd"], UW = 56, UH = (UW * uh0) / uw0;
+  const borde = by + BH * BRAZO.borde, xP = bx + BW * BRAZO.platos[0], xD = bx + BW * BRAZO.platos[1];
+  const porFila = 4, paso = FW * 0.78;
   return (
-    <svg viewBox="0 0 300 150" style={{ width: "100%", height: "auto", maxWidth: 380, display: "block", margin: "0 auto" }}
+    <svg viewBox="0 0 300 236" style={{ width: "100%", height: "auto", maxWidth: 380, display: "block", margin: "0 auto" }}
       role="img" aria-label={`USD 1 = $${fmtTc(tc)}`} data-balanza data-tc={tc}>
+      <image href={rutaIlustrado("balanza-pie")} x={PX - PW / 2} y={PY - PH * 0.05 - 4} width={PW} height={PH} />
+      <g className="pc26-plato" style={{ transform: `rotate(${inclina}deg)`, transformOrigin: `${PX}px ${PY}px` }}>
+        {/* Los pesos: fajos de $250 apilados en el plato izquierdo. */}
+        {Array.from({ length: n }, (_, k) => {
+          const fila = Math.floor(k / porFila), col = k % porFila;
+          return <image key={k} href={rutaIlustrado("fajo-pesos")} x={xP - (porFila * paso) / 2 + col * paso - FW * 0.1} y={borde - FH * 0.8 - fila * FH * 0.42} width={FW} height={FH} data-pila />;
+        })}
+        {/* El dólar: un billete de USD 1. */}
+        <image href={rutaIlustrado("billete-usd")} x={xD - UW / 2} y={borde - UH * 0.85} width={UW} height={UH} data-billete-usd />
+        <image href={rutaIlustrado("balanza-brazo")} x={bx} y={by} width={BW} height={BH} />
+      </g>
       <g className="pc26-medalla" style={{ transform: `scale(${sP})` }} data-medalla-peso={sP.toFixed(2)}>
-        <circle cx="40" cy="24" r="18" fill={PESO} />
-        <text x="40" y="30" textAnchor="middle" fill={TINTA_SOBRE_COLOR} fontSize="17" fontWeight="800">$</text>
+        <circle cx="34" cy="24" r="18" fill={PESO} stroke="#0E1B2E" strokeWidth="2" />
+        <text x="34" y="30" textAnchor="middle" fill={TINTA_SOBRE_COLOR} fontSize="17" fontWeight="800">$</text>
       </g>
       <g className="pc26-medalla" style={{ transform: `scale(${sD})` }} data-medalla-dolar={sD.toFixed(2)}>
-        <circle cx="260" cy="24" r="18" fill={DOLAR} />
-        <text x="260" y="29" textAnchor="middle" fill={TINTA_SOBRE_COLOR} fontSize="14" fontWeight="800">USD</text>
+        <circle cx="266" cy="24" r="18" fill={DOLAR} stroke="#0E1B2E" strokeWidth="2" />
+        <text x="266" y="29" textAnchor="middle" fill={TINTA_SOBRE_COLOR} fontSize="14" fontWeight="800">USD</text>
       </g>
-      <path d="M150 58V140M118 144h64" stroke={INK_2} strokeWidth="4" strokeLinecap="round" />
-      <g className="pc26-plato" style={{ transform: `rotate(${inclina}deg)`, transformOrigin: "150px 58px" }}>
-        <path d="M54 58H246" stroke={INK} strokeWidth="4" strokeLinecap="round" />
-        <path d="M54 58l-34 54h68Z M246 58l-34 54h68Z" fill="none" stroke={INK_2} strokeWidth="1.5" />
-        <path d="M14 112h80M206 112h80" stroke={INK} strokeWidth="4" strokeLinecap="round" />
-        {/* El dólar: un billete de USD 1. */}
-        <rect x="224" y="86" width="44" height="24" rx="3" fill={DOLAR} stroke={INK} strokeWidth="1.5" />
-        <text x="246" y="104" textAnchor="middle" fill={TINTA_SOBRE_COLOR} fontSize="15" fontWeight="800" aria-hidden="true">1</text>
-        {/* Los pesos: pilas de $100. */}
-        {Array.from({ length: n }, (_, k) => {
-          const fila = Math.floor(k / 8), col = k % 8;
-          return <rect key={k} x={18 + col * 9.5} y={98 - fila * 13} width="8" height="12" rx="2" fill={PESO} stroke={FONDO} strokeWidth="1" data-pila />;
-        })}
-      </g>
-      <text x="54" y="140" textAnchor="middle" fill={INK} fontSize="15" fontWeight="700" className="da26-mono" data-cifra-pesos>${fmtTc(tc)}</text>
-      <text x="246" y="140" textAnchor="middle" fill={INK} fontSize="15" fontWeight="700" className="da26-mono">USD 1</text>
+      <text x={xP} y="230" textAnchor="middle" fill={INK} fontSize="16" fontWeight="700" className="da26-mono" data-cifra-pesos>${fmtTc(tc)}</text>
+      <text x={xD} y="230" textAnchor="middle" fill={INK} fontSize="16" fontWeight="700" className="da26-mono">USD 1</text>
     </svg>
   );
 }
@@ -293,38 +306,59 @@ const COLUMNAS = [0, 1, 2, 3, 4, 5];
  */
 export function Imanes({ atraccion = 0, nube = false, cuesta = false, nombres = ["Colombia", "EE. UU."] }) {
   const a = Math.max(-1, Math.min(1, atraccion + (nube ? 0.9 : 0)));
+  /* Imán, nube y monedas ilustrados (Gemini, 25-nov; diagnostico-visual.md,
+   * familia 6). El imán mira a la derecha; el de EE. UU. es su espejo. Bajo
+   * cada imán, la medalla de su moneda ($ o USD), además del nombre. */
+  const IW = 86, IH = (IW * ILUSTRADOS.iman[1]) / ILUSTRADOS.iman[0];
+  const MW = 28, MH = (MW * ILUSTRADOS["moneda-oro"][1]) / ILUSTRADOS["moneda-oro"][0];
+  const NW = 64, NH = (NW * ILUSTRADOS["nube-tormenta"][1]) / ILUSTRADOS["nube-tormenta"][0];
   return (
     <svg viewBox="0 0 300 150" style={{ width: "100%", height: "auto", maxWidth: 380, display: "block", margin: "0 auto" }}
       role="img" aria-label={`El capital va hacia ${a < -0.1 ? nombres[0] : a > 0.1 ? nombres[1] : "ninguno de los dos"}`} data-imanes data-atraccion={a.toFixed(2)}>
       {[0, 1].map((k) => {
-        const x = k === 0 ? 14 : 238;
+        const x = k === 0 ? 4 : 296 - IW, cx = x + IW / 2;
         return (
           <g key={k} data-iman={k === 0 ? "aqui" : "alla"}>
-            <path d={`M${x} 40h48v22h-26v26h26v22h-48Z`} transform={k === 1 ? `translate(${2 * x + 48} 0) scale(-1 1)` : undefined} fill={SUPERFICIE_2} stroke={INK} strokeWidth="2.5" strokeLinejoin="round" />
-            <rect x={k === 0 ? x + 36 : x} y="40" width="12" height="22" fill={k === 0 ? PESO : DOLAR} />
-            <rect x={k === 0 ? x + 36 : x} y="88" width="12" height="22" fill={k === 0 ? PESO : DOLAR} />
-            <text x={x + 24} y="134" textAnchor="middle" fill={INK} fontSize="15" fontWeight="700">{nombres[k]}</text>
+            <image href={rutaIlustrado("iman")} x={x} y={26} width={IW} height={IH}
+              transform={k === 1 ? `translate(${2 * cx} 0) scale(-1 1)` : undefined} />
+            <circle cx={cx} cy={118} r="9" fill={k === 0 ? PESO : DOLAR} stroke="#0E1B2E" strokeWidth="1.5" />
+            <text x={cx} y={122} textAnchor="middle" fill={TINTA_SOBRE_COLOR} fontSize={k === 0 ? 11 : 7} fontWeight="800">{k === 0 ? "$" : "USD"}</text>
+            <text x={cx} y={144} textAnchor="middle" fill={INK} fontSize="15" fontWeight="700">{nombres[k]}</text>
           </g>
         );
       })}
-      {nube && (
-        <g data-nube>
-          <path d="M28 30c-10 0-14-12-4-16 0-10 14-12 18-4 8-6 20 0 16 10 8 2 6 12-2 12Z" fill={GRIS} stroke={INK_2} strokeWidth="1.5" />
-          <path d="M40 30l-4 8h6l-4 8" stroke={CAMBIARIA} strokeWidth="2.5" fill="none" strokeLinecap="round" />
-        </g>
-      )}
-      {cuesta && <path d="M70 116L130 96" stroke={INK_2} strokeWidth="3" strokeDasharray="5 4" data-cuesta />}
+      {nube && <image href={rutaIlustrado("nube-tormenta")} x={10} y={-6} width={NW} height={NH} data-nube />}
+      {cuesta && <path d="M86 118L130 100" stroke={INK_2} strokeWidth="3" strokeDasharray="5 4" data-cuesta />}
       {COLUMNAS.map((k) => {
         const fila = k % 2, base = 110 + (k - 2.5) * 13;
         const vuelve = cuesta && a < 0 && k >= 4;
-        const dx = vuelve ? 44 : a * 70;
+        const dx = vuelve ? 44 : a * 62;
         return (
           <g key={k} className="pc26-moneda-cap" style={{ transform: `translateX(${dx}px)` }} data-moneda-capital={k}>
-            <circle cx={base} cy={fila ? 92 : 66} r="12" fill={CAMBIARIA} stroke={INK} strokeWidth="1.5" />
-            <text x={base} y={(fila ? 92 : 66) + 5} textAnchor="middle" fill={TINTA_SOBRE_COLOR} fontSize="14" fontWeight="800">$</text>
+            <image href={rutaIlustrado("moneda-oro")} x={base + 40 - MW / 2} y={(fila ? 92 : 66) - MH / 2} width={MW} height={MH} />
           </g>
         );
       })}
+    </svg>
+  );
+}
+
+/* El depósito de reservas internacionales, ilustrado (Gemini, 25-nov;
+ * familias 7 y 8): cilindro de vidrio con tapa de bóveda, 218 × 300. Vidrio
+ * útil de x .06 a .94 y de y .3 a .83 (medido en el WebP). Los dólares de las
+ * reservas suben y bajan en vivo dentro. */
+const VIDRIO_RES = { x0: 0.06, x1: 0.94, y0: 0.3, y1: 0.83 };
+export function Reservas({ nivel, alto = 110, nombre }) {
+  const [w0, h0] = ILUSTRADOS["deposito-reservas"];
+  const h = alto, w = (alto * w0) / h0;
+  const x = w * VIDRIO_RES.x0, iw = w * (VIDRIO_RES.x1 - VIDRIO_RES.x0), y = h * VIDRIO_RES.y0, ih = h * (VIDRIO_RES.y1 - VIDRIO_RES.y0);
+  const n = Math.max(0, Math.min(1, nivel));
+  return (
+    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} role="img" aria-label={nombre} data-reservas={n.toFixed(2)} style={{ display: "block", margin: "0 auto", width: w, height: h, maxWidth: "100%" }}>
+      <image href={rutaIlustrado("deposito-reservas")} width={w} height={h} />
+      <rect className="pc26-reservas-nivel" x={x} y={y} width={iw} height={ih} rx={w * 0.08} fill={DOLAR} fillOpacity=".85" style={{ transform: `scaleY(${n})` }} />
+      <image href={rutaIlustrado("deposito-reservas")} width={w} height={h} opacity=".35" />
+      <text x={w / 2} y={y + ih - 8} textAnchor="middle" fill={TINTA_SOBRE_COLOR} fontSize="13" fontWeight="800" opacity={n > 0.2 ? 1 : 0}>USD</text>
     </svg>
   );
 }

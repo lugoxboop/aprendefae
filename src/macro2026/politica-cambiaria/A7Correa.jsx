@@ -15,7 +15,8 @@ import { fmtEntero } from "../comun/modelo-da.js";
 import { Boton, MarcoAprender, usePasos } from "../comun/ui.jsx";
 import { EscenaMascotas } from "../comun/mascotas.jsx";
 import { Objeto } from "../comun/kit.jsx";
-import { CAMBIARIA, CSS_PC, Correa } from "./comun-pc.jsx";
+import { Ilustrado } from "../comun/ilustrados.jsx";
+import { CAMBIARIA, CSS_PC, Correa, Reservas } from "./comun-pc.jsx";
 import { A7, APRENDER, REGIMENES, ESCENAS } from "./textos.js";
 
 export const ID = "pc26-a7-correa";
@@ -34,23 +35,18 @@ const CSS = `
 @media (prefers-reduced-motion: reduce) { .pc26-a7-agua { transition: none; } }
 `;
 
+/* El balde y el candado, ilustrados (Gemini, 25-nov; familia 7). El signo
+ * dice si el balde mete (+) o saca (−) dólares; no depende solo del color. */
 function Balde({ dibujo }) {
   return (
-    <svg viewBox="0 0 60 50" width="60" height="50" aria-hidden="true">
-      <path d="M8 12h44l-6 34H14Z" fill={SUPERFICIE_2} stroke={INK} strokeWidth="2.5" strokeLinejoin="round" />
-      <path d="M8 12c0-10 44-10 44 0" fill="none" stroke={INK_2} strokeWidth="2" />
-      <text x="30" y="36" textAnchor="middle" fill={dibujo === "compra" ? DOLAR : CAMBIARIA} fontSize="18" fontWeight="800">{dibujo === "compra" ? "+" : "−"}</text>
-    </svg>
+    <span style={{ position: "relative", display: "inline-block" }} aria-hidden="true">
+      <Ilustrado id="balde" alto={70} />
+      <b style={{ position: "absolute", left: "50%", top: "58%", transform: "translate(-50%, -50%)", width: 26, height: 26, borderRadius: 13, display: "grid", placeItems: "center",
+        background: dibujo === "compra" ? DOLAR : CAMBIARIA, color: "#0E1B2E", font: "800 18px/1 var(--planck-font-sans, system-ui, sans-serif)" }}>{dibujo === "compra" ? "+" : "−"}</b>
+    </span>
   );
 }
-function Candado() {
-  return (
-    <svg viewBox="0 0 60 64" width="60" height="64" aria-hidden="true">
-      <path d="M18 28v-8a12 12 0 0 1 24 0v8" fill="none" stroke={INK} strokeWidth="4" />
-      <rect x="10" y="28" width="40" height="30" rx="6" fill={CAMBIARIA} stroke={INK} strokeWidth="2.5" />
-    </svg>
-  );
-}
+const Candado = () => <Ilustrado id="candado" alto={64} />;
 function Etiquetas() {
   return (
     <svg viewBox="0 0 100 64" width="100" height="64" aria-hidden="true">
@@ -103,7 +99,7 @@ export default function A7Correa({ onTerminar }) {
         {paso === 2 && (
           <div style={{ display: "grid", gridTemplateColumns: "minmax(0,1fr) minmax(0,1fr)", gap: 8, marginTop: 8, alignItems: "center" }}>
             <div>
-              <div className="pc26-a7-tanque" data-reservas={reservas.toFixed(2)} role="img" aria-label={A7.reservas}><div className="pc26-a7-agua" style={{ transform: `scaleY(${reservas})` }} /></div>
+              <div data-reservas-a7={reservas.toFixed(2)}><Reservas nivel={reservas} alto={96} nombre={A7.reservas} /></div>
               <p className="da26-rotulo" style={{ margin: "2px 0 0", textAlign: "center", fontSize: 14, color: INK }}>{A7.reservas}</p>
             </div>
             <p className="pc26-contador" style={{ margin: 0 }} data-tc-a7={tc}><span>tc</span><b>${fmtEntero(tc)}{ultimo ? (ultimo === "compra" ? " ↑" : " ↓") : ""}</b></p>

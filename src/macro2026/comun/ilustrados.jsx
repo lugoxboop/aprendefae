@@ -19,6 +19,21 @@ export const ILUSTRADOS = {
   "tanque-estado": [296, 400],
   "carrito-mercado": [496, 360],
   manguera: [354, 300],
+  "balanza-pie": [221, 360],
+  "balanza-brazo": [596, 372],
+  "fajo-pesos": [280, 200],
+  "billete-usd": [247, 160],
+  "moneda-oro": [197, 200],
+  iman: [267, 260],
+  "nube-tormenta": [243, 220],
+  balde: [189, 240],
+  "casa-pais": [221, 200],
+  globo: [167, 220],
+  "arbol-raices": [177, 240],
+  golondrina: [196, 180],
+  "deposito-reservas": [218, 300],
+  "caja-bananos": [253, 220],
+  candado: [162, 220],
 };
 
 export const rutaIlustrado = (id) => `/macro2026/ilustrados/${id}.webp`;

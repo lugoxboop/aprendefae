@@ -12,6 +12,7 @@ import { DOLAR, PESO } from "../comun/monedas.js";
 import { fmtDecimal, fmtEntero } from "../comun/modelo-da.js";
 import { MarcoAprender, Retro, usePasos } from "../comun/ui.jsx";
 import { Objeto } from "../comun/kit.jsx";
+import { Ilustrado } from "../comun/ilustrados.jsx";
 import { Balanza, CAMBIARIA, CSS_PC, Dial } from "./comun-pc.jsx";
 import { A4, APRENDER, BANANO, ESCENAS } from "./textos.js";
 
@@ -29,15 +30,8 @@ const CSS = `
 @media (prefers-reduced-motion: reduce) { .pc26-a4-carrito { transition: opacity 120ms linear; } .pc26-a4-carrito[data-pasa="1"] { transform: none; } }
 `;
 
-function Caja() {
-  return (
-    <svg viewBox="0 0 120 80" width="120" height="80" aria-hidden="true">
-      <path d="M10 26h100v48H10Z" fill={SUPERFICIE_2} stroke={INK} strokeWidth="2.5" strokeLinejoin="round" />
-      <path d="M10 26l14-16h72l14 16" fill="none" stroke={INK} strokeWidth="2.5" strokeLinejoin="round" />
-      {[34, 56, 78].map((x) => <path key={x} d={`M${x} 56c6 10 22 10 26-4`} fill="none" stroke={CAMBIARIA} strokeWidth="7" strokeLinecap="round" />)}
-    </svg>
-  );
-}
+/* La caja de bananos, ilustrada (Gemini, 25-nov; familia 5). */
+const Caja = () => <Ilustrado id="caja-bananos" alto={80} />;
 
 function Etiqueta({ titulo, usd, data }) {
   return <div className="pc26-a4-etiqueta" {...data}><span>{titulo}</span><b>USD {fmtDecimal(usd, 2)}</b></div>;
@@ -82,7 +76,7 @@ export default function A4Banano({ onTerminar }) {
               : necesario != null ? <Etiqueta titulo={A4.necesario} usd={necesario} data={{ "data-necesario": necesario.toFixed(2) }} /> : <span className="da26-mono">USD ?</span>}
           </div>
           <div className="pc26-a4-lado" data-comprador>
-            <div className="pc26-a4-carrito" data-pasa={pasa ? "1" : "0"}><Objeto id="carrito" alto={64} /></div>
+            <div className="pc26-a4-carrito" data-pasa={pasa ? "1" : "0"}><Ilustrado id="carrito-mercado" alto={60} /></div>
             <span>{A4.comprador}{paso >= 1 ? ` · ${A4.gondola}` : ""}</span>
             {paso >= 1 && <Etiqueta titulo={A4.mercado} usd={mercado} data={{ "data-mercado": mercado.toFixed(2) }} />}
           </div>

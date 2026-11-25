@@ -223,7 +223,16 @@ de rectángulos o líneas a mano como protagonistas. El kit plano de 36 objetos
   algo se ve raro o deforme, se regenera.
 
 Hechos (lote 1): frasco-banco, termometro-vidrio, grifo, casa-aire,
-tanque-estado, carrito-mercado, manguera.
+tanque-estado, carrito-mercado, manguera. (Lote 2): balanza-pie,
+balanza-brazo, fajo-pesos, billete-usd, moneda-oro, iman, nube-tormenta,
+balde, casa-pais, globo, arbol-raices, golondrina, deposito-reservas,
+caja-bananos, candado.
+- **Hojas:** varios objetos en una fila con mucho espacio verde entre ellos; se
+  cortan con `scripts/ilustrados/hoja.py` (también guarda las cajas).
+- **Objetos verdes** (hojas de árbol, billete verde): el recorte los come. Se
+  rellenan con `rellenar.py` desde el original (`-` conserva el color; un
+  `#rrggbb` lo retiñe, así el billete de dólar quedó en el tono DÓLAR).
+- **Gemini se niega** a «billete tipo dólar»: pedir «billete de juguete».
 
 ## Dónde quedan las imágenes
 - Gemini descarga a la carpeta **Descargas/Imagenes-agentes** del computador.
