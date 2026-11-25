@@ -137,6 +137,17 @@ Subtema: `pf-impuestos`. Celular: a 320 px los cajeros miden 40 % del ancho cada
 deslizamiento no mueve la página (`touch-action: pan-y` en la tarjeta).
 
 ### H3 · La factura con lupa (`pf26-h3-factura`, Medio, 25 × 3 = 75 FP × %)
+> **Corrección 25-nov (Mateo: «tiene un error en el diseño»).** (1) La notaría no traía montos
+> pero sí un total de $2.316.824: la pregunta «¿por qué tanto?» no tenía respuesta visible; ahora
+> cada línea lleva su monto real y suman el total. (2) La barra «Lo que va al Estado» estaba vacía,
+> sin escala, dibujada a mano (paso 6) y era falsa en la notaría: los derechos notariales son tasa
+> pero los cobra el notario. La reemplazan los tres buzones ilustrados de A2 (impuestos, tasas,
+> contribuciones): cada tributo bien marcado cae como papelito con su monto y el buzón suma en vivo.
+> (3) El profesor preguntaba por su propia cuenta y el estudiante era «asistente»: ahora es
+> **asesor tributario** y cada documento trae a su cliente (Familia: carro; Viajero: tiquete;
+> Inversionista: notaría; Analista: nómina) con la etiqueta «Tu cliente pregunta:». (4) Las fichas
+> abren en una pestaña clara pegada a la línea resaltada, con la retro del error ahí mismo; los
+> renglones son separadores por línea (antes una trama de 48 px que cortaba el texto).
 **Consigna:** «Toca cada línea y dile qué es.» (7)
 **Figura:** un documento con aspecto de recibo real (papel, renglones, totales), redibujado,
 sin logos ni nombres de empresas. Arriba, el personaje del profesor con su pregunta
@@ -152,8 +163,8 @@ lateral «Lo que va al Estado» crece con cada tributo bien marcado.
   Precio base $130.000.000 → No es tributo · IVA 19 % $24.700.000 → Indirecto · Impoconsumo 8 % $10.400.000 → Indirecto · Matrícula y registro $540.200 → Tasa · Revisión técnico-mecánica $327.219 → No es tributo · Impuesto anual del vehículo $3.336.000 → Directo.
 - **Tiquete internacional** (d. 24; «¿Por qué el tiquete es tan caro?»)
   Tarifa base → No es tributo · Tasa aeroportuaria → Tasa · Timbre nacional ≈ US$ 38 → Indirecto · Impuesto de salida ≈ $115.000 → Indirecto · Tarifa administrativa → No es tributo · Combustible y cargos → No es tributo.
-- **Venta de apartamento en notaría** (d. 30; «¿Por qué me cobran tanto en la notaría?»)
-  Derechos notariales → Tasa · Autenticaciones y biometría → Tasa · Fondo de notariado y superintendencia → Tasa · IVA del servicio notarial → Indirecto · Retención en la fuente por la venta → Directo. Total $2.316.824.
+- **Venta de apartamento en notaría** (d. 30; cliente: Inversionista; «Vendí mi apartamento. ¿Por qué pagué $2,3 millones en la notaría?»)
+  Derechos notariales, hojas y copias $736.428 → Tasa · Autenticaciones, firma digital y biometría $15.500 → Tasa · Recaudos del Fondo de Notariado y la Superintendencia $21.750 → Tasa · IVA del servicio notarial (19 %) $142.866 → Indirecto · Retención en la fuente por la venta $1.400.280 → Directo. Total $2.316.824 (montos de la factura real de la diapositiva; suman exacto).
 - **Nómina de un salario alto** (d. 22; «¿Qué me quitan del salario?»)
   Salario integral $16.900.000 → No es tributo · Salud 4 % $473.200 → Contribución · Pensión 4 % $473.200 → Contribución · Fondo de solidaridad 1 % $118.300 → Contribución · Retención en la fuente $1.014.000 → Directo. Neto $14.821.300.
 

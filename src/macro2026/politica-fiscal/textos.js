@@ -240,11 +240,20 @@ export const FICHAS_H3 = [
   { id: "contribucion", nombre: "Contribución", tributo: "contribucion" },
   { id: "no", nombre: "No es tributo", tributo: null },
 ];
-export const H3 = { alEstado: "Lo que va al Estado", siguiente: "Siguiente documento", terminar: "Terminar", profesor: "El profesor pregunta:" };
+/* Corrección 25-nov (Mateo): fuera la barra «Lo que va al Estado» (vacía, sin
+   escala, y falsa en la notaría: los derechos notariales son tasa pero los
+   cobra el notario). Ahora cada tributo bien marcado cae en su buzón ilustrado. */
+export const H3 = { buzones: "Tributos de esta cuenta", sumados: "Tributos sumados:", siguiente: "Siguiente documento", terminar: "Terminar", cliente: "Tu cliente pregunta:", papel: (n) => (n === 1 ? "1 línea" : `${n} líneas`) };
+/* Los buzones de H3: los directos e indirectos caen al de impuestos. */
+export const BUZONES_H3 = [
+  { id: "impuesto", nombre: "Impuestos", claves: ["directo", "indirecto"] },
+  { id: "tasa", nombre: "Tasas", claves: ["tasa"] },
+  { id: "contribucion", nombre: "Contribuciones", claves: ["contribucion"] },
+];
 const SUB_H3 = ["pf-tributacion-casos", "pf-impuestos"];
 export const DOCUMENTOS_H3 = [
   {
-    id: "carro", titulo: "Carro nuevo", pregunta: "¿Por qué el carro cuesta tanto más?",
+    id: "carro", titulo: "Carro nuevo", cliente: { id: "familia", pose: "recibo" }, pregunta: "¿Por qué el carro cuesta tanto más?",
     lineas: [
       { id: "base", texto: "Precio base", monto: "$130.000.000", clave: "no" },
       { id: "iva", texto: "IVA 19 %", monto: "$24.700.000", clave: "indirecto" },
@@ -255,7 +264,7 @@ export const DOCUMENTOS_H3 = [
     ],
   },
   {
-    id: "tiquete", titulo: "Tiquete internacional", pregunta: "¿Por qué el tiquete es tan caro?",
+    id: "tiquete", titulo: "Tiquete internacional", cliente: { id: "viajero", pose: "avion" }, pregunta: "¿Por qué el tiquete es tan caro?",
     lineas: [
       { id: "tarifa", texto: "Tarifa base", monto: null, clave: "no" },
       { id: "aeroportuaria", texto: "Tasa aeroportuaria", monto: null, clave: "tasa" },
@@ -266,18 +275,22 @@ export const DOCUMENTOS_H3 = [
     ],
   },
   {
-    id: "notaria", titulo: "Venta de apartamento en notaría", pregunta: "¿Por qué me cobran tanto en la notaría?",
+    /* Montos de la factura real de la diapositiva 30 (venta de $420 millones).
+       Hojas de matriz, copias y documento electrónico ($94.000) se facturan
+       con la tarifa notarial: van con los derechos. Suman el total exacto. */
+    id: "notaria", titulo: "Venta de apartamento en notaría", cliente: { id: "inversionista", pose: "ladrillo" },
+    pregunta: "Vendí mi apartamento. ¿Por qué pagué $2,3 millones en la notaría?",
     lineas: [
-      { id: "derechos", texto: "Derechos notariales", monto: null, clave: "tasa" },
-      { id: "autenticaciones", texto: "Autenticaciones y biometría", monto: null, clave: "tasa" },
-      { id: "fondo", texto: "Fondo de notariado y superintendencia", monto: null, clave: "tasa" },
-      { id: "iva", texto: "IVA del servicio notarial", monto: null, clave: "indirecto" },
-      { id: "retencion", texto: "Retención en la fuente por la venta", monto: null, clave: "directo" },
+      { id: "derechos", texto: "Derechos notariales, hojas y copias", monto: "$736.428", clave: "tasa" },
+      { id: "autenticaciones", texto: "Autenticaciones, firma digital y biometría", monto: "$15.500", clave: "tasa" },
+      { id: "fondo", texto: "Recaudos del Fondo de Notariado y la Superintendencia", monto: "$21.750", clave: "tasa" },
+      { id: "iva", texto: "IVA del servicio notarial (19 %)", monto: "$142.866", clave: "indirecto" },
+      { id: "retencion", texto: "Retención en la fuente por la venta", monto: "$1.400.280", clave: "directo" },
     ],
     pie: { rotulo: "Total", monto: "$2.316.824" },
   },
   {
-    id: "nomina", titulo: "Nómina de un salario alto", pregunta: "¿Qué me quitan del salario?",
+    id: "nomina", titulo: "Nómina de un salario alto", cliente: { id: "analista", pose: "libreta" }, pregunta: "¿Qué me quitan del salario?",
     lineas: [
       { id: "salario", texto: "Salario integral", monto: "$16.900.000", clave: "no" },
       { id: "salud", texto: "Salud 4 %", monto: "$473.200", clave: "contribucion" },
@@ -425,10 +438,12 @@ export const ESCENAS = {
     { todas: "Llega un tributo:" }),
   /* El profesor sube del hueco de 120 a la franja (180 en la tarjeta de inicio);
      su pregunta de cada documento es el mini contexto de la ronda. */
-  "pf26-h3-factura": hacienda("noche", "der", { mascota: { id: "profesor", pose: "pregunta" } },
-    "Eres el asistente del profesor; él te muestra un documento real.",
-    "Cada documento trae su precio desglosado. Algunas líneas van al Estado; otras, no.",
-    { etiqueta: H3.profesor, texto: "pregunta" }),
+  /* Corrección 25-nov: el estudiante es asesor tributario y cada documento
+     trae a su propio cliente (DOCUMENTOS_H3[].cliente) a la franja. */
+  "pf26-h3-factura": hacienda("noche", "der", { mascota: { id: "viajero", pose: "maleta" } },
+    "Eres asesor tributario: tus clientes traen cuentas que no entienden.",
+    "Cada cuenta viene desglosada. Unas líneas son tributos; otras, precios privados. Encuéntralos.",
+    { etiqueta: H3.cliente, texto: "pregunta" }),
   "pf26-h4-expande": hacienda("dia", "der", { mascota: { id: "analista", pose: "libreta" } },
     "Eres el asesor del ministro de Hacienda.",
     "Llega una medida nueva. Di si expande o contrae, y por dónde entra a la demanda.",

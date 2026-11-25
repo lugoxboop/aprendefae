@@ -106,7 +106,7 @@ Mascota = `id/pose`. Tamaño 180 en la escena completa salvo que se diga.
 | pf26-a5-balanza | dia·izq | autoridad-economica/timon | Eres el asesor del ministro: dile qué hace cada perilla. | El ministro tiene tres perillas fiscales y quiere saber cómo mueve cada una la demanda. | — (los impactos conservan su mascota de 180) |
 | pf26-h1-moneda | manana·der | familia/alcancia | Trabajas en la DIAN: cada pago entra a su buzón. | Abriste la ventanilla. Los pagos del día llegan uno por uno. | «Siguiente pago:» |
 | pf26-h2-cajero | tarde·izq | empresario/explica | Eres el jefe de cajeros de la DIAN. | Cada tributo se cobra en una caja: la de directos o la de indirectos. | «Llega un tributo:» |
-| pf26-h3-factura | noche·der | profesor/pregunta (sube a 180) | Eres el asistente del profesor; él te muestra un documento real. | (actual) el documento | la línea tocada |
+| pf26-h3-factura | noche·der | viajero/maleta al inicio; cada documento trae su cliente (corr. 25-nov) | Eres asesor tributario: tus clientes traen cuentas que no entienden. | (actual) el documento | la línea tocada |
 | pf26-h4-expande | dia·der | autoridad-economica/carpeta | Eres el asesor del ministro de Hacienda. | Llega una medida nueva. Di si expande o contrae, y por dónde entra a la demanda. | «Medida sobre la mesa:» |
 | pf26-h5-montanas | manana·izq | deudor-externo/sobre | Te contratan como analista de deuda pública del Ministerio de Hacienda. | La deuda de Colombia es una cordillera: una montaña interna y otra externa. | la consigna actual de cada reto |
 | pf26-h6-memo | tarde·der | empresario/periodico | Te contratan como asesor de NOVA S. A. para revisar su memo. | (actual) el memo de la gerencia | — |
