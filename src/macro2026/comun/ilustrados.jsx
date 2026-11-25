@@ -65,6 +65,7 @@ export const ILUSTRADOS = {
   "balancin-tabla": [357, 50],
   "balancin-soporte": [198, 160],
   cohete: [227, 220],
+  "marco-pizarra": [461, 245],
 };
 
 export const rutaIlustrado = (id) => `/macro2026/ilustrados/${id}.webp`;
@@ -110,4 +111,22 @@ export function TermometroVidrio({ x = 0, y = 0, alto = 90, nivel = 0, ...resto 
  * cuando la moneda entra (clase .ilu-salta del CSS de la pieza). */
 export function BuzonIlustrado({ tributo, alto = 64, abierto = false }) {
   return <Ilustrado id={`buzon-${tributo}`} alto={alto} className={abierto ? "ilu-salta" : undefined} key={abierto ? "a" : "c"} />;
+}
+
+/* La pizarra ilustrada (Gemini, 25-nov; familia 21 del diagnóstico visual):
+ * el marco de madera con su repisa de tizas va como border-image alrededor de
+ * las gráficas con datos exactos, que siguen dibujadas a mano y en vivo por
+ * dentro. El marco WebP mide 461 × 245; el corte de las esquinas (24 37 28 37)
+ * se midió sobre él. Fondo de pizarra oscuro para que la tinta clara se lea. */
+export const PIZARRA_FONDO = "#1b2f2b";
+export function Pizarra({ children, style = null, ...resto }) {
+  return (
+    <div data-pizarra {...resto} style={{
+      boxSizing: "border-box", width: "100%", borderStyle: "solid", borderWidth: "12px 16px 15px",
+      borderImage: `url(${rutaIlustrado("marco-pizarra")}) 24 37 28 37 / 12px 16px 15px stretch`,
+      padding: "4px 8px 2px", background: PIZARRA_FONDO, backgroundClip: "padding-box", borderRadius: 10, ...style,
+    }}>
+      {children}
+    </div>
+  );
 }

@@ -75,3 +75,10 @@ que lo usan. Por eso los lotes van por **familia de visual**, de peor a mejor.
   torre, tabla y soporte de balancín, cohete) y tres recortes derivados
   (mango de la lupa, tramo de cuerda, pañuelo). La familia 21 (marco de
   pizarra para las gráficas) queda para un lote final si Mateo lo pide.
+  Lote 4 publicado el 25-nov (#769).
+- **Extra, familia 21 (pizarra):** marco de pizarra de Gemini como
+  border-image (`Pizarra` en `comun/ilustrados.jsx`) alrededor de las cuatro
+  gráficas comunes: `GraficaDA`, `GraficaDinero`, `GraficaDivisas`, `Dial` y
+  `Correa`. Las líneas siguen a mano y en vivo dentro. Hecho el 25-nov; video
+  en `/mnt/project-files/macro-2026/videos/ilustrados-pizarra/`. Mateo decide
+  si se publica.

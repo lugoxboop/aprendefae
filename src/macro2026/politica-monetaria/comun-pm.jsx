@@ -9,7 +9,7 @@
 import { useRef } from "react";
 import { BORDE, FONDO, GRIS, INK, INK_2, SUPERFICIE_2, TINTA_SOBRE_COLOR } from "../comun/colores-da.js";
 import { colorRama } from "../comun/ramas.js";
-import { ILUSTRADOS, rutaIlustrado } from "../comun/ilustrados.jsx";
+import { ILUSTRADOS, Pizarra, rutaIlustrado } from "../comun/ilustrados.jsx";
 import { fmtEntero, fmtDecimal } from "../comun/modelo-da.js";
 import { A5, A6, A7, MODELO_DINERO, ORDEN_POSICIONES, PALANCAS, tasaEquilibrio } from "./textos.js";
 
@@ -178,6 +178,7 @@ export function GraficaDinero({ M, Y, conDemanda = true, cruce = true, flecha = 
     return `M${xDeM(a)} ${yDeI((k * Yd - a) / h)}L${xDeM(b)} ${yDeI((k * Yd - b) / h)}`;
   };
   return (
+    <Pizarra style={{ maxWidth: 392, margin: "0 auto" }}>
     <svg ref={svg} viewBox="0 0 280 214" style={{ width: "100%", height: "auto", maxWidth: 360, display: "block", margin: "0 auto", overflow: "visible" }}
       role="img" aria-label={`Mercado de dinero: tasa ${fmtDecimal(i, 1)} %`} data-grafica-dinero data-tasa={i.toFixed(1)} data-m={Math.round(M)} data-y={Math.round(Y)}>
       <path d={`M${GX0} ${GY0 - 4}V${GY1}H${GX1 + 6}`} fill="none" stroke={INK_2} strokeWidth="2" />
@@ -215,6 +216,7 @@ export function GraficaDinero({ M, Y, conDemanda = true, cruce = true, flecha = 
           escala={1 / MODELO_DINERO.k} onCambio={(v) => asas.demanda.onCambio(v)} activo />
       )}
     </svg>
+    </Pizarra>
   );
 }
 
