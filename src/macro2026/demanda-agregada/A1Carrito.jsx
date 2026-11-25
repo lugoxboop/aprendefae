@@ -47,12 +47,13 @@ function Formula() {
   );
 }
 
-/* El carrito de Gemini, encima de la barra DA; `vuela` = el último objeto echado. */
+/* El hueco donde cae lo echado, encima del carrito ilustrado (carrito.jsx);
+ * `vuela` = el último objeto echado. */
 function Cesta({ vuela = null }) {
   const DX = { C: "-90px", I: "-30px", G: "30px", XN: "90px" };
   return (
     <div className="da26-a1-cesta" data-cesta>
-      <Objeto id="carrito" alto={76} nombre="Carrito" />
+      <div style={{ height: 44 }} aria-hidden="true" />
       {vuela && <Objeto key={vuela.n} id={OBJETO_MANO[vuela.k]} alto={40} className="da26-a1-vuela" data-vuela={vuela.k} style={{ "--dx": DX[vuela.k] }} />}
     </div>
   );

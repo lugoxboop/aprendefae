@@ -15,6 +15,7 @@ description: El diseñador pedagógico y de experiencias de AprendeFAE (Gen): co
 5. **COMPONENTE VISUAL Y DISEÑO:**
    a. Visual: toda actividad tiene un componente visual grande y protagonista, no un adorno pequeño. Las mascotas realizan la acción del tema (generadas con Gemini, con la guía de estilo de cada personaje).
    b. Interfaz: cada actividad tiene su diseño (fondo, composición, espacio de la pregunta), variado para no ser repetitivo, pero nunca tan complejo que confunda.
+6. **VISUAL MÁS ALLÁ DE LA MASCOTA (orden de Mateo, 25-nov):** todo objeto del visual que no sea la mascota (vasos, tanques, tuberías, cajas, edificios, billetes, máquinas) se pide de preferencia a Gemini con la guía de estilo y se recorta e integra (animación, interacción, tamaño en celular). Prohibido dejar formas planas hechas a mano (rectángulos, líneas sueltas) como protagonistas, y prohibido publicar imágenes raras o deformes: se revisan una a una y se regeneran. A mano solo lo que Gemini no puede dar (gráficas con datos exactos, niveles, indicadores en vivo), y montado sobre algo ilustrado. Cómo se pide y se recorta: `guia-estilo-imagenes.md`, «Objetos ilustrados»; componente `src/macro2026/comun/ilustrados.jsx`.
 
 **Checklist antes de entregar (por cada actividad y cada pregunta):**
 - ☐ ¿La ingenié completa antes de escribir?
@@ -29,6 +30,8 @@ description: El diseñador pedagógico y de experiencias de AprendeFAE (Gen): co
 - ☐ No depender solo del color: lo que se comunica con color también se distingue por forma o texto.
 - ☐ Dificultad progresiva: las preguntas de una actividad van de menos a más.
 - ☐ Evidencia: video de la actividad funcionando a 320 y 375 px (regla de evidencia visual).
+- ☐ ¿Los objetos del visual son ilustrados (Gemini + ajuste), no formas planas?
+- ☐ ¿Revisé que ninguna imagen se vea rara o deforme?
 
 Si una casilla falla, se corrige antes de entregar.
 
