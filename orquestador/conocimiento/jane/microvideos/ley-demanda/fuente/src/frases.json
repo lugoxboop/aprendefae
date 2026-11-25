@@ -1,0 +1,181 @@
+[
+ {
+  "escena": 1,
+  "dur": 5.286,
+  "frases": [
+   {
+    "texto": "Si el mango sube, ¿lo queremos menos?",
+    "ini": 0,
+    "fin": 2.178
+   },
+   {
+    "texto": "Lo queremos igual.",
+    "ini": 2.498,
+    "fin": 3.665
+   },
+   {
+    "texto": "Pero compramos menos.",
+    "ini": 3.985,
+    "fin": 5.286
+   }
+  ]
+ },
+ {
+  "escena": 2,
+  "dur": 3.738,
+  "frases": [
+   {
+    "texto": "A mil pesos,",
+    "ini": 0,
+    "fin": 0.877
+   },
+   {
+    "texto": "cinco compradores se llevan un mango cada uno.",
+    "ini": 0.997,
+    "fin": 3.738
+   }
+  ]
+ },
+ {
+  "escena": 3,
+  "dur": 4.29,
+  "frases": [
+   {
+    "texto": "Sube a dos mil.",
+    "ini": 0,
+    "fin": 1.104
+   },
+   {
+    "texto": "Dos se retiran.",
+    "ini": 1.424,
+    "fin": 2.504
+   },
+   {
+    "texto": "Se venden tres mangos.",
+    "ini": 2.824,
+    "fin": 4.29
+   }
+  ]
+ },
+ {
+  "escena": 4,
+  "dur": 2.467,
+  "frases": [
+   {
+    "texto": "A tres mil pesos,",
+    "ini": 0,
+    "fin": 1.206
+   },
+   {
+    "texto": "solo compra uno.",
+    "ini": 1.326,
+    "fin": 2.467
+   }
+  ]
+ },
+ {
+  "escena": 5,
+  "dur": 3.268,
+  "frases": [
+   {
+    "texto": "Baja a mil quinientos,",
+    "ini": 0,
+    "fin": 1.37
+   },
+   {
+    "texto": "y vuelven:",
+    "ini": 1.49,
+    "fin": 2.213
+   },
+   {
+    "texto": "cuatro mangos.",
+    "ini": 2.333,
+    "fin": 3.268
+   }
+  ]
+ },
+ {
+  "escena": 6,
+  "dur": 4.843,
+  "frases": [
+   {
+    "texto": "Unimos los puntos:",
+    "ini": 0,
+    "fin": 1.256
+   },
+   {
+    "texto": "esa es la curva de demanda.",
+    "ini": 1.376,
+    "fin": 3.033
+   },
+   {
+    "texto": "Baja hacia la derecha.",
+    "ini": 3.353,
+    "fin": 4.843
+   }
+  ]
+ },
+ {
+  "escena": 7,
+  "dur": 6.205,
+  "frases": [
+   {
+    "texto": "Precio más alto,",
+    "ini": 0,
+    "fin": 1.223
+   },
+   {
+    "texto": "menor cantidad demandada,",
+    "ini": 1.343,
+    "fin": 2.988
+   },
+   {
+    "texto": "si todo lo demás sigue igual:",
+    "ini": 3.108,
+    "fin": 4.894
+   },
+   {
+    "texto": "la ley de la demanda.",
+    "ini": 5.014,
+    "fin": 6.205
+   }
+  ]
+ },
+ {
+  "escena": 8,
+  "dur": 3.763,
+  "frases": [
+   {
+    "texto": "Ojo, el precio no movió la curva.",
+    "ini": 0,
+    "fin": 2.052
+   },
+   {
+    "texto": "Nos movimos sobre ella.",
+    "ini": 2.372,
+    "fin": 3.763
+   }
+  ]
+ },
+ {
+  "escena": 9,
+  "dur": 4.372,
+  "frases": [
+   {
+    "texto": "En la actividad, decides tú:",
+    "ini": 0,
+    "fin": 1.636
+   },
+   {
+    "texto": "¿se mueve la curva,",
+    "ini": 1.756,
+    "fin": 2.86
+   },
+   {
+    "texto": "o te mueves sobre ella?",
+    "ini": 2.98,
+    "fin": 4.372
+   }
+  ]
+ }
+]
