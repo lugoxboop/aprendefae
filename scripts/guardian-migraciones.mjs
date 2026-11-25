@@ -335,6 +335,44 @@ export function revisar(archivos, catalogoCliente, retiradasPrevias = new Set())
   return reproches;
 }
 
+/*
+ * 4. LA NUMERACIÓN (auditoría externa del 25-nov, hallazgo 5).
+ *
+ * Producción aplica «las que falten» en el orden en que LLEGAN a main; las
+ * pruebas, en orden de NOMBRE sobre una base vacía. Mientras cada migración
+ * nueva lleve un número mayor que todo lo que ya hay en su rango, los dos
+ * órdenes coinciden dentro del rango. Si una llega tarde con un número bajo
+ * —o repite uno—, producción la corre DESPUÉS de otras más nuevas y las
+ * pruebas ANTES: podría pisar en producción una función más nueva y la prueba
+ * saldría verde. Ya pasó cuatro veces sin daño (0160, 0161, 0170 y 0173
+ * repetidos); la historia se queda como está, pero no entra un caso nuevo.
+ *
+ * Pura: recibe los nombres AÑADIDOS por la propuesta y los que ya están en la
+ * base de comparación.
+ */
+export function revisarNumeracion(anadidos, existentes) {
+  const reproches = [];
+  const usados = new Set(existentes.map(numeroDe).filter((n) => n !== null));
+  for (const nombre of anadidos) {
+    const numero = numeroDe(nombre);
+    if (numero === null) continue; // ya lo reprocha revisar()
+    const rango = rangoDe(numero);
+    if (!rango) continue; // ídem
+    if (usados.has(numero)) {
+      reproches.push(`${nombre}: el número ${numero} ya lo usa otra migración. Toma el siguiente libre de tu rango.`);
+      continue;
+    }
+    const tope = Math.max(-1, ...[...usados].filter((n) => n >= rango.desde && n <= rango.hasta));
+    if (numero < tope) {
+      reproches.push(
+        `${nombre}: el número ${numero} queda por debajo de la ${String(tope).padStart(4, "0")}, que ya está en main en el mismo rango. ` +
+          `Producción la aplicaría después y las pruebas antes. Renómbrala por encima de ${tope}.`,
+      );
+    }
+  }
+  return reproches;
+}
+
 export function leerMigraciones() {
   const nombres = readdirSync(DIR).filter((n) => n.endsWith(".sql")).sort();
   return nombres.map((nombre) => ({ nombre, sql: readFileSync(join(DIR, nombre), "utf8") }));
@@ -383,6 +421,14 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   }
 
   const reproches = revisar(archivos, catalogoDelCliente(SUBJECTS), retiradasPrevias);
+  if (base) {
+    const { execFileSync } = await import("node:child_process");
+    const git = (args) => execFileSync("git", args, { cwd: RAIZ, encoding: "utf8" });
+    const lineas = (t) => t.split("\n").map((l) => l.trim()).filter(Boolean).map((r) => r.split("/").pop());
+    const anadidos = lineas(git(["diff", "--name-only", "--diff-filter=A", `${base}...HEAD`, "--", "supabase/migrations"]));
+    const existentes = lineas(git(["ls-tree", "--name-only", base, "supabase/migrations/"]));
+    reproches.push(...revisarNumeracion(anadidos, existentes));
+  }
   if (reproches.length) {
     console.error(`\nEl guardián rechaza ${reproches.length} cosa(s):\n`);
     for (const r of reproches) console.error("  · " + r);

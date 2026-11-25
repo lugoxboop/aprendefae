@@ -1,4 +1,16 @@
-@import url("https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=Inter:wght@400;500;600;700&display=swap");
+/* Fuentes servidas desde el propio sitio (auditoría 25-nov, hallazgo 13): antes
+ * se pedían a fonts.googleapis.com en cada visita, y Google recibía la dirección
+ * de cada estudiante. Mismas familias y pesos; los archivos salen de @fontsource
+ * (versión exacta en package.json) y Vite los publica en assets/. */
+@import "@fontsource/sora/300.css";
+@import "@fontsource/sora/400.css";
+@import "@fontsource/sora/600.css";
+@import "@fontsource/sora/700.css";
+@import "@fontsource/sora/800.css";
+@import "@fontsource/inter/400.css";
+@import "@fontsource/inter/500.css";
+@import "@fontsource/inter/600.css";
+@import "@fontsource/inter/700.css";
 @import "tailwindcss";
 /* Capa de marca Planck: tokens en claro y oscuro + utilidades Tailwind. Durante
  * la migración, Sora/Inter siguen cargándose arriba; planck.css trae Geist. */

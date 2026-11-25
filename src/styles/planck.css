@@ -14,7 +14,13 @@
  * El sitio hoy es oscuro: pon `data-theme="dark"` en <html> para que la capa
  * Planck salga en oscuro. Sin atributo, sale en claro (propuestas, sitio web).
  */
-@import url("https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500&display=swap");
+/* (auditoría 25-nov, hallazgo 13) Aquí iba un @import de Google Fonts para
+ * Geist y Geist Mono. NUNCA llegó al sitio: un @import que no va al principio
+ * de la hoja combinada se descarta al compilar, y el build publicado no lo
+ * traía (comprobado comparando el CSS de dist/). Se quitó para no dejar una
+ * llamada a Google escrita; las familias Geist siguen cayendo a la siguiente
+ * de su lista, igual que hasta hoy. Si algún día se quieren de verdad, van en
+ * global.css con @fontsource/geist, como Sora e Inter. */
 
 :root, [data-theme="light"] {
   --surface-0: #ffffff;
