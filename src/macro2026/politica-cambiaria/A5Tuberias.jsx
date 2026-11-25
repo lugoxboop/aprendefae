@@ -13,7 +13,8 @@ import { BORDE, FONDO, INK, INK_2, SUPERFICIE_2, TINTA_SOBRE_COLOR } from "../co
 import { DOLAR } from "../comun/monedas.js";
 import { Boton, MarcoAprender, usePasos } from "../comun/ui.jsx";
 import { Objeto } from "../comun/kit.jsx";
-import { CAMBIARIA, CSS_PC } from "./comun-pc.jsx";
+import { Ilustrado, ILUSTRADOS, rutaIlustrado } from "../comun/ilustrados.jsx";
+import { CAMBIARIA, CSS_PC, Reservas } from "./comun-pc.jsx";
 import { A5, APRENDER, ESCENAS } from "./textos.js";
 
 export const ID = "pc26-a5-tuberias";
@@ -25,11 +26,11 @@ const CARGA = {
 };
 
 const CSS = `
-.pc26-a5-mapa { display: grid; grid-template-columns: 54px minmax(0, 1fr) 54px; gap: 4px; align-items: center; }
+.pc26-a5-mapa { display: grid; grid-template-columns: 62px minmax(0, 1fr) 62px; gap: 4px; align-items: center; }
 .pc26-a5-tubos { display: grid; gap: 10px; }
-.pc26-a5-tubo { position: relative; display: block; width: 100%; min-height: 56px; padding: 0; border-radius: 999px; border: 3px solid ${BORDE}; background: ${SUPERFICIE_2}; color: ${INK}; overflow: hidden; cursor: pointer; touch-action: manipulation; }
+.pc26-a5-tubo { position: relative; display: block; width: 100%; min-height: 56px; padding: 0; border-radius: 999px; border: 3px solid ${BORDE}; background: linear-gradient(180deg, #e4e9f4 0%, #aeb9d0 38%, #7f8cab 70%, #a9b5cc 100%); color: ${INK}; overflow: hidden; cursor: pointer; touch-action: manipulation; box-shadow: inset 0 -4px 0 rgba(14,27,46,.25); }
 .pc26-a5-tubo[aria-pressed="true"] { border-color: var(--tono); }
-.pc26-a5-tubo-rotulo { position: relative; z-index: 1; font: 700 14px/1.2 var(--planck-font-sans, system-ui, sans-serif); padding: 0 8px; background: ${SUPERFICIE_2}; border-radius: 6px; }
+.pc26-a5-tubo-rotulo { position: relative; z-index: 1; font: 700 14px/1.2 var(--planck-font-sans, system-ui, sans-serif); padding: 2px 8px; background: ${SUPERFICIE_2}; border-radius: 6px; }
 .pc26-a5-pasa { position: absolute; top: 50%; left: 0; display: flex; gap: 10px; transform: translate(-100%, -50%); opacity: 0; }
 .pc26-a5-pasa[data-corre="1"] { animation: pc26-a5-corre 1800ms cubic-bezier(.4,0,.6,1) both 1; }
 @keyframes pc26-a5-corre { 0% { transform: translate(-100%, -50%); opacity: 1; } 100% { transform: translate(260px, -50%); opacity: 1; } }
@@ -43,22 +44,9 @@ const CSS = `
 @media (prefers-reduced-motion: reduce) { .pc26-a5-pasa[data-corre="1"] { animation: none; opacity: 1; transform: translate(8px, -50%); } .pc26-a5-agua, .pc26-a5-pajaro { transition: none; } }
 `;
 
-function Casa() {
-  return (
-    <svg viewBox="0 0 54 60" width="54" height="60" aria-hidden="true">
-      <path d="M5 28L27 8l22 20v28H5Z" fill={SUPERFICIE_2} stroke={INK} strokeWidth="2.5" strokeLinejoin="round" />
-      <rect x="21" y="38" width="12" height="18" fill={FONDO} stroke={INK} strokeWidth="2" />
-    </svg>
-  );
-}
-function Mundo() {
-  return (
-    <svg viewBox="0 0 54 54" width="54" height="54" aria-hidden="true">
-      <circle cx="27" cy="27" r="22" fill={FONDO} stroke={INK} strokeWidth="2.5" />
-      <path d="M5 27h44M27 5c-10 12-10 32 0 44M27 5c10 12 10 32 0 44" fill="none" stroke={INK_2} strokeWidth="1.5" />
-    </svg>
-  );
-}
+/* La casa del país y el globo, ilustrados (Gemini, 25-nov; familia 8). */
+const Casa = () => <Ilustrado id="casa-pais" alto={56} />;
+const Mundo = () => <Ilustrado id="globo" alto={60} />;
 
 export default function A5Tuberias({ onTerminar }) {
   const { paso, siguiente, anterior } = usePasos(TEXTOS.length);
@@ -87,16 +75,14 @@ export default function A5Tuberias({ onTerminar }) {
   if (paso === 3) {
     figura = (
       <svg viewBox="0 0 300 150" style={{ width: "100%", height: "auto", maxWidth: 380, display: "block", margin: "0 auto" }} role="img" aria-label={`${A5.ied} y ${A5.golondrina}`} data-ied>
-        <rect x="6" y="40" width="288" height="56" rx="28" fill={SUPERFICIE_2} stroke={DOLAR} strokeWidth="3" />
         <g data-arbol>
-          <path d="M80 96v34M80 130l-14 12M80 130l14 12M80 126l-8 16" stroke={INK} strokeWidth="3" strokeLinecap="round" />
-          <circle cx="80" cy="66" r="24" fill={DOLAR} stroke={INK} strokeWidth="2.5" />
-          <text x="80" y="72" textAnchor="middle" fill={TINTA_SOBRE_COLOR} fontSize="15" fontWeight="800">{A5.ied}</text>
+          <image href={rutaIlustrado("arbol-raices")} x={80 - (120 * ILUSTRADOS["arbol-raices"][0]) / ILUSTRADOS["arbol-raices"][1] / 2} y="4" width={(120 * ILUSTRADOS["arbol-raices"][0]) / ILUSTRADOS["arbol-raices"][1]} height="120" />
+          <text x="80" y="144" textAnchor="middle" fill={INK} fontSize="14" fontWeight="700">{A5.ied}</text>
         </g>
         <g className="pc26-a5-pajaro" data-se-fue={trimestre ? "1" : "0"} data-pajaro style={{ transformBox: "view-box" }}>
-          <path d="M200 70c10-12 22-12 28 0c6-12 18-12 28 0" fill="none" stroke={CAMBIARIA} strokeWidth="5" strokeLinecap="round" />
+          <image href={rutaIlustrado("golondrina")} x="190" y="30" width="76" height={(76 * ILUSTRADOS.golondrina[1]) / ILUSTRADOS.golondrina[0]} />
         </g>
-        <text x="228" y="118" textAnchor="middle" fill={INK} fontSize="14" fontWeight="700">{A5.golondrina}</text>
+        <text x="228" y="144" textAnchor="middle" fill={INK} fontSize="14" fontWeight="700">{A5.golondrina}</text>
       </svg>
     );
   } else {
@@ -122,9 +108,7 @@ export default function A5Tuberias({ onTerminar }) {
             {A5.terminos.map((t) => <span key={t.id} style={{ background: TONO[t.tuberia] }} data-termino={t.id} title={t.nombre}>{t.texto}</span>)}
           </p>
         )}
-        <div className="pc26-a5-tanque" data-tanque={nivel.toFixed(2)} aria-label={A5.reservas} role="img">
-          <div className="pc26-a5-agua" style={{ transform: `scaleY(${nivel})` }} />
-        </div>
+        <div data-tanque={nivel.toFixed(2)} style={{ marginTop: 8 }}><Reservas nivel={nivel} alto={110} nombre={A5.reservas} /></div>
         <p className="da26-rotulo" style={{ textAlign: "center", margin: "4px 0 0", fontSize: 14, color: INK }}>{A5.reservas}</p>
       </div>
     );

@@ -6,7 +6,8 @@ import { JSDOM, VirtualConsole } from "jsdom";
 
 /*
  * La secuencia del momento de racha en pantalla: fases, mensaje, calendario,
- * saltar con un toque, y que el fuego siga donde estaba.
+ * saltar con un toque. Desde el 25-nov la protagoniza la mascota del
+ * estudiante, feliz, con una llama viva detrás (ya no el teseracto).
  */
 
 const dom = new JSDOM("<!doctype html><html><body></body></html>", { url: "http://localhost/", virtualConsole: new VirtualConsole(), pretendToBeVisual: true });
@@ -44,23 +45,29 @@ function montar(momento = MOMENTO) {
 }
 const avanzar = (ms) => act(() => { mock.timers.tick(ms); });
 
-test("la secuencia: entrada con el mensaje y luego la semana, que espera al estudiante", () => {
+test("la secuencia: la mascota feliz con su llama, el número que sube y luego la semana, que espera al estudiante", () => {
   mock.timers.enable({ apis: ["setTimeout"] });
   const m = montar();
   try {
     assert.equal(m.fase(), "entrada");
     assert.ok(m.caja.textContent.includes("Pasaste de racha 7 a 8"));
-    assert.ok(m.caja.querySelector("[data-lienzo-teseracto]"), "el teseracto es el protagonista");
+    assert.ok(m.caja.querySelector("[data-mascota-racha] [data-mascota]"), "la mascota es la protagonista");
+    assert.equal(m.caja.querySelector("[data-mascota-racha] [data-mascota]").dataset.animo, "feliz", "y está feliz");
+    assert.equal(m.caja.querySelector("[data-llama-grande] [data-llama-racha]").dataset.llamaRacha, "viva", "con la llama viva detrás");
+    assert.equal(m.caja.querySelector("[data-lienzo-teseracto]"), null, "el teseracto ya no sale aquí");
     assert.equal(m.caja.querySelector("[data-semana-racha]"), null, "nada más compite en la entrada");
 
-    /* Día 8: dos aristas, así que la entrada dura una arista más. */
-    assert.equal(duracionEntrada(8) - duracionEntrada(7), TIEMPOS.porArista);
-    avanzar(duracionEntrada(8) - 1);
+    /* El número arranca en el de ayer y salta al de hoy. */
+    assert.equal(m.caja.querySelector("[data-numero-racha]").dataset.numeroRacha, "7");
+    avanzar(TIEMPOS.cambioNumero);
+    assert.equal(m.caja.querySelector("[data-numero-racha]").dataset.numeroRacha, "8");
+
+    avanzar(duracionEntrada(8) - TIEMPOS.cambioNumero - 1);
     assert.equal(m.fase(), "entrada");
     avanzar(1);
     assert.equal(m.fase(), "semana");
     assert.ok(m.caja.querySelector("[data-semana-racha]"));
-    assert.ok(m.caja.querySelector("[data-lienzo-teseracto]"), "el teseracto sigue ahí, no se desmonta");
+    assert.ok(m.caja.querySelector("[data-mascota-racha] [data-mascota]"), "la mascota sigue ahí, no se desmonta");
 
     /* Y ahí se queda: la tarjeta no se cierra sola. */
     avanzar(10 * 60 * 1000);
@@ -68,6 +75,25 @@ test("la secuencia: entrada con el mensaje y luego la semana, que espera al estu
     assert.equal(m.fin.length, 0);
   } finally {
     m.desmontar();
+    mock.timers.reset();
+  }
+});
+
+test("la mascota es la del estudiante: su especie y el nombre que le puso", () => {
+  mock.timers.enable({ apis: ["setTimeout"] });
+  const perfil = { id: "u1", mascota_especie: "panda", mascota_paleta: "natural", mascota_nombre: "Bambú" };
+  const fin = [];
+  const caja = document.createElement("div");
+  document.body.appendChild(caja);
+  const raiz = createRoot(caja);
+  try {
+    act(() => raiz.render(React.createElement(SecuenciaRacha, { momento: MOMENTO, perfil, onFin: () => fin.push(1) })));
+    assert.equal(caja.querySelector("[data-mascota-racha] [data-mascota]").dataset.mascota, "panda");
+    avanzar(duracionEntrada(8));
+    assert.ok(caja.textContent.includes("Bambú está feliz"));
+  } finally {
+    act(() => raiz.unmount());
+    caja.remove();
     mock.timers.reset();
   }
 });
@@ -102,19 +128,20 @@ test("un toque en cualquier momento lo salta: en la entrada, en la semana, y con
   }
 });
 
-test("la semana: completados llenos teal, hoy con anillo ámbar sin llenar, pendientes en gris; sin coral", () => {
+test("la semana: cada día una llamita; hechos encendidos, hoy con anillo ámbar, pendientes apagados; sin coral", () => {
   mock.timers.enable({ apis: ["setTimeout"] });
   const m = montar();
   try {
     avanzar(duracionEntrada(8));
     const dias = [...m.caja.querySelectorAll("[data-dia]")];
     assert.deepEqual(dias.map((d) => d.dataset.dia), ["completado", "pendiente", "completado", "hoy", "pendiente", "pendiente", "pendiente"]);
+    const llama = (k) => dias[k].querySelector("[data-llama-racha]").dataset.llamaRacha;
+    assert.equal(llama(0), "encendida", "completado: llama encendida");
+    assert.equal(llama(3), "apagada", "hoy sin hacer: apagada");
+    assert.equal(llama(5), "apagada");
     const circulo = (k) => dias[k].querySelector("span").style;
-    assert.match(circulo(0).background, /rgb\(42,\s*157,\s*143\)|#2a9d8f/i, "completado: teal");
-    assert.equal(circulo(3).background, "transparent", "hoy: sin relleno");
     assert.match(circulo(3).border, /rgb\(233,\s*196,\s*106\)|#e9c46a/i, "hoy: anillo ámbar");
-    assert.equal(circulo(5).background, "transparent");
-    assert.doesNotMatch(circulo(5).border, /233|42,\s*157/, "pendiente: gris, sin acento");
+    assert.doesNotMatch(circulo(5).border, /233/, "pendiente: sin acento");
     assert.ok(m.caja.textContent.includes("Tu racha sigue viva."));
     assert.ok(m.caja.textContent.includes("8 días seguidos"));
     assert.doesNotMatch(m.caja.innerHTML, CORAL);
@@ -124,7 +151,7 @@ test("la semana: completados llenos teal, hoy con anillo ámbar sin llenar, pend
   }
 });
 
-test("el fuego no se toca: IconoRacha sigue en sus usos pequeños y el momento grande no lo usa", () => {
+test("la llama: IconoRacha sigue en sus usos pequeños, ya redonda (sin la silueta facetada del piloto)", () => {
   const raiz = new URL("../../", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1");
   const archivos = [];
   const recorrer = (dir) => {
@@ -136,9 +163,12 @@ test("el fuego no se toca: IconoRacha sigue en sus usos pequeños y el momento g
   recorrer(raiz);
   const importan = archivos.filter((p) => /import\s+IconoRacha\s+from/.test(readFileSync(p, "utf8"))).map((p) => p.replace(/\\/g, "/").replace(raiz.replace(/\\/g, "/"), "").replace(/^\//, ""));
   assert.ok(importan.includes("components/repaso/BannerRepaso.jsx"), "el banner del Repaso conserva la llama");
-  assert.ok(!importan.some((p) => p.startsWith("components/racha/")), "el teseracto no la reemplaza ni la importa");
+  assert.ok(importan.includes("components/auth/AccountControl.jsx"), "la ficha de la cuenta también");
   const icono = readFileSync(join(raiz, "components/shared/IconoRacha.jsx"), "utf8");
-  assert.ok(icono.includes('points="20,2 26,14 31,10 36,24 33,38 20,46 7,38 4,24 10,15 14,20"'), "la silueta facetada, intacta");
+  assert.ok(icono.includes("racha/Llama.jsx"), "la misma llama del momento grande");
+  assert.ok(!icono.includes("points="), "sin polígonos facetados");
+  const momento = readFileSync(join(raiz, "components/racha/MomentoRacha.jsx"), "utf8");
+  assert.ok(!/import[^;]*Teseracto/.test(momento), "el momento ya no carga el teseracto");
   const app = readFileSync(join(raiz, "App.jsx"), "utf8");
-  assert.ok(app.includes("<MomentoRacha />") && !app.includes("AvisoRacha"), "App monta el momento nuevo y no el aviso viejo");
+  assert.ok(app.includes("<MomentoRacha />") && !app.includes("AvisoRacha"), "App monta el momento y no el aviso viejo");
 });

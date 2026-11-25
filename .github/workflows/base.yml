@@ -95,12 +95,12 @@ jobs:
       # fetch-depth 0 porque el guardián de las migraciones compara contra la
       # rama base, y con el historial recortado no hay contra qué comparar.
       - name: Traer el código
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
 
       - name: Preparar Node
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: "24"
           cache: npm
@@ -172,7 +172,7 @@ jobs:
 
     steps:
       - name: Traer el código
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       # Que el cliente exista se comprueba, no se supone: si la imagen del
       # runner cambiara y psql desapareciera, el error tiene que decir eso.

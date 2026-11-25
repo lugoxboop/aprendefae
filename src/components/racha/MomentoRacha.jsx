@@ -1,68 +1,80 @@
-import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { FAE } from "../../theme.js";
 import { useAuth } from "../../auth/AuthProvider.jsx";
 import { escucharFP } from "../../fp/aviso.js";
 import { crearDisparador } from "../../racha/disparador.js";
 import { crearRelojPausable, visibilidadDocumento } from "../../racha/visibilidad.js";
 import { pedirMomentoRacha } from "../../racha/datos.js";
-import { aristasNuevas, mensajeRacha, semana } from "../../racha/teseracto.js";
+import { mensajeRacha, semana } from "../../racha/teseracto.js";
+import { mascotaDe } from "../../mascota/mascotas.js";
+import Mascota from "../Mascota.jsx";
+import Llama from "./Llama.jsx";
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
  * EL MOMENTO DE RACHA: el grande, el de una vez al día.
  *
- *   1. ENTRADA     el teseracto ocupa la pantalla, solo.
- *   2. TRAZO       la arista nueva (o las dos, los días 8 y 23) se dibuja y
- *                  se enciende; debajo, «Pasaste de racha N−1 a N».
- *   3. TRANSICIÓN  el teseracto se encoge hasta la esquina de la tarjeta de la
- *                  semana, sin dejar de girar: es el mismo lienzo, movido con
- *                  transform, no uno nuevo.
- *   4. SEMANA      la tarjeta con los siete días, y se va sola.
+ * 25-nov (Mateo): «que no sea una forma geométrica, sino la mascotica con una
+ * animación de fueguito; que la mascota esté feliz porque se mantuvo la
+ * racha». El teseracto del plan piloto sale de aquí (sigue vivo en el panel
+ * docente, FermiTrabajando); el protagonista es ahora LA MASCOTA DEL
+ * ESTUDIANTE —la suya, con su especie, color y accesorios— saltando de
+ * contenta delante de una llama grande que chisporrotea.
  *
- * UN TOQUE EN CUALQUIER SITIO, o Escape, lo cierra en cualquier momento. Dura
- * unos seis segundos en total; con dos aristas, uno más.
+ *   1. ENTRADA  la llama crece desde abajo, la mascota sube y salta; el número
+ *               de la racha muestra el de ayer y, al segundo, salta al de hoy.
+ *               Debajo, «Pasaste de racha N−1 a N».
+ *   2. SEMANA   todo el bloque sube con transform (sin saltos de maqueta: el
+ *               hueco de la tarjeta está reservado desde el principio) y entra
+ *               la tarjeta con los siete días, cada uno una llamita.
  *
- * El fuego (IconoRacha) NO sale aquí ni se toca: sigue en todos los usos
- * pequeños. Esto es solo el momento grande.
+ * UN TOQUE EN CUALQUIER SITIO, o Escape, lo cierra en cualquier momento. La
+ * tarjeta de la semana NO se cierra sola: es la única parte que se lee.
  *
- * Three.js entra con lazy: el sitio no descarga el teseracto hasta el día en
- * que hay algo que celebrar.
+ * Lo que NO cambia: cuándo sale (disparador.js y racha_momento(), migración
+ * 0034), la semana que manda el servidor y el reloj que se pausa con la
+ * página oculta. Solo cambia lo que se ve.
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-const Teseracto = lazy(() => import("./Teseracto.jsx"));
-
 /*
- * Los tiempos de la secuencia. El trazo de cada arista dura dos segundos —se
- * ve nacer— y después la figura se queda quieta y completa segundo y medio
- * antes de encogerse: sin esa pausa, el estudiante no alcanza a ver la arista
- * que ganó hoy. Los días de dos aristas (8 y 23) llevan dos trazos seguidos.
- *
- * NO HAY TIEMPO DE CIERRE. La tarjeta de la semana se queda hasta que el
- * estudiante la cierre.
+ * Los tiempos. La llama tarda 700 ms en crecer; el número cambia cuando ya
+ * está arriba (1,3 s), con tiempo para verlo; y la entrada se queda un rato
+ * más para que el estudiante vea a su mascota celebrar antes de la tarjeta.
  */
 export const TIEMPOS = {
-  inicioTrazo: 500,
-  porArista: 2000,
-  pausaTrasTrazo: 1400,
-  transicion: 750,
+  crecer: 700,
+  cambioNumero: 1300,
+  entrada: 3400,
+  transicion: 700,
   salida: 320,
 };
 
-export const duracionEntrada = (dia) => TIEMPOS.inicioTrazo + Math.max(1, aristasNuevas(dia)) * TIEMPOS.porArista + TIEMPOS.pausaTrasTrazo;
+/* Se conserva la firma de antes (la usaban las pruebas): ya no depende del día. */
+export const duracionEntrada = () => TIEMPOS.entrada;
 
-const TAM_PEQUENO = 76;
 const CURVA = "cubic-bezier(.45,.05,.2,1)";
+const REBOTE = "cubic-bezier(.34,1.56,.64,1)";
+const GRIS = "rgba(248,249,250,0.34)";
 
 const CSS = `
 @keyframes fae-mr-aparecer { from { opacity: 0; } to { opacity: 1; } }
-@keyframes fae-mr-subir { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@keyframes fae-mr-crecer { 0% { opacity: 0; transform: scale(.15); } 60% { opacity: 1; transform: scale(1.08); } 100% { opacity: 1; transform: scale(1); } }
+@keyframes fae-mr-subir { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
+@keyframes fae-mr-pop { 0% { opacity: 0; transform: scale(1.9); } 55% { opacity: 1; transform: scale(.92); } 100% { opacity: 1; transform: scale(1); } }
+@keyframes fae-mr-halo { 0%, 100% { opacity: .75; transform: scale(1); } 50% { opacity: 1; transform: scale(1.06); } }
+@keyframes fae-mr-onda { from { opacity: .7; transform: scale(.4); } to { opacity: 0; transform: scale(1.5); } }
 .fae-mr-velo { animation: fae-mr-aparecer 380ms ease-out both; }
-.fae-mr-mensaje { animation: fae-mr-subir 520ms ${CURVA} 380ms both; }
-.fae-mr-tarjeta { animation: fae-mr-subir 560ms ${CURVA} both; }
+.fae-mr-llama { transform-origin: 50% 100%; animation: fae-mr-crecer ${TIEMPOS.crecer}ms ${CURVA} both; }
+.fae-mr-mascota { animation: fae-mr-subir 620ms ${REBOTE} 260ms both; }
+.fae-mr-halo { animation: fae-mr-halo 1.6s ease-in-out infinite; }
+.fae-mr-numero { display: inline-block; animation: fae-mr-pop 560ms ${REBOTE} both; }
+.fae-mr-onda { animation: fae-mr-onda 800ms ease-out both; }
+.fae-mr-texto { animation: fae-mr-subir 520ms ${CURVA} 420ms both; }
 @media (prefers-reduced-motion: reduce) {
-  .fae-mr-velo, .fae-mr-mensaje, .fae-mr-tarjeta { animation: none !important; }
-  .fae-mr-lienzo { transition: none !important; }
+  .fae-mr-velo, .fae-mr-llama, .fae-mr-mascota, .fae-mr-halo, .fae-mr-numero, .fae-mr-onda, .fae-mr-texto { animation: none !important; }
+  .fae-mr-onda { display: none; }
+  .fae-mr-bloque, .fae-mr-tarjeta { transition: none !important; }
 }
 `;
 
@@ -74,12 +86,15 @@ function Dia({ etiqueta, estado }) {
       <span
         aria-hidden="true"
         style={{
-          boxSizing: "border-box", width: "26px", height: "26px", borderRadius: "999px",
-          background: lleno ? FAE.teal : "transparent",
-          border: hoy ? `2.5px solid ${FAE.ambar}` : lleno ? `2px solid ${FAE.teal}` : "1.5px solid rgba(248,249,250,0.32)",
+          boxSizing: "border-box", width: "34px", height: "34px", borderRadius: "999px",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          background: lleno ? "rgba(245,138,31,0.16)" : "rgba(248,249,250,0.05)",
+          border: hoy ? `2.5px solid ${FAE.ambar}` : "1px solid rgba(248,249,250,0.10)",
           boxShadow: hoy ? "0 0 0 3px rgba(233,196,106,0.16)" : "none",
         }}
-      />
+      >
+        <Llama tamano={17} encendida={lleno} colorApagado={GRIS} id="fae-llama-dia" />
+      </span>
       <span style={{ fontFamily: "Inter, sans-serif", fontSize: "11.5px", fontWeight: hoy ? 700 : 600, color: hoy ? FAE.text : "rgba(248,249,250,0.6)" }}>
         {etiqueta}
       </span>
@@ -91,24 +106,27 @@ const NOMBRE_ESTADO = { completado: "completado", "hoy-hecho": "hoy, completado"
 
 /**
  * La secuencia en pantalla. Separada del disparo para poder probarla y verla
- * sin sesión.
+ * sin sesión. `perfil` pinta la mascota del estudiante; sin perfil, la de
+ * fábrica (mascotaDe).
  */
-export function SecuenciaRacha({ momento, onFin, visibilidad = visibilidadDocumento }) {
+export function SecuenciaRacha({ momento, perfil = null, onFin, visibilidad = visibilidadDocumento }) {
   const [fase, setFase] = useState("entrada");
+  const [numero, setNumero] = useState(momento.desde);
   /*
-   * Todas las esperas de la secuencia van por un reloj que se para con la
-   * página oculta y retoma al volver: con setTimeout a secas, la secuencia se
-   * cerraba sola en una pestaña que nadie estaba mirando.
+   * Todas las esperas van por un reloj que se para con la página oculta y
+   * retoma al volver: con setTimeout a secas, la secuencia se cerraba sola en
+   * una pestaña que nadie estaba mirando.
    */
   const reloj = useRef(null);
   if (!reloj.current) reloj.current = crearRelojPausable(visibilidad);
-  const [sinWebGL, setSinWebGL] = useState(false);
-  const [destino, setDestino] = useState(null);
-  const hueco = useRef(null);
+  const tarjeta = useRef(null);
+  const [bajada, setBajada] = useState(0);
   const cerrado = useRef(false);
 
   const dia = momento.hasta;
   const dias = semana(momento.hoy, momento.semana);
+  const m = mascotaDe(perfil);
+  const nombre = perfil?.mascota_nombre?.trim();
 
   const cerrar = () => {
     if (cerrado.current) return;
@@ -118,28 +136,30 @@ export function SecuenciaRacha({ momento, onFin, visibilidad = visibilidadDocume
   };
 
   useEffect(() => {
-    /*
-     * Solo una espera: la de pasar a la semana. La tarjeta no se cierra sola;
-     * un temporizador ahí le quitaría al estudiante la única parte que se lee.
-     */
+    reloj.current.programar(() => setNumero(momento.hasta), TIEMPOS.cambioNumero);
     reloj.current.programar(() => setFase((f) => (f === "entrada" ? "semana" : f)), duracionEntrada(dia));
     const tecla = (e) => { if (e.key === "Escape" || e.key === "Enter" || e.key === " ") cerrar(); };
     window.addEventListener("keydown", tecla);
     return () => { reloj.current.detener(); window.removeEventListener("keydown", tecla); };
   }, []);
 
-  /* Dónde tiene que acabar el teseracto: el hueco de arriba a la derecha de la tarjeta. */
+  /*
+   * El hueco de la tarjeta está en la maqueta desde el primer cuadro (oculto),
+   * así que nada salta cuando aparece. En la entrada, el bloque de arriba baja
+   * la mitad de ese hueco para quedar centrado; en la semana vuelve a su sitio
+   * con una transición de transform.
+   */
   useLayoutEffect(() => {
-    if (fase !== "semana" || !hueco.current) return;
-    const r = hueco.current.getBoundingClientRect();
-    setDestino({ x: r.left + r.width / 2, y: r.top + r.height / 2 });
-  }, [fase]);
+    if (!tarjeta.current) return;
+    setBajada(Math.round((tarjeta.current.offsetHeight + 14) / 2));
+  }, []);
 
-  const grande = Math.round(Math.min(window.innerWidth * 0.88, window.innerHeight * 0.58, 560));
-  const enSemana = fase !== "entrada" && destino;
-  const escala = enSemana ? TAM_PEQUENO / grande : 1;
-  const cx = enSemana ? destino.x : window.innerWidth / 2;
-  const cy = enSemana ? destino.y : window.innerHeight * 0.42;
+  const alto = typeof window === "undefined" ? 667 : window.innerHeight;
+  const ancho = typeof window === "undefined" ? 375 : window.innerWidth;
+  /* La escena se ajusta al alto: en un 320 × 568 caben escena, número y tarjeta sin cortar la llama. */
+  const H = Math.max(120, Math.round(Math.min(ancho * 0.62, (alto - 360) / 1.12, 250)));
+  const enSemana = fase !== "entrada";
+  const nuevo = numero === momento.hasta && momento.hasta !== momento.desde;
 
   return (
     <div
@@ -151,107 +171,119 @@ export function SecuenciaRacha({ momento, onFin, visibilidad = visibilidadDocume
       className="fae-mr-velo"
       style={{
         position: "fixed", inset: 0, zIndex: 90, cursor: "pointer", overflow: "hidden",
-        background: "radial-gradient(circle at 50% 42%, rgba(29,53,87,0.94) 0%, rgba(10,20,34,0.97) 62%)",
+        background: "radial-gradient(circle at 50% 34%, rgba(245,138,31,0.20) 0%, rgba(29,53,87,0.94) 38%, rgba(10,20,34,0.97) 72%)",
         opacity: fase === "salida" ? 0 : 1, transition: `opacity ${TIEMPOS.salida}ms ease-in`,
         WebkitTapHighlightColor: "transparent",
       }}
     >
       <style>{CSS}</style>
 
-      {!sinWebGL && (
+      <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "14px", padding: "16px", boxSizing: "border-box", pointerEvents: "none" }}>
         <div
-          className="fae-mr-lienzo"
-          data-lienzo-teseracto
+          className="fae-mr-bloque"
+          data-heroe-racha
           style={{
-            /* Por encima de la tarjeta: la tarjeta viene después en el DOM y, sin esto, lo tapaba al posarse. */
-            position: "absolute", zIndex: 2, left: 0, top: 0, width: `${grande}px`, height: `${grande}px`,
-            transform: `translate(${cx - grande / 2}px, ${cy - grande / 2}px) scale(${escala})`,
-            transformOrigin: "50% 50%",
-            transition: `transform ${TIEMPOS.transicion}ms ${CURVA}`,
-            willChange: "transform", pointerEvents: "none",
+            display: "flex", flexDirection: "column", alignItems: "center",
+            transform: `translateY(${enSemana ? 0 : bajada}px)`,
+            /* Solo con la semana: si la transición estuviera desde el principio, la
+               medida inicial del hueco animaría un descenso al abrir. */
+            transition: enSemana ? `transform ${TIEMPOS.transicion}ms ${CURVA}` : "none",
           }}
         >
-          <Suspense fallback={null}>
-            <Teseracto
-              dia={dia}
-              trazarNuevas
-              inicioTrazoMs={TIEMPOS.inicioTrazo}
-              msPorArista={TIEMPOS.porArista}
-              onSinWebGL={() => setSinWebGL(true)}
+          {/* La escena: halo, llama grande detrás y la mascota delante, saltando. */}
+          <div data-escena-racha style={{ position: "relative", width: `${H}px`, height: `${Math.round(H * 1.12)}px` }}>
+            <div
+              aria-hidden="true"
+              className="fae-mr-halo"
+              style={{ position: "absolute", left: "-18%", right: "-18%", top: "-6%", bottom: "4%", borderRadius: "50%", background: "radial-gradient(circle, rgba(255,179,71,0.38) 0%, rgba(245,138,31,0.12) 45%, rgba(245,138,31,0) 70%)" }}
             />
-          </Suspense>
-        </div>
-      )}
+            <div className="fae-mr-llama" data-llama-grande style={{ position: "absolute", left: "50%", top: 0, width: `${Math.round(H * 0.86)}px`, marginLeft: `-${Math.round(H * 0.43)}px` }}>
+              <Llama tamano={Math.round(H * 0.86)} viva chispas id="fae-llama-grande" />
+            </div>
+            <div className="fae-mr-mascota" data-mascota-racha style={{ position: "absolute", left: "50%", bottom: 0, width: `${Math.round(H * 0.6)}px`, marginLeft: `-${Math.round(H * 0.3)}px`, filter: "drop-shadow(0 0 3px rgba(10,20,34,0.9)) drop-shadow(0 6px 12px rgba(10,20,34,0.55))" }}>
+              <Mascota
+                especie={m.especie}
+                paleta={m.paleta}
+                ojos={m.ojos}
+                puestos={m.puestos}
+                perfil={perfil}
+                tamano={Math.round(H * 0.6)}
+                encuadre="cuerpo"
+                animo="feliz"
+                titulo={nombre ? `${nombre}, tu mascota, salta de contenta` : "Tu mascota salta de contenta"}
+              />
+            </div>
+          </div>
 
-      {fase === "entrada" && (
-        <p
-          className="fae-mr-mensaje"
-          aria-live="polite"
+          {/* El número: ayer, y al segundo salta al de hoy. */}
+          <div style={{ position: "relative", marginTop: "6px", textAlign: "center" }}>
+            <p style={{ position: "relative", margin: 0, lineHeight: 1, fontFamily: "Sora, sans-serif", fontWeight: 800, fontSize: "clamp(52px, 15vw, 72px)", letterSpacing: "-0.03em", color: "#FFD27A", textShadow: "0 0 24px rgba(255,179,71,0.45)" }}>
+              {nuevo && <span aria-hidden="true" className="fae-mr-onda" style={{ position: "absolute", left: "50%", top: "50%", width: "76px", height: "76px", margin: "-38px 0 0 -38px", borderRadius: "50%", border: `3px solid ${FAE.ambar}` }} />}
+              <span key={numero} data-numero-racha={numero} className={nuevo ? "fae-mr-numero" : undefined}>{numero}</span>
+            </p>
+            <p style={{ margin: "4px 0 0", fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "16px", color: FAE.text }}>
+              {numero === 1 ? "día de racha" : "días de racha"}
+            </p>
+            {/* Fuera del flujo: así no reserva sitio y la tarjeta cabe a 320 × 568. Se va al llegar la semana. */}
+            <p aria-live="polite" style={{ position: "absolute", left: "-60px", right: "-60px", top: "100%", margin: "8px 0 0", opacity: enSemana ? 0 : 1, transition: "opacity 300ms ease-out", fontSize: "13.5px", lineHeight: 1.4, color: "rgba(248,249,250,0.7)" }}>
+              <span className="fae-mr-texto" style={{ display: "block" }}>{mensajeRacha(momento.desde, momento.hasta)}</span>
+            </p>
+          </div>
+        </div>
+
+        <section
+          ref={tarjeta}
+          className="fae-mr-tarjeta"
+          {...(enSemana ? { "data-semana-racha": "" } : { "aria-hidden": "true" })}
           style={{
-            position: "absolute", left: "16px", right: "16px", top: `calc(42% + ${grande / 2}px + 8px)`, margin: 0, textAlign: "center",
-            fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "clamp(20px, 5.4vw, 28px)", letterSpacing: "-0.02em", color: FAE.text,
+            position: "relative", boxSizing: "border-box", width: "100%", maxWidth: "380px",
+            padding: "16px 16px 18px", borderRadius: "20px",
+            background: "linear-gradient(180deg, rgba(36,62,99,0.92) 0%, rgba(21,41,74,0.96) 100%)",
+            border: "1px solid rgba(147,197,253,0.22)",
+            boxShadow: "0 24px 60px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06)",
+            visibility: enSemana ? "visible" : "hidden",
+            opacity: enSemana ? 1 : 0,
+            transform: enSemana ? "none" : "translateY(24px)",
+            transition: `opacity 480ms ${CURVA} 220ms, transform 560ms ${CURVA} 180ms`,
           }}
         >
-          {mensajeRacha(momento.desde, momento.hasta)}
-        </p>
-      )}
+          <p style={{ margin: 0, fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "18px", lineHeight: 1.25, color: FAE.text }}>
+            Tu racha sigue viva.
+          </p>
+          <p style={{ margin: "4px 0 0", fontSize: "13px", lineHeight: 1.45, color: "rgba(248,249,250,0.72)" }}>
+            {nombre ? `${nombre} está feliz` : "Tu mascota está feliz"}: {dia} {dia === 1 ? "día seguido" : "días seguidos"} aprendiendo.
+          </p>
 
-      {fase !== "entrada" && (
-        <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", padding: "16px", pointerEvents: "none" }}>
-          <section
-            className="fae-mr-tarjeta"
-            data-semana-racha
+          <ol aria-label="Esta semana" style={{ margin: "14px 0 0", padding: 0, display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "2px" }}>
+            {dias.map((d) => (
+              <Dia key={d.fecha} etiqueta={d.etiqueta} estado={d.estado} />
+            ))}
+          </ol>
+          {/* El único cierre de la tarjeta es del estudiante: este botón o un toque en cualquier sitio. */}
+          <button
+            type="button"
+            data-continuar
+            tabIndex={enSemana ? 0 : -1}
+            onClick={cerrar}
             style={{
-              boxSizing: "border-box", width: "100%", maxWidth: "380px",
-              padding: "18px 18px 20px", borderRadius: "18px",
-              background: "#15294A", border: "1px solid rgba(248,249,250,0.14)",
-              boxShadow: "0 24px 60px rgba(0,0,0,0.45)",
+              pointerEvents: enSemana ? "auto" : "none", display: "block", width: "100%", marginTop: "16px",
+              padding: "13px 18px", borderRadius: "999px", cursor: "pointer",
+              background: FAE.teal, border: `1px solid ${FAE.teal}`, color: "#06202A",
+              boxShadow: "0 8px 22px rgba(42,157,143,0.35)",
+              fontFamily: "Sora, sans-serif", fontSize: "15px", fontWeight: 700,
             }}
           >
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", minHeight: `${TAM_PEQUENO}px` }}>
-              <div style={{ minWidth: 0 }}>
-                <p style={{ margin: 0, fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "19px", lineHeight: 1.25, color: FAE.text }}>
-                  Tu racha sigue viva.
-                </p>
-                <p style={{ margin: "4px 0 0", fontSize: "13px", lineHeight: 1.45, color: "rgba(248,249,250,0.7)" }}>
-                  {dia} {dia === 1 ? "día seguido" : "días seguidos"}
-                </p>
-              </div>
-              {/* El hueco donde se posa el teseracto: mismo tamaño, sin dibujar nada. */}
-              <div ref={hueco} aria-hidden="true" style={{ flex: `0 0 ${TAM_PEQUENO}px`, width: `${TAM_PEQUENO}px`, height: `${TAM_PEQUENO}px` }} />
-            </div>
+            Continuar
+          </button>
 
-            <ol aria-label="Esta semana" style={{ margin: "16px 0 0", padding: 0, display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "4px" }}>
-              {dias.map((d) => (
-                <Dia key={d.fecha} etiqueta={d.etiqueta} estado={d.estado} />
-              ))}
-            </ol>
-            {/*
-              El único cierre de la tarjeta es del estudiante: este botón o un
-              toque en cualquier sitio. Nunca un temporizador.
-            */}
-            <button
-              type="button"
-              data-continuar
-              onClick={cerrar}
-              style={{
-                pointerEvents: "auto", display: "block", width: "100%", marginTop: "16px",
-                padding: "12px 18px", borderRadius: "14px", cursor: "pointer",
-                background: FAE.teal, border: `1px solid ${FAE.teal}`, color: FAE.bg,
-                fontFamily: "Sora, sans-serif", fontSize: "14px", fontWeight: 700,
-              }}
-            >
-              Continuar
-            </button>
+          <p className="fae-jg-oculto" style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0 0 0 0)" }}>
+            {dias.map((d) => `${d.etiqueta}: ${NOMBRE_ESTADO[d.estado]}`).join(". ")}
+          </p>
+        </section>
+      </div>
 
-            <p className="fae-jg-oculto" style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0 0 0 0)" }}>
-              {dias.map((d) => `${d.etiqueta}: ${NOMBRE_ESTADO[d.estado]}`).join(". ")}
-            </p>
-          </section>
-        </div>
-      )}
-
-      <p style={{ position: "absolute", left: 0, right: 0, bottom: "max(18px, env(safe-area-inset-bottom))", margin: 0, textAlign: "center", fontSize: "12px", color: "rgba(248,249,250,0.55)", pointerEvents: "none" }}>
+      {/* La pista se va con la semana: ahí ya está el botón, y a 320 × 568 la tarjeta la tapaba. */}
+      <p style={{ position: "absolute", left: 0, right: 0, bottom: "max(14px, env(safe-area-inset-bottom))", margin: 0, textAlign: "center", fontSize: "12px", color: "rgba(248,249,250,0.55)", pointerEvents: "none", opacity: enSemana ? 0 : 1, transition: "opacity 300ms ease-out" }}>
         Toca para cerrar.
       </p>
     </div>
@@ -263,7 +295,7 @@ export function SecuenciaRacha({ momento, onFin, visibilidad = visibilidadDocume
  * la pregunta al servidor, el canal de FP y la visibilidad de la página. Así la
  * prueba monta exactamente lo que monta App, con una pestaña oculta de mentira.
  */
-export function MomentoRachaCon({ sesionActiva, pedir, escucharFP: escuchar, visibilidad = visibilidadDocumento, esperaMs }) {
+export function MomentoRachaCon({ sesionActiva, perfil = null, pedir, escucharFP: escuchar, visibilidad = visibilidadDocumento, esperaMs }) {
   const [momento, setMomento] = useState(null);
   const disparador = useRef(null);
 
@@ -277,11 +309,11 @@ export function MomentoRachaCon({ sesionActiva, pedir, escucharFP: escuchar, vis
   }, [sesionActiva]);
 
   if (!momento) return null;
-  return <SecuenciaRacha momento={momento} visibilidad={visibilidad} onFin={() => setMomento(null)} />;
+  return <SecuenciaRacha momento={momento} perfil={perfil} visibilidad={visibilidad} onFin={() => setMomento(null)} />;
 }
 
 /** Montado una vez en App: escucha, pregunta cuando toca y enseña la secuencia. */
 export default function MomentoRacha() {
-  const { session } = useAuth();
-  return <MomentoRachaCon sesionActiva={Boolean(session)} pedir={pedirMomentoRacha} escucharFP={escucharFP} />;
+  const { session, perfil } = useAuth();
+  return <MomentoRachaCon sesionActiva={Boolean(session)} perfil={perfil} pedir={pedirMomentoRacha} escucharFP={escucharFP} />;
 }

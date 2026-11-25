@@ -9,6 +9,7 @@
 import { useRef } from "react";
 import { BORDE, FONDO, GRIS, INK, INK_2, SUPERFICIE_2, TINTA_SOBRE_COLOR } from "../comun/colores-da.js";
 import { colorRama } from "../comun/ramas.js";
+import { ILUSTRADOS, rutaIlustrado } from "../comun/ilustrados.jsx";
 import { fmtEntero, fmtDecimal } from "../comun/modelo-da.js";
 import { A5, A6, A7, MODELO_DINERO, ORDEN_POSICIONES, PALANCAS, tasaEquilibrio } from "./textos.js";
 
@@ -36,7 +37,10 @@ export const CSS_PM = `
 .pm26-asa:focus-visible { outline: none; }
 .pm26-asa:focus-visible .pm26-asa-anillo { stroke: ${INK}; stroke-width: 3; }
 .pm26-mercurio { transform-box: fill-box; transform-origin: bottom; transition: transform 900ms cubic-bezier(.3,.9,.4,1); }
-@media (prefers-reduced-motion: reduce) { .pm26-vaso-agua, .pm26-aguja, .pm26-mercurio { transition: none; } }
+.pm26-calor, .pm26-aire { transition: opacity 900ms linear; }
+.pm26-brisa { animation: pm26-brisa 1400ms ease-in-out infinite; }
+@keyframes pm26-brisa { 0% { opacity: 0; transform: translateY(-4px); } 40% { opacity: .9; } 100% { opacity: 0; transform: translateY(8px); } }
+@media (prefers-reduced-motion: reduce) { .pm26-vaso-agua, .pm26-aguja, .pm26-mercurio, .pm26-calor, .pm26-aire { transition: none; } .pm26-brisa { animation: none; opacity: .8; } }
 `;
 
 /* ─── La cascada de vasos ─────────────────────────────────────────────── */
@@ -45,37 +49,80 @@ export const CSS_PM = `
 export const depositos = (encajePct, n, d0 = 1000) => Array.from({ length: n }, (_, k) => d0 * (1 - encajePct / 100) ** k);
 
 const VASOS = 7;
+/* El frasco de banco ilustrado (Gemini, 25-nov; diagnostico-visual.md, familia 1).
+ * Origen 255 × 360. El agua se pinta en vivo DENTRO del vidrio: frasco detrás,
+ * agua y encaje en medio, y el mismo frasco encima, translúcido, para que los
+ * brillos del vidrio queden por delante del agua. */
+export const FRASCO = { src: rutaIlustrado("frasco-banco"), w: ILUSTRADOS["frasco-banco"][0], h: ILUSTRADOS["frasco-banco"][1] };
+/* Hueco útil del vidrio, en fracciones del frasco (medido en el WebP). */
+const HUECO = { x0: 0.07, x1: 0.93, arriba: 0.27, fondo: 0.83 };
 /**
- * `visibles`: cuántos vasos ya recibieron agua. Cada vaso muestra el depósito
- * y, en el fondo, la franja del encaje. Los vasos pasan de 7 en «toda la
- * cascada»: el último dibuja lo que queda.
+ * `visibles`: cuántos frascos ya recibieron agua. Cada frasco es un banco:
+ * muestra su depósito y, en el fondo, la franja del encaje. Los frascos pasan
+ * de 7 en «toda la cascada»: el último dibuja lo que queda.
  */
-export function Cascada({ encaje, visibles, conEncaje = true, mini = false, etiqueta = null }) {
+export function Cascada({ encaje, visibles, conEncaje = true, mini = false, etiqueta = null, grifo = false }) {
   const d = depositos(encaje, VASOS);
-  const w = 36, h = 50, paso = 40, baja = 16;
+  const w = 44, h = (w * FRASCO.h) / FRASCO.w, paso = 47, baja = 22;
+  const ix0 = w * HUECO.x0, iw = w * (HUECO.x1 - HUECO.x0), iy0 = h * HUECO.arriba, iyF = h * HUECO.fondo, ih = iyF - iy0;
+  /* Con grifo: el grifo ilustrado arriba a la izquierda llena el primer frasco. */
+  const gw = 46, gh = (gw * ILUSTRADOS.grifo[1]) / ILUSTRADOS.grifo[0];
+  const ox = grifo ? 22 : 0, oy = grifo ? gh + 6 : 0;
+  const W = ox + (VASOS - 1) * paso + w + 2, H = oy + h + (VASOS - 1) * baja + 4;
   return (
-    <svg viewBox={`0 0 ${VASOS * paso + 4} ${h + (VASOS - 1) * baja + 8}`} style={{ width: "100%", height: "auto", maxWidth: mini ? 220 : 320, display: "block", margin: "0 auto" }}
+    <svg viewBox={`0 0 ${W} ${H}`} style={{ width: "100%", height: "auto", maxWidth: mini ? 240 : 360, display: "block", margin: "0 auto", overflow: "visible" }}
       role="img" aria-label={etiqueta ?? `Cascada con encaje de ${encaje} %`} data-cascada={encaje} data-vasos={Math.min(visibles, VASOS)}>
+      <defs>
+        <clipPath id="pm26-hueco" clipPathUnits="userSpaceOnUse">
+          <rect x={ix0} y={iy0 - 4} width={iw} height={ih + 4} rx={w * 0.12} />
+        </clipPath>
+        <linearGradient id="pm26-agua" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0" stopColor={MONETARIA} stopOpacity=".95" />
+          <stop offset="1" stopColor={MONETARIA} stopOpacity=".75" />
+        </linearGradient>
+      </defs>
+      {grifo && visibles > 0 && (
+        <path d={`M${gw * 0.84} ${gh - 2}V${oy + h * 0.6}`} stroke={MONETARIA} strokeWidth="4" strokeLinecap="round" opacity=".9" data-chorro-grifo />
+      )}
       {d.map((v, k) => {
-        const x = 2 + k * paso, y = 4 + k * baja;
+        const x = ox + 1 + k * paso, y = oy + 2 + k * baja;
         const lleno = k < visibles;
         const nivel = v / 1000;
         const fondo = (encaje / 100) * nivel;
+        const cae = k < VASOS - 1 && lleno && k + 1 < visibles;
         return (
-          <g key={k} data-vaso={k} data-lleno={lleno ? "1" : "0"}>
-            <rect className="pm26-vaso-agua" x={x + 2} y={y + h * (1 - nivel)} width={w - 4} height={h * nivel} fill={MONETARIA}
-              style={{ transform: `scaleY(${lleno ? 1 : 0})`, opacity: lleno ? 0.9 : 0 }} />
-            {conEncaje && (
-              <rect className="pm26-vaso-agua" x={x + 2} y={y + h - h * fondo} width={w - 4} height={h * fondo} fill={GRIS}
-                style={{ transform: `scaleY(${lleno ? 1 : 0})`, opacity: lleno ? 1 : 0 }} data-encaje-vaso={k} />
+          <g key={k} data-vaso={k} data-lleno={lleno ? "1" : "0"} transform={`translate(${x} ${y})`}>
+            {cae && (/* el chorro sale del pico y cae dentro del frasco siguiente */
+              <path d={`M${w * 0.98} ${h * 0.12} q${paso - w * 0.6} 2 ${paso - w * 0.45} ${baja + h * 0.3}`} fill="none" stroke={MONETARIA} strokeWidth="3.2" strokeLinecap="round" opacity=".9" />
             )}
-            <path d={`M${x} ${y}v${h}h${w}v${-h}`} fill="none" stroke={INK_2} strokeWidth="2.5" strokeLinejoin="round" />
-            {k < VASOS - 1 && lleno && k + 1 < visibles && (
-              <path d={`M${x + w} ${y + 6}q8 0 8 ${baja + 4}`} fill="none" stroke={MONETARIA} strokeWidth="3" strokeLinecap="round" />
-            )}
+            <image href={FRASCO.src} width={w} height={h} />
+            <g clipPath="url(#pm26-hueco)">
+              <rect className="pm26-vaso-agua" x={ix0} y={iyF - ih * nivel} width={iw} height={ih * nivel} fill="url(#pm26-agua)"
+                style={{ transform: `scaleY(${lleno ? 1 : 0})`, opacity: lleno ? 1 : 0 }} />
+              {lleno && <rect x={ix0} y={iyF - ih * nivel} width={iw} height={1.6} fill="#fff" opacity=".45" />}
+              {conEncaje && (
+                <rect className="pm26-vaso-agua" x={ix0} y={iyF - ih * fondo} width={iw} height={ih * fondo} fill={GRIS}
+                  style={{ transform: `scaleY(${lleno ? 1 : 0})`, opacity: lleno ? 1 : 0 }} data-encaje-vaso={k} />
+              )}
+            </g>
+            <image href={FRASCO.src} width={w} height={h} opacity=".38" aria-hidden="true" />
           </g>
         );
       })}
+      {grifo && <image href={rutaIlustrado("grifo")} x="0" y="0" width={gw} height={gh} data-grifo />}
+    </svg>
+  );
+}
+
+/** Un frasco suelto con su nivel (0 a 1), para medidores pequeños (H1). */
+export function FrascoNivel({ nivel, alto = 64 }) {
+  const w = (alto * FRASCO.w) / FRASCO.h, h = alto;
+  const ix0 = w * HUECO.x0, iw = w * (HUECO.x1 - HUECO.x0), iy0 = h * HUECO.arriba, iyF = h * HUECO.fondo, ih = iyF - iy0;
+  return (
+    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} aria-hidden="true" data-frasco-nivel={nivel.toFixed(2)}>
+      <image href={FRASCO.src} width={w} height={h} />
+      <rect className="pm26-vaso-agua" x={ix0} y={iy0} width={iw} height={ih} rx={w * 0.1} fill={MONETARIA} fillOpacity=".9" style={{ transform: `scaleY(${nivel})` }} />
+      <image href={FRASCO.src} width={w} height={h} opacity=".38" />
     </svg>
   );
 }
@@ -225,22 +272,53 @@ export function Tablero({ pos, onCambio, bloqueado = false, estado = {}, onNombr
 /* ─── El termostato: la casa, el termómetro y la banda ────────────────── */
 
 const T_MAX = 14;
+/* La casa en corte con su aire y el termómetro de vidrio, ilustrados (Gemini,
+ * 25-nov; diagnostico-visual.md, familia 2). El calor de la sala, el chorro
+ * frío del aire, el mercurio y la banda se pintan en vivo encima.
+ * Termómetro (160 × 420): tubo útil de x .39 a .625; 0 % en y .66 y T_MAX en
+ * y .12; bulbo con centro (.5, .81) y radio .3 del ancho (medido en el WebP). */
+/* Mercurio naranja cálido (coral queda solo para error). */
+const MERCURIO = "#f2994a";
+const TERMO = { x0: 0.39, x1: 0.625, cero: 0.66, tope: 0.12, bx: 0.5, by: 0.81, br: 0.3 };
 /** `inflacion` en %, el mercurio sube hasta T_MAX. `banda`: sombrea 2 %–4 %. */
 export function Termostato({ inflacion, banda = true, aire = false, alto = 150 }) {
-  const y0 = 128, y1 = 14, yDe = (v) => y0 - (Math.min(T_MAX, Math.max(0, v)) / T_MAX) * (y0 - y1);
+  const [cw, ch] = ILUSTRADOS["casa-aire"], [tw0, th0] = ILUSTRADOS["termometro-vidrio"];
+  const casaH = 150, casaW = (casaH * cw) / ch;                 /* 180 × 150 */
+  const tH = 158, tW = (tH * tw0) / th0, tX = casaW + 14, tY = 0; /* ~60 × 158 */
+  const VW = tX + tW + 34, VH = 160;
+  const yDe = (v) => tY + tH * (TERMO.cero - (Math.min(T_MAX, Math.max(0, v)) / T_MAX) * (TERMO.cero - TERMO.tope));
   const nivel = Math.min(T_MAX, Math.max(0, inflacion)) / T_MAX;
+  const tuboX = tX + tW * TERMO.x0, tuboW = tW * (TERMO.x1 - TERMO.x0);
+  const calor = Math.max(0, Math.min(1, (inflacion - 3) / 7));   /* la sala se ve caliente con inflación alta */
+  const sala = `M${casaW * 0.09} ${casaH * 0.92}V${casaH * 0.33}L${casaW * 0.5} ${casaH * 0.1}L${casaW * 0.91} ${casaH * 0.33}V${casaH * 0.92}Z`;
   return (
     <div>
-    <svg viewBox="0 0 240 150" style={{ width: "100%", height: "auto", maxWidth: (alto * 240) / 150, display: "block", margin: "0 auto" }}
+    <svg viewBox={`0 0 ${VW} ${VH}`} style={{ width: "100%", height: "auto", maxWidth: (alto * VW) / VH * 1.25, display: "block", margin: "0 auto" }}
       role="img" aria-label={`${A7.inflacion} ${fmtDecimal(inflacion, 1)} %${banda ? `. ${A7.banda}` : ""}`} data-termostato data-inflacion={inflacion}>
-      <path d="M20 140V70l60-48 60 48v70Z" fill="none" stroke={INK_2} strokeWidth="3" strokeLinejoin="round" />
-      <rect x="40" y="86" width="56" height="26" rx="4" fill="none" stroke={aire ? MONETARIA : INK_2} strokeWidth="2.5" data-aire={aire ? "1" : "0"} />
-      {[0, 1, 2].map((k) => <path key={k} d={`M${48 + k * 14} 102v${aire ? 18 : 6}`} stroke={aire ? MONETARIA : INK_2} strokeWidth="2.5" strokeLinecap="round" />)}
-      <rect x="180" y={y1} width="22" height={y0 - y1} rx="11" fill="none" stroke={INK} strokeWidth="2.5" />
-      {banda && <rect x="176" y={yDe(4)} width="30" height={yDe(2) - yDe(4)} fill={MONETARIA} opacity=".35" data-banda />}
-      <rect className="pm26-mercurio" x="186" y={y1 + 6} width="10" height={y0 - y1 - 6} rx="5" fill={CALIDO} style={{ transform: `scaleY(${nivel})` }} />
-      <circle cx="191" cy={y0 + 6} r="12" fill={CALIDO} />
-      <text x="232" y={yDe(inflacion) + 5} textAnchor="end" fill={INK} fontSize="15" fontWeight="700" className="da26-mono">{fmtDecimal(inflacion, 1)}</text>
+      <defs>
+        <radialGradient id="pm26-calor" cx=".5" cy=".7" r=".7">
+          <stop offset="0" stopColor="#f4a259" stopOpacity=".6" />
+          <stop offset="1" stopColor={CALIDO} stopOpacity=".12" />
+        </radialGradient>
+      </defs>
+      <image href={rutaIlustrado("casa-aire")} width={casaW} height={casaH} y={VH - casaH} />
+      <g transform={`translate(0 ${VH - casaH})`}>
+        <path d={sala} fill="url(#pm26-calor)" className="pm26-calor" style={{ opacity: calor }} data-calor={calor.toFixed(2)} />
+        <g data-aire={aire ? "1" : "0"} className="pm26-aire" style={{ opacity: aire ? 1 : 0 }}>
+          {[0, 1, 2].map((k) => (
+            <path key={k} className="pm26-brisa" style={{ animationDelay: `${k * 260}ms` }}
+              d={`M${casaW * (0.22 + k * 0.08)} ${casaH * 0.56} q${-6 + k * 2} 14 ${4 + k * 3} 26 t${2 + k} 24`}
+              fill="none" stroke="#c4ecff" strokeWidth="4" strokeLinecap="round" />
+          ))}
+        </g>
+      </g>
+      <image href={rutaIlustrado("termometro-vidrio")} x={tX} y={tY} width={tW} height={tH} />
+      <circle cx={tX + tW * TERMO.bx} cy={tY + tH * TERMO.by} r={tW * TERMO.br * 0.86} fill={MERCURIO} />
+      <rect className="pm26-mercurio" x={tuboX + 1} y={yDe(T_MAX)} width={tuboW - 2} height={tY + tH * TERMO.by - yDe(T_MAX)} rx={tuboW / 2 - 1} fill={MERCURIO}
+        style={{ transform: `scaleY(${(tY + tH * TERMO.by - yDe(inflacion)) / (tY + tH * TERMO.by - yDe(T_MAX))})` }} data-mercurio={nivel.toFixed(2)} />
+      <image href={rutaIlustrado("termometro-vidrio")} x={tX} y={tY} width={tW} height={tH} opacity=".35" aria-hidden="true" />
+      {banda && <rect x={tX + tW * 0.1} y={yDe(4)} width={tW * 0.8} height={yDe(2) - yDe(4)} rx="3" fill={MONETARIA} fillOpacity=".45" stroke={MONETARIA} strokeWidth="2" data-banda />}
+      <text x={VW - 2} y={yDe(inflacion) + 5} textAnchor="end" fill={INK} fontSize="15" fontWeight="700" className="da26-mono">{fmtDecimal(inflacion, 1)}</text>
     </svg>
     {banda && (
       <p className="da26-rotulo" style={{ margin: "4px 0 0", textAlign: "center", fontSize: 14, color: INK }} aria-hidden="true" data-rotulo-banda>

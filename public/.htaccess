@@ -73,4 +73,17 @@
   Header always set Strict-Transport-Security "max-age=31536000"
   Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
   Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'sha256-TAOxLNe1AkEgVF4xBMsZZga8lkws91+W6Br58t1EGh4=' https://accounts.google.com/gsi/client; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' data: blob:; connect-src 'self' https://nlebxuyxilmyrgergxrc.supabase.co wss://nlebxuyxilmyrgergxrc.supabase.co https://accounts.google.com/gsi/; frame-src https://accounts.google.com/gsi/ https://www.youtube-nocookie.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'"
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # EL INVENTARIO DEL FTP NO SE SIRVE (auditoría 25-nov, hallazgo 14)
+  #
+  # El action de despliegue deja en la raíz .ftp-deploy-sync-state.json: la
+  # lista de todos los archivos publicados y la hora del último despliegue. Lo
+  # necesita él, por FTP; por la web solo le sirve a quien quiera un mapa del
+  # sitio. Se niega a cualquier visitante. Va aquí dentro, y no suelto, por la
+  # regla de arriba: todo dentro de <IfModule>.
+  # ═══════════════════════════════════════════════════════════════════════════
+  <Files ".ftp-deploy-sync-state.json">
+    Require all denied
+  </Files>
 </IfModule>

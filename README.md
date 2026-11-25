@@ -32,7 +32,7 @@ npm run dev
 
 1. **`.env.local` con las tres variables** (`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_GOOGLE_CLIENT_ID`). Sin ellas el sitio arranca y se puede recorrer entero, pero **sin cuenta, sin FP, sin rankings y sin nada de la capa de progreso**: el control de cuenta no se muestra y nunca se pide entrar.
 2. **Google como proveedor en Supabase** → Auth → Providers → Google, con el mismo client id que va en `VITE_GOOGLE_CLIENT_ID`.
-3. **Correr las 37 migraciones, en orden.** Ver la sección siguiente. Es obligatorio y no sobra ninguna.
+3. **Correr todas las migraciones, en orden de nombre.** Ver la sección siguiente. Es obligatorio y no sobra ninguna.
 4. **Verificar** con `npm run verificar`, que aplica esas mismas migraciones sobre una base limpia y corre las pruebas SQL contra ella.
 5. `npm run dev` → `http://localhost:5173`.
 
@@ -40,13 +40,17 @@ Opcional, y solo si hace falta panel docente: dar de alta la fila del profesor e
 
 ---
 
-## Las migraciones: todas, en orden, de la 0001 a la 0037
+## Las migraciones: todas, en orden de nombre
 
-Viven en `supabase/migrations/` y **se corren a mano en el SQL Editor de Supabase**, una por una, en orden numérico ascendente. Hoy son **37 archivos, de `0001_profiles.sql` a `0037_avatar_en_ranking_y_liga.sql`**.
+Viven en `supabase/migrations/`. **Desde el 15 de octubre de 2026 no se corren a mano en producción**: al fusionar en `main`, `.github/workflows/deploy.yml` aplica las que falten y las anota en `public.migraciones_aplicadas`. A mano solo se corren para **reconstruir una base desde cero** (copia de ensayo, restauración): todas, una por una, en el orden de `ls supabase/migrations/*.sql | sort`, que es exactamente lo que hace el CI en `.github/workflows/base.yml` sobre un Postgres limpio.
+
+El 25-nov-2026 eran **144 archivos, de `0001_profiles.sql` a `0275_repaso_diario_macro.sql`**, con rangos por célula (ver `orquestador/conocimiento/nocturno.md`). No hay que contarlos: `ls supabase/migrations | wc -l`. Tres pares comparten número (`0160_*`, `0161_*`, `0170_*`, `0173_*`); el orden de nombre los desempata y así se aplicaron. **Ningún número nuevo puede quedar por debajo del último ya aplicado** (auditoría 25-nov, hallazgo 5): una migración vieja que llegue tarde se aplica en producción después de otras más nuevas, al revés que en las pruebas.
+
+Lo de abajo cuenta la historia de las 37 primeras; sigue valiendo como ejemplo de por qué el orden manda.
 
 ### El orden no es una convención: es una dependencia
 
-Las migraciones no son 37 piezas independientes que se puedan aplicar sueltas. Muchas **reescriben o retiran lo que dejó una anterior**, así que saltarse una o cambiar el orden deja la base rota o, peor, incoherente sin error visible. Cuatro hechos comprobados de esa cadena:
+Las migraciones no son piezas independientes que se puedan aplicar sueltas. Muchas **reescriben o retiran lo que dejó una anterior**, así que saltarse una o cambiar el orden deja la base rota o, peor, incoherente sin error visible. Cuatro hechos comprobados de esa cadena:
 
 - **`registrar_fp` se define en ocho migraciones distintas.** Nace en la 0003 y se reescribe en la 0007 (racha), la 0011 (el cálculo pasa al servidor), la 0014 (desafíos de varias etapas), la 0017 (detalle por ítem, cuarto parámetro), la 0028 (partida en curso), la 0033 (renovable a diario) y la 0036 (cierre de liga, Cristales de racha y contador de actividades). Cada una parte de la versión que dejó la anterior, así que la última no se puede aplicar sola.
 - **Hay migraciones cuyo único trabajo es borrar lo de antes.** La 0011 añade la función nueva *al lado* de la vieja para no dejar a nadie sin FP durante el despliegue; la **0012** es la que retira la vieja. La **0018** retira la firma de tres argumentos que la 0017 dejó conviviendo con la de cuatro.

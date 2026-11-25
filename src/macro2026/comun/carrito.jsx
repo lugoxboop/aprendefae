@@ -8,6 +8,7 @@
  */
 import { COMPONENTES, GRIS, INK, INK_2 } from "./colores-da.js";
 import { useAncho } from "./ui.jsx";
+import { ILUSTRADOS, rutaIlustrado } from "./ilustrados.jsx";
 
 /* Los íconos de las manos, en una caja de 40 × 32. */
 export function IconoMano({ id, size = 40 }) {
@@ -59,8 +60,13 @@ export function Carrito({ valores, alto = 180, escala = 0.4, total = null, sacud
   const neg = Math.min(0, valores.XN ?? 0) * escala;   /* px que cuelgan bajo la línea */
   const baja = Math.min(16, -neg * 0.5);               /* el carrito baja con el negativo */
   const piso = alto - 40 + baja;
-  const izq = 30, der = ancho - 16;
-  const bx = izq + 14, bw = der - izq - 52;             /* bloques; a su derecha, la letra */
+  /* El carrito ilustrado (Gemini, 25-nov; diagnostico-visual.md, familia 4),
+   * 496 × 360, de rejilla abierta: los bloques van DETRÁS y los alambres los
+   * cruzan por delante. Fondo de la cesta en y .64; cesta útil de x .27 a .87. */
+  const [cw, ch] = ILUSTRADOS["carrito-mercado"];
+  const IW = Math.min(ancho - 4, ((piso - 2) / 0.64) * (cw / ch)), IH = (IW * ch) / cw, imgX = (ancho - IW) / 2, imgY = piso - 0.64 * IH;
+  const bx = imgX + 0.27 * IW, bw = 0.6 * IW;             /* bloques; a su derecha, la letra */
+  const altoSvg = Math.max(alto, Math.ceil(imgY + IH + 2));
   let y = piso;
   const bloques = orden.map((k) => {
     const v = valores[k] ?? 0;
@@ -71,14 +77,8 @@ export function Carrito({ valores, alto = 180, escala = 0.4, total = null, sacud
   const tope = Math.min(piso, ...bloques.filter((b) => b.v >= 0).map((b) => b.y));
   return (
     <div ref={ref} style={{ width: "100%" }}>
-    <svg viewBox={`0 0 ${ancho} ${alto}`} width="100%" height={alto} role="img" aria-label={`Carrito de la demanda agregada: total ${Math.round(total ?? suma)}`} data-carrito data-total={Math.round(total ?? suma)}>
+    <svg viewBox={`0 0 ${ancho} ${altoSvg}`} width="100%" height={altoSvg} role="img" aria-label={`Carrito de la demanda agregada: total ${Math.round(total ?? suma)}`} data-carrito data-total={Math.round(total ?? suma)}>
       <g className={sacude ? "da26-sacude" : ""} key={sacude}>
-        <g className="da26-trans" style={{ transform: `translateY(${baja}px)` }}>
-          <path d={`M4 14 L${izq - 6} 14 L${izq} 36`} fill="none" stroke={INK_2} strokeWidth={3} strokeLinejoin="round" strokeLinecap="round" />
-          <path d={`M${izq} 36 L${der + 4} 36 L${der - 6} ${alto - 40} L${izq + 8} ${alto - 40} Z`} fill="rgba(244,245,247,0.04)" stroke={INK_2} strokeWidth={3} strokeLinejoin="round" />
-          <circle cx={izq + 20} cy={alto - 40 + 16} r={8} fill="none" stroke={INK_2} strokeWidth={3} />
-          <circle cx={der - 20} cy={alto - 40 + 16} r={8} fill="none" stroke={INK_2} strokeWidth={3} />
-        </g>
         {bloques.map((b) => (
           <g key={b.k} data-bloque={b.k} data-valor={Math.round(b.v)} opacity={resaltar && resaltar !== b.k ? 0.4 : 1}>
             {b.h > 0.5 && (
@@ -88,11 +88,6 @@ export function Carrito({ valores, alto = 180, escala = 0.4, total = null, sacud
                 fill={b.v >= 0 ? COMPONENTES[b.k].color : "transparent"}
                 stroke={b.v >= 0 ? "#0E1B2E" : GRIS} strokeWidth={b.v >= 0 ? 1 : 2} strokeDasharray={b.v >= 0 ? undefined : "5 4"}
               />
-            )}
-            {b.h > 0.5 && (
-              <text x={bx + bw + 8} y={b.y + Math.max(b.h, 12) / 2 + 5} fontSize={13} fontWeight={700} fill={b.v >= 0 ? INK : INK_2}>
-                {COMPONENTES[b.k].letra}
-              </text>
             )}
             {onAgarre && b.v > 0 && (
               <g
@@ -112,9 +107,19 @@ export function Carrito({ valores, alto = 180, escala = 0.4, total = null, sacud
             )}
           </g>
         ))}
+        <g className="da26-trans">
+          <image href={rutaIlustrado("carrito-mercado")} x={imgX} y={imgY} width={IW} height={IH} data-carrito-ilustrado style={{ pointerEvents: "none" }} />
+        </g>
+        {/* Las letras van encima de los alambres para leerse. */}
+        {bloques.map((b) => b.h > 0.5 && (
+          <text key={`l${b.k}`} x={bx + bw + 8} y={b.y + Math.max(b.h, 12) / 2 + 5} fontSize={13} fontWeight={700} fill={b.v >= 0 ? INK : INK_2}
+            stroke="#0E1B2E" strokeWidth={3} paintOrder="stroke" opacity={resaltar && resaltar !== b.k ? 0.4 : 1} data-letra={b.k}>
+            {COMPONENTES[b.k].letra}
+          </text>
+        ))}
         <g data-nivel-da>
           <line x1={bx - 6} y1={tope} x2={bx + bw + 4} y2={tope} stroke={INK} strokeWidth={1.5} strokeDasharray="2 3" />
-          <text x={4} y={12} fontSize={14} fontWeight={700} fill={INK}>{etiqueta}{total != null ? ` = ${Math.round(total)}` : ""}</text>
+          <text x={ancho - 4} y={14} textAnchor="end" fontSize={14} fontWeight={700} fill={INK}>{etiqueta}{total != null ? ` = ${Math.round(total)}` : ""}</text>
         </g>
       </g>
     </svg>

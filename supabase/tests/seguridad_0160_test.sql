@@ -97,12 +97,12 @@ insert into res select 3, 'una opinión sin sesión entra con el texto recortado
   current_setting('seg.p3a') = 'true' and (select length(texto) from public.opiniones where user_id is null order by creado desc, id desc limit 1) = 600;
 
 insert into public.opiniones (puntaje, texto, anonimo, user_id, origen)
-select 3, 'relleno', true, null, 'inicio' from generate_series(1, 30);
+select 3, 'relleno', true, null, 'inicio' from generate_series(1, 120);  -- (0176) el tope global pasó de 30 a 120
 set local role anon;
 select set_config('request.jwt.claims', '{"role":"anon"}', true);
 do $$ begin perform set_config('seg.p4', public.enviar_opinion(4::smallint, 'otra', true, '{}', 'inicio', null, null, null, null)::text, true); end $$;
 reset role;
-insert into res select 4, 'con 30 opiniones sin sesión en la última hora, la siguiente no entra', 'false',
+insert into res select 4, 'con 120 opiniones sin sesión en la última hora (tope global desde la 0176), la siguiente no entra', 'false',
   current_setting('seg.p4'), current_setting('seg.p4') = 'false';
 
 -- ── 5. Ráfaga: 13 actividades en 10 minutos; la 13 queda marcada ──────────

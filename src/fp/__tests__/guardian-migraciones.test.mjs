@@ -11,7 +11,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { revisar, sinComentarios, filasDeCatalogo, rangoDe, soloRetiroBlando, idsRetirados, RANGOS, MARCA_ESQUEMA, MARCA_RETIRO } from "../../../scripts/guardian-migraciones.mjs";
+import { revisar, revisarNumeracion, sinComentarios, filasDeCatalogo, rangoDe, soloRetiroBlando, idsRetirados, RANGOS, MARCA_ESQUEMA, MARCA_RETIRO } from "../../../scripts/guardian-migraciones.mjs";
 
 const CLIENTE = new Map([
   ["t7-3-costo-o-vnr", { activity_id: "t7-3-costo-o-vnr", subject_id: "contabilidad", topic_id: "inventarios-descuentos-nic2", modalidad: "evaluativa", dificultad: "medio", fp_base: 25 }],
@@ -271,4 +271,30 @@ test("★★ las piezas sueltas hacen lo que dicen", () => {
   assert.ok(bloque.includes("select 1;") && bloque.includes("select 2;"));
   assert.equal(filasDeCatalogo("select 1;").length, 0, "sin insert al catálogo, no hay filas que juzgar");
   assert.equal(filasDeCatalogo(fila())[0].fp_base, 25);
+});
+
+/* ─── 4. La numeración (auditoría externa del 25-nov, hallazgo 5) ─────── */
+test("numeración: un número nuevo por encima de su rango pasa", () => {
+  const hay = ["0175_x.sql", "0258_y.sql"];
+  assert.deepEqual(revisarNumeracion(["0176_nueva.sql", "0259_otra.sql"], hay), []);
+});
+
+test("numeración: repetir un número se rechaza", () => {
+  const r = revisarNumeracion(["0175_otra_cosa.sql"], ["0175_x.sql"]);
+  assert.equal(r.length, 1);
+  assert.match(r[0], /ya lo usa otra migración/);
+});
+
+test("numeración: un número por debajo del último de SU rango se rechaza, aunque haya otros rangos más altos", () => {
+  const hay = ["0170_a.sql", "0175_b.sql", "0258_c.sql"];
+  const r = revisarNumeracion(["0172_tarde.sql"], hay);
+  assert.equal(r.length, 1);
+  assert.match(r[0], /por debajo de la 0175/);
+  /* Otro rango más alto en main no cuenta: los rangos conviven a propósito. */
+  assert.deepEqual(revisarNumeracion(["0176_bien.sql"], hay), []);
+});
+
+test("numeración: la historia no se juzga, solo lo añadido", () => {
+  /* 0160 está repetida en main desde noviembre; no se le reprocha a nadie. */
+  assert.deepEqual(revisarNumeracion([], ["0160_mascota.sql", "0160_seguridad.sql"]), []);
 });

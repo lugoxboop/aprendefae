@@ -25,7 +25,7 @@
  * ═══════════════════════════════════════════════════════════════════════════
  */
 import Anthropic from "npm:@anthropic-ai/sdk@0.71.0";
-import { createClient } from "jsr:@supabase/supabase-js@2";
+import { createClient } from "jsr:@supabase/supabase-js@2.112.4";
 import { manejar } from "./manejador.js";
 
 const ORIGENES = ["https://aprendefae.com", "https://www.aprendefae.com", "http://localhost:5173"];
