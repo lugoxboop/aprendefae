@@ -65,10 +65,10 @@ jobs:
 
     steps:
       - name: Traer el código
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Preparar Node
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           # La misma versión mayor que se usa en desarrollo.
           node-version: "24"
@@ -254,11 +254,16 @@ jobs:
           # «Installing Supabase CLI as a global module is not supported»— y
           # ese fue el primer intento de este paso, que murió ahí. `npx` es la
           # forma que la propia documentación usa en integración continua.
-          # LA VERSIÓN VA FIJADA AL 3, no a `latest`. Fijarla a `latest` es
+          # LA VERSIÓN VA FIJADA EXACTA (auditoría 25-nov, hallazgo 4). Antes
+          # era `supabase@3`, que trae la más nueva de la serie 3 en cada
+          # despliegue: si la cuenta del autor fuera comprometida, el código
+          # nuevo correría con el token de Supabase en la mano. Para subirla,
+          # se cambia el número aquí, a propósito y en una propuesta.
+          # Y nunca a `latest`. Fijarla a `latest` es
           # pedir que un día cualquiera una versión nueva cambie una bandera y
           # el despliegue se caiga sin que nadie haya tocado nada — y ya pasó
           # aquí: la 3 deprecó `--project-ref` a favor de `--remote`.
-          CLI="npx --yes supabase@3"
+          CLI="npx --yes supabase@3.4.0"
           $CLI --version || { echo "No se pudo preparar la CLI de Supabase"; exit 1; }
 
           # Una por una, para que el registro diga cuál falló si falla alguna.
@@ -281,17 +286,19 @@ jobs:
           done
 
       - name: Subir a Hostinger por FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
+        uses: SamKirkland/FTP-Deploy-Action@110f9186c050f71550953127052e77650219c287 # v4.4.0
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           port: 21
-          # `ftp` es FTP a secas: la contraseña viaja sin cifrar. Hostinger
-          # admite FTPS explícito en este mismo puerto 21; en cuanto el primer
-          # despliegue funcione, cambiar esta línea a `ftps` es la mejora de
-          # seguridad más barata que tiene este archivo.
-          protocol: ftp
+          # FTPS explícito (auditoría 25-nov, hallazgo 3): usuario, contraseña
+          # y archivos viajan cifrados, en el mismo puerto 21. Hasta el 25-nov
+          # iba `ftp` a secas, con la contraseña legible en el camino. Si un
+          # despliegue falla aquí por el certificado o la conexión, volver a
+          # `ftp` es una línea; pero antes, mirar el error: Hostinger admite
+          # FTPS explícito en todas sus cuentas.
+          protocol: ftps
           # Solo el resultado del build. Al apuntar a dist/, el código fuente,
           # node_modules y .git quedan fuera por construcción, no por filtro.
           local-dir: ./dist/
@@ -389,41 +396,34 @@ jobs:
             esac
           fi
 
-          # ── Inventario de lo que hay REALMENTE en el servidor ──────────────
+          # ── El inventario del FTP ya NO es público (auditoría 25-nov) ─────
           #
           # El action de FTP deja en la raíz un .ftp-deploy-sync-state.json con
-          # la lista de lo que subió y cuándo. Es público y no tiene nada
-          # sensible —son las rutas de archivos que ya sirve la web—, y
-          # convierte «no aparece la cabecera» en un diagnóstico con fecha:
-          # dice si el despliegue vivo es este o uno anterior, y si el
-          # .htaccess llegó a entrar.
+          # la lista de todo lo que subió y cuándo. Hasta el 25-nov esta sonda
+          # lo leía desde la web, y por eso mismo lo podía leer cualquiera: un
+          # mapa del sitio servido en bandeja. Ahora public/.htaccess lo niega.
+          # El action no lo necesita por la web (lo lee por FTP), y lo que
+          # decía —qué subió y cuándo— ya está en el registro del paso de subida.
           #
-          # Se imprime SIEMPRE, salga verde o rojo: cuando sale verde no
-          # estorba, y cuando sale rojo es justo lo que hace falta.
-          estado=$(curl -sS --max-time 25 "$sitio/.ftp-deploy-sync-state.json" || true)
-          printf '%s' "$estado" | node -e '
-            let d = "";
-            process.stdin.on("data", (c) => (d += c)).on("end", () => {
-              try {
-                const j = JSON.parse(d);
-                /*
-                 * El inventario es un objeto indexado por numero ("0", "1", ...),
-                 * y el nombre del archivo esta en .name, NO en la clave. Leer las
-                 * claves daba "no esta el .htaccess" con el .htaccess puesto.
-                 */
-                const entradas = Object.values(j.data ?? j).filter((x) => x && x.type === "file");
-                const nombres = entradas.map((x) => x.name);
-                const conta = nombres.filter((n) => /Contabilidad|Rombicub/i.test(n)).length;
-                console.log("      Ultimo despliegue registrado : " + new Date(j.generatedTime).toISOString());
-                console.log("      Archivos subidos             : " + entradas.length);
-                console.log("      Esta el .htaccess?           : " + (nombres.includes(".htaccess") ? "si" : "NO"));
-                console.log("      Esta el index.html?          : " + (nombres.includes("index.html") ? "si" : "NO"));
-                if (conta) console.log("      Piezas de Contabilidad       : " + conta);
-              } catch {
-                console.log("      (no se pudo leer el inventario del servidor)");
-              }
-            });
-          ' || true
+          # Aquí solo se mira que siga cerrado. Es AVISO y no ROJO: si el
+          # servidor ignorara la regla, el sitio sigue sano; se corrige aparte.
+          inv=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 25 "$sitio/.ftp-deploy-sync-state.json" || true)
+          case "$inv" in
+            403|404) echo "OK    el inventario del FTP no se puede leer desde la web ($inv)" ;;
+            *)       echo "AVISO el inventario del FTP responde $inv desde la web: el .htaccess no lo está cerrando" ;;
+          esac
+
+          # ── Las protecciones del navegador llegan de verdad (auditoría 25-nov) ─
+          #
+          # Están escritas en public/.htaccess, pero nadie había comprobado que
+          # el servidor las mande. Mismo criterio: AVISO, no ROJO.
+          for cab in x-frame-options content-security-policy strict-transport-security x-content-type-options referrer-policy; do
+            if printf '%s' "$portada" | grep -qi "^$cab:"; then
+              echo "OK    la portada trae $cab"
+            else
+              echo "AVISO la portada NO trae $cab"
+            fi
+          done
 
           exit $fallo
 
