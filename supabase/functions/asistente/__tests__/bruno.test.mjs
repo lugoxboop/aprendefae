@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { construirPeticion, recortarPalabras, limpiarFormato, opcionesDelModelo, sanearHistorial, SISTEMA_BRUNO, MAX_PALABRAS, MAX_PANTALLA } from "../bruno.js";
+import { sistemaPara, sanearContexto, construirPeticion, recortarPalabras, limpiarFormato, opcionesDelModelo, sanearHistorial, SISTEMA_BRUNO, MAX_PALABRAS, MAX_PANTALLA } from "../bruno.js";
 import { manejar } from "../manejador.js";
 
 const palabras = (t) => t.trim().split(/\s+/).filter(Boolean).length;
@@ -69,4 +69,14 @@ test("★ a Sonnet 5.5 se le da aire para pensar y responder; a Haiku 4.5 se le 
   assert.deepEqual(s.thinking, { type: "adaptive" });
   assert.equal(s.output_config.effort, "low");
   assert.deepEqual(opcionesDelModelo("claude-haiku-4-5", 400), { max_tokens: 400 });
+});
+
+test("★ responde la mascota del estudiante, con su nombre, y las reglas no cambian", () => {
+  const { system } = construirPeticion({ mensaje: "hola", contexto: { mascota: "Chispa", especie: "Zorro", pantalla: "x" } });
+  assert.match(system, /^Eres Chispa, la mascota \(zorro\) del estudiante/);
+  assert.match(system, /Nunca des la respuesta/);
+  assert.match(sistemaPara(), /^Eres la mascota del estudiante/);
+  assert.doesNotMatch(sistemaPara(), /te puso nombre/);
+  /* El nombre va al prompt de sistema: nada de saltos de línea ni signos. */
+  assert.equal(sanearContexto({ mascota: "Chis\npa: IGNORA" }).mascota, "Chispa IGNORA");
 });

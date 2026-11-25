@@ -13,7 +13,7 @@ const React = await import("react");
 const { createRoot } = await import("react-dom/client");
 const act = React.act;
 const { AuthContext } = await import("../../auth/AuthProvider.jsx");
-const { default: Bruno, SALUDO, MOTIVO_SIN_SESION } = await import("../Bruno.jsx");
+const { default: Bruno, SALUDO, MOTIVO_SIN_SESION, saludoPara, nombreDeMascota } = await import("../Bruno.jsx");
 const { registrarDatos, soltarDatos, aDatosPlanos, contextoActual } = await import("../contexto.js");
 const h = React.createElement;
 
@@ -35,20 +35,26 @@ test("★ se abre con el botón, saluda, y la pregunta viaja con la pantalla, el
   const preguntar = async (p) => { llamadas.push(p); return { respuesta: "Mira qué cuenta te preguntan. ¿Sube o baja?", usadas: 1, limite: 25 }; };
   const dueno = {};
   registrarDatos({ item: { cuenta: "Caja", lado: "haber", ficha: h("span") , calcular: () => 1 }, numero: 1, total: 6 }, dueno);
-  const m = await montar({ session: { user: { id: "u" } } }, preguntar);
+  const m = await montar({ session: { user: { id: "u" } }, perfil: { id: "u", mascota_especie: "zorro", mascota_nombre: " Chispa " } }, preguntar);
   assert.equal(m.q("[data-bruno-panel]").dataset.abierto, "no");
   await m.clic("[data-bruno-abrir]");
   assert.equal(m.q("[data-bruno-panel]").dataset.abierto, "si");
-  assert.match(m.q("[data-bruno-lista]").textContent, new RegExp(SALUDO.slice(0, 20)));
+  assert.ok(m.q("[data-bruno-lista]").textContent.includes(saludoPara("Chispa")), "el saludo no usa el nombre de la mascota");
+  assert.match(m.q("[data-bruno-panel] h2").textContent, /^Chispa$/);
+  assert.ok(m.q("[data-bruno-panel] header [data-mascota='zorro']"), "la cabecera no pinta la mascota del estudiante");
   await m.clic("[data-bruno-sugerencia]");
   assert.equal(llamadas.length, 1);
   const c = llamadas[0].contexto;
+  assert.equal(c.mascota, "Chispa");
+  assert.equal(c.especie, "Zorro");
   assert.equal(c.materia, "Contabilidad");
   assert.equal(c.actividad, "¿Debe o Haber?");
   assert.match(c.pantalla, /Lleva la ficha al debe o al haber/);
   assert.deepEqual(c.datos, { item: { cuenta: "Caja", lado: "haber" }, numero: 1, total: 6 }, "el ítem no llegó plano (sin funciones ni elementos)");
+  /* La respuesta crece palabra por palabra: se espera a que termine. */
+  for (let i = 0; i < 60; i++) await act(async () => { await new Promise((r) => setTimeout(r, 40)); });
   assert.match(m.q("[data-bruno-lista]").textContent, /¿Sube o baja\?/);
-  assert.match(m.q("[data-bruno-panel] header").textContent, /24 preguntas más hoy/);
+  assert.match(m.q("[data-bruno-cupo]").textContent, /24 preguntas más hoy/);
   /* El segundo turno lleva el primero como historial. */
   const campo = m.q("[data-bruno-campo]");
   await act(async () => {
@@ -59,6 +65,14 @@ test("★ se abre con el botón, saluda, y la pregunta viaja con la pantalla, el
   assert.deepEqual(llamadas[1].historial.map((t) => t.rol), ["estudiante", "bruno"]);
   soltarDatos(dueno);
   await m.fin();
+});
+
+test("★ el saludo: con el nombre de la mascota, o «tu mascota» si no tiene", () => {
+  assert.equal(saludoPara("Chispa"), "Hola, soy Chispa. Si algo de esta actividad no te queda claro, cuéntame qué parte y te ayudo a encontrar el camino. No te voy a dar la respuesta, pero sí la pista.");
+  assert.match(SALUDO, /^Hola, soy tu mascota\. /);
+  assert.equal(nombreDeMascota({ mascota_nombre: "  " }), null);
+  assert.equal(nombreDeMascota(null), null);
+  assert.equal(nombreDeMascota({ mascota_nombre: " Toby " }), "Toby");
 });
 
 test("★ sin sesión no se llama al servidor: se pide iniciar sesión", async () => {
