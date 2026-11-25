@@ -2,13 +2,13 @@
 id: microvideo-ley-demanda
 titulo: Microvideo de prueba — La ley de la demanda (Macroeconomía)
 procedencia: encargo de Mateo, 2026-11-25; Jane
-estado: v2 en revisión de Mateo. NO publicado, no visible a estudiantes.
+estado: v5 en revisión de Mateo. NO publicado, no visible a estudiantes.
 ---
 
 # La ley de la demanda (prueba)
 
 - **Video:** no vive en el repo. Está en el almacenamiento del proyecto:
-  `/mnt/project-files/jane/microvideos/ley-demanda-v2.mp4` (1080 × 1920, 30 fps, 44 s, H.264 + AAC).
+  `/mnt/project-files/jane/microvideos/ley-demanda-v5.mp4` (1080 × 1920, 30 fps, 44 s, H.264 + AAC).
 - **Una idea:** si el precio sube, baja la cantidad demandada (ceteris
   paribus); y eso es moverse **sobre** la curva, no mover la curva.
 - **Fuente:** el material de Macro 2026 del profesor (fichas 1–5) no trae la
@@ -41,7 +41,7 @@ estado: v2 en revisión de Mateo. NO publicado, no visible a estudiantes.
 | 22,3 | Unimos los puntos: esa es la curva de demanda. Baja hacia la derecha. | El mercado se atenúa; la recta une los cuatro puntos, aparece «D», una flecha recorre la curva hacia abajo. |
 | 27,5 | Precio más alto, menor cantidad demandada, si todo lo demás sigue igual: la ley de la demanda. | El punto sube a $3.000: flecha ↑ en el precio, ← en la cantidad; rótulos «ceteris paribus» y «Ley de la demanda». |
 | 34,3 | Ojo, el precio no movió la curva. Nos movimos sobre ella. | La curva late en su sitio; el punto se desliza por ella de un extremo a otro. |
-| 38,5 | En la actividad, decides tú: ¿se mueve la curva, o te mueves sobre ella? | Vuelve el mercado completo; dos tarjetas: una curva que se desplaza / un punto que se mueve sobre la curva. |
+| 38,5 | En la actividad, decides tú: ¿se mueve la curva, o te mueves sobre ella? | Vuelve el mercado (los cuatro con su mango); dos tarjetas: una curva que se desplaza / un punto que se mueve sobre la curva. |
 
 Los tiempos salen del audio medido (`fuente/src/frases.json`), no de cálculo.
 
@@ -72,3 +72,18 @@ npx remotion render src/index.jsx LeyDemanda salida/ley-demanda.mp4 --codec=h264
 
 Herramientas: Remotion 4 (gratis para empresas de hasta 3 personas), voz
 Kokoro-82M (Apache-2.0, ver `../../voz-narrador.md`).
+
+## Verificación (otro agente, auditor independiente)
+
+| Versión | Veredicto | Qué falló |
+|---|---|---|
+| v2 | NO PASA | el mango del panda quedaba tapado por el gato: se veían 4 de 5 y 3 de 4 |
+| v3 | NO PASA | movido de lado, quedaba tapado por el zorro |
+| v4 | NO PASA | cambio de técnica (mangos en capa propia): el del perro tapaba la cara de la coneja |
+| v5 | **PASA** | conteo visible 5 · 3 · 1 · 4 a 320 y 375 px; sin cuadros negros ni saltos (máx. 2,2 de luminancia) |
+
+Menores aceptados: las etiquetas $2.000 / $1.500 / $1.000 quedan justas a 320 px;
+el punto de la gráfica se mueve después del letrero (causa → efecto, como lo narra la voz).
+
+**Lección:** en grupo con filas, los objetos que hay que contar van en una capa
+encima de todas las mascotas y, para las de atrás, sobre el pecho (lo único que se les ve).

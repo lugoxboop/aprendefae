@@ -87,17 +87,17 @@ const COMPRADORES = [
 const ESTADOS = {
   A: [[0, "dentro"], [T(0, 2), "atras"], [FIN(0) + 0.25, "dentro"], [T(3, 1), "fuera"], [T(4, 1), "dentro"]],
   B: [[0, "dentro"]],
-  C: [[0, "dentro"], [T(0, 2) + 0.1, "atras"], [FIN(0) + 0.25, "dentro"], [T(3, 1) + 0.12, "fuera"], [T(8), "dentro"]],
+  C: [[0, "dentro"], [T(0, 2) + 0.1, "atras"], [FIN(0) + 0.25, "dentro"], [T(3, 1) + 0.12, "fuera"]],
   D: [[0, "dentro"], [T(0, 2) + 0.05, "atras"], [FIN(0) + 0.25, "dentro"], [T(2, 1), "fuera"], [T(4, 1) + 0.1, "dentro"]],
   E: [[0, "dentro"], [T(0, 2) + 0.15, "atras"], [FIN(0) + 0.25, "dentro"], [T(2, 1) + 0.12, "fuera"], [T(4, 1) + 0.2, "dentro"]],
 };
 /* Mango en la pata: cuándo lo recibe y cuándo lo deja */
 const MANGOS = {
-  A: [[T(1, 1) + 0.2, 1], [T(3, 1), 0], [T(4, 2), 1], [T(8), 0]],
-  B: [[T(1, 1) + 0.45, 1], [T(8), 0]],
-  C: [[T(1, 1) + 0.7, 1], [T(3, 1) + 0.12, 0]],
-  D: [[T(1, 1) + 0.95, 1], [T(2, 1), 0], [T(4, 2) + 0.15, 1], [T(8), 0]],
-  E: [[T(1, 1) + 1.2, 1], [T(2, 1) + 0.12, 0], [T(4, 2) + 0.3, 1], [T(8), 0]],
+  A: [[T(1, 1) + 0.2, 1], [T(3, 1) - 0.32, 0], [T(4, 2), 1]],
+  B: [[T(1, 1) + 0.45, 1]],
+  C: [[T(1, 1) + 0.7, 1], [T(3, 1) - 0.2, 0]],
+  D: [[T(1, 1) + 0.95, 1], [T(2, 1) - 0.32, 0], [T(4, 2) + 0.15, 1]],
+  E: [[T(1, 1) + 1.2, 1], [T(2, 1) - 0.2, 0], [T(4, 2) + 0.3, 1]],
 };
 
 function tramo(lista, t) {
@@ -277,7 +277,7 @@ function Rotulo({ x, y, children, op = 1, chico = false }) {
   return (
     <div style={{
       position: "absolute", left: x, top: y, opacity: op,
-      fontFamily: "Inter", fontWeight: 600, fontSize: chico ? 34 : 40, color: INK,
+      fontFamily: "Inter", fontWeight: 600, fontSize: chico ? 38 : 40, color: INK,
       background: "rgba(14,27,46,.78)", border: `3px solid ${BORDE}`, borderRadius: 12, padding: "4px 18px",
       whiteSpace: "nowrap",
     }}>{children}</div>
@@ -320,14 +320,31 @@ function Mercado({ t }) {
             opacity: pos.op, transform: `rotate(${ladeo}deg)`, transformOrigin: "50% 100%",
           }}>
             <Marioneta esp={c.esp} alto={alto} t={t} semilla={n * 1.7} cab={cab} saltito={rebote} bi={saluda} />
-            {escMango > 0.01 && (
-              <div style={{
-                position: "absolute", left: ancho * 0.62, top: alto * 0.6 - rebote, width: 100, height: 100,
-                transform: `scale(${escMango * (alto / 430)})`, transformOrigin: "50% 50%",
-              }}>
-                <Mango size={100} giro={12} />
-              </div>
-            )}
+          </div>
+        );
+      })}
+      {/* Los mangos van en su propia capa, por encima de todas las mascotas:
+          así ninguno queda tapado y el conteo se ve siempre (5 · 3 · 1 · 4). */}
+      {orden.map((c) => {
+        const pos = posicion(c, t);
+        const alto = c.fila.alto * pos.esc;
+        const [, , vw, vh] = MASCOTAS[c.esp].viewBox.split(" ").map(Number);
+        const ancho = (alto * vw) / vh;
+        const rebote = pos.caminando ? Math.abs(Math.sin(pos.fase * 11)) * 22 : 0;
+        const m = tramo(MANGOS[c.id], t);
+        const tiene = m.k === 0 && t < MANGOS[c.id][0][0] ? 0 : m.actual;
+        const pm = clamp01((t - m.desde) / 0.3);
+        const escMango = t < MANGOS[c.id][0][0] ? 0 : tiene ? EASE(pm) * (1 + 0.25 * Math.sin(pm * Math.PI)) : 1 - EASE(pm);
+        if (escMango <= 0.01) return null;
+        /* los de atrás (panda y perro) lo sostienen sobre el pecho, que es lo que se les ve */
+        const [fx, fy] = c.id === "D" ? [0.37, 0.52] : c.id === "E" ? [0.36, 0.52] : [0.62, 0.6];
+        return (
+          <div key={"m" + c.id} style={{
+            position: "absolute", left: pos.x - ancho / 2 + ancho * fx, top: c.fila.base - alto + alto * fy - rebote,
+            width: 100, height: 100, opacity: pos.op,
+            transform: `scale(${escMango * (alto / 430)})`, transformOrigin: "50% 50%",
+          }}>
+            <Mango size={100} giro={12} />
           </div>
         );
       })}
@@ -522,7 +539,7 @@ function MiniGrafica({ modo, t, t0, activo }) {
 }
 
 function Cierre({ t }) {
-  const entra = prog(t, T(8) + 0.1, 0.5);
+  const entra = prog(t, T(8) + 0.45, 0.5);
   if (entra <= 0) return null;
   const izq = t >= T(8, 1) && t < T(8, 2) + 0.05;
   const der = t >= T(8, 2);
@@ -549,7 +566,7 @@ const CIFRAS = [
   [/mil quinientos/g, "$1.500"], [/tres mil pesos/g, "$3.000"], [/dos mil/g, "$2.000"], [/mil pesos/g, "$1.000"],
 ];
 const CORTES = {
-  "cinco compradores se llevan un mango cada uno.": ["Cinco compradores", "se llevan un mango cada uno."],
+  "cinco compradores se llevan un mango cada uno.": ["cinco compradores", "se llevan un mango cada uno."],
   "Si el mango sube, ¿lo queremos menos?": ["Si el mango sube,", "¿lo queremos menos?"],
 };
 function trozos() {
@@ -559,7 +576,7 @@ function trozos() {
     CIFRAS.forEach(([re, s]) => { txt = txt.replace(re, s); });
     const previo = j > 0 ? e.frases[j - 1].texto : ".";
     if (/[.?]$/.test(previo)) txt = txt.charAt(0).toUpperCase() + txt.slice(1);
-    if (txt.endsWith("?") && !txt.includes("¿")) txt = "¿" + txt;
+    if (txt.endsWith("?") && !txt.includes("¿") && !e.frases.slice(0, j).some((g) => g.texto.includes("¿"))) txt = "¿" + txt;
     const ini = INICIO[i] + f.ini, fin = INICIO[i] + f.fin;
     /* frases largas: en dos, cortadas por palabras, con el tiempo repartido por letras */
     const aMano = CORTES[f.texto];
