@@ -144,8 +144,27 @@ test("★ el cuerpo a medida ensancha el torso y crece la cabeza sin despegarla 
   const { PIEZAS } = await import("../marionetas-piezas.js");
   for (const { id } of ESPECIES) {
     const M = MARIONETAS[id], P = PIEZAS[id];
-    const gordo = svgMarioneta(id, { uid: "c", complexion: 2 }).inner;
-    assert.match(gordo, /scale\(1\.22 1\)/, `${id}: gordito ensancha el torso`);
+    /*
+     * 25-nov (falla grave): esta prueba solo buscaba «scale(1.22 1)» en el
+     * texto y pasaba mientras en pantalla el gordito crecía hacia la izquierda
+     * (el navegador escalaba desde la esquina del grupo, no desde su centro).
+     * Ahora mide dónde queda el torso: más ancho y con el MISMO centro.
+     */
+    const tn = M.torso[0], te = M.torso[3]?.escala || 1;
+    const centroTorso = M.torso[1] + (P.piezas[tn][0] * te) / 2;
+    for (const cpx of [-2, -1, 1, 2]) {
+      const svg = svgMarioneta(id, { uid: "c", complexion: cpx }).inner;
+      const m = svg.match(new RegExp(`<g class="mta-cuerpo"><g transform="translate\\(([\\d.-]+) [\\d.-]+\\)"><image href="[^"]*/${tn}(?:_p)?\\.webp" width="([\\d.]+)"`));
+      assert.ok(m, `${id} ${cpx}: el torso se pinta sin grupo escalado`);
+      const [x, w] = [+m[1], +m[2]];
+      assert.ok(Math.abs(x + w / 2 - centroTorso) < 0.6, `${id} ${cpx}: el torso crece desde su centro (${x + w / 2} vs ${centroTorso})`);
+      assert.ok(Math.abs(w - P.piezas[tn][0] * te * (1 + cpx * 0.11)) < 0.6, `${id} ${cpx}: el torso cambia de ancho`);
+      /* Ningún grupo de piezas escala desde una esquina desconocida: o es el
+         espejo de una pieza (origen en su 0,0) o lleva el origen fijo. */
+      for (const g of svg.match(/<g transform="translate[^"]*scale\([^"]*"[^>]*>/g) || []) {
+        assert.ok(/scale\(-1 1\)/.test(g) || g.includes("transform-origin:0 0"), `${id} ${cpx}: grupo escalado sin origen fijo: ${g}`);
+      }
+    }
     const { M: G } = marionetaAjustada(M, P, { cabeza: 2 });
     const [cw, ch] = P.piezas[M.cabeza.base[0]];
     const barbilla = (m) => m.cabeza.en[1] + ch * m.cabeza.en[2];
