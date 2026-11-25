@@ -229,22 +229,40 @@ $migracion$;
  * restricción fallaría al crearse si producción ya tiene algún duplicado, y
  * porque las actividades de renovación diaria sí tienen varias filas.
  */
+/*
+ * El ancla es de UNA línea y tolera espacios: el primer intento (multilínea)
+ * falló en producción el 25-nov —«registrar_fp cambió desde la 0036»— porque
+ * la función viva no tiene el mismo texto que el repositorio (hallazgo 5 del
+ * informe: producción y repositorio pueden diferir; p. ej. saltos de línea
+ * \r\n de cuando las migraciones se pegaban a mano en el editor de Supabase).
+ * Si aun así no aparece, el bloque NO se aplica y lo dice en el registro del
+ * despliegue, con el trozo de la función que sí encontró, en vez de tumbar
+ * el despliegue de todas las células.
+ */
 DO $migracion$
 DECLARE
-  v_def text;
-  v_ancla text := '  select count(*) into v_previas
-    from public.fp_history';
+  v_def   text;
+  v_patron text := 'select\s+count\(\*\)\s+into\s+v_previas';
+  v_n     integer;
 BEGIN
   SELECT pg_get_functiondef('public.registrar_fp(text, integer, numeric, jsonb)'::regprocedure) INTO v_def;
-  IF position(v_ancla in v_def) = 0 THEN
-    RAISE EXCEPTION 'registrar_fp cambió desde la 0036: revisar la 0176 a mano';
+  IF position('pg_advisory_xact_lock' in v_def) > 0 THEN
+    RAISE NOTICE '0176 bloque 6: registrar_fp ya tenía el cerrojo; nada que hacer';
+    RETURN;
   END IF;
-  v_def := replace(v_def, v_ancla,
-'  /* (0176) Un envío a la vez por estudiante y actividad. */
+  SELECT count(*) INTO v_n FROM regexp_matches(v_def, v_patron, 'gi');
+  IF v_n <> 1 THEN
+    RAISE NOTICE '0176 bloque 6: NO aplicado. El ancla aparece % veces. Alrededor de v_previas: %',
+      v_n, replace(substr(v_def, greatest(1, position('into v_previas' in v_def) - 120), 400), chr(13), '\r');
+    RETURN;
+  END IF;
+  v_def := regexp_replace(v_def, '(' || v_patron || ')',
+    '/* (0176) Un envío a la vez por estudiante y actividad. */
   perform pg_advisory_xact_lock(hashtext(''registrar_fp''), hashtext(v_uid::text || ''|'' || p_activity_id));
 
-' || v_ancla);
+  \1', 'i');
   EXECUTE v_def;
+  RAISE NOTICE '0176 bloque 6: cerrojo aplicado en registrar_fp';
 END
 $migracion$;
 
