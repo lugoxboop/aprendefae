@@ -1675,8 +1675,8 @@ function DesafioEnTarjeta({ especial, onAbrir, resaltado, marca, marcas }) {
  * QUE NO PISE NADA, MEDIDO. Al montar y al cambiar de ancho se mide cada caja
  * contra los nodos (con su aro), los rótulos, «Sigue aquí», la línea de
  * puntos y los bordes del lienzo. Si no cabe, ese nodo se queda sin mascota:
- * nunca se encoge por debajo de 120. La del nodo que toca va a 150 con su
- * globo; si a 150 no cabe, prueba a 120.
+ * nunca se encoge por debajo de 120. La del nodo que toca va a 150 (sin
+ * globo: Mateo lo pidió quitar el 24-nov); si a 150 no cabe, prueba a 120.
  *
  * DECORATIVAS. aria-hidden, sin foco y sin rótulo de rol (alt vacío): el
  * nodo sigue siendo lo único que se pulsa para jugar. Tocarlas solo las
@@ -1689,14 +1689,12 @@ function DesafioEnTarjeta({ especial, onAbrir, resaltado, marca, marcas }) {
  */
 const SEPARACION_MASCOTAS = 200;
 const MARGEN_Y_MASCOTAS = 112;
-/* Arriba, si el primer nodo es el que toca: su mascota va a 150 con globo. */
+/* Arriba, si el primer nodo es el que toca: su mascota va a 150. */
 const MARGEN_Y_MASCOTA_ACTUAL = 176;
 const AMPLITUD_MASCOTAS = 26;
 export const ALTO_MASCOTA = 120;
 export const ALTO_MASCOTA_ACTUAL = 150;
-export const GLOBO_MASCOTA = "¡Te toca!";
 const AIRE_NODO = 9;           // unidades del centro del nodo más allá del radio: su aro y su onda
-const GLOBO = { ancho: 84, alto: 26, aire: 6 };
 const SALTO = 12;              // px que sube como mucho al saltar
 const FLOTE = 3;               // px que sube al flotar
 
@@ -1727,7 +1725,7 @@ const seCruzan = (a, b) => a.l < b.r && b.l < a.r && a.t < b.b && b.t < a.b;
 /* Hasta dónde llega un nodo: su aro; el que toca, su onda (r + 4, crece a 1,5). */
 const alcanceNodo = (radio, actual) => (actual ? (radio + 4) * 1.5 : radio + AIRE_NODO);
 
-/* Las cajas (px) que ocupa una mascota de alto `alto` junto al nodo `i`, con su globo. */
+/* La caja (px) que ocupa una mascota de alto `alto` junto al nodo `i`. */
 export function cajasMascota({ x, y }, radio, fig, alto, k, actual, anchoPx) {
   const ancho = (alto * fig.w) / fig.h;
   const izquierda = x < ANCHO / 2;
@@ -1735,10 +1733,7 @@ export function cajasMascota({ x, y }, radio, fig, alto, k, actual, anchoPx) {
   const left = izquierda ? x * k - aire - ancho : x * k + aire;
   const top = y * k - alto / 2;
   const cuerpo = { l: left, t: top - (actual ? SALTO : FLOTE), r: left + ancho, b: top + alto };
-  if (!actual) return { left, top, ancho, cajas: [cuerpo] };
-  const gl = Math.max(0, Math.min(anchoPx - GLOBO.ancho, left + ancho / 2 - GLOBO.ancho / 2));
-  const globo = { l: gl, t: cuerpo.t - GLOBO.aire - GLOBO.alto, r: gl + GLOBO.ancho, b: cuerpo.t - GLOBO.aire };
-  return { left, top, ancho, globoX: gl - left, cajas: [cuerpo, globo] };
+  return { left, top, ancho, cajas: [cuerpo] };
 }
 
 const CSS_MASCOTAS = `
@@ -1763,21 +1758,8 @@ const CSS_MASCOTAS = `
   45% { transform: rotate(6deg); }
   70% { transform: rotate(-3deg); }
 }
-.fae-ch-globo {
-  position: absolute; width: ${GLOBO.ancho}px; height: ${GLOBO.alto}px; box-sizing: border-box;
-  display: flex; align-items: center; justify-content: center; white-space: nowrap;
-  border-radius: 13px; background: #F4F5F7; color: #0E1B2E;
-  font: 700 12px/1 Sora, sans-serif; letter-spacing: .02em;
-  box-shadow: 0 6px 14px -6px rgba(0,0,0,.6);
-  animation: fae-ch-globo-entra 400ms ease-out both;
-}
-.fae-ch-globo::after {
-  content: ""; position: absolute; left: 50%; bottom: -5px; width: 10px; height: 10px; margin-left: -5px;
-  background: inherit; transform: rotate(45deg); border-radius: 0 0 2px 0;
-}
-@keyframes fae-ch-globo-entra { from { opacity: 0; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) {
-  .fae-ch-masc-mueve, .fae-ch-masc-cuerpo.fae-ch-menea, .fae-ch-globo { animation: none !important; }
+  .fae-ch-masc-mueve, .fae-ch-masc-cuerpo.fae-ch-menea { animation: none !important; }
 }
 `;
 
@@ -1819,7 +1801,7 @@ function MascotasCamino({ nodos, p, m, anchoTotal, mascotas, sugerido }) {
           const c = cajasMascota(p[i], m.radio, mascotas[nodo.id], alto, k, actual, anchoPx);
           const dentro = c.cajas.every((b) => b.l >= 0 && b.r <= anchoPx && b.t >= 0 && b.b <= altoPx);
           if (dentro && !c.cajas.some((b) => obst.some((o) => seCruzan(b, o)))) {
-            res[nodo.id] = { alto, left: c.left, top: c.top, ancho: c.ancho, globoX: c.globoX };
+            res[nodo.id] = { alto, left: c.left, top: c.top, ancho: c.ancho };
             break;
           }
         }
@@ -1870,12 +1852,6 @@ function MascotasCamino({ nodos, p, m, anchoTotal, mascotas, sugerido }) {
           >
             <div className="fae-ch-masc-mueve" style={{ animationDelay: `-${((i * 0.83) % 2.6).toFixed(2)}s` }}>
               <img className="fae-ch-masc-cuerpo" src={fig.src} alt="" width={ancho} height={alto} loading={i >= 3 ? "lazy" : "eager"} decoding="async" draggable={false} />
-              {/* El globo salta con ella: va dentro de lo que se mueve. */}
-              {actual && sitio?.globoX !== undefined && (
-                <span className="fae-ch-globo" data-globo-mascota="" style={{ left: `${sitio.globoX.toFixed(1)}px`, top: `${-(GLOBO.aire + GLOBO.alto)}px` }}>
-                  {GLOBO_MASCOTA}
-                </span>
-              )}
             </div>
           </div>
         );
