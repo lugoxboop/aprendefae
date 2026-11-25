@@ -6,7 +6,8 @@ import {
 } from "../teseracto.js";
 
 /*
- * Las tres correcciones sobre el teseracto ya construido:
+ * Las tres correcciones sobre el teseracto ya construido (la 1 se adaptó el
+ * 25-nov, cuando la mascota con su llama reemplazó al teseracto en el momento):
  *   1. el trazo se ve —1,5 a 2,5 s por arista— y hay una pausa antes de encoger
  *   2. la tarjeta de la semana no se cierra sola
  *   3. las aristas se revelan en tres fases y cada cara nace con su cuarta arista
@@ -47,46 +48,24 @@ const avanzar = (ms) => act(() => { mock.timers.tick(ms); });
 
 /* ─────────────────────────── 1. el ritmo ─────────────────────────── */
 
-test("cada arista nueva se traza entre 1,5 y 2,5 s, una tras otra y sin solaparse", () => {
-  assert.ok(TIEMPOS.porArista >= 1500 && TIEMPOS.porArista <= 2500, `porArista = ${TIEMPOS.porArista}`);
-
-  for (const dia of [1, 7, 8, 15, 23, 30]) {
-    const lista = trazos(dia, { inicio: TIEMPOS.inicioTrazo, porArista: TIEMPOS.porArista });
-    assert.equal(lista.length, aristasNuevas(dia), `día ${dia}`);
-    let anterior = null;
-    for (const t of lista) {
-      const dura = t.hasta - t.desde;
-      assert.ok(dura >= 1500 && dura <= 2500, `día ${dia}: trazo de ${dura} ms`);
-      if (anterior) assert.ok(t.desde >= anterior, `día ${dia}: los dos trazos se pisan`);
-      anterior = t.hasta;
-    }
-  }
-  /* Los días de dos aristas se ven como dos trazos separados, no como uno. */
-  const dos = trazos(8, { inicio: TIEMPOS.inicioTrazo, porArista: TIEMPOS.porArista });
-  assert.equal(dos.length, 2);
-  assert.notDeepEqual(dos[0].arista, dos[1].arista);
-  assert.equal(dos[1].desde, dos[0].hasta, "el segundo empieza cuando termina el primero");
+/*
+ * 25-nov: el momento grande ya no traza aristas (lo protagoniza la mascota con
+ * su llama). Lo que se conserva de estas correcciones es el RITMO: que lo
+ * importante se alcance a ver antes de que llegue la tarjeta.
+ */
+test("el número cambia cuando la llama ya creció, y se deja ver antes de la tarjeta", () => {
+  assert.ok(TIEMPOS.cambioNumero >= TIEMPOS.crecer + 300, "la llama termina de crecer antes del cambio");
+  const visto = duracionEntrada(8) - TIEMPOS.cambioNumero;
+  assert.ok(visto >= 1500 && visto <= 2600, `el número nuevo se ve ${visto} ms antes de la tarjeta`);
+  assert.equal(duracionEntrada(8), duracionEntrada(23), "ya no depende del día");
 });
 
-test("tras el último trazo la figura se queda quieta 1 a 2 s antes de encoger", () => {
-  assert.ok(TIEMPOS.pausaTrasTrazo >= 1000 && TIEMPOS.pausaTrasTrazo <= 2000, `pausa = ${TIEMPOS.pausaTrasTrazo}`);
-
-  for (const dia of [7, 8]) {
-    const lista = trazos(dia, { inicio: TIEMPOS.inicioTrazo, porArista: TIEMPOS.porArista });
-    const finTrazo = lista[lista.length - 1].hasta;
-    const pausa = duracionEntrada(dia) - finTrazo;
-    assert.ok(pausa >= 1000 && pausa <= 2000, `día ${dia}: quedan ${pausa} ms de figura quieta`);
-  }
-
-  mock.timers.enable({ apis: ["setTimeout", "Date"] });
+test("la entrada no se corta antes de tiempo: sigue en entrada hasta el último milisegundo", () => {
+  mock.timers.enable({ apis: ["setTimeout"] });
   const m = montar();
   try {
-    /* Justo cuando acaba el trazo, la figura sigue grande: todavía no encoge. */
-    const finTrazo = TIEMPOS.inicioTrazo + 2 * TIEMPOS.porArista;
-    avanzar(finTrazo);
+    avanzar(duracionEntrada(8) - 1);
     assert.equal(m.fase(), "entrada");
-    avanzar(TIEMPOS.pausaTrasTrazo - 1);
-    assert.equal(m.fase(), "entrada", "la pausa entera con la figura completa a la vista");
     avanzar(1);
     assert.equal(m.fase(), "semana");
   } finally {
@@ -94,8 +73,6 @@ test("tras el último trazo la figura se queda quieta 1 a 2 s antes de encoger",
     mock.timers.reset();
   }
 });
-
-/* ─────────────────────────── 2. el cierre ─────────────────────────── */
 
 test("la tarjeta de la semana NO se cierra sola: ni en diez minutos ni en una hora", () => {
   mock.timers.enable({ apis: ["setTimeout", "Date"] });
