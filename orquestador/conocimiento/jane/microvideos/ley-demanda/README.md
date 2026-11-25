@@ -2,13 +2,18 @@
 id: microvideo-ley-demanda
 titulo: Microvideo de prueba — La ley de la demanda (Macroeconomía)
 procedencia: encargo de Mateo, 2026-11-25; Jane
-estado: aprobado por Mateo (25-nov, 13:12 Bogotá) con la voz em_alex; publicación pendiente de dónde alojar el video.
+estado: aprobado por Mateo (25-nov, 13:12 Bogotá) con la voz em_alex; publicado en Macro T1 como primer Aprender (da26-a0-ley-demanda), versión ligera en el sitio (decisión de Mateo, 25-nov).
 ---
 
 # La ley de la demanda (prueba)
 
 - **Video:** no vive en el repo. Está en el almacenamiento del proyecto:
   `/mnt/project-files/jane/microvideos/ley-demanda-v6-alex.mp4` (1080 × 1920, 30 fps, 44,7 s, H.264 + AAC).
+- **Publicado:** `public/macro2026/videos/ley-demanda.mp4` (copia ligera 720 × 1280,
+  crf 27, AAC 80k mono, faststart, 1,8 MB) + póster `ley-demanda-poster.webp`, en la
+  pieza `src/macro2026/demanda-agregada/A0LeyDemanda.jsx` (P1 video + transcripción,
+  P2 la curva quieta). Excepción aprobada a «videos fuera del repo». Verificada por
+  otro agente: PASA a 320 y 375 px (reproduce, sin scroll lateral, 292/292 pruebas).
 - **Una idea:** si el precio sube, baja la cantidad demandada (ceteris
   paribus); y eso es moverse **sobre** la curva, no mover la curva.
 - **Fuente:** el material de Macro 2026 del profesor (fichas 1–5) no trae la

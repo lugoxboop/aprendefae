@@ -52,7 +52,7 @@ function Transcripcion() {
 
 /* Los cuatro pares del video, sobre una sola recta: P = 3.500 − 500·Q. */
 const PUNTOS = [[5, 1000], [3, 2000], [1, 3000], [4, 1500]];
-const W = 320, H = 240, X0 = 52, X1 = 300, Y0 = 200, Y1 = 20;
+const W = 320, H = 240, X0 = 60, X1 = 300, Y0 = 200, Y1 = 20;
 const x = (q) => X0 + (q / 6.5) * (X1 - X0);
 const y = (p) => Y0 - (p / 3600) * (Y0 - Y1);
 const fmt = (p) => `$${p.toLocaleString("es-CO")}`;
@@ -63,13 +63,13 @@ function Curva() {
       aria-label="Curva de demanda con pendiente negativa: a $1.000 se compran 5 mangos, a $1.500 4, a $2.000 3 y a $3.000 1">
       <line x1={X0} y1={Y0} x2={X1} y2={Y0} stroke={BORDE} strokeWidth="2" />
       <line x1={X0} y1={Y0} x2={X0} y2={Y1} stroke={BORDE} strokeWidth="2" />
-      <text x={X1} y={Y0 + 30} textAnchor="end" fill={INK_2} fontSize="12">Cantidad demandada (Q)</text>
-      <text x={X0 - 4} y={Y1 - 6} textAnchor="start" fill={INK_2} fontSize="12">Precio (P)</text>
-      {[1000, 2000, 3000].map((p) => (
-        <text key={p} x={X0 - 6} y={y(p) + 4} textAnchor="end" fill={INK_2} fontSize="11">{fmt(p)}</text>
+      <text x={X1} y={Y0 + 30} textAnchor="end" fill={INK_2} fontSize="13">Cantidad demandada (Q)</text>
+      <text x={X0 - 4} y={Y1 - 6} textAnchor="start" fill={INK_2} fontSize="13">Precio (P)</text>
+      {[1000, 1500, 2000, 3000].map((p) => (
+        <text key={p} x={X0 - 6} y={y(p) + 4} textAnchor="end" fill={INK_2} fontSize="13">{fmt(p)}</text>
       ))}
       {[1, 3, 4, 5].map((q) => (
-        <text key={q} x={x(q)} y={Y0 + 15} textAnchor="middle" fill={INK_2} fontSize="11">{q}</text>
+        <text key={q} x={x(q)} y={Y0 + 15} textAnchor="middle" fill={INK_2} fontSize="13">{q}</text>
       ))}
       <line x1={x(0.4)} y1={y(3500 - 500 * 0.4)} x2={x(6.2)} y2={y(3500 - 500 * 6.2)} stroke={ACENTO} strokeWidth="4" strokeLinecap="round" />
       <text x={x(6.2) + 4} y={y(3500 - 500 * 6.2) - 6} fill={ACENTO} fontSize="15" fontWeight="700">D</text>
