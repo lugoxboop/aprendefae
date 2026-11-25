@@ -51,8 +51,10 @@ test("★ se abre con el botón, saluda, y la pregunta viaja con la pantalla, el
   assert.equal(c.actividad, "¿Debe o Haber?");
   assert.match(c.pantalla, /Lleva la ficha al debe o al haber/);
   assert.deepEqual(c.datos, { item: { cuenta: "Caja", lado: "haber" }, numero: 1, total: 6 }, "el ítem no llegó plano (sin funciones ni elementos)");
+  /* La respuesta crece palabra por palabra: se espera a que termine. */
+  for (let i = 0; i < 60; i++) await act(async () => { await new Promise((r) => setTimeout(r, 40)); });
   assert.match(m.q("[data-bruno-lista]").textContent, /¿Sube o baja\?/);
-  assert.match(m.q("[data-bruno-panel] header").textContent, /24 preguntas más hoy/);
+  assert.match(m.q("[data-bruno-cupo]").textContent, /24 preguntas más hoy/);
   /* El segundo turno lleva el primero como historial. */
   const campo = m.q("[data-bruno-campo]");
   await act(async () => {

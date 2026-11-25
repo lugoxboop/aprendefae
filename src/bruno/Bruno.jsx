@@ -65,7 +65,7 @@ export const MOTIVO_SIN_SESION = "Para hablar con tu mascota necesitas iniciar s
 const REVELADO_MS = 1100;
 
 const CSS = `
-.fae-bruno-panel { transform-origin: calc(100% - 28px) 100%; transform: translateY(16px) scale(.94); opacity: 0; pointer-events: none; transition: transform 360ms ${CURVA}, opacity 220ms ${CURVA}; }
+.fae-bruno-panel { transform-origin: calc(100% - 34px) calc(100% - 110px); transform: scale(.25); opacity: 0; pointer-events: none; transition: transform 460ms ${CURVA}, opacity 260ms ${CURVA}; }
 .fae-bruno-panel[data-abierto="si"] { transform: none; opacity: 1; pointer-events: auto; }
 .fae-bruno-panel, .fae-bruno-panel * { box-sizing: border-box; }
 .fae-bruno-boton { transition: transform 220ms ${CURVA}, opacity 200ms ${CURVA}; }
@@ -100,7 +100,7 @@ const CSS = `
 .fae-bruno-entra-propia { animation: fae-bruno-desde-derecha 300ms ${CURVA} both; }
 .fae-bruno-palabra { display: inline-block; animation: fae-bruno-palabra 260ms ${CURVA} both; }
 .fae-bruno-punto { display: inline-block; width: 6px; height: 6px; border-radius: 999px; background: ${APOYO}; animation: fae-bruno-punto 900ms ${CURVA} 12 both; }
-.fae-bruno-asoma { animation: fae-bruno-asoma 520ms ${CURVA} 80ms both; }
+.fae-bruno-asoma { animation: fae-bruno-asoma 640ms ${CURVA} 220ms both; }
 .fae-bruno-luz { animation: fae-bruno-luz 600ms ${CURVA} both; }
 
 @media (prefers-reduced-motion: reduce) {
@@ -108,7 +108,7 @@ const CSS = `
   .fae-bruno-entra, .fae-bruno-entra-propia, .fae-bruno-palabra, .fae-bruno-punto, .fae-bruno-asoma, .fae-bruno-luz { animation: none !important; }
 }
 .fae-bruno-escenario { width: 84px; height: 84px; }
-@media (max-width: 360px) { .fae-bruno-escenario { width: 68px; height: 68px; } }
+@media (max-width: 360px) { .fae-bruno-escenario { width: 68px; height: 68px; } .fae-bruno-boton { width: 52px !important; height: 52px !important; right: 10px !important; } }
 @media (min-width: 640px) { .fae-bruno-panel { left: auto !important; width: 400px; right: 16px !important; } }
 `;
 
@@ -152,9 +152,22 @@ export default function Bruno({ materia = "", tema = "", preguntar = preguntarAB
     const l = lista.current;
     if (!l?.scrollTo) return;
     const quieto = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
-    const destino = !turnos.length && !pensando ? 0 : pensando || !ultimo.current ? l.scrollHeight : Math.max(0, ultimo.current.offsetTop - 12);
-    l.scrollTo({ top: destino, behavior: quieto ? "auto" : "smooth" });
+    if (!turnos.length && !pensando) { l.scrollTo({ top: 0 }); return; }
+    /* Lo nuevo de la mascota crece palabra por palabra y seguir() lo acompaña: no se salta de golpe. */
+    if (!pensando && turnos[turnos.length - 1]?.rol === "bruno" && turnos[turnos.length - 1]?.nuevo && !quieto) return;
+    const destino = pensando || !ultimo.current ? l.scrollHeight : Math.max(0, ultimo.current.offsetTop - 12);
+    l.scrollTo({ top: Math.min(destino, l.scrollHeight - l.clientHeight), behavior: quieto ? "auto" : "smooth" });
   }, [turnos, pensando]);
+
+  /* Mientras la respuesta crece, la lista baja con ella hasta que su primera línea llega arriba. */
+  const seguir = () => {
+    const l = lista.current;
+    if (!l || !ultimo.current) return;
+    const tope = Math.max(0, ultimo.current.offsetTop - 12);
+    const abajo = l.scrollHeight - l.clientHeight;
+    const meta = Math.min(tope, abajo);
+    if (meta > l.scrollTop) l.scrollTop = meta;
+  };
 
   const abrir = () => { setAperturas((n) => n + 1); setAbierto(true); };
 
@@ -256,11 +269,6 @@ export default function Bruno({ materia = "", tema = "", preguntar = preguntarAB
             <p data-bruno-estado style={{ margin: "3px 0 0", fontSize: "12.5px", color: APOYO, lineHeight: 1.35 }}>
               {pensando ? "Pensando una pista…" : "Pistas, no respuestas"}
             </p>
-            {quedan !== null && (
-              <span data-bruno-cupo style={{ display: "inline-flex", alignItems: "center", gap: "5px", marginTop: "5px", padding: "2px 9px", borderRadius: "999px", background: "rgba(248,249,250,0.07)", border: "1px solid rgba(148,170,210,0.20)", color: APOYO, fontSize: "11px", fontWeight: 600, whiteSpace: "nowrap" }}>
-                {quedan} preguntas más hoy
-              </span>
-            )}
           </div>
           <button type="button" data-bruno-cerrar aria-label={`Cerrar a ${llamado}`} onClick={() => setAbierto(false)} className="fae-bruno-cerrar"
             style={{ alignSelf: "flex-start", width: "44px", height: "44px", borderRadius: "999px", border: "1px solid rgba(148,170,210,0.18)", background: "rgba(8,16,28,0.30)", color: APOYO, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flex: "none" }}>
@@ -284,11 +292,11 @@ export default function Bruno({ materia = "", tema = "", preguntar = preguntarAB
             <Saludo nombre={nombre} />
           </Turno>
           {turnos.length === 0 && (
-            <div key={`chips-${aperturas}`} style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "8px", paddingLeft: "40px" }}>
+            <div key={`chips-${aperturas}`} style={{ display: "flex", flexWrap: "wrap", gap: "8px", paddingLeft: "40px" }}>
               {SUGERENCIAS.map(({ texto: s, Icono }, k) => (
                 <span key={s} className="fae-bruno-entra" style={{ animationDelay: `${300 + k * 80}ms`, maxWidth: "100%" }}>
                   <button type="button" data-bruno-sugerencia onClick={() => enviar(s)} className="fae-bruno-chip"
-                    style={{ position: "relative", display: "inline-flex", alignItems: "center", gap: "9px", minHeight: "44px", maxWidth: "100%", padding: "0 16px 0 12px", borderRadius: "14px", border: "1px solid rgba(95,211,195,0.38)", background: "rgba(42,157,143,0.10)", color: BLANCO, fontSize: "13.5px", fontWeight: 600, textAlign: "left", cursor: "pointer" }}>
+                    style={{ position: "relative", display: "inline-flex", alignItems: "center", gap: "9px", minHeight: "44px", maxWidth: "100%", padding: "0 14px 0 11px", borderRadius: "14px", border: "1px solid rgba(95,211,195,0.38)", background: "rgba(42,157,143,0.10)", color: BLANCO, fontSize: "13px", fontWeight: 600, textAlign: "left", cursor: "pointer" }}>
                     <Icono size={17} strokeWidth={2.2} color={TEAL_CLARO} aria-hidden="true" style={{ flex: "none" }} />
                     {s}
                   </button>
@@ -297,7 +305,7 @@ export default function Bruno({ materia = "", tema = "", preguntar = preguntarAB
             </div>
           )}
           {turnos.map((t, k) => (
-            <Turno key={k} rol={t.rol} mascota={mascota} refe={k === turnos.length - 1 ? ultimo : null} revelar={t.nuevo && k === ultimoBruno}>{t.texto}</Turno>
+            <Turno key={k} rol={t.rol} mascota={mascota} refe={k === turnos.length - 1 ? ultimo : null} revelar={t.nuevo && k === ultimoBruno} alCrecer={seguir}>{t.texto}</Turno>
           ))}
           {pensando && (
             <div data-bruno-pensando aria-label={`${Llamado} está pensando`} className="fae-bruno-entra" style={{ display: "flex", alignItems: "flex-start", gap: "8px" }}>
@@ -332,9 +340,11 @@ export default function Bruno({ materia = "", tema = "", preguntar = preguntarAB
               <ArrowUp size={20} strokeWidth={2.4} aria-hidden="true" />
             </button>
           </div>
-          <p style={{ margin: "7px 0 0", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px", fontSize: "11px", color: DATO, textAlign: "center" }}>
+          <p style={{ margin: "7px 0 0", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px", fontSize: "11px", whiteSpace: "nowrap", overflow: "hidden", color: DATO, textAlign: "center" }}>
             <Lightbulb size={12} color={AMBAR} aria-hidden="true" style={{ flex: "none" }} />
-            Te da la pista, la respuesta la encuentras tú
+            {quedan === null
+              ? "Te da la pista, la respuesta la encuentras tú"
+              : <span data-bruno-cupo>Te da la pista · {quedan} preguntas más hoy</span>}
           </p>
         </form>
       </section>
@@ -362,20 +372,36 @@ function MiniMascota({ mascota }) {
   );
 }
 
-/* La respuesta nueva aparece palabra por palabra; el resto, de una. */
-function Palabras({ texto }) {
+/*
+ * La respuesta nueva aparece palabra por palabra y la burbuja CRECE con ella:
+ * las palabras se agregan de verdad (no se reserva el hueco), así no se ve una
+ * caja vacía que se llena. Con movimiento reducido, de una.
+ */
+function Palabras({ texto, alCrecer }) {
   const trozos = String(texto).split(/(\s+)/);
   const n = Math.max(1, trozos.filter((t) => t.trim()).length);
-  const paso = Math.min(28, REVELADO_MS / n);
+  const quieto = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+  const [vistas, setVistas] = useState(quieto ? n : 1);
+  useEffect(() => {
+    if (vistas >= n) return undefined;
+    const paso = Math.max(16, Math.min(34, REVELADO_MS / n));
+    const t = setTimeout(() => setVistas((v) => Math.min(n, v + 1)), paso);
+    return () => clearTimeout(t);
+  }, [vistas, n]);
+  useEffect(() => { alCrecer?.(); }, [vistas]); // eslint-disable-line react-hooks/exhaustive-deps
+  const salida = [];
   let i = 0;
-  return trozos.map((t, k) => {
-    if (!t.trim()) return t;
-    const retraso = Math.round(80 + paso * i++);
-    return <span key={k} className="fae-bruno-palabra" style={{ animationDelay: `${retraso}ms` }}>{t}</span>;
-  });
+  for (let k = 0; k < trozos.length; k++) {
+    const t = trozos[k];
+    if (!t.trim()) { if (i < vistas) salida.push(t); continue; }
+    if (i >= vistas) break;
+    salida.push(<span key={k} className={quieto ? undefined : "fae-bruno-palabra"}>{t}</span>);
+    i++;
+  }
+  return salida;
 }
 
-function Turno({ rol, children, mascota, refe = null, revelar = false, retraso = 0 }) {
+function Turno({ rol, children, mascota, refe = null, revelar = false, retraso = 0, alCrecer = null }) {
   const propia = rol === "estudiante";
   const aviso = rol === "aviso";
   const burbuja = (
@@ -393,7 +419,7 @@ function Turno({ rol, children, mascota, refe = null, revelar = false, retraso =
         color: BLANCO, animationDelay: propia && retraso ? `${retraso}ms` : undefined,
       }}
     >
-      {revelar ? <Palabras texto={children} /> : children}
+      {revelar ? <Palabras texto={children} alCrecer={alCrecer} /> : children}
     </p>
   );
   if (propia) return burbuja;
