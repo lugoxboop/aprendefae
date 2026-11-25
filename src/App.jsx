@@ -53,6 +53,7 @@ const VivoProfesor = lazy(() => import("./components/vivo/VivoProfesor.jsx"));
 const VistaPreviaMacro2026 = lazy(() => import("./macro2026/VistaPrevia.jsx"));
 /* Macroeconomía 2026, lo publicado de cada tema: solo las piezas de PUBLICADAS_T1 / PUBLICADAS_T2. */
 const TemaMacro2026 = lazy(() => import("./macro2026/TemaMacro2026.jsx"));
+const RepasoMacroView = lazy(() => import("./macro2026/repaso/RepasoMacroView.jsx"));
 
 /*
  * ═══════════ QUÉ VISTAS LLEVAN TÍTULO EN LA CABECERA ═══════════
@@ -99,6 +100,7 @@ const VISTAS_CON_TITULO = new Set([
   "inventarios-descuentos-nic2",
   "repaso-capitulo-5",
   "repaso-diario-contabilidad",
+  "repaso-diario-macro",
 ]);
 
 export default function App() {
@@ -370,6 +372,15 @@ export default function App() {
     return wrap(
       <Suspense fallback={siteFallback}>
         <RepasoView idRepaso="repaso-diario-contabilidad" onBack={() => setView("contabilidad")} />
+      </Suspense>
+    );
+  }
+
+  /* El Repaso Diario de Macro 2026: el mismo motor, con la ronda del economista (src/macro2026/repaso/). */
+  if (view === "repaso-diario-macro") {
+    return wrap(
+      <Suspense fallback={siteFallback}>
+        <RepasoMacroView onBack={() => setView("macroeconomia")} />
       </Suspense>
     );
   }

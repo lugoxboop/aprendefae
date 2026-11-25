@@ -28,6 +28,12 @@ import { Raiz, Boton } from "./comun/ui.jsx";
 import CierreAprender from "./comun/CierreAprender.jsx";
 import { INK, INK_2, BORDE } from "./comun/colores-da.js";
 import FondoPagina, { ESCENA_DE_TEMA } from "./comun/FondoPagina.jsx";
+import { azarDeLaPagina } from "./comun/azar.js";
+import { armarRonda } from "./repaso/ronda.js";
+
+/* El Repaso Diario de Macro 2026 (diseño de Gen, 24-nov): #/macro-2026/repaso. */
+const RepasoMacro = lazy(() => import("./repaso/RepasoMacro.jsx"));
+export const ID_REPASO_PREVIA = "repaso";
 
 const COMPONENTES = {
   "da26-a1-carrito": lazy(() => import("./demanda-agregada/A1Carrito.jsx")),
@@ -127,6 +133,9 @@ function Indice() {
   return (
     <div className="da26-tarjeta" data-indice-previa>
       <p className="da26-rotulo da26-mono" style={{ margin: 0 }}>VISTA PREVIA · NO PUBLICADO</p>
+      <button type="button" className="da26-boton" data-abrir="repaso" onClick={() => ir(ID_REPASO_PREVIA)} style={{ width: "100%", margin: "10px 0 4px", borderRadius: 12, textAlign: "left" }}>
+        Repaso diario · la ronda del economista (sin publicar)
+      </button>
       <p style={{ margin: "6px 0 4px", color: INK_2, fontSize: 14 }}>Macroeconomía 2026. Las piezas de cada tema en el orden del camino.</p>
       {TEMAS.map((t) => (
         <section key={t.id} data-tema-previa={t.id}>
@@ -146,6 +155,28 @@ function Indice() {
         </section>
       ))}
     </div>
+  );
+}
+
+/* La ronda del repaso, sin servidor: historial vacío, datos nuevos en cada ronda. */
+function RepasoPrevia() {
+  const [n, setN] = useState(0);
+  const consultas = useMemo(() => {
+    /* Con ?semilla=N (videos), cada «Otra ronda» avanza el azar: nunca repite. */
+    const rng = azarDeLaPagina();
+    for (let k = 0; k < n * 97; k += 1) rng();
+    return armarRonda({ rng });
+  }, [n]);
+  return (
+    <>
+      <div style={{ display: "flex", justifyContent: "space-between", gap: 8, alignItems: "center", maxWidth: 640, margin: "0 auto 12px" }}>
+        <Boton onClick={() => ir(null)} data-volver-previa>‹ Las piezas</Boton>
+        <span className="da26-rotulo da26-mono">VISTA PREVIA · REPASO</span>
+      </div>
+      <Suspense fallback={<div className="da26-tarjeta" style={{ minHeight: 320 }} />}>
+        <RepasoMacro key={n} consultas={consultas} onOtra={() => setN((k) => k + 1)} textoOtra="Otra ronda" />
+      </Suspense>
+    </>
   );
 }
 
@@ -208,7 +239,7 @@ export default function VistaPrevia({ extra = null, onBack }) {
               <Boton onClick={onBack}>‹ Inicio</Boton>
             </div>
           )}
-          {id ? <Pieza key={id} id={id} /> : <Indice />}
+          {id === ID_REPASO_PREVIA ? <RepasoPrevia /> : id ? <Pieza key={id} id={id} /> : <Indice />}
           <p style={{ maxWidth: 640, margin: "16px auto 0", fontSize: 12, color: INK_2, borderTop: `1px solid ${BORDE}`, paddingTop: 10 }}>
             Esta página no está enlazada desde el sitio. No guarda FP ni datos.
           </p>

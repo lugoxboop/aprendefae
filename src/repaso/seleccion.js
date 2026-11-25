@@ -202,12 +202,11 @@ export const semillaDelDia = (usuarioId, ahora, repaso) =>
  *   `temas` son los ids de tema de la mezcla, en el orden del pool.
  */
 export function vistaPreviaDelDia({ hechas, historial, ahora = new Date(), usuarioId = null, repaso }) {
-  const { items, topeRelajado } = seleccionarRepaso({
-    pool: poolDel(repaso, hechas),
-    historial,
-    ahora,
-    mezclar: barajadorDe(semillaDelDia(usuarioId, ahora, repaso)),
-  });
+  const mezclar = barajadorDe(semillaDelDia(usuarioId, ahora, repaso));
+  const sorteo = seleccionarRepaso({ pool: poolDel(repaso, hechas), historial, ahora, mezclar });
+  const { topeRelajado } = sorteo;
+  /* El ajuste propio de un repaso (repasos.js), con el mismo barajado: sigue siendo la misma tirada. */
+  const items = repaso.ajustar ? repaso.ajustar(sorteo.items, { historial, ahora, mezclar }) : sorteo.items;
   const presentes = new Set(items.map((x) => x.materia));
   return {
     items,

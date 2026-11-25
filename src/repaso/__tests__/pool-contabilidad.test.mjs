@@ -25,13 +25,14 @@ import { estadoRepaso, actividadesDelPool, faltanActividades, semillaDelDia, uni
 const CONTA = REPASOS[ID_REPASO_CONTABILIDAD];
 const hacerDe = (temaId) => actividadesDeTipo(SUBJECTS.contabilidad.topics.find((t) => t.id === temaId), HACER).map((a) => a.id);
 
-test("★ sin decir cuál, el motor no adivina: el de Macro ya no existe", () => {
+test("★ sin decir cuál, el motor no adivina: el de Macro viejo ya no existe", () => {
   /*
    * Hasta el 22-nov-2026 el repaso por defecto era el de Macro. Se retiró con
    * la materia (0258), y un motor que cayera a otro en silencio le daría a un
    * estudiante el repaso equivocado: mejor que falle al desarrollar.
    */
-  assert.deepEqual(Object.keys(REPASOS), [ID_REPASO_CONTABILIDAD]);
+  /* El Macro 2026 tiene id propio (25-nov-2026); el viejo sigue sin repaso. */
+  assert.deepEqual(Object.keys(REPASOS), [ID_REPASO_CONTABILIDAD, "repaso-diario-macro"]);
   assert.equal(repasoDe(ID_REPASO_CONTABILIDAD), CONTA);
   assert.throws(() => repasoDe(), /Repaso desconocido/);
   assert.throws(() => repasoDe("repaso-diario"), /Repaso desconocido/);

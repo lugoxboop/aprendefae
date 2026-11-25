@@ -51,11 +51,12 @@ select set_config('request.jwt.claims',
                   true);
 
 -- ── 1. La marca existe y solo la lleva el Repaso ───────────────────────────
--- Desde la 0152 son dos: el de Macro y el de Contabilidad, y ninguna más.
-insert into res select 1, 'renovable_diario solo en los dos Repasos', 'repaso-diario, repaso-diario-contabilidad',
+-- Desde la 0152 son dos: el de Macro y el de Contabilidad. Desde la 0275, tres:
+-- el Macro 2026 entra con id propio (el viejo es lápida y conserva su marca).
+insert into res select 1, 'renovable_diario solo en los tres Repasos', 'repaso-diario, repaso-diario-contabilidad, repaso-diario-macro',
   coalesce((select string_agg(activity_id, ', ' order by activity_id)
               from public.actividad_catalogo where renovable_diario), 'ninguna'),
-  (select coalesce(array_agg(activity_id order by activity_id), '{}') = array['repaso-diario', 'repaso-diario-contabilidad']
+  (select coalesce(array_agg(activity_id order by activity_id), '{}') = array['repaso-diario', 'repaso-diario-contabilidad', 'repaso-diario-macro']
      from public.actividad_catalogo where renovable_diario);
 
 -- ── 2. La fila del catálogo ────────────────────────────────────────────────
