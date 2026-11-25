@@ -28,6 +28,7 @@
 - 2026-11-22 ~18:40 — Fichas (5), mapa y diseños de los 5 temas listos (59 piezas, `macro-2026/disenos/`). Construcción: T1 en curso; T2–T5 en cola, uno tras otro sobre la rama del anterior (reusan `src/macro2026/comun/`). Retiro de lo viejo listo aparte; sale el día que Mateo apruebe el primer lote.
 
 ## Decisiones tomadas y por qué
+- 2026-11-25 — Reparto: hago SOLO las actividades (los Hacer). Los Aprender, las animaciones y los microvideos pasan a [[jane]]. Me coordino con Jane para que el Aprender y el Hacer de cada tema se conecten (mismo contexto y personajes). Debo entregarle a Jane, por escrito en el repo, lo que llevo de Aprender (diagnóstico, diseños y avances).
 - Lo viejo de Macro se retira (lápida), no se borra; sale junto con el primer lote aprobado (Mateo, 22-nov).
 - Errores del material se corrigen en el diseño y se listan en `macro-2026/mapa.md`.
 
