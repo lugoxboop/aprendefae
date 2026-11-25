@@ -9,8 +9,9 @@
 - Antes de abrir nada: primero `orquestador/INDICE.md`, luego el buscador del canon (regla k).
 
 ## En qué estoy ahora
+- 2026-11-25 12:53 — Racha con la mascota (pedido de Mateo): el momento de racha ya no es el teseracto del piloto; sale la mascota del estudiante feliz delante de una llama redonda viva, el número sube de ayer a hoy y la semana va en llamitas. La llama pequeña (ficha de cuenta y Repaso) también pasa a redonda. Conteo y disparo intactos. Video 320/375 + verificador: PASA. PR abierto, espera visto bueno de Mateo.
 - 2026-11-20 17:05 — Salas de entrenamiento + duelo 1 vs 1 (pedido de Mateo): lobby estilo juego con mascotas, el creador elige tema y arranca, partida de preguntas que avanza sola, podio. Migración 0172 (tablas entreno_*, aparte de la Clase en vivo). Los amigos de demostración juegan como bots en la sala de su dueño. PR #714 fusionado y desplegado ~17:50 con el visto bueno de Mateo.
-- 2026-11-20 17:59 — Emotes en las salas (pedido de Mateo): botón Emotes en el lobby y el podio, bandeja con los 12 festejos que ya tiene la mascota (FESTEJOS de marionetas.js, nada dibujado nuevo), burbuja con el emoji 5 s, se ve en todos los celulares por la base. Los bots también hacen emotes. Migración 0173. Sonda scripts/entreno/emotes.mjs 21/21. Espera aprobación de Mateo para publicar.
+- 2026-11-20 17:59 — Emotes en las salas: 12 festejos de la mascota en lobby y podio. Migración 0173. Fusionado (#716) con aprobación de Mateo.
 - 2026-11-20 12:52 — Fondo vivo en 6 pantallas planas. Fusionado y desplegado (#712).
 - 2026-11-20 10:00 — Amigos en el inicio: fila de mascotas, sugerencias, 11 amigos de demostración (0170). Fusionado y desplegado (#709).
 - 2026-11-18 17:54 — Auditoría de navegación (pedida por Mateo): X del menú muerta, sin botón visible a Inicio en las materias, «Salir» de Clase en vivo tapado en celular, Tienda en blanco al entrar directo. Fusionado (#697).
@@ -22,6 +23,7 @@
 - 
 
 ## Lo que aprendí que no hay que repetir
+- 2026-11-25 — Banco de video de un componente: página Vite en scripts/<tema>/capturas/ que monta el componente real; grabar con Playwright, recortar el calentamiento con ffmpeg y sacar hojas de contacto a 8 fps para el verificador. Una transición CSS puesta desde el primer cuadro anima la medida inicial (el bloque «bajaba» al abrir): ponerla solo cuando hace falta.
 - Los amigos de demostración NO son cuentas (tabla aparte): así no salen en ranking, ligas, panel docente ni búsqueda. Sembrar cuentas falsas en auth.users ensuciaría todo eso.
 - Las migraciones no llevan begin/commit: el despliegue las aplica con psql -1.
 - Para probar una pantalla con la base DE VERDAD sin Supabase: Postgres local con todas las migraciones y un puente que ejecuta cada rpc/<fn> del navegador como el usuario (scripts/entreno/partida.mjs). Prueba la lógica real, no respuestas inventadas.
