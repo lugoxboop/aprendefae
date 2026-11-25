@@ -152,6 +152,8 @@ test("H3: el cambio de cada suceso desplaza o gira en el sentido de la respuesta
 
 test("Aprender: ≤ 20 palabras por pantalla, y el conteo coincide con el del diseño (§4)", () => {
   const disenio = {
+    /* A0: el microvideo de Jane (25-nov-2026), fuera de la spec de Gen. */
+    "da26-a0-ley-demanda": [14, 16],
     "da26-a1-carrito": [15, 9, 14, 12],
     "da26-a2-vaso-renta": [7, 15, 15, 13, 15, 7],
     "da26-a3-columpio-tasa": [12, 9, 15, 15],
@@ -301,7 +303,8 @@ test("publicación por pieza: subjects.js y supabase/migrations llevan exactamen
   }
   /* Publicar las Aprender no exige ninguna Hacer: el interruptor es por pieza. */
   const soloAprender = PIEZAS_T1.filter((p) => p.tipo === "aprender");
-  assert.equal(soloAprender.length, 6);
+  /* Seis de la spec de Gen + A0, el microvideo de Jane (25-nov-2026). */
+  assert.equal(soloAprender.length, 7);
   assert.ok(soloAprender.every((p) => !p.clasificacion), "las Aprender no tienen clasificación de FP");
   assert.ok(VISTAS.has("macro-2026"), "la vista previa existe por dirección");
   /*

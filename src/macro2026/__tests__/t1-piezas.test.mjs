@@ -37,6 +37,7 @@ const { PIEZAS_T1 } = await import("../demanda-agregada/catalogo.js");
 const { partidaDePrevia } = await import("../VistaPrevia.jsx");
 
 const MODULOS = {
+  "da26-a0-ley-demanda": "A0LeyDemanda",
   "da26-a1-carrito": "A1Carrito", "da26-h1-llena-carrito": "H1LlenaCarrito", "da26-a2-vaso-renta": "A2VasoRenta",
   "da26-a3-columpio-tasa": "A3ColumpioTasa", "da26-a4-no-miran-renta": "A4NoMiranRenta", "da26-h4-empresario": "H4Empresario",
   "da26-a5-bisagra-ascensor": "A5BisagraAscensor", "da26-h3-gira-o-sube": "H3GiraOSube", "da26-a6-eco-multiplicador": "A6EcoMultiplicador",
