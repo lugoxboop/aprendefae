@@ -929,7 +929,7 @@ const ALIAS = { "camara-presion-experto": "Cámara de presión · modo experto" 
  * EL REPASO DIARIO DE MACRO (`repaso-diario`, 0033) SALIÓ EL 22-NOV-2026 con
  * todo Macroeconomía: su pool eran los juegos retirados y se quedó sin un solo
  * ítem. Su fila es lápida desde la 0258 y su nombre está en retiradas.js. El
- * Macro nuevo, cuando tenga pool, entra con un id nuevo.
+ * Macro nuevo entró el 25-nov-2026 con id nuevo: `repaso-diario-macro`.
  */
 export const ACTIVIDADES_TRANSVERSALES = [
   /*
@@ -956,6 +956,22 @@ export const ACTIVIDADES_TRANSVERSALES = [
     materiaId: "contabilidad",
     temaId: "repaso-diario-contabilidad",
     indice: "contabilidad",
+    clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 60, renovableDiario: true },
+  },
+  /*
+   * El Repaso Diario de Macroeconomía 2026, «la ronda del economista» (orden
+   * de Mateo del 24-nov-2026; visto bueno el 25-nov). Id nuevo porque el viejo
+   * es lápida. Diez consultas de los cinco temas; las cifras cambian en cada
+   * intento (src/macro2026/repaso/). Misma clasificación que el de
+   * Contabilidad: 60 FP × % de aciertos, renovable cada día. Su fila del
+   * servidor es la migración 0275.
+   */
+  {
+    id: "repaso-diario-macro",
+    nombre: "El Repaso Diario",
+    materiaId: "macroeconomia",
+    temaId: "repaso-diario-macro",
+    indice: "macroeconomia",
     clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 60, renovableDiario: true },
   },
 ];

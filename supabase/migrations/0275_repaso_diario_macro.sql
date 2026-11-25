@@ -1,7 +1,6 @@
 -- ---------------------------------------------------------------------------
--- (PENDIENTE: se numera y pasa a supabase/migrations/ SOLO cuando Mateo
--- apruebe el Repaso Diario de Macro 2026. El número es el siguiente libre del
--- rango 0250-0299 de nocturno.md; hoy sería la 0275.)
+-- 0275 · Publicada el 25-nov-2026 con el visto bueno de Mateo. Esperó en
+-- supabase/macro2026-pendientes/ mientras el repaso estaba en vista previa.
 --
 -- EL REPASO DIARIO DE MACROECONOMÍA 2026 («la ronda del economista»)
 --

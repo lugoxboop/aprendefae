@@ -84,8 +84,9 @@ test("Contabilidad: el banner va encima de la rejilla de temas y fuera de ella",
   }
 });
 
-test("Macroeconomía, retirada, ya no tiene banner: su Repaso salió con la materia", () => {
-  assert.equal(ACTIVIDADES_TRANSVERSALES.filter((a) => a.indice === "macroeconomia").length, 0);
+test("Macroeconomía tiene un solo banner, el del Repaso nuevo: el viejo salió con la materia", () => {
+  /* El de 2025 («repaso-diario») es lápida desde la 0258; el de 2026 entró el 25-nov con id propio. */
+  assert.deepEqual(ACTIVIDADES_TRANSVERSALES.filter((a) => a.indice === "macroeconomia").map((a) => a.id), ["repaso-diario-macro"]);
 });
 
 test("es por materia: Pensamiento Estratégico no tiene banner ni hueco para uno", () => {

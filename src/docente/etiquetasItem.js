@@ -49,6 +49,7 @@ import { SALDO_DE_LA_CUENTA, SIMPLE_O_COMPUESTO, ARMA_EL_ASIENTO, ASIENTO_COMPUE
 import { transaccionDe } from "../components/mecanicas/libros/ArmaElAsiento.jsx";
 import { transaccionDe as transaccionCompuesta } from "../components/mecanicas/libros/ElAsientoCompuesto.jsx";
 import { REGLAS_MACRO2026 } from "../macro2026/etiquetas.js";
+import { ETIQUETA_PLANTILLA } from "../macro2026/repaso/pool.js";
 import { LAVADO_DE_AUTOS, CALEJA, pesos as pesosContables } from "../data/contabilidad.js";
 import { BALANCES as BALANCES_DE_A2, cuentaHistorica } from "../contabilidad/armaElBalance.js";
 import { FILAS as FILAS_DE_A3 } from "../contabilidad/cuadroDinamicas.js";
@@ -861,6 +862,13 @@ REGLAS["repaso-diario"] = (id) => {
 
 /* El de Contabilidad (0152) guarda su detalle igual: la misma lectura. */
 REGLAS["repaso-diario-contabilidad"] = REGLAS["repaso-diario"];
+
+/*
+ * El de Macro 2026 (0275) es distinto: cada ítem es una plantilla cuyas cifras
+ * cambian en cada intento, y se guarda solo con su id (`rd-da-curva`). La
+ * etiqueta nombra la situación (pool.js · ETIQUETA_PLANTILLA).
+ */
+REGLAS["repaso-diario-macro"] = (id) => ETIQUETA_PLANTILLA[String(id)] ?? null;
 
 function pareja(memorama, id) {
   const p = MEMORAMAS[memorama].pares.find((x) => x.id === id);

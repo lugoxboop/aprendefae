@@ -212,3 +212,37 @@ test("montada: una respuesta mala muestra su retro propia en coral", async () =>
   assert.ok(div.querySelector('[data-res="mal"]'));
   await act(async () => root.unmount());
 });
+
+/* ── Publicado (25-nov-2026): el motor, el banner y la partida usan la misma tirada ── */
+const { REPASOS, poolDel } = await import("../../repaso/repasos.js");
+const { vistaPreviaDelDia, estadoRepaso } = await import("../../repaso/seleccion.js");
+const { ACTIVIDADES_TRANSVERSALES } = await import("../../data/subjects.js");
+const { consultasDe } = await import("../repaso/ronda.js");
+
+test("publicado: catálogo con 60 FP renovables y el pool entero desde el desbloqueo", () => {
+  const a = ACTIVIDADES_TRANSVERSALES.find((x) => x.id === "repaso-diario-macro");
+  assert.equal(a.indice, "macroeconomia");
+  assert.deepEqual(a.clasificacion, { tipo: a.clasificacion.tipo, modalidad: "evaluativa", dificultad: "medio", fpBase: 60, renovableDiario: true });
+  const r = REPASOS["repaso-diario-macro"];
+  const tres = new Set(["da26-h1-llena-carrito", "pe26-h3-cables", "pf26-h3-factura"]);
+  assert.equal(poolDel(r, tres).length, 14);
+  assert.equal(estadoRepaso({ hechas: new Set(["da26-h1-llena-carrito"]), hechoHoy: false }, r), "pocas-actividades");
+  assert.equal(estadoRepaso({ hechas: tres, hechoHoy: false }, r), "listo");
+  assert.equal(estadoRepaso({ hechas: tres, hechoHoy: true }, r), "hecho-hoy");
+});
+
+test("publicado: la tirada del banner trae los cinco temas y es la misma en cada llamada", () => {
+  const r = REPASOS["repaso-diario-macro"];
+  const hechas = new Set(["da26-h1-llena-carrito", "pe26-h3-cables", "pf26-h3-factura"]);
+  const ahora = new Date("2026-11-25T15:00:00Z");
+  for (const u of ["u1", "u2", "u3", null]) {
+    const a = vistaPreviaDelDia({ hechas, historial: new Map(), ahora, usuarioId: u, repaso: r });
+    const b = vistaPreviaDelDia({ hechas, historial: new Map(), ahora, usuarioId: u, repaso: r });
+    assert.equal(a.cuantos, 10);
+    assert.equal(a.temas.length, 5, `cinco temas para ${u}`);
+    assert.deepEqual(a.items.map((x) => x.clave), b.items.map((x) => x.clave));
+    assert.equal(new Set(a.items.map((x) => x.clave)).size, 10);
+    const c = consultasDe(a.items);
+    assert.deepEqual(c.map((x) => x.clave).sort(), a.items.map((x) => x.clave).sort());
+  }
+});

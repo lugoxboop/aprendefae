@@ -56,4 +56,4 @@
 - [x] Diseño «la ronda del economista» (14 plantillas, datos que cambian) → `disenos/repaso-diario.md`
 - [x] Construcción en vista previa (`#/macro-2026/repaso`, sin servidor) · `src/macro2026/repaso/`
 - [x] Video a 320 y 375 px para Mateo
-- [ ] Visto bueno de Mateo → publicar (pasos al final del diseño; migración en `supabase/macro2026-pendientes/`)
+- [x] Visto bueno de Mateo → publicado el 25-nov-2026 (migración 0275; ver «Cómo quedó publicado» en el diseño)

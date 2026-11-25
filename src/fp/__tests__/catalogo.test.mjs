@@ -263,6 +263,6 @@ test("renovable a diario: las mismas en el cliente y en el servidor, y solo los 
   assert.deepEqual(vivas.sort(), [...cliente].sort());
   assert.ok(renovablesDelServidor().has("repaso-diario") && retiradas.has("repaso-diario"),
     "el Repaso de Macro tiene que seguir marcado y retirado en el servidor");
-  /* El Repaso Diario de Contabilidad (0152), y nada más. */
-  assert.deepEqual([...cliente], ["repaso-diario-contabilidad"]);
+  /* El de Contabilidad (0152) y, desde el 25-nov-2026, el Macro 2026 (0275), y nada más. */
+  assert.deepEqual([...cliente].sort(), ["repaso-diario-contabilidad", "repaso-diario-macro"]);
 });

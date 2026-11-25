@@ -15,16 +15,11 @@
  * Las cifras de cada consulta se sortean al armarla (plantillas.js): la
  * selección del día es estable (semilla), los datos cambian en cada intento.
  */
-import { seleccionarRepaso, categoriaDe } from "../../repaso/seleccion.js";
-import { PLANTILLAS, TEMAS_REPASO, generarConsulta, plantilla } from "./plantillas.js";
+import { seleccionarRepaso } from "../../repaso/seleccion.js";
+import { generarConsulta, plantilla } from "./plantillas.js";
+import { POOL_MACRO, ajustarItems } from "./pool.js";
 
-export const ID_REPASO_MACRO = "repaso-diario-macro";
-export const CONSULTAS_POR_RONDA = 10;
-
-/** Las unidades del pool, con la forma que espera el motor. */
-export const POOL_MACRO = PLANTILLAS.map((pl) => ({
-  clave: pl.id, itemId: pl.id, actividad: pl.actividad, materia: pl.tema, plantilla: pl.id,
-}));
+export { ID_REPASO_MACRO, CONSULTAS_POR_RONDA, POOL_MACRO, equilibrar, ajustarItems } from "./pool.js";
 
 const mezclarCon = (rng) => (lista) => {
   const a = [...lista];
@@ -34,23 +29,6 @@ const mezclarCon = (rng) => (lista) => {
   }
   return a;
 };
-
-/** Regla 1: los cinco temas presentes. */
-export function equilibrar(ids, historial, ahora, rng) {
-  const elegidas = [...ids];
-  for (const tema of TEMAS_REPASO.map((t) => t.id)) {
-    if (elegidas.some((id) => plantilla(id).tema === tema)) continue;
-    const candidatas = mezclarCon(rng)(PLANTILLAS.filter((pl) => pl.tema === tema && !elegidas.includes(pl.id)));
-    if (!candidatas.length) continue;
-    const cuenta = new Map();
-    for (const id of elegidas) cuenta.set(plantilla(id).tema, (cuenta.get(plantilla(id).tema) ?? 0) + 1);
-    const reemplazable = elegidas
-      .filter((id) => cuenta.get(plantilla(id).tema) > 1 && categoriaDe(historial.get(id), ahora) !== "fallado")
-      .sort((a, b) => cuenta.get(plantilla(b).tema) - cuenta.get(plantilla(a).tema))[0];
-    if (reemplazable) elegidas[elegidas.indexOf(reemplazable)] = candidatas[0].id;
-  }
-  return elegidas;
-}
 
 /**
  * Reglas 2 y 3. En cada paso sale la consulta pendiente de menor costo:
@@ -71,14 +49,19 @@ export function ordenarRonda(consultas) {
   return fuera;
 }
 
+/** Las consultas de unos ítems ya elegidos: cifras sorteadas con `rng` y en orden de ronda. */
+export const consultasDe = (items, rng = Math.random) =>
+  ordenarRonda(items.map((x) => generarConsulta(plantilla(x.plantilla), rng)));
+
 /**
  * La ronda de hoy: diez consultas con sus datos sorteados.
- * `mezclar`: el barajado del motor (sembrado con estudiante y día en el
- * sitio, para que el banner y la partida coincidan). `rng`: el azar de las
- * cifras (Math.random en el sitio; con semilla en pruebas y videos).
+ * `mezclar`: el barajado del motor. `rng`: el azar de las cifras.
+ * En el sitio la selección la hace vistaPreviaDelDia (la misma tirada del
+ * banner, sembrada con estudiante y día) y luego consultasDe; armarRonda
+ * queda para la vista previa, las pruebas y los videos.
  */
 export function armarRonda({ historial = new Map(), ahora = new Date(), mezclar = null, rng = Math.random } = {}) {
-  const { items } = seleccionarRepaso({ pool: POOL_MACRO, historial, ahora, mezclar: mezclar ?? mezclarCon(rng) });
-  const ids = equilibrar(items.map((x) => x.plantilla), historial, ahora, rng).slice(0, CONSULTAS_POR_RONDA);
-  return ordenarRonda(ids.map((id) => generarConsulta(plantilla(id), rng)));
+  const baraja = mezclar ?? mezclarCon(rng);
+  const { items } = seleccionarRepaso({ pool: POOL_MACRO, historial, ahora, mezclar: baraja });
+  return consultasDe(ajustarItems(items, { historial, mezclar: baraja }), rng);
 }

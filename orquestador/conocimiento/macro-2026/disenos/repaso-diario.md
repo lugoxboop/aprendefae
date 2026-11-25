@@ -2,8 +2,9 @@
 
 Diseño de Gen, 24-nov-2026. Orden de Mateo: un repaso general, como el que
 había antes, que junte preguntas de todos los temas al azar y cambie los datos
-en cada intento. **Sin publicar**: se ve solo en `#/macro-2026/repaso` hasta el
-visto bueno de Mateo.
+en cada intento. **Publicado el 25-nov-2026** con el visto bueno de Mateo:
+banner en el índice de Macroeconomía y página `#/repaso-diario-macro`. La
+vista previa `#/macro-2026/repaso` sigue para videos (sin FP).
 
 ## La idea
 
@@ -76,13 +77,19 @@ de la plantilla; cada ítem lleva sus subtemas (los de la ficha del tema).
 | Rejugabilidad | Avanzado | Datos nuevos cada intento; motor de repetición espaciada |
 | Celular | Avanzado | Sin desborde a 320 y 375 (sonda de Playwright) |
 
-## Para publicarlo (cuando Mateo apruebe)
+## Cómo quedó publicado (25-nov-2026)
 
-1. Pasar `supabase/macro2026-pendientes/repaso_diario_macro.sql` a
-   `supabase/migrations/` con su número.
-2. Entrada en `ACTIVIDADES_TRANSVERSALES` (src/data/subjects.js) con id
-   `repaso-diario-macro`, `indice: "macroeconomia"` y la clasificación de arriba.
-3. Entrada en `REPASOS` (src/repaso/repasos.js) con `POOL_MACRO` y los cinco
-   temas, y montar `RepasoMacro` en la vista del repaso para ese id (las
-   consultas salen de `armarRonda` con el barajado sembrado del día).
-4. El banner del índice de Macroeconomía.
+1. Migración `supabase/migrations/0275_repaso_diario_macro.sql` (fila del
+   catálogo, renovable a diario, y `repaso_historial()` con el id nuevo).
+2. `ACTIVIDADES_TRANSVERSALES` (src/data/subjects.js): `repaso-diario-macro`,
+   `indice: "macroeconomia"`, 60 FP × % de aciertos, renovable cada día.
+3. `REPASOS` (src/repaso/repasos.js) con `POOL_MACRO` (src/macro2026/repaso/pool.js)
+   y dos opciones nuevas del motor: `poolCompleto` (las 14 plantillas desde el
+   desbloqueo, que sigue siendo 3 actividades de Macro hechas) y `ajustar` (la
+   regla de los cinco temas, dentro de `vistaPreviaDelDia`, para que el banner
+   y la partida salgan de la misma tirada).
+4. Página propia `RepasoMacroView` (ruta `repaso-diario-macro` en ruta.js y
+   App.jsx): guarda la ronda al empezar, registra los FP una vez y deja el
+   balance en pantalla; «Otra ronda de práctica» no registra nada.
+5. Panel docente: `REGLAS["repaso-diario-macro"]` nombra cada plantilla
+   (`ETIQUETA_PLANTILLA`).

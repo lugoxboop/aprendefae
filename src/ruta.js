@@ -74,8 +74,10 @@ export const VISTAS = new Set([
   /* El repaso del capítulo 5 (Célula E): siempre el último tema de Contabilidad. */
   "repaso-capitulo-5",
   /* Transversales: no son un tema, pero se entra igual desde el índice. El de
-     Macro, «repaso-diario», salió con su pool el 22-nov-2026. */
+     Macro viejo, «repaso-diario», salió con su pool el 22-nov-2026; el
+     nuevo tiene id propio desde el 25-nov. */
   "repaso-diario-contabilidad",
+  "repaso-diario-macro",
   /*
    * Aquí estaban las seis vistas de DA-Learn —dashboard, consumo, inversion,
    * gasto, xn y final—. El simulador se retiró entero, así que sus hashes
