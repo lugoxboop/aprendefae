@@ -9,6 +9,7 @@ import { COMPONENTES, INK, INK_2, BORDE, FONDO } from "../comun/colores-da.js";
 import { BASE, fmtEntero } from "../comun/modelo-da.js";
 import { Boton, Deslizador, MarcoAprender, useAncho, usePasos } from "../comun/ui.jsx";
 import { APRENDER, ESCENAS } from "./textos.js";
+import { rutaIlustrado } from "../comun/ilustrados.jsx";
 
 export const ID = "da26-a3-columpio-tasa";
 const TX = APRENDER[ID];
@@ -18,17 +19,17 @@ const IBAR_INCIERTO = 120;
 function Grua({ subidos }) {
   return (
     <svg viewBox="0 0 260 170" width="100%" role="img" aria-label={`Grúa que sube ladrillos de crédito: ${subidos}`} data-ladrillos={subidos}>
-      <path d="M40 165V20h8v145M44 20h170M44 34l26-14M200 20v24" fill="none" stroke={INK} strokeWidth={4} strokeLinejoin="round" />
+      {/* La grúa de torre ilustrada (Gemini, 25-nov; familia 17). Su gancho
+          (x .82, y .68 del WebP) sube el bloque de crédito; los ladrillos
+          de la inversión se apilan en vivo a la derecha. */}
+      <image href={rutaIlustrado("grua-torre")} x="4" y="5" width={(160 * 299) / 300} height="160" />
       <path d="M10 165h240" stroke={INK_2} strokeWidth={3} />
-      <rect x={140} y={120} width={100} height={45} fill="none" stroke={INK_2} strokeWidth={3} />
-      <path d="M140 120l50-26 50 26" fill="none" stroke={INK_2} strokeWidth={3} />
       {Array.from({ length: Math.min(subidos, 6) }, (_, k) => (
-        <rect key={k} className="da26-entra" x={146 + (k % 3) * 30} y={150 - Math.floor(k / 3) * 14} width={26} height={12} rx={2} fill={LADRILLO} />
+        <rect key={k} className="da26-entra" x={172 + (k % 3) * 26} y={151 - Math.floor(k / 3) * 14} width={24} height={13} rx={2} fill={LADRILLO} stroke="#0E1B2E" strokeWidth="1.5" />
       ))}
       <g className="da26-entra" key={subidos}>
-        <path d="M200 44v24" stroke={INK_2} strokeWidth={2} />
-        <rect x={168} y={68} width={64} height={22} rx={3} fill={LADRILLO} />
-        <text x={200} y={84} textAnchor="middle" fontSize={13} fontWeight={700} fill="#121418">crédito</text>
+        <rect x={103} y={117} width={64} height={22} rx={3} fill={LADRILLO} stroke="#0E1B2E" strokeWidth="2" />
+        <text x={135} y={133} textAnchor="middle" fontSize={13} fontWeight={700} fill="#121418">crédito</text>
       </g>
     </svg>
   );
@@ -56,10 +57,13 @@ function Balancin({ i, b, Ibar, nubes = false, base = false }) {
             ))}
           </g>
         )}
-        <path d={`M${cx - 14} ${cy + 34} L${cx} ${cy + 4} L${cx + 14} ${cy + 34} Z`} fill={BORDE} />
+        {/* Soporte y tabla del balancín, ilustrados (Gemini, 25-nov; familia
+            17). La tabla se estira al largo del brazo (b) y gira con i. */}
+        <image href={rutaIlustrado("balancin-soporte")} x={cx - 24} y={cy - 5} width="48" height="39" />
         <path d={`M8 ${cy + 34} H${W - 8}`} stroke={INK_2} strokeWidth={2} />
         <g className="da26-trans">
-          <line x1={ix} y1={iy} x2={fx} y2={fy} stroke={INK} strokeWidth={6} strokeLinecap="round" data-brazo={b} />
+          <image href={rutaIlustrado("balancin-tabla")} x={-izq - 6} y={-14} width={izq + der + 12} height="20" preserveAspectRatio="none"
+            transform={`translate(${cx} ${cy}) rotate(${ang})`} data-brazo={b} />
           <circle cx={ix} cy={iy - 16} r={16} fill={FONDO} stroke={INK} strokeWidth={2.5} />
           <text x={ix} y={iy - 11} textAnchor="middle" fontSize={15} fontWeight={700} fill={INK}>i</text>
           <text x={ix} y={iy + 22} textAnchor="middle" fontSize={12} fill={INK} className="da26-mono">{i} %</text>

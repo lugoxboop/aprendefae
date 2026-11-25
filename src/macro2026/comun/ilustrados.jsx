@@ -52,6 +52,19 @@ export const ILUSTRADOS = {
   "pozo-monedas": [238, 180],
   "barrera-peaje": [265, 200],
   "casa-anden": [251, 220],
+  billetera: [394, 200],
+  lupa: [233, 220],
+  "lupa-mango": [108, 102],
+  alcancia: [218, 200],
+  carretera: [360, 240],
+  cuerda: [525, 60],
+  "cuerda-tramo": [160, 31],
+  "panuelo-rojo": [92, 60],
+  "pila-monedas": [143, 260],
+  "grua-torre": [299, 300],
+  "balancin-tabla": [357, 50],
+  "balancin-soporte": [198, 160],
+  cohete: [227, 220],
 };
 
 export const rutaIlustrado = (id) => `/macro2026/ilustrados/${id}.webp`;

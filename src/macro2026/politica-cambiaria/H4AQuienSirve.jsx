@@ -13,8 +13,9 @@ import { INK, INK_2 } from "../comun/colores-da.js";
 import { Boton, MarcoHacer, Retro, useCronometro } from "../comun/ui.jsx";
 import { azarDeLaPagina, sortear } from "../comun/azar.js";
 import { MascotaRol } from "../comun/mascotas.jsx";
-import { CAMBIARIA, CSS_PC } from "./comun-pc.jsx";
+import { CSS_PC } from "./comun-pc.jsx";
 import { BANCO_H4, CONSIGNAS, H4, PARTIDA_H4, ESCENAS } from "./textos.js";
+import { rutaIlustrado } from "../comun/ilustrados.jsx";
 
 export const ID = "pc26-h4-a-quien-sirve";
 export const prepararH4 = (rng = Math.random) => sortear(BANCO_H4, PARTIDA_H4, rng);
@@ -26,9 +27,12 @@ const CSS = `
 .pc26-h4-lado[data-tira="1"] { transform: translateX(var(--tira)); }
 .pc26-h4-lado:disabled { cursor: default; }
 .pc26-h4-cuerda { position: relative; height: 150px; }
-.pc26-h4-cuerda::before { content: ""; position: absolute; left: -6px; right: -6px; top: 95px; height: 4px; border-radius: 2px; background: ${INK_2}; }
-.pc26-h4-panuelo { position: absolute; left: 50%; top: 75px; width: 44px; height: 48px; margin-left: -22px; border-radius: 8px; border: 2px solid ${INK}; background: ${CAMBIARIA}; cursor: grab; touch-action: none; transition: transform 320ms cubic-bezier(.3,.9,.4,1); }
+/* Cuerda y pañuelo ilustrados (Gemini, 25-nov; familia 20): un tramo de la
+ * cuerda se repite a lo ancho y el pañuelo es el botón que se arrastra. */
+.pc26-h4-cuerda::before { content: ""; position: absolute; left: -6px; right: -6px; top: 87px; height: 20px; background: url(${rutaIlustrado("cuerda-tramo")}) repeat-x center / auto 20px; }
+.pc26-h4-panuelo { position: absolute; left: 50%; top: 70px; width: 52px; height: 56px; margin-left: -26px; border-radius: 12px; border: 2px solid transparent; background: url(${rutaIlustrado("panuelo-rojo")}) no-repeat center / contain; cursor: grab; touch-action: none; transition: transform 320ms cubic-bezier(.3,.9,.4,1); }
 .pc26-h4-panuelo[data-estado="mal"] { border-color: #E76F51; border-width: 3px; }
+.pc26-h4-panuelo:focus-visible { border-color: ${INK}; }
 .pc26-h4-panuelo[data-arrastre="1"] { transition: none; }
 .pc26-h4-nombre { font: 600 13px/1.2 var(--planck-font-sans, system-ui, sans-serif); text-align: center; max-width: 96px; }
 @media (prefers-reduced-motion: reduce) { .pc26-h4-lado, .pc26-h4-panuelo { transition: none; } }

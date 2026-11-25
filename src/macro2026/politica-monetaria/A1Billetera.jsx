@@ -11,6 +11,7 @@ import { useState } from "react";
 import { BORDE, FONDO, INK, INK_2, SUPERFICIE_2, TINTA_SOBRE_COLOR } from "../comun/colores-da.js";
 import { MarcoAprender, usePasos } from "../comun/ui.jsx";
 import { Objeto } from "../comun/kit.jsx";
+import { Ilustrado } from "../comun/ilustrados.jsx";
 import { MONETARIA } from "./comun-pm.jsx";
 import { A1, APRENDER, ESCENAS } from "./textos.js";
 
@@ -30,14 +31,13 @@ const CSS = `
 .pm26-a1-red { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; align-items: end; text-align: center; font: 600 13px/1.2 var(--planck-font-sans, system-ui, sans-serif); }
 `;
 
+/* La billetera de cuero, ilustrada (Gemini, 25-nov; familia 15). Cerrada se
+ * ve en gris y pequeña; al abrirla crece y se ve con color. */
 function Cartera({ abierta }) {
   return (
-    <svg viewBox="0 0 200 120" style={{ width: 200, height: 120 }} aria-hidden="true">
-      <rect x="20" y="40" width="160" height="70" rx="10" fill={SUPERFICIE_2} stroke={INK} strokeWidth="3" />
-      <path d={abierta ? "M20 40L50 6h100l30 34" : "M20 40h160"} fill="none" stroke={INK} strokeWidth="3" strokeLinejoin="round" />
-      <rect x="150" y="62" width="30" height="22" rx="5" fill={FONDO} stroke={INK} strokeWidth="3" />
-      <circle cx="162" cy="73" r="4" fill={MONETARIA} />
-    </svg>
+    <span style={{ display: "inline-block", transition: "transform 420ms cubic-bezier(.3,.9,.4,1), filter 420ms", transform: abierta ? "scale(1.06)" : "scale(.94)", filter: abierta ? "none" : "saturate(.55) brightness(.9)" }} data-billetera-abierta={abierta ? "1" : "0"}>
+      <Ilustrado id="billetera" alto={110} />
+    </span>
   );
 }
 

@@ -9,6 +9,7 @@ import { COMPONENTES, INK, INK_2, BORDE, FONDO, SUPERFICIE_2 } from "../comun/co
 import { BASE, ecos, fmtCorto, fmtDecimal, fmtEco, fmtEntero, fmtLimpio, modelo, multiplicador, pendiente } from "../comun/modelo-da.js";
 import { Boton, Deslizador, MarcoAprender, Retro, useAncho, usePasos } from "../comun/ui.jsx";
 import { APRENDER, ESCENAS, RETRO_A6_P1 } from "./textos.js";
+import { rutaIlustrado } from "../comun/ilustrados.jsx";
 
 export const ID = "da26-a6-eco-multiplicador";
 const TX = APRENDER[ID];
@@ -78,9 +79,10 @@ export default function A6EcoMultiplicador({ onTerminar }) {
   if (paso === 0) {
     figura = (
       <svg viewBox="0 0 260 120" width="100%" role="img" aria-label="Una vía en obra con más 100 del Gobierno">
-        <path d="M10 110 L110 30 H150 L250 110 Z" fill={SUPERFICIE_2} stroke={BORDE} strokeWidth={2} />
-        <path d="M130 36v12M130 60v16M130 88v20" stroke={INK} strokeWidth={4} />
-        <path d="M200 100 l12 -40 l12 40 z" fill="none" stroke={COMPONENTES.G.color} strokeWidth={3} />
+        {/* La vía y la pila de monedas del gasto, ilustradas (Gemini, 25-nov;
+            familia 18). */}
+        <image href={rutaIlustrado("carretera")} x={130 - (114 * 360) / 240 / 2} y="4" width={(114 * 360) / 240} height="114" />
+        <image href={rutaIlustrado("pila-monedas")} x="210" y="44" width="36" height={(36 * 260) / 143} />
         <rect x={20} y={16} width={64} height={30} rx={8} fill={COMPONENTES.G.color} />
         <text x={52} y={37} textAnchor="middle" fontSize={18} fontWeight={700} fill="#121418" className="da26-mono">+100</text>
         <text x={92} y={36} fontSize={13} fill={INK}>G</text>
