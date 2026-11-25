@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import { BORDE, FONDO, INK, INK_2, SUPERFICIE_2 } from "../comun/colores-da.js";
 import { MarcoAprender, usePasos } from "../comun/ui.jsx";
 import { Carrito } from "../comun/carrito.jsx";
-import { Objeto } from "../comun/kit.jsx";
+import { Ilustrado, rutaIlustrado } from "../comun/ilustrados.jsx";
 import { colorRama } from "../comun/ramas.js";
 import { IconoTrazo } from "../comun/iconos-pf.jsx";
 import { APRENDER, A1, CARAS_A1, ESCENAS } from "./textos.js";
@@ -42,7 +42,7 @@ function Lente({ cara, objetivo, setObjetivo }) {
   if (cara === "naturaleza") {
     return (
       <>
-        <Objeto id="alcancia" alto={56} nombre="Alcancía del Estado" />
+        <Ilustrado id="alcancia" alto={62} nombre="Alcancía del Estado" />
         <div className="pf26-a1-flechas">
           {A1.flechas.map((f, k) => (
             <span key={f} className="pf26-a1-flecha" data-flecha={f}>
@@ -104,8 +104,12 @@ export default function A1Lupa({ onTerminar }) {
     <div className="pf26-a1">
       <div className="pf26-a1-lupa" data-lupa data-cara={cara ?? ""}>
         <svg className="pf26-a1-marco" viewBox="0 0 220 236" style={{ width: 220, height: 236 }} aria-hidden="true">
-          <path d="M160 190 L196 230" stroke={INK_2} strokeWidth="12" strokeLinecap="round" />
-          <polygon points={hex} fill={FONDO} stroke={cara ? INK : INK_2} strokeWidth="4" style={{ transition: "stroke 280ms" }} />
+          {/* La lupa de seis caras: el mango es el de la lupa ilustrada
+              (Gemini, 25-nov; familia 14) y el aro, del mismo azul. */}
+          <image href={rutaIlustrado("lupa-mango")} x="156" y="170" width="62" height={(62 * 102) / 108} />
+          <polygon points={hex} fill="#0E1B2E" stroke="#0E1B2E" strokeWidth="14" strokeLinejoin="round" />
+          <polygon points={hex} fill={FONDO} stroke={cara ? "#6F86FF" : "#2747F5"} strokeWidth="8" strokeLinejoin="round" style={{ transition: "stroke 280ms" }} />
+          <polygon points={hex} fill="none" stroke="#fff" strokeOpacity=".35" strokeWidth="2" strokeLinejoin="round" transform="translate(-2 -2)" />
         </svg>
         <div className="pf26-a1-lente da26-entra" key={cara ?? "nada"} data-lente>
           <Lente cara={cara} objetivo={objetivo} setObjetivo={setObjetivo} />

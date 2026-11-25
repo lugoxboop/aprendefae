@@ -12,6 +12,7 @@ import { COMPONENTES, GRIS, INK, INK_2, BORDE, FONDO, TINTA_SOBRE_COLOR } from "
 import { fmtEntero } from "../comun/modelo-da.js";
 import { Deslizador, MarcoAprender, useAncho, usePasos } from "../comun/ui.jsx";
 import { APRENDER, ESCENAS } from "./textos.js";
+import { rutaIlustrado } from "../comun/ilustrados.jsx";
 
 export const ID = "da26-a4-no-miran-renta";
 const TX = APRENDER[ID];
@@ -26,20 +27,24 @@ export const xmDeTc = (tc) => {
 
 function RentaYG({ Y }) {
   const [ref, W] = useAncho(262);
-  const H = 170, nivel = 30 + (1 - Y / 1000) * 110;
+  const H = 186, nivel = 30 + (1 - Y / 1000) * 110;
+  const FH = 150, FW = (FH * 255) / 360, FX = 70 - FW / 2, FY = 14;
   return (
     <div ref={ref}>
       <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label={`Renta ${Y}; el gasto G sigue en 200`} data-renta={Y}>
         <path d="M0 14 H70 V30" fill="none" stroke={INK} strokeWidth={7} strokeLinecap="round" />
         <text x={2} y={9} fontSize={13} fontWeight={700} fill={INK}>Y</text>
         {Y > 0 && <rect x={70 - (2 + Y / 140) / 2} y={32} width={2 + Y / 140} height={nivel - 32} fill={AGUA} />}
-        <path d="M30 30 L36 150 H104 L110 30" fill="none" stroke={INK} strokeWidth={3} />
-        <rect className="da26-trans" x={36} y={nivel} width={68} height={150 - nivel} fill={AGUA} opacity={0.85} />
-        <text x={70} y={166} textAnchor="middle" fontSize={12} fill={INK} className="da26-mono">{fmtEntero(Y)}</text>
+        {/* El vaso de la renta es el frasco de vidrio ilustrado y G, una pila
+            de monedas (Gemini, 25-nov; familia 19): G no se mueve con Y. */}
+        <image href={rutaIlustrado("frasco-banco")} x={FX} y={FY} width={FW} height={FH} />
+        <rect className="da26-trans" x={FX + FW * 0.08} y={Math.max(nivel, FY + FH * 0.27)} width={FW * 0.84} height={FY + FH * 0.83 - Math.max(nivel, FY + FH * 0.27)} rx={6} fill="#4f7bff" opacity={0.8} data-agua-renta />
+        <image href={rutaIlustrado("frasco-banco")} x={FX} y={FY} width={FW} height={FH} opacity=".3" />
+        <text x={70} y={181} textAnchor="middle" fontSize={13} fontWeight={700} fill={INK} className="da26-mono">Y = {fmtEntero(Y)}</text>
         <g data-bloque-g>
-          <rect x={W - 96} y={70} width={80} height={80} rx={6} fill={COMPONENTES.G.color} />
-          <text x={W - 56} y={110} textAnchor="middle" fontSize={22} fontWeight={700} fill={TINTA_SOBRE_COLOR}>G</text>
-          <text x={W - 56} y={132} textAnchor="middle" fontSize={13} fill={TINTA_SOBRE_COLOR} className="da26-mono">200</text>
+          <image href={rutaIlustrado("pila-monedas")} x={W - 80} y={46} width={58} height={(58 * 260) / 143} />
+          <rect x={W - 96} y={14} width={90} height={26} rx={13} fill={COMPONENTES.G.color} />
+          <text x={W - 51} y={32} textAnchor="middle" fontSize={15} fontWeight={700} fill={TINTA_SOBRE_COLOR}>G · <tspan className="da26-mono">200</tspan></text>
         </g>
       </svg>
     </div>
@@ -62,16 +67,21 @@ function Columnas({ gasta }) {
           </pattern>
         </defs>
         <line x1={6} y1={base} x2={W - 6} y2={base} stroke={BORDE} strokeWidth={2} />
-        <rect x={x1} y={base - hR} width={cw} height={hR} fill={INK_2} />
+        {/* Recauda y gasta son pilas de monedas ilustradas (familia 19); su
+            alto es el dato exacto. La de gasto lleva el tono de G encima. */}
+        <image href={rutaIlustrado("pila-monedas")} x={x1} y={base - hR} width={cw} height={hR} preserveAspectRatio="none" />
         <text x={x1 + cw / 2} y={base + 16} textAnchor="middle" fontSize={13} fill={INK}>Recauda</text>
-        <text x={x1 + cw / 2} y={base - 10} textAnchor="middle" fontSize={12} fill={TINTA_SOBRE_COLOR} fontWeight={700} className="da26-mono">{RECAUDA}</text>
+        <text x={x1 + cw / 2} y={base - 10} textAnchor="middle" fontSize={12} fill="#0E1B2E" stroke="#fff" strokeWidth="3" paintOrder="stroke" fontWeight={700} className="da26-mono">{RECAUDA}</text>
         {deficit && (
           <g className="da26-entra" data-tramado>
             <rect x={x1} y={base - hG} width={cw} height={hG - hR} fill="url(#da26-tramado)" stroke={GRIS} strokeWidth={1.5} />
             <line x1={x1 + cw} y1={base - hG} x2={x2} y2={base - hG} stroke={GRIS} strokeDasharray="3 3" />
           </g>
         )}
-        <rect className="da26-trans" x={x2} y={base - hG} width={cw} height={hG} fill={COMPONENTES.G.color} />
+        <g className="da26-trans" data-pila-gasta>
+          <image href={rutaIlustrado("pila-monedas")} x={x2} y={base - hG} width={cw} height={hG} preserveAspectRatio="none" />
+          <rect x={x2} y={base - hG} width={cw} height={hG} rx={8} fill={COMPONENTES.G.color} opacity=".45" />
+        </g>
         <text x={x2 + cw / 2} y={base + 16} textAnchor="middle" fontSize={13} fill={INK}>Gasta</text>
         <text x={x2 + cw / 2} y={base - hG - 6} textAnchor="middle" fontSize={12} fill={INK} className="da26-mono">{gasta}</text>
         {deficit && (
