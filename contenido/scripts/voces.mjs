@@ -9,7 +9,11 @@ import path from "node:path";
 import fs from "node:fs";
 import { clave, pide, pideSiSePuede, escribeJSON, leeJSON, RAIZ, registra, ahoraBogota } from "./comun.mjs";
 
-const N = Number(process.argv[2] || 3);
+// node voces.mjs --nombres "Javier Rojas,David,Brian,Juan"  → fija esas voces (elegidas por Mateo),
+// buscándolas por nombre en la biblioteca (español latino). Sin --nombres: las n más en tendencia.
+const iN = process.argv.indexOf("--nombres");
+const NOMBRES = iN > 0 ? process.argv[iN + 1].split(",").map((x) => x.trim().toLowerCase()) : null;
+const N = NOMBRES ? NOMBRES.length : Number(process.argv[2] || 3);
 const API = "https://api.elevenlabs.io";
 const H = { "xi-api-key": clave("ELEVENLABS_API_KEY") };
 const CONF = path.join(RAIZ, "voz.json");
@@ -49,8 +53,19 @@ console.log(filas.join("\n"));
 const apta = (v) => /narra|social|convers|character|entertain|advert|informative/i.test(`${v.use_case} ${v.category}`);
 const orden = [...cand.filter(apta), ...cand.filter((v) => !apta(v))];
 const elegidas = [];
-for (const g of ["female", "male"]) { const v = orden.find((x) => x.gender === g && !elegidas.includes(x)); if (v) elegidas.push(v); }
-for (const v of orden) { if (elegidas.length >= N) break; if (!elegidas.includes(v)) elegidas.push(v); }
+if (NOMBRES) {
+  for (const nom of NOMBRES) {
+    let v = cand.find((x) => x.name.toLowerCase().startsWith(nom)) || lib.find((x) => x.name.toLowerCase().startsWith(nom));
+    if (!v) {
+      const q2 = new URLSearchParams({ search: nom, language: "es", page_size: "30" });
+      const r2 = (await (await pide(`${API}/v1/shared-voices?${q2}`, { headers: H })).json()).voices || [];
+      v = r2.find((x) => x.name.toLowerCase().startsWith(nom)) || r2[0];
+    }
+    if (v) elegidas.push(v); else console.log(`No encontré la voz «${nom}».`);
+  }
+}
+for (const g of NOMBRES ? [] : ["female", "male"]) { const v = orden.find((x) => x.gender === g && !elegidas.includes(x)); if (v) elegidas.push(v); }
+for (const v of NOMBRES ? [] : orden) { if (elegidas.length >= N) break; if (!elegidas.includes(v)) elegidas.push(v); }
 if (!elegidas.length) throw new Error("La biblioteca no devolvió voces en español latino en tendencia.");
 
 // 3. Agregar a la cuenta (si ya están, se reutilizan) y guardar.
@@ -66,10 +81,10 @@ for (const v of elegidas) {
     id = r.voice_id;
   }
   const alias = v.name.split(/[\s\-–—]/)[0].toLowerCase().normalize("NFD").replace(/[^a-z0-9]/g, "");
-  confianza.push({ alias, nombre: v.name, voice_id: id, genero: v.gender, edad: v.age, acento: v.accent, uso: v.use_case, tono: v.descriptive, desde: dia });
+  confianza.push({ alias: confianza.some((c) => c.alias === alias) ? alias + confianza.length : alias, nombre: v.name, voice_id: id, genero: v.gender, edad: v.age, acento: v.accent, uso: v.use_case, tono: v.descriptive, desde: dia });
 }
 escribeJSON(CONF, {
   _nota: "Voces de confianza: se renuevan según la tendencia (node voces.mjs). Cada pieza anota qué voz usó en tiempos-<alias>.json y en el registro.",
-  ...conf, confianza, modelo, modelos: [modelo, "eleven_v3", "eleven_multilingual_v2"].filter((m, i, a) => ids.includes(m) && a.indexOf(m) === i), ajustes: { stability: 0.5, similarity_boost: 0.75 }, formato: "mp3_44100_128", cupo: { plan: "Creator", aviso: 0.8 },
+  ...conf, confianza, rotacion: 0, modelo, modelos: [modelo, "eleven_v3", "eleven_multilingual_v2"].filter((m, i, a) => ids.includes(m) && a.indexOf(m) === i), ajustes: { stability: 0.5, similarity_boost: 0.75 }, formato: "mp3_44100_128", cupo: { plan: "Creator", aviso: 0.8 },
 });
 registra(`Voces de confianza renovadas (${modelo}): ${confianza.map((c) => `${c.nombre} [${c.genero}, ${c.acento}]`).join("; ")}.`);

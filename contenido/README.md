@@ -35,8 +35,8 @@ Lo generado vuelve solo a la rama en un commit de `nino-contenido[bot]`: hay que
 
 | Script | Qué hace |
 |---|---|
-| `voces.mjs` | Lista las voces **en tendencia** de la biblioteca de ElevenLabs (español latino), elige 3 (al menos una de mujer), las agrega a la cuenta y las deja en `voz.json`. Sin el permiso `voices_read` deja 3 prediseñadas provisionales. |
-| `voz.mjs <pieza> [alias\|todas]` | Genera el guion **completo en una sola llamada** a `with-timestamps`, y escribe `estudio/public/voz/<pieza>-<alias>.mp3` y `estudio/src/piezas/<pieza>/tiempos-<alias>.json` (inicio y fin de cada frase y palabra). Comprueba que el final no se cortó. Si el guion no cambió, no gasta cupo. Prueba los modelos de `voz.json` en cascada (hoy: `eleven_v3`, luego `eleven_multilingual_v2`). |
+| `voces.mjs [--nombres "A,B"]` | Con `--nombres` fija las voces que eligió Mateo (en `pedido.json`: `voces_nombres`). Sin él, lista las voces **en tendencia** de la biblioteca de ElevenLabs (español latino), elige 3 (al menos una de mujer), las agrega a la cuenta y las deja en `voz.json`. Sin el permiso `voices_read` deja 3 prediseñadas provisionales. |
+| `voz.mjs <pieza> [alias\|todas]` | Sin alias, **rota** entre las voces de confianza (cada pieza nueva usa la siguiente; Mateo, 26-nov). Genera el guion **completo en una sola llamada** a `with-timestamps`, y escribe `estudio/public/voz/<pieza>-<alias>.mp3` y `estudio/src/piezas/<pieza>/tiempos-<alias>.json` (inicio y fin de cada frase y palabra). Comprueba que el final no se cortó. Si el guion no cambió, no gasta cupo. Prueba los modelos de `voz.json` en cascada (hoy: `eleven_v3`, luego `eleven_multilingual_v2`). |
 | `cupo.mjs` | Caracteres usados del mes; aviso al 80 %. Necesita el permiso `user_read`. |
 | `bucket.mjs` | Crea el bucket público `instagram-publico` (máx. 50 MB, solo mp4/jpg/png). Idempotente. |
 | `subir.mjs <archivo> <ruta>` | Sube al bucket y comprueba que el enlace público responde. |

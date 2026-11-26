@@ -78,7 +78,9 @@ jobs:
 
       - name: voces
         if: contains(steps.pedido.outputs.acciones, 'voces')
-        run: node contenido/scripts/voces.mjs
+        run: |
+          n=$(jq -r '.voces_nombres // ""' contenido/pedido.json 2>/dev/null)
+          if [ -n "$n" ]; then node contenido/scripts/voces.mjs --nombres "$n"; else node contenido/scripts/voces.mjs; fi
 
       - name: bucket
         if: contains(steps.pedido.outputs.acciones, 'bucket')

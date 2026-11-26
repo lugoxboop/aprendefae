@@ -20,7 +20,7 @@
 
 ## Herramientas
 - **Voz: ElevenLabs por API** (endpoint `with-timestamps`, modelo `eleven_v3`, estabilidad 0,50, similitud 0,75, mp3 44,1 kHz/128). **La voz NO es fija** (Mateo, 26-nov): varía según la tendencia y el tono de la pieza, con voces de mujer; siempre del plan Creator. Lista de confianza en `contenido/voz.json` (se renueva con `voces.mjs`); cada pieza anota su voz en `tiempos-<voz>.json` y en `contenido/registro/`. Clave solo como secreto de GitHub (`ELEVENLABS_API_KEY`). Plan Creator ≈100 min/mes; aviso al 80 %.
-- **Voces de confianza (tendencia, 26-nov, `eleven_v4`):** Gaby `p5EUznrYaWnafKvUkNiR` (mujer, joven, casual) · David `K3TeN3ZVK8WnOeJ0NYqZ` (hombre, grave, calmado) · Brian `jBlmi27XRORxjPquUeCh` (hombre, cálido). La clave tiene permisos completos; cupo 0,9 % el 26-nov.
+- **Voces de confianza (elegidas por Mateo, 26-nov):** Javier Rojas, David, Brian y Juan (colombiano), `eleven_v4`. **Se rotan entre piezas** (voz.mjs sin alias toma la siguiente). IDs en `contenido/voz.json`. Permisos completos; cupo 0,9 % el 26-nov.
 - **Video por IA de ElevenLabs** (`POST /v1/flows/video`, Veo 3.1 / Seedance): exige **plan Pro o superior** (402 con Creator, 26-nov). Script listo: `contenido/scripts/video.mjs` + `contenido/pedido-video.json`.
 - **Instagram por la API oficial de Meta** (app «AprendeFAE Publicador»). Token largo en `IG_ACCESS_TOKEN` + `IG_USER_ID`; se renueva solo cada 50 días. Límite 100 publicaciones/24 h. Por API no se puede poner canción de la biblioteca de Instagram → esas piezas se marcan «publicación manual» y Mateo pone la canción.
 - **Render:** Remotion (skills oficiales, router `remotion-best-practices`). **Imágenes/storyboards:** Gemini con `orquestador/conocimiento/guia-estilo-imagenes.md`. **Efectos/música:** Pixabay/Freesound CC0 o sintetizados.
@@ -30,6 +30,7 @@
 - **GitHub Actions** (`.github/workflows/contenido.yml`), disparado al empujar `contenido/pedido.json`. El shell de la nube NO alcanza ElevenLabs, Supabase ni Meta (proxy). Animar y revisar cuadros: local, en `contenido/estudio/`. Detalle en `contenido/README.md`.
 
 ## En qué estoy ahora
+- 2026-11-26 14:45 — Mateo **aprobó** prueba-01 v2 (Gaby). Pidió comparar con una escena hecha por ElevenLabs (exige plan Pro: lo compra él). Escena lista en `contenido/pedido-video.json`.
 - 2026-11-26 12:45 — Pipeline montado en Actions (voz con timestamps, bucket `instagram-publico` creado, render y subida). Reel de prueba `prueba-01` «¿Café o dormir?» (21 s, voz Jessica, ritmo 1,17) enviado a Mateo para aprobar; NO publicado. Falta: permisos de la clave de voz (`voices_read`, `voices_write`, `models_read`, `user_read`) y Meta.
 - 2026-11-26 11:30 — Recién creado (encargo de Mateo). Hechas: las dos skills (`contenido-instagram`, `animacion-instagram`), bitácora e índice. PENDIENTE del montaje: clave de ElevenLabs + MCP (tras el plan Creator), app de Meta + token (tras el login de Mateo), bucket de Supabase, secretos de GitHub, scripts de `contenido/`, tareas programadas (6:30 radar, 7:30 ideas, noche métricas, lunes informe) y el Reel de prueba de 15–20 s para Mateo (parada 3).
 

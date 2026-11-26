@@ -22,7 +22,10 @@ const frases = fs.readFileSync(path.join(dir, "guion.txt"), "utf8").split("\n").
 const texto = frases.join("\n\n");
 const conf = leeJSON(path.join(RAIZ, "voz.json"));
 if (!conf?.confianza?.length) throw new Error("Falta la lista de voces en contenido/voz.json: corre antes node voces.mjs");
-const lista = quien === "todas" ? conf.confianza : [quien ? conf.confianza.find((v) => v.alias === quien) : conf.confianza[0]];
+// Sin alias: ROTA entre las voces de confianza (Mateo, 26-nov): cada pieza nueva usa la siguiente.
+const rota = !quien;
+const turno = (conf.rotacion || 0) % conf.confianza.length;
+const lista = quien === "todas" ? conf.confianza : [quien ? conf.confianza.find((v) => v.alias === quien) : conf.confianza[turno]];
 if (!lista[0]) throw new Error(`No hay una voz «${quien}» en la lista de confianza.`);
 
 async function genera(voz) {
@@ -88,4 +91,5 @@ registra(`Voz de ${pieza} con ${voz.nombre} (${voz.genero}): ${frases.length} fr
 }
 
 for (const voz of lista) await genera(voz);
+if (rota) escribeJSON(path.join(RAIZ, "voz.json"), { ...conf, rotacion: turno + 1 });
 await cupo();
