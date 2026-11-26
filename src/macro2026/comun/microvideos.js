@@ -7,6 +7,10 @@
  * Voz: Brian, de ElevenLabs, plan gratuito (sin licencia comercial). Mateo fue
  * avisado y aceptó publicar; al comprar el plan se regeneran las voces.
  * La transcripción es el guion exacto que lee la voz.
+ *
+ * Sonido (26-nov-2026, pedido de Mateo): remezclados sin tocar imagen ni voz. Los efectos
+ * quedan siempre debajo de la voz y cada video tiene su propia música (Eleven Music).
+ * Detalle y medición: orquestador/conocimiento/jane/microvideos/macro/sonido/README.md
  */
 export const MICROVIDEOS = {
   "da26-a1-carrito": {

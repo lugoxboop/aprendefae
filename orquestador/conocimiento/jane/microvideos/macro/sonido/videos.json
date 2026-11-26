@@ -1,0 +1,14 @@
+{
+  "_nota": "Cada microvideo con su propia pista (pedido de Mateo, 26-nov-2026: que la música no sea siempre la misma). Dos videos seguidos nunca comparten pista.",
+  "videos": [
+    { "id": "A1", "video": "carrito", "musica": "lofi-cafe" },
+    { "id": "A2", "video": "vaso-renta", "musica": "marimba-curiosa" },
+    { "id": "A3", "video": "columpio-tasa", "musica": "guitarra-andina" },
+    { "id": "A4", "video": "no-miran-renta", "musica": "jazz-ligero" },
+    { "id": "A5", "video": "bisagra-ascensor", "musica": "sintes-estudio" },
+    { "id": "A6", "video": "eco-multiplicador", "musica": "ukelele-sol" },
+    { "id": "B1", "video": "mecanico", "musica": "cumbia-tranquila" },
+    { "id": "B2", "video": "fiebre", "musica": "piano-pensativo" },
+    { "id": "B3", "video": "problema-resuelto", "musica": "bossa-suave" }
+  ]
+}

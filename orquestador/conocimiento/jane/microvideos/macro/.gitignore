@@ -5,3 +5,4 @@ public/audio/
 # se regenera con: python3 sonido/sintetiza.py
 public/sfx/musica.wav
 *.mp4
+__pycache__/
