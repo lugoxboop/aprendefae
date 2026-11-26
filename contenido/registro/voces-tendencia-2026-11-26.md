@@ -7,7 +7,7 @@ Orden de la biblioteca: trending. Modelo: eleven_v4. Modelos disponibles: eleven
 3. Gaby - Natura & Casual · female · young · latin american · conversational · casual · usada 595937924 [p5EUznrYaWnafKvUkNiR]
 4. Luisa - Smooth, Friendly and Engaging · female · middle_aged · latin american · narrative_story · excited · usada 56926325 [ByzPpv6d6pT90CCpgb7k]
 5. Brian C. - Professional Latin Narrator · male · young · latin american · narrative_story · professional · usada 53692900 [uCQe5kObQIjtylU0HL3m]
-6. Renata - Dynamic & Professional · female · young · latin american · advertisement · professional · usada 29749029 [vTh15aXpXCElYDOJnJK0]
+6. Renata - Dynamic & Professional · female · young · latin american · advertisement · professional · usada 30019628 [vTh15aXpXCElYDOJnJK0]
 7. Ivan - Breathy, Wise-Sounding · male · old · latin american · narrative_story · wise · usada 99289439 [oqO5cdAzjE5Ik5xWIZRL]
 8. Sandra - Dynamic, Engaging and Energetic · female · young · latin american · social_media · hyped · usada 214947146 [rEVYTKPqwSMhytFPayIb]
 9. Yorman Zapata - Podcast, Ads · male · middle_aged · colombian · advertisement · cute · usada 8549780 [VVBVYefvg7r5n2yHrobQ]

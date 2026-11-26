@@ -2,14 +2,14 @@
   "_nota": "Voces de confianza por tendencia (biblioteca de ElevenLabs, español latino, orden trending). Se renuevan con node voces.mjs. Cada pieza anota su voz.",
   "confianza": [
     {
-      "alias": "gaby",
-      "nombre": "Gaby - Natura & Casual",
-      "voice_id": "p5EUznrYaWnafKvUkNiR",
-      "genero": "female",
-      "edad": "young",
-      "acento": "latin american",
-      "uso": "conversational",
-      "tono": "casual",
+      "alias": "javier",
+      "nombre": "Javier Rojas - Learning & Storytelling",
+      "voice_id": "eHAEFkimnYz57pupUMcq",
+      "genero": "male",
+      "edad": "middle_aged",
+      "acento": "peninsular",
+      "uso": "informative_educational",
+      "tono": "classy",
       "desde": "2026-11-26"
     },
     {
@@ -33,6 +33,17 @@
       "uso": "narrative_story",
       "tono": "calm",
       "desde": "2026-11-26"
+    },
+    {
+      "alias": "juan",
+      "nombre": "Juan - Clear & Expressive",
+      "voice_id": "FA1FBP9TKxnBiw45fHmS",
+      "genero": "male",
+      "edad": "middle_aged",
+      "acento": "colombian",
+      "uso": "narrative_story",
+      "tono": "calm",
+      "desde": "2026-11-26"
     }
   ],
   "modelos": [
@@ -49,5 +60,6 @@
   "cupo": {
     "plan": "Creator",
     "aviso": 0.8
-  }
+  },
+  "rotacion": 0
 }
