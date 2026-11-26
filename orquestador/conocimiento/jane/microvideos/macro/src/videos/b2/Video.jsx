@@ -33,7 +33,7 @@ const VIRUS = [
 const tVirus = (i) => i < 5 ? S(VIRUS[i][1]) + 0.05 : [W(9, "desigualdad", 0.3), W(9, "recursos", 0.55), W(9, "ambiental", 0.85)][i - 5] - 0.2;
 
 /* dónde aparece cada virus: cinco alrededor del circuito, tres pequeños adentro */
-const SITIO = [[175, 330], [905, 330], [175, 1260], [905, 1260], [540, 1400], [430, 690], [650, 690], [540, 900]];
+const SITIO = [[270, 320], [810, 320], [270, 1260], [810, 1260], [540, 1400], [380, 690], [700, 690], [540, 900]];
 
 const PLANOS = [
   { tipo: "consulta", desde: 0 },
@@ -129,7 +129,7 @@ function Circuito({ t }) {
         return (
           <div key={n}>
             <Obj src="macro2026/ilustrados/virus.webp" x={x} y={y + 8 * Math.sin(t * 3 + i)} w={(i < 5 ? 150 : 100) + 40 * foco} giro={t * 40 + i * 30} esc={rebote(p)} filtro={`hue-rotate(${i * 45}deg)`} />
-            <Cartel x={x} y={y + (i < 5 ? 105 : 75)} txt={n} p={p} tam={i < 5 ? 42 + 14 * foco : 30} fondo={col} color="#fff" />
+            <Cartel x={x} y={y + (i < 5 ? 105 : 75)} txt={n} p={p} tam={i < 5 ? 42 + 6 * foco : 30} fondo={col} color="#fff" />
             {sub && <Cartel x={540} y={780} txt={sub} p={rampa(t, t0 + 0.3, 0.3) * (1 - rampa(t, tVirus(i + 1) - 0.1, 0.2))} tam={52} fondo={CREMA} />}
           </div>
         );
@@ -147,7 +147,7 @@ function Receta({ t }) {
   return (
     <Escena cam={cam} fondo="art/consultorio.jpg">
       <Paciente x={380} y={1160} w={380} fiebre={1 - 0.6 * rampa(t, M.politica, 1.5)} t={t} />
-      <Cartel x={380} y={860} txt="problemas económicos" p={rampa(t, M.problemas - 0.2, 0.35)} tam={50} fondo={COLOR.CORAL} color="#fff" />
+      <Cartel x={520} y={860} txt="problemas económicos" p={rampa(t, M.problemas - 0.2, 0.35)} tam={46} fondo={COLOR.CORAL} color="#fff" />
       <div style={{ position: "absolute", left: 560, top: lerp(1500, 1040, sale(receta)), width: 360, height: 420, background: "#fff", border: `8px solid ${TINTA}`, borderRadius: 14, transform: `rotate(4deg) scale(${rebote(receta)})`, opacity: Math.min(1, receta * 3) }}>
         <div style={{ margin: "18px 22px 6px", fontFamily: "Sora", fontWeight: 800, fontSize: 46, color: "#E5484D" }}>Rx</div>
         <div style={{ margin: "0 22px", fontFamily: "Caveat", fontWeight: 700, fontSize: 58, lineHeight: 1.05, color: AZUL, clipPath: `inset(0 ${100 - 100 * rampa(t, M.politica - 0.3, 0.9)}% 0 0)` }}>Política económica</div>
