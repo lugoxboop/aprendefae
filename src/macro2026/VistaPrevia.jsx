@@ -52,8 +52,7 @@ const COMPONENTES = {
   "da26-h5-libreta": lazy(() => import("./demanda-agregada/H5Libreta.jsx")),
   "da26-h6-meta": lazy(() => import("./demanda-agregada/H6Meta.jsx")),
   "pe26-a1-mecanico": lazy(() => conVideo(() => import("./politica-economica/A1Mecanico.jsx"), "pe26-a1-mecanico")),
-  /* Piloto del simulador con IA (26-nov): solo aquí, sin publicar. */
-  "pe26-a2-fiebre": lazy(() => conVideo(() => import("./politica-economica/A2Fiebre.jsx"), "pe26-a2-fiebre", { simulador: true })),
+  "pe26-a2-fiebre": lazy(() => conVideo(() => import("./politica-economica/A2Fiebre.jsx"), "pe26-a2-fiebre")),
   "pe26-a3-problema-resuelto": lazy(() => conVideo(() => import("./politica-economica/A3ProblemaResuelto.jsx"), "pe26-a3-problema-resuelto")),
   "pe26-a4-perillas": lazy(() => conVideo(() => import("./politica-economica/A4Perillas.jsx"), "pe26-a4-perillas")),
   "pe26-a5-escalera": lazy(() => conVideo(() => import("./politica-economica/A5Escalera.jsx"), "pe26-a5-escalera")),
