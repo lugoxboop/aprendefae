@@ -36,6 +36,7 @@ const RepasoMacro = lazy(() => import("./repaso/RepasoMacro.jsx"));
 export const ID_REPASO_PREVIA = "repaso";
 
 const COMPONENTES = {
+  "da26-a0-ley-demanda": lazy(() => import("./demanda-agregada/A0LeyDemanda.jsx")),
   "da26-a1-carrito": lazy(() => import("./demanda-agregada/A1Carrito.jsx")),
   "da26-h1-llena-carrito": lazy(() => import("./demanda-agregada/H1LlenaCarrito.jsx")),
   "da26-a2-vaso-renta": lazy(() => import("./demanda-agregada/A2VasoRenta.jsx")),

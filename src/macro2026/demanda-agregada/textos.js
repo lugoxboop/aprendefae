@@ -13,6 +13,11 @@
 
 /* ─── Las pantallas de Aprender: el texto de lectura de cada P ─────────── */
 export const APRENDER = {
+  /* A0: microvideo de Jane «El mango de Toby» (aprobado por Mateo, 25-nov-2026); no viene de la spec de Gen. */
+  "da26-a0-ley-demanda": [
+    "Mira qué pasa en el mercado cuando el precio del mango sube y baja.",
+    "Sube el precio, baja la cantidad demandada. No se mueve la curva: te mueves sobre ella.",
+  ],
   "da26-a1-carrito": [
     "Toda la economía hace un solo mercado. Lo que compra junta es la demanda agregada.",
     "Toca cada mano y mira qué echa al carrito.",
@@ -91,6 +96,9 @@ export const CONSIGNAS = {
  */
 const plaza = (hora, lado, mascota, rol, contexto, porRonda = null) => ({ tema: "plaza", hora, lado, ...mascota, rol, contexto, porRonda });
 export const ESCENAS = {
+  "da26-a0-ley-demanda": plaza("manana", "der", { mascota: { id: "familia", pose: "mercado" } },
+    "Vas al mercado a comprar mangos, como todos los días.",
+    "En la plaza está el puesto de mangos de Rufo. Él cambia el precio y Toby decide cuántos se lleva."),
   "da26-a1-carrito": plaza("dia", "izq", { mascota: { id: "empresario", pose: "carrito" } },
     "Te contratan en el DANE para medir cuánto compra el país entero.",
     "Fin de mes: familias, empresas, Gobierno y extranjeros compran a la vez. Todo cabe en un solo carrito."),
@@ -285,6 +293,19 @@ export const ETAPAS_H2 = [
     },
   },
 ];
+
+/* ─── A0: lo que dice el video, para leerlo sin sonido (subtítulos quemados + transcripción) ─── */
+export const TRANSCRIPCION_A0 = Object.freeze([
+  "Toby ama el mango. Y hoy solo se lleva uno. ¿Qué pasó?",
+  "Lunes. Toby llega al mercado: quiere mangos para su jugo. En el puesto de Rufo, el mango está a mil pesos. A ese precio, Toby ni lo piensa: se lleva cinco.",
+  "Martes. El camión llegó casi vacío, y Rufo sube el precio: dos mil. Toby hace cuentas… y se lleva tres.",
+  "Miércoles: tres mil pesos. Toby quiere mango igual que el lunes. Pero se lleva solo uno.",
+  "El jueves, el mango baja a mil quinientos. Y Toby vuelve por cuatro.",
+  "Rufo lo fue anotando todo en su pizarra: el precio, y los mangos que se llevó Toby. Une los puntos. Esa línea que baja es la curva de demanda.",
+  "Y lo que acabas de ver tiene nombre: la ley de la demanda. Si el precio sube, la cantidad demandada baja. Si todo lo demás sigue igual.",
+  "Ojo: la curva no se movió. Fue Toby quien se movió sobre ella.",
+  "Ahora te toca. En la actividad, tú decides: ¿se mueve la curva, o te mueves sobre ella?",
+]);
 
 /* ─── Los subtemas válidos (ids de la ficha 1) ─────────────────────────── */
 export const SUBTEMAS = [

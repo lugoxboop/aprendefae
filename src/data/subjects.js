@@ -69,6 +69,8 @@ export const SUBJECTS = {
         id: "demanda-agregada",
         title: "Demanda agregada",
         actividades: [
+          /* Lote 3 (25-nov-2026): el microvideo de Jane abre el tema. */
+          { id: "da26-a0-ley-demanda", nombre: "La ley de la demanda en el mercado", clasificacion: { tipo: APRENDER } },
           { id: "da26-a1-carrito", nombre: "El carrito de la economía", clasificacion: { tipo: APRENDER } },
           { id: "da26-a2-vaso-renta", nombre: "El vaso de la renta", clasificacion: { tipo: APRENDER } },
           { id: "da26-a3-columpio-tasa", nombre: "El columpio de la tasa", clasificacion: { tipo: APRENDER } },
