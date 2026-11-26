@@ -5,7 +5,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
-import { clave, pide, leeJSON, RAIZ, registra, ahoraBogota } from "./comun.mjs";
+import { clave, pide, leeJSON, RAIZ, registra, ahoraBogota, aviso } from "./comun.mjs";
 import { cupo } from "./cupo.mjs";
 
 const pedido = leeJSON(path.resolve(process.argv[2]));
@@ -24,7 +24,14 @@ const cuerpo = {
   generate_audio: false,
   start_frame: { type: "inline_base64", content_base64: img.toString("base64"), mime_type: "image/jpeg" },
 };
-const r = await (await pide(`${API}/v1/flows/video`, { method: "POST", headers: H, body: JSON.stringify(cuerpo) }, { reintentos: 0 })).json();
+let r;
+try {
+  r = await (await pide(`${API}/v1/flows/video`, { method: "POST", headers: H, body: JSON.stringify(cuerpo) }, { reintentos: 0 })).json();
+} catch (e) {
+  // 402 = el plan no incluye la API de video (exige Pro o superior). No es un fallo del pipeline.
+  if (/→ 402:/.test(e.message)) { aviso("La API de video de ElevenLabs exige plan Pro o superior: no se generó nada."); registra("Video IA no disponible con el plan actual (402, exige Pro)."); process.exit(0); }
+  throw e;
+}
 console.log("Generación", r.id, r.status);
 let g;
 for (let i = 0; i < 90; i++) {                       // hasta ~15 min
