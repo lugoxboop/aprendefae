@@ -26,6 +26,10 @@
 - **Render:** Remotion (skills oficiales, router `remotion-best-practices`). **Imágenes/storyboards:** Gemini con `orquestador/conocimiento/guia-estilo-imagenes.md`. **Efectos/música:** Pixabay/Freesound CC0 o sintetizados.
 - **Videos terminados:** bucket público `instagram-publico` de Supabase Storage (solo videos, nunca datos de estudiantes); Meta publica desde ese enlace.
 
+## Imágenes nuevas (Mateo, 26-nov; nos quedamos en Creator, sin video IA)
+- Las animaciones las hago yo en Remotion. Si falta un elemento (pose, objeto, expresión), lo pido a **Gemini por Claude en Chrome, solo Browser 1**: 1) leer `orquestador/conocimiento/guia-estilo-imagenes.md` y las referencias; 2) generar con la guía, descargar en máxima resolución y guardar el original con nombre descriptivo en minúsculas; 3) revisar una por una y regenerar lo raro o fuera de estilo; 4) recortar a fondo transparente y WebP liviano en la carpeta de assets; 5) integrarla en la pieza con su animación y comprobar a 320 y 375 px.
+- Los ojos cerrados ya no hacen falta como imagen: el párpado se dibuja en código (`base.jsx`).
+
 ## Cómo corre el pipeline
 - **GitHub Actions** (`.github/workflows/contenido.yml`), disparado al empujar `contenido/pedido.json`. El shell de la nube NO alcanza ElevenLabs, Supabase ni Meta (proxy). Animar y revisar cuadros: local, en `contenido/estudio/`. Detalle en `contenido/README.md`.
 
