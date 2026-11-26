@@ -31,6 +31,7 @@ import FondoPagina, { ESCENA_DE_TEMA } from "./comun/FondoPagina.jsx";
 import { azarDeLaPagina } from "./comun/azar.js";
 import { armarRonda } from "./repaso/ronda.js";
 import { conVideo } from "./comun/ConVideo.jsx";
+import { simuladorDe } from "./simulador/escenas.js";
 
 /* El Repaso Diario de Macro 2026 (diseño de Gen, 24-nov): #/macro-2026/repaso. */
 const RepasoMacro = lazy(() => import("./repaso/RepasoMacro.jsx"));
@@ -51,7 +52,8 @@ const COMPONENTES = {
   "da26-h5-libreta": lazy(() => import("./demanda-agregada/H5Libreta.jsx")),
   "da26-h6-meta": lazy(() => import("./demanda-agregada/H6Meta.jsx")),
   "pe26-a1-mecanico": lazy(() => conVideo(() => import("./politica-economica/A1Mecanico.jsx"), "pe26-a1-mecanico")),
-  "pe26-a2-fiebre": lazy(() => conVideo(() => import("./politica-economica/A2Fiebre.jsx"), "pe26-a2-fiebre")),
+  /* Piloto del simulador con IA (26-nov): solo aquí, sin publicar. */
+  "pe26-a2-fiebre": lazy(() => conVideo(() => import("./politica-economica/A2Fiebre.jsx"), "pe26-a2-fiebre", { simulador: true })),
   "pe26-a3-problema-resuelto": lazy(() => conVideo(() => import("./politica-economica/A3ProblemaResuelto.jsx"), "pe26-a3-problema-resuelto")),
   "pe26-a4-perillas": lazy(() => import("./politica-economica/A4Perillas.jsx")),
   "pe26-a5-escalera": lazy(() => import("./politica-economica/A5Escalera.jsx")),
@@ -235,7 +237,7 @@ export default function VistaPrevia({ extra = null, onBack }) {
   return (
     <FondoPagina tema={id && piezaDe(id) ? ESCENA_DE_TEMA[temaDe(id).id] : null} style={{ color: INK }}>
       <Raiz data-vista-previa-macro2026>
-        <div style={{ padding: "16px 16px 56px", maxWidth: 672, margin: "0 auto" }}>
+        <div style={{ padding: "16px 16px 56px", maxWidth: id && simuladorDe(id) ? 1112 : 672, margin: "0 auto" }}>
           {!id && (
             <div style={{ maxWidth: 640, margin: "0 auto 12px" }}>
               <Boton onClick={onBack}>‹ Inicio</Boton>
