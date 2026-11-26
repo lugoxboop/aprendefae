@@ -52,3 +52,10 @@ video; para los siguientes se le vuelve a preguntar.
 
 Kokoro-82M `em_alex` (Apache-2.0), usada en el primer intento del microvideo de
 la ley de la demanda. Mateo la rechazó por robótica el 2026-11-25.
+
+## Música y efectos (decisión de Mateo, 2026-11-26)
+
+Los efectos nunca suenan más fuerte que la voz y la música de fondo cambia de un video a otro.
+La mezcla final se hace con `microvideos/macro/sonido/mezcla.py`; las pistas y cómo pedir más
+están en `microvideos/macro/sonido/README.md`. Muestras de 8 voces del plan Creator en
+`microvideos/macro/sonido/voces-muestra/` para que Mateo elija si cambia la voz.

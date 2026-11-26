@@ -25,13 +25,13 @@ SR = 44100
 VOZ_LUFS = -18.0
 FINAL_LUFS = -16.0
 FX_BAJO_VOZ = 6.0      # dB que el efecto queda debajo de la voz, como mínimo
-FX_MEDIO = 12.0        # dB debajo de la voz a los que se lleva el efecto típico
+FX_MEDIO = 9.0         # dB debajo de la voz a los que se lleva el efecto típico
 MUSICA_HABLA = 21.0    # dB de la música debajo de la voz mientras se habla
 MUSICA_PAUSA = 12.0    # dB de la música debajo de la voz en las pausas
 
 
 def lee(f, canales=2):
-    r = subprocess.run(["ffmpeg", "-v", "error", "-i", f, "-f", "f32le", "-ac", str(canales), "-ar", str(SR), "-"],
+    r = subprocess.run(["ffmpeg", "-nostdin", "-v", "error", "-i", f, "-f", "f32le", "-ac", str(canales), "-ar", str(SR), "-"],
                        capture_output=True, check=True)
     return np.frombuffer(r.stdout, dtype=np.float32).reshape(-1, canales).astype(np.float64)
 
@@ -100,29 +100,38 @@ def mezcla(a):
     med = pyln.Meter(SR)
     voz *= 10 ** ((VOZ_LUFS - med.integrated_loudness(voz[:, 0])) / 20)
     ev, tipico, activa = actividad_voz(voz)
-    ev_alrededor = maximum_filter1d(env_db(voz, 0.3), size=int(0.6 * SR))
-    ref = np.where(activa, ev_alrededor, tipico)
 
-    # efectos: primero al nivel típico (FX_MEDIO debajo de la voz), luego el tope por instante
-    efx = env_db(fx, 0.05)
-    sonando = efx > efx.max() - 30
-    if sonando.any():
-        fx *= 10 ** ((tipico - FX_MEDIO - np.percentile(efx[sonando], 90)) / 20)
-    efx = env_db(fx, 0.05)
-    g = np.minimum(0, (ref - FX_BAJO_VOZ) - efx)
-    fx *= (10 ** (suaviza_ganancia(g) / 20))[:, None]
-
-    # música
+    # música: a su nivel debajo de la voz, más baja mientras se habla
     mu = ajusta(lee(a.musica, 2), n)
-    mu /= 10 ** (med.integrated_loudness(mu) / 20) / 10 ** (VOZ_LUFS / 20)  # a -16 LUFS
+    mu *= 10 ** ((VOZ_LUFS - med.integrated_loudness(mu)) / 20)
     habla = uniform_filter1d(activa.astype(float), size=int(0.7 * SR), mode="nearest")
     g_mu = -(MUSICA_PAUSA + (MUSICA_HABLA - MUSICA_PAUSA) * habla)
     t = np.arange(n) / SR
     fundido = np.clip(t / 0.6, 0, 1) * np.clip((t[-1] - t) / 1.4, 0, 1)
     mu *= (10 ** (g_mu / 20) * fundido)[:, None]
 
+    # el techo del fondo en cada instante: el nivel momentáneo de la voz (400 ms) o, en las
+    # pausas y entre palabras, el nivel típico de la voz; menos FX_BAJO_VOZ dB
+    ev4 = env_db(voz, 0.4)
+    tip4 = float(np.median(ev4[activa]))
+    techo = np.where(activa, np.maximum(ev4, tip4 - 10), tip4) - FX_BAJO_VOZ
+    techo = minimum_filter1d(techo, size=int(0.4 * SR), mode="nearest")
+
+    # efectos: primero al nivel típico (FX_MEDIO debajo de la voz); luego, el tope instante a
+    # instante (medido en 50 ms, más estricto que el medidor) descontando lo que ya ocupa la música
+    efx = env_db(fx, 0.05)
+    sonando = efx > efx.max() - 30
+    if sonando.any():
+        fx *= 10 ** ((tip4 - FX_MEDIO - np.percentile(efx[sonando], 90)) / 20)
+    efx = env_db(fx, 0.05)
+    libre = 10 ** (techo / 10) - 10 ** (env_db(mu, 0.05) / 10)
+    permitido = 10 * np.log10(np.maximum(libre, 10 ** ((techo - 20) / 10)))
+    g = np.minimum(0, permitido - efx)
+    fx *= (10 ** (suaviza_ganancia(g) / 20))[:, None]
+
     total = voz + fx + mu  # la voz mono va a los dos canales
-    total *= 10 ** ((FINAL_LUFS - med.integrated_loudness(total)) / 20)
+    gf = 10 ** ((FINAL_LUFS - med.integrated_loudness(total)) / 20)
+    total *= gf
     pico = np.abs(total).max()
     lim = 10 ** (-1.5 / 20)
     if pico > lim:
@@ -132,12 +141,17 @@ def mezcla(a):
         gl = uniform_filter1d(minimum_filter1d(gl, size=int(0.01 * SR)), size=int(0.004 * SR) + 1)
         total *= gl[:, None]
 
+    if a.pistas:  # voz y fondo por separado, ya con la ganancia final (para el video de evidencia)
+        os.makedirs(a.pistas, exist_ok=True)
+        np.save(os.path.join(a.pistas, "voz.npy"), (voz[:, 0] * gf).astype(np.float32))
+        np.save(os.path.join(a.pistas, "fondo.npy"), ((fx + mu).mean(axis=1) * gf).astype(np.float32))
     inf = {"despues": informe_fondo(voz, fx + mu, "después"),
-           "lufs_final": round(med.integrated_loudness(total), 1), "musica": os.path.basename(a.musica)}
+           "lufs_final": round(med.integrated_loudness(total), 1),
+           "efecto_tipico_bajo_voz_db": round(tip4 - float(np.percentile(env_db(fx, 0.2)[sonando], 90)), 1) if sonando.any() else None, "musica": os.path.basename(a.musica)}
     with tempfile.TemporaryDirectory() as d:
         w = os.path.join(d, "m.f32")
         total.astype(np.float32).tofile(w)
-        cmd = ["ffmpeg", "-y", "-v", "error"]
+        cmd = ["ffmpeg", "-nostdin", "-y", "-v", "error"]
         if a.video:
             cmd += ["-i", a.video]
         cmd += ["-f", "f32le", "-ar", str(SR), "-ac", "2", "-i", w]
@@ -151,7 +165,7 @@ def mezcla(a):
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
     p.add_argument("--voz", required=True); p.add_argument("--fx"); p.add_argument("--musica")
-    p.add_argument("--video"); p.add_argument("--salida"); p.add_argument("--informe")
+    p.add_argument("--video"); p.add_argument("--salida"); p.add_argument("--informe"); p.add_argument("--pistas")
     p.add_argument("--medir", action="store_true"); p.add_argument("--fondo", nargs="*")
     a = p.parse_args()
     if a.medir:
