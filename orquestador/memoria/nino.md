@@ -9,6 +9,11 @@
 - **El día a día NO depende de Chrome:** todo por API (ElevenLabs e Instagram) con scripts en `contenido/`. Chrome solo para la configuración inicial.
 - Antes de abrir nada: primero `orquestador/INDICE.md`, luego el buscador del canon (regla k).
 
+## Dos públicos (Mateo, 26-nov)
+- **Usuarios:** estudiantes y profesores (vida universitaria, parciales, economía del día a día).
+- **Clientes:** cualquier persona que quiera **enseñar** algo y montar su propia página de forma sencilla: capacitaciones en el trabajo, cursos en línea, cursos de Excel, etc. (ni siquiera tiene que ser una facultad). Lo que vendemos es que **creamos la página**.
+- Cada tanda de 5 ideas incluye al menos una para clientes. Mismo modelo Red Bull: historia primero, la marca como firma. Detalle en `contenido/audiencias.md`.
+
 ## Aprobación y paradas
 - Mateo aprueba **las ideas**; las que elige, las produzco y publico sin volver a preguntar. Excepción: el **primer video** y cualquier pieza sensible (política, religión, tragedias, otras universidades/marcas) van a Mateo antes de publicar. Si no responde en todo el día, no se publica nada nuevo (sale una historia de una serie ya aprobada).
 - Paradas del montaje (solo estas): (1) login de Meta/Instagram y códigos → Mateo en persona; (2) compra del plan Creator de ElevenLabs → Mateo; (3) primer video → a Mateo antes de la primera publicación real.
