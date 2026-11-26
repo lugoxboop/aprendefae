@@ -1,0 +1,49 @@
+{
+  "_nota": "PROVISIONAL: la clave no tiene voices_read; no se pudo leer la tendencia. Correr de nuevo voces.mjs cuando tenga el permiso.",
+  "confianza": [
+    {
+      "alias": "jessica",
+      "nombre": "Jessica (prediseñada)",
+      "voice_id": "cgSgspJ2msm6clMCkdW9",
+      "genero": "female",
+      "tono": "joven, expresiva, juguetona",
+      "acento": "multilingüe (acento del modelo)",
+      "desde": "2026-11-26",
+      "provisional": true
+    },
+    {
+      "alias": "brian",
+      "nombre": "Brian (prediseñada)",
+      "voice_id": "nPczCjzI2devNBz1zQrb",
+      "genero": "male",
+      "tono": "grave, cálida, narrador",
+      "acento": "multilingüe (acento del modelo)",
+      "desde": "2026-11-26",
+      "provisional": true
+    },
+    {
+      "alias": "sarah",
+      "nombre": "Sarah (prediseñada)",
+      "voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "genero": "female",
+      "tono": "madura, tranquila, segura",
+      "acento": "multilingüe (acento del modelo)",
+      "desde": "2026-11-26",
+      "provisional": true
+    }
+  ],
+  "modelos": [
+    "eleven_v3",
+    "eleven_multilingual_v2"
+  ],
+  "modelo": "eleven_multilingual_v2",
+  "ajustes": {
+    "stability": 0.5,
+    "similarity_boost": 0.75
+  },
+  "formato": "mp3_44100_128",
+  "cupo": {
+    "plan": "Creator",
+    "aviso": 0.8
+  }
+}

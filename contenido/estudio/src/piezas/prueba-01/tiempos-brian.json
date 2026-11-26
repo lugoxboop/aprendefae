@@ -1,0 +1,304 @@
+{
+  "audio": "voz/prueba-01-brian.mp3",
+  "duracion": 21.96,
+  "hash": "cd1813fc3aeb261b",
+  "voz": "Brian (prediseñada)",
+  "voice_id": "nPczCjzI2devNBz1zQrb",
+  "genero": "male",
+  "modelo": "eleven_v3",
+  "caracteres": 262,
+  "escenas": [
+    {
+      "ini": 0,
+      "fin": 4.16,
+      "texto": "Son las dos de la mañana. El parcial de Toby es a las siete.",
+      "palabras": [
+        {
+          "w": "Son",
+          "ini": 0,
+          "fin": 0.16
+        },
+        {
+          "w": "las",
+          "ini": 0.22,
+          "fin": 0.4
+        },
+        {
+          "w": "dos",
+          "ini": 0.48,
+          "fin": 0.72
+        },
+        {
+          "w": "de",
+          "ini": 0.747,
+          "fin": 0.8
+        },
+        {
+          "w": "la",
+          "ini": 0.853,
+          "fin": 0.96
+        },
+        {
+          "w": "mañana.",
+          "ini": 1.029,
+          "fin": 1.52
+        },
+        {
+          "w": "El",
+          "ini": 1.707,
+          "fin": 2.08
+        },
+        {
+          "w": "parcial",
+          "ini": 2.16,
+          "fin": 2.64
+        },
+        {
+          "w": "de",
+          "ini": 2.667,
+          "fin": 2.72
+        },
+        {
+          "w": "Toby",
+          "ini": 2.832,
+          "fin": 3.28
+        },
+        {
+          "w": "es",
+          "ini": 3.333,
+          "fin": 3.44
+        },
+        {
+          "w": "a",
+          "ini": 3.48,
+          "fin": 3.52
+        },
+        {
+          "w": "las",
+          "ini": 3.56,
+          "fin": 3.68
+        },
+        {
+          "w": "siete.",
+          "ini": 3.72,
+          "fin": 4.16
+        }
+      ]
+    },
+    {
+      "ini": 4.4,
+      "fin": 7.093,
+      "texto": "Su plan: leerse todo esto.",
+      "palabras": [
+        {
+          "w": "Su",
+          "ini": 4.4,
+          "fin": 4.72
+        },
+        {
+          "w": "plan:",
+          "ini": 4.8,
+          "fin": 5.2
+        },
+        {
+          "w": "leerse",
+          "ini": 5.344,
+          "fin": 6.08
+        },
+        {
+          "w": "todo",
+          "ini": 6.144,
+          "fin": 6.4
+        },
+        {
+          "w": "esto.",
+          "ini": 6.48,
+          "fin": 7.093
+        }
+      ]
+    },
+    {
+      "ini": 7.533,
+      "fin": 10.64,
+      "texto": "Pausa. ¿Qué harías tú: café o dormir?",
+      "palabras": [
+        {
+          "w": "Pausa.",
+          "ini": 7.533,
+          "fin": 8.08
+        },
+        {
+          "w": "¿Qué",
+          "ini": 8.32,
+          "fin": 8.64
+        },
+        {
+          "w": "harías",
+          "ini": 8.68,
+          "fin": 8.96
+        },
+        {
+          "w": "tú:",
+          "ini": 9.04,
+          "fin": 9.28
+        },
+        {
+          "w": "café",
+          "ini": 9.424,
+          "fin": 10
+        },
+        {
+          "w": "o",
+          "ini": 10.04,
+          "fin": 10.08
+        },
+        {
+          "w": "dormir?",
+          "ini": 10.144,
+          "fin": 10.64
+        }
+      ]
+    },
+    {
+      "ini": 10.72,
+      "fin": 15.36,
+      "texto": "Toby eligió café. Al tercero, no entendía ni el título.",
+      "palabras": [
+        {
+          "w": "Toby",
+          "ini": 10.72,
+          "fin": 11.488
+        },
+        {
+          "w": "eligió",
+          "ini": 11.68,
+          "fin": 12.08
+        },
+        {
+          "w": "café.",
+          "ini": 12.16,
+          "fin": 12.84
+        },
+        {
+          "w": "Al",
+          "ini": 12.96,
+          "fin": 13.2
+        },
+        {
+          "w": "tercero,",
+          "ini": 13.28,
+          "fin": 13.84
+        },
+        {
+          "w": "no",
+          "ini": 13.92,
+          "fin": 14.08
+        },
+        {
+          "w": "entendía",
+          "ini": 14.137,
+          "fin": 14.64
+        },
+        {
+          "w": "ni",
+          "ini": 14.667,
+          "fin": 14.72
+        },
+        {
+          "w": "el",
+          "ini": 14.773,
+          "fin": 14.88
+        },
+        {
+          "w": "título.",
+          "ini": 14.937,
+          "fin": 15.36
+        }
+      ]
+    },
+    {
+      "ini": 15.72,
+      "fin": 18.8,
+      "texto": "Dato: dormir ayuda a fijar lo que estudiaste.",
+      "palabras": [
+        {
+          "w": "Dato:",
+          "ini": 15.72,
+          "fin": 16.4
+        },
+        {
+          "w": "dormir",
+          "ini": 16.544,
+          "fin": 17.2
+        },
+        {
+          "w": "ayuda",
+          "ini": 17.253,
+          "fin": 17.52
+        },
+        {
+          "w": "a",
+          "ini": 17.56,
+          "fin": 17.6
+        },
+        {
+          "w": "fijar",
+          "ini": 17.64,
+          "fin": 17.92
+        },
+        {
+          "w": "lo",
+          "ini": 17.973,
+          "fin": 18.08
+        },
+        {
+          "w": "que",
+          "ini": 18.1,
+          "fin": 18.16
+        },
+        {
+          "w": "estudiaste.",
+          "ini": 18.2,
+          "fin": 18.8
+        }
+      ]
+    },
+    {
+      "ini": 19.1,
+      "fin": 21.76,
+      "texto": "¿Y tú, qué eliges? Te leemos.",
+      "palabras": [
+        {
+          "w": "¿Y",
+          "ini": 19.1,
+          "fin": 19.28
+        },
+        {
+          "w": "tú,",
+          "ini": 19.333,
+          "fin": 19.52
+        },
+        {
+          "w": "qué",
+          "ini": 19.64,
+          "fin": 20
+        },
+        {
+          "w": "eliges?",
+          "ini": 20.064,
+          "fin": 20.64
+        },
+        {
+          "w": "Te",
+          "ini": 20.773,
+          "fin": 21.04
+        },
+        {
+          "w": "leemos.",
+          "ini": 21.093,
+          "fin": 21.76
+        }
+      ]
+    }
+  ]
+}
