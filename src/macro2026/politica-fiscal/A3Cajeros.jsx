@@ -77,7 +77,7 @@ function Billeteras({ tipo, tocadas, tocar }) {
       <div className="pf26-a3-billeteras" role="group" aria-label="Las tres billeteras">
         {A3.billeteras.map((b) => (
           <button key={b.id} type="button" className="pf26-a3-billetera" data-billetera={b.id} aria-pressed={tocadas.has(b.id)} onClick={() => tocar(b.id)}>
-            <IconoBilletera size={30 + 14 * ESCALA_BILLETERA[b.id]} escala={ESCALA_BILLETERA[b.id]} />
+            <Ilustrado id="billetera" alto={22 + 14 * ESCALA_BILLETERA[b.id]} />
             <span>{b.nombre}</span>
           </button>
         ))}

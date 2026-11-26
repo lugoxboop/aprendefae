@@ -38,6 +38,7 @@ const { conSemilla } = await import("../comun/azar.js");
 const { CORAL } = await import("../comun/colores-da.js");
 const { CSS_DA } = await import("../comun/ui.jsx");
 const T = await import("../politica-fiscal/textos.js");
+const { sumable, pesos } = await import("../politica-fiscal/H3Factura.jsx");
 const { HACER_T3 } = await import("../politica-fiscal/catalogo.js");
 const { partidaDePrevia } = await import("../VistaPrevia.jsx");
 
@@ -207,9 +208,10 @@ test("H3: la línea abre cinco fichas debajo; el error da la retro del par y dej
   let lineas = 0;
   for (let d = 0; d < 3; d += 1) {
     const doc = T.DOCUMENTOS_H3.find((x) => x.id === m.q("[data-documento]").dataset.documento);
-    /* Rediseño lote 2: el profesor y su pregunta van en la escena compacta. */
-    assert.ok(m.q("[data-escenario] [data-mascota-rol='profesor']"), "el profesor en la escena");
-    assert.equal(m.q("[data-pregunta]").textContent, `${T.H3.profesor}${doc.pregunta}`);
+    /* Corrección 25-nov: cada documento trae a su cliente y su pregunta a la escena compacta. */
+    assert.ok(m.q(`[data-escenario] [data-mascota-rol='${doc.cliente.id}']`), "el cliente del documento en la escena");
+    assert.equal(m.q("[data-pregunta]").textContent, `${T.H3.cliente}${doc.pregunta}`);
+    for (const b of T.BUZONES_H3) assert.equal(m.q(`[data-buzon="${b.id}"]`).dataset.lineas, "0", "buzones vacíos al empezar");
     for (const [i, l] of doc.lineas.entries()) {
       lineas += 1;
       await m.clic(`[data-linea="${l.id}"]`);
@@ -226,7 +228,14 @@ test("H3: la línea abre cinco fichas debajo; el error da la retro del par y dej
       await m.clic(`[data-ficha="${l.clave}"]`);
       assert.equal(m.q(`[data-linea="${l.id}"]`).dataset.hecha, "1");
     }
-    assert.equal(m.q("[data-al-estado]").dataset.alEstado, "100", "la barra llena con todos los tributos");
+    for (const b of T.BUZONES_H3) {
+      const n = doc.lineas.filter((l) => b.claves.includes(l.clave)).length;
+      assert.equal(m.q(`[data-buzon="${b.id}"]`).dataset.lineas, String(n), `cada tributo cae en su buzón (${b.id})`);
+    }
+    if (sumable(doc)) {
+      const tributos = doc.lineas.filter((l) => l.clave !== "no").reduce((a, l) => a + pesos(l.monto), 0);
+      assert.equal(m.q("[data-sumados]").dataset.sumados, String(tributos), "la suma de tributos en pesos");
+    }
     await m.clic("[data-siguiente]");
   }
   assert.ok(res);

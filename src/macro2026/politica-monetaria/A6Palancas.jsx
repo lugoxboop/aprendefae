@@ -14,6 +14,7 @@ import { useState } from "react";
 import { BORDE, FONDO, INK, INK_2, TINTA_SOBRE_COLOR } from "../comun/colores-da.js";
 import { MarcoAprender, usePasos } from "../comun/ui.jsx";
 import { Objeto } from "../comun/kit.jsx";
+import { Ilustrado, TermometroVidrio } from "../comun/ilustrados.jsx";
 import { EscenaMascotas, MascotaRol } from "../comun/mascotas.jsx";
 import { BASE, fmtEntero, modelo, produccion } from "../comun/modelo-da.js";
 import { Cascada, CSS_PM, Letrero, MONETARIA, Tablero, medidaDe } from "./comun-pm.jsx";
@@ -49,10 +50,10 @@ export default function A6Palancas({ onTerminar }) {
   if (paso === 0) {
     figura = (
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-        <Objeto id="lupa" alto={120} />
+        <Ilustrado id="lupa" alto={120} />
         <div style={{ display: "grid", gap: 6, justifyItems: "center", minWidth: 0 }}>
           <span className="pm26-a6-proceso" style={{ margin: 0, minHeight: 0, padding: "4px 10px" }} data-cara="naturaleza">{A6.caras.naturaleza}</span>
-          <Objeto id="banco-central" alto={56} />
+          <Ilustrado id="edificio-gobierno" alto={56} nombre="Banco de la República" />
           <div style={{ width: 150 }}><Cascada encaje={20} visibles={4} mini /></div>
         </div>
       </div>
@@ -60,8 +61,8 @@ export default function A6Palancas({ onTerminar }) {
   } else if (paso === 1) {
     figura = (
       <div style={{ display: "flex", justifyContent: "center", gap: 28 }} data-cara="objetivos">
-        <div style={{ display: "grid", justifyItems: "center", gap: 4 }}><Objeto id="termometro" alto={110} /><span>{A6.precios}</span></div>
-        <div style={{ display: "grid", justifyItems: "center", gap: 4 }}><Objeto id="flecha-arriba" alto={110} /><span>{A6.crecimiento}</span></div>
+        <div style={{ display: "grid", justifyItems: "center", gap: 4 }}><svg width="44" height="116" viewBox="0 0 44 116" aria-hidden="true" style={{ width: 44, height: 116 }}><TermometroVidrio x={0} y={0} alto={116} nivel={0.35} /></svg><span>{A6.precios}</span></div>
+        <div style={{ display: "grid", justifyItems: "center", gap: 4 }}><Ilustrado id="cohete" alto={110} /><span>{A6.crecimiento}</span></div>
       </div>
     );
   } else if (paso <= 4) {

@@ -67,4 +67,18 @@ que lo usan. Por eso los lotes van por **familia de visual**, de peor a mejor.
   casa con andén). El termómetro de vidrio pasó a `TermometroVidrio` común.
   Gemini deja de crear imágenes tras unas 7 en un chat («soy un modelo de
   lenguaje»): se abre un chat nuevo y se pega el estilo bloqueado completo.
-- **Lote 4:** familias 14 a 20.
+- **Lote 4:** familias 14 a 20 (pf26-a1, pm26-a1, pm26-a6, da26-a3, a4, a6,
+  pc26-h4; de paso las billeteras de pf26-a3). Lote 3 publicado el 25-nov con
+  visto bueno de Mateo (#767). Lote 4 hecho el 25-nov; video en
+  `/mnt/project-files/macro-2026/videos/ilustrados-lote4/`. 10 objetos nuevos
+  (billetera, lupa, alcancía, carretera, cuerda, pila de monedas, grúa de
+  torre, tabla y soporte de balancín, cohete) y tres recortes derivados
+  (mango de la lupa, tramo de cuerda, pañuelo). La familia 21 (marco de
+  pizarra para las gráficas) queda para un lote final si Mateo lo pide.
+  Lote 4 publicado el 25-nov (#769).
+- **Extra, familia 21 (pizarra):** marco de pizarra de Gemini como
+  border-image (`Pizarra` en `comun/ilustrados.jsx`) alrededor de las cuatro
+  gráficas comunes: `GraficaDA`, `GraficaDinero`, `GraficaDivisas`, `Dial` y
+  `Correa`. Las líneas siguen a mano y en vivo dentro. Hecho el 25-nov; video
+  en `/mnt/project-files/macro-2026/videos/ilustrados-pizarra/`. Mateo decide
+  si se publica.

@@ -276,10 +276,21 @@ export function piezasAccesorios(especie, M, P, puestos) {
   const aj = ESPECIE[especie]?.ajustes || {};
   /* Orden fijo: lo que va abajo primero (de la tabla), no el orden de compra. */
   const orden = Object.keys(ACCESORIOS_MARIONETA).filter((k) => lista.includes(k));
+  /*
+   * El cuerpo a medida (complexión): lo del pecho y la espalda se ensancha
+   * con el torso, desde su centro y solo a lo ancho —una bufanda de un
+   * gordito es más ancha, no más alta—. Lo de la cabeza no se toca.
+   */
+  const ancho = M.anchoCuerpo || 1;
+  const eje = A.pecho[0];
   for (const id of orden) {
     const [ax = 0, ay = 0, as = 1, giro = 0] = aj[id] || [];
     let trozos = { cabeza: "", pecho: "", espalda: "" };
     const pintar = (pieza, capa, px, py, w, h) => {
+      if (ancho !== 1 && capa !== "cabeza") {
+        px = eje + (px - eje) * ancho;
+        w *= ancho;
+      }
       out.cajas.push([px, py, px + w, py + h, capa === "cabeza"]);
       const rot = giro ? ` transform="rotate(${giro} ${+(px + w / 2).toFixed(1)} ${+(py + h / 2).toFixed(1)})"` : "";
       /* preserveAspectRatio="none": la copa de un sombrero puede ir achatada. */

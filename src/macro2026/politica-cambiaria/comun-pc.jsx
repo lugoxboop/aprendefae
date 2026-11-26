@@ -12,7 +12,7 @@
 import { useEffect, useRef, useState } from "react";
 import { BORDE, FONDO, GRIS, INK, INK_2, SUPERFICIE_2, TINTA_SOBRE_COLOR } from "../comun/colores-da.js";
 import { colorRama } from "../comun/ramas.js";
-import { ILUSTRADOS, rutaIlustrado } from "../comun/ilustrados.jsx";
+import { ILUSTRADOS, Pizarra, rutaIlustrado } from "../comun/ilustrados.jsx";
 import { DOLAR, PESO } from "../comun/monedas.js";
 import { fmtDecimal, fmtEntero } from "../comun/modelo-da.js";
 import { movimientoReducido } from "../comun/ui.jsx";
@@ -164,6 +164,7 @@ export function GraficaDivisas({ so = 0, sd = 0, curvas = true, cruce = true, fa
   const linea = (f, s) => `M${xDeQ(QMIN)} ${yDeT(f(QMIN, s))}L${xDeQ(QMAX)} ${yDeT(f(QMAX, s))}`;
   const qO = (t, s) => s + (t - o0) / m, qD = (t, s) => s + (d0 - t) / m;
   return (
+    <Pizarra style={{ maxWidth: 392, margin: "0 auto" }}>
     <svg ref={svg} viewBox="0 0 280 218" style={{ width: "100%", height: "auto", maxWidth: 360, display: "block", margin: "0 auto", overflow: "visible" }}
       role="img" aria-label={`Mercado cambiario: tc ${fmtEntero(tc)}`} data-grafica-divisas data-tc={Math.round(tc)} data-so={Math.round(so)} data-sd={Math.round(sd)}>
       <defs><clipPath id="pc26-marco"><rect x={GX0} y={GY0 - 6} width={GX1 - GX0 + 6} height={GY1 - GY0 + 6} /></clipPath></defs>
@@ -197,6 +198,7 @@ export function GraficaDivisas({ so = 0, sd = 0, curvas = true, cruce = true, fa
       {curvas && asas.oferta && <Asa svg={svg} id="oferta" nombre={`${A2.oferta}: oferta de dólares`} x={xDeQ(qO(4350, so))} y={yDeT(4350)} valor={so} onCambio={asas.oferta} />}
       {curvas && asas.demanda && <Asa svg={svg} id="demanda" nombre={`${A2.demanda}: demanda de dólares`} x={xDeQ(qD(3650, sd))} y={yDeT(3650)} valor={sd} onCambio={asas.demanda} />}
     </svg>
+    </Pizarra>
   );
 }
 
@@ -239,6 +241,7 @@ export function Dial({ valor, onCambio = null, fantasma = null, itcrTexto = null
   const grados = (v) => (anguloDe(v) * 180) / Math.PI;
   const zona = valor == null ? null : zonaDe(valor);
   return (
+    <Pizarra style={{ maxWidth: 360, margin: "0 auto" }}>
     <svg ref={svg} viewBox="0 0 300 200" style={{ width: "100%", height: "auto", maxWidth: 380, display: "block", margin: "0 auto", touchAction: interactivo ? "none" : "auto", cursor: interactivo ? "pointer" : "default" }}
       role={interactivo ? "slider" : "img"} tabIndex={interactivo ? 0 : undefined}
       aria-label={interactivo ? nombre : `${nombre}: ${valor == null ? "sin marcar" : fmtVar(valor)}`}
@@ -293,6 +296,7 @@ export function Dial({ valor, onCambio = null, fantasma = null, itcrTexto = null
         {valor == null ? (interactivo ? "—" : "") : `Δtcr ${fmtVar(valor)}${itcrTexto ? ` · ${itcrTexto}` : ""}`}
       </text>
     </svg>
+    </Pizarra>
   );
 }
 
@@ -443,6 +447,7 @@ export function Correa({ regimen, vez = 0, sucia = false, mini = false }) {
   const anclaY = regimen === "fijo" ? CYM : regimen === "gota" ? py : regimen === "banda" ? (py < CYM ? CYM - 22 : CYM + 22) : null;
   const jala = regimen === "banda" ? Math.abs(rastro("banda", t)) >= 21.5 : regimen === "flexible" && sucia ? Math.abs(rastro("flexible", t)) >= 13.5 : false;
   return (
+    <Pizarra style={mini ? { borderWidth: "8px 10px 10px", borderImageWidth: "8px 10px 10px" } : null}>
     <svg viewBox={`0 0 300 ${mini ? 120 : 140}`} style={{ width: "100%", height: "auto", display: "block" }} role="img"
       aria-label={`${REG_NOMBRE[regimen]}${sucia ? `, ${A7.sucia.toLowerCase()}` : ""}`} data-correa={regimen} data-t={t.toFixed(2)} data-jala={jala ? "1" : "0"}>
       <path d={`M${CX0} 8V${mini ? 116 : 124}H292`} stroke={INK_2} strokeWidth="1.5" fill="none" />
@@ -468,6 +473,7 @@ export function Correa({ regimen, vez = 0, sucia = false, mini = false }) {
       {jala && <text x={px - 22} y={py - 12} fill={CAMBIARIA} fontSize="18" fontWeight="800" data-jalon>↩</text>}
       <Perro x={px} y={py} />
     </svg>
+    </Pizarra>
   );
 }
 const REG_NOMBRE = { fijo: "Fijo", banda: "Banda", gota: "Gota a gota", flexible: "Flexible" };

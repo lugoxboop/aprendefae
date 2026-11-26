@@ -13,11 +13,6 @@
 
 /* ─── Las pantallas de Aprender: el texto de lectura de cada P ─────────── */
 export const APRENDER = {
-  /* A0: microvideo de Jane (aprobado por Mateo, 25-nov-2026); no viene de la spec de Gen. */
-  "da26-a0-ley-demanda": [
-    "Mira qué pasa en el mercado cuando el precio del mango sube y baja.",
-    "Sube el precio, baja la cantidad demandada. No se mueve la curva: te mueves sobre ella.",
-  ],
   "da26-a1-carrito": [
     "Toda la economía hace un solo mercado. Lo que compra junta es la demanda agregada.",
     "Toca cada mano y mira qué echa al carrito.",
@@ -96,9 +91,6 @@ export const CONSIGNAS = {
  */
 const plaza = (hora, lado, mascota, rol, contexto, porRonda = null) => ({ tema: "plaza", hora, lado, ...mascota, rol, contexto, porRonda });
 export const ESCENAS = {
-  "da26-a0-ley-demanda": plaza("manana", "der", { mascota: { id: "familia", pose: "mercado" } },
-    "Vas al mercado a comprar mangos, como todos los días.",
-    "En la plaza hay un puesto de mangos. El vendedor cambia el precio y los compradores deciden."),
   "da26-a1-carrito": plaza("dia", "izq", { mascota: { id: "empresario", pose: "carrito" } },
     "Te contratan en el DANE para medir cuánto compra el país entero.",
     "Fin de mes: familias, empresas, Gobierno y extranjeros compran a la vez. Todo cabe en un solo carrito."),
@@ -293,19 +285,6 @@ export const ETAPAS_H2 = [
     },
   },
 ];
-
-/* ─── A0: lo que dice el video, para leerlo sin sonido (subtítulos quemados + transcripción) ─── */
-export const TRANSCRIPCION_A0 = Object.freeze([
-  "Si el mango sube, ¿lo queremos menos? Lo queremos igual. Pero compramos menos.",
-  "A $1.000, cinco compradores se llevan un mango cada uno.",
-  "Sube a $2.000. Dos se retiran. Se venden tres mangos.",
-  "A $3.000, solo compra uno.",
-  "Baja a $1.500, y vuelven: cuatro mangos.",
-  "Unimos los puntos: esa es la curva de demanda. Baja hacia la derecha.",
-  "Precio más alto, menor cantidad demandada, si todo lo demás sigue igual: la ley de la demanda.",
-  "Ojo, el precio no movió la curva. Nos movimos sobre ella.",
-  "En la actividad, decides tú: ¿se mueve la curva, o te mueves sobre ella?",
-]);
 
 /* ─── Los subtemas válidos (ids de la ficha 1) ─────────────────────────── */
 export const SUBTEMAS = [

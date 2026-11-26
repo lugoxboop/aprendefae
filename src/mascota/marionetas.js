@@ -371,10 +371,37 @@ const filtroIris = (id, iris) => {
  *   complexion  -2 (flaquito) … 2 (gordito)
  *   cabeza      -2 (pequeña) … 2 (cabezón)
  */
+/*
+ * EL ORIGEN DE LOS GRUPOS (25-nov, falla grave: «cada parte vuela para su
+ * lado»). Todo lo de `.mta` lleva `transform-box: fill-box`, y con eso el
+ * navegador escala y gira los <g transform="…"> desde la ESQUINA DE LO QUE
+ * DIBUJAN, no desde (0, 0). Dos efectos:
+ *   · El torso ensanchado con scale(…) sobre un grupo crecía desde x ≈ 207 +
+ *     su centro: el gordito se iba 45 px a la izquierda y la cola y el brazo
+ *     derecho quedaban volando. Ya no hay grupo: la pieza se estira sola
+ *     (`estira`) y lo del pecho se ensancha en accesorios-marioneta.js.
+ *   · La cabeza (translate + scale) quedaba corrida (1 − escala) × la esquina
+ *     de lo que lleva dentro: unas orejas altas o un sombrero la movían, y al
+ *     cambiar su tamaño la barbilla se despegaba del cuello. Ahora el grupo
+ *     lleva su origen fijo en (0, 0) y el corrimiento de siempre se suma a
+ *     mano (`desfase`, medido sin accesorios): de fábrica se ve igual que
+ *     antes, pero ya no cambia con un sombrero ni con el tamaño.
+ */
+export const ORIGEN_FIJO = 'style="transform-box:view-box;transform-origin:0 0"';
+export function desfaseCabeza(C) {
+  const piezas = [C.base, ...(C.orejas || []), ...(C.tranquila?.ojos || []), ...(C.tranquila?.resto || []), C.nariz].filter(Boolean);
+  const ox = Math.min(0, ...piezas.map((p) => p[1]));
+  const oy = Math.min(0, ...piezas.map((p) => p[2]));
+  const k = 1 - C.en[2];
+  return [ox * k, oy * k];
+}
+
 export const ANCHO_POR_PASO = 0.11;
 export const CABEZA_POR_PASO = 0.075;
 export function marionetaAjustada(M, P, { complexion = 0, cabeza = 0 } = {}) {
-  if (!complexion && !cabeza) return { M, ancho: 1, cx: 0 };
+  /* El desfase se mide con la cabeza de fábrica: no cambia con el tamaño. */
+  const desfase = desfaseCabeza(M.cabeza);
+  if (!complexion && !cabeza) return { M: { ...M, cabeza: { ...M.cabeza, desfase } }, ancho: 1, cx: 0 };
   const [tn, tx, ty] = M.torso;
   const tw = (P.piezas[tn]?.[0] || 200) * (M.torso[3]?.escala || 1);
   const cx = tx + tw / 2;
@@ -392,13 +419,17 @@ export function marionetaAjustada(M, P, { complexion = 0, cabeza = 0 } = {}) {
   const k = 1 + cabeza * CABEZA_POR_PASO;
   const hs2 = hs * k;
   const en = [hx + (cw * hs) / 2 - (cw * hs2) / 2, hy + ch * hs - ch * hs2, hs2];
+  /* El torso se estira a lo ancho desde su centro (opción `estira` de la pieza). */
+  const torso = ancho === 1 ? M.torso : [tn, tx, ty, { ...(M.torso[3] || {}), estira: ancho }];
   return {
     M: {
       ...M,
+      torso,
+      anchoCuerpo: ancho,
       cola: lado(M.cola, 1),
       piernas: (M.piernas || []).map((p) => lado(p, 0.7)),
       brazos: (M.brazos || []).map((p) => lado(p, 0.95)),
-      cabeza: { ...C, en },
+      cabeza: { ...C, en, desfase },
     },
     ancho,
     cx,
@@ -434,10 +465,14 @@ export function svgMarioneta(especie, { tinte = null, uid = "m", busto = false, 
     const d = P.piezas[n];
     if (!d) return "";
     const s = o.escala || 1;
-    const w = d[0] * s, h = d[1] * s;
+    /* `estira`: más ancha (o angosta) desde su centro, sin cambiar el alto. */
+    const k = o.estira || 1;
+    const w = d[0] * s * k, h = d[1] * s;
+    if (k !== 1) x -= (d[0] * s * (k - 1)) / 2;
+    const par = k !== 1 ? ' preserveAspectRatio="none"' : "";
     const capas = tinte && d[2]
-      ? `<image href="${url(especie, n, "_p")}" width="${w}" height="${h}" filter="url(#${fid})"/><image href="${url(especie, n, "_f")}" width="${w}" height="${h}"/>`
-      : `<image href="${url(especie, n)}" width="${w}" height="${h}"${o.filtro ? ` filter="url(#${o.filtro})"` : ""}/>`;
+      ? `<image href="${url(especie, n, "_p")}" width="${w}" height="${h}"${par} filter="url(#${fid})"/><image href="${url(especie, n, "_f")}" width="${w}" height="${h}"${par}/>`
+      : `<image href="${url(especie, n)}" width="${w}" height="${h}"${par}${o.filtro ? ` filter="url(#${o.filtro})"` : ""}/>`;
     /* `giro`: la pieza girada en su sitio, sobre su borde de arriba (el hombro). */
     const giro = o.giro ? ` rotate(${o.giro} ${w / 2} ${h * 0.08})` : "";
     const tr = (o.espejo ? `translate(${x + w} ${y}) scale(-1 1)` : `translate(${x} ${y})`) + giro;
@@ -448,6 +483,7 @@ export function svgMarioneta(especie, { tinte = null, uid = "m", busto = false, 
 
   const C = M.cabeza;
   const [hx, hy, hs] = C.en;
+  const [dhx, dhy] = C.desfase || [0, 0];
   const caraDe = (lista) => lista.map(pieza).join("");
 
   let defs = "";
@@ -556,7 +592,7 @@ export function svgMarioneta(especie, { tinte = null, uid = "m", busto = false, 
   const lag = C.lagrima ? `<g class="mta-lagrima">${img("lagrima", C.lagrima[0], C.lagrima[1])}</g>` : "";
 
   const cabeza =
-    `<g class="mta-cabeza"><g transform="translate(${hx} ${hy}) scale(${hs})">` +
+    `<g class="mta-cabeza"><g transform="translate(${+(hx + dhx).toFixed(2)} ${+(hy + dhy).toFixed(2)}) scale(${hs})" ${ORIGEN_FIJO}>` +
     (oi ? grupo("mta-oreja-i", pieza(oi)) : "") +
     (od ? grupo("mta-oreja-d", pieza(od)) : "") +
     pieza(C.base) +
@@ -635,9 +671,7 @@ export function svgMarioneta(especie, { tinte = null, uid = "m", busto = false, 
     (M.cola && !M.colaDelante ? grupo("mta-cola", pieza(M.cola)) : "") +
     (M.piernas || []).map(pieza).join("") +
     (M.brazosDelante ? "" : brazos) +
-    (ancho !== 1
-      ? `<g transform="translate(${+torsoCx.toFixed(1)} 0) scale(${+ancho.toFixed(3)} 1) translate(${-torsoCx.toFixed(1)} 0)">${grupo("mta-cuerpo", pieza(M.torso) + acc.pecho)}</g>`
-      : grupo("mta-cuerpo", pieza(M.torso) + acc.pecho)) +
+    grupo("mta-cuerpo", pieza(M.torso) + acc.pecho) +
     /* El conejo trae la colita dibujada en el cuerpo nuevo: la que se menea va encima, tapándola. */
     (M.cola && M.colaDelante ? grupo("mta-cola", pieza(M.cola)) : "") +
     (M.brazosDelante ? brazos : "") +
