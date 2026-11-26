@@ -7,7 +7,7 @@
 // Gasta 0 caracteres: solo lista. Todas salen del plan Creator (licencia comercial).
 import path from "node:path";
 import fs from "node:fs";
-import { clave, pide, escribeJSON, leeJSON, RAIZ, registra, ahoraBogota } from "./comun.mjs";
+import { clave, pide, pideSiSePuede, escribeJSON, leeJSON, RAIZ, registra, ahoraBogota } from "./comun.mjs";
 
 const N = Number(process.argv[2] || 3);
 const API = "https://api.elevenlabs.io";
@@ -16,8 +16,8 @@ const CONF = path.join(RAIZ, "voz.json");
 const conf = leeJSON(CONF, {});
 
 // 1. Modelo: el más nuevo multilingüe con texto a voz.
-const modelos = await (await pide(`${API}/v1/models`, { headers: H })).json();
-const ids = modelos.filter((m) => m.can_do_text_to_speech).map((m) => m.model_id);
+const rm = await pideSiSePuede(`${API}/v1/models`, { headers: H }, "listar modelos (models_read)");
+const ids = rm ? (await rm.json()).filter((m) => m.can_do_text_to_speech).map((m) => m.model_id) : ["eleven_multilingual_v2"];
 const PREF = ["eleven_v4", "eleven_multilingual_v4", "eleven_multilingual_v2"];
 const modelo = PREF.find((p) => ids.includes(p)) || ids.find((i) => /multilingual/.test(i)) || ids[0];
 
@@ -41,7 +41,8 @@ for (const v of orden) { if (elegidas.length >= N) break; if (!elegidas.includes
 if (!elegidas.length) throw new Error("La biblioteca no devolvió voces en español latino en tendencia.");
 
 // 3. Agregar a la cuenta (si ya están, se reutilizan) y guardar.
-const mias = (await (await pide(`${API}/v1/voices`, { headers: H })).json()).voices;
+const rv = await pideSiSePuede(`${API}/v1/voices`, { headers: H }, "listar mis voces");
+const mias = rv ? (await rv.json()).voices : [];
 const confianza = [];
 for (const v of elegidas) {
   let id = mias.find((m) => m.name === v.name || m.sharing?.original_voice_id === v.voice_id)?.voice_id;

@@ -43,3 +43,12 @@ export function registra(linea) {
 
 /* Aviso visible en el resumen de GitHub Actions. */
 export const aviso = (msg) => console.log(process.env.GITHUB_ACTIONS ? `::warning::${msg}` : `AVISO: ${msg}`);
+
+/* Como pide(), pero si la clave no tiene el permiso (401/403) devuelve null y avisa en vez de fallar. */
+export async function pideSiSePuede(url, opciones = {}, que = "") {
+  try { return await pide(url, opciones); }
+  catch (e) {
+    if (/→ 40[13]:/.test(e.message)) { aviso(`Sin permiso para ${que || url.split("?")[0]}: ${(e.message.match(/permission (\w+)/) || [, "?"])[1]}. Se sigue sin ese dato.`); return null; }
+    throw e;
+  }
+}

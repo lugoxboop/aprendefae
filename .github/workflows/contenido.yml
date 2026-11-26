@@ -68,6 +68,10 @@ jobs:
           for n in ELEVENLABS_API_KEY VITE_SUPABASE_URL SUPABASE_ACCESS_TOKEN SUPABASE_SERVICE_ROLE_KEY IG_ACCESS_TOKEN IG_USER_ID; do
             v="${!n}"; if [ -n "$v" ]; then echo "OK     $n (${#v} caracteres)"; else echo "FALTA  $n"; fi
           done
+          # Permisos de la clave de ElevenLabs (las claves con alcance limitado dan 401 por permiso).
+          for e in v1/models v1/voices v2/voices?page_size=1 "v1/shared-voices?page_size=1&language=es" v1/user/subscription v1/user; do
+            echo "elevenlabs /$e → $(curl -s -o /dev/null -w '%{http_code}' -m 15 -H "xi-api-key: $ELEVENLABS_API_KEY" "https://api.elevenlabs.io/$e")"
+          done
           for h in https://api.elevenlabs.io https://graph.facebook.com https://api.supabase.com; do
             echo "$h → $(curl -s -o /dev/null -w '%{http_code}' -m 15 $h)"
           done

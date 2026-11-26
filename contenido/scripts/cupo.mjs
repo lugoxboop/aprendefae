@@ -1,8 +1,10 @@
 // node cupo.mjs → cuántos caracteres del mes van gastados; avisa al 80 %.
-import { clave, pide, aviso, registra } from "./comun.mjs";
+import { clave, pideSiSePuede, aviso, registra } from "./comun.mjs";
 
 export async function cupo() {
-  const s = await (await pide("https://api.elevenlabs.io/v1/user/subscription", { headers: { "xi-api-key": clave("ELEVENLABS_API_KEY") } })).json();
+  const r = await pideSiSePuede("https://api.elevenlabs.io/v1/user/subscription", { headers: { "xi-api-key": clave("ELEVENLABS_API_KEY") } }, "leer el cupo (user_read)");
+  if (!r) return { character_count: 0, character_limit: Infinity, uso: 0, sinDatos: true };
+  const s = await r.json();
   const uso = s.character_count / s.character_limit;
   const renueva = s.next_character_count_reset_unix ? new Date(s.next_character_count_reset_unix * 1000).toISOString().slice(0, 10) : "?";
   const linea = `Cupo ElevenLabs (${s.tier}): ${s.character_count.toLocaleString("es-CO")} de ${s.character_limit.toLocaleString("es-CO")} caracteres (${(uso * 100).toFixed(1)} %), se renueva ${renueva}.`;
