@@ -223,10 +223,10 @@ function PlanoPizarra({ t }) {
     <Escena cam={cam} fondo="art/oficina.jpg">
       <Pizarra x={60} y={330} w={960} h={760}>
         <Tiza x={450} y={60} txt="Demanda agregada" p={rampa(t, t1, 0.9)} tam={92} centro />
-        <div style={{ position: "absolute", left: 0, right: 0, top: 300, display: "flex", justifyContent: "center", gap: 14 }}>
+        <div style={{ position: "absolute", left: 0, right: 0, top: 300, display: "flex", justifyContent: "center", gap: 6, whiteSpace: "nowrap", alignItems: "baseline" }}>
           {partes.map(([s, col], i) => {
             const p = rampa(t, t1 + 0.8 + i * 0.16, 0.3);
-            return <span key={i} style={{ fontFamily: "Caveat", fontWeight: 700, fontSize: s.length > 2 ? 104 : 130, color: col, opacity: p, transform: `translateY(${(1 - sale(p)) * 30}px)`, display: "inline-block" }}>{s}</span>;
+            return <span key={i} style={{ fontFamily: "Caveat", fontWeight: 700, fontSize: s.length > 2 ? 92 : 118, color: col, opacity: p, transform: `translateY(${(1 - sale(p)) * 30}px)`, display: "inline-block" }}>{s}</span>;
           })}
         </div>
         <Tiza x={450} y={500} txt="todo lo que compra junta la economía" p={rampa(t, E(12) - 0.4, 1.0)} tam={56} centro />

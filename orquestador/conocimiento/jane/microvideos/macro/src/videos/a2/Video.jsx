@@ -126,7 +126,7 @@ function Agua({ t }) {
         </svg>
       )}
       <Obj src="macro2026/ilustrados/buzon-impuesto.webp" x={170} y={880} w={240} op={rampa(t, M.tajo - 0.3, 0.3) * (1 - vierte)} esc={rebote(rampa(t, M.tajo - 0.3, 0.4))} />
-      <Cartel x={200} y={560} txt="T · −250.000" p={cifraT * (1 - fueraCifras)} tam={58} fondo={COLOR.CORAL} color="#fff" />
+      <Cartel x={265} y={560} txt="T · −250.000" p={cifraT * (1 - fueraCifras)} tam={58} fondo={COLOR.CORAL} color="#fff" />
       {/* la ministra Mei con su gotero (TR) */}
       {gotero > 0 && (
         <>
@@ -138,7 +138,7 @@ function Agua({ t }) {
           })}
         </>
       )}
-      <Cartel x={850} y={600} txt="TR · +50.000" p={cifraTR * (1 - fueraCifras)} tam={58} fondo={COLOR.VERDE} color="#fff" />
+      <Cartel x={800} y={600} txt="TR · +50.000" p={cifraTR * (1 - fueraCifras)} tam={58} fondo={COLOR.VERDE} color="#fff" />
       {/* el vaso */}
       <Vaso x={560} y={880} w={380} h={480} nivel={nivel} rotulo={cifraY > 0 && cifraYd <= 0 ? "Y" : cifraYd > 0 ? "Yd" : null} giro={giro} />
       <Cartel x={540} y={340} txt="Y · renta" p={cifraY * (1 - rampa(t, S(3), 0.3))} tam={72} fondo={MANGO} />
@@ -217,11 +217,11 @@ function PlanoPizarra({ t }) {
           {partes.map(([s, col], i) => {
             const p = rampa(t, t1 + 0.5 + i * 0.12, 0.3);
             const brilla = (i === 2 ? auto : 0) + (i >= 4 ? frac : 0);
-            return <span key={i} style={{ fontFamily: "Caveat", fontWeight: 700, fontSize: 118, color: col, opacity: p, transform: `translateY(${(1 - sale(p)) * 30 - brilla * 16}px) scale(${1 + brilla * 0.18})`, display: "inline-block" }}>{s}</span>;
+            return <span key={i} style={{ fontFamily: "Caveat", fontWeight: 700, fontSize: 118, color: col, opacity: p, transform: `translateY(${(1 - sale(p)) * 30 - brilla * 16}px) scale(${1 + brilla * 0.18})`, display: "inline-block" }}>{s === "Ī" || s === "C̄" ? <span style={{ position: "relative", display: "inline-block" }}>{s === "Ī" ? "I" : "C"}<span style={{ position: "absolute", left: "8%", right: "2%", top: "0.16em", height: "0.06em", background: "currentColor", borderRadius: 6 }} /></span> : s}</span>;
           })}
         </div>
         <Tiza x={230} y={500} txt="autónomo" p={rampa(t, W(12, "autónomo", 0.4), 0.6)} tam={54} centro color={COLOR.C} />
-        <Tiza x={640} y={500} txt="parte de la renta disponible" p={rampa(t, W(12, "fracción", 0.6), 0.8)} tam={54} centro />
+        <Tiza x={640} y={500} txt="parte de la renta disponible" p={rampa(t, W(12, "fracción", 0.6), 0.8)} tam={44} centro />
       </Pizarra>
       <Sombra x={830} y={1660} w={320} />
       <Mascota esp="gato-gafas" x={830} y={1665} alto={560} t={t} cara="feliz" bi={-60 * clamp01(Math.sin((t - t1) * 3)) * (t < E(12) ? 1 : 0)} semilla={7} espejo />

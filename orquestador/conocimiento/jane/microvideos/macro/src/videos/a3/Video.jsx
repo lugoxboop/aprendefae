@@ -140,7 +140,7 @@ function Obra({ t }) {
       <LetreroTasa x={300} y={760} txt={doce ? "12 %" : "8 %"} p={rampa(t, M.ocho - 0.3, 0.4)} sacude={pulso(t, M.doce, 0.5)} color={doce ? COLOR.CORAL : CREMA} />
       <Destello x={300} y={700} r={300} p={rampa(t, M.doce, 0.5)} />
       <Sombra x={420} y={1660} w={320} />
-      <Mascota esp="zorro-corbata" x={420} y={1665} alto={580} t={t} cara={doce ? "estrellas" : "feliz"} salto={doce ? 30 * pulso(t, M.doce, 0.4) : 20 * pulso(t, M.construir, 0.4)} bi={doce ? 0 : -80 * pulso(t, M.construir - 0.2, 0.8)} semilla={3} />
+      <Mascota esp="zorro-corbata" x={420} y={1665} alto={580} t={t} cara={doce ? "triste" : "feliz"} salto={doce ? 30 * pulso(t, M.doce, 0.4) : 20 * pulso(t, M.construir, 0.4)} bi={doce ? 0 : -80 * pulso(t, M.construir - 0.2, 0.8)} semilla={3} />
       <Cartel x={540} y={1460} txt="¡A construir!" p={rampa(t, M.construir - 0.2, 0.3) * (1 - rampa(t, M.doce - 0.2, 0.2))} tam={64} fondo={COLOR.VERDE} color="#fff" />
       <Cartel x={600} y={1200} txt="cuota ↑" p={rampa(t, M.cuota, 0.3)} tam={70} fondo={COLOR.CORAL} color="#fff" giro={-4} />
     </Escena>
@@ -200,7 +200,7 @@ function PlanoPizarra({ t }) {
         <div style={{ position: "absolute", left: 0, right: 0, top: 260, display: "flex", justifyContent: "center", gap: 22 }}>
           {partes.map(([s, col], i) => {
             const p = rampa(t, t1 + 0.6 + i * 0.22, 0.3);
-            return <span key={i} style={{ fontFamily: "Caveat", fontWeight: 700, fontSize: 170, color: col, opacity: p, transform: `translateY(${(1 - sale(p)) * 30}px)`, display: "inline-block" }}>{s}</span>;
+            return <span key={i} style={{ fontFamily: "Caveat", fontWeight: 700, fontSize: 170, color: col, opacity: p, transform: `translateY(${(1 - sale(p)) * 30}px)`, display: "inline-block" }}>{s === "Ī" || s === "C̄" ? <span style={{ position: "relative", display: "inline-block" }}>{s === "Ī" ? "I" : "C"}<span style={{ position: "absolute", left: "8%", right: "2%", top: "0.16em", height: "0.06em", background: "currentColor", borderRadius: 6 }} /></span> : s}</span>;
           })}
         </div>
         <Tiza x={200} y={520} txt="autónoma" p={rampa(t, t1 + 1.6, 0.6)} tam={50} centro color={COLOR.I} />

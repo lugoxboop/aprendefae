@@ -150,8 +150,8 @@ function Cierre({ t }) {
   return (
     <Escena cam={cam} fondo="art/carretera.jpg" filtro="blur(5px)" velo={0.25}>
       <div style={{ opacity: 1 - sigue }}>
-        <Cartel x={300} y={700} txt="¿quién?" p={quien} tam={90} fondo={CREMA} giro={-5} />
-        <Cartel x={780} y={700} txt="¿cuándo?" p={cuando} tam={90} fondo={MANGO} giro={5} />
+        <Cartel x={290} y={700} txt="¿quién?" p={quien} tam={80} fondo={CREMA} giro={-5} />
+        <Cartel x={760} y={700} txt="¿cuándo?" p={cuando} tam={80} fondo={MANGO} giro={5} />
         <Obj src="macro2026/ilustrados/caja-herramientas.webp" x={300} y={1000} w={260} esc={rebote(quien)} />
         <Obj src="macro2026/objetos/reloj-arena.png" x={780} y={1000} w={200} esc={rebote(cuando)} giro={180 * rampa(t, M.cuando + 0.4, 0.8)} />
       </div>

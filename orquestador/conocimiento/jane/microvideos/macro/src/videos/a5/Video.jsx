@@ -69,7 +69,7 @@ function Grafico({ t }) {
       {(fantasma || fantasma2) && <line x1={OX} y1={OY - base.h0} x2={OX + LX} y2={OY - base.h0 - base.m * LX} stroke={TIZA} strokeWidth={6} strokeDasharray="14 14" opacity={0.5} />}
       {/* la recta DA */}
       {dib > 0 && <line x1={x0} y1={y0} x2={x1} y2={y1} stroke={MANGO} strokeWidth={14 + 8 * brillo} strokeLinecap="round" style={{ filter: brillo > 0 ? `drop-shadow(0 0 ${20 * brillo}px ${MANGO})` : undefined }} />}
-      {dib > 0.95 && <text x={x1 - 40} y={y1 - 30} fill={MANGO} fontFamily="Caveat" fontWeight="700" fontSize="66">DA</text>}
+      {dib > 0.95 && <text x={x1 - 80} y={y1 + 75} fill={MANGO} fontFamily="Caveat" fontWeight="700" fontSize="66">DA</text>}
       {/* punto que recorre */}
       {punto > 0 && punto < 1 && <circle cx={OX + LX * punto} cy={OY - h0 - m * LX * punto} r={20} fill="#fff" stroke={TINTA} strokeWidth={5} />}
       {/* arranque y ángulo */}
@@ -133,7 +133,7 @@ function Tablero({ t }) {
           if (p <= 0) return null;
           return <div key={s} style={{ position: "absolute", left: 230 + i * 170, top: 120, width: 140, height: 120, background: col, border: `7px solid ${TINTA}`, borderRadius: 18, transform: `scale(${rebote(p)}) translateY(${-20 * pulso(t, tt, 0.5)}px)`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Sora", fontWeight: 800, fontSize: 64, color: TINTA }}>{s}<span style={{ fontSize: 46, color: COLOR.VERDE, marginLeft: 6 }}>↑</span></div>;
         })}
-        <Ascensor t={t} x={740} y={120} />
+        <Ascensor t={t} x={730} y={500} />
         <Tiza x={330} y={130} txt="G ↑" p={rampa(t, M.gasta - 0.2, 0.4) * (1 - rampa(t, t0, 0.2))} tam={84} color={COLOR.G} />
         <Tiza x={330} y={130} txt="i ↑  →  I ↓" p={rampa(t, M.tasa - 0.1, 0.5) * (1 - rampa(t, S(7) - 0.5, 0.2))} tam={80} color={COLOR.CORAL} />
         <Tiza x={300} y={130} txt="c ↑" p={rampa(t, M.gira - 0.6, 0.4) * (1 - rampa(t, M.acuesta - 0.8, 0.2))} tam={90} color={COLOR.VERDE} />

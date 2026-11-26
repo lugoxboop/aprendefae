@@ -164,7 +164,7 @@ function PlanoPizarra({ t }) {
         <Tiza x={60} y={230} txt="G" p={rampa(t, W(12, "Gasto", 0.2), 0.3)} tam={140} color={COLOR.G} />
         <Tiza x={220} y={270} txt="← presupuesto" p={rampa(t, W(12, "presupuesto", 0.4), 0.7)} tam={84} />
         <Tiza x={60} y={430} txt="XN" p={rampa(t, W(12, "exportaciones", 0.4), 0.3)} tam={140} color={COLOR.XN} />
-        <Tiza x={290} y={470} txt="← el dólar" p={rampa(t, W(12, "dólar", 0.9), 0.7)} tam={84} />
+        <Tiza x={290} y={470} txt="← el dólar" p={rampa(t, W(12, "dólar", 0.1), 0.5)} tam={84} />
       </Pizarra>
       <Sombra x={830} y={1660} w={320} />
       <Mascota esp="gato-gafas" x={830} y={1665} alto={560} t={t} cara="feliz" bi={-60 * clamp01(Math.sin((t - t1) * 3)) * (t < E(12) ? 1 : 0)} semilla={7} espejo />
@@ -211,7 +211,7 @@ fx(S(6) + 0.2, "bocina", 0.4); fx(M.dolar - 0.4, "pop", 0.45); fx(M.cuatro - 0.3
 fx(M.sube, "sube", 0.45); fx(M.vende - 0.3, "bocina", 0.4); fx(M.vende + 0.4, "bocina", 0.3);
 fx(M.caro, "bocina-grave", 0.35); fx(M.suben, "pop", 0.45);
 fx(M.bajad, "baja", 0.45); fx(M.aprecia, "desliza", 0.45);
-fx(M.pizarra, "tiza-larga", 0.55); fx(W(12, "presupuesto", 0.4), "tiza", 0.45); fx(W(12, "dólar", 0.9), "tiza", 0.45);
+fx(M.pizarra, "tiza-larga", 0.55); fx(W(12, "presupuesto", 0.4), "tiza", 0.45); fx(W(12, "dólar", 0.1), "tiza", 0.45);
 fx(M.noticia, "papel", 0.5);
 fx(E(13) + 0.1, "ding-doble", 0.45);
 
