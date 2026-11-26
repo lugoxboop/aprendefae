@@ -1,192 +1,182 @@
 {
   "audio": "voz/prueba-01-jessica.mp3",
-  "duracion": 22.2,
-  "hash": "1d7256f920061c42",
+  "duracion": 21.58,
+  "hash": "8e5ae1e2a784836e",
   "voz": "Jessica (prediseñada)",
   "voice_id": "cgSgspJ2msm6clMCkdW9",
   "genero": "female",
   "modelo": "eleven_v3",
-  "caracteres": 262,
+  "caracteres": 243,
   "escenas": [
     {
       "ini": 0,
-      "fin": 3.8,
-      "texto": "Son las dos de la mañana. El parcial de Toby es a las siete.",
+      "fin": 3.48,
+      "texto": "Dos de la mañana. El parcial de Toby es a las siete.",
       "palabras": [
         {
-          "w": "Son",
+          "w": "Dos",
           "ini": 0,
           "fin": 0.16
         },
         {
-          "w": "las",
-          "ini": 0.2,
-          "fin": 0.32
-        },
-        {
-          "w": "dos",
-          "ini": 0.36,
-          "fin": 0.48
-        },
-        {
           "w": "de",
-          "ini": 0.507,
-          "fin": 0.56
+          "ini": 0.187,
+          "fin": 0.24
         },
         {
           "w": "la",
-          "ini": 0.587,
-          "fin": 0.64
+          "ini": 0.267,
+          "fin": 0.32
         },
         {
           "w": "mañana.",
-          "ini": 0.697,
-          "fin": 1.12
+          "ini": 0.389,
+          "fin": 0.88
         },
         {
           "w": "El",
-          "ini": 1.413,
-          "fin": 2
+          "ini": 1.12,
+          "fin": 1.6
         },
         {
           "w": "parcial",
-          "ini": 2.06,
-          "fin": 2.4
+          "ini": 1.64,
+          "fin": 2
         },
         {
           "w": "de",
-          "ini": 2.427,
-          "fin": 2.48
+          "ini": 2.027,
+          "fin": 2.08
         },
         {
           "w": "Toby",
-          "ini": 2.56,
-          "fin": 2.88
+          "ini": 2.176,
+          "fin": 2.56
         },
         {
           "w": "es",
-          "ini": 2.96,
-          "fin": 3.12
+          "ini": 2.613,
+          "fin": 2.72
         },
         {
           "w": "a",
-          "ini": 3.16,
-          "fin": 3.2
+          "ini": 2.78,
+          "fin": 2.84
         },
         {
           "w": "las",
-          "ini": 3.22,
-          "fin": 3.28
+          "ini": 2.87,
+          "fin": 2.96
         },
         {
           "w": "siete.",
-          "ini": 3.36,
-          "fin": 3.8
+          "ini": 3,
+          "fin": 3.48
         }
       ]
     },
     {
-      "ini": 4.133,
-      "fin": 7.04,
+      "ini": 3.787,
+      "fin": 6.48,
       "texto": "Su plan: leerse todo esto.",
       "palabras": [
         {
           "w": "Su",
-          "ini": 4.133,
-          "fin": 4.72
+          "ini": 3.787,
+          "fin": 4.32
         },
         {
           "w": "plan:",
-          "ini": 4.8,
-          "fin": 5.56
+          "ini": 4.384,
+          "fin": 4.72
         },
         {
           "w": "leerse",
-          "ini": 5.648,
-          "fin": 6.16
+          "ini": 4.864,
+          "fin": 5.6
         },
         {
           "w": "todo",
-          "ini": 6.224,
-          "fin": 6.48
+          "ini": 5.68,
+          "fin": 6
         },
         {
           "w": "esto.",
-          "ini": 6.56,
-          "fin": 7.04
+          "ini": 6.08,
+          "fin": 6.48
         }
       ]
     },
     {
-      "ini": 7.64,
-      "fin": 10.96,
+      "ini": 7.26,
+      "fin": 10.8,
       "texto": "Pausa. ¿Qué harías tú: café o dormir?",
       "palabras": [
         {
           "w": "Pausa.",
-          "ini": 7.64,
-          "fin": 8.64
+          "ini": 7.26,
+          "fin": 8
         },
         {
           "w": "¿Qué",
-          "ini": 8.84,
-          "fin": 9.12
+          "ini": 8.4,
+          "fin": 8.88
         },
         {
           "w": "harías",
-          "ini": 9.14,
-          "fin": 9.36
+          "ini": 8.9,
+          "fin": 9.2
         },
         {
           "w": "tú:",
-          "ini": 9.44,
-          "fin": 9.68
+          "ini": 9.28,
+          "fin": 9.84
         },
         {
           "w": "café",
-          "ini": 9.824,
-          "fin": 10.4
+          "ini": 9.904,
+          "fin": 10.16
         },
         {
           "w": "o",
-          "ini": 10.44,
-          "fin": 10.48
+          "ini": 10.2,
+          "fin": 10.24
         },
         {
           "w": "dormir?",
-          "ini": 10.528,
-          "fin": 10.96
+          "ini": 10.304,
+          "fin": 10.8
         }
       ]
     },
     {
       "ini": 11.04,
-      "fin": 15.44,
+      "fin": 15.52,
       "texto": "Toby eligió café. Al tercero, no entendía ni el título.",
       "palabras": [
         {
           "w": "Toby",
           "ini": 11.04,
-          "fin": 12.16
+          "fin": 12
         },
         {
           "w": "eligió",
-          "ini": 12.208,
-          "fin": 12.48
+          "ini": 12.048,
+          "fin": 12.32
         },
         {
           "w": "café.",
-          "ini": 12.56,
-          "fin": 13.28
+          "ini": 12.4,
+          "fin": 12.8
         },
         {
           "w": "Al",
-          "ini": 13.413,
-          "fin": 13.68
+          "ini": 13.067,
+          "fin": 13.6
         },
         {
           "w": "tercero,",
-          "ini": 13.72,
+          "ini": 13.64,
           "fin": 14.24
         },
         {
@@ -197,11 +187,11 @@
         {
           "w": "entendía",
           "ini": 14.366,
-          "fin": 14.72
+          "fin": 14.8
         },
         {
           "w": "ni",
-          "ini": 14.773,
+          "ini": 14.827,
           "fin": 14.88
         },
         {
@@ -211,24 +201,24 @@
         },
         {
           "w": "título.",
-          "ini": 15.017,
-          "fin": 15.44
+          "ini": 15.029,
+          "fin": 15.52
         }
       ]
     },
     {
-      "ini": 15.92,
-      "fin": 19.12,
+      "ini": 15.96,
+      "fin": 19.36,
       "texto": "Dato: dormir ayuda a fijar lo que estudiaste.",
       "palabras": [
         {
           "w": "Dato:",
-          "ini": 15.92,
-          "fin": 16.72
+          "ini": 15.96,
+          "fin": 16.8
         },
         {
           "w": "dormir",
-          "ini": 16.864,
+          "ini": 16.928,
           "fin": 17.52
         },
         {
@@ -243,7 +233,7 @@
         },
         {
           "w": "fijar",
-          "ini": 17.92,
+          "ini": 17.88,
           "fin": 18.16
         },
         {
@@ -259,44 +249,34 @@
         {
           "w": "estudiaste.",
           "ini": 18.44,
-          "fin": 19.12
+          "fin": 19.36
         }
       ]
     },
     {
-      "ini": 19.42,
-      "fin": 22,
-      "texto": "¿Y tú, qué eliges? Te leemos.",
+      "ini": 19.72,
+      "fin": 21.52,
+      "texto": "¿Y tú, qué eliges?",
       "palabras": [
         {
           "w": "¿Y",
-          "ini": 19.42,
-          "fin": 19.64
+          "ini": 19.72,
+          "fin": 19.92
         },
         {
           "w": "tú,",
-          "ini": 19.68,
-          "fin": 19.84
-        },
-        {
-          "w": "qué",
-          "ini": 19.94,
+          "ini": 20,
           "fin": 20.24
         },
         {
+          "w": "qué",
+          "ini": 20.36,
+          "fin": 20.72
+        },
+        {
           "w": "eliges?",
-          "ini": 20.304,
-          "fin": 21.08
-        },
-        {
-          "w": "Te",
-          "ini": 21.173,
-          "fin": 21.36
-        },
-        {
-          "w": "leemos.",
-          "ini": 21.387,
-          "fin": 22
+          "ini": 20.784,
+          "fin": 21.52
         }
       ]
     }
