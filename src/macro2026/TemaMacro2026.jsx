@@ -37,7 +37,8 @@ import * as T4 from "./politica-monetaria/catalogo.js";
 import * as T5 from "./politica-cambiaria/catalogo.js";
 import { Raiz, Boton } from "./comun/ui.jsx";
 import CierreAprender from "./comun/CierreAprender.jsx";
-import { INK, INK_2 } from "./comun/colores-da.js";
+import IndiceAprender, { marcarVista } from "./comun/IndiceAprender.jsx";
+import { INK } from "./comun/colores-da.js";
 import FondoPagina, { ESCENA_DE_TEMA } from "./comun/FondoPagina.jsx";
 import { MASCOTAS, rutaMascota } from "./comun/mascotas.jsx";
 
@@ -174,23 +175,23 @@ function FilaVolver({ children }) {
 
 function ListaAprender({ temaId }) {
   const ir = useContext(IrContexto);
-  const piezas = piezasVisibles(temaId, APRENDER);
+  const [escenas, setEscenas] = useState(null);
+  useEffect(() => {
+    let vivo = true;
+    textosDelTema(temaId).then((T) => { if (vivo) setEscenas(T?.ESCENAS ?? {}); }).catch(() => {});
+    return () => { vivo = false; };
+  }, [temaId]);
   return (
-    <div className="da26-tarjeta" data-tema-publicado={temaId}>
-      <p className="da26-rotulo da26-mono" style={{ margin: 0 }}>MACROECONOMÍA · APRENDER</p>
-      <h1 style={{ font: "700 22px/28px var(--planck-font-sans, system-ui)", margin: "6px 0 12px" }}>{TEMAS_2026[temaId].titulo}</h1>
-      <ol style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 8 }}>
-        {piezas.map((p, k) => (
-          <li key={p.id}>
-            <button type="button" className="da26-boton" data-abrir={p.id} onClick={() => ir(temaId, APRENDER, p.id)}
-              style={{ width: "100%", minHeight: 44, display: "flex", gap: 10, alignItems: "center", textAlign: "left", borderRadius: 12 }}>
-              <span className="da26-mono" style={{ color: INK_2, width: 22, flex: "none" }}>{k + 1}</span>
-              <span style={{ flex: 1 }}>{p.nombre}</span>
-            </button>
-          </li>
-        ))}
-      </ol>
-    </div>
+    <IndiceAprender
+      temaId={temaId}
+      titulo={TEMAS_2026[temaId].titulo}
+      escenaTema={ESCENA_DE_TEMA[temaId]}
+      piezas={piezasVisibles(temaId, APRENDER)}
+      escenas={escenas}
+      retos={piezasVisibles(temaId, HACER).length}
+      onAbrir={(id) => ir(temaId, APRENDER, id)}
+      onRetos={() => ir(temaId, HACER)}
+    />
   );
 }
 
@@ -215,7 +216,7 @@ function PiezaAprender({ temaId, id }) {
         />
       ) : (
         <Suspense fallback={<div className="da26-tarjeta" style={{ minHeight: 320 }} />}>
-          <Componente key={intento} onTerminar={() => setTerminada(true)} />
+          <Componente key={intento} onTerminar={() => { marcarVista(id); setTerminada(true); }} />
         </Suspense>
       )}
     </>
