@@ -1,9 +1,9 @@
 # Voces en tendencia (ElevenLabs, español latino) — 2026-11-26
 
-Orden de la biblioteca: trending. Modelo: eleven_v4. Modelos disponibles: eleven_v4, eleven_v4_turbo, eleven_v3, eleven_v3_conversational, eleven_multilingual_v2, eleven_flash_v2_5, eleven_turbo_v2_5, eleven_turbo_v2, eleven_flash_v2.
+Orden de la biblioteca: trending. Modelo: eleven_v4. Modelos disponibles: eleven_v4, eleven_v4_turbo, eleven_v3, eleven_v3_conversational, eleven_multilingual_v2, eleven_flash_v2_5, eleven_turbo_v2_5, eleven_turbo_v2, eleven_flash_v2, eleven_storytel_v2.
 
 1. David - Deep, Attractive, Mysterious · male · young · latin american · narrative_story · calm · usada 291731484 [K3TeN3ZVK8WnOeJ0NYqZ]
-2. Brian - Warm, Smooth, Confident · male · middle_aged · latin american · narrative_story · calm · usada 246110554 [jBlmi27XRORxjPquUeCh]
+2. Brian - Warm, Smooth, Confident · male · middle_aged · latin american · narrative_story · calm · usada 247063861 [jBlmi27XRORxjPquUeCh]
 3. Gaby - Natura & Casual · female · young · latin american · conversational · casual · usada 595937924 [p5EUznrYaWnafKvUkNiR]
 4. Luisa - Smooth, Friendly and Engaging · female · middle_aged · latin american · narrative_story · excited · usada 56926325 [ByzPpv6d6pT90CCpgb7k]
 5. Brian C. - Professional Latin Narrator · male · young · latin american · narrative_story · professional · usada 53692900 [uCQe5kObQIjtylU0HL3m]

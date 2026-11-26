@@ -13,6 +13,17 @@
       "desde": "2026-11-26"
     },
     {
+      "alias": "gaby",
+      "nombre": "Gaby - Natura & Casual",
+      "voice_id": "p5EUznrYaWnafKvUkNiR",
+      "genero": "female",
+      "edad": "young",
+      "acento": "latin american",
+      "uso": "conversational",
+      "tono": "casual",
+      "desde": "2026-11-26"
+    },
+    {
       "alias": "david",
       "nombre": "David - Deep, Attractive, Mysterious",
       "voice_id": "K3TeN3ZVK8WnOeJ0NYqZ",
@@ -24,12 +35,34 @@
       "desde": "2026-11-26"
     },
     {
+      "alias": "alma",
+      "nombre": "Alma - Soothing & Warm",
+      "voice_id": "8gK5gnQBZnJWm1ta8R8X",
+      "genero": "female",
+      "edad": "young",
+      "acento": "peninsular",
+      "uso": "narrative_story",
+      "tono": "calm",
+      "desde": "2026-11-26"
+    },
+    {
       "alias": "brian",
       "nombre": "Brian - Warm, Smooth, Confident",
       "voice_id": "jBlmi27XRORxjPquUeCh",
       "genero": "male",
       "edad": "middle_aged",
       "acento": "latin american",
+      "uso": "narrative_story",
+      "tono": "calm",
+      "desde": "2026-11-26"
+    },
+    {
+      "alias": "isabel",
+      "nombre": "Isabel - Soft, Calm and Meditative",
+      "voice_id": "ChvF2eSRaJsHDVJhdmbG",
+      "genero": "female",
+      "edad": "middle_aged",
+      "acento": "argentine",
       "uso": "narrative_story",
       "tono": "calm",
       "desde": "2026-11-26"
