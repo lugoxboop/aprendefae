@@ -55,10 +55,12 @@ const orden = [...cand.filter(apta), ...cand.filter((v) => !apta(v))];
 const elegidas = [];
 if (NOMBRES) {
   for (const nom of NOMBRES) {
+    // (si hay varias con el mismo nombre, se queda la primera en tendencia; queda anotada en el registro)
     let v = cand.find((x) => x.name.toLowerCase().startsWith(nom)) || lib.find((x) => x.name.toLowerCase().startsWith(nom));
     if (!v) {
       const q2 = new URLSearchParams({ search: nom, language: "es", page_size: "30" });
       const r2 = (await (await pide(`${API}/v1/shared-voices?${q2}`, { headers: H })).json()).voices || [];
+      console.log(`Candidatas «${nom}»:`, r2.slice(0, 8).map((x) => `${x.name} [${x.accent}, ${x.gender}]`).join(" | "));
       v = r2.find((x) => x.name.toLowerCase().startsWith(nom)) || r2[0];
     }
     if (v) elegidas.push(v); else console.log(`No encontré la voz «${nom}».`);
