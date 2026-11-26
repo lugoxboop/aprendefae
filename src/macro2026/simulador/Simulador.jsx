@@ -3,17 +3,18 @@
  * MACRO 2026 · EL SIMULADOR CON IA (orden de Mateo, 26-nov)
  *
  * El estudiante ENTRA a una oficina (puertas de vidrio que se abren), una
- * compañera del elenco lo recibe y lo capacita, y la IA le trae expedientes
+ * mascota del elenco lo recibe y lo capacita, y la IA le trae expedientes
  * que cambian en cada ronda. Él diagnostica, la compañera le explica, y en
  * cualquier momento le puede preguntar escribiendo o con el micrófono.
  *
  * Los cinco pasos de la REGLA MAESTRA:
- *   1. Ingenio: diagnosticar países como un médico; tres rondas de dificultad
- *      creciente (un virus, dos virus, un virus con trampa).
+ *   1. Ingenio: cada tema es una oficina (Brújula, Pulso, Hacienda, la Junta,
+ *      el puerto) y cada Aprender, un oficio; tres rondas de dificultad
+ *      creciente, la última con trampa. Lo que se decide viene de escenas.js.
  *   2. Contexto: el titular y la frase de la compañera, antes de la consigna.
  *   3. Rol: «analista junior de Pulso», escrito en la escena.
- *   4. Pregunta: «¿Qué virus tiene Valdoria? Marca uno o varios.» (≤ 12).
- *   5. Visual: la oficina ilustrada, la compañera de 180 px, virus ilustrados.
+ *   4. Pregunta: la consigna de cada simulador (≤ 12 palabras).
+ *   5. Visual: la oficina ilustrada, la mascota de 190 px, opciones ilustradas.
  *
  * Movimiento dentro del Kit: una sola curva, solo transform y opacity, nada
  * en bucle. Con movimiento reducido, todo aparece sin desplazarse.
@@ -26,7 +27,7 @@ import { CURVA } from "../comun/ui.jsx";
 import { rutaMascota } from "../comun/mascotas.jsx";
 import { rutaIlustrado } from "../comun/ilustrados.jsx";
 import { IconoProblema } from "../comun/iconos-pe.jsx";
-import { AVISO_IA, PROBLEMAS_PE, simuladorDe, explicacionLocal, veredictoLocal, nombreProblema } from "./escenas.js";
+import { AVISO_IA, simuladorDe, explicacionLocal, veredictoLocal, nombreOpcion } from "./escenas.js";
 import { llamarSimulador } from "./api.js";
 import { useDictado, hablar, callar, hayVoz } from "./voz.js";
 
@@ -63,13 +64,13 @@ export const CSS_SIM = `
 .sim-hoja::before { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, rgba(255,255,255,0) 0 22px, rgba(255,255,255,.05) 22px 23px); }
 .sim-hoja-izq { left: 0; border-right-width: 2px; }
 .sim-hoja-der { right: 0; border-left-width: 2px; }
-.sim-manija { position: absolute; top: 34%; height: 32%; width: 7px; border-radius: 4px; background: linear-gradient(90deg, #8d99a6, #eef2f5 45%, #9aa6b2); box-shadow: 0 2px 6px rgba(0,0,0,.35); }
+.sim-manija { position: absolute; top: 60%; height: 24%; width: 7px; border-radius: 4px; background: linear-gradient(90deg, #8d99a6, #eef2f5 45%, #9aa6b2); box-shadow: 0 2px 6px rgba(0,0,0,.35); }
 .sim-hoja-izq .sim-manija { right: 12px; }
 .sim-hoja-der .sim-manija { left: 12px; }
 .sim-escena[data-dentro="1"] .sim-hoja-izq { transform: translateX(-102%); }
 .sim-escena[data-dentro="1"] .sim-hoja-der { transform: translateX(102%); }
 .sim-rotulo-puerta { position: relative; z-index: 6; text-align: center; color: #f4f8fb; text-shadow: 0 1px 2px rgba(0,0,0,.5); transition: opacity 400ms ${CURVA}; }
-.sim-rotulo-puerta b { display: block; font: 800 34px/36px var(--planck-font-sans, system-ui, sans-serif); letter-spacing: .32em; padding-left: .32em; }
+.sim-rotulo-puerta b { display: block; font: 800 clamp(24px, 8vw, 34px)/1.1 var(--planck-font-sans, system-ui, sans-serif); letter-spacing: .26em; padding-left: .26em; }
 .sim-rotulo-puerta span { display: block; margin-top: 4px; font: 600 12px/16px var(--planck-font-sans, system-ui, sans-serif); letter-spacing: .2em; text-transform: uppercase; opacity: .9; }
 .sim-escena[data-dentro="1"] .sim-rotulo-puerta { opacity: 0; }
 
@@ -98,9 +99,12 @@ export const CSS_SIM = `
 .sim-sintoma-flecha { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font: 800 16px/1 var(--planck-font-sans, system-ui, sans-serif); color: #fff; background: #6b5a43; }
 .sim-sintoma-flecha[data-t="sube"] { background: #b5452e; }
 .sim-sintoma-flecha[data-t="baja"] { background: #2b6f8f; }
+.sim-sintoma-flecha[data-t="dato"] { background: #8a7656; }
 .sim-sintoma-dato { font: 600 14px/18px var(--planck-font-sans, system-ui, sans-serif); }
 .sim-sintoma-cifras { font: 500 14px/18px var(--planck-font-mono, ui-monospace, monospace); font-variant-numeric: tabular-nums; color: #5a4a33; }
 .sim-sintoma-cifras b { color: #2a2116; }
+.sim-sintoma-cifras[data-solo] { font-family: var(--planck-font-sans, system-ui, sans-serif); }
+.sim-sintoma-cifras[data-solo] b { font-weight: 600; }
 .sim-testigo { margin: 10px 0 0; padding: 8px 10px 8px 12px; border-left: 4px solid #c9a66b; font: italic 500 15px/20px var(--planck-font-sans, system-ui, sans-serif); }
 .sim-testigo small { display: block; font-style: normal; font-size: 12px; color: #6d5c44; margin-top: 2px; }
 .sim-archivo { margin: 8px 0 0; font: 600 12px/16px var(--planck-font-sans, system-ui, sans-serif); color: #8a5a2b; }
@@ -108,9 +112,10 @@ export const CSS_SIM = `
 /* Los virus. */
 .sim-consigna { margin: 2px 0 8px; font: 700 17px/22px var(--planck-font-sans, system-ui, sans-serif); color: ${INK}; }
 .sim-virus { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
-@media (min-width: 560px) { .sim-virus { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.sim-virus[data-n="3"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (min-width: 560px) { .sim-virus[data-n="4"], .sim-virus[data-n="8"] { grid-template-columns: repeat(4, minmax(0, 1fr)); } .sim-virus[data-n="5"], .sim-virus[data-n="6"] { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 400px) {
-  .sim-chip { flex-direction: column; justify-content: center; text-align: center; gap: 4px; min-height: 84px; padding: 8px 6px; font-size: 13px; line-height: 16px; }
+  .sim-chip { flex-direction: column; justify-content: center; text-align: center; gap: 4px; min-height: 84px; padding: 8px 3px; font-size: 13px; line-height: 16px; overflow-wrap: anywhere; hyphens: auto; }
 }
 .sim-chip { position: relative; display: flex; align-items: center; gap: 8px; min-height: 56px; padding: 6px 10px 6px 6px; border-radius: 12px; border: 2px solid ${BORDE}; background: ${SUPERFICIE_2}; color: ${INK}; font: 600 14px/17px var(--planck-font-sans, system-ui, sans-serif); text-align: left; cursor: pointer; touch-action: manipulation; transition: transform 200ms ${CURVA}, border-color 200ms ${CURVA}; }
 .sim-chip:active { transform: scale(.96); }
@@ -118,7 +123,8 @@ export const CSS_SIM = `
 .sim-chip:disabled { cursor: default; }
 .sim-chip-ilu { position: relative; width: 40px; height: 40px; flex: none; }
 .sim-chip-ilu img { width: 40px; height: 40px; }
-.sim-chip-ilu span { position: absolute; right: -4px; bottom: -4px; width: 22px; height: 22px; border-radius: 50%; background: #fff; border: 1.5px solid #0E1B2E; color: #0E1B2E; display: grid; place-items: center; }
+.sim-chip-ilu img { object-fit: contain; }
+.sim-chip-ilu span { position: absolute; right: -4px; bottom: -4px; min-width: 22px; height: 22px; padding: 0 3px; font: 800 11px/1 var(--planck-font-sans, system-ui, sans-serif); border-radius: 999px; background: #fff; border: 1.5px solid #0E1B2E; color: #0E1B2E; display: grid; place-items: center; }
 .sim-chip-marca { position: absolute; top: -9px; right: 6px; padding: 1px 7px; border-radius: 999px; font: 700 11px/15px var(--planck-font-sans, system-ui, sans-serif); background: ${INK}; color: ${TINTA_SOBRE_COLOR}; }
 .sim-chip[data-res="falto"] { border-style: dashed; border-color: ${AMBAR}; }
 .sim-chip[data-res="falto"] .sim-chip-marca { background: ${AMBAR}; }
@@ -197,8 +203,8 @@ function Escena({ sim, dentro, pose }) {
     <div className="sim-escena" data-dentro={dentro ? "1" : "0"} data-sim-escena>
       <div className="sim-fondo" style={{ backgroundImage: `url(${sim.fondo})` }} />
       <span className="sim-aviso" data-aviso-ia><Sparkles size={14} aria-hidden="true" />{AVISO_IA}</span>
-      <img className="sim-mascota" src={m.src} width={m.tam[0]} height={m.tam[1]} alt={`${sim.companera.nombre}, tu compañera en ${sim.firma}`} data-cambia={cambia ? "1" : "0"} />
-      <div className="sim-placa sim-placa-ella">{sim.companera.nombre}<small>Compañera con IA</small></div>
+      <img className="sim-mascota" src={m.src} width={m.tam[0]} height={m.tam[1]} alt={`${sim.companera.nombre}, ${sim.companera.genero === "Compañero" ? "tu compañero" : "tu compañera"} en ${sim.firma}`} data-cambia={cambia ? "1" : "0"} />
+      <div className="sim-placa sim-placa-ella">{sim.companera.nombre}<small>{sim.companera.genero} con IA</small></div>
       <div className="sim-placa sim-placa-yo">{sim.rol}</div>
       <Puerta sim={sim} />
     </div>
@@ -223,24 +229,24 @@ function Globo({ sim, texto, pensando, voz, onVoz }) {
 
 function Expediente({ caso, ronda, total }) {
   return (
-    <article className="sim-expediente" data-expediente aria-label={`Expediente de ${caso.pais}`}>
+    <article className="sim-expediente" data-expediente aria-label={`Expediente de ${caso.nombre}`}>
       <div className="sim-exp-cab">
         <img src={rutaIlustrado("lupa")} alt="" width="46" height="46" />
         <div>
           <span className="sim-exp-sello">Expediente {ronda} de {total}</span>
-          <h3 className="sim-exp-pais">{caso.pais}</h3>
+          <h3 className="sim-exp-pais">{caso.nombre}</h3>
         </div>
       </div>
       <p className="sim-exp-titular">{caso.titular}</p>
       <ul className="sim-sintomas">
-        {caso.sintomas.map((s, k) => (
+        {caso.datos.map((s, k) => (
           <li key={k} className="sim-sintoma" style={{ animationDelay: `${200 + k * 140}ms` }}>
-            <span className="sim-sintoma-flecha" data-t={s.tendencia} aria-label={s.tendencia === "sube" ? "Sube" : s.tendencia === "baja" ? "Baja" : "Igual"}>
-              {s.tendencia === "sube" ? "↑" : s.tendencia === "baja" ? "↓" : "="}
+            <span className="sim-sintoma-flecha" data-t={s.tendencia} aria-label={s.tendencia === "sube" ? "Sube" : s.tendencia === "baja" ? "Baja" : s.tendencia === "igual" ? "Igual" : "Dato"}>
+              {s.tendencia === "sube" ? "↑" : s.tendencia === "baja" ? "↓" : s.tendencia === "igual" ? "=" : "•"}
             </span>
             <span>
               <span className="sim-sintoma-dato">{s.dato}</span><br />
-              <span className="sim-sintoma-cifras">{s.antes} → <b>{s.ahora}</b></span>
+              <span className="sim-sintoma-cifras" data-solo={s.tendencia === "dato" && !s.antes ? "" : undefined}>{s.antes ? <>{s.antes} → </> : null}<b>{s.ahora}</b></span>
             </span>
           </li>
         ))}
@@ -252,11 +258,12 @@ function Expediente({ caso, ronda, total }) {
 }
 
 const MARCA = { bien: "Acertaste", falto: "Faltó", sobro: "No era" };
+const MARCA_UNA = { ...MARCA, falto: "Era esta" };
 
-function Virus({ elegidos, onToggle, resultado, correctos }) {
+function Opciones({ sim, elegidos, onToggle, resultado, correctos }) {
   return (
-    <div className="sim-virus" role="group" aria-label="Los ocho virus">
-      {PROBLEMAS_PE.map((p) => {
+    <div className="sim-virus" role="group" aria-label={sim.multiple ? "Opciones: marca una o varias" : "Opciones: marca una"} data-n={sim.opciones.length}>
+      {sim.opciones.map((p) => {
         const sel = elegidos.includes(p.id);
         let res = null;
         if (resultado) {
@@ -264,13 +271,13 @@ function Virus({ elegidos, onToggle, resultado, correctos }) {
           res = real && sel ? "bien" : real ? "falto" : sel ? "sobro" : null;
         }
         return (
-          <button key={p.id} type="button" className="sim-chip" aria-pressed={sel} disabled={Boolean(resultado)} onClick={() => onToggle(p.id)} data-virus={p.id} data-res={res ?? undefined}>
+          <button key={p.id} type="button" className="sim-chip" aria-pressed={sel} disabled={Boolean(resultado)} onClick={() => onToggle(p.id)} data-opcion={p.id} data-res={res ?? undefined}>
             <span className="sim-chip-ilu">
-              <img src={rutaIlustrado("virus")} alt="" width="40" height="40" />
-              <span><IconoProblema id={p.id} size={14} /></span>
+              <img src={rutaIlustrado(p.ilu)} alt="" width="40" height="40" />
+              {p.iconoPe ? <span><IconoProblema id={p.id} size={14} /></span> : p.signo ? <span aria-hidden="true">{p.signo}</span> : null}
             </span>
             {p.nombre}
-            {res && <span className="sim-chip-marca">{MARCA[res]}</span>}
+            {res && <span className="sim-chip-marca">{(sim.multiple ? MARCA : MARCA_UNA)[res]}</span>}
           </button>
         );
       })}
@@ -278,7 +285,7 @@ function Virus({ elegidos, onToggle, resultado, correctos }) {
   );
 }
 
-const ETIQUETA_V = { acierto: "Diagnóstico exacto", parcial: "Diagnóstico a medias", fallo: "Diagnóstico errado" };
+const ETIQUETA_V = { acierto: "Correcto", parcial: "A medias", fallo: "No era" };
 
 /**
  * @param {string} escenaId     id de la Aprender (p. ej. «pe26-a2-fiebre»)
@@ -332,7 +339,7 @@ export default function Simulador({ escenaId, llamar = llamarSimulador }) {
     setRazon("");
     setResultado(null);
     setPensando(true);
-    const r = await llamar({ escenario: sim.id, accion: "caso", ronda: n, previos: historia.map((h) => ({ pais: h.caso.pais, problemas: h.caso.problemas })), semilla: Math.floor(Math.random() * 1e6) });
+    const r = await llamar({ escenario: sim.id, accion: "caso", ronda: n, previos: historia.map((h) => ({ nombre: h.caso.nombre, respuesta: h.caso.respuesta })), semilla: Math.floor(Math.random() * 1e6) });
     setPensando(false);
     if (r?.caso) {
       anotarCupo(r);
@@ -341,22 +348,22 @@ export default function Simulador({ escenaId, llamar = llamarSimulador }) {
       if (r.sugerencias?.length) setSugerencias(r.sugerencias);
       return;
     }
-    const usados = new Set(historia.map((h) => h.caso.pais));
-    const libres = sim.archivo.filter((c) => !usados.has(c.pais));
+    const usados = new Set(historia.map((h) => h.caso.nombre));
+    const libres = sim.archivo.filter((c) => !usados.has(c.nombre));
     const c = libres[archivoUsado.current % Math.max(1, libres.length)] ?? sim.archivo[archivoUsado.current % sim.archivo.length];
     archivoUsado.current += 1;
     setCaso({ ...c, archivo: true });
-    decir(`${r?.error ?? "La IA no respondió."} Mientras tanto, revisa este expediente de archivo: ${c.pais}.`);
+    decir(`${r?.error ?? "La IA no respondió."} Mientras tanto, revisa este expediente de archivo: ${c.nombre}.`);
   }
 
   async function diagnosticar() {
     if (!caso || !elegidos.length) return;
     dictadoRazon.parar();
     if (caso.archivo) {
-      const v = veredictoLocal(caso.problemas, elegidos);
-      setResultado({ veredicto: v.estado, correctos: caso.problemas });
+      const v = veredictoLocal(caso.respuesta, elegidos);
+      setResultado({ veredicto: v.estado, correctos: caso.respuesta });
       setFase("veredicto");
-      decir(explicacionLocal(caso, v));
+      decir(explicacionLocal(sim, caso, v));
       setHistoria((h) => [...h, { caso, veredicto: v.estado }]);
       return;
     }
@@ -366,13 +373,13 @@ export default function Simulador({ escenaId, llamar = llamarSimulador }) {
     let res;
     if (r?.veredicto) {
       anotarCupo(r);
-      res = { veredicto: r.veredicto, correctos: r.correctos ?? caso.problemas };
+      res = { veredicto: r.veredicto, correctos: r.correctos ?? caso.respuesta };
       decir(r.dice);
       if (r.sugerencias?.length) setSugerencias(r.sugerencias);
     } else {
-      const v = veredictoLocal(caso.problemas, elegidos);
-      res = { veredicto: v.estado, correctos: caso.problemas };
-      decir(explicacionLocal(caso, v));
+      const v = veredictoLocal(caso.respuesta, elegidos);
+      res = { veredicto: v.estado, correctos: caso.respuesta };
+      decir(explicacionLocal(sim, caso, v));
     }
     setResultado(res);
     setFase("veredicto");
@@ -396,7 +403,8 @@ export default function Simulador({ escenaId, llamar = llamarSimulador }) {
     if (r?.sugerencias?.length) setSugerencias(r.sugerencias);
   }
 
-  const alternar = (id) => setElegidos((e) => (e.includes(id) ? e.filter((x) => x !== id) : [...e, id]));
+  /* Si la decisión es de una sola opción, tocar otra cambia la elegida. */
+  const alternar = (id) => setElegidos((e) => (e.includes(id) ? e.filter((x) => x !== id) : sim.multiple ? [...e, id] : [id]));
   const alternarVoz = () => { const v = !voz; setVoz(v); if (v) hablar(dice); else callar(); };
   const pose = sim.companera.poses[fase === "veredicto" || fase === "cierre" ? "veredicto" : fase === "caso" ? "caso" : "capacitacion"];
   const dentro = fase !== "puerta";
@@ -409,7 +417,7 @@ export default function Simulador({ escenaId, llamar = llamarSimulador }) {
       {fase === "puerta" && (
         <div style={{ display: "grid", gap: 10 }}>
           <p style={{ margin: 0, color: INK, fontSize: 16, lineHeight: 1.4 }}>
-            Te contrataron en <b>{sim.firma}</b>, una firma que diagnostica economías. Hoy es tu primer día.
+            {sim.intro}
           </p>
           <button type="button" className="da26-boton da26-primario" onClick={entrar} data-entrar style={{ marginLeft: 0, width: "100%" }}>Entrar a la oficina</button>
         </div>
@@ -430,8 +438,8 @@ export default function Simulador({ escenaId, llamar = llamarSimulador }) {
         <>
           <Expediente caso={caso} ronda={ronda} total={sim.rondas} />
           <div>
-            <p className="sim-consigna" data-consigna>{sim.consigna(caso.pais)}</p>
-            <Virus elegidos={elegidos} onToggle={alternar} resultado={resultado} correctos={resultado?.correctos ?? []} />
+            <p className="sim-consigna" data-consigna>{sim.consigna(caso.nombre)}</p>
+            <Opciones sim={sim} elegidos={elegidos} onToggle={alternar} resultado={resultado} correctos={resultado?.correctos ?? []} />
           </div>
           {fase === "caso" && (
             <>
@@ -445,7 +453,7 @@ export default function Simulador({ escenaId, llamar = llamarSimulador }) {
               </div>
               <div className="sim-acciones">
                 <button type="button" className="da26-boton da26-primario" onClick={diagnosticar} disabled={!elegidos.length || pensando} data-diagnosticar style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-                  <FileText size={16} aria-hidden="true" />Entregar diagnóstico
+                  <FileText size={16} aria-hidden="true" />{sim.entregar}
                 </button>
               </div>
             </>
@@ -456,8 +464,8 @@ export default function Simulador({ escenaId, llamar = llamarSimulador }) {
                 {resultado.veredicto === "acierto" ? "✓" : resultado.veredicto === "parcial" ? "½" : "✕"} {ETIQUETA_V[resultado.veredicto]}
               </span>
               {ronda < sim.rondas
-                ? <button type="button" className="da26-boton da26-primario" onClick={() => traerCaso(ronda + 1)} disabled={pensando} data-siguiente-caso>Siguiente expediente</button>
-                : <button type="button" className="da26-boton da26-primario" onClick={() => { setFase("cierre"); decir(`Buen turno. Diagnosticaste ${historia.length} economías. Mañana llegan pacientes nuevos.`); }} data-cerrar-turno>Cerrar el turno</button>}
+                ? <button type="button" className="da26-boton da26-primario" onClick={() => traerCaso(ronda + 1)} disabled={pensando} data-siguiente-caso>Siguiente caso</button>
+                : <button type="button" className="da26-boton da26-primario" onClick={() => { setFase("cierre"); decir(sim.cierre(historia.length)); }} data-cerrar-turno>Cerrar el turno</button>}
             </div>
           )}
         </>
@@ -468,7 +476,7 @@ export default function Simulador({ escenaId, llamar = llamarSimulador }) {
           <p className="sim-consigna" style={{ margin: 0 }}>Tu turno en {sim.firma}</p>
           <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 6 }}>
             {historia.map((h, k) => (
-              <li key={k}><span><b>{h.caso.pais}</b> · {h.caso.problemas.map(nombreProblema).join(" + ")}</span><span className="sim-veredicto" data-v={h.veredicto} style={{ padding: "2px 8px", fontSize: 11 }}>{h.veredicto}</span></li>
+              <li key={k}><span><b>{h.caso.nombre}</b> · {h.caso.respuesta.map((id) => nombreOpcion(sim, id)).join(" + ")}</span><span className="sim-veredicto" data-v={h.veredicto} style={{ padding: "2px 8px", fontSize: 11 }}>{h.veredicto}</span></li>
             ))}
           </ul>
           <div className="sim-acciones">

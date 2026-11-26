@@ -1,7 +1,10 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { manejar, MOTIVOS, leerLimite, LIMITE_PROVISIONAL, sanearHistorial, leerJson } from "../manejador.js";
-import { veredicto, validarSalida, armarTurno, sanearCaso, IDS, SISTEMA, esquema } from "../escenarios/fiebre.js";
+import { manejar, MOTIVOS, leerLimite, LIMITE_PROVISIONAL, sanearHistorial, leerJson, ESCENARIOS } from "../manejador.js";
+import { veredicto } from "../escenarios/motor.js";
+
+const FIEBRE = ESCENARIOS["pe26-a2-fiebre"];
+const { validarSalida, armarTurno, sanearCaso, IDS, SISTEMA, esquema } = FIEBRE;
 
 /*
  * El simulador con el modelo y la base simulados: ninguna prueba gasta tokens.
@@ -9,14 +12,14 @@ import { veredicto, validarSalida, armarTurno, sanearCaso, IDS, SISTEMA, esquema
 const ENV = { ANTHROPIC_API_KEY: "sk-ant-api03-DE-MENTIRA" };
 
 const CASO = {
-  pais: "Valdoria", titular: "Las vitrinas cambian de precio cada semana",
-  sintomas: [
+  nombre: "Valdoria", titular: "Las vitrinas cambian de precio cada semana",
+  datos: [
     { dato: "Precio de la canasta familiar", ahora: "+14 % anual", antes: "+3 % anual", tendencia: "sube" },
     { dato: "Arriendo promedio", ahora: "$1,4 millones", antes: "$1,1 millones", tendencia: "sube" },
     { dato: "Pasaje de bus", ahora: "$3.900", antes: "$3.200", tendencia: "sube" },
   ],
   testigo: "Con el mismo mercado de enero ya no me alcanza para nada", quien: "una tendera",
-  problemas: ["inflacion"],
+  respuesta: ["inflacion"],
 };
 
 const peticion = (cuerpo, { sesion = true } = {}) => new Request("https://x/simulador", {
@@ -67,8 +70,8 @@ test("el prompt de sistema lo pone el servidor, nunca el sitio", async () => {
   assert.equal(r.status, 200);
   assert.equal(llamadas.modelo[0].system, SISTEMA);
   const j = await r.json();
-  assert.equal(j.caso.pais, "Valdoria");
-  assert.equal(j.caso.sintomas.length, 3);
+  assert.equal(j.caso.nombre, "Valdoria");
+  assert.equal(j.caso.datos.length, 3);
 });
 
 test("un expediente que nombra su virus se descarta y se pide otro", async () => {
@@ -105,9 +108,9 @@ test("veredicto: acierto, parcial y fallo", () => {
 });
 
 test("ids inventados no pasan al expediente", () => {
-  const c = sanearCaso({ ...CASO, problemas: ["inflacion", "virus-falso"] });
-  assert.deepEqual(c.problemas, ["inflacion"]);
-  assert.equal(validarSalida("caso", { dice: "x", caso: { ...CASO, problemas: ["nada"] }, sugerencias: [] }), null);
+  const c = sanearCaso({ ...CASO, respuesta: ["inflacion", "virus-falso"] });
+  assert.deepEqual(c.respuesta, ["inflacion"]);
+  assert.equal(validarSalida("caso", { dice: "x", caso: { ...CASO, respuesta: ["nada"] }, sugerencias: [] }), null);
 });
 
 test("una pregunta sin diagnosticar le dice al modelo que no revele", () => {
@@ -131,6 +134,33 @@ test("límite: provisional sin secreto, el del secreto si es válido", () => {
 
 test("el esquema del caso solo admite los ocho ids de la fuente", () => {
   assert.equal(IDS.length, 8);
-  assert.deepEqual(esquema("caso").properties.caso.properties.problemas.items.enum, IDS);
+  assert.deepEqual(esquema("caso").properties.caso.properties.respuesta.items.enum, IDS);
   assert.equal(leerJson('```json\n{"dice":"a"}\n```').dice, "a");
+});
+
+test("hay un escenario por cada Aprender de Macro con microsimulador: 31", () => {
+  assert.equal(Object.keys(ESCENARIOS).length, 31);
+  for (const [id, e] of Object.entries(ESCENARIOS)) {
+    assert.equal(e.ID, id);
+    assert.ok(e.IDS.length >= 2, id);
+    for (const op of e.IDS) assert.match(e.SISTEMA, new RegExp(`- ${op} = `), `${id}: ${op} sin definición`);
+    assert.doesNotMatch(e.SISTEMA, /undefined/, id);
+    assert.deepEqual(e.esquema("caso").properties.caso.properties.respuesta.items.enum, e.IDS);
+  }
+});
+
+test("si la decisión es de una sola opción, el diagnóstico y el caso se recortan a una", () => {
+  const e = ESCENARIOS["pf26-a2-buzones"];
+  const caso = { nombre: "Arenal", titular: "Recibo de la vía nueva", datos: CASO.datos, testigo: "x", quien: "y", respuesta: ["contribucion"] };
+  const t = e.armarTurno({ accion: "diagnostico", caso, elegidos: ["tasa", "contribucion"] });
+  assert.equal(t.extra.veredicto, "fallo");
+  assert.deepEqual(t.extra.sobran, ["tasa"]);
+  assert.equal(e.validarSalida("caso", { dice: "Mira.", caso: { ...caso, respuesta: ["tasa", "impuesto"] }, sugerencias: [] }), null);
+});
+
+test("un caso de los buzones que dice la palabra «contribución» se descarta", () => {
+  const e = ESCENARIOS["pf26-a2-buzones"];
+  const caso = { nombre: "Arenal", titular: "La contribución por la vía nueva", datos: CASO.datos, testigo: "x", quien: "y", respuesta: ["contribucion"] };
+  assert.equal(e.validarSalida("caso", { dice: "Mira.", caso, sugerencias: [] }), null);
+  assert.ok(e.validarSalida("caso", { dice: "Mira.", caso: { ...caso, titular: "El cobro por la vía nueva" }, sugerencias: [] }));
 });

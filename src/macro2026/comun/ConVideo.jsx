@@ -4,9 +4,14 @@
  * pantallas quedan iguales, y quien quiera puede saltar el video.
  *
  * Uso: conVideo(() => import("./A1Carrito.jsx"), "da26-a1-carrito") dentro de lazy().
+ *
+ * Si la Aprender tiene simulador con IA (simulador/escenas.js), va al lado:
+ * con microvideo, «Video» | «Simulador con IA»; sin microvideo, «Aprender» |
+ * «Simulador con IA». Publicado para todos (orden de Mateo, 26-nov: «publica
+ * todo para los estudiantes, nada oculto»).
  */
 import { lazy, Suspense, useState } from "react";
-import { Sparkles, Play } from "lucide-react";
+import { Sparkles, Play, BookOpen } from "lucide-react";
 import { Boton } from "./ui.jsx";
 import { INK, INK_2 } from "./colores-da.js";
 import { MICROVIDEOS } from "./microvideos.js";
@@ -65,8 +70,8 @@ function TarjetaVideo({ id, onSeguir, onSimulador = null }) {
  * video una invitación a entrar a la oficina. El botón de siempre, «Ahora, a
  * moverlo tú», sigue llevando a la pieza interactiva.
  *
- * Solo se enciende con `{ simulador: true }` y si el escenario existe: hoy,
- * únicamente en la vista previa sin publicar.
+ * Se enciende en toda Aprender que tenga escenario en simulador/escenas.js.
+ * Sin microvideo, la primera pestaña es la pieza interactiva misma.
  */
 const CSS_LADO = `
 .sim-lado { max-width: 1080px; margin: 0 auto; display: grid; gap: 12px; }
@@ -86,6 +91,7 @@ const CSS_LADO = `
   .sim-columnas { grid-template-columns: minmax(300px, 380px) minmax(0, 1fr); align-items: start; }
   .sim-columnas > [data-visible="0"] { display: block; }
   .sim-columnas .da26-tarjeta { max-width: none; margin: 0; }
+  .sim-columnas[data-pieza-al-lado] { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
   .sim-col-sim { max-width: none; }
 }
 `;
@@ -118,14 +124,48 @@ function VideoYSimulador({ id, onSeguir }) {
   );
 }
 
-export function conVideo(cargar, id, { simulador = false } = {}) {
+function PiezaYSimulador({ id, Pieza, props }) {
+  const [pestana, setPestana] = useState("pieza");
+  return (
+    <div className="sim-lado" data-con-simulador={id}>
+      <style>{CSS_LADO}</style>
+      <div className="sim-pestanas" role="tablist" aria-label="Cómo aprender este tema">
+        <button type="button" role="tab" aria-selected={pestana === "pieza"} onClick={() => setPestana("pieza")} data-pestana="pieza">
+          <BookOpen size={16} aria-hidden="true" />Aprender
+        </button>
+        <button type="button" role="tab" aria-selected={pestana === "simulador"} onClick={() => setPestana("simulador")} data-pestana="simulador" data-ia>
+          <Sparkles size={16} aria-hidden="true" />Simulador con IA
+        </button>
+      </div>
+      <div className="sim-columnas" data-pieza-al-lado>
+        <div data-visible={pestana === "pieza" ? "1" : "0"}>
+          <Pieza {...props} />
+        </div>
+        <div className="sim-col-sim da26-tarjeta" data-visible={pestana === "simulador" ? "1" : "0"} aria-label={AVISO_IA}>
+          <Suspense fallback={<div style={{ minHeight: 320 }} />}>
+            <Simulador escenaId={id} />
+          </Suspense>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function conVideo(cargar, id, { simulador = true } = {}) {
   return cargar().then((m) => {
     const Pieza = m.default;
-    if (!MICROVIDEOS[id]) return m;
+    const conSim = simulador && Boolean(simuladorDe(id));
+    if (!MICROVIDEOS[id]) {
+      if (!conSim) return m;
+      function PiezaConSimulador(props) {
+        return <PiezaYSimulador id={id} Pieza={Pieza} props={props} />;
+      }
+      return { ...m, default: PiezaConSimulador };
+    }
     function PiezaConVideo(props) {
       const [visto, setVisto] = useState(false);
       if (visto) return <Pieza {...props} />;
-      return simulador && simuladorDe(id)
+      return conSim
         ? <VideoYSimulador id={id} onSeguir={() => setVisto(true)} />
         : <TarjetaVideo id={id} onSeguir={() => setVisto(true)} />;
     }

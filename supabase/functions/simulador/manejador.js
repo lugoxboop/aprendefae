@@ -6,6 +6,7 @@
  * tres diferencias:
  *   1. El prompt de sistema NO llega del sitio: el sitio solo dice qué
  *      escenario abrió (p. ej. «pe26-a2-fiebre») y el servidor elige el prompt.
+ *      Los escenarios salen de escenarios/motor.js, uno por Aprender.
  *      Un estudiante no puede reescribir a la compañera.
  *   2. El modelo responde JSON con esquema (structured outputs), y aun así se
  *      comprueba aquí: un expediente que nombra su propio virus o trae un id
@@ -16,9 +17,14 @@
  * JavaScript plano, como asistente/manejador.js: lo cargan Deno y Node.
  * ═══════════════════════════════════════════════════════════════════════════
  */
-import * as FIEBRE from "./escenarios/fiebre.js";
+import { ESCENARIOS as T1 } from "./escenarios/demanda-agregada.js";
+import { ESCENARIOS as T2 } from "./escenarios/politica-economica.js";
+import { ESCENARIOS as T3 } from "./escenarios/politica-fiscal.js";
+import { ESCENARIOS as T4 } from "./escenarios/politica-monetaria.js";
+import { ESCENARIOS as T5 } from "./escenarios/politica-cambiaria.js";
 
-export const ESCENARIOS = { [FIEBRE.ID]: FIEBRE };
+/* Un escenario por Aprender de Macro: id de la pieza → escenario del motor. */
+export const ESCENARIOS = Object.fromEntries([...T1, ...T2, ...T3, ...T4, ...T5].map((e) => [e.ID, e]));
 
 /* Una partida son unas 6 a 10 llamadas (3 expedientes, 3 diagnósticos y
  * preguntas). 40 alcanza para cuatro partidas al día. Se cambia con el
