@@ -45,6 +45,8 @@ video; para los siguientes se le vuelve a preguntar.
 | 2026-11 | 3 muestras de voz (111 caracteres cada una) | 333 |
 | 2026-11 | Narración completa de «El mango de Toby» (878 caracteres) | 878 |
 | 2026-11 | Última frase de «El mango de Toby», regrabada (87 caracteres) | 87 |
+| 2026-11 | Microvideos Macro 2026: T1 A1–A6 y T2 A1–A3 (9 narraciones, unos 7.400 caracteres, más un sobrante pegado en A1) | ≈7.400 |
+| 2026-11 | Saldo al cierre del 26-nov | 1.261 restantes de 10.000 |
 
 ## Voz anterior (retirada)
 

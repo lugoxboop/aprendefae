@@ -40,6 +40,7 @@ import CierreAprender from "./comun/CierreAprender.jsx";
 import { INK, INK_2 } from "./comun/colores-da.js";
 import FondoPagina, { ESCENA_DE_TEMA } from "./comun/FondoPagina.jsx";
 import { MASCOTAS, rutaMascota } from "./comun/mascotas.jsx";
+import { conVideo } from "./comun/ConVideo.jsx";
 
 const MATERIA = "macroeconomia";
 
@@ -54,12 +55,12 @@ export const TEMAS_2026 = {
     publicada: T1.estaPublicada,
     componentes: {
       "da26-a0-ley-demanda": lazy(() => import("./demanda-agregada/A0LeyDemanda.jsx")),
-      "da26-a1-carrito": lazy(() => import("./demanda-agregada/A1Carrito.jsx")),
-      "da26-a2-vaso-renta": lazy(() => import("./demanda-agregada/A2VasoRenta.jsx")),
-      "da26-a3-columpio-tasa": lazy(() => import("./demanda-agregada/A3ColumpioTasa.jsx")),
-      "da26-a4-no-miran-renta": lazy(() => import("./demanda-agregada/A4NoMiranRenta.jsx")),
-      "da26-a5-bisagra-ascensor": lazy(() => import("./demanda-agregada/A5BisagraAscensor.jsx")),
-      "da26-a6-eco-multiplicador": lazy(() => import("./demanda-agregada/A6EcoMultiplicador.jsx")),
+      "da26-a1-carrito": lazy(() => conVideo(() => import("./demanda-agregada/A1Carrito.jsx"), "da26-a1-carrito")),
+      "da26-a2-vaso-renta": lazy(() => conVideo(() => import("./demanda-agregada/A2VasoRenta.jsx"), "da26-a2-vaso-renta")),
+      "da26-a3-columpio-tasa": lazy(() => conVideo(() => import("./demanda-agregada/A3ColumpioTasa.jsx"), "da26-a3-columpio-tasa")),
+      "da26-a4-no-miran-renta": lazy(() => conVideo(() => import("./demanda-agregada/A4NoMiranRenta.jsx"), "da26-a4-no-miran-renta")),
+      "da26-a5-bisagra-ascensor": lazy(() => conVideo(() => import("./demanda-agregada/A5BisagraAscensor.jsx"), "da26-a5-bisagra-ascensor")),
+      "da26-a6-eco-multiplicador": lazy(() => conVideo(() => import("./demanda-agregada/A6EcoMultiplicador.jsx"), "da26-a6-eco-multiplicador")),
       "da26-h1-llena-carrito": lazy(() => import("./demanda-agregada/H1LlenaCarrito.jsx")),
       "da26-h4-empresario": lazy(() => import("./demanda-agregada/H4Empresario.jsx")),
       "da26-h3-gira-o-sube": lazy(() => import("./demanda-agregada/H3GiraOSube.jsx")),
@@ -73,9 +74,9 @@ export const TEMAS_2026 = {
     piezas: T2.PIEZAS_T2,
     publicada: T2.estaPublicadaT2,
     componentes: {
-      "pe26-a1-mecanico": lazy(() => import("./politica-economica/A1Mecanico.jsx")),
-      "pe26-a2-fiebre": lazy(() => import("./politica-economica/A2Fiebre.jsx")),
-      "pe26-a3-problema-resuelto": lazy(() => import("./politica-economica/A3ProblemaResuelto.jsx")),
+      "pe26-a1-mecanico": lazy(() => conVideo(() => import("./politica-economica/A1Mecanico.jsx"), "pe26-a1-mecanico")),
+      "pe26-a2-fiebre": lazy(() => conVideo(() => import("./politica-economica/A2Fiebre.jsx"), "pe26-a2-fiebre")),
+      "pe26-a3-problema-resuelto": lazy(() => conVideo(() => import("./politica-economica/A3ProblemaResuelto.jsx"), "pe26-a3-problema-resuelto")),
       "pe26-a4-perillas": lazy(() => import("./politica-economica/A4Perillas.jsx")),
       "pe26-a5-escalera": lazy(() => import("./politica-economica/A5Escalera.jsx")),
       "pe26-h3-cables": lazy(() => import("./politica-economica/H3Cables.jsx")),

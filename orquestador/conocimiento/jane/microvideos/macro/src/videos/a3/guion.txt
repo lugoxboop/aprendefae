@@ -1,0 +1,13 @@
+Bruno tiene listo el plano de su segunda panadería. Y lo va a guardar en un cajón. ¿Por qué?
+Como casi todas las empresas, quiere construirla con un crédito.
+Máquinas, plantas, inventarios: eso es la inversión, I.
+Con la tasa de interés al ocho por ciento, las cuentas le dan. ¡A construir!
+Pero el banco sube la tasa al doce por ciento. La cuota ya no le cabe.
+El plano vuelve al cajón. Y no es el único: en toda la ciudad se frenan las grúas.
+Es un columpio: si la tasa de interés sube, la inversión baja.
+¿Cuánto baja? Lo dice b: cuánto cae la inversión por cada punto de tasa.
+Si a las empresas les importa mucho la tasa, b es grande. Brazo largo, golpe fuerte.
+Pero hay inversión que no mira la tasa: depende de las expectativas.
+Si el futuro se ve nublado, se invierte menos. Esa es la inversión autónoma: I barra.
+Todo junto: I es igual a I barra, menos b por i.
+En la actividad, escucha lo que oyó el empresario y arma la cadena.
