@@ -88,7 +88,15 @@ jobs:
 
       - name: voz
         if: contains(steps.pedido.outputs.acciones, ' voz') || startsWith(steps.pedido.outputs.acciones, 'voz')
-        run: node contenido/scripts/voz.mjs "${{ steps.pedido.outputs.pieza }}" ${{ steps.pedido.outputs.voz }}
+        run: |
+          # Varias piezas en un solo pedido: "piezas": [{"pieza": "...", "voz": "alias"}, ...]
+          if [ "${{ github.event_name }}" != "workflow_dispatch" ] && jq -e '.piezas | length > 0' contenido/pedido.json >/dev/null 2>&1; then
+            jq -r '.piezas[] | "\(.pieza) \(.voz // "")"' contenido/pedido.json | while read -r p v; do
+              node contenido/scripts/voz.mjs "$p" $v
+            done
+          else
+            node contenido/scripts/voz.mjs "${{ steps.pedido.outputs.pieza }}" ${{ steps.pedido.outputs.voz }}
+          fi
 
       - name: Instalar el estudio (Remotion)
         if: contains(steps.pedido.outputs.acciones, 'render') || contains(steps.pedido.outputs.acciones, 'video-ia')
