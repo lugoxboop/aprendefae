@@ -88,7 +88,7 @@ function volumenMusica(t, T, base, baja) {
   return (base - baja * habla) * clamp01(t / 0.15) * clamp01((T.DURACION_S - t) / 1.2);
 }
 
-export function Reel({ T, planos, pinta, sfx, arte = [], musica, musicaBase = 0.55, musicaBaja = 0.38, sinSonido = false, zonas = false, encima = null, subY }) {
+export function Reel({ T, planos, pinta, sfx, arte = [], musica, musicaBase = 0.55, musicaBaja = 0.38, sinSonido = false, zonas = false, encima = null, subY, sinSubs = false }) {
   usePrecarga(arte);
   const t = useCurrentFrame() / FPS;
   const subs = trozosSub(T);
@@ -96,8 +96,8 @@ export function Reel({ T, planos, pinta, sfx, arte = [], musica, musicaBase = 0.
     <AbsoluteFill style={{ background: TINTA, overflow: "hidden" }}>
       <style>{ESTILO}</style>
       <Planos t={t} planos={planos} pinta={pinta} />
-      {encima && encima(t)}
-      <Subtitulos t={t} subs={subs} y={subY} />
+      {encima && !sinSubs && encima(t)}
+      {!sinSubs && <Subtitulos t={t} subs={subs} y={subY} />}
       {zonas && <Zonas />}
       {!sinSonido && T.TRAMOS.map((tr, i) => (
         <Sequence key={i} from={Math.round(tr.v * FPS)} durationInFrames={Math.max(1, Math.round(((tr.a1 - tr.a0) / T.RITMO) * FPS))}>

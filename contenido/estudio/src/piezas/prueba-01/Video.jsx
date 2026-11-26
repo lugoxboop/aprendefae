@@ -305,7 +305,7 @@ function pinta(pl, t) {
   );
 }
 
-export function Prueba01({ sinSonido = false, zonas = false }) {
+export function Prueba01({ sinSonido = false, zonas = false, sinSubs = false }) {
   const sfx = [];
   const fx = (t, f, vol = 0.5) => sfx.push({ t, f, vol });
   fx(0, "toc", 0.35); fx(0.6, "toc", 0.3); fx(1.2, "toc", 0.3);                  // tictac
@@ -330,6 +330,6 @@ export function Prueba01({ sinSonido = false, zonas = false }) {
       </div>
     );
   };
-  return <Reel T={T} planos={PLANOS} encima={invita} pinta={pinta} sfx={sfx} arte={ARTE} musica="lofi" sinSonido={sinSonido} zonas={zonas} subY={1405} />;
+  return <Reel T={T} planos={PLANOS} encima={invita} pinta={pinta} sfx={sfx} arte={ARTE} musica="lofi" sinSonido={sinSonido} zonas={zonas} sinSubs={sinSubs} subY={1405} />;
 }
 export { VOZ };

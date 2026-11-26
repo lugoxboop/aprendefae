@@ -89,11 +89,19 @@ jobs:
         run: node contenido/scripts/voz.mjs "${{ steps.pedido.outputs.pieza }}" ${{ steps.pedido.outputs.voz }}
 
       - name: Instalar el estudio (Remotion)
-        if: contains(steps.pedido.outputs.acciones, 'render')
+        if: contains(steps.pedido.outputs.acciones, 'render') || contains(steps.pedido.outputs.acciones, 'video-ia')
         working-directory: contenido/estudio
         run: |
           npm ci && npx remotion browser ensure
           pip install --quiet numpy && python3 sonido/sintetiza.py   # música original, se sintetiza aquí
+
+      # PRUEBA: una escena animada por la API de video de ElevenLabs (ver contenido/pedido-video.json).
+      - name: video-ia
+        if: contains(steps.pedido.outputs.acciones, 'video-ia')
+        run: |
+          node contenido/scripts/video.mjs contenido/pedido-video.json
+          f=$(cat contenido/estudio/salida/ia-ultimo.txt)
+          node contenido/scripts/subir.mjs "$f" "pruebas/$(basename "$f")"
 
       - name: render
         if: contains(steps.pedido.outputs.acciones, 'render')

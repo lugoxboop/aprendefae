@@ -24,6 +24,7 @@ ${CARAS.map((c) => `.mv.cara-${c} .mta-c-${c}`).join(", ")} { display: inline; }
 .mv .mta-cabeza { transform-origin: 50% 95%; transform: rotate(var(--cab, 0deg)); }
 .mv .mta-cola { transform-origin: 5% 85%; transform: rotate(var(--cola, 0deg)); }
 .mv .mta-ojos { transform-origin: 50% 50%; transform: scale(var(--ojx, 1), var(--ojo, 1)); }
+.mv .mta-parpados { opacity: var(--cerrado, 0); }
 .mv .mta-cuerpo { transform-origin: 50% 100%; transform: scaleY(var(--resp, 1)); }
 .mv .mta-brazo-i { transform-origin: 90% 8%; transform: rotate(var(--bi, 0deg)); }
 .mv .mta-brazo-d { transform-origin: 10% 8%; transform: rotate(var(--bd, 0deg)); }
@@ -42,7 +43,19 @@ ${fuente("Caveat", 700, "caveat-latin-700-normal.woff2")}
 `;
 
 const BASE_MASCOTAS = staticFile("mascotas");
-const svgDe = (esp) => MASCOTAS[esp].inner.replaceAll('href="/mascotas', `href="${BASE_MASCOTAS}`);
+/* Párpados (Nino): cuando los ojos se cierran (parpadeo o dormido) se dibuja la línea del
+   párpado; antes los ojos solo se encogían y la cara quedaba sin ojos. Se calcula de la caja
+   de cada ojo, así sirve para todas las especies, y gira con la cabeza. */
+const RE_OJOS = /<g class="mta-ojos">((?:<g transform="translate\(([\d.]+) ([\d.]+)\)"><image [^>]*?width="([\d.]+)" height="([\d.]+)"\/><\/g>)+)<\/g>/g;
+const conParpados = (inner) => inner.replace(RE_OJOS, (todo, ojos) => {
+  const arcos = [...ojos.matchAll(/translate\(([\d.]+) ([\d.]+)\)"><image [^>]*?width="([\d.]+)" height="([\d.]+)"/g)].map(([, x, y, w, h]) => {
+    x = +x; y = +y; w = +w; h = +h;
+    const y0 = y + h * 0.55, x0 = x + w * 0.12, x1 = x + w * 0.88;
+    return `<path d="M${x0} ${y0} Q${x + w / 2} ${y0 + h * 0.32} ${x1} ${y0}" fill="none" stroke="#2A1E17" stroke-width="${(w * 0.11).toFixed(1)}" stroke-linecap="round"/>`;
+  }).join("");
+  return `${todo}<g class="mta-parpados">${arcos}</g>`;
+});
+const svgDe = (esp) => conParpados(MASCOTAS[esp].inner).replaceAll('href="/mascotas', `href="${BASE_MASCOTAS}`);
 const CACHE = {};
 
 /* Marioneta anclada por los pies: (x, y) es el punto del suelo, al centro. */
@@ -73,7 +86,7 @@ export function Mascota({
         width={ancho} height={alto} viewBox={`${vx} ${vy} ${vw} ${vh}`}
         style={{
           display: "block", overflow: "visible",
-          "--ojo": parp * ojos, "--ojx": ojos, "--resp": resp, "--cola": `${cola}deg`, "--cab": `${cab}deg`,
+          "--ojo": parp * ojos < 0.35 ? 0 : parp * ojos, "--ojx": ojos, "--cerrado": parp * ojos < 0.35 ? 1 : 0, "--resp": resp, "--cola": `${cola}deg`, "--cab": `${cab}deg`,
           "--bi": `${bi}deg`, "--bd": `${bd}deg`, "--oi": `${giroOreja}deg`, "--od": `${-giroOreja}deg`,
         }}
         dangerouslySetInnerHTML={{ __html: CACHE[clave] }}

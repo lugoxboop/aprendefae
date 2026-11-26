@@ -1,0 +1,9 @@
+{
+  "id": "prueba-01-dormido",
+  "primer_cuadro": "estudio/src/piezas/prueba-01/referencias/dormido.jpg",
+  "modelo": "veo-3.1-fast-generate-001",
+  "segundos": 8,
+  "resolucion": "720p",
+  "prompt": "2D cartoon animation, keep exactly the same flat illustration style, colors, thick black outlines and composition as the first frame. A cute chibi puppy is asleep with its head resting on a wooden desk at night, eyes closed. It breathes slowly; its floppy ears twitch slightly; small Z letters float up and fade. Steam rises gently from the coffee mugs. Through the window the night sky slowly turns to orange dawn. Near the end the puppy wakes up with a start: eyes pop wide open, ears jump up, startled expression. Static camera with a very slow push-in. No new objects, no text changes.",
+  "negativo": "3D, realistic, photorealistic, extra limbs, morphing, distorted face, new characters, changing text, watermark, blurry"
+}
