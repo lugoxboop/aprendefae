@@ -1,0 +1,364 @@
+{
+  "audio": "voz/musica-isabel.mp3",
+  "duracion": 24.95,
+  "hash": "c5435828fc8527e6",
+  "voz": "Isabel - Soft, Calm and Meditative",
+  "voice_id": "ChvF2eSRaJsHDVJhdmbG",
+  "genero": "female",
+  "modelo": "eleven_v4",
+  "caracteres": 341,
+  "escenas": [
+    {
+      "ini": 0,
+      "fin": 4.24,
+      "texto": "Toby estudia con su playlist favorita, y se la canta toda.",
+      "palabras": [
+        {
+          "w": "Toby",
+          "ini": 0,
+          "fin": 0.32
+        },
+        {
+          "w": "estudia",
+          "ini": 0.44,
+          "fin": 0.8
+        },
+        {
+          "w": "con",
+          "ini": 0.88,
+          "fin": 0.96
+        },
+        {
+          "w": "su",
+          "ini": 1.04,
+          "fin": 1.12
+        },
+        {
+          "w": "playlist",
+          "ini": 1.2,
+          "fin": 1.68
+        },
+        {
+          "w": "favorita,",
+          "ini": 1.84,
+          "fin": 2.56
+        },
+        {
+          "w": "y",
+          "ini": 2.64,
+          "fin": 2.72
+        },
+        {
+          "w": "se",
+          "ini": 2.8,
+          "fin": 2.88
+        },
+        {
+          "w": "la",
+          "ini": 2.96,
+          "fin": 3.04
+        },
+        {
+          "w": "canta",
+          "ini": 3.12,
+          "fin": 3.52
+        },
+        {
+          "w": "toda.",
+          "ini": 3.76,
+          "fin": 4.24
+        }
+      ]
+    },
+    {
+      "ini": 4.72,
+      "fin": 8.08,
+      "texto": "Su amiga estudia en silencio, o con música sin letra.",
+      "palabras": [
+        {
+          "w": "Su",
+          "ini": 4.72,
+          "fin": 4.8
+        },
+        {
+          "w": "amiga",
+          "ini": 4.88,
+          "fin": 5.2
+        },
+        {
+          "w": "estudia",
+          "ini": 5.32,
+          "fin": 5.6
+        },
+        {
+          "w": "en",
+          "ini": 5.64,
+          "fin": 5.68
+        },
+        {
+          "w": "silencio,",
+          "ini": 5.76,
+          "fin": 6.64
+        },
+        {
+          "w": "o",
+          "ini": 6.72,
+          "fin": 6.8
+        },
+        {
+          "w": "con",
+          "ini": 6.88,
+          "fin": 7.04
+        },
+        {
+          "w": "música",
+          "ini": 7.08,
+          "fin": 7.44
+        },
+        {
+          "w": "sin",
+          "ini": 7.52,
+          "fin": 7.6
+        },
+        {
+          "w": "letra.",
+          "ini": 7.68,
+          "fin": 8.08
+        }
+      ]
+    },
+    {
+      "ini": 8.64,
+      "fin": 11.52,
+      "texto": "¿Quién entiende más lo que lee: A o B?",
+      "palabras": [
+        {
+          "w": "¿Quién",
+          "ini": 8.64,
+          "fin": 8.8
+        },
+        {
+          "w": "entiende",
+          "ini": 8.92,
+          "fin": 9.28
+        },
+        {
+          "w": "más",
+          "ini": 9.32,
+          "fin": 9.52
+        },
+        {
+          "w": "lo",
+          "ini": 9.56,
+          "fin": 9.6
+        },
+        {
+          "w": "que",
+          "ini": 9.68,
+          "fin": 9.76
+        },
+        {
+          "w": "lee:",
+          "ini": 9.84,
+          "fin": 10.56
+        },
+        {
+          "w": "A",
+          "ini": 10.64,
+          "fin": 10.88
+        },
+        {
+          "w": "o",
+          "ini": 11.12,
+          "fin": 11.2
+        },
+        {
+          "w": "B?",
+          "ini": 11.28,
+          "fin": 11.52
+        }
+      ]
+    },
+    {
+      "ini": 12.08,
+      "fin": 16.92,
+      "texto": "Gana B. Las canciones con letra compiten con las palabras que estás leyendo.",
+      "palabras": [
+        {
+          "w": "Gana",
+          "ini": 12.08,
+          "fin": 12.4
+        },
+        {
+          "w": "B.",
+          "ini": 12.56,
+          "fin": 12.8
+        },
+        {
+          "w": "Las",
+          "ini": 13.2,
+          "fin": 13.36
+        },
+        {
+          "w": "canciones",
+          "ini": 13.4,
+          "fin": 13.84
+        },
+        {
+          "w": "con",
+          "ini": 13.92,
+          "fin": 14
+        },
+        {
+          "w": "letra",
+          "ini": 14.08,
+          "fin": 14.48
+        },
+        {
+          "w": "compiten",
+          "ini": 14.56,
+          "fin": 15.04
+        },
+        {
+          "w": "con",
+          "ini": 15.12,
+          "fin": 15.2
+        },
+        {
+          "w": "las",
+          "ini": 15.28,
+          "fin": 15.36
+        },
+        {
+          "w": "palabras",
+          "ini": 15.44,
+          "fin": 15.76
+        },
+        {
+          "w": "que",
+          "ini": 15.8,
+          "fin": 15.84
+        },
+        {
+          "w": "estás",
+          "ini": 15.92,
+          "fin": 16.08
+        },
+        {
+          "w": "leyendo.",
+          "ini": 16.16,
+          "fin": 16.92
+        }
+      ]
+    },
+    {
+      "ini": 17.12,
+      "fin": 19.96,
+      "texto": "Sin letra, tu cabeza lee sin pelear.",
+      "palabras": [
+        {
+          "w": "Sin",
+          "ini": 17.12,
+          "fin": 17.36
+        },
+        {
+          "w": "letra,",
+          "ini": 17.48,
+          "fin": 18
+        },
+        {
+          "w": "tu",
+          "ini": 18.08,
+          "fin": 18.16
+        },
+        {
+          "w": "cabeza",
+          "ini": 18.2,
+          "fin": 18.56
+        },
+        {
+          "w": "lee",
+          "ini": 18.64,
+          "fin": 18.88
+        },
+        {
+          "w": "sin",
+          "ini": 18.96,
+          "fin": 19.12
+        },
+        {
+          "w": "pelear.",
+          "ini": 19.2,
+          "fin": 19.96
+        }
+      ]
+    },
+    {
+      "ini": 20.24,
+      "fin": 24.96,
+      "texto": "¿Con qué estudias tú? Coméntalo y síguenos para más trucos de estudio.",
+      "palabras": [
+        {
+          "w": "¿Con",
+          "ini": 20.24,
+          "fin": 20.4
+        },
+        {
+          "w": "qué",
+          "ini": 20.44,
+          "fin": 20.48
+        },
+        {
+          "w": "estudias",
+          "ini": 20.56,
+          "fin": 21.04
+        },
+        {
+          "w": "tú?",
+          "ini": 21.08,
+          "fin": 21.28
+        },
+        {
+          "w": "Coméntalo",
+          "ini": 21.68,
+          "fin": 22.4
+        },
+        {
+          "w": "y",
+          "ini": 22.56,
+          "fin": 22.64
+        },
+        {
+          "w": "síguenos",
+          "ini": 22.72,
+          "fin": 23.12
+        },
+        {
+          "w": "para",
+          "ini": 23.2,
+          "fin": 23.36
+        },
+        {
+          "w": "más",
+          "ini": 23.52,
+          "fin": 23.68
+        },
+        {
+          "w": "trucos",
+          "ini": 23.76,
+          "fin": 24.08
+        },
+        {
+          "w": "de",
+          "ini": 24.107,
+          "fin": 24.133
+        },
+        {
+          "w": "estudio.",
+          "ini": 24.16,
+          "fin": 24.96
+        }
+      ]
+    }
+  ]
+}
