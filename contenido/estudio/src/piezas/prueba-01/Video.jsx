@@ -13,7 +13,7 @@ import DATOS, { VOZ } from "./tiempos.js";
 /* las imágenes que no son mascotas se precargan aparte */
 const ARTE = ["planck/planck-logo-claro.svg"];
 
-export const T = crearTiempo(DATOS, { extra: [0.0, 0.1, 0.15, 1.3, 0.2, 0.2], cola: 1.65, recorta: true, ritmo: 1.17 });
+export const T = crearTiempo(DATOS, { extra: [0.0, 0.1, 0.15, 1.3, 0.2, 0.2], cola: 1.65, recorta: true, ritmo: 1.06 });
 export const DURACION = T.DURACION_S;
 const { S, E, W } = T;
 
@@ -169,8 +169,8 @@ function Logo({ p }) {
       </div>
       {/* respaldo de marca (kit Planck, nov-2026): todo producto termina con «… es de planck»; el logo va en imagen, nunca escrito */}
       <div style={{ marginTop: 18, display: "flex", alignItems: "center", justifyContent: "center", gap: 12, background: CREMA, borderRadius: 12, padding: "8px 22px 10px", width: "fit-content", marginLeft: "auto", marginRight: "auto", opacity: clamp01(p * 2 - 0.4) }}>
-        <span style={{ fontFamily: "Inter", fontWeight: 600, fontSize: 30, color: "#565C66" }}>AprendeFAE es de</span>
-        <Img src={staticFile("planck/planck-logo-claro.svg")} style={{ height: 36, width: "auto", display: "block" }} />
+        <span style={{ fontFamily: "Inter", fontWeight: 600, fontSize: 42, color: "#565C66" }}>AprendeFAE es de</span>
+        <Img src={staticFile("planck/planck-logo-claro.svg")} style={{ height: 54, width: "auto", display: "block" }} />
       </div>
     </div>
   );
