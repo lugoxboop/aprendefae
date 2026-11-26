@@ -1,0 +1,117 @@
+# Pipeline de contenido de Instagram (Nino). Corre aquí y no en el shell de la nube porque
+# allí no hay salida a api.elevenlabs.io, a Supabase ni a la Graph API de Meta; aquí sí,
+# y aquí viven los secretos. Ver contenido/README.md.
+#
+# Cómo se dispara:
+#   · empujando un cambio a contenido/pedido.json (cualquier rama claude/** o main), o
+#   · a mano desde Actions (workflow_dispatch), cuando este archivo esté en main.
+# Las acciones corren en el orden en que van en el pedido. Cada una es idempotente:
+# la voz no se regenera si el guion no cambió (no gasta cupo).
+#
+# Lo que produce:
+#   · voz (mp3 + tiempos.json) y registro → se confirman a la MISMA rama (son fuentes).
+#   · el video terminado → al bucket público instagram-publico. NUNCA al repositorio.
+
+name: Contenido (Instagram)
+
+on:
+  push:
+    branches: ["claude/**", main]
+    paths: ["contenido/pedido.json"]
+  workflow_dispatch:
+    inputs:
+      pieza: { description: "id de la pieza (carpeta en contenido/estudio/src/piezas)", required: true }
+      acciones: { description: "acciones separadas por espacio (diagnostico voces bucket voz render subir)", required: true, default: "voz render subir" }
+      voz: { description: "alias de la voz de confianza, o «todas» para comparar (vacío = la primera)", required: false, default: "" }
+
+concurrency:
+  group: contenido-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    if: github.repository == 'lugoxboop/aprendefae'
+    timeout-minutes: 40
+    env:
+      ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+      VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+      IG_USER_ID: ${{ secrets.IG_USER_ID }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with: { node-version: "24" }
+
+      - name: Leer el pedido
+        id: pedido
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "pieza=${{ inputs.pieza }}" >> "$GITHUB_OUTPUT"
+            echo "acciones=${{ inputs.acciones }}" >> "$GITHUB_OUTPUT"
+            echo "voz=${{ inputs.voz }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "pieza=$(jq -r .pieza contenido/pedido.json)" >> "$GITHUB_OUTPUT"
+            echo "acciones=$(jq -r '.acciones | join(" ")' contenido/pedido.json)" >> "$GITHUB_OUTPUT"
+            echo "voz=$(jq -r '.voz // ""' contenido/pedido.json)" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Solo dice si cada secreto existe y su longitud. Nunca el valor.
+      - name: diagnostico
+        if: contains(steps.pedido.outputs.acciones, 'diagnostico')
+        run: |
+          for n in ELEVENLABS_API_KEY VITE_SUPABASE_URL SUPABASE_ACCESS_TOKEN SUPABASE_SERVICE_ROLE_KEY IG_ACCESS_TOKEN IG_USER_ID; do
+            v="${!n}"; if [ -n "$v" ]; then echo "OK     $n (${#v} caracteres)"; else echo "FALTA  $n"; fi
+          done
+          for h in https://api.elevenlabs.io https://graph.facebook.com https://api.supabase.com; do
+            echo "$h → $(curl -s -o /dev/null -w '%{http_code}' -m 15 $h)"
+          done
+
+      - name: voces
+        if: contains(steps.pedido.outputs.acciones, 'voces')
+        run: node contenido/scripts/voces.mjs
+
+      - name: bucket
+        if: contains(steps.pedido.outputs.acciones, 'bucket')
+        run: node contenido/scripts/bucket.mjs
+
+      - name: voz
+        if: contains(steps.pedido.outputs.acciones, ' voz') || startsWith(steps.pedido.outputs.acciones, 'voz')
+        run: node contenido/scripts/voz.mjs "${{ steps.pedido.outputs.pieza }}" ${{ steps.pedido.outputs.voz }}
+
+      - name: Instalar el estudio (Remotion)
+        if: contains(steps.pedido.outputs.acciones, 'render')
+        working-directory: contenido/estudio
+        run: npm ci && npx remotion browser ensure
+
+      - name: render
+        if: contains(steps.pedido.outputs.acciones, 'render')
+        working-directory: contenido/estudio
+        run: |
+          mkdir -p salida
+          node render.mjs "${{ steps.pedido.outputs.pieza }}" "salida/${{ steps.pedido.outputs.pieza }}.mp4"
+          node portada.mjs "${{ steps.pedido.outputs.pieza }}" "salida/${{ steps.pedido.outputs.pieza }}-portada.jpg"
+          ffprobe -v error -show_entries stream=codec_name,width,height,r_frame_rate:format=duration -of compact "salida/${{ steps.pedido.outputs.pieza }}.mp4"
+
+      - name: subir
+        if: contains(steps.pedido.outputs.acciones, 'subir')
+        run: |
+          p="${{ steps.pedido.outputs.pieza }}"; fecha=$(TZ=America/Bogota date +%Y-%m-%d)
+          node contenido/scripts/subir.mjs "contenido/estudio/salida/$p.mp4" "reels/$fecha-$p.mp4"
+          node contenido/scripts/subir.mjs "contenido/estudio/salida/$p-portada.jpg" "reels/$fecha-$p-portada.jpg"
+
+      # Voz, tiempos, voz.json y registro vuelven a la rama: son fuentes, pesan poco.
+      - name: Guardar lo generado en la rama
+        if: always()
+        run: |
+          git config user.name "nino-contenido[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add contenido/voz.json contenido/registro contenido/estudio/public/voz contenido/estudio/src/piezas 2>/dev/null || true
+          if git diff --cached --quiet; then echo "Nada nuevo que guardar."; exit 0; fi
+          git commit -m "contenido: ${{ steps.pedido.outputs.acciones }} de ${{ steps.pedido.outputs.pieza }} (Actions)"
+          for i in 1 2 3; do git pull --rebase origin "${GITHUB_REF_NAME}" && git push origin "HEAD:${GITHUB_REF_NAME}" && break; sleep 5; done
