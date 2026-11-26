@@ -42,6 +42,7 @@ import { INK } from "./comun/colores-da.js";
 import FondoPagina, { ESCENA_DE_TEMA } from "./comun/FondoPagina.jsx";
 import { MASCOTAS, rutaMascota } from "./comun/mascotas.jsx";
 import { conVideo } from "./comun/ConVideo.jsx";
+import { simuladorDe } from "./simulador/escenas.js";
 
 const MATERIA = "macroeconomia";
 
@@ -55,7 +56,7 @@ export const TEMAS_2026 = {
     piezas: T1.PIEZAS_T1,
     publicada: T1.estaPublicada,
     componentes: {
-      "da26-a0-ley-demanda": lazy(() => import("./demanda-agregada/A0LeyDemanda.jsx")),
+      "da26-a0-ley-demanda": lazy(() => conVideo(() => import("./demanda-agregada/A0LeyDemanda.jsx"), "da26-a0-ley-demanda")),
       "da26-a1-carrito": lazy(() => conVideo(() => import("./demanda-agregada/A1Carrito.jsx"), "da26-a1-carrito")),
       "da26-a2-vaso-renta": lazy(() => conVideo(() => import("./demanda-agregada/A2VasoRenta.jsx"), "da26-a2-vaso-renta")),
       "da26-a3-columpio-tasa": lazy(() => conVideo(() => import("./demanda-agregada/A3ColumpioTasa.jsx"), "da26-a3-columpio-tasa")),
@@ -78,8 +79,8 @@ export const TEMAS_2026 = {
       "pe26-a1-mecanico": lazy(() => conVideo(() => import("./politica-economica/A1Mecanico.jsx"), "pe26-a1-mecanico")),
       "pe26-a2-fiebre": lazy(() => conVideo(() => import("./politica-economica/A2Fiebre.jsx"), "pe26-a2-fiebre")),
       "pe26-a3-problema-resuelto": lazy(() => conVideo(() => import("./politica-economica/A3ProblemaResuelto.jsx"), "pe26-a3-problema-resuelto")),
-      "pe26-a4-perillas": lazy(() => import("./politica-economica/A4Perillas.jsx")),
-      "pe26-a5-escalera": lazy(() => import("./politica-economica/A5Escalera.jsx")),
+      "pe26-a4-perillas": lazy(() => conVideo(() => import("./politica-economica/A4Perillas.jsx"), "pe26-a4-perillas")),
+      "pe26-a5-escalera": lazy(() => conVideo(() => import("./politica-economica/A5Escalera.jsx"), "pe26-a5-escalera")),
       "pe26-h3-cables": lazy(() => import("./politica-economica/H3Cables.jsx")),
       "pe26-h1-seis-cajones": lazy(() => import("./politica-economica/H1SeisCajones.jsx")),
       "pe26-h2-grupo-logico": lazy(() => import("./politica-economica/H2GrupoLogico.jsx")),
@@ -92,11 +93,11 @@ export const TEMAS_2026 = {
     piezas: T3.PIEZAS_T3,
     publicada: T3.estaPublicadaT3,
     componentes: {
-      "pf26-a1-lupa": lazy(() => import("./politica-fiscal/A1Lupa.jsx")),
-      "pf26-a2-buzones": lazy(() => import("./politica-fiscal/A2Buzones.jsx")),
-      "pf26-a3-cajeros": lazy(() => import("./politica-fiscal/A3Cajeros.jsx")),
-      "pf26-a4-tanque": lazy(() => import("./politica-fiscal/A4Tanque.jsx")),
-      "pf26-a5-balanza": lazy(() => import("./politica-fiscal/A5Balanza.jsx")),
+      "pf26-a1-lupa": lazy(() => conVideo(() => import("./politica-fiscal/A1Lupa.jsx"), "pf26-a1-lupa")),
+      "pf26-a2-buzones": lazy(() => conVideo(() => import("./politica-fiscal/A2Buzones.jsx"), "pf26-a2-buzones")),
+      "pf26-a3-cajeros": lazy(() => conVideo(() => import("./politica-fiscal/A3Cajeros.jsx"), "pf26-a3-cajeros")),
+      "pf26-a4-tanque": lazy(() => conVideo(() => import("./politica-fiscal/A4Tanque.jsx"), "pf26-a4-tanque")),
+      "pf26-a5-balanza": lazy(() => conVideo(() => import("./politica-fiscal/A5Balanza.jsx"), "pf26-a5-balanza")),
       "pf26-h1-moneda": lazy(() => import("./politica-fiscal/H1Moneda.jsx")),
       "pf26-h2-cajero": lazy(() => import("./politica-fiscal/H2Cajero.jsx")),
       "pf26-h3-factura": lazy(() => import("./politica-fiscal/H3Factura.jsx")),
@@ -110,18 +111,18 @@ export const TEMAS_2026 = {
     piezas: T4.PIEZAS_T4,
     publicada: T4.estaPublicadaT4,
     componentes: {
-      "pm26-a1-billetera": lazy(() => import("./politica-monetaria/A1Billetera.jsx")),
-      "pm26-a2-ventanilla": lazy(() => import("./politica-monetaria/A2Ventanilla.jsx")),
+      "pm26-a1-billetera": lazy(() => conVideo(() => import("./politica-monetaria/A1Billetera.jsx"), "pm26-a1-billetera")),
+      "pm26-a2-ventanilla": lazy(() => conVideo(() => import("./politica-monetaria/A2Ventanilla.jsx"), "pm26-a2-ventanilla")),
       "pm26-h1-entra-sale": lazy(() => import("./politica-monetaria/H1EntraSale.jsx")),
-      "pm26-a3-cascada": lazy(() => import("./politica-monetaria/A3Cascada.jsx")),
+      "pm26-a3-cascada": lazy(() => conVideo(() => import("./politica-monetaria/A3Cascada.jsx"), "pm26-a3-cascada")),
       "pm26-h2-cascada-meta": lazy(() => import("./politica-monetaria/H2CascadaMeta.jsx")),
-      "pm26-a4-cajas": lazy(() => import("./politica-monetaria/A4Cajas.jsx")),
+      "pm26-a4-cajas": lazy(() => conVideo(() => import("./politica-monetaria/A4Cajas.jsx"), "pm26-a4-cajas")),
       "pm26-h3-cajas": lazy(() => import("./politica-monetaria/H3Cajas.jsx")),
-      "pm26-a5-precio-dinero": lazy(() => import("./politica-monetaria/A5PrecioDinero.jsx")),
+      "pm26-a5-precio-dinero": lazy(() => conVideo(() => import("./politica-monetaria/A5PrecioDinero.jsx"), "pm26-a5-precio-dinero")),
       "pm26-h4-mueve-tasa": lazy(() => import("./politica-monetaria/H4MueveTasa.jsx")),
-      "pm26-a6-palancas": lazy(() => import("./politica-monetaria/A6Palancas.jsx")),
+      "pm26-a6-palancas": lazy(() => conVideo(() => import("./politica-monetaria/A6Palancas.jsx"), "pm26-a6-palancas")),
       "pm26-h6-domino": lazy(() => import("./politica-monetaria/H6Domino.jsx")),
-      "pm26-a7-termostato": lazy(() => import("./politica-monetaria/A7Termostato.jsx")),
+      "pm26-a7-termostato": lazy(() => conVideo(() => import("./politica-monetaria/A7Termostato.jsx"), "pm26-a7-termostato")),
       "pm26-h5-junta": lazy(() => import("./politica-monetaria/H5Junta.jsx")),
     },
   },
@@ -130,18 +131,18 @@ export const TEMAS_2026 = {
     piezas: T5.PIEZAS_T5,
     publicada: T5.estaPublicadaT5,
     componentes: {
-      "pc26-a1-balanza": lazy(() => import("./politica-cambiaria/A1Balanza.jsx")),
+      "pc26-a1-balanza": lazy(() => conVideo(() => import("./politica-cambiaria/A1Balanza.jsx"), "pc26-a1-balanza")),
       "pc26-h1-quien-aprecia": lazy(() => import("./politica-cambiaria/H1QuienAprecia.jsx")),
-      "pc26-a2-subasta": lazy(() => import("./politica-cambiaria/A2Subasta.jsx")),
+      "pc26-a2-subasta": lazy(() => conVideo(() => import("./politica-cambiaria/A2Subasta.jsx"), "pc26-a2-subasta")),
       "pc26-h2-empuja-curva": lazy(() => import("./politica-cambiaria/H2EmpujaCurva.jsx")),
-      "pc26-a3-nominal-real": lazy(() => import("./politica-cambiaria/A3NominalReal.jsx")),
-      "pc26-a4-banano": lazy(() => import("./politica-cambiaria/A4Banano.jsx")),
+      "pc26-a3-nominal-real": lazy(() => conVideo(() => import("./politica-cambiaria/A3NominalReal.jsx"), "pc26-a3-nominal-real")),
+      "pc26-a4-banano": lazy(() => conVideo(() => import("./politica-cambiaria/A4Banano.jsx"), "pc26-a4-banano")),
       "pc26-h3-aguja": lazy(() => import("./politica-cambiaria/H3Aguja.jsx")),
       "pc26-h4-a-quien-sirve": lazy(() => import("./politica-cambiaria/H4AQuienSirve.jsx")),
-      "pc26-a5-tuberias": lazy(() => import("./politica-cambiaria/A5Tuberias.jsx")),
-      "pc26-a6-imanes": lazy(() => import("./politica-cambiaria/A6Imanes.jsx")),
+      "pc26-a5-tuberias": lazy(() => conVideo(() => import("./politica-cambiaria/A5Tuberias.jsx"), "pc26-a5-tuberias")),
+      "pc26-a6-imanes": lazy(() => conVideo(() => import("./politica-cambiaria/A6Imanes.jsx"), "pc26-a6-imanes")),
       "pc26-h5-donde-ahorro": lazy(() => import("./politica-cambiaria/H5DondeAhorro.jsx")),
-      "pc26-a7-correa": lazy(() => import("./politica-cambiaria/A7Correa.jsx")),
+      "pc26-a7-correa": lazy(() => conVideo(() => import("./politica-cambiaria/A7Correa.jsx"), "pc26-a7-correa")),
       "pc26-h6-correa": lazy(() => import("./politica-cambiaria/H6Correa.jsx")),
     },
   },
@@ -350,7 +351,7 @@ export default function TemaMacro2026({ temaId, modo = null, extra = null, onBac
     <FondoPagina tema={pieza ? ESCENA_DE_TEMA[temaId] : null} style={{ color: INK }}>
       <IrContexto.Provider value={onIr ? (t, m, i = null) => onIr(t, m, i) : irPorHash}>
       <Raiz data-macro2026-publicado={temaId}>
-        <div style={{ padding: "16px 16px 56px", maxWidth: 672, margin: "0 auto" }}>
+        <div style={{ padding: "16px 16px 56px", maxWidth: pieza && mitad === APRENDER && simuladorDe(pieza.id) ? 1112 : 672, margin: "0 auto" }}>
           {!pieza && <FilaVolver><Boton onClick={onBack} data-volver-indice>‹ Macroeconomía</Boton></FilaVolver>}
           {pieza && mitad === HACER && <RetoHacer key={pieza.id} temaId={temaId} id={pieza.id} />}
           {pieza && mitad === APRENDER && <PiezaAprender key={pieza.id} temaId={temaId} id={pieza.id} />}
