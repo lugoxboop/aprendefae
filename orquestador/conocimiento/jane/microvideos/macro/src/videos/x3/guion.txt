@@ -1,0 +1,10 @@
+El dólar subió. ¿Le conviene a Lucía? No siempre.
+El tipo de cambio nominal es el precio del dólar hoy, en pesos corrientes.
+El dieciséis de abril de 2025 estaba en cuatro mil trescientos veintinueve con noventa.
+Pero los precios también suben, aquí y afuera.
+El tipo de cambio real ajusta el nominal por las inflaciones de los dos países.
+Atajo: la variación real es más o menos la inflación de afuera, menos la de aquí, más la variación del nominal.
+Si da positivo, hay devaluación real: Lucía gana.
+Si da negativo, hay revaluación real: Lucía pierde.
+El índice de tasa de cambio real lo calcula con índices: mayor que uno, devaluación real; menor, revaluación.
+En la actividad, mueve las tres palancas y mira la aguja.
