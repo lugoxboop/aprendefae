@@ -1,0 +1,369 @@
+{
+  "audio": "voz/celular-brian.mp3",
+  "duracion": 24.479,
+  "hash": "02c13f78550cab26",
+  "voz": "Brian - Warm, Smooth, Confident",
+  "voice_id": "jBlmi27XRORxjPquUeCh",
+  "genero": "male",
+  "modelo": "eleven_v4",
+  "caracteres": 340,
+  "escenas": [
+    {
+      "ini": 0,
+      "fin": 3.12,
+      "texto": "Toby estudia con el celular al lado, boca arriba.",
+      "palabras": [
+        {
+          "w": "Toby",
+          "ini": 0,
+          "fin": 0.32
+        },
+        {
+          "w": "estudia",
+          "ini": 0.44,
+          "fin": 0.8
+        },
+        {
+          "w": "con",
+          "ini": 0.88,
+          "fin": 0.96
+        },
+        {
+          "w": "el",
+          "ini": 1,
+          "fin": 1.04
+        },
+        {
+          "w": "celular",
+          "ini": 1.12,
+          "fin": 1.52
+        },
+        {
+          "w": "al",
+          "ini": 1.56,
+          "fin": 1.6
+        },
+        {
+          "w": "lado,",
+          "ini": 1.68,
+          "fin": 2.24
+        },
+        {
+          "w": "boca",
+          "ini": 2.32,
+          "fin": 2.56
+        },
+        {
+          "w": "arriba.",
+          "ini": 2.64,
+          "fin": 3.12
+        }
+      ]
+    },
+    {
+      "ini": 3.52,
+      "fin": 6.52,
+      "texto": "Su amiga lo deja en otro cuarto, en silencio.",
+      "palabras": [
+        {
+          "w": "Su",
+          "ini": 3.52,
+          "fin": 3.6
+        },
+        {
+          "w": "amiga",
+          "ini": 3.68,
+          "fin": 3.92
+        },
+        {
+          "w": "lo",
+          "ini": 4,
+          "fin": 4.08
+        },
+        {
+          "w": "deja",
+          "ini": 4.16,
+          "fin": 4.32
+        },
+        {
+          "w": "en",
+          "ini": 4.4,
+          "fin": 4.48
+        },
+        {
+          "w": "otro",
+          "ini": 4.52,
+          "fin": 4.64
+        },
+        {
+          "w": "cuarto,",
+          "ini": 4.72,
+          "fin": 5.44
+        },
+        {
+          "w": "en",
+          "ini": 5.52,
+          "fin": 5.6
+        },
+        {
+          "w": "silencio.",
+          "ini": 5.68,
+          "fin": 6.52
+        }
+      ]
+    },
+    {
+      "ini": 6.8,
+      "fin": 9.52,
+      "texto": "¿Quién se concentra más: A o B?",
+      "palabras": [
+        {
+          "w": "¿Quién",
+          "ini": 6.8,
+          "fin": 6.96
+        },
+        {
+          "w": "se",
+          "ini": 7.04,
+          "fin": 7.2
+        },
+        {
+          "w": "concentra",
+          "ini": 7.28,
+          "fin": 7.68
+        },
+        {
+          "w": "más:",
+          "ini": 7.76,
+          "fin": 8.48
+        },
+        {
+          "w": "A",
+          "ini": 8.56,
+          "fin": 8.8
+        },
+        {
+          "w": "o",
+          "ini": 9.12,
+          "fin": 9.16
+        },
+        {
+          "w": "B?",
+          "ini": 9.2,
+          "fin": 9.52
+        }
+      ]
+    },
+    {
+      "ini": 10.08,
+      "fin": 15.84,
+      "texto": "Gana B. Cada notificación te saca de lo que estabas leyendo, aunque no la abras.",
+      "palabras": [
+        {
+          "w": "Gana",
+          "ini": 10.08,
+          "fin": 10.48
+        },
+        {
+          "w": "B.",
+          "ini": 10.72,
+          "fin": 10.96
+        },
+        {
+          "w": "Cada",
+          "ini": 11.36,
+          "fin": 11.52
+        },
+        {
+          "w": "notificación",
+          "ini": 11.6,
+          "fin": 12.32
+        },
+        {
+          "w": "te",
+          "ini": 12.4,
+          "fin": 12.64
+        },
+        {
+          "w": "saca",
+          "ini": 12.68,
+          "fin": 12.96
+        },
+        {
+          "w": "de",
+          "ini": 13,
+          "fin": 13.04
+        },
+        {
+          "w": "lo",
+          "ini": 13.12,
+          "fin": 13.16
+        },
+        {
+          "w": "que",
+          "ini": 13.2,
+          "fin": 13.28
+        },
+        {
+          "w": "estabas",
+          "ini": 13.36,
+          "fin": 13.6
+        },
+        {
+          "w": "leyendo,",
+          "ini": 13.68,
+          "fin": 14.4
+        },
+        {
+          "w": "aunque",
+          "ini": 14.44,
+          "fin": 14.72
+        },
+        {
+          "w": "no",
+          "ini": 14.8,
+          "fin": 14.96
+        },
+        {
+          "w": "la",
+          "ini": 15.04,
+          "fin": 15.12
+        },
+        {
+          "w": "abras.",
+          "ini": 15.2,
+          "fin": 15.84
+        }
+      ]
+    },
+    {
+      "ini": 16.08,
+      "fin": 19.76,
+      "texto": "Lejos y en silencio, tu atención se queda en la página.",
+      "palabras": [
+        {
+          "w": "Lejos",
+          "ini": 16.08,
+          "fin": 16.56
+        },
+        {
+          "w": "y",
+          "ini": 16.6,
+          "fin": 16.64
+        },
+        {
+          "w": "en",
+          "ini": 16.72,
+          "fin": 16.8
+        },
+        {
+          "w": "silencio,",
+          "ini": 16.88,
+          "fin": 17.6
+        },
+        {
+          "w": "tu",
+          "ini": 17.64,
+          "fin": 17.68
+        },
+        {
+          "w": "atención",
+          "ini": 17.76,
+          "fin": 18.24
+        },
+        {
+          "w": "se",
+          "ini": 18.32,
+          "fin": 18.56
+        },
+        {
+          "w": "queda",
+          "ini": 18.68,
+          "fin": 18.8
+        },
+        {
+          "w": "en",
+          "ini": 18.84,
+          "fin": 18.88
+        },
+        {
+          "w": "la",
+          "ini": 18.96,
+          "fin": 19.04
+        },
+        {
+          "w": "página.",
+          "ini": 19.12,
+          "fin": 19.76
+        }
+      ]
+    },
+    {
+      "ini": 20,
+      "fin": 24.48,
+      "texto": "¿Dónde dejas el tuyo? Coméntalo y síguenos para más trucos de estudio.",
+      "palabras": [
+        {
+          "w": "¿Dónde",
+          "ini": 20,
+          "fin": 20.24
+        },
+        {
+          "w": "dejas",
+          "ini": 20.32,
+          "fin": 20.56
+        },
+        {
+          "w": "el",
+          "ini": 20.64,
+          "fin": 20.72
+        },
+        {
+          "w": "tuyo?",
+          "ini": 20.8,
+          "fin": 21.44
+        },
+        {
+          "w": "Coméntalo",
+          "ini": 21.52,
+          "fin": 22.08
+        },
+        {
+          "w": "y",
+          "ini": 22.12,
+          "fin": 22.16
+        },
+        {
+          "w": "síguenos",
+          "ini": 22.32,
+          "fin": 22.72
+        },
+        {
+          "w": "para",
+          "ini": 22.8,
+          "fin": 23.04
+        },
+        {
+          "w": "más",
+          "ini": 23.08,
+          "fin": 23.28
+        },
+        {
+          "w": "trucos",
+          "ini": 23.36,
+          "fin": 23.68
+        },
+        {
+          "w": "de",
+          "ini": 23.72,
+          "fin": 23.76
+        },
+        {
+          "w": "estudio.",
+          "ini": 23.88,
+          "fin": 24.48
+        }
+      ]
+    }
+  ]
+}
