@@ -1,15 +1,14 @@
 {
   "_ayuda": "Cambiar este archivo y empujarlo dispara .github/workflows/contenido.yml. Acciones, en orden: diagnostico, voces, bucket, voz, render, subir. voz: alias de la lista de confianza o «todas». Ver contenido/README.md. Varias piezas de una vez: \"piezas\": [{\"pieza\",\"voz\"}] (voz, render y subir recorren la lista).",
-  "n": 20,
-  "pieza": "musica",
+  "n": 21,
+  "pieza": "celular",
   "acciones": [
-    "render",
-    "subir"
+    "voz"
   ],
   "piezas": [
     {
-      "pieza": "musica",
-      "voz": "isabel"
+      "pieza": "celular",
+      "voz": "brian"
     }
   ]
 }
