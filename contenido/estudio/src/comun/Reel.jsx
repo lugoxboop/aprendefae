@@ -60,7 +60,7 @@ function Subtitulos({ t, subs, y = 1300 }) {
     <div style={{ position: "absolute", left: ZONA.izq, width: ZONA.der - ZONA.izq, top: y - 110, height: 220, display: "flex", alignItems: "center", justifyContent: "center" }}>
       <div style={{
         textAlign: "center", fontFamily: "Sora", fontWeight: 800, fontSize: 82, lineHeight: 1.08, letterSpacing: "-0.01em",
-        color: "#fff", WebkitTextStroke: `16px ${TINTA}`, paintOrder: "stroke fill", textWrap: "balance",
+        color: "#fff", WebkitTextStroke: `14px ${TINTA}`, wordSpacing: "0.1em", paintOrder: "stroke fill", textWrap: "balance",
         transform: `scale(${0.86 + 0.14 * p}) translateY(${(1 - p) * 20}px)`, opacity: Math.min(1, p * 1.6),
         filter: "drop-shadow(0 8px 0 rgba(20,14,10,.35))",
       }}>

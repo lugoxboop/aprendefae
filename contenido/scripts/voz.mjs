@@ -75,7 +75,11 @@ const escenas = frases.map((frase) => {
 let duracion = fin.at(-1) + 0.2;
 try {
   duracion = +execFileSync("ffprobe", ["-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", mp3]).toString().trim();
-} catch { aviso("Sin ffprobe: la duración se toma de la alineación."); }
+} catch {
+  // Sin ffprobe: el mp3 es de tasa fija (128 kb/s), así que duración = bytes × 8 / 128 000.
+  const kbps = Number((conf.formato.match(/_(\d+)$/) || [, 128])[1]);
+  duracion = (fs.statSync(mp3).size * 8) / (kbps * 1000);
+}
 const ultima = escenas.at(-1).fin;
 if (duracion + 0.05 < ultima) throw new Error(`El audio (${duracion}s) termina antes que la última palabra (${ultima}s): se cortó el final. Regenerar.`);
 

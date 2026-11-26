@@ -15,7 +15,7 @@ export const pulso = (t, t0, d) => { const p = (t - t0) / d; return p <= 0 || p 
 export const fmt = (p) => "$" + String(p).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 const limpia = (w) => w.toLowerCase().normalize("NFD").replace(/[^a-z0-9]/g, "");
 
-export function crearTiempo(DATOS, { extra = [], manual = {}, cola = 1.4, pausa = 0.25 } = {}) {
+export function crearTiempo(DATOS, { extra = [], manual = {}, cola = 1.4, pausa = 0.25, recorta = false } = {}) {
   const ESC = DATOS.escenas;
   const corte = ESC.map((e, i) => (i === 0 ? Math.max(0, e.ini - 0.12) : (ESC[i - 1].fin + e.ini) / 2));
   corte.push(ESC[ESC.length - 1].fin + 0.35);
@@ -23,7 +23,10 @@ export function crearTiempo(DATOS, { extra = [], manual = {}, cola = 1.4, pausa 
   let v = 0;
   ESC.forEach((e, i) => {
     v += extra[i] ?? (i === 0 ? 0.35 : pausa);
-    const a0 = corte[i], a1 = corte[i + 1];
+    /* recorta (Nino, Reels): cada tramo es solo la frase y un margen; el silencio entre
+       frases lo pone `pausa`, no la voz. Así el Reel no arrastra pausas largas. */
+    const a0 = recorta ? Math.max(0, e.ini - 0.06) : corte[i];
+    const a1 = recorta ? Math.min(DATOS.duracion ?? e.fin + 0.2, e.fin + 0.14) : corte[i + 1];
     TRAMOS.push({ v, a0, a1, habla: v + (e.ini - a0), calla: v + (e.fin - a0) });
     v += a1 - a0;
   });

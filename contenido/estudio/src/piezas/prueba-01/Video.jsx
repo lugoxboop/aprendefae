@@ -11,11 +11,11 @@ import { Reel } from "../../comun/Reel.jsx";
 import { crearTiempo, clamp01, lerp, suave, sale, rampa, rebote, pulso } from "../../comun/tiempo.js";
 import DATOS, { VOZ } from "./tiempos.js";
 
-export const T = crearTiempo(DATOS, { extra: [0.05, 0.3, 0.3, 1.9, 0.35, 0.35], cola: 2.3 });
+export const T = crearTiempo(DATOS, { extra: [0.0, 0.12, 0.18, 1.45, 0.22, 0.22], cola: 1.75, recorta: true });
 export const DURACION = T.DURACION_S;
 const { S, E, W } = T;
 
-const CORAL = "#E76F51", VERDE = "#2FA36B", AZUL_C = "#6F86FF", MESA = 1250;
+const CORAL = "#E76F51", VERDE = "#2FA36B", AZUL_C = "#6F86FF", MESA = 1300;
 
 /* ── cielo de la ventana: noche → amanecer ── */
 function Cielo({ t, alba }) {
@@ -79,16 +79,14 @@ function Cuarto({ t, alba = 0, luz = 1, hojas = 8, tazas = 0, hora = "2:00", tob
       </div>
       {/* tarjeta del dato (escena 5) */}
       {nota > 0 && (
-        <div style={{ position: "absolute", left: 610, top: 600, width: 330, transformOrigin: "50% 0", transform: `rotate(${-3 + 6 * (1 - rebote(nota))}deg) scale(${rebote(Math.min(1, nota))})`, background: CREMA, border: `7px solid ${TINTA}`, borderRadius: 26, padding: "20px 22px 26px", boxShadow: "0 12px 0 rgba(0,0,0,.25)", textAlign: "center" }}>
+        <div style={{ position: "absolute", left: 360, top: 470, width: 360, transformOrigin: "50% 0", transform: `rotate(${-3 + 6 * (1 - rebote(nota))}deg) scale(${rebote(Math.min(1, nota))})`, background: CREMA, border: `7px solid ${TINTA}`, borderRadius: 26, padding: "20px 22px 26px", boxShadow: "0 12px 0 rgba(0,0,0,.25)", textAlign: "center" }}>
           <div style={{ display: "inline-block", fontFamily: "Sora", fontWeight: 800, fontSize: 36, color: "#fff", background: VERDE, borderRadius: 999, padding: "4px 22px" }}>DATO</div>
           <div style={{ fontFamily: "Caveat", fontWeight: 700, fontSize: 60, lineHeight: 1, color: TINTA, marginTop: 10 }}>dormir fija lo que estudiaste</div>
         </div>
       )}
-      {/* logo al cierre, colgado en la pared */}
-      {logo > 0 && <Logo p={logo} />}
       {/* Toby */}
-      <Sombra x={toby.x ?? 560} y={MESA + 30} w={420} op={0.25} />
-      <Mascota esp="perro" x={toby.x ?? 560} y={MESA + 210} alto={760} t={t} semilla={1} {...toby} />
+      <Sombra x={toby.x ?? 600} y={MESA + 10} w={330} op={0.25} />
+      <Mascota esp="perro" x={toby.x ?? 600} y={MESA + 150} alto={560} t={t} semilla={1} {...toby} />
       {/* montaña de fotocopias */}
       <Pila t={t} n={hojas} />
       {/* escritorio */}
@@ -100,8 +98,10 @@ function Cuarto({ t, alba = 0, luz = 1, hojas = 8, tazas = 0, hora = "2:00", tob
       {/* reloj */}
       <Reloj hora={hora} t={t} />
       {/* tazas de café */}
-      {[0, 1, 2].map((k) => (tazas > k ? <Taza key={k} x={650 + k * 105} p={clamp01(tazas - k)} t={t} k={k} /> : null))}
+      {[0, 1, 2].map((k) => (tazas > k ? <Taza key={k} x={760 + k * 0 + (k - 1) * 95 + 30} p={clamp01(tazas - k)} t={t} k={k} /> : null))}
       {carteles}
+      {/* logo al cierre, colgado en la pared */}
+      {logo > 0 && <Logo p={logo} />}
     </AbsoluteFill>
   );
 }
@@ -113,9 +113,9 @@ function Pila({ t, n }) {
     const p = k < entera ? 1 : frac;
     if (p <= 0) continue;
     const y = MESA - 18 - k * 19.5 - (1 - sale(p)) * 260;
-    const x = 210 + ((k * 37) % 23) - 11 + Math.sin(k * 1.9) * 8;
+    const x = 175 + ((k * 37) % 23) - 11 + Math.sin(k * 1.9) * 8;
     L.push(
-      <div key={k} style={{ position: "absolute", left: x - 150, top: y, width: 300, height: 18, background: k % 2 ? "#F4F1EA" : "#FFFFFF", border: `4px solid ${TINTA}`, borderRadius: 4, transform: `rotate(${Math.sin(k * 2.7) * 2.2 + (1 - p) * 12}deg)`, opacity: Math.min(1, p * 3) }} />
+      <div key={k} style={{ position: "absolute", left: x - 130, top: y, width: 260, height: 18, background: k % 2 ? "#F4F1EA" : "#FFFFFF", border: `4px solid ${TINTA}`, borderRadius: 4, transform: `rotate(${Math.sin(k * 2.7) * 2.2 + (1 - p) * 12}deg)`, opacity: Math.min(1, p * 3) }} />
     );
   }
   return <>{L}</>;
@@ -135,7 +135,7 @@ function Lampara({ luz, t }) {
 function Reloj({ hora, t }) {
   const parpadea = Math.floor(t * 2) % 2 === 0;
   return (
-    <div style={{ position: "absolute", left: 360, top: MESA - 112, width: 210, height: 108, background: "#1B1B22", border: `7px solid ${TINTA}`, borderRadius: 22, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 8px 0 rgba(0,0,0,.25)" }}>
+    <div style={{ position: "absolute", left: 318, top: MESA - 112, width: 210, height: 108, background: "#1B1B22", border: `7px solid ${TINTA}`, borderRadius: 22, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 8px 0 rgba(0,0,0,.25)" }}>
       <div style={{ fontFamily: "Inter", fontWeight: 800, fontSize: 70, color: "#FF5A4A", textShadow: "0 0 18px rgba(255,90,74,.8)", letterSpacing: 2 }}>
         {hora.split(":")[0]}<span style={{ opacity: parpadea ? 1 : 0.25 }}>:</span>{hora.split(":")[1]}
       </div>
@@ -177,7 +177,7 @@ function Opciones({ t, p, elige = 0, sale: s = 0, cuenta = null, chicas = false 
     const ganador = elige === lado, perdedor = elige && elige !== lado;
     const esc = (chicas ? 0.55 : 1) * pe * (ganador ? 1 + 0.1 * Math.sin(Math.min(1, (t % 10)) * 0) + 0.12 : 1) * (perdedor ? 0.82 : 1);
     return (
-      <div style={{ position: "absolute", left: lado === 1 ? (chicas ? 250 : 255) : (chicas ? 690 : 685), top: chicas ? 1010 : 470, transform: `translate(-50%, 0) translateY(${-s * 1400}px) rotate(${(lado === 1 ? -4 : 4) * pe}deg) scale(${esc})`, opacity: perdedor ? 0.45 : 1, transformOrigin: "50% 0" }}>
+      <div style={{ position: "absolute", left: lado === 1 ? (chicas ? 250 : 255) : (chicas ? 690 : 685), top: chicas ? 1040 : 420, transform: `translate(-50%, 0) translateY(${-s * 1400}px) rotate(${(lado === 1 ? -4 : 4) * pe}deg) scale(${esc})`, opacity: perdedor ? 0.45 : 1, transformOrigin: "50% 0" }}>
         <div style={{ width: 360, background: CREMA, border: `8px solid ${TINTA}`, borderRadius: 34, padding: "26px 0 30px", textAlign: "center", boxShadow: `0 14px 0 ${ganador ? color : "rgba(0,0,0,.3)"}` }}>
           <div style={{ width: 92, height: 92, margin: "0 auto", borderRadius: "50%", background: color, color: "#fff", fontFamily: "Sora", fontWeight: 800, fontSize: 62, lineHeight: "92px" }}>{letra}</div>
           <div style={{ height: 150, display: "flex", alignItems: "center", justifyContent: "center" }}>{icono}</div>
@@ -197,7 +197,7 @@ function Opciones({ t, p, elige = 0, sale: s = 0, cuenta = null, chicas = false 
       {tarj(1, "A", "CAFÉ", CORAL, taza, 0)}
       {tarj(2, "B", "DORMIR", AZUL, luna, 1)}
       {cuenta !== null && cuenta > 0 && (
-        <div style={{ position: "absolute", left: 470, top: 640, width: 140, height: 140, borderRadius: "50%", background: TINTA, color: MANGO, fontFamily: "Sora", fontWeight: 800, fontSize: 84, display: "flex", alignItems: "center", justifyContent: "center", border: `8px solid ${MANGO}`, transform: `scale(${1 + 0.15 * pulso(t % 1, 0, 0.3)})` }}>{cuenta}</div>
+        <div style={{ position: "absolute", left: 400, top: 270, width: 140, height: 140, borderRadius: "50%", background: TINTA, color: MANGO, fontFamily: "Sora", fontWeight: 800, fontSize: 84, display: "flex", alignItems: "center", justifyContent: "center", border: `8px solid ${MANGO}`, transform: `scale(${1 + 0.15 * pulso(t % 1, 0, 0.3)})` }}>{cuenta}</div>
       )}
     </>
   );
@@ -244,10 +244,10 @@ function pinta(pl, t) {
     const cafe = rampa(t, W(4, "café", 0.3), 0.4);
     const triste = t > S(2) + 0.5 && t < S(3) + 0.2;
     const cam = camara(t, [
-      [0, 1.75, 470, 1040], [S(1) + 1.2, 1.6, 500, 1020],
-      [S(2), 1.6, 500, 1020], [S(2) + 1.1, 1.0, 540, 960],
-      [S(3), 1.0, 540, 960], [S(3) + 0.7, 1.12, 540, 900],
-      [S(4), 1.12, 540, 900], [S(4) + 0.6, 1.35, 640, 1060],
+      [0, 1.6, 430, 1120], [S(1) + 1.4, 1.45, 470, 1100],
+      [S(2), 1.45, 470, 1100], [S(2) + 1.0, 1.0, 540, 960],
+      [S(3), 1.0, 540, 960], [S(3) + 0.7, 1.06, 540, 930],
+      [S(4), 1.06, 540, 930], [S(4) + 0.6, 1.3, 640, 1080],
     ]);
     const toby = {
       cara: cafe > 0.5 ? "racha" : triste ? "triste" : "tranquila",
@@ -272,7 +272,7 @@ function pinta(pl, t) {
   /* alba: lámpara apagada, Toby dormido; amanece; despierta y pregunta; logo */
   const alba = suave(rampa(t, S(5), E(5) - S(5) + 0.8));
   const despierta = rampa(t, S(6) - 0.2, 0.4);
-  const cam = camara(t, [[S(5) - 0.3, 1.25, 560, 1000], [E(5), 1.08, 540, 980], [S(6), 1.08, 540, 980], [T.DURACION_S - 2.2, 1.0, 540, 960]]);
+  const cam = camara(t, [[S(5) - 0.3, 1.2, 600, 1080], [E(5), 1.05, 560, 1000], [S(6), 1.05, 560, 1000], [T.DURACION_S - 2.2, 1.0, 540, 960]]);
   const toby = {
     cara: despierta > 0.5 ? "feliz" : "tranquila",
     ojos: despierta > 0.5 ? 1 : 0.08,
@@ -283,7 +283,7 @@ function pinta(pl, t) {
   const zz = despierta < 0.5 ? (
     <>{[0, 1, 2].map((k) => {
       const f = ((t * 0.6 + k / 3) % 1);
-      return <div key={k} style={{ position: "absolute", left: 640 + f * 120, top: 640 - f * 260, fontFamily: "Sora", fontWeight: 800, fontSize: 60 + k * 14, color: CREMA, opacity: Math.sin(f * Math.PI), WebkitTextStroke: `6px ${TINTA}`, paintOrder: "stroke fill" }}>z</div>;
+      return <div key={k} style={{ position: "absolute", left: 790 + f * 90, top: 940 - f * 220, fontFamily: "Sora", fontWeight: 800, fontSize: 60 + k * 14, color: CREMA, opacity: Math.sin(f * Math.PI), WebkitTextStroke: `6px ${TINTA}`, paintOrder: "stroke fill" }}>z</div>;
     })}</>
   ) : null;
   const logo = rampa(t, T.DURACION_S - 2.1, 0.5);
@@ -310,6 +310,6 @@ export function Prueba01({ sinSonido = false, zonas = false }) {
   fx(S(5) - 0.25, "barrido", 0.4); fx(W(5, "dormir", 0.3), "pop", 0.45);
   fx(S(6) - 0.2, "campana", 0.4);
   fx(T.DURACION_S - 2.1, "ding", 0.45);
-  return <Reel T={T} planos={PLANOS} pinta={pinta} sfx={sfx} musica="lofi" sinSonido={sinSonido} zonas={zonas} subY={1340} />;
+  return <Reel T={T} planos={PLANOS} pinta={pinta} sfx={sfx} musica="lofi" sinSonido={sinSonido} zonas={zonas} subY={1405} />;
 }
 export { VOZ };
