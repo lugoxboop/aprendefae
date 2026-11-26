@@ -2,41 +2,44 @@
   "_nota": "PROVISIONAL: la clave no tiene voices_read; no se pudo leer la tendencia. Correr de nuevo voces.mjs cuando tenga el permiso.",
   "confianza": [
     {
-      "alias": "jessica",
-      "nombre": "Jessica (prediseñada)",
-      "voice_id": "cgSgspJ2msm6clMCkdW9",
+      "alias": "gaby",
+      "nombre": "Gaby - Natura & Casual",
+      "voice_id": "p5EUznrYaWnafKvUkNiR",
       "genero": "female",
-      "tono": "joven, expresiva, juguetona",
-      "acento": "multilingüe (acento del modelo)",
-      "desde": "2026-11-26",
-      "provisional": true
+      "edad": "young",
+      "acento": "latin american",
+      "uso": "conversational",
+      "tono": "casual",
+      "desde": "2026-11-26"
+    },
+    {
+      "alias": "david",
+      "nombre": "David - Deep, Attractive, Mysterious",
+      "voice_id": "K3TeN3ZVK8WnOeJ0NYqZ",
+      "genero": "male",
+      "edad": "young",
+      "acento": "latin american",
+      "uso": "narrative_story",
+      "tono": "calm",
+      "desde": "2026-11-26"
     },
     {
       "alias": "brian",
-      "nombre": "Brian (prediseñada)",
-      "voice_id": "nPczCjzI2devNBz1zQrb",
+      "nombre": "Brian - Warm, Smooth, Confident",
+      "voice_id": "jBlmi27XRORxjPquUeCh",
       "genero": "male",
-      "tono": "grave, cálida, narrador",
-      "acento": "multilingüe (acento del modelo)",
-      "desde": "2026-11-26",
-      "provisional": true
-    },
-    {
-      "alias": "sarah",
-      "nombre": "Sarah (prediseñada)",
-      "voice_id": "EXAVITQu4vr4xnSDxMaL",
-      "genero": "female",
-      "tono": "madura, tranquila, segura",
-      "acento": "multilingüe (acento del modelo)",
-      "desde": "2026-11-26",
-      "provisional": true
+      "edad": "middle_aged",
+      "acento": "latin american",
+      "uso": "narrative_story",
+      "tono": "calm",
+      "desde": "2026-11-26"
     }
   ],
   "modelos": [
     "eleven_v3",
     "eleven_multilingual_v2"
   ],
-  "modelo": "eleven_multilingual_v2",
+  "modelo": "eleven_v4",
   "ajustes": {
     "stability": 0.5,
     "similarity_boost": 0.75
