@@ -164,7 +164,7 @@ function LaQueSigue({ pieza, numero, escena, tema, repaso, onAbrir }) {
     <button type="button" className="m26i-sigue m26i-entra" style={{ "--i": 1 }} data-abrir={pieza.id} data-la-que-sigue onClick={onAbrir}>
       <span className="m26i-lienzo" data-video={video ? "1" : "0"} style={{ background: `linear-gradient(180deg, ${arriba}, ${abajo})` }}>
         {video
-          ? <img className="m26i-lienzo-fondo m26i-lienzo-poster" src={video.poster} alt="" width="720" height="1280" decoding="async" />
+          ? <img className="m26i-lienzo-fondo m26i-lienzo-poster" style={{ objectPosition: `center ${video.foco ?? 40}%` }} src={video.poster} alt="" width="720" height="1280" decoding="async" />
           : FONDOS_TEMA[tema] && <img className="m26i-lienzo-fondo" src={FONDOS_TEMA[tema]} alt="" width="1280" height="714" decoding="async" />}
         <span className="m26i-lienzo-velo" aria-hidden="true" />
         {mascota && <img className="m26i-mascota" src={mascota} alt="" decoding="async" />}
@@ -193,7 +193,7 @@ function Fila({ pieza, numero, escena, tema, vista, orden, onAbrir }) {
         <span className="m26i-mini" aria-hidden="true" style={{ background: `linear-gradient(180deg, ${arriba}, ${abajo})` }}>
           {video ? (
             <>
-              <img className="m26i-mini-poster" src={video.poster} alt="" width="720" height="1280" loading="lazy" decoding="async" />
+              <img className="m26i-mini-poster" style={{ objectPosition: `center ${video.foco ?? 40}%` }} src={video.poster} alt="" width="720" height="1280" loading="lazy" decoding="async" />
               <span className="m26i-mini-play"><Triangulo t={11} /></span>
             </>
           ) : (
