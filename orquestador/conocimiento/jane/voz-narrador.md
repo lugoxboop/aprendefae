@@ -32,6 +32,14 @@ microvideos para que el narrador sea reconocible.
   «Voz: elevenlabs.io» en el video. Antes de publicar a estudiantes o mostrar a
   otra facultad hay que avisar a Mateo: para esos usos se regenera con un plan pago.
 
+### Decisión de Mateo sobre la licencia (2026-11-25)
+
+Al aprobar «El mango de Toby» para publicarlo en Macro, se le recordó que la voz
+es del plan gratuito y no tiene licencia comercial. Su respuesta textual:
+**«mantenlo y publicalo»**. El video se publicó con esa voz y con el crédito
+«Voz: elevenlabs.io». El riesgo de licencia quedó aceptado por él para este
+video; para los siguientes se le vuelve a preguntar.
+
 | Mes | Uso | Créditos |
 |---|---|---|
 | 2026-11 | 3 muestras de voz (111 caracteres cada una) | 333 |

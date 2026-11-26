@@ -53,6 +53,7 @@ export const TEMAS_2026 = {
     piezas: T1.PIEZAS_T1,
     publicada: T1.estaPublicada,
     componentes: {
+      "da26-a0-ley-demanda": lazy(() => import("./demanda-agregada/A0LeyDemanda.jsx")),
       "da26-a1-carrito": lazy(() => import("./demanda-agregada/A1Carrito.jsx")),
       "da26-a2-vaso-renta": lazy(() => import("./demanda-agregada/A2VasoRenta.jsx")),
       "da26-a3-columpio-tasa": lazy(() => import("./demanda-agregada/A3ColumpioTasa.jsx")),
