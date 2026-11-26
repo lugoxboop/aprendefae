@@ -91,7 +91,9 @@ jobs:
       - name: Instalar el estudio (Remotion)
         if: contains(steps.pedido.outputs.acciones, 'render')
         working-directory: contenido/estudio
-        run: npm ci && npx remotion browser ensure
+        run: |
+          npm ci && npx remotion browser ensure
+          pip install --quiet numpy && python3 sonido/sintetiza.py   # música original, se sintetiza aquí
 
       - name: render
         if: contains(steps.pedido.outputs.acciones, 'render')

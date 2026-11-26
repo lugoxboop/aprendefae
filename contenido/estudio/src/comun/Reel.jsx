@@ -44,7 +44,7 @@ export function trozosSub(T, max = 4) {
     let cur = [];
     const cierra = () => { if (cur.length) L.push(cur); cur = []; };
     e.palabras.forEach((p) => {
-      cur.push({ w: p.w, ini: tr.v + (p.ini - tr.a0), fin: tr.v + (p.fin - tr.a0) });
+      cur.push({ w: p.w, ini: tr.v + (p.ini - tr.a0) / T.RITMO, fin: tr.v + (p.fin - tr.a0) / T.RITMO });
       if (cur.length >= max || /[.,:;?!…]$/.test(p.w)) cierra();
     });
     cierra();
@@ -100,8 +100,8 @@ export function Reel({ T, planos, pinta, sfx, arte = [], musica, musicaBase = 0.
       <Subtitulos t={t} subs={subs} y={subY} />
       {zonas && <Zonas />}
       {!sinSonido && T.TRAMOS.map((tr, i) => (
-        <Sequence key={i} from={Math.round(tr.v * FPS)} durationInFrames={Math.max(1, Math.round((tr.a1 - tr.a0) * FPS))}>
-          <Audio src={staticFile(T.AUDIO)} startFrom={Math.round(tr.a0 * FPS)} />
+        <Sequence key={i} from={Math.round(tr.v * FPS)} durationInFrames={Math.max(1, Math.round(((tr.a1 - tr.a0) / T.RITMO) * FPS))}>
+          <Audio src={staticFile(T.AUDIO)} trimBefore={Math.round(tr.a0 * FPS)} playbackRate={T.RITMO} />
         </Sequence>
       ))}
       {!sinSonido && musica && <Audio src={staticFile(`sfx/${musica}.wav`)} volume={(f) => volumenMusica(f / FPS, T, musicaBase, musicaBaja)} />}

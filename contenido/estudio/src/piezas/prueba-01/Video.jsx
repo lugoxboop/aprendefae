@@ -11,7 +11,7 @@ import { Reel } from "../../comun/Reel.jsx";
 import { crearTiempo, clamp01, lerp, suave, sale, rampa, rebote, pulso } from "../../comun/tiempo.js";
 import DATOS, { VOZ } from "./tiempos.js";
 
-export const T = crearTiempo(DATOS, { extra: [0.0, 0.12, 0.18, 1.45, 0.22, 0.22], cola: 1.75, recorta: true });
+export const T = crearTiempo(DATOS, { extra: [0.0, 0.1, 0.15, 1.3, 0.2, 0.2], cola: 1.65, recorta: true, ritmo: 1.17 });
 export const DURACION = T.DURACION_S;
 const { S, E, W } = T;
 
@@ -175,9 +175,9 @@ function Opciones({ t, p, elige = 0, sale: s = 0, cuenta = null, chicas = false 
   const tarj = (lado, letra, txt, color, icono, k) => {
     const pe = rebote(clamp01(p * 1.4 - k * 0.25));
     const ganador = elige === lado, perdedor = elige && elige !== lado;
-    const esc = (chicas ? 0.55 : 1) * pe * (ganador ? 1 + 0.1 * Math.sin(Math.min(1, (t % 10)) * 0) + 0.12 : 1) * (perdedor ? 0.82 : 1);
+    const esc = (chicas ? 0.68 : 1) * pe * (ganador ? 1 + 0.1 * Math.sin(Math.min(1, (t % 10)) * 0) + 0.12 : 1) * (perdedor ? 0.82 : 1);
     return (
-      <div style={{ position: "absolute", left: lado === 1 ? (chicas ? 250 : 255) : (chicas ? 690 : 685), top: chicas ? 1040 : 420, transform: `translate(-50%, 0) translateY(${-s * 1400}px) rotate(${(lado === 1 ? -4 : 4) * pe}deg) scale(${esc})`, opacity: perdedor ? 0.45 : 1, transformOrigin: "50% 0" }}>
+      <div style={{ position: "absolute", left: lado === 1 ? (chicas ? 250 : 255) : (chicas ? 690 : 685), top: chicas ? 560 : 420, transform: `translate(-50%, 0) translateY(${-s * 1400}px) rotate(${(lado === 1 ? -4 : 4) * pe}deg) scale(${esc})`, opacity: perdedor ? 0.6 + 0.4 * s : 1, transformOrigin: "50% 0" }}>
         <div style={{ width: 360, background: CREMA, border: `8px solid ${TINTA}`, borderRadius: 34, padding: "26px 0 30px", textAlign: "center", boxShadow: `0 14px 0 ${ganador ? color : "rgba(0,0,0,.3)"}` }}>
           <div style={{ width: 92, height: 92, margin: "0 auto", borderRadius: "50%", background: color, color: "#fff", fontFamily: "Sora", fontWeight: 800, fontSize: 62, lineHeight: "92px" }}>{letra}</div>
           <div style={{ height: 150, display: "flex", alignItems: "center", justifyContent: "center" }}>{icono}</div>
@@ -239,27 +239,27 @@ function pinta(pl, t) {
   if (pl.id === "hoja") return <Hoja t={t} t0={pl.desde} />;
   if (pl.id === "cuarto") {
     /* hojas: 8 → 47 con la frase «leerse todo esto» */
-    const hojas = 8 + 39 * suave(rampa(t, S(2) + 0.1, Math.max(0.8, E(2) - S(2) + 0.5)));
+    const hojas = 20 + 27 * suave(rampa(t, S(2) + 0.1, Math.max(0.8, E(2) - S(2) + 0.5)));
     const tazas = clamp01(rampa(t, W(4, "café", 0.3), 0.3)) + clamp01(rampa(t, W(4, "café", 0.3) + 0.5, 0.3)) + clamp01(rampa(t, W(4, "tercero", 0.5) - 0.35, 0.3));
     const cafe = rampa(t, W(4, "café", 0.3), 0.4);
-    const triste = t > S(2) + 0.5 && t < S(3) + 0.2;
+    const triste = t < S(3) + 0.2;
     const cam = camara(t, [
-      [0, 1.6, 430, 1120], [S(1) + 1.4, 1.45, 470, 1100],
-      [S(2), 1.45, 470, 1100], [S(2) + 1.0, 1.0, 540, 960],
+      [0, 1.5, 420, 1140], [S(1) + 1.4, 1.4, 440, 1110],
+      [S(2), 1.4, 440, 1110], [S(2) + 1.0, 1.0, 540, 960],
       [S(3), 1.0, 540, 960], [S(3) + 0.7, 1.06, 540, 930],
       [S(4), 1.06, 540, 930], [S(4) + 0.6, 1.3, 640, 1080],
     ]);
     const toby = {
       cara: cafe > 0.5 ? "racha" : triste ? "triste" : "tranquila",
       orejas: triste ? 7 : cafe > 0.5 ? -4 : 2,
-      ojos: cafe > 0.5 ? 1.22 : t < S(2) ? 0.8 : 1,
+      ojos: cafe > 0.5 ? 1.22 : t < S(2) ? 0.88 : 1,
       cab: t > S(3) && t < S(4) ? 6 * Math.sin(Math.min(1, (t - S(3)) * 2) * Math.PI / 2) : cafe > 0.5 ? 3 * Math.sin(t * 23) : -2,
       bi: cafe > 0.5 ? -20 : 0, bd: 0,
       salto: t > S(1) + 0.05 && t < S(1) + 0.45 ? 14 * pulso(t, S(1) + 0.05, 0.4) : 0,
     };
     const hora = t < S(4) ? "2:00" : "3:47";
     const pOp = rampa(t, S(3) + 0.15, 0.55);
-    const sal = rampa(t, W(4, "café", 0.3) + 0.25, 0.5);
+    const sal = suave(rampa(t, W(4, "café", 0.3) + 0.2, 0.3));
     const restante = T.TRAMOS[3].v - t;
     const cuenta = t > E(3) + 0.1 && restante > 0 ? Math.min(2, Math.ceil(restante / 0.9)) : null;
     const carteles = <Opciones t={t} p={pOp} elige={t > S(4) - 0.05 ? 1 : 0} sale={sal} cuenta={cuenta} />;
@@ -272,13 +272,14 @@ function pinta(pl, t) {
   /* alba: lámpara apagada, Toby dormido; amanece; despierta y pregunta; logo */
   const alba = suave(rampa(t, S(5), E(5) - S(5) + 0.8));
   const despierta = rampa(t, S(6) - 0.2, 0.4);
-  const cam = camara(t, [[S(5) - 0.3, 1.2, 600, 1080], [E(5), 1.05, 560, 1000], [S(6), 1.05, 560, 1000], [T.DURACION_S - 2.2, 1.0, 540, 960]]);
+  const cam = camara(t, [[S(5) - 0.3, 1.2, 600, 1080], [E(5), 1.05, 560, 1000], [S(6), 1.05, 560, 1000], [T.DURACION_S - 1.8, 1.0, 540, 960]]);
+  /* despierta de golpe: son las 6:58 y el parcial es a las 7 (el café no le sirvió) */
   const toby = {
-    cara: despierta > 0.5 ? "feliz" : "tranquila",
-    ojos: despierta > 0.5 ? 1 : 0.08,
-    cab: despierta > 0.5 ? 0 : 16, ladeo: despierta > 0.5 ? 0 : 6 * (1 - despierta),
-    orejas: despierta > 0.5 ? -2 : 6, bd: despierta > 0.5 ? -110 * suave(rampa(t, S(6) + 0.3, 0.4)) * (1 - rampa(t, E(6) + 0.3, 0.4)) : 0,
-    salto: 18 * pulso(t, S(6) - 0.2, 0.45),
+    cara: despierta > 0.5 ? "triste" : "tranquila",
+    ojos: despierta > 0.5 ? 1.28 : 0.08,
+    cab: despierta > 0.5 ? 2 * Math.sin(t * 19) : 16, ladeo: despierta > 0.5 ? 0 : 6 * (1 - despierta),
+    orejas: despierta > 0.5 ? -5 : 6, bi: despierta > 0.5 ? -35 : 0, bd: despierta > 0.5 ? -35 : 0,
+    salto: 46 * pulso(t, S(6) - 0.2, 0.5),
   };
   const zz = despierta < 0.5 ? (
     <>{[0, 1, 2].map((k) => {
@@ -286,11 +287,11 @@ function pinta(pl, t) {
       return <div key={k} style={{ position: "absolute", left: 790 + f * 90, top: 940 - f * 220, fontFamily: "Sora", fontWeight: 800, fontSize: 60 + k * 14, color: CREMA, opacity: Math.sin(f * Math.PI), WebkitTextStroke: `6px ${TINTA}`, paintOrder: "stroke fill" }}>z</div>;
     })}</>
   ) : null;
-  const logo = rampa(t, T.DURACION_S - 2.1, 0.5);
-  const chicas = rampa(t, W(6, "eliges?", 0.4), 0.4) * (1 - rampa(t, T.DURACION_S - 2.2, 0.3));
+  const logo = rampa(t, T.DURACION_S - 1.75, 0.45);
+  const chicas = rampa(t, S(6) + 0.1, 0.35) * (1 - rampa(t, T.DURACION_S - 1.8, 0.3));
   return (
-    <Camara {...cam} t={t}>
-      <Cuarto t={t} alba={alba} luz={0.15 + 0.85 * rampa(t, S(6), 0.01) * 0} hojas={47} tazas={3} hora={t < S(6) ? "6:30" : "6:31"} toby={toby}
+    <Camara {...cam} t={t} temblor={despierta > 0.5 && t < S(6) + 0.6 ? 6 * (1 - rampa(t, S(6), 0.6)) : 0}>
+      <Cuarto t={t} alba={alba} luz={0.15 + 0.85 * rampa(t, S(6), 0.01) * 0} hojas={47} tazas={3} hora={t < S(6) - 0.2 ? "6:30" : "6:58"} toby={toby}
         nota={t < S(6) ? rampa(t, W(5, "dormir", 0.3), 0.5) : 1 - rampa(t, S(6), 0.3)} logo={logo}
         carteles={<>{zz}<Opciones t={t} p={chicas} chicas /></>} />
     </Camara>
@@ -308,8 +309,20 @@ export function Prueba01({ sinSonido = false, zonas = false }) {
   fx(W(4, "café", 0.3), "sorbo", 0.55); fx(W(4, "café", 0.3) + 0.5, "pop-suave", 0.5); fx(W(4, "tercero", 0.5) - 0.35, "pop-suave", 0.5);
   fx(PLANOS[1].desde, "whoosh", 0.45);
   fx(S(5) - 0.25, "barrido", 0.4); fx(W(5, "dormir", 0.3), "pop", 0.45);
-  fx(S(6) - 0.2, "campana", 0.4);
-  fx(T.DURACION_S - 2.1, "ding", 0.45);
-  return <Reel T={T} planos={PLANOS} pinta={pinta} sfx={sfx} musica="lofi" sinSonido={sinSonido} zonas={zonas} subY={1405} />;
+  fx(S(6) - 0.2, "campana", 0.5); fx(S(6) - 0.15, "golpe", 0.4);
+  fx(T.DURACION_S - 1.75, "ding", 0.45); fx(S(6) + 0.1, "pop", 0.4);
+  /* línea de invitación del cierre, en la franja de subtítulos cuando la voz ya terminó */
+  const invita = (t) => {
+    const p = rampa(t, E(6) + 0.25, 0.3);
+    if (p <= 0) return null;
+    return (
+      <div style={{ position: "absolute", left: 60, width: 880, top: 1330, display: "flex", justifyContent: "center", opacity: p, transform: `scale(${0.85 + 0.15 * sale(p)})` }}>
+        <div style={{ background: CREMA, border: `7px solid ${TINTA}`, borderRadius: 999, padding: "10px 40px 16px", fontFamily: "Sora", fontWeight: 800, fontSize: 70, color: TINTA, whiteSpace: "nowrap", boxShadow: "0 10px 0 rgba(0,0,0,.3)" }}>
+          ¿<span style={{ color: CORAL }}>A</span> o <span style={{ color: AZUL }}>B</span>? Cuéntanos
+        </div>
+      </div>
+    );
+  };
+  return <Reel T={T} planos={PLANOS} encima={invita} pinta={pinta} sfx={sfx} musica="lofi" sinSonido={sinSonido} zonas={zonas} subY={1405} />;
 }
 export { VOZ };

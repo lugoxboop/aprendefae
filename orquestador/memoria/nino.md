@@ -14,12 +14,17 @@
 - Paradas del montaje (solo estas): (1) login de Meta/Instagram y códigos → Mateo en persona; (2) compra del plan Creator de ElevenLabs → Mateo; (3) primer video → a Mateo antes de la primera publicación real.
 
 ## Herramientas
-- **Voz: ElevenLabs por API** (voz «Brian», endpoint `with-timestamps`). Clave en `ELEVENLABS_API_KEY` (entorno + secreto de GitHub, NUNCA en el repo). Plan Creator ≈100 min/mes; aviso al 80 %. MCP oficial de ElevenLabs para pruebas y efectos.
+- **Voz: ElevenLabs por API** (endpoint `with-timestamps`, modelo `eleven_v3`, estabilidad 0,50, similitud 0,75, mp3 44,1 kHz/128). **La voz NO es fija** (Mateo, 26-nov): varía según la tendencia y el tono de la pieza, con voces de mujer; siempre del plan Creator. Lista de confianza en `contenido/voz.json` (se renueva con `voces.mjs`); cada pieza anota su voz en `tiempos-<voz>.json` y en `contenido/registro/`. Clave solo como secreto de GitHub (`ELEVENLABS_API_KEY`). Plan Creator ≈100 min/mes; aviso al 80 %.
+- **Voces de confianza hoy (PROVISIONALES, prediseñadas):** Jessica `cgSgspJ2msm6clMCkdW9` (mujer, joven, expresiva) · Sarah `EXAVITQu4vr4xnSDxMaL` (mujer, madura, tranquila) · Brian `nPczCjzI2devNBz1zQrb` (hombre, cálida). La clave aún no tiene `voices_read`: sin él no se lee la tendencia.
 - **Instagram por la API oficial de Meta** (app «AprendeFAE Publicador»). Token largo en `IG_ACCESS_TOKEN` + `IG_USER_ID`; se renueva solo cada 50 días. Límite 100 publicaciones/24 h. Por API no se puede poner canción de la biblioteca de Instagram → esas piezas se marcan «publicación manual» y Mateo pone la canción.
 - **Render:** Remotion (skills oficiales, router `remotion-best-practices`). **Imágenes/storyboards:** Gemini con `orquestador/conocimiento/guia-estilo-imagenes.md`. **Efectos/música:** Pixabay/Freesound CC0 o sintetizados.
 - **Videos terminados:** bucket público `instagram-publico` de Supabase Storage (solo videos, nunca datos de estudiantes); Meta publica desde ese enlace.
 
+## Cómo corre el pipeline
+- **GitHub Actions** (`.github/workflows/contenido.yml`), disparado al empujar `contenido/pedido.json`. El shell de la nube NO alcanza ElevenLabs, Supabase ni Meta (proxy). Animar y revisar cuadros: local, en `contenido/estudio/`. Detalle en `contenido/README.md`.
+
 ## En qué estoy ahora
+- 2026-11-26 12:45 — Pipeline montado en Actions (voz con timestamps, bucket `instagram-publico` creado, render y subida). Reel de prueba `prueba-01` «¿Café o dormir?» (21 s, voz Jessica, ritmo 1,17) enviado a Mateo para aprobar; NO publicado. Falta: permisos de la clave de voz (`voices_read`, `voices_write`, `models_read`, `user_read`) y Meta.
 - 2026-11-26 11:30 — Recién creado (encargo de Mateo). Hechas: las dos skills (`contenido-instagram`, `animacion-instagram`), bitácora e índice. PENDIENTE del montaje: clave de ElevenLabs + MCP (tras el plan Creator), app de Meta + token (tras el login de Mateo), bucket de Supabase, secretos de GitHub, scripts de `contenido/`, tareas programadas (6:30 radar, 7:30 ideas, noche métricas, lunes informe) y el Reel de prueba de 15–20 s para Mateo (parada 3).
 
 ## Decisiones tomadas y por qué
@@ -30,4 +35,6 @@
 - Recibir de Mateo: login de Meta/Instagram y plan Creator de ElevenLabs.
 
 ## Lo que aprendí que no hay que repetir
--
+- `eleven_v3` habla lento (~2,5 palabras/s) y deja pausas largas entre párrafos: un guion de 45 palabras da ~21 s de audio. Para Reels cortos: `recorta: true` y `ritmo` ~1,15 en `crearTiempo`, o guion de ≤40 palabras.
+- Subtítulos con borde grueso (`-webkit-text-stroke`) se comen el espacio entre palabras: margen por palabra.
+- En la nube no hay emojis en Chromium headless: nada de emojis dentro del video.

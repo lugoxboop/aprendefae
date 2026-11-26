@@ -15,7 +15,10 @@ export const pulso = (t, t0, d) => { const p = (t - t0) / d; return p <= 0 || p 
 export const fmt = (p) => "$" + String(p).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 const limpia = (w) => w.toLowerCase().normalize("NFD").replace(/[^a-z0-9]/g, "");
 
-export function crearTiempo(DATOS, { extra = [], manual = {}, cola = 1.4, pausa = 0.25, recorta = false } = {}) {
+export function crearTiempo(DATOS, { extra = [], manual = {}, cola = 1.4, pausa = 0.25, recorta = false, ritmo = 1 } = {}) {
+  /* ritmo (Nino): la voz suena `ritmo` veces más rápido (Audio playbackRate; el tono se
+     conserva). Todo tiempo de audio se divide por él al pasarlo al video. */
+  const r = ritmo;
   const ESC = DATOS.escenas;
   const corte = ESC.map((e, i) => (i === 0 ? Math.max(0, e.ini - 0.12) : (ESC[i - 1].fin + e.ini) / 2));
   corte.push(ESC[ESC.length - 1].fin + 0.35);
@@ -27,8 +30,8 @@ export function crearTiempo(DATOS, { extra = [], manual = {}, cola = 1.4, pausa 
        frases lo pone `pausa`, no la voz. Así el Reel no arrastra pausas largas. */
     const a0 = recorta ? Math.max(0, e.ini - 0.06) : corte[i];
     const a1 = recorta ? Math.min(DATOS.duracion ?? e.fin + 0.2, e.fin + 0.14) : corte[i + 1];
-    TRAMOS.push({ v, a0, a1, habla: v + (e.ini - a0), calla: v + (e.fin - a0) });
-    v += a1 - a0;
+    TRAMOS.push({ v, a0, a1, habla: v + (e.ini - a0) / r, calla: v + (e.fin - a0) / r });
+    v += (a1 - a0) / r;
   });
   const N = ESC.length;
   const S = (i) => TRAMOS[i - 1].habla;
@@ -39,7 +42,7 @@ export function crearTiempo(DATOS, { extra = [], manual = {}, cola = 1.4, pausa 
   const W = (i, palabra, frac = 0.5, n = 0) => {
     const e = ESC[i - 1];
     const hits = (e.palabras || []).filter((p) => limpia(p.w) === limpia(palabra));
-    if (hits[n]) return TRAMOS[i - 1].v + (hits[n].ini - TRAMOS[i - 1].a0);
+    if (hits[n]) return TRAMOS[i - 1].v + (hits[n].ini - TRAMOS[i - 1].a0) / r;
     return c(i, frac);
   };
   const DURACION_S = E(N) + cola;
@@ -58,10 +61,10 @@ export function crearTiempo(DATOS, { extra = [], manual = {}, cola = 1.4, pausa 
       const nPal = txt.split(/\s+/).length;
       const p0 = e.palabras[Math.min(pal, e.palabras.length - 1)];
       const p1 = e.palabras[Math.min(pal + nPal - 1, e.palabras.length - 1)];
-      SUBS.push({ i, k, txt, ini: TRAMOS[idx].v + (p0.ini - TRAMOS[idx].a0), fin: TRAMOS[idx].v + (p1.fin - TRAMOS[idx].a0) });
+      SUBS.push({ i, k, txt, ini: TRAMOS[idx].v + (p0.ini - TRAMOS[idx].a0) / r, fin: TRAMOS[idx].v + (p1.fin - TRAMOS[idx].a0) / r });
       pal += nPal;
     });
   });
   SUBS.forEach((s, n) => { const sig = SUBS[n + 1]; s.hasta = sig && sig.ini - s.fin < 0.9 ? sig.ini : s.fin + 0.5; });
-  return { ESC, N, TRAMOS, S, E, D, c, W, SUBS, DURACION_S, AUDIO: DATOS.audio };
+  return { RITMO: r, ESC, N, TRAMOS, S, E, D, c, W, SUBS, DURACION_S, AUDIO: DATOS.audio };
 }
