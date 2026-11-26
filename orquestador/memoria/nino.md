@@ -14,7 +14,7 @@
 - Paradas del montaje (solo estas): (1) login de Meta/Instagram y códigos → Mateo en persona; (2) compra del plan Creator de ElevenLabs → Mateo; (3) primer video → a Mateo antes de la primera publicación real.
 
 ## Herramientas
-- **Voz: ElevenLabs por API** (voz «Brian», endpoint `with-timestamps`). Clave en `ELEVENLABS_API_KEY` (entorno + secreto de GitHub, NUNCA en el repo). Plan Creator ≈100 min/mes; aviso al 80 %. MCP oficial de ElevenLabs para pruebas y efectos.
+- **Voz: ElevenLabs por API**, endpoint `with-timestamps`. **La voz varía según tendencia** (no fija): voces populares/en tendencia del mercado, incluyendo mujer, acorde al tono de cada pieza. Lista corta de voces de confianza con `voice_id` aquí; registrar qué voz usó cada pieza. Clave en `ELEVENLABS_API_KEY` (secreto de GitHub, NUNCA en el repo). Plan Creator ≈100 min/mes; aviso al 80 %. MCP oficial de ElevenLabs para pruebas y efectos.
 - **Instagram por la API oficial de Meta** (app «AprendeFAE Publicador»). Token largo en `IG_ACCESS_TOKEN` + `IG_USER_ID`; se renueva solo cada 50 días. Límite 100 publicaciones/24 h. Por API no se puede poner canción de la biblioteca de Instagram → esas piezas se marcan «publicación manual» y Mateo pone la canción.
 - **Render:** Remotion (skills oficiales, router `remotion-best-practices`). **Imágenes/storyboards:** Gemini con `orquestador/conocimiento/guia-estilo-imagenes.md`. **Efectos/música:** Pixabay/Freesound CC0 o sintetizados.
 - **Videos terminados:** bucket público `instagram-publico` de Supabase Storage (solo videos, nunca datos de estudiantes); Meta publica desde ese enlace.
