@@ -1,0 +1,7 @@
+node_modules/
+out/
+# voz del plan gratuito de ElevenLabs: vive en /mnt/project-files/jane/microvideos/macro/voz/
+public/audio/
+# se regenera con: python3 sonido/sintetiza.py
+public/sfx/musica.wav
+*.mp4

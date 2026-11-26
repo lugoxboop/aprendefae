@@ -1,0 +1,12 @@
+El Gobierno gasta cien en una vía. ¿Cuánto sube la producción? ¿Cien? Ni cerca.
+Los cien se los paga a los obreros de la obra.
+Pagan impuestos, ahorran un poco y gastan el resto: sesenta, en el puesto de Rufo.
+Rufo cobra esos sesenta, y gasta treinta y seis en la panadería de Bruno.
+Bruno gasta veintiuno coma seis… y así sigue, como un eco.
+Cada eco guarda el sesenta por ciento del anterior: c por uno menos t.
+Pero si sumas todos los ecos, los cien se vuelven doscientos cincuenta.
+Eso es el multiplicador: uno sobre uno menos c por uno menos t.
+Con c de cero coma ocho y t del veinticinco por ciento, da dos coma cinco.
+Ojo: no lo confundas con la inclinación de la recta, cero coma seis. Son números distintos.
+La producción de equilibrio es el multiplicador por el gasto autónomo, menos b por i.
+En la actividad, lleva la economía a la meta con una sola palanca.
