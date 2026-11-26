@@ -102,7 +102,7 @@ jobs:
           mkdir -p salida
           node render.mjs "${{ steps.pedido.outputs.pieza }}" "salida/${{ steps.pedido.outputs.pieza }}.mp4"
           node portada.mjs "${{ steps.pedido.outputs.pieza }}" "salida/${{ steps.pedido.outputs.pieza }}-portada.jpg"
-          ffprobe -v error -show_entries stream=codec_name,width,height,r_frame_rate:format=duration -of compact "salida/${{ steps.pedido.outputs.pieza }}.mp4"
+          npx remotion ffprobe -v error -show_entries stream=codec_name,width,height,r_frame_rate:format=duration -of compact "salida/${{ steps.pedido.outputs.pieza }}.mp4"
 
       - name: subir
         if: contains(steps.pedido.outputs.acciones, 'subir')
