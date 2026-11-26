@@ -73,7 +73,7 @@ const CSS_LADO = `
 .sim-pestanas { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; border-radius: 999px; background: #0E1B2E; border: 1px solid #3a4a63; max-width: 640px; width: 100%; margin: 0 auto; }
 .sim-pestanas button { min-height: 44px; border-radius: 999px; border: 0; background: transparent; color: #b6bbc5; font: 700 14px/18px var(--planck-font-sans, system-ui, sans-serif); display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; }
 .sim-pestanas button[aria-selected="true"] { background: #f4f5f7; color: #121418; }
-.sim-pestanas button[data-ia] svg { color: #2A9D8F; }
+.sim-pestanas button[data-ia] svg { stroke: #2A9D8F; }
 @media (max-width: 360px) { .sim-pestanas button { font-size: 13px; gap: 4px; } }
 .sim-columnas { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
 .sim-lado > * { min-width: 0; }
