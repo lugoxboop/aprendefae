@@ -114,9 +114,6 @@ export const CSS_SIM = `
 .sim-virus { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .sim-virus[data-n="3"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 @media (min-width: 560px) { .sim-virus[data-n="4"], .sim-virus[data-n="8"] { grid-template-columns: repeat(4, minmax(0, 1fr)); } .sim-virus[data-n="5"], .sim-virus[data-n="6"] { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-@media (max-width: 400px) {
-  .sim-chip { flex-direction: column; justify-content: center; text-align: center; gap: 4px; min-height: 84px; padding: 8px 3px; font-size: 13px; line-height: 16px; overflow-wrap: anywhere; hyphens: auto; }
-}
 .sim-chip { position: relative; display: flex; align-items: center; gap: 8px; min-height: 56px; padding: 6px 10px 6px 6px; border-radius: 12px; border: 2px solid ${BORDE}; background: ${SUPERFICIE_2}; color: ${INK}; font: 600 14px/17px var(--planck-font-sans, system-ui, sans-serif); text-align: left; cursor: pointer; touch-action: manipulation; transition: transform 200ms ${CURVA}, border-color 200ms ${CURVA}; }
 .sim-chip:active { transform: scale(.96); }
 .sim-chip[aria-pressed="true"] { border-color: ${INK}; background: #2b4268; }
@@ -132,6 +129,10 @@ export const CSS_SIM = `
 .sim-chip[data-res="sobro"] .sim-chip-marca { background: ${CORAL}; color: #fff; }
 .sim-chip[data-res="bien"] { border-color: ${TEAL}; }
 .sim-chip[data-res="bien"] .sim-chip-marca { background: ${TEAL}; }
+/* En celular angosto, la ilustración arriba y el nombre debajo (va después de la regla base para ganarle). */
+@media (max-width: 400px) {
+  .sim-chip { flex-direction: column; justify-content: center; text-align: center; gap: 4px; min-height: 84px; padding: 8px 4px; font-size: 13px; line-height: 16px; overflow-wrap: break-word; }
+}
 
 .sim-veredicto { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; font: 800 14px/18px var(--planck-font-sans, system-ui, sans-serif); letter-spacing: .04em; text-transform: uppercase; }
 .sim-veredicto[data-v="acierto"] { background: ${TEAL}; color: ${TINTA_SOBRE_COLOR}; }

@@ -149,8 +149,8 @@ const T1 = [
     ],
     consigna: (n) => `¿Qué le pasa al consumo de ${n}?`,
     opciones: [
-      op("sube", "El consumo sube", "carrito-mercado", "Subió la renta disponible: la familia gasta una parte (c) de ese peso extra.", SUBE),
-      op("baja", "El consumo baja", "carrito-mercado", "Bajó la renta disponible: la familia gasta menos.", BAJA),
+      op("sube", "Sube", "carrito-mercado", "Subió la renta disponible: la familia gasta una parte (c) de ese peso extra.", SUBE),
+      op("baja", "Baja", "carrito-mercado", "Bajó la renta disponible: la familia gasta menos.", BAJA),
       op("igual", "No cambia", "alcancia", "Lo que cambió no entra en la función de consumo de este modelo.", IGUAL),
     ],
     sugerencias: ["¿Qué es el consumo autónomo?", "¿La tasa de interés mueve el consumo?"],
@@ -173,8 +173,8 @@ const T1 = [
     ],
     consigna: (n) => `¿Qué le pasa a la inversión de ${n}?`,
     opciones: [
-      op("sube", "La inversión sube", "fabrica", "El crédito se abarató o mejoraron las expectativas.", SUBE),
-      op("baja", "La inversión baja", "fabrica", "El crédito se encareció o empeoraron las expectativas.", BAJA),
+      op("sube", "Sube", "fabrica", "El crédito se abarató o mejoraron las expectativas.", SUBE),
+      op("baja", "Baja", "fabrica", "El crédito se encareció o empeoraron las expectativas.", BAJA),
       op("igual", "No cambia", "caja-herramientas", "No se movió ni la tasa ni la inversión autónoma.", IGUAL),
     ],
     sugerencias: ["¿Qué es la b de la fórmula?", "¿Qué es la inversión autónoma?"],
