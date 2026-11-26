@@ -1,0 +1,364 @@
+{
+  "audio": "voz/repartir-gaby.mp3",
+  "duracion": 22.076,
+  "hash": "3f22b7392aaac834",
+  "voz": "Gaby - Natura & Casual",
+  "voice_id": "p5EUznrYaWnafKvUkNiR",
+  "genero": "female",
+  "modelo": "eleven_v4",
+  "caracteres": 339,
+  "escenas": [
+    {
+      "ini": 0,
+      "fin": 2.32,
+      "texto": "Dos formas de estudiar para el mismo parcial.",
+      "palabras": [
+        {
+          "w": "Dos",
+          "ini": 0,
+          "fin": 0.24
+        },
+        {
+          "w": "formas",
+          "ini": 0.32,
+          "fin": 0.56
+        },
+        {
+          "w": "de",
+          "ini": 0.64,
+          "fin": 0.693
+        },
+        {
+          "w": "estudiar",
+          "ini": 0.747,
+          "fin": 1.12
+        },
+        {
+          "w": "para",
+          "ini": 1.2,
+          "fin": 1.36
+        },
+        {
+          "w": "el",
+          "ini": 1.4,
+          "fin": 1.44
+        },
+        {
+          "w": "mismo",
+          "ini": 1.52,
+          "fin": 1.76
+        },
+        {
+          "w": "parcial.",
+          "ini": 1.84,
+          "fin": 2.32
+        }
+      ]
+    },
+    {
+      "ini": 2.8,
+      "fin": 5.6,
+      "texto": "Toby: cinco horas seguidas, la noche antes.",
+      "palabras": [
+        {
+          "w": "Toby:",
+          "ini": 2.8,
+          "fin": 3.44
+        },
+        {
+          "w": "cinco",
+          "ini": 3.52,
+          "fin": 3.76
+        },
+        {
+          "w": "horas",
+          "ini": 3.84,
+          "fin": 4
+        },
+        {
+          "w": "seguidas,",
+          "ini": 4.08,
+          "fin": 4.64
+        },
+        {
+          "w": "la",
+          "ini": 4.72,
+          "fin": 4.8
+        },
+        {
+          "w": "noche",
+          "ini": 4.88,
+          "fin": 5.12
+        },
+        {
+          "w": "antes.",
+          "ini": 5.32,
+          "fin": 5.6
+        }
+      ]
+    },
+    {
+      "ini": 6,
+      "fin": 8.88,
+      "texto": "Su amiga: las mismas cinco horas, una por día.",
+      "palabras": [
+        {
+          "w": "Su",
+          "ini": 6,
+          "fin": 6.08
+        },
+        {
+          "w": "amiga:",
+          "ini": 6.16,
+          "fin": 6.8
+        },
+        {
+          "w": "las",
+          "ini": 6.88,
+          "fin": 6.96
+        },
+        {
+          "w": "mismas",
+          "ini": 7.04,
+          "fin": 7.28
+        },
+        {
+          "w": "cinco",
+          "ini": 7.36,
+          "fin": 7.6
+        },
+        {
+          "w": "horas,",
+          "ini": 7.68,
+          "fin": 8.16
+        },
+        {
+          "w": "una",
+          "ini": 8.24,
+          "fin": 8.32
+        },
+        {
+          "w": "por",
+          "ini": 8.4,
+          "fin": 8.56
+        },
+        {
+          "w": "día.",
+          "ini": 8.68,
+          "fin": 8.88
+        }
+      ]
+    },
+    {
+      "ini": 9.28,
+      "fin": 12.4,
+      "texto": "¿Quién recuerda más el día del parcial: A o B?",
+      "palabras": [
+        {
+          "w": "¿Quién",
+          "ini": 9.28,
+          "fin": 9.44
+        },
+        {
+          "w": "recuerda",
+          "ini": 9.52,
+          "fin": 9.84
+        },
+        {
+          "w": "más",
+          "ini": 9.92,
+          "fin": 10.08
+        },
+        {
+          "w": "el",
+          "ini": 10.16,
+          "fin": 10.24
+        },
+        {
+          "w": "día",
+          "ini": 10.32,
+          "fin": 10.4
+        },
+        {
+          "w": "del",
+          "ini": 10.48,
+          "fin": 10.56
+        },
+        {
+          "w": "parcial:",
+          "ini": 10.64,
+          "fin": 11.36
+        },
+        {
+          "w": "A",
+          "ini": 11.44,
+          "fin": 11.6
+        },
+        {
+          "w": "o",
+          "ini": 11.84,
+          "fin": 11.92
+        },
+        {
+          "w": "B?",
+          "ini": 12,
+          "fin": 12.4
+        }
+      ]
+    },
+    {
+      "ini": 12.64,
+      "fin": 18,
+      "texto": "Gana B. Repartir el repaso en varios días fija más que meterlo todo en una noche.",
+      "palabras": [
+        {
+          "w": "Gana",
+          "ini": 12.64,
+          "fin": 12.96
+        },
+        {
+          "w": "B.",
+          "ini": 13.2,
+          "fin": 13.44
+        },
+        {
+          "w": "Repartir",
+          "ini": 13.84,
+          "fin": 14.24
+        },
+        {
+          "w": "el",
+          "ini": 14.28,
+          "fin": 14.32
+        },
+        {
+          "w": "repaso",
+          "ini": 14.4,
+          "fin": 14.72
+        },
+        {
+          "w": "en",
+          "ini": 14.8,
+          "fin": 14.88
+        },
+        {
+          "w": "varios",
+          "ini": 14.96,
+          "fin": 15.12
+        },
+        {
+          "w": "días",
+          "ini": 15.2,
+          "fin": 15.52
+        },
+        {
+          "w": "fija",
+          "ini": 15.68,
+          "fin": 16
+        },
+        {
+          "w": "más",
+          "ini": 16.08,
+          "fin": 16.32
+        },
+        {
+          "w": "que",
+          "ini": 16.36,
+          "fin": 16.4
+        },
+        {
+          "w": "meterlo",
+          "ini": 16.48,
+          "fin": 16.96
+        },
+        {
+          "w": "todo",
+          "ini": 17.08,
+          "fin": 17.2
+        },
+        {
+          "w": "en",
+          "ini": 17.24,
+          "fin": 17.28
+        },
+        {
+          "w": "una",
+          "ini": 17.36,
+          "fin": 17.44
+        },
+        {
+          "w": "noche.",
+          "ini": 17.52,
+          "fin": 18
+        }
+      ]
+    },
+    {
+      "ini": 18.16,
+      "fin": 22.08,
+      "texto": "¿Cuál es tu estilo? Coméntalo y síguenos para más trucos de estudio.",
+      "palabras": [
+        {
+          "w": "¿Cuál",
+          "ini": 18.16,
+          "fin": 18.32
+        },
+        {
+          "w": "es",
+          "ini": 18.4,
+          "fin": 18.48
+        },
+        {
+          "w": "tu",
+          "ini": 18.52,
+          "fin": 18.56
+        },
+        {
+          "w": "estilo?",
+          "ini": 18.64,
+          "fin": 19.28
+        },
+        {
+          "w": "Coméntalo",
+          "ini": 19.36,
+          "fin": 19.84
+        },
+        {
+          "w": "y",
+          "ini": 19.92,
+          "fin": 20
+        },
+        {
+          "w": "síguenos",
+          "ini": 20.08,
+          "fin": 20.48
+        },
+        {
+          "w": "para",
+          "ini": 20.6,
+          "fin": 20.72
+        },
+        {
+          "w": "más",
+          "ini": 20.8,
+          "fin": 20.96
+        },
+        {
+          "w": "trucos",
+          "ini": 21.04,
+          "fin": 21.28
+        },
+        {
+          "w": "de",
+          "ini": 21.32,
+          "fin": 21.36
+        },
+        {
+          "w": "estudio.",
+          "ini": 21.44,
+          "fin": 22.08
+        }
+      ]
+    }
+  ]
+}

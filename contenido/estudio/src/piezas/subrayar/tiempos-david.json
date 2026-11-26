@@ -1,0 +1,394 @@
+{
+  "audio": "voz/subrayar-david.mp3",
+  "duracion": 26.543,
+  "hash": "18745fa0c9b2cd43",
+  "voz": "David - Deep, Attractive, Mysterious",
+  "voice_id": "K3TeN3ZVK8WnOeJ0NYqZ",
+  "genero": "male",
+  "modelo": "eleven_v4",
+  "caracteres": 367,
+  "escenas": [
+    {
+      "ini": 0,
+      "fin": 4.64,
+      "texto": "Parcial mañana. Toby subraya todo el cuaderno, de amarillo.",
+      "palabras": [
+        {
+          "w": "Parcial",
+          "ini": 0,
+          "fin": 0.4
+        },
+        {
+          "w": "mañana.",
+          "ini": 0.48,
+          "fin": 1.2
+        },
+        {
+          "w": "Toby",
+          "ini": 1.44,
+          "fin": 1.76
+        },
+        {
+          "w": "subraya",
+          "ini": 1.88,
+          "fin": 2.24
+        },
+        {
+          "w": "todo",
+          "ini": 2.4,
+          "fin": 2.72
+        },
+        {
+          "w": "el",
+          "ini": 2.76,
+          "fin": 2.8
+        },
+        {
+          "w": "cuaderno,",
+          "ini": 2.88,
+          "fin": 3.68
+        },
+        {
+          "w": "de",
+          "ini": 3.76,
+          "fin": 3.84
+        },
+        {
+          "w": "amarillo.",
+          "ini": 3.96,
+          "fin": 4.64
+        }
+      ]
+    },
+    {
+      "ini": 4.88,
+      "fin": 8.36,
+      "texto": "Su amiga cierra el cuaderno y se pregunta lo que acaba de leer.",
+      "palabras": [
+        {
+          "w": "Su",
+          "ini": 4.88,
+          "fin": 4.96
+        },
+        {
+          "w": "amiga",
+          "ini": 5.04,
+          "fin": 5.36
+        },
+        {
+          "w": "cierra",
+          "ini": 5.44,
+          "fin": 5.68
+        },
+        {
+          "w": "el",
+          "ini": 5.72,
+          "fin": 5.76
+        },
+        {
+          "w": "cuaderno",
+          "ini": 5.84,
+          "fin": 6.32
+        },
+        {
+          "w": "y",
+          "ini": 6.4,
+          "fin": 6.44
+        },
+        {
+          "w": "se",
+          "ini": 6.48,
+          "fin": 6.64
+        },
+        {
+          "w": "pregunta",
+          "ini": 6.72,
+          "fin": 7.04
+        },
+        {
+          "w": "lo",
+          "ini": 7.08,
+          "fin": 7.12
+        },
+        {
+          "w": "que",
+          "ini": 7.2,
+          "fin": 7.28
+        },
+        {
+          "w": "acaba",
+          "ini": 7.36,
+          "fin": 7.6
+        },
+        {
+          "w": "de",
+          "ini": 7.68,
+          "fin": 7.76
+        },
+        {
+          "w": "leer.",
+          "ini": 7.84,
+          "fin": 8.36
+        }
+      ]
+    },
+    {
+      "ini": 8.56,
+      "fin": 11.52,
+      "texto": "¿Quién crees que recuerda más: A o B?",
+      "palabras": [
+        {
+          "w": "¿Quién",
+          "ini": 8.56,
+          "fin": 8.72
+        },
+        {
+          "w": "crees",
+          "ini": 8.8,
+          "fin": 9.04
+        },
+        {
+          "w": "que",
+          "ini": 9.12,
+          "fin": 9.2
+        },
+        {
+          "w": "recuerda",
+          "ini": 9.32,
+          "fin": 9.68
+        },
+        {
+          "w": "más:",
+          "ini": 9.72,
+          "fin": 10.48
+        },
+        {
+          "w": "A",
+          "ini": 10.56,
+          "fin": 10.72
+        },
+        {
+          "w": "o",
+          "ini": 11.12,
+          "fin": 11.2
+        },
+        {
+          "w": "B?",
+          "ini": 11.28,
+          "fin": 11.52
+        }
+      ]
+    },
+    {
+      "ini": 12,
+      "fin": 16.72,
+      "texto": "Gana B. Sacar la respuesta de tu cabeza la fija más que releerla.",
+      "palabras": [
+        {
+          "w": "Gana",
+          "ini": 12,
+          "fin": 12.4
+        },
+        {
+          "w": "B.",
+          "ini": 12.64,
+          "fin": 12.88
+        },
+        {
+          "w": "Sacar",
+          "ini": 13.36,
+          "fin": 13.6
+        },
+        {
+          "w": "la",
+          "ini": 13.68,
+          "fin": 13.76
+        },
+        {
+          "w": "respuesta",
+          "ini": 14,
+          "fin": 14.24
+        },
+        {
+          "w": "de",
+          "ini": 14.28,
+          "fin": 14.32
+        },
+        {
+          "w": "tu",
+          "ini": 14.4,
+          "fin": 14.48
+        },
+        {
+          "w": "cabeza",
+          "ini": 14.56,
+          "fin": 14.96
+        },
+        {
+          "w": "la",
+          "ini": 15.04,
+          "fin": 15.12
+        },
+        {
+          "w": "fija",
+          "ini": 15.2,
+          "fin": 15.44
+        },
+        {
+          "w": "más",
+          "ini": 15.6,
+          "fin": 15.84
+        },
+        {
+          "w": "que",
+          "ini": 15.92,
+          "fin": 16
+        },
+        {
+          "w": "releerla.",
+          "ini": 16.08,
+          "fin": 16.72
+        }
+      ]
+    },
+    {
+      "ini": 17.04,
+      "fin": 22.12,
+      "texto": "Subrayar se siente bien, pero engaña: lo ves y crees que ya lo sabes.",
+      "palabras": [
+        {
+          "w": "Subrayar",
+          "ini": 17.04,
+          "fin": 17.52
+        },
+        {
+          "w": "se",
+          "ini": 17.6,
+          "fin": 17.68
+        },
+        {
+          "w": "siente",
+          "ini": 17.72,
+          "fin": 18
+        },
+        {
+          "w": "bien,",
+          "ini": 18.08,
+          "fin": 18.72
+        },
+        {
+          "w": "pero",
+          "ini": 18.76,
+          "fin": 18.88
+        },
+        {
+          "w": "engaña:",
+          "ini": 18.96,
+          "fin": 19.76
+        },
+        {
+          "w": "lo",
+          "ini": 19.84,
+          "fin": 19.92
+        },
+        {
+          "w": "ves",
+          "ini": 20,
+          "fin": 20.32
+        },
+        {
+          "w": "y",
+          "ini": 20.48,
+          "fin": 20.56
+        },
+        {
+          "w": "crees",
+          "ini": 20.72,
+          "fin": 21.04
+        },
+        {
+          "w": "que",
+          "ini": 21.08,
+          "fin": 21.12
+        },
+        {
+          "w": "ya",
+          "ini": 21.2,
+          "fin": 21.28
+        },
+        {
+          "w": "lo",
+          "ini": 21.32,
+          "fin": 21.36
+        },
+        {
+          "w": "sabes.",
+          "ini": 21.44,
+          "fin": 22.12
+        }
+      ]
+    },
+    {
+      "ini": 22.32,
+      "fin": 26.56,
+      "texto": "¿Tú cuál haces? Coméntalo y síguenos para más trucos de estudio.",
+      "palabras": [
+        {
+          "w": "¿Tú",
+          "ini": 22.32,
+          "fin": 22.4
+        },
+        {
+          "w": "cuál",
+          "ini": 22.48,
+          "fin": 22.64
+        },
+        {
+          "w": "haces?",
+          "ini": 22.68,
+          "fin": 23.36
+        },
+        {
+          "w": "Coméntalo",
+          "ini": 23.44,
+          "fin": 24.08
+        },
+        {
+          "w": "y",
+          "ini": 24.16,
+          "fin": 24.24
+        },
+        {
+          "w": "síguenos",
+          "ini": 24.32,
+          "fin": 24.72
+        },
+        {
+          "w": "para",
+          "ini": 24.8,
+          "fin": 24.96
+        },
+        {
+          "w": "más",
+          "ini": 25.12,
+          "fin": 25.28
+        },
+        {
+          "w": "trucos",
+          "ini": 25.36,
+          "fin": 25.68
+        },
+        {
+          "w": "de",
+          "ini": 25.72,
+          "fin": 25.76
+        },
+        {
+          "w": "estudio.",
+          "ini": 25.84,
+          "fin": 26.56
+        }
+      ]
+    }
+  ]
+}
