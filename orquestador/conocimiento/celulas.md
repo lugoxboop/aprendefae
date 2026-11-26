@@ -296,6 +296,7 @@ y sin los enlaces no había forma de hablar con ningún general.
 | **Levi** | calidad, Célula A y auditor central | `https://claude.ai/chat/e14fb739-cad6-4f22-b3e8-8844f7b38d0c` (desde el 24-oct; el chat anterior, `edb72638…`, quedó retirado) |
 | **Gen** | actividades (los Hacer) | `https://claude.ai/code/project/chan_01Py261CBgpzNCnc4uGDbkwR` |
 | **Jane** | Aprender y animación (microvideos) | `https://claude.ai/code/project/chan_0158yVQW9YLBhkavWkUMmmmq` |
+| **Nino** | contenido de Instagram (marca, todo por API) | `https://claude.ai/code/project/chan_01RB4Nnwq8CDQpx2CFyMm5kH` |
 | **Sai** | construcción, Célula A | `https://claude.ai/code/session_01HTfZSXunqjEHrG95ZZSLoB` (Sai 4.0 es la vigente; la sesión «Sai 2.0» es vieja, no se le escribe) |
 | **Mello** | auditor jefe | sin enlace: se busca en `https://claude.ai/recents` |
 | Kaede · Miku · Tsukasa · Feynman · Macro · Senku 4.0 | otros | se buscan en `https://claude.ai/recents` |

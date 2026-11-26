@@ -63,6 +63,8 @@ archivo, y solo si vas a editarlo.** Quien cree, mueva o renombre un documento
 | `orquestador/conocimiento/roles/` (5) | Definiciones de rol (células, compilación, gen, levi, xeno) | Al capacitar o revisar un rol |
 | `.claude/skills/gen-disenador-actividades/` | Skill de **Gen**, el diseñador de **actividades (los Hacer)**: convierte un tema en actividades lúdicas y muy visuales | Al diseñar o rediseñar actividades |
 | `.claude/skills/jane-aprender-animaciones/` | Skill de **Jane**, directora de **Aprender y animación**: microvideos con narrador y mascotas que actúan, escenas interactivas (Remotion/Manim), con la guía de estilo | Al hacer Aprender, animaciones o microvideos |
+| `.claude/skills/contenido-instagram/` | Skill de **Nino**, el **agente de contenido de Instagram** (marca): investiga tendencias, propone ideas, produce y publica Reels/carruseles/historias con las mascotas, todo por API | Al trabajar el contenido o las redes de AprendeFAE |
+| `.claude/skills/animacion-instagram/` | Manual técnico de animación para Instagram (lo escribió Jane): formatos, zonas seguras, guion, voz Brian por API, Remotion, sonido, render y mascotas | Al producir cualquier pieza de Instagram (la usa Nino) |
 | `orquestador/conocimiento/herramientas.md` | Las herramientas y sondas de la casa (qué mide cada una) | Antes de medir |
 | `orquestador/conocimiento/herramientas-de-sesion.md` | Cómo instalar Graphify (mapa del código) y los complementos (Agent Skills, Ponytail) en una sesión de código | Un agente de código, una vez; y para consultar el mapa del código |
 
