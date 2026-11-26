@@ -36,6 +36,7 @@ export const ahoraBogota = () =>
 export function registra(linea) {
   const mes = ahoraBogota().slice(0, 7);
   const f = path.join(RAIZ, "registro", `${mes}.md`);
+  fs.mkdirSync(path.dirname(f), { recursive: true });
   if (!fs.existsSync(f)) fs.writeFileSync(f, `# Registro de contenido — ${mes}\n\n`);
   fs.appendFileSync(f, `- ${ahoraBogota()} — ${linea}\n`);
   console.log(linea);

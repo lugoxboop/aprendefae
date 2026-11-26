@@ -1,0 +1,298 @@
+{
+ "audio": null,
+ "duracion": 26.180000000000007,
+ "escenas": [
+  {
+   "ini": 0.1,
+   "fin": 5.44,
+   "texto": "Son las dos de la mañana. El parcial de Toby es a las siete.",
+   "palabras": [
+    {
+     "w": "Son",
+     "ini": 0.1,
+     "fin": 0.43
+    },
+    {
+     "w": "las",
+     "ini": 0.45,
+     "fin": 0.78
+    },
+    {
+     "w": "dos",
+     "ini": 0.81,
+     "fin": 1.14
+    },
+    {
+     "w": "de",
+     "ini": 1.17,
+     "fin": 1.46
+    },
+    {
+     "w": "la",
+     "ini": 1.49,
+     "fin": 1.78
+    },
+    {
+     "w": "mañana.",
+     "ini": 1.81,
+     "fin": 2.27
+    },
+    {
+     "w": "El",
+     "ini": 2.52,
+     "fin": 2.81
+    },
+    {
+     "w": "parcial",
+     "ini": 2.84,
+     "fin": 3.31
+    },
+    {
+     "w": "de",
+     "ini": 3.34,
+     "fin": 3.63
+    },
+    {
+     "w": "Toby",
+     "ini": 3.66,
+     "fin": 4.02
+    },
+    {
+     "w": "es",
+     "ini": 4.05,
+     "fin": 4.34
+    },
+    {
+     "w": "a",
+     "ini": 4.37,
+     "fin": 4.62
+    },
+    {
+     "w": "las",
+     "ini": 4.65,
+     "fin": 4.98
+    },
+    {
+     "w": "siete.",
+     "ini": 5.01,
+     "fin": 5.44
+    }
+   ]
+  },
+  {
+   "ini": 6.19,
+   "fin": 8.39,
+   "texto": "Su plan: leerse todo esto.",
+   "palabras": [
+    {
+     "w": "Su",
+     "ini": 6.19,
+     "fin": 6.48
+    },
+    {
+     "w": "plan:",
+     "ini": 6.51,
+     "fin": 6.9
+    },
+    {
+     "w": "leerse",
+     "ini": 7.15,
+     "fin": 7.58
+    },
+    {
+     "w": "todo",
+     "ini": 7.61,
+     "fin": 7.97
+    },
+    {
+     "w": "esto.",
+     "ini": 8,
+     "fin": 8.39
+    }
+   ]
+  },
+  {
+   "ini": 9.14,
+   "fin": 12.39,
+   "texto": "Pausa. ¿Qué harías tú: café o dormir?",
+   "palabras": [
+    {
+     "w": "Pausa.",
+     "ini": 9.14,
+     "fin": 9.57
+    },
+    {
+     "w": "¿Qué",
+     "ini": 9.82,
+     "fin": 10.18
+    },
+    {
+     "w": "harías",
+     "ini": 10.21,
+     "fin": 10.64
+    },
+    {
+     "w": "tú:",
+     "ini": 10.68,
+     "fin": 11
+    },
+    {
+     "w": "café",
+     "ini": 11.25,
+     "fin": 11.61
+    },
+    {
+     "w": "o",
+     "ini": 11.64,
+     "fin": 11.9
+    },
+    {
+     "w": "dormir?",
+     "ini": 11.93,
+     "fin": 12.39
+    }
+   ]
+  },
+  {
+   "ini": 13.14,
+   "fin": 17.66,
+   "texto": "Toby eligió café. Al tercero, no entendía ni el título.",
+   "palabras": [
+    {
+     "w": "Toby",
+     "ini": 13.14,
+     "fin": 13.5
+    },
+    {
+     "w": "eligió",
+     "ini": 13.53,
+     "fin": 13.96
+    },
+    {
+     "w": "café.",
+     "ini": 13.99,
+     "fin": 14.39
+    },
+    {
+     "w": "Al",
+     "ini": 14.64,
+     "fin": 14.93
+    },
+    {
+     "w": "tercero,",
+     "ini": 14.96,
+     "fin": 15.46
+    },
+    {
+     "w": "no",
+     "ini": 15.71,
+     "fin": 16
+    },
+    {
+     "w": "entendía",
+     "ini": 16.03,
+     "fin": 16.53
+    },
+    {
+     "w": "ni",
+     "ini": 16.56,
+     "fin": 16.85
+    },
+    {
+     "w": "el",
+     "ini": 16.88,
+     "fin": 17.17
+    },
+    {
+     "w": "título.",
+     "ini": 17.2,
+     "fin": 17.66
+    }
+   ]
+  },
+  {
+   "ini": 18.41,
+   "fin": 21.93,
+   "texto": "Dato: dormir ayuda a fijar lo que estudiaste.",
+   "palabras": [
+    {
+     "w": "Dato:",
+     "ini": 18.41,
+     "fin": 18.81
+    },
+    {
+     "w": "dormir",
+     "ini": 19.06,
+     "fin": 19.49
+    },
+    {
+     "w": "ayuda",
+     "ini": 19.52,
+     "fin": 19.91
+    },
+    {
+     "w": "a",
+     "ini": 19.94,
+     "fin": 20.2
+    },
+    {
+     "w": "fijar",
+     "ini": 20.23,
+     "fin": 20.62
+    },
+    {
+     "w": "lo",
+     "ini": 20.65,
+     "fin": 20.94
+    },
+    {
+     "w": "que",
+     "ini": 20.97,
+     "fin": 21.3
+    },
+    {
+     "w": "estudiaste.",
+     "ini": 21.33,
+     "fin": 21.93
+    }
+   ]
+  },
+  {
+   "ini": 22.68,
+   "fin": 25.43,
+   "texto": "¿Y tú, qué eliges? Te leemos.",
+   "palabras": [
+    {
+     "w": "¿Y",
+     "ini": 22.68,
+     "fin": 22.97
+    },
+    {
+     "w": "tú,",
+     "ini": 23,
+     "fin": 23.33
+    },
+    {
+     "w": "qué",
+     "ini": 23.58,
+     "fin": 23.9
+    },
+    {
+     "w": "eliges?",
+     "ini": 23.93,
+     "fin": 24.4
+    },
+    {
+     "w": "Te",
+     "ini": 24.65,
+     "fin": 24.94
+    },
+    {
+     "w": "leemos.",
+     "ini": 24.97,
+     "fin": 25.43
+    }
+   ]
+  }
+ ]
+}
