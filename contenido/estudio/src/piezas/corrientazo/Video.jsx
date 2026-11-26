@@ -281,7 +281,7 @@ export function Corrientazo({ sinSonido = false, zonas = false, sinSubs = false 
   fx(W(5, "alcanza", 0.7), "pop-suave", 0.4); fx(W(5, "menos", 0.9), "pop-suave", 0.4); fx(W(5, "menos", 0.9) + 0.3, "suspiro", 0.4);
   fx(T.DURACION_S - 1.8, "ding", 0.45);
   const invita = (t) => (
-    <Invita p={rampa(t, E(6) + 0.5, 0.3)} tam={60}>¿Cuánto pagas <span style={{ color: CORAL }}>tú</span>? Cuéntanos</Invita>
+    <Invita p={rampa(t, E(6) + 0.4, 0.3)} tam={60}>Coméntalo y <span style={{ color: CORAL }}>síguenos</span></Invita>
   );
   return <Reel T={T} planos={PLANOS} encima={invita} pinta={pinta} sfx={sfx} arte={ARTE_MARCA} musica="lofi" sinSonido={sinSonido} zonas={zonas} sinSubs={sinSubs} subY={1405} />;
 }

@@ -312,7 +312,7 @@ export function Capacitar({ sinSonido = false, zonas = false, sinSubs = false })
   fx(PLANOS[4].desde, "barrido", 0.4); fx(W(5, "armamos", 0.4), "golpe", 0.4); fx(W(5, "enseñas", 0.8), "campana", 0.35);
   fx(T.DURACION_S - 1.8, "ding", 0.45);
   const invita = (t) => (
-    <Invita p={rampa(t, E(6) + 0.5, 0.3)} tam={56}>¿Qué curso <span style={{ color: CORAL }}>convertirías</span>?</Invita>
+    <Invita p={rampa(t, S(6) + 0.2, 0.3)} y={720} tam={52}>Escríbenos <span style={{ color: CORAL }}>CAPACITACIÓN</span></Invita>
   );
   return <Reel T={T} planos={PLANOS} encima={invita} pinta={pinta} sfx={sfx} arte={ARTE_MARCA} musica="lofi" sinSonido={sinSonido} zonas={zonas} sinSubs={sinSubs} subY={1405} />;
 }

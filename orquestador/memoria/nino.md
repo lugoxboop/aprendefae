@@ -49,3 +49,9 @@
 - `eleven_v3` habla lento (~2,5 palabras/s) y deja pausas largas entre párrafos: un guion de 45 palabras da ~21 s de audio. Para Reels cortos: `recorta: true` y `ritmo` ~1,15 en `crearTiempo`, o guion de ≤40 palabras.
 - Subtítulos con borde grueso (`-webkit-text-stroke`) se comen el espacio entre palabras: margen por palabra.
 - En la nube no hay emojis en Chromium headless: nada de emojis dentro del video.
+
+## Regla de Mateo (26-nov, 15:36): llamado a la acción SIEMPRE
+- Toda pieza cierra con un llamado a la acción, en la voz, en pantalla y en el pie.
+- Clientes: palabra clave por mensaje directo para contactar o cotizar («Escríbenos CAPACITACIÓN y cotizamos tu curso»). Cambia la palabra según la variante (CURSO, EXCEL, INDUCCIÓN…).
+- Usuarios: comentar + seguir («Coméntalo y síguenos»).
+- El formato que más le gustó: **problema real → nosotros lo solucionamos** (capacitar). Hacer variantes: inducción de personal nuevo, curso de Excel para el equipo, profesor que quiere su curso en línea, consultor que vende un taller.
