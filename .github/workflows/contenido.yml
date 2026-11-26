@@ -60,6 +60,11 @@ jobs:
             echo "acciones=$(jq -r '.acciones | join(" ")' contenido/pedido.json)" >> "$GITHUB_OUTPUT"
             echo "voz=$(jq -r '.voz // ""' contenido/pedido.json)" >> "$GITHUB_OUTPUT"
           fi
+          # lista de piezas para render y subir: "piezas" del pedido si existe; si no, la pieza sola
+          l=""; [ "${{ github.event_name }}" != "workflow_dispatch" ] && l=$(jq -r '[.piezas[]?.pieza] | join(" ")' contenido/pedido.json 2>/dev/null)
+          [ -n "$l" ] || l="${{ github.event_name == 'workflow_dispatch' && inputs.pieza || '' }}"
+          [ -n "$l" ] || l=$(jq -r .pieza contenido/pedido.json)
+          echo "lista=$l" >> "$GITHUB_OUTPUT"
 
       # Solo dice si cada secreto existe y su longitud. Nunca el valor.
       - name: diagnostico
@@ -119,16 +124,20 @@ jobs:
         working-directory: contenido/estudio
         run: |
           mkdir -p salida
-          node render.mjs "${{ steps.pedido.outputs.pieza }}" "salida/${{ steps.pedido.outputs.pieza }}.mp4"
-          node portada.mjs "${{ steps.pedido.outputs.pieza }}" "salida/${{ steps.pedido.outputs.pieza }}-portada.jpg"
-          npx remotion ffprobe -v error -show_entries stream=codec_name,width,height,r_frame_rate:format=duration -of compact "salida/${{ steps.pedido.outputs.pieza }}.mp4"
+          for p in ${{ steps.pedido.outputs.lista }}; do
+            node render.mjs "$p" "salida/$p.mp4"
+            node portada.mjs "$p" "salida/$p-portada.jpg"
+            npx remotion ffprobe -v error -show_entries stream=codec_name,width,height,r_frame_rate:format=duration -of compact "salida/$p.mp4"
+          done
 
       - name: subir
         if: contains(steps.pedido.outputs.acciones, 'subir')
         run: |
-          p="${{ steps.pedido.outputs.pieza }}"; fecha=$(TZ=America/Bogota date +%Y-%m-%d)
-          node contenido/scripts/subir.mjs "contenido/estudio/salida/$p.mp4" "reels/$fecha-$p.mp4"
-          node contenido/scripts/subir.mjs "contenido/estudio/salida/$p-portada.jpg" "reels/$fecha-$p-portada.jpg"
+          fecha=$(TZ=America/Bogota date +%Y-%m-%d)
+          for p in ${{ steps.pedido.outputs.lista }}; do
+            node contenido/scripts/subir.mjs "contenido/estudio/salida/$p.mp4" "reels/$fecha-$p.mp4"
+            node contenido/scripts/subir.mjs "contenido/estudio/salida/$p-portada.jpg" "reels/$fecha-$p-portada.jpg"
+          done
 
       # Voz, tiempos, voz.json y registro vuelven a la rama: son fuentes, pesan poco.
       - name: Guardar lo generado en la rama
