@@ -26,7 +26,7 @@ const lista = quien === "todas" ? conf.confianza : [quien ? conf.confianza.find(
 if (!lista[0]) throw new Error(`No hay una voz «${quien}» en la lista de confianza.`);
 
 async function genera(voz) {
-const hash = crypto.createHash("sha256").update(JSON.stringify([texto, voz.voice_id, conf.modelo, conf.ajustes])).digest("hex").slice(0, 16);
+const hash = crypto.createHash("sha256").update(JSON.stringify([texto, voz.voice_id, conf.modelos || conf.modelo, conf.ajustes])).digest("hex").slice(0, 16);
 const fTiempos = path.join(dir, `tiempos-${voz.alias}.json`);
 const previo = leeJSON(fTiempos);
 if (previo?.hash === hash && !banderas.includes("--forzar")) { console.log(`La voz de ${pieza} ya está al día (hash ${hash}); no se gasta cupo.`); return; }
@@ -43,7 +43,7 @@ for (modelo of conf.modelos || [conf.modelo]) {
     r = await (await pide(url, {
       method: "POST",
       headers: { "xi-api-key": clave("ELEVENLABS_API_KEY"), "content-type": "application/json" },
-      body: JSON.stringify({ text: texto, model_id: modelo, voice_settings: modelo === "eleven_v3" ? { stability: 0.5 } : conf.ajustes }),
+      body: JSON.stringify({ text: texto, model_id: modelo, voice_settings: /eleven_v[34]$/.test(modelo) ? { stability: 0.5, similarity_boost: 0.75 } : conf.ajustes }),
     })).json();
     break;
   } catch (e) { aviso(`Modelo ${modelo} falló con ${voz.alias}: ${e.message.slice(0, 160)}`); }

@@ -5,11 +5,13 @@
  * título. Dato verdadero: dormir ayuda a fijar lo estudiado (consolidación de la memoria).
  * Cierre: pregunta para comentar y el logo en el mundo. No menciona la plataforma.
  */
-import { AbsoluteFill } from "remotion";
+import { AbsoluteFill, Img, staticFile } from "remotion";
 import { Mascota, Sombra, Camara, camara, TINTA, CREMA, MANGO, AZUL } from "../../comun/base.jsx";
 import { Reel } from "../../comun/Reel.jsx";
 import { crearTiempo, clamp01, lerp, suave, sale, rampa, rebote, pulso } from "../../comun/tiempo.js";
 import DATOS, { VOZ } from "./tiempos.js";
+/* las imágenes que no son mascotas se precargan aparte */
+const ARTE = ["planck/planck-logo-claro.svg"];
 
 export const T = crearTiempo(DATOS, { extra: [0.0, 0.1, 0.15, 1.3, 0.2, 0.2], cola: 1.65, recorta: true, ritmo: 1.17 });
 export const DURACION = T.DURACION_S;
@@ -164,6 +166,11 @@ function Logo({ p }) {
       <div style={{ display: "flex", alignItems: "center", gap: 22, background: CREMA, border: `7px solid ${TINTA}`, borderRadius: 999, padding: "18px 44px 22px 34px", boxShadow: "0 12px 0 rgba(0,0,0,.25)" }}>
         <svg width="92" height="92" viewBox="0 0 32 32"><path d="M6 24 L16 7 L26 24" stroke="#1D3557" strokeWidth="2.6" fill="none" strokeLinecap="round" strokeLinejoin="round" /><circle cx="6" cy="24" r="3.6" fill="#1D3557" /><circle cx="26" cy="24" r="3.6" fill="#1D3557" /><circle cx="16" cy="7" r="3.9" fill="#E76F51" /></svg>
         <div style={{ fontFamily: "Sora", fontSize: 76, letterSpacing: "-0.035em", color: "#1D3557", whiteSpace: "nowrap" }}><span style={{ fontWeight: 300 }}>aprende</span><span style={{ fontWeight: 800 }}>FAE</span></div>
+      </div>
+      {/* respaldo de marca (kit Planck, nov-2026): todo producto termina con «… es de planck»; el logo va en imagen, nunca escrito */}
+      <div style={{ marginTop: 18, display: "flex", alignItems: "center", justifyContent: "center", gap: 12, background: CREMA, borderRadius: 12, padding: "8px 22px 10px", width: "fit-content", marginLeft: "auto", marginRight: "auto", opacity: clamp01(p * 2 - 0.4) }}>
+        <span style={{ fontFamily: "Inter", fontWeight: 600, fontSize: 30, color: "#565C66" }}>AprendeFAE es de</span>
+        <Img src={staticFile("planck/planck-logo-claro.svg")} style={{ height: 36, width: "auto", display: "block" }} />
       </div>
     </div>
   );
@@ -323,6 +330,6 @@ export function Prueba01({ sinSonido = false, zonas = false }) {
       </div>
     );
   };
-  return <Reel T={T} planos={PLANOS} encima={invita} pinta={pinta} sfx={sfx} musica="lofi" sinSonido={sinSonido} zonas={zonas} subY={1405} />;
+  return <Reel T={T} planos={PLANOS} encima={invita} pinta={pinta} sfx={sfx} arte={ARTE} musica="lofi" sinSonido={sinSonido} zonas={zonas} subY={1405} />;
 }
 export { VOZ };

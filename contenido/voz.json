@@ -1,5 +1,5 @@
 {
-  "_nota": "PROVISIONAL: la clave no tiene voices_read; no se pudo leer la tendencia. Correr de nuevo voces.mjs cuando tenga el permiso.",
+  "_nota": "Voces de confianza por tendencia (biblioteca de ElevenLabs, español latino, orden trending). Se renuevan con node voces.mjs. Cada pieza anota su voz.",
   "confianza": [
     {
       "alias": "gaby",
@@ -36,6 +36,7 @@
     }
   ],
   "modelos": [
+    "eleven_v4",
     "eleven_v3",
     "eleven_multilingual_v2"
   ],

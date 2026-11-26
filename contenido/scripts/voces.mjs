@@ -70,6 +70,6 @@ for (const v of elegidas) {
 }
 escribeJSON(CONF, {
   _nota: "Voces de confianza: se renuevan según la tendencia (node voces.mjs). Cada pieza anota qué voz usó en tiempos-<alias>.json y en el registro.",
-  ...conf, confianza, modelo, ajustes: { stability: 0.5, similarity_boost: 0.75 }, formato: "mp3_44100_128", cupo: { plan: "Creator", aviso: 0.8 },
+  ...conf, confianza, modelo, modelos: [modelo, "eleven_v3", "eleven_multilingual_v2"].filter((m, i, a) => ids.includes(m) && a.indexOf(m) === i), ajustes: { stability: 0.5, similarity_boost: 0.75 }, formato: "mp3_44100_128", cupo: { plan: "Creator", aviso: 0.8 },
 });
 registra(`Voces de confianza renovadas (${modelo}): ${confianza.map((c) => `${c.nombre} [${c.genero}, ${c.acento}]`).join("; ")}.`);

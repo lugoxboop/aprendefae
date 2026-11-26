@@ -1,7 +1,7 @@
 {
   "_ayuda": "Cambiar este archivo y empujarlo dispara .github/workflows/contenido.yml. Acciones, en orden: diagnostico, voces, bucket, voz, render, subir. voz: alias de la lista de confianza o «todas». Ver contenido/README.md.",
-  "n": 8,
+  "n": 9,
   "pieza": "prueba-01",
-  "voz": "todas",
-  "acciones": ["diagnostico", "voces", "voz"]
+  "voz": "gaby",
+  "acciones": ["voz"]
 }
