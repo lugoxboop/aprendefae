@@ -35,11 +35,20 @@ const antes = await cupo();
 if (antes.character_limit - antes.character_count < texto.length) throw new Error("No queda cupo de caracteres este mes.");
 
 const url = `https://api.elevenlabs.io/v1/text-to-speech/${voz.voice_id}/with-timestamps?output_format=${conf.formato}`;
-const r = await (await pide(url, {
-  method: "POST",
-  headers: { "xi-api-key": clave("ELEVENLABS_API_KEY"), "content-type": "application/json" },
-  body: JSON.stringify({ text: texto, model_id: conf.modelo, voice_settings: conf.ajustes }),
-})).json();
+// Prueba los modelos en orden (el más nuevo primero); si uno no sirve con esta voz o con
+// marcas de tiempo, pasa al siguiente. El que funcionó queda anotado en tiempos.
+let r, modelo;
+for (modelo of conf.modelos || [conf.modelo]) {
+  try {
+    r = await (await pide(url, {
+      method: "POST",
+      headers: { "xi-api-key": clave("ELEVENLABS_API_KEY"), "content-type": "application/json" },
+      body: JSON.stringify({ text: texto, model_id: modelo, voice_settings: modelo === "eleven_v3" ? { stability: 0.5 } : conf.ajustes }),
+    })).json();
+    break;
+  } catch (e) { aviso(`Modelo ${modelo} falló con ${voz.alias}: ${e.message.slice(0, 160)}`); }
+}
+if (!r) throw new Error(`Ningún modelo generó la voz de ${voz.alias}.`);
 
 const mp3 = path.join(ESTUDIO, "public", "voz", `${pieza}-${voz.alias}.mp3`);
 fs.mkdirSync(path.dirname(mp3), { recursive: true });
@@ -70,7 +79,7 @@ try {
 const ultima = escenas.at(-1).fin;
 if (duracion + 0.05 < ultima) throw new Error(`El audio (${duracion}s) termina antes que la última palabra (${ultima}s): se cortó el final. Regenerar.`);
 
-escribeJSON(fTiempos, { audio: `voz/${pieza}-${voz.alias}.mp3`, duracion: +duracion.toFixed(3), hash, voz: voz.nombre, voice_id: voz.voice_id, genero: voz.genero, modelo: conf.modelo, caracteres: texto.length, escenas });
+escribeJSON(fTiempos, { audio: `voz/${pieza}-${voz.alias}.mp3`, duracion: +duracion.toFixed(3), hash, voz: voz.nombre, voice_id: voz.voice_id, genero: voz.genero, modelo, caracteres: texto.length, escenas });
 registra(`Voz de ${pieza} con ${voz.nombre} (${voz.genero}): ${frases.length} frases, ${texto.length} caracteres, ${duracion.toFixed(1)} s, última palabra a ${ultima}s (completa).`);
 }
 

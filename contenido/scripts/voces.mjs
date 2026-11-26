@@ -23,7 +23,20 @@ const modelo = PREF.find((p) => ids.includes(p)) || ids.find((i) => /multilingua
 
 // 2. Tendencia: biblioteca compartida, español, orden «trending».
 const q = new URLSearchParams({ language: "es", sort: "trending", page_size: "60" });
-const lib = (await (await pide(`${API}/v1/shared-voices?${q}`, { headers: H })).json()).voices || [];
+const rl = await pideSiSePuede(`${API}/v1/shared-voices?${q}`, { headers: H }, "leer la biblioteca de voces (voices_read)");
+if (!rl) {
+  // Sin voices_read no se puede ver la tendencia. Provisional: voces prediseñadas de ElevenLabs
+  // (incluidas en el plan, uso comercial), multilingües. Se reemplazan apenas haya permiso.
+  const PRE = [
+    { alias: "jessica", nombre: "Jessica (prediseñada)", voice_id: "cgSgspJ2msm6clMCkdW9", genero: "female", tono: "joven, expresiva, juguetona" },
+    { alias: "brian", nombre: "Brian (prediseñada)", voice_id: "nPczCjzI2devNBz1zQrb", genero: "male", tono: "grave, cálida, narrador" },
+    { alias: "sarah", nombre: "Sarah (prediseñada)", voice_id: "EXAVITQu4vr4xnSDxMaL", genero: "female", tono: "madura, tranquila, segura" },
+  ].map((v) => ({ ...v, acento: "multilingüe (acento del modelo)", desde: ahoraBogota().slice(0, 10), provisional: true }));
+  escribeJSON(CONF, { _nota: "PROVISIONAL: la clave no tiene voices_read; no se pudo leer la tendencia. Correr de nuevo voces.mjs cuando tenga el permiso.", ...conf, confianza: PRE, modelos: ["eleven_v3", "eleven_multilingual_v2"], modelo: ids[0], ajustes: { stability: 0.5, similarity_boost: 0.75 }, formato: "mp3_44100_128", cupo: { plan: "Creator", aviso: 0.8 } });
+  registra("Voces provisionales (prediseñadas): jessica, brian, sarah. Falta el permiso voices_read para leer la tendencia.");
+  process.exit(0);
+}
+const lib = (await rl.json()).voices || [];
 const LATAM = /latin|mex|colomb|argent|chile|peru|venez|caribe|neutral/i;
 const cand = lib.filter((v) => LATAM.test(v.accent || "") || LATAM.test(v.locale || "") || LATAM.test(v.description || ""));
 const filas = cand.slice(0, 20).map((v, i) => `${i + 1}. ${v.name} · ${v.gender} · ${v.age} · ${v.accent} · ${v.use_case || "-"} · ${v.descriptive || "-"} · usada ${v.usage_character_count_1y ?? "?"} [${v.voice_id}]`);
