@@ -15,7 +15,8 @@ const CARAS = ["tranquila", "feliz", "triste", "risa", "racha", "guino", "estrel
 const fuente = (fam, peso, arch) =>
   `@font-face { font-family: "${fam}"; font-weight: ${peso}; src: url("${staticFile("fonts/" + arch)}") format("woff2"); }`;
 export const ESTILO = `
-.mv .mta * { transform-box: fill-box; }
+/* cada pieza gira sobre su propia caja (no sobre el lienzo entero) */
+.mv g { transform-box: fill-box; }
 .mv .mta-cara, .mv .mta-aura, .mv .mta-fuego, .mv .mta-confeti, .mv .mta-notas,
 .mv .mta-corazones, .mv .mta-estrellas, .mv .mta-obj, .mv .mta-birrete, .mv .mta-chispas,
 .mv .mta-lagrima, .mv .mta-sombra, .mv.sin-cola .mta-cola { display: none; }
@@ -28,6 +29,10 @@ ${CARAS.map((c) => `.mv.cara-${c} .mta-c-${c}`).join(", ")} { display: inline; }
 .mv .mta-brazo-d { transform-origin: 10% 8%; transform: rotate(var(--bd, 0deg)); }
 .mv .mta-oreja-i { transform-origin: 70% 95%; transform: rotate(var(--oi, 0deg)); }
 .mv .mta-oreja-d { transform-origin: 30% 95%; transform: rotate(var(--od, 0deg)); }
+/* Las orejas giran desde donde se unen a la cabeza. Las del perro cuelgan: su
+   unión está arriba (igual que en src/mascota/marioneta-estilo.js). */
+.mv.esp-perro .mta-oreja-i { transform-origin: 60% 8%; }
+.mv.esp-perro .mta-oreja-d { transform-origin: 40% 8%; }
 ${fuente("Inter", 600, "inter-latin-600-normal.woff2")}
 ${fuente("Inter", 700, "inter-latin-700-normal.woff2")}
 ${fuente("Inter", 800, "inter-latin-800-normal.woff2")}
@@ -51,7 +56,10 @@ export function Mascota({
   const parp = ciclo < 0.14 ? Math.max(0.1, Math.abs(ciclo - 0.07) / 0.07) : 1;
   const resp = 1 + 0.014 * Math.sin((t + semilla) * 2.1);
   const cola = 7 * Math.sin((t + semilla * 0.5) * (cara === "feliz" ? 7 : 2.4));
-  const oreja = 3 * Math.sin((t + semilla) * 1.3);
+  /* vaivén mínimo, y un tope para que la oreja nunca se despegue de la cabeza */
+  const TOPE = esp === "perro" ? 8 : 5;
+  const oreja = 1.2 * Math.sin((t + semilla) * 1.3);
+  const giroOreja = Math.max(-TOPE, Math.min(TOPE, oreja + orejas));
   CACHE[esp] = CACHE[esp] || svgDe(esp);
   return (
     <div style={{
@@ -60,12 +68,12 @@ export function Mascota({
       transform: `rotate(${ladeo}deg) scale(${(espejo ? -1 : 1) * (1 + aplasta * 0.5)}, ${1 - aplasta})`,
     }}>
       <svg
-        className={`mv cara-${cara}${sinCola ? " sin-cola" : ""}`}
+        className={`mv esp-${esp} cara-${cara}${sinCola ? " sin-cola" : ""}`}
         width={ancho} height={alto} viewBox={`${vx} ${vy} ${vw} ${vh}`}
         style={{
           display: "block", overflow: "visible",
           "--ojo": parp * ojos, "--ojx": ojos, "--resp": resp, "--cola": `${cola}deg`, "--cab": `${cab}deg`,
-          "--bi": `${bi}deg`, "--bd": `${bd}deg`, "--oi": `${oreja + orejas}deg`, "--od": `${-oreja - orejas}deg`,
+          "--bi": `${bi}deg`, "--bd": `${bd}deg`, "--oi": `${giroOreja}deg`, "--od": `${-giroOreja}deg`,
         }}
         dangerouslySetInnerHTML={{ __html: CACHE[esp] }}
       />

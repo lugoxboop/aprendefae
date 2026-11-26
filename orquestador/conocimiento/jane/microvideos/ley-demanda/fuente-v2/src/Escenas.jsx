@@ -54,7 +54,7 @@ export function Gancho({ t }) {
           <Img src={staticFile("art/calle-blur.jpg")} style={{ position: "absolute", left: 0, top: 0, width: 1080, height: 1935 }} />
           <div style={{ position: "absolute", inset: 0, background: "radial-gradient(circle at 50% 55%, rgba(255,246,224,0) 30%, rgba(42,30,23,.35) 100%)" }} />
           <Sombra x={540} y={1560} w={760} />
-          <Mascota esp="perro" x={540} y={1570} alto={960} t={t} cara="triste" cab={lerp(0, 5, cae)} orejas={5} sinCola semilla={1} />
+          <Mascota esp="perro" x={540} y={1570} alto={960} t={t} cara="triste" cab={lerp(0, 5, cae)} orejas={-6} sinCola semilla={1} />
           <Canasta x={540} y={1200} w={620} golpe={golpe} dentro={cae >= 1 ? [{ k: 1 }] : []} />
           {cae > 0 && cae < 1 && <MangoImg x={540} y={yMango} w={200} giro={cae * 200} />}
           {(() => {
@@ -242,10 +242,10 @@ export function Puesto({ t }) {
   if (t >= tDos && t < tDos + 1.3) { salto = 60 * pulso(t, tDos + 0.05, 0.4); ojos = 1 + 0.3 * clamp01(1 - (t - tDos - 0.7) / 0.5); cab = -4; }
   if (t >= M.monedas && t < COMPRAS[1].mangos[0].sale) { cab = -9 + 4 * Math.sin((t - M.monedas) * 4); }
   if (t >= tTres && t < X5 + 0.5) {
-    cara = "triste"; orejas = 7 * clamp01((t - tTres) / 0.3); cab = -6;
+    cara = "triste"; orejas = -7 * clamp01((t - tTres) / 0.3); cab = -6;
     salto = 50 * pulso(t, tTres + 0.02, 0.35);
     ladeo = 3 * Math.exp(-(t - tTres) * 4) * Math.sin((t - tTres) * 40);
-    if (t >= M.ganas && t < M.ganasFin) { cab = -10; cara = "tranquila"; orejas = 3; }
+    if (t >= M.ganas && t < M.ganasFin) { cab = -10; cara = "tranquila"; orejas = -3; }
     if (t >= M.ganasFin) cab = 9;
   }
   if (t >= X6) {
