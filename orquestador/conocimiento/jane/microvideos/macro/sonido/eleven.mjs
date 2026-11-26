@@ -95,7 +95,9 @@ if (acciones.includes("voces")) {
           id = r.voice_id;
         } catch (e) { anota(`No pude agregar ${v.name}: ${e.message.slice(0, 160)}`); continue; }
       }
-      lista.push({ alias: v.name.split(/[ -]/)[0].toLowerCase(), nombre: v.name, voice_id: id, genero: v.gender, acento: v.accent, uso: v.use_case, nueva: true });
+      let al = v.name.split(/[ -]/)[0].toLowerCase().normalize("NFD").replace(/[^a-z]/g, "");
+      while (lista.some((x) => x.alias === al)) al += "2";
+      lista.push({ alias: al, nombre: v.name, voice_id: id, genero: v.gender, acento: v.accent, uso: v.use_case, nueva: true });
     }
   } catch (e) { anota(`Biblioteca de voces: no se pudo leer (${e.message.slice(0, 160)}).`); }
   const hechas = [];
@@ -118,6 +120,20 @@ if (acciones.includes("voces")) {
     anota(`Muestra de voz ${v.alias} (${v.nombre}, ${v.genero}, ${v.acento}): lista.`);
   }
   fs.writeFileSync(path.join(AQUI, "voces-muestra", "voces.json"), JSON.stringify({ frase: cfg.frase, voces: hechas }, null, 2) + "\n");
+}
+
+if (acciones.includes("revisar")) {
+  // ¿alguna pista de música trae voz cantada? La transcripción de ElevenLabs lo dice.
+  for (const f of fs.readdirSync(path.join(AQUI, "musica")).filter((x) => x.endsWith(".mp3"))) {
+    try {
+      const fd = new FormData();
+      fd.append("model_id", "scribe_v1");
+      fd.append("file", new Blob([fs.readFileSync(path.join(AQUI, "musica", f))], { type: "audio/mpeg" }), f);
+      const r = await (await pide(`${API}/v1/speech-to-text`, { method: "POST", headers: H, body: fd })).json();
+      const palabras = (r.words || []).filter((w) => w.type === "word");
+      anota(`Revisión ${f}: ${palabras.length} palabras detectadas${palabras.length ? ` («${palabras.slice(0, 12).map((w) => w.text).join(" ")}»)` : ""}.`);
+    } catch (e) { anota(`Revisión ${f}: no se pudo (${e.message.slice(0, 160)}).`); }
+  }
 }
 
 const reg = path.join(AQUI, "registro-eleven.md");

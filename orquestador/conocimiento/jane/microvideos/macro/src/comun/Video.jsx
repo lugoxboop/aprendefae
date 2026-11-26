@@ -4,7 +4,7 @@
  * Cada video pone su tiempo (crearTiempo), sus planos, cómo se pinta cada plano
  * y su lista de efectos.
  */
-import { AbsoluteFill, Audio, Sequence, staticFile, useCurrentFrame } from "remotion";
+import { AbsoluteFill, Audio, Sequence, getInputProps, staticFile, useCurrentFrame } from "remotion";
 import { ESTILO, usePrecarga, TINTA, CREMA, MANGO } from "./base.jsx";
 import { FPS, clamp01, rampa, sale } from "./tiempo.js";
 
@@ -77,8 +77,16 @@ function volumenMusica(t, T) {
   return base * clamp01(t / 0.6) * clamp01((T.DURACION_S - t) / 1.4);
 }
 
+/*
+ * Pistas por separado (--props='{"pista":"fx"}'): «fx» saca solo los efectos y «musica» solo
+ * la música. La mezcla final (voz, música variada y efectos por debajo de la voz) la hace
+ * sonido/mezcla.py con esas pistas; ver sonido/README.md.
+ */
+const PISTA = (() => { try { return getInputProps().pista || "todo"; } catch { return "todo"; } })();
+
 export function VideoMicro({ T, planos, pinta, sfx, clave, arte = [], audio, musica = "musica", sinSonido = false, encima = null, sinResaltar }) {
   usePrecarga(arte);
+  const conVoz = PISTA === "todo", conMusica = PISTA === "todo" || PISTA === "musica", conFx = PISTA === "todo" || PISTA === "fx";
   const frame = useCurrentFrame();
   const t = frame / FPS;
   return (
@@ -88,13 +96,13 @@ export function VideoMicro({ T, planos, pinta, sfx, clave, arte = [], audio, mus
       {encima && encima(t)}
       <Subtitulos t={t} T={T} clave={clave} sinResaltar={sinResaltar} />
       <Credito t={t} desde={T.S(T.N) + 0.2} />
-      {!sinSonido && audio && T.TRAMOS.map((tr, i) => (
+      {!sinSonido && conVoz && audio && T.TRAMOS.map((tr, i) => (
         <Sequence key={i} from={Math.round(tr.v * FPS)} durationInFrames={Math.max(1, Math.round((tr.a1 - tr.a0) * FPS))}>
           <Audio src={staticFile(audio)} startFrom={Math.round(tr.a0 * FPS)} />
         </Sequence>
       ))}
-      {!sinSonido && <Audio src={staticFile(`sfx/${musica}.wav`)} volume={(f) => volumenMusica(f / FPS, T)} />}
-      {!sinSonido && sfx.map((s, i) => (
+      {!sinSonido && conMusica && <Audio src={staticFile(`sfx/${musica}.wav`)} volume={(f) => volumenMusica(f / FPS, T)} />}
+      {!sinSonido && conFx && sfx.map((s, i) => (
         <Sequence key={"fx" + i} from={Math.max(0, Math.round(s.t * FPS))}>
           <Audio src={staticFile(`sfx/${s.f}.wav`)} volume={s.vol} />
         </Sequence>

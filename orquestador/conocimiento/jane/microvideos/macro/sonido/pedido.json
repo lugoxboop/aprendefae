@@ -1,26 +1,104 @@
 {
-  "acciones": ["cupo", "musica", "aislar", "voces", "cupo"],
-  "musica": [
-    { "id": "lofi-cafe", "prompt": "Warm lo-fi hip hop instrumental, soft Rhodes electric piano chords, mellow brushed drums, subtle vinyl texture, relaxed 82 bpm, steady and unobtrusive background for a narrated educational explainer, no vocals, no sudden changes" },
-    { "id": "marimba-curiosa", "prompt": "Playful light marimba melody with pizzicato strings and soft woodblock, curious and clever mood, 100 bpm, sparse arrangement that leaves room for a narrator, background music for an explainer video, no vocals" },
-    { "id": "guitarra-andina", "prompt": "Gentle acoustic guitar fingerpicking with soft shaker and light hand percussion, warm optimistic Latin American folk feel, 94 bpm, calm and even dynamics, background for narration, no vocals" },
-    { "id": "jazz-ligero", "prompt": "Light jazz trio, soft brushed snare, upright bass walking quietly, sparse warm piano chords, sophisticated and curious, 90 bpm, low-key even background for a voice-over, no vocals, no solos" },
-    { "id": "sintes-estudio", "prompt": "Soft modern electronic background, warm synth pads, gentle plucked arpeggio, light kick and shaker, focused study mood, 104 bpm, smooth and constant energy for a narrated video, no vocals, no drops" },
-    { "id": "cumbia-suave", "prompt": "Soft instrumental cumbia groove, gentle guacharaca scraper, mellow accordion melody kept quiet, round bass, friendly relaxed mood, 92 bpm, low intensity background under a narrator, no vocals" },
-    { "id": "ukelele-sol", "prompt": "Bright but calm ukulele strumming with glockenspiel touches and soft claps, sunny friendly mood, 108 bpm, light and even background for an educational voice-over, no vocals, no whistling" }
+  "acciones": [
+    "musica",
+    "voces",
+    "revisar",
+    "cupo"
   ],
-  "aislar": ["carrito", "vaso-renta", "columpio-tasa", "no-miran-renta", "bisagra-ascensor", "eco-multiplicador", "mecanico", "fiebre", "problema-resuelto"],
+  "musica": [
+    {
+      "id": "lofi-cafe",
+      "prompt": "Warm lo-fi hip hop instrumental, soft Rhodes electric piano chords, mellow brushed drums, subtle vinyl texture, relaxed 82 bpm, steady and unobtrusive background for a narrated educational explainer, no vocals, no sudden changes"
+    },
+    {
+      "id": "marimba-curiosa",
+      "prompt": "Playful light marimba melody with pizzicato strings and soft woodblock, curious and clever mood, 100 bpm, sparse arrangement that leaves room for a narrator, background music for an explainer video, no vocals"
+    },
+    {
+      "id": "guitarra-andina",
+      "prompt": "Gentle acoustic guitar fingerpicking with soft shaker and light hand percussion, warm optimistic Latin American folk feel, 94 bpm, calm and even dynamics, background for narration, no vocals"
+    },
+    {
+      "id": "jazz-ligero",
+      "prompt": "Light jazz trio, soft brushed snare, upright bass walking quietly, sparse warm piano chords, sophisticated and curious, 90 bpm, low-key even background for a voice-over, no vocals, no solos"
+    },
+    {
+      "id": "sintes-estudio",
+      "prompt": "Soft modern electronic background, warm synth pads, gentle plucked arpeggio, light kick and shaker, focused study mood, 104 bpm, smooth and constant energy for a narrated video, no vocals, no drops"
+    },
+    {
+      "id": "ukelele-sol",
+      "prompt": "Bright but calm ukulele strumming with glockenspiel touches and soft claps, sunny friendly mood, 108 bpm, light and even background for an educational voice-over, no vocals, no whistling"
+    },
+    {
+      "id": "cumbia-tranquila",
+      "prompt": "Mellow instrumental cumbia, clear steady guacharaca and soft congas, round warm bass, gentle accordion melody, friendly relaxed groove at 92 bpm, full and present mix at normal volume, background under a narrator, no vocals"
+    },
+    {
+      "id": "piano-pensativo",
+      "prompt": "Thoughtful light piano with soft cello and warm pads, curious and hopeful, gentle pulse at 86 bpm, even dynamics, background for a narrated economics explainer, no vocals, no dramatic swells"
+    },
+    {
+      "id": "bossa-suave",
+      "prompt": "Soft bossa nova instrumental, nylon guitar comping, light brushed percussion, warm upright bass, relaxed and smart mood, 96 bpm, steady low-key background for a voice-over, no vocals"
+    }
+  ],
+  "aislar": [
+    "carrito",
+    "vaso-renta",
+    "columpio-tasa",
+    "no-miran-renta",
+    "bisagra-ascensor",
+    "eco-multiplicador",
+    "mecanico",
+    "fiebre",
+    "problema-resuelto"
+  ],
   "voces": {
     "frase": "Nina gana un millón de pesos al mes. ¿Cuánto se gasta? Menos de lo que crees. De cada peso, gasta ochenta centavos y ahorra veinte.",
-    "modelos": ["eleven_v3", "eleven_multilingual_v2"],
+    "modelos": [
+      "eleven_v3",
+      "eleven_multilingual_v2"
+    ],
     "nuevasMujer": 2,
     "nuevasHombre": 1,
     "fijas": [
-      { "alias": "brian", "nombre": "Brian - Warm, Smooth, Confident", "voice_id": "jBlmi27XRORxjPquUeCh", "genero": "male", "acento": "latin american", "actual": true },
-      { "alias": "juan", "nombre": "Juan - Clear & Expressive", "voice_id": "FA1FBP9TKxnBiw45fHmS", "genero": "male", "acento": "colombian" },
-      { "alias": "david", "nombre": "David - Deep, Attractive, Mysterious", "voice_id": "K3TeN3ZVK8WnOeJ0NYqZ", "genero": "male", "acento": "latin american" },
-      { "alias": "gaby", "nombre": "Gaby - Natura & Casual", "voice_id": "p5EUznrYaWnafKvUkNiR", "genero": "female", "acento": "latin american" },
-      { "alias": "isabel", "nombre": "Isabel - Soft, Calm and Meditative", "voice_id": "ChvF2eSRaJsHDVJhdmbG", "genero": "female", "acento": "argentine" }
+      {
+        "alias": "brian",
+        "nombre": "Brian - Warm, Smooth, Confident",
+        "voice_id": "jBlmi27XRORxjPquUeCh",
+        "genero": "male",
+        "acento": "latin american",
+        "actual": true
+      },
+      {
+        "alias": "juan",
+        "nombre": "Juan - Clear & Expressive",
+        "voice_id": "FA1FBP9TKxnBiw45fHmS",
+        "genero": "male",
+        "acento": "colombian"
+      },
+      {
+        "alias": "david",
+        "nombre": "David - Deep, Attractive, Mysterious",
+        "voice_id": "K3TeN3ZVK8WnOeJ0NYqZ",
+        "genero": "male",
+        "acento": "latin american"
+      },
+      {
+        "alias": "gaby",
+        "nombre": "Gaby - Natura & Casual",
+        "voice_id": "p5EUznrYaWnafKvUkNiR",
+        "genero": "female",
+        "acento": "latin american"
+      },
+      {
+        "alias": "isabel",
+        "nombre": "Isabel - Soft, Calm and Meditative",
+        "voice_id": "ChvF2eSRaJsHDVJhdmbG",
+        "genero": "female",
+        "acento": "argentine"
+      }
     ]
   }
 }
