@@ -1,16 +1,16 @@
 {
   "audio": "voz/corrientazo-juan.mp3",
-  "duracion": 23.513,
-  "hash": "2cf0c1bc02eb938f",
+  "duracion": 25.028,
+  "hash": "0a7954c147651c65",
   "voz": "Juan - Clear & Expressive",
   "voice_id": "FA1FBP9TKxnBiw45fHmS",
   "genero": "male",
   "modelo": "eleven_v4",
-  "caracteres": 325,
+  "caracteres": 359,
   "escenas": [
     {
       "ini": 0,
-      "fin": 3.44,
+      "fin": 3.52,
       "texto": "El almuerzo de Toby subió. Y nadie le avisó.",
       "palabras": [
         {
@@ -20,7 +20,7 @@
         },
         {
           "w": "almuerzo",
-          "ini": 0.28,
+          "ini": 0.24,
           "fin": 0.64
         },
         {
@@ -50,85 +50,85 @@
         },
         {
           "w": "le",
-          "ini": 2.8,
-          "fin": 2.88
+          "ini": 2.76,
+          "fin": 2.8
         },
         {
           "w": "avisó.",
-          "ini": 3.04,
-          "fin": 3.44
+          "ini": 2.88,
+          "fin": 3.52
         }
       ]
     },
     {
-      "ini": 3.92,
+      "ini": 3.76,
       "fin": 9.24,
       "texto": "En un año, la comida subió siete por ciento. Lo más alto en tres años.",
       "palabras": [
         {
           "w": "En",
-          "ini": 3.92,
-          "fin": 4.08
+          "ini": 3.76,
+          "fin": 3.92
         },
         {
           "w": "un",
-          "ini": 4.12,
-          "fin": 4.16
+          "ini": 3.96,
+          "fin": 4
         },
         {
           "w": "año,",
-          "ini": 4.24,
-          "fin": 4.64
+          "ini": 4.08,
+          "fin": 4.48
         },
         {
           "w": "la",
-          "ini": 4.72,
-          "fin": 4.8
+          "ini": 4.52,
+          "fin": 4.56
         },
         {
           "w": "comida",
-          "ini": 4.88,
-          "fin": 5.2
+          "ini": 4.64,
+          "fin": 4.96
         },
         {
           "w": "subió",
-          "ini": 5.32,
-          "fin": 5.68
+          "ini": 5.04,
+          "fin": 5.36
         },
         {
           "w": "siete",
-          "ini": 5.76,
-          "fin": 6.08
+          "ini": 5.52,
+          "fin": 5.84
         },
         {
           "w": "por",
-          "ini": 6.16,
-          "fin": 6.32
+          "ini": 5.92,
+          "fin": 6.08
         },
         {
           "w": "ciento.",
-          "ini": 6.4,
-          "fin": 7
+          "ini": 6.16,
+          "fin": 6.56
         },
         {
           "w": "Lo",
-          "ini": 7.2,
-          "fin": 7.36
+          "ini": 6.96,
+          "fin": 7.12
         },
         {
           "w": "más",
-          "ini": 7.52,
-          "fin": 7.68
+          "ini": 7.28,
+          "fin": 7.52
         },
         {
           "w": "alto",
-          "ini": 7.76,
-          "fin": 8
+          "ini": 7.68,
+          "fin": 7.84
         },
         {
           "w": "en",
-          "ini": 8.08,
-          "fin": 8.24
+          "ini": 8,
+          "fin": 8.16
         },
         {
           "w": "tres",
@@ -144,7 +144,7 @@
     },
     {
       "ini": 9.44,
-      "fin": 11.52,
+      "fin": 11.44,
       "texto": "La papa casi duplicó su precio.",
       "palabras": [
         {
@@ -154,8 +154,8 @@
         },
         {
           "w": "papa",
-          "ini": 9.68,
-          "fin": 10
+          "ini": 9.6,
+          "fin": 9.92
         },
         {
           "w": "casi",
@@ -164,189 +164,219 @@
         },
         {
           "w": "duplicó",
-          "ini": 10.48,
-          "fin": 10.88
+          "ini": 10.44,
+          "fin": 10.84
         },
         {
           "w": "su",
-          "ini": 10.96,
-          "fin": 11.04
+          "ini": 10.88,
+          "fin": 10.96
         },
         {
           "w": "precio.",
-          "ini": 11.24,
-          "fin": 11.52
+          "ini": 11.04,
+          "fin": 11.44
         }
       ]
     },
     {
-      "ini": 11.92,
+      "ini": 11.84,
       "fin": 15.44,
       "texto": "Si al restaurante le sube lo que compra, el plato también sube.",
       "palabras": [
         {
           "w": "Si",
-          "ini": 11.92,
-          "fin": 12
+          "ini": 11.84,
+          "fin": 11.92
         },
         {
           "w": "al",
-          "ini": 12.04,
-          "fin": 12.08
+          "ini": 11.96,
+          "fin": 12
         },
         {
           "w": "restaurante",
-          "ini": 12.2,
-          "fin": 12.72
+          "ini": 12.12,
+          "fin": 12.64
         },
         {
           "w": "le",
-          "ini": 12.76,
-          "fin": 12.8
+          "ini": 12.68,
+          "fin": 12.72
         },
         {
           "w": "sube",
-          "ini": 12.88,
-          "fin": 13.12
+          "ini": 12.8,
+          "fin": 13.04
         },
         {
           "w": "lo",
-          "ini": 13.16,
-          "fin": 13.2
+          "ini": 13.08,
+          "fin": 13.12
         },
         {
           "w": "que",
-          "ini": 13.28,
-          "fin": 13.44
+          "ini": 13.2,
+          "fin": 13.28
         },
         {
           "w": "compra,",
-          "ini": 13.56,
-          "fin": 14.08
+          "ini": 13.36,
+          "fin": 13.92
         },
         {
           "w": "el",
-          "ini": 14.12,
-          "fin": 14.16
+          "ini": 14,
+          "fin": 14.08
         },
         {
           "w": "plato",
-          "ini": 14.32,
-          "fin": 14.64
+          "ini": 14.16,
+          "fin": 14.48
         },
         {
           "w": "también",
-          "ini": 14.68,
-          "fin": 14.96
+          "ini": 14.52,
+          "fin": 14.8
         },
         {
           "w": "sube.",
-          "ini": 15.04,
+          "ini": 14.88,
           "fin": 15.44
         }
       ]
     },
     {
-      "ini": 15.84,
-      "fin": 20,
+      "ini": 15.68,
+      "fin": 19.68,
       "texto": "Eso es inflación: con la misma plata, te alcanza para menos.",
       "palabras": [
         {
           "w": "Eso",
-          "ini": 15.84,
-          "fin": 16.16
+          "ini": 15.68,
+          "fin": 16
         },
         {
           "w": "es",
-          "ini": 16.32,
-          "fin": 16.4
+          "ini": 16.16,
+          "fin": 16.24
         },
         {
           "w": "inflación:",
-          "ini": 16.48,
-          "fin": 17.44
+          "ini": 16.32,
+          "fin": 17.28
         },
         {
           "w": "con",
+          "ini": 17.36,
+          "fin": 17.44
+        },
+        {
+          "w": "la",
           "ini": 17.52,
           "fin": 17.6
         },
         {
-          "w": "la",
-          "ini": 17.68,
-          "fin": 17.76
-        },
-        {
           "w": "misma",
-          "ini": 17.84,
-          "fin": 18.16
+          "ini": 17.68,
+          "fin": 17.84
         },
         {
           "w": "plata,",
-          "ini": 18.24,
-          "fin": 18.72
+          "ini": 18,
+          "fin": 18.48
         },
         {
           "w": "te",
-          "ini": 18.76,
-          "fin": 18.8
+          "ini": 18.52,
+          "fin": 18.56
         },
         {
           "w": "alcanza",
-          "ini": 18.88,
-          "fin": 19.28
+          "ini": 18.64,
+          "fin": 18.96
         },
         {
           "w": "para",
-          "ini": 19.4,
-          "fin": 19.52
+          "ini": 19.04,
+          "fin": 19.2
         },
         {
           "w": "menos.",
-          "ini": 19.64,
-          "fin": 20
+          "ini": 19.28,
+          "fin": 19.68
         }
       ]
     },
     {
-      "ini": 20.4,
-      "fin": 23.52,
-      "texto": "¿Cuánto pagas tú por un corrientazo? Cuéntanos.",
+      "ini": 20.08,
+      "fin": 25.04,
+      "texto": "¿Cuánto pagas tú por un corrientazo? Coméntalo y síguenos para entender tu plata.",
       "palabras": [
         {
           "w": "¿Cuánto",
+          "ini": 20.08,
+          "fin": 20.32
+        },
+        {
+          "w": "pagas",
           "ini": 20.4,
           "fin": 20.72
         },
         {
-          "w": "pagas",
-          "ini": 20.8,
-          "fin": 21.04
-        },
-        {
           "w": "tú",
-          "ini": 21.12,
-          "fin": 21.28
+          "ini": 20.8,
+          "fin": 20.88
         },
         {
           "w": "por",
-          "ini": 21.36,
-          "fin": 21.44
+          "ini": 20.96,
+          "fin": 21.04
         },
         {
           "w": "un",
-          "ini": 21.52,
-          "fin": 21.56
+          "ini": 21.12,
+          "fin": 21.16
         },
         {
           "w": "corrientazo?",
-          "ini": 21.6,
-          "fin": 22.64
+          "ini": 21.2,
+          "fin": 22.24
         },
         {
-          "w": "Cuéntanos.",
-          "ini": 22.68,
+          "w": "Coméntalo",
+          "ini": 22.32,
+          "fin": 22.88
+        },
+        {
+          "w": "y",
+          "ini": 22.92,
+          "fin": 22.96
+        },
+        {
+          "w": "síguenos",
+          "ini": 23.12,
           "fin": 23.52
+        },
+        {
+          "w": "para",
+          "ini": 23.6,
+          "fin": 23.76
+        },
+        {
+          "w": "entender",
+          "ini": 23.84,
+          "fin": 24.24
+        },
+        {
+          "w": "tu",
+          "ini": 24.32,
+          "fin": 24.4
+        },
+        {
+          "w": "plata.",
+          "ini": 24.44,
+          "fin": 25.04
         }
       ]
     }
