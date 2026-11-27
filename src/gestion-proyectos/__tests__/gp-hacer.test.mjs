@@ -37,8 +37,8 @@ const { PIEZAS_TEXTO_GP, ITEMS_GP } = await import("../etiquetas.js");
 const S = solucionario();
 const DIR = new URL("..", import.meta.url);
 const COMPONENTES = {};
-/* Lote 1: fundamentos/Hnn*.jsx · lote 2: fundamentos/C03Hnn*.jsx e integracion/C04Hnn*.jsx · lote 3: alcance/ y cronograma/. */
-for (const dir of ["fundamentos", "integracion", "alcance", "cronograma"]) {
+/* Lote 1: fundamentos/Hnn*.jsx · lote 2: fundamentos/C03Hnn*.jsx e integracion/C04Hnn*.jsx · lote 3: alcance/ y cronograma/ · lote 4: costos/ y calidad/. */
+for (const dir of ["fundamentos", "integracion", "alcance", "cronograma", "costos", "calidad"]) {
   for (const f of readdirSync(new URL(`${dir}/`, DIR)).filter((x) => /^(C0\d)?H\d\d.*\.jsx$/.test(x))) {
     const m = await import(new URL(`${dir}/${f}`, DIR).href);
     COMPONENTES[m.ID] = m.default;
@@ -81,10 +81,14 @@ async function mover(el) {
     const casillas = S.casillas[motor.dataset.pasoId];
     assert.ok(casillas, `sin casillas para ${motor.dataset.pasoId}`);
     for (const c of casillas) {
+      if (c.marcar) { for (const id of c.clave) await clicEn(q(`[data-casilla="${c.id}"][data-marca-casilla="${id}"]`)); continue; }
       if (c.opciones) { await clicEn(q(`[data-casilla="${c.id}"][data-opcion-casilla="${c.clave}"]`)); continue; }
       await escribir(q(`input[data-casilla="${c.id}"]`), String(c.clave).replace(".", ","));
     }
     await clicEn(q("[data-comprobar-casillas]"));
+  } else if (tipo === "explorar") {
+    /* Lote 4: la exploración sin puntaje; tres movimientos y aparece «Seguir». */
+    for (let k = 0; k < 3; k += 1) await clicEn(q("[data-mas]"));
   } else if (tipo === "ordenar") {
     for (const id of S.ordenes[motor.dataset.pasoId]) await clicEn(q(`[data-por-ordenar="${id}"]`));
     await clicEn(q("[data-comprobar]"));
@@ -116,9 +120,9 @@ async function mover(el) {
   return true;
 }
 
-test("hay 59 piezas (18 del lote 1, 17 del lote 2 y 24 del lote 3), cada una con su componente", () => {
-  assert.equal(PIEZAS_TEXTO_GP.length, 59);
-  assert.equal(Object.keys(COMPONENTES).length, 59);
+test("hay 83 piezas (18 del lote 1, 17 del lote 2, 24 del lote 3 y 24 del lote 4), cada una con su componente", () => {
+  assert.equal(PIEZAS_TEXTO_GP.length, 83);
+  assert.equal(Object.keys(COMPONENTES).length, 83);
   for (const p of PIEZAS_TEXTO_GP) assert.equal(typeof COMPONENTES[p.id], "function", p.id);
 });
 
@@ -136,7 +140,7 @@ test("la tarjeta de inicio: papel, contexto, consigna y protagonista grande, sin
   }
 });
 
-test("las 59 se juegan enteras: partida perfecta = 100 % y cada ítem con etiqueta", async () => {
+test("las 83 se juegan enteras: partida perfecta = 100 % y cada ítem con etiqueta", async () => {
   mock.timers.enable({ apis: ["setTimeout"] });
   try {
     for (const semilla of [1, 7]) {
