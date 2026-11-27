@@ -74,10 +74,10 @@ function Balanza({ x, y, w, inclina, izq, der, p = 1 }) {
       <div style={{ position: "absolute", left: w / 2 - w * 0.2, top: w * 0.7 + 20, width: w * 0.4, height: 40, background: "#8A5A35", border: `7px solid ${TINTA}`, borderRadius: 12 }} />
       <div style={{ position: "absolute", left: 0, top: 40, width: w, height: 0, transform: `rotate(${a}deg)` }}>
         <div style={{ position: "absolute", left: 0, top: -12, width: w, height: 24, background: MANGO, border: `7px solid ${TINTA}`, borderRadius: 12 }} />
-        {[[0.08, izq], [0.92, der]].map(([f, txt], k) => (
+        {[[0.12, izq], [0.88, der]].map(([f, txt], k) => (
           <div key={k} style={{ position: "absolute", left: w * f, top: 0, transform: `rotate(${-a}deg)`, transformOrigin: "50% 0" }}>
             <div style={{ position: "absolute", left: -3, top: 0, width: 6, height: 90, background: TINTA }} />
-            <div style={{ position: "absolute", left: -140, top: 86, width: 280, height: 84, background: CREMA, border: `7px solid ${TINTA}`, borderRadius: "0 0 110px 110px", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Sora", fontWeight: 800, fontSize: 50, color: TINTA }}>{txt}</div>
+            <div style={{ position: "absolute", left: -165, top: 86, width: 330, height: 84, background: CREMA, border: `7px solid ${TINTA}`, borderRadius: "0 0 110px 110px", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Sora", fontWeight: 800, fontSize: 42, whiteSpace: "nowrap", color: TINTA }}>{txt}</div>
           </div>
         ))}
       </div>
@@ -88,7 +88,7 @@ function Balanza({ x, y, w, inclina, izq, der, p = 1 }) {
 /* ═════ 1 · Iba a costar 5 millones. Terminó en 12 ═════ */
 function Cuenta({ t }) {
   const cam = mover(t, { s: 1.1, x: 540, y: 940 }, [{ a: M.termino - 0.3, b: M.doce + 0.4, s: 1.0, x: 540, y: 968 }]);
-  const sube = rampa(t, M.termino - 0.2, M.doce - M.termino + 0.3);
+  const sube = rampa(t, M.termino - 0.2, M.doce - M.termino + 0.05);
   const v = Math.round(lerp(5, 12, sale(sube)));
   const temblor = sube > 0 && sube < 1 ? 6 * Math.sin(t * 60) : 0;
   return (
@@ -115,7 +115,7 @@ function Agrega({ t }) {
       <Calendario x={150} y={1120} w={200} t={t} vel={t > M.semana - 0.4 && t < E(3) ? 3 : 0} />
       {cosas.map(([tw, ic, txt], k) => <Ficha key={k} x={pos[k][0]} y={pos[k][1]} w={230} icono={ic} txt={txt} p={rampa(t, tw - 0.3, 0.4)} giro={k % 2 ? 4 : -4} />)}
       {/* la cuenta, sin que nadie la mire */}
-      <Precio x={690} y={1000} txt={`$${5 + n} millones`} p={rampa(t, M.semana - 0.4, 0.35)} fondo={n > 2 ? "#FFD3CF" : CREMA} />
+      <Precio x={690} y={1000} txt={`$${5 + n} millones`} p={rampa(t, M.semana - 0.4, 0.35)} fondo={n > 2 ? "#FFD3CF" : CREMA} aro />
       <Gigante x={930} y={880} txt="?" p={rampa(t, M.costaba - 0.5, 0.35)} tam={140} color={ROJO} />
       <Sombra x={400} y={1510} w={260} />
       <Mascota esp="perro-corbatin" x={400} y={1515} alto={460} t={t} cara="feliz" bd={-70 * Math.abs(Math.sin(t * 2.2)) * (t < M.costaba - 0.6 ? 1 : 0)} semilla={9} />
@@ -138,21 +138,21 @@ function Fecha({ t }) {
         <div style={{ position: "absolute", left: xPin - 34, top: 520, width: 68, height: 68, borderRadius: "50%", background: ROJO, border: `7px solid ${TINTA}`, transform: `scale(${rebote(rampa(t, M.fecha - 0.3, 0.35))})` }} />
         <Flecha x0={340} y0={820} x1={480} y1={820} p={rampa(t, M.corrio - 0.2, 0.3)} color={ROJO} grosor={18} />
         <Flecha x0={500} y0={820} x1={640} y1={820} p={rampa(t, M.veces - 0.2, 0.3)} color={ROJO} grosor={18} />
-        <Precio x={300} y={980} txt="salón $" p={rampa(t, M.salon - 0.3, 0.35)} />
-        <Precio x={420} y={1170} txt="salón $ otra vez" p={rampa(t, M.nuevo - 0.4, 0.35)} fondo="#FFD3CF" giro={5} />
+        <Precio x={300} y={980} txt="salón $" p={rampa(t, M.salon - 0.3, 0.35)} aro />
+        <Precio x={370} y={1190} txt="salón $ otra vez" p={rampa(t, M.nuevo - 0.4, 0.35)} fondo="#FFD3CF" giro={5} aro />
       </div>
       {t > S(5) - 0.4 && (
         <>
           {/* el plato frío y el segundo pedido */}
           <div style={{ position: "absolute", left: 340, top: 680, width: 400, height: 140, borderRadius: "50%", background: "#fff", border: `8px solid ${TINTA}`, transform: `scale(${rebote(rampa(t, M.comida - 0.3, 0.4))})` }} />
           <Gigante x={540} y={690} txt="🍗" p={rampa(t, M.comida - 0.2, 0.35)} tam={140} />
-          <Gigante x={760} y={560} txt="❄️" p={rampa(t, M.fria - 0.3, 0.35)} tam={130} />
+          <Gigante x={790} y={760} txt="❄️" p={rampa(t, M.fria - 0.3, 0.35)} tam={130} />
           <Cartel x={540} y={980} txt="pedir otra vez" p={rampa(t, M.otra - 0.4, 0.35)} tam={70} fondo={ROJO} color="#fff" giro={-3} />
-          <Gigante x={300} y={560} txt="🔁" p={rampa(t, M.otra - 0.3, 0.35)} tam={130} />
+          <Gigante x={540} y={1170} txt="🔁" p={rampa(t, M.otra - 0.3, 0.35)} tam={130} />
         </>
       )}
-      <Sombra x={830} y={1510} w={240} />
-      <Mascota esp="perro-corbatin" x={830} y={1515} alto={460} t={t} cara="triste" cab={6 * pulso(t, M.nuevo - 0.4, 1.2)} orejas={-5} semilla={9} espejo />
+      <Sombra x={890} y={1510} w={220} />
+      <Mascota esp="perro-corbatin" x={890} y={1515} alto={420} t={t} cara="triste" cab={6 * pulso(t, M.nuevo - 0.4, 1.2)} orejas={-5} semilla={9} espejo />
     </Escena>
   );
 }
@@ -189,7 +189,7 @@ function PiaDirige({ t }) {
       <Guirnalda y={160} t={t} colores={[MANGO, COLOR.VERDE, AZUL]} />
       <Cartel x={540} y={420} txt="esta vez, con dirección" p={rampa(t, M.dirige - 0.5, 0.35) * (1 - rampa(t, S(8) - 0.2, 0.3))} tam={64} fondo={COLOR.VERDE} color="#fff" />
       <div style={{ opacity: 1 - pTri }}>
-        <Balanza x={540} y={470} w={820} inclina={inc} izq="plata" der="+ invitados" p={pB} />
+        <Balanza x={540} y={470} w={720} inclina={inc} izq="plata" der="+ invitados" p={pB} />
       </div>
       {/* alcance → costo o tiempo */}
       {pTri > 0 && (
@@ -199,14 +199,14 @@ function PiaDirige({ t }) {
           <Flecha x0={620} y0={720} x1={790} y1={880} p={rampa(t, M.tiempo - 0.4, 0.35)} color={COLOR.CORAL} />
           <Ficha x={250} y={1020} w={250} icono="💰" txt="costo" p={rampa(t, M.costo - 0.2, 0.35)} />
           <Ficha x={830} y={1020} w={250} icono="⏳" txt="tiempo" p={rampa(t, M.tiempo - 0.2, 0.35)} />
-          <Cartel x={540} y={1260} txt="⚖️ equilibrar" p={rampa(t, M.equilibrarlos - 0.5, 0.35)} tam={70} fondo={CREMA} />
+          <Cartel x={630} y={1250} txt="⚖️ equilibrar" p={rampa(t, M.equilibrarlos - 0.5, 0.35)} tam={60} fondo={CREMA} />
         </>
       )}
-      <Sombra x={230} y={1520} w={220} />
-      <Mascota esp="hamster-gorra" x={230} y={1525} alto={440} t={t} cara={t > M.dirige - 0.5 ? "feliz" : "tranquila"} bd={-70 * pulso(t, M.pregunta - 0.3, 1.1)} cab={-8 * pulso(t, M.plata - 0.5, 1.2)} semilla={3} />
-      <Placa x={230} y={1100} nombre="Pía" rol="la dirige" p={rampa(t, M.pia - 0.2, 0.35) * (1 - rampa(t, S(8) - 0.3, 0.3))} />
-      <Sombra x={900} y={1520} w={200} />
-      <Mascota esp="conejo" x={900} y={1525} alto={380} t={t} cara="feliz" bi={-60 * pulso(t, M.piden - 0.2, 1)} semilla={5} espejo />
+      <Sombra x={170} y={1520} w={200} />
+      <Mascota esp="hamster-gorra" x={170} y={1525} alto={400} t={t} cara={t > M.dirige - 0.5 ? "feliz" : "tranquila"} bd={-70 * pulso(t, M.pregunta - 0.3, 1.1)} cab={-8 * pulso(t, M.plata - 0.5, 1.2)} semilla={3} />
+      <Placa x={190} y={1130} nombre="Pía" rol="la dirige" p={rampa(t, M.pia - 0.2, 0.35) * (1 - rampa(t, S(8) - 0.3, 0.3))} />
+      <Sombra x={930} y={1520} w={190} />
+      <Mascota esp="conejo" x={930} y={1525} alto={350} t={t} cara="feliz" bi={-60 * pulso(t, M.piden - 0.2, 1)} semilla={5} espejo />
     </Escena>
   );
 }

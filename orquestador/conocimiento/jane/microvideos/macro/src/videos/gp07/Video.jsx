@@ -41,7 +41,7 @@ const PLANOS = [
   { tipo: "cierre", desde: S(12) - 0.25, entra: "zoom" },
 ];
 
-const OPC = [["▶️", "seguir"], ["↪️", "seguir con cambios"], ["⏸️", "quedarse"], ["🔁", "repetir la fase"], ["⏹️", "terminar"]];
+const OPC = [["▶️", "seguir a la siguiente fase"], ["↪️", "seguir con cambios"], ["⏸️", "quedarse en la fase"], ["🔁", "repetir la fase"], ["⏹️", "terminar"]];
 
 /* Talanquera del punto de revisión: barra que sube (abre 0..1) */
 function Talanquera({ x, y, w, abre = 0, p = 1 }) {
@@ -50,6 +50,22 @@ function Talanquera({ x, y, w, abre = 0, p = 1 }) {
     <div style={{ position: "absolute", left: x, top: y, transform: `scale(${rebote(Math.min(1, p))})`, transformOrigin: "0 100%" }}>
       <div style={{ position: "absolute", left: -30, top: -160, width: 60, height: 160, background: "#596579", border: `7px solid ${TINTA}`, borderRadius: 10 }} />
       <div style={{ position: "absolute", left: 0, top: -140, width: w, height: 40, transformOrigin: "0 50%", transform: `rotate(${-70 * sale(abre)}deg)`, background: `repeating-linear-gradient(90deg,${ROJO} 0 50px,#fff 50px 100px)`, border: `7px solid ${TINTA}`, borderRadius: 14 }} />
+    </div>
+  );
+}
+
+/* Globo de diálogo (habla, no piensa): la cola apunta hacia abajo, a quien habla */
+function Dicho({ x, y, w, h, p, colaX, children }) {
+  if (p <= 0) return null;
+  const cx = colaX - x;
+  return (
+    <div style={{ position: "absolute", left: x, top: y, width: w, height: h, transformOrigin: `${cx}px ${h + 90}px`, transform: `scale(${rebote(Math.min(1, p))})`, opacity: Math.min(1, p * 3) }}>
+      <svg style={{ position: "absolute", left: 0, top: 0, overflow: "visible" }} width={w} height={h}>
+        <path d={`M ${cx - 70} ${h - 20} L ${cx + 30} ${h + 100} L ${cx + 30} ${h - 20} Z`} fill={CREMA} stroke={TINTA} strokeWidth={7} strokeLinejoin="round" />
+      </svg>
+      <div style={{ position: "absolute", inset: 0, background: CREMA, border: `7px solid ${TINTA}`, borderRadius: 40, boxShadow: "0 10px 0 rgba(42,30,23,.18)" }} />
+      <div style={{ position: "absolute", left: cx - 62, top: h - 14, width: 88, height: 14, background: CREMA }} />
+      <div style={{ position: "absolute", inset: 0 }}>{children}</div>
     </div>
   );
 }
@@ -93,7 +109,7 @@ function Fase({ t }) {
             <Gigante x={440} y={330} txt="?" p={rampa(t, M.usaria - 0.5, 0.35)} tam={180} />
           </div>
         </Globo>
-        <Cartel x={720} y={1000} txt="📋 primero, un estudio" p={rampa(t, M.estudio2 - 0.4, 0.35)} tam={56} fondo={MANGO} />
+        <Cartel x={620} y={1000} txt="📋 primero, un estudio" p={rampa(t, M.estudio2 - 0.4, 0.35)} tam={52} fondo={MANGO} />
       </div>
       {enFase > 0 && (
         <>
@@ -116,10 +132,10 @@ function Revision({ t }) {
   const cam = mover(t, { s: 1.0, x: 540, y: 968 }, [{ a: S(5) - 0.2, b: E(5), s: 1.04, x: 540, y: 940 }]);
   return (
     <Escena cam={cam} fondo="art/oficina.jpg">
-      <Documento x={250} y={620} w={260} p={rampa(t, M.logrado - 0.4, 0.4)} titulo="INFORME" giro={-4} />
-      <Gigante x={540} y={620} txt="⇄" p={rampa(t, M.logrado, 0.35)} tam={150} />
-      <Documento x={830} y={520} w={230} p={rampa(t, M.caso - 0.4, 0.4)} titulo="CASO" giro={4} />
-      <Documento x={830} y={800} w={230} p={rampa(t, M.acta - 0.4, 0.4)} titulo="ACTA" giro={-3} />
+      <Documento x={180} y={640} w={240} p={rampa(t, M.logrado - 0.4, 0.4)} titulo="informe" letra={40} giro={-4} />
+      <Gigante x={400} y={640} txt="⇄" p={rampa(t, M.logrado, 0.35)} tam={120} />
+      <Documento x={620} y={640} w={240} p={rampa(t, M.caso - 0.4, 0.4)} titulo="caso de negocio" letra={32} giro={3} />
+      <Documento x={880} y={640} w={240} p={rampa(t, M.acta - 0.4, 0.4)} titulo="acta" letra={40} giro={-3} />
       {/* la mesa */}
       <Sombra x={260} y={1500} w={240} />
       <Mascota esp="hamster-gorra" x={260} y={1505} alto={460} t={t} cara="tranquila" bd={-50 * pulso(t, M.caso - 0.3, 1)} semilla={3} />
@@ -138,13 +154,16 @@ function Opciones({ t }) {
         const p = rampa(t, tw[k] - 0.3, 0.35);
         if (p <= 0) return null;
         return (
-          <div key={k} style={{ position: "absolute", left: 150, top: 300 + k * 150, width: 780, height: 124, display: "flex", alignItems: "center", gap: 24, background: k === 4 ? "#FFD3CF" : CREMA, border: `7px solid ${TINTA}`, borderRadius: 24, padding: "0 28px", transform: `translateX(${(1 - sale(p)) * 900}px)`, fontFamily: "Sora", fontWeight: 800, fontSize: 56, color: TINTA, boxShadow: "0 8px 0 rgba(42,30,23,.25)" }}>
-            <span style={{ fontSize: 70 }}>{ic}</span>{txt}
+          <div key={k} style={{ position: "absolute", left: 60, top: 280 + k * 150, width: 960, height: 124, display: "flex", alignItems: "center", gap: 24, background: k === 4 ? "#FFD3CF" : CREMA, border: `7px solid ${TINTA}`, borderRadius: 24, padding: "0 28px", transform: `translateX(${(1 - sale(p)) * 900}px)`, fontFamily: "Sora", fontWeight: 800, fontSize: 50, whiteSpace: "nowrap", color: TINTA, boxShadow: "0 8px 0 rgba(42,30,23,.25)" }}>
+            <span style={{ fontSize: 66 }}>{ic}</span>{txt}
           </div>
         );
       })}
-      <Talanquera x={180} y={1400} w={560} p={rampa(t, M.punto - 0.4, 0.4)} abre={0} />
-      <Cartel x={540} y={1120} txt="punto de revisión de fase" p={rampa(t, M.revision7 - 0.3, 0.35)} tam={56} fondo={MANGO} />
+      <Talanquera x={110} y={1400} w={500} p={rampa(t, M.punto - 0.4, 0.4)} abre={0} />
+      <Sombra x={760} y={1500} w={190} />
+      <Mascota esp="hamster-gorra" x={760} y={1505} alto={330} t={t} cara="tranquila" bd={-50 * pulso(t, M.seguir - 0.3, 1)} semilla={3} />
+      <Carmen x={950} t={t} alto={360} bd={-50 * pulso(t, M.terminar - 0.3, 1)} />
+      <Cartel x={540} y={1110} txt="punto de revisión de fase" p={rampa(t, M.revision7 - 0.3, 0.35)} tam={56} fondo={MANGO} />
     </Escena>
   );
 }
@@ -157,9 +176,9 @@ function Decision({ t }) {
     <Escena cam={cam} fondo="art/oficina.jpg">
       <div style={{ opacity: 1 - enPlata }}>
         <Ficha x={330} y={560} w={300} icono="☎️" txt="prefieren llamar" p={rampa(t, M.telefono - 0.5, 0.4)} />
-        <Globo x={520} y={300} w={480} h={300} p={rampa(t, M.terminamos - 0.4, 0.4)} cola="der">
-          <div style={{ position: "absolute", left: 0, top: 0, width: 480, height: 300, display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center", fontFamily: "Sora", fontWeight: 800, fontSize: 50, color: TINTA, lineHeight: 1.15 }}>⏹️ terminamos<br />aquí</div>
-        </Globo>
+        <Dicho x={540} y={320} w={460} h={260} colaX={840} p={rampa(t, M.terminamos - 0.4, 0.4)}>
+          <div style={{ position: "absolute", left: 0, top: 0, width: 460, height: 260, display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center", fontFamily: "Sora", fontWeight: 800, fontSize: 52, color: TINTA, lineHeight: 1.15 }}>⏹️ terminamos<br />aquí</div>
+        </Dicho>
       </div>
       {enPlata > 0 && (
         <div style={{ opacity: enPlata }}>
@@ -188,21 +207,21 @@ function Ciclo({ t }) {
         {/* tres fases con su revisión */}
         {fases.map((k) => (
           <div key={k}>
-            <TrazoTiza d={`M ${40 + k * 300} 210 L ${220 + k * 300} 210 L ${220 + k * 300} 330 L ${40 + k * 300} 330 Z`} p={rampa(t, M.fases10 - 0.3 + k * 0.25, 0.4)} w={8} />
-            <Tiza x={130 + k * 300} y={240} txt={`fase ${k + 1}`} p={rampa(t, M.fases10 - 0.1 + k * 0.25, 0.3)} tam={52} centro />
-            <TrazoTiza d={`M ${250 + k * 300} 190 L ${250 + k * 300} 350`} p={rampa(t, M.fases10 + 0.2 + k * 0.25, 0.3)} w={10} color="#FF9B95" />
+            <TrazoTiza d={`M ${30 + k * 310} 180 L ${270 + k * 310} 180 L ${270 + k * 310} 350 L ${30 + k * 310} 350 Z`} p={rampa(t, M.fases10 - 0.3 + k * 0.25, 0.4)} w={9} />
+            <Tiza x={150 + k * 310} y={225} txt={`fase ${k + 1}`} p={rampa(t, M.fases10 - 0.1 + k * 0.25, 0.3)} tam={84} centro />
+            <TrazoTiza d={`M ${300 + k * 310} 160 L ${300 + k * 310} 370`} p={rampa(t, M.fases10 + 0.2 + k * 0.25, 0.3)} w={12} color="#FF9B95" />
           </div>
         ))}
-        <Tiza x={40} y={370} txt="inicio" p={rampa(t, M.inicio - 0.2, 0.3)} tam={52} color="#9FE0B4" />
-        <Tiza x={680} y={370} txt="conclusión" p={rampa(t, M.conclusion - 0.3, 0.3)} tam={52} color="#9FE0B4" />
+        <Tiza x={30} y={380} txt="inicio" p={rampa(t, M.inicio - 0.2, 0.3)} tam={72} color="#9FE0B4" />
+        <Tiza x={620} y={380} txt="conclusión" p={rampa(t, M.conclusion - 0.3, 0.3)} tam={72} color="#9FE0B4" />
         {/* predictivo */}
-        <Tiza x={40} y={520} txt="predictivo" p={rampa(t, M.predictivo - 0.4, 0.4)} tam={74} color={MANGO} />
-        <Tiza x={40} y={610} txt="alcance fijo al principio" p={rampa(t, M.principio - 0.4, 0.5)} tam={52} />
-        <TrazoTiza d="M 60 720 L 200 720 L 200 780 L 340 780 L 340 840 L 480 840" p={rampa(t, M.predictivo - 0.2, 0.6)} w={10} flecha />
+        <Tiza x={30} y={520} txt="predictivo" p={rampa(t, M.predictivo - 0.4, 0.4)} tam={104} color={MANGO} />
+        <Tiza x={30} y={630} txt="alcance definido al principio" p={rampa(t, M.principio - 0.4, 0.5)} tam={68} />
+        <TrazoTiza d="M 60 750 L 260 750 L 260 820 L 460 820 L 460 890 L 660 890" p={rampa(t, M.predictivo - 0.2, 0.6)} w={10} flecha />
         {/* adaptativo */}
-        <Tiza x={40} y={930} txt="adaptativo" p={rampa(t, M.adaptativo - 0.5, 0.4)} tam={74} color="#9FE0B4" />
-        <Tiza x={40} y={1020} txt="se define iteración por iteración" p={rampa(t, M.iteracion - 0.4, 0.5)} tam={52} />
-        {[0, 1, 2].map((k) => <Gigante key={k} x={150 + k * 170} y={1150} txt="↻" p={rampa(t, M.iteracion - 0.1 + k * 0.15, 0.3)} tam={110} color="#9FE0B4" giro={(t - M.iteracion) * 90} />)}
+        <Tiza x={30} y={960} txt="adaptativo" p={rampa(t, M.adaptativo - 0.5, 0.4)} tam={104} color="#9FE0B4" />
+        <Tiza x={30} y={1070} txt="se define iteración por iteración" p={rampa(t, M.iteracion - 0.4, 0.5)} tam={68} />
+        {[0, 1, 2].map((k) => <Gigante key={k} x={160 + k * 230} y={1210} txt="↻" p={rampa(t, M.iteracion - 0.1 + k * 0.15, 0.3)} tam={140} color="#9FE0B4" giro={(t - M.iteracion) * 90} />)}
       </Pizarra>
     </Escena>
   );
@@ -248,5 +267,5 @@ const CLAVE = /^(fase|fase:|fase\.|entregable\.|revisión|punto|ciclo|vida|predi
 
 export const DURACION = T.DURACION_S;
 export const GP07 = ({ sinSonido = false }) => (
-  <VideoMicro T={T} planos={PLANOS} pinta={pinta} sfx={SFX} clave={CLAVE} arte={ARTE} audio="audio/gp07-cancelar-a-tiempo.mp3" sinSonido={sinSonido} />
+  <VideoMicro T={T} planos={PLANOS} pinta={pinta} sfx={SFX} clave={CLAVE} arte={ARTE} audio="audio/gp07-cancelar-a-tiempo-v2.mp3" sinSonido={sinSonido} />
 );

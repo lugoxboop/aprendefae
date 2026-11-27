@@ -107,13 +107,14 @@ export function Estrellas({ x, y, tam = 70, p }) {
 }
 
 /* Etiqueta de precio que cuelga */
-export function Precio({ x, y, txt, p = 1, fondo = CREMA, giro = -8, tachado = 0 }) {
+/* aro: el agujero se dibuja como argolla, con espacio propio (GP-05 en adelante) */
+export function Precio({ x, y, txt, p = 1, fondo = CREMA, giro = -8, tachado = 0, aro = false }) {
   if (p <= 0) return null;
   return (
     <div style={{ position: "absolute", left: x, top: y, transform: `translate(-50%,-50%) scale(${rebote(Math.min(1, p))}) rotate(${giro}deg)`, opacity: Math.min(1, p * 3) }}>
-      <div style={{ position: "relative", background: fondo, border: `7px solid ${TINTA}`, borderRadius: "14px 40px 40px 14px", padding: "6px 34px 10px 26px", fontFamily: "Sora", fontWeight: 800, fontSize: 64, color: TINTA, whiteSpace: "nowrap", boxShadow: "0 8px 0 rgba(42,30,23,.25)" }}>
+      <div style={{ position: "relative", background: fondo, border: `7px solid ${TINTA}`, borderRadius: "14px 40px 40px 14px", padding: aro ? "6px 62px 10px 26px" : "6px 34px 10px 26px", fontFamily: "Sora", fontWeight: 800, fontSize: 64, color: TINTA, whiteSpace: "nowrap", boxShadow: "0 8px 0 rgba(42,30,23,.25)" }}>
         {txt}
-        <div style={{ position: "absolute", right: 14, top: "50%", width: 18, height: 18, marginTop: -9, borderRadius: "50%", background: TINTA }} />
+        {aro ? <div style={{ position: "absolute", right: 16, top: "50%", width: 26, height: 26, marginTop: -13, borderRadius: "50%", background: "#fff", border: `6px solid ${TINTA}`, boxSizing: "border-box" }} /> : <div style={{ position: "absolute", right: 14, top: "50%", width: 18, height: 18, marginTop: -9, borderRadius: "50%", background: TINTA }} />}
         {tachado > 0 && <div style={{ position: "absolute", left: 12, top: "52%", height: 12, width: `${90 * sale(tachado)}%`, background: ROJO, borderRadius: 6, transform: "rotate(-8deg)", transformOrigin: "0 50%" }} />}
       </div>
     </div>
@@ -121,13 +122,13 @@ export function Precio({ x, y, txt, p = 1, fondo = CREMA, giro = -8, tachado = 0
 }
 
 /* Documento oficial con sello (la norma) */
-export function Documento({ x, y, w, p = 1, titulo = "NORMA", sello = 0, giro = 0 }) {
+export function Documento({ x, y, w, p = 1, titulo = "NORMA", sello = 0, giro = 0, letra }) {
   if (p <= 0) return null;
   const h = w * 1.3;
   return (
     <div style={{ position: "absolute", left: x - w / 2, top: y - h / 2, width: w, height: h, transform: `translateY(${(1 - sale(Math.min(1, p))) * -600}px) rotate(${giro}deg)` }}>
       <div style={{ position: "absolute", inset: 0, background: "#FFFDF7", border: `8px solid ${TINTA}`, borderRadius: 16, boxShadow: "0 14px 0 rgba(42,30,23,.28)" }} />
-      <div style={{ position: "absolute", left: 0, right: 0, top: h * 0.07, textAlign: "center", fontFamily: "Sora", fontWeight: 800, fontSize: w * 0.15, color: TINTA }}>{titulo}</div>
+      <div style={{ position: "absolute", left: 0, right: 0, top: h * 0.07, textAlign: "center", fontFamily: "Sora", fontWeight: 800, fontSize: letra || w * 0.15, lineHeight: 1.05, padding: "0 10px", color: TINTA }}>{titulo}</div>
       {[0.3, 0.4, 0.5, 0.6, 0.7].map((f, k) => <div key={f} style={{ position: "absolute", left: w * 0.12, width: w * (k % 2 ? 0.6 : 0.76), top: h * f, height: 12, background: "#D9D2C3", borderRadius: 6 }} />)}
       {sello > 0 && (
         <div style={{ position: "absolute", right: w * 0.06, bottom: h * 0.06, width: w * 0.4, height: w * 0.4, borderRadius: "50%", border: `9px solid ${ROJO}`, color: ROJO, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Sora", fontWeight: 800, fontSize: w * 0.08, transform: `rotate(-16deg) scale(${lerp(2, 1, sale(sello))})`, opacity: Math.min(1, sello * 3), background: "rgba(255,255,255,.6)" }}>OFICIAL</div>
@@ -137,13 +138,13 @@ export function Documento({ x, y, w, p = 1, titulo = "NORMA", sello = 0, giro = 
 }
 
 /* Tarjeta con icono grande y rótulo corto (para resumir casos) */
-export function Ficha({ x, y, w = 260, icono, txt, p = 1, fondo = CREMA, giro = 0, op = 1 }) {
+export function Ficha({ x, y, w = 260, icono, txt, p = 1, fondo = CREMA, giro = 0, op = 1, letra }) {
   if (p <= 0) return null;
   return (
     <div style={{ position: "absolute", left: x - w / 2, top: y - w * 0.55, width: w, transform: `scale(${rebote(Math.min(1, p))}) rotate(${giro}deg)`, opacity: Math.min(1, p * 3) * op }}>
       <div style={{ background: fondo, border: `7px solid ${TINTA}`, borderRadius: 24, padding: "14px 10px 16px", textAlign: "center", boxShadow: "0 9px 0 rgba(42,30,23,.28)" }}>
         <div style={{ fontSize: w * 0.36, lineHeight: 1.05, fontFamily: "Sora", fontWeight: 800, color: TINTA }}>{icono}</div>
-        <div style={{ marginTop: 6, fontFamily: "Sora", fontWeight: 800, fontSize: w * 0.15, lineHeight: 1.15, color: TINTA }}>{txt}</div>
+        <div style={{ marginTop: 6, fontFamily: "Sora", fontWeight: 800, fontSize: letra || w * 0.15, lineHeight: 1.15, color: TINTA }}>{txt}</div>
       </div>
     </div>
   );

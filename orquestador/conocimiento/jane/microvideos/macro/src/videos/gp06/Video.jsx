@@ -40,6 +40,16 @@ const PLANOS = [
   { tipo: "cierre", desde: S(12) - 0.25, entra: "zoom" },
 ];
 
+/* El local de Pía (dibujo de GP-01) en chico: (x, y) = base del local */
+function MiniLocal({ x, y, s = 0.4, p = 1, n = 2, t }) {
+  if (p <= 0) return null;
+  return (
+    <div style={{ position: "absolute", left: 0, top: 0, transform: `scale(${s * rebote(Math.min(1, p))})`, transformOrigin: `${x}px ${y}px`, opacity: Math.min(1, p * 3) }}>
+      <Local x={x} y={y} w={460} alto={1} toldo={1} letrero={1} nombre={`Pía ${n}`} t={t} />
+    </div>
+  );
+}
+
 /* Recuadro con rótulo que agrupa cosas (programa, portafolio) */
 function Caja({ x, y, w, h, p, txt, color = COLOR.VERDE, punteada = false }) {
   if (p <= 0) return null;
@@ -68,7 +78,7 @@ function Gancho({ t }) {
 /* ═════ 2–5 · Tres sedes: cada una un proyecto; juntas, un ahorro ═════ */
 function Sedes({ t }) {
   const cam = mover(t, { s: 1.0, x: 540, y: 968 }, [{ a: S(4) - 0.2, b: S(4) + 0.6, s: 1.0, x: 540, y: 940 }]);
-  const xs = [200, 540, 880];
+  const xs = [225, 540, 855];
   const junta = sale(rampa(t, M.juntas - 0.3, 0.6));
   const pSub = [M.obra, M.permiso, M.apertura];
   return (
@@ -81,19 +91,19 @@ function Sedes({ t }) {
             <div style={{ position: "absolute", left: 0, top: 0, transform: `scale(${0.5 * rebote(Math.min(1, p))})`, transformOrigin: `${x}px 760px` }}>
               <Local x={x} y={760} w={460} alto={1} toldo={1} letrero={1} nombre={`Pía ${k + 2}`} t={t} />
             </div>
-            <Cartel x={x} y={300} txt="proyecto" p={rampa(t, M.proyecto3 - 0.3 + k * 0.12, 0.35)} tam={48} fondo={AZUL} color="#fff" />
+            <Cartel x={x} y={340} txt="proyecto" p={rampa(t, M.proyecto3 - 0.3 + k * 0.12, 0.35)} tam={48} fondo={AZUL} color="#fff" />
             {["🧱", "📄", "🎀"].map((ic, j) => <Gigante key={j} x={x - 80 + j * 80} y={850} txt={ic} p={rampa(t, pSub[j] - 0.3, 0.3)} tam={64} />)}
           </div>
         );
       })}
-      <Caja x={50} y={210} w={980} h={720} p={rampa(t, M.juntas - 0.3, 0.5)} color={COLOR.VERDE} />
+      <Caja x={50} y={200} w={980} h={730} p={rampa(t, M.juntas - 0.3, 0.5)} color={COLOR.VERDE} />
       {/* lo que se gana juntas */}
-      <Ficha x={300} y={1100} w={260} icono="🔥" txt="hornos al por mayor" p={rampa(t, M.hornos - 0.3, 0.4) * junta} />
-      <Ficha x={780} y={1100} w={260} icono="👩‍🍳" txt="capacitación juntos" p={rampa(t, M.capacita - 0.3, 0.4) * junta} />
+      <Ficha x={300} y={1100} w={300} letra={36} icono="🔥" txt="hornos al por mayor" p={rampa(t, M.hornos - 0.3, 0.4) * junta} />
+      <Ficha x={780} y={1100} w={300} letra={36} icono="👩‍🍳" txt="capacitación juntas" p={rampa(t, M.capacita - 0.3, 0.4) * junta} />
       <Cartel x={540} y={1290} txt="💰 ahorro" p={rampa(t, M.ahorro - 0.3, 0.35)} tam={80} fondo={COLOR.VERDE} color="#fff" />
-      <Cartel x={540} y={1410} txt="cada sede por su lado: sin ahorro" p={rampa(t, M.lado - 0.6, 0.35)} tam={52} fondo={CREMA} giro={-2} />
-      <Sombra x={150} y={1530} w={180} />
-      <Mascota esp="hamster-gorra" x={150} y={1535} alto={330} t={t} cara={t > M.ahorro ? "estrellas" : "feliz"} bi={-60 * pulso(t, M.suena - 0.3, 1)} semilla={3} />
+      <Cartel x={620} y={1410} txt="cada una por su lado: sin ahorro" p={rampa(t, M.lado - 0.6, 0.35)} tam={44} fondo={CREMA} giro={-2} />
+      <Sombra x={110} y={1530} w={170} />
+      <Mascota esp="hamster-gorra" x={110} y={1535} alto={320} t={t} cara={t > M.ahorro ? "estrellas" : "feliz"} bi={-60 * pulso(t, M.suena - 0.3, 1)} semilla={3} />
     </Escena>
   );
 }
@@ -110,7 +120,7 @@ function Programa({ t }) {
         <Tiza x={100} y={450} txt="coordinada" p={rampa(t, M.coordinada - 0.2, 0.4)} tam={78} color="#9FE0B4" />
         <Tiza x={60} y={580} txt="• beneficios que solos" p={rampa(t, M.beneficios - 0.3, 0.5)} tam={78} />
         <Tiza x={100} y={670} txt="no darían" p={rampa(t, M.solos - 0.2, 0.4)} tam={78} color="#9FE0B4" />
-        {[0, 1, 2].map((k) => <Gigante key={k} x={260 + k * 200} y={950} txt="🏪" p={rampa(t, M.relacionados - 0.2 + k * 0.1, 0.3)} tam={110} />)}
+        {[0, 1, 2].map((k) => <MiniLocal key={k} x={260 + k * 200} y={1020} s={0.36} n={k + 2} t={t} p={rampa(t, M.relacionados - 0.2 + k * 0.1, 0.3)} />)}
         <TrazoTiza d="M 140 870 Q 460 820 780 870 L 780 1040 Q 460 1090 140 1040 Z" p={rampa(t, M.coordinada - 0.3, 0.8)} w={8} color="#9FE0B4" />
       </Pizarra>
     </Escena>
@@ -132,9 +142,9 @@ function Mega({ t }) {
         ))}
       </div>
       <div style={{ position: "absolute", left: 0, top: 1010, width: 1080, height: 26, background: TINTA }} />
-      <Cartel x={540} y={420} txt="megaproyecto" p={rampa(t, M.mega - 0.6, 0.35)} tam={96} fondo={MANGO} giro={-3} />
-      <Cartel x={540} y={600} txt="programa" p={rampa(t, M.noes - 0.4, 0.35)} tam={64} />
-      <Tachon x={540} y={600} w={380} p={rampa(t, M.noes - 0.1, 0.3)} />
+      <Cartel x={540} y={390} txt="megaproyecto" p={rampa(t, M.mega - 0.6, 0.35)} tam={96} fondo={MANGO} giro={-3} />
+      <Cartel x={540} y={640} txt="programa" p={rampa(t, M.noes - 0.4, 0.35)} tam={64} />
+      <Tachon x={540} y={640} w={380} p={rampa(t, M.noes - 0.1, 0.3)} />
       <Sombra x={830} y={1510} w={240} />
       <Mascota esp="hamster-gorra" x={830} y={1515} alto={460} t={t} cara="estrellas" cab={-10} semilla={3} espejo />
     </Escena>
@@ -156,9 +166,9 @@ function Portafolio({ t }) {
         </div>
       ))}
       <Monedas t={t} t0={M.plata - 0.5} n={5} x0={540} y0={1300} x1={260} y1={540} w={60} alto={200} />
-      <Cartel x={560} y={1160} txt="🎯 objetivos estratégicos" p={rampa(t, M.objetivos - 0.3, 0.35)} tam={58} fondo={MANGO} />
-      <Sombra x={150} y={1520} w={200} />
-      <Mascota esp="hamster-gorra" x={150} y={1525} alto={300} t={t} cara="tranquila" cab={-8 * pulso(t, M.todo - 0.3, 1.5)} bd={-60 * pulso(t, M.primero - 0.3, 1.2)} semilla={3} />
+      <Cartel x={560} y={250} txt="🎯 objetivos estratégicos" p={rampa(t, M.objetivos - 0.3, 0.35)} tam={58} fondo={MANGO} />
+      <Sombra x={170} y={1520} w={240} />
+      <Mascota esp="hamster-gorra" x={170} y={1525} alto={420} t={t} cara="tranquila" cab={-8 * pulso(t, M.todo - 0.3, 1.5)} bd={-60 * pulso(t, M.primero - 0.3, 1.2)} semilla={3} />
     </Escena>
   );
 }
@@ -170,9 +180,14 @@ function Lentes({ t }) {
     <Escena cam={cam} fondo="art/ciudad.jpg" filtro="blur(7px)" velo={0.3}>
       <Caja x={60} y={300} w={960} h={1050} p={rampa(t, M.portafolio11 - 0.3, 0.5)} txt="portafolio" color={AZUL} />
       <Caja x={140} y={480} w={800} h={560} p={rampa(t, M.programa11 - 0.3, 0.5)} txt="programa" color={COLOR.VERDE} />
-      <Ficha x={330} y={810} w={260} icono="🏪" txt="proyecto" p={rampa(t, M.proyecto11 - 0.3, 0.4)} fondo={MANGO} />
-      <Ficha x={750} y={810} w={260} icono="🏪" txt="proyecto" p={rampa(t, M.proyecto11 - 0.1, 0.4)} fondo={MANGO} />
-      <Ficha x={540} y={1240} w={240} icono="🥖" txt="operación" p={rampa(t, M.portafolio11, 0.4)} />
+      {[280, 540, 800].map((x, k) => (
+        <div key={k}>
+          <MiniLocal x={x} y={880} s={0.4} n={k + 2} t={t} p={rampa(t, M.proyecto11 - 0.3 + k * 0.12, 0.4)} />
+          <Cartel x={x} y={950} txt="proyecto" p={rampa(t, M.proyecto11 - 0.2 + k * 0.12, 0.35)} tam={38} fondo={MANGO} />
+        </div>
+      ))}
+      <Ficha x={330} y={1210} w={250} letra={36} icono="🥖" txt="operación" p={rampa(t, M.portafolio11, 0.4)} />
+      <Ficha x={750} y={1210} w={280} letra={34} icono="🛒" txt="tienda en línea" p={rampa(t, M.portafolio11 + 0.15, 0.4)} fondo={MANGO} />
       <Cartel x={540} y={1470} txt="👀 maneras de mirar" p={rampa(t, M.mirar - 0.3, 0.35)} tam={62} fondo={CREMA} />
     </Escena>
   );
@@ -221,5 +236,5 @@ const CLAVE = /^(programa|programa:|proyecto|proyecto:|proyectos|portafolio|port
 
 export const DURACION = T.DURACION_S;
 export const GP06 = ({ sinSonido = false }) => (
-  <VideoMicro T={T} planos={PLANOS} pinta={pinta} sfx={SFX} clave={CLAVE} arte={ARTE} audio="audio/gp06-tres-sedes.mp3" sinSonido={sinSonido} />
+  <VideoMicro T={T} planos={PLANOS} pinta={pinta} sfx={SFX} clave={CLAVE} arte={ARTE} audio="audio/gp06-tres-sedes-v2.mp3" sinSonido={sinSonido} />
 );

@@ -18,7 +18,7 @@ const T = crearTiempo(DATOS, { extra: [0.35, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.35,
 const { S, E, W } = T;
 
 const M = {
-  iniciar: W(1, "iniciar", 0.1), veces: W(1, "veces", 0.3), fase1: W(1, "fase.", 0.95),
+  iniciar: W(1, "pasar", 0.35), veces: W(1, "veces", 0.3), fase1: W(1, "fase.", 0.95),
   remodela: W(2, "remodela", 0.15), dos: W(2, "dos", 0.4), cocina2: W(2, "cocina,", 0.7), salon2: W(2, "salón.", 0.95),
   carmen: W(3, "Carmen", 0.5), autorice: W(3, "autorice", 0.75), arrancar: W(3, "arrancar.", 0.95),
   plan4: W(4, "plan:", 0.25), cambia: W(4, "cambia,", 0.45), cuesta: W(4, "cuesta", 0.7), cuando: W(4, "cuándo.", 0.95),
@@ -73,7 +73,7 @@ function Gancho({ t }) {
   return (
     <Escena cam={cam} fondo="art/panaderia.jpg" filtro="blur(4px)" velo={0.1}>
       {[0, 1, 2].map((k) => <Gigante key={k} x={240 + k * 300} y={420 + (k % 2) * 80} txt="🚩" p={rampa(t, M.iniciar - 0.2 + k * 0.25, 0.3)} tam={150} />)}
-      <Cartel x={540} y={700} txt="iniciar × varias" p={rampa(t, M.veces - 0.3, 0.35)} tam={84} fondo={ROJO} color="#fff" giro={-3} />
+      <Cartel x={540} y={700} txt="el inicio, varias veces" p={rampa(t, M.veces - 0.3, 0.35)} tam={72} fondo={ROJO} color="#fff" giro={-3} />
       <Cartel x={540} y={860} txt="una por cada fase" p={rampa(t, M.fase1 - 0.6, 0.35)} tam={60} fondo={CREMA} giro={2} />
       <Sombra x={540} y={1510} w={280} />
       <Mascota esp="hamster-gorra" x={540} y={1515} alto={520} t={t} cara="guino" bi={-60 * pulso(t, M.veces - 0.3, 1)} semilla={3} />
@@ -90,9 +90,11 @@ function Obra({ t }) {
   const enPaso = (n) => (paso === n ? 1 : 0);
   return (
     <Escena cam={cam} fondo="art/cocina.jpg">
-      <Fase x={50} y={300} w={600} h={720} txt="fase 1: cocina" p={pF} color={AZUL} />
-      <Fase x={690} y={300} w={340} h={720} txt="fase 2" p={rampa(t, M.salon2 - 0.4, 0.4)} color="#8A97B0" />
-      <Gigante x={860} y={660} txt="🛋️" p={rampa(t, M.salon2 - 0.2, 0.35)} tam={120} />
+      <Fase x={40} y={280} w={650} h={1180} txt="fase 1: cocina" p={pF} color={AZUL} />
+      <div style={{ opacity: 0.55, filter: "grayscale(1)" }}>
+        <Fase x={730} y={280} w={290} h={700} txt="fase 2" p={rampa(t, M.salon2 - 0.4, 0.4)} color="#8A97B0" />
+        <Gigante x={875} y={620} txt="🛋️" p={rampa(t, M.salon2 - 0.2, 0.35)} tam={120} />
+      </div>
       {/* dentro de la fase 1: lo que hace Pía en cada momento */}
       {t > S(3) - 0.3 && (
         <>
@@ -101,7 +103,7 @@ function Obra({ t }) {
             {[["¿qué?", M.cambia], ["¿cuánto?", M.cuesta], ["¿cuándo?", M.cuando]].map(([txt, tw], k) => <Cartel key={k} x={350} y={470 + k * 130} txt={"☐ " + txt} p={rampa(t, tw - 0.3, 0.3)} tam={52} />)}
           </div>
           <div style={{ opacity: enPaso(5) }}>
-            <Horno x={350 + lerp(400, 0, sale(rampa(t, M.horno - 0.6, 0.6)))} y={820} w={220} brillo={0.7} />
+            <Horno x={350 + lerp(400, 0, sale(rampa(t, M.horno - 0.6, 0.6)))} y={700} w={220} brillo={0.7} />
             <Gigante x={210} y={480} txt="🔨" p={rampa(t, M.obreros - 0.4, 0.3)} tam={110} giro={-20 * Math.sin(t * 8)} />
           </div>
           <div style={{ opacity: enPaso(6) }}>
@@ -116,20 +118,17 @@ function Obra({ t }) {
         </>
       )}
       {/* las tarjetas de los grupos, abajo, sin flechas entre ellas */}
-      <Grupo x={285} y={1150} w={450} k={0} p={rampa(t, M.autorice - 0.2, 0.35)} />
-      <Grupo x={795} y={1150} w={450} k={1} p={rampa(t, M.plan4 - 0.3, 0.35)} />
-      <Grupo x={285} y={1290} w={450} k={2} p={rampa(t, M.ejecuta - 0.3, 0.35)} />
-      <Grupo x={795} y={1290} w={450} k={4} p={rampa(t, M.cierra - 0.3, 0.35)} />
-      <Grupo x={540} y={1420} w={960} k={3} p={rampa(t, M.vigila - 0.3, 0.35)} chico />
+      {[M.autorice - 0.2, M.plan4 - 0.3, M.ejecuta - 0.3, M.vigila - 0.3, M.cierra - 0.3].map((tw, k) => <Grupo key={k} x={365} y={960 + k * 105} w={580} k={k} p={rampa(t, tw, 0.35)} />)}
       {/* Carmen autoriza */}
       {t > S(3) - 0.4 && t < S(4) + 0.3 && (
         <>
-          <Mascota esp="gato-gafas" x={880} y={1500} alto={420} t={t} cara="feliz" bd={-70 * pulso(t, M.autorice - 0.4, 1)} semilla={6} espejo />
-          <Placa x={880} y={950} nombre="Carmen" rol="Socia" p={rampa(t, M.carmen - 0.3, 0.35)} color={COLOR.CORAL} />
+          <Mascota esp="gato-gafas" x={950} y={1500} alto={400} t={t} cara="feliz" bd={-70 * pulso(t, M.autorice - 0.4, 1)} semilla={6} espejo />
+          <Placa x={875} y={1060} nombre="Carmen" rol="Socia" p={rampa(t, M.carmen - 0.3, 0.35)} color={COLOR.CORAL} />
         </>
       )}
-      {t > S(5) - 0.3 && t < S(6) + 0.2 && <Mascota esp="perro-mochila" x={lerp(1250, 880, sale(rampa(t, M.obreros - 0.6, 0.6)))} y={1500} alto={400} t={t} cara="feliz" bd={-60 * Math.abs(Math.sin(t * 5))} semilla={9} espejo />}
-      <Sombra x={1000} y={1505} w={1} op={0} />
+      {t > S(5) - 0.3 && t < S(6) + 0.2 && <Mascota esp="perro-mochila" x={lerp(1250, 950, sale(rampa(t, M.obreros - 0.6, 0.6)))} y={1500} alto={380} t={t} cara="feliz" bd={-60 * Math.abs(Math.sin(t * 5))} semilla={9} espejo />}
+      <Sombra x={800} y={1505} w={200} />
+      <Mascota esp="hamster-gorra" x={800} y={1510} alto={340} t={t} cara={paso === 7 ? "feliz" : "tranquila"} bd={-60 * pulso(t, M.ejecuta - 0.3, 1)} semilla={3} />
     </Escena>
   );
 }
@@ -140,12 +139,8 @@ function Salon({ t }) {
   return (
     <Escena cam={cam} fondo="art/panaderia.jpg" filtro="blur(3px)" velo={0.1}>
       <Fase x={60} y={300} w={960} h={900} txt="fase 2: salón" p={rampa(t, M.salon8 - 0.4, 0.4)} color={AZUL} />
-      <Gigante x={850} y={460} txt="↻" p={rampa(t, M.vuelve - 0.3, 0.35)} tam={150} color={COLOR.VERDE} giro={(t - M.vuelve) * 120} />
-      <Grupo x={300} y={520} w={440} k={0} p={rampa(t, M.inicio8 - 0.3, 0.35)} />
-      <Grupo x={300} y={700} w={440} k={1} p={rampa(t, M.plan8 - 0.3, 0.35)} />
-      <Grupo x={770} y={700} w={440} k={2} p={rampa(t, M.plan8 - 0.1, 0.35)} />
-      <Grupo x={540} y={870} w={600} k={3} p={rampa(t, M.plan8 + 0.1, 0.35)} chico />
-      <Grupo x={540} y={1040} w={440} k={4} p={rampa(t, M.cierre8 - 0.3, 0.35)} />
+      <Gigante x={860} y={720} txt="↻" p={rampa(t, M.vuelve - 0.3, 0.35)} tam={150} color={COLOR.VERDE} giro={(t - M.vuelve) * 120} />
+      {[M.inicio8 - 0.3, M.plan8 - 0.3, M.plan8 - 0.1, M.plan8 + 0.1, M.cierre8 - 0.3].map((tw, k) => <Grupo key={k} x={430} y={470 + k * 125} w={580} k={k} p={rampa(t, tw, 0.35)} />)}
       <Sombra x={180} y={1500} w={220} />
       <Mascota esp="hamster-gorra" x={180} y={1505} alto={380} t={t} cara="estrellas" bi={-60 * pulso(t, M.vuelve - 0.3, 1)} semilla={3} />
     </Escena>
@@ -157,19 +152,19 @@ function Grupos({ t }) {
   const cam = mover(t, { s: 1.0, x: 540, y: 968 }, [{ a: S(10) - 0.2, b: E(10), s: 1.02, x: 540, y: 960 }]);
   const enFases = rampa(t, S(10) - 0.3, 0.5);
   const tw = [M.inicio9, M.planificacion, M.ejecucion, M.monitoreo, M.cierre9];
-  const pos = [[280, 470], [800, 470], [280, 680], [800, 680], [540, 890]];
+  const pos = [[280, 470], [800, 470], [280, 680], [540, 890], [800, 680]];
   return (
     <Escena cam={cam} fondo="art/oficina.jpg" filtro="blur(6px)" velo={0.2}>
       <Cartel x={540} y={290} txt="5 grupos de procesos" p={rampa(t, M.cinco - 0.3, 0.35)} tam={70} fondo={MANGO} />
       <div style={{ opacity: 1 - enFases }}>
-        {GRUPOS.map((_, k) => <Grupo key={k} x={pos[k][0]} y={pos[k][1]} w={470} k={k} p={rampa(t, tw[k] - 0.3, 0.35)} />)}
+        {GRUPOS.map((_, k) => <Grupo key={k} x={pos[k][0]} y={pos[k][1]} w={k === 3 ? 640 : 470} k={k} p={rampa(t, tw[k] - 0.3, 0.35)} />)}
       </div>
       {enFases > 0 && (
         <div style={{ opacity: enFases }}>
           <Cartel x={540} y={430} txt="✗ no son fases" p={rampa(t, M.nofases - 0.4, 0.35)} tam={64} fondo={ROJO} color="#fff" />
           {[0, 1].map((f) => (
-            <Fase key={f} x={60 + f * 500} y={590 + f * 40} w={460} h={720} txt={`fase ${f + 1}`} p={rampa(t, M.repiten - 0.5 + f * 0.3, 0.4)} color={f ? "#5B7BD5" : AZUL}>
-              {GRUPOS.map((_, k) => <Grupo key={k} x={230} y={90 + k * 125} w={400} k={k} p={rampa(t, M.repiten - 0.2 + f * 0.3 + k * 0.08, 0.3)} chico />)}
+            <Fase key={f} x={50 + f * 460} y={590 + f * 60} w={520} h={720} txt={`fase ${f + 1}`} p={rampa(t, M.repiten - 0.5 + f * 0.3, 0.4)} color={f ? "#5B7BD5" : AZUL}>
+              {GRUPOS.map((_, k) => <Grupo key={k} x={f ? 275 : 245} y={90 + k * 125} w={430} k={k} p={rampa(t, M.repiten - 0.2 + f * 0.3 + k * 0.08, 0.3)} chico />)}
             </Fase>
           ))}
           <Cartel x={540} y={1420} txt="se repiten y se superponen" p={rampa(t, M.superponen - 0.6, 0.35)} tam={52} fondo={CREMA} />
@@ -182,13 +177,14 @@ function Grupos({ t }) {
 /* ═════ 11 · Lo que sale de un proceso entra a otro ═════ */
 function Salida({ t }) {
   const cam = mover(t, { s: 1.0, x: 540, y: 968 }, [{ a: S(11), b: E(11), s: 1.02, x: 540, y: 960 }]);
-  const viaja = sale(rampa(t, M.plan11, M.entra - M.plan11 + 0.2));
+  const viaja = sale(rampa(t, M.plan11 - 0.1, M.otro - M.plan11 + 0.2));
   return (
     <Escena cam={cam} fondo="art/oficina.jpg" filtro="blur(6px)" velo={0.2}>
       <Ficha x={250} y={640} w={320} icono="⚙️" txt="un proceso" p={rampa(t, S(11) - 0.2, 0.4)} />
       <Ficha x={830} y={640} w={320} icono="⚙️" txt="otro proceso" p={rampa(t, M.entra - 0.4, 0.4)} />
       <Cartel x={250} y={860} txt="salida" p={rampa(t, M.sale - 0.3, 0.35)} tam={56} fondo={MANGO} />
       <Cartel x={830} y={860} txt="entrada" p={rampa(t, M.entra - 0.3, 0.35)} tam={56} fondo={COLOR.VERDE} color="#fff" />
+      <Flecha x0={420} y0={1260} x1={660} y1={1260} p={rampa(t, M.plan11, 0.5)} color={MANGO} grosor={14} />
       <Documento x={lerp(250, 830, viaja)} y={1100 - 120 * Math.sin(Math.PI * viaja)} w={200} p={rampa(t, M.plan11 - 0.4, 0.4)} titulo="PLAN" />
     </Escena>
   );
@@ -197,7 +193,7 @@ function Salida({ t }) {
 /* ═════ 12 · ¿A qué grupo pertenece cada tarea? ═════ */
 function Cierre({ t }) {
   const cam = mover(t, { s: 1.08, x: 540, y: 1000 }, [{ a: S(12), b: T.DURACION_S, s: 1.0, x: 540, y: 968 }]);
-  const tareas = [["🖊️", "autorizar"], ["🗓️", "el plan"], ["🧱", "la obra"], ["⏱️", "vigilar"], ["🔑", "recibir"]];
+  const tareas = [["🧱", "la obra"], ["🔑", "recibir"], ["🖊️", "autorizar"], ["⏱️", "vigilar"], ["🗓️", "el plan"]];
   return (
     <Escena cam={cam} fondo="art/panaderia.jpg" filtro="blur(6px)" velo={0.25}>
       {tareas.map(([ic, txt], k) => <Ficha key={k} x={[200, 540, 880, 370, 710][k]} y={k < 3 ? 470 : 760} w={240} icono={ic} txt={txt} p={rampa(t, M.toca - 0.3 + k * 0.1, 0.35)} giro={k % 2 ? 3 : -3} />)}
@@ -236,5 +232,5 @@ const CLAVE = /^(inicio|inicio,|planificación,|ejecución,|monitoreo|control,|c
 
 export const DURACION = T.DURACION_S;
 export const GP08 = ({ sinSonido = false }) => (
-  <VideoMicro T={T} planos={PLANOS} pinta={pinta} sfx={SFX} clave={CLAVE} arte={ARTE} audio="audio/gp08-cinco-grupos.mp3" sinSonido={sinSonido} />
+  <VideoMicro T={T} planos={PLANOS} pinta={pinta} sfx={SFX} clave={CLAVE} arte={ARTE} audio="audio/gp08-cinco-grupos-v2.mp3" sinSonido={sinSonido} />
 );
