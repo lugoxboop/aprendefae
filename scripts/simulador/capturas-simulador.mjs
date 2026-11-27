@@ -96,6 +96,11 @@ try {
     await p.evaluate(() => document.querySelector("[data-consigna]").scrollIntoView({ block: "start" }));
     await espera(500);
     await p.screenshot({ path: `${SALIDA}/${ancho}-4-veredicto.png` });
+    await p.evaluate(() => document.querySelector("[data-preguntas]").scrollIntoView({ block: "end" }));
+    await espera(400);
+    await p.screenshot({ path: `${SALIDA}/${ancho}-5-preguntas.png` });
+    const cabe = await p.evaluate(() => { const t = document.querySelector("[data-pregunta]"); return { alto: t.clientHeight, contenido: t.scrollHeight }; });
+    console.log(`${ancho}px · campo de pregunta ${cabe.contenido <= cabe.alto + 1 ? "cabe" : "SE CORTA"} (${cabe.contenido}/${cabe.alto})`);
     // Desborde horizontal: nada debe salirse.
     const desborde = await p.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
     console.log(`${ancho}px · desborde ${desborde}px · errores ${errores.length}`);

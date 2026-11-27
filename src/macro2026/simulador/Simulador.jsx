@@ -150,6 +150,8 @@ export const CSS_SIM = `
 .sim-barra { display: flex; gap: 8px; align-items: flex-end; padding: 8px; border-radius: 16px; background: ${FONDO}; border: 1px solid ${BORDE}; }
 .sim-barra textarea { flex: 1; min-width: 0; min-height: 44px; max-height: 120px; resize: none; padding: 11px 6px; border: 0; background: transparent; color: ${INK}; font: 400 16px/22px var(--planck-font-sans, system-ui, sans-serif); }
 .sim-barra textarea:focus { outline: none; }
+.sim-barra textarea::placeholder { color: ${INK_2}; opacity: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 360px) { .sim-barra { gap: 6px; padding: 6px 6px 6px 10px; } .sim-barra textarea { padding: 11px 2px; } }
 .sim-barra:focus-within { border-color: ${INK_2}; }
 .sim-redondo { width: 44px; height: 44px; flex: none; border-radius: 50%; border: 1px solid ${BORDE}; background: ${SUPERFICIE_2}; color: ${INK}; display: grid; place-items: center; cursor: pointer; touch-action: manipulation; transition: transform 160ms ${CURVA}; }
 .sim-redondo:active { transform: scale(.92); }
