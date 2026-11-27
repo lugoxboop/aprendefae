@@ -22,9 +22,10 @@ import { ESCENARIOS as T2 } from "./escenarios/politica-economica.js";
 import { ESCENARIOS as T3 } from "./escenarios/politica-fiscal.js";
 import { ESCENARIOS as T4 } from "./escenarios/politica-monetaria.js";
 import { ESCENARIOS as T5 } from "./escenarios/politica-cambiaria.js";
+import { ESCENARIOS as GP } from "./escenarios/gestion-proyectos.js";
 
-/* Un escenario por Aprender de Macro: id de la pieza → escenario del motor. */
-export const ESCENARIOS = Object.fromEntries([...T1, ...T2, ...T3, ...T4, ...T5].map((e) => [e.ID, e]));
+/* Un escenario por Aprender de Macro (id de la pieza → escenario del motor), más «gp26-acta» de Gestión de Proyectos. */
+export const ESCENARIOS = Object.fromEntries([...T1, ...T2, ...T3, ...T4, ...T5, ...GP].map((e) => [e.ID, e]));
 
 /* Una partida son unas 6 a 10 llamadas (3 expedientes, 3 diagnósticos y
  * preguntas). 40 alcanza para cuatro partidas al día. Se cambia con el
