@@ -85,3 +85,12 @@
 - Transcripción gp07-cancelar-a-tiempo: 157 palabras.
 - Narración gp08-cinco-grupos: lista con eleven_v3 (824 caracteres).
 - Transcripción gp08-cinco-grupos: 144 palabras.
+
+## 2026-11-27T22:39:51.533Z
+- Cupo: plan creator, 23928 de 122261 créditos usados.
+- Narración gp02-puente-cien-anos-v2: lista con eleven_v3 (706 caracteres).
+- Transcripción gp02-puente-cien-anos-v2: 129 palabras.
+- Narración gp03-mostrador-celular-v2: lista con eleven_v3 (785 caracteres).
+- Transcripción gp03-mostrador-celular-v2: 147 palabras.
+- Narración gp04-grieta-que-manda-v2: lista con eleven_v3 (784 caracteres).
+- Transcripción gp04-grieta-que-manda-v2: 127 palabras.
