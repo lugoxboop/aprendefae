@@ -49,6 +49,25 @@ export const COMPONENTES_GP = {
   "gp26-fun-h16-nudos": lazy(() => import("./fundamentos/H16Nudos.jsx")),
   "gp26-fun-h17-dial": lazy(() => import("./fundamentos/H17Dial.jsx")),
   "gp26-fun-h18-pmo": lazy(() => import("./fundamentos/H18Pmo.jsx")),
+  /* Lote 2 · cap. 3 (fundamentos) */
+  "gp26-fun-c03-h01-orquesta": lazy(() => import("./fundamentos/C03H01Orquesta.jsx")),
+  "gp26-fun-c03-h02-tranvia": lazy(() => import("./fundamentos/C03H02Tranvia.jsx")),
+  "gp26-fun-c03-h03-taburete": lazy(() => import("./fundamentos/C03H03Taburete.jsx")),
+  "gp26-fun-c03-h04-llavero": lazy(() => import("./fundamentos/C03H04Llavero.jsx")),
+  "gp26-fun-c03-h05-moneda": lazy(() => import("./fundamentos/C03H05Moneda.jsx")),
+  "gp26-fun-c03-h06-comandas": lazy(() => import("./fundamentos/C03H06Comandas.jsx")),
+  "gp26-fun-c03-h07-mosaico": lazy(() => import("./fundamentos/C03H07Mosaico.jsx")),
+  /* Lote 2 · cap. 4 (Integración, repartido por grupo de procesos) */
+  "gp26-ini-c04-h01-acta": lazy(() => import("./integracion/C04H01Acta.jsx")),
+  "gp26-ini-c04-h02-expositor": lazy(() => import("./integracion/C04H02Expositor.jsx")),
+  "gp26-pla-c04-h03-portaplanos": lazy(() => import("./integracion/C04H03Portaplanos.jsx")),
+  "gp26-eje-c04-h04-carretillas": lazy(() => import("./integracion/C04H04Carretillas.jsx")),
+  "gp26-eje-c04-h05-bitacora": lazy(() => import("./integracion/C04H05Bitacora.jsx")),
+  "gp26-eje-c04-h06-recetario": lazy(() => import("./integracion/C04H06Recetario.jsx")),
+  "gp26-moc-c04-h07-camara": lazy(() => import("./integracion/C04H07Camara.jsx")),
+  "gp26-moc-c04-h08-turnero": lazy(() => import("./integracion/C04H08Turnero.jsx")),
+  "gp26-cie-c04-h09-breakers": lazy(() => import("./integracion/C04H09Breakers.jsx")),
+  "gp26-cie-c04-h10-beneficiadero": lazy(() => import("./integracion/C04H10Beneficiadero.jsx")),
 };
 
 /* Las Hacer que se ven de un módulo: publicadas y con componente, en el orden del camino. */

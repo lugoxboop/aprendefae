@@ -66,20 +66,54 @@ export const PIEZAS = Object.freeze({
     { id: "gp26-fun-h16-nudos", tipo: "hacer", nombre: "El organigrama con nudos", subtemas: ["gp-c2-gobernanza"], clasificacion: hacer("medio", 25) },
     { id: "gp26-fun-h17-dial", tipo: "hacer", nombre: "El dial de la autoridad", subtemas: ["gp-c2-estructuras"], clasificacion: hacer("medio", 25) },
     { id: "gp26-fun-h18-pmo", tipo: "hacer", nombre: "Tres empresas, tres PMO", subtemas: ["gp-c2-estructuras"], clasificacion: hacer("medio", 25) },
+    /*
+     * Gen · lote 2: las 7 Hacer del cap. 3 (diseño disenos/c03-hacer.md; textos en
+     * fundamentos/textos-c3.js). El cap. 3 no es un proceso: va en fundamentos.
+     * Misma clasificación que su fila de la 0277. Mateo: «publica todo».
+     */
+    { id: "gp26-fun-c03-h01-orquesta", tipo: "hacer", nombre: "La orquesta de la inauguración", subtemas: ["gp-c3-rol"], clasificacion: hacer("facil", 10, { etapas: 2 }) },
+    { id: "gp26-fun-c03-h02-tranvia", tipo: "hacer", nombre: "Las cinco líneas de tu semana", subtemas: ["gp-c3-esfera", "gp-c3-comunicacion"], clasificacion: hacer("facil", 10) },
+    { id: "gp26-fun-c03-h03-taburete", tipo: "hacer", nombre: "El taburete de tres patas", subtemas: ["gp-c3-talento"], clasificacion: hacer("medio", 25, { etapas: 2 }) },
+    { id: "gp26-fun-c03-h04-llavero", tipo: "hacer", nombre: "El llavero del poder", subtemas: ["gp-c3-poder"], clasificacion: hacer("medio", 25) },
+    { id: "gp26-fun-c03-h05-moneda", tipo: "hacer", nombre: "Las dos caras de la moneda", subtemas: ["gp-c3-lider-gestor"], clasificacion: hacer("medio", 25, { etapas: 2 }) },
+    { id: "gp26-fun-c03-h06-comandas", tipo: "hacer", nombre: "La comanda de la mañana", subtemas: ["gp-c3-estilos"], clasificacion: hacer("medio", 25, { etapas: 2 }) },
+    { id: "gp26-fun-c03-h07-mosaico", tipo: "hacer", nombre: "El mosaico de la integración", subtemas: ["gp-c3-integracion"], clasificacion: hacer("dificil", 50, { etapas: 2 }) },
   ],
-  "gp-inicio": [],
-  "gp-planificacion": [],
-  "gp-ejecucion": [],
-  "gp-monitoreo-control": [],
-  "gp-cierre": [],
+  /*
+   * Gen · lote 2: las 10 Hacer del cap. 4 (Integración; diseño disenos/c04-hacer.md;
+   * textos en integracion/textos-c4.js), cada una en el módulo del grupo de
+   * procesos del proceso que ejercita. H10, el taller que integra los siete,
+   * cierra el capítulo en Cierre, después de H09.
+   */
+  "gp-inicio": [
+    { id: "gp26-ini-c04-h01-acta", tipo: "hacer", nombre: "El acta de Barranquilla", subtemas: ["gp-4-1"], clasificacion: hacer("dificil", 50, { etapas: 2 }) },
+    { id: "gp26-ini-c04-h02-expositor", tipo: "hacer", nombre: "El expositor de los casos", subtemas: ["gp-4-1"], clasificacion: hacer("medio", 25, { etapas: 2 }) },
+  ],
+  "gp-planificacion": [
+    { id: "gp26-pla-c04-h03-portaplanos", tipo: "hacer", nombre: "El portaplanos y el revistero", subtemas: ["gp-4-2"], clasificacion: hacer("medio", 25, { etapas: 2 }) },
+  ],
+  "gp-ejecucion": [
+    { id: "gp26-eje-c04-h04-carretillas", tipo: "hacer", nombre: "Cuatro carretillas de cambio", subtemas: ["gp-4-3"], clasificacion: hacer("medio", 25) },
+    { id: "gp26-eje-c04-h05-bitacora", tipo: "hacer", nombre: "La bitácora de obra", subtemas: ["gp-4-3"], clasificacion: hacer("medio", 25, { etapas: 2 }) },
+    { id: "gp26-eje-c04-h06-recetario", tipo: "hacer", nombre: "El recetario y las manos", subtemas: ["gp-4-4"], clasificacion: hacer("medio", 25, { etapas: 3 }) },
+  ],
+  "gp-monitoreo-control": [
+    { id: "gp26-moc-c04-h07-camara", tipo: "hacer", nombre: "La cámara del viernes", subtemas: ["gp-4-5"], clasificacion: hacer("medio", 25, { etapas: 2 }) },
+    { id: "gp26-moc-c04-h08-turnero", tipo: "hacer", nombre: "El turnero de los cambios", subtemas: ["gp-4-6"], clasificacion: hacer("dificil", 50, { etapas: 2 }) },
+  ],
+  "gp-cierre": [
+    { id: "gp26-cie-c04-h09-breakers", tipo: "hacer", nombre: "Apaga el proyecto", subtemas: ["gp-4-7"], clasificacion: hacer("medio", 25, { etapas: 2 }) },
+    { id: "gp26-cie-c04-h10-beneficiadero", tipo: "hacer", nombre: "Los canales del beneficiadero", subtemas: ["gp-4-1", "gp-4-2", "gp-4-3", "gp-4-4", "gp-4-5", "gp-4-6", "gp-4-7"], clasificacion: hacer("dificil", 50, { etapas: 3 }) },
+  ],
 });
 
 /* El interruptor de publicación: vacío = nada visible para los estudiantes. */
 /* GP-01 aprobado por Mateo el 27-nov-2026: sale en cuanto la materia entre a subjects.js. */
 /* Las 18 Hacer de los caps. 1-2: Mateo, 27-nov-2026 («publica todo; cada lote apenas esté construido»). */
+/* Lote 2 (las 17 de los caps. 3 y 4, repartidas por módulo): mismo visto bueno. */
 export const PUBLICADAS = Object.freeze([
   "gp26-fun-a1-proyecto-operacion",
-  ...PIEZAS["gp-fundamentos"].filter((pz) => pz.tipo === "hacer").map((pz) => pz.id),
+  ...MODULOS.flatMap((m) => PIEZAS[m.id] ?? []).filter((pz) => pz.tipo === "hacer").map((pz) => pz.id),
 ]);
 export const estaPublicada = (id) => PUBLICADAS.includes(id);
 

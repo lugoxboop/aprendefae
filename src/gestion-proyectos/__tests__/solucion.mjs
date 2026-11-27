@@ -16,7 +16,7 @@ export function solucionario() {
   for (const p of PIEZAS_TEXTO_GP) {
     for (const e of p.etapas) {
       for (const x of e.banco ?? []) ponDecidir(x);
-      if (e.despues) (e.despues.tipo === "ordenar" ? ponOrden : ponDecidir)(e.despues);
+      for (const d of [].concat(e.despues ?? [])) (d.tipo === "ordenar" ? ponOrden : ponDecidir)(d);
       for (const m of e.pasos ?? []) {
         if (m.tipo === "ordenar") ponOrden(m);
         else if (m.items) m.items.forEach(ponDecidir);

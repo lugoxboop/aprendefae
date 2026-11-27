@@ -96,7 +96,8 @@ export default function Decidir({ paso, escena = {}, estadoEtapa = null, alTermi
   const conTarjeta = Boolean(paso.texto);
   const estado = { paso, encaja, intento, mal, ultimo, revelado: Boolean(encaja), etapa: estadoEtapa };
   const obj = paso.objeto ? { id: paso.objeto } : escena.objetoDe?.(paso) ?? escena.objeto ?? null;
-  const quien = escena.mesa === false ? null : escena.mesa ?? "tu";
+  /* Lote 2: un paso puede traer su propio personaje (`paso.mesa`), p. ej. el practicante en un micro. */
+  const quien = escena.mesa === false ? null : paso.mesa ?? escena.mesa ?? "tu";
   const nombreDe = (id) => destinos.find((d) => d.id === id)?.nombre ?? id;
   const disposicion = escena.disposicion ?? (destinos.length === 3 ? "fila3" : destinos.length > 3 && destinos.length <= 4 ? "rejilla" : destinos.length === 5 ? "palancas" : "rejilla");
 

@@ -613,6 +613,8 @@ chocando entre ellos · hámsters corriendo con un testigo · gato gerente funci
 una torre de bloques · hámster presentando en un rotafolio · panda con una alcancía ·
 hurón junto a un rollo de papel.
 
+**Ids de imagen (lote de imágenes 2):** H01 → archivador-fuelle, semaforo · H02 → caja-paquete, bandeja-carton, tunel, linterna, piedra, saco-arena (bulto) · H03 → pieza-rompecabezas (se tiñe con tenir.py), mesa-cajones, edificio-gobierno (macro: /macro2026/ilustrados/edificio-gobierno.webp, alcaldía); los conectores, la interfaz · H04 → cinta-metrica · H05 → sumadora · H06 → pared-ladrillo, rodillo-pintura, escalera, cartel-obra, alcancia (macro: /macro2026/ilustrados/alcancia.webp), caja-fuerte (caja «línea base») · H07 → anden-metro (líneas y estaciones del mapa, la interfaz) · H08 → ficha-domino · H09 → pista-atletismo, testigo-relevos · H10 → bloque-madera, casco-electricista · H11 → rotafolio, mesa-redonda, silla-oficina · H12 → rollo-plotter. Archivos en `public/gestion-proyectos/ilustrados/<id>.webp` salvo los marcados «macro».
+
 ## 4. Autoevaluación contra el Kit
 
 | Dimensión | Nivel esperado | Por qué |

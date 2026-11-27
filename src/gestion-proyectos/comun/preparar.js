@@ -38,10 +38,45 @@ const decidir = (item, etapa, base = {}) => ({
   subtemas: item.subtemas ?? base.subtemas ?? null,
 });
 
+/*
+ * Lote 2 (caps. 3 y 4): `cubrir` = que cada clave del banco salga al menos
+ * una vez (o `minPorClave` veces); `pares` = n pares (ítems con el mismo
+ * `par`) y nunca los dos de un par seguidos; `ordenarPorNivel` = tras el
+ * sorteo, primero los de nivel 1 (los obvios). El sorteo se repite con el
+ * mismo rng hasta cumplir: sigue siendo reproducible con semilla.
+ */
+const cuentaPorClave = (lista) => lista.reduce((m, x) => ({ ...m, [x.clave]: (m[x.clave] ?? 0) + 1 }), {});
+function cumpleCobertura(lista, banco, p) {
+  if (!p.cubrir && !p.minPorClave) return true;
+  const min = p.minPorClave ?? 1;
+  const n = cuentaPorClave(lista);
+  return [...new Set(banco.map((x) => x.clave))].every((c) => (n[c] ?? 0) >= min);
+}
+const sinParesSeguidos = (lista) => lista.every((x, k) => k === 0 || !x.par || x.par !== lista[k - 1].par);
+export function sortearCubriendo(items, n, rng = Math.random, p = { cubrir: true }) {
+  let sale = sortear(items, n, rng);
+  for (let k = 0; k < 400 && !cumpleCobertura(sale, items, p); k += 1) sale = sortear(items, n, rng);
+  return sale;
+}
+
 /* Los ítems de un banco que entran en esta partida, en su orden de juego. */
 export function partidaDe(etapa, rng = Math.random) {
   const p = etapa.partida ?? { todas: true };
   const banco = etapa.banco;
+  if (p.cubrir || p.minPorClave || p.pares || p.ordenarPorNivel) {
+    const base = { ...p, cubrir: false, minPorClave: undefined, pares: undefined, ordenarPorNivel: false };
+    if (p.pares) {
+      const ids = [...new Set(banco.map((x) => x.par))];
+      const elegidos = new Set(sortear(ids, p.pares, rng));
+      let sale = barajar(banco.filter((x) => elegidos.has(x.par)), rng);
+      for (let k = 0; k < 400 && !sinParesSeguidos(sale); k += 1) sale = barajar(sale, rng);
+      return sale;
+    }
+    let sale = partidaDe({ ...etapa, partida: base }, rng);
+    for (let k = 0; k < 400 && !cumpleCobertura(sale, banco, p); k += 1) sale = partidaDe({ ...etapa, partida: base }, rng);
+    if (p.ordenarPorNivel) sale = [...sale].sort((a, b) => (a.nivel ?? 1) - (b.nivel ?? 1));
+    return sale;
+  }
   if (p.porNivel) {
     return Object.keys(p.porNivel).sort().flatMap((nivel) =>
       sortear(banco.filter((x) => String(x.nivel) === String(nivel)), p.porNivel[nivel], rng));
@@ -83,7 +118,7 @@ function pasosDeMicros(etapa, rng) {
   for (const m of etapa.pasos) {
     if (m.tipo === "ordenar") { pasos.push(ordenarDe(m, rng)); continue; }
     if (m.items) {
-      const elegidos = m.sortear ? sortear(m.items, m.sortear, rng) : m.barajar ? barajar(m.items, rng) : m.items;
+      const elegidos = m.sortear ? (m.cubrir ? sortearCubriendo(m.items, m.sortear, rng) : sortear(m.items, m.sortear, rng)) : m.barajar ? barajar(m.items, rng) : m.items;
       for (const x of elegidos) {
         pasos.push(conDestinos(decidir(x, etapa, {
           consigna: m.consigna, destinos: m.destinos, retro: m.retro, grupo: m.grupo,
@@ -108,12 +143,16 @@ function ordenarDe(m, rng) {
 /* Los pares vecinos de un orden, como ids de ítem: «<paso>:<a>-<b>». */
 export const paresDe = (paso) => paso.items.slice(1).map((x, k) => `${paso.items[k].id}-${x.id}`);
 
+/* Los pasos que siguen al banco de una etapa «clasificar» (uno o una lista). */
+export const despuesDe = (etapa) => (etapa.despues ? [].concat(etapa.despues) : []);
+
 /* Una etapa → { consigna, pasos }. */
 export function prepararEtapa(etapa, rng = Math.random) {
   switch (etapa.tipo) {
     case "clasificar": {
       const pasos = partidaDe(etapa, rng).map((x) => decidir(x, etapa));
-      if (etapa.despues) pasos.push(etapa.despues.tipo === "ordenar" ? ordenarDe(etapa.despues, rng) : conDestinos(decidir(etapa.despues, etapa), rng));
+      /* `despues`: un paso o (lote 2) una lista de pasos, en orden. */
+      for (const d of despuesDe(etapa)) pasos.push(d.tipo === "ordenar" ? ordenarDe(d, rng) : conDestinos(decidir(d, etapa), rng));
       return { consigna: etapa.consigna, pasos };
     }
     case "micros":
@@ -162,9 +201,9 @@ export function itemsDePieza(pieza) {
   for (const e of pieza.etapas) {
     if (e.tipo === "clasificar") {
       for (const x of e.banco) out[x.id] = x.texto;
-      if (e.despues) {
-        if (e.despues.tipo === "ordenar") ponOrden(e.despues);
-        else ponDecidir(e.despues);
+      for (const d of despuesDe(e)) {
+        if (d.tipo === "ordenar") ponOrden(d);
+        else ponDecidir(d);
       }
     } else if (e.tipo === "micros") {
       for (const m of e.pasos) {

@@ -590,6 +590,8 @@ Situaciones de mascotas nuevas (chat «Chibi Fox Model Sheet»): conejo cliente 
 girando la perilla de una caja fuerte · panda sosteniendo un mapa · perro PMO mirando un
 telar · hurón con un montón de hojas · zorro guardando binoculares en una mochila.
 
+**Ids de imagen (lote de imágenes 2):** H01 → teatro-telon, andamio, celular (lote 1), foco-teatro · H02 → carretera (macro: /macro2026/ilustrados/carretera.webp), senal-vial, noria · H03 → encuadernadora, libreta-anillada, libreta-anillada-verde, monton-hojas · H04 → mochila-campo, perchero, grabadora, mesa-redonda, fajo-formularios, binoculares, maqueta-carton, tira-vinetas, carpeta-documento (lote 1), taza-marca-azul, taza-marca-ambar (taza-cafe gris para otro tono) · H05 → urna-vidrio, ficha-madera, frasco-contador, cuerda (macro: /macro2026/ilustrados/cuerda.webp), pinza-ropa · H06 → alacena, frasco-etiqueta · H07 → telar, ovillo-hilo · H08 → mapa-plegable, memorando-clip (lote 1) · H09 → barra-movil (el móvil se arma con varias barras), ficha-colgante, escalera, caneca · H10 → caja-fuerte, carpeta-documento (lote 1), ficha-fichero · H11 → escaner-equipaje, puerta-embarque, maleta, pantalla-salidas, sobre-boleto (lote 1, pase de abordar) · H12 → globo-aerostatico (macro: /macro2026/ilustrados/globo-aerostatico.webp), saco-arena, valvula, letrero-luminoso (lote 1). Archivos en `public/gestion-proyectos/ilustrados/<id>.webp` salvo los marcados «macro».
+
 ## 4. Autoevaluación contra el Kit
 
 | Dimensión | Nivel esperado | Por qué |
