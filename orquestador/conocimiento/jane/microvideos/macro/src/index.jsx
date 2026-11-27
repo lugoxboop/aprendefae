@@ -20,9 +20,13 @@ import * as gp09 from "./videos/gp09/Video.jsx";
 import * as gp10 from "./videos/gp10/Video.jsx";
 import * as gp11 from "./videos/gp11/Video.jsx";
 import * as gp12 from "./videos/gp12/Video.jsx";
+import * as gp13 from "./videos/gp13/Video.jsx";
+import * as gp14 from "./videos/gp14/Video.jsx";
+import * as gp15 from "./videos/gp15/Video.jsx";
+import * as gp16 from "./videos/gp16/Video.jsx";
 import { Pia } from "./retratos/Pia.jsx";
 const FPS = 30;
-const V = [["A1", a1.A1, a1.DURACION], ["A2", a2.A2, a2.DURACION], ["A3", a3.A3, a3.DURACION], ["A4", a4.A4, a4.DURACION], ["A5", a5.A5, a5.DURACION], ["A6", a6.A6, a6.DURACION], ["B1", b1.B1, b1.DURACION], ["B2", b2.B2, b2.DURACION], ["B3", b3.B3, b3.DURACION], ["GP01", gp01.GP01, gp01.DURACION], ["GP02", gp02.GP02, gp02.DURACION], ["GP03", gp03.GP03, gp03.DURACION], ["GP04", gp04.GP04, gp04.DURACION], ["GP05", gp05.GP05, gp05.DURACION], ["GP06", gp06.GP06, gp06.DURACION], ["GP07", gp07.GP07, gp07.DURACION], ["GP08", gp08.GP08, gp08.DURACION], ["GP09", gp09.GP09, gp09.DURACION], ["GP10", gp10.GP10, gp10.DURACION], ["GP11", gp11.GP11, gp11.DURACION], ["GP12", gp12.GP12, gp12.DURACION]];
+const V = [["A1", a1.A1, a1.DURACION], ["A2", a2.A2, a2.DURACION], ["A3", a3.A3, a3.DURACION], ["A4", a4.A4, a4.DURACION], ["A5", a5.A5, a5.DURACION], ["A6", a6.A6, a6.DURACION], ["B1", b1.B1, b1.DURACION], ["B2", b2.B2, b2.DURACION], ["B3", b3.B3, b3.DURACION], ["GP01", gp01.GP01, gp01.DURACION], ["GP02", gp02.GP02, gp02.DURACION], ["GP03", gp03.GP03, gp03.DURACION], ["GP04", gp04.GP04, gp04.DURACION], ["GP05", gp05.GP05, gp05.DURACION], ["GP06", gp06.GP06, gp06.DURACION], ["GP07", gp07.GP07, gp07.DURACION], ["GP08", gp08.GP08, gp08.DURACION], ["GP09", gp09.GP09, gp09.DURACION], ["GP10", gp10.GP10, gp10.DURACION], ["GP11", gp11.GP11, gp11.DURACION], ["GP12", gp12.GP12, gp12.DURACION], ["GP13", gp13.GP13, gp13.DURACION], ["GP14", gp14.GP14, gp14.DURACION], ["GP15", gp15.GP15, gp15.DURACION], ["GP16", gp16.GP16, gp16.DURACION]];
 const Root = () => (<>{V.map(([id, C, d]) => (
   <Composition key={id} id={id} component={C} durationInFrames={Math.round(d * FPS)} fps={FPS} width={1080} height={1920} defaultProps={{ sinSonido: false }} />
 ))}

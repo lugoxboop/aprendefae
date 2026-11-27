@@ -41,7 +41,7 @@ const PLANOS = [
 ];
 
 /* Carrito de pan */
-function Carrito({ x, y, w = 300, p = 1, t = 0 }) {
+export function Carrito({ x, y, w = 300, p = 1, t = 0 }) {
   if (p <= 0) return null;
   const h = w * 0.7;
   return (
