@@ -94,7 +94,7 @@ function Sede({ t }) {
       </div>
       {enNorte > 0 && (
         <div style={{ opacity: enNorte }}>
-          <Cartel x={540} y={300} txt="1 · la necesidad" p={rampa(t, M.necesidad - 0.3, 0.35)} tam={64} fondo={MANGO} />
+          <Cartel x={540} y={300} txt="1 · necesidades de negocio" p={rampa(t, M.necesidad - 0.3, 0.35)} tam={64} fondo={MANGO} />
           <Cartel x={540} y={450} txt="📍 barrio norte" p={rampa(t, M.norte3 - 0.3, 0.35)} tam={52} fondo={CREMA} />
           {Array.from({ length: 6 }).map((_, k) => (
             <Gigante key={k} x={170 + k * 140} y={780} txt={["🧍", "🧍‍♀️", "🧍‍♂️", "🧍", "🧍‍♀️", "🧍‍♂️"][k]} p={rampa(t, M.fila - 0.4 + k * 0.07, 0.3)} tam={120} />
@@ -116,7 +116,7 @@ function Analisis({ t }) {
   const qs = [[M.causa, "🔍", "¿qué lo causa?"], [M.riesgos4, "⚠️", "¿qué riesgos hay?"], [M.criterios, "⚖️", "¿con qué criterios decidir?"]];
   return (
     <Escena cam={cam} fondo="art/oficina.jpg" filtro="blur(6px)" velo={0.2}>
-      <Cartel x={540} y={300} txt="2 · el análisis" p={rampa(t, M.analisis - 0.3, 0.35)} tam={64} fondo={MANGO} />
+      <Cartel x={540} y={300} txt="2 · análisis de la situación" p={rampa(t, M.analisis - 0.3, 0.35)} tam={64} fondo={MANGO} />
       {qs.map(([tw, ic, txt], k) => {
         const p = rampa(t, tw - 0.3, 0.35);
         if (p <= 0) return null;
@@ -137,7 +137,7 @@ function Opciones({ t }) {
   const cam = mover(t, { s: 1.0, x: 540, y: 968 }, [{ a: S(7) - 0.2, b: E(7), s: 1.02, x: 540, y: 960 }]);
   return (
     <Escena cam={cam} fondo="art/ciudad.jpg" filtro="blur(6px)" velo={0.2}>
-      <Cartel x={540} y={290} txt="3 · las opciones" p={rampa(t, M.opciones - 0.3, 0.35)} tam={64} fondo={MANGO} />
+      <Cartel x={540} y={290} txt="2 · análisis: las opciones" p={rampa(t, M.opciones - 0.3, 0.35)} tam={64} fondo={MANGO} />
       <Opcion x={60} y={400} w={960} n={1} ic="🛋️" titulo="no hacer nada" sub="sin proyecto" p={rampa(t, M.una - 0.3, 0.4)} apagada={rampa(t, M.proyecto5 - 0.3, 0.4) * 0.6} />
       <Opcion x={60} y={680} w={960} n={2} ic="🛒" titulo="lo mínimo" sub="un carrito de pan" p={rampa(t, M.dos - 0.3, 0.4)} />
       <Opcion x={60} y={960} w={960} n={3} ic="☕" titulo="más que el mínimo" sub="sede con cafetería" p={rampa(t, M.tres - 0.3, 0.4)} />
@@ -153,7 +153,7 @@ function Opciones({ t }) {
 /* ═════ 8–9 · La recomendación y el nombre ═════ */
 function Caso({ t }) {
   const cam = mover(t, { s: 1.0, x: 540, y: 968 }, [{ a: S(9) - 0.2, b: E(9), s: 1.03, x: 540, y: 950 }]);
-  const partes = [[S(3), "necesidad"], [S(4), "análisis"], [S(5), "opciones"], [M.recomendacion - 0.3, "recomendación"]];
+  const partes = [[S(3), "necesidades de negocio"], [S(4), "análisis y opciones"], [M.recomendacion - 0.3, "recomendación"], [1e9, "evaluación"]];
   const pD = rampa(t, S(8) - 0.3, 0.4);
   return (
     <Escena cam={cam} fondo="art/oficina.jpg" filtro="blur(5px)" velo={0.2}>
@@ -162,7 +162,7 @@ function Caso({ t }) {
           <div style={{ position: "absolute", left: 0, right: 0, top: 30, textAlign: "center", fontFamily: "Sora", fontWeight: 800, fontSize: 60, color: TINTA }}>caso de negocio</div>
           {partes.map(([tw, txt], k) => (
             <div key={k} style={{ position: "absolute", left: 60, top: 150 + k * 110, display: "flex", alignItems: "center", gap: 20, fontFamily: "Sora", fontWeight: 800, fontSize: 48, color: TINTA }}>
-              <div style={{ width: 62, height: 62, border: `7px solid ${TINTA}`, borderRadius: 12, background: k < 3 || t > tw ? COLOR.VERDE : "#fff", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 40 }}>{k < 3 || t > tw ? "✓" : ""}</div>{txt}
+              <div style={{ width: 62, height: 62, border: `7px solid ${TINTA}`, borderRadius: 12, background: k < 2 || t > tw ? COLOR.VERDE : "#fff", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 40 }}>{k < 2 || t > tw ? "✓" : ""}</div>{txt}
             </div>
           ))}
           <div style={{ position: "absolute", left: 140, top: 600, display: "flex", gap: 16, opacity: rampa(t, M.riesgos8 - 0.4, 0.3) }}>
@@ -180,11 +180,11 @@ function Caso({ t }) {
 /* ═════ 10–11 · Eligen el carrito; el plan de beneficios ═════ */
 function CarritoEsc({ t }) {
   const cam = mover(t, { s: 1.0, x: 540, y: 968 }, [{ a: S(11) - 0.2, b: E(11), s: 1.02, x: 540, y: 950 }]);
-  const preg = [[M.llega, "🎁", "qué beneficio"], [M.cuando, "📅", "cuándo"], [M.mide, "📏", "cómo se mide"], [M.vigila, "👀", "quién lo vigila"]];
+  const preg = [[M.llega, "🎁", "qué beneficio"], [M.cuando, "🗓️", "cuándo"], [M.mide, "📏", "cómo se mide"], [M.vigila, "👀", "quién lo vigila"]];
   const enPlan = rampa(t, S(11) - 0.3, 0.4);
   return (
     <Escena cam={cam} fondo="art/ciudad.jpg" filtro="blur(3px)" velo={0.12}>
-      <div style={{ opacity: 1 - 0.75 * enPlan }}>
+      <div style={{ opacity: 1 - enPlan }}>
         <Carrito x={540} y={900} w={460} p={rampa(t, M.carrito10 - 0.6, 0.4)} t={t} />
         <Cartel x={540} y={380} txt="✓ opción 2: el carrito" p={rampa(t, M.eligen10 - 0.3, 0.35)} tam={62} fondo={COLOR.VERDE} color="#fff" giro={-2} />
       </div>

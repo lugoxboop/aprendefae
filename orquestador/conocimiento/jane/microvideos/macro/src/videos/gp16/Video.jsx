@@ -98,8 +98,8 @@ function Organigrama({ t }) {
       <Linea x0={560} y0={1020} x1={200} y1={725} p={rampa(t, M.area, 0.4)} discontinua color="#8A97B0" />
       <Linea x0={560} y0={1020} x1={420} y1={725} p={rampa(t, M.area + 0.1, 0.4)} discontinua color="#8A97B0" />
       <Linea x0={560} y0={1020} x1={780} y1={725} p={rampa(t, M.area + 0.2, 0.4)} discontinua color="#8A97B0" />
-      <Dicho x={500} y={820} w={540} h={170} colaX={720} p={pide}>
-        <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Sora", fontWeight: 800, fontSize: 40, color: TINTA }}>¿me prestas a la repostera?</div>
+      <Dicho x={500} y={820} w={580} h={170} colaX={720} p={pide}>
+        <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Sora", fontWeight: 800, fontSize: 38, color: TINTA, padding: "0 24px" }}>¿me prestas a la repostera?</div>
       </Dicho>
       <Sombra x={560} y={1510} w={220} />
       <Mascota esp="perro-corbatin" x={560} y={1515} alto={400} t={t} cara={pide > 0 ? "tranquila" : "feliz"} semilla={9} />
@@ -130,6 +130,8 @@ function Medidor({ t }) {
           </div>
         );
       })}
+      <Sombra x={540} y={1510} w={200} />
+      <Mascota esp="perro-corbatin" x={540} y={1515} alto={lerp(200, 330, ESTR.reduce((m, [tw, , , f]) => (t > tw - 0.4 ? f : m), 0))} t={t} cara={t > M.orientada ? "estrellas" : t > M.debil ? "tranquila" : "triste"} semilla={9} />
     </Escena>
   );
 }
@@ -140,7 +142,7 @@ function Pmo({ t }) {
   const tipos = [[M.apoyo, "🤝", "de apoyo", "aconseja y presta plantillas", "reducido", 0.25], [M.control10, "📏", "de control", "exige sus métodos", "moderado", 0.55], [M.directiva, "🎯", "directiva", "dirige los proyectos", "elevado", 0.92]];
   return (
     <Escena cam={cam} fondo="art/oficina.jpg" filtro="blur(6px)" velo={0.2}>
-      <Cartel x={540} y={270} txt="🏢 oficina de dirección de proyectos" p={rampa(t, M.oficina - 0.3, 0.35)} tam={42} fondo={AZUL} color="#fff" />
+      <Cartel x={540} y={270} txt="🏢 oficina de dirección de proyectos" p={rampa(t, S(8) - 0.2, 0.35)} tam={42} fondo={AZUL} color="#fff" />
       <Cartel x={540} y={370} txt="PMO" p={rampa(t, M.pmo8 - 0.4, 0.35)} tam={52} fondo={CREMA} />
       {tipos.map(([tw, ic, nom, que, ctl, f], k) => {
         const p = rampa(t, tw - 0.4, 0.4);
@@ -161,6 +163,10 @@ function Pmo({ t }) {
           </div>
         );
       })}
+      <Sombra x={300} y={1510} w={190} />
+      <Mascota esp="perro-corbatin" x={300} y={1515} alto={300} t={t} cara="feliz" bi={-50 * pulso(t, M.oficina - 0.3, 1)} semilla={9} />
+      <Sombra x={800} y={1510} w={170} />
+      <Mascota esp="conejo" x={800} y={1515} alto={280} t={t} cara="tranquila" semilla={5} espejo />
     </Escena>
   );
 }

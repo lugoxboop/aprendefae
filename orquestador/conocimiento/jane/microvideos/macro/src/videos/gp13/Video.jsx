@@ -48,7 +48,7 @@ const CAMPOS = [
   [M.objetivos, "📏", "objetivos medibles", "100 panes al día · diciembre"],
   [M.riesgo, "⚠️", "riesgo general", ""],
   [M.hitos, "🚩", "hitos", ""],
-  [M.preaprobada, "💰", "plata preaprobada", ""],
+  [M.preaprobada, "💰", "recursos financieros preaprobados", ""],
   [M.interesados, "👥", "interesados clave", ""],
   [M.firma, "✍️", "quién firma la aprobación", ""],
 ];
@@ -60,7 +60,7 @@ function Gancho({ t }) {
     <Escena cam={cam} fondo="art/oficina.jpg" filtro="blur(5px)" velo={0.15}>
       <Documento x={540} y={560} w={380} p={rampa(t, M.papel - 0.3, 0.4)} titulo="acta de constitución" letra={44} />
       <Destello x={540} y={560} r={300} p={rampa(t, M.papel - 0.2, 0.8)} />
-      <Cartel x={540} y={920} txt="sin acta, no existe" p={rampa(t, M.existe1 - 0.4, 0.35)} tam={76} fondo={ROJO} color="#fff" giro={-3} />
+      <Cartel x={540} y={920} txt="sin acta, no existe formalmente" p={rampa(t, M.existe1 - 0.4, 0.35)} tam={76} fondo={ROJO} color="#fff" giro={-3} />
       <Sombra x={540} y={1510} w={260} />
       <Mascota esp="hamster-gorra" x={540} y={1515} alto={420} t={t} cara={t > M.empezado - 0.5 ? "triste" : "feliz"} semilla={3} />
     </Escena>
@@ -78,7 +78,7 @@ function Frena({ t }) {
       <Cartel x={540} y={330} txt="✓ el carrito" p={rampa(t, M.eligieron - 0.3, 0.35)} tam={58} fondo={COLOR.VERDE} color="#fff" />
       <Gigante x={xPia + 40} y={1000} txt="🛞" p={rampa(t, M.ruedas - 0.5, 0.35)} tam={110} giro={t * 200} />
       <Dicho x={480} y={400} w={500} h={210} colaX={850} p={rampa(t, M.frena - 0.2, 0.4)}>
-        <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Sora", fontWeight: 800, fontSize: 50, color: TINTA }}>✋ Primero, el acta.</div>
+        <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Sora", fontWeight: 800, fontSize: 46, color: TINTA }}>✋ Primero, el acta.</div>
       </Dicho>
       <Sombra x={xPia} y={1510} w={210} />
       <Mascota esp="hamster-gorra" x={xPia} y={1515} alto={400} t={t} cara={frena > 0.5 ? "tranquila" : "estrellas"} salto={30 * Math.abs(Math.sin(t * 7)) * (1 - frena) * (t > M.ruedas - 1.0 ? 1 : 0)} semilla={3} />
@@ -96,7 +96,7 @@ function Firma({ t }) {
     <Escena cam={cam} fondo="art/oficina.jpg">
       <Documento x={540} y={560} w={340} p={rampa(t, S(4) - 0.2, 0.4)} titulo="acta de constitución" letra={38} sello={rampa(t, M.existe5 - 0.3, 0.4)} />
       <Cartel x={540} y={300} txt="la emite el patrocinador" p={rampa(t, M.patrocinador - 0.4, 0.35)} tam={54} fondo={MANGO} />
-      <Cartel x={540} y={880} txt="el proyecto existe" p={rampa(t, M.formal - 0.6, 0.35)} tam={56} fondo={COLOR.VERDE} color="#fff" giro={-2} />
+      <Cartel x={540} y={880} txt="existe formalmente" p={rampa(t, M.formal - 0.6, 0.35)} tam={56} fondo={COLOR.VERDE} color="#fff" giro={-2} />
       <Cartel x={300} y={1020} txt="⚡ autoridad" p={rampa(t, M.autoridad - 0.3, 0.35)} tam={56} fondo={CREMA} />
       {rec.map(([tw, ic], k) => {
         const q = sale(rampa(t, tw - 0.3, 0.6));
@@ -156,7 +156,7 @@ function Acta({ t }) {
 /* ═════ 11 · Todos entienden lo mismo ═════ */
 function Comun({ t }) {
   const cam = mover(t, { s: 1.0, x: 540, y: 968 }, [{ a: S(11), b: E(11), s: 1.03, x: 540, y: 960 }]);
-  const cosas = [[M.entrega, "📦", "qué se entrega"], [M.cuando, "📅", "cuándo"], [M.que11, "🙋", "quién hace qué"]];
+  const cosas = [[M.entrega, "📦", "qué se entrega"], [M.cuando, "🗓️", "cuándo"], [M.que11, "🙋", "quién hace qué"]];
   const gente = [["hamster-gorra", 170, 3, false], ["gato-gafas", 420, 6, false], ["perro-corbatin", 670, 9, true], ["perro-mochila", 910, 4, true]];
   return (
     <Escena cam={cam} fondo="art/panaderia.jpg" filtro="blur(4px)" velo={0.15}>

@@ -42,7 +42,7 @@ const PLANOS = [
 const AREAS = [
   ["🧩", "integración", AZUL, M.integracion],
   ["📦", "alcance", MANGO, M.alcance],
-  ["📅", "cronograma", COLOR.CORAL, M.cronograma],
+  ["🗓️", "cronograma", COLOR.CORAL, M.cronograma],
   ["💰", "costos", COLOR.VERDE, M.costos],
   ["🎂", "calidad", "#B57BE0", M.calidad],
   ["🪑", "recursos", "#8A5A35", M.recursos],
@@ -56,7 +56,7 @@ const AREAS = [
 const ESCENAS = {
   3: [[M.encaje - 0.3, "🧩", "que todo encaje"]],
   4: [[M.baile - 0.3, "💃", "¿baile?"], [M.mariachi - 0.3, "🎺", "¿mariachi?"]],
-  5: [[M.fecha - 0.3, "📅", "la fecha"], [M.presupuesto - 0.3, "💰", "el presupuesto"]],
+  5: [[M.fecha - 0.3, "🗓️", "la fecha"], [M.presupuesto - 0.3, "💰", "el presupuesto"]],
   6: [[M.pastel - 0.3, "🎂", "el pastel pedido"], [M.meseros - 0.3, "🤵", "meseros y sillas"]],
   7: [[M.avisar - 0.3, "📣", "avisar a todos"], [M.llueve - 0.3, "🌧️", "¿y si llueve?"]],
   8: [[M.salon - 0.3, "🏛️", "el salón"], [M.musica - 0.3, "🎵", "la música"]],
@@ -150,7 +150,7 @@ function Areas({ t }) {
 
 /* Tabla 1-1: procesos por área (filas) y grupo (columnas: inicio, planificación, ejecución, monitoreo y control, cierre) */
 const TABLA = [[1, 1, 2, 2, 1], [0, 4, 0, 2, 0], [0, 5, 0, 1, 0], [0, 3, 0, 1, 0], [0, 1, 1, 1, 0], [0, 2, 3, 1, 0], [0, 1, 1, 1, 0], [0, 5, 1, 1, 0], [0, 1, 1, 1, 0], [1, 1, 1, 1, 0]];
-const COLS = [["🚩", ROJO], ["📋", MANGO], ["🔨", COLOR.VERDE], ["👀", AZUL], ["✍️", COLOR.CORAL]];
+const COLS = [["🚩", ROJO, "inicio"], ["📋", MANGO, "planif."], ["🔨", COLOR.VERDE, "ejec."], ["👀", AZUL, "M y C"], ["✍️", COLOR.CORAL, "cierre"]];
 
 /* ═════ 11 · Cruzadas con los cinco grupos: 49 procesos ═════ */
 function Tabla({ t }) {
@@ -161,8 +161,8 @@ function Tabla({ t }) {
   return (
     <Escena cam={cam} fondo="art/oficina.jpg" filtro="blur(6px)" velo={0.25}>
       <div style={{ position: "absolute", left: 30, top: y0 - 110, width: 1020, height: ch * 10 + 130, background: "rgba(255,253,247,.9)", border: `7px solid ${TINTA}`, borderRadius: 28 }} />
-      {COLS.map(([ic, col], c) => (
-        <div key={c} style={{ position: "absolute", left: x0 + c * cw, top: y0 - 95, width: cw - 10, height: 76, borderRadius: 16, background: col, border: `5px solid ${TINTA}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 44, transform: `scale(${rebote(rampa(t, M.cinco - 0.4 + c * 0.08, 0.3))})` }}>{ic}</div>
+      {COLS.map(([ic, col, nom], c) => (
+        <div key={c} style={{ position: "absolute", left: x0 + c * cw, top: y0 - 95, width: cw - 10, height: 76, borderRadius: 16, background: col, border: `5px solid ${TINTA}`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", fontSize: 32, lineHeight: 1, transform: `scale(${rebote(rampa(t, M.cinco - 0.4 + c * 0.08, 0.3))})` }}>{ic}<span style={{ fontFamily: "Sora", fontWeight: 800, fontSize: 22, color: "#fff", marginTop: 4, textShadow: "0 2px 0 rgba(42,30,23,.6)" }}>{nom}</span></div>
       ))}
       {AREAS.map(([ic, txt], r) => (
         <div key={r} style={{ position: "absolute", left: 50, top: y0 + r * ch, width: 240, height: ch - 8, display: "flex", alignItems: "center", gap: 8, fontFamily: "Sora", fontWeight: 800, fontSize: 23, color: TINTA, whiteSpace: "nowrap", opacity: rampa(t, M.cruzadas - 0.4 + r * 0.04, 0.3) }}>

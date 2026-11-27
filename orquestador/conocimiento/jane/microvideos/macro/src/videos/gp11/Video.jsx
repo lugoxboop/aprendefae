@@ -146,7 +146,7 @@ function Lista({ t }) {
 function Adapta({ t }) {
   const cam = mover(t, { s: 1.0, x: 540, y: 968 }, [{ a: S(11) - 0.2, b: E(11), s: 1.02, x: 540, y: 960 }]);
   const piezas = [[M.procesos, "⚙️ procesos"], [M.entradas, "📥 entradas"], [M.herramientas, "🧰 herramientas"], [M.tecnicas, "🎯 técnicas"], [M.salidas, "📤 salidas"], [M.fases, "🧭 fases"]];
-  const elige = [1, 0, 1, 1, 0, 1];
+  const elige = [1, 1, 1, 1, 1, 1];
   const enGente = rampa(t, S(11) - 0.3, 0.4);
   return (
     <Escena cam={cam} fondo="art/oficina.jpg" filtro="blur(6px)" velo={0.2}>

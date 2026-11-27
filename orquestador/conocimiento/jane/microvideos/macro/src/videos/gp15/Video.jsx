@@ -105,7 +105,7 @@ function CarritoEsc({ t }) {
 function Eef({ t }) {
   const cam = mover(t, { s: 1.0, x: 540, y: 968 }, [{ a: S(7) - 0.2, b: E(7), s: 1.02, x: 540, y: 960 }]);
   const ext = [[rampa(t, M.clima - 0.3, 0.35), "☁️", "clima"], [rampa(t, M.mercado - 0.3, 0.35), "📈", "mercado"], [rampa(t, M.leyes - 0.3, 0.35), "⚖️", "leyes"], [rampa(t, M.cambio - 0.5, 0.35), "💱", "tasas de cambio"]];
-  const int = [[rampa(t, M.cultura - 0.3, 0.35), "🎭", "cultura"], [rampa(t, M.instalaciones - 0.3, 0.35), "🏭", "instalaciones"], [rampa(t, M.gente - 0.5, 0.35), "🧠", "lo que sabe su gente"]];
+  const int = [[rampa(t, M.cultura - 0.3, 0.35), "🎭", "cultura"], [rampa(t, M.instalaciones - 0.3, 0.35), "🏭", "instalaciones"], [rampa(t, M.gente - 0.5, 0.35), "🧠", "saber de su gente"]];
   return (
     <Escena cam={cam} fondo="art/oficina.jpg" filtro="blur(6px)" velo={0.2}>
       <Cartel x={540} y={250} txt="factores ambientales de la empresa" p={rampa(t, M.factores5 - 0.3, 0.35)} tam={44} fondo={MANGO} />

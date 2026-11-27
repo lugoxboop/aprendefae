@@ -74,7 +74,7 @@ function Gancho({ t }) {
   const cam = mover(t, { s: 1.1, x: 540, y: 940 }, [{ a: 0.2, b: E(1) + 0.3, s: 1.0, x: 540, y: 968 }]);
   return (
     <Escena cam={cam} fondo="art/oficina.jpg" filtro="blur(5px)" velo={0.15}>
-      <Cartel x={540} y={520} txt="«Gastamos $3 millones»" p={rampa(t, M.gastamos - 0.2, 0.35)} tam={72} fondo={CREMA} giro={-2} />
+      <Cartel x={540} y={520} txt="«Gastamos $3 millones»" p={rampa(t, M.gastamos - 0.2, 0.35)} tam={62} fondo={CREMA} giro={-2} />
       <Gigante x={540} y={800} txt="¿y?" p={rampa(t, M.nada - 0.5, 0.35)} tam={170} color={ROJO} giro={-4 + 4 * Math.sin(t * 3)} />
       <Sombra x={540} y={1510} w={260} />
       <Mascota esp="hamster-gorra" x={540} y={1515} alto={460} t={t} cara="tranquila" cab={10 * pulso(t, M.nada - 0.4, 1.2)} bi={-50 * pulso(t, M.nada - 0.4, 1.2)} bd={-50 * pulso(t, M.nada - 0.4, 1.2)} semilla={3} />
@@ -122,7 +122,7 @@ function Contexto({ t }) {
 function Informe({ t }) {
   const cam = mover(t, { s: 1.0, x: 540, y: 968 }, [{ a: S(9) - 0.2, b: E(9), s: 1.03, x: 540, y: 950 }]);
   const pH = rampa(t, M.hoja - 0.4, 0.4);
-  const filas = [["💰 costo", ROJO, M.rojo], ["📅 plazo", COLOR.VERDE, M.verde]];
+  const filas = [["💰 costo", ROJO, M.rojo], ["🗓️ plazo", COLOR.VERDE, M.verde]];
   return (
     <Escena cam={cam} fondo="art/oficina.jpg">
       {pH > 0 && (
@@ -136,14 +136,14 @@ function Informe({ t }) {
           ))}
         </div>
       )}
-      <Cartel x={330} y={1010} txt="informe de desempeño" p={rampa(t, M.informe9 - 0.3, 0.35)} tam={54} fondo={MANGO} giro={-2} />
-      <Cartel x={330} y={1135} txt="para decidir" p={rampa(t, M.decisiones - 0.5, 0.35)} tam={50} fondo={CREMA} giro={2} />
+      <Cartel x={440} y={1010} txt="informe de desempeño" p={rampa(t, M.informe9 - 0.3, 0.35)} tam={54} fondo={MANGO} giro={-2} />
+      <Cartel x={440} y={1135} txt="para decidir" p={rampa(t, M.decisiones - 0.5, 0.35)} tam={50} fondo={CREMA} giro={2} />
       <Dicho x={600} y={560} w={450} h={230} colaX={860} p={rampa(t, M.decide - 0.3, 0.4)}>
         <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center", fontFamily: "Sora", fontWeight: 800, fontSize: 44, lineHeight: 1.15, color: TINTA, padding: "0 20px" }}>paremos el gasto<br />en adornos</div>
       </Dicho>
       <Sombra x={850} y={1510} w={240} />
       <Mascota esp="gato-gafas" x={850} y={1515} alto={500} t={t} cara={t > M.decide - 0.3 ? "feliz" : "tranquila"} bd={-70 * pulso(t, M.decide - 0.3, 1)} cab={6 * pulso(t, M.lee - 0.3, 1.2)} semilla={6} espejo />
-      <Placa x={850} y={880} nombre="Carmen" rol="Socia" p={rampa(t, M.lee - 0.4, 0.35) * (1 - rampa(t, M.decide - 0.4, 0.3))} color={COLOR.CORAL} />
+      <Placa x={850} y={880} nombre="Carmen" rol="socia" p={rampa(t, M.lee - 0.4, 0.35) * (1 - rampa(t, M.decide - 0.4, 0.3))} color={COLOR.CORAL} />
       <Sombra x={170} y={1510} w={200} />
       <Mascota esp="hamster-gorra" x={170} y={1515} alto={340} t={t} cara="feliz" semilla={3} />
     </Escena>
