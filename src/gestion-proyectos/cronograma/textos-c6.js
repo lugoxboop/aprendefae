@@ -688,7 +688,7 @@ export const GP_C6_H12 = {
       linea12("c6h12-02", "Ruta crítica: A–B–D–F (20 días).", "A–C–D–F (23 días)", "A–G–H (14 días)", "La crítica es la más larga: 23 días.", "gp-6-5"),
       linea12("c6h12-03", "Para abrir antes: intensificar G (contratar).", "Intensificar una actividad crítica", "Intensificar H (capacitar)", "G tiene holgura: acelerarla no adelanta la inauguración.", "gp-6-5"),
       linea12("c6h12-04", "Pintar: 8 días, incluidos 3 de secado.", "5 días + retraso de 3", "8 días + retraso de 3", "La duración no incluye retrasos: el secado va aparte.", "gp-6-3"),
-      linea12("c6h12-05", "Ejecución rápida: empezar la obra antes del permiso.", "Solapar D y F", "Solapar A y C", "El permiso es obligatorio por ley: no se puede solapar.", "gp-6-5"),
+      linea12("c6h12-05", "Ejecución rápida: empezar la obra antes del permiso.", "Solapar D y F", "Solapar G y H", "El permiso es obligatorio por ley: no se puede solapar.", "gp-6-5"),
       linea12("c6h12-06", "La fecha de fin se movió sin aprobación.", "Pedir el cambio al control integrado", "Avisar a la junta después", "La línea base solo cambia por control formal de cambios.", "gp-6-6"),
       linea12("c6h12-07", "Monte Carlo: 10 % de probabilidad de abrir el día 21; «es casi seguro».", "Es poco probable", "Es seguro", "Un 10 % de probabilidad significa que es poco probable.", "gp-6-5"),
       linea12("c6h12-08", "A no tiene predecesora: es la primera actividad.", null, ["A depende de B", "A empieza el día 3"], "Correcto: solo la primera y la última no tienen ambas.", "gp-6-3"),
