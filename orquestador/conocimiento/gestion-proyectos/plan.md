@@ -61,7 +61,10 @@ Total de la materia: **141 Hacer** (18 de caps. 1–2 + 123 de caps. 3–13).
   en el texto. La 2-1 se reconstruyó; las claves de H03 son criterio de Gen. Confirmar
   con el PDF o con el profesor.
 - 2026-11-27 — Sin syllabus: el orden es el de la guía, un Hacer por día.
-- Avisos de la fuente: la 6.ª ed. **no trae** la fórmula de canales n(n−1)/2 (c10 H07 queda
-  condicionada al aval del profesor) ni el diagrama de Pareto con ese nombre (c08 lo trabaja
+- Avisos de la fuente: la 6.ª ed. **no trae** la fórmula de canales n(n−1)/2 (c10 H07 se ajustó
+  a la guía: tipos de canal, sin fórmula) ni el diagrama de Pareto con ese nombre (c08 lo trabaja
   como histograma de causas); la fórmula del TCPI con EAC trae una errata en la guía (c07).
   Gráficos ilegibles: 9-4, 11-5, 11-10, 11-14, 13-6, 8-9 (no se usaron sus claves).
+- 2026-11-27 20:19 — Mateo: trabajar solo con la guía; lo que no esté se ajusta a ella, no
+  se bloquea. Dudas para el profesor → `preguntas-profesor.md`. **Publicar visible cada lote
+  apenas esté construido**, los 13 capítulos.

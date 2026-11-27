@@ -20,9 +20,8 @@ elenco, paso 6, límites de texto, arrastre, coral solo para error, puntaje, cel
   PMO (perro) · Practicante (hurón). Tiendas aliadas, distribuidores, prensa, alcaldías y
   proveedores no son mascotas: aparecen como edificios, documentos o voces en globo.
 - **Calendario:** días relativos al capítulo (Día 1 = primer Hacer del cap. 10).
-- **Pieza condicionada:** H07 (canales potenciales) usa una cuenta que **no trae la 6.ª
-  ed.** (ver ficha). Se construye, pero queda oculta hasta que el profesor la avale; el
-  capítulo queda completo con las otras 10.
+- **H07 ajustada a la guía:** trabaja los canales uno a uno, uno a muchos y muchos a
+  muchos (p. 370), sin la fórmula n(n−1)/2, que la 6.ª ed. no trae.
 
 ## 1. Plan y calendario
 
@@ -34,7 +33,7 @@ elenco, paso 6, límites de texto, arrastre, coral solo para error, puntaje, cel
 | 4 | gp-c10-h04-playa | Faro, quiosco o carpa | Clasificar en 3 lugares + predecir y revelar (2 etapas) | gp10-metodos | Medio | 25 × 2 = 50 × % | gp-c10-a04 |
 | 5 | gp-c10-h05-malecon | El malecón de los cinco escenarios | Llevar al zorro al escenario (ubicar) | gp10-metodos | Fácil | 10 × % | gp-c10-a04 |
 | 6 | gp-c10-h06-banderas | Las banderas de señales | Izar la bandera del factor | gp10-tecnologia | Medio | 25 × % | gp-c10-a05 |
-| 7 | gp-c10-h07-amarres | Los amarres del muelle (condicionada) | Predecir y revelar con conteo | gp10-requisitos | Medio | 25 × % | gp-c10-a05 |
+| 7 | gp-c10-h07-amarres | Los amarres del muelle | Amarrar por tipo de canal + predecir | gp10-requisitos | Medio | 25 × % | gp-c10-a05 |
 | 8 | gp-c10-h08-tablero | El tablero de salidas | Construir el plan en un tablero + filtrar contenido (2 etapas) | gp10-plan | Difícil | 50 × 2 = 100 × % | gp-c10-a06 |
 | 9 | gp-c10-h09-reunion | La reunión que se desbordó | Decisiones con consecuencias (reloj) | gp10-gestionar | Medio | 25 × % | gp-c10-a07 |
 | 10 | gp-c10-h10-ecosonda | La ecosonda del lanzamiento | Calcular + decidir (2 etapas) | gp10-monitorear | Difícil | 50 × 2 = 100 × % | gp-c10-a08 |
@@ -261,29 +260,35 @@ y decidir (H08–H10), evaluar (H11).
 - **Cierre (9):** «Urgencia, disponibilidad, facilidad, entorno y confidencialidad deciden la tecnología.»
 - **Subtema:** `gp10-tecnologia`.
 
-### H07 · Los amarres del muelle (`gp-c10-h07-amarres`, Medio, 25 FP × %) — CONDICIONADA
-> Oculta hasta que el profesor avale la cuenta: la 6.ª ed. solo nombra los «canales
-> potenciales uno a uno» como fuente del análisis de requisitos (p. 370); la expresión
-> n(n−1)/2 no aparece. El visual no afirma nada falso: **cuenta pares**, uno por uno.
+### H07 · Los amarres del muelle (`gp-c10-h07-amarres`, Medio, 25 FP × %)
+> Ajustada a la guía (orden de Mateo, 27-nov): la 6.ª ed. pide analizar la **cantidad de
+> canales potenciales, incluidas las comunicaciones uno a uno, uno a muchos y muchos a
+> muchos** (p. 370), sin dar fórmula. La pieza ejercita esos tres tipos; no usa n(n−1)/2.
 - **Contexto (18):** «El equipo de lanzamiento empezó con cuatro personas. Cada semana se suma gente y los mensajes se enredan.»
 - **Rol (9):** «Diriges el lanzamiento y analizas los requisitos de comunicación.»
-- **Consigna (7):** «Predice cuántos canales uno a uno habrá.»
+- **Consigna (8):** «Amarra cada mensaje con el tipo de canal que usa.»
 - **Visual:** un **muelle de madera** ilustrado (Gemini) con **bolardos de amarre**
-  (uno por persona, con su rol escrito: Tú, Patrocinadora, Equipo · diseño,
-  Equipo · mercadeo…). El estudiante escribe su predicción; al revelar, se tiende una
-  soga entre cada par de bolardos, una a una, con un contador que sube.
+  (uno por persona o grupo, con su rol escrito). Tres carretes de soga para arrastrar:
+  **Uno a uno** (una soga entre dos bolardos) · **Uno a muchos** (abanico de sogas desde
+  un bolardo) · **Muchos a muchos** (red entre todos). Al acertar, la soga se tiende con
+  esa forma; la forma distingue el tipo, no solo el color.
 
-| Ronda | Personas | Clave | Retro si se equivoca |
-|---|---|---|---|
-| 1 | 4 | **6** | «Con 4 personas hay 6 pares posibles.» |
-| 2 | 5 | **10** | «La quinta persona se une a las otras 4: 6 + 4 = 10.» |
-| 3 | 6 | **15** | «La sexta suma 5 sogas nuevas: 10 + 5 = 15.» |
-| 4 | 10 | **45** | «Con 10 personas los pares llegan a 45.» |
+| Mensaje | Clave | Retro si se equivoca |
+|---|---|---|
+| «La patrocinadora te escribe solo a ti sobre el presupuesto.» | Uno a uno | «Una persona habla con otra: un solo canal.» |
+| «Llamas al proveedor de vallas para cambiar una fecha.» | Uno a uno | «Es una conversación entre dos partes.» |
+| «Envías el boletín del lanzamiento a todos los distribuidores.» | Uno a muchos | «Sale de ti hacia muchos a la vez.» |
+| «La PMO publica la plantilla nueva para todos los equipos.» | Uno a muchos | «Un emisor y varios receptores: uno a muchos.» |
+| «Reunión de todo el equipo donde todos opinan.» | Muchos a muchos | «Todos emiten y todos reciben: muchos a muchos.» |
+| «Grupo de chat del equipo de diseño y mercadeo.» | Muchos a muchos | «Cualquiera escribe y todos leen: muchos a muchos.» |
 
-- **Micro final:** Consigna (9): «¿Qué crece más rápido, las personas o los canales?»
-  **Los canales ✓** / Las personas / Igual. Retro: «Cada persona nueva se conecta con
-  todas las anteriores.»
-- **Cierre (12):** «Canales uno a uno = n × (n − 1) ÷ 2.» (solo se muestra con aval del profesor)
+- **Micro final (predecir y revelar):** Contexto (12): «Esta semana el equipo pasa de
+  cuatro a diez personas.» Consigna (8): «¿Qué pasa con los canales de comunicación
+  potenciales?» **Aumentan y hay que revisar los requisitos ✓** / Siguen iguales / Bajan.
+  Revelar: aparecen bolardos nuevos y el muelle se llena de sogas posibles. Retros:
+  «Cada persona nueva abre canales nuevos con las demás.» (9) · «Más gente no reduce los
+  canales posibles.» (6)
+- **Cierre (12):** «La cantidad de canales es una fuente para definir los requisitos de comunicación.»
 - **Subtema:** `gp10-requisitos`.
 
 ### H08 · El tablero de salidas (`gp-c10-h08-tablero`, Difícil, 50 × 2 = 100 FP × %)
@@ -446,7 +451,7 @@ una pantalla · panda leyendo un informe corto.
 
 | Dimensión | Nivel esperado | Por qué |
 |---|---|---|
-| Prerrequisitos | Pasa | Todo concepto rastreable a la ficha (pp. 359–393). Claves no explícitas marcadas «criterio de Gen» (H02 por solapamiento de las 5C; cifras ilustrativas de H04). La cuenta de canales (H07) **no está en la 6.ª ed.**: pieza condicionada y oculta hasta el aval del profesor. Sin clichés. |
+| Prerrequisitos | Pasa | Todo concepto rastreable a la ficha (pp. 359–393). Claves no explícitas marcadas «criterio de Gen» (H02 por solapamiento de las 5C; cifras ilustrativas de H04). H07 ajustada a la guía (sin fórmula de canales). Sin clichés. |
 | D1 Cobertura | Avanzado | Los 11 subtemas tienen pieza (`gp10-tendencias` y `gp10-habilidades` van dentro de H06, H08 y H09: entorno, idioma, escucha activa, conflictos). Los 3 procesos tienen Hacer (10.1 H06–H08, 10.2 H02, H03, H09, 10.3 H10). |
 | D2 Nivel cognitivo | Avanzado | Reconocer (H01, H05), aplicar (H02–H04, H06, H07), construir y decidir (H08–H10), evaluar (H11). |
 | D3 Retroalimentación | Avanzado | Retro específica por ítem, por par invertido (H03) o por opción (H09, H10). |

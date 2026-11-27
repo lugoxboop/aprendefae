@@ -90,8 +90,8 @@ uno a muchos, muchos a muchos); organigramas; responsabilidades e interdependenc
 enfoque de desarrollo; disciplinas y departamentos; cuántas personas y dónde; necesidades
 internas y externas; requisitos legales.
 ⚠ **La guía 6.ª ed. no trae la fórmula de canales n(n−1)/2** (solo nombra los canales
-potenciales como fuente). La fórmula venía en ediciones anteriores; si se usa en una
-actividad, va **marcada y condicionada al aval del profesor** (ver diseño c10, H03).
+potenciales como fuente). Por orden de Mateo (27-nov) no se usa: las actividades se
+ajustan a la guía (canales uno a uno, uno a muchos, muchos a muchos; diseño c10, H07).
 
 **Tecnología de la comunicación (pp. 370–371).** Métodos comunes: conversaciones,
 reuniones, documentos, bases de datos, redes, sitios web. Factores para elegir:
@@ -196,8 +196,7 @@ o crear procedimientos para eliminar **cuellos de botella**).
 - Cumplimiento del plan: **% = comunicaciones implementadas ÷ planificadas × 100**
   (criterio de Gen para la forma; la guía pide comparar implementado vs. planificado).
 - Eficacia por encuesta: **% = quienes entendieron ÷ encuestados × 100** (criterio de Gen).
-- Canales potenciales uno a uno: **n(n−1)/2** — **no está en la 6.ª ed.**; solo con aval
-  del profesor.
+- Canales potenciales: la guía no da fórmula; no se usa n(n−1)/2.
 
 ## Lo que más confunde (criterio de Gen hasta que llegue el profesor)
 1. Creer que push garantiza que el mensaje se entendió (solo asegura que se envió).
