@@ -246,3 +246,73 @@ Fuente: G 1.2.5, p. 28; G p. 1–2.
 12. Ahora te toca: arma las tres opciones de tu propio proyecto.
 
 Fuente: G 1.2.6, 1.2.6.1, 1.2.6.2, p. 29–33; Tabla 1-5.
+
+# Tanda 4 (GP-13 a GP-16)
+
+## GP-13 · Sin este papel, el proyecto no existe (G 1.2.6.3, p. 34; 4.1.3.1, p. 81)
+
+1. Sin este papel, tu proyecto no existe. Aunque ya hayas empezado.
+2. Pía y Carmen eligieron el carrito de pan, y Pía ya quiere salir a comprar ruedas.
+3. Carmen la frena: «Primero, el acta».
+4. El acta de constitución la emite el patrocinador: aquí, Carmen, que pone la plata.
+5. Con ella, el proyecto existe de manera formal.
+6. Y Pía, como directora, recibe la autoridad para usar los recursos: la plata, el horno, la gente.
+7. El acta no es el plan: documenta la información de alto nivel.
+8. El propósito: vender pan en el barrio norte.
+9. Los objetivos medibles: cien panes al día antes de diciembre.
+10. Y también el riesgo general, los hitos, la plata preaprobada, los interesados clave y quién firma la aprobación.
+11. Así todos entienden lo mismo: qué se entrega, cuándo y quién hace qué.
+12. Ahora te toca: arma con Pía el acta de tu propio proyecto.
+
+Fuente: G 1.2.6.3, p. 34; 4.1.3.1, p. 81.
+
+## GP-14 · A tiempo, en presupuesto… y fracasó (G 1.2.6.4, p. 34–35)
+
+1. Un proyecto puede salir a tiempo y en presupuesto, y aun así fracasar.
+2. Ramón montó una tienda para imprimir fotos en su barrio.
+3. La terminó a tiempo, sin pasarse del presupuesto y bien hecha.
+4. Pero mientras la montaba, la gente empezó a guardar sus fotos en el celular. Nadie entró.
+5. Éxito en alcance, cronograma y presupuesto; fracaso para el negocio. Pasa cuando el mercado cambia antes de terminar.
+6. Por tradición, el éxito se medía con tiempo, costo, alcance y calidad.
+7. Hoy también cuenta si se lograron los objetivos del proyecto.
+8. Y cada interesado puede tener una idea distinta de lo que es el éxito.
+9. Por eso se responden tres preguntas: ¿cómo se define el éxito?, ¿cómo se medirá?, ¿qué factores pueden influir?
+10. Las respuestas se documentan, y las acuerdan los interesados clave y el director.
+11. Y los objetivos deben ser medibles: no «que se venda bien», sino «cien clientes al mes».
+12. Ahora te toca: ¿cómo vas a medir el éxito de tu proyecto?
+
+Fuente: G 1.2.6.4, p. 34–35.
+
+## GP-15 · Lo que no controlas y lo que tu organización ya sabe (G 2.2, 2.2.1, 2.2.2, 2.3, p. 37–41)
+
+1. La lluvia no está en tu plan, pero manda en tu obra.
+2. Pía arma el carrito de pan para el barrio norte.
+3. Llueve tres semanas seguidas, sube el precio de la harina y la alcaldía pide un permiso nuevo.
+4. Nada de eso lo controla el equipo, pero influye en el proyecto, lo restringe o lo dirige.
+5. Son los factores ambientales de la empresa.
+6. Unos son externos: el clima, el mercado, las leyes, las tasas de cambio.
+7. Otros son internos: la cultura de la panadería, sus instalaciones, lo que sabe hacer su gente.
+8. Pero Pía tiene ayuda: la plantilla del acta, la lista de proveedores aprobados y las lecciones del primer local.
+9. Esos son los activos de los procesos de la organización.
+10. Sus planes, procesos, políticas, procedimientos y lo que la organización ya sabe.
+11. Los factores te condicionan; los activos los usas, y lo aprendido se suma a lo que la organización sabe.
+12. Ahora te toca: ¿esto es un factor interno, un factor externo o un activo de la organización?
+
+Fuente: G 2.2, 2.2.1, 2.2.2, 2.3, p. 37–41.
+
+## GP-16 · Director sin poder: estructuras y PMO (G 2.4.4.1, Tabla 2-1, p. 45–47; 2.4.4.3, p. 48)
+
+1. Puedes ser director del proyecto y no poder decidir casi nada.
+2. A Ramón lo nombran director del proyecto de una nueva línea de tortas en una gran panificadora.
+3. Pero cada persona de su equipo responde a su propio jefe de área.
+4. Si Ramón necesita a la repostera, se la tiene que pedir al jefe de producción.
+5. En una organización funcional, la autoridad del director es poca o ninguna.
+6. En una matricial se reparte: baja en la débil, de baja a moderada en la balanceada y de moderada a alta en la fuerte.
+7. Y en una organización orientada a proyectos, el director tiene una autoridad elevada, casi total.
+8. Además, muchas organizaciones tienen una oficina de dirección de proyectos: una PMO.
+9. Una PMO de apoyo aconseja y presta plantillas: ejerce un control reducido.
+10. Una de control exige que se usen sus métodos y plantillas: control moderado.
+11. Y una directiva dirige ella misma los proyectos: control elevado.
+12. Ahora te toca: en tu organización, ¿cuánto manda el director del proyecto?
+
+Fuente: G 2.4.4.1, Tabla 2-1, p. 45–47; 2.4.4.3, p. 48.
