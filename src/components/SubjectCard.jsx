@@ -1,5 +1,5 @@
 import { FAE } from "../theme.js";
-import { ArrowRight, TrendingUp, Scale, Compass } from "lucide-react";
+import { ArrowRight, TrendingUp, Scale, Compass, ClipboardCheck } from "lucide-react";
 import { CaraTema, LucesTema, TONOS, variablesDeTono } from "./shared/TarjetaTema.jsx";
 import { SUBJECTS, temasVisibles, actividadesDeTipo, APRENDER, HACER } from "../data/subjects.js";
 
@@ -28,8 +28,8 @@ export const CARD_SHELL = {
  * `icon` es el bloque gráfico propio de cada materia; `accent` tiñe la flecha y
  * el estado hover, que vive en home.css y lee las variables --fae-card-hover-*.
  */
-export default function SubjectCard({ icon, title, accent, hoverBg, hoverBorder, onClick, label, badges, tema = null, materia = null }) {
-  if (materia) return <TarjetaMateria materia={materia} title={title} label={label} onClick={onClick} />;
+export default function SubjectCard({ icon, title, accent, hoverBg, hoverBorder, onClick, label, badges, tema = null, materia = null, resumen = null }) {
+  if (materia) return <TarjetaMateria materia={materia} title={title} label={label} onClick={onClick} resumen={resumen} />;
   /*
    * Con `tema` (el índice de temas lo pasa), la tarjeta lleva la identidad de
    * su tema: pastilla, tono, luces y flecha en círculo (shared/TarjetaTema).
@@ -125,6 +125,8 @@ const MATERIAS = {
   macroeconomia: { tono: "durazno", Glifo: TrendingUp, Icono: () => <MacroIcon color="#fff" /> },
   contabilidad: { tono: "ambar", Glifo: Scale, Icono: () => <ContabilidadIcon enPastilla /> },
   "pensamiento-estrategico": { tono: "menta", Glifo: Compass, Icono: () => <EstrategiaIcon enPastilla /> },
+  /* Gestión de Proyectos (27-nov-2026): aún sin entrada en subjects.js, su rótulo llega por props. */
+  "gestion-proyectos": { tono: "cielo", Glifo: ClipboardCheck, Icono: () => <ClipboardCheck size={34} color="#fff" strokeWidth={2.2} aria-hidden="true" focusable="false" /> },
 };
 
 export function resumenDeMateria(id) {
@@ -143,10 +145,10 @@ export function resumenDeMateria(id) {
   return { rotulo, conteo: partes.join(" · ") || null };
 }
 
-function TarjetaMateria({ materia, title, label, onClick }) {
+function TarjetaMateria({ materia, title, label, onClick, resumen = null }) {
   const id = MATERIAS[materia] ? materia : "macroeconomia";
   const { tono, Glifo, Icono } = MATERIAS[id];
-  const { rotulo, conteo } = resumenDeMateria(materia);
+  const { rotulo, conteo } = resumen ?? resumenDeMateria(materia);
   return (
     <button
       type="button"

@@ -138,6 +138,16 @@ export default function HomeScreen({ onSelectSubject, onQueEs }) {
               onClick={() => onSelectSubject("contabilidad")}
             />
             </Entrada>
+            {/* Gestión de Proyectos, publicada por orden de Mateo el 27-nov-2026. */}
+            <Entrada orden={4} modo="crece" estira>
+            <SubjectCard
+              materia="gestion-proyectos"
+              title="Gestión de Proyectos"
+              label="Card Gestión de Proyectos"
+              resumen={{ rotulo: "Nueva", conteo: "1 video · 1 simulador" }}
+              onClick={() => onSelectSubject("gestion-proyectos")}
+            />
+            </Entrada>
           </div>
         </div>
 
