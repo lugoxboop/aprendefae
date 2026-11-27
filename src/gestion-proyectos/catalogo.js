@@ -34,7 +34,10 @@ export const PREFIJO_PIEZA = "gp26-";
 
 /* Las piezas de cada módulo, en el orden del camino. */
 export const PIEZAS = Object.freeze({
-  "gp-fundamentos": [],
+  "gp-fundamentos": [
+    /* Jane · GP-01 microvideo «El pan de cada día» (G §1.2.1, p. 4; operaciones p. 16). Aprobado por Mateo el 27-nov-2026. */
+    { id: "gp26-fun-a1-proyecto-operacion", tipo: "aprender", nombre: "¿Proyecto u operación? El pan de cada día", subtemas: ["gp-c1-proyectos", "gp-c1-portafolios"], microvideo: true },
+  ],
   "gp-inicio": [],
   "gp-planificacion": [],
   "gp-ejecucion": [],
@@ -43,7 +46,8 @@ export const PIEZAS = Object.freeze({
 });
 
 /* El interruptor de publicación: vacío = nada visible para los estudiantes. */
-export const PUBLICADAS = Object.freeze([]);
+/* GP-01 aprobado por Mateo el 27-nov-2026: sale en cuanto la materia entre a subjects.js. */
+export const PUBLICADAS = Object.freeze(["gp26-fun-a1-proyecto-operacion"]);
 export const estaPublicada = (id) => PUBLICADAS.includes(id);
 
 export const todasLasPiezas = () => MODULOS.flatMap((m) => (PIEZAS[m.id] ?? []).map((pz) => ({ ...pz, moduloId: m.id })));

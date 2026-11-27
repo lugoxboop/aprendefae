@@ -57,8 +57,12 @@ test("hay un espacio por módulo y las piezas que entren cumplen las reglas", ()
   for (const id of PUBLICADAS) assert.ok(piezas.some((p) => p.id === id), `${id} publicada sin pieza`);
 });
 
-test("la cobertura cuenta los huecos: hoy todos los procesos están sin pieza", () => {
-  for (const m of MODULOS) assert.equal(coberturaDe(m.id).sinPieza, m.procesos.length);
+test("la cobertura cuenta los huecos: un proceso sin ninguna pieza cuenta como hueco", () => {
+  for (const m of MODULOS) {
+    const conPieza = new Set((PIEZAS[m.id] ?? []).flatMap((pz) => pz.subtemas ?? []));
+    const huecos = m.procesos.filter((pr) => !conPieza.has(pr.id)).length;
+    assert.equal(coberturaDe(m.id).sinPieza, huecos, m.id);
+  }
 });
 
 test("nada visible a estudiantes sin el visto bueno de Mateo", () => {

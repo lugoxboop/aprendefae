@@ -18,6 +18,7 @@
 import { FAE } from "../theme.js";
 import { AREAS, GUIA, MODULOS, NOMBRE_MATERIA, SUBTEMAS } from "./estructura.js";
 import { PIEZAS, coberturaDe, todasLasPiezas } from "./catalogo.js";
+import Microvideo from "./Microvideo.jsx";
 
 const VERDE = FAE.teal;
 const LINEA = "rgba(203,220,242,0.16)";
@@ -126,6 +127,7 @@ export default function VistaPreviaGestionProyectos({ onBack }) {
                             {pr.documentos.map((d) => <li className="gp-doc" key={d}>{d}</li>)}
                           </ul>
                         )}
+                        {(PIEZAS[m.id] ?? []).filter((pz) => pz.microvideo && pz.subtemas?.[0] === pr.id).map((pz) => <Microvideo key={pz.id} id={pz.id} />)}
                         <div className="gp-espacios">
                           <span className="gp-espacio" data-lleno={c?.aprender ? "1" : "0"}>Aprender {c?.aprender ? "✓" : "· espacio libre"}</span>
                           <span className="gp-espacio" data-lleno={c?.hacer ? "1" : "0"}>Hacer {c?.hacer ? "✓" : "· espacio libre"}</span>
