@@ -10,8 +10,12 @@ export function solucionario() {
   const ordenes = {};
   const frases = {};
   const rieles = {};
+  const casillas = {};
   let posiciones = [];
-  const ponDecidir = (x) => { if (x.id && x.clave) claves[x.id] = x.clave; };
+  const ponDecidir = (x) => {
+    if (x.tipo === "casillas") { casillas[x.id] = x.casillas; return; }
+    if (x.id && x.clave) claves[x.id] = x.clave;
+  };
   const ponOrden = (m) => { ordenes[m.id] = m.items.map((x) => x.id); };
   for (const p of PIEZAS_TEXTO_GP) {
     for (const e of p.etapas) {
@@ -28,7 +32,7 @@ export function solucionario() {
       if (e.posiciones) posiciones = e.posiciones.map((x) => x.id);
     }
   }
-  return { claves, ordenes, frases, rieles, posiciones };
+  return { claves, ordenes, frases, rieles, posiciones, casillas };
 }
 
 /* Una respuesta que NO es la clave, para jugar un error a propósito. */

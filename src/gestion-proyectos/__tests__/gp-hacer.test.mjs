@@ -37,8 +37,8 @@ const { PIEZAS_TEXTO_GP, ITEMS_GP } = await import("../etiquetas.js");
 const S = solucionario();
 const DIR = new URL("..", import.meta.url);
 const COMPONENTES = {};
-/* Lote 1: fundamentos/Hnn*.jsx · lote 2: fundamentos/C03Hnn*.jsx e integracion/C04Hnn*.jsx. */
-for (const dir of ["fundamentos", "integracion"]) {
+/* Lote 1: fundamentos/Hnn*.jsx · lote 2: fundamentos/C03Hnn*.jsx e integracion/C04Hnn*.jsx · lote 3: alcance/ y cronograma/. */
+for (const dir of ["fundamentos", "integracion", "alcance", "cronograma"]) {
   for (const f of readdirSync(new URL(`${dir}/`, DIR)).filter((x) => /^(C0\d)?H\d\d.*\.jsx$/.test(x))) {
     const m = await import(new URL(`${dir}/${f}`, DIR).href);
     COMPONENTES[m.ID] = m.default;
@@ -47,6 +47,11 @@ for (const dir of ["fundamentos", "integracion"]) {
 
 const sinEstilos = (el) => el.innerHTML.replace(/<style>[\s\S]*?<\/style>/g, "");
 const clicEn = (b) => act(async () => { b.dispatchEvent(new w.MouseEvent("click", { bubbles: true })); });
+/* Escribir en un <input> controlado de React: el setter nativo y un evento input. */
+const escribir = (input, valor) => act(async () => {
+  Object.getOwnPropertyDescriptor(w.HTMLInputElement.prototype, "value").set.call(input, valor);
+  input.dispatchEvent(new w.Event("input", { bubbles: true }));
+});
 const pasa = (ms) => act(async () => { mock.timers.tick(ms); });
 
 async function montar(Componente, props) {
@@ -72,6 +77,14 @@ async function mover(el) {
     const tarjeta = q(`[data-tarjeta="${id}"]`);
     if (tarjeta) await clicEn(tarjeta);
     await clicEn(q(`[data-destino-id="${clave}"]`));
+  } else if (tipo === "casillas") {
+    const casillas = S.casillas[motor.dataset.pasoId];
+    assert.ok(casillas, `sin casillas para ${motor.dataset.pasoId}`);
+    for (const c of casillas) {
+      if (c.opciones) { await clicEn(q(`[data-casilla="${c.id}"][data-opcion-casilla="${c.clave}"]`)); continue; }
+      await escribir(q(`input[data-casilla="${c.id}"]`), String(c.clave).replace(".", ","));
+    }
+    await clicEn(q("[data-comprobar-casillas]"));
   } else if (tipo === "ordenar") {
     for (const id of S.ordenes[motor.dataset.pasoId]) await clicEn(q(`[data-por-ordenar="${id}"]`));
     await clicEn(q("[data-comprobar]"));
@@ -103,9 +116,9 @@ async function mover(el) {
   return true;
 }
 
-test("hay 35 piezas (18 del lote 1 y 17 del lote 2), cada una con su componente", () => {
-  assert.equal(PIEZAS_TEXTO_GP.length, 35);
-  assert.equal(Object.keys(COMPONENTES).length, 35);
+test("hay 59 piezas (18 del lote 1, 17 del lote 2 y 24 del lote 3), cada una con su componente", () => {
+  assert.equal(PIEZAS_TEXTO_GP.length, 59);
+  assert.equal(Object.keys(COMPONENTES).length, 59);
   for (const p of PIEZAS_TEXTO_GP) assert.equal(typeof COMPONENTES[p.id], "function", p.id);
 });
 
@@ -123,7 +136,7 @@ test("la tarjeta de inicio: papel, contexto, consigna y protagonista grande, sin
   }
 });
 
-test("las 35 se juegan enteras: partida perfecta = 100 % y cada ítem con etiqueta", async () => {
+test("las 59 se juegan enteras: partida perfecta = 100 % y cada ítem con etiqueta", async () => {
   mock.timers.enable({ apis: ["setTimeout"] });
   try {
     for (const semilla of [1, 7]) {
