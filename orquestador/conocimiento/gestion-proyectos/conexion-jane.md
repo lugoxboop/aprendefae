@@ -42,3 +42,8 @@
 - Simuladores de Jane que conviene (sugerencia): A04 un ciclo de vida que el estudiante
   configura; A07 un caso de negocio que se llena por secciones; A11 la tabla 2-1 como
   algo manipulable. Los Hacer H07, H11 y H17 retoman exactamente esos objetos.
+
+## Capítulos 3 a 13
+Cada diseño trae su tabla de Aprender propuestos en su **§6. Conexión con Jane**
+(`disenos/c03-hacer.md` … `disenos/c13-hacer.md`), con ids `gp-cNN-aMM`. Mismo mundo
+(Altamira), mismo elenco y misma regla de dos pasos.
