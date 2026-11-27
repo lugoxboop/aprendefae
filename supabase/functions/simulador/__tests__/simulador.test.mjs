@@ -139,8 +139,10 @@ test("el esquema del caso solo admite los ocho ids de la fuente", () => {
 });
 
 test("hay un escenario por cada Aprender de Macro con microsimulador: 31", () => {
-  assert.equal(Object.keys(ESCENARIOS).length, 31);
-  for (const [id, e] of Object.entries(ESCENARIOS)) {
+  /* gp26-acta (Gestión de Proyectos) no es de expedientes: tiene su propia prueba en acta.test.mjs. */
+  const macro = Object.entries(ESCENARIOS).filter(([id]) => !id.startsWith("gp26-"));
+  assert.equal(macro.length, 31);
+  for (const [id, e] of macro) {
     assert.equal(e.ID, id);
     assert.ok(e.IDS.length >= 2, id);
     for (const op of e.IDS) assert.match(e.SISTEMA, new RegExp(`- ${op} = `), `${id}: ${op} sin definición`);
