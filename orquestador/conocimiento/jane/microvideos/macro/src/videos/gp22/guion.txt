@@ -1,0 +1,11 @@
+Pía tiene papeles por todas partes, y nadie sabe cuál manda.
+Uno dice cómo hacer el horario; otro, cómo cuidar la plata; otro, cómo manejar los riesgos.
+Carmen le pide uno solo, que diga cómo se va a ejecutar, monitorear, controlar y cerrar el proyecto.
+Ese documento es el plan para la dirección del proyecto.
+Integra todos los planes de gestión: del alcance, del cronograma, de los costos, de los riesgos y más.
+Y también las líneas base: la del alcance, la del cronograma y la de los costos.
+Una línea base es una versión aprobada que sirve para comparar lo planeado con lo real.
+Además, puede incluir cómo se manejarán los cambios, el ciclo de vida y el enfoque de desarrollo.
+Las necesidades del proyecto deciden qué partes lleva.
+Y ojo: otros documentos, como el registro de supuestos, son documentos del proyecto, no parte del plan.
+Ahora te toca: arma el índice del plan de tu proyecto.

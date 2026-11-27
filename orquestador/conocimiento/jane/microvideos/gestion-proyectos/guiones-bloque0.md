@@ -382,3 +382,69 @@ Fuente: G 3.4.5, Tabla 3-1, p. 64; 3.5, p. 66–67.
 11. Ahora te toca: escribe tres supuestos de tu proyecto.
 
 Fuente: G 4.1, 4.1.1 a 4.1.3.2, p. 75–81; Glosario, «Supuesto».
+
+# Tanda 6 (GP-21 a GP-24)
+
+## GP-21 · El vecino que nadie invitó (G 13.1, 13.1.2.4, 13.1.3.1, p. 507–514; Glosario, «Interesado»)
+
+1. El vecino que nadie invitó puede frenar tu proyecto.
+2. El primer día, el carrito de Pía tapa el garaje de don Tito, y él se queja en la alcaldía.
+3. Nadie lo había tenido en cuenta, pero también era un interesado.
+4. Un interesado es quien puede afectar el proyecto, verse afectado o sentirse afectado por él.
+5. Por eso se identifica a los interesados: quiénes son, qué intereses tienen, cuánto influyen y qué impacto pueden tener.
+6. Y no se hace una sola vez: se repite a lo largo del proyecto.
+7. Para ordenarlos, Pía los ubica en una matriz de poder e interés.
+8. Carmen tiene mucho poder y mucho interés. Don Tito, menos poder, pero mucho interés.
+9. Todo queda en el registro de interesados.
+10. Ahí va quién es cada uno y su rol, qué espera, cuánto puede influir y cómo se clasifica: por ejemplo, interno o externo.
+11. Ahora te toca: arma el registro de interesados de tu proyecto.
+
+Fuente: G 13.1, 13.1.2.4, 13.1.3.1, p. 507–514; Glosario, «Interesado».
+
+## GP-22 · El plan que guarda todos los planes (G 4.2, 4.2.3.1, p. 82–89; Glosario, «Plan para la Dirección del Proyecto»)
+
+1. Pía tiene papeles por todas partes, y nadie sabe cuál manda.
+2. Uno dice cómo hacer el horario; otro, cómo cuidar la plata; otro, cómo manejar los riesgos.
+3. Carmen le pide uno solo, que diga cómo se va a ejecutar, monitorear, controlar y cerrar el proyecto.
+4. Ese documento es el plan para la dirección del proyecto.
+5. Integra todos los planes de gestión: del alcance, del cronograma, de los costos, de los riesgos y más.
+6. Y también las líneas base: la del alcance, la del cronograma y la de los costos.
+7. Una línea base es una versión aprobada que sirve para comparar lo planeado con lo real.
+8. Además, puede incluir cómo se manejarán los cambios, el ciclo de vida y el enfoque de desarrollo.
+9. Las necesidades del proyecto deciden qué partes lleva.
+10. Y ojo: otros documentos, como el registro de supuestos, son documentos del proyecto, no parte del plan.
+11. Ahora te toca: arma el índice del plan de tu proyecto.
+
+Fuente: G 4.2, 4.2.3.1, p. 82–89; Glosario, «Plan para la Dirección del Proyecto».
+
+## GP-23 · ¿Y quién decide qué entra? (G 5.1, 5.1.3.1, 5.1.3.2, p. 134–137)
+
+1. «Ya que estás, ponle una sombrilla al carrito.» Y después, una nevera. ¿Quién decide qué entra?
+2. Cada semana, Carmen y los clientes piden algo nuevo, y Pía no sabe qué responder.
+3. Le faltó acordar, desde antes, cómo se iba a manejar el alcance.
+4. Eso es planificar la gestión del alcance: crear un plan que documente cómo se definirá, validará y controlará.
+5. El plan de gestión del alcance dice cómo se escribirá el enunciado del alcance,
+6. cómo se creará, a partir de él, la estructura de desglose del trabajo,
+7. cómo se aprobará la línea base del alcance y cómo se aceptarán formalmente los entregables.
+8. Y tiene un compañero: el plan de gestión de los requisitos.
+9. Ese dice cómo se analizarán, documentarán y gestionarán los requisitos: cómo se priorizan y quién autoriza los cambios.
+10. Los dos son parte del plan para la dirección del proyecto, y pueden ser formales o informales, según lo que se necesite.
+11. Ahora te toca: escribe cómo se aceptarán los entregables de tu proyecto.
+
+Fuente: G 5.1, 5.1.3.1, 5.1.3.2, p. 134–137.
+
+## GP-24 · «Pan rico» no es un requisito (G 5.2, 5.2.2.2, 5.2.3.1, 5.2.3.2, p. 138–149; Glosario, «Requisito»)
+
+1. «Queremos pan rico.» Suena bien, pero no se puede comprobar.
+2. Pía sale a preguntar: entrevista a los clientes, hace una encuesta en el barrio y reúne un grupo focal.
+3. También compara con otras panaderías y revisa los documentos que ya tiene.
+4. Está recopilando requisitos: determina, documenta y gestiona lo que necesitan los interesados.
+5. Un requisito es una condición que el producto debe cumplir para satisfacer una necesidad.
+6. Y debe ser medible y comprobable: no «pan rico», sino «pan caliente antes de las siete».
+7. Además, trazable, completo, coherente y aceptable para los interesados clave.
+8. Todo va a la documentación de requisitos: los del negocio, los de los interesados, los de las soluciones y otros.
+9. Y a la matriz de trazabilidad: una cuadrícula que une cada requisito con su origen y con el entregable que lo cumple.
+10. Así, al final, se puede comprobar que se entregó lo aprobado.
+11. Ahora te toca: convierte «pan rico» en un requisito que se pueda medir.
+
+Fuente: G 5.2, 5.2.2.2, 5.2.3.1, 5.2.3.2, p. 138–149; Glosario, «Requisito».

@@ -1,0 +1,11 @@
+«Ya que estás, ponle una sombrilla al carrito.» Y después, una nevera. ¿Quién decide qué entra?
+Cada semana, Carmen y los clientes piden algo nuevo, y Pía no sabe qué responder.
+Le faltó acordar, desde antes, cómo se iba a manejar el alcance.
+Eso es planificar la gestión del alcance: crear un plan que documente cómo se definirá, validará y controlará.
+El plan de gestión del alcance dice cómo se escribirá el enunciado del alcance,
+cómo se creará, a partir de él, la estructura de desglose del trabajo,
+cómo se aprobará la línea base del alcance y cómo se aceptarán formalmente los entregables.
+Y tiene un compañero: el plan de gestión de los requisitos.
+Ese dice cómo se analizarán, documentarán y gestionarán los requisitos: cómo se priorizan y quién autoriza los cambios.
+Los dos son parte del plan para la dirección del proyecto, y pueden ser formales o informales, según lo que se necesite.
+Ahora te toca: escribe cómo se aceptarán los entregables de tu proyecto.
