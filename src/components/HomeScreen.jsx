@@ -144,7 +144,7 @@ export default function HomeScreen({ onSelectSubject, onQueEs }) {
               materia="gestion-proyectos"
               title="Gestión de Proyectos"
               label="Card Gestión de Proyectos"
-              resumen={{ rotulo: "Nueva", conteo: "1 video · 1 simulador" }}
+              resumen={{ rotulo: "Nueva", conteo: "1 video · 18 retos · 1 simulador" }}
               onClick={() => onSelectSubject("gestion-proyectos")}
             />
             </Entrada>

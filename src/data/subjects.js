@@ -22,6 +22,8 @@
  * ---------------------------------------------------------------------------
  */
 
+import { materiaParaRegistro } from "../gestion-proyectos/catalogo.js";
+
 export const APRENDER = "aprender";
 export const HACER = "hacer";
 
@@ -774,6 +776,15 @@ export const SUBJECTS = {
       },
     ],
   },
+  /*
+   * GESTIÓN DE PROYECTOS (27-nov-2026), sobre la Guía del PMBOK 6.ª ed. La
+   * entrada sale de src/gestion-proyectos/catalogo.js (materiaParaRegistro):
+   * los módulos de estructura.js como temas y, en cada uno, solo lo que está
+   * en PUBLICADAS. Hoy: gp-fundamentos con GP-01 (Jane) y las 18 Hacer de los
+   * caps. 1-2 (Gen), cuyas filas del servidor están en la 0276. Un solo sitio
+   * donde se anota cada pieza: no hay copia que se pueda separar.
+   */
+  "gestion-proyectos": materiaParaRegistro(),
 };
 
 /*

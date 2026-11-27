@@ -39,7 +39,8 @@ test("ids de subtema únicos; cada proceso con área de la guía y documentos", 
 test("hay un espacio por módulo y las piezas que entren cumplen las reglas", () => {
   assert.deepEqual(Object.keys(PIEZAS), MODULOS.map((m) => m.id));
   const existentes = new Set([
-    ...Object.values(SUBJECTS).flatMap((m) => [m.id, ...m.topics.flatMap((t) => [t.id, ...(t.actividades ?? []).map((a) => a.id)])]),
+    /* La materia misma ya está en SUBJECTS (sale de materiaParaRegistro): se compara contra las DEMÁS. */
+    ...Object.values(SUBJECTS).filter((m) => m.id !== MATERIA).flatMap((m) => [m.id, ...m.topics.flatMap((t) => [t.id, ...(t.actividades ?? []).map((a) => a.id)])]),
     ...ACTIVIDADES_TRANSVERSALES.map((a) => a.id),
     ...Object.keys(NOMBRE_DE_RETIRADA),
   ]);

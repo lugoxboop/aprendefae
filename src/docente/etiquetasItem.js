@@ -49,6 +49,7 @@ import { SALDO_DE_LA_CUENTA, SIMPLE_O_COMPUESTO, ARMA_EL_ASIENTO, ASIENTO_COMPUE
 import { transaccionDe } from "../components/mecanicas/libros/ArmaElAsiento.jsx";
 import { transaccionDe as transaccionCompuesta } from "../components/mecanicas/libros/ElAsientoCompuesto.jsx";
 import { REGLAS_MACRO2026 } from "../macro2026/etiquetas.js";
+import { REGLAS_GP } from "../gestion-proyectos/etiquetas.js";
 import { ETIQUETA_PLANTILLA } from "../macro2026/repaso/pool.js";
 import { LAVADO_DE_AUTOS, CALEJA, pesos as pesosContables } from "../data/contabilidad.js";
 import { BALANCES as BALANCES_DE_A2, cuentaHistorica } from "../contabilidad/armaElBalance.js";
@@ -469,6 +470,9 @@ export const REGLAS = {
 
 /* Macro 2026: las reglas viven junto a sus bancos (src/macro2026/etiquetas.js). */
 Object.assign(REGLAS, REGLAS_MACRO2026);
+
+/* Gestión de Proyectos: las reglas salen de los textos de cada pieza (src/gestion-proyectos/etiquetas.js). */
+Object.assign(REGLAS, REGLAS_GP);
 
 /* ── Política Monetaria (0031) ── */
 Object.assign(REGLAS, {

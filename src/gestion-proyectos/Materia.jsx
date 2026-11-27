@@ -19,6 +19,7 @@ import { FAE } from "../theme.js";
 import { GUIA, MODULOS, NOMBRE_MATERIA } from "./estructura.js";
 import { PIEZAS, estaPublicada } from "./catalogo.js";
 import Microvideo from "./Microvideo.jsx";
+import { CaminoHacerGP, hacerVisibles } from "./Hacer.jsx";
 
 /* El simulador aprobado por Mateo (27-nov-2026): página de Claude con el chat de Pía y el PDF. */
 export const SIMULADOR_ACTA = "https://claude.ai/artifact/CHdpTrKXPht5F4SZe3fAV1";
@@ -52,7 +53,7 @@ const CSS = `
 .gpm-estado { display: inline-block !important; margin-top: 8px !important; font-size: 11px !important; font-weight: 700; padding: 3px 8px; border-radius: 999px; border: 1px solid ${LINEA}; }
 `;
 
-export default function MateriaGestionProyectos({ onBack }) {
+export default function MateriaGestionProyectos({ onBack, onAbrirHacer = null }) {
   const publicadas = (id) => (PIEZAS[id] ?? []).filter((pz) => estaPublicada(pz.id));
   const fundamentos = MODULOS[0];
   const grupos = MODULOS.slice(1);
@@ -82,6 +83,17 @@ export default function MateriaGestionProyectos({ onBack }) {
             <p className="gpm-nota" style={{ marginTop: 10 }}>Se abre en una pestaña nueva.</p>
           </div>
         </div>
+
+        {/* Gen · las Hacer diarias de cada módulo (Hacer.jsx); hoy, las 18 de los caps. 1 y 2. */}
+        {hacerVisibles(fundamentos.id).length > 0 && (
+          <section data-hacer-modulo={fundamentos.id}>
+            <h2 className="gpm-h2">Practica · {fundamentos.titulo}</h2>
+            <p className="gpm-guia" style={{ marginBottom: 12 }}>
+              Los retos de los capítulos 1 y 2 de la guía.
+            </p>
+            <CaminoHacerGP moduloId={fundamentos.id} onAbrir={onAbrirHacer} />
+          </section>
+        )}
 
         <h2 className="gpm-h2">Los cinco grupos de procesos</h2>
         <p className="gpm-guia" style={{ marginBottom: 12 }}>
