@@ -23,6 +23,7 @@ import BackgroundVeil from "./BackgroundVeil.jsx";
 const SupplyDemandBackground = lazy(() => import("../backgrounds/SupplyDemandBackground.jsx"));
 const ChessBackground = lazy(() => import("../backgrounds/ChessBackground.jsx"));
 const LibroMayorBackground = lazy(() => import("../backgrounds/LibroMayorBackground.jsx"));
+const GanttBackground = lazy(() => import("../../gestion-proyectos/comun/FondoGP.jsx").then((m) => ({ default: m.CapaFondoGP })));
 
 const FONDOS = {
   macroeconomia: SupplyDemandBackground,
@@ -34,6 +35,8 @@ const FONDOS = {
    * primera actividad que entre se abra con fondo plano sin que nadie sepa por qué.
    */
   contabilidad: LibroMayorBackground,
+  /* Gestión de Proyectos: su trama de Gantt (src/gestion-proyectos/comun/FondoGP.jsx). */
+  "gestion-proyectos": GanttBackground,
 };
 
 export default function FondoMateria({ materiaId, children }) {

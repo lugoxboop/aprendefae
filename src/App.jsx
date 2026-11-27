@@ -56,6 +56,8 @@ const MateriaGestionProyectos = lazy(() => import("./gestion-proyectos/Materia.j
 const VistaPreviaGestionProyectos = lazy(() => import("./gestion-proyectos/VistaPrevia.jsx"));
 /* El simulador «Arma tu acta», dentro del sitio (#/gestion-proyectos/acta). */
 const ArmaTuActa = lazy(() => import("./gestion-proyectos/simulador/ArmaTuActa.jsx"));
+/* Gestión de Proyectos, cada Hacer publicada: #/gestion-proyectos/hacer/<id> (el camino está en Materia.jsx). */
+const HacerGestionProyectos = lazy(() => import("./gestion-proyectos/Hacer.jsx"));
 /* Macroeconomía 2026, lo publicado de cada tema: solo las piezas de PUBLICADAS_T1 / PUBLICADAS_T2. */
 const TemaMacro2026 = lazy(() => import("./macro2026/TemaMacro2026.jsx"));
 const RepasoMacroView = lazy(() => import("./macro2026/repaso/RepasoMacroView.jsx"));
@@ -226,13 +228,16 @@ export default function App() {
   }
 
   if (view === "gestion-proyectos") {
+    const volverAGestion = () => navegar("gestion-proyectos");
     return wrap(
       <Suspense fallback={siteFallback}>
-        {ruta.extra === "previa"
-          ? <VistaPreviaGestionProyectos onBack={goHome} />
-          : ruta.extra === "acta"
-            ? <ArmaTuActa onBack={() => setView("gestion-proyectos")} />
-            : <MateriaGestionProyectos onBack={goHome} onSimulador={() => navegar("gestion-proyectos", null, { extra: "acta" })} />}
+        {ruta.modo === "hacer" && ruta.extra
+          ? <HacerGestionProyectos key={ruta.extra} extra={ruta.extra} onBack={volverAGestion} />
+          : ruta.extra === "previa"
+            ? <VistaPreviaGestionProyectos onBack={goHome} />
+            : ruta.extra === "acta"
+              ? <ArmaTuActa onBack={volverAGestion} />
+              : <MateriaGestionProyectos onBack={goHome} onAbrirHacer={(id) => navegar("gestion-proyectos", "hacer", { extra: id })} onSimulador={() => navegar("gestion-proyectos", null, { extra: "acta" })} />}
       </Suspense>
     );
   }

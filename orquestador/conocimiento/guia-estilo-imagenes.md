@@ -231,6 +231,15 @@ tanque-estado, carrito-mercado, manguera. (Lote 2): balanza-pie,
 balanza-brazo, fajo-pesos, billete-usd, moneda-oro, iman, nube-tormenta,
 balde, casa-pais, globo, arbol-raices, golondrina, deposito-reservas,
 caja-bananos, candado.
+Gestión de Proyectos lote 1: cinta-transportadora, bandeja-madera, sobre-carta,
+reloj-arena, escritorio-madera, carpeta-abierta, sello-goma, puente-tablones,
+letrero-luminoso, tablero-corcho, celular, plano-enrollado, porton-madera,
+archivador-cajones, calendario-pared, conmutador, telefono-antiguo, cafetera-goteo,
+puente-grietas, camion-cafe, puente-reforzado, puente-nuevo, carpeta-documento,
+memorando-clip, sobre-boleto, bodega, archivador-metalico, tablero-organigrama,
+dial-radio, bolsa-dinero, edificio-oficinas, portapapeles, timon, en
+public/gestion-proyectos/ilustrados/ (originales: 11 hojas en
+/mnt/project-files/gestion-proyectos/ilustrados-origen/).
 - **Hojas:** varios objetos en una fila con mucho espacio verde entre ellos; se
   cortan con `scripts/ilustrados/hoja.py` (también guarda las cajas).
 - **Objetos verdes** (hojas de árbol, billete verde): el recorte los come. Se

@@ -75,9 +75,9 @@ insert into res select 1, 'una fila sin etapas declaradas vale 1', '1',
 insert into res select 2, 'las actividades reales que no son desafío siguen en 1 etapa', '0 con etapas>1',
   (select count(*)::text || ' con etapas>1'
      from public.actividad_catalogo
-    where etapas > 1 and activity_id not in ('proyecto-arca', 'comite-nova', 'ciclo-completo', 'da26-h2-arma-formula', 'da26-h6-meta', 'pe26-h2-grupo-logico', 'pf26-h3-factura', 'pm26-h2-cascada-meta') and activity_id not like 'zzz-%'),
+    where etapas > 1 and activity_id not in ('proyecto-arca', 'comite-nova', 'ciclo-completo', 'da26-h2-arma-formula', 'da26-h6-meta', 'pe26-h2-grupo-logico', 'pf26-h3-factura', 'pm26-h2-cascada-meta', 'gp26-fun-h04-puente', 'gp26-fun-h05-portafolio', 'gp26-fun-h08-calendario', 'gp26-fun-h11-caso-puente', 'gp26-fun-h12-balanzas', 'gp26-fun-h15-control') and activity_id not like 'zzz-%'),
   (select count(*) = 0 from public.actividad_catalogo
-    where etapas > 1 and activity_id not in ('proyecto-arca', 'comite-nova', 'ciclo-completo', 'da26-h2-arma-formula', 'da26-h6-meta', 'pe26-h2-grupo-logico', 'pf26-h3-factura', 'pm26-h2-cascada-meta') and activity_id not like 'zzz-%');
+    where etapas > 1 and activity_id not in ('proyecto-arca', 'comite-nova', 'ciclo-completo', 'da26-h2-arma-formula', 'da26-h6-meta', 'pe26-h2-grupo-logico', 'pf26-h3-factura', 'pm26-h2-cascada-meta', 'gp26-fun-h04-puente', 'gp26-fun-h05-portafolio', 'gp26-fun-h08-calendario', 'gp26-fun-h11-caso-puente', 'gp26-fun-h12-balanzas', 'gp26-fun-h15-control') and activity_id not like 'zzz-%');
 
 -- ── 13. Y los tres desafíos declaran sus cuatro etapas ─────────────────────
 -- El complemento del chequeo de arriba: excluirlos de la cuenta no puede
@@ -132,6 +132,23 @@ insert into res select 17, 'la Hacer por etapas de Política monetaria declara 3
     where activity_id = 'pm26-h2-cascada-meta' and etapas = 3 and fp_base = 10),
   (select count(*) = 1 from public.actividad_catalogo
     where activity_id = 'pm26-h2-cascada-meta' and etapas = 3 and fp_base = 10);
+
+-- ── 18. Gestión de Proyectos: las seis Hacer por etapas de los caps. 1 y 2 ─
+-- Diseño de Gen (gestion-proyectos/disenos/c1-c2-hacer.md §1): «El puente al
+-- estado futuro» Fácil (10) × 2; «Arma el mapa», «La trampa del calendario»,
+-- «¿Éxito o fracaso?» y «¿Lo controlas o te controla?» Medio (25) × 2; «El
+-- caso de negocio del puente» Difícil (50) × 3. Migración 0276. Se excluyen
+-- de la cuenta del chequeo 2 y se miran aquí, igual que las de Macro 2026.
+insert into res select 18, 'las seis Hacer por etapas de Gestión de Proyectos declaran sus etapas y su base', '6 filas',
+  (select count(*)::text || ' filas'
+     from public.actividad_catalogo
+    where (activity_id = 'gp26-fun-h04-puente' and etapas = 2 and fp_base = 10)
+       or (activity_id in ('gp26-fun-h05-portafolio', 'gp26-fun-h08-calendario', 'gp26-fun-h12-balanzas', 'gp26-fun-h15-control') and etapas = 2 and fp_base = 25)
+       or (activity_id = 'gp26-fun-h11-caso-puente' and etapas = 3 and fp_base = 50)),
+  (select count(*) = 6 from public.actividad_catalogo
+    where (activity_id = 'gp26-fun-h04-puente' and etapas = 2 and fp_base = 10)
+       or (activity_id in ('gp26-fun-h05-portafolio', 'gp26-fun-h08-calendario', 'gp26-fun-h12-balanzas', 'gp26-fun-h15-control') and etapas = 2 and fp_base = 25)
+       or (activity_id = 'gp26-fun-h11-caso-puente' and etapas = 3 and fp_base = 50));
 
 -- ── 3. Lo de siempre sigue pagando lo de siempre ───────────────────────────
 -- EL CHEQUEO MÁS IMPORTANTE DEL ARCHIVO. registrar_fp se reemplazó entera; si
