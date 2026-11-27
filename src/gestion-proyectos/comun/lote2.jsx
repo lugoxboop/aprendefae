@@ -37,6 +37,7 @@ export const CSS_LOTE2 = `
 .gp-destinos[data-disposicion="aro"] .gp-destino { padding: 6px 4px; }
 .gp-destinos[data-disposicion="aro"] .gp-destino-txt { font-size: 13px; hyphens: none; -webkit-hyphens: none; overflow-wrap: normal; letter-spacing: -.01em; }
 @media (max-width: 400px) { .gp-destinos[data-disposicion="aro"] { grid-auto-columns: minmax(80px, 30%); } }
+@media (max-width: 359px) { .gp-destinos[data-disposicion="aro"] .gp-destino-txt { font-size: 12px; } }
 .gp2-pista { margin: 4px 0 0; text-align: right; font: 600 12px/16px var(--planck-font-sans, system-ui, sans-serif); color: #b6bbc5; }
 @media (prefers-reduced-motion: reduce) { .gp2-entra, .gp2-tambalea { animation: none !important; } .gp2-gira { transition: opacity 120ms linear !important; } }
 `;
