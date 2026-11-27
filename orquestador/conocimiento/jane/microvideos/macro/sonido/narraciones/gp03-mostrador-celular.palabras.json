@@ -1,0 +1,735 @@
+{
+ "texto": "Nadie quiere un proyecto, quiere lo que cambia después. Hoy, Pía solo vende a quien entra por la puerta. Los domingos, la fila da la vuelta a la cuadra y muchos se van sin pan. Pía se imagina otra panadería: pedidos por el celular y domicilios. Entre ese hoy y ese mañana hay un camino: tomar fotos, armar el menú, contratar un domiciliario. Ese camino es el proyecto. Al final, Pía vende más. Eso se puede contar en pesos, pero también la recomiendan más. Eso no cabe en la caja y también vale. Lo que acabas de ver es el paso de un estado actual a un estado futuro. Y lo que gana Pía se llama valor del negocio, tangible como el dinero o intangible como la reputación. Un proyecto existe para ese cambio. ¿Cuál es el estado actual de tu idea y cuál el futuro?",
+ "palabras": [
+  {
+   "w": "Nadie",
+   "ini": 0.14,
+   "fin": 0.48
+  },
+  {
+   "w": "quiere",
+   "ini": 0.52,
+   "fin": 0.76
+  },
+  {
+   "w": "un",
+   "ini": 0.8,
+   "fin": 0.86
+  },
+  {
+   "w": "proyecto,",
+   "ini": 0.9,
+   "fin": 1.42
+  },
+  {
+   "w": "quiere",
+   "ini": 1.96,
+   "fin": 2.26
+  },
+  {
+   "w": "lo",
+   "ini": 2.32,
+   "fin": 2.44
+  },
+  {
+   "w": "que",
+   "ini": 2.48,
+   "fin": 2.6
+  },
+  {
+   "w": "cambia",
+   "ini": 2.74,
+   "fin": 3.08
+  },
+  {
+   "w": "después.",
+   "ini": 3.12,
+   "fin": 3.64
+  },
+  {
+   "w": "Hoy,",
+   "ini": 4.8,
+   "fin": 5.04
+  },
+  {
+   "w": "Pía",
+   "ini": 5.38,
+   "fin": 5.64
+  },
+  {
+   "w": "solo",
+   "ini": 5.72,
+   "fin": 5.94
+  },
+  {
+   "w": "vende",
+   "ini": 6,
+   "fin": 6.3
+  },
+  {
+   "w": "a",
+   "ini": 6.34,
+   "fin": 6.42
+  },
+  {
+   "w": "quien",
+   "ini": 6.46,
+   "fin": 6.64
+  },
+  {
+   "w": "entra",
+   "ini": 6.7,
+   "fin": 6.94
+  },
+  {
+   "w": "por",
+   "ini": 7,
+   "fin": 7.12
+  },
+  {
+   "w": "la",
+   "ini": 7.16,
+   "fin": 7.26
+  },
+  {
+   "w": "puerta.",
+   "ini": 7.3,
+   "fin": 7.68
+  },
+  {
+   "w": "Los",
+   "ini": 8.28,
+   "fin": 8.42
+  },
+  {
+   "w": "domingos,",
+   "ini": 8.46,
+   "fin": 8.92
+  },
+  {
+   "w": "la",
+   "ini": 9.28,
+   "fin": 9.38
+  },
+  {
+   "w": "fila",
+   "ini": 9.46,
+   "fin": 9.86
+  },
+  {
+   "w": "da",
+   "ini": 9.92,
+   "fin": 10
+  },
+  {
+   "w": "la",
+   "ini": 10.06,
+   "fin": 10.14
+  },
+  {
+   "w": "vuelta",
+   "ini": 10.18,
+   "fin": 10.46
+  },
+  {
+   "w": "a",
+   "ini": 10.48,
+   "fin": 10.52
+  },
+  {
+   "w": "la",
+   "ini": 10.56,
+   "fin": 10.64
+  },
+  {
+   "w": "cuadra",
+   "ini": 10.7,
+   "fin": 11.4
+  },
+  {
+   "w": "y",
+   "ini": 11.48,
+   "fin": 11.54
+  },
+  {
+   "w": "muchos",
+   "ini": 11.62,
+   "fin": 12.16
+  },
+  {
+   "w": "se",
+   "ini": 12.22,
+   "fin": 12.32
+  },
+  {
+   "w": "van",
+   "ini": 12.36,
+   "fin": 12.5
+  },
+  {
+   "w": "sin",
+   "ini": 12.56,
+   "fin": 12.72
+  },
+  {
+   "w": "pan.",
+   "ini": 12.78,
+   "fin": 13.06
+  },
+  {
+   "w": "Pía",
+   "ini": 13.8,
+   "fin": 14.02
+  },
+  {
+   "w": "se",
+   "ini": 14.08,
+   "fin": 14.16
+  },
+  {
+   "w": "imagina",
+   "ini": 14.22,
+   "fin": 14.82
+  },
+  {
+   "w": "otra",
+   "ini": 14.92,
+   "fin": 15.14
+  },
+  {
+   "w": "panadería:",
+   "ini": 15.18,
+   "fin": 15.7
+  },
+  {
+   "w": "pedidos",
+   "ini": 16.26,
+   "fin": 16.68
+  },
+  {
+   "w": "por",
+   "ini": 16.74,
+   "fin": 16.84
+  },
+  {
+   "w": "el",
+   "ini": 16.88,
+   "fin": 16.96
+  },
+  {
+   "w": "celular",
+   "ini": 17,
+   "fin": 17.56
+  },
+  {
+   "w": "y",
+   "ini": 17.62,
+   "fin": 17.64
+  },
+  {
+   "w": "domicilios.",
+   "ini": 17.7,
+   "fin": 18.4
+  },
+  {
+   "w": "Entre",
+   "ini": 19.26,
+   "fin": 19.54
+  },
+  {
+   "w": "ese",
+   "ini": 19.62,
+   "fin": 19.86
+  },
+  {
+   "w": "hoy",
+   "ini": 19.9,
+   "fin": 20.26
+  },
+  {
+   "w": "y",
+   "ini": 20.34,
+   "fin": 20.42
+  },
+  {
+   "w": "ese",
+   "ini": 20.52,
+   "fin": 20.72
+  },
+  {
+   "w": "mañana",
+   "ini": 20.78,
+   "fin": 21.5
+  },
+  {
+   "w": "hay",
+   "ini": 21.54,
+   "fin": 21.7
+  },
+  {
+   "w": "un",
+   "ini": 21.74,
+   "fin": 21.82
+  },
+  {
+   "w": "camino:",
+   "ini": 21.88,
+   "fin": 22.24
+  },
+  {
+   "w": "tomar",
+   "ini": 22.82,
+   "fin": 23.1
+  },
+  {
+   "w": "fotos,",
+   "ini": 23.18,
+   "fin": 23.58
+  },
+  {
+   "w": "armar",
+   "ini": 23.9,
+   "fin": 24.16
+  },
+  {
+   "w": "el",
+   "ini": 24.2,
+   "fin": 24.28
+  },
+  {
+   "w": "menú,",
+   "ini": 24.32,
+   "fin": 24.58
+  },
+  {
+   "w": "contratar",
+   "ini": 24.98,
+   "fin": 25.46
+  },
+  {
+   "w": "un",
+   "ini": 25.5,
+   "fin": 25.58
+  },
+  {
+   "w": "domiciliario.",
+   "ini": 25.62,
+   "fin": 26.38
+  },
+  {
+   "w": "Ese",
+   "ini": 27.3,
+   "fin": 27.52
+  },
+  {
+   "w": "camino",
+   "ini": 27.58,
+   "fin": 28.2
+  },
+  {
+   "w": "es",
+   "ini": 28.28,
+   "fin": 28.38
+  },
+  {
+   "w": "el",
+   "ini": 28.42,
+   "fin": 28.52
+  },
+  {
+   "w": "proyecto.",
+   "ini": 28.56,
+   "fin": 29.08
+  },
+  {
+   "w": "Al",
+   "ini": 30,
+   "fin": 30.1
+  },
+  {
+   "w": "final,",
+   "ini": 30.16,
+   "fin": 30.48
+  },
+  {
+   "w": "Pía",
+   "ini": 30.8,
+   "fin": 31.02
+  },
+  {
+   "w": "vende",
+   "ini": 31.08,
+   "fin": 31.34
+  },
+  {
+   "w": "más.",
+   "ini": 31.4,
+   "fin": 31.68
+  },
+  {
+   "w": "Eso",
+   "ini": 32.24,
+   "fin": 32.479
+  },
+  {
+   "w": "se",
+   "ini": 32.619,
+   "fin": 32.74
+  },
+  {
+   "w": "puede",
+   "ini": 32.78,
+   "fin": 33
+  },
+  {
+   "w": "contar",
+   "ini": 33.04,
+   "fin": 33.34
+  },
+  {
+   "w": "en",
+   "ini": 33.38,
+   "fin": 33.48
+  },
+  {
+   "w": "pesos,",
+   "ini": 33.54,
+   "fin": 33.88
+  },
+  {
+   "w": "pero",
+   "ini": 34.46,
+   "fin": 34.64
+  },
+  {
+   "w": "también",
+   "ini": 34.68,
+   "fin": 35.04
+  },
+  {
+   "w": "la",
+   "ini": 35.08,
+   "fin": 35.16
+  },
+  {
+   "w": "recomiendan",
+   "ini": 35.22,
+   "fin": 35.9
+  },
+  {
+   "w": "más.",
+   "ini": 35.94,
+   "fin": 36.22
+  },
+  {
+   "w": "Eso",
+   "ini": 36.7,
+   "fin": 36.9
+  },
+  {
+   "w": "no",
+   "ini": 37,
+   "fin": 37.14
+  },
+  {
+   "w": "cabe",
+   "ini": 37.18,
+   "fin": 37.36
+  },
+  {
+   "w": "en",
+   "ini": 37.38,
+   "fin": 37.44
+  },
+  {
+   "w": "la",
+   "ini": 37.48,
+   "fin": 37.54
+  },
+  {
+   "w": "caja",
+   "ini": 37.64,
+   "fin": 37.96
+  },
+  {
+   "w": "y",
+   "ini": 38.3,
+   "fin": 38.36
+  },
+  {
+   "w": "también",
+   "ini": 38.46,
+   "fin": 38.9
+  },
+  {
+   "w": "vale.",
+   "ini": 38.94,
+   "fin": 39.22
+  },
+  {
+   "w": "Lo",
+   "ini": 39.98,
+   "fin": 40.04
+  },
+  {
+   "w": "que",
+   "ini": 40.12,
+   "fin": 40.18
+  },
+  {
+   "w": "acabas",
+   "ini": 40.24,
+   "fin": 40.62
+  },
+  {
+   "w": "de",
+   "ini": 40.66,
+   "fin": 40.74
+  },
+  {
+   "w": "ver",
+   "ini": 40.78,
+   "fin": 41.08
+  },
+  {
+   "w": "es",
+   "ini": 41.16,
+   "fin": 41.26
+  },
+  {
+   "w": "el",
+   "ini": 41.32,
+   "fin": 41.4
+  },
+  {
+   "w": "paso",
+   "ini": 41.48,
+   "fin": 41.78
+  },
+  {
+   "w": "de",
+   "ini": 41.82,
+   "fin": 41.88
+  },
+  {
+   "w": "un",
+   "ini": 41.92,
+   "fin": 42
+  },
+  {
+   "w": "estado",
+   "ini": 42.04,
+   "fin": 42.38
+  },
+  {
+   "w": "actual",
+   "ini": 42.44,
+   "fin": 42.96
+  },
+  {
+   "w": "a",
+   "ini": 43.02,
+   "fin": 43.08
+  },
+  {
+   "w": "un",
+   "ini": 43.14,
+   "fin": 43.2
+  },
+  {
+   "w": "estado",
+   "ini": 43.26,
+   "fin": 43.6
+  },
+  {
+   "w": "futuro.",
+   "ini": 43.7,
+   "fin": 44.1
+  },
+  {
+   "w": "Y",
+   "ini": 44.68,
+   "fin": 44.74
+  },
+  {
+   "w": "lo",
+   "ini": 44.78,
+   "fin": 44.88
+  },
+  {
+   "w": "que",
+   "ini": 44.96,
+   "fin": 45.08
+  },
+  {
+   "w": "gana",
+   "ini": 45.12,
+   "fin": 45.34
+  },
+  {
+   "w": "Pía",
+   "ini": 45.46,
+   "fin": 45.68
+  },
+  {
+   "w": "se",
+   "ini": 45.9,
+   "fin": 45.98
+  },
+  {
+   "w": "llama",
+   "ini": 46.04,
+   "fin": 46.36
+  },
+  {
+   "w": "valor",
+   "ini": 46.56,
+   "fin": 46.98
+  },
+  {
+   "w": "del",
+   "ini": 47.04,
+   "fin": 47.18
+  },
+  {
+   "w": "negocio,",
+   "ini": 47.22,
+   "fin": 47.74
+  },
+  {
+   "w": "tangible",
+   "ini": 48.28,
+   "fin": 48.86
+  },
+  {
+   "w": "como",
+   "ini": 49.06,
+   "fin": 49.22
+  },
+  {
+   "w": "el",
+   "ini": 49.26,
+   "fin": 49.32
+  },
+  {
+   "w": "dinero",
+   "ini": 49.36,
+   "fin": 49.74
+  },
+  {
+   "w": "o",
+   "ini": 50.18,
+   "fin": 50.26
+  },
+  {
+   "w": "intangible",
+   "ini": 50.32,
+   "fin": 51.04
+  },
+  {
+   "w": "como",
+   "ini": 51.32,
+   "fin": 51.48
+  },
+  {
+   "w": "la",
+   "ini": 51.54,
+   "fin": 51.6
+  },
+  {
+   "w": "reputación.",
+   "ini": 51.66,
+   "fin": 52.38
+  },
+  {
+   "w": "Un",
+   "ini": 53.22,
+   "fin": 53.3
+  },
+  {
+   "w": "proyecto",
+   "ini": 53.34,
+   "fin": 53.76
+  },
+  {
+   "w": "existe",
+   "ini": 53.8,
+   "fin": 54.28
+  },
+  {
+   "w": "para",
+   "ini": 54.44,
+   "fin": 54.66
+  },
+  {
+   "w": "ese",
+   "ini": 54.74,
+   "fin": 54.94
+  },
+  {
+   "w": "cambio.",
+   "ini": 55.04,
+   "fin": 55.4
+  },
+  {
+   "w": "¿Cuál",
+   "ini": 56.06,
+   "fin": 56.24
+  },
+  {
+   "w": "es",
+   "ini": 56.28,
+   "fin": 56.36
+  },
+  {
+   "w": "el",
+   "ini": 56.4,
+   "fin": 56.46
+  },
+  {
+   "w": "estado",
+   "ini": 56.5,
+   "fin": 56.86
+  },
+  {
+   "w": "actual",
+   "ini": 56.9,
+   "fin": 57.22
+  },
+  {
+   "w": "de",
+   "ini": 57.24,
+   "fin": 57.32
+  },
+  {
+   "w": "tu",
+   "ini": 57.38,
+   "fin": 57.46
+  },
+  {
+   "w": "idea",
+   "ini": 57.5,
+   "fin": 57.84
+  },
+  {
+   "w": "y",
+   "ini": 58.08,
+   "fin": 58.14
+  },
+  {
+   "w": "cuál",
+   "ini": 58.26,
+   "fin": 58.46
+  },
+  {
+   "w": "el",
+   "ini": 58.5,
+   "fin": 58.58
+  },
+  {
+   "w": "futuro?",
+   "ini": 58.64,
+   "fin": 59
+  }
+ ]
+}

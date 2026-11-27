@@ -65,3 +65,12 @@
 ## 2026-11-27T21:20:41.076Z
 - Cupo: plan creator, 21256 de 122261 créditos usados.
 - Narración gp01-pan-de-cada-dia: ya existe.
+
+## 2026-11-27T22:14:53.592Z
+- Cupo: plan creator, 21256 de 122261 créditos usados.
+- Narración gp02-puente-cien-anos: lista con eleven_v3 (685 caracteres).
+- Transcripción gp02-puente-cien-anos: 125 palabras.
+- Narración gp03-mostrador-celular: lista con eleven_v3 (778 caracteres).
+- Transcripción gp03-mostrador-celular: 146 palabras.
+- Narración gp04-grieta-que-manda: lista con eleven_v3 (744 caracteres).
+- Transcripción gp04-grieta-que-manda: 121 palabras.
