@@ -68,6 +68,32 @@ export const COMPONENTES_GP = {
   "gp26-moc-c04-h08-turnero": lazy(() => import("./integracion/C04H08Turnero.jsx")),
   "gp26-cie-c04-h09-breakers": lazy(() => import("./integracion/C04H09Breakers.jsx")),
   "gp26-cie-c04-h10-beneficiadero": lazy(() => import("./integracion/C04H10Beneficiadero.jsx")),
+  /* Lote 3 · cap. 5 (Alcance) */
+  "gp26-pla-c05-h01-teatro": lazy(() => import("./alcance/C05H01Teatro.jsx")),
+  "gp26-pla-c05-h02-noria": lazy(() => import("./alcance/C05H02Noria.jsx")),
+  "gp26-pla-c05-h03-libretas": lazy(() => import("./alcance/C05H03Libretas.jsx")),
+  "gp26-pla-c05-h04-mochila": lazy(() => import("./alcance/C05H04Mochila.jsx")),
+  "gp26-pla-c05-h05-urna": lazy(() => import("./alcance/C05H05Urna.jsx")),
+  "gp26-pla-c05-h06-alacena": lazy(() => import("./alcance/C05H06Alacena.jsx")),
+  "gp26-pla-c05-h07-telar": lazy(() => import("./alcance/C05H07Telar.jsx")),
+  "gp26-pla-c05-h08-mapa": lazy(() => import("./alcance/C05H08Mapa.jsx")),
+  "gp26-pla-c05-h09-movil": lazy(() => import("./alcance/C05H09Movil.jsx")),
+  "gp26-pla-c05-h10-caja-fuerte": lazy(() => import("./alcance/C05H10CajaFuerte.jsx")),
+  "gp26-moc-c05-h11-embarque": lazy(() => import("./alcance/C05H11Embarque.jsx")),
+  "gp26-moc-c05-h12-globo": lazy(() => import("./alcance/C05H12Globo.jsx")),
+  /* Lote 3 · cap. 6 (Cronograma) */
+  "gp26-pla-c06-h01-semaforo": lazy(() => import("./cronograma/C06H01Semaforo.jsx")),
+  "gp26-pla-c06-h02-linterna": lazy(() => import("./cronograma/C06H02Linterna.jsx")),
+  "gp26-pla-c06-h03-rompecabezas": lazy(() => import("./cronograma/C06H03Rompecabezas.jsx")),
+  "gp26-pla-c06-h04-cinta": lazy(() => import("./cronograma/C06H04Cinta.jsx")),
+  "gp26-pla-c06-h05-sumadora": lazy(() => import("./cronograma/C06H05Sumadora.jsx")),
+  "gp26-pla-c06-h06-alcancias": lazy(() => import("./cronograma/C06H06Alcancias.jsx")),
+  "gp26-pla-c06-h07-metro": lazy(() => import("./cronograma/C06H07Metro.jsx")),
+  "gp26-pla-c06-h08-domino": lazy(() => import("./cronograma/C06H08Domino.jsx")),
+  "gp26-pla-c06-h09-relevos": lazy(() => import("./cronograma/C06H09Relevos.jsx")),
+  "gp26-pla-c06-h10-bloques": lazy(() => import("./cronograma/C06H10Bloques.jsx")),
+  "gp26-moc-c06-h11-rotafolio": lazy(() => import("./cronograma/C06H11Rotafolio.jsx")),
+  "gp26-pla-c06-h12-plotter": lazy(() => import("./cronograma/C06H12Plotter.jsx")),
 };
 
 /* Las Hacer que se ven de un módulo: publicadas y con componente, en el orden del camino. */

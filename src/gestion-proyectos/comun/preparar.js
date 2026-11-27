@@ -16,6 +16,10 @@
  *   dilema      decisiones encadenadas sin clave (H14, exploratorio).
  *   dial        exploración libre y reto (H17).
  *
+ * Lote 3 (caps. 5 y 6): un paso puede ser `tipo: "casillas"` (motor Casillas:
+ * escribir un número o elegir en varias casillas a la vez). Entra en un banco
+ * o en un micro como cualquier paso «decidir» y vale un ítem.
+ *
  * Un paso «decidir» = { tipo, id, texto, contexto?, consigna?, destinos,
  * clave, retros | retro, retroComun?, subtemas }: un ítem que se lleva a un
  * destino. Es la mecánica de casi todo: clasificar en cinta, sellar, conectar
@@ -178,7 +182,7 @@ export const prepararPieza = (pieza, rng = Math.random) => pieza.etapas.map((e) 
 
 /* Cuántos ítems puntúa un paso (la base del porcentaje). */
 export function itemsDePaso(paso) {
-  if (paso.tipo === "decidir") return 1;
+  if (paso.tipo === "decidir" || paso.tipo === "casillas") return 1;
   if (paso.tipo === "emparejar") return paso.rieles.length;
   if (paso.tipo === "ordenar") return paso.puntuaPares ? paso.items.length - 1 : 1;
   if (paso.tipo === "memorando") return paso.partida.conError;
@@ -208,7 +212,10 @@ export function itemsDePieza(pieza) {
     } else if (e.tipo === "micros") {
       for (const m of e.pasos) {
         if (m.tipo === "ordenar") ponOrden(m);
-        else if (m.items) for (const x of m.items) out[x.id] = x.texto;
+        else if (m.items) {
+          /* Lote 3: un ítem sin texto (dos versiones a elegir) se nombra por sus destinos. */
+          for (const x of m.items) out[x.id] = x.texto ?? (x.destinos ? x.destinos.map((d) => d.nombre).join(" / ") : [x.contexto, x.consigna ?? m.consigna].filter(Boolean).join(" "));
+        }
         else ponDecidir(m);
       }
     } else if (e.tipo === "emparejar") {
