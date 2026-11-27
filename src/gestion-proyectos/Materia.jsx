@@ -38,7 +38,7 @@ const CSS = `
 .gpm-empieza { display: grid; gap: 16px; }
 @media (min-width: 700px) { .gpm-empieza { grid-template-columns: minmax(0, 320px) minmax(0, 1fr); align-items: start; } }
 .gpm-tarjeta { border: 1px solid ${LINEA}; border-radius: 16px; background: rgba(29,53,87,0.35); padding: 16px; }
-.gpm-rotulo { margin: 0; font-size: 13px; font-weight: 600; color: ${FAE.teal}; }
+.gpm-rotulo { margin: 0; font-size: 13px; font-weight: 600; color: #A8B6C8; }
 .gpm-tarjeta h3 { font: 700 18px/1.3 Sora, Inter, sans-serif; margin: 6px 0 8px; overflow-wrap: anywhere; }
 .gpm-tarjeta p { margin: 0 0 10px; font-size: 15px; line-height: 1.5; color: ${TENUE}; }
 .gpm-sim { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 12px 18px; border-radius: 999px; background: ${VERDE}; color: ${FAE.bg}; font: 700 15px/1.2 Inter, system-ui, sans-serif; text-decoration: none; text-align: center; }

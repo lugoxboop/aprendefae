@@ -27,7 +27,9 @@ test("cada oficina: contexto ≤ 30 palabras, rol ≤ 15, mascota, poses y fondo
 });
 
 test("hay un simulador en el sitio por cada escenario del servidor, y ninguno de más", () => {
-  assert.deepEqual(Object.keys(SIMULADORES).sort(), Object.keys(ESCENARIOS).sort());
+  /* gp26-acta es el simulador de Gestión de Proyectos (src/gestion-proyectos/simulador/), no de Macro. */
+  const deMacro = Object.keys(ESCENARIOS).filter((id) => !id.startsWith("gp26-"));
+  assert.deepEqual(Object.keys(SIMULADORES).sort(), deMacro.sort());
 });
 
 test("toda Aprender publicable de Macro 2026 tiene su simulador", () => {
