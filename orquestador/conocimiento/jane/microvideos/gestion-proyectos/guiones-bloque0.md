@@ -100,11 +100,11 @@ Una idea: los proyectos nacen de cuatro tipos de factores.
 4. Pía tiene que bajar costos, o pierde clientes.
 5. Y los vecinos le piden pan sin gluten.
 6. Encima, una norma nueva exige etiquetar todo lo que se vende.
-7. Cuatro empujones distintos. Y cada uno hace nacer un proyecto.
+7. Cuatro empujones distintos, y cada uno puede hacer nacer un proyecto.
 8. La guía los agrupa en cuatro factores.
 9. Cumplir requisitos legales o sociales. Satisfacer a los interesados.
 10. Cambiar la estrategia o la tecnología. Crear, mejorar o reparar productos y servicios.
 11. Detrás de cada proyecto hay uno de estos empujones, o varios.
 12. Ahora clasifica: ¿qué empujón hizo nacer cada proyecto?
 Fidelidad: las cuatro categorías (G p. 7); las grietas del puente municipal y el competidor que baja precios vienen de la Tabla 1-1 (G p. 9).
-Pendiente: confirmar la categoría de cada caso con las «X» de la Tabla 1-1 (el texto extraído perdió las columnas; hay que leerlo en el PDF).
+Decisión (27-nov): el texto extraído perdió las «X» de la Tabla 1-1, así que el video NO empareja cada caso con un factor (ni en la voz ni en la imagen). El emparejamiento queda para cuando se lea el PDF.
