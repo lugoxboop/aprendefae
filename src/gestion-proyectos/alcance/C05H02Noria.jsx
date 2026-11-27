@@ -10,7 +10,8 @@ import { Signpost, Repeat } from "lucide-react";
 import Partida from "../comun/Partida.jsx";
 import { Objeto } from "../comun/objetos.jsx";
 import { Personaje } from "../comun/elenco.jsx";
-import { EstiloLote2, cuantos } from "../comun/lote2.jsx";
+import { cuantos } from "../comun/lote2.jsx";
+import { EstiloLote3 as EstiloLote2 } from "../comun/lote3.jsx";
 import { GP_C5_H02 } from "./textos-c5.js";
 
 export const ID = GP_C5_H02.id;

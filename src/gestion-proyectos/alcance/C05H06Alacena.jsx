@@ -8,7 +8,8 @@
  */
 import Partida from "../comun/Partida.jsx";
 import { Objeto } from "../comun/objetos.jsx";
-import { EstiloLote2, Barra, cuantos } from "../comun/lote2.jsx";
+import { Barra, cuantos } from "../comun/lote2.jsx";
+import { EstiloLote3 as EstiloLote2 } from "../comun/lote3.jsx";
 import { GP_C5_H06 } from "./textos-c5.js";
 
 export const ID = GP_C5_H06.id;

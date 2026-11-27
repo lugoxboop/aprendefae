@@ -7,7 +7,7 @@
  */
 import Partida from "../comun/Partida.jsx";
 import { Objeto } from "../comun/objetos.jsx";
-import { EstiloLote2 } from "../comun/lote2.jsx";
+import { EstiloLote3 as EstiloLote2 } from "../comun/lote3.jsx";
 import { GP_C6_H12 } from "./textos-c6.js";
 
 export const ID = GP_C6_H12.id;
@@ -15,11 +15,14 @@ export const ID = GP_C6_H12.id;
 function Gantt() {
   const barras = [["A", 0, 3], ["B", 3, 5], ["C", 3, 8], ["D", 11, 10], ["E", 8, 6], ["F", 21, 2], ["G", 3, 7], ["H", 10, 4]];
   return (
-    <svg viewBox="0 0 240 90" width="100%" style={{ display: "block", maxHeight: 96 }} aria-hidden="true" data-gantt>
-      {barras.map(([id, es, d], k) => (
-        <g key={id}><text x="2" y={10 + k * 10} fontSize="9" fill="#d7dbe2">{id}</text><rect x={14 + es * 9} y={3 + k * 10} width={Math.max(2, d * 9)} height="7" rx="2" fill="#f2c14e" /></g>
+    <div data-gantt aria-hidden="true" style={{ display: "grid", gap: 3 }}>
+      {barras.map(([id, es, d]) => (
+        <div key={id} style={{ display: "grid", gridTemplateColumns: "16px minmax(0, 1fr)", gap: 6, alignItems: "center" }}>
+          <small className="da26-mono">{id}</small>
+          <span style={{ position: "relative", height: 8 }}><span style={{ position: "absolute", top: 0, bottom: 0, left: `${(es / 23) * 100}%`, width: `${(d / 23) * 100}%`, borderRadius: 2, background: "#f2c14e" }} /></span>
+        </div>
       ))}
-    </svg>
+    </div>
   );
 }
 

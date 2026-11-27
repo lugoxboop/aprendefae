@@ -10,7 +10,8 @@
  */
 import Partida from "../comun/Partida.jsx";
 import { Objeto } from "../comun/objetos.jsx";
-import { EstiloLote2, cuantos } from "../comun/lote2.jsx";
+import { cuantos } from "../comun/lote2.jsx";
+import { EstiloLote3 as EstiloLote2 } from "../comun/lote3.jsx";
 import { GP_C6_H06, PINTORES_C6 } from "./textos-c6.js";
 
 export const ID = GP_C6_H06.id;
