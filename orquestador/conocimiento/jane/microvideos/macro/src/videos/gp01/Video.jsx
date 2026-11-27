@@ -9,7 +9,7 @@ import { VideoMicro, hazSfx, mover } from "../../comun/Video.jsx";
 import { Escena, Cartel, Gigante, Destello, Pizarra, Tiza, TrazoTiza, Horno, Pan, COLOR, clamp01, lerp, sale, rampa, rebote, pulso } from "../../comun/kit.jsx";
 import DATOS from "./tiempos.json";
 
-const T = crearTiempo(DATOS, { extra: [0.35, 0.3, 0.35, 0.35, 0.3, 0.3, 0.3, 0.35, 0.45, 0.3, 0.35, 0.4] });
+const T = crearTiempo(DATOS, { extra: [0.35, 0.3, 0.35, 0.35, 0.3, 0.3, 0.3, 0.35, 0.45, 0.3, 1.1, 0.4] });
 const { S, E, W } = T;
 
 const M = {
@@ -289,8 +289,8 @@ function Operacion({ t }) {
   return (
     <Escena cam={cam} fondo="art/panaderia.jpg">
       {panes}
-      <Gigante x={560} y={420} txt="↻" p={rampa(t, M.repite - 0.3, 0.4)} tam={230} color={COLOR.VERDE} giro={(t - M.repite) * 140} />
-      <Cartel x={540} y={1180} txt="operación" p={pO} tam={88} fondo={COLOR.VERDE} color="#fff" giro={-3} />
+      <Gigante x={300} y={440} txt="↻" p={rampa(t, M.repite - 0.3, 0.4)} tam={230} color={COLOR.VERDE} giro={(t - M.repite) * 140} />
+      <Cartel x={620} y={660} txt="operación" p={pO} tam={88} fondo={COLOR.VERDE} color="#fff" giro={-3} />
       <Sombra x={760} y={1500} w={280} />
       <Mascota esp="perro" x={760} y={1505} alto={540} t={t} cara="feliz" bd={-50 * Math.abs(Math.sin(t * 3))} semilla={9} espejo />
     </Escena>
