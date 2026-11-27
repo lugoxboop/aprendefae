@@ -54,6 +54,8 @@ const VistaPreviaMacro2026 = lazy(() => import("./macro2026/VistaPrevia.jsx"));
 /* Gestión de Proyectos: la materia publicada (27-nov, orden de Mateo) y, en #/gestion-proyectos/previa, la vista previa interna. */
 const MateriaGestionProyectos = lazy(() => import("./gestion-proyectos/Materia.jsx"));
 const VistaPreviaGestionProyectos = lazy(() => import("./gestion-proyectos/VistaPrevia.jsx"));
+/* El simulador «Arma tu acta», dentro del sitio (#/gestion-proyectos/acta). */
+const ArmaTuActa = lazy(() => import("./gestion-proyectos/simulador/ArmaTuActa.jsx"));
 /* Macroeconomía 2026, lo publicado de cada tema: solo las piezas de PUBLICADAS_T1 / PUBLICADAS_T2. */
 const TemaMacro2026 = lazy(() => import("./macro2026/TemaMacro2026.jsx"));
 const RepasoMacroView = lazy(() => import("./macro2026/repaso/RepasoMacroView.jsx"));
@@ -228,7 +230,9 @@ export default function App() {
       <Suspense fallback={siteFallback}>
         {ruta.extra === "previa"
           ? <VistaPreviaGestionProyectos onBack={goHome} />
-          : <MateriaGestionProyectos onBack={goHome} />}
+          : ruta.extra === "acta"
+            ? <ArmaTuActa onBack={() => setView("gestion-proyectos")} />
+            : <MateriaGestionProyectos onBack={goHome} onSimulador={() => navegar("gestion-proyectos", null, { extra: "acta" })} />}
       </Suspense>
     );
   }

@@ -20,8 +20,6 @@ import { GUIA, MODULOS, NOMBRE_MATERIA } from "./estructura.js";
 import { PIEZAS, estaPublicada } from "./catalogo.js";
 import Microvideo from "./Microvideo.jsx";
 
-/* El simulador aprobado por Mateo (27-nov-2026): página de Claude con el chat de Pía y el PDF. */
-export const SIMULADOR_ACTA = "https://claude.ai/artifact/CHdpTrKXPht5F4SZe3fAV1";
 
 const VERDE = FAE.teal;
 const LINEA = "rgba(203,220,242,0.16)";
@@ -39,11 +37,13 @@ const CSS = `
 .gpm-empieza { display: grid; gap: 16px; }
 @media (min-width: 700px) { .gpm-empieza { grid-template-columns: minmax(0, 320px) minmax(0, 1fr); align-items: start; } }
 .gpm-tarjeta { border: 1px solid ${LINEA}; border-radius: 16px; background: rgba(29,53,87,0.35); padding: 16px; }
-.gpm-rotulo { margin: 0; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: ${VERDE}; }
+.gpm-rotulo { margin: 0; font-size: 13px; font-weight: 600; color: ${FAE.teal}; }
 .gpm-tarjeta h3 { font: 700 18px/1.3 Sora, Inter, sans-serif; margin: 6px 0 8px; overflow-wrap: anywhere; }
 .gpm-tarjeta p { margin: 0 0 10px; font-size: 15px; line-height: 1.5; color: ${TENUE}; }
 .gpm-sim { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 12px 18px; border-radius: 999px; background: ${VERDE}; color: ${FAE.bg}; font: 700 15px/1.2 Inter, system-ui, sans-serif; text-decoration: none; text-align: center; }
-.gpm-nota { font-size: 13px !important; }
+.gpm-simulador { position: relative; overflow: hidden; padding-right: 16px; background: linear-gradient(160deg, rgba(42,157,143,0.22), rgba(29,53,87,0.45) 60%); border-color: rgba(42,157,143,0.45); }
+.gpm-pia { float: right; width: 92px; height: auto; margin: -4px -6px 4px 10px; shape-outside: margin-box; }
+.gpm-sim { border: 0; cursor: pointer; clear: both; }
 .gpm-grupos { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 10px; padding: 0; margin: 0; list-style: none; }
 .gpm-grupo { border: 1px solid ${LINEA}; border-radius: 14px; padding: 14px; background: rgba(29,53,87,0.35); }
 .gpm-grupo[data-con-piezas="1"] { border-color: rgba(42,157,143,0.6); }
@@ -52,7 +52,7 @@ const CSS = `
 .gpm-estado { display: inline-block !important; margin-top: 8px !important; font-size: 11px !important; font-weight: 700; padding: 3px 8px; border-radius: 999px; border: 1px solid ${LINEA}; }
 `;
 
-export default function MateriaGestionProyectos({ onBack }) {
+export default function MateriaGestionProyectos({ onBack, onSimulador }) {
   const publicadas = (id) => (PIEZAS[id] ?? []).filter((pz) => estaPublicada(pz.id));
   const fundamentos = MODULOS[0];
   const grupos = MODULOS.slice(1);
@@ -68,18 +68,16 @@ export default function MateriaGestionProyectos({ onBack }) {
         <h2 className="gpm-h2">Empieza aquí · {fundamentos.titulo}</h2>
         <div className="gpm-empieza">
           {videos.map((pz) => <Microvideo key={pz.id} id={pz.id} />)}
-          <div className="gpm-tarjeta" data-simulador="acta">
-            <p className="gpm-rotulo">Simulador</p>
+          <div className="gpm-tarjeta gpm-simulador" data-simulador="acta">
+            <img className="gpm-pia" src="/gestion-proyectos/pia/feliz-cuerpo.webp" alt="" width="150" height="192" />
+            <p className="gpm-rotulo">Simulador con IA</p>
             <h3>Arma el acta de constitución de tu proyecto</h3>
             <p>
-              Pía, la de la panadería, te hace preguntas sobre tu idea: qué vas a hacer, para qué,
-              cuánto cuesta, cuánto tiempo toma, quién decide. Con tus respuestas se llena el acta,
-              campo por campo, hasta dejarla lista para firmar y descargar en PDF.
+              Pía te pregunta por tu idea: qué vas a hacer, para qué, cuánto cuesta, cuánto
+              tiempo toma y quién decide. Con tus respuestas se escribe el acta, componente por
+              componente, hasta dejarla lista para firmar.
             </p>
-            <a className="gpm-sim" href={SIMULADOR_ACTA} target="_blank" rel="noopener noreferrer">
-              Abrir el simulador ↗
-            </a>
-            <p className="gpm-nota" style={{ marginTop: 10 }}>Se abre en una pestaña nueva.</p>
+            <button type="button" className="gpm-sim" onClick={onSimulador}>Armar mi acta</button>
           </div>
         </div>
 
