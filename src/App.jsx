@@ -51,7 +51,8 @@ const VivoProfesor = lazy(() => import("./components/vivo/VivoProfesor.jsx"));
 
 /* Macroeconomía 2026: vista previa de lo que aún no se publica, solo por dirección (#/macro-2026). */
 const VistaPreviaMacro2026 = lazy(() => import("./macro2026/VistaPrevia.jsx"));
-/* Gestión de Proyectos: esqueleto sin publicar, solo por dirección (#/gestion-proyectos). */
+/* Gestión de Proyectos: la materia publicada (27-nov, orden de Mateo) y, en #/gestion-proyectos/previa, la vista previa interna. */
+const MateriaGestionProyectos = lazy(() => import("./gestion-proyectos/Materia.jsx"));
 const VistaPreviaGestionProyectos = lazy(() => import("./gestion-proyectos/VistaPrevia.jsx"));
 /* Macroeconomía 2026, lo publicado de cada tema: solo las piezas de PUBLICADAS_T1 / PUBLICADAS_T2. */
 const TemaMacro2026 = lazy(() => import("./macro2026/TemaMacro2026.jsx"));
@@ -225,7 +226,9 @@ export default function App() {
   if (view === "gestion-proyectos") {
     return wrap(
       <Suspense fallback={siteFallback}>
-        <VistaPreviaGestionProyectos onBack={goHome} />
+        {ruta.extra === "previa"
+          ? <VistaPreviaGestionProyectos onBack={goHome} />
+          : <MateriaGestionProyectos onBack={goHome} />}
       </Suspense>
     );
   }
