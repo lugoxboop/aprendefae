@@ -39,7 +39,7 @@ const PLANOS = [
 const LADRILLO = "#C8643B", LADRILLO2 = "#B4532E", JUNTA = "#E9D6B8";
 
 /* Calendario de pared: hojas que pasan (vel > 0) o dos alfileres (inicio y fin) */
-function Calendario({ x, y, w, t, vel = 0, hoja = "", alfiler = [0, 0], sello = 0 }) {
+export function Calendario({ x, y, w, t, vel = 0, hoja = "", alfiler = [0, 0], sello = 0 }) {
   const h = w * 1.1;
   const pasa = vel > 0 ? (t * vel) % 1 : 0;
   const num = vel > 0 ? 1 + Math.floor(t * vel) % 31 : null;
@@ -79,7 +79,7 @@ function Alfiler({ x, y, p, color, txt }) {
 }
 
 /* La panadería nueva: muro de ladrillo que sube hilada por hilada (alto 0..1), toldo, horno, letrero y puerta */
-function Local({ x, y, w, alto = 1, toldo = 0, horno = 0, letrero = 0, puerta = 0, luz = 0, nombre = "Pía 2", t = 0 }) {
+export function Local({ x, y, w, alto = 1, toldo = 0, horno = 0, letrero = 0, puerta = 0, luz = 0, nombre = "Pía 2", t = 0 }) {
   const h = w * 0.95, filas = 12, hFila = h / filas;
   const vis = Math.floor(clamp01(alto) * filas + 0.999);
   return (
@@ -125,7 +125,7 @@ function Contador({ x, y, p }) {
 }
 
 /* Tachón rojo sobre un cartel */
-const Tachon = ({ x, y, w, p }) => p <= 0 ? null : (
+export const Tachon = ({ x, y, w, p }) => p <= 0 ? null : (
   <div style={{ position: "absolute", left: x - w / 2, top: y - 14, width: w * sale(p), height: 28, background: "#E5484D", border: `5px solid ${TINTA}`, borderRadius: 14, transform: "rotate(-12deg)", transformOrigin: "0% 50%" }} />
 );
 
