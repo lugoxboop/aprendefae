@@ -316,3 +316,69 @@ Fuente: G 2.2, 2.2.1, 2.2.2, 2.3, p. 37–41.
 12. Ahora te toca: en tu organización, ¿cuánto manda el director del proyecto?
 
 Fuente: G 2.4.4.1, Tabla 2-1, p. 45–47; 2.4.4.3, p. 48.
+
+# Tanda 5 (GP-17 a GP-20)
+
+## GP-17 · No toca ningún instrumento y dirige a todos (G 3.1, 3.2, 3.3, Gráfico 3-1, p. 51–56; 3.4.4.2, p. 61)
+
+1. Pía no hornea, no empuja el carrito y no cobra. Y todo depende de ella.
+2. Es la directora del proyecto: la persona asignada para liderar al equipo que debe lograr los objetivos.
+3. Como el director de una orquesta: no toca todos los instrumentos, pero sabe de música y coordina a todos.
+4. Y su trabajo va más allá del equipo: es su esfera de influencia.
+5. En el proyecto, equilibra restricciones y recursos, y comunica entre Carmen, el equipo y los interesados.
+6. En la organización, habla con otros directores, porque piden los mismos recursos: el mismo horno, la misma plata.
+7. En la industria, sigue las tendencias: nuevas tecnologías, mercados que cambian, estándares.
+8. Y en su profesión, sigue aprendiendo y comparte lo que sabe.
+9. Los mejores directores dedican cerca del noventa por ciento de su tiempo a comunicar.
+10. Y su red informal, de expertos y líderes influyentes, pesa más que el organigrama.
+11. Ahora te toca: dibuja la esfera de influencia de tu proyecto.
+
+Fuente: G 3.1, 3.2, 3.3, Gráfico 3-1, p. 51–56; 3.4.4.2, p. 61.
+
+## GP-18 · Cronograma perfecto, proyecto hundido (G 3.4.1 a 3.4.4, Gráfico 3-2, p. 56–60)
+
+1. Ramón tiene un cronograma perfecto. Y su proyecto igual se está hundiendo.
+2. Dirige la línea de tortas y lleva al día el cronograma, los costos y los incidentes.
+3. Pero no sabe que el mercado de tortas se está achicando, y su equipo trabaja sin ganas.
+4. Ramón tiene solo una de las tres habilidades del Triángulo de Talentos.
+5. La primera es la dirección técnica de proyectos: aplicar lo que se sabe de dirección para manejar cronograma, costo, recursos y riesgos.
+6. La segunda es la gestión estratégica y de negocios: ver el panorama de la organización, su estrategia, su mercado y su competencia.
+7. Así puede explicar a otros por qué el proyecto le importa al negocio.
+8. La tercera es el liderazgo: guiar, motivar y dirigir al equipo.
+9. Las investigaciones dicen que lo técnico es esencial, pero no basta.
+10. Para ser más eficaz, el director necesita un equilibrio de las tres.
+11. Ahora te toca: ¿qué habilidad le falta a cada director?
+
+Fuente: G 3.4.1 a 3.4.4, Gráfico 3-2, p. 56–60.
+
+## GP-19 · Mandar no es lo mismo que liderar (G 3.4.5, Tabla 3-1, p. 64; 3.5, p. 66–67)
+
+1. Mandar no es lo mismo que liderar.
+2. Se daña el horno, y Pía tiene que sacar cien panes hoy.
+3. Primero gestiona: reparte turnos, mira el reloj y pregunta cómo y cuándo.
+4. Luego reúne al equipo, pregunta qué y por qué, y entre todos debaten otra salida.
+5. Gestionar es llevar a alguien de un punto a otro con pasos ya conocidos, usando el poder de la posición.
+6. Liderar es guiarlo con discusión y debate, usando el poder de las relaciones.
+7. La gestión hace las cosas correctamente; el liderazgo hace las cosas correctas.
+8. Una mira el corto plazo y los sistemas; la otra, la visión a largo plazo y las personas.
+9. No son sinónimos, y el director necesita las dos: la habilidad está en el equilibrio para cada situación.
+10. Además, integra en tres niveles: une los procesos donde se cruzan, aplica lo que sabe y tiene en cuenta el contexto.
+11. Ahora te toca: en cada escena, ¿Pía está gestionando o liderando?
+
+Fuente: G 3.4.5, Tabla 3-1, p. 64; 3.5, p. 66–67.
+
+## GP-20 · La frase que nadie comprobó (G 4.1, 4.1.1 a 4.1.3.2, p. 75–81; Glosario, «Supuesto»)
+
+1. Una frase que nadie comprobó puede tumbar tu plan.
+2. En el acta del carrito, Pía escribe: «El horno estará libre todas las mañanas».
+3. Para llegar ahí, ella y Carmen parten del caso de negocio y de los acuerdos que ya tienen.
+4. Revisan los factores del entorno y usan la plantilla del acta de la panadería.
+5. Consultan a expertos, hacen una tormenta de ideas y entrevistas, y se reúnen con los interesados clave.
+6. Así nace el acta. Cuando Carmen la aprueba, el proyecto se inicia de manera formal.
+7. Ojo: el acta no es un contrato, porque al crearla no hay intercambio de dinero.
+8. ¿Y el horno? Nadie lo comprobó. Es un supuesto: algo que se da por cierto sin prueba.
+9. Por eso este proceso tiene una segunda salida: el registro de supuestos.
+10. Ahí se anotan los supuestos y las restricciones, a lo largo de todo el proyecto.
+11. Ahora te toca: escribe tres supuestos de tu proyecto.
+
+Fuente: G 4.1, 4.1.1 a 4.1.3.2, p. 75–81; Glosario, «Supuesto».
