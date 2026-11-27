@@ -1,5 +1,5 @@
 import {
-  ArrowRight, ShoppingCart, Landmark, Coins, PiggyBank, Network, Mountain, Swords, Sparkles,
+  ArrowRight, ShoppingCart, Landmark, Coins, PiggyBank, Network, Mountain, Swords, Sparkles, Milestone, Building2,
 } from "lucide-react";
 import { APRENDER, HACER, actividadesDeTipo } from "../../data/subjects.js";
 import IdentificadorDeTema, { tieneIdentificador } from "./IdentificadorDeTema.jsx";
@@ -70,6 +70,9 @@ const IDENTIDAD = {
   "contabilidad/inventarios-permanente": { tono: "rosa" },
   "contabilidad/inventarios-descuentos-nic2": { tono: "indigo" },
   "contabilidad/repaso-capitulo-5": { tono: "lima" },
+  /* Gestión de Proyectos: un tema por capítulo del PMBOK. */
+  "gestion-proyectos/gp-introduccion": { tono: "indigo", Glifo: Milestone },
+  "gestion-proyectos/gp-entorno": { tono: "cielo", Glifo: Building2 },
 };
 
 export function identidadDeTema(materia, tema, indice = 0) {

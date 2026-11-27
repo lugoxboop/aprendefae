@@ -47,6 +47,23 @@ function fondoAjedrez(ctx) {
   ctx.restore();
 }
 
+/* Gestión de Proyectos: barras de un diagrama de Gantt y un hito en rombo. */
+function fondoProyectos(ctx) {
+  ctx.save();
+  ctx.fillStyle = "rgba(108,140,255,0.13)";
+  const barras = [[0.1, 0.56, 0.34], [0.3, 0.63, 0.42], [0.52, 0.7, 0.3], [0.18, 0.77, 0.5], [0.6, 0.84, 0.28]];
+  for (const [x, y, w] of barras) {
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(W * x, H * y, W * w, 34, 17);
+    else ctx.rect(W * x, H * y, W * w, 34);
+    ctx.fill();
+  }
+  ctx.translate(W * 0.86, H * 0.66);
+  ctx.rotate(Math.PI / 4);
+  ctx.fillRect(-22, -22, 44, 44);
+  ctx.restore();
+}
+
 function fondoOfertaDemanda(ctx) {
   ctx.save();
   ctx.lineWidth = 10;
@@ -164,6 +181,7 @@ const FONDOS_DE_MATERIA = {
   macroeconomia: fondoOfertaDemanda,
   "pensamiento-estrategico": fondoAjedrez,
   contabilidad: fondoContabilidad,
+  "gestion-proyectos": fondoProyectos,
 };
 
 const POR_DEFECTO = fondoOfertaDemanda;

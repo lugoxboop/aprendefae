@@ -1,5 +1,5 @@
 import { FAE } from "../theme.js";
-import { ArrowRight, TrendingUp, Scale, Compass } from "lucide-react";
+import { ArrowRight, TrendingUp, Scale, Compass, FolderKanban } from "lucide-react";
 import { CaraTema, LucesTema, TONOS, variablesDeTono } from "./shared/TarjetaTema.jsx";
 import { SUBJECTS, temasVisibles, actividadesDeTipo, APRENDER, HACER } from "../data/subjects.js";
 
@@ -125,6 +125,8 @@ const MATERIAS = {
   macroeconomia: { tono: "durazno", Glifo: TrendingUp, Icono: () => <MacroIcon color="#fff" /> },
   contabilidad: { tono: "ambar", Glifo: Scale, Icono: () => <ContabilidadIcon enPastilla /> },
   "pensamiento-estrategico": { tono: "menta", Glifo: Compass, Icono: () => <EstrategiaIcon enPastilla /> },
+  /* Gestión de Proyectos (27-nov-2026): índigo, que no usa ninguna otra materia, y barras de Gantt. */
+  "gestion-proyectos": { tono: "indigo", Glifo: FolderKanban, Icono: () => <ProyectosIcon enPastilla /> },
 };
 
 export function resumenDeMateria(id) {
@@ -192,6 +194,20 @@ export function MacroIcon({ color = FAE.coral }) {
       <div style={{ width: "9px", height: "16px", background: color, borderRadius: "2px" }} />
       <div style={{ width: "9px", height: "25px", background: color, borderRadius: "2px" }} />
       <div style={{ width: "9px", height: "34px", background: color, borderRadius: "2px" }} />
+    </div>
+  );
+}
+
+/* Barras de Gantt escalonadas — Gestión de Proyectos. */
+export function ProyectosIcon({ enPastilla = false }) {
+  const fuerte = enPastilla ? "#fff" : "#6C8CFF";
+  const soft = enPastilla ? "rgba(255,255,255,0.45)" : "rgba(108,140,255,0.4)";
+  const barra = { height: "8px", borderRadius: "2px" };
+  return (
+    <div style={{ display: "grid", gap: "5px", width: "34px" }}>
+      <div style={{ ...barra, width: "18px", background: fuerte }} />
+      <div style={{ ...barra, width: "20px", marginLeft: "8px", background: soft }} />
+      <div style={{ ...barra, width: "18px", marginLeft: "16px", background: fuerte }} />
     </div>
   );
 }

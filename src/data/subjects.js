@@ -774,6 +774,53 @@ export const SUBJECTS = {
       },
     ],
   },
+  /*
+   * ═══════════════════════ GESTIÓN DE PROYECTOS ═══════════════════════
+   *
+   * Materia nueva (27-nov-2026), sobre la Guía del PMBOK 6.ª ed. Un tema por
+   * capítulo; el hilo de toda la materia es Altamira, una empresa cafetera de
+   * Manizales (ficticia). Lote 1: las 18 Hacer diarias de los caps. 1 y 2
+   * (diseño de Gen, gestion-proyectos/disenos/c1-c2-hacer.md), todas
+   * publicadas por orden de Mateo. Misma clasificación que su fila de la 0276
+   * y que src/gestion-proyectos/<tema>/catalogo.js (gp-catalogo.test.mjs).
+   * Los Aprender los hace Jane y entran después, con su propio id.
+   */
+  "gestion-proyectos": {
+    id: "gestion-proyectos",
+    name: "Gestión de Proyectos",
+    topics: [
+      {
+        id: "gp-introduccion",
+        title: "Introducción",
+        actividades: [
+          { id: "gp-h01-bandeja", nombre: "La bandeja de los lunes", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
+          { id: "gp-h02-reloj", nombre: "¿Se acaba o sigue?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
+          { id: "gp-h03-sellos", nombre: "El sello del porqué", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          { id: "gp-h04-puente", nombre: "El puente al estado futuro", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10, etapas: 2 } },
+          { id: "gp-h05-portafolio", nombre: "Arma el mapa de Altamira", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25, etapas: 2 } },
+          { id: "gp-h06-lineas", nombre: "Cinco formas de hacer la app", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          { id: "gp-h07-puerta", nombre: "La puerta de fase", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          { id: "gp-h08-calendario", nombre: "La trampa del calendario", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25, etapas: 2 } },
+          { id: "gp-h09-central", nombre: "La central de la obra", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          { id: "gp-h10-cafetera", nombre: "Del grano a la taza", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "facil", fpBase: 10 } },
+          { id: "gp-h11-caso-puente", nombre: "El caso de negocio del puente", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50, etapas: 3 } },
+          { id: "gp-h12-balanzas", nombre: "¿Éxito o fracaso?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25, etapas: 2 } },
+          { id: "gp-h13-memorando", nombre: "El memorando del practicante", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "dificil", fpBase: 50 } },
+          { id: "gp-h14-sobre", nombre: "El sobre del proveedor", clasificacion: { tipo: HACER, modalidad: "exploratoria", dificultad: "medio", fpBase: 25 } },
+        ],
+      },
+      {
+        id: "gp-entorno",
+        title: "El entorno de los proyectos",
+        actividades: [
+          { id: "gp-h15-control", nombre: "¿Lo controlas o te controla?", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25, etapas: 2 } },
+          { id: "gp-h16-nudos", nombre: "El organigrama con nudos", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          { id: "gp-h17-dial", nombre: "El dial de la autoridad", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+          { id: "gp-h18-pmo", nombre: "Tres empresas, tres PMO", clasificacion: { tipo: HACER, modalidad: "evaluativa", dificultad: "medio", fpBase: 25 } },
+        ],
+      },
+    ],
+  },
 };
 
 /*

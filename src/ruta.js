@@ -110,6 +110,13 @@ export const VISTAS = new Set([
   "politica-fiscal",
   "politica-monetaria",
   "politica-cambiaria",
+  /*
+   * Gestión de Proyectos (27-nov-2026): el índice de la materia y un tema por
+   * capítulo del PMBOK (src/gestion-proyectos/TemaGP.jsx). #/<tema>/hacer[/<id>].
+   */
+  "gestion-proyectos",
+  "gp-introduccion",
+  "gp-entorno",
 ]);
 
 /*
