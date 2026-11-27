@@ -176,3 +176,73 @@ Fuente: fase (1.2.4.2), las cinco decisiones del punto de revisión y los docume
 12. Ahora te toca: ¿a qué grupo pertenece cada tarea de Pía?
 
 Fuente: los cinco grupos con su propósito (1.2.4.5), «no son fases», se repiten en cada fase y se superponen (p. 554 y Gráfico 1-5), la salida de un proceso es entrada de otro (1.2.4.4). Decisión de Mateo: nunca como línea de tiempo.
+
+## Tanda 3 (GP-09 a GP-12), 27-nov
+
+## GP-09 · Una boda: las diez áreas de conocimiento (G 1.2.4.6, p. 23–25; Tabla 1-4; 49 procesos: Tabla 1-1 (X3))
+
+1. Una boda tiene las diez áreas de la dirección de proyectos. Mira.
+2. Carmen se casa, y Pía organiza la boda.
+3. Lo primero es que todo encaje y se coordine: eso es integración.
+4. Decidir qué entra y qué no: ¿hay baile?, ¿hay mariachi? Eso es alcance.
+5. Fijar la fecha y los tiempos: cronograma. Y el presupuesto: costos.
+6. Que el pastel salga como Carmen lo pidió: calidad. Meseros y sillas: recursos.
+7. Avisar a todos a tiempo: comunicaciones. ¿Y si llueve? Riesgos.
+8. Contratar el salón y la música por fuera del equipo: adquisiciones.
+9. Y las familias, que pueden afectar la boda o verse afectadas por ella: interesados.
+10. Son las diez áreas de conocimiento, y cada una tiene sus propios procesos.
+11. Cruzadas con los cinco grupos de procesos, la guía describe cuarenta y nueve procesos.
+12. Ahora te toca: ¿a qué área pertenece cada problema de la boda?
+
+Fuente: G 1.2.4.6, p. 23–25; Tabla 1-4; 49 procesos: Tabla 1-1 (X3).
+
+## GP-10 · Datos, información e informes de desempeño (G 1.2.4.7, p. 26–27; Gráfico 1-7)
+
+1. «Gastamos tres millones» no dice nada.
+2. Pía remodela la cocina, y cada día el maestro de obra anota cosas.
+3. «Hoy se gastó medio millón. Va el cuarenta por ciento de la baldosa.»
+4. Eso son datos de desempeño del trabajo: observaciones y mediciones en bruto.
+5. Solos no dicen si la obra va bien o mal.
+6. Pía los compara con el plan: llevamos tres millones de dos previstos, y vamos por la mitad.
+7. Eso ya es información de desempeño del trabajo: datos analizados en contexto.
+8. Luego le arma a Carmen una hoja con semáforo: costo en rojo, plazo en verde.
+9. Ese es el informe de desempeño del trabajo: está hecho para tomar decisiones.
+10. Carmen lo lee y decide: paremos el gasto en adornos.
+11. Datos en bruto, información en contexto, informes para decidir.
+12. Ahora te toca: ¿esto es un dato, información o un informe?
+
+Fuente: G 1.2.4.7, p. 26–27; Gráfico 1-7.
+
+## GP-11 · La guía no es una receta: se adapta (G 1.2.5, p. 28; G p. 1–2)
+
+1. Usar toda la guía para pintar tu cuarto es dirigir mal.
+2. Ramón quiere pintar su cuarto el sábado.
+3. Pía, emocionada, le trae la guía completa: acta, plan de riesgos, informes…
+4. Ramón la mira: «Pía, es un cuarto».
+5. Y tiene razón: la guía no es una receta ni una metodología.
+6. Es una base de buenas prácticas, y buenas prácticas no significa aplicarlas igual en todos los proyectos.
+7. Para el cuarto basta una lista: color, pintura, brochas y el sábado.
+8. Para remodelar la panadería, en cambio, sí hace falta mucho más.
+9. Escoger qué procesos, entradas, herramientas, técnicas, salidas y fases usar en cada proyecto se llama adaptación.
+10. Se adapta porque cada proyecto es único.
+11. Y el director no lo decide solo: lo hace con el equipo, el patrocinador o la dirección de la organización.
+12. Ahora te toca: ¿qué usarías para tu proyecto, y qué dejarías por fuera?
+
+Fuente: G 1.2.5, p. 28; G p. 1–2.
+
+## GP-12 · No hacer nada también es una opción (G 1.2.6, 1.2.6.1, 1.2.6.2, p. 29–33; Tabla 1-5)
+
+1. Un caso de negocio puede incluir una opción muy seria: no hacer nada.
+2. Pía quiere abrir una segunda sede. Carmen, la socia que pone la plata, arma con ella el caso de negocio.
+3. Primero, la necesidad: en el barrio norte la gente hace fila y se va sin pan.
+4. Luego, el análisis: ¿qué causa el problema?, ¿qué riesgos hay?, ¿con qué criterios van a decidir?
+5. Y las opciones. Una: no hacer nada, seguir como hasta ahora. Si la eligen, no hay proyecto.
+6. Dos: lo mínimo, un carrito que vende pan en el barrio norte.
+7. Tres: más que el mínimo, una sede completa con cafetería.
+8. Al final, la recomendación: la opción elegida, con sus riesgos y sus medidas de éxito.
+9. Eso es el caso de negocio: un estudio de viabilidad económica que sirve de base para autorizar el proyecto.
+10. Pía y Carmen eligen el carrito.
+11. Y arman el plan de gestión de beneficios: qué beneficio llega, cuándo, cómo se mide y quién lo vigila.
+12. Ahora te toca: arma las tres opciones de tu propio proyecto.
+
+Fuente: G 1.2.6, 1.2.6.1, 1.2.6.2, p. 29–33; Tabla 1-5.
