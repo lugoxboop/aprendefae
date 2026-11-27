@@ -240,6 +240,13 @@ memorando-clip, sobre-boleto, bodega, archivador-metalico, tablero-organigrama,
 dial-radio, bolsa-dinero, edificio-oficinas, portapapeles, timon, en
 public/gestion-proyectos/ilustrados/ (originales: 11 hojas en
 /mnt/project-files/gestion-proyectos/ilustrados-origen/).
+Gestión de Proyectos lote 2 (caps. 3–6, 106 objetos; la lista por pieza está en
+«Ids de imagen» al final del §3 de c03–c06-hacer.md), en
+public/gestion-proyectos/ilustrados/ (originales: 34 hojas `lote2-hoja-*` en la misma
+carpeta de red). Captura sin descargas: superponer la imagen generada a pantalla
+completa sobre verde (un `div` fijo con el `<img>` del blob) y tomar la captura del
+navegador. Hojas de 4 objetos funcionan; pedir «ningún objeto verde» evita cabinas o
+pantallas verdes que el recorte se come.
 - **Hojas:** varios objetos en una fila con mucho espacio verde entre ellos; se
   cortan con `scripts/ilustrados/hoja.py` (también guarda las cajas).
 - **Objetos verdes** (hojas de árbol, billete verde): el recorte los come. Se

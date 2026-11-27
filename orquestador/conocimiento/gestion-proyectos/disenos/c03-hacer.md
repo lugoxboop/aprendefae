@@ -358,6 +358,8 @@ Situaciones de mascotas nuevas (en el chat «Chibi Fox Model Sheet»): zorro dir
 batuta · zorro en la estación de tranvía · zorro sentándose en taburete (y tambaleándose) · zorro con
 llavero · zorro sosteniendo moneda · hámster en seis poses de reacción (H06) · zorro asentando baldosas · gato asomado por una puerta · hurón con hoja de informe.
 
+**Ids de imagen (lote de imágenes 2):** H01 → partitura-abierta, batuta, puerta-oficina (la orquesta en silueta la arma la interfaz) · H02 → estacion-tranvia, tranvia · H03 → taburete-barista · H04 → llavero, llave, reja-obra · H05 → moneda-engranaje, moneda-farol · H06 → comandera, nevera-barra, iman (macro: /macro2026/ilustrados/iman.webp), pincho-comandas · H07 → baldosa (gris claro, se tiñe con tenir.py), nube-polvo. Archivos en `public/gestion-proyectos/ilustrados/<id>.webp` salvo los marcados «macro».
+
 ## 4. Autoevaluación contra el Kit
 
 | Dimensión | Nivel esperado | Por qué |

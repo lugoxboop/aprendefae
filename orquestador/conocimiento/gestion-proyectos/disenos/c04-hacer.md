@@ -537,6 +537,8 @@ hámster entregando hojas · zorro cargando una carretilla · hurón dictando ·
 barista sirviendo arte latte · comité (panda, gato, perro) sentado frente a la pantalla de turnos · zorro con
 casco abriendo compuertas.
 
+**Ids de imagen (lote de imágenes 2):** H01 → pliego-acta, sello-lacre, carpeta-documento (lote 1) · H02 → expositor-postales, postal · H03 → portaplanos, revistero, regla-madera · H04 → carretilla, caseta-obra · H05 → bitacora · H06 → recetario, taza-latte, bandeja-madera (lote 1), posavasos · H07 → camara-tripode, estuche-objetivos, cubeta-revelado, album-fotos · H08 → turnero, pantalla-llamado, dial-radio (lote 1), ficha-voto · H09 → tablero-breakers, carpeta-documento (lote 1) · H10 → tolva, despulpadora, tanque-beneficio, canal-madera, compuerta. Archivos en `public/gestion-proyectos/ilustrados/<id>.webp` salvo los marcados «macro».
+
 ## 4. Autoevaluación contra el Kit
 
 | Dimensión | Nivel esperado | Por qué |
