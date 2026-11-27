@@ -34,7 +34,10 @@ export const CSS_LOTE2 = `
 .gp2-medidor > span { position: absolute; inset: 0; transform-origin: 0 50%; background: var(--gp2-relleno, #ffc978); transition: transform 420ms ${CURVA}; }
 .gp-destinos[data-disposicion="aro"] { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(96px, 30%); grid-template-columns: none; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 6px; overscroll-behavior-x: contain; }
 .gp-destinos[data-disposicion="aro"] > * { scroll-snap-align: start; }
-@media (max-width: 400px) { .gp-destinos[data-disposicion="aro"] { grid-auto-columns: minmax(84px, 31%); } }
+.gp-destinos[data-disposicion="aro"] .gp-destino { padding: 6px 4px; }
+.gp-destinos[data-disposicion="aro"] .gp-destino-txt { font-size: 13px; hyphens: none; -webkit-hyphens: none; overflow-wrap: normal; letter-spacing: -.01em; }
+@media (max-width: 400px) { .gp-destinos[data-disposicion="aro"] { grid-auto-columns: minmax(80px, 30%); } }
+.gp2-pista { margin: 4px 0 0; text-align: right; font: 600 12px/16px var(--planck-font-sans, system-ui, sans-serif); color: #b6bbc5; }
 @media (prefers-reduced-motion: reduce) { .gp2-entra, .gp2-tambalea { animation: none !important; } .gp2-gira { transition: opacity 120ms linear !important; } }
 `;
 

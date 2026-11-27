@@ -26,6 +26,8 @@ export const ESCENA = {
   disposicion: "aro",
   antes: () => <EstiloLote2 />,
   destinos: { "*": { objeto: LLAVE, alto: 34 } },
+  /* El aro gira deslizando: la pista lo dice (14 llaves, unas cuatro a la vista). */
+  despues: ({ paso }) => (paso.destinos.length > 4 ? <p className="gp2-pista" aria-hidden="true">Desliza el aro: son {paso.destinos.length} llaves →</p> : null),
 };
 
 export default function C03H04Llavero({ onTerminar, rng = null }) {
