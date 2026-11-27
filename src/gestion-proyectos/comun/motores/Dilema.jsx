@@ -41,7 +41,7 @@ export default function Dilema({ paso, escena = {}, alTerminar, valores }) {
       for (const [v, d] of Object.entries(o.efecto)) m[v] = Math.max(0, Math.min(1, m[v] + d * PASO));
       return m;
     });
-    detalle.current.push({ item: `${p.id}:${o.id}`, ok: Object.values(o.efecto).every((d) => d > 0), subtemas: ["gp-etica"] });
+    detalle.current.push({ item: `${p.id}:${o.id}`, ok: Object.values(o.efecto).every((d) => d > 0), subtemas: ["gp-c1-proposito"] });
   };
 
   const seguir = () => {

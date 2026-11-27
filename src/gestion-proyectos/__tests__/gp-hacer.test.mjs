@@ -37,11 +37,9 @@ const { PIEZAS_TEXTO_GP, ITEMS_GP } = await import("../etiquetas.js");
 const S = solucionario();
 const DIR = new URL("..", import.meta.url);
 const COMPONENTES = {};
-for (const sub of ["introduccion", "entorno"]) {
-  for (const f of readdirSync(new URL(`${sub}/`, DIR)).filter((x) => /^H\d\d.*\.jsx$/.test(x))) {
-    const m = await import(new URL(`${sub}/${f}`, DIR).href);
-    COMPONENTES[m.ID] = m.default;
-  }
+for (const f of readdirSync(new URL("fundamentos/", DIR)).filter((x) => /^H\d\d.*\.jsx$/.test(x))) {
+  const m = await import(new URL(`fundamentos/${f}`, DIR).href);
+  COMPONENTES[m.ID] = m.default;
 }
 
 const sinEstilos = (el) => el.innerHTML.replace(/<style>[\s\S]*?<\/style>/g, "");
@@ -141,7 +139,7 @@ test("las 18 se juegan enteras: partida perfecta = 100 % y cada ítem con etique
 test("un error: coral en ese destino, la retro de ese destino, y el ítem cuenta en contra", async () => {
   mock.timers.enable({ apis: ["setTimeout"] });
   try {
-    const p = PIEZAS_TEXTO_GP.find((x) => x.id === "gp-h01-bandeja");
+    const p = PIEZAS_TEXTO_GP.find((x) => x.id === "gp26-fun-h01-bandeja");
     let res = null;
     const m = await montar(COMPONENTES[p.id], { onTerminar: (r) => { res = r; }, rng: conSemilla(2) });
     await clicEn(m.el.querySelector("[data-empezar]"));

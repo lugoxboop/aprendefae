@@ -75,9 +75,9 @@ insert into res select 1, 'una fila sin etapas declaradas vale 1', '1',
 insert into res select 2, 'las actividades reales que no son desafío siguen en 1 etapa', '0 con etapas>1',
   (select count(*)::text || ' con etapas>1'
      from public.actividad_catalogo
-    where etapas > 1 and activity_id not in ('proyecto-arca', 'comite-nova', 'ciclo-completo', 'da26-h2-arma-formula', 'da26-h6-meta', 'pe26-h2-grupo-logico', 'pf26-h3-factura', 'pm26-h2-cascada-meta', 'gp-h04-puente', 'gp-h05-portafolio', 'gp-h08-calendario', 'gp-h11-caso-puente', 'gp-h12-balanzas', 'gp-h15-control') and activity_id not like 'zzz-%'),
+    where etapas > 1 and activity_id not in ('proyecto-arca', 'comite-nova', 'ciclo-completo', 'da26-h2-arma-formula', 'da26-h6-meta', 'pe26-h2-grupo-logico', 'pf26-h3-factura', 'pm26-h2-cascada-meta', 'gp26-fun-h04-puente', 'gp26-fun-h05-portafolio', 'gp26-fun-h08-calendario', 'gp26-fun-h11-caso-puente', 'gp26-fun-h12-balanzas', 'gp26-fun-h15-control') and activity_id not like 'zzz-%'),
   (select count(*) = 0 from public.actividad_catalogo
-    where etapas > 1 and activity_id not in ('proyecto-arca', 'comite-nova', 'ciclo-completo', 'da26-h2-arma-formula', 'da26-h6-meta', 'pe26-h2-grupo-logico', 'pf26-h3-factura', 'pm26-h2-cascada-meta', 'gp-h04-puente', 'gp-h05-portafolio', 'gp-h08-calendario', 'gp-h11-caso-puente', 'gp-h12-balanzas', 'gp-h15-control') and activity_id not like 'zzz-%');
+    where etapas > 1 and activity_id not in ('proyecto-arca', 'comite-nova', 'ciclo-completo', 'da26-h2-arma-formula', 'da26-h6-meta', 'pe26-h2-grupo-logico', 'pf26-h3-factura', 'pm26-h2-cascada-meta', 'gp26-fun-h04-puente', 'gp26-fun-h05-portafolio', 'gp26-fun-h08-calendario', 'gp26-fun-h11-caso-puente', 'gp26-fun-h12-balanzas', 'gp26-fun-h15-control') and activity_id not like 'zzz-%');
 
 -- ── 13. Y los tres desafíos declaran sus cuatro etapas ─────────────────────
 -- El complemento del chequeo de arriba: excluirlos de la cuenta no puede
@@ -142,13 +142,13 @@ insert into res select 17, 'la Hacer por etapas de Política monetaria declara 3
 insert into res select 18, 'las seis Hacer por etapas de Gestión de Proyectos declaran sus etapas y su base', '6 filas',
   (select count(*)::text || ' filas'
      from public.actividad_catalogo
-    where (activity_id = 'gp-h04-puente' and etapas = 2 and fp_base = 10)
-       or (activity_id in ('gp-h05-portafolio', 'gp-h08-calendario', 'gp-h12-balanzas', 'gp-h15-control') and etapas = 2 and fp_base = 25)
-       or (activity_id = 'gp-h11-caso-puente' and etapas = 3 and fp_base = 50)),
+    where (activity_id = 'gp26-fun-h04-puente' and etapas = 2 and fp_base = 10)
+       or (activity_id in ('gp26-fun-h05-portafolio', 'gp26-fun-h08-calendario', 'gp26-fun-h12-balanzas', 'gp26-fun-h15-control') and etapas = 2 and fp_base = 25)
+       or (activity_id = 'gp26-fun-h11-caso-puente' and etapas = 3 and fp_base = 50)),
   (select count(*) = 6 from public.actividad_catalogo
-    where (activity_id = 'gp-h04-puente' and etapas = 2 and fp_base = 10)
-       or (activity_id in ('gp-h05-portafolio', 'gp-h08-calendario', 'gp-h12-balanzas', 'gp-h15-control') and etapas = 2 and fp_base = 25)
-       or (activity_id = 'gp-h11-caso-puente' and etapas = 3 and fp_base = 50));
+    where (activity_id = 'gp26-fun-h04-puente' and etapas = 2 and fp_base = 10)
+       or (activity_id in ('gp26-fun-h05-portafolio', 'gp26-fun-h08-calendario', 'gp26-fun-h12-balanzas', 'gp26-fun-h15-control') and etapas = 2 and fp_base = 25)
+       or (activity_id = 'gp26-fun-h11-caso-puente' and etapas = 3 and fp_base = 50));
 
 -- ── 3. Lo de siempre sigue pagando lo de siempre ───────────────────────────
 -- EL CHEQUEO MÁS IMPORTANTE DEL ARCHIVO. registrar_fp se reemplazó entera; si

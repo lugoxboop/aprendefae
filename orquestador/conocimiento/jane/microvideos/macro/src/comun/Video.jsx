@@ -78,15 +78,15 @@ function volumenMusica(t, T) {
 }
 
 /*
- * Pistas por separado (--props='{"pista":"fx"}'): «fx» saca solo los efectos y «musica» solo
- * la música. La mezcla final (voz, música variada y efectos por debajo de la voz) la hace
+ * Pistas por separado (--props='{"pista":"fx"}'): «fx» saca solo los efectos, «musica» solo
+ * la música y «voz» solo la narración ya repartida en sus tramos. La mezcla final (voz, música variada y efectos por debajo de la voz) la hace
  * sonido/mezcla.py con esas pistas; ver sonido/README.md.
  */
 const PISTA = (() => { try { return getInputProps().pista || "todo"; } catch { return "todo"; } })();
 
 export function VideoMicro({ T, planos, pinta, sfx, clave, arte = [], audio, musica = "musica", sinSonido = false, encima = null, sinResaltar }) {
   usePrecarga(arte);
-  const conVoz = PISTA === "todo", conMusica = PISTA === "todo" || PISTA === "musica", conFx = PISTA === "todo" || PISTA === "fx";
+  const conVoz = PISTA === "todo" || PISTA === "voz", conMusica = PISTA === "todo" || PISTA === "musica", conFx = PISTA === "todo" || PISTA === "fx";
   const frame = useCurrentFrame();
   const t = frame / FPS;
   return (

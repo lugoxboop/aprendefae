@@ -92,7 +92,7 @@ export default function Dial({ paso, escena = {}, alTerminar, consignaReto, onFa
   const confirmar = () => {
     if (hecho) return;
     if (p.id === reto.clave) {
-      if (intento === 1) detalle.current.push({ item: reto.id, ok: true, subtemas: ["gp-estructuras"] });
+      if (intento === 1) detalle.current.push({ item: reto.id, ok: true, subtemas: ["gp-c2-estructuras"] });
       setRetro(null);
       setHecho(true);
       setTimeout(() => siguiente(), 900);
@@ -101,7 +101,7 @@ export default function Dial({ paso, escena = {}, alTerminar, consignaReto, onFa
     setRetro(reto.retro);
     setMal(i);
     setGolpes((g) => g + 1);
-    if (intento === 1) { detalle.current.push({ item: reto.id, ok: false, subtemas: ["gp-estructuras"], respuesta: p.id }); setIntento(2); return; }
+    if (intento === 1) { detalle.current.push({ item: reto.id, ok: false, subtemas: ["gp-c2-estructuras"], respuesta: p.id }); setIntento(2); return; }
     setHecho(true);
     ir(pos.findIndex((x) => x.id === reto.clave));
     setTimeout(() => siguiente(), 2600);

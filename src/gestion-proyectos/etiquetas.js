@@ -6,8 +6,8 @@
  * que la pieza puede mandar en su `detalle` tiene aquí su enunciado.
  */
 import { itemsDePieza } from "./comun/preparar.js";
-import { PIEZAS_TEXTO_INTRO } from "./introduccion/textos.js";
-import { PIEZAS_TEXTO_ENTORNO } from "./entorno/textos.js";
+import { PIEZAS_TEXTO_INTRO } from "./fundamentos/textos-c1.js";
+import { PIEZAS_TEXTO_ENTORNO } from "./fundamentos/textos-c2.js";
 
 export const PIEZAS_TEXTO_GP = [...PIEZAS_TEXTO_INTRO, ...PIEZAS_TEXTO_ENTORNO];
 

@@ -86,7 +86,7 @@ export default function Emparejar({ paso, escena = {}, alTerminar }) {
     if (!riel || puestas[rielId]) return;
     const n = (intentos[rielId] ?? 0) + 1;
     setIntentos((i) => ({ ...i, [rielId]: n }));
-    if (!detalle.current[rielId]) detalle.current[rielId] = { item: rielId, ok: etiqueta === riel.clave, subtemas: ["gp-ciclo"], ...(etiqueta === riel.clave ? {} : { respuesta: etiqueta }) };
+    if (!detalle.current[rielId]) detalle.current[rielId] = { item: rielId, ok: etiqueta === riel.clave, subtemas: ["gp-c1-ciclo-vida"], ...(etiqueta === riel.clave ? {} : { respuesta: etiqueta }) };
     if (etiqueta === riel.clave) {
       setRetro(null);
       const nuevas = { ...puestas, [rielId]: etiqueta };

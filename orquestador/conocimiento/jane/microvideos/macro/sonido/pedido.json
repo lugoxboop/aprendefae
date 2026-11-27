@@ -1,8 +1,6 @@
 {
   "acciones": [
-    "musica",
-    "voces",
-    "revisar",
+    "narrar",
     "cupo"
   ],
   "musica": [
@@ -100,5 +98,12 @@
         "acento": "argentine"
       }
     ]
-  }
+  },
+  "narrar": [
+    {
+      "id": "gp01-pan-de-cada-dia",
+      "voz": "jBlmi27XRORxjPquUeCh",
+      "texto": "Pía hornea quinientos panes cada mañana. Y nada de eso es un proyecto.\n\nMismo horno, misma receta, todos los días. Sin fecha de fin.\n\nPero un día, Pía quiere algo nuevo: abrir una segunda panadería al otro lado del barrio.\n\nAhí todo cambia. Esto tiene un primer día… y un último día.\n\nY va a crear algo que no existe: otro local, otro horno, otros vecinos.\n\nAunque use los mismos ladrillos que la primera, esta panadería es única.\n\nRamón pregunta: ¿y esto cuándo se acaba?\n\nCuando la nueva sede abra sus puertas. Ese día termina el trabajo… pero la panadería se queda.\n\nEso que acabas de ver tiene nombre.\n\nUn proyecto es un esfuerzo temporal para crear un producto, servicio o resultado único.\n\nY lo que se repite todos los días, como hornear el pan, se llama operación.\n\nAhora piensa en tu idea: ¿es un proyecto o una operación? Vamos a averiguarlo."
+    }
+  ]
 }

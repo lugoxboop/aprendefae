@@ -101,6 +101,12 @@ export const VISTAS = new Set([
    */
   "macro-2026",
   /*
+   * Gestión de Proyectos (src/gestion-proyectos/): la página de la materia
+   * (Materia.jsx), #/gestion-proyectos/previa la vista previa interna y
+   * #/gestion-proyectos/hacer/<id> cada Hacer publicada.
+   */
+  "gestion-proyectos",
+  /*
    * Macroeconomía 2026, lo PUBLICADO (src/macro2026/TemaMacro2026.jsx): las
    * piezas de PUBLICADAS_T1 a PUBLICADAS_T5. #/<tema>/aprender[/<id>] y
    * #/<tema>/hacer[/<id>].
@@ -110,13 +116,6 @@ export const VISTAS = new Set([
   "politica-fiscal",
   "politica-monetaria",
   "politica-cambiaria",
-  /*
-   * Gestión de Proyectos (27-nov-2026): el índice de la materia y un tema por
-   * capítulo del PMBOK (src/gestion-proyectos/TemaGP.jsx). #/<tema>/hacer[/<id>].
-   */
-  "gestion-proyectos",
-  "gp-introduccion",
-  "gp-entorno",
 ]);
 
 /*

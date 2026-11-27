@@ -51,14 +51,14 @@ const VivoProfesor = lazy(() => import("./components/vivo/VivoProfesor.jsx"));
 
 /* Macroeconomía 2026: vista previa de lo que aún no se publica, solo por dirección (#/macro-2026). */
 const VistaPreviaMacro2026 = lazy(() => import("./macro2026/VistaPrevia.jsx"));
+/* Gestión de Proyectos: la materia publicada (27-nov, orden de Mateo) y, en #/gestion-proyectos/previa, la vista previa interna. */
+const MateriaGestionProyectos = lazy(() => import("./gestion-proyectos/Materia.jsx"));
+const VistaPreviaGestionProyectos = lazy(() => import("./gestion-proyectos/VistaPrevia.jsx"));
+/* Gestión de Proyectos, cada Hacer publicada: #/gestion-proyectos/hacer/<id> (el camino está en Materia.jsx). */
+const HacerGestionProyectos = lazy(() => import("./gestion-proyectos/Hacer.jsx"));
 /* Macroeconomía 2026, lo publicado de cada tema: solo las piezas de PUBLICADAS_T1 / PUBLICADAS_T2. */
 const TemaMacro2026 = lazy(() => import("./macro2026/TemaMacro2026.jsx"));
 const RepasoMacroView = lazy(() => import("./macro2026/repaso/RepasoMacroView.jsx"));
-
-/* Gestión de Proyectos (27-nov-2026): el índice de la materia y un tema por capítulo del PMBOK. */
-const GestionTopicIndex = lazy(() => import("./gestion-proyectos/GestionTopicIndex.jsx"));
-const TemaGP = lazy(() => import("./gestion-proyectos/TemaGP.jsx"));
-const VISTAS_GP = new Set(["gp-introduccion", "gp-entorno"]);
 
 /*
  * ═══════════ QUÉ VISTAS LLEVAN TÍTULO EN LA CABECERA ═══════════
@@ -82,13 +82,12 @@ const VISTAS_CONTABILIDAD = new Set([
 ]);
 
 /* Bruno no sale en el inicio, los índices de materia ni las páginas de cuenta: ahí no hay actividad que orientar. */
-const VISTAS_SIN_BRUNO = new Set(["home", "macroeconomia", "pensamiento-estrategico", "contabilidad", "gestion-proyectos", "gp-introduccion", "gp-entorno", "docente", "que-es", "perfil", "tienda", "vivo", "vivo-profesor", "salas", "macro-2026"]);
+const VISTAS_SIN_BRUNO = new Set(["home", "macroeconomia", "pensamiento-estrategico", "contabilidad", "docente", "que-es", "perfil", "tienda", "vivo", "vivo-profesor", "salas", "macro-2026", "gestion-proyectos"]);
 const VISTAS_PE = new Set(["pensamiento-sistemico", "modelo-iceberg", "fuerzas-porter"]);
 const materiaDeVista = (v) => (VISTAS_CONTABILIDAD.has(v) || v === "repaso-diario-contabilidad" ? "Contabilidad" : VISTAS_PE.has(v) ? "Pensamiento Estratégico" : "Macroeconomía");
 
 const VISTAS_CON_TITULO = new Set([
   "macroeconomia", "pensamiento-estrategico", "contabilidad",
-  "gestion-proyectos", "gp-introduccion", "gp-entorno",
   "demanda-agregada",
   "politica-economica",
   "politica-fiscal",
@@ -226,6 +225,19 @@ export default function App() {
     );
   }
 
+  if (view === "gestion-proyectos") {
+    const volverAGestion = () => navegar("gestion-proyectos");
+    return wrap(
+      <Suspense fallback={siteFallback}>
+        {ruta.modo === "hacer" && ruta.extra
+          ? <HacerGestionProyectos key={ruta.extra} extra={ruta.extra} onBack={volverAGestion} />
+          : ruta.extra === "previa"
+            ? <VistaPreviaGestionProyectos onBack={goHome} />
+            : <MateriaGestionProyectos onBack={goHome} onAbrirHacer={(id) => navegar("gestion-proyectos", "hacer", { extra: id })} />}
+      </Suspense>
+    );
+  }
+
   if (view === "macro-2026") {
     return wrap(
       <Suspense fallback={siteFallback}>
@@ -238,23 +250,6 @@ export default function App() {
     return wrap(
       <Suspense fallback={siteFallback}>
         <TemaMacro2026 key={view} temaId={view} modo={modoTema} extra={ruta.extra} onBack={() => setView("macroeconomia")} onIr={(vista, modo, extra) => navegar(vista, modo, { extra })} />
-      </Suspense>
-    );
-  }
-
-  /* Gestión de Proyectos: el índice y cada tema (solo Hacer por ahora; los Aprender los hace Jane). */
-  if (view === "gestion-proyectos") {
-    return wrap(
-      <Suspense fallback={siteFallback}>
-        <GestionTopicIndex onOpenTopic={(topicId) => abrirTema(topicId, "hacer")} />
-      </Suspense>
-    );
-  }
-
-  if (VISTAS_GP.has(view)) {
-    return wrap(
-      <Suspense fallback={siteFallback}>
-        <TemaGP key={view} temaId={view} extra={ruta.extra} onBack={() => setView("gestion-proyectos")} onIr={(vista, modo, extra) => navegar(vista, modo, { extra })} />
       </Suspense>
     );
   }
