@@ -103,3 +103,14 @@
 - Transcripción gp07-cancelar-a-tiempo-v2: 157 palabras.
 - Narración gp08-cinco-grupos-v2: lista con eleven_v3 (835 caracteres).
 - Transcripción gp08-cinco-grupos-v2: 147 palabras.
+
+## 2026-11-27T23:16:50.421Z
+- Cupo: plan creator, 26241 de 122261 créditos usados.
+- Narración gp09-diez-areas: lista con eleven_v3 (841 caracteres).
+- Transcripción gp09-diez-areas: 141 palabras.
+- Narración gp10-datos-informes: lista con eleven_v3 (805 caracteres).
+- Transcripción gp10-datos-informes: 139 palabras.
+- Narración gp11-adaptar: lista con eleven_v3 (854 caracteres).
+- Transcripción gp11-adaptar: 145 palabras.
+- Narración gp12-caso-de-negocio: lista con eleven_v3 (963 caracteres).
+- Transcripción gp12-caso-de-negocio: 174 palabras.
