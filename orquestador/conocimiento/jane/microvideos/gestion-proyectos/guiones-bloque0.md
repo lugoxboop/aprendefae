@@ -134,7 +134,7 @@ Fuente: la definición (aplicación de conocimientos, habilidades, herramientas 
 4. Pero si las maneja juntas, compra los hornos al por mayor y capacita a todos a la vez.
 5. Ese ahorro no existiría si cada sede fuera por su lado.
 6. Eso es un programa: proyectos relacionados, gestionados de forma coordinada, para lograr beneficios que solos no darían.
-7. Y un proyecto enorme, como un metro para toda la ciudad, no es un programa: se llama megaproyecto.
+7. Y un proyecto enorme, como un metro para toda la ciudad, no es un programa: puede llamarse megaproyecto.
 8. Ahora Pía mira todo lo que hace la panadería: las sedes, la tienda en línea y el pan de cada día.
 9. Decide qué va primero y a qué le pone plata, según hacia dónde quiere llevar el negocio.
 10. Ese conjunto, gestionado como grupo para alcanzar objetivos estratégicos, es un portafolio.
@@ -155,14 +155,14 @@ Fuente: definiciones de programa y portafolio, «Los programas no son proyectos 
 8. El estudio dice que sus clientes prefieren llamar por teléfono. Carmen dice: terminamos aquí.
 9. Gastaron en un estudio, no en una app que nadie iba a usar.
 10. Todas las fases juntas, del inicio a la conclusión, forman el ciclo de vida del proyecto.
-11. Si el alcance se fija al principio, el ciclo es predictivo; si se define iteración por iteración, es adaptativo.
+11. Si el alcance se define al principio, el ciclo es predictivo; si se define iteración por iteración, es adaptativo.
 12. Ahora te toca: estás en el punto de revisión. ¿Qué decides?
 
 Fuente: fase (1.2.4.2), las cinco decisiones del punto de revisión y los documentos con que se compara (1.2.4.3), ciclo predictivo y adaptativo (1.2.4.1). «Concluir proyectos fallidos» como beneficio de la dirección: 1.2.2.
 
 ## GP-08 · Iniciar varias veces · Los cinco grupos de procesos no son fases (G p. 18, 22–23; 1.2.4.4–1.2.4.5; p. 554)
 
-1. Puedes iniciar varias veces el mismo proyecto: una por cada fase.
+1. Un mismo proyecto puede pasar varias veces por el inicio: una por cada fase.
 2. Pía remodela la panadería en dos fases: primero la cocina, después el salón.
 3. Para la cocina, primero consigue que Carmen autorice arrancar.
 4. Luego hace el plan: qué se cambia, cuánto cuesta y para cuándo.

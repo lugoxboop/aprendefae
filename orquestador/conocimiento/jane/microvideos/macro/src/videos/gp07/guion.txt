@@ -8,5 +8,5 @@ Eso es un punto de revisión de fase.
 El estudio dice que sus clientes prefieren llamar por teléfono. Carmen dice: terminamos aquí.
 Gastaron en un estudio, no en una app que nadie iba a usar.
 Todas las fases juntas, del inicio a la conclusión, forman el ciclo de vida del proyecto.
-Si el alcance se fija al principio, el ciclo es predictivo; si se define iteración por iteración, es adaptativo.
+Si el alcance se define al principio, el ciclo es predictivo; si se define iteración por iteración, es adaptativo.
 Ahora te toca: estás en el punto de revisión. ¿Qué decides?

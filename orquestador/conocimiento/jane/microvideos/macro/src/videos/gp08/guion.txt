@@ -1,4 +1,4 @@
-Puedes iniciar varias veces el mismo proyecto: una por cada fase.
+Un mismo proyecto puede pasar varias veces por el inicio: una por cada fase.
 Pía remodela la panadería en dos fases: primero la cocina, después el salón.
 Para la cocina, primero consigue que Carmen autorice arrancar.
 Luego hace el plan: qué se cambia, cuánto cuesta y para cuándo.
