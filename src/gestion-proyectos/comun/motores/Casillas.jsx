@@ -15,6 +15,18 @@
  * fórmula, si el paso la trae) y segundo intento sin puntaje; si el segundo
  * también yerra, se muestran las respuestas y se sigue con «Seguir».
  * La escena es la misma de Decidir (antes / encima / despues / objeto / mesa).
+ *
+ * Lote 4 (caps. 7 y 8), todo opcional y por casilla:
+ *   salto       las flechas mueven de a `salto` (el imán cada 20 del embudo).
+ *   signo       un botón «− / +» que cambia el signo (el teclado decimal del
+ *               teléfono no siempre trae el menos: CV −75, VAC −300).
+ *   tolerancia  acepta la clave ± tolerancia (±1 en enteros, ±0,01 en índices).
+ *   retro       la retro propia de la casilla; se lee la de cada casilla que
+ *               falla (si el paso no trae una común).
+ *   trampas     [{ valor, retro }]: el error típico con su retro (el CPI
+ *               invertido, 1,25).
+ *   marcar      varias opciones a la vez (tocar las que son); `clave` es la
+ *               lista de las que van. Cada opción puede traer su `retro`.
  */
 import { useEffect, useRef, useState } from "react";
 import { Boton, Retro } from "../../../macro2026/comun/ui.jsx";
@@ -39,6 +51,7 @@ const CSS = `
 .gp-opcion { min-height: 48px; padding: 6px 8px; border-radius: 10px; border: 2px solid rgba(244,245,247,.45); background: rgba(31,50,80,.6); color: #f4f5f7; font: 600 14px/1.25 var(--planck-font-sans, system-ui, sans-serif); cursor: pointer; text-align: center; touch-action: manipulation; }
 .gp-opcion[aria-pressed="true"] { border-color: #f4f5f7; background: #fbf7ee; color: #121418; }
 .gp-opcion[aria-pressed="true"]::before { content: "● "; }
+.gp-signo { flex: none; min-width: 48px; min-height: 48px; border-radius: 10px; border: 2px solid rgba(244,245,247,.55); background: rgba(31,50,80,.92); color: #f4f5f7; font: 800 17px/1 var(--planck-font-mono, monospace); cursor: pointer; touch-action: manipulation; }
 .gp-casilla-sol { font: 600 13px/1.3 var(--planck-font-sans, system-ui, sans-serif); color: #d7dbe2; }
 .gp-formula { margin: 6px 0 0; padding: 6px 10px; border-radius: 10px; background: rgba(8,16,30,.8); font: 600 14px/1.35 var(--planck-font-mono, ui-monospace, monospace); color: #f4f5f7; }
 @media (max-width: 359px) { .gp-opciones { --gp-cols: 1; } }
@@ -46,20 +59,41 @@ const CSS = `
 
 /* «7,5» o «7.5» → 7.5; vacío o basura → null. */
 export const numeroDe = (v) => {
-  const t = String(v ?? "").trim().replace(/\s/g, "").replace(",", ".");
+  const t = String(v ?? "").trim().replace(/\s/g, "").replace(/\u2212/g, "-").replace(",", ".");
   if (t === "" || !/^-?\d+(\.\d+)?$/.test(t)) return null;
   return Number(t);
 };
 
 /* ¿La respuesta de una casilla es buena? */
 export function casillaBien(c, valor) {
+  if (c.marcar) {
+    const puestas = new Set(String(valor ?? "").split(",").filter(Boolean));
+    return puestas.size === c.clave.length && c.clave.every((k) => puestas.has(k));
+  }
   if (c.opciones) return valor === c.clave;
   const n = numeroDe(valor);
   if (n == null) return false;
-  return [c.clave, ...(c.aceptadas ?? [])].some((k) => Math.abs(Number(k) - n) < 1e-9);
+  const tol = (c.tolerancia ?? 0) + 1e-9;
+  return [c.clave, ...(c.aceptadas ?? [])].some((k) => Math.abs(Number(k) - n) <= tol);
 }
 
-const textoClave = (c) => (c.opciones ? c.opciones.find((o) => o.id === c.clave)?.nombre : String(c.clave).replace(".", ","));
+/* La retro de una casilla que falla: la trampa que cayó, la de la opción marcada mal, o la suya. */
+export function retroDeCasilla(c, valor) {
+  if (c.marcar) {
+    const puestas = new Set(String(valor ?? "").split(",").filter(Boolean));
+    const malas = c.opciones.filter((o) => puestas.has(o.id) !== c.clave.includes(o.id));
+    const propias = malas.map((o) => o.retro).filter(Boolean);
+    return propias.length ? propias.join(" ") : c.retro ?? null;
+  }
+  const n = numeroDe(valor);
+  const trampa = n == null ? null : (c.trampas ?? []).find((t) => Math.abs(Number(t.valor) - n) <= (c.tolerancia ?? 0) + 1e-9);
+  return trampa?.retro ?? c.retro ?? null;
+}
+
+const coma = (v) => String(v).replace(".", ",").replace(/^-/, "−");
+const textoClave = (c) => (c.marcar ? c.opciones.filter((o) => c.clave.includes(o.id)).map((o) => o.nombre).join(" · ")
+  : c.opciones ? c.opciones.find((o) => o.id === c.clave)?.nombre : coma(c.clave));
+const valorClave = (c) => (c.marcar ? c.clave.join(",") : c.opciones ? c.clave : String(c.clave));
 
 export default function Casillas({ paso, escena = {}, estadoEtapa = null, alTerminar }) {
   const [valores, setValores] = useState(() => Object.fromEntries(paso.casillas.map((c) => [c.id, c.inicial != null ? String(c.inicial) : ""])));
@@ -73,12 +107,22 @@ export default function Casillas({ paso, escena = {}, estadoEtapa = null, alTerm
   const reloj = useRef(null);
   useEffect(() => () => clearTimeout(reloj.current), []);
 
-  const lleno = paso.casillas.every((c) => String(valores[c.id] ?? "").trim() !== "");
+  /* Una casilla de marcar puede quedar vacía a propósito (ninguna va); las demás, no. */
+  const lleno = paso.casillas.every((c) => c.marcar || String(valores[c.id] ?? "").trim() !== "");
   const poner = (id, v) => { if (resuelto) return; setValores((x) => ({ ...x, [id]: v })); setMalas(new Set()); };
   const mover = (c, d) => {
     const n = numeroDe(valores[c.id]) ?? c.inicial ?? c.min ?? 0;
-    const v = Math.max(c.min ?? -Infinity, Math.min(c.max ?? Infinity, n + d));
+    const v = Math.max(c.min ?? -Infinity, Math.min(c.max ?? Infinity, n + d * (c.salto ?? 1)));
     poner(c.id, String(v));
+  };
+  const cambiarSigno = (c) => {
+    const t = String(valores[c.id] ?? "").trim();
+    poner(c.id, t.startsWith("-") ? t.slice(1) : `-${t}`);
+  };
+  const alternar = (c, id) => {
+    const puestas = new Set(String(valores[c.id] ?? "").split(",").filter(Boolean));
+    if (puestas.has(id)) puestas.delete(id); else puestas.add(id);
+    poner(c.id, c.opciones.map((o) => o.id).filter((x) => puestas.has(x)).join(","));
   };
 
   const comprobar = () => {
@@ -95,12 +139,15 @@ export default function Casillas({ paso, escena = {}, estadoEtapa = null, alTerm
       reloj.current = setTimeout(() => alTerminar(res), ESPERA_BIEN);
       return;
     }
-    setRetro(paso.retro ?? null);
+    const propias = fallan.map((c) => retroDeCasilla(c, valores[c.id])).filter(Boolean);
+    /* La trampa que cayó manda sobre la retro común del paso. */
+    const trampa = fallan.map((c) => { const n = numeroDe(valores[c.id]); return n == null ? null : (c.trampas ?? []).find((t) => Math.abs(Number(t.valor) - n) <= (c.tolerancia ?? 0) + 1e-9)?.retro; }).find(Boolean);
+    setRetro(trampa ?? paso.retro ?? (propias.length ? [...new Set(propias)].join(" ") : null));
     setMalas(new Set(fallan.map((c) => c.id)));
     setGolpes((g) => g + 1);
     if (intento === 1) { setIntento(2); return; }
     setResuelto("visto");
-    setValores(Object.fromEntries(paso.casillas.map((c) => [c.id, c.opciones ? c.clave : String(c.clave)])));
+    setValores(Object.fromEntries(paso.casillas.map((c) => [c.id, valorClave(c)])));
     setListo({ detalle: detalle.current, puntos: 0, destino: "visto" });
   };
 
@@ -135,7 +182,19 @@ export default function Casillas({ paso, escena = {}, estadoEtapa = null, alTerm
             return (
               <div key={c.id} className="gp-casilla" data-casilla-caja={c.id} data-estado={est}>
                 <label className="gp-casilla-nombre" htmlFor={c.opciones ? undefined : etq} id={`${etq}-n`}>{c.nombre}</label>
-                {c.opciones ? (
+                {c.marcar ? (
+                  <div className="gp-opciones" role="group" aria-labelledby={`${etq}-n`} style={{ "--gp-cols": c.columnas ?? 2 }}>
+                    {c.opciones.map((o) => {
+                      const puesta = String(valores[c.id] ?? "").split(",").includes(o.id);
+                      return (
+                        <button key={o.id} type="button" className="gp-opcion" data-casilla={c.id} data-marca-casilla={o.id}
+                          aria-pressed={puesta} disabled={Boolean(resuelto)} onClick={() => alternar(c, o.id)}>
+                          {o.nombre}
+                        </button>
+                      );
+                    })}
+                  </div>
+                ) : c.opciones ? (
                   <div className="gp-opciones" role="group" aria-labelledby={`${etq}-n`} style={{ "--gp-cols": c.columnas ?? (c.opciones.length === 3 ? 3 : 2) }}>
                     {c.opciones.map((o) => (
                       <button key={o.id} type="button" className="gp-opcion" data-casilla={c.id} data-opcion-casilla={o.id}
@@ -151,6 +210,7 @@ export default function Casillas({ paso, escena = {}, estadoEtapa = null, alTerm
                       disabled={Boolean(resuelto)} aria-invalid={malas.has(c.id) || undefined}
                       onChange={(ev) => poner(c.id, ev.target.value)}
                       onKeyDown={(ev) => { if (ev.key === "Enter" && lleno && !resuelto) comprobar(); }} />
+                    {c.signo && <button type="button" className="gp-signo" aria-label="Cambiar el signo" disabled={Boolean(resuelto)} onClick={() => cambiarSigno(c)} data-signo={c.id}>− / +</button>}
                     {c.flechas && <button type="button" className="gp-flecha" aria-label="Uno más" disabled={Boolean(resuelto)} onClick={() => mover(c, 1)} data-mas={c.id}>▶</button>}
                     {c.unidad && <span className="gp-casilla-unidad">{c.unidad}</span>}
                   </div>

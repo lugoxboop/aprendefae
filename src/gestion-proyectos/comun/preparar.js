@@ -20,6 +20,11 @@
  * escribir un número o elegir en varias casillas a la vez). Entra en un banco
  * o en un micro como cualquier paso «decidir» y vale un ítem.
  *
+ * Lote 4 (caps. 7 y 8): `tipo: "explorar"` (motor Explorar) es una
+ * exploración sin puntaje antes del reto (c07 H03: mover las tres cifras y
+ * ver los dos resultados); vale 0 ítems. En la partida, `maxPorClave` y
+ * `minClaves` (c08 H06: 8 de 11, al menos 5 espinas y ninguna con más de 2).
+ *
  * Un paso «decidir» = { tipo, id, texto, contexto?, consigna?, destinos,
  * clave, retros | retro, retroComun?, subtemas }: un ítem que se lleva a un
  * destino. Es la mecánica de casi todo: clasificar en cinta, sellar, conectar
@@ -51,9 +56,11 @@ const decidir = (item, etapa, base = {}) => ({
  */
 const cuentaPorClave = (lista) => lista.reduce((m, x) => ({ ...m, [x.clave]: (m[x.clave] ?? 0) + 1 }), {});
 function cumpleCobertura(lista, banco, p) {
+  const n = cuentaPorClave(lista);
+  if (p.maxPorClave && Object.values(n).some((v) => v > p.maxPorClave)) return false;
+  if (p.minClaves && Object.keys(n).length < p.minClaves) return false;
   if (!p.cubrir && !p.minPorClave) return true;
   const min = p.minPorClave ?? 1;
-  const n = cuentaPorClave(lista);
   return [...new Set(banco.map((x) => x.clave))].every((c) => (n[c] ?? 0) >= min);
 }
 const sinParesSeguidos = (lista) => lista.every((x, k) => k === 0 || !x.par || x.par !== lista[k - 1].par);
@@ -67,8 +74,8 @@ export function sortearCubriendo(items, n, rng = Math.random, p = { cubrir: true
 export function partidaDe(etapa, rng = Math.random) {
   const p = etapa.partida ?? { todas: true };
   const banco = etapa.banco;
-  if (p.cubrir || p.minPorClave || p.pares || p.ordenarPorNivel) {
-    const base = { ...p, cubrir: false, minPorClave: undefined, pares: undefined, ordenarPorNivel: false };
+  if (p.cubrir || p.minPorClave || p.maxPorClave || p.minClaves || p.pares || p.ordenarPorNivel) {
+    const base = { ...p, cubrir: false, minPorClave: undefined, maxPorClave: undefined, minClaves: undefined, pares: undefined, ordenarPorNivel: false };
     if (p.pares) {
       const ids = [...new Set(banco.map((x) => x.par))];
       const elegidos = new Set(sortear(ids, p.pares, rng));
@@ -182,6 +189,7 @@ export const prepararPieza = (pieza, rng = Math.random) => pieza.etapas.map((e) 
 
 /* Cuántos ítems puntúa un paso (la base del porcentaje). */
 export function itemsDePaso(paso) {
+  if (paso.tipo === "explorar") return 0;
   if (paso.tipo === "decidir" || paso.tipo === "casillas") return 1;
   if (paso.tipo === "emparejar") return paso.rieles.length;
   if (paso.tipo === "ordenar") return paso.puntuaPares ? paso.items.length - 1 : 1;
