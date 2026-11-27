@@ -122,6 +122,43 @@ if (acciones.includes("voces")) {
   fs.writeFileSync(path.join(AQUI, "voces-muestra", "voces.json"), JSON.stringify({ frase: cfg.frase, voces: hechas }, null, 2) + "\n");
 }
 
+if (acciones.includes("narrar")) {
+  // la narración completa de un video (una frase por párrafo) con la voz única del narrador,
+  // y su transcripción palabra por palabra (scribe_v1) para alinear las escenas sin Whisper local.
+  // pedido.narrar = [{ id, voz, modelo?, texto }] → sonido/narraciones/<id>.mp3 y <id>.palabras.json
+  for (const n of pedido.narrar || []) {
+    const f = path.join(AQUI, "narraciones", `${n.id}.mp3`);
+    if (!fs.existsSync(f)) {
+      let ok = false;
+      for (const modelo of n.modelo ? [n.modelo] : ["eleven_v3", "eleven_multilingual_v2"]) {
+        try {
+          const r = await pide(`${API}/v1/text-to-speech/${n.voz}?output_format=mp3_44100_128`, {
+            method: "POST", headers: { ...H, "Content-Type": "application/json" },
+            body: JSON.stringify({ text: n.texto, model_id: modelo, language_code: "es", voice_settings: { stability: 0.5, similarity_boost: 0.75 } }),
+          });
+          await guarda(r, f); ok = true;
+          anota(`Narración ${n.id}: lista con ${modelo} (${n.texto.length} caracteres).`);
+          break;
+        } catch (e) { anota(`Narración ${n.id} con ${modelo}: ${e.message.slice(0, 160)}`); }
+      }
+      if (!ok) continue;
+    } else anota(`Narración ${n.id}: ya existe.`);
+    const fj = path.join(AQUI, "narraciones", `${n.id}.palabras.json`);
+    if (!fs.existsSync(fj)) {
+      try {
+        const fd = new FormData();
+        fd.append("model_id", "scribe_v1");
+        fd.append("language_code", "spa");
+        fd.append("file", new Blob([fs.readFileSync(f)], { type: "audio/mpeg" }), `${n.id}.mp3`);
+        const r = await (await pide(`${API}/v1/speech-to-text`, { method: "POST", headers: H, body: fd })).json();
+        const palabras = (r.words || []).filter((w) => w.type === "word").map((w) => ({ w: w.text, ini: w.start, fin: w.end }));
+        fs.writeFileSync(fj, JSON.stringify({ texto: r.text, palabras }, null, 1) + "\n");
+        anota(`Transcripción ${n.id}: ${palabras.length} palabras.`);
+      } catch (e) { anota(`Transcripción ${n.id}: no se pudo (${e.message.slice(0, 160)}).`); }
+    }
+  }
+}
+
 if (acciones.includes("revisar")) {
   // ¿alguna pista de música trae voz cantada? La transcripción de ElevenLabs lo dice.
   for (const f of fs.readdirSync(path.join(AQUI, "musica")).filter((x) => x.endsWith(".mp3"))) {
