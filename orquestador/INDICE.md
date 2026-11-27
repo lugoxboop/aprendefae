@@ -49,6 +49,11 @@ archivo, y solo si vas a editarlo.** Quien cree, mueva o renombre un documento
 | `orquestador/conocimiento/mapas/` | Mapas por tema (t3 ingresos-gastos, t4 efectivo, t5 activos financieros, t7 inventarios, e5 banco) | Al planear un tema |
 | `orquestador/conocimiento/registro-cifras-construidas-*.md` | Cifras ya medidas (PM instrumentos, T7): no recalcular | Antes de volver a calcular una cifra |
 
+## Gestión de Proyectos (la materia, PMBOK V6)
+| Archivo | Qué contiene | Cuándo leerlo |
+|---|---|---|
+| `orquestador/conocimiento/gestion-proyectos/plan.md` | Plan con casillas, dónde vive cada cosa (esqueleto, espacios, vista previa) y cómo se publica | Jane, Gen o quien construya, antes de tocar la materia |
+
 ## Material pesado (buscar, casi nunca abrir entero)
 | Carpeta | Qué contiene | Cuándo leerlo |
 |---|---|---|
