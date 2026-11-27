@@ -13,7 +13,7 @@ import { GP_C3_H04 } from "./textos-c3.js";
 export const ID = GP_C3_H04.id;
 const REJA = primero("reja-obra", "porton-madera");
 const LLAVE = primero("llave", "candado");
-const LLAVERO = primero("llavero-aro", "candado");
+const LLAVERO = primero("llavero", "candado");
 
 export const ESCENA = {
   nombre: "llavero", fondo: ["#2a2f36", "#111418"], acento: "#c9a7ff", luz: "rgba(201,167,255,.2)",

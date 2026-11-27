@@ -8,12 +8,13 @@
  */
 import { Cog, Lightbulb, Globe2, Network, Users, CloudFog } from "lucide-react";
 import Partida from "../comun/Partida.jsx";
-import { primero } from "../comun/objetos.jsx";
+import { Objeto, primero } from "../comun/objetos.jsx";
 import { EstiloLote2, cuantos } from "../comun/lote2.jsx";
 import { GP_C3_H07 } from "./textos-c3.js";
 
 export const ID = GP_C3_H07.id;
-const MOSAICO = primero("mosaico-baldosas", "plano-enrollado");
+const MOSAICO = primero("baldosa", "plano-enrollado");
+const POLVO = primero("nube-polvo");
 const FRANJAS = [["proceso", "Proceso", "#6cc3d5", 2], ["cognitivo", "Cognitivo", "#f2c14e", 2], ["contextual", "Contextual", "#a3d65c", 2]];
 
 function Franjas(estado) {
@@ -38,7 +39,12 @@ function Franjas(estado) {
 
 function Polvo({ paso, encaja }) {
   if (!paso.destinos.some((d) => d.id === "sistema")) return null;
-  return <p className="gp-escenita" data-falla={encaja ? "arreglada" : "abierta"}>{encaja ? "✓ El piso queda parejo." : "Hay una falla en el mosaico."}</p>;
+  return (
+    <p className="gp-escenita" data-falla={encaja ? "arreglada" : "abierta"}>
+      <span className="gp2-gira" style={{ display: "block", opacity: encaja ? 0.25 : 1 }}><Objeto id={paso.clave === "ambiguedad" ? POLVO : MOSAICO} alto={44} /></span>
+      <span>{encaja ? "✓ El piso queda parejo." : "Hay una falla en el mosaico."}</span>
+    </p>
+  );
 }
 
 export const ESCENA = {

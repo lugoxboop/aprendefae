@@ -13,7 +13,7 @@ import { EstiloLote2, colocados, cuantos } from "../comun/lote2.jsx";
 import { GP_C4_H05 } from "./textos-c4.js";
 
 export const ID = GP_C4_H05.id;
-const BITACORA = primero("bitacora-obra", "carpeta-abierta");
+const BITACORA = primero("bitacora", "carpeta-abierta");
 
 function Separadores(estado) {
   if (!estado.paso.destinos.some((d) => d.id === "incidentes")) return null;

@@ -7,12 +7,25 @@
  */
 import { Cog, Lamp } from "lucide-react";
 import Partida from "../comun/Partida.jsx";
-import { primero } from "../comun/objetos.jsx";
+import { Objeto, primero } from "../comun/objetos.jsx";
 import { EstiloLote2, colocados } from "../comun/lote2.jsx";
 import { GP_C3_H05 } from "./textos-c3.js";
 
 export const ID = GP_C3_H05.id;
-const MONEDA = primero("moneda-cobre", "moneda-oro");
+const ENGRANAJE = primero("moneda-engranaje", "moneda-oro");
+const FAROL = primero("moneda-farol", "moneda-oro");
+const MONEDA = ENGRANAJE;
+
+/* La moneda gira: muestra la cara elegida (o la del último intento). */
+function Moneda({ encaja, ultimo, paso }) {
+  const cara = encaja ?? ultimo;
+  const farol = cara === "liderazgo";
+  return (
+    <div style={{ display: "grid", justifyItems: "center", marginTop: 6 }} data-moneda={farol ? "liderazgo" : "gestion"}>
+      <span key={`${paso.id}-${cara}`} className="gp2-entra" style={{ display: "block" }}><Objeto id={farol ? FAROL : ENGRANAJE} alto={100} /></span>
+    </div>
+  );
+}
 
 function Caras(estado) {
   const puestas = colocados(estado).filter((x) => x.texto);
@@ -28,12 +41,11 @@ function Caras(estado) {
 export const ESCENA = {
   nombre: "moneda", fondo: ["#3b2416", "#170d07"], acento: "#e08a4f", luz: "rgba(224,138,79,.22)",
   portada: MONEDA,
-  objeto: { id: MONEDA, alto: 104 },
-  objetoEstilo: ({ ultimo, encaja }) => ({ transform: encaja === "liderazgo" || (!encaja && ultimo === "liderazgo") ? "rotateY(180deg)" : "rotateY(0deg)", transition: "transform 520ms cubic-bezier(.3,.9,.4,1)" }),
+  objeto: null,
   anim: "sella",
   antes: () => <EstiloLote2 />,
-  destinos: { gestion: { icono: Cog }, liderazgo: { icono: Lamp }, dos: { objeto: MONEDA, alto: 30 } },
-  etapas: [{ encima: (e) => <Caras {...e} /> }, {}],
+  destinos: { gestion: { icono: Cog, objeto: ENGRANAJE, alto: 30 }, liderazgo: { icono: Lamp, objeto: FAROL, alto: 30 }, dos: { objeto: MONEDA, alto: 30 } },
+  etapas: [{ encima: (e) => <><Moneda {...e} /><Caras {...e} /></> }, { encima: (e) => <Moneda {...e} /> }],
 };
 
 export default function C03H05Moneda({ onTerminar, rng = null }) {

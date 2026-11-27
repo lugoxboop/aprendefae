@@ -13,8 +13,11 @@ import { EstiloLote2, colocados } from "../comun/lote2.jsx";
 import { GP_C4_H10, TANQUES } from "./textos-c4.js";
 
 export const ID = GP_C4_H10.id;
-const BENEFICIADERO = primero("beneficiadero", "tanque-estado");
-const TANQUE = primero("tanque-cafe", "tanque-estado");
+const BENEFICIADERO = primero("tolva", "tanque-estado");
+const TANQUE = primero("tanque-beneficio", "tanque-estado");
+const DESPULPADORA = primero("despulpadora");
+const CANAL = primero("canal-madera");
+const COMPUERTA = primero("compuerta");
 
 function Tanques(estado) {
   const puestos = colocados(estado);
@@ -46,8 +49,9 @@ function Canal({ paso, encaja }) {
   if (!paso.sale) return null;
   return (
     <p className="gp-escenita" data-canal={paso.id}>
+      <Objeto id={CANAL} alto={32} />
       <span>Sale de {paso.sale}</span>
-      {paso.compuerta && <span className="gp-chip-c">Compuerta: Comparar con el plan</span>}
+      {paso.compuerta && <span className="gp2-fila"><Objeto id={COMPUERTA} alto={32} /><span className="gp-chip-c">Comparar con el plan</span></span>}
       <span aria-hidden="true" style={{ display: "inline-flex", opacity: encaja ? 1 : 0.35, transition: "opacity 300ms" }}><Droplets size={20} /></span>
     </p>
   );
@@ -60,7 +64,7 @@ export const ESCENA = {
   anim: "gotea",
   antes: () => <EstiloLote2 />,
   etapas: [
-    { disposicion: "rejilla", encima: (e) => <Tanques {...e} /> },
+    { disposicion: "rejilla", encima: (e) => <><div className="gp2-fila" aria-hidden="true"><Objeto id={DESPULPADORA} alto={56} /></div><Tanques {...e} /></> },
     { disposicion: "columna", destinos: { "*": { forma: "clavija" } }, encima: (e) => <><Canal {...e} /><Tanques {...e} /></> },
     { disposicion: "columna" },
   ],

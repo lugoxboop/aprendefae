@@ -12,7 +12,7 @@ import { EstiloLote2, cuantos } from "../comun/lote2.jsx";
 import { GP_C4_H04 } from "./textos-c4.js";
 
 export const ID = GP_C4_H04.id;
-const CARRETILLA = primero("carretilla-obra", "carrito-mercado");
+const CARRETILLA = primero("carretilla", "carrito-mercado");
 const CASETA = primero("caseta-obra", "bodega");
 
 /* La línea del formulario: plan (punteada) y desempeño (continua). */

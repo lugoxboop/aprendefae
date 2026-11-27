@@ -16,8 +16,10 @@ import { GP_C4_H08 } from "./textos-c4.js";
 
 export const ID = GP_C4_H08.id;
 const TURNERO = primero("turnero", "conmutador");
-const DIAL = primero("dial-votacion", "dial-radio");
-const FORMULARIO = primero("formulario-cambio", "portapapeles");
+const DIAL = primero("dial-radio");
+const PANTALLA = primero("pantalla-llamado");
+const FICHA = primero("ficha-voto");
+const FORMULARIO = primero("portapapeles");
 
 function Comite({ paso, encaja, mal, ultimo }) {
   return (
@@ -41,7 +43,9 @@ function Votacion({ paso, elegido }) {
   return (
     <div className="gp2-caja" data-votacion>
       <div className="gp2-fila" style={{ justifyContent: "space-between" }}>
-        <span>Aprobar {"●".repeat(a)}</span><span>Aplazar {"●".repeat(p)}</span><span>Rechazar {"●".repeat(r)}</span>
+        {[["Aprobar", a], ["Aplazar", p], ["Rechazar", r]].map(([n, v]) => (
+          <span key={n} className="gp2-pieza" data-fichas={v}><span style={{ display: "flex" }}>{Array.from({ length: v }, (_, k) => <Objeto key={k} id={FICHA} alto={18} />)}</span>{n} · {v}</span>
+        ))}
       </div>
       <p style={{ margin: "6px 0" }} className="da26-mono">3 de 7 = 43 %</p>
       <div className="gp2-rejilla" style={{ "--gp2-cols": 2 }}>
@@ -61,7 +65,7 @@ export const ESCENA = {
   portada: TURNERO,
   antes: () => <EstiloLote2 />,
   etapas: [
-    { objetos: [TURNERO] },
+    { objetos: [TURNERO, PANTALLA] },
     { objeto: null, mesa: "tu", anim: "abre", disposicion: "columna", encima: (e) => <Comite {...e} /> },
   ],
 };

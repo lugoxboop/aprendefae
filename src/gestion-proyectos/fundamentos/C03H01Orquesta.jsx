@@ -7,13 +7,14 @@
  */
 import { Music, DoorOpen } from "lucide-react";
 import Partida from "../comun/Partida.jsx";
-import { primero } from "../comun/objetos.jsx";
+import { Objeto, primero } from "../comun/objetos.jsx";
 import { EstiloLote2, colocados } from "../comun/lote2.jsx";
 import { GP_C3_H01 } from "./textos-c3.js";
 
 export const ID = GP_C3_H01.id;
-const PARTITURA = primero("partitura-batuta", "plano-enrollado");
+const PARTITURA = primero("partitura-abierta", "plano-enrollado");
 const PUERTA = primero("puerta-oficina", "porton-madera");
+const BATUTA = primero("batuta");
 
 function Cuerdas(estado) {
   const nombre = (id) => estado.paso.destinos.find((d) => d.id === id)?.nombre ?? id;
@@ -38,7 +39,8 @@ export const ESCENA = {
   portada: PARTITURA,
   etapas: [
     { objeto: { id: PARTITURA, alto: 96 }, anim: "conecta", disposicion: "columna", antes: () => <EstiloLote2 />,
-      destinos: { "*": { icono: Music, forma: "clavija" } }, despues: (e) => <Cuerdas {...e} /> },
+      destinos: { "*": { icono: Music, forma: "clavija" } }, despues: (e) => <Cuerdas {...e} />,
+      encima: () => <div className="gp2-fila" aria-hidden="true"><Objeto id={BATUTA} alto={44} /><small>La batuta y la partitura: así comunica el director.</small></div> },
     { objeto: null, mesa: "gerente", anim: "abre", disposicion: "fila3", antes: () => <EstiloLote2 />,
       destinos: { director: ICONO_PUERTA, funcional: ICONO_PUERTA, operaciones: ICONO_PUERTA } },
   ],

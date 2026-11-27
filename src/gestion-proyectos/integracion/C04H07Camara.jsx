@@ -14,14 +14,15 @@ import { GP_C4_H07 } from "./textos-c4.js";
 
 export const ID = GP_C4_H07.id;
 const CAMARA = primero("camara-tripode", "lupa");
-const OBJETIVO = primero("objetivo-camara", "lupa-mango");
+const OBJETIVO = primero("estuche-objetivos", "lupa-mango");
 const CUBETA = primero("cubeta-revelado", "balde");
+const ALBUM = primero("album-fotos");
 
 const REVELA = { informe: "Se revela: pasa al álbum", dato: "Queda como negativo: falta compararlo con el plan", otro: "Se devuelve con su etiqueta" };
 function Foto({ paso, encaja }) {
   if (!encaja) return null;
   const d = paso.destinos.find((x) => x.id === encaja);
-  return <p className="gp-escenita gp2-entra" data-foto={encaja}><span className="gp-chip-c">✓ {d?.nombre}</span><small>{REVELA[encaja] ?? "Foto lista"}</small></p>;
+  return <p className="gp-escenita gp2-entra" data-foto={encaja}>{encaja === "informe" && <Objeto id={ALBUM} alto={40} />}<span className="gp-chip-c">✓ {d?.nombre}</span><small>{REVELA[encaja] ?? "Foto lista"}</small></p>;
 }
 
 const ic = (o, objeto) => Object.fromEntries(Object.entries(o).map(([k, icono]) => [k, { icono, ...(objeto ? { objeto, alto: 30 } : {}) }]));

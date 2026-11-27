@@ -15,7 +15,7 @@ import { GP_C4_H06 } from "./textos-c4.js";
 export const ID = GP_C4_H06.id;
 const RECETARIO = primero("recetario", "memorando-clip");
 const TAZA = primero("taza-latte", "cafetera-goteo");
-const BANDEJA = primero("bandeja-servicio", "bandeja-madera");
+const BANDEJA = primero("bandeja-madera");
 const POSAVASOS = primero("posavasos", "sobre-boleto");
 
 function Herramienta({ paso, encaja }) {

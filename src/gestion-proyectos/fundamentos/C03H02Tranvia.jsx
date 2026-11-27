@@ -13,8 +13,8 @@ import { EstiloLote2, cuantos } from "../comun/lote2.jsx";
 import { GP_C3_H02 } from "./textos-c3.js";
 
 export const ID = GP_C3_H02.id;
-const MAPA = primero("mapa-tranvia", "tablero-corcho");
-const VAGON = primero("vagon-tranvia", "camion-cafe");
+const MAPA = primero("estacion-tranvia", "tablero-corcho");
+const VAGON = primero("tranvia", "camion-cafe");
 
 const LINEAS = [
   { id: "proyecto", color: "#f2c14e", trazo: "0", angulo: -90 },

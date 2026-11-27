@@ -14,7 +14,8 @@ import { ESTILOS, GP_C3_H06 } from "./textos-c3.js";
 
 export const ID = GP_C3_H06.id;
 const COMANDERA = primero("comandera", "caja-registradora");
-const IMAN = primero("iman-nevera", "iman");
+const IMAN = primero("iman");
+const NEVERA = primero("nevera-barra", "archivador-metalico");
 const PINCHO = primero("pincho-comandas", "portapapeles");
 
 function Reaccion({ encaja, intento }) {
@@ -35,7 +36,8 @@ export const ESCENA = {
   anim: "sella",
   antes: () => <EstiloLote2 />,
   etapas: [
-    { disposicion: "fila3", destinos: { "*": { objeto: IMAN, alto: 30 } }, despues: (e) => <Reaccion {...e} /> },
+    { disposicion: "fila3", destinos: { "*": { objeto: IMAN, alto: 30 } }, despues: (e) => <Reaccion {...e} />,
+      encima: () => <div className="gp2-fila" aria-hidden="true"><Objeto id={NEVERA} alto={72} /><small>La nevera de la barra, con sus seis imanes.</small></div> },
     { disposicion: "rejilla", destinos: { "*": { objeto: PINCHO, alto: 40 } } },
   ],
 };

@@ -13,8 +13,9 @@ import { EstiloLote2, colocados } from "../comun/lote2.jsx";
 import { GP_C4_H01, SECCIONES_ACTA } from "./textos-c4.js";
 
 export const ID = GP_C4_H01.id;
-const ACTA = primero("acta-lacre", "carpeta-documento");
-const CARPETA = primero("carpeta-lateral", "carpeta-abierta");
+const ACTA = primero("pliego-acta", "carpeta-documento");
+const CARPETA = primero("carpeta-documento", "carpeta-abierta");
+const LACRE = primero("sello-lacre");
 const ICONOS = { proposito: Target, objetivos: ListChecks, requisitos: Ruler, riesgo: AlertTriangle, hitos: Flag, recursos: Wallet, interesados: Users, salida: DoorClosed, director: UserCheck, plan: FolderClosed };
 
 function Pliego(estado) {
@@ -25,7 +26,7 @@ function Pliego(estado) {
     <div className="gp2-caja" style={{ marginTop: 10, background: "rgba(251,247,238,.1)" }} data-acta={llenas}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
         <b style={{ margin: 0 }}>Acta de constitución · {llenas}/9</b>
-        {sellada && <span className="gp-chip-c gp2-entra" data-lacre>● El proyecto existe</span>}
+        {sellada && <span className="gp2-fila gp2-entra" data-lacre><Objeto id={LACRE} alto={40} /><span className="gp-chip-c">El proyecto existe</span></span>}
       </div>
       <div className="gp2-rejilla" style={{ "--gp2-cols": 3 }}>
         {SECCIONES_ACTA.map((s) => {
@@ -47,7 +48,7 @@ export const ESCENA = {
   etapas: [
     { disposicion: "rejilla", encima: (e) => <Pliego {...e} />,
       destinos: { ...Object.fromEntries(Object.entries(ICONOS).map(([k, icono]) => [k, { icono }])), plan: { icono: FolderClosed, objeto: CARPETA, alto: 36 } } },
-    { mesa: "tu", disposicion: "columna", despues: () => <div className="gp-escenita"><Objeto id={ACTA} alto={48} /><span>Acta sellada por la patrocinadora.</span></div> },
+    { mesa: "tu", disposicion: "columna", despues: () => <div className="gp-escenita"><Objeto id={ACTA} alto={48} /><Objeto id={LACRE} alto={36} /><span>Acta sellada por la patrocinadora.</span></div> },
   ],
 };
 

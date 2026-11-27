@@ -14,7 +14,7 @@ import { GP_C4_H09 } from "./textos-c4.js";
 
 export const ID = GP_C4_H09.id;
 const TABLERO = primero("tablero-breakers", "conmutador");
-const INFORME = primero("carpeta-informe", "carpeta-documento");
+const INFORME = primero("carpeta-documento");
 
 function Luces(estado) {
   if (!estado.paso.destinos.some((d) => d.id === "cierre")) return null;
