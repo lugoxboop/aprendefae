@@ -94,6 +94,32 @@ export const COMPONENTES_GP = {
   "gp26-pla-c06-h10-bloques": lazy(() => import("./cronograma/C06H10Bloques.jsx")),
   "gp26-moc-c06-h11-rotafolio": lazy(() => import("./cronograma/C06H11Rotafolio.jsx")),
   "gp26-pla-c06-h12-plotter": lazy(() => import("./cronograma/C06H12Plotter.jsx")),
+  /* Lote 4 · cap. 7 (Costos) */
+  "gp26-pla-c07-h01-plan-costos": lazy(() => import("./costos/C07H01Cajones.jsx")),
+  "gp26-pla-c07-h02-metodos": lazy(() => import("./costos/C07H02Mesa.jsx")),
+  "gp26-pla-c07-h03-tres-valores": lazy(() => import("./costos/C07H03Calculadora.jsx")),
+  "gp26-pla-c07-h04-embudo": lazy(() => import("./costos/C07H04Embudo.jsx")),
+  "gp26-pla-c07-h05-reservas": lazy(() => import("./costos/C07H05Barriles.jsx")),
+  "gp26-pla-c07-h06-polea": lazy(() => import("./costos/C07H06Polea.jsx")),
+  "gp26-pla-c07-h07-curva-s": lazy(() => import("./costos/C07H07CurvaS.jsx")),
+  "gp26-moc-c07-h08-lona": lazy(() => import("./costos/C07H08Lona.jsx")),
+  "gp26-moc-c07-h09-termometros": lazy(() => import("./costos/C07H09Termometros.jsx")),
+  "gp26-moc-c07-h10-telescopio": lazy(() => import("./costos/C07H10Telescopio.jsx")),
+  "gp26-moc-c07-h11-rampa": lazy(() => import("./costos/C07H11Rampa.jsx")),
+  "gp26-moc-c07-h12-libro": lazy(() => import("./costos/C07H12Libro.jsx")),
+  /* Lote 4 · cap. 8 (Calidad) */
+  "gp26-pla-c08-h01-gondola": lazy(() => import("./calidad/C08H01Gondola.jsx")),
+  "gp26-pla-c08-h02-cubetas": lazy(() => import("./calidad/C08H02Cubetas.jsx")),
+  "gp26-pla-c08-h03-ascensor": lazy(() => import("./calidad/C08H03Ascensor.jsx")),
+  "gp26-pla-c08-h04-plano": lazy(() => import("./calidad/C08H04Plano.jsx")),
+  "gp26-eje-c08-h05-casilleros": lazy(() => import("./calidad/C08H05Casilleros.jsx")),
+  "gp26-eje-c08-h06-espina": lazy(() => import("./calidad/C08H06Espina.jsx")),
+  "gp26-moc-c08-h07-hoja": lazy(() => import("./calidad/C08H07Hoja.jsx")),
+  "gp26-moc-c08-h08-monitor": lazy(() => import("./calidad/C08H08Monitor.jsx")),
+  "gp26-eje-c08-h09-tablero": lazy(() => import("./calidad/C08H09Tablero.jsx")),
+  "gp26-eje-c08-h10-auditoria": lazy(() => import("./calidad/C08H10Auditoria.jsx")),
+  "gp26-eje-c08-h11-cadena": lazy(() => import("./calidad/C08H11Cadena.jsx")),
+  "gp26-moc-c08-h12-despacho": lazy(() => import("./calidad/C08H12Despacho.jsx")),
 };
 
 /* Las Hacer que se ven de un módulo: publicadas y con componente, en el orden del camino. */
