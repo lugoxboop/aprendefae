@@ -74,3 +74,14 @@
 - Transcripción gp03-mostrador-celular: 146 palabras.
 - Narración gp04-grieta-que-manda: lista con eleven_v3 (744 caracteres).
 - Transcripción gp04-grieta-que-manda: 121 palabras.
+
+## 2026-11-27T22:28:02.869Z
+- Cupo: plan creator, 22275 de 122261 créditos usados.
+- Narración gp05-fiesta-desbordada: lista con eleven_v3 (871 caracteres).
+- Transcripción gp05-fiesta-desbordada: 144 palabras.
+- Narración gp06-tres-sedes: lista con eleven_v3 (979 caracteres).
+- Transcripción gp06-tres-sedes: 173 palabras.
+- Narración gp07-cancelar-a-tiempo: lista con eleven_v3 (902 caracteres).
+- Transcripción gp07-cancelar-a-tiempo: 157 palabras.
+- Narración gp08-cinco-grupos: lista con eleven_v3 (824 caracteres).
+- Transcripción gp08-cinco-grupos: 144 palabras.
