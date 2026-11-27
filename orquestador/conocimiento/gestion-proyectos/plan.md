@@ -87,8 +87,8 @@ Capítulos de la guía (líneas del .txt, para leer por secciones sin abrirlo en
 - [x] Puntos de conexión con Jane → `conexion-jane.md`
 - [x] Objetos con Gemini (paso 6) → `public/gestion-proyectos/ilustrados/` (33)
 - [x] Construcción: 18 piezas en `src/gestion-proyectos/fundamentos/`, módulo `gp-fundamentos`, ids `gp26-fun-hNN-*`, migración 0276
-- [x] Video a 320 y 375 px (`videos/lote1/` en el almacén); falta la verificación de Gen
-- [ ] Publicar visible
+- [x] Video a 320 y 375 px (`videos/lote1/` en el almacén); verificado por Gen el 27-nov (H01, H06, H17 a 375: fieles al diseño, sin desbordes)
+- [x] Publicar visible: PR #788 (orden de Mateo, 27-nov 20:19: publicar cada lote apenas esté construido)
 
 #### Capítulos 3 a 13 (orden de Mateo, 27-nov: todos los capítulos de la guía)
 Cada capítulo: `fichas/cNN-*.md` + `disenos/cNN-hacer.md` (la conexión con Jane va en su §6).
