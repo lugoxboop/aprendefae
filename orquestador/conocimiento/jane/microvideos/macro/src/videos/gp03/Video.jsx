@@ -24,7 +24,7 @@ const M = {
   vende: W(7, "vende", 0.3), pesos: W(7, "pesos.", 0.95),
   recomiendan: W(8, "recomiendan", 0.25), caja: W(8, "caja,", 0.6), vale: W(8, "vale.", 0.95),
   actual: W(9, "actual", 0.65), futuro: W(9, "futuro.", 0.95),
-  valor: W(10, "valor", 0.3), tangible: W(10, "tangible,", 0.5), dinero: W(10, "dinero,", 0.6), intangible: W(10, "intangible,", 0.75), reputacion: W(10, "reputación.", 0.95),
+  valor: W(10, "valor", 0.3), tangible: W(10, "tangible,", 0.5), dinero: W(10, "dinero,", 0.6), intangible: W(10, "intangible,", 0.75), reputacion: W(10, "reputación,", 0.85), ambos: W(10, "ambos.", 0.97),
   existe: W(11, "existe", 0.4), cambio11: W(11, "cambio.", 0.95),
   actual12: W(12, "actual", 0.35), idea: W(12, "idea,", 0.6), futuro12: W(12, "futuro?", 0.95),
 };
@@ -82,7 +82,7 @@ function Mostrador({ t }) {
 
 /* ═════ 3 · Los domingos, la fila ═════ */
 function Fila({ t }) {
-  const cam = mover(t, { s: 1.0, x: 540, y: 968 }, [{ a: S(3), b: M.cuadra, s: 0.92, x: 560, y: 1000 }, { a: M.van - 0.4, b: E(3) + 0.3, s: 1.05, x: 400, y: 1050 }]);
+  const cam = mover(t, { s: 1.0, x: 540, y: 968 }, [{ a: S(3), b: M.cuadra, s: 1.0, x: 540, y: 990 }, { a: M.van - 0.4, b: E(3) + 0.3, s: 1.05, x: 400, y: 1050 }]);
   return (
     <Escena cam={cam} fondo="art/calle.jpg">
       <Cartel x={540} y={330} txt="domingo" p={rampa(t, M.domingos - 0.3, 0.35)} tam={84} fondo={MANGO} giro={3} />
@@ -143,13 +143,13 @@ function Camino({ t }) {
   const pProy = rampa(t, M.proyecto6 - 0.4, 0.4);
   return (
     <Escena cam={cam} fondo="art/ciudad.jpg" filtro="blur(4px)" velo={0.2}>
-      <Ficha x={170} y={620} w={300} icono="🏪" txt="hoy" p={rampa(t, S(5), 0.4)} fondo={CREMA} />
-      <Ficha x={910} y={620} w={300} icono="📱" txt="mañana" p={rampa(t, S(5) + 0.3, 0.4)} fondo={MANGO} />
+      <Ficha x={200} y={560} w={300} icono="🚪" txt="hoy" p={rampa(t, S(5), 0.4)} fondo={CREMA} />
+      <Ficha x={880} y={560} w={300} icono="📱" txt="mañana" p={rampa(t, S(5) + 0.3, 0.4)} fondo={MANGO} />
       <svg style={{ position: "absolute", left: 0, top: 0, overflow: "visible" }} width="1" height="1">
         <path d="M 150 1300 Q 540 960 930 1300" fill="none" stroke={TINTA} strokeWidth={70} strokeLinecap="round" strokeDasharray={1400} strokeDashoffset={1400 * (1 - rampa(t, M.camino5 - 0.4, 0.6))} />
         <path d="M 150 1300 Q 540 960 930 1300" fill="none" stroke={pProy > 0 ? MANGO : "#E9D6B8"} strokeWidth={54} strokeLinecap="round" strokeDasharray={1400} strokeDashoffset={1400 * (1 - rampa(t, M.camino5 - 0.4, 0.6))} />
       </svg>
-      {pasos.map(([tw, ic, txt, x, y]) => <Ficha key={txt} x={x} y={y - 80} w={240} icono={ic} txt={txt} p={rampa(t, tw - 0.35, 0.4)} />)}
+      {pasos.map(([tw, ic, txt, x, y]) => <Ficha key={txt} x={x} y={y - 270} w={240} icono={ic} txt={txt} p={rampa(t, tw - 0.35, 0.4)} />)}
       <Destello x={540} y={1150} r={420} p={rampa(t, M.proyecto6 - 0.3, 0.9)} />
       <Cartel x={540} y={1420} txt="el proyecto" p={pProy} tam={92} fondo={MANGO} giro={-2} />
       <Mascota esp="hamster-gorra" x={xP} y={yP + 60} alto={330} t={t} cara="feliz" salto={30 * Math.abs(Math.sin(t * 6)) * (k < 3 ? 1 : 0)} semilla={3} />
@@ -163,7 +163,7 @@ function Valor({ t }) {
   const n = Math.round(lerp(0, 120, sale(rampa(t, M.vende - 0.2, M.pesos - M.vende + 0.3))));
   return (
     <Escena cam={cam} fondo="art/panaderia.jpg">
-      <Cartel x={300} y={360} txt="📈 vende más" p={rampa(t, M.vende - 0.3, 0.35)} tam={70} fondo={COLOR.VERDE} color="#fff" />
+      <Cartel x={340} y={360} txt="📈 vende más" p={rampa(t, M.vende - 0.3, 0.35)} tam={70} fondo={COLOR.VERDE} color="#fff" />
       {/* la caja registradora */}
       <div style={{ position: "absolute", left: 160, top: 560, width: 280, height: 200, background: "#596579", border: `8px solid ${TINTA}`, borderRadius: 20 }}>
         <div style={{ position: "absolute", left: 20, right: 20, top: 18, height: 60, background: "#9FE0B4", border: `5px solid ${TINTA}`, borderRadius: 8, fontFamily: "Sora", fontWeight: 800, fontSize: 40, textAlign: "center", lineHeight: "50px", color: TINTA }}>$</div>
@@ -207,13 +207,14 @@ function PizarraValor({ t }) {
         </div>
         {/* valor del negocio */}
         <div style={{ opacity: clamp01(enCambio - vuelve) }}>
-          <Tiza x={420} y={40} txt="valor del negocio" p={rampa(t, M.valor - 0.2, 0.6)} tam={96} centro color={MANGO} />
+          <Tiza x={420} y={40} txt="valor del negocio" p={rampa(t, M.valor - 0.6, 0.6)} tam={96} centro color={MANGO} />
           <TrazoTiza d="M 420 190 L 420 1000" p={rampa(t, M.tangible - 0.3, 0.4)} w={6} punteado />
           <Tiza x={60} y={230} txt="tangible" p={rampa(t, M.tangible - 0.25, 0.4)} tam={86} color="#9FE0B4" />
           <Gigante x={210} y={520} txt="$" p={rampa(t, M.dinero - 0.3, 0.35)} tam={220} color={COLOR.VERDE} />
           <Tiza x={110} y={680} txt="dinero" p={rampa(t, M.dinero - 0.1, 0.35)} tam={80} />
           <Tiza x={480} y={230} txt="intangible" p={rampa(t, M.intangible - 0.25, 0.4)} tam={86} color="#FFD58A" />
           <Gigante x={640} y={520} txt="★" p={rampa(t, M.reputacion - 0.5, 0.35)} tam={220} color={MANGO} />
+          <Tiza x={420} y={860} txt="o ambos" p={rampa(t, M.ambos - 0.3, 0.4)} tam={92} centro color={MANGO} />
           <Tiza x={500} y={680} txt="reputación" p={rampa(t, M.reputacion - 0.3, 0.35)} tam={80} />
         </div>
       </Pizarra>
@@ -260,7 +261,7 @@ fx(M.proyecto6 - 0.4, "campana", 0.45);
 fx(S(7) - 0.3, "whoosh", 0.4); fx(M.vende - 0.3, "sube", 0.35); fx(M.pesos - 0.6, "monedas", 0.4); fx(M.pesos - 0.3, "caja", 0.35);
 fx(M.recomiendan - 0.4, "ding", 0.35); fx(M.caja - 0.3, "toc-grave", 0.35); fx(M.vale - 0.4, "ding-doble", 0.35);
 fx(S(9) - 0.3, "barrido-lento", 0.35); fx(M.actual - 0.3, "tiza", 0.35); fx(M.futuro - 0.5, "tiza", 0.35);
-fx(M.valor - 0.2, "tiza-larga", 0.4); fx(M.tangible - 0.25, "tiza", 0.35); fx(M.dinero - 0.3, "monedas", 0.3); fx(M.intangible - 0.25, "tiza", 0.35); fx(M.reputacion - 0.5, "ding", 0.35);
+fx(M.valor - 0.2, "tiza-larga", 0.4); fx(M.tangible - 0.25, "tiza", 0.35); fx(M.dinero - 0.3, "monedas", 0.3); fx(M.intangible - 0.25, "tiza", 0.35); fx(M.reputacion - 0.5, "ding", 0.35); fx(M.ambos - 0.3, "tiza-larga", 0.35);
 fx(M.existe - 0.4, "tiza", 0.35); fx(M.cambio11 - 0.7, "tiza-larga", 0.35);
 fx(M.actual12 - 0.3, "pop", 0.35); fx(M.futuro12 - 0.4, "pop", 0.35); fx(E(12) + 0.1, "ding-doble", 0.4);
 
@@ -269,5 +270,5 @@ const CLAVE = /^(proyecto|proyecto\.|actual|futuro|futuro\.|futuro\?|valor|negoc
 
 export const DURACION = T.DURACION_S;
 export const GP03 = ({ sinSonido = false }) => (
-  <VideoMicro T={T} planos={PLANOS} pinta={pinta} sfx={SFX} clave={CLAVE} arte={ARTE} audio="audio/gp03-mostrador-celular.mp3" sinSonido={sinSonido} />
+  <VideoMicro T={T} planos={PLANOS} pinta={pinta} sfx={SFX} clave={CLAVE} arte={ARTE} audio="audio/gp03-mostrador-celular-v2.mp3" sinSonido={sinSonido} />
 );

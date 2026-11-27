@@ -24,7 +24,7 @@ const M = {
   abrir: W(7, "abrir.", 0.4), parar: W(7, "parar.", 0.95),
   fracaso: W(8, "Fracasó", 0.15), termino: W(8, "Terminó,", 0.6), mismo8: W(8, "mismo.", 0.95),
   termina9: W(9, "termina", 0.3), logra: W(9, "logra", 0.6), objetivos: W(9, "objetivos…", 0.9),
-  puede: W(10, "puede", 0.15), plata: W(10, "plata,", 0.45), falta: W(10, "falta", 0.7), recursos: W(10, "recursos.", 0.95),
+  puede: W(10, "puede", 0.15), plata: W(10, "plata,", 0.45), falta: W(10, "falta", 0.7), recursos: W(10, "recursos", 0.8), legal: W(10, "legal.", 0.95),
   temporal: W(11, "temporal:", 0.15), principio: W(11, "principio", 0.4), fin11: W(11, "fin", 0.55), dure: W(11, "dure", 0.8),
   toca: W(12, "toca:", 0.15), termino12: W(12, "terminó", 0.5), proyectos12: W(12, "proyectos?", 0.95),
 };
@@ -59,7 +59,7 @@ function Pregunta({ t }) {
 function PuenteEsc({ t }) {
   const cam = mover(t, { s: 1.15, x: 540, y: 1000 }, [
     { a: S(2), b: E(2), s: 1.05, x: 540, y: 980 },
-    { a: S(3) - 0.2, b: E(3) + 0.3, s: 0.95, x: 540, y: 968 },
+    { a: S(3) - 0.2, b: E(3) + 0.3, s: 1.0, x: 540, y: 968 },
   ]);
   const avance = rampa(t, M.obra - 0.2, M.anos2 - M.obra + 0.2);
   const anos = Math.min(4, Math.max(1, Math.ceil(4 * avance)));
@@ -88,7 +88,7 @@ function PuenteEsc({ t }) {
 /* ═════ 4 · Dos barras: el proyecto y lo que entrega ═════ */
 function Barras({ t }) {
   const cam = mover(t, { s: 1.05, x: 540, y: 900 }, [{ a: S(4), b: E(4), s: 1.0, x: 540, y: 900 }]);
-  const pP = rampa(t, M.proyecto4 - 0.3, 0.6), pE = rampa(t, M.entrega - 0.3, 1.4);
+  const pP = rampa(t, M.ciertas + 0.1, 0.6), pE = rampa(t, M.entrega - 0.3, 1.4);
   return (
     <Escena cam={cam} fondo="art/carretera.jpg" filtro="blur(7px)" velo={0.3}>
       <Gigante x={330} y={330} txt="✓" p={rampa(t, M.ciertas - 0.6, 0.35)} tam={170} color={COLOR.VERDE} />
@@ -96,7 +96,7 @@ function Barras({ t }) {
       {/* barra del proyecto: corta */}
       <Cartel x={290} y={530} txt="el proyecto" p={pP} tam={66} />
       {pP > 0 && <div style={{ position: "absolute", left: 110, top: 610, width: 240 * sale(pP), height: 110, background: MANGO, border: `8px solid ${TINTA}`, borderRadius: 18 }} />}
-      <Cartel x={500} y={665} txt="4 años" p={rampa(t, M.proyecto4, 0.35)} tam={60} fondo={CREMA} />
+      <Cartel x={500} y={665} txt="4 años" p={rampa(t, M.ciertas + 0.4, 0.35)} tam={60} fondo={CREMA} />
       {/* barra de lo que entrega: larguísima */}
       <Cartel x={350} y={850} txt="lo que entrega" p={rampa(t, M.entrega - 0.3, 0.35)} tam={66} />
       {pE > 0 && <div style={{ position: "absolute", left: 110, top: 930, width: 860 * sale(pE), height: 110, background: COLOR.VERDE, border: `8px solid ${TINTA}`, borderRadius: 18 }} />}
@@ -111,8 +111,8 @@ function Barras({ t }) {
 /* ═════ 5–7 · La segunda sede de Pía: el dueño vende el local ═════ */
 function Sede({ t }) {
   const cam = mover(t, { s: 1.0, x: 540, y: 968 }, [
-    { a: S(6) - 0.2, b: S(6) + 0.6, s: 1.12, x: 640, y: 940 },
-    { a: S(7) - 0.2, b: E(7), s: 1.18, x: 520, y: 1050 },
+    { a: S(6) - 0.2, b: S(6) + 0.6, s: 1.05, x: 560, y: 960 },
+    { a: S(7) - 0.2, b: E(7), s: 1.08, x: 540, y: 1020 },
   ]);
   const alto = rampa(t, M.pia5, M.mitad - M.pia5 + 0.1) * 0.55;
   const pVende = rampa(t, M.vende - 0.4, 0.4);
@@ -123,21 +123,21 @@ function Sede({ t }) {
       <div style={{ filter: `grayscale(${0.8 * rampa(t, M.abrir - 0.4, 0.6)})` }}>
         <Local x={540} y={1180} w={520} alto={alto} t={t} />
       </div>
-      <Calendario x={860} y={420} w={220} t={t} alfiler={[rampa(t, M.sede - 0.3, 0.35), 0]} />
+      <Calendario x={840} y={470} w={210} t={t} alfiler={[rampa(t, M.sede - 0.3, 0.35), 0]} />
       <Cartel x={420} y={470} txt="✓ todo listo" p={rampa(t, M.listo - 0.4, 0.35) * (1 - rampa(t, S(6) - 0.1, 0.3))} tam={62} fondo={COLOR.VERDE} color="#fff" giro={-3} />
       {/* el dueño del local y su letrero de VENDIDO */}
       {t > S(6) - 0.3 && (
         <>
-          <Sombra x={880} y={1500} w={230} />
-          <Mascota esp="zorro-corbata" x={lerp(1250, 880, sale(rampa(t, M.mitad - 0.2, 0.6)))} y={1505} alto={480} t={t} cara="feliz" bd={-60 * pulso(t, M.vende - 0.6, 1)} semilla={7} espejo />
-          <Placa x={880} y={1080} nombre="El dueño" rol="del local" p={rampa(t, M.dueno - 0.2, 0.35) * (1 - rampa(t, S(7) + 0.4, 0.3))} color={COLOR.CORAL} />
+          <Sombra x={840} y={1500} w={230} />
+          <Mascota esp="zorro-corbata" x={lerp(1250, 840, sale(rampa(t, M.mitad - 0.2, 0.6)))} y={1505} alto={480} t={t} cara="feliz" bd={-60 * pulso(t, M.vende - 0.6, 1)} semilla={7} espejo />
+          <Placa x={840} y={1080} nombre="El dueño" rol="del local" p={rampa(t, M.dueno - 0.2, 0.35) * (1 - rampa(t, S(7) + 0.4, 0.3))} color={COLOR.CORAL} />
           <div style={{ position: "absolute", left: 610, top: 1060, transform: `translate(-50%,-50%) rotate(-10deg) scale(${lerp(2.4, 1, sale(pVende))})`, opacity: Math.min(1, pVende * 3), border: `12px solid ${ROJO}`, color: ROJO, background: "rgba(255,255,255,.9)", fontFamily: "Sora", fontWeight: 800, fontSize: 84, padding: "6px 30px", borderRadius: 18 }}>VENDIDO</div>
         </>
       )}
       <Gigante x={250} y={560} txt="✋" p={pAlto} tam={170} />
       <Cartel x={250} y={740} txt="parar" p={rampa(t, M.parar - 0.3, 0.35)} tam={70} fondo={ROJO} color="#fff" />
-      <Sombra x={220} y={1500} w={260} />
-      <Mascota esp="hamster-gorra" x={220} y={1505} alto={500} t={t} cara={triste ? "triste" : "feliz"} cab={triste ? 8 : 0} bd={-80 * pulso(t, M.pia5 - 0.2, 1.2)} bi={-70 * pulso(t, M.parar - 0.6, 1.2)} semilla={3} />
+      <Sombra x={260} y={1500} w={260} />
+      <Mascota esp="hamster-gorra" x={260} y={1505} alto={500} t={t} cara={triste ? "triste" : "feliz"} cab={triste ? 8 : 0} bd={-80 * pulso(t, M.pia5 - 0.2, 1.2)} bi={-70 * pulso(t, M.parar - 0.6, 1.2)} semilla={3} />
     </Escena>
   );
 }
@@ -165,16 +165,17 @@ function PizarraFin({ t }) {
     [M.plata, "se acaba la plata", "$"],
     [M.falta, "ya no hace falta", "–"],
     [M.recursos, "faltan recursos", "…"],
+    [M.legal, "hay una causa legal", "§"],
   ];
   return (
     <Escena cam={cam} fondo="art/panaderia.jpg" filtro="blur(7px)" velo={0.15}>
       <Pizarra x={60} y={220} w={960} h={1220}>
-        <Tiza x={450} y={30} txt="Termina cuando…" p={rampa(t, M.termina9 - 0.2, 0.6)} tam={104} centro color={MANGO} />
-        <Tiza x={70} y={220} txt="✓ logra sus objetivos" p={rampa(t, M.logra - 0.2, 0.7)} tam={90} color="#9FE0B4" />
+        <Tiza x={450} y={30} txt="Termina cuando…" p={rampa(t, S(9) - 0.2, 0.6)} tam={104} centro color={MANGO} />
+        <Tiza x={70} y={220} txt="✓ logra sus objetivos" p={rampa(t, Math.min(M.logra - 0.2, S(9) + 0.5), 0.7)} tam={90} color="#9FE0B4" />
         <TrazoTiza d="M 60 340 L 840 340" p={rampa(t, S(10) - 0.3, 0.4)} w={5} punteado />
-        <Tiza x={70} y={370} txt="o…" p={rampa(t, S(10) - 0.2, 0.3)} tam={70} color="#FF9B95" />
+        <Tiza x={70} y={355} txt="o…" p={rampa(t, S(10) - 0.2, 0.3)} tam={96} color="#FF9B95" />
         {items.map(([tw, txt], k) => (
-          <Tiza key={k} x={110} y={480 + k * 150} txt={"• " + txt} p={rampa(t, tw - 0.25, 0.55)} tam={86} />
+          <Tiza key={k} x={110} y={470 + k * 140} txt={"• " + txt} p={rampa(t, tw - 0.25, 0.55)} tam={86} />
         ))}
       </Pizarra>
       <Destello x={540} y={330} r={300} p={rampa(t, M.termina9 - 0.1, 0.8)} />
@@ -196,11 +197,11 @@ function Temporal({ t }) {
   return (
     <Escena cam={cam} fondo="art/panaderia.jpg" filtro="blur(7px)" velo={0.15}>
       <Pizarra x={60} y={260} w={960} h={1060}>
-        <Tiza x={450} y={30} txt="temporal" p={rampa(t, M.temporal - 0.25, 0.5)} tam={130} centro color={MANGO} />
-        <Tiza x={80} y={240} txt="inicio" p={rampa(t, M.principio - 0.2, 0.3)} tam={56} color="#9FE0B4" />
-        <Tiza x={700} y={240} txt="fin" p={rampa(t, M.fin11 - 0.2, 0.3)} tam={56} color="#FF9B95" />
-        {linea(440, 400, "4 meses", M.principio - 0.1)}
-        {linea(760, 840, "4 años", M.principio + 0.1)}
+        <Tiza x={450} y={30} txt="temporal" p={rampa(t, Math.min(M.temporal - 0.25, S(11) - 0.1), 0.5)} tam={130} centro color={MANGO} />
+        <Tiza x={70} y={230} txt="inicio" p={rampa(t, M.principio - 0.2, 0.3)} tam={76} color="#9FE0B4" />
+        <Tiza x={720} y={230} txt="fin" p={rampa(t, M.fin11 - 0.2, 0.3)} tam={76} color="#FF9B95" />
+        {linea(440, 400, "la sede", M.principio - 0.1)}
+        {linea(760, 840, "el puente", M.principio + 0.1)}
       </Pizarra>
     </Escena>
   );
@@ -242,7 +243,7 @@ fx(S(2) - 0.3, "whoosh", 0.4); fx(M.obra - 0.1, "grua", 0.3); fx(M.cuatro - 0.2,
 fx(S(3) - 0.3, "desliza", 0.35); fx(M.cien - 0.5, "campana", 0.4);
 fx(S(4) - 0.3, "barrido-lento", 0.35); fx(M.ciertas - 0.6, "ding", 0.3); fx(M.ciertas - 0.4, "ding", 0.3); fx(M.proyecto4 - 0.3, "desliza", 0.3); fx(M.entrega - 0.3, "desliza", 0.35);
 fx(S(5) - 0.3, "whoosh", 0.4); fx(M.sede - 0.3, "toc", 0.4); fx(M.listo - 0.4, "ding", 0.35);
-fx(M.mitad - 0.2, "pasos", 0.35); fx(M.vende - 0.4, "sello", 0.5); fx(M.abrir - 0.4, "eco", 0.3); fx(M.parar - 0.5, "toc-grave", 0.45);
+fx(M.mitad - 0.2, "pasos", 0.35); fx(M.legal - 0.25, "tiza", 0.35); fx(M.vende - 0.4, "sello", 0.5); fx(M.abrir - 0.4, "eco", 0.3); fx(M.parar - 0.5, "toc-grave", 0.45);
 fx(S(8) - 0.3, "whoosh", 0.35); fx(M.fracaso - 0.3, "pop", 0.4); fx(M.termino - 0.2, "toc", 0.4); fx(M.termino, "sello", 0.5);
 fx(S(9) - 0.3, "barrido-lento", 0.35); fx(M.termina9 - 0.2, "tiza-larga", 0.4); fx(M.logra - 0.2, "ding", 0.3);
 [M.puede, M.plata, M.falta, M.recursos].forEach((w) => fx(w - 0.25, "tiza", 0.35));
@@ -254,5 +255,5 @@ const CLAVE = /^(temporal|temporal:|terminó|terminó,|termina|objetivos…|proy
 
 export const DURACION = T.DURACION_S;
 export const GP02 = ({ sinSonido = false }) => (
-  <VideoMicro T={T} planos={PLANOS} pinta={pinta} sfx={SFX} clave={CLAVE} arte={ARTE} audio="audio/gp02-puente-cien-anos.mp3" sinSonido={sinSonido} />
+  <VideoMicro T={T} planos={PLANOS} pinta={pinta} sfx={SFX} clave={CLAVE} arte={ARTE} audio="audio/gp02-puente-cien-anos-v2.mp3" sinSonido={sinSonido} />
 );

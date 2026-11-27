@@ -12,9 +12,13 @@ import * as gp01 from "./videos/gp01/Video.jsx";
 import * as gp02 from "./videos/gp02/Video.jsx";
 import * as gp03 from "./videos/gp03/Video.jsx";
 import * as gp04 from "./videos/gp04/Video.jsx";
+import * as gp05 from "./videos/gp05/Video.jsx";
+import * as gp06 from "./videos/gp06/Video.jsx";
+import * as gp07 from "./videos/gp07/Video.jsx";
+import * as gp08 from "./videos/gp08/Video.jsx";
 import { Pia } from "./retratos/Pia.jsx";
 const FPS = 30;
-const V = [["A1", a1.A1, a1.DURACION], ["A2", a2.A2, a2.DURACION], ["A3", a3.A3, a3.DURACION], ["A4", a4.A4, a4.DURACION], ["A5", a5.A5, a5.DURACION], ["A6", a6.A6, a6.DURACION], ["B1", b1.B1, b1.DURACION], ["B2", b2.B2, b2.DURACION], ["B3", b3.B3, b3.DURACION], ["GP01", gp01.GP01, gp01.DURACION], ["GP02", gp02.GP02, gp02.DURACION], ["GP03", gp03.GP03, gp03.DURACION], ["GP04", gp04.GP04, gp04.DURACION]];
+const V = [["A1", a1.A1, a1.DURACION], ["A2", a2.A2, a2.DURACION], ["A3", a3.A3, a3.DURACION], ["A4", a4.A4, a4.DURACION], ["A5", a5.A5, a5.DURACION], ["A6", a6.A6, a6.DURACION], ["B1", b1.B1, b1.DURACION], ["B2", b2.B2, b2.DURACION], ["B3", b3.B3, b3.DURACION], ["GP01", gp01.GP01, gp01.DURACION], ["GP02", gp02.GP02, gp02.DURACION], ["GP03", gp03.GP03, gp03.DURACION], ["GP04", gp04.GP04, gp04.DURACION], ["GP05", gp05.GP05, gp05.DURACION], ["GP06", gp06.GP06, gp06.DURACION], ["GP07", gp07.GP07, gp07.DURACION], ["GP08", gp08.GP08, gp08.DURACION]];
 const Root = () => (<>{V.map(([id, C, d]) => (
   <Composition key={id} id={id} component={C} durationInFrames={Math.round(d * FPS)} fps={FPS} width={1080} height={1920} defaultProps={{ sinSonido: false }} />
 ))}

@@ -35,9 +35,9 @@ export function Puente({ x, y, w, avance = 1, grietas = 0, autos = 0, t = 0, and
         })}
         {/* grietas: zigzag que se dibuja */}
         {grietas > 0 && [[0.22, 70], [0.5, 60], [0.74, 80]].map(([f, l], k) => {
-          const x0 = w * f, d = `M ${x0} 62 l 14 ${l * 0.25} l -18 ${l * 0.25} l 16 ${l * 0.25} l -10 ${l * 0.3}`;
+          const L = l * 1.7, x0 = w * f, d = `M ${x0} 50 l 22 ${L * 0.25} l -28 ${L * 0.25} l 24 ${L * 0.25} l -16 ${L * 0.3}`;
           const pk = clamp01(grietas * 3 - k);
-          return <path key={k} d={d} fill="none" stroke={TINTA} strokeWidth={8} strokeLinecap="round" strokeDasharray={200} strokeDashoffset={200 * (1 - pk)} />;
+          return <path key={k} d={d} fill="none" stroke={TINTA} strokeWidth={13} strokeLinecap="round" strokeDasharray={400} strokeDashoffset={400 * (1 - pk)} />;
         })}
       </svg>
       {/* tablero */}
