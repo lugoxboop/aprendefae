@@ -7,6 +7,6 @@ Ese camino es el proyecto.
 Al final, Pía vende más: eso se puede contar en pesos.
 Pero también la recomiendan más: eso no cabe en la caja, y también vale.
 Lo que acabas de ver es el paso de un estado actual a un estado futuro.
-Y lo que gana Pía se llama valor del negocio: tangible, como el dinero, o intangible, como la reputación.
+Y lo que gana Pía se llama valor del negocio: tangible, como el dinero, intangible, como la reputación, o ambos.
 Un proyecto existe para ese cambio.
 ¿Cuál es el estado actual de tu idea, y cuál el futuro?

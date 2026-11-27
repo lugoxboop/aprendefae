@@ -101,28 +101,22 @@
   },
   "narrar": [
     {
-      "id": "gp05-fiesta-desbordada",
+      "id": "gp02-puente-cien-anos-v2",
       "voz": "jBlmi27XRORxjPquUeCh",
       "modelo": "eleven_v3",
-      "texto": "La fiesta de quince de la hija de Ramón iba a costar cinco millones. Terminó en doce.\n\nNadie la dirigió: cada semana alguien agregaba algo.\n\nMás invitados, un mariachi, otro pastel, y nadie preguntó cuánto costaba.\n\nLa fecha se corrió dos veces, y el salón cobró de nuevo.\n\nLa comida llegó fría y hubo que pedirla otra vez.\n\nPlazos incumplidos, sobrecostos, mala calidad, retrabajo y un alcance que creció sin control.\n\nUn año después, Pía organiza la fiesta de su sobrina, y esta vez la dirige.\n\nCuando piden más invitados, Pía pregunta: ¿ponemos más plata, o quitamos otra cosa?\n\nPorque más alcance puede subir el costo o el tiempo, y hay que equilibrarlos.\n\nEso se llama dirección de proyectos: aplicar conocimientos, habilidades, herramientas y técnicas…\n\n…a las actividades del proyecto, para cumplir sus requisitos.\n\nAhora te toca: ¿qué falló en la fiesta de Ramón?"
+      "texto": "¿Cuánto dura un proyecto? Pocos meses, dirías tú.\n\nEsta obra de un puente tardó cuatro años.\n\nY el puente va a durar cien.\n\nLas dos cosas son ciertas, porque el proyecto y lo que entrega no viven lo mismo.\n\nMientras tanto, Pía arranca su segunda sede con todo listo.\n\nPero a mitad de obra, el dueño del local lo vende.\n\nYa no hay dónde abrir. Pía decide parar.\n\n¿Fracasó el proyecto? Terminó, que no es lo mismo.\n\nUn proyecto termina cuando logra sus objetivos…\n\n…o cuando ya no puede lograrlos, se acaba la plata, ya no hace falta, faltan recursos o hay una causa legal.\n\nEso es ser temporal: tiene principio y fin definidos, dure lo que dure.\n\nAhora te toca: ¿por qué terminó cada uno de estos proyectos?"
     },
     {
-      "id": "gp06-tres-sedes",
+      "id": "gp03-mostrador-celular-v2",
       "voz": "jBlmi27XRORxjPquUeCh",
       "modelo": "eleven_v3",
-      "texto": "Un programa no es un proyecto grande. Mira por qué.\n\nPía sueña con abrir tres sedes nuevas en la ciudad.\n\nCada sede es un proyecto: su obra, su permiso, su apertura.\n\nPero si las maneja juntas, compra los hornos al por mayor y capacita a todos a la vez.\n\nEse ahorro no existiría si cada sede fuera por su lado.\n\nEso es un programa: proyectos relacionados, gestionados de forma coordinada, para lograr beneficios que solos no darían.\n\nY un proyecto enorme, como un metro para toda la ciudad, no es un programa: se llama megaproyecto.\n\nAhora Pía mira todo lo que hace la panadería: las sedes, la tienda en línea y el pan de cada día.\n\nDecide qué va primero y a qué le pone plata, según hacia dónde quiere llevar el negocio.\n\nEse conjunto, gestionado como grupo para alcanzar objetivos estratégicos, es un portafolio.\n\nProyecto, programa y portafolio: tres maneras de mirar el trabajo, no tres tamaños de obra.\n\nAhora te toca: ¿cada caso es un proyecto, un programa o un portafolio?"
+      "texto": "Nadie quiere un proyecto. Quiere lo que cambia después.\n\nHoy, Pía solo vende a quien entra por la puerta.\n\nLos domingos, la fila da la vuelta a la cuadra, y muchos se van sin pan.\n\nPía se imagina otra panadería: pedidos por el celular y domicilios.\n\nEntre ese hoy y ese mañana hay un camino: tomar fotos, armar el menú, contratar un domiciliario.\n\nEse camino es el proyecto.\n\nAl final, Pía vende más: eso se puede contar en pesos.\n\nPero también la recomiendan más: eso no cabe en la caja, y también vale.\n\nLo que acabas de ver es el paso de un estado actual a un estado futuro.\n\nY lo que gana Pía se llama valor del negocio: tangible, como el dinero, intangible, como la reputación, o ambos.\n\nUn proyecto existe para ese cambio.\n\n¿Cuál es el estado actual de tu idea, y cuál el futuro?"
     },
     {
-      "id": "gp07-cancelar-a-tiempo",
+      "id": "gp04-grieta-que-manda-v2",
       "voz": "jBlmi27XRORxjPquUeCh",
       "modelo": "eleven_v3",
-      "texto": "Cancelar un proyecto a tiempo también puede ser un acierto.\n\nPía quiere una app para pedir pan. Primero, un estudio: ¿alguien la usaría?\n\nEse estudio es una fase: actividades relacionadas que terminan en un entregable.\n\nAl final de la fase, Pía y su socia Carmen se sientan a revisar.\n\nComparan lo logrado con el caso de negocio y el acta del proyecto.\n\nY deciden: seguir, seguir con cambios, quedarse, repetir la fase o terminar el proyecto.\n\nEso es un punto de revisión de fase.\n\nEl estudio dice que sus clientes prefieren llamar por teléfono. Carmen dice: terminamos aquí.\n\nGastaron en un estudio, no en una app que nadie iba a usar.\n\nTodas las fases juntas, del inicio a la conclusión, forman el ciclo de vida del proyecto.\n\nSi el alcance se fija al principio, el ciclo es predictivo; si se define iteración por iteración, es adaptativo.\n\nAhora te toca: estás en el punto de revisión. ¿Qué decides?"
-    },
-    {
-      "id": "gp08-cinco-grupos",
-      "voz": "jBlmi27XRORxjPquUeCh",
-      "modelo": "eleven_v3",
-      "texto": "Puedes iniciar varias veces el mismo proyecto: una por cada fase.\n\nPía remodela la panadería en dos fases: primero la cocina, después el salón.\n\nPara la cocina, primero consigue que Carmen autorice arrancar.\n\nLuego hace el plan: qué se cambia, cuánto cuesta y para cuándo.\n\nEjecuta: llegan los obreros y el horno nuevo.\n\nMientras tanto vigila: ¿vamos a tiempo?, ¿el gasto va bien? Y corrige.\n\nAl final, cierra: recibe la cocina y firma.\n\nY en la fase del salón, todo eso vuelve a pasar: otro inicio, otro plan, otro cierre.\n\nSon los cinco grupos de procesos: inicio, planificación, ejecución, monitoreo y control, y cierre.\n\nNo son fases del proyecto: se repiten dentro de cada fase, y a veces se superponen.\n\nY lo que sale de un proceso, como el plan, entra a otro.\n\nAhora te toca: ¿a qué grupo pertenece cada tarea de Pía?"
+      "texto": "A veces la idea de un proyecto no sale del gerente. Sale de una grieta.\n\nEn el puente del barrio aparecen grietas; el municipio tiene que repararlo.\n\nAl mismo tiempo, la panadería de enfrente baja sus precios.\n\nPía tiene que bajar costos, o pierde clientes.\n\nY los vecinos le piden pan sin gluten.\n\nEncima, una norma nueva exige etiquetar todo lo que se vende.\n\nCuatro empujones distintos, y cada uno puede hacer nacer un proyecto.\n\nLa guía los agrupa en cuatro categorías de factores.\n\nCumplir requisitos regulatorios, legales o sociales. Satisfacer a los interesados.\n\nCambiar la estrategia o la tecnología. Crear, mejorar o reparar productos, procesos o servicios.\n\nDetrás de cada proyecto hay uno de estos empujones, o varios.\n\nAhora clasifica: ¿en qué categoría cae cada empujón?"
     }
   ]
 }
