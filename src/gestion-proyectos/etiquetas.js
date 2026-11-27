@@ -8,8 +8,11 @@
 import { itemsDePieza } from "./comun/preparar.js";
 import { PIEZAS_TEXTO_INTRO } from "./fundamentos/textos-c1.js";
 import { PIEZAS_TEXTO_ENTORNO } from "./fundamentos/textos-c2.js";
+import { PIEZAS_TEXTO_C3 } from "./fundamentos/textos-c3.js";
+import { PIEZAS_TEXTO_C4 } from "./integracion/textos-c4.js";
 
-export const PIEZAS_TEXTO_GP = [...PIEZAS_TEXTO_INTRO, ...PIEZAS_TEXTO_ENTORNO];
+/* Lote 1 (caps. 1-2) y lote 2 (caps. 3-4), en el orden de los diseños. */
+export const PIEZAS_TEXTO_GP = [...PIEZAS_TEXTO_INTRO, ...PIEZAS_TEXTO_ENTORNO, ...PIEZAS_TEXTO_C3, ...PIEZAS_TEXTO_C4];
 
 export const ITEMS_GP = Object.fromEntries(PIEZAS_TEXTO_GP.map((p) => [p.id, itemsDePieza(p)]));
 

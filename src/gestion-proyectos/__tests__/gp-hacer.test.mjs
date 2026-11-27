@@ -37,9 +37,12 @@ const { PIEZAS_TEXTO_GP, ITEMS_GP } = await import("../etiquetas.js");
 const S = solucionario();
 const DIR = new URL("..", import.meta.url);
 const COMPONENTES = {};
-for (const f of readdirSync(new URL("fundamentos/", DIR)).filter((x) => /^H\d\d.*\.jsx$/.test(x))) {
-  const m = await import(new URL(`fundamentos/${f}`, DIR).href);
-  COMPONENTES[m.ID] = m.default;
+/* Lote 1: fundamentos/Hnn*.jsx · lote 2: fundamentos/C03Hnn*.jsx e integracion/C04Hnn*.jsx. */
+for (const dir of ["fundamentos", "integracion"]) {
+  for (const f of readdirSync(new URL(`${dir}/`, DIR)).filter((x) => /^(C0\d)?H\d\d.*\.jsx$/.test(x))) {
+    const m = await import(new URL(`${dir}/${f}`, DIR).href);
+    COMPONENTES[m.ID] = m.default;
+  }
 }
 
 const sinEstilos = (el) => el.innerHTML.replace(/<style>[\s\S]*?<\/style>/g, "");
@@ -100,8 +103,9 @@ async function mover(el) {
   return true;
 }
 
-test("hay 18 piezas, cada una con su componente", () => {
-  assert.equal(PIEZAS_TEXTO_GP.length, 18);
+test("hay 35 piezas (18 del lote 1 y 17 del lote 2), cada una con su componente", () => {
+  assert.equal(PIEZAS_TEXTO_GP.length, 35);
+  assert.equal(Object.keys(COMPONENTES).length, 35);
   for (const p of PIEZAS_TEXTO_GP) assert.equal(typeof COMPONENTES[p.id], "function", p.id);
 });
 
@@ -119,7 +123,7 @@ test("la tarjeta de inicio: papel, contexto, consigna y protagonista grande, sin
   }
 });
 
-test("las 18 se juegan enteras: partida perfecta = 100 % y cada ítem con etiqueta", async () => {
+test("las 35 se juegan enteras: partida perfecta = 100 % y cada ítem con etiqueta", async () => {
   mock.timers.enable({ apis: ["setTimeout"] });
   try {
     for (const semilla of [1, 7]) {

@@ -75,9 +75,9 @@ insert into res select 1, 'una fila sin etapas declaradas vale 1', '1',
 insert into res select 2, 'las actividades reales que no son desafío siguen en 1 etapa', '0 con etapas>1',
   (select count(*)::text || ' con etapas>1'
      from public.actividad_catalogo
-    where etapas > 1 and activity_id not in ('proyecto-arca', 'comite-nova', 'ciclo-completo', 'da26-h2-arma-formula', 'da26-h6-meta', 'pe26-h2-grupo-logico', 'pf26-h3-factura', 'pm26-h2-cascada-meta', 'gp26-fun-h04-puente', 'gp26-fun-h05-portafolio', 'gp26-fun-h08-calendario', 'gp26-fun-h11-caso-puente', 'gp26-fun-h12-balanzas', 'gp26-fun-h15-control') and activity_id not like 'zzz-%'),
+    where etapas > 1 and activity_id not in ('proyecto-arca', 'comite-nova', 'ciclo-completo', 'da26-h2-arma-formula', 'da26-h6-meta', 'pe26-h2-grupo-logico', 'pf26-h3-factura', 'pm26-h2-cascada-meta', 'gp26-fun-h04-puente', 'gp26-fun-h05-portafolio', 'gp26-fun-h08-calendario', 'gp26-fun-h11-caso-puente', 'gp26-fun-h12-balanzas', 'gp26-fun-h15-control', 'gp26-fun-c03-h01-orquesta', 'gp26-fun-c03-h03-taburete', 'gp26-fun-c03-h05-moneda', 'gp26-fun-c03-h06-comandas', 'gp26-fun-c03-h07-mosaico', 'gp26-ini-c04-h01-acta', 'gp26-ini-c04-h02-expositor', 'gp26-pla-c04-h03-portaplanos', 'gp26-eje-c04-h05-bitacora', 'gp26-eje-c04-h06-recetario', 'gp26-moc-c04-h07-camara', 'gp26-moc-c04-h08-turnero', 'gp26-cie-c04-h09-breakers', 'gp26-cie-c04-h10-beneficiadero') and activity_id not like 'zzz-%'),
   (select count(*) = 0 from public.actividad_catalogo
-    where etapas > 1 and activity_id not in ('proyecto-arca', 'comite-nova', 'ciclo-completo', 'da26-h2-arma-formula', 'da26-h6-meta', 'pe26-h2-grupo-logico', 'pf26-h3-factura', 'pm26-h2-cascada-meta', 'gp26-fun-h04-puente', 'gp26-fun-h05-portafolio', 'gp26-fun-h08-calendario', 'gp26-fun-h11-caso-puente', 'gp26-fun-h12-balanzas', 'gp26-fun-h15-control') and activity_id not like 'zzz-%');
+    where etapas > 1 and activity_id not in ('proyecto-arca', 'comite-nova', 'ciclo-completo', 'da26-h2-arma-formula', 'da26-h6-meta', 'pe26-h2-grupo-logico', 'pf26-h3-factura', 'pm26-h2-cascada-meta', 'gp26-fun-h04-puente', 'gp26-fun-h05-portafolio', 'gp26-fun-h08-calendario', 'gp26-fun-h11-caso-puente', 'gp26-fun-h12-balanzas', 'gp26-fun-h15-control', 'gp26-fun-c03-h01-orquesta', 'gp26-fun-c03-h03-taburete', 'gp26-fun-c03-h05-moneda', 'gp26-fun-c03-h06-comandas', 'gp26-fun-c03-h07-mosaico', 'gp26-ini-c04-h01-acta', 'gp26-ini-c04-h02-expositor', 'gp26-pla-c04-h03-portaplanos', 'gp26-eje-c04-h05-bitacora', 'gp26-eje-c04-h06-recetario', 'gp26-moc-c04-h07-camara', 'gp26-moc-c04-h08-turnero', 'gp26-cie-c04-h09-breakers', 'gp26-cie-c04-h10-beneficiadero') and activity_id not like 'zzz-%');
 
 -- ── 13. Y los tres desafíos declaran sus cuatro etapas ─────────────────────
 -- El complemento del chequeo de arriba: excluirlos de la cuenta no puede
@@ -149,6 +149,26 @@ insert into res select 18, 'las seis Hacer por etapas de Gestión de Proyectos d
     where (activity_id = 'gp26-fun-h04-puente' and etapas = 2 and fp_base = 10)
        or (activity_id in ('gp26-fun-h05-portafolio', 'gp26-fun-h08-calendario', 'gp26-fun-h12-balanzas', 'gp26-fun-h15-control') and etapas = 2 and fp_base = 25)
        or (activity_id = 'gp26-fun-h11-caso-puente' and etapas = 3 and fp_base = 50));
+
+-- ── 19. Gestión de Proyectos: las catorce Hacer por etapas de los caps. 3 y 4 ─
+-- Diseño de Gen (gestion-proyectos/disenos/c03-hacer.md y c04-hacer.md §1),
+-- migración 0277: una Fácil (10) × 2; ocho Medio (25) × 2; una Medio × 3; tres
+-- Difícil (50) × 2 y una Difícil × 3. Se excluyen de la cuenta del chequeo 2
+-- y se miran aquí, igual que las del lote 1 (chequeo 18).
+insert into res select 19, 'las catorce Hacer por etapas de los caps. 3 y 4 de Gestión de Proyectos declaran sus etapas y su base', '14 filas',
+  (select count(*)::text || ' filas'
+     from public.actividad_catalogo
+    where (activity_id = 'gp26-fun-c03-h01-orquesta' and etapas = 2 and fp_base = 10)
+       or (activity_id in ('gp26-fun-c03-h03-taburete', 'gp26-fun-c03-h05-moneda', 'gp26-fun-c03-h06-comandas', 'gp26-ini-c04-h02-expositor', 'gp26-pla-c04-h03-portaplanos', 'gp26-eje-c04-h05-bitacora', 'gp26-moc-c04-h07-camara', 'gp26-cie-c04-h09-breakers') and etapas = 2 and fp_base = 25)
+       or (activity_id = 'gp26-eje-c04-h06-recetario' and etapas = 3 and fp_base = 25)
+       or (activity_id in ('gp26-fun-c03-h07-mosaico', 'gp26-ini-c04-h01-acta', 'gp26-moc-c04-h08-turnero') and etapas = 2 and fp_base = 50)
+       or (activity_id = 'gp26-cie-c04-h10-beneficiadero' and etapas = 3 and fp_base = 50)),
+  (select count(*) = 14 from public.actividad_catalogo
+    where (activity_id = 'gp26-fun-c03-h01-orquesta' and etapas = 2 and fp_base = 10)
+       or (activity_id in ('gp26-fun-c03-h03-taburete', 'gp26-fun-c03-h05-moneda', 'gp26-fun-c03-h06-comandas', 'gp26-ini-c04-h02-expositor', 'gp26-pla-c04-h03-portaplanos', 'gp26-eje-c04-h05-bitacora', 'gp26-moc-c04-h07-camara', 'gp26-cie-c04-h09-breakers') and etapas = 2 and fp_base = 25)
+       or (activity_id = 'gp26-eje-c04-h06-recetario' and etapas = 3 and fp_base = 25)
+       or (activity_id in ('gp26-fun-c03-h07-mosaico', 'gp26-ini-c04-h01-acta', 'gp26-moc-c04-h08-turnero') and etapas = 2 and fp_base = 50)
+       or (activity_id = 'gp26-cie-c04-h10-beneficiadero' and etapas = 3 and fp_base = 50));
 
 -- ── 3. Lo de siempre sigue pagando lo de siempre ───────────────────────────
 -- EL CHEQUEO MÁS IMPORTANTE DEL ARCHIVO. registrar_fp se reemplazó entera; si

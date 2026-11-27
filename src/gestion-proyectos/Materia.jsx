@@ -89,11 +89,20 @@ export default function MateriaGestionProyectos({ onBack, onAbrirHacer = null })
           <section data-hacer-modulo={fundamentos.id}>
             <h2 className="gpm-h2">Practica · {fundamentos.titulo}</h2>
             <p className="gpm-guia" style={{ marginBottom: 12 }}>
-              Los retos de los capítulos 1 y 2 de la guía.
+              Los retos de los capítulos 1, 2 y 3 de la guía.
             </p>
             <CaminoHacerGP moduloId={fundamentos.id} onAbrir={onAbrirHacer} />
           </section>
         )}
+
+        {/* Lote 2 · los retos de cada grupo de procesos (hoy, los del cap. 4, Integración). */}
+        {grupos.filter((m) => hacerVisibles(m.id).length > 0).map((m) => (
+          <section key={m.id} data-hacer-modulo={m.id}>
+            <h2 className="gpm-h2">Practica · {m.titulo}</h2>
+            <p className="gpm-guia" style={{ marginBottom: 12 }}>{m.resumen}</p>
+            <CaminoHacerGP moduloId={m.id} onAbrir={onAbrirHacer} />
+          </section>
+        ))}
 
         <h2 className="gpm-h2">Los cinco grupos de procesos</h2>
         <p className="gpm-guia" style={{ marginBottom: 12 }}>
