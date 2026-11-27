@@ -149,3 +149,19 @@ export function Ficha({ x, y, w = 260, icono, txt, p = 1, fondo = CREMA, giro = 
     </div>
   );
 }
+
+/* Globo de diálogo (habla, no piensa): la cola apunta hacia abajo, a quien habla */
+export function Dicho({ x, y, w, h, p, colaX, children }) {
+  if (p <= 0) return null;
+  const cx = colaX - x;
+  return (
+    <div style={{ position: "absolute", left: x, top: y, width: w, height: h, transformOrigin: `${cx}px ${h + 90}px`, transform: `scale(${rebote(Math.min(1, p))})`, opacity: Math.min(1, p * 3) }}>
+      <svg style={{ position: "absolute", left: 0, top: 0, overflow: "visible" }} width={w} height={h}>
+        <path d={`M ${cx - 70} ${h - 20} L ${cx + 30} ${h + 100} L ${cx + 30} ${h - 20} Z`} fill={CREMA} stroke={TINTA} strokeWidth={7} strokeLinejoin="round" />
+      </svg>
+      <div style={{ position: "absolute", inset: 0, background: CREMA, border: `7px solid ${TINTA}`, borderRadius: 40, boxShadow: "0 10px 0 rgba(42,30,23,.18)" }} />
+      <div style={{ position: "absolute", left: cx - 62, top: h - 14, width: 88, height: 14, background: CREMA }} />
+      <div style={{ position: "absolute", inset: 0 }}>{children}</div>
+    </div>
+  );
+}

@@ -10,7 +10,7 @@ import { Mascota, Sombra, Placa, Globo, TINTA, CREMA, MANGO, AZUL } from "../../
 import { crearTiempo } from "../../comun/tiempo.js";
 import { VideoMicro, hazSfx, mover } from "../../comun/Video.jsx";
 import { Escena, Cartel, Gigante, Destello, Pizarra, Tiza, TrazoTiza, Flecha, COLOR, clamp01, lerp, sale, rampa, rebote, pulso } from "../../comun/kit.jsx";
-import { Celular, Documento, Ficha, Tachon, ROJO } from "../gp/piezas.jsx";
+import { Celular, Documento, Ficha, Tachon, Dicho, ROJO } from "../gp/piezas.jsx";
 import DATOS from "./tiempos.json";
 
 const T = crearTiempo(DATOS, { extra: [0.35, 0.3, 0.3, 0.3, 0.3, 0.3, 0.35, 0.35, 0.3, 0.35, 0.3, 0.4] });
@@ -50,22 +50,6 @@ function Talanquera({ x, y, w, abre = 0, p = 1 }) {
     <div style={{ position: "absolute", left: x, top: y, transform: `scale(${rebote(Math.min(1, p))})`, transformOrigin: "0 100%" }}>
       <div style={{ position: "absolute", left: -30, top: -160, width: 60, height: 160, background: "#596579", border: `7px solid ${TINTA}`, borderRadius: 10 }} />
       <div style={{ position: "absolute", left: 0, top: -140, width: w, height: 40, transformOrigin: "0 50%", transform: `rotate(${-70 * sale(abre)}deg)`, background: `repeating-linear-gradient(90deg,${ROJO} 0 50px,#fff 50px 100px)`, border: `7px solid ${TINTA}`, borderRadius: 14 }} />
-    </div>
-  );
-}
-
-/* Globo de diálogo (habla, no piensa): la cola apunta hacia abajo, a quien habla */
-function Dicho({ x, y, w, h, p, colaX, children }) {
-  if (p <= 0) return null;
-  const cx = colaX - x;
-  return (
-    <div style={{ position: "absolute", left: x, top: y, width: w, height: h, transformOrigin: `${cx}px ${h + 90}px`, transform: `scale(${rebote(Math.min(1, p))})`, opacity: Math.min(1, p * 3) }}>
-      <svg style={{ position: "absolute", left: 0, top: 0, overflow: "visible" }} width={w} height={h}>
-        <path d={`M ${cx - 70} ${h - 20} L ${cx + 30} ${h + 100} L ${cx + 30} ${h - 20} Z`} fill={CREMA} stroke={TINTA} strokeWidth={7} strokeLinejoin="round" />
-      </svg>
-      <div style={{ position: "absolute", inset: 0, background: CREMA, border: `7px solid ${TINTA}`, borderRadius: 40, boxShadow: "0 10px 0 rgba(42,30,23,.18)" }} />
-      <div style={{ position: "absolute", left: cx - 62, top: h - 14, width: 88, height: 14, background: CREMA }} />
-      <div style={{ position: "absolute", inset: 0 }}>{children}</div>
     </div>
   );
 }
