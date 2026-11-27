@@ -1,0 +1,12 @@
+Cancelar un proyecto a tiempo también puede ser un acierto.
+Pía quiere una app para pedir pan. Primero, un estudio: ¿alguien la usaría?
+Ese estudio es una fase: actividades relacionadas que terminan en un entregable.
+Al final de la fase, Pía y su socia Carmen se sientan a revisar.
+Comparan lo logrado con el caso de negocio y el acta del proyecto.
+Y deciden: seguir, seguir con cambios, quedarse, repetir la fase o terminar el proyecto.
+Eso es un punto de revisión de fase.
+El estudio dice que sus clientes prefieren llamar por teléfono. Carmen dice: terminamos aquí.
+Gastaron en un estudio, no en una app que nadie iba a usar.
+Todas las fases juntas, del inicio a la conclusión, forman el ciclo de vida del proyecto.
+Si el alcance se fija al principio, el ciclo es predictivo; si se define iteración por iteración, es adaptativo.
+Ahora te toca: estás en el punto de revisión. ¿Qué decides?

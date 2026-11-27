@@ -108,3 +108,71 @@ Una idea: los proyectos nacen de cuatro tipos de factores.
 12. Ahora clasifica: ¿qué empujón hizo nacer cada proyecto?
 Fidelidad: las cuatro categorías (G p. 7); las grietas del puente municipal y el competidor que baja precios vienen de la Tabla 1-1 (G p. 9).
 Decisión (27-nov): el texto extraído perdió las «X» de la Tabla 1-1, así que el video NO empareja cada caso con un factor (ni en la voz ni en la imagen). El emparejamiento queda para cuando se lea el PDF.
+
+## GP-05 · La fiesta que se desbordó · Por qué importa dirigir (G p. 10–11, 1.2.2)
+
+1. La fiesta de quince de la hija de Ramón iba a costar cinco millones. Terminó en doce.
+2. Nadie la dirigió: cada semana alguien agregaba algo.
+3. Más invitados, un mariachi, otro pastel, y nadie preguntó cuánto costaba.
+4. La fecha se corrió dos veces, y el salón cobró de nuevo.
+5. La comida llegó fría y hubo que pedirla otra vez.
+6. Plazos incumplidos, sobrecostos, mala calidad, retrabajo y un alcance que creció sin control.
+7. Un año después, Pía organiza la fiesta de su sobrina, y esta vez la dirige.
+8. Cuando piden más invitados, Pía pregunta: ¿ponemos más plata, o quitamos otra cosa?
+9. Porque más alcance puede subir el costo o el tiempo, y hay que equilibrarlos.
+10. Eso se llama dirección de proyectos: aplicar conocimientos, habilidades, herramientas y técnicas…
+11. …a las actividades del proyecto, para cumplir sus requisitos.
+12. Ahora te toca: ¿qué falló en la fiesta de Ramón?
+
+Fuente: la definición (aplicación de conocimientos, habilidades, herramientas y técnicas…) y la lista de lo que trae una dirección deficiente (incumplimiento de plazos, sobrecostos, calidad deficiente, retrabajo, expansión no controlada) y «un mayor alcance puede aumentar el costo o cronograma» son de 1.2.2. La fiesta es la historia que lo ilustra.
+
+## GP-06 · Tres sedes no son un proyecto gigante · Proyecto, programa y portafolio (G p. 11–12, 1.2.3.1)
+
+1. Un programa no es un proyecto grande. Mira por qué.
+2. Pía sueña con abrir tres sedes nuevas en la ciudad.
+3. Cada sede es un proyecto: su obra, su permiso, su apertura.
+4. Pero si las maneja juntas, compra los hornos al por mayor y capacita a todos a la vez.
+5. Ese ahorro no existiría si cada sede fuera por su lado.
+6. Eso es un programa: proyectos relacionados, gestionados de forma coordinada, para lograr beneficios que solos no darían.
+7. Y un proyecto enorme, como un metro para toda la ciudad, no es un programa: se llama megaproyecto.
+8. Ahora Pía mira todo lo que hace la panadería: las sedes, la tienda en línea y el pan de cada día.
+9. Decide qué va primero y a qué le pone plata, según hacia dónde quiere llevar el negocio.
+10. Ese conjunto, gestionado como grupo para alcanzar objetivos estratégicos, es un portafolio.
+11. Proyecto, programa y portafolio: tres maneras de mirar el trabajo, no tres tamaños de obra.
+12. Ahora te toca: ¿cada caso es un proyecto, un programa o un portafolio?
+
+Fuente: definiciones de programa y portafolio, «Los programas no son proyectos grandes» y megaproyecto (1.2.3.1). El portafolio incluye operaciones: por eso entra el pan de cada día. Se descartó la frase «hacer las cosas correctas» del plan: en la guía está en la tabla de liderazgo, no en portafolios.
+
+## GP-07 · Cancelar a tiempo · Fase, punto de revisión y ciclo de vida (G p. 19–21, 1.2.4.1–1.2.4.3)
+
+1. Cancelar un proyecto a tiempo también puede ser un acierto.
+2. Pía quiere una app para pedir pan. Primero, un estudio: ¿alguien la usaría?
+3. Ese estudio es una fase: actividades relacionadas que terminan en un entregable.
+4. Al final de la fase, Pía y su socia Carmen se sientan a revisar.
+5. Comparan lo logrado con el caso de negocio y el acta del proyecto.
+6. Y deciden: seguir, seguir con cambios, quedarse, repetir la fase o terminar el proyecto.
+7. Eso es un punto de revisión de fase.
+8. El estudio dice que sus clientes prefieren llamar por teléfono. Carmen dice: terminamos aquí.
+9. Gastaron en un estudio, no en una app que nadie iba a usar.
+10. Todas las fases juntas, del inicio a la conclusión, forman el ciclo de vida del proyecto.
+11. Si el alcance se fija al principio, el ciclo es predictivo; si se define iteración por iteración, es adaptativo.
+12. Ahora te toca: estás en el punto de revisión. ¿Qué decides?
+
+Fuente: fase (1.2.4.2), las cinco decisiones del punto de revisión y los documentos con que se compara (1.2.4.3), ciclo predictivo y adaptativo (1.2.4.1). «Concluir proyectos fallidos» como beneficio de la dirección: 1.2.2.
+
+## GP-08 · Iniciar varias veces · Los cinco grupos de procesos no son fases (G p. 18, 22–23; 1.2.4.4–1.2.4.5; p. 554)
+
+1. Puedes iniciar varias veces el mismo proyecto: una por cada fase.
+2. Pía remodela la panadería en dos fases: primero la cocina, después el salón.
+3. Para la cocina, primero consigue que Carmen autorice arrancar.
+4. Luego hace el plan: qué se cambia, cuánto cuesta y para cuándo.
+5. Ejecuta: llegan los obreros y el horno nuevo.
+6. Mientras tanto vigila: ¿vamos a tiempo?, ¿el gasto va bien? Y corrige.
+7. Al final, cierra: recibe la cocina y firma.
+8. Y en la fase del salón, todo eso vuelve a pasar: otro inicio, otro plan, otro cierre.
+9. Son los cinco grupos de procesos: inicio, planificación, ejecución, monitoreo y control, y cierre.
+10. No son fases del proyecto: se repiten dentro de cada fase, y a veces se superponen.
+11. Y lo que sale de un proceso, como el plan, entra a otro.
+12. Ahora te toca: ¿a qué grupo pertenece cada tarea de Pía?
+
+Fuente: los cinco grupos con su propósito (1.2.4.5), «no son fases», se repiten en cada fase y se superponen (p. 554 y Gráfico 1-5), la salida de un proceso es entrada de otro (1.2.4.4). Decisión de Mateo: nunca como línea de tiempo.
