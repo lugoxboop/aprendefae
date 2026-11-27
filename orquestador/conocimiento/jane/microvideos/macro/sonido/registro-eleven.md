@@ -114,3 +114,14 @@
 - Transcripción gp11-adaptar: 145 palabras.
 - Narración gp12-caso-de-negocio: lista con eleven_v3 (963 caracteres).
 - Transcripción gp12-caso-de-negocio: 174 palabras.
+
+## 2026-11-27T23:30:17.053Z
+- Cupo: plan creator, 27846 de 122261 créditos usados.
+- Narración gp13-acta: lista con eleven_v3 (834 caracteres).
+- Transcripción gp13-acta: 145 palabras.
+- Narración gp14-exito: lista con eleven_v3 (954 caracteres).
+- Transcripción gp14-exito: 163 palabras.
+- Narración gp15-eef-opa: lista con eleven_v3 (959 caracteres).
+- Transcripción gp15-eef-opa: 169 palabras.
+- Narración gp16-estructuras: lista con eleven_v3 (984 caracteres).
+- Transcripción gp16-estructuras: 166 palabras.
