@@ -51,6 +51,8 @@ const VivoProfesor = lazy(() => import("./components/vivo/VivoProfesor.jsx"));
 
 /* Macroeconomía 2026: vista previa de lo que aún no se publica, solo por dirección (#/macro-2026). */
 const VistaPreviaMacro2026 = lazy(() => import("./macro2026/VistaPrevia.jsx"));
+/* Gestión de Proyectos: esqueleto sin publicar, solo por dirección (#/gestion-proyectos). */
+const VistaPreviaGestionProyectos = lazy(() => import("./gestion-proyectos/VistaPrevia.jsx"));
 /* Macroeconomía 2026, lo publicado de cada tema: solo las piezas de PUBLICADAS_T1 / PUBLICADAS_T2. */
 const TemaMacro2026 = lazy(() => import("./macro2026/TemaMacro2026.jsx"));
 const RepasoMacroView = lazy(() => import("./macro2026/repaso/RepasoMacroView.jsx"));
@@ -77,7 +79,7 @@ const VISTAS_CONTABILIDAD = new Set([
 ]);
 
 /* Bruno no sale en el inicio, los índices de materia ni las páginas de cuenta: ahí no hay actividad que orientar. */
-const VISTAS_SIN_BRUNO = new Set(["home", "macroeconomia", "pensamiento-estrategico", "contabilidad", "docente", "que-es", "perfil", "tienda", "vivo", "vivo-profesor", "salas", "macro-2026"]);
+const VISTAS_SIN_BRUNO = new Set(["home", "macroeconomia", "pensamiento-estrategico", "contabilidad", "docente", "que-es", "perfil", "tienda", "vivo", "vivo-profesor", "salas", "macro-2026", "gestion-proyectos"]);
 const VISTAS_PE = new Set(["pensamiento-sistemico", "modelo-iceberg", "fuerzas-porter"]);
 const materiaDeVista = (v) => (VISTAS_CONTABILIDAD.has(v) || v === "repaso-diario-contabilidad" ? "Contabilidad" : VISTAS_PE.has(v) ? "Pensamiento Estratégico" : "Macroeconomía");
 
@@ -216,6 +218,14 @@ export default function App() {
             abrirTema(vistaDeTema(topicId, modo) ?? topicId, modo);
           }}
         />
+      </Suspense>
+    );
+  }
+
+  if (view === "gestion-proyectos") {
+    return wrap(
+      <Suspense fallback={siteFallback}>
+        <VistaPreviaGestionProyectos onBack={goHome} />
       </Suspense>
     );
   }

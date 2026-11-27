@@ -101,6 +101,12 @@ export const VISTAS = new Set([
    */
   "macro-2026",
   /*
+   * Gestión de Proyectos, VISTA PREVIA sin publicar (src/gestion-proyectos/).
+   * Solo se entra escribiendo #/gestion-proyectos: nada la enlaza y la materia
+   * no está en subjects.js hasta que Mateo la apruebe.
+   */
+  "gestion-proyectos",
+  /*
    * Macroeconomía 2026, lo PUBLICADO (src/macro2026/TemaMacro2026.jsx): las
    * piezas de PUBLICADAS_T1 a PUBLICADAS_T5. #/<tema>/aprender[/<id>] y
    * #/<tema>/hacer[/<id>].
