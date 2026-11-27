@@ -14,7 +14,13 @@
  *   · Un módulo por grupo de procesos (Inicio, Planificación, Ejecución,
  *     Monitoreo y Control, Cierre), con los 49 procesos de la guía, cada uno
  *     con el número de su sección, su área de conocimiento y sus salidas
- *     principales (los documentos).
+ *     (los documentos).
+ *   COTEJADO CON EL TEXTO DE LA GUÍA V6 EN ESPAÑOL (27-nov, la pasó Mateo):
+ *   nombres de proceso tal cual la tabla de contenidos y la Tabla 1-4; los
+ *   documentos son las salidas «X.Y.3.n» de cada proceso, sin las
+ *   «Actualizaciones a…» genéricas (salvo en 11.3 y 11.4, que no tienen otra).
+ *   Fundamentos, con las secciones de los capítulos 1 y 2. Falta el syllabus
+ *   para el nombre exacto de la materia y para el recorte.
  *
  * QUÉ ES CADA COSA EN LA PLATAFORMA
  *   módulo  → un TEMA del índice de la materia (como «Demanda agregada»).
@@ -71,14 +77,18 @@ export const MODULOS = Object.freeze([
     capitulos: [1, 2],
     confirmado: false,
     procesos: [
-      f("gp-c1-proyecto", "1.2", "Qué es un proyecto y por qué importa"),
-      f("gp-c1-programas", "1.2", "Proyectos, programas y portafolios"),
-      f("gp-c1-ciclo-vida", "1.2", "Ciclo de vida del proyecto y sus fases"),
-      f("gp-c1-procesos-areas", "1.2", "Grupos de procesos y áreas de conocimiento"),
-      f("gp-c1-negocio", "1.2", "Documentos de negocio del proyecto", ["Caso de negocio", "Plan de gestión de los beneficios"]),
-      f("gp-c2-entorno", "2.2", "Factores ambientales de la empresa y activos de los procesos de la organización"),
-      f("gp-c2-gobernanza", "2.4", "Gobernanza y estructuras organizacionales"),
-      f("gp-c2-pmo", "2.4", "La oficina de dirección de proyectos (PMO)"),
+      f("gp-c1-proposito", "1.1", "Propósito de la guía, vocabulario común y código de ética"),
+      f("gp-c1-proyectos", "1.2.1", "Proyectos"),
+      f("gp-c1-importancia", "1.2.2", "La importancia de la dirección de proyectos"),
+      f("gp-c1-portafolios", "1.2.3", "Relación entre dirección de proyectos, programas, portafolios y operaciones"),
+      f("gp-c1-ciclo-vida", "1.2.4", "Ciclo de vida, fases y puntos de revisión de fase"),
+      f("gp-c1-procesos-areas", "1.2.4", "Procesos, grupos de procesos y áreas de conocimiento"),
+      f("gp-c1-adaptacion", "1.2.5", "Adaptación"),
+      f("gp-c1-negocio", "1.2.6", "Documentos de negocio de la dirección de proyectos", ["Caso de negocio del proyecto", "Plan de gestión de beneficios del proyecto", "Medidas de éxito del proyecto"]),
+      f("gp-c2-factores", "2.2", "Factores ambientales de la empresa (internos y externos)"),
+      f("gp-c2-activos", "2.3", "Activos de los procesos de la organización"),
+      f("gp-c2-gobernanza", "2.4", "Sistemas organizacionales: gobernanza y elementos de gestión"),
+      f("gp-c2-estructuras", "2.4.4", "Tipos de estructura organizacional y la oficina de dirección de proyectos (PMO)"),
     ],
   },
   {
@@ -89,7 +99,7 @@ export const MODULOS = Object.freeze([
     confirmado: false,
     procesos: [
       p("4.1", "Desarrollar el acta de constitución del proyecto", "integracion", ["Acta de constitución del proyecto", "Registro de supuestos"]),
-      p("13.1", "Identificar a los interesados", "interesados", ["Registro de interesados"]),
+      p("13.1", "Identificar a los interesados", "interesados", ["Registro de interesados", "Solicitudes de cambio"]),
     ],
   },
   {
@@ -103,25 +113,26 @@ export const MODULOS = Object.freeze([
       p("5.1", "Planificar la gestión del alcance", "alcance", ["Plan de gestión del alcance", "Plan de gestión de los requisitos"]),
       p("5.2", "Recopilar requisitos", "alcance", ["Documentación de requisitos", "Matriz de trazabilidad de requisitos"]),
       p("5.3", "Definir el alcance", "alcance", ["Enunciado del alcance del proyecto"]),
-      p("5.4", "Crear la EDT/WBS", "alcance", ["Línea base del alcance (EDT/WBS y diccionario)"]),
+      p("5.4", "Crear la EDT/WBS", "alcance", ["Línea base del alcance"]),
       p("6.1", "Planificar la gestión del cronograma", "cronograma", ["Plan de gestión del cronograma"]),
-      p("6.2", "Definir las actividades", "cronograma", ["Lista de actividades", "Atributos de las actividades", "Lista de hitos"]),
-      p("6.3", "Secuenciar las actividades", "cronograma", ["Diagramas de red del cronograma"]),
-      p("6.4", "Estimar la duración de las actividades", "cronograma", ["Estimaciones de la duración", "Base de las estimaciones"]),
-      p("6.5", "Desarrollar el cronograma", "cronograma", ["Línea base del cronograma", "Cronograma del proyecto", "Calendarios del proyecto"]),
+      p("6.2", "Definir las actividades", "cronograma", ["Lista de actividades", "Atributos de las actividades", "Lista de hitos", "Solicitudes de cambio"]),
+      p("6.3", "Secuenciar las actividades", "cronograma", ["Diagramas de red del cronograma del proyecto"]),
+      p("6.4", "Estimar la duración de las actividades", "cronograma", ["Estimación de la duración", "Base de las estimaciones"]),
+      p("6.5", "Desarrollar el cronograma", "cronograma", ["Línea base del cronograma", "Cronograma del proyecto", "Datos del cronograma", "Calendarios del proyecto", "Solicitudes de cambio"]),
       p("7.1", "Planificar la gestión de los costos", "costos", ["Plan de gestión de los costos"]),
       p("7.2", "Estimar los costos", "costos", ["Estimaciones de costos", "Base de las estimaciones"]),
       p("7.3", "Determinar el presupuesto", "costos", ["Línea base de costos", "Requisitos de financiamiento del proyecto"]),
       p("8.1", "Planificar la gestión de la calidad", "calidad", ["Plan de gestión de la calidad", "Métricas de calidad"]),
-      p("9.1", "Planificar la gestión de los recursos", "recursos", ["Plan de gestión de los recursos", "Acta de constitución del equipo"]),
-      p("9.2", "Estimar los recursos de las actividades", "recursos", ["Requisitos de recursos", "Estructura de desglose de recursos"]),
+      p("9.1", "Planificar la gestión de recursos", "recursos", ["Plan de gestión de los recursos", "Acta de constitución del equipo"]),
+      p("9.2", "Estimar los recursos de las actividades", "recursos", ["Requisitos de recursos", "Base de las estimaciones", "Estructura de desglose de recursos"]),
       p("10.1", "Planificar la gestión de las comunicaciones", "comunicaciones", ["Plan de gestión de las comunicaciones"]),
       p("11.1", "Planificar la gestión de los riesgos", "riesgos", ["Plan de gestión de los riesgos"]),
       p("11.2", "Identificar los riesgos", "riesgos", ["Registro de riesgos", "Informe de riesgos"]),
-      p("11.3", "Realizar el análisis cualitativo de riesgos", "riesgos", ["Registro de riesgos (prioridades)"]),
-      p("11.4", "Realizar el análisis cuantitativo de riesgos", "riesgos", ["Informe de riesgos (análisis cuantitativo)"]),
-      p("11.5", "Planificar la respuesta a los riesgos", "riesgos", ["Registro de riesgos (respuestas)", "Solicitudes de cambio"]),
-      p("12.1", "Planificar la gestión de las adquisiciones", "adquisiciones", ["Plan de gestión de las adquisiciones", "Estrategia de las adquisiciones", "Documentos de la licitación", "Enunciados del trabajo relativo a adquisiciones", "Criterios de selección de proveedores"]),
+      /* 11.3 y 11.4 no crean documentos nuevos: la guía solo lista actualizaciones (al registro y al informe de riesgos). */
+      p("11.3", "Realizar el análisis cualitativo de riesgos", "riesgos", ["Actualizaciones a los documentos del proyecto"]),
+      p("11.4", "Realizar el análisis cuantitativo de riesgos", "riesgos", ["Actualizaciones a los documentos del proyecto"]),
+      p("11.5", "Planificar la respuesta a los riesgos", "riesgos", ["Solicitudes de cambio"]),
+      p("12.1", "Planificar la gestión de las adquisiciones del proyecto", "adquisiciones", ["Plan de gestión de las adquisiciones", "Estrategia de las adquisiciones", "Documentos de las licitaciones", "Enunciados del trabajo relativo a las adquisiciones", "Criterios de selección de proveedores", "Decisiones de hacer o comprar", "Estimaciones de costos independientes", "Solicitudes de cambio"]),
       p("13.2", "Planificar el involucramiento de los interesados", "interesados", ["Plan de involucramiento de los interesados"]),
     ],
   },
@@ -134,14 +145,14 @@ export const MODULOS = Object.freeze([
     procesos: [
       p("4.3", "Dirigir y gestionar el trabajo del proyecto", "integracion", ["Entregables", "Datos de desempeño del trabajo", "Registro de incidentes", "Solicitudes de cambio"]),
       p("4.4", "Gestionar el conocimiento del proyecto", "integracion", ["Registro de lecciones aprendidas"]),
-      p("8.2", "Gestionar la calidad", "calidad", ["Informes de calidad", "Documentos de prueba y evaluación"]),
-      p("9.3", "Adquirir recursos", "recursos", ["Asignaciones de recursos físicos", "Asignaciones del equipo del proyecto", "Calendarios de recursos"]),
-      p("9.4", "Desarrollar el equipo", "recursos", ["Evaluaciones de desempeño del equipo"]),
+      p("8.2", "Gestionar la calidad", "calidad", ["Informes de calidad", "Documentos de prueba y evaluación", "Solicitudes de cambio"]),
+      p("9.3", "Adquirir recursos", "recursos", ["Asignaciones de recursos físicos", "Asignaciones del equipo del proyecto", "Calendarios de recursos", "Solicitudes de cambio"]),
+      p("9.4", "Desarrollar el equipo", "recursos", ["Evaluaciones de desempeño del equipo", "Solicitudes de cambio"]),
       p("9.5", "Dirigir al equipo", "recursos", ["Solicitudes de cambio"]),
       p("10.2", "Gestionar las comunicaciones", "comunicaciones", ["Comunicaciones del proyecto"]),
       p("11.6", "Implementar la respuesta a los riesgos", "riesgos", ["Solicitudes de cambio"]),
-      p("12.2", "Efectuar las adquisiciones", "adquisiciones", ["Vendedores seleccionados", "Acuerdos"]),
-      p("13.3", "Gestionar la participación de los interesados", "interesados", ["Solicitudes de cambio"]),
+      p("12.2", "Efectuar las adquisiciones", "adquisiciones", ["Vendedores seleccionados", "Acuerdos", "Solicitudes de cambio"]),
+      p("13.3", "Gestionar el involucramiento de los interesados", "interesados", ["Solicitudes de cambio"]),
     ],
   },
   {
@@ -151,18 +162,18 @@ export const MODULOS = Object.freeze([
     capitulos: [4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
     confirmado: false,
     procesos: [
-      p("4.5", "Monitorear y controlar el trabajo del proyecto", "integracion", ["Informes de desempeño del trabajo"]),
-      p("4.6", "Realizar el control integrado de cambios", "integracion", ["Solicitudes de cambio aprobadas", "Registro de cambios"]),
-      p("5.5", "Validar el alcance", "alcance", ["Entregables aceptados"]),
-      p("5.6", "Controlar el alcance", "alcance", ["Información de desempeño del trabajo"]),
-      p("6.6", "Controlar el cronograma", "cronograma", ["Pronósticos del cronograma"]),
-      p("7.4", "Controlar los costos", "costos", ["Pronósticos de costos"]),
-      p("8.3", "Controlar la calidad", "calidad", ["Mediciones de control de calidad", "Entregables verificados"]),
-      p("9.6", "Controlar los recursos", "recursos", ["Información de desempeño del trabajo"]),
-      p("10.3", "Monitorear las comunicaciones", "comunicaciones", ["Información de desempeño del trabajo"]),
-      p("11.7", "Monitorear los riesgos", "riesgos", ["Información de desempeño del trabajo"]),
-      p("12.3", "Controlar las adquisiciones", "adquisiciones", ["Adquisiciones cerradas"]),
-      p("13.4", "Monitorear el involucramiento de los interesados", "interesados", ["Información de desempeño del trabajo"]),
+      p("4.5", "Monitorear y controlar el trabajo del proyecto", "integracion", ["Informes de desempeño del trabajo", "Solicitudes de cambio"]),
+      p("4.6", "Realizar el control integrado de cambios", "integracion", ["Solicitudes de cambio aprobadas"]),
+      p("5.5", "Validar el alcance", "alcance", ["Entregables aceptados", "Información de desempeño del trabajo", "Solicitudes de cambio"]),
+      p("5.6", "Controlar el alcance", "alcance", ["Información de desempeño del trabajo", "Solicitudes de cambio"]),
+      p("6.6", "Controlar el cronograma", "cronograma", ["Información de desempeño del trabajo", "Pronósticos del cronograma", "Solicitudes de cambio"]),
+      p("7.4", "Controlar los costos", "costos", ["Información de desempeño del trabajo", "Pronósticos de costos", "Solicitudes de cambio"]),
+      p("8.3", "Controlar la calidad", "calidad", ["Mediciones de control de calidad", "Entregables verificados", "Información de desempeño del trabajo", "Solicitudes de cambio"]),
+      p("9.6", "Controlar los recursos", "recursos", ["Información de desempeño del trabajo", "Solicitudes de cambio"]),
+      p("10.3", "Monitorear las comunicaciones", "comunicaciones", ["Información de desempeño del trabajo", "Solicitudes de cambio"]),
+      p("11.7", "Monitorear los riesgos", "riesgos", ["Información de desempeño del trabajo", "Solicitudes de cambio"]),
+      p("12.3", "Controlar las adquisiciones", "adquisiciones", ["Adquisiciones cerradas", "Información de desempeño del trabajo", "Solicitudes de cambio"]),
+      p("13.4", "Monitorear el involucramiento de los interesados", "interesados", ["Información de desempeño del trabajo", "Solicitudes de cambio"]),
     ],
   },
   {

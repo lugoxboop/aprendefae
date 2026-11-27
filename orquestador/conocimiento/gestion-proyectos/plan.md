@@ -35,7 +35,8 @@ La vista previa marca en ámbar los procesos «sin pieza».
 
 ### Etapa 0 — Estructura (Magno)
 - [x] Esqueleto general de la guía V6 (49 procesos, documentos), vista previa oculta, pruebas
-- [ ] Recibir syllabus y guía V6 de Mateo → ajustar nombre exacto de la materia, módulos y subtemas (marcar `confirmado: true`)
+- [x] Guía V6 (texto en español, la pasó Mateo el 27-nov, fuera del repo) → nombres de procesos, salidas y secciones de los caps. 1-2 cotejados uno a uno
+- [ ] Syllabus (Mateo aún no lo tiene) → nombre exacto de la materia y recorte; entonces `confirmado: true`
 
 ### Etapa 1 — Fichas (Gen, con Jane)
 - [ ] Ficha por capítulo/unidad del syllabus → `fichas/`

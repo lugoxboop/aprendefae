@@ -1,3 +1,3 @@
-2026-11-27 12:18
+2026-11-27 14:41
 
-- Gestión de Proyectos: esqueleto y espacios listos (oculto, PR abierto). Falta syllabus y guía V6 de Mateo.
+- Gestión de Proyectos: esqueleto cotejado con la guía V6 (PR #787, oculto). Falta solo el syllabus.
