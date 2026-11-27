@@ -91,6 +91,33 @@ export const PIEZAS = Object.freeze({
   ],
   "gp-planificacion": [
     { id: "gp26-pla-c04-h03-portaplanos", tipo: "hacer", nombre: "El portaplanos y el revistero", subtemas: ["gp-4-2"], clasificacion: hacer("medio", 25, { etapas: 2 }) },
+    /*
+     * Gen · lote 3: cap. 5 (Alcance, 5.1–5.4; diseño disenos/c05-hacer.md; textos
+     * en alcance/textos-c5.js) y cap. 6 (Cronograma, 6.1–6.5; disenos/c06-hacer.md;
+     * textos en cronograma/textos-c6.js). Misma clasificación que su fila de la
+     * 0278. H12 del cap. 6 mezcla procesos: va con el principal, 6.5.
+     */
+    { id: "gp26-pla-c05-h01-teatro", tipo: "hacer", nombre: "Escenario o bambalinas", subtemas: ["gp-5-1"], clasificacion: hacer("facil", 10) },
+    { id: "gp26-pla-c05-h02-noria", tipo: "hacer", nombre: "La carretera y la noria", subtemas: ["gp-5-2", "gp-5-3", "gp-5-4", "gp-5-5", "gp-5-6"], clasificacion: hacer("medio", 25) },
+    { id: "gp26-pla-c05-h03-libretas", tipo: "hacer", nombre: "Las dos libretas", subtemas: ["gp-5-1"], clasificacion: hacer("medio", 25) },
+    { id: "gp26-pla-c05-h04-mochila", tipo: "hacer", nombre: "La mochila de campo", subtemas: ["gp-5-2"], clasificacion: hacer("medio", 25) },
+    { id: "gp26-pla-c05-h05-urna", tipo: "hacer", nombre: "La urna de las funciones", subtemas: ["gp-5-2"], clasificacion: hacer("medio", 25, { etapas: 2 }) },
+    { id: "gp26-pla-c05-h06-alacena", tipo: "hacer", nombre: "La alacena de requisitos", subtemas: ["gp-5-2"], clasificacion: hacer("medio", 25, { etapas: 2 }) },
+    { id: "gp26-pla-c05-h07-telar", tipo: "hacer", nombre: "El telar de la trazabilidad", subtemas: ["gp-5-2"], clasificacion: hacer("dificil", 50) },
+    { id: "gp26-pla-c05-h08-mapa", tipo: "hacer", nombre: "El mapa de dos escalas", subtemas: ["gp-5-3"], clasificacion: hacer("medio", 25, { etapas: 2 }) },
+    { id: "gp26-pla-c05-h09-movil", tipo: "hacer", nombre: "El móvil de la EDT", subtemas: ["gp-5-4"], clasificacion: hacer("dificil", 50, { etapas: 3 }) },
+    { id: "gp26-pla-c05-h10-caja-fuerte", tipo: "hacer", nombre: "La caja fuerte", subtemas: ["gp-5-4"], clasificacion: hacer("medio", 25, { etapas: 2 }) },
+    { id: "gp26-pla-c06-h01-semaforo", tipo: "hacer", nombre: "El semáforo del plan", subtemas: ["gp-6-1"], clasificacion: hacer("medio", 25, { etapas: 2 }) },
+    { id: "gp26-pla-c06-h02-linterna", tipo: "hacer", nombre: "La linterna del túnel", subtemas: ["gp-6-2"], clasificacion: hacer("facil", 10, { etapas: 2 }) },
+    { id: "gp26-pla-c06-h03-rompecabezas", tipo: "hacer", nombre: "Las piezas que encajan", subtemas: ["gp-6-3"], clasificacion: hacer("medio", 25, { etapas: 2 }) },
+    { id: "gp26-pla-c06-h04-cinta", tipo: "hacer", nombre: "La cinta métrica", subtemas: ["gp-6-3"], clasificacion: hacer("medio", 25) },
+    { id: "gp26-pla-c06-h05-sumadora", tipo: "hacer", nombre: "La sumadora de duraciones", subtemas: ["gp-6-4"], clasificacion: hacer("dificil", 50, { etapas: 2 }) },
+    { id: "gp26-pla-c06-h06-alcancias", tipo: "hacer", nombre: "Pintores y alcancías", subtemas: ["gp-6-4"], clasificacion: hacer("medio", 25, { etapas: 2 }) },
+    { id: "gp26-pla-c06-h07-metro", tipo: "hacer", nombre: "El metro de la ruta crítica", subtemas: ["gp-6-5"], clasificacion: hacer("dificil", 50, { etapas: 3 }) },
+    { id: "gp26-pla-c06-h08-domino", tipo: "hacer", nombre: "Fichas de dominó", subtemas: ["gp-6-5"], clasificacion: hacer("dificil", 50) },
+    { id: "gp26-pla-c06-h09-relevos", tipo: "hacer", nombre: "La pista de relevos", subtemas: ["gp-6-5"], clasificacion: hacer("dificil", 50, { etapas: 2 }) },
+    { id: "gp26-pla-c06-h10-bloques", tipo: "hacer", nombre: "La torre de bloques", subtemas: ["gp-6-5"], clasificacion: hacer("medio", 25, { etapas: 2 }) },
+    { id: "gp26-pla-c06-h12-plotter", tipo: "hacer", nombre: "El rollo del practicante", subtemas: ["gp-6-2", "gp-6-3", "gp-6-5", "gp-6-6"], clasificacion: hacer("dificil", 50) },
   ],
   "gp-ejecucion": [
     { id: "gp26-eje-c04-h04-carretillas", tipo: "hacer", nombre: "Cuatro carretillas de cambio", subtemas: ["gp-4-3"], clasificacion: hacer("medio", 25) },
@@ -100,6 +127,10 @@ export const PIEZAS = Object.freeze({
   "gp-monitoreo-control": [
     { id: "gp26-moc-c04-h07-camara", tipo: "hacer", nombre: "La cámara del viernes", subtemas: ["gp-4-5"], clasificacion: hacer("medio", 25, { etapas: 2 }) },
     { id: "gp26-moc-c04-h08-turnero", tipo: "hacer", nombre: "El turnero de los cambios", subtemas: ["gp-4-6"], clasificacion: hacer("dificil", 50, { etapas: 2 }) },
+    /* Lote 3: Validar y Controlar el alcance (5.5, 5.6) y Controlar el cronograma (6.6). */
+    { id: "gp26-moc-c05-h11-embarque", tipo: "hacer", nombre: "Escáner y puerta de embarque", subtemas: ["gp-5-5"], clasificacion: hacer("medio", 25, { etapas: 2 }) },
+    { id: "gp26-moc-c05-h12-globo", tipo: "hacer", nombre: "El globo que se infla", subtemas: ["gp-5-6"], clasificacion: hacer("dificil", 50) },
+    { id: "gp26-moc-c06-h11-rotafolio", tipo: "hacer", nombre: "El rotafolio del lunes", subtemas: ["gp-6-6"], clasificacion: hacer("medio", 25, { etapas: 2 }) },
   ],
   "gp-cierre": [
     { id: "gp26-cie-c04-h09-breakers", tipo: "hacer", nombre: "Apaga el proyecto", subtemas: ["gp-4-7"], clasificacion: hacer("medio", 25, { etapas: 2 }) },
@@ -111,6 +142,7 @@ export const PIEZAS = Object.freeze({
 /* GP-01 aprobado por Mateo el 27-nov-2026: sale en cuanto la materia entre a subjects.js. */
 /* Las 18 Hacer de los caps. 1-2: Mateo, 27-nov-2026 («publica todo; cada lote apenas esté construido»). */
 /* Lote 2 (las 17 de los caps. 3 y 4, repartidas por módulo): mismo visto bueno. */
+/* Lote 3 (las 24 de los caps. 5 y 6): mismo visto bueno («publicar todo»). */
 export const PUBLICADAS = Object.freeze([
   "gp26-fun-a1-proyecto-operacion",
   ...MODULOS.flatMap((m) => PIEZAS[m.id] ?? []).filter((pz) => pz.tipo === "hacer").map((pz) => pz.id),
