@@ -1,5 +1,5 @@
 /*
- * Gestión de Proyectos · los textos y el catálogo de las 35 Hacer (lotes 1 y 2).
+ * Gestión de Proyectos · los textos y el catálogo de las 59 Hacer (lotes 1 a 3).
  * - Longitudes del diseño (contexto ≤ 30, rol ≤ 15, consigna ≤ 12, retro ≤ 15).
  * - Cada clave está entre los destinos de su ítem; ids únicos.
  * - Los sorteos que pide el diseño (H01 4/4/2, H09 Integración al final,
@@ -52,10 +52,15 @@ test("bancos: ids únicos y cada clave entre sus destinos", () => {
   for (const p of PIEZAS_TEXTO_GP) {
     for (const e of p.etapas) {
       const items = [...(e.banco ?? []), ...[].concat(e.despues ?? []).filter((d) => d.tipo !== "ordenar"),
-        ...(e.pasos ?? []).flatMap((m) => (m.items && m.tipo !== "ordenar" ? m.items.map((x) => ({ ...x, destinos: x.destinos ?? m.destinos })) : m.clave ? [m] : []))];
+        ...(e.pasos ?? []).flatMap((m) => (m.items && m.tipo !== "ordenar" ? m.items.map((x) => ({ ...x, destinos: x.destinos ?? m.destinos })) : m.clave || m.tipo === "casillas" ? [m] : []))];
       for (const x of items) {
         assert.ok(!vistos.has(x.id), `id repetido ${x.id}`);
         vistos.add(x.id);
+        if (x.tipo === "casillas") {
+          /* Lote 3: cada casilla con su clave (número, o una de sus opciones). */
+          for (const c of x.casillas) assert.ok(c.opciones ? c.opciones.some((o) => o.id === c.clave) : Number.isFinite(c.clave), `${x.id}/${c.id}: clave`);
+          continue;
+        }
         if (e.tipo === "dial") { assert.ok(e.posiciones.some((q) => q.id === x.clave), `${x.id}: clave del dial`); continue; }
         const destinos = (x.destinos ?? e.destinos).map((d) => d.id);
         assert.ok(destinos.includes(x.clave), `${x.id}: clave ${x.clave} fuera de ${destinos}`);
@@ -82,11 +87,16 @@ test("sorteos del diseño", () => {
   }
 });
 
-test("catálogo (todos los módulos) = textos = subjects.js = 0276/0277 = publicadas, con subtemas de estructura.js", () => {
-  const sql = readFileSync("supabase/migrations/0276_gp_c01_c02_hacer.sql", "utf8") + readFileSync("supabase/migrations/0277_gp_c03_c04_hacer.sql", "utf8");
+test("catálogo (todos los módulos) = textos = subjects.js = 0276/0277/0278 = publicadas, con subtemas de estructura.js", () => {
+  const sql = ["0276_gp_c01_c02_hacer", "0277_gp_c03_c04_hacer", "0278_gp_c05_c06_hacer"].map((f) => readFileSync(`supabase/migrations/${f}.sql`, "utf8")).join("\n");
   const hacer = MODULOS.flatMap((m) => (PIEZAS[m.id] ?? []).filter((p) => p.tipo === "hacer").map((p) => ({ ...p, moduloId: m.id })));
-  /* El orden de los diseños: caps. 1-2, cap. 3 (fundamentos) y cap. 4 (repartido por módulo, en orden). */
-  assert.deepEqual(hacer.map((p) => p.id), PIEZAS_TEXTO_GP.map((p) => p.id), "las 35, en el orden de los diseños");
+  /* Las 59: las mismas en el catálogo y en los textos; dentro de cada módulo, en el orden de los diseños. */
+  assert.deepEqual([...hacer.map((p) => p.id)].sort(), PIEZAS_TEXTO_GP.map((p) => p.id).sort(), "las 59, las mismas");
+  const ordenTextos = PIEZAS_TEXTO_GP.map((p) => p.id);
+  for (const m of MODULOS) {
+    const ids = hacer.filter((p) => p.moduloId === m.id).map((p) => p.id);
+    assert.deepEqual(ids, [...ids].sort((a, b) => ordenTextos.indexOf(a) - ordenTextos.indexOf(b)), `${m.id}: en el orden de los diseños`);
+  }
   const validos = new Set(SUBTEMAS_ESTRUCTURA.map((s) => s.id));
   const abrev = { "gp-fundamentos": "fun", "gp-inicio": "ini", "gp-planificacion": "pla", "gp-ejecucion": "eje", "gp-monitoreo-control": "moc", "gp-cierre": "cie" };
   for (const p of hacer) {
@@ -99,7 +109,7 @@ test("catálogo (todos los módulos) = textos = subjects.js = 0276/0277 = public
     assert.equal(porId[p.id].etapas.length, p.clasificacion.etapas ?? 1, `${p.id}: etapas del texto`);
     const e = p.clasificacion.etapas ?? 1;
     const fila = `('${p.id}', 'gestion-proyectos', '${p.moduloId}', '${p.clasificacion.modalidad}', '${p.clasificacion.dificultad}', ${p.clasificacion.fpBase}, ${e})`;
-    assert.ok(sql.includes(fila), `${p.id}: su fila en la 0276 o la 0277`);
+    assert.ok(sql.includes(fila), `${p.id}: su fila en la 0276, 0277 o 0278`);
     for (const s of p.subtemas) assert.ok(validos.has(s), `${p.id}: subtema ${s}`);
   }
   const usados = new Set();
@@ -107,7 +117,7 @@ test("catálogo (todos los módulos) = textos = subjects.js = 0276/0277 = public
   junta(PIEZAS_TEXTO_GP);
   for (const s of usados) assert.ok(validos.has(s), `subtema de los textos fuera de estructura.js: ${s}`);
   assert.match(sql, /on conflict \(activity_id\) do nothing/i);
-  assert.doesNotMatch(sql.replace(/--.*$/gm, ""), /\b(delete|update|drop|alter|truncate)\b/i, "la 0276 y la 0277 solo agregan");
+  assert.doesNotMatch(sql.replace(/--.*$/gm, ""), /\b(delete|update|drop|alter|truncate)\b/i, "la 0276, la 0277 y la 0278 solo agregan");
   const etapas = readFileSync("supabase/tests/etapas_test.sql", "utf8");
   for (const p of hacer.filter((x) => (x.clasificacion.etapas ?? 1) > 1)) assert.ok(etapas.includes(`'${p.id}'`), `${p.id}: en etapas_test.sql`);
 });
@@ -169,7 +179,7 @@ test("cada objeto que nombran los textos y las escenas existe", async () => {
     }
   };
   junta(PIEZAS_TEXTO_GP);
-  for (const dir of ["fundamentos", "integracion"]) {
+  for (const dir of ["fundamentos", "integracion", "alcance", "cronograma"]) {
     for (const f of readdirSync(new URL(`../${dir}/`, import.meta.url)).filter((x) => /^(C0\d)?H\d\d.*\.jsx$/.test(x))) {
       junta((await import(`../${dir}/${f}`)).ESCENA);
     }
