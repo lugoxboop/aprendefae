@@ -22,7 +22,7 @@
  */
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Mic, ArrowUp, Volume2, VolumeX, Sparkles, FileText, Square } from "lucide-react";
-import { BORDE, FONDO, INK, INK_2, SUPERFICIE_2, CORAL, TINTA_SOBRE_COLOR } from "../comun/colores-da.js";
+import { BORDE, FONDO, INK, INK_2, SUPERFICIE_2, CORAL, GRIS, TINTA_SOBRE_COLOR } from "../comun/colores-da.js";
 import { CURVA } from "../comun/ui.jsx";
 import { rutaMascota } from "../comun/mascotas.jsx";
 import { rutaIlustrado } from "../comun/ilustrados.jsx";
@@ -74,40 +74,47 @@ export const CSS_SIM = `
 .sim-rotulo-puerta span { display: block; margin-top: 4px; font: 600 12px/16px var(--planck-font-sans, system-ui, sans-serif); letter-spacing: .2em; text-transform: uppercase; opacity: .9; }
 .sim-escena[data-dentro="1"] .sim-rotulo-puerta { opacity: 0; }
 
-/* El globo de la compañera. */
-.sim-globo { position: relative; padding: 12px 14px; border-radius: 14px; background: ${INK}; color: ${TINTA_SOBRE_COLOR}; font-size: 16px; line-height: 1.42; min-height: 64px; }
-.sim-globo::before { content: ""; position: absolute; top: -9px; left: 46px; width: 18px; height: 18px; background: ${INK}; transform: rotate(45deg); border-radius: 3px; }
-.sim-globo-quien { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 4px; font: 700 12px/16px var(--planck-font-sans, system-ui, sans-serif); color: #3a4658; letter-spacing: .02em; }
+/* El globo de la compañera: superficie de la casa (oscura), no un papel blanco. */
+.sim-globo { position: relative; padding: 12px 14px; border-radius: 14px; background: ${SUPERFICIE_2}; border: 1px solid ${BORDE}; color: ${INK}; font-size: 16px; line-height: 1.45; min-height: 64px; box-shadow: 0 8px 20px rgba(0,0,0,.22); }
+.sim-globo::before { content: ""; position: absolute; top: -8px; left: 46px; width: 14px; height: 14px; background: ${SUPERFICIE_2}; border-top: 1px solid ${BORDE}; border-left: 1px solid ${BORDE}; transform: rotate(45deg); border-top-left-radius: 3px; }
+.sim-globo-quien { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 6px; font: 700 13px/16px var(--planck-font-sans, system-ui, sans-serif); color: ${INK_2}; }
+.sim-globo-quien > span { display: inline-flex; align-items: center; gap: 6px; }
+.sim-globo-quien > span::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: ${TEAL}; flex: none; }
 .sim-globo p { margin: 0; position: relative; }
 .sim-palabra { display: inline-block; animation: sim-palabra 240ms ${CURVA} both; }
 @keyframes sim-palabra { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: none; } }
-.sim-punto { display: inline-block; width: 7px; height: 7px; margin-right: 4px; border-radius: 999px; background: #3a4658; animation: sim-punto 900ms ${CURVA} 10 both; }
+.sim-punto { display: inline-block; width: 7px; height: 7px; margin-right: 4px; border-radius: 999px; background: ${INK_2}; animation: sim-punto 900ms ${CURVA} 10 both; }
 @keyframes sim-punto { 0%,100% { opacity: .25; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-3px); } }
-.sim-voz { display: inline-flex; align-items: center; gap: 4px; min-height: 32px; padding: 4px 10px; border-radius: 999px; border: 1px solid #b9c2cf; background: transparent; color: #26303d; font: 600 12px/16px var(--planck-font-sans, system-ui, sans-serif); cursor: pointer; }
+.sim-voz { display: inline-flex; align-items: center; gap: 4px; min-height: 32px; padding: 4px 10px; border-radius: 999px; border: 1px solid ${BORDE}; background: ${FONDO}; color: ${INK}; font: 600 12px/16px var(--planck-font-sans, system-ui, sans-serif); cursor: pointer; }
 
-/* El expediente. */
-.sim-expediente { position: relative; border-radius: 4px 14px 14px 14px; background: #f3ead8; color: #2a2116; padding: 14px 14px 12px; box-shadow: 0 10px 24px rgba(0,0,0,.35); animation: sim-cae 520ms ${CURVA} both; }
-.sim-expediente::before { content: ""; position: absolute; top: -14px; left: 0; width: 120px; height: 16px; border-radius: 8px 8px 0 0; background: #f3ead8; }
-@keyframes sim-cae { from { opacity: 0; transform: translateY(-14px) rotate(-1.5deg); } to { opacity: 1; transform: none; } }
-.sim-exp-cab { display: flex; gap: 10px; align-items: center; }
-.sim-exp-cab img { width: 46px; height: auto; flex: none; }
-.sim-exp-pais { margin: 0; font: 800 20px/24px var(--planck-font-sans, system-ui, sans-serif); }
-.sim-exp-sello { font: 700 11px/14px var(--planck-font-mono, ui-monospace, monospace); letter-spacing: .08em; color: #8a5a2b; text-transform: uppercase; }
-.sim-exp-titular { margin: 8px 0 10px; font: 600 16px/21px var(--planck-font-sans, system-ui, sans-serif); }
+/* El expediente: tarjeta oscura de la casa con acento ámbar (sin papel beige, sin pestaña, sin letra de máquina). */
+.sim-expediente { position: relative; border-radius: 14px; background: linear-gradient(180deg, rgba(233,196,106,.10) 0, rgba(233,196,106,0) 96px), ${SUPERFICIE_2}; border: 1px solid ${BORDE}; color: ${INK}; padding: 16px 14px 14px; overflow: hidden; box-shadow: 0 10px 24px rgba(0,0,0,.28); animation: sim-cae 480ms ${CURVA} both; }
+.sim-expediente::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: ${AMBAR}; }
+@keyframes sim-cae { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: none; } }
+.sim-exp-cab { display: flex; gap: 12px; align-items: center; }
+.sim-exp-lupa { width: 48px; height: 48px; flex: none; border-radius: 14px; display: grid; place-items: center; background: rgba(233,196,106,.14); border: 1px solid rgba(233,196,106,.45); }
+.sim-exp-lupa img { width: 34px; height: 34px; object-fit: contain; }
+.sim-exp-pais { margin: 2px 0 0; font: 800 19px/23px var(--planck-font-sans, system-ui, sans-serif); color: ${INK}; overflow-wrap: break-word; }
+.sim-exp-sello { display: inline-block; font: 700 11px/14px var(--planck-font-sans, system-ui, sans-serif); letter-spacing: .08em; color: ${AMBAR}; text-transform: uppercase; }
+.sim-exp-titular { margin: 10px 0 12px; font: 500 15px/21px var(--planck-font-sans, system-ui, sans-serif); color: ${INK_2}; }
 .sim-sintomas { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
-.sim-sintoma { display: grid; grid-template-columns: 30px 1fr; gap: 8px; align-items: center; padding: 8px 10px; border-radius: 10px; background: #fffaf0; border: 1px solid #e0d2b6; animation: da26-entra 320ms ${CURVA} both; }
-.sim-sintoma-flecha { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font: 800 16px/1 var(--planck-font-sans, system-ui, sans-serif); color: #fff; background: #6b5a43; }
-.sim-sintoma-flecha[data-t="sube"] { background: #b5452e; }
-.sim-sintoma-flecha[data-t="baja"] { background: #2b6f8f; }
-.sim-sintoma-flecha[data-t="dato"] { background: #8a7656; }
-.sim-sintoma-dato { font: 600 14px/18px var(--planck-font-sans, system-ui, sans-serif); }
-.sim-sintoma-cifras { font: 500 14px/18px var(--planck-font-mono, ui-monospace, monospace); font-variant-numeric: tabular-nums; color: #5a4a33; }
-.sim-sintoma-cifras b { color: #2a2116; }
-.sim-sintoma-cifras[data-solo] { font-family: var(--planck-font-sans, system-ui, sans-serif); }
-.sim-sintoma-cifras[data-solo] b { font-weight: 600; }
-.sim-testigo { margin: 10px 0 0; padding: 8px 10px 8px 12px; border-left: 4px solid #c9a66b; font: italic 500 15px/20px var(--planck-font-sans, system-ui, sans-serif); }
-.sim-testigo small { display: block; font-style: normal; font-size: 12px; color: #6d5c44; margin-top: 2px; }
-.sim-archivo { margin: 8px 0 0; font: 600 12px/16px var(--planck-font-sans, system-ui, sans-serif); color: #8a5a2b; }
+.sim-sintoma { display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 10px; align-items: center; padding: 10px 12px; border-radius: 12px; background: rgba(14,27,46,.6); border: 1px solid ${BORDE}; animation: da26-entra 320ms ${CURVA} both; }
+.sim-sintoma-flecha { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; font: 800 16px/1 var(--planck-font-sans, system-ui, sans-serif); color: ${TINTA_SOBRE_COLOR}; background: ${GRIS}; }
+.sim-sintoma-flecha[data-t="sube"] { background: ${AMBAR}; }
+.sim-sintoma-flecha[data-t="baja"] { background: #6f86ff; }
+.sim-sintoma-dato { display: block; font: 600 14px/18px var(--planck-font-sans, system-ui, sans-serif); color: ${INK}; }
+.sim-sintoma-cifras { display: block; margin-top: 2px; font: 500 14px/19px var(--planck-font-sans, system-ui, sans-serif); font-variant-numeric: tabular-nums; color: ${INK_2}; }
+.sim-sintoma-cifras b { color: ${INK}; font-weight: 700; }
+.sim-testigo { margin: 12px 0 0; padding: 8px 12px; border-left: 3px solid ${AMBAR}; border-radius: 0 10px 10px 0; background: rgba(233,196,106,.06); font: italic 500 15px/21px var(--planck-font-sans, system-ui, sans-serif); color: ${INK}; }
+.sim-testigo small { display: block; font-style: normal; font-weight: 600; font-size: 12px; color: ${INK_2}; margin-top: 4px; }
+.sim-archivo { margin: 8px 0 0; font: 600 12px/16px var(--planck-font-sans, system-ui, sans-serif); color: ${AMBAR}; }
+
+/* El avance de la capacitación: puntitos, no un contador de máquina. */
+.sim-avance { display: inline-flex; align-items: center; gap: 8px; margin-right: auto; font: 600 13px/16px var(--planck-font-sans, system-ui, sans-serif); color: ${INK_2}; }
+.sim-avance-puntos { display: inline-flex; gap: 4px; }
+.sim-avance-puntos i { width: 8px; height: 8px; border-radius: 999px; background: ${BORDE}; transition: width 260ms ${CURVA}, background-color 260ms ${CURVA}; }
+.sim-avance-puntos i[data-hecho="1"] { background: ${INK_2}; }
+.sim-avance-puntos i[data-ahora="1"] { width: 20px; background: ${TEAL}; }
 
 /* Los virus. */
 .sim-consigna { margin: 2px 0 8px; font: 700 17px/22px var(--planck-font-sans, system-ui, sans-serif); color: ${INK}; }
@@ -160,13 +167,14 @@ export const CSS_SIM = `
 .sim-acciones { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
 .sim-cierre { display: grid; gap: 8px; }
 .sim-cierre li { display: flex; justify-content: space-between; gap: 8px; padding: 8px 10px; border-radius: 10px; background: ${SUPERFICIE_2}; border: 1px solid ${BORDE}; }
-.sim-cupo { font: 500 12px/16px var(--planck-font-mono, ui-monospace, monospace); color: ${INK_2}; text-align: right; }
+.sim-cupo { font: 500 12px/16px var(--planck-font-sans, system-ui, sans-serif); font-variant-numeric: tabular-nums; color: ${INK_2}; text-align: right; }
 
 @media (prefers-reduced-motion: reduce) {
   .sim-fondo, .sim-mascota, .sim-hoja, .sim-rotulo-puerta { transition: opacity 120ms linear !important; }
   .sim-escena[data-dentro="1"] .sim-hoja { opacity: 0; transform: none; }
   .sim-mascota { transform: none; }
   .sim-palabra, .sim-expediente, .sim-sintoma, .sim-msg, .sim-mascota[data-cambia="1"] { animation: none !important; }
+  .sim-avance-puntos i { transition: none; }
   .sim-punto { animation: none; opacity: .7; }
 }
 `;
@@ -232,7 +240,7 @@ function Expediente({ caso, ronda, total }) {
   return (
     <article className="sim-expediente" data-expediente aria-label={`Expediente de ${caso.nombre}`}>
       <div className="sim-exp-cab">
-        <img src={rutaIlustrado("lupa")} alt="" width="46" height="46" />
+        <span className="sim-exp-lupa"><img src={rutaIlustrado("lupa")} alt="" width="34" height="34" /></span>
         <div>
           <span className="sim-exp-sello">Expediente {ronda} de {total}</span>
           <h3 className="sim-exp-pais">{caso.nombre}</h3>
@@ -246,8 +254,8 @@ function Expediente({ caso, ronda, total }) {
               {s.tendencia === "sube" ? "↑" : s.tendencia === "baja" ? "↓" : s.tendencia === "igual" ? "=" : "•"}
             </span>
             <span>
-              <span className="sim-sintoma-dato">{s.dato}</span><br />
-              <span className="sim-sintoma-cifras" data-solo={s.tendencia === "dato" && !s.antes ? "" : undefined}>{s.antes ? <>{s.antes} → </> : null}<b>{s.ahora}</b></span>
+              <span className="sim-sintoma-dato">{s.dato}</span>
+              <span className="sim-sintoma-cifras" data-solo={s.tendencia === "dato" && !s.antes ? "" : undefined}>{s.antes ? <>{s.antes} →{"\u00a0"}</> : null}<b>{s.ahora}</b></span>
             </span>
           </li>
         ))}
@@ -428,7 +436,12 @@ export default function Simulador({ escenaId, llamar = llamarSimulador }) {
 
       {fase === "capacitacion" && (
         <div className="sim-acciones">
-          <span className="da26-rotulo da26-mono" style={{ marginRight: "auto", alignSelf: "center" }}>Capacitación {paso + 1}/{sim.capacitacion.length}</span>
+          <span className="sim-avance" aria-label={`Capacitación, paso ${paso + 1} de ${sim.capacitacion.length}`} data-avance>
+            <span className="sim-avance-puntos" aria-hidden="true">
+              {sim.capacitacion.map((_, k) => <i key={k} data-hecho={k < paso ? "1" : "0"} data-ahora={k === paso ? "1" : "0"} />)}
+            </span>
+            Capacitación {paso + 1} de {sim.capacitacion.length}
+          </span>
           <button type="button" className="da26-boton da26-primario" onClick={seguirCapacitacion} data-siguiente-capacitacion>
             {paso + 1 < sim.capacitacion.length ? "Sigue" : sim.empezar}
           </button>
