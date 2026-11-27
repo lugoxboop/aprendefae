@@ -125,3 +125,14 @@
 - Transcripción gp15-eef-opa: 169 palabras.
 - Narración gp16-estructuras: lista con eleven_v3 (984 caracteres).
 - Transcripción gp16-estructuras: 166 palabras.
+
+## 2026-11-27T23:38:48.762Z
+- Cupo: plan creator, 29571 de 122261 créditos usados.
+- Narración gp17-esfera: lista con eleven_v3 (961 caracteres).
+- Transcripción gp17-esfera: 158 palabras.
+- Narración gp18-triangulo: lista con eleven_v3 (926 caracteres).
+- Transcripción gp18-triangulo: 158 palabras.
+- Narración gp19-liderar: lista con eleven_v3 (897 caracteres).
+- Transcripción gp19-liderar: 159 palabras.
+- Narración gp20-supuestos: lista con eleven_v3 (872 caracteres).
+- Transcripción gp20-supuestos: 155 palabras.
