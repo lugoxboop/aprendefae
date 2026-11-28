@@ -277,3 +277,14 @@
 - Transcripción gp59-controlar-alcance: 178 palabras.
 - Narración gp60-controlar-cronograma: lista con eleven_v3 (935 caracteres).
 - Transcripción gp60-controlar-cronograma: 146 palabras.
+
+## 2026-11-28T02:16:10.429Z
+- Cupo: plan creator, 52731 de 122261 créditos usados.
+- Narración gp61-controlar-costos: lista con eleven_v3 (1031 caracteres).
+- Transcripción gp61-controlar-costos: 163 palabras.
+- Narración gp62-controlar-calidad: lista con eleven_v3 (1020 caracteres).
+- Transcripción gp62-controlar-calidad: 163 palabras.
+- Narración gp63-controlar-recursos: lista con eleven_v3 (1012 caracteres).
+- Transcripción gp63-controlar-recursos: 160 palabras.
+- Narración gp64-monitorear-comunicaciones: lista con eleven_v3 (954 caracteres).
+- Transcripción gp64-monitorear-comunicaciones: 156 palabras.
