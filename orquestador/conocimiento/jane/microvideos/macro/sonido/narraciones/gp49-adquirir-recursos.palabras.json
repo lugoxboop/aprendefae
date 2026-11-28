@@ -1,0 +1,795 @@
+{
+ "texto": "La feria crece. Pía necesita dos ayudantes más, un horno extra y mesas. ¿A quién elige y cuándo estará cada uno? Adquirir recursos es obtener miembros del equipo, instalaciones, equipamiento, materiales, suministros y otros recursos necesarios para completar el trabajo del proyecto. Para elegir, se usan criterios de selección ponderados según su importancia. Por ejemplo, disponibilidad, costo y capacidad. Y para las personas, también experiencia, habilidades y actitud. A veces, un recurso ya viene preasignado. Carmen estaba en el equipo desde el acta de constitución. El resultado son las asignaciones de recursos físicos, como el horno y las mesas, y del equipo con sus roles y responsabilidades. También los calendarios de recursos, cuándo y por cuánto tiempo estará disponible cada recurso. Ramón solo puede los sábados. El horno extra llega el viernes. Si un recurso no se consigue, puede salir una solicitud de cambio. Ahora te toca. Elige tres criterios para escoger a una persona de tu equipo.",
+ "palabras": [
+  {
+   "w": "La",
+   "ini": 0.14,
+   "fin": 0.22
+  },
+  {
+   "w": "feria",
+   "ini": 0.34,
+   "fin": 0.64
+  },
+  {
+   "w": "crece.",
+   "ini": 0.72,
+   "fin": 1.1
+  },
+  {
+   "w": "Pía",
+   "ini": 1.7,
+   "fin": 1.88
+  },
+  {
+   "w": "necesita",
+   "ini": 1.94,
+   "fin": 2.52
+  },
+  {
+   "w": "dos",
+   "ini": 2.66,
+   "fin": 2.84
+  },
+  {
+   "w": "ayudantes",
+   "ini": 2.9,
+   "fin": 3.46
+  },
+  {
+   "w": "más,",
+   "ini": 3.52,
+   "fin": 3.7
+  },
+  {
+   "w": "un",
+   "ini": 4.16,
+   "fin": 4.24
+  },
+  {
+   "w": "horno",
+   "ini": 4.28,
+   "fin": 4.52
+  },
+  {
+   "w": "extra",
+   "ini": 4.62,
+   "fin": 4.96
+  },
+  {
+   "w": "y",
+   "ini": 5.22,
+   "fin": 5.26
+  },
+  {
+   "w": "mesas.",
+   "ini": 5.34,
+   "fin": 5.74
+  },
+  {
+   "w": "¿A",
+   "ini": 6.54,
+   "fin": 6.62
+  },
+  {
+   "w": "quién",
+   "ini": 6.7,
+   "fin": 6.88
+  },
+  {
+   "w": "elige",
+   "ini": 6.92,
+   "fin": 7.26
+  },
+  {
+   "w": "y",
+   "ini": 7.86,
+   "fin": 7.9
+  },
+  {
+   "w": "cuándo",
+   "ini": 8.039,
+   "fin": 8.38
+  },
+  {
+   "w": "estará",
+   "ini": 8.42,
+   "fin": 8.8
+  },
+  {
+   "w": "cada",
+   "ini": 8.84,
+   "fin": 9.08
+  },
+  {
+   "w": "uno?",
+   "ini": 9.16,
+   "fin": 9.32
+  },
+  {
+   "w": "Adquirir",
+   "ini": 10.56,
+   "fin": 10.98
+  },
+  {
+   "w": "recursos",
+   "ini": 11.04,
+   "fin": 11.58
+  },
+  {
+   "w": "es",
+   "ini": 11.84,
+   "fin": 11.96
+  },
+  {
+   "w": "obtener",
+   "ini": 12.02,
+   "fin": 12.4
+  },
+  {
+   "w": "miembros",
+   "ini": 12.56,
+   "fin": 13.02
+  },
+  {
+   "w": "del",
+   "ini": 13.06,
+   "fin": 13.14
+  },
+  {
+   "w": "equipo,",
+   "ini": 13.18,
+   "fin": 13.58
+  },
+  {
+   "w": "instalaciones,",
+   "ini": 13.96,
+   "fin": 14.74
+  },
+  {
+   "w": "equipamiento,",
+   "ini": 15.04,
+   "fin": 15.82
+  },
+  {
+   "w": "materiales,",
+   "ini": 16.239,
+   "fin": 16.88
+  },
+  {
+   "w": "suministros",
+   "ini": 17.08,
+   "fin": 17.76
+  },
+  {
+   "w": "y",
+   "ini": 18.1,
+   "fin": 18.16
+  },
+  {
+   "w": "otros",
+   "ini": 18.26,
+   "fin": 18.52
+  },
+  {
+   "w": "recursos",
+   "ini": 18.6,
+   "fin": 19.02
+  },
+  {
+   "w": "necesarios",
+   "ini": 19.08,
+   "fin": 19.7
+  },
+  {
+   "w": "para",
+   "ini": 19.78,
+   "fin": 19.94
+  },
+  {
+   "w": "completar",
+   "ini": 19.98,
+   "fin": 20.44
+  },
+  {
+   "w": "el",
+   "ini": 20.48,
+   "fin": 20.56
+  },
+  {
+   "w": "trabajo",
+   "ini": 20.6,
+   "fin": 20.98
+  },
+  {
+   "w": "del",
+   "ini": 21.02,
+   "fin": 21.12
+  },
+  {
+   "w": "proyecto.",
+   "ini": 21.18,
+   "fin": 21.66
+  },
+  {
+   "w": "Para",
+   "ini": 22.68,
+   "fin": 22.8
+  },
+  {
+   "w": "elegir,",
+   "ini": 22.84,
+   "fin": 23.2
+  },
+  {
+   "w": "se",
+   "ini": 23.6,
+   "fin": 23.68
+  },
+  {
+   "w": "usan",
+   "ini": 23.74,
+   "fin": 23.96
+  },
+  {
+   "w": "criterios",
+   "ini": 24,
+   "fin": 24.48
+  },
+  {
+   "w": "de",
+   "ini": 24.52,
+   "fin": 24.58
+  },
+  {
+   "w": "selección",
+   "ini": 24.64,
+   "fin": 25.18
+  },
+  {
+   "w": "ponderados",
+   "ini": 25.56,
+   "fin": 26.12
+  },
+  {
+   "w": "según",
+   "ini": 26.18,
+   "fin": 26.48
+  },
+  {
+   "w": "su",
+   "ini": 26.52,
+   "fin": 26.58
+  },
+  {
+   "w": "importancia.",
+   "ini": 26.62,
+   "fin": 27.26
+  },
+  {
+   "w": "Por",
+   "ini": 27.68,
+   "fin": 27.76
+  },
+  {
+   "w": "ejemplo,",
+   "ini": 27.82,
+   "fin": 28.24
+  },
+  {
+   "w": "disponibilidad,",
+   "ini": 28.72,
+   "fin": 29.58
+  },
+  {
+   "w": "costo",
+   "ini": 30,
+   "fin": 30.38
+  },
+  {
+   "w": "y",
+   "ini": 30.64,
+   "fin": 30.68
+  },
+  {
+   "w": "capacidad.",
+   "ini": 30.78,
+   "fin": 31.4
+  },
+  {
+   "w": "Y",
+   "ini": 32.24,
+   "fin": 32.28
+  },
+  {
+   "w": "para",
+   "ini": 32.36,
+   "fin": 32.5
+  },
+  {
+   "w": "las",
+   "ini": 32.54,
+   "fin": 32.659
+  },
+  {
+   "w": "personas,",
+   "ini": 32.7,
+   "fin": 33.18
+  },
+  {
+   "w": "también",
+   "ini": 33.5,
+   "fin": 33.84
+  },
+  {
+   "w": "experiencia,",
+   "ini": 33.9,
+   "fin": 34.68
+  },
+  {
+   "w": "habilidades",
+   "ini": 34.88,
+   "fin": 35.68
+  },
+  {
+   "w": "y",
+   "ini": 35.74,
+   "fin": 35.8
+  },
+  {
+   "w": "actitud.",
+   "ini": 35.88,
+   "fin": 36.36
+  },
+  {
+   "w": "A",
+   "ini": 37.26,
+   "fin": 37.3
+  },
+  {
+   "w": "veces,",
+   "ini": 37.36,
+   "fin": 37.74
+  },
+  {
+   "w": "un",
+   "ini": 37.94,
+   "fin": 38.02
+  },
+  {
+   "w": "recurso",
+   "ini": 38.08,
+   "fin": 38.6
+  },
+  {
+   "w": "ya",
+   "ini": 38.68,
+   "fin": 38.8
+  },
+  {
+   "w": "viene",
+   "ini": 38.84,
+   "fin": 39.14
+  },
+  {
+   "w": "preasignado.",
+   "ini": 39.18,
+   "fin": 39.86
+  },
+  {
+   "w": "Carmen",
+   "ini": 40.46,
+   "fin": 40.78
+  },
+  {
+   "w": "estaba",
+   "ini": 40.84,
+   "fin": 41.18
+  },
+  {
+   "w": "en",
+   "ini": 41.2,
+   "fin": 41.28
+  },
+  {
+   "w": "el",
+   "ini": 41.3,
+   "fin": 41.38
+  },
+  {
+   "w": "equipo",
+   "ini": 41.42,
+   "fin": 41.8
+  },
+  {
+   "w": "desde",
+   "ini": 41.84,
+   "fin": 42.1
+  },
+  {
+   "w": "el",
+   "ini": 42.14,
+   "fin": 42.22
+  },
+  {
+   "w": "acta",
+   "ini": 42.3,
+   "fin": 42.5
+  },
+  {
+   "w": "de",
+   "ini": 42.54,
+   "fin": 42.6
+  },
+  {
+   "w": "constitución.",
+   "ini": 42.64,
+   "fin": 43.4
+  },
+  {
+   "w": "El",
+   "ini": 44.4,
+   "fin": 44.48
+  },
+  {
+   "w": "resultado",
+   "ini": 44.52,
+   "fin": 45.08
+  },
+  {
+   "w": "son",
+   "ini": 45.22,
+   "fin": 45.36
+  },
+  {
+   "w": "las",
+   "ini": 45.42,
+   "fin": 45.52
+  },
+  {
+   "w": "asignaciones",
+   "ini": 45.6,
+   "fin": 46.34
+  },
+  {
+   "w": "de",
+   "ini": 46.92,
+   "fin": 46.98
+  },
+  {
+   "w": "recursos",
+   "ini": 47.04,
+   "fin": 47.46
+  },
+  {
+   "w": "físicos,",
+   "ini": 47.52,
+   "fin": 47.98
+  },
+  {
+   "w": "como",
+   "ini": 48.1,
+   "fin": 48.28
+  },
+  {
+   "w": "el",
+   "ini": 48.32,
+   "fin": 48.38
+  },
+  {
+   "w": "horno",
+   "ini": 48.44,
+   "fin": 48.72
+  },
+  {
+   "w": "y",
+   "ini": 48.76,
+   "fin": 48.8
+  },
+  {
+   "w": "las",
+   "ini": 48.84,
+   "fin": 48.96
+  },
+  {
+   "w": "mesas,",
+   "ini": 49.02,
+   "fin": 49.36
+  },
+  {
+   "w": "y",
+   "ini": 49.76,
+   "fin": 49.8
+  },
+  {
+   "w": "del",
+   "ini": 49.84,
+   "fin": 49.96
+  },
+  {
+   "w": "equipo",
+   "ini": 50,
+   "fin": 50.42
+  },
+  {
+   "w": "con",
+   "ini": 50.66,
+   "fin": 50.8
+  },
+  {
+   "w": "sus",
+   "ini": 50.84,
+   "fin": 51.02
+  },
+  {
+   "w": "roles",
+   "ini": 51.1,
+   "fin": 51.46
+  },
+  {
+   "w": "y",
+   "ini": 51.52,
+   "fin": 51.58
+  },
+  {
+   "w": "responsabilidades.",
+   "ini": 51.66,
+   "fin": 52.66
+  },
+  {
+   "w": "También",
+   "ini": 53.6,
+   "fin": 53.92
+  },
+  {
+   "w": "los",
+   "ini": 53.96,
+   "fin": 54.08
+  },
+  {
+   "w": "calendarios",
+   "ini": 54.12,
+   "fin": 54.64
+  },
+  {
+   "w": "de",
+   "ini": 54.68,
+   "fin": 54.74
+  },
+  {
+   "w": "recursos,",
+   "ini": 54.78,
+   "fin": 55.3
+  },
+  {
+   "w": "cuándo",
+   "ini": 55.76,
+   "fin": 56.26
+  },
+  {
+   "w": "y",
+   "ini": 56.32,
+   "fin": 56.36
+  },
+  {
+   "w": "por",
+   "ini": 56.46,
+   "fin": 56.58
+  },
+  {
+   "w": "cuánto",
+   "ini": 56.64,
+   "fin": 56.92
+  },
+  {
+   "w": "tiempo",
+   "ini": 57,
+   "fin": 57.32
+  },
+  {
+   "w": "estará",
+   "ini": 57.66,
+   "fin": 57.94
+  },
+  {
+   "w": "disponible",
+   "ini": 57.98,
+   "fin": 58.58
+  },
+  {
+   "w": "cada",
+   "ini": 58.64,
+   "fin": 58.86
+  },
+  {
+   "w": "recurso.",
+   "ini": 58.9,
+   "fin": 59.36
+  },
+  {
+   "w": "Ramón",
+   "ini": 60.18,
+   "fin": 60.66
+  },
+  {
+   "w": "solo",
+   "ini": 60.74,
+   "fin": 61
+  },
+  {
+   "w": "puede",
+   "ini": 61.04,
+   "fin": 61.3
+  },
+  {
+   "w": "los",
+   "ini": 61.34,
+   "fin": 61.44
+  },
+  {
+   "w": "sábados.",
+   "ini": 61.5,
+   "fin": 61.98
+  },
+  {
+   "w": "El",
+   "ini": 62.62,
+   "fin": 62.7
+  },
+  {
+   "w": "horno",
+   "ini": 62.72,
+   "fin": 62.96
+  },
+  {
+   "w": "extra",
+   "ini": 63.06,
+   "fin": 63.38
+  },
+  {
+   "w": "llega",
+   "ini": 63.6,
+   "fin": 63.82
+  },
+  {
+   "w": "el",
+   "ini": 63.84,
+   "fin": 63.92
+  },
+  {
+   "w": "viernes.",
+   "ini": 63.96,
+   "fin": 64.4
+  },
+  {
+   "w": "Si",
+   "ini": 65.44,
+   "fin": 65.54
+  },
+  {
+   "w": "un",
+   "ini": 65.58,
+   "fin": 65.66
+  },
+  {
+   "w": "recurso",
+   "ini": 65.72,
+   "fin": 66.16
+  },
+  {
+   "w": "no",
+   "ini": 66.22,
+   "fin": 66.34
+  },
+  {
+   "w": "se",
+   "ini": 66.4,
+   "fin": 66.5
+  },
+  {
+   "w": "consigue,",
+   "ini": 66.54,
+   "fin": 66.98
+  },
+  {
+   "w": "puede",
+   "ini": 67.32,
+   "fin": 67.52
+  },
+  {
+   "w": "salir",
+   "ini": 67.58,
+   "fin": 67.94
+  },
+  {
+   "w": "una",
+   "ini": 68.04,
+   "fin": 68.16
+  },
+  {
+   "w": "solicitud",
+   "ini": 68.24,
+   "fin": 68.88
+  },
+  {
+   "w": "de",
+   "ini": 68.94,
+   "fin": 69
+  },
+  {
+   "w": "cambio.",
+   "ini": 69.08,
+   "fin": 69.48
+  },
+  {
+   "w": "Ahora",
+   "ini": 70.46,
+   "fin": 70.7
+  },
+  {
+   "w": "te",
+   "ini": 70.76,
+   "fin": 70.84
+  },
+  {
+   "w": "toca.",
+   "ini": 70.92,
+   "fin": 71.2
+  },
+  {
+   "w": "Elige",
+   "ini": 71.7,
+   "fin": 72.04
+  },
+  {
+   "w": "tres",
+   "ini": 72.16,
+   "fin": 72.36
+  },
+  {
+   "w": "criterios",
+   "ini": 72.42,
+   "fin": 73.02
+  },
+  {
+   "w": "para",
+   "ini": 73.06,
+   "fin": 73.18
+  },
+  {
+   "w": "escoger",
+   "ini": 73.22,
+   "fin": 73.6
+  },
+  {
+   "w": "a",
+   "ini": 73.64,
+   "fin": 73.68
+  },
+  {
+   "w": "una",
+   "ini": 73.74,
+   "fin": 73.86
+  },
+  {
+   "w": "persona",
+   "ini": 73.92,
+   "fin": 74.34
+  },
+  {
+   "w": "de",
+   "ini": 74.38,
+   "fin": 74.46
+  },
+  {
+   "w": "tu",
+   "ini": 74.5,
+   "fin": 74.56
+  },
+  {
+   "w": "equipo.",
+   "ini": 74.6,
+   "fin": 74.98
+  }
+ ]
+}

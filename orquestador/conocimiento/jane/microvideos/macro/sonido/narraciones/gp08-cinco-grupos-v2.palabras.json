@@ -1,0 +1,740 @@
+{
+ "texto": "Un mismo proyecto puede pasar varias veces por el inicio, una por cada fase. Pía remodela la panadería en dos fases: primero la cocina, después el salón. Para la cocina, primero consigue que Carmen autorice arrancar. Luego hace el plan: qué se cambia, cuánto cuesta y para cuándo. Ejecuta. Llegan los obreros y el horno nuevo. Mientras tanto, vigila: ¿vamos a tiempo? ¿El gasto va bien? Y corrige. Al final, cierra, recibe la cocina y firma. Y en la fase del salón, todo eso vuelve a pasar. Otro inicio, otro plan, otro cierre. Son los cinco grupos de procesos: inicio, planificación, ejecución, monitoreo y control y cierre. No son fases del proyecto, se repiten dentro de cada fase y a veces se superponen. Y lo que sale de un proceso, como el plan, entra a otro. Ahora te toca. ¿A qué grupo pertenece cada tarea de Pía?",
+ "palabras": [
+  {
+   "w": "Un",
+   "ini": 0.14,
+   "fin": 0.26
+  },
+  {
+   "w": "mismo",
+   "ini": 0.32,
+   "fin": 0.62
+  },
+  {
+   "w": "proyecto",
+   "ini": 0.68,
+   "fin": 1.18
+  },
+  {
+   "w": "puede",
+   "ini": 1.5,
+   "fin": 1.7
+  },
+  {
+   "w": "pasar",
+   "ini": 1.76,
+   "fin": 2.06
+  },
+  {
+   "w": "varias",
+   "ini": 2.1,
+   "fin": 2.44
+  },
+  {
+   "w": "veces",
+   "ini": 2.48,
+   "fin": 2.86
+  },
+  {
+   "w": "por",
+   "ini": 2.9,
+   "fin": 3
+  },
+  {
+   "w": "el",
+   "ini": 3.04,
+   "fin": 3.1
+  },
+  {
+   "w": "inicio,",
+   "ini": 3.16,
+   "fin": 3.54
+  },
+  {
+   "w": "una",
+   "ini": 4.18,
+   "fin": 4.38
+  },
+  {
+   "w": "por",
+   "ini": 4.62,
+   "fin": 4.78
+  },
+  {
+   "w": "cada",
+   "ini": 4.84,
+   "fin": 5.08
+  },
+  {
+   "w": "fase.",
+   "ini": 5.14,
+   "fin": 5.46
+  },
+  {
+   "w": "Pía",
+   "ini": 6.62,
+   "fin": 6.86
+  },
+  {
+   "w": "remodela",
+   "ini": 7.2,
+   "fin": 7.62
+  },
+  {
+   "w": "la",
+   "ini": 7.66,
+   "fin": 7.74
+  },
+  {
+   "w": "panadería",
+   "ini": 7.78,
+   "fin": 8.4
+  },
+  {
+   "w": "en",
+   "ini": 8.46,
+   "fin": 8.56
+  },
+  {
+   "w": "dos",
+   "ini": 8.62,
+   "fin": 8.76
+  },
+  {
+   "w": "fases:",
+   "ini": 8.84,
+   "fin": 9.2
+  },
+  {
+   "w": "primero",
+   "ini": 9.7,
+   "fin": 10.04
+  },
+  {
+   "w": "la",
+   "ini": 10.08,
+   "fin": 10.14
+  },
+  {
+   "w": "cocina,",
+   "ini": 10.2,
+   "fin": 10.58
+  },
+  {
+   "w": "después",
+   "ini": 10.96,
+   "fin": 11.4
+  },
+  {
+   "w": "el",
+   "ini": 11.46,
+   "fin": 11.52
+  },
+  {
+   "w": "salón.",
+   "ini": 11.6,
+   "fin": 11.98
+  },
+  {
+   "w": "Para",
+   "ini": 13.02,
+   "fin": 13.16
+  },
+  {
+   "w": "la",
+   "ini": 13.18,
+   "fin": 13.26
+  },
+  {
+   "w": "cocina,",
+   "ini": 13.32,
+   "fin": 13.72
+  },
+  {
+   "w": "primero",
+   "ini": 14.04,
+   "fin": 14.38
+  },
+  {
+   "w": "consigue",
+   "ini": 14.44,
+   "fin": 14.84
+  },
+  {
+   "w": "que",
+   "ini": 14.88,
+   "fin": 15.02
+  },
+  {
+   "w": "Carmen",
+   "ini": 15.1,
+   "fin": 15.44
+  },
+  {
+   "w": "autorice",
+   "ini": 15.52,
+   "fin": 16.02
+  },
+  {
+   "w": "arrancar.",
+   "ini": 16.079,
+   "fin": 16.5
+  },
+  {
+   "w": "Luego",
+   "ini": 17.28,
+   "fin": 17.52
+  },
+  {
+   "w": "hace",
+   "ini": 17.56,
+   "fin": 17.76
+  },
+  {
+   "w": "el",
+   "ini": 17.78,
+   "fin": 17.88
+  },
+  {
+   "w": "plan:",
+   "ini": 17.92,
+   "fin": 18.18
+  },
+  {
+   "w": "qué",
+   "ini": 18.78,
+   "fin": 18.9
+  },
+  {
+   "w": "se",
+   "ini": 18.96,
+   "fin": 19.08
+  },
+  {
+   "w": "cambia,",
+   "ini": 19.14,
+   "fin": 19.54
+  },
+  {
+   "w": "cuánto",
+   "ini": 19.78,
+   "fin": 20.1
+  },
+  {
+   "w": "cuesta",
+   "ini": 20.16,
+   "fin": 20.62
+  },
+  {
+   "w": "y",
+   "ini": 20.68,
+   "fin": 20.72
+  },
+  {
+   "w": "para",
+   "ini": 20.8,
+   "fin": 20.98
+  },
+  {
+   "w": "cuándo.",
+   "ini": 21.02,
+   "fin": 21.38
+  },
+  {
+   "w": "Ejecuta.",
+   "ini": 22.46,
+   "fin": 23.02
+  },
+  {
+   "w": "Llegan",
+   "ini": 23.66,
+   "fin": 23.94
+  },
+  {
+   "w": "los",
+   "ini": 23.96,
+   "fin": 24.08
+  },
+  {
+   "w": "obreros",
+   "ini": 24.16,
+   "fin": 24.6
+  },
+  {
+   "w": "y",
+   "ini": 24.66,
+   "fin": 24.7
+  },
+  {
+   "w": "el",
+   "ini": 24.76,
+   "fin": 24.84
+  },
+  {
+   "w": "horno",
+   "ini": 24.88,
+   "fin": 25.1
+  },
+  {
+   "w": "nuevo.",
+   "ini": 25.18,
+   "fin": 25.5
+  },
+  {
+   "w": "Mientras",
+   "ini": 26.4,
+   "fin": 26.72
+  },
+  {
+   "w": "tanto,",
+   "ini": 26.76,
+   "fin": 27.04
+  },
+  {
+   "w": "vigila:",
+   "ini": 27.14,
+   "fin": 27.56
+  },
+  {
+   "w": "¿vamos",
+   "ini": 28.14,
+   "fin": 28.42
+  },
+  {
+   "w": "a",
+   "ini": 28.46,
+   "fin": 28.5
+  },
+  {
+   "w": "tiempo?",
+   "ini": 28.58,
+   "fin": 28.9
+  },
+  {
+   "w": "¿El",
+   "ini": 29.36,
+   "fin": 29.48
+  },
+  {
+   "w": "gasto",
+   "ini": 29.54,
+   "fin": 29.94
+  },
+  {
+   "w": "va",
+   "ini": 30,
+   "fin": 30.08
+  },
+  {
+   "w": "bien?",
+   "ini": 30.16,
+   "fin": 30.4
+  },
+  {
+   "w": "Y",
+   "ini": 31.24,
+   "fin": 31.28
+  },
+  {
+   "w": "corrige.",
+   "ini": 31.36,
+   "fin": 31.8
+  },
+  {
+   "w": "Al",
+   "ini": 32.74,
+   "fin": 32.82
+  },
+  {
+   "w": "final,",
+   "ini": 32.88,
+   "fin": 33.2
+  },
+  {
+   "w": "cierra,",
+   "ini": 33.5,
+   "fin": 33.86
+  },
+  {
+   "w": "recibe",
+   "ini": 34.48,
+   "fin": 34.82
+  },
+  {
+   "w": "la",
+   "ini": 34.86,
+   "fin": 34.92
+  },
+  {
+   "w": "cocina",
+   "ini": 34.98,
+   "fin": 35.56
+  },
+  {
+   "w": "y",
+   "ini": 35.62,
+   "fin": 35.66
+  },
+  {
+   "w": "firma.",
+   "ini": 35.78,
+   "fin": 36.1
+  },
+  {
+   "w": "Y",
+   "ini": 37.18,
+   "fin": 37.22
+  },
+  {
+   "w": "en",
+   "ini": 37.26,
+   "fin": 37.32
+  },
+  {
+   "w": "la",
+   "ini": 37.36,
+   "fin": 37.42
+  },
+  {
+   "w": "fase",
+   "ini": 37.5,
+   "fin": 37.74
+  },
+  {
+   "w": "del",
+   "ini": 37.78,
+   "fin": 37.88
+  },
+  {
+   "w": "salón,",
+   "ini": 37.94,
+   "fin": 38.24
+  },
+  {
+   "w": "todo",
+   "ini": 38.66,
+   "fin": 38.86
+  },
+  {
+   "w": "eso",
+   "ini": 38.96,
+   "fin": 39.18
+  },
+  {
+   "w": "vuelve",
+   "ini": 39.36,
+   "fin": 39.66
+  },
+  {
+   "w": "a",
+   "ini": 39.68,
+   "fin": 39.72
+  },
+  {
+   "w": "pasar.",
+   "ini": 39.76,
+   "fin": 40.1
+  },
+  {
+   "w": "Otro",
+   "ini": 40.62,
+   "fin": 40.82
+  },
+  {
+   "w": "inicio,",
+   "ini": 40.9,
+   "fin": 41.32
+  },
+  {
+   "w": "otro",
+   "ini": 41.62,
+   "fin": 41.82
+  },
+  {
+   "w": "plan,",
+   "ini": 41.92,
+   "fin": 42.16
+  },
+  {
+   "w": "otro",
+   "ini": 42.56,
+   "fin": 42.78
+  },
+  {
+   "w": "cierre.",
+   "ini": 42.88,
+   "fin": 43.24
+  },
+  {
+   "w": "Son",
+   "ini": 44.14,
+   "fin": 44.3
+  },
+  {
+   "w": "los",
+   "ini": 44.34,
+   "fin": 44.46
+  },
+  {
+   "w": "cinco",
+   "ini": 44.52,
+   "fin": 44.8
+  },
+  {
+   "w": "grupos",
+   "ini": 44.86,
+   "fin": 45.2
+  },
+  {
+   "w": "de",
+   "ini": 45.24,
+   "fin": 45.3
+  },
+  {
+   "w": "procesos:",
+   "ini": 45.36,
+   "fin": 45.9
+  },
+  {
+   "w": "inicio,",
+   "ini": 46.4,
+   "fin": 46.82
+  },
+  {
+   "w": "planificación,",
+   "ini": 47.06,
+   "fin": 47.86
+  },
+  {
+   "w": "ejecución,",
+   "ini": 48.24,
+   "fin": 48.92
+  },
+  {
+   "w": "monitoreo",
+   "ini": 49.24,
+   "fin": 49.78
+  },
+  {
+   "w": "y",
+   "ini": 49.82,
+   "fin": 49.84
+  },
+  {
+   "w": "control",
+   "ini": 49.94,
+   "fin": 50.42
+  },
+  {
+   "w": "y",
+   "ini": 50.68,
+   "fin": 50.72
+  },
+  {
+   "w": "cierre.",
+   "ini": 50.82,
+   "fin": 51.18
+  },
+  {
+   "w": "No",
+   "ini": 52.34,
+   "fin": 52.42
+  },
+  {
+   "w": "son",
+   "ini": 52.5,
+   "fin": 52.7
+  },
+  {
+   "w": "fases",
+   "ini": 52.74,
+   "fin": 53.06
+  },
+  {
+   "w": "del",
+   "ini": 53.1,
+   "fin": 53.2
+  },
+  {
+   "w": "proyecto,",
+   "ini": 53.26,
+   "fin": 53.7
+  },
+  {
+   "w": "se",
+   "ini": 54.12,
+   "fin": 54.18
+  },
+  {
+   "w": "repiten",
+   "ini": 54.26,
+   "fin": 54.76
+  },
+  {
+   "w": "dentro",
+   "ini": 54.82,
+   "fin": 55.12
+  },
+  {
+   "w": "de",
+   "ini": 55.14,
+   "fin": 55.22
+  },
+  {
+   "w": "cada",
+   "ini": 55.28,
+   "fin": 55.46
+  },
+  {
+   "w": "fase",
+   "ini": 55.56,
+   "fin": 55.86
+  },
+  {
+   "w": "y",
+   "ini": 56.18,
+   "fin": 56.24
+  },
+  {
+   "w": "a",
+   "ini": 56.28,
+   "fin": 56.34
+  },
+  {
+   "w": "veces",
+   "ini": 56.38,
+   "fin": 56.72
+  },
+  {
+   "w": "se",
+   "ini": 56.9,
+   "fin": 56.98
+  },
+  {
+   "w": "superponen.",
+   "ini": 57.06,
+   "fin": 57.72
+  },
+  {
+   "w": "Y",
+   "ini": 58.46,
+   "fin": 58.5
+  },
+  {
+   "w": "lo",
+   "ini": 58.54,
+   "fin": 58.62
+  },
+  {
+   "w": "que",
+   "ini": 58.68,
+   "fin": 58.78
+  },
+  {
+   "w": "sale",
+   "ini": 58.82,
+   "fin": 59.04
+  },
+  {
+   "w": "de",
+   "ini": 59.06,
+   "fin": 59.14
+  },
+  {
+   "w": "un",
+   "ini": 59.18,
+   "fin": 59.26
+  },
+  {
+   "w": "proceso,",
+   "ini": 59.28,
+   "fin": 59.76
+  },
+  {
+   "w": "como",
+   "ini": 59.9,
+   "fin": 60.06
+  },
+  {
+   "w": "el",
+   "ini": 60.08,
+   "fin": 60.16
+  },
+  {
+   "w": "plan,",
+   "ini": 60.22,
+   "fin": 60.48
+  },
+  {
+   "w": "entra",
+   "ini": 60.9,
+   "fin": 61.24
+  },
+  {
+   "w": "a",
+   "ini": 61.28,
+   "fin": 61.36
+  },
+  {
+   "w": "otro.",
+   "ini": 61.44,
+   "fin": 61.7
+  },
+  {
+   "w": "Ahora",
+   "ini": 62.76,
+   "fin": 63
+  },
+  {
+   "w": "te",
+   "ini": 63.06,
+   "fin": 63.14
+  },
+  {
+   "w": "toca.",
+   "ini": 63.2,
+   "fin": 63.5
+  },
+  {
+   "w": "¿A",
+   "ini": 64.06,
+   "fin": 64.14
+  },
+  {
+   "w": "qué",
+   "ini": 64.2,
+   "fin": 64.319
+  },
+  {
+   "w": "grupo",
+   "ini": 64.36,
+   "fin": 64.62
+  },
+  {
+   "w": "pertenece",
+   "ini": 64.7,
+   "fin": 65.26
+  },
+  {
+   "w": "cada",
+   "ini": 65.4,
+   "fin": 65.62
+  },
+  {
+   "w": "tarea",
+   "ini": 65.68,
+   "fin": 65.94
+  },
+  {
+   "w": "de",
+   "ini": 65.98,
+   "fin": 66.06
+  },
+  {
+   "w": "Pía?",
+   "ini": 66.14,
+   "fin": 66.36
+  }
+ ]
+}

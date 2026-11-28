@@ -101,9 +101,28 @@
   },
   "narrar": [
     {
-      "id": "gp01-pan-de-cada-dia",
+      "id": "gp65-monitorear-riesgos",
       "voz": "jBlmi27XRORxjPquUeCh",
-      "texto": "Pía hornea quinientos panes cada mañana. Y nada de eso es un proyecto.\n\nMismo horno, misma receta, todos los días. Sin fecha de fin.\n\nPero un día, Pía quiere algo nuevo: abrir una segunda panadería al otro lado del barrio.\n\nAhí todo cambia. Esto tiene un primer día… y un último día.\n\nY va a crear algo que no existe: otro local, otro horno, otros vecinos.\n\nAunque use los mismos ladrillos que la primera, esta panadería es única.\n\nRamón pregunta: ¿y esto cuándo se acaba?\n\nCuando la nueva sede abra sus puertas. Ese día termina el trabajo… pero la panadería se queda.\n\nEso que acabas de ver tiene nombre.\n\nUn proyecto es un esfuerzo temporal para crear un producto, servicio o resultado único.\n\nY lo que se repite todos los días, como hornear el pan, se llama operación.\n\nAhora piensa en tu idea: ¿es un proyecto o una operación? Vamos a averiguarlo."
+      "modelo": "eleven_v3",
+      "texto": "El horno ya se arregló. Pero ahora el pronóstico anuncia lluvia el día de la feria.\n\nLos riesgos no se quedan quietos.\n\nMonitorear los riesgos es monitorear la implementación de los planes acordados de respuesta, hacer seguimiento a los riesgos identificados, e identificar y analizar nuevos riesgos.\n\nY también evaluar si el proceso de gestión de los riesgos funciona.\n\nSe pregunta: ¿las respuestas son efectivas? ¿Cambió el nivel de riesgo? ¿Hay riesgos nuevos?\n\nEl análisis de reserva compara la reserva para contingencias que queda con el riesgo que queda.\n\n¿Alcanza la reserva? Si no, hay que actuar.\n\nEn las revisiones de riesgos se reevalúan los riesgos actuales y se cierran los obsoletos.\n\nPía cierra el riesgo del horno, y agrega uno nuevo: la lluvia.\n\nSi hace falta, salen solicitudes de cambio, con acciones correctivas o preventivas.\n\nAhora te toca: revisa un riesgo de tu proyecto. ¿Sigue igual, cambió o ya se puede cerrar?"
+    },
+    {
+      "id": "gp66-controlar-adquisiciones",
+      "voz": "jBlmi27XRORxjPquUeCh",
+      "modelo": "eleven_v3",
+      "texto": "Por fin llegaron los toldos. Pero uno viene roto.\n\n¿Y ahora? El contrato ya está firmado.\n\nControlar las adquisiciones es gestionar las relaciones de adquisiciones, monitorear la ejecución de los contratos, efectuar cambios y correcciones, y cerrar los contratos.\n\nAsí el vendedor y el comprador cumplen lo acordado.\n\nUna herramienta es la inspección: revisar el trabajo del vendedor, a veces en el mismo lugar.\n\nOtra, la revisión del desempeño: calidad, recursos, cronograma y costos frente al acuerdo.\n\nSi no se ponen de acuerdo sobre un cambio, nace una reclamación.\n\nEl método preferido para resolver reclamaciones es la negociación.\n\nPía y el vendedor negocian: él cambia el toldo roto sin costo.\n\nAl final, la adquisición se cierra con una notificación formal por escrito, sin reclamaciones ni pagos pendientes.\n\nAhora te toca: piensa en algo que compraste y salió mal. ¿Cómo lo habrías reclamado?"
+    },
+    {
+      "id": "gp67-monitorear-involucramiento",
+      "voz": "jBlmi27XRORxjPquUeCh",
+      "modelo": "eleven_v3",
+      "texto": "Al principio, Don Tito apoyaba la feria. Ahora casi no contesta.\n\n¿Qué cambió?\n\nMonitorear el involucramiento de los interesados es monitorear sus relaciones y adaptar las estrategias para involucrarlos.\n\nAsí se mantiene o se incrementa la eficiencia y la eficacia de su participación, mientras el proyecto cambia.\n\nLa matriz de evaluación del involucramiento sigue los cambios en el nivel de participación de cada interesado.\n\nDon Tito pasó del nivel de apoyo al neutral. Pía lo nota en la matriz.\n\nCon el análisis de causa raíz, busca el motivo de fondo: nadie le contó los nuevos horarios.\n\nAyudan escuchar de forma activa, la retroalimentación y el liderazgo.\n\nPía lo visita, lo escucha y le explica el plan. Don Tito vuelve a apoyar.\n\nSi hace falta, sale una solicitud de cambio, con acciones correctivas o preventivas para mejorar el involucramiento.\n\nAhora te toca: elige un interesado de tu proyecto y anota su nivel de participación actual y el deseado."
+    },
+    {
+      "id": "gp68-cerrar-proyecto",
+      "voz": "jBlmi27XRORxjPquUeCh",
+      "modelo": "eleven_v3",
+      "texto": "La feria fue un éxito. Pía quiere irse a dormir.\n\nPero un proyecto no termina cuando termina el trabajo.\n\nCerrar el proyecto o fase es finalizar todas las actividades del proyecto, fase o contrato.\n\nAsí la información se archiva, el trabajo planificado se completa y los recursos del equipo se liberan.\n\nSe confirma que los entregables fueron aceptados y se verifica que no quede ningún incidente abierto.\n\nSe recopilan las lecciones aprendidas, se mide la satisfacción de los interesados, y se celebra el éxito.\n\nUna salida clave es la transferencia del resultado a quien lo va a operar y mantener.\n\nPía entrega los toldos y el horno nuevo al equipo de la panadería.\n\nLa otra es el informe final: un resumen del desempeño del proyecto.\n\nAlcance, calidad, costos, cronograma, y los riesgos e incidentes, y cómo se abordaron.\n\nAhora te toca: cierra tu proyecto. Escribe tu informe final en cinco líneas, y celebra."
     }
   ]
 }

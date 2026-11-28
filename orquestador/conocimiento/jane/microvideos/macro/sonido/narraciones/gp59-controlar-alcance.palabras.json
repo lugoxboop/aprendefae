@@ -1,0 +1,895 @@
+{
+ "texto": "A la feria de Pía le piden un puesto más, luego otro, luego música en vivo, con el mismo tiempo y el mismo presupuesto. Controlar el alcance es monitorear el estado del alcance del proyecto y del producto y gestionar cambios a la línea base del alcance. Así, la línea base del alcance se mantiene a lo largo del proyecto. Si crece sin control ni ajustes de tiempo, costo y recursos, es corrupción o deslizamiento del alcance. Los cambios son inevitables. Por eso todo proyecto necesita algún proceso de control de cambios. Para vigilarlo, el análisis de variación compara la línea base con los resultados reales y el de tendencias ve si el desempeño mejora o se deteriora con el tiempo. La clave: hallar la causa y el grado de la desviación y decidir si hace falta una acción correctiva o preventiva. Pía no dice que no. Registra una solicitud de cambio que pasa por el control integrado de cambios. Ahora te toca. Recuerda algo que creció sin control en un proyecto tuyo y cómo lo habrías frenado.",
+ "palabras": [
+  {
+   "w": "A",
+   "ini": 0.14,
+   "fin": 0.18
+  },
+  {
+   "w": "la",
+   "ini": 0.22,
+   "fin": 0.28
+  },
+  {
+   "w": "feria",
+   "ini": 0.38,
+   "fin": 0.62
+  },
+  {
+   "w": "de",
+   "ini": 0.66,
+   "fin": 0.72
+  },
+  {
+   "w": "Pía",
+   "ini": 0.82,
+   "fin": 1.06
+  },
+  {
+   "w": "le",
+   "ini": 1.36,
+   "fin": 1.48
+  },
+  {
+   "w": "piden",
+   "ini": 1.52,
+   "fin": 1.76
+  },
+  {
+   "w": "un",
+   "ini": 1.8,
+   "fin": 1.88
+  },
+  {
+   "w": "puesto",
+   "ini": 1.94,
+   "fin": 2.24
+  },
+  {
+   "w": "más,",
+   "ini": 2.3,
+   "fin": 2.52
+  },
+  {
+   "w": "luego",
+   "ini": 3.22,
+   "fin": 3.52
+  },
+  {
+   "w": "otro,",
+   "ini": 3.84,
+   "fin": 4.1
+  },
+  {
+   "w": "luego",
+   "ini": 4.7,
+   "fin": 5.02
+  },
+  {
+   "w": "música",
+   "ini": 5.4,
+   "fin": 5.78
+  },
+  {
+   "w": "en",
+   "ini": 5.8,
+   "fin": 5.9
+  },
+  {
+   "w": "vivo,",
+   "ini": 5.94,
+   "fin": 6.18
+  },
+  {
+   "w": "con",
+   "ini": 6.84,
+   "fin": 6.94
+  },
+  {
+   "w": "el",
+   "ini": 6.98,
+   "fin": 7.08
+  },
+  {
+   "w": "mismo",
+   "ini": 7.12,
+   "fin": 7.4
+  },
+  {
+   "w": "tiempo",
+   "ini": 7.46,
+   "fin": 7.8
+  },
+  {
+   "w": "y",
+   "ini": 7.84,
+   "fin": 7.88
+  },
+  {
+   "w": "el",
+   "ini": 7.92,
+   "fin": 8.02
+  },
+  {
+   "w": "mismo",
+   "ini": 8.06,
+   "fin": 8.38
+  },
+  {
+   "w": "presupuesto.",
+   "ini": 8.42,
+   "fin": 9.1
+  },
+  {
+   "w": "Controlar",
+   "ini": 10.3,
+   "fin": 10.7
+  },
+  {
+   "w": "el",
+   "ini": 10.74,
+   "fin": 10.82
+  },
+  {
+   "w": "alcance",
+   "ini": 10.86,
+   "fin": 11.36
+  },
+  {
+   "w": "es",
+   "ini": 11.68,
+   "fin": 11.8
+  },
+  {
+   "w": "monitorear",
+   "ini": 11.86,
+   "fin": 12.44
+  },
+  {
+   "w": "el",
+   "ini": 12.48,
+   "fin": 12.56
+  },
+  {
+   "w": "estado",
+   "ini": 12.62,
+   "fin": 13
+  },
+  {
+   "w": "del",
+   "ini": 13.04,
+   "fin": 13.14
+  },
+  {
+   "w": "alcance",
+   "ini": 13.2,
+   "fin": 13.6
+  },
+  {
+   "w": "del",
+   "ini": 13.64,
+   "fin": 13.76
+  },
+  {
+   "w": "proyecto",
+   "ini": 13.82,
+   "fin": 14.44
+  },
+  {
+   "w": "y",
+   "ini": 14.5,
+   "fin": 14.54
+  },
+  {
+   "w": "del",
+   "ini": 14.58,
+   "fin": 14.7
+  },
+  {
+   "w": "producto",
+   "ini": 14.76,
+   "fin": 15.22
+  },
+  {
+   "w": "y",
+   "ini": 15.62,
+   "fin": 15.66
+  },
+  {
+   "w": "gestionar",
+   "ini": 15.74,
+   "fin": 16.219
+  },
+  {
+   "w": "cambios",
+   "ini": 16.32,
+   "fin": 16.86
+  },
+  {
+   "w": "a",
+   "ini": 16.92,
+   "fin": 16.96
+  },
+  {
+   "w": "la",
+   "ini": 17.02,
+   "fin": 17.08
+  },
+  {
+   "w": "línea",
+   "ini": 17.18,
+   "fin": 17.5
+  },
+  {
+   "w": "base",
+   "ini": 17.54,
+   "fin": 17.8
+  },
+  {
+   "w": "del",
+   "ini": 17.84,
+   "fin": 17.96
+  },
+  {
+   "w": "alcance.",
+   "ini": 18,
+   "fin": 18.52
+  },
+  {
+   "w": "Así,",
+   "ini": 19.18,
+   "fin": 19.44
+  },
+  {
+   "w": "la",
+   "ini": 19.84,
+   "fin": 19.88
+  },
+  {
+   "w": "línea",
+   "ini": 19.94,
+   "fin": 20.2
+  },
+  {
+   "w": "base",
+   "ini": 20.24,
+   "fin": 20.5
+  },
+  {
+   "w": "del",
+   "ini": 20.54,
+   "fin": 20.62
+  },
+  {
+   "w": "alcance",
+   "ini": 20.68,
+   "fin": 21.16
+  },
+  {
+   "w": "se",
+   "ini": 21.36,
+   "fin": 21.44
+  },
+  {
+   "w": "mantiene",
+   "ini": 21.5,
+   "fin": 21.9
+  },
+  {
+   "w": "a",
+   "ini": 21.92,
+   "fin": 21.96
+  },
+  {
+   "w": "lo",
+   "ini": 22,
+   "fin": 22.06
+  },
+  {
+   "w": "largo",
+   "ini": 22.12,
+   "fin": 22.38
+  },
+  {
+   "w": "del",
+   "ini": 22.42,
+   "fin": 22.52
+  },
+  {
+   "w": "proyecto.",
+   "ini": 22.58,
+   "fin": 23.08
+  },
+  {
+   "w": "Si",
+   "ini": 23.76,
+   "fin": 23.84
+  },
+  {
+   "w": "crece",
+   "ini": 23.94,
+   "fin": 24.22
+  },
+  {
+   "w": "sin",
+   "ini": 24.3,
+   "fin": 24.46
+  },
+  {
+   "w": "control",
+   "ini": 24.5,
+   "fin": 25.04
+  },
+  {
+   "w": "ni",
+   "ini": 25.1,
+   "fin": 25.2
+  },
+  {
+   "w": "ajustes",
+   "ini": 25.26,
+   "fin": 25.72
+  },
+  {
+   "w": "de",
+   "ini": 25.74,
+   "fin": 25.82
+  },
+  {
+   "w": "tiempo,",
+   "ini": 25.9,
+   "fin": 26.26
+  },
+  {
+   "w": "costo",
+   "ini": 26.52,
+   "fin": 27.04
+  },
+  {
+   "w": "y",
+   "ini": 27.1,
+   "fin": 27.16
+  },
+  {
+   "w": "recursos,",
+   "ini": 27.24,
+   "fin": 27.8
+  },
+  {
+   "w": "es",
+   "ini": 28.28,
+   "fin": 28.42
+  },
+  {
+   "w": "corrupción",
+   "ini": 28.48,
+   "fin": 29.14
+  },
+  {
+   "w": "o",
+   "ini": 29.36,
+   "fin": 29.4
+  },
+  {
+   "w": "deslizamiento",
+   "ini": 29.46,
+   "fin": 30.28
+  },
+  {
+   "w": "del",
+   "ini": 30.32,
+   "fin": 30.42
+  },
+  {
+   "w": "alcance.",
+   "ini": 30.46,
+   "fin": 30.98
+  },
+  {
+   "w": "Los",
+   "ini": 32.04,
+   "fin": 32.18
+  },
+  {
+   "w": "cambios",
+   "ini": 32.24,
+   "fin": 32.64
+  },
+  {
+   "w": "son",
+   "ini": 32.82,
+   "fin": 32.98
+  },
+  {
+   "w": "inevitables.",
+   "ini": 33.02,
+   "fin": 33.76
+  },
+  {
+   "w": "Por",
+   "ini": 34.28,
+   "fin": 34.38
+  },
+  {
+   "w": "eso",
+   "ini": 34.44,
+   "fin": 34.64
+  },
+  {
+   "w": "todo",
+   "ini": 34.76,
+   "fin": 34.94
+  },
+  {
+   "w": "proyecto",
+   "ini": 35.02,
+   "fin": 35.46
+  },
+  {
+   "w": "necesita",
+   "ini": 35.52,
+   "fin": 36
+  },
+  {
+   "w": "algún",
+   "ini": 36.02,
+   "fin": 36.28
+  },
+  {
+   "w": "proceso",
+   "ini": 36.34,
+   "fin": 36.78
+  },
+  {
+   "w": "de",
+   "ini": 36.82,
+   "fin": 36.88
+  },
+  {
+   "w": "control",
+   "ini": 36.94,
+   "fin": 37.3
+  },
+  {
+   "w": "de",
+   "ini": 37.34,
+   "fin": 37.4
+  },
+  {
+   "w": "cambios.",
+   "ini": 37.46,
+   "fin": 37.88
+  },
+  {
+   "w": "Para",
+   "ini": 38.48,
+   "fin": 38.64
+  },
+  {
+   "w": "vigilarlo,",
+   "ini": 38.68,
+   "fin": 39.26
+  },
+  {
+   "w": "el",
+   "ini": 39.6,
+   "fin": 39.68
+  },
+  {
+   "w": "análisis",
+   "ini": 39.72,
+   "fin": 40.18
+  },
+  {
+   "w": "de",
+   "ini": 40.22,
+   "fin": 40.3
+  },
+  {
+   "w": "variación",
+   "ini": 40.34,
+   "fin": 40.92
+  },
+  {
+   "w": "compara",
+   "ini": 41.12,
+   "fin": 41.52
+  },
+  {
+   "w": "la",
+   "ini": 41.56,
+   "fin": 41.62
+  },
+  {
+   "w": "línea",
+   "ini": 41.68,
+   "fin": 41.92
+  },
+  {
+   "w": "base",
+   "ini": 41.96,
+   "fin": 42.28
+  },
+  {
+   "w": "con",
+   "ini": 42.36,
+   "fin": 42.48
+  },
+  {
+   "w": "los",
+   "ini": 42.5,
+   "fin": 42.62
+  },
+  {
+   "w": "resultados",
+   "ini": 42.72,
+   "fin": 43.34
+  },
+  {
+   "w": "reales",
+   "ini": 43.46,
+   "fin": 43.92
+  },
+  {
+   "w": "y",
+   "ini": 44.5,
+   "fin": 44.52
+  },
+  {
+   "w": "el",
+   "ini": 44.58,
+   "fin": 44.66
+  },
+  {
+   "w": "de",
+   "ini": 44.7,
+   "fin": 44.78
+  },
+  {
+   "w": "tendencias",
+   "ini": 44.84,
+   "fin": 45.52
+  },
+  {
+   "w": "ve",
+   "ini": 45.92,
+   "fin": 46
+  },
+  {
+   "w": "si",
+   "ini": 46.08,
+   "fin": 46.16
+  },
+  {
+   "w": "el",
+   "ini": 46.2,
+   "fin": 46.28
+  },
+  {
+   "w": "desempeño",
+   "ini": 46.32,
+   "fin": 46.86
+  },
+  {
+   "w": "mejora",
+   "ini": 46.94,
+   "fin": 47.36
+  },
+  {
+   "w": "o",
+   "ini": 47.54,
+   "fin": 47.58
+  },
+  {
+   "w": "se",
+   "ini": 47.66,
+   "fin": 47.74
+  },
+  {
+   "w": "deteriora",
+   "ini": 47.8,
+   "fin": 48.32
+  },
+  {
+   "w": "con",
+   "ini": 48.38,
+   "fin": 48.48
+  },
+  {
+   "w": "el",
+   "ini": 48.52,
+   "fin": 48.6
+  },
+  {
+   "w": "tiempo.",
+   "ini": 48.66,
+   "fin": 49.02
+  },
+  {
+   "w": "La",
+   "ini": 49.94,
+   "fin": 50
+  },
+  {
+   "w": "clave:",
+   "ini": 50.08,
+   "fin": 50.36
+  },
+  {
+   "w": "hallar",
+   "ini": 50.86,
+   "fin": 51.18
+  },
+  {
+   "w": "la",
+   "ini": 51.24,
+   "fin": 51.32
+  },
+  {
+   "w": "causa",
+   "ini": 51.42,
+   "fin": 51.78
+  },
+  {
+   "w": "y",
+   "ini": 51.84,
+   "fin": 51.88
+  },
+  {
+   "w": "el",
+   "ini": 51.92,
+   "fin": 52
+  },
+  {
+   "w": "grado",
+   "ini": 52.06,
+   "fin": 52.34
+  },
+  {
+   "w": "de",
+   "ini": 52.4,
+   "fin": 52.46
+  },
+  {
+   "w": "la",
+   "ini": 52.5,
+   "fin": 52.56
+  },
+  {
+   "w": "desviación",
+   "ini": 52.6,
+   "fin": 53.28
+  },
+  {
+   "w": "y",
+   "ini": 53.72,
+   "fin": 53.74
+  },
+  {
+   "w": "decidir",
+   "ini": 53.8,
+   "fin": 54.24
+  },
+  {
+   "w": "si",
+   "ini": 54.34,
+   "fin": 54.42
+  },
+  {
+   "w": "hace",
+   "ini": 54.46,
+   "fin": 54.7
+  },
+  {
+   "w": "falta",
+   "ini": 54.76,
+   "fin": 55.08
+  },
+  {
+   "w": "una",
+   "ini": 55.14,
+   "fin": 55.24
+  },
+  {
+   "w": "acción",
+   "ini": 55.26,
+   "fin": 55.58
+  },
+  {
+   "w": "correctiva",
+   "ini": 55.66,
+   "fin": 56.3
+  },
+  {
+   "w": "o",
+   "ini": 56.52,
+   "fin": 56.56
+  },
+  {
+   "w": "preventiva.",
+   "ini": 56.64,
+   "fin": 57.22
+  },
+  {
+   "w": "Pía",
+   "ini": 58.54,
+   "fin": 58.76
+  },
+  {
+   "w": "no",
+   "ini": 58.86,
+   "fin": 58.96
+  },
+  {
+   "w": "dice",
+   "ini": 59.02,
+   "fin": 59.3
+  },
+  {
+   "w": "que",
+   "ini": 59.38,
+   "fin": 59.46
+  },
+  {
+   "w": "no.",
+   "ini": 59.52,
+   "fin": 59.66
+  },
+  {
+   "w": "Registra",
+   "ini": 60.2,
+   "fin": 60.74
+  },
+  {
+   "w": "una",
+   "ini": 60.8,
+   "fin": 60.92
+  },
+  {
+   "w": "solicitud",
+   "ini": 61,
+   "fin": 61.54
+  },
+  {
+   "w": "de",
+   "ini": 61.58,
+   "fin": 61.66
+  },
+  {
+   "w": "cambio",
+   "ini": 61.74,
+   "fin": 62.1
+  },
+  {
+   "w": "que",
+   "ini": 62.34,
+   "fin": 62.46
+  },
+  {
+   "w": "pasa",
+   "ini": 62.5,
+   "fin": 62.72
+  },
+  {
+   "w": "por",
+   "ini": 62.8,
+   "fin": 62.9
+  },
+  {
+   "w": "el",
+   "ini": 62.94,
+   "fin": 63
+  },
+  {
+   "w": "control",
+   "ini": 63.08,
+   "fin": 63.44
+  },
+  {
+   "w": "integrado",
+   "ini": 63.5,
+   "fin": 63.98
+  },
+  {
+   "w": "de",
+   "ini": 64.019,
+   "fin": 64.099
+  },
+  {
+   "w": "cambios.",
+   "ini": 64.18,
+   "fin": 64.64
+  },
+  {
+   "w": "Ahora",
+   "ini": 65.54,
+   "fin": 65.82
+  },
+  {
+   "w": "te",
+   "ini": 65.88,
+   "fin": 65.96
+  },
+  {
+   "w": "toca.",
+   "ini": 66.02,
+   "fin": 66.3
+  },
+  {
+   "w": "Recuerda",
+   "ini": 66.84,
+   "fin": 67.26
+  },
+  {
+   "w": "algo",
+   "ini": 67.28,
+   "fin": 67.56
+  },
+  {
+   "w": "que",
+   "ini": 67.64,
+   "fin": 67.76
+  },
+  {
+   "w": "creció",
+   "ini": 67.8,
+   "fin": 68.16
+  },
+  {
+   "w": "sin",
+   "ini": 68.28,
+   "fin": 68.42
+  },
+  {
+   "w": "control",
+   "ini": 68.48,
+   "fin": 68.9
+  },
+  {
+   "w": "en",
+   "ini": 68.94,
+   "fin": 69.02
+  },
+  {
+   "w": "un",
+   "ini": 69.06,
+   "fin": 69.12
+  },
+  {
+   "w": "proyecto",
+   "ini": 69.16,
+   "fin": 69.56
+  },
+  {
+   "w": "tuyo",
+   "ini": 69.66,
+   "fin": 69.92
+  },
+  {
+   "w": "y",
+   "ini": 70.36,
+   "fin": 70.42
+  },
+  {
+   "w": "cómo",
+   "ini": 70.58,
+   "fin": 70.8
+  },
+  {
+   "w": "lo",
+   "ini": 70.82,
+   "fin": 70.88
+  },
+  {
+   "w": "habrías",
+   "ini": 70.9,
+   "fin": 71.28
+  },
+  {
+   "w": "frenado.",
+   "ini": 71.34,
+   "fin": 71.74
+  }
+ ]
+}

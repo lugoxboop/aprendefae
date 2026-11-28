@@ -1,0 +1,780 @@
+{
+ "texto": "El vecino que nadie invitó puede frenar tu proyecto. El primer día, el carrito de Pía tapa el garaje de don Tito y él se queja en la alcaldía. Nadie lo había tenido en cuenta, pero también era un interesado. Un interesado es quien puede afectar el proyecto, verse afectado o sentirse afectado por él. Por eso se identifica a los interesados: quiénes son, qué intereses tienen, cuánto influyen y qué impacto pueden tener. Y no se hace una sola vez, se repite a lo largo del proyecto. Para ordenarlos, Pía los ubica en una matriz de poder e interés. Carmen tiene mucho poder y mucho interés. Don Tito, menos poder, pero mucho interés. Todo queda en el registro de interesados. Ahí va quién es cada uno y su rol, qué espera, cuánto puede influir y cómo se clasifica, por ejemplo, interno o externo. Ahora te toca. Arma el registro de interesados de tu proyecto.",
+ "palabras": [
+  {
+   "w": "El",
+   "ini": 0.08,
+   "fin": 0.18
+  },
+  {
+   "w": "vecino",
+   "ini": 0.22,
+   "fin": 0.62
+  },
+  {
+   "w": "que",
+   "ini": 0.7,
+   "fin": 0.82
+  },
+  {
+   "w": "nadie",
+   "ini": 0.88,
+   "fin": 1.18
+  },
+  {
+   "w": "invitó",
+   "ini": 1.2,
+   "fin": 1.64
+  },
+  {
+   "w": "puede",
+   "ini": 2.1,
+   "fin": 2.38
+  },
+  {
+   "w": "frenar",
+   "ini": 2.44,
+   "fin": 2.76
+  },
+  {
+   "w": "tu",
+   "ini": 2.82,
+   "fin": 2.88
+  },
+  {
+   "w": "proyecto.",
+   "ini": 2.96,
+   "fin": 3.44
+  },
+  {
+   "w": "El",
+   "ini": 4.72,
+   "fin": 4.8
+  },
+  {
+   "w": "primer",
+   "ini": 4.84,
+   "fin": 5.08
+  },
+  {
+   "w": "día,",
+   "ini": 5.14,
+   "fin": 5.34
+  },
+  {
+   "w": "el",
+   "ini": 5.64,
+   "fin": 5.7
+  },
+  {
+   "w": "carrito",
+   "ini": 5.76,
+   "fin": 6.14
+  },
+  {
+   "w": "de",
+   "ini": 6.18,
+   "fin": 6.24
+  },
+  {
+   "w": "Pía",
+   "ini": 6.34,
+   "fin": 6.56
+  },
+  {
+   "w": "tapa",
+   "ini": 6.84,
+   "fin": 7.1
+  },
+  {
+   "w": "el",
+   "ini": 7.14,
+   "fin": 7.22
+  },
+  {
+   "w": "garaje",
+   "ini": 7.26,
+   "fin": 7.62
+  },
+  {
+   "w": "de",
+   "ini": 7.66,
+   "fin": 7.72
+  },
+  {
+   "w": "don",
+   "ini": 7.76,
+   "fin": 7.92
+  },
+  {
+   "w": "Tito",
+   "ini": 7.98,
+   "fin": 8.26
+  },
+  {
+   "w": "y",
+   "ini": 8.66,
+   "fin": 8.7
+  },
+  {
+   "w": "él",
+   "ini": 8.78,
+   "fin": 8.86
+  },
+  {
+   "w": "se",
+   "ini": 8.94,
+   "fin": 9.02
+  },
+  {
+   "w": "queja",
+   "ini": 9.14,
+   "fin": 9.38
+  },
+  {
+   "w": "en",
+   "ini": 9.42,
+   "fin": 9.48
+  },
+  {
+   "w": "la",
+   "ini": 9.5,
+   "fin": 9.54
+  },
+  {
+   "w": "alcaldía.",
+   "ini": 9.56,
+   "fin": 10.06
+  },
+  {
+   "w": "Nadie",
+   "ini": 10.94,
+   "fin": 11.26
+  },
+  {
+   "w": "lo",
+   "ini": 11.3,
+   "fin": 11.34
+  },
+  {
+   "w": "había",
+   "ini": 11.36,
+   "fin": 11.6
+  },
+  {
+   "w": "tenido",
+   "ini": 11.64,
+   "fin": 11.9
+  },
+  {
+   "w": "en",
+   "ini": 11.92,
+   "fin": 12
+  },
+  {
+   "w": "cuenta,",
+   "ini": 12.04,
+   "fin": 12.38
+  },
+  {
+   "w": "pero",
+   "ini": 12.72,
+   "fin": 12.88
+  },
+  {
+   "w": "también",
+   "ini": 12.92,
+   "fin": 13.38
+  },
+  {
+   "w": "era",
+   "ini": 13.64,
+   "fin": 13.8
+  },
+  {
+   "w": "un",
+   "ini": 13.84,
+   "fin": 13.92
+  },
+  {
+   "w": "interesado.",
+   "ini": 13.96,
+   "fin": 14.6
+  },
+  {
+   "w": "Un",
+   "ini": 15.44,
+   "fin": 15.52
+  },
+  {
+   "w": "interesado",
+   "ini": 15.56,
+   "fin": 16.14
+  },
+  {
+   "w": "es",
+   "ini": 16.4,
+   "fin": 16.52
+  },
+  {
+   "w": "quien",
+   "ini": 16.56,
+   "fin": 16.76
+  },
+  {
+   "w": "puede",
+   "ini": 16.78,
+   "fin": 16.98
+  },
+  {
+   "w": "afectar",
+   "ini": 17.02,
+   "fin": 17.4
+  },
+  {
+   "w": "el",
+   "ini": 17.44,
+   "fin": 17.5
+  },
+  {
+   "w": "proyecto,",
+   "ini": 17.56,
+   "fin": 18
+  },
+  {
+   "w": "verse",
+   "ini": 18.48,
+   "fin": 18.72
+  },
+  {
+   "w": "afectado",
+   "ini": 18.76,
+   "fin": 19.26
+  },
+  {
+   "w": "o",
+   "ini": 19.6,
+   "fin": 19.66
+  },
+  {
+   "w": "sentirse",
+   "ini": 19.78,
+   "fin": 20.3
+  },
+  {
+   "w": "afectado",
+   "ini": 20.34,
+   "fin": 20.8
+  },
+  {
+   "w": "por",
+   "ini": 20.88,
+   "fin": 20.98
+  },
+  {
+   "w": "él.",
+   "ini": 21.04,
+   "fin": 21.18
+  },
+  {
+   "w": "Por",
+   "ini": 21.86,
+   "fin": 21.96
+  },
+  {
+   "w": "eso",
+   "ini": 22,
+   "fin": 22.18
+  },
+  {
+   "w": "se",
+   "ini": 22.24,
+   "fin": 22.32
+  },
+  {
+   "w": "identifica",
+   "ini": 22.36,
+   "fin": 22.96
+  },
+  {
+   "w": "a",
+   "ini": 22.98,
+   "fin": 23.02
+  },
+  {
+   "w": "los",
+   "ini": 23.06,
+   "fin": 23.18
+  },
+  {
+   "w": "interesados:",
+   "ini": 23.24,
+   "fin": 23.9
+  },
+  {
+   "w": "quiénes",
+   "ini": 24.22,
+   "fin": 24.5
+  },
+  {
+   "w": "son,",
+   "ini": 24.56,
+   "fin": 24.82
+  },
+  {
+   "w": "qué",
+   "ini": 25.14,
+   "fin": 25.24
+  },
+  {
+   "w": "intereses",
+   "ini": 25.26,
+   "fin": 25.74
+  },
+  {
+   "w": "tienen,",
+   "ini": 25.8,
+   "fin": 26.14
+  },
+  {
+   "w": "cuánto",
+   "ini": 26.48,
+   "fin": 26.78
+  },
+  {
+   "w": "influyen",
+   "ini": 26.82,
+   "fin": 27.32
+  },
+  {
+   "w": "y",
+   "ini": 27.68,
+   "fin": 27.72
+  },
+  {
+   "w": "qué",
+   "ini": 27.84,
+   "fin": 27.96
+  },
+  {
+   "w": "impacto",
+   "ini": 28,
+   "fin": 28.5
+  },
+  {
+   "w": "pueden",
+   "ini": 28.58,
+   "fin": 28.82
+  },
+  {
+   "w": "tener.",
+   "ini": 28.88,
+   "fin": 29.16
+  },
+  {
+   "w": "Y",
+   "ini": 29.86,
+   "fin": 29.9
+  },
+  {
+   "w": "no",
+   "ini": 29.96,
+   "fin": 30.06
+  },
+  {
+   "w": "se",
+   "ini": 30.12,
+   "fin": 30.22
+  },
+  {
+   "w": "hace",
+   "ini": 30.26,
+   "fin": 30.44
+  },
+  {
+   "w": "una",
+   "ini": 30.48,
+   "fin": 30.58
+  },
+  {
+   "w": "sola",
+   "ini": 30.64,
+   "fin": 30.84
+  },
+  {
+   "w": "vez,",
+   "ini": 30.88,
+   "fin": 31.08
+  },
+  {
+   "w": "se",
+   "ini": 31.48,
+   "fin": 31.56
+  },
+  {
+   "w": "repite",
+   "ini": 31.66,
+   "fin": 32.08
+  },
+  {
+   "w": "a",
+   "ini": 32.119,
+   "fin": 32.14
+  },
+  {
+   "w": "lo",
+   "ini": 32.18,
+   "fin": 32.24
+  },
+  {
+   "w": "largo",
+   "ini": 32.299,
+   "fin": 32.54
+  },
+  {
+   "w": "del",
+   "ini": 32.58,
+   "fin": 32.68
+  },
+  {
+   "w": "proyecto.",
+   "ini": 32.74,
+   "fin": 33.2
+  },
+  {
+   "w": "Para",
+   "ini": 34.02,
+   "fin": 34.18
+  },
+  {
+   "w": "ordenarlos,",
+   "ini": 34.2,
+   "fin": 34.8
+  },
+  {
+   "w": "Pía",
+   "ini": 35.1,
+   "fin": 35.26
+  },
+  {
+   "w": "los",
+   "ini": 35.3,
+   "fin": 35.42
+  },
+  {
+   "w": "ubica",
+   "ini": 35.48,
+   "fin": 35.78
+  },
+  {
+   "w": "en",
+   "ini": 35.8,
+   "fin": 35.86
+  },
+  {
+   "w": "una",
+   "ini": 35.92,
+   "fin": 36.02
+  },
+  {
+   "w": "matriz",
+   "ini": 36.06,
+   "fin": 36.44
+  },
+  {
+   "w": "de",
+   "ini": 36.48,
+   "fin": 36.56
+  },
+  {
+   "w": "poder",
+   "ini": 36.64,
+   "fin": 36.96
+  },
+  {
+   "w": "e",
+   "ini": 37.1,
+   "fin": 37.14
+  },
+  {
+   "w": "interés.",
+   "ini": 37.2,
+   "fin": 37.66
+  },
+  {
+   "w": "Carmen",
+   "ini": 38.26,
+   "fin": 38.6
+  },
+  {
+   "w": "tiene",
+   "ini": 38.68,
+   "fin": 38.9
+  },
+  {
+   "w": "mucho",
+   "ini": 39,
+   "fin": 39.22
+  },
+  {
+   "w": "poder",
+   "ini": 39.32,
+   "fin": 39.6
+  },
+  {
+   "w": "y",
+   "ini": 39.88,
+   "fin": 39.92
+  },
+  {
+   "w": "mucho",
+   "ini": 40.02,
+   "fin": 40.24
+  },
+  {
+   "w": "interés.",
+   "ini": 40.28,
+   "fin": 40.7
+  },
+  {
+   "w": "Don",
+   "ini": 41.38,
+   "fin": 41.5
+  },
+  {
+   "w": "Tito,",
+   "ini": 41.58,
+   "fin": 41.86
+  },
+  {
+   "w": "menos",
+   "ini": 42.18,
+   "fin": 42.42
+  },
+  {
+   "w": "poder,",
+   "ini": 42.48,
+   "fin": 42.76
+  },
+  {
+   "w": "pero",
+   "ini": 43.08,
+   "fin": 43.26
+  },
+  {
+   "w": "mucho",
+   "ini": 43.34,
+   "fin": 43.6
+  },
+  {
+   "w": "interés.",
+   "ini": 43.64,
+   "fin": 44.06
+  },
+  {
+   "w": "Todo",
+   "ini": 44.98,
+   "fin": 45.16
+  },
+  {
+   "w": "queda",
+   "ini": 45.28,
+   "fin": 45.5
+  },
+  {
+   "w": "en",
+   "ini": 45.52,
+   "fin": 45.58
+  },
+  {
+   "w": "el",
+   "ini": 45.62,
+   "fin": 45.7
+  },
+  {
+   "w": "registro",
+   "ini": 45.76,
+   "fin": 46.2
+  },
+  {
+   "w": "de",
+   "ini": 46.22,
+   "fin": 46.28
+  },
+  {
+   "w": "interesados.",
+   "ini": 46.32,
+   "fin": 47
+  },
+  {
+   "w": "Ahí",
+   "ini": 47.68,
+   "fin": 47.84
+  },
+  {
+   "w": "va",
+   "ini": 47.86,
+   "fin": 47.96
+  },
+  {
+   "w": "quién",
+   "ini": 48.12,
+   "fin": 48.3
+  },
+  {
+   "w": "es",
+   "ini": 48.34,
+   "fin": 48.46
+  },
+  {
+   "w": "cada",
+   "ini": 48.5,
+   "fin": 48.72
+  },
+  {
+   "w": "uno",
+   "ini": 48.8,
+   "fin": 48.94
+  },
+  {
+   "w": "y",
+   "ini": 48.96,
+   "fin": 49
+  },
+  {
+   "w": "su",
+   "ini": 49.06,
+   "fin": 49.14
+  },
+  {
+   "w": "rol,",
+   "ini": 49.22,
+   "fin": 49.44
+  },
+  {
+   "w": "qué",
+   "ini": 49.8,
+   "fin": 49.9
+  },
+  {
+   "w": "espera,",
+   "ini": 49.94,
+   "fin": 50.34
+  },
+  {
+   "w": "cuánto",
+   "ini": 50.78,
+   "fin": 51.08
+  },
+  {
+   "w": "puede",
+   "ini": 51.16,
+   "fin": 51.34
+  },
+  {
+   "w": "influir",
+   "ini": 51.36,
+   "fin": 51.78
+  },
+  {
+   "w": "y",
+   "ini": 52.06,
+   "fin": 52.1
+  },
+  {
+   "w": "cómo",
+   "ini": 52.24,
+   "fin": 52.44
+  },
+  {
+   "w": "se",
+   "ini": 52.5,
+   "fin": 52.58
+  },
+  {
+   "w": "clasifica,",
+   "ini": 52.62,
+   "fin": 53.2
+  },
+  {
+   "w": "por",
+   "ini": 53.66,
+   "fin": 53.76
+  },
+  {
+   "w": "ejemplo,",
+   "ini": 53.8,
+   "fin": 54.2
+  },
+  {
+   "w": "interno",
+   "ini": 54.64,
+   "fin": 55.14
+  },
+  {
+   "w": "o",
+   "ini": 55.46,
+   "fin": 55.52
+  },
+  {
+   "w": "externo.",
+   "ini": 55.6,
+   "fin": 56.14
+  },
+  {
+   "w": "Ahora",
+   "ini": 56.92,
+   "fin": 57.16
+  },
+  {
+   "w": "te",
+   "ini": 57.2,
+   "fin": 57.3
+  },
+  {
+   "w": "toca.",
+   "ini": 57.36,
+   "fin": 57.66
+  },
+  {
+   "w": "Arma",
+   "ini": 58.04,
+   "fin": 58.24
+  },
+  {
+   "w": "el",
+   "ini": 58.28,
+   "fin": 58.36
+  },
+  {
+   "w": "registro",
+   "ini": 58.42,
+   "fin": 58.9
+  },
+  {
+   "w": "de",
+   "ini": 58.94,
+   "fin": 59
+  },
+  {
+   "w": "interesados",
+   "ini": 59.04,
+   "fin": 59.74
+  },
+  {
+   "w": "de",
+   "ini": 59.8,
+   "fin": 59.86
+  },
+  {
+   "w": "tu",
+   "ini": 59.94,
+   "fin": 60
+  },
+  {
+   "w": "proyecto.",
+   "ini": 60.08,
+   "fin": 60.58
+  }
+ ]
+}

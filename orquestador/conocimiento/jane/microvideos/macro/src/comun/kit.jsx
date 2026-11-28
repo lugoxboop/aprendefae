@@ -106,7 +106,7 @@ export function Pizarra({ x, y, w, h, children, marco = "#8A5A35" }) {
 export function Tiza({ x, y, txt, p, tam = 70, color = TIZA, fuente = "Caveat", centro = false, peso = 700 }) {
   if (p <= 0) return null;
   return (
-    <div style={{ position: "absolute", left: x, top: y, transform: centro ? "translateX(-50%)" : undefined, whiteSpace: "nowrap", fontFamily: fuente, fontWeight: peso, fontSize: tam, lineHeight: 1.1, color, clipPath: `inset(-20% ${100 - clamp01(p) * 100}% -20% 0)`, textShadow: "0 0 2px rgba(255,255,255,.35)" }}>{txt}</div>
+    <div style={{ position: "absolute", left: x, top: y, transform: centro ? "translateX(-50%)" : undefined, whiteSpace: "nowrap", fontFamily: fuente, fontWeight: peso, fontSize: tam, lineHeight: 1.1, color, clipPath: `inset(-45% ${(1 - clamp01(p)) * 115 - 15}% -30% -5%)`, textShadow: "0 0 2px rgba(255,255,255,.35)" }}>{txt}</div>
   );
 }
 /* trazo de tiza (path SVG) que se dibuja de 0 a 1 */

@@ -1,0 +1,11 @@
+Ramón cuenta en horas, Pía en días y Carmen en semanas. Nadie se entiende.
+Antes de armar el cronograma, hay que acordar las reglas.
+Eso es planificar la gestión del cronograma: establecer las políticas, los procedimientos y la documentación para planificar, desarrollar, gestionar, ejecutar y controlar el cronograma.
+El resultado es el plan de gestión del cronograma.
+Define las unidades de medida. Aquí, todo en días.
+El nivel de exactitud: el rango aceptable al estimar, y si se deja una cantidad para contingencias.
+La metodología y la herramienta para hacer el modelo de programación.
+Y los umbrales de control: cuánto se puede desviar antes de tomar medidas. Por ejemplo, un diez por ciento respecto a la línea base.
+También dice cómo se registrará el avance durante la ejecución.
+Es parte del plan para la dirección del proyecto, y puede ser formal o informal, según lo que se necesite.
+Ahora te toca: elige la unidad de medida y el umbral de control de tu proyecto.

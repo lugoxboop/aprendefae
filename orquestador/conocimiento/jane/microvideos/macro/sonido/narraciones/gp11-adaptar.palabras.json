@@ -1,0 +1,730 @@
+{
+ "texto": "Usar toda la guía para pintar tu cuarto es dirigir mal. Ramón quiere pintar su cuarto el sábado. Pía, emocionada, le trae la guía completa: acta, plan de riesgos, informes. Ramón la mira: \"Pía, es un cuarto\". Y tiene razón. La guía no es una receta ni una metodología. Es una base de buenas prácticas, y buenas prácticas no significa aplicarlas igual en todos los proyectos. Para el cuarto basta una lista: color, pintura, brochas y el sábado. Para remodelar la panadería, en cambio, sí hace falta mucho más. Escoger qué procesos, entradas, herramientas, técnicas, salidas y fases usar en cada proyecto se llama adaptación. Se adapta porque cada proyecto es único y el director no lo decide solo. Lo hace con el equipo, el patrocinador o la dirección de la organización. Ahora te toca: ¿qué usarías para tu proyecto y qué dejarías por fuera?",
+ "palabras": [
+  {
+   "w": "Usar",
+   "ini": 0.1,
+   "fin": 0.4
+  },
+  {
+   "w": "toda",
+   "ini": 0.54,
+   "fin": 0.72
+  },
+  {
+   "w": "la",
+   "ini": 0.76,
+   "fin": 0.84
+  },
+  {
+   "w": "guía",
+   "ini": 0.88,
+   "fin": 1.18
+  },
+  {
+   "w": "para",
+   "ini": 1.22,
+   "fin": 1.4
+  },
+  {
+   "w": "pintar",
+   "ini": 1.44,
+   "fin": 1.8
+  },
+  {
+   "w": "tu",
+   "ini": 1.86,
+   "fin": 1.96
+  },
+  {
+   "w": "cuarto",
+   "ini": 2,
+   "fin": 2.58
+  },
+  {
+   "w": "es",
+   "ini": 2.7,
+   "fin": 2.84
+  },
+  {
+   "w": "dirigir",
+   "ini": 2.9,
+   "fin": 3.36
+  },
+  {
+   "w": "mal.",
+   "ini": 3.42,
+   "fin": 3.72
+  },
+  {
+   "w": "Ramón",
+   "ini": 5.14,
+   "fin": 5.5
+  },
+  {
+   "w": "quiere",
+   "ini": 5.56,
+   "fin": 5.78
+  },
+  {
+   "w": "pintar",
+   "ini": 5.82,
+   "fin": 6.12
+  },
+  {
+   "w": "su",
+   "ini": 6.18,
+   "fin": 6.28
+  },
+  {
+   "w": "cuarto",
+   "ini": 6.32,
+   "fin": 6.6
+  },
+  {
+   "w": "el",
+   "ini": 6.66,
+   "fin": 6.74
+  },
+  {
+   "w": "sábado.",
+   "ini": 6.82,
+   "fin": 7.16
+  },
+  {
+   "w": "Pía,",
+   "ini": 7.84,
+   "fin": 8.08
+  },
+  {
+   "w": "emocionada,",
+   "ini": 8.34,
+   "fin": 8.92
+  },
+  {
+   "w": "le",
+   "ini": 9.36,
+   "fin": 9.48
+  },
+  {
+   "w": "trae",
+   "ini": 9.54,
+   "fin": 9.8
+  },
+  {
+   "w": "la",
+   "ini": 9.84,
+   "fin": 9.94
+  },
+  {
+   "w": "guía",
+   "ini": 9.98,
+   "fin": 10.22
+  },
+  {
+   "w": "completa:",
+   "ini": 10.26,
+   "fin": 10.78
+  },
+  {
+   "w": "acta,",
+   "ini": 11.32,
+   "fin": 11.62
+  },
+  {
+   "w": "plan",
+   "ini": 11.9,
+   "fin": 12.06
+  },
+  {
+   "w": "de",
+   "ini": 12.1,
+   "fin": 12.18
+  },
+  {
+   "w": "riesgos,",
+   "ini": 12.26,
+   "fin": 12.74
+  },
+  {
+   "w": "informes.",
+   "ini": 12.94,
+   "fin": 13.56
+  },
+  {
+   "w": "Ramón",
+   "ini": 14.5,
+   "fin": 14.74
+  },
+  {
+   "w": "la",
+   "ini": 14.78,
+   "fin": 14.86
+  },
+  {
+   "w": "mira:",
+   "ini": 14.92,
+   "fin": 15.12
+  },
+  {
+   "w": "\"Pía,",
+   "ini": 15.96,
+   "fin": 16.239
+  },
+  {
+   "w": "es",
+   "ini": 16.52,
+   "fin": 16.6
+  },
+  {
+   "w": "un",
+   "ini": 16.66,
+   "fin": 16.74
+  },
+  {
+   "w": "cuarto\".",
+   "ini": 16.8,
+   "fin": 17.16
+  },
+  {
+   "w": "Y",
+   "ini": 18.24,
+   "fin": 18.28
+  },
+  {
+   "w": "tiene",
+   "ini": 18.32,
+   "fin": 18.54
+  },
+  {
+   "w": "razón.",
+   "ini": 18.6,
+   "fin": 19.02
+  },
+  {
+   "w": "La",
+   "ini": 19.46,
+   "fin": 19.54
+  },
+  {
+   "w": "guía",
+   "ini": 19.58,
+   "fin": 19.86
+  },
+  {
+   "w": "no",
+   "ini": 19.94,
+   "fin": 20.02
+  },
+  {
+   "w": "es",
+   "ini": 20.06,
+   "fin": 20.14
+  },
+  {
+   "w": "una",
+   "ini": 20.2,
+   "fin": 20.32
+  },
+  {
+   "w": "receta",
+   "ini": 20.36,
+   "fin": 20.8
+  },
+  {
+   "w": "ni",
+   "ini": 20.84,
+   "fin": 20.94
+  },
+  {
+   "w": "una",
+   "ini": 21,
+   "fin": 21.12
+  },
+  {
+   "w": "metodología.",
+   "ini": 21.16,
+   "fin": 21.86
+  },
+  {
+   "w": "Es",
+   "ini": 22.62,
+   "fin": 22.7
+  },
+  {
+   "w": "una",
+   "ini": 22.76,
+   "fin": 22.88
+  },
+  {
+   "w": "base",
+   "ini": 22.94,
+   "fin": 23.2
+  },
+  {
+   "w": "de",
+   "ini": 23.24,
+   "fin": 23.32
+  },
+  {
+   "w": "buenas",
+   "ini": 23.36,
+   "fin": 23.62
+  },
+  {
+   "w": "prácticas,",
+   "ini": 23.68,
+   "fin": 24.22
+  },
+  {
+   "w": "y",
+   "ini": 24.72,
+   "fin": 24.76
+  },
+  {
+   "w": "buenas",
+   "ini": 24.8,
+   "fin": 25.06
+  },
+  {
+   "w": "prácticas",
+   "ini": 25.1,
+   "fin": 25.62
+  },
+  {
+   "w": "no",
+   "ini": 25.94,
+   "fin": 26.06
+  },
+  {
+   "w": "significa",
+   "ini": 26.12,
+   "fin": 26.66
+  },
+  {
+   "w": "aplicarlas",
+   "ini": 26.72,
+   "fin": 27.28
+  },
+  {
+   "w": "igual",
+   "ini": 27.34,
+   "fin": 27.74
+  },
+  {
+   "w": "en",
+   "ini": 27.82,
+   "fin": 28.06
+  },
+  {
+   "w": "todos",
+   "ini": 28.12,
+   "fin": 28.5
+  },
+  {
+   "w": "los",
+   "ini": 28.56,
+   "fin": 28.68
+  },
+  {
+   "w": "proyectos.",
+   "ini": 28.74,
+   "fin": 29.3
+  },
+  {
+   "w": "Para",
+   "ini": 30.4,
+   "fin": 30.5
+  },
+  {
+   "w": "el",
+   "ini": 30.54,
+   "fin": 30.6
+  },
+  {
+   "w": "cuarto",
+   "ini": 30.66,
+   "fin": 31
+  },
+  {
+   "w": "basta",
+   "ini": 31.2,
+   "fin": 31.48
+  },
+  {
+   "w": "una",
+   "ini": 31.54,
+   "fin": 31.66
+  },
+  {
+   "w": "lista:",
+   "ini": 31.72,
+   "fin": 32.02
+  },
+  {
+   "w": "color,",
+   "ini": 32.54,
+   "fin": 32.86
+  },
+  {
+   "w": "pintura,",
+   "ini": 33.18,
+   "fin": 33.62
+  },
+  {
+   "w": "brochas",
+   "ini": 34,
+   "fin": 34.68
+  },
+  {
+   "w": "y",
+   "ini": 34.74,
+   "fin": 34.78
+  },
+  {
+   "w": "el",
+   "ini": 34.84,
+   "fin": 34.92
+  },
+  {
+   "w": "sábado.",
+   "ini": 34.98,
+   "fin": 35.32
+  },
+  {
+   "w": "Para",
+   "ini": 36.3,
+   "fin": 36.48
+  },
+  {
+   "w": "remodelar",
+   "ini": 36.54,
+   "fin": 37
+  },
+  {
+   "w": "la",
+   "ini": 37.04,
+   "fin": 37.12
+  },
+  {
+   "w": "panadería,",
+   "ini": 37.16,
+   "fin": 37.62
+  },
+  {
+   "w": "en",
+   "ini": 37.68,
+   "fin": 37.76
+  },
+  {
+   "w": "cambio,",
+   "ini": 37.82,
+   "fin": 38.16
+  },
+  {
+   "w": "sí",
+   "ini": 38.52,
+   "fin": 38.64
+  },
+  {
+   "w": "hace",
+   "ini": 38.7,
+   "fin": 38.92
+  },
+  {
+   "w": "falta",
+   "ini": 38.98,
+   "fin": 39.28
+  },
+  {
+   "w": "mucho",
+   "ini": 39.34,
+   "fin": 39.6
+  },
+  {
+   "w": "más.",
+   "ini": 39.64,
+   "fin": 39.88
+  },
+  {
+   "w": "Escoger",
+   "ini": 40.7,
+   "fin": 41.16
+  },
+  {
+   "w": "qué",
+   "ini": 41.2,
+   "fin": 41.3
+  },
+  {
+   "w": "procesos,",
+   "ini": 41.34,
+   "fin": 41.86
+  },
+  {
+   "w": "entradas,",
+   "ini": 42.14,
+   "fin": 42.72
+  },
+  {
+   "w": "herramientas,",
+   "ini": 42.88,
+   "fin": 43.64
+  },
+  {
+   "w": "técnicas,",
+   "ini": 43.94,
+   "fin": 44.5
+  },
+  {
+   "w": "salidas",
+   "ini": 44.78,
+   "fin": 45.32
+  },
+  {
+   "w": "y",
+   "ini": 45.66,
+   "fin": 45.7
+  },
+  {
+   "w": "fases",
+   "ini": 45.84,
+   "fin": 46.16
+  },
+  {
+   "w": "usar",
+   "ini": 46.24,
+   "fin": 46.52
+  },
+  {
+   "w": "en",
+   "ini": 46.56,
+   "fin": 46.66
+  },
+  {
+   "w": "cada",
+   "ini": 46.7,
+   "fin": 46.88
+  },
+  {
+   "w": "proyecto",
+   "ini": 46.94,
+   "fin": 47.44
+  },
+  {
+   "w": "se",
+   "ini": 47.74,
+   "fin": 47.82
+  },
+  {
+   "w": "llama",
+   "ini": 47.86,
+   "fin": 48.18
+  },
+  {
+   "w": "adaptación.",
+   "ini": 48.52,
+   "fin": 49.32
+  },
+  {
+   "w": "Se",
+   "ini": 50.2,
+   "fin": 50.26
+  },
+  {
+   "w": "adapta",
+   "ini": 50.32,
+   "fin": 50.68
+  },
+  {
+   "w": "porque",
+   "ini": 50.78,
+   "fin": 51.06
+  },
+  {
+   "w": "cada",
+   "ini": 51.1,
+   "fin": 51.28
+  },
+  {
+   "w": "proyecto",
+   "ini": 51.34,
+   "fin": 51.72
+  },
+  {
+   "w": "es",
+   "ini": 51.76,
+   "fin": 51.84
+  },
+  {
+   "w": "único",
+   "ini": 51.9,
+   "fin": 52.22
+  },
+  {
+   "w": "y",
+   "ini": 52.66,
+   "fin": 52.7
+  },
+  {
+   "w": "el",
+   "ini": 52.74,
+   "fin": 52.8
+  },
+  {
+   "w": "director",
+   "ini": 52.82,
+   "fin": 53.26
+  },
+  {
+   "w": "no",
+   "ini": 53.54,
+   "fin": 53.64
+  },
+  {
+   "w": "lo",
+   "ini": 53.66,
+   "fin": 53.74
+  },
+  {
+   "w": "decide",
+   "ini": 53.78,
+   "fin": 54.12
+  },
+  {
+   "w": "solo.",
+   "ini": 54.2,
+   "fin": 54.46
+  },
+  {
+   "w": "Lo",
+   "ini": 54.9,
+   "fin": 54.98
+  },
+  {
+   "w": "hace",
+   "ini": 55.02,
+   "fin": 55.24
+  },
+  {
+   "w": "con",
+   "ini": 55.28,
+   "fin": 55.4
+  },
+  {
+   "w": "el",
+   "ini": 55.44,
+   "fin": 55.5
+  },
+  {
+   "w": "equipo,",
+   "ini": 55.54,
+   "fin": 55.92
+  },
+  {
+   "w": "el",
+   "ini": 56.2,
+   "fin": 56.26
+  },
+  {
+   "w": "patrocinador",
+   "ini": 56.32,
+   "fin": 57.02
+  },
+  {
+   "w": "o",
+   "ini": 57.3,
+   "fin": 57.36
+  },
+  {
+   "w": "la",
+   "ini": 57.4,
+   "fin": 57.46
+  },
+  {
+   "w": "dirección",
+   "ini": 57.5,
+   "fin": 57.96
+  },
+  {
+   "w": "de",
+   "ini": 58,
+   "fin": 58.06
+  },
+  {
+   "w": "la",
+   "ini": 58.1,
+   "fin": 58.16
+  },
+  {
+   "w": "organización.",
+   "ini": 58.2,
+   "fin": 58.94
+  },
+  {
+   "w": "Ahora",
+   "ini": 60.02,
+   "fin": 60.26
+  },
+  {
+   "w": "te",
+   "ini": 60.32,
+   "fin": 60.4
+  },
+  {
+   "w": "toca:",
+   "ini": 60.46,
+   "fin": 60.74
+  },
+  {
+   "w": "¿qué",
+   "ini": 61.22,
+   "fin": 61.32
+  },
+  {
+   "w": "usarías",
+   "ini": 61.36,
+   "fin": 61.78
+  },
+  {
+   "w": "para",
+   "ini": 61.82,
+   "fin": 61.96
+  },
+  {
+   "w": "tu",
+   "ini": 62.02,
+   "fin": 62.08
+  },
+  {
+   "w": "proyecto",
+   "ini": 62.14,
+   "fin": 62.62
+  },
+  {
+   "w": "y",
+   "ini": 62.92,
+   "fin": 62.96
+  },
+  {
+   "w": "qué",
+   "ini": 63.08,
+   "fin": 63.2
+  },
+  {
+   "w": "dejarías",
+   "ini": 63.24,
+   "fin": 63.72
+  },
+  {
+   "w": "por",
+   "ini": 63.8,
+   "fin": 63.94
+  },
+  {
+   "w": "fuera?",
+   "ini": 63.98,
+   "fin": 64.2
+  }
+ ]
+}

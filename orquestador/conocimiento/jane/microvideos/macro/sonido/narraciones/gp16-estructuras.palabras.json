@@ -1,0 +1,835 @@
+{
+ "texto": "Puedes ser director del proyecto y no poder decidir casi nada. A Ramón lo nombran director del proyecto de una nueva línea de tortas en una gran panificadora, pero cada persona de su equipo responde a su propio jefe de área. Si Ramón necesita a la repostera, se la tiene que pedir al jefe de producción. En una organización funcional, la autoridad del director es poca o ninguna. En una matricial se reparte: baja en la débil, de baja a moderada en la balanceada y de moderada a alta en la fuerte. Y en una organización orientada a proyectos, el director tiene una autoridad elevada, casi total. Además, muchas organizaciones tienen una oficina de dirección de proyectos, una PMO. Una PMO de apoyo aconseja y presta plantillas, ejerce un control reducido. Una de control exige que se usen sus métodos y plantillas, control moderado. Y una directiva dirige ella misma los proyectos, control elevado. Ahora te toca. En tu organización, ¿cuánto manda el director del proyecto?",
+ "palabras": [
+  {
+   "w": "Puedes",
+   "ini": 0.08,
+   "fin": 0.34
+  },
+  {
+   "w": "ser",
+   "ini": 0.38,
+   "fin": 0.52
+  },
+  {
+   "w": "director",
+   "ini": 0.54,
+   "fin": 0.94
+  },
+  {
+   "w": "del",
+   "ini": 0.98,
+   "fin": 1.08
+  },
+  {
+   "w": "proyecto",
+   "ini": 1.14,
+   "fin": 1.62
+  },
+  {
+   "w": "y",
+   "ini": 1.84,
+   "fin": 1.9
+  },
+  {
+   "w": "no",
+   "ini": 2,
+   "fin": 2.1
+  },
+  {
+   "w": "poder",
+   "ini": 2.2,
+   "fin": 2.44
+  },
+  {
+   "w": "decidir",
+   "ini": 2.48,
+   "fin": 2.92
+  },
+  {
+   "w": "casi",
+   "ini": 3.12,
+   "fin": 3.4
+  },
+  {
+   "w": "nada.",
+   "ini": 3.46,
+   "fin": 3.72
+  },
+  {
+   "w": "A",
+   "ini": 4.48,
+   "fin": 4.54
+  },
+  {
+   "w": "Ramón",
+   "ini": 4.58,
+   "fin": 4.92
+  },
+  {
+   "w": "lo",
+   "ini": 5.24,
+   "fin": 5.3
+  },
+  {
+   "w": "nombran",
+   "ini": 5.36,
+   "fin": 5.66
+  },
+  {
+   "w": "director",
+   "ini": 5.72,
+   "fin": 6.08
+  },
+  {
+   "w": "del",
+   "ini": 6.12,
+   "fin": 6.24
+  },
+  {
+   "w": "proyecto",
+   "ini": 6.3,
+   "fin": 6.78
+  },
+  {
+   "w": "de",
+   "ini": 6.84,
+   "fin": 6.9
+  },
+  {
+   "w": "una",
+   "ini": 6.96,
+   "fin": 7.1
+  },
+  {
+   "w": "nueva",
+   "ini": 7.2,
+   "fin": 7.46
+  },
+  {
+   "w": "línea",
+   "ini": 7.54,
+   "fin": 7.76
+  },
+  {
+   "w": "de",
+   "ini": 7.8,
+   "fin": 7.88
+  },
+  {
+   "w": "tortas",
+   "ini": 7.96,
+   "fin": 8.34
+  },
+  {
+   "w": "en",
+   "ini": 8.5,
+   "fin": 8.6
+  },
+  {
+   "w": "una",
+   "ini": 8.66,
+   "fin": 8.78
+  },
+  {
+   "w": "gran",
+   "ini": 8.84,
+   "fin": 9.04
+  },
+  {
+   "w": "panificadora,",
+   "ini": 9.1,
+   "fin": 9.8
+  },
+  {
+   "w": "pero",
+   "ini": 10.4,
+   "fin": 10.58
+  },
+  {
+   "w": "cada",
+   "ini": 10.62,
+   "fin": 10.8
+  },
+  {
+   "w": "persona",
+   "ini": 10.88,
+   "fin": 11.26
+  },
+  {
+   "w": "de",
+   "ini": 11.3,
+   "fin": 11.36
+  },
+  {
+   "w": "su",
+   "ini": 11.44,
+   "fin": 11.52
+  },
+  {
+   "w": "equipo",
+   "ini": 11.56,
+   "fin": 11.94
+  },
+  {
+   "w": "responde",
+   "ini": 12.32,
+   "fin": 12.76
+  },
+  {
+   "w": "a",
+   "ini": 12.8,
+   "fin": 12.84
+  },
+  {
+   "w": "su",
+   "ini": 12.92,
+   "fin": 13.02
+  },
+  {
+   "w": "propio",
+   "ini": 13.14,
+   "fin": 13.52
+  },
+  {
+   "w": "jefe",
+   "ini": 13.62,
+   "fin": 13.88
+  },
+  {
+   "w": "de",
+   "ini": 13.92,
+   "fin": 14
+  },
+  {
+   "w": "área.",
+   "ini": 14.08,
+   "fin": 14.32
+  },
+  {
+   "w": "Si",
+   "ini": 15.26,
+   "fin": 15.36
+  },
+  {
+   "w": "Ramón",
+   "ini": 15.4,
+   "fin": 15.68
+  },
+  {
+   "w": "necesita",
+   "ini": 15.72,
+   "fin": 16.18
+  },
+  {
+   "w": "a",
+   "ini": 16.2,
+   "fin": 16.239
+  },
+  {
+   "w": "la",
+   "ini": 16.28,
+   "fin": 16.32
+  },
+  {
+   "w": "repostera,",
+   "ini": 16.379,
+   "fin": 16.9
+  },
+  {
+   "w": "se",
+   "ini": 17.28,
+   "fin": 17.34
+  },
+  {
+   "w": "la",
+   "ini": 17.38,
+   "fin": 17.44
+  },
+  {
+   "w": "tiene",
+   "ini": 17.5,
+   "fin": 17.68
+  },
+  {
+   "w": "que",
+   "ini": 17.72,
+   "fin": 17.84
+  },
+  {
+   "w": "pedir",
+   "ini": 17.88,
+   "fin": 18.14
+  },
+  {
+   "w": "al",
+   "ini": 18.28,
+   "fin": 18.4
+  },
+  {
+   "w": "jefe",
+   "ini": 18.48,
+   "fin": 18.7
+  },
+  {
+   "w": "de",
+   "ini": 18.74,
+   "fin": 18.8
+  },
+  {
+   "w": "producción.",
+   "ini": 18.86,
+   "fin": 19.4
+  },
+  {
+   "w": "En",
+   "ini": 20.22,
+   "fin": 20.32
+  },
+  {
+   "w": "una",
+   "ini": 20.38,
+   "fin": 20.48
+  },
+  {
+   "w": "organización",
+   "ini": 20.52,
+   "fin": 21.12
+  },
+  {
+   "w": "funcional,",
+   "ini": 21.2,
+   "fin": 21.72
+  },
+  {
+   "w": "la",
+   "ini": 22.06,
+   "fin": 22.12
+  },
+  {
+   "w": "autoridad",
+   "ini": 22.14,
+   "fin": 22.66
+  },
+  {
+   "w": "del",
+   "ini": 22.7,
+   "fin": 22.8
+  },
+  {
+   "w": "director",
+   "ini": 22.82,
+   "fin": 23.24
+  },
+  {
+   "w": "es",
+   "ini": 23.44,
+   "fin": 23.6
+  },
+  {
+   "w": "poca",
+   "ini": 23.72,
+   "fin": 24.02
+  },
+  {
+   "w": "o",
+   "ini": 24.28,
+   "fin": 24.34
+  },
+  {
+   "w": "ninguna.",
+   "ini": 24.4,
+   "fin": 24.84
+  },
+  {
+   "w": "En",
+   "ini": 25.82,
+   "fin": 25.92
+  },
+  {
+   "w": "una",
+   "ini": 25.96,
+   "fin": 26.06
+  },
+  {
+   "w": "matricial",
+   "ini": 26.14,
+   "fin": 26.66
+  },
+  {
+   "w": "se",
+   "ini": 26.72,
+   "fin": 26.8
+  },
+  {
+   "w": "reparte:",
+   "ini": 26.88,
+   "fin": 27.36
+  },
+  {
+   "w": "baja",
+   "ini": 27.98,
+   "fin": 28.26
+  },
+  {
+   "w": "en",
+   "ini": 28.28,
+   "fin": 28.36
+  },
+  {
+   "w": "la",
+   "ini": 28.4,
+   "fin": 28.46
+  },
+  {
+   "w": "débil,",
+   "ini": 28.52,
+   "fin": 28.86
+  },
+  {
+   "w": "de",
+   "ini": 29.38,
+   "fin": 29.46
+  },
+  {
+   "w": "baja",
+   "ini": 29.52,
+   "fin": 29.84
+  },
+  {
+   "w": "a",
+   "ini": 30,
+   "fin": 30.04
+  },
+  {
+   "w": "moderada",
+   "ini": 30.12,
+   "fin": 30.56
+  },
+  {
+   "w": "en",
+   "ini": 30.58,
+   "fin": 30.66
+  },
+  {
+   "w": "la",
+   "ini": 30.7,
+   "fin": 30.76
+  },
+  {
+   "w": "balanceada",
+   "ini": 30.8,
+   "fin": 31.38
+  },
+  {
+   "w": "y",
+   "ini": 31.8,
+   "fin": 31.84
+  },
+  {
+   "w": "de",
+   "ini": 31.88,
+   "fin": 31.96
+  },
+  {
+   "w": "moderada",
+   "ini": 32.02,
+   "fin": 32.52
+  },
+  {
+   "w": "a",
+   "ini": 32.78,
+   "fin": 32.82
+  },
+  {
+   "w": "alta",
+   "ini": 32.92,
+   "fin": 33.28
+  },
+  {
+   "w": "en",
+   "ini": 33.48,
+   "fin": 33.56
+  },
+  {
+   "w": "la",
+   "ini": 33.6,
+   "fin": 33.66
+  },
+  {
+   "w": "fuerte.",
+   "ini": 33.76,
+   "fin": 34.14
+  },
+  {
+   "w": "Y",
+   "ini": 34.88,
+   "fin": 34.94
+  },
+  {
+   "w": "en",
+   "ini": 34.98,
+   "fin": 35.06
+  },
+  {
+   "w": "una",
+   "ini": 35.12,
+   "fin": 35.22
+  },
+  {
+   "w": "organización",
+   "ini": 35.26,
+   "fin": 35.9
+  },
+  {
+   "w": "orientada",
+   "ini": 35.96,
+   "fin": 36.42
+  },
+  {
+   "w": "a",
+   "ini": 36.46,
+   "fin": 36.48
+  },
+  {
+   "w": "proyectos,",
+   "ini": 36.54,
+   "fin": 37.1
+  },
+  {
+   "w": "el",
+   "ini": 37.48,
+   "fin": 37.56
+  },
+  {
+   "w": "director",
+   "ini": 37.6,
+   "fin": 38.06
+  },
+  {
+   "w": "tiene",
+   "ini": 38.2,
+   "fin": 38.44
+  },
+  {
+   "w": "una",
+   "ini": 38.48,
+   "fin": 38.6
+  },
+  {
+   "w": "autoridad",
+   "ini": 38.64,
+   "fin": 39.16
+  },
+  {
+   "w": "elevada,",
+   "ini": 39.3,
+   "fin": 39.72
+  },
+  {
+   "w": "casi",
+   "ini": 40.1,
+   "fin": 40.4
+  },
+  {
+   "w": "total.",
+   "ini": 40.46,
+   "fin": 40.84
+  },
+  {
+   "w": "Además,",
+   "ini": 41.7,
+   "fin": 42.1
+  },
+  {
+   "w": "muchas",
+   "ini": 42.44,
+   "fin": 42.72
+  },
+  {
+   "w": "organizaciones",
+   "ini": 42.78,
+   "fin": 43.54
+  },
+  {
+   "w": "tienen",
+   "ini": 43.64,
+   "fin": 43.88
+  },
+  {
+   "w": "una",
+   "ini": 43.92,
+   "fin": 44.04
+  },
+  {
+   "w": "oficina",
+   "ini": 44.06,
+   "fin": 44.54
+  },
+  {
+   "w": "de",
+   "ini": 44.58,
+   "fin": 44.64
+  },
+  {
+   "w": "dirección",
+   "ini": 44.68,
+   "fin": 45.1
+  },
+  {
+   "w": "de",
+   "ini": 45.12,
+   "fin": 45.18
+  },
+  {
+   "w": "proyectos,",
+   "ini": 45.24,
+   "fin": 45.82
+  },
+  {
+   "w": "una",
+   "ini": 46.28,
+   "fin": 46.48
+  },
+  {
+   "w": "PMO.",
+   "ini": 46.76,
+   "fin": 47.5
+  },
+  {
+   "w": "Una",
+   "ini": 48.28,
+   "fin": 48.44
+  },
+  {
+   "w": "PMO",
+   "ini": 48.6,
+   "fin": 49.26
+  },
+  {
+   "w": "de",
+   "ini": 49.6,
+   "fin": 49.66
+  },
+  {
+   "w": "apoyo",
+   "ini": 49.7,
+   "fin": 50.1
+  },
+  {
+   "w": "aconseja",
+   "ini": 50.28,
+   "fin": 50.86
+  },
+  {
+   "w": "y",
+   "ini": 50.88,
+   "fin": 50.92
+  },
+  {
+   "w": "presta",
+   "ini": 51.02,
+   "fin": 51.32
+  },
+  {
+   "w": "plantillas,",
+   "ini": 51.38,
+   "fin": 51.96
+  },
+  {
+   "w": "ejerce",
+   "ini": 52.36,
+   "fin": 52.74
+  },
+  {
+   "w": "un",
+   "ini": 52.76,
+   "fin": 52.84
+  },
+  {
+   "w": "control",
+   "ini": 52.88,
+   "fin": 53.22
+  },
+  {
+   "w": "reducido.",
+   "ini": 53.3,
+   "fin": 53.8
+  },
+  {
+   "w": "Una",
+   "ini": 54.68,
+   "fin": 54.8
+  },
+  {
+   "w": "de",
+   "ini": 54.86,
+   "fin": 54.92
+  },
+  {
+   "w": "control",
+   "ini": 54.98,
+   "fin": 55.4
+  },
+  {
+   "w": "exige",
+   "ini": 55.78,
+   "fin": 56.22
+  },
+  {
+   "w": "que",
+   "ini": 56.3,
+   "fin": 56.4
+  },
+  {
+   "w": "se",
+   "ini": 56.46,
+   "fin": 56.56
+  },
+  {
+   "w": "usen",
+   "ini": 56.6,
+   "fin": 56.86
+  },
+  {
+   "w": "sus",
+   "ini": 56.92,
+   "fin": 57.08
+  },
+  {
+   "w": "métodos",
+   "ini": 57.18,
+   "fin": 57.58
+  },
+  {
+   "w": "y",
+   "ini": 57.62,
+   "fin": 57.66
+  },
+  {
+   "w": "plantillas,",
+   "ini": 57.72,
+   "fin": 58.32
+  },
+  {
+   "w": "control",
+   "ini": 58.74,
+   "fin": 59.16
+  },
+  {
+   "w": "moderado.",
+   "ini": 59.22,
+   "fin": 59.68
+  },
+  {
+   "w": "Y",
+   "ini": 60.44,
+   "fin": 60.48
+  },
+  {
+   "w": "una",
+   "ini": 60.54,
+   "fin": 60.68
+  },
+  {
+   "w": "directiva",
+   "ini": 60.72,
+   "fin": 61.24
+  },
+  {
+   "w": "dirige",
+   "ini": 61.46,
+   "fin": 61.8
+  },
+  {
+   "w": "ella",
+   "ini": 61.84,
+   "fin": 62.02
+  },
+  {
+   "w": "misma",
+   "ini": 62.08,
+   "fin": 62.4
+  },
+  {
+   "w": "los",
+   "ini": 62.42,
+   "fin": 62.54
+  },
+  {
+   "w": "proyectos,",
+   "ini": 62.62,
+   "fin": 63.18
+  },
+  {
+   "w": "control",
+   "ini": 63.62,
+   "fin": 64.16
+  },
+  {
+   "w": "elevado.",
+   "ini": 64.4,
+   "fin": 64.879
+  },
+  {
+   "w": "Ahora",
+   "ini": 65.9,
+   "fin": 66.18
+  },
+  {
+   "w": "te",
+   "ini": 66.24,
+   "fin": 66.32
+  },
+  {
+   "w": "toca.",
+   "ini": 66.4,
+   "fin": 66.68
+  },
+  {
+   "w": "En",
+   "ini": 67.1,
+   "fin": 67.18
+  },
+  {
+   "w": "tu",
+   "ini": 67.22,
+   "fin": 67.28
+  },
+  {
+   "w": "organización,",
+   "ini": 67.32,
+   "fin": 68.04
+  },
+  {
+   "w": "¿cuánto",
+   "ini": 68.46,
+   "fin": 68.8
+  },
+  {
+   "w": "manda",
+   "ini": 68.9,
+   "fin": 69.14
+  },
+  {
+   "w": "el",
+   "ini": 69.16,
+   "fin": 69.22
+  },
+  {
+   "w": "director",
+   "ini": 69.26,
+   "fin": 69.64
+  },
+  {
+   "w": "del",
+   "ini": 69.68,
+   "fin": 69.78
+  },
+  {
+   "w": "proyecto?",
+   "ini": 69.86,
+   "fin": 70.28
+  }
+ ]
+}

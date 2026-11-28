@@ -1,0 +1,810 @@
+{
+ "texto": "\"Toldo\" está en la estructura, pero un toldo no se hace solo. Pía toma el paquete de trabajo \"Toldo\" y se pregunta: \"¿Qué hay que hacer?\" Medir, comprar la tela, coser e instalar. Eso es definir las actividades, identificar y documentar las acciones específicas que se deben realizar para elaborar los entregables. Las saca de los paquetes de trabajo y lo hace a lo largo de todo el proyecto. El resultado es la lista de actividades, cada una con un identificador y una descripción clara del trabajo. Cada actividad tiene atributos: su nombre, su código y el del paquete del que sale. Más adelante, qué actividades van antes y cuáles después. Aparte, Pía arma la lista de hitos. Un hito es un punto o evento significativo, como \"Carrito aprobado por el parque\". Su duración es cero. Un hito puede ser obligatorio, como uno exigido por contrato, u opcional. Ahora te toca. Convierte un paquete de trabajo de tu proyecto en actividades.",
+ "palabras": [
+  {
+   "w": "\"Toldo\"",
+   "ini": 0.06,
+   "fin": 0.4
+  },
+  {
+   "w": "está",
+   "ini": 0.72,
+   "fin": 1.08
+  },
+  {
+   "w": "en",
+   "ini": 1.1,
+   "fin": 1.2
+  },
+  {
+   "w": "la",
+   "ini": 1.24,
+   "fin": 1.3
+  },
+  {
+   "w": "estructura,",
+   "ini": 1.34,
+   "fin": 1.86
+  },
+  {
+   "w": "pero",
+   "ini": 2.58,
+   "fin": 2.72
+  },
+  {
+   "w": "un",
+   "ini": 2.76,
+   "fin": 2.9
+  },
+  {
+   "w": "toldo",
+   "ini": 2.94,
+   "fin": 3.28
+  },
+  {
+   "w": "no",
+   "ini": 3.58,
+   "fin": 3.68
+  },
+  {
+   "w": "se",
+   "ini": 3.78,
+   "fin": 3.88
+  },
+  {
+   "w": "hace",
+   "ini": 3.92,
+   "fin": 4.12
+  },
+  {
+   "w": "solo.",
+   "ini": 4.2,
+   "fin": 4.46
+  },
+  {
+   "w": "Pía",
+   "ini": 5.22,
+   "fin": 5.44
+  },
+  {
+   "w": "toma",
+   "ini": 5.86,
+   "fin": 6.04
+  },
+  {
+   "w": "el",
+   "ini": 6.08,
+   "fin": 6.18
+  },
+  {
+   "w": "paquete",
+   "ini": 6.22,
+   "fin": 6.56
+  },
+  {
+   "w": "de",
+   "ini": 6.6,
+   "fin": 6.68
+  },
+  {
+   "w": "trabajo",
+   "ini": 6.74,
+   "fin": 7.22
+  },
+  {
+   "w": "\"Toldo\"",
+   "ini": 7.54,
+   "fin": 7.9
+  },
+  {
+   "w": "y",
+   "ini": 8.28,
+   "fin": 8.32
+  },
+  {
+   "w": "se",
+   "ini": 8.38,
+   "fin": 8.46
+  },
+  {
+   "w": "pregunta:",
+   "ini": 8.52,
+   "fin": 9.02
+  },
+  {
+   "w": "\"¿Qué",
+   "ini": 9.72,
+   "fin": 9.88
+  },
+  {
+   "w": "hay",
+   "ini": 9.9,
+   "fin": 10.02
+  },
+  {
+   "w": "que",
+   "ini": 10.08,
+   "fin": 10.14
+  },
+  {
+   "w": "hacer?\"",
+   "ini": 10.16,
+   "fin": 10.46
+  },
+  {
+   "w": "Medir,",
+   "ini": 11.26,
+   "fin": 11.6
+  },
+  {
+   "w": "comprar",
+   "ini": 12,
+   "fin": 12.38
+  },
+  {
+   "w": "la",
+   "ini": 12.42,
+   "fin": 12.5
+  },
+  {
+   "w": "tela,",
+   "ini": 12.6,
+   "fin": 12.88
+  },
+  {
+   "w": "coser",
+   "ini": 13.28,
+   "fin": 13.68
+  },
+  {
+   "w": "e",
+   "ini": 13.98,
+   "fin": 14.04
+  },
+  {
+   "w": "instalar.",
+   "ini": 14.1,
+   "fin": 14.62
+  },
+  {
+   "w": "Eso",
+   "ini": 15.44,
+   "fin": 15.66
+  },
+  {
+   "w": "es",
+   "ini": 15.72,
+   "fin": 15.82
+  },
+  {
+   "w": "definir",
+   "ini": 15.86,
+   "fin": 16.28
+  },
+  {
+   "w": "las",
+   "ini": 16.34,
+   "fin": 16.48
+  },
+  {
+   "w": "actividades,",
+   "ini": 16.54,
+   "fin": 17.22
+  },
+  {
+   "w": "identificar",
+   "ini": 17.66,
+   "fin": 18.38
+  },
+  {
+   "w": "y",
+   "ini": 18.6,
+   "fin": 18.62
+  },
+  {
+   "w": "documentar",
+   "ini": 18.68,
+   "fin": 19.24
+  },
+  {
+   "w": "las",
+   "ini": 19.28,
+   "fin": 19.42
+  },
+  {
+   "w": "acciones",
+   "ini": 19.46,
+   "fin": 19.86
+  },
+  {
+   "w": "específicas",
+   "ini": 19.92,
+   "fin": 20.64
+  },
+  {
+   "w": "que",
+   "ini": 20.72,
+   "fin": 20.8
+  },
+  {
+   "w": "se",
+   "ini": 20.86,
+   "fin": 20.94
+  },
+  {
+   "w": "deben",
+   "ini": 20.98,
+   "fin": 21.18
+  },
+  {
+   "w": "realizar",
+   "ini": 21.24,
+   "fin": 21.68
+  },
+  {
+   "w": "para",
+   "ini": 21.76,
+   "fin": 21.9
+  },
+  {
+   "w": "elaborar",
+   "ini": 21.94,
+   "fin": 22.4
+  },
+  {
+   "w": "los",
+   "ini": 22.44,
+   "fin": 22.56
+  },
+  {
+   "w": "entregables.",
+   "ini": 22.6,
+   "fin": 23.26
+  },
+  {
+   "w": "Las",
+   "ini": 24.04,
+   "fin": 24.18
+  },
+  {
+   "w": "saca",
+   "ini": 24.32,
+   "fin": 24.56
+  },
+  {
+   "w": "de",
+   "ini": 24.6,
+   "fin": 24.66
+  },
+  {
+   "w": "los",
+   "ini": 24.68,
+   "fin": 24.78
+  },
+  {
+   "w": "paquetes",
+   "ini": 24.86,
+   "fin": 25.26
+  },
+  {
+   "w": "de",
+   "ini": 25.28,
+   "fin": 25.36
+  },
+  {
+   "w": "trabajo",
+   "ini": 25.4,
+   "fin": 25.84
+  },
+  {
+   "w": "y",
+   "ini": 26.16,
+   "fin": 26.2
+  },
+  {
+   "w": "lo",
+   "ini": 26.26,
+   "fin": 26.34
+  },
+  {
+   "w": "hace",
+   "ini": 26.4,
+   "fin": 26.66
+  },
+  {
+   "w": "a",
+   "ini": 26.68,
+   "fin": 26.72
+  },
+  {
+   "w": "lo",
+   "ini": 26.76,
+   "fin": 26.82
+  },
+  {
+   "w": "largo",
+   "ini": 26.86,
+   "fin": 27.14
+  },
+  {
+   "w": "de",
+   "ini": 27.18,
+   "fin": 27.26
+  },
+  {
+   "w": "todo",
+   "ini": 27.4,
+   "fin": 27.58
+  },
+  {
+   "w": "el",
+   "ini": 27.62,
+   "fin": 27.68
+  },
+  {
+   "w": "proyecto.",
+   "ini": 27.72,
+   "fin": 28.2
+  },
+  {
+   "w": "El",
+   "ini": 28.88,
+   "fin": 28.94
+  },
+  {
+   "w": "resultado",
+   "ini": 29,
+   "fin": 29.56
+  },
+  {
+   "w": "es",
+   "ini": 29.9,
+   "fin": 30.02
+  },
+  {
+   "w": "la",
+   "ini": 30.06,
+   "fin": 30.12
+  },
+  {
+   "w": "lista",
+   "ini": 30.2,
+   "fin": 30.5
+  },
+  {
+   "w": "de",
+   "ini": 30.54,
+   "fin": 30.58
+  },
+  {
+   "w": "actividades,",
+   "ini": 30.62,
+   "fin": 31.26
+  },
+  {
+   "w": "cada",
+   "ini": 31.7,
+   "fin": 31.96
+  },
+  {
+   "w": "una",
+   "ini": 32.06,
+   "fin": 32.22
+  },
+  {
+   "w": "con",
+   "ini": 32.36,
+   "fin": 32.5
+  },
+  {
+   "w": "un",
+   "ini": 32.56,
+   "fin": 32.74
+  },
+  {
+   "w": "identificador",
+   "ini": 32.8,
+   "fin": 33.62
+  },
+  {
+   "w": "y",
+   "ini": 33.86,
+   "fin": 33.9
+  },
+  {
+   "w": "una",
+   "ini": 33.98,
+   "fin": 34.1
+  },
+  {
+   "w": "descripción",
+   "ini": 34.14,
+   "fin": 34.72
+  },
+  {
+   "w": "clara",
+   "ini": 34.84,
+   "fin": 35.1
+  },
+  {
+   "w": "del",
+   "ini": 35.14,
+   "fin": 35.26
+  },
+  {
+   "w": "trabajo.",
+   "ini": 35.3,
+   "fin": 35.74
+  },
+  {
+   "w": "Cada",
+   "ini": 36.56,
+   "fin": 36.74
+  },
+  {
+   "w": "actividad",
+   "ini": 36.76,
+   "fin": 37.3
+  },
+  {
+   "w": "tiene",
+   "ini": 37.48,
+   "fin": 37.68
+  },
+  {
+   "w": "atributos:",
+   "ini": 37.72,
+   "fin": 38.3
+  },
+  {
+   "w": "su",
+   "ini": 38.66,
+   "fin": 38.74
+  },
+  {
+   "w": "nombre,",
+   "ini": 38.82,
+   "fin": 39.16
+  },
+  {
+   "w": "su",
+   "ini": 39.54,
+   "fin": 39.64
+  },
+  {
+   "w": "código",
+   "ini": 39.76,
+   "fin": 40.16
+  },
+  {
+   "w": "y",
+   "ini": 40.5,
+   "fin": 40.54
+  },
+  {
+   "w": "el",
+   "ini": 40.58,
+   "fin": 40.64
+  },
+  {
+   "w": "del",
+   "ini": 40.68,
+   "fin": 40.8
+  },
+  {
+   "w": "paquete",
+   "ini": 40.86,
+   "fin": 41.28
+  },
+  {
+   "w": "del",
+   "ini": 41.32,
+   "fin": 41.42
+  },
+  {
+   "w": "que",
+   "ini": 41.48,
+   "fin": 41.6
+  },
+  {
+   "w": "sale.",
+   "ini": 41.64,
+   "fin": 41.9
+  },
+  {
+   "w": "Más",
+   "ini": 42.36,
+   "fin": 42.52
+  },
+  {
+   "w": "adelante,",
+   "ini": 42.56,
+   "fin": 43.06
+  },
+  {
+   "w": "qué",
+   "ini": 43.4,
+   "fin": 43.48
+  },
+  {
+   "w": "actividades",
+   "ini": 43.54,
+   "fin": 44.22
+  },
+  {
+   "w": "van",
+   "ini": 44.26,
+   "fin": 44.4
+  },
+  {
+   "w": "antes",
+   "ini": 44.48,
+   "fin": 44.92
+  },
+  {
+   "w": "y",
+   "ini": 44.98,
+   "fin": 45.02
+  },
+  {
+   "w": "cuáles",
+   "ini": 45.12,
+   "fin": 45.46
+  },
+  {
+   "w": "después.",
+   "ini": 45.5,
+   "fin": 45.98
+  },
+  {
+   "w": "Aparte,",
+   "ini": 46.74,
+   "fin": 47.22
+  },
+  {
+   "w": "Pía",
+   "ini": 47.62,
+   "fin": 47.88
+  },
+  {
+   "w": "arma",
+   "ini": 48.12,
+   "fin": 48.32
+  },
+  {
+   "w": "la",
+   "ini": 48.38,
+   "fin": 48.46
+  },
+  {
+   "w": "lista",
+   "ini": 48.5,
+   "fin": 48.82
+  },
+  {
+   "w": "de",
+   "ini": 48.86,
+   "fin": 48.94
+  },
+  {
+   "w": "hitos.",
+   "ini": 48.98,
+   "fin": 49.36
+  },
+  {
+   "w": "Un",
+   "ini": 50.12,
+   "fin": 50.2
+  },
+  {
+   "w": "hito",
+   "ini": 50.24,
+   "fin": 50.5
+  },
+  {
+   "w": "es",
+   "ini": 50.84,
+   "fin": 50.96
+  },
+  {
+   "w": "un",
+   "ini": 51.02,
+   "fin": 51.12
+  },
+  {
+   "w": "punto",
+   "ini": 51.22,
+   "fin": 51.58
+  },
+  {
+   "w": "o",
+   "ini": 51.7,
+   "fin": 51.76
+  },
+  {
+   "w": "evento",
+   "ini": 51.82,
+   "fin": 52.14
+  },
+  {
+   "w": "significativo,",
+   "ini": 52.22,
+   "fin": 53
+  },
+  {
+   "w": "como",
+   "ini": 53.36,
+   "fin": 53.7
+  },
+  {
+   "w": "\"Carrito",
+   "ini": 53.96,
+   "fin": 54.42
+  },
+  {
+   "w": "aprobado",
+   "ini": 54.46,
+   "fin": 54.9
+  },
+  {
+   "w": "por",
+   "ini": 54.98,
+   "fin": 55.08
+  },
+  {
+   "w": "el",
+   "ini": 55.12,
+   "fin": 55.18
+  },
+  {
+   "w": "parque\".",
+   "ini": 55.26,
+   "fin": 55.58
+  },
+  {
+   "w": "Su",
+   "ini": 56.42,
+   "fin": 56.5
+  },
+  {
+   "w": "duración",
+   "ini": 56.56,
+   "fin": 57.1
+  },
+  {
+   "w": "es",
+   "ini": 57.3,
+   "fin": 57.46
+  },
+  {
+   "w": "cero.",
+   "ini": 57.7,
+   "fin": 57.94
+  },
+  {
+   "w": "Un",
+   "ini": 58.76,
+   "fin": 58.84
+  },
+  {
+   "w": "hito",
+   "ini": 58.88,
+   "fin": 59.1
+  },
+  {
+   "w": "puede",
+   "ini": 59.2,
+   "fin": 59.4
+  },
+  {
+   "w": "ser",
+   "ini": 59.46,
+   "fin": 59.58
+  },
+  {
+   "w": "obligatorio,",
+   "ini": 59.62,
+   "fin": 60.32
+  },
+  {
+   "w": "como",
+   "ini": 60.5,
+   "fin": 60.72
+  },
+  {
+   "w": "uno",
+   "ini": 60.78,
+   "fin": 60.9
+  },
+  {
+   "w": "exigido",
+   "ini": 60.94,
+   "fin": 61.4
+  },
+  {
+   "w": "por",
+   "ini": 61.46,
+   "fin": 61.58
+  },
+  {
+   "w": "contrato,",
+   "ini": 61.64,
+   "fin": 62.16
+  },
+  {
+   "w": "u",
+   "ini": 62.54,
+   "fin": 62.6
+  },
+  {
+   "w": "opcional.",
+   "ini": 62.68,
+   "fin": 63.24
+  },
+  {
+   "w": "Ahora",
+   "ini": 64.019,
+   "fin": 64.28
+  },
+  {
+   "w": "te",
+   "ini": 64.34,
+   "fin": 64.42
+  },
+  {
+   "w": "toca.",
+   "ini": 64.48,
+   "fin": 64.78
+  },
+  {
+   "w": "Convierte",
+   "ini": 65.239,
+   "fin": 65.66
+  },
+  {
+   "w": "un",
+   "ini": 65.7,
+   "fin": 65.78
+  },
+  {
+   "w": "paquete",
+   "ini": 65.82,
+   "fin": 66.18
+  },
+  {
+   "w": "de",
+   "ini": 66.22,
+   "fin": 66.28
+  },
+  {
+   "w": "trabajo",
+   "ini": 66.34,
+   "fin": 66.72
+  },
+  {
+   "w": "de",
+   "ini": 66.76,
+   "fin": 66.84
+  },
+  {
+   "w": "tu",
+   "ini": 66.88,
+   "fin": 66.96
+  },
+  {
+   "w": "proyecto",
+   "ini": 67.02,
+   "fin": 67.48
+  },
+  {
+   "w": "en",
+   "ini": 67.52,
+   "fin": 67.6
+  },
+  {
+   "w": "actividades.",
+   "ini": 67.64,
+   "fin": 68.28
+  }
+ ]
+}

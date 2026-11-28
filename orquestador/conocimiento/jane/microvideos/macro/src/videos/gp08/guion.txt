@@ -1,0 +1,12 @@
+Un mismo proyecto puede pasar varias veces por el inicio: una por cada fase.
+Pía remodela la panadería en dos fases: primero la cocina, después el salón.
+Para la cocina, primero consigue que Carmen autorice arrancar.
+Luego hace el plan: qué se cambia, cuánto cuesta y para cuándo.
+Ejecuta: llegan los obreros y el horno nuevo.
+Mientras tanto vigila: ¿vamos a tiempo?, ¿el gasto va bien? Y corrige.
+Al final, cierra: recibe la cocina y firma.
+Y en la fase del salón, todo eso vuelve a pasar: otro inicio, otro plan, otro cierre.
+Son los cinco grupos de procesos: inicio, planificación, ejecución, monitoreo y control, y cierre.
+No son fases del proyecto: se repiten dentro de cada fase, y a veces se superponen.
+Y lo que sale de un proceso, como el plan, entra a otro.
+Ahora te toca: ¿a qué grupo pertenece cada tarea de Pía?

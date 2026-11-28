@@ -1,0 +1,800 @@
+{
+ "texto": "\"Queremos pan rico\". Suena bien, pero no se puede comprobar. Pía sale a preguntar. Entrevista a los clientes, hace una encuesta en el barrio y reúne un grupo focal. También compara con otras panaderías y revisa los documentos que ya tiene. Está recopilando requisitos. Determina, documenta y gestiona lo que necesitan los interesados. Un requisito es una condición que el producto debe cumplir para satisfacer una necesidad y debe ser medible y comprobable. No \"pan rico\", sino \"pan caliente antes de las 7:00\". Además, trazable, completo, coherente y aceptable para los interesados clave. Todo va a la documentación de requisitos: los del negocio, los de los interesados, los de las soluciones y otros, y a la matriz de trazabilidad, una cuadrícula que une cada requisito con su origen y con el entregable que lo cumple. Así, al final, se puede comprobar que se entregó lo aprobado. Ahora te toca. Convierte \"pan rico\" en un requisito que se pueda medir.",
+ "palabras": [
+  {
+   "w": "\"Queremos",
+   "ini": 0.08,
+   "fin": 0.5
+  },
+  {
+   "w": "pan",
+   "ini": 0.64,
+   "fin": 0.84
+  },
+  {
+   "w": "rico\".",
+   "ini": 0.94,
+   "fin": 1.28
+  },
+  {
+   "w": "Suena",
+   "ini": 1.96,
+   "fin": 2.18
+  },
+  {
+   "w": "bien,",
+   "ini": 2.22,
+   "fin": 2.42
+  },
+  {
+   "w": "pero",
+   "ini": 2.88,
+   "fin": 3.08
+  },
+  {
+   "w": "no",
+   "ini": 3.3,
+   "fin": 3.42
+  },
+  {
+   "w": "se",
+   "ini": 3.46,
+   "fin": 3.58
+  },
+  {
+   "w": "puede",
+   "ini": 3.62,
+   "fin": 3.86
+  },
+  {
+   "w": "comprobar.",
+   "ini": 3.9,
+   "fin": 4.36
+  },
+  {
+   "w": "Pía",
+   "ini": 5.32,
+   "fin": 5.6
+  },
+  {
+   "w": "sale",
+   "ini": 5.68,
+   "fin": 5.86
+  },
+  {
+   "w": "a",
+   "ini": 5.88,
+   "fin": 5.92
+  },
+  {
+   "w": "preguntar.",
+   "ini": 5.96,
+   "fin": 6.4
+  },
+  {
+   "w": "Entrevista",
+   "ini": 7.06,
+   "fin": 7.6
+  },
+  {
+   "w": "a",
+   "ini": 7.62,
+   "fin": 7.66
+  },
+  {
+   "w": "los",
+   "ini": 7.7,
+   "fin": 7.82
+  },
+  {
+   "w": "clientes,",
+   "ini": 7.88,
+   "fin": 8.36
+  },
+  {
+   "w": "hace",
+   "ini": 8.74,
+   "fin": 8.94
+  },
+  {
+   "w": "una",
+   "ini": 8.98,
+   "fin": 9.06
+  },
+  {
+   "w": "encuesta",
+   "ini": 9.1,
+   "fin": 9.48
+  },
+  {
+   "w": "en",
+   "ini": 9.5,
+   "fin": 9.56
+  },
+  {
+   "w": "el",
+   "ini": 9.6,
+   "fin": 9.68
+  },
+  {
+   "w": "barrio",
+   "ini": 9.72,
+   "fin": 10.16
+  },
+  {
+   "w": "y",
+   "ini": 10.22,
+   "fin": 10.28
+  },
+  {
+   "w": "reúne",
+   "ini": 10.38,
+   "fin": 10.7
+  },
+  {
+   "w": "un",
+   "ini": 10.74,
+   "fin": 10.82
+  },
+  {
+   "w": "grupo",
+   "ini": 10.84,
+   "fin": 11.12
+  },
+  {
+   "w": "focal.",
+   "ini": 11.2,
+   "fin": 11.6
+  },
+  {
+   "w": "También",
+   "ini": 12.36,
+   "fin": 12.84
+  },
+  {
+   "w": "compara",
+   "ini": 12.9,
+   "fin": 13.28
+  },
+  {
+   "w": "con",
+   "ini": 13.32,
+   "fin": 13.46
+  },
+  {
+   "w": "otras",
+   "ini": 13.5,
+   "fin": 13.76
+  },
+  {
+   "w": "panaderías",
+   "ini": 13.8,
+   "fin": 14.38
+  },
+  {
+   "w": "y",
+   "ini": 14.7,
+   "fin": 14.74
+  },
+  {
+   "w": "revisa",
+   "ini": 14.82,
+   "fin": 15.12
+  },
+  {
+   "w": "los",
+   "ini": 15.16,
+   "fin": 15.26
+  },
+  {
+   "w": "documentos",
+   "ini": 15.3,
+   "fin": 15.88
+  },
+  {
+   "w": "que",
+   "ini": 16,
+   "fin": 16.12
+  },
+  {
+   "w": "ya",
+   "ini": 16.18,
+   "fin": 16.28
+  },
+  {
+   "w": "tiene.",
+   "ini": 16.379,
+   "fin": 16.68
+  },
+  {
+   "w": "Está",
+   "ini": 17.44,
+   "fin": 17.64
+  },
+  {
+   "w": "recopilando",
+   "ini": 17.7,
+   "fin": 18.34
+  },
+  {
+   "w": "requisitos.",
+   "ini": 18.4,
+   "fin": 19.06
+  },
+  {
+   "w": "Determina,",
+   "ini": 19.72,
+   "fin": 20.32
+  },
+  {
+   "w": "documenta",
+   "ini": 20.58,
+   "fin": 21.34
+  },
+  {
+   "w": "y",
+   "ini": 21.38,
+   "fin": 21.44
+  },
+  {
+   "w": "gestiona",
+   "ini": 21.52,
+   "fin": 22.12
+  },
+  {
+   "w": "lo",
+   "ini": 22.36,
+   "fin": 22.42
+  },
+  {
+   "w": "que",
+   "ini": 22.5,
+   "fin": 22.58
+  },
+  {
+   "w": "necesitan",
+   "ini": 22.64,
+   "fin": 23.3
+  },
+  {
+   "w": "los",
+   "ini": 23.38,
+   "fin": 23.54
+  },
+  {
+   "w": "interesados.",
+   "ini": 23.6,
+   "fin": 24.34
+  },
+  {
+   "w": "Un",
+   "ini": 25.42,
+   "fin": 25.52
+  },
+  {
+   "w": "requisito",
+   "ini": 25.58,
+   "fin": 26.14
+  },
+  {
+   "w": "es",
+   "ini": 26.56,
+   "fin": 26.64
+  },
+  {
+   "w": "una",
+   "ini": 26.7,
+   "fin": 26.84
+  },
+  {
+   "w": "condición",
+   "ini": 26.88,
+   "fin": 27.36
+  },
+  {
+   "w": "que",
+   "ini": 27.4,
+   "fin": 27.46
+  },
+  {
+   "w": "el",
+   "ini": 27.48,
+   "fin": 27.56
+  },
+  {
+   "w": "producto",
+   "ini": 27.6,
+   "fin": 27.98
+  },
+  {
+   "w": "debe",
+   "ini": 28.04,
+   "fin": 28.2
+  },
+  {
+   "w": "cumplir",
+   "ini": 28.26,
+   "fin": 28.62
+  },
+  {
+   "w": "para",
+   "ini": 28.74,
+   "fin": 28.9
+  },
+  {
+   "w": "satisfacer",
+   "ini": 28.96,
+   "fin": 29.54
+  },
+  {
+   "w": "una",
+   "ini": 29.76,
+   "fin": 29.88
+  },
+  {
+   "w": "necesidad",
+   "ini": 29.94,
+   "fin": 30.52
+  },
+  {
+   "w": "y",
+   "ini": 31.24,
+   "fin": 31.3
+  },
+  {
+   "w": "debe",
+   "ini": 31.36,
+   "fin": 31.56
+  },
+  {
+   "w": "ser",
+   "ini": 31.62,
+   "fin": 31.74
+  },
+  {
+   "w": "medible",
+   "ini": 31.8,
+   "fin": 32.22
+  },
+  {
+   "w": "y",
+   "ini": 32.259,
+   "fin": 32.299
+  },
+  {
+   "w": "comprobable.",
+   "ini": 32.38,
+   "fin": 33.02
+  },
+  {
+   "w": "No",
+   "ini": 33.62,
+   "fin": 33.82
+  },
+  {
+   "w": "\"pan",
+   "ini": 33.98,
+   "fin": 34.18
+  },
+  {
+   "w": "rico\",",
+   "ini": 34.3,
+   "fin": 34.6
+  },
+  {
+   "w": "sino",
+   "ini": 34.98,
+   "fin": 35.28
+  },
+  {
+   "w": "\"pan",
+   "ini": 35.62,
+   "fin": 35.8
+  },
+  {
+   "w": "caliente",
+   "ini": 35.88,
+   "fin": 36.42
+  },
+  {
+   "w": "antes",
+   "ini": 36.54,
+   "fin": 36.84
+  },
+  {
+   "w": "de",
+   "ini": 36.88,
+   "fin": 36.96
+  },
+  {
+   "w": "las",
+   "ini": 37,
+   "fin": 37.1
+  },
+  {
+   "w": "7:00\".",
+   "ini": 37.16,
+   "fin": 37.5
+  },
+  {
+   "w": "Además,",
+   "ini": 38.34,
+   "fin": 38.8
+  },
+  {
+   "w": "trazable,",
+   "ini": 39.06,
+   "fin": 39.68
+  },
+  {
+   "w": "completo,",
+   "ini": 39.98,
+   "fin": 40.6
+  },
+  {
+   "w": "coherente",
+   "ini": 40.86,
+   "fin": 41.46
+  },
+  {
+   "w": "y",
+   "ini": 41.5,
+   "fin": 41.54
+  },
+  {
+   "w": "aceptable",
+   "ini": 41.58,
+   "fin": 42.14
+  },
+  {
+   "w": "para",
+   "ini": 42.24,
+   "fin": 42.4
+  },
+  {
+   "w": "los",
+   "ini": 42.44,
+   "fin": 42.56
+  },
+  {
+   "w": "interesados",
+   "ini": 42.62,
+   "fin": 43.3
+  },
+  {
+   "w": "clave.",
+   "ini": 43.38,
+   "fin": 43.7
+  },
+  {
+   "w": "Todo",
+   "ini": 44.72,
+   "fin": 44.96
+  },
+  {
+   "w": "va",
+   "ini": 45,
+   "fin": 45.08
+  },
+  {
+   "w": "a",
+   "ini": 45.14,
+   "fin": 45.18
+  },
+  {
+   "w": "la",
+   "ini": 45.22,
+   "fin": 45.3
+  },
+  {
+   "w": "documentación",
+   "ini": 45.32,
+   "fin": 46.08
+  },
+  {
+   "w": "de",
+   "ini": 46.1,
+   "fin": 46.16
+  },
+  {
+   "w": "requisitos:",
+   "ini": 46.22,
+   "fin": 46.86
+  },
+  {
+   "w": "los",
+   "ini": 47.38,
+   "fin": 47.5
+  },
+  {
+   "w": "del",
+   "ini": 47.56,
+   "fin": 47.68
+  },
+  {
+   "w": "negocio,",
+   "ini": 47.72,
+   "fin": 48.16
+  },
+  {
+   "w": "los",
+   "ini": 48.58,
+   "fin": 48.74
+  },
+  {
+   "w": "de",
+   "ini": 48.78,
+   "fin": 48.84
+  },
+  {
+   "w": "los",
+   "ini": 48.88,
+   "fin": 49
+  },
+  {
+   "w": "interesados,",
+   "ini": 49.04,
+   "fin": 49.74
+  },
+  {
+   "w": "los",
+   "ini": 50.1,
+   "fin": 50.24
+  },
+  {
+   "w": "de",
+   "ini": 50.3,
+   "fin": 50.36
+  },
+  {
+   "w": "las",
+   "ini": 50.4,
+   "fin": 50.48
+  },
+  {
+   "w": "soluciones",
+   "ini": 50.52,
+   "fin": 51.16
+  },
+  {
+   "w": "y",
+   "ini": 51.32,
+   "fin": 51.38
+  },
+  {
+   "w": "otros,",
+   "ini": 51.48,
+   "fin": 51.84
+  },
+  {
+   "w": "y",
+   "ini": 52.52,
+   "fin": 52.58
+  },
+  {
+   "w": "a",
+   "ini": 52.64,
+   "fin": 52.68
+  },
+  {
+   "w": "la",
+   "ini": 52.74,
+   "fin": 52.78
+  },
+  {
+   "w": "matriz",
+   "ini": 52.84,
+   "fin": 53.32
+  },
+  {
+   "w": "de",
+   "ini": 53.38,
+   "fin": 53.46
+  },
+  {
+   "w": "trazabilidad,",
+   "ini": 53.54,
+   "fin": 54.32
+  },
+  {
+   "w": "una",
+   "ini": 55.02,
+   "fin": 55.16
+  },
+  {
+   "w": "cuadrícula",
+   "ini": 55.22,
+   "fin": 55.76
+  },
+  {
+   "w": "que",
+   "ini": 55.82,
+   "fin": 55.94
+  },
+  {
+   "w": "une",
+   "ini": 56,
+   "fin": 56.14
+  },
+  {
+   "w": "cada",
+   "ini": 56.24,
+   "fin": 56.44
+  },
+  {
+   "w": "requisito",
+   "ini": 56.5,
+   "fin": 57
+  },
+  {
+   "w": "con",
+   "ini": 57.06,
+   "fin": 57.18
+  },
+  {
+   "w": "su",
+   "ini": 57.22,
+   "fin": 57.3
+  },
+  {
+   "w": "origen",
+   "ini": 57.32,
+   "fin": 57.88
+  },
+  {
+   "w": "y",
+   "ini": 57.92,
+   "fin": 57.96
+  },
+  {
+   "w": "con",
+   "ini": 58.04,
+   "fin": 58.16
+  },
+  {
+   "w": "el",
+   "ini": 58.2,
+   "fin": 58.26
+  },
+  {
+   "w": "entregable",
+   "ini": 58.3,
+   "fin": 58.86
+  },
+  {
+   "w": "que",
+   "ini": 58.92,
+   "fin": 59
+  },
+  {
+   "w": "lo",
+   "ini": 59.04,
+   "fin": 59.1
+  },
+  {
+   "w": "cumple.",
+   "ini": 59.18,
+   "fin": 59.58
+  },
+  {
+   "w": "Así,",
+   "ini": 60.2,
+   "fin": 60.48
+  },
+  {
+   "w": "al",
+   "ini": 60.64,
+   "fin": 60.7
+  },
+  {
+   "w": "final,",
+   "ini": 60.78,
+   "fin": 61.08
+  },
+  {
+   "w": "se",
+   "ini": 61.46,
+   "fin": 61.52
+  },
+  {
+   "w": "puede",
+   "ini": 61.6,
+   "fin": 61.78
+  },
+  {
+   "w": "comprobar",
+   "ini": 61.82,
+   "fin": 62.24
+  },
+  {
+   "w": "que",
+   "ini": 62.32,
+   "fin": 62.42
+  },
+  {
+   "w": "se",
+   "ini": 62.48,
+   "fin": 62.56
+  },
+  {
+   "w": "entregó",
+   "ini": 62.58,
+   "fin": 63
+  },
+  {
+   "w": "lo",
+   "ini": 63.06,
+   "fin": 63.12
+  },
+  {
+   "w": "aprobado.",
+   "ini": 63.16,
+   "fin": 63.66
+  },
+  {
+   "w": "Ahora",
+   "ini": 64.5,
+   "fin": 64.76
+  },
+  {
+   "w": "te",
+   "ini": 64.8,
+   "fin": 64.879
+  },
+  {
+   "w": "toca.",
+   "ini": 64.94,
+   "fin": 65.239
+  },
+  {
+   "w": "Convierte",
+   "ini": 65.76,
+   "fin": 66.3
+  },
+  {
+   "w": "\"pan",
+   "ini": 66.46,
+   "fin": 66.68
+  },
+  {
+   "w": "rico\"",
+   "ini": 66.78,
+   "fin": 67.1
+  },
+  {
+   "w": "en",
+   "ini": 67.5,
+   "fin": 67.6
+  },
+  {
+   "w": "un",
+   "ini": 67.66,
+   "fin": 67.74
+  },
+  {
+   "w": "requisito",
+   "ini": 67.82,
+   "fin": 68.38
+  },
+  {
+   "w": "que",
+   "ini": 68.48,
+   "fin": 68.58
+  },
+  {
+   "w": "se",
+   "ini": 68.66,
+   "fin": 68.74
+  },
+  {
+   "w": "pueda",
+   "ini": 68.88,
+   "fin": 69.14
+  },
+  {
+   "w": "medir.",
+   "ini": 69.2,
+   "fin": 69.54
+  }
+ ]
+}

@@ -1,0 +1,740 @@
+{
+ "texto": "\"Yo pensé que el carrito traía café\", dice Carmen. Pero eso nunca se escribió. El acta de Pía solo decía: \"Un carrito para vender pan en el parque\". Eso es información de alto nivel. Para trabajar, el equipo necesita el detalle. Por eso Pía define el alcance. Desarrolla una descripción detallada del proyecto y del producto. Lo escribe en el enunciado del alcance del proyecto. Primero, la descripción del alcance del producto: un carrito con vitrina, toldo y caja. Después, los entregables: el carrito listo, el permiso del parque y el menú impreso. Luego, los criterios de aceptación: las condiciones que deben cumplirse antes de aceptar cada entregable. Y las exclusiones: lo que queda fuera. Café no incluido. Así todos entienden lo mismo y cuando alguien pide algo nuevo, se sabe si está dentro o fuera del proyecto. Ahora te toca. Escribe tres exclusiones de tu proyecto.",
+ "palabras": [
+  {
+   "w": "\"Yo",
+   "ini": 0.12,
+   "fin": 0.22
+  },
+  {
+   "w": "pensé",
+   "ini": 0.28,
+   "fin": 0.56
+  },
+  {
+   "w": "que",
+   "ini": 0.6,
+   "fin": 0.64
+  },
+  {
+   "w": "el",
+   "ini": 0.68,
+   "fin": 0.72
+  },
+  {
+   "w": "carrito",
+   "ini": 0.78,
+   "fin": 1.1
+  },
+  {
+   "w": "traía",
+   "ini": 1.16,
+   "fin": 1.46
+  },
+  {
+   "w": "café\",",
+   "ini": 1.52,
+   "fin": 1.86
+  },
+  {
+   "w": "dice",
+   "ini": 2.32,
+   "fin": 2.54
+  },
+  {
+   "w": "Carmen.",
+   "ini": 2.58,
+   "fin": 2.94
+  },
+  {
+   "w": "Pero",
+   "ini": 3.6,
+   "fin": 3.76
+  },
+  {
+   "w": "eso",
+   "ini": 3.84,
+   "fin": 4.04
+  },
+  {
+   "w": "nunca",
+   "ini": 4.46,
+   "fin": 4.78
+  },
+  {
+   "w": "se",
+   "ini": 4.82,
+   "fin": 4.88
+  },
+  {
+   "w": "escribió.",
+   "ini": 4.92,
+   "fin": 5.38
+  },
+  {
+   "w": "El",
+   "ini": 6.38,
+   "fin": 6.46
+  },
+  {
+   "w": "acta",
+   "ini": 6.52,
+   "fin": 6.74
+  },
+  {
+   "w": "de",
+   "ini": 6.78,
+   "fin": 6.86
+  },
+  {
+   "w": "Pía",
+   "ini": 6.96,
+   "fin": 7.18
+  },
+  {
+   "w": "solo",
+   "ini": 7.26,
+   "fin": 7.46
+  },
+  {
+   "w": "decía:",
+   "ini": 7.5,
+   "fin": 7.9
+  },
+  {
+   "w": "\"Un",
+   "ini": 8.64,
+   "fin": 8.76
+  },
+  {
+   "w": "carrito",
+   "ini": 8.84,
+   "fin": 9.26
+  },
+  {
+   "w": "para",
+   "ini": 9.36,
+   "fin": 9.5
+  },
+  {
+   "w": "vender",
+   "ini": 9.54,
+   "fin": 9.84
+  },
+  {
+   "w": "pan",
+   "ini": 9.98,
+   "fin": 10.26
+  },
+  {
+   "w": "en",
+   "ini": 10.3,
+   "fin": 10.4
+  },
+  {
+   "w": "el",
+   "ini": 10.42,
+   "fin": 10.5
+  },
+  {
+   "w": "parque\".",
+   "ini": 10.6,
+   "fin": 10.94
+  },
+  {
+   "w": "Eso",
+   "ini": 11.74,
+   "fin": 11.98
+  },
+  {
+   "w": "es",
+   "ini": 12.2,
+   "fin": 12.28
+  },
+  {
+   "w": "información",
+   "ini": 12.32,
+   "fin": 12.92
+  },
+  {
+   "w": "de",
+   "ini": 12.96,
+   "fin": 13.04
+  },
+  {
+   "w": "alto",
+   "ini": 13.12,
+   "fin": 13.34
+  },
+  {
+   "w": "nivel.",
+   "ini": 13.4,
+   "fin": 13.74
+  },
+  {
+   "w": "Para",
+   "ini": 14.5,
+   "fin": 14.64
+  },
+  {
+   "w": "trabajar,",
+   "ini": 14.68,
+   "fin": 15.14
+  },
+  {
+   "w": "el",
+   "ini": 15.3,
+   "fin": 15.36
+  },
+  {
+   "w": "equipo",
+   "ini": 15.4,
+   "fin": 15.72
+  },
+  {
+   "w": "necesita",
+   "ini": 15.8,
+   "fin": 16.32
+  },
+  {
+   "w": "el",
+   "ini": 16.36,
+   "fin": 16.42
+  },
+  {
+   "w": "detalle.",
+   "ini": 16.46,
+   "fin": 16.9
+  },
+  {
+   "w": "Por",
+   "ini": 17.46,
+   "fin": 17.56
+  },
+  {
+   "w": "eso",
+   "ini": 17.62,
+   "fin": 17.78
+  },
+  {
+   "w": "Pía",
+   "ini": 17.92,
+   "fin": 18.14
+  },
+  {
+   "w": "define",
+   "ini": 18.18,
+   "fin": 18.6
+  },
+  {
+   "w": "el",
+   "ini": 18.64,
+   "fin": 18.7
+  },
+  {
+   "w": "alcance.",
+   "ini": 18.74,
+   "fin": 19.24
+  },
+  {
+   "w": "Desarrolla",
+   "ini": 19.72,
+   "fin": 20.36
+  },
+  {
+   "w": "una",
+   "ini": 20.44,
+   "fin": 20.56
+  },
+  {
+   "w": "descripción",
+   "ini": 20.6,
+   "fin": 21.14
+  },
+  {
+   "w": "detallada",
+   "ini": 21.18,
+   "fin": 21.68
+  },
+  {
+   "w": "del",
+   "ini": 21.74,
+   "fin": 21.84
+  },
+  {
+   "w": "proyecto",
+   "ini": 21.9,
+   "fin": 22.34
+  },
+  {
+   "w": "y",
+   "ini": 22.38,
+   "fin": 22.4
+  },
+  {
+   "w": "del",
+   "ini": 22.46,
+   "fin": 22.56
+  },
+  {
+   "w": "producto.",
+   "ini": 22.64,
+   "fin": 23.1
+  },
+  {
+   "w": "Lo",
+   "ini": 23.8,
+   "fin": 23.88
+  },
+  {
+   "w": "escribe",
+   "ini": 23.92,
+   "fin": 24.42
+  },
+  {
+   "w": "en",
+   "ini": 24.48,
+   "fin": 24.56
+  },
+  {
+   "w": "el",
+   "ini": 24.6,
+   "fin": 24.66
+  },
+  {
+   "w": "enunciado",
+   "ini": 24.72,
+   "fin": 25.28
+  },
+  {
+   "w": "del",
+   "ini": 25.32,
+   "fin": 25.42
+  },
+  {
+   "w": "alcance",
+   "ini": 25.48,
+   "fin": 25.9
+  },
+  {
+   "w": "del",
+   "ini": 25.94,
+   "fin": 26.04
+  },
+  {
+   "w": "proyecto.",
+   "ini": 26.1,
+   "fin": 26.58
+  },
+  {
+   "w": "Primero,",
+   "ini": 27.5,
+   "fin": 27.86
+  },
+  {
+   "w": "la",
+   "ini": 28.26,
+   "fin": 28.32
+  },
+  {
+   "w": "descripción",
+   "ini": 28.36,
+   "fin": 28.88
+  },
+  {
+   "w": "del",
+   "ini": 28.92,
+   "fin": 29.02
+  },
+  {
+   "w": "alcance",
+   "ini": 29.06,
+   "fin": 29.5
+  },
+  {
+   "w": "del",
+   "ini": 29.54,
+   "fin": 29.64
+  },
+  {
+   "w": "producto:",
+   "ini": 29.72,
+   "fin": 30.16
+  },
+  {
+   "w": "un",
+   "ini": 30.76,
+   "fin": 30.86
+  },
+  {
+   "w": "carrito",
+   "ini": 30.9,
+   "fin": 31.32
+  },
+  {
+   "w": "con",
+   "ini": 31.38,
+   "fin": 31.52
+  },
+  {
+   "w": "vitrina,",
+   "ini": 31.56,
+   "fin": 32
+  },
+  {
+   "w": "toldo",
+   "ini": 32.34,
+   "fin": 32.9
+  },
+  {
+   "w": "y",
+   "ini": 32.94,
+   "fin": 33
+  },
+  {
+   "w": "caja.",
+   "ini": 33.1,
+   "fin": 33.4
+  },
+  {
+   "w": "Después,",
+   "ini": 34.34,
+   "fin": 34.78
+  },
+  {
+   "w": "los",
+   "ini": 34.94,
+   "fin": 35.08
+  },
+  {
+   "w": "entregables:",
+   "ini": 35.14,
+   "fin": 35.78
+  },
+  {
+   "w": "el",
+   "ini": 36.26,
+   "fin": 36.32
+  },
+  {
+   "w": "carrito",
+   "ini": 36.38,
+   "fin": 36.74
+  },
+  {
+   "w": "listo,",
+   "ini": 36.82,
+   "fin": 37.22
+  },
+  {
+   "w": "el",
+   "ini": 37.56,
+   "fin": 37.62
+  },
+  {
+   "w": "permiso",
+   "ini": 37.68,
+   "fin": 38.04
+  },
+  {
+   "w": "del",
+   "ini": 38.08,
+   "fin": 38.2
+  },
+  {
+   "w": "parque",
+   "ini": 38.32,
+   "fin": 38.66
+  },
+  {
+   "w": "y",
+   "ini": 38.84,
+   "fin": 38.88
+  },
+  {
+   "w": "el",
+   "ini": 38.92,
+   "fin": 39
+  },
+  {
+   "w": "menú",
+   "ini": 39.06,
+   "fin": 39.3
+  },
+  {
+   "w": "impreso.",
+   "ini": 39.34,
+   "fin": 39.82
+  },
+  {
+   "w": "Luego,",
+   "ini": 40.78,
+   "fin": 41.1
+  },
+  {
+   "w": "los",
+   "ini": 41.26,
+   "fin": 41.38
+  },
+  {
+   "w": "criterios",
+   "ini": 41.44,
+   "fin": 41.9
+  },
+  {
+   "w": "de",
+   "ini": 41.92,
+   "fin": 41.96
+  },
+  {
+   "w": "aceptación:",
+   "ini": 42,
+   "fin": 42.66
+  },
+  {
+   "w": "las",
+   "ini": 43.2,
+   "fin": 43.3
+  },
+  {
+   "w": "condiciones",
+   "ini": 43.34,
+   "fin": 43.92
+  },
+  {
+   "w": "que",
+   "ini": 43.98,
+   "fin": 44.06
+  },
+  {
+   "w": "deben",
+   "ini": 44.08,
+   "fin": 44.3
+  },
+  {
+   "w": "cumplirse",
+   "ini": 44.34,
+   "fin": 44.88
+  },
+  {
+   "w": "antes",
+   "ini": 45.08,
+   "fin": 45.38
+  },
+  {
+   "w": "de",
+   "ini": 45.42,
+   "fin": 45.46
+  },
+  {
+   "w": "aceptar",
+   "ini": 45.5,
+   "fin": 45.94
+  },
+  {
+   "w": "cada",
+   "ini": 46.02,
+   "fin": 46.22
+  },
+  {
+   "w": "entregable.",
+   "ini": 46.26,
+   "fin": 46.84
+  },
+  {
+   "w": "Y",
+   "ini": 47.56,
+   "fin": 47.62
+  },
+  {
+   "w": "las",
+   "ini": 47.66,
+   "fin": 47.8
+  },
+  {
+   "w": "exclusiones:",
+   "ini": 47.86,
+   "fin": 48.64
+  },
+  {
+   "w": "lo",
+   "ini": 49.22,
+   "fin": 49.28
+  },
+  {
+   "w": "que",
+   "ini": 49.36,
+   "fin": 49.5
+  },
+  {
+   "w": "queda",
+   "ini": 49.54,
+   "fin": 49.8
+  },
+  {
+   "w": "fuera.",
+   "ini": 49.86,
+   "fin": 50.12
+  },
+  {
+   "w": "Café",
+   "ini": 50.98,
+   "fin": 51.28
+  },
+  {
+   "w": "no",
+   "ini": 51.7,
+   "fin": 51.82
+  },
+  {
+   "w": "incluido.",
+   "ini": 51.86,
+   "fin": 52.36
+  },
+  {
+   "w": "Así",
+   "ini": 53.2,
+   "fin": 53.46
+  },
+  {
+   "w": "todos",
+   "ini": 53.6,
+   "fin": 53.9
+  },
+  {
+   "w": "entienden",
+   "ini": 53.94,
+   "fin": 54.42
+  },
+  {
+   "w": "lo",
+   "ini": 54.46,
+   "fin": 54.54
+  },
+  {
+   "w": "mismo",
+   "ini": 54.6,
+   "fin": 54.94
+  },
+  {
+   "w": "y",
+   "ini": 55.26,
+   "fin": 55.3
+  },
+  {
+   "w": "cuando",
+   "ini": 55.36,
+   "fin": 55.6
+  },
+  {
+   "w": "alguien",
+   "ini": 55.64,
+   "fin": 55.92
+  },
+  {
+   "w": "pide",
+   "ini": 55.96,
+   "fin": 56.14
+  },
+  {
+   "w": "algo",
+   "ini": 56.18,
+   "fin": 56.36
+  },
+  {
+   "w": "nuevo,",
+   "ini": 56.4,
+   "fin": 56.68
+  },
+  {
+   "w": "se",
+   "ini": 57.06,
+   "fin": 57.14
+  },
+  {
+   "w": "sabe",
+   "ini": 57.24,
+   "fin": 57.5
+  },
+  {
+   "w": "si",
+   "ini": 57.56,
+   "fin": 57.64
+  },
+  {
+   "w": "está",
+   "ini": 57.68,
+   "fin": 57.92
+  },
+  {
+   "w": "dentro",
+   "ini": 57.96,
+   "fin": 58.32
+  },
+  {
+   "w": "o",
+   "ini": 58.56,
+   "fin": 58.6
+  },
+  {
+   "w": "fuera",
+   "ini": 58.7,
+   "fin": 58.92
+  },
+  {
+   "w": "del",
+   "ini": 58.96,
+   "fin": 59.08
+  },
+  {
+   "w": "proyecto.",
+   "ini": 59.14,
+   "fin": 59.6
+  },
+  {
+   "w": "Ahora",
+   "ini": 60.46,
+   "fin": 60.72
+  },
+  {
+   "w": "te",
+   "ini": 60.76,
+   "fin": 60.86
+  },
+  {
+   "w": "toca.",
+   "ini": 60.92,
+   "fin": 61.22
+  },
+  {
+   "w": "Escribe",
+   "ini": 61.76,
+   "fin": 62.12
+  },
+  {
+   "w": "tres",
+   "ini": 62.24,
+   "fin": 62.42
+  },
+  {
+   "w": "exclusiones",
+   "ini": 62.48,
+   "fin": 63.1
+  },
+  {
+   "w": "de",
+   "ini": 63.14,
+   "fin": 63.2
+  },
+  {
+   "w": "tu",
+   "ini": 63.24,
+   "fin": 63.32
+  },
+  {
+   "w": "proyecto.",
+   "ini": 63.38,
+   "fin": 63.82
+  }
+ ]
+}

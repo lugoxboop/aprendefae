@@ -1,0 +1,11 @@
+«Hacer el carrito» suena a un solo trabajo. Pero ¿por dónde se empieza?
+Pía lo parte en pedazos: el carrito, el permiso, el menú y la dirección del proyecto.
+Y cada pedazo, en otros más pequeños: estructura, toldo y vitrina.
+Eso es crear la estructura de desglose del trabajo: subdividir los entregables y el trabajo del proyecto en componentes más pequeños y fáciles de manejar.
+La técnica principal se llama descomposición.
+El nivel más bajo es el paquete de trabajo: ahí ya se pueden estimar y gestionar el costo y la duración.
+Cada componente lleva un código: uno punto uno, uno punto dos.
+Ojo: lo de abajo debe sumar justo lo de arriba; que no falte nada ni sobre trabajo. Es la llamada regla del cien por ciento.
+Los detalles de cada componente van al diccionario de la estructura.
+La versión aprobada del enunciado del alcance, la estructura y su diccionario es la línea base del alcance: solo cambia con control formal de cambios.
+Ahora te toca: parte tu proyecto en paquetes de trabajo.

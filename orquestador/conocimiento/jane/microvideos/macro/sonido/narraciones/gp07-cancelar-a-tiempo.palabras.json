@@ -1,0 +1,790 @@
+{
+ "texto": "Cancelar un proyecto a tiempo también puede ser un acierto. Pía quiere una \"app\" para pedir pan. Primero, un estudio. ¿Alguien la usaría? Ese estudio es una fase, actividades relacionadas que terminan en un entregable. Al final de la fase, Pía y su socia Carmen se sientan a revisar. Comparan lo logrado con el caso de negocio y el acta del proyecto y deciden: seguir, seguir con cambios, quedarse, repetir la fase o terminar el proyecto. Eso es un punto de revisión de fase. El estudio dice que sus clientes prefieren llamar por teléfono. Carmen dice: \"Terminamos aquí\". Gastaron en un estudio, no en una \"app\" que nadie iba a usar. Todas las fases juntas, del inicio a la conclusión, forman el ciclo de vida del proyecto. Si el alcance se fija al principio, el ciclo es predictivo. Si se define iteración por iteración, es adaptativo. Ahora te toca. Estás en el punto de revisión. ¿Qué decides?",
+ "palabras": [
+  {
+   "w": "Cancelar",
+   "ini": 0.06,
+   "fin": 0.46
+  },
+  {
+   "w": "un",
+   "ini": 0.52,
+   "fin": 0.58
+  },
+  {
+   "w": "proyecto",
+   "ini": 0.62,
+   "fin": 1
+  },
+  {
+   "w": "a",
+   "ini": 1.02,
+   "fin": 1.06
+  },
+  {
+   "w": "tiempo",
+   "ini": 1.14,
+   "fin": 1.48
+  },
+  {
+   "w": "también",
+   "ini": 1.56,
+   "fin": 1.98
+  },
+  {
+   "w": "puede",
+   "ini": 2.06,
+   "fin": 2.26
+  },
+  {
+   "w": "ser",
+   "ini": 2.34,
+   "fin": 2.46
+  },
+  {
+   "w": "un",
+   "ini": 2.5,
+   "fin": 2.56
+  },
+  {
+   "w": "acierto.",
+   "ini": 2.62,
+   "fin": 3.1
+  },
+  {
+   "w": "Pía",
+   "ini": 3.78,
+   "fin": 4.04
+  },
+  {
+   "w": "quiere",
+   "ini": 4.38,
+   "fin": 4.6
+  },
+  {
+   "w": "una",
+   "ini": 4.66,
+   "fin": 4.82
+  },
+  {
+   "w": "\"app\"",
+   "ini": 4.84,
+   "fin": 5.02
+  },
+  {
+   "w": "para",
+   "ini": 5.22,
+   "fin": 5.38
+  },
+  {
+   "w": "pedir",
+   "ini": 5.44,
+   "fin": 5.66
+  },
+  {
+   "w": "pan.",
+   "ini": 5.76,
+   "fin": 6
+  },
+  {
+   "w": "Primero,",
+   "ini": 6.56,
+   "fin": 6.88
+  },
+  {
+   "w": "un",
+   "ini": 7.14,
+   "fin": 7.22
+  },
+  {
+   "w": "estudio.",
+   "ini": 7.26,
+   "fin": 7.72
+  },
+  {
+   "w": "¿Alguien",
+   "ini": 8.22,
+   "fin": 8.54
+  },
+  {
+   "w": "la",
+   "ini": 8.58,
+   "fin": 8.64
+  },
+  {
+   "w": "usaría?",
+   "ini": 8.68,
+   "fin": 9.08
+  },
+  {
+   "w": "Ese",
+   "ini": 9.82,
+   "fin": 9.98
+  },
+  {
+   "w": "estudio",
+   "ini": 10,
+   "fin": 10.46
+  },
+  {
+   "w": "es",
+   "ini": 10.52,
+   "fin": 10.64
+  },
+  {
+   "w": "una",
+   "ini": 10.72,
+   "fin": 10.84
+  },
+  {
+   "w": "fase,",
+   "ini": 10.94,
+   "fin": 11.26
+  },
+  {
+   "w": "actividades",
+   "ini": 11.66,
+   "fin": 12.32
+  },
+  {
+   "w": "relacionadas",
+   "ini": 12.4,
+   "fin": 13.1
+  },
+  {
+   "w": "que",
+   "ini": 13.14,
+   "fin": 13.22
+  },
+  {
+   "w": "terminan",
+   "ini": 13.28,
+   "fin": 13.68
+  },
+  {
+   "w": "en",
+   "ini": 13.74,
+   "fin": 13.84
+  },
+  {
+   "w": "un",
+   "ini": 13.88,
+   "fin": 13.96
+  },
+  {
+   "w": "entregable.",
+   "ini": 14,
+   "fin": 14.6
+  },
+  {
+   "w": "Al",
+   "ini": 15.2,
+   "fin": 15.26
+  },
+  {
+   "w": "final",
+   "ini": 15.32,
+   "fin": 15.54
+  },
+  {
+   "w": "de",
+   "ini": 15.56,
+   "fin": 15.62
+  },
+  {
+   "w": "la",
+   "ini": 15.66,
+   "fin": 15.7
+  },
+  {
+   "w": "fase,",
+   "ini": 15.8,
+   "fin": 16.1
+  },
+  {
+   "w": "Pía",
+   "ini": 16.42,
+   "fin": 16.62
+  },
+  {
+   "w": "y",
+   "ini": 16.64,
+   "fin": 16.68
+  },
+  {
+   "w": "su",
+   "ini": 16.74,
+   "fin": 16.82
+  },
+  {
+   "w": "socia",
+   "ini": 16.92,
+   "fin": 17.24
+  },
+  {
+   "w": "Carmen",
+   "ini": 17.32,
+   "fin": 17.66
+  },
+  {
+   "w": "se",
+   "ini": 17.88,
+   "fin": 17.96
+  },
+  {
+   "w": "sientan",
+   "ini": 18.08,
+   "fin": 18.42
+  },
+  {
+   "w": "a",
+   "ini": 18.46,
+   "fin": 18.5
+  },
+  {
+   "w": "revisar.",
+   "ini": 18.56,
+   "fin": 19
+  },
+  {
+   "w": "Comparan",
+   "ini": 19.68,
+   "fin": 20.06
+  },
+  {
+   "w": "lo",
+   "ini": 20.1,
+   "fin": 20.16
+  },
+  {
+   "w": "logrado",
+   "ini": 20.2,
+   "fin": 20.6
+  },
+  {
+   "w": "con",
+   "ini": 20.68,
+   "fin": 20.78
+  },
+  {
+   "w": "el",
+   "ini": 20.82,
+   "fin": 20.9
+  },
+  {
+   "w": "caso",
+   "ini": 20.98,
+   "fin": 21.24
+  },
+  {
+   "w": "de",
+   "ini": 21.28,
+   "fin": 21.34
+  },
+  {
+   "w": "negocio",
+   "ini": 21.38,
+   "fin": 21.86
+  },
+  {
+   "w": "y",
+   "ini": 22.04,
+   "fin": 22.08
+  },
+  {
+   "w": "el",
+   "ini": 22.12,
+   "fin": 22.22
+  },
+  {
+   "w": "acta",
+   "ini": 22.28,
+   "fin": 22.52
+  },
+  {
+   "w": "del",
+   "ini": 22.56,
+   "fin": 22.66
+  },
+  {
+   "w": "proyecto",
+   "ini": 22.72,
+   "fin": 23.22
+  },
+  {
+   "w": "y",
+   "ini": 23.6,
+   "fin": 23.64
+  },
+  {
+   "w": "deciden:",
+   "ini": 23.72,
+   "fin": 24.28
+  },
+  {
+   "w": "seguir,",
+   "ini": 24.86,
+   "fin": 25.2
+  },
+  {
+   "w": "seguir",
+   "ini": 26,
+   "fin": 26.26
+  },
+  {
+   "w": "con",
+   "ini": 26.32,
+   "fin": 26.44
+  },
+  {
+   "w": "cambios,",
+   "ini": 26.52,
+   "fin": 26.96
+  },
+  {
+   "w": "quedarse,",
+   "ini": 27.68,
+   "fin": 28.18
+  },
+  {
+   "w": "repetir",
+   "ini": 28.94,
+   "fin": 29.38
+  },
+  {
+   "w": "la",
+   "ini": 29.44,
+   "fin": 29.5
+  },
+  {
+   "w": "fase",
+   "ini": 29.6,
+   "fin": 29.9
+  },
+  {
+   "w": "o",
+   "ini": 30.36,
+   "fin": 30.42
+  },
+  {
+   "w": "terminar",
+   "ini": 30.5,
+   "fin": 30.96
+  },
+  {
+   "w": "el",
+   "ini": 31,
+   "fin": 31.06
+  },
+  {
+   "w": "proyecto.",
+   "ini": 31.12,
+   "fin": 31.64
+  },
+  {
+   "w": "Eso",
+   "ini": 32.36,
+   "fin": 32.54
+  },
+  {
+   "w": "es",
+   "ini": 32.6,
+   "fin": 32.7
+  },
+  {
+   "w": "un",
+   "ini": 32.759,
+   "fin": 32.88
+  },
+  {
+   "w": "punto",
+   "ini": 32.94,
+   "fin": 33.24
+  },
+  {
+   "w": "de",
+   "ini": 33.28,
+   "fin": 33.36
+  },
+  {
+   "w": "revisión",
+   "ini": 33.42,
+   "fin": 33.92
+  },
+  {
+   "w": "de",
+   "ini": 33.94,
+   "fin": 34.02
+  },
+  {
+   "w": "fase.",
+   "ini": 34.1,
+   "fin": 34.44
+  },
+  {
+   "w": "El",
+   "ini": 35.2,
+   "fin": 35.28
+  },
+  {
+   "w": "estudio",
+   "ini": 35.32,
+   "fin": 35.76
+  },
+  {
+   "w": "dice",
+   "ini": 35.82,
+   "fin": 36.04
+  },
+  {
+   "w": "que",
+   "ini": 36.08,
+   "fin": 36.16
+  },
+  {
+   "w": "sus",
+   "ini": 36.2,
+   "fin": 36.38
+  },
+  {
+   "w": "clientes",
+   "ini": 36.42,
+   "fin": 36.88
+  },
+  {
+   "w": "prefieren",
+   "ini": 36.94,
+   "fin": 37.3
+  },
+  {
+   "w": "llamar",
+   "ini": 37.34,
+   "fin": 37.6
+  },
+  {
+   "w": "por",
+   "ini": 37.68,
+   "fin": 37.78
+  },
+  {
+   "w": "teléfono.",
+   "ini": 37.84,
+   "fin": 38.32
+  },
+  {
+   "w": "Carmen",
+   "ini": 38.96,
+   "fin": 39.28
+  },
+  {
+   "w": "dice:",
+   "ini": 39.34,
+   "fin": 39.6
+  },
+  {
+   "w": "\"Terminamos",
+   "ini": 40.1,
+   "fin": 40.7
+  },
+  {
+   "w": "aquí\".",
+   "ini": 40.78,
+   "fin": 41
+  },
+  {
+   "w": "Gastaron",
+   "ini": 41.7,
+   "fin": 42.12
+  },
+  {
+   "w": "en",
+   "ini": 42.16,
+   "fin": 42.22
+  },
+  {
+   "w": "un",
+   "ini": 42.28,
+   "fin": 42.34
+  },
+  {
+   "w": "estudio,",
+   "ini": 42.4,
+   "fin": 42.88
+  },
+  {
+   "w": "no",
+   "ini": 43.14,
+   "fin": 43.24
+  },
+  {
+   "w": "en",
+   "ini": 43.28,
+   "fin": 43.38
+  },
+  {
+   "w": "una",
+   "ini": 43.44,
+   "fin": 43.62
+  },
+  {
+   "w": "\"app\"",
+   "ini": 43.64,
+   "fin": 43.84
+  },
+  {
+   "w": "que",
+   "ini": 44.04,
+   "fin": 44.16
+  },
+  {
+   "w": "nadie",
+   "ini": 44.24,
+   "fin": 44.62
+  },
+  {
+   "w": "iba",
+   "ini": 44.7,
+   "fin": 44.84
+  },
+  {
+   "w": "a",
+   "ini": 44.84,
+   "fin": 44.88
+  },
+  {
+   "w": "usar.",
+   "ini": 44.92,
+   "fin": 45.24
+  },
+  {
+   "w": "Todas",
+   "ini": 45.88,
+   "fin": 46.18
+  },
+  {
+   "w": "las",
+   "ini": 46.24,
+   "fin": 46.38
+  },
+  {
+   "w": "fases",
+   "ini": 46.44,
+   "fin": 46.74
+  },
+  {
+   "w": "juntas,",
+   "ini": 46.8,
+   "fin": 47.24
+  },
+  {
+   "w": "del",
+   "ini": 47.44,
+   "fin": 47.56
+  },
+  {
+   "w": "inicio",
+   "ini": 47.6,
+   "fin": 47.94
+  },
+  {
+   "w": "a",
+   "ini": 47.96,
+   "fin": 47.98
+  },
+  {
+   "w": "la",
+   "ini": 48.02,
+   "fin": 48.08
+  },
+  {
+   "w": "conclusión,",
+   "ini": 48.14,
+   "fin": 48.7
+  },
+  {
+   "w": "forman",
+   "ini": 49.12,
+   "fin": 49.38
+  },
+  {
+   "w": "el",
+   "ini": 49.42,
+   "fin": 49.5
+  },
+  {
+   "w": "ciclo",
+   "ini": 49.58,
+   "fin": 49.86
+  },
+  {
+   "w": "de",
+   "ini": 49.9,
+   "fin": 49.98
+  },
+  {
+   "w": "vida",
+   "ini": 50.04,
+   "fin": 50.24
+  },
+  {
+   "w": "del",
+   "ini": 50.28,
+   "fin": 50.4
+  },
+  {
+   "w": "proyecto.",
+   "ini": 50.46,
+   "fin": 50.96
+  },
+  {
+   "w": "Si",
+   "ini": 51.62,
+   "fin": 51.68
+  },
+  {
+   "w": "el",
+   "ini": 51.7,
+   "fin": 51.76
+  },
+  {
+   "w": "alcance",
+   "ini": 51.8,
+   "fin": 52.26
+  },
+  {
+   "w": "se",
+   "ini": 52.32,
+   "fin": 52.44
+  },
+  {
+   "w": "fija",
+   "ini": 52.48,
+   "fin": 52.66
+  },
+  {
+   "w": "al",
+   "ini": 52.7,
+   "fin": 52.76
+  },
+  {
+   "w": "principio,",
+   "ini": 52.82,
+   "fin": 53.32
+  },
+  {
+   "w": "el",
+   "ini": 53.72,
+   "fin": 53.8
+  },
+  {
+   "w": "ciclo",
+   "ini": 53.9,
+   "fin": 54.22
+  },
+  {
+   "w": "es",
+   "ini": 54.28,
+   "fin": 54.38
+  },
+  {
+   "w": "predictivo.",
+   "ini": 54.44,
+   "fin": 55
+  },
+  {
+   "w": "Si",
+   "ini": 55.64,
+   "fin": 55.7
+  },
+  {
+   "w": "se",
+   "ini": 55.78,
+   "fin": 55.86
+  },
+  {
+   "w": "define",
+   "ini": 55.9,
+   "fin": 56.3
+  },
+  {
+   "w": "iteración",
+   "ini": 56.34,
+   "fin": 56.96
+  },
+  {
+   "w": "por",
+   "ini": 57.04,
+   "fin": 57.14
+  },
+  {
+   "w": "iteración,",
+   "ini": 57.18,
+   "fin": 57.76
+  },
+  {
+   "w": "es",
+   "ini": 58.24,
+   "fin": 58.4
+  },
+  {
+   "w": "adaptativo.",
+   "ini": 58.46,
+   "fin": 59.16
+  },
+  {
+   "w": "Ahora",
+   "ini": 60.02,
+   "fin": 60.3
+  },
+  {
+   "w": "te",
+   "ini": 60.36,
+   "fin": 60.44
+  },
+  {
+   "w": "toca.",
+   "ini": 60.5,
+   "fin": 60.82
+  },
+  {
+   "w": "Estás",
+   "ini": 61.48,
+   "fin": 61.8
+  },
+  {
+   "w": "en",
+   "ini": 61.86,
+   "fin": 61.92
+  },
+  {
+   "w": "el",
+   "ini": 61.96,
+   "fin": 62.04
+  },
+  {
+   "w": "punto",
+   "ini": 62.12,
+   "fin": 62.38
+  },
+  {
+   "w": "de",
+   "ini": 62.42,
+   "fin": 62.48
+  },
+  {
+   "w": "revisión.",
+   "ini": 62.54,
+   "fin": 63.14
+  },
+  {
+   "w": "¿Qué",
+   "ini": 63.8,
+   "fin": 63.9
+  },
+  {
+   "w": "decides?",
+   "ini": 63.94,
+   "fin": 64.459
+  }
+ ]
+}
