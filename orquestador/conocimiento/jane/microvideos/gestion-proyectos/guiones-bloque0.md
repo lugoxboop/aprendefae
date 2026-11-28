@@ -660,3 +660,54 @@ Fuente: G 8.1, 8.1.3.1, 8.1.3.2, p. 277–287.
 11. Ahora te toca: escribe tres reglas para el acta de constitución de tu equipo.
 
 Fuente: G 9.1, 9.1.3.1, 9.1.3.2, p. 312–320.
+## GP-37 · ¿Cuántas manos y cuánta harina? (G 9.2, 9.2.2.2–9.2.2.5, 9.2.3.1–9.2.3.3, p. 320–327)
+1. Pía aceptó un pedido de mil panes: ¿cuántas personas, cuánta harina, cuántos hornos?
+2. Si se queda corta, no llega; si pide de más, desperdicia.
+3. Estimar los recursos de las actividades es estimar el equipo y el tipo y la cantidad de materiales, equipamiento y suministros necesarios.
+4. Se puede estimar actividad por actividad y sumar: la estimación ascendente.
+5. O usar un proyecto parecido, la análoga, o una relación entre datos, la paramétrica.
+6. Por ejemplo: cuatro mil horas de trabajo en un año piden dos personas, de dos mil horas cada una.
+7. Y se comparan alternativas: ¿horno manual o automático? ¿Fabricar, alquilar o comprar?
+8. La primera salida son los requisitos de recursos: tipos y cantidades para cada actividad o paquete de trabajo.
+9. Otra salida es la base de las estimaciones: el método, los supuestos, el rango y el nivel de confianza.
+10. Y otra más es la estructura de desglose de recursos: por categoría y tipo, como mano de obra, materiales y equipos.
+11. Ahora te toca: arma la estructura de desglose de recursos de tu proyecto.
+
+## GP-38 · ¿Quién se entera de qué? (G 10.1, 10.1.2.2, 10.1.2.5, 10.1.3.1, p. 366–378)
+1. El carrito cambió de horario. Don Tito se enteró por un vecino; Carmen, nunca.
+2. Nadie decidió quién avisa, a quién, ni cómo.
+3. Planificar la gestión de las comunicaciones es desarrollar un enfoque y un plan para comunicar, según lo que necesita cada interesado.
+4. Primero se analiza qué necesita saber cada quien, y cuántos canales hay: uno a uno, uno a muchos, muchos a muchos.
+5. Luego se elige el método.
+6. Interactiva: en tiempo real, como una reunión o una llamada.
+7. De tipo push: se envía, como un correo; asegura que sale, pero no que llegue ni que se entienda.
+8. De tipo pull: cada quien la consulta, como un portal; sirve para mucha información o audiencias grandes.
+9. Todo queda en el plan de gestión de las comunicaciones: qué, para quién, cada cuánto, quién lo envía y por qué medio.
+10. También dice cómo escalar un asunto cuando se traba.
+11. Ahora te toca: haz una tabla con qué, a quién, cuándo y cómo se comunica en tu proyecto.
+
+## GP-39 · ¿Y si llueve? (G 11 intro, 11.1, 11.1.3.1, p. 397–408)
+1. Pía planea vender en la feria del domingo. ¿Y si llueve? ¿Y si llega un pedido enorme?
+2. Las dos cosas son inciertas, y las dos cambiarían el proyecto.
+3. Eso es un riesgo: un evento o condición incierta que, si ocurre, afecta los objetivos, para bien o para mal.
+4. El negativo es una amenaza; el positivo, una oportunidad.
+5. Planificar la gestión de los riesgos es definir cómo se harán las actividades de gestión de riesgos.
+6. Así, el esfuerzo es proporcional a los riesgos y a la importancia del proyecto.
+7. El resultado es el plan de gestión de los riesgos: estrategia, metodología, roles, financiamiento y calendario.
+8. Incluye las categorías de riesgo, a menudo en una estructura de desglose de los riesgos.
+9. También, el apetito al riesgo de los interesados, expresado como umbrales medibles.
+10. Y qué significa probabilidad alta o baja, e impacto alto o bajo, en este proyecto.
+11. Ahora te toca: escribe tu umbral de riesgo y tres categorías.
+
+## GP-40 · ¿Qué podría salir mal… o bien? (G 11.2, 11.2.2, 11.2.3.1, 11.2.3.2, p. 409–418)
+1. Antes de la feria, el equipo de Pía se pregunta: ¿qué podría pasar?
+2. Ramón: «se puede dañar el horno». Carmen: «nos pueden invitar a otra feria».
+3. Identificar los riesgos es identificar los riesgos individuales y las fuentes de riesgo general, y documentar sus características.
+4. Sirven la tormenta de ideas, las listas de verificación y las entrevistas.
+5. También el análisis de supuestos y restricciones, y el análisis FODA: fortalezas, debilidades, oportunidades y amenazas.
+6. Cada riesgo se escribe claro: causa, riesgo y efecto.
+7. Como el horno es viejo, puede dañarse, y se retrasarían los pedidos.
+8. Todo va al registro de riesgos: cada uno con su identificador, su dueño y sus respuestas potenciales.
+9. La otra salida es el informe de riesgos: las fuentes de riesgo general y un resumen de los individuales.
+10. Y no se hace una sola vez: se repite durante todo el proyecto.
+11. Ahora te toca: escribe tres riesgos de tu proyecto, con causa y efecto.
