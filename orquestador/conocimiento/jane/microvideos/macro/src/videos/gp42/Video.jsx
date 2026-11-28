@@ -14,7 +14,7 @@ import { Escena, Cartel, Gigante, COLOR, clamp01, lerp, sale, rampa, rebote, pul
 import { Documento, Dicho, ROJO } from "../gp/piezas.jsx";
 import DATOS from "./tiempos.json";
 
-const T = crearTiempo(DATOS, { extra: [0.3, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.3] });
+const T = crearTiempo(DATOS, { extra: [0.3, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.3], manual: { 3: ["Realizar el análisis cuantitativo de riesgos", "es analizar numéricamente el efecto combinado", "de los riesgos y otras fuentes de incertidumbre", "sobre los objetivos del proyecto."] } });
 const { S, E, W } = T;
 
 const M = {

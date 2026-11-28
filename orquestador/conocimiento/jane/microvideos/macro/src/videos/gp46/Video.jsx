@@ -16,7 +16,7 @@ import { Documento, ROJO } from "../gp/piezas.jsx";
 import { Hoja } from "../gp/hoja.jsx";
 import DATOS from "./tiempos.json";
 
-const T = crearTiempo(DATOS, { extra: [0.3, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.3] });
+const T = crearTiempo(DATOS, { extra: [0.3, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.3], manual: { 3: ["Dirigir y gestionar el trabajo del proyecto", "es liderar y llevar a cabo el trabajo definido", "en el plan para la dirección del proyecto,", "e implementar los cambios aprobados."] } });
 const { S, E, W } = T;
 
 const M = {
