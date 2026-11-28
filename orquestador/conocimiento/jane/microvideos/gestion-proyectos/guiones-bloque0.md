@@ -448,3 +448,69 @@ Fuente: G 5.1, 5.1.3.1, 5.1.3.2, p. 134–137.
 11. Ahora te toca: convierte «pan rico» en un requisito que se pueda medir.
 
 Fuente: G 5.2, 5.2.2.2, 5.2.2.3, 5.2.3.1, 5.2.3.2, p. 138–149; Glosario, «Requisito».
+
+# Tanda 7 (GP-25 a GP-28)
+
+## GP-25 · El café que nadie pidió (G 5.3, 5.3.3.1, Tabla 5-1, p. 150–155)
+
+1. «Yo pensé que el carrito traía café», dice Carmen. Pero eso nunca se escribió.
+2. El acta de Pía solo decía: «un carrito para vender pan en el parque».
+3. Eso es información de alto nivel. Para trabajar, el equipo necesita el detalle.
+4. Por eso Pía define el alcance: desarrolla una descripción detallada del proyecto y del producto.
+5. Lo escribe en el enunciado del alcance del proyecto.
+6. Primero, la descripción del alcance del producto: un carrito con vitrina, toldo y caja.
+7. Después, los entregables: el carrito listo, el permiso del parque y el menú impreso.
+8. Luego, los criterios de aceptación: las condiciones que deben cumplirse antes de aceptar cada entregable.
+9. Y las exclusiones: lo que queda fuera. «Café: no incluido.»
+10. Así todos entienden lo mismo, y cuando alguien pide algo nuevo, se sabe si está dentro o fuera del proyecto.
+11. Ahora te toca: escribe tres exclusiones de tu proyecto.
+
+Fuente: G 5.3, 5.3.3.1, Tabla 5-1, p. 150–155.
+
+## GP-26 · El carrito en pedacitos (G 5.4, 5.4.2.2, 5.4.3.1, p. 156–162)
+
+1. «Hacer el carrito» suena a un solo trabajo. Pero ¿por dónde se empieza?
+2. Pía lo parte en pedazos: el carrito, el permiso, el menú y la dirección del proyecto.
+3. Y cada pedazo, en otros más pequeños: estructura, toldo y vitrina.
+4. Eso es crear la estructura de desglose del trabajo: subdividir los entregables y el trabajo del proyecto en componentes más pequeños y fáciles de manejar.
+5. La técnica principal se llama descomposición.
+6. El nivel más bajo es el paquete de trabajo: ahí ya se pueden estimar y gestionar el costo y la duración.
+7. Cada componente lleva un código: uno punto uno, uno punto dos.
+8. Ojo: lo de abajo debe sumar justo lo de arriba; que no falte nada ni sobre trabajo. Es la llamada regla del cien por ciento.
+9. Los detalles de cada componente van al diccionario de la estructura.
+10. La versión aprobada del enunciado del alcance, la estructura y su diccionario es la línea base del alcance: solo cambia con control formal de cambios.
+11. Ahora te toca: parte tu proyecto en paquetes de trabajo.
+
+Fuente: G 5.4, 5.4.2.2, 5.4.3.1, p. 156–162.
+
+## GP-27 · Horas, días o semanas (G 6.1, 6.1.3.1, p. 179–182)
+
+1. Ramón cuenta en horas, Pía en días y Carmen en semanas. Nadie se entiende.
+2. Antes de armar el cronograma, hay que acordar las reglas.
+3. Eso es planificar la gestión del cronograma: establecer las políticas, los procedimientos y la documentación para planificar, desarrollar, gestionar, ejecutar y controlar el cronograma.
+4. El resultado es el plan de gestión del cronograma.
+5. Define las unidades de medida. Aquí, todo en días.
+6. El nivel de exactitud: el rango aceptable al estimar, y si se deja una cantidad para contingencias.
+7. La metodología y la herramienta para hacer el modelo de programación.
+8. Y los umbrales de control: cuánto se puede desviar antes de tomar medidas. Por ejemplo, un diez por ciento respecto a la línea base.
+9. También dice cómo se registrará el avance durante la ejecución.
+10. Es parte del plan para la dirección del proyecto, y puede ser formal o informal, según lo que se necesite.
+11. Ahora te toca: elige la unidad de medida y el umbral de control de tu proyecto.
+
+Fuente: G 6.1, 6.1.3.1, p. 179–182.
+
+## GP-28 · Un toldo no se hace solo (G 6.2, 6.2.3.1, 6.2.3.2, 6.2.3.3, p. 183–186)
+
+1. «Toldo» está en la estructura. Pero un toldo no se hace solo.
+2. Pía toma el paquete de trabajo «toldo» y se pregunta: ¿qué hay que hacer?
+3. Medir, comprar la tela, coser e instalar.
+4. Eso es definir las actividades: identificar y documentar las acciones específicas que se deben realizar para elaborar los entregables.
+5. Las saca de los paquetes de trabajo, y lo hace a lo largo de todo el proyecto.
+6. El resultado es la lista de actividades: cada una con un identificador y una descripción clara del trabajo.
+7. Cada actividad tiene atributos: su nombre, su código y el del paquete del que sale; más adelante, qué actividades van antes y cuáles después.
+8. Aparte, Pía arma la lista de hitos.
+9. Un hito es un punto o evento significativo, como «carrito aprobado por el parque». Su duración es cero.
+10. Un hito puede ser obligatorio, como uno exigido por contrato, u opcional.
+11. Ahora te toca: convierte un paquete de trabajo de tu proyecto en actividades.
+
+Fuente: G 6.2, 6.2.3.1, 6.2.3.2, 6.2.3.3, p. 183–186.
