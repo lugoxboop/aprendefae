@@ -101,28 +101,10 @@
   },
   "narrar": [
     {
-      "id": "gp41-cualitativo",
+      "id": "gp43-respuestas-v2",
       "voz": "jBlmi27XRORxjPquUeCh",
       "modelo": "eleven_v3",
-      "texto": "El registro de Pía ya tiene veinte riesgos. No le alcanza el tiempo para atenderlos todos.\n\n¿Por cuál empieza?\n\nRealizar el análisis cualitativo de riesgos es priorizar los riesgos individuales, evaluando su probabilidad de ocurrencia y su impacto.\n\nAsí el esfuerzo se concentra en los riesgos de alta prioridad.\n\nPara cada riesgo se pregunta: ¿qué tan probable es? Y si ocurre, ¿cuánto afecta al cronograma, al costo o a la calidad?\n\nLas respuestas van a una matriz de probabilidad e impacto.\n\nEl horno viejo: probabilidad alta, impacto alto. Va arriba, en rojo.\n\nQue llueva un poco: probabilidad media, impacto bajo. Queda en verde.\n\nTambién se revisa si los datos sobre cada riesgo son confiables, y se agrupan por categorías.\n\nEl registro de riesgos se actualiza con la prioridad, el dueño y una lista de observación para los de baja prioridad.\n\nAhora te toca: ubica tres riesgos de tu proyecto en una matriz de probabilidad e impacto."
-    },
-    {
-      "id": "gp42-cuantitativo",
-      "voz": "jBlmi27XRORxjPquUeCh",
-      "modelo": "eleven_v3",
-      "texto": "Ramón quiere saber: ¿qué probabilidad hay de terminar a tiempo y con el presupuesto que tenemos?\n\nUna matriz de colores no le da ese número.\n\nRealizar el análisis cuantitativo de riesgos es analizar numéricamente el efecto combinado de los riesgos y otras fuentes de incertidumbre sobre los objetivos del proyecto.\n\nNo se requiere en todos los proyectos.\n\nLo habitual es una simulación de Monte Carlo: el modelo se repite miles de veces con valores al azar.\n\nEl resultado es una curva en S: la probabilidad de terminar con cierto costo, o antes de cierta fecha.\n\nPor ejemplo: solo un veintitrés por ciento de probabilidad de cumplir la meta de costo.\n\nEl análisis de sensibilidad muestra qué riesgos pesan más, en un diagrama de tornado.\n\nY el árbol de decisiones compara caminos según su valor esperado.\n\nTodo eso actualiza el informe de riesgos, incluida la reserva para contingencias necesaria.\n\nAhora te toca: piensa qué riesgo movería más la fecha de tu proyecto."
-    },
-    {
-      "id": "gp43-respuestas",
-      "voz": "jBlmi27XRORxjPquUeCh",
-      "modelo": "eleven_v3",
-      "texto": "El horno viejo está en rojo. ¿Qué hace Pía: lo cambia, lo asegura, lo repara o espera?\n\nCada opción es una respuesta distinta.\n\nPlanificar la respuesta a los riesgos es desarrollar opciones, seleccionar estrategias y acordar acciones para tratar los riesgos.\n\nPara las amenazas hay cinco estrategias.\n\nEvitar: eliminar la amenaza, por ejemplo, cambiar el horno. Transferir: pasársela a un tercero, como un seguro.\n\nMitigar: reducir su probabilidad o su impacto, con mantenimiento. Aceptar: reconocerla sin tomar medidas por adelantado. Y escalar, si no le toca al proyecto.\n\nPara las oportunidades también hay cinco: explotar, compartir, mejorar, aceptar y escalar.\n\nSi los invitan a otra feria, explotar es asegurarse de poder ir.\n\nAlgunas respuestas solo se activan si pasa algo: son planes de contingencia, con su evento desencadenante.\n\nCada respuesta tiene un dueño, y se anota en el registro de riesgos.\n\nAhora te toca: elige una estrategia para tu mayor amenaza y para tu mejor oportunidad."
-    },
-    {
-      "id": "gp44-adquisiciones",
-      "voz": "jBlmi27XRORxjPquUeCh",
-      "modelo": "eleven_v3",
-      "texto": "Pía necesita un toldo nuevo. ¿Lo cose el equipo o lo compra hecho?\n\nY si lo compra, ¿a quién?\n\nPlanificar la gestión de las adquisiciones es documentar las decisiones de adquisiciones del proyecto, especificar el enfoque e identificar a los posibles proveedores.\n\nPrimero, el análisis de hacer o comprar: ¿el equipo puede hacerlo bien, o hace falta alguien de afuera?\n\nPesan la capacidad del equipo, la pericia necesaria y los riesgos.\n\nSi se compra, se escribe el enunciado del trabajo: solo la parte del alcance que irá en el contrato.\n\nDebe ser claro, completo y conciso: especificaciones, cantidad, calidad, plazo y lugar.\n\nLuego, los criterios de selección de proveedores: capacidad, costo, entrega y experiencia.\n\nY el método de selección, por ejemplo: menor costo, solo por calificaciones, o basado en costos y calidad.\n\nCada decisión queda documentada, junto al plan de gestión de las adquisiciones.\n\nAhora te toca: decide si harías o comprarías una pieza de tu proyecto, y por qué."
+      "texto": "El horno viejo está en rojo. ¿Qué hace Pía: lo cambia, lo asegura, lo repara o espera?\n\nCada opción es una respuesta.\n\nPlanificar la respuesta a los riesgos es desarrollar opciones, seleccionar estrategias y acordar acciones para tratar los riesgos.\n\nPara las amenazas hay cinco estrategias.\n\nEvitar: eliminarla, como cambiar el horno. Transferir: pasarla a un tercero, como un seguro.\n\nMitigar: reducir su probabilidad o impacto, con mantenimiento. Aceptar: reconocerla, sin medidas por adelantado. Y escalar, si no le toca al proyecto.\n\nPara las oportunidades también hay cinco: explotar, compartir, mejorar, aceptar y escalar.\n\nSi los invitan a otra feria, explotar es asegurar que puedan ir.\n\nAlgunas solo se activan si pasa algo: son planes de contingencia, con su evento desencadenante.\n\nCada respuesta tiene un dueño y va al registro de riesgos.\n\nAhora te toca: elige una estrategia para tu mayor amenaza y tu mejor oportunidad."
     }
   ]
 }
