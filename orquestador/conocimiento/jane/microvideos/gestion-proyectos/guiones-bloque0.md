@@ -1017,3 +1017,54 @@ Fuente: G 9.1, 9.1.3.1, 9.1.3.2, p. 312–320.
 9. Se comparan las comunicaciones implementadas con las planificadas.
 10. Si algo falla, sale una solicitud de cambio: otro canal, otro formato u otro contenido.
 11. Ahora te toca: piensa en un mensaje de tu proyecto que no llegó, y qué canal usarías.
+## GP-65 · El riesgo que cambió (G 11.7, 11.7.2.1–11.7.2.3, 11.7.3.2, p. 453–458)
+1. El horno ya se arregló. Pero ahora el pronóstico anuncia lluvia el día de la feria.
+2. Los riesgos no se quedan quietos.
+3. Monitorear los riesgos es monitorear la implementación de los planes acordados de respuesta, hacer seguimiento a los riesgos identificados, e identificar y analizar nuevos riesgos.
+4. Y también evaluar si el proceso de gestión de los riesgos funciona.
+5. Se pregunta: ¿las respuestas son efectivas? ¿Cambió el nivel de riesgo? ¿Hay riesgos nuevos?
+6. El análisis de reserva compara la reserva para contingencias que queda con el riesgo que queda.
+7. ¿Alcanza la reserva? Si no, hay que actuar.
+8. En las revisiones de riesgos se reevalúan los riesgos actuales y se cierran los obsoletos.
+9. Pía cierra el riesgo del horno, y agrega uno nuevo: la lluvia.
+10. Si hace falta, salen solicitudes de cambio, con acciones correctivas o preventivas.
+11. Ahora te toca: revisa un riesgo de tu proyecto. ¿Sigue igual, cambió o ya se puede cerrar?
+
+## GP-66 · El toldo que llegó roto (G 12.3, 12.3.2.2–12.3.2.4, 12.3.3.1, p. 492–502)
+1. Por fin llegaron los toldos. Pero uno viene roto.
+2. ¿Y ahora? El contrato ya está firmado.
+3. Controlar las adquisiciones es gestionar las relaciones de adquisiciones, monitorear la ejecución de los contratos, efectuar cambios y correcciones, y cerrar los contratos.
+4. Así el vendedor y el comprador cumplen lo acordado.
+5. Una herramienta es la inspección: revisar el trabajo del vendedor, a veces en el mismo lugar.
+6. Otra, la revisión del desempeño: calidad, recursos, cronograma y costos frente al acuerdo.
+7. Si no se ponen de acuerdo sobre un cambio, nace una reclamación.
+8. El método preferido para resolver reclamaciones es la negociación.
+9. Pía y el vendedor negocian: él cambia el toldo roto sin costo.
+10. Al final, la adquisición se cierra con una notificación formal por escrito, sin reclamaciones ni pagos pendientes.
+11. Ahora te toca: piensa en algo que compraste y salió mal. ¿Cómo lo habrías reclamado?
+
+## GP-67 · ¿Siguen con nosotros? (G 13.4, 13.4.2.1–13.4.2.6, 13.4.3.1–13.4.3.2, p. 530–536)
+1. Al principio, Don Tito apoyaba la feria. Ahora casi no contesta.
+2. ¿Qué cambió?
+3. Monitorear el involucramiento de los interesados es monitorear sus relaciones y adaptar las estrategias para involucrarlos.
+4. Así se mantiene o se incrementa la eficiencia y la eficacia de su participación, mientras el proyecto cambia.
+5. La matriz de evaluación del involucramiento sigue los cambios en el nivel de participación de cada interesado.
+6. Don Tito pasó del nivel de apoyo al neutral. Pía lo nota en la matriz.
+7. Con el análisis de causa raíz, busca el motivo de fondo: nadie le contó los nuevos horarios.
+8. Ayudan escuchar de forma activa, la retroalimentación y el liderazgo.
+9. Pía lo visita, lo escucha y le explica el plan. Don Tito vuelve a apoyar.
+10. Si hace falta, sale una solicitud de cambio, con acciones correctivas o preventivas para mejorar el involucramiento.
+11. Ahora te toca: elige un interesado de tu proyecto y anota su nivel de participación actual y el deseado.
+
+## GP-68 · ¡Se acabó la feria! (G 4.7, 4.7.2.3, 4.7.3.1–4.7.3.3, p. 121–128)
+1. La feria fue un éxito. Pía quiere irse a dormir.
+2. Pero un proyecto no termina cuando termina el trabajo.
+3. Cerrar el proyecto o fase es finalizar todas las actividades del proyecto, fase o contrato.
+4. Así la información se archiva, el trabajo planificado se completa y los recursos del equipo se liberan.
+5. Se confirma que los entregables fueron aceptados y se verifica que no quede ningún incidente abierto.
+6. Se recopilan las lecciones aprendidas, se mide la satisfacción de los interesados, y se celebra el éxito.
+7. Una salida clave es la transferencia del resultado a quien lo va a operar y mantener.
+8. Pía entrega los toldos y el horno nuevo al equipo de la panadería.
+9. La otra es el informe final: un resumen del desempeño del proyecto.
+10. Alcance, calidad, costos, cronograma, y los riesgos e incidentes, y cómo se abordaron.
+11. Ahora te toca: cierra tu proyecto. Escribe tu informe final en cinco líneas, y celebra.
