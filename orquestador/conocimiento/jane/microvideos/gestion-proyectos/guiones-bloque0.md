@@ -915,3 +915,54 @@ Fuente: G 9.1, 9.1.3.1, 9.1.3.2, p. 312–320.
 9. El informe puede ser un tablero, o un semáforo: verde, amarillo y rojo.
 10. Si hay desviaciones, salen solicitudes de cambio, como acciones correctivas o preventivas.
 11. Ahora te toca: arma un semáforo con tres indicadores de tu proyecto.
+## GP-57 · ¿Quién decide el cambio? (G 4.6, 4.6.2.4–4.6.2.5, 4.6.3.1, 4.6.3.3, p. 113–120)
+1. Ramón quiere cambiar el horno por uno más grande. Hoy mismo.
+2. ¿Se cambia así, sin más?
+3. Realizar el control integrado de cambios es revisar todas las solicitudes de cambio, aprobar y gestionar los cambios, y comunicar las decisiones.
+4. Una vez definidas las líneas base, todo cambio pasa por aquí.
+5. Aunque se pida de palabra, el cambio debe quedar por escrito.
+6. Si hace falta, decide un comité de control de cambios: revisa y evalúa, y luego aprueba, aplaza o rechaza.
+7. Casi todo cambio impacta el tiempo, el costo, los recursos o los riesgos. Evaluar ese impacto es clave.
+8. El comité de Pía compara el costo y el beneficio del horno grande, y lo aprueba.
+9. Los cambios aprobados se implementan al dirigir y gestionar el trabajo del proyecto. Los aplazados o rechazados se comunican a quien los pidió.
+10. Y el estado de cada solicitud queda en el registro de cambios.
+11. Ahora te toca: piensa en un cambio para tu proyecto y decide si lo apruebas, lo aplazas o lo rechazas.
+
+## GP-58 · ¿Lo aceptas? (G 5.5, 5.5.2.1–5.5.2.2, 5.5.3.1–5.5.3.3, p. 163–167)
+1. Pía terminó el pastel de bodas que encargó Carmen. ¿Ya está listo?
+2. No del todo: falta que Carmen lo acepte.
+3. Validar el alcance es formalizar la aceptación de los entregables del proyecto que se hayan completado.
+4. Aporta objetividad, y aumenta la probabilidad de que el resultado final sea aceptado.
+5. Antes, controlar la calidad revisó que el pastel estuviera correcto. Ahora se trata de aceptarlo.
+6. La herramienta clave es la inspección: medir, examinar y validar contra los requisitos y los criterios de aceptación.
+7. Carmen revisa: tres pisos, sí. Sin nueces, sí. Flores blancas... son rosadas.
+8. Si el equipo y los interesados validan juntos, pueden decidir por votación.
+9. Lo que cumple se firma: son los entregables aceptados.
+10. Lo que no, se documenta con sus razones, y puede requerir una solicitud de cambio para reparar el defecto.
+11. Ahora te toca: escribe tres criterios de aceptación para algo que vas a entregar.
+
+## GP-59 · El alcance que crece solo (G 5.6, 5.6.2.1, 5.6.3.1–5.6.3.2, p. 167–172)
+1. A la feria de Pía le piden un puesto más. Luego otro. Luego música en vivo.
+2. Con el mismo tiempo y el mismo presupuesto.
+3. Controlar el alcance es monitorear el estado del alcance del proyecto y del producto, y gestionar cambios a la línea base del alcance.
+4. Así la línea base del alcance se mantiene a lo largo del proyecto.
+5. Si crece sin control ni ajustes de tiempo, costo y recursos, es corrupción o deslizamiento del alcance.
+6. Los cambios son inevitables. Por eso todo proyecto necesita algún proceso de control de cambios.
+7. Para vigilarlo, el análisis de variación compara la línea base con los resultados reales.
+8. Y el de tendencias ve si el desempeño mejora o se deteriora con el tiempo.
+9. La clave: hallar la causa y el grado de la desviación, y decidir si hace falta una acción correctiva o preventiva.
+10. Pía no dice que no: registra una solicitud de cambio, que pasa por el control integrado de cambios.
+11. Ahora te toca: recuerda algo que creció sin control en un proyecto tuyo, y cómo lo habrías frenado.
+
+## GP-60 · ¿Llegamos a tiempo? (G 6.6, 6.6.2.1–6.6.2.6, 6.6.3.2–6.6.3.3, p. 222–230)
+1. Faltan diez días para la feria, y los toldos aún no llegan.
+2. ¿Todavía llegamos a tiempo?
+3. Controlar el cronograma es monitorear el estado del proyecto para actualizar el cronograma y gestionar cambios a su línea base.
+4. Primero, el estado actual: fechas reales contra planificadas, porcentaje físicamente completado y duración pendiente.
+5. Ojo con la ruta crítica: ahí, un retraso menor puede requerir una acción inmediata.
+6. En cambio, un retraso importante fuera de ella puede tener un efecto mínimo.
+7. Los toldos están en la ruta crítica. Pía tiene que recuperar tiempo.
+8. Puede ajustar adelantos y retrasos, o comprimir el cronograma con ejecución rápida o intensificación.
+9. Con todo eso se emiten pronósticos del cronograma: predicciones del futuro según la información disponible.
+10. Y si hay que mover la línea base, sale una solicitud de cambio.
+11. Ahora te toca: busca la tarea más crítica de tu proyecto y pronostica cuándo terminará.
