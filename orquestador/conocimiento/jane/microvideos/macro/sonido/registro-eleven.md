@@ -195,3 +195,14 @@
 - Cupo: plan creator, 39282 de 122261 créditos usados.
 - Narración gp30-duracion-v2: lista con eleven_v3 (960 caracteres).
 - Transcripción gp30-duracion-v2: 160 palabras.
+
+## 2026-11-28T00:59:25.057Z
+- Cupo: plan creator, 39727 de 122261 créditos usados.
+- Narración gp33-costos-est: lista con eleven_v3 (1004 caracteres).
+- Transcripción gp33-costos-est: 153 palabras.
+- Narración gp34-presupuesto: lista con eleven_v3 (956 caracteres).
+- Transcripción gp34-presupuesto: 158 palabras.
+- Narración gp35-calidad: lista con eleven_v3 (994 caracteres).
+- Transcripción gp35-calidad: 160 palabras.
+- Narración gp36-recursos: lista con eleven_v3 (1020 caracteres).
+- Transcripción gp36-recursos: 165 palabras.
