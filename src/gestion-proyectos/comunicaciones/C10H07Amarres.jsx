@@ -51,7 +51,8 @@ export const ESCENA = {
   mesa: "tu",
   objeto: { id: MUELLE, alto: 60 },
   anim: "cae",
-  disposicion: "fila3",
+  /* A 320 px «fila3» pasa a fila con la cuerda y la pista al lado y se salía (medido): una columna. */
+  disposicion: "columna",
   antes: () => <EstiloLote5 />,
   encima: (e) => <Amarres {...e} />,
   destinos: { "*": { objeto: CUERDA, alto: 28 } },
