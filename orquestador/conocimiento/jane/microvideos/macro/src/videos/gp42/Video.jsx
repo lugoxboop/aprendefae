@@ -104,12 +104,12 @@ function Simulacion({ t }) {
               <line x1="90" y1="560" x2="820" y2="560" stroke={TINTA} strokeWidth="6" />
               <line x1="90" y1="560" x2="90" y2="50" stroke={TINTA} strokeWidth="6" />
               <path d="M 90 550 C 330 550, 360 500, 450 300 S 600 70, 810 70" fill="none" stroke={AZUL} strokeWidth="14" strokeLinecap="round" strokeDasharray={L} strokeDashoffset={L * (1 - dib)} />
-              <line x1="330" y1="560" x2="330" y2="440" stroke={ROJO} strokeWidth="6" strokeDasharray="14 10" opacity={pV} />
-              <line x1="90" y1="440" x2="330" y2="440" stroke={ROJO} strokeWidth="6" strokeDasharray="14 10" opacity={pV} />
+              <line x1="380" y1="560" x2="380" y2="440" stroke={ROJO} strokeWidth="6" strokeDasharray="14 10" opacity={pV} />
+              <line x1="90" y1="440" x2="380" y2="440" stroke={ROJO} strokeWidth="6" strokeDasharray="14 10" opacity={pV} />
             </svg>
             <div style={{ position: "absolute", left: 20, top: 10, fontFamily: "Sora", fontWeight: 800, fontSize: 28, color: TINTA }}>probabilidad</div>
             <div style={{ position: "absolute", left: 560, top: 580, fontFamily: "Sora", fontWeight: 800, fontSize: 28, color: TINTA }}>costo total ➡️</div>
-            <div style={{ position: "absolute", left: 270, top: 575, fontFamily: "Sora", fontWeight: 800, fontSize: 28, color: ROJO, opacity: pV }}>🎯 meta</div>
+            <div style={{ position: "absolute", left: 320, top: 575, fontFamily: "Sora", fontWeight: 800, fontSize: 28, color: ROJO, opacity: pV }}>🎯 meta</div>
           </div>
           <Cartel x={640} y={560} txt="curva en S" p={rampa(t, M.curva - 0.3, 0.3)} tam={44} fondo={MANGO} giro={-3} />
           <Cartel x={440} y={1060} txt="23 % de cumplir la meta" p={pV} tam={44} fondo="#FFE1D8" giro={-2} />
@@ -144,8 +144,8 @@ function Tornado({ t }) {
         <line x1="250" y1="960" x2="520" y2="1050" stroke={TINTA} strokeWidth="6" />
       </svg>
       <div style={{ position: "absolute", left: 180, top: 920, width: 80, height: 80, background: MANGO, border: `6px solid ${TINTA}`, opacity: pA }} />
-      <Cartel x={720} y={870} txt="camino A: valor esperado" p={rampa(t, M.caminos - 0.3, 0.3)} tam={32} fondo="#E3F6EC" />
-      <Cartel x={720} y={1050} txt="camino B: valor esperado" p={rampa(t, M.caminos, 0.3)} tam={32} fondo="#E3F6EC" />
+      <Cartel x={720} y={870} txt="camino A: valor monetario esperado" p={rampa(t, M.caminos - 0.3, 0.3)} tam={32} fondo="#E3F6EC" />
+      <Cartel x={720} y={1050} txt="camino B: valor monetario esperado" p={rampa(t, M.caminos, 0.3)} tam={32} fondo="#E3F6EC" />
       <Cartel x={300} y={1150} txt="🌳 árbol de decisiones" p={pA} tam={38} fondo={CREMA} giro={2} />
       <Sombra x={900} y={1530} w={150} />
       <Mascota esp="hamster-gorra" x={900} y={1535} alto={230} t={t} cara="feliz" semilla={3} espejo />
