@@ -266,3 +266,14 @@
 - Transcripción gp55-gestionar-involucramiento: 152 palabras.
 - Narración gp56-monitorear-trabajo: lista con eleven_v3 (873 caracteres).
 - Transcripción gp56-monitorear-trabajo: 140 palabras.
+
+## 2026-11-28T02:12:53.130Z
+- Cupo: plan creator, 50961 de 122261 créditos usados.
+- Narración gp57-control-cambios: lista con eleven_v3 (967 caracteres).
+- Transcripción gp57-control-cambios: 168 palabras.
+- Narración gp58-validar-alcance: lista con eleven_v3 (921 caracteres).
+- Transcripción gp58-validar-alcance: 148 palabras.
+- Narración gp59-controlar-alcance: lista con eleven_v3 (1012 caracteres).
+- Transcripción gp59-controlar-alcance: 178 palabras.
+- Narración gp60-controlar-cronograma: lista con eleven_v3 (935 caracteres).
+- Transcripción gp60-controlar-cronograma: 146 palabras.

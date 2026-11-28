@@ -1,0 +1,745 @@
+{
+ "texto": "Pía terminó el pastel de bodas que encargó Carmen. ¿Ya está listo? No del todo. Falta que Carmen lo acepte. Validar el alcance es formalizar la aceptación de los entregables del proyecto que se hayan completado. Aporta objetividad y aumenta la probabilidad de que el resultado final sea aceptado. Antes, controlar la calidad revisó que el pastel estuviera correcto. Ahora se trata de aceptarlo. La herramienta clave es la inspección: medir, examinar y validar contra los requisitos y los criterios de aceptación. Carmen revisa: tres pisos, sí. Sin nueces, sí. Flores blancas, son rosadas. Si el equipo y los interesados validan juntos, pueden decidir por votación. Lo que cumple se firma, son los entregables aceptados. Lo que no, se documenta con sus razones y puede requerir una solicitud de cambio para reparar el defecto. Ahora te toca. Escribe tres criterios de aceptación para algo que vas a entregar.",
+ "palabras": [
+  {
+   "w": "Pía",
+   "ini": 0.08,
+   "fin": 0.28
+  },
+  {
+   "w": "terminó",
+   "ini": 0.32,
+   "fin": 0.62
+  },
+  {
+   "w": "el",
+   "ini": 0.66,
+   "fin": 0.72
+  },
+  {
+   "w": "pastel",
+   "ini": 0.76,
+   "fin": 1.1
+  },
+  {
+   "w": "de",
+   "ini": 1.14,
+   "fin": 1.22
+  },
+  {
+   "w": "bodas",
+   "ini": 1.26,
+   "fin": 1.58
+  },
+  {
+   "w": "que",
+   "ini": 1.62,
+   "fin": 1.68
+  },
+  {
+   "w": "encargó",
+   "ini": 1.72,
+   "fin": 2.08
+  },
+  {
+   "w": "Carmen.",
+   "ini": 2.12,
+   "fin": 2.52
+  },
+  {
+   "w": "¿Ya",
+   "ini": 2.58,
+   "fin": 3.42
+  },
+  {
+   "w": "está",
+   "ini": 3.44,
+   "fin": 3.6
+  },
+  {
+   "w": "listo?",
+   "ini": 3.64,
+   "fin": 3.94
+  },
+  {
+   "w": "No",
+   "ini": 5.12,
+   "fin": 5.2
+  },
+  {
+   "w": "del",
+   "ini": 5.24,
+   "fin": 5.36
+  },
+  {
+   "w": "todo.",
+   "ini": 5.44,
+   "fin": 5.7
+  },
+  {
+   "w": "Falta",
+   "ini": 6.16,
+   "fin": 6.4
+  },
+  {
+   "w": "que",
+   "ini": 6.44,
+   "fin": 6.58
+  },
+  {
+   "w": "Carmen",
+   "ini": 6.64,
+   "fin": 6.98
+  },
+  {
+   "w": "lo",
+   "ini": 7.02,
+   "fin": 7.06
+  },
+  {
+   "w": "acepte.",
+   "ini": 7.12,
+   "fin": 7.54
+  },
+  {
+   "w": "Validar",
+   "ini": 8.9,
+   "fin": 9.28
+  },
+  {
+   "w": "el",
+   "ini": 9.32,
+   "fin": 9.4
+  },
+  {
+   "w": "alcance",
+   "ini": 9.44,
+   "fin": 9.98
+  },
+  {
+   "w": "es",
+   "ini": 10.02,
+   "fin": 10.14
+  },
+  {
+   "w": "formalizar",
+   "ini": 10.22,
+   "fin": 10.84
+  },
+  {
+   "w": "la",
+   "ini": 10.88,
+   "fin": 10.94
+  },
+  {
+   "w": "aceptación",
+   "ini": 10.98,
+   "fin": 11.56
+  },
+  {
+   "w": "de",
+   "ini": 11.6,
+   "fin": 11.66
+  },
+  {
+   "w": "los",
+   "ini": 11.7,
+   "fin": 11.82
+  },
+  {
+   "w": "entregables",
+   "ini": 11.88,
+   "fin": 12.4
+  },
+  {
+   "w": "del",
+   "ini": 12.44,
+   "fin": 12.54
+  },
+  {
+   "w": "proyecto",
+   "ini": 12.6,
+   "fin": 13.06
+  },
+  {
+   "w": "que",
+   "ini": 13.14,
+   "fin": 13.24
+  },
+  {
+   "w": "se",
+   "ini": 13.3,
+   "fin": 13.38
+  },
+  {
+   "w": "hayan",
+   "ini": 13.4,
+   "fin": 13.62
+  },
+  {
+   "w": "completado.",
+   "ini": 13.68,
+   "fin": 14.24
+  },
+  {
+   "w": "Aporta",
+   "ini": 14.86,
+   "fin": 15.18
+  },
+  {
+   "w": "objetividad",
+   "ini": 15.22,
+   "fin": 15.94
+  },
+  {
+   "w": "y",
+   "ini": 16.36,
+   "fin": 16.4
+  },
+  {
+   "w": "aumenta",
+   "ini": 16.48,
+   "fin": 16.96
+  },
+  {
+   "w": "la",
+   "ini": 17,
+   "fin": 17.06
+  },
+  {
+   "w": "probabilidad",
+   "ini": 17.14,
+   "fin": 17.8
+  },
+  {
+   "w": "de",
+   "ini": 17.84,
+   "fin": 17.92
+  },
+  {
+   "w": "que",
+   "ini": 17.98,
+   "fin": 18.06
+  },
+  {
+   "w": "el",
+   "ini": 18.1,
+   "fin": 18.18
+  },
+  {
+   "w": "resultado",
+   "ini": 18.24,
+   "fin": 18.76
+  },
+  {
+   "w": "final",
+   "ini": 18.82,
+   "fin": 19.18
+  },
+  {
+   "w": "sea",
+   "ini": 19.5,
+   "fin": 19.72
+  },
+  {
+   "w": "aceptado.",
+   "ini": 19.76,
+   "fin": 20.36
+  },
+  {
+   "w": "Antes,",
+   "ini": 21.32,
+   "fin": 21.68
+  },
+  {
+   "w": "controlar",
+   "ini": 22.08,
+   "fin": 22.54
+  },
+  {
+   "w": "la",
+   "ini": 22.58,
+   "fin": 22.64
+  },
+  {
+   "w": "calidad",
+   "ini": 22.7,
+   "fin": 23.14
+  },
+  {
+   "w": "revisó",
+   "ini": 23.36,
+   "fin": 23.74
+  },
+  {
+   "w": "que",
+   "ini": 23.76,
+   "fin": 23.82
+  },
+  {
+   "w": "el",
+   "ini": 23.86,
+   "fin": 23.94
+  },
+  {
+   "w": "pastel",
+   "ini": 23.98,
+   "fin": 24.28
+  },
+  {
+   "w": "estuviera",
+   "ini": 24.32,
+   "fin": 24.72
+  },
+  {
+   "w": "correcto.",
+   "ini": 24.8,
+   "fin": 25.26
+  },
+  {
+   "w": "Ahora",
+   "ini": 25.82,
+   "fin": 26.16
+  },
+  {
+   "w": "se",
+   "ini": 26.26,
+   "fin": 26.4
+  },
+  {
+   "w": "trata",
+   "ini": 26.44,
+   "fin": 26.74
+  },
+  {
+   "w": "de",
+   "ini": 26.76,
+   "fin": 26.82
+  },
+  {
+   "w": "aceptarlo.",
+   "ini": 26.86,
+   "fin": 27.44
+  },
+  {
+   "w": "La",
+   "ini": 28.26,
+   "fin": 28.32
+  },
+  {
+   "w": "herramienta",
+   "ini": 28.36,
+   "fin": 28.84
+  },
+  {
+   "w": "clave",
+   "ini": 28.94,
+   "fin": 29.22
+  },
+  {
+   "w": "es",
+   "ini": 29.28,
+   "fin": 29.42
+  },
+  {
+   "w": "la",
+   "ini": 29.48,
+   "fin": 29.56
+  },
+  {
+   "w": "inspección:",
+   "ini": 29.62,
+   "fin": 30.36
+  },
+  {
+   "w": "medir,",
+   "ini": 30.9,
+   "fin": 31.26
+  },
+  {
+   "w": "examinar",
+   "ini": 31.58,
+   "fin": 32.22
+  },
+  {
+   "w": "y",
+   "ini": 32.46,
+   "fin": 32.5
+  },
+  {
+   "w": "validar",
+   "ini": 32.56,
+   "fin": 32.94
+  },
+  {
+   "w": "contra",
+   "ini": 33.04,
+   "fin": 33.3
+  },
+  {
+   "w": "los",
+   "ini": 33.34,
+   "fin": 33.46
+  },
+  {
+   "w": "requisitos",
+   "ini": 33.56,
+   "fin": 34.18
+  },
+  {
+   "w": "y",
+   "ini": 34.22,
+   "fin": 34.26
+  },
+  {
+   "w": "los",
+   "ini": 34.3,
+   "fin": 34.42
+  },
+  {
+   "w": "criterios",
+   "ini": 34.46,
+   "fin": 35.02
+  },
+  {
+   "w": "de",
+   "ini": 35.06,
+   "fin": 35.12
+  },
+  {
+   "w": "aceptación.",
+   "ini": 35.16,
+   "fin": 35.9
+  },
+  {
+   "w": "Carmen",
+   "ini": 36.82,
+   "fin": 37.12
+  },
+  {
+   "w": "revisa:",
+   "ini": 37.18,
+   "fin": 37.58
+  },
+  {
+   "w": "tres",
+   "ini": 38.38,
+   "fin": 38.58
+  },
+  {
+   "w": "pisos,",
+   "ini": 38.68,
+   "fin": 39.08
+  },
+  {
+   "w": "sí.",
+   "ini": 39.36,
+   "fin": 39.56
+  },
+  {
+   "w": "Sin",
+   "ini": 40.2,
+   "fin": 40.34
+  },
+  {
+   "w": "nueces,",
+   "ini": 40.4,
+   "fin": 40.8
+  },
+  {
+   "w": "sí.",
+   "ini": 41.18,
+   "fin": 41.34
+  },
+  {
+   "w": "Flores",
+   "ini": 42.18,
+   "fin": 42.46
+  },
+  {
+   "w": "blancas,",
+   "ini": 42.52,
+   "fin": 43.24
+  },
+  {
+   "w": "son",
+   "ini": 43.86,
+   "fin": 44.02
+  },
+  {
+   "w": "rosadas.",
+   "ini": 44.08,
+   "fin": 44.68
+  },
+  {
+   "w": "Si",
+   "ini": 45.86,
+   "fin": 45.92
+  },
+  {
+   "w": "el",
+   "ini": 45.96,
+   "fin": 46.04
+  },
+  {
+   "w": "equipo",
+   "ini": 46.08,
+   "fin": 46.4
+  },
+  {
+   "w": "y",
+   "ini": 46.42,
+   "fin": 46.46
+  },
+  {
+   "w": "los",
+   "ini": 46.48,
+   "fin": 46.6
+  },
+  {
+   "w": "interesados",
+   "ini": 46.66,
+   "fin": 47.28
+  },
+  {
+   "w": "validan",
+   "ini": 47.32,
+   "fin": 47.68
+  },
+  {
+   "w": "juntos,",
+   "ini": 47.76,
+   "fin": 48.16
+  },
+  {
+   "w": "pueden",
+   "ini": 48.56,
+   "fin": 48.8
+  },
+  {
+   "w": "decidir",
+   "ini": 48.84,
+   "fin": 49.22
+  },
+  {
+   "w": "por",
+   "ini": 49.28,
+   "fin": 49.4
+  },
+  {
+   "w": "votación.",
+   "ini": 49.44,
+   "fin": 50.02
+  },
+  {
+   "w": "Lo",
+   "ini": 50.72,
+   "fin": 50.8
+  },
+  {
+   "w": "que",
+   "ini": 50.86,
+   "fin": 51
+  },
+  {
+   "w": "cumple",
+   "ini": 51.04,
+   "fin": 51.38
+  },
+  {
+   "w": "se",
+   "ini": 51.42,
+   "fin": 51.52
+  },
+  {
+   "w": "firma,",
+   "ini": 51.6,
+   "fin": 51.9
+  },
+  {
+   "w": "son",
+   "ini": 52.44,
+   "fin": 52.58
+  },
+  {
+   "w": "los",
+   "ini": 52.62,
+   "fin": 52.74
+  },
+  {
+   "w": "entregables",
+   "ini": 52.78,
+   "fin": 53.36
+  },
+  {
+   "w": "aceptados.",
+   "ini": 53.4,
+   "fin": 54.02
+  },
+  {
+   "w": "Lo",
+   "ini": 54.6,
+   "fin": 54.66
+  },
+  {
+   "w": "que",
+   "ini": 54.74,
+   "fin": 54.84
+  },
+  {
+   "w": "no,",
+   "ini": 54.88,
+   "fin": 55
+  },
+  {
+   "w": "se",
+   "ini": 55.4,
+   "fin": 55.48
+  },
+  {
+   "w": "documenta",
+   "ini": 55.52,
+   "fin": 56.02
+  },
+  {
+   "w": "con",
+   "ini": 56.1,
+   "fin": 56.2
+  },
+  {
+   "w": "sus",
+   "ini": 56.24,
+   "fin": 56.4
+  },
+  {
+   "w": "razones",
+   "ini": 56.44,
+   "fin": 56.94
+  },
+  {
+   "w": "y",
+   "ini": 57.12,
+   "fin": 57.16
+  },
+  {
+   "w": "puede",
+   "ini": 57.28,
+   "fin": 57.52
+  },
+  {
+   "w": "requerir",
+   "ini": 57.58,
+   "fin": 58
+  },
+  {
+   "w": "una",
+   "ini": 58.2,
+   "fin": 58.32
+  },
+  {
+   "w": "solicitud",
+   "ini": 58.38,
+   "fin": 58.88
+  },
+  {
+   "w": "de",
+   "ini": 58.92,
+   "fin": 59
+  },
+  {
+   "w": "cambio",
+   "ini": 59.08,
+   "fin": 59.4
+  },
+  {
+   "w": "para",
+   "ini": 59.52,
+   "fin": 59.7
+  },
+  {
+   "w": "reparar",
+   "ini": 59.76,
+   "fin": 60.14
+  },
+  {
+   "w": "el",
+   "ini": 60.18,
+   "fin": 60.26
+  },
+  {
+   "w": "defecto.",
+   "ini": 60.3,
+   "fin": 60.76
+  },
+  {
+   "w": "Ahora",
+   "ini": 61.86,
+   "fin": 62.1
+  },
+  {
+   "w": "te",
+   "ini": 62.16,
+   "fin": 62.24
+  },
+  {
+   "w": "toca.",
+   "ini": 62.32,
+   "fin": 62.62
+  },
+  {
+   "w": "Escribe",
+   "ini": 63.16,
+   "fin": 63.56
+  },
+  {
+   "w": "tres",
+   "ini": 63.66,
+   "fin": 63.86
+  },
+  {
+   "w": "criterios",
+   "ini": 63.92,
+   "fin": 64.4
+  },
+  {
+   "w": "de",
+   "ini": 64.42,
+   "fin": 64.48
+  },
+  {
+   "w": "aceptación",
+   "ini": 64.5,
+   "fin": 65.14
+  },
+  {
+   "w": "para",
+   "ini": 65.28,
+   "fin": 65.48
+  },
+  {
+   "w": "algo",
+   "ini": 65.54,
+   "fin": 65.76
+  },
+  {
+   "w": "que",
+   "ini": 65.82,
+   "fin": 65.92
+  },
+  {
+   "w": "vas",
+   "ini": 65.96,
+   "fin": 66.12
+  },
+  {
+   "w": "a",
+   "ini": 66.14,
+   "fin": 66.16
+  },
+  {
+   "w": "entregar.",
+   "ini": 66.2,
+   "fin": 66.62
+  }
+ ]
+}
