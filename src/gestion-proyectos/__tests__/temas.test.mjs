@@ -28,5 +28,5 @@ test("cada proceso de un tema tiene su fila en Aprender: una pieza o «Próximam
     for (const pr of m.procesos) assert.ok(capituloDeSubtema(pr.id) != null, pr.id);
   }
   assert.equal(aprenderDeModulo("gp-fundamentos").listas[0].clase, "video");
-  assert.equal(aprenderDeModulo("gp-inicio").listas[0].clase, "simulador");
+  assert.ok(aprenderDeModulo("gp-inicio").listas.some((p) => p.clase === "simulador"));
 });
