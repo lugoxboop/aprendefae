@@ -25,6 +25,10 @@
  * ver los dos resultados); vale 0 ítems. En la partida, `maxPorClave` y
  * `minClaves` (c08 H06: 8 de 11, al menos 5 espinas y ninguna con más de 2).
  *
+ * Lote 5 (caps. 9 y 10): en la partida, `porClave` admite `siempre` (c09 H04:
+ * 6 que van y 2 que no, siempre la «autorización formal») y `alMenosUno`
+ * (c09 H08: siempre una escena de retroceso o estancamiento).
+ *
  * Un paso «decidir» = { tipo, id, texto, contexto?, consigna?, destinos,
  * clave, retros | retro, retroComun?, subtemas }: un ítem que se lleva a un
  * destino. Es la mecánica de casi todo: clasificar en cinta, sellar, conectar
@@ -74,6 +78,13 @@ export function sortearCubriendo(items, n, rng = Math.random, p = { cubrir: true
 export function partidaDe(etapa, rng = Math.random) {
   const p = etapa.partida ?? { todas: true };
   const banco = etapa.banco;
+  if (p.alMenosUno) {
+    const sin = { ...etapa, partida: { ...p, alMenosUno: undefined } };
+    const cumple = (lista) => lista.some((x) => p.alMenosUno.includes(x.id));
+    let sale = partidaDe(sin, rng);
+    for (let k = 0; k < 400 && !cumple(sale); k += 1) sale = partidaDe(sin, rng);
+    return sale;
+  }
   if (p.cubrir || p.minPorClave || p.maxPorClave || p.minClaves || p.pares || p.ordenarPorNivel) {
     const base = { ...p, cubrir: false, minPorClave: undefined, maxPorClave: undefined, minClaves: undefined, pares: undefined, ordenarPorNivel: false };
     if (p.pares) {
@@ -95,7 +106,11 @@ export function partidaDe(etapa, rng = Math.random) {
   if (p.porClave) {
     const claves = [...new Set(banco.map((x) => x.clave))];
     const cuantas = (c) => (typeof p.porClave === "number" ? p.porClave : p.porClave[c] ?? 0);
-    return barajar(claves.flatMap((c) => sortear(banco.filter((x) => x.clave === c), cuantas(c), rng)), rng);
+    const fijos = (p.siempre ?? []).map((id) => banco.find((x) => x.id === id)).filter(Boolean);
+    return barajar(claves.flatMap((c) => {
+      const deC = fijos.filter((x) => x.clave === c);
+      return [...deC, ...sortear(banco.filter((x) => x.clave === c && !deC.includes(x)), Math.max(0, cuantas(c) - deC.length), rng)];
+    }), rng);
   }
   if (p.rondasPorClave) {
     /* H18: tantas rondas como ítems por clave; en cada ronda, uno de cada clave. */
@@ -209,10 +224,13 @@ export function itemsDePieza(pieza) {
   const ponOrden = (m) => {
     const t = (id) => m.items.find((x) => x.id === id).texto;
     for (const p of paresDe(m)) { const [a, b] = p.split("-"); out[`${m.id}:${p}`] = `Orden: ${t(a)} → ${t(b)}`; }
+    /* Lote 5: un orden que vale un solo ítem (sin `puntuaPares`) manda el id del paso. */
+    if (!m.puntuaPares) out[m.id] = `Orden: ${m.items.map((x) => x.texto).join(" → ")}`;
   };
   for (const e of pieza.etapas) {
     if (e.tipo === "clasificar") {
-      for (const x of e.banco) out[x.id] = x.texto;
+      /* Lote 5: un ítem sin tarjeta (la pregunta especial al final del banco) se nombra por su pregunta. */
+      for (const x of e.banco) out[x.id] = x.texto ?? [x.contexto, x.consigna].filter(Boolean).join(" ");
       for (const d of despuesDe(e)) {
         if (d.tipo === "ordenar") ponOrden(d);
         else ponDecidir(d);
@@ -233,7 +251,8 @@ export function itemsDePieza(pieza) {
     } else if (e.tipo === "dilema") {
       for (const p of e.pasos) for (const o of p.opciones) out[`${p.id}:${o.id}`] = `${p.titulo}: ${o.texto}`;
     } else if (e.tipo === "dial") {
-      for (const x of e.banco) out[x.id] = x.texto;
+      /* Lote 5: un ítem sin tarjeta (la pregunta especial al final del banco) se nombra por su pregunta. */
+      for (const x of e.banco) out[x.id] = x.texto ?? [x.contexto, x.consigna].filter(Boolean).join(" ");
     }
   }
   return out;
