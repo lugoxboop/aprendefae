@@ -44,7 +44,7 @@ const PLANES = [[() => M.alcance5, "alcance"], [() => M.cronograma5, "cronograma
 const BASES = [[() => M.alcance6, "alcance"], [() => M.cronograma6, "cronograma"], [() => M.costos6, "costos"]];
 
 /* La carpeta grande del plan, con su contenido */
-function Carpeta({ x, y, w, h, p, children, titulo = "plan para la dirección del proyecto" }) {
+export function Carpeta({ x, y, w, h, p, children, titulo = "plan para la dirección del proyecto" }) {
   if (p <= 0) return null;
   return (
     <div style={{ position: "absolute", left: x - w / 2, top: y, width: w, height: h, transform: `scale(${rebote(Math.min(1, p))})`, transformOrigin: "50% 0" }}>
