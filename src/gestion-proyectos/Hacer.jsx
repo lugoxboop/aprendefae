@@ -145,6 +145,32 @@ export const COMPONENTES_GP = {
   "gp26-eje-c10-h09-reunion": lazy(() => import("./comunicaciones/C10H09Reunion.jsx")),
   "gp26-moc-c10-h10-ecosonda": lazy(() => import("./comunicaciones/C10H10Ecosonda.jsx")),
   "gp26-moc-c10-h11-diapositiva": lazy(() => import("./comunicaciones/C10H11Diapositiva.jsx")),
+  /* Lote 6 · cap. 11 (Riesgos) */
+  "gp26-pla-c11-h01-fichero": lazy(() => import("./riesgos/C11H01Fichero.jsx")),
+  "gp26-pla-c11-h02-movil": lazy(() => import("./riesgos/C11H02Movil.jsx")),
+  "gp26-pla-c11-h03-cable": lazy(() => import("./riesgos/C11H03Cable.jsx")),
+  "gp26-pla-c11-h04-muro": lazy(() => import("./riesgos/C11H04Muro.jsx")),
+  "gp26-pla-c11-h05-cata": lazy(() => import("./riesgos/C11H05Cata.jsx")),
+  "gp26-pla-c11-h06-burbujas": lazy(() => import("./riesgos/C11H06Burbujas.jsx")),
+  "gp26-pla-c11-h07-montana": lazy(() => import("./riesgos/C11H07Montana.jsx")),
+  "gp26-pla-c11-h08-galton": lazy(() => import("./riesgos/C11H08Galton.jsx")),
+  "gp26-pla-c11-h09-ladera": lazy(() => import("./riesgos/C11H09Ladera.jsx")),
+  "gp26-pla-c11-h10-espejo": lazy(() => import("./riesgos/C11H10Espejo.jsx")),
+  "gp26-pla-c11-h11-libro": lazy(() => import("./riesgos/C11H11Libro.jsx")),
+  "gp26-moc-c11-h12-silo": lazy(() => import("./riesgos/C11H12Silo.jsx")),
+  /* Lote 6 · cap. 12 (Adquisiciones) */
+  "gp26-pla-c12-h01-hacer-comprar": lazy(() => import("./adquisiciones/C12H01Banco.jsx")),
+  "gp26-pla-c12-h02-contratos": lazy(() => import("./adquisiciones/C12H02Planero.jsx")),
+  "gp26-pla-c12-h03-sobrecosto": lazy(() => import("./adquisiciones/C12H03Rampa.jsx")),
+  "gp26-pla-c12-h04-rfi-rfq-rfp": lazy(() => import("./adquisiciones/C12H04Tubos.jsx")),
+  "gp26-pla-c12-h05-sow": lazy(() => import("./adquisiciones/C12H05Placas.jsx")),
+  "gp26-pla-c12-h06-metodo-seleccion": lazy(() => import("./adquisiciones/C12H06Cambiavias.jsx")),
+  "gp26-eje-c12-h07-puntajes": lazy(() => import("./adquisiciones/C12H07Marcador.jsx")),
+  "gp26-eje-c12-h08-conferencia": lazy(() => import("./adquisiciones/C12H08Conferencia.jsx")),
+  "gp26-moc-c12-h09-reclamacion": lazy(() => import("./adquisiciones/C12H09Pasillo.jsx")),
+  "gp26-moc-c12-h10-controlar": lazy(() => import("./adquisiciones/C12H10Cinturon.jsx")),
+  "gp26-moc-c12-h11-cierre": lazy(() => import("./adquisiciones/C12H11Cerradura.jsx")),
+  "gp26-pla-c12-h12-taller": lazy(() => import("./adquisiciones/C12H12Contenedor.jsx")),
 };
 
 /* Las Hacer que se ven de un módulo: publicadas y con componente, en el orden del camino. */
