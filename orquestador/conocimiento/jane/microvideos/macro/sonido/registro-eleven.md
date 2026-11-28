@@ -206,3 +206,14 @@
 - Transcripción gp35-calidad: 160 palabras.
 - Narración gp36-recursos: lista con eleven_v3 (1020 caracteres).
 - Transcripción gp36-recursos: 165 palabras.
+
+## 2026-11-28T01:13:35.460Z
+- Cupo: plan creator, 41562 de 122261 créditos usados.
+- Narración gp37-recursos-est: lista con eleven_v3 (1042 caracteres).
+- Transcripción gp37-recursos-est: 174 palabras.
+- Narración gp38-comunicaciones: lista con eleven_v3 (932 caracteres).
+- Transcripción gp38-comunicaciones: 164 palabras.
+- Narración gp39-plan-riesgos: lista con eleven_v3 (937 caracteres).
+- Transcripción gp39-plan-riesgos: 157 palabras.
+- Narración gp40-identificar-riesgos: lista con eleven_v3 (946 caracteres).
+- Transcripción gp40-identificar-riesgos: 155 palabras.
