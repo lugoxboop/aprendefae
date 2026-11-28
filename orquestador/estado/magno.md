@@ -1,3 +1,3 @@
-2026-11-27 22:52
+2026-11-27 23:01
 
-- Gestión de Proyectos con la estructura de Macro: PR abierto, espera visto bueno de Mateo.
+- Gestión de Proyectos con la estructura de Macro: PR #798 aprobado por Mateo, integrándose.
