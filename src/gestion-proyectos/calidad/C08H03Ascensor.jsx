@@ -33,7 +33,8 @@ export const ESCENA = {
   objetos: [],
   deAbajo: true,
   rotuloHueco: (k) => (k === 0 ? "Piso 1 · el más caro" : k === 4 ? "Piso 5 · el más eficaz" : `Piso ${k + 1}`),
-  encimaOrden: (e) => <Cabina {...e} />,
+  /* El motor Ordenar no llama a `antes`: la hoja del lote 4 entra aquí. */
+  encimaOrden: (e) => <><EstiloLote4 /><Cabina {...e} /></>,
   objeto: { id: ASCENSOR, alto: 72 },
   anim: "abre",
   antes: () => <EstiloLote4 />,

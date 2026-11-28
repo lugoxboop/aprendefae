@@ -54,7 +54,8 @@ export const ESCENA = {
   objetoTarjeta: BLOQUE,
   deAbajo: true,
   rotuloHueco: (k) => (k === 0 ? "Abajo: toca la base" : k === 6 ? "Arriba del todo" : "Toca el que sigue hacia arriba"),
-  encimaOrden: (e) => <Gancho {...e} />,
+  /* El motor Ordenar no llama a `antes`: la hoja del lote 4 entra aquí. */
+  encimaOrden: (e) => <><EstiloLote4 /><Gancho {...e} /></>,
   objeto: { id: POLEA, alto: 70 },
   anim: "cae",
   antes: () => <EstiloLote4 />,

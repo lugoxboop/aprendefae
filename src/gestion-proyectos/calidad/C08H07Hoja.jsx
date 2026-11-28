@@ -68,7 +68,8 @@ export const ESCENA = {
   mesa: "equipo",
   objeto: { id: BANDEJA, alto: 56 },
   objetos: [BLOC],
-  encimaOrden: (e) => <Bloc {...e} />,
+  /* El motor Ordenar no llama a `antes`: la hoja del lote 4 entra aquí. */
+  encimaOrden: (e) => <><EstiloLote4 /><Bloc {...e} /></>,
   anim: "cae",
   disposicion: "rejilla",
   antes: () => <EstiloLote4 />,

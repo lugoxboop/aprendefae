@@ -45,7 +45,8 @@ export const ESCENA = {
   mesa: "equipo",
   objetos: [],
   objetoTarjeta: PLACA,
-  encimaOrden: (e) => <Eslabones {...e} />,
+  /* El motor Ordenar no llama a `antes`: la hoja del lote 4 entra aquí. */
+  encimaOrden: (e) => <><EstiloLote4 /><Eslabones {...e} /></>,
   anim: "sella",
   antes: () => <EstiloLote4 />,
   encima: (e) => <Molino {...e} />,
