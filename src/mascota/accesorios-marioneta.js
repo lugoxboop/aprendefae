@@ -17,6 +17,7 @@
  * ═══════════════════════════════════════════════════════════════════════════
  */
 import { SILUETAS } from "./siluetas-cabeza.js";
+import { COSMETICO, baseDe, filtroTinte, idFiltroTinte, svgAura } from "./cosmeticos-caja.js";
 
 /* Tamaño de cada pieza en px (el webp guardado). */
 export const PIEZAS_ACCESORIO = {
@@ -169,7 +170,7 @@ const ESPECIE = {
 /* ¿Lleva un sombrero que le tapa las orejas? Entonces no se pintan. */
 export function orejasTapadas(especie, puestos) {
   const t = ESPECIE[especie]?.tapaOrejas;
-  return Boolean(t && (puestos || []).some((k) => t.includes(k)));
+  return Boolean(t && (puestos || []).some((k) => t.includes(baseDe(k))));
 }
 
 const centroDe = (P, p) => {
@@ -255,7 +256,8 @@ function rigAudifonos(A, [ax, ay, as], pintar) {
 }
 
 /* Las ranuras: al ponerse uno, se quitan los demás de la misma. */
-export const ranuraDe = (id) => ACCESORIOS_MARIONETA[id]?.ranura ?? null;
+/* Los cosméticos de las cajas van en la ranura de su pieza base; las auras, en la suya. */
+export const ranuraDe = (id) => (COSMETICO[id]?.esAura ? "aura" : ACCESORIOS_MARIONETA[baseDe(id)]?.ranura ?? null);
 export function chocaCon(id, puestos) {
   const r = ranuraDe(id);
   return r ? (puestos || []).filter((k) => k !== id && ranuraDe(k) === r) : [];
@@ -267,15 +269,25 @@ export function chocaCon(id, puestos) {
  * Si dos accesorios comparten ranura (datos viejos), se pintan los dos: nada
  * de lo que alguien compró desaparece por sorpresa.
  */
-export function piezasAccesorios(especie, M, P, puestos) {
+export function piezasAccesorios(especie, M, P, puestos, uid = "") {
   /* cajas: [x0, y0, x1, y1, enCabeza] de cada pieza, para el encuadre. */
-  const out = { cabeza: "", pecho: "", espalda: "", cajas: [] };
-  const lista = (puestos || []).filter((k) => ACCESORIOS_MARIONETA[k]);
+  const out = { cabeza: "", pecho: "", espalda: "", aura: "", auraFrente: "", defs: "", cajas: [] };
+  /* Los cosméticos de las cajas (cosmeticos-caja.js): las ediciones se pintan
+     con la pieza de su base y un filtro de tinte; el aura, detrás de todo. */
+  const aura = (puestos || []).find((k) => COSMETICO[k]?.esAura);
+  if (aura) {
+    const a = auraDe(especie, M, P, COSMETICO[aura].tinte);
+    out.aura = a.atras;
+    out.auraFrente = a.frente;
+  }
+  const lista = (puestos || []).filter((k) => ACCESORIOS_MARIONETA[baseDe(k)]);
   if (!lista.length) return out;
   const A = anclasDe(especie, M, P);
   const aj = ESPECIE[especie]?.ajustes || {};
   /* Orden fijo: lo que va abajo primero (de la tabla), no el orden de compra. */
-  const orden = Object.keys(ACCESORIOS_MARIONETA).filter((k) => lista.includes(k));
+  const posicion = Object.fromEntries(Object.keys(ACCESORIOS_MARIONETA).map((k, i) => [k, i]));
+  const orden = [...new Set(lista)].sort((a, b) => posicion[baseDe(a)] - posicion[baseDe(b)]);
+  const tintes = new Set();
   /*
    * El cuerpo a medida (complexión): lo del pecho y la espalda se ensancha
    * con el torso, desde su centro y solo a lo ancho —una bufanda de un
@@ -283,7 +295,10 @@ export function piezasAccesorios(especie, M, P, puestos) {
    */
   const ancho = M.anchoCuerpo || 1;
   const eje = A.pecho[0];
-  for (const id of orden) {
+  for (const cid of orden) {
+    const id = baseDe(cid);
+    const tinte = COSMETICO[cid]?.tinte;
+    if (tinte) tintes.add(tinte);
     const [ax = 0, ay = 0, as = 1, giro = 0] = aj[id] || [];
     let trozos = { cabeza: "", pecho: "", espalda: "" };
     const pintar = (pieza, capa, px, py, w, h) => {
@@ -325,8 +340,29 @@ export function piezasAccesorios(especie, M, P, puestos) {
       pintar(pt.pieza, capa, px, py, w, h);
     }
     for (const c of ["cabeza", "pecho", "espalda"]) {
-      if (trozos[c]) out[c] += `<g class="mta-acc mta-acc-${id}">${trozos[c]}</g>`;
+      if (!trozos[c]) continue;
+      /* El tinte va en un grupo de dentro: el de fuera es el que se mueve (capa, alas). */
+      const dentro = tinte ? `<g filter="url(#${idFiltroTinte(tinte, uid)})">${trozos[c]}</g>` : trozos[c];
+      out[c] += `<g class="mta-acc mta-acc-${id}${tinte ? ` mta-cos mta-cos-${cid}` : ""}">${dentro}</g>`;
     }
   }
+  out.defs = [...tintes].map((t) => filtroTinte(t, uid)).join("");
   return out;
+}
+
+/*
+ * Dónde va el aura de cada especie: centrada en el cuerpo (entre la coronilla
+ * y los pies, que están en y = 684) y un poco más ancha que la cabeza.
+ */
+function auraDe(especie, M, P, dibujo) {
+  const C = M.cabeza;
+  const [hx, hy, hs] = C.en;
+  const [cw] = P.piezas[C.base[0]] || [220, 220];
+  const arriba = hy, abajo = 684;
+  const cx = hx + (cw * hs) / 2;
+  const cy = (arriba + abajo) / 2;
+  /* Pegada al cuerpo: el recuadro no la cuenta (encogería a la mascota). */
+  const ry = (abajo - arriba) / 2 + 6;
+  const rx = (cw * hs) / 2 + 30;
+  return svgAura(dibujo, [cx, cy], [rx, ry]);
 }

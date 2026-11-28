@@ -240,6 +240,14 @@ export const ESTILO_MARIONETA = `.mta * { transform-box: fill-box; }
 .mta-feliz .mta-acc-medalla, .mta-celebra .mta-acc-medalla, .mta-colita .mta-acc-medalla, .mta-baila .mta-acc-medalla, .mta-canta .mta-acc-medalla, .mta-saltitos .mta-acc-medalla, .mta-saluda .mta-acc-medalla, .mta-karaoke .mta-acc-medalla, .mta-campeon .mta-acc-medalla, .mta-graduado .mta-acc-medalla, .mta-fiesta .mta-acc-medalla, .mta-globo .mta-acc-medalla, .mta-porra .mta-acc-medalla { animation: mta-pendulo .9s ease-in-out infinite; }
 .mta-feliz .mta-acc-jetpack, .mta-celebra .mta-acc-jetpack, .mta-racha .mta-acc-jetpack, .mta-colita .mta-acc-jetpack, .mta-baila .mta-acc-jetpack, .mta-saltitos .mta-acc-jetpack, .mta-saluda .mta-acc-jetpack { animation: mta-motor .18s linear infinite alternate; }
 
+/* Las auras de las cajas sorpresa (cosmeticos-caja.js): se mueven en todo
+   menos en las listas (.mta-quieta), donde muchas a la vez cansan. */
+.mta:not(.mta-quieta) .mta-au-titila { animation: mta-au-titila 1.6s ease-in-out infinite; transform-origin: 50% 50%; }
+.mta:not(.mta-quieta) .mta-au-sube { animation: mta-au-sube 2.8s ease-in-out infinite; }
+.mta:not(.mta-quieta) .mta-au-cae { animation: mta-au-cae 3.4s ease-in-out infinite; }
+.mta:not(.mta-quieta) .mta-au-llama { animation: mta-au-llama .7s ease-in-out infinite alternate; transform-origin: 50% 100%; }
+.mta:not(.mta-quieta) .mta-au-gira { animation: mta-au-gira 14s linear infinite; transform-origin: 50% 50%; }
+
 @media (prefers-reduced-motion: reduce) {
   .mta * { animation: none !important; transition: none !important; }
 }
@@ -261,6 +269,11 @@ export const ESTILO_MARIONETA = `.mta * { transform-box: fill-box; }
 @keyframes mta-brazos-v-d { from { transform: rotate(-20deg); } to { transform: rotate(-48deg); } }
 @keyframes mta-ladea { 0%,100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg); } }
 @keyframes mta-lagrima { 0% { transform: translateY(0) scale(.3); opacity: 0; } 15% { transform: translateY(0) scale(1); opacity: 1; } 80% { transform: translateY(60px) scale(1); opacity: 1; } 100% { transform: translateY(75px) scale(.8); opacity: 0; } }
+@keyframes mta-au-titila { 0%,100% { transform: scale(.55); opacity: .35; } 50% { transform: scale(1.15); opacity: 1; } }
+@keyframes mta-au-sube { 0% { transform: translateY(14px); opacity: 0; } 30%,70% { opacity: 1; } 100% { transform: translateY(-26px); opacity: 0; } }
+@keyframes mta-au-cae { 0% { transform: translateY(-18px) rotate(0); opacity: 0; } 25%,75% { opacity: 1; } 100% { transform: translateY(22px) rotate(90deg); opacity: 0; } }
+@keyframes mta-au-llama { from { transform: scale(.88,.92); opacity: .75; } to { transform: scale(1.08,1.16); opacity: 1; } }
+@keyframes mta-au-gira { to { transform: rotate(360deg); } }
 @keyframes mta-aura { 0%,100% { transform: scale(.95); opacity: .55; } 50% { transform: scale(1.06); opacity: .9; } }
 @keyframes mta-llama { from { transform: scale(.92,1) skewX(-4deg); } to { transform: scale(1.06,1.14) skewX(5deg); } }
 @keyframes mta-puno { 0%,100% { transform: rotate(-120deg); } 50% { transform: rotate(-160deg); } }

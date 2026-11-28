@@ -24,6 +24,7 @@
  * mascota: solo cambia cómo se pinta.
  */
 
+import { COSMETICOS_CAJA } from "./cosmeticos-caja.js";
 import { recolorarPelaje } from "./pelaje.js";
 import svgZorro from "./ilustradas/zorro.js";
 import svgConejo from "./ilustradas/conejo.js";
@@ -366,7 +367,10 @@ export const ACCESORIOS_META = [
   { id: "alas", nombre: "Alas de hada", zona: "espalda" },
   { id: "jetpack", nombre: "Jetpack", zona: "espalda" },
 ];
-const ID_ACCESORIO_VALIDO = new Set(ACCESORIOS_META.map((a) => a.id));
+/* Más los cosméticos que salen de las cajas sorpresa (cosmeticos-caja.js). */
+export const TODOS_LOS_COSMETICOS = [...ACCESORIOS_META, ...COSMETICOS_CAJA.map(({ id, nombre, zona, rareza }) => ({ id, nombre, zona, rareza, deCaja: true }))];
+export const ZONAS_MI_AVATAR = [...ZONAS_ACCESORIO, { id: "aura", nombre: "Auras" }];
+const ID_ACCESORIO_VALIDO = new Set(TODOS_LOS_COSMETICOS.map((a) => a.id));
 export const esAccesorio = (k) => typeof k === "string" && ID_ACCESORIO_VALIDO.has(k);
 
 /*
