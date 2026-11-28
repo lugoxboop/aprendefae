@@ -76,9 +76,9 @@ function Definicion({ t }) {
 
 /* ═════ 4–7 · Cuatro pasos ═════ */
 const PASOS = [
-  ["📣", "publicidad", "encontrar más vendedores posibles", "#FFFDF7"],
+  ["📣", "publicidad", "ampliar la lista de vendedores potenciales", "#FFFDF7"],
   ["🎤", "conferencia de oferentes", "todos escuchan lo mismo · sin trato preferencial", CREMA],
-  ["📑", "evaluación de propuestas", "¿completas? ¿responden al enunciado y a los criterios?", "#DDE3FF"],
+  ["📑", "evaluación de propuestas", "¿completas? ¿responden al enunciado del trabajo y a los criterios de selección?", "#DDE3FF"],
   ["🤝", "negociación", "derechos · obligaciones · términos, antes de firmar", "#E3F6EC"],
 ];
 function Pasos({ t }) {
@@ -128,7 +128,7 @@ function Salidas({ t }) {
 /* ═════ 9–10 · El contrato ═════ */
 function Contrato({ t }) {
   const cam = mover(t, { s: 1.0, x: 540, y: 968 }, [{ a: S(10), b: E(10) + 0.3, s: 1.02, x: 540, y: 960 }]);
-  const I = [[M.trabajo10, "📦 trabajo a entregar"], [M.cronograma10, "📅 cronograma"], [M.precios, "💲 precios"], [M.garantia, "🛡️ garantía"], [M.cambios10, "🔄 manejo de cambios"]];
+  const I = [[M.trabajo10, "📦 trabajo a entregar"], [M.cronograma10, "📅 cronograma"], [M.precios, "💲 precios"], [M.garantia, "🛡️ garantía"], [M.cambios10, "🔄 manejo de las solicitudes de cambio"]];
   return (
     <Escena cam={cam} fondo="art/oficina.jpg" filtro="blur(7px)" velo={0.3}>
       <Cartel x={540} y={170} txt="✍️ el contrato" p={rampa(t, M.obliga - 0.4, 0.35)} tam={50} fondo={MANGO} />

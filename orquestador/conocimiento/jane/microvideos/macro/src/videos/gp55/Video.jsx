@@ -85,7 +85,7 @@ function Definicion({ t }) {
 /* ═════ 5 · Escuchar ═════ */
 function Escuchar({ t }) {
   const cam = mover(t, { s: 1.0, x: 540, y: 968 }, [{ a: S(5), b: E(5) + 0.3, s: 1.03, x: 540, y: 955 }]);
-  const R = [[M.conversaciones, "🗣️ conversaciones"], [M.reuniones5, "👥 reuniones"], [M.informes, "📊 informes de avance"], [M.encuestas, "📝 encuestas"]];
+  const R = [[M.conversaciones, "🗣️ conversaciones"], [M.reuniones5, "👥 reuniones"], [M.informes, "📊 informes del avance"], [M.encuestas, "📝 encuestas"]];
   return (
     <Escena cam={cam} fondo="art/calle.jpg" filtro="blur(7px)" velo={0.3}>
       <Gigante x={540} y={260} txt="👂" p={rampa(t, M.escuchar - 0.3, 0.35)} tam={150} />

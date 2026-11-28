@@ -70,7 +70,7 @@ function Definicion({ t }) {
       <Cartel x={540} y={220} txt="monitorear y controlar el trabajo del proyecto" p={rampa(t, M.monitorear - 0.3, 0.35)} tam={34} fondo={MANGO} />
       {C.map(([tw, txt], k) => <Cartel key={k} x={200 + k * 340} y={400} txt={txt} p={rampa(t, tw - 0.3, 0.3)} tam={38} fondo={CREMA} giro={[-2, 1, 2][k]} />)}
       <Cartel x={540} y={540} txt="📈 el avance general" p={rampa(t, M.informar + 0.4, 0.3)} tam={40} fondo="#FFFDF7" />
-      <Cartel x={540} y={700} txt="🎯 para cumplir los objetivos del plan" p={rampa(t, M.objetivos - 0.3, 0.3)} tam={36} fondo="#E3F6EC" giro={1} />
+      <Cartel x={540} y={700} txt="🎯 para cumplir los objetivos de desempeño del plan" p={rampa(t, M.objetivos - 0.3, 0.3)} tam={31} fondo="#E3F6EC" giro={0} />
       <Sombra x={540} y={1510} w={190} />
       <Mascota esp="hamster-gorra" x={540} y={1515} alto={300} t={t} cara="feliz" semilla={3} />
     </Escena>
@@ -81,8 +81,8 @@ function Definicion({ t }) {
 function Escalera({ t }) {
   const cam = mover(t, { s: 1.0, x: 540, y: 968 }, [{ a: S(6), b: E(6) + 0.3, s: 1.03, x: 540, y: 955 }]);
   const N = [
-    [M.datos4, "🔢", "datos de desempeño", "observaciones en bruto: costos reales", "#FFFDF7"],
-    [M.contexto, "🧠", "información de desempeño", "analizados en contexto", CREMA],
+    [M.datos4, "🔢", "datos de desempeño del trabajo", "observaciones en bruto: costos reales", "#FFFDF7"],
+    [M.contexto, "🧠", "información de desempeño del trabajo", "analizados en contexto", CREMA],
     [M.compilada, "📄", "informe de desempeño del trabajo", "compilado en un documento", "#DDE3FF"],
   ];
   return (
@@ -147,7 +147,7 @@ function Semaforo({ t }) {
   const luz = [M.verde, M.amarillo, M.rojo];
   return (
     <Escena cam={cam} fondo="art/oficina.jpg" filtro="blur(7px)" velo={0.3}>
-      <Cartel x={540} y={170} txt="🚦 tablero tipo semáforo" p={pS} tam={46} fondo={MANGO} />
+      <Cartel x={540} y={170} txt="🚦 cuadro de mandos tipo semáforo" p={pS} tam={46} fondo={MANGO} />
       {pS > 0 && (
         <div style={{ position: "absolute", left: 120, top: 260, width: 840, height: 470, background: "#FFFDF7", border: `8px solid ${TINTA}`, borderRadius: 26, boxShadow: "0 14px 0 rgba(42,30,23,.28)", transform: `scale(${rebote(pS)})`, fontFamily: "Sora", fontWeight: 800, color: TINTA }}>
           {IND.map(([nom, col], k) => {
