@@ -179,3 +179,14 @@
 - Transcripción gp27-cronograma: 162 palabras.
 - Narración gp28-actividades: lista con eleven_v3 (943 caracteres).
 - Transcripción gp28-actividades: 161 palabras.
+
+## 2026-11-28T00:45:55.257Z
+- Cupo: plan creator, 37378 de 122261 créditos usados.
+- Narración gp29-red: lista con eleven_v3 (969 caracteres).
+- Transcripción gp29-red: 161 palabras.
+- Narración gp30-duracion: lista con eleven_v3 (1077 caracteres).
+- Transcripción gp30-duracion: 177 palabras.
+- Narración gp31-ruta-critica: lista con eleven_v3 (1060 caracteres).
+- Transcripción gp31-ruta-critica: 177 palabras.
+- Narración gp32-costos: lista con eleven_v3 (1013 caracteres).
+- Transcripción gp32-costos: 165 palabras.
