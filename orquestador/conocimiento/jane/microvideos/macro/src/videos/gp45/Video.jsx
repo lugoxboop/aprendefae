@@ -119,10 +119,10 @@ function Matriz({ t }) {
       <Marca cx={c1 - 20} cy={yD - 5} letra="D" p={rampa(t, M.apoyo7 - 0.3, 0.3)} punteado />
       <Marca cx={c2 - 50} cy={yFila(0) + FH / 2 - 5} letra="C" p={rampa(t, M.lider9 - 0.4, 0.3)} />
       <Marca cx={c2 + 50} cy={yFila(0) + FH / 2 - 5} letra="D" p={rampa(t, M.lider9 - 0.2, 0.3)} punteado />
-      <Cartel x={300} y={1090} txt="C = hoy" p={rampa(t, M.hoy6 - 0.3, 0.3)} tam={38} fondo="#FFE1D8" giro={-2} />
-      <Cartel x={760} y={1090} txt="D = deseado" p={rampa(t, M.deberia - 0.3, 0.3)} tam={38} fondo="#DDE3FF" giro={2} />
-      <Cartel x={330} y={1210} txt="🔺 brecha = más comunicación" p={rampa(t, M.comunicacion - 0.4, 0.3)} tam={32} fondo={CREMA} giro={-1} />
-      <Cartel x={820} y={1210} txt="✅ sin brecha" p={rampa(t, M.nohay - 0.4, 0.3)} tam={36} fondo="#E3F6EC" giro={2} />
+      <Cartel x={210} y={1090} txt="C = hoy" p={rampa(t, M.hoy6 - 0.3, 0.3)} tam={38} fondo="#FFE1D8" giro={-2} />
+      <Cartel x={520} y={1090} txt="D = deseado" p={rampa(t, M.deberia - 0.3, 0.3)} tam={38} fondo="#DDE3FF" giro={2} />
+      <Cartel x={540} y={1210} txt="🔺 la brecha define cuánta comunicación" p={rampa(t, M.comunicacion - 0.4, 0.3)} tam={32} fondo={CREMA} giro={-1} />
+      <Cartel x={860} y={1090} txt="✅ sin brecha" p={rampa(t, M.nohay - 0.4, 0.3)} tam={36} fondo="#E3F6EC" giro={2} />
       <Sombra x={180} y={1530} w={150} />
       <Mascota esp="perro-mochila" x={180} y={1535} alto={240} t={t} cara={t > M.comunicacion ? "feliz" : "tranquila"} semilla={5} />
       <Sombra x={540} y={1530} w={150} />

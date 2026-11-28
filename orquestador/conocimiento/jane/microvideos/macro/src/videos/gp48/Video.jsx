@@ -69,7 +69,7 @@ function Definicion({ t }) {
       <Cartel x={780} y={420} txt="✅ actividades" p={rampa(t, M.actividades - 0.3, 0.3)} tam={40} fondo="#E3F6EC" giro={2} />
       <Cartel x={780} y={520} txt="que se ejecutan" p={rampa(t, M.actividades - 0.1, 0.3)} tam={34} fondo="#FFFDF7" giro={-1} />
       <Cartel x={540} y={720} txt="🏢 + políticas de calidad de la organización" p={rampa(t, M.politicas3 - 0.3, 0.3)} tam={32} fondo={CREMA} />
-      <Cartel x={540} y={880} txt="también se llama: aseguramiento de calidad" p={rampa(t, M.aseguramiento - 0.4, 0.3)} tam={32} fondo="#DDE3FF" giro={-1} />
+      <Cartel x={540} y={880} txt="a veces se llama: aseguramiento de calidad" p={rampa(t, M.aseguramiento - 0.4, 0.3)} tam={32} fondo="#DDE3FF" giro={-1} />
       <Cartel x={540} y={1000} txt="⚙️ usar bien los procesos" p={rampa(t, M.procesos4 - 0.4, 0.3)} tam={40} fondo={CREMA} giro={1} />
       <Sombra x={540} y={1530} w={180} />
       <Mascota esp="hamster-gorra" x={540} y={1535} alto={260} t={t} cara="feliz" semilla={3} />
@@ -89,7 +89,7 @@ function Auditoria({ t }) {
       <Cartel x={780} y={300} txt="independiente" p={rampa(t, M.independiente - 0.4, 0.3)} tam={38} fondo={CREMA} giro={2} />
       <Cartel x={540} y={430} txt="¿el trabajo cumple…?" p={rampa(t, M.politicas6 - 0.8, 0.3)} tam={36} fondo="#FFFDF7" />
       {R.map(([tw, txt], k) => <Cartel key={k} x={[220, 540, 860][k]} y={540} txt={txt} p={rampa(t, tw - 0.3, 0.3)} tam={30} fondo="#DDE3FF" giro={[-2, 1, 2][k]} />)}
-      <Cartel x={540} y={700} txt="👤 alguien externo al proyecto" p={rampa(t, M.externo - 0.3, 0.3)} tam={38} fondo="#FFE1D8" giro={-1} />
+      <Cartel x={540} y={700} txt="👥 por lo general, un equipo externo" p={rampa(t, M.externo - 0.3, 0.3)} tam={38} fondo="#FFE1D8" giro={-1} />
       <Cartel x={540} y={810} txt="🏢 ej.: oficina de dirección de proyectos" p={rampa(t, M.oficina - 0.3, 0.3)} tam={30} fondo={CREMA} giro={1} />
       <Cartel x={300} y={960} txt="⭐ buenas prácticas" p={rampa(t, M.buenas - 0.3, 0.3)} tam={36} fondo="#E3F6EC" giro={-2} />
       <Cartel x={780} y={960} txt="🕳️ brechas · 🐞 defectos" p={rampa(t, M.brechas - 0.3, 0.3)} tam={34} fondo="#FFE1D8" giro={2} />
