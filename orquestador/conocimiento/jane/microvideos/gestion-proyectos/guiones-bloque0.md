@@ -813,3 +813,54 @@ Fuente: G 9.1, 9.1.3.1, 9.1.3.2, p. 312–320.
 9. Los resultados van a los informes de calidad: pueden ser gráficos, numéricos o cualitativos.
 10. Pueden incluir los incidentes y recomendaciones de mejora y de acciones correctivas. Si algo debe cambiar, sale una solicitud de cambio.
 11. Ahora te toca: piensa quién podría auditar la calidad de tu proyecto, y qué revisaría.
+## GP-49 · ¿Quién entra al equipo? (G 9.3, 9.3.2.1, 9.3.2.3, 9.3.3.1–9.3.3.4, p. 328–335)
+1. La feria crece. Pía necesita dos ayudantes más, un horno extra y mesas.
+2. ¿A quién elige? ¿Y cuándo estará cada uno?
+3. Adquirir recursos es obtener miembros del equipo, instalaciones, equipamiento, materiales, suministros y otros recursos necesarios para completar el trabajo del proyecto.
+4. Para elegir se usan criterios de selección, ponderados según su importancia.
+5. Por ejemplo: disponibilidad, costo y capacidad. Y para las personas, también experiencia, habilidades y actitud.
+6. A veces un recurso ya viene preasignado: Carmen estaba en el equipo desde el acta de constitución.
+7. El resultado son las asignaciones: de recursos físicos, como el horno y las mesas, y del equipo, con sus roles y responsabilidades.
+8. También los calendarios de recursos: cuándo y por cuánto tiempo estará disponible cada recurso.
+9. Ramón solo puede los sábados. El horno extra llega el viernes.
+10. Si un recurso no se consigue, puede salir una solicitud de cambio.
+11. Ahora te toca: elige tres criterios para escoger a una persona de tu equipo.
+
+## GP-50 · De grupo a equipo (G 9.4, 9.4.2.1, 9.4.2.4–9.4.2.6, 9.4.3.1, p. 336–344)
+1. El equipo de Pía es nuevo. Cada uno trabaja por su lado y casi no hablan.
+2. ¿Cómo se vuelve un buen equipo?
+3. Desarrollar el equipo es mejorar las competencias, la interacción de los miembros y el ambiente general del equipo, para lograr un mejor desempeño del proyecto.
+4. Un modelo útil es la escalera de Tuckman, con cinco etapas.
+5. Formación: se conocen. Turbulencia: chocan las ideas. Normalización: aprenden a confiar.
+6. Desempeño: funcionan como una unidad. Y disolución: terminan y se despiden.
+7. Un equipo puede estancarse en una etapa, o retroceder.
+8. ¿Qué ayuda? La coubicación, que es trabajar en el mismo lugar, la capacitación, el reconocimiento y el espíritu de equipo.
+9. Ojo: el reconocimiento se da durante todo el proyecto, no al final.
+10. Luego se hacen evaluaciones de desempeño del equipo: ¿mejoraron las habilidades, hay más cohesión, se va menos gente?
+11. Ahora te toca: ¿en qué etapa de Tuckman está hoy tu equipo?
+
+## GP-51 · Dos quieren el mismo horno (G 9.5, 9.5.2.1, p. 345–351)
+1. Ramón y Carmen discuten: los dos quieren el horno a la misma hora.
+2. ¿Qué hace Pía?
+3. Dirigir al equipo es hacer seguimiento del desempeño, dar retroalimentación, resolver problemas y gestionar cambios en el equipo.
+4. Los conflictos son inevitables. Pueden nacer de recursos escasos, prioridades del cronograma y estilos de trabajo.
+5. Primero intentan resolverlo ellos. Si crece, el director ayuda: pronto y, en general, en privado.
+6. Hay cinco técnicas. Retirarse o eludir: posponer el conflicto.
+7. Suavizar o adaptarse: resaltar los acuerdos y ceder para mantener la armonía.
+8. Consensuar o conciliar: cada uno cede algo. A veces, todos pierden.
+9. Forzar o dirigir: imponer el propio punto de vista. Uno gana y otro pierde.
+10. Colaborar o resolver el problema: sumar todas las visiones, con diálogo abierto. Puede ser ganar-ganar.
+11. Ahora te toca: piensa en un conflicto de tu equipo, y qué técnica usarías.
+
+## GP-52 · El mismo aviso, dos formas (G 10.2, 10.2.2.3, 10.2.2.5, 10.2.3.1, p. 379–387)
+1. El plan de gestión de las comunicaciones de Pía está listo. Ahora hay que comunicar de verdad.
+2. Hay nuevo horario. ¿Cómo se avisa?
+3. Gestionar las comunicaciones es garantizar que la información del proyecto se recopile, se distribuya y se guarde, entre otras cosas, de forma oportuna y adecuada.
+4. Una herramienta es la generación de informes: recopilar y distribuir la información del proyecto.
+5. Pero adaptada a cada interesado: con el nivel, el formato y el detalle adecuados.
+6. Don Tito recibe un mensaje corto. El equipo, la presentación completa.
+7. También cuentan las habilidades de comunicación: la retroalimentación, el lenguaje no verbal y las presentaciones.
+8. Una buena presentación piensa en la audiencia: sus expectativas y necesidades.
+9. El resultado son las comunicaciones del proyecto, como informes de desempeño, estado de los entregables, avance del cronograma y costos.
+10. Y si cambian sus necesidades, los métodos de comunicación deben poder ajustarse.
+11. Ahora te toca: escribe el mismo aviso de dos formas, para tu jefe y para tu equipo.
