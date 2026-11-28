@@ -101,16 +101,22 @@
   },
   "narrar": [
     {
-      "id": "gp19-liderar-v2",
+      "id": "gp21-interesados-v2",
       "voz": "jBlmi27XRORxjPquUeCh",
       "modelo": "eleven_v3",
-      "texto": "Gestionar no es lo mismo que liderar.\n\nSe daña el horno, y Pía tiene que sacar cien panes hoy.\n\nPrimero gestiona: reparte turnos, mira el reloj y pregunta cómo y cuándo.\n\nLuego reúne al equipo, pregunta qué y por qué, y entre todos debaten otra salida.\n\nGestionar es llevar a alguien de un punto a otro con pasos ya conocidos, usando el poder de la posición.\n\nLiderar es guiarlo con discusión y debate, usando el poder de las relaciones.\n\nLa gestión hace las cosas correctamente; el liderazgo hace las cosas correctas.\n\nUna mira el corto plazo y los sistemas; la otra, la visión a largo plazo y las personas.\n\nNo son sinónimos, y el director necesita las dos: la habilidad está en el equilibrio para cada situación.\n\nAdemás, integra en tres niveles: une los procesos donde se cruzan, aplica lo que sabe y tiene en cuenta el contexto.\n\nAhora te toca: en cada escena, ¿Pía está gestionando o liderando?"
+      "texto": "El vecino que nadie invitó puede frenar tu proyecto.\n\nEl primer día, el carrito de Pía tapa el garaje de don Tito, y él se queja en la alcaldía.\n\nNadie lo había tenido en cuenta, pero también era un interesado.\n\nUn interesado es quien puede afectar el proyecto, verse afectado o percibirse como afectado por él.\n\nPor eso se identifica a los interesados: quiénes son, qué intereses tienen, cuánto influyen y qué impacto pueden tener.\n\nY no se hace una sola vez: se repite a lo largo del proyecto.\n\nPara ordenarlos, Pía los ubica en una matriz de poder e interés.\n\nCarmen tiene mucho poder y mucho interés. Don Tito, menos poder, pero mucho interés.\n\nTodo queda en el registro de interesados.\n\nAhí va quién es cada uno y su rol, qué espera, cuánto puede influir y cómo se clasifica: por ejemplo, interno o externo.\n\nAhora te toca: arma el registro de interesados de tu proyecto."
     },
     {
-      "id": "gp20-supuestos-v2",
+      "id": "gp23-alcance-v3",
       "voz": "jBlmi27XRORxjPquUeCh",
       "modelo": "eleven_v3",
-      "texto": "Una frase que nadie comprobó puede tumbar tu plan.\n\nEn el acta del carrito, Pía escribe: «El horno estará libre todas las mañanas».\n\nPara llegar ahí, ella y Carmen parten del caso de negocio y de los acuerdos que ya tienen.\n\nRevisan los factores ambientales de la empresa y usan la plantilla del acta de la panadería.\n\nConsultan a expertos, hacen una tormenta de ideas y entrevistas, y se reúnen con los interesados clave.\n\nAsí nace el acta. Cuando Carmen la aprueba, el proyecto se inicia de manera formal.\n\nOjo: el acta no es un contrato, porque al crearla no hay compromisos ni intercambio de dinero.\n\n¿Y el horno? Nadie lo comprobó. Es un supuesto: algo que se da por cierto sin prueba.\n\nPor eso este proceso tiene una segunda salida: el registro de supuestos.\n\nAhí se anotan los supuestos y las restricciones, a lo largo de todo el proyecto.\n\nAhora te toca: escribe tres supuestos de tu proyecto."
+      "texto": "«Ya que estás, ponle una sombrilla al carrito.» Y después, una nevera. ¿Quién decide qué entra?\n\nCada semana, Carmen y los clientes piden algo nuevo, y Pía no sabe qué responder.\n\nLe faltó acordar, desde antes, cómo se iba a manejar el alcance.\n\nEso es planificar la gestión del alcance: crear un plan que documente cómo se definirá, validará y controlará.\n\nEl plan de gestión del alcance dice cómo se escribirá el enunciado del alcance,\n\ncómo se creará, a partir de él, la estructura de desglose del trabajo,\n\ncómo se aprobará la línea base del alcance y cómo se aceptarán formalmente los entregables.\n\nY tiene un compañero: el plan de gestión de los requisitos.\n\nEse dice cómo se analizarán, documentarán y gestionarán los requisitos: cómo se priorizan y qué autorización necesitan los cambios.\n\nLos dos son parte del plan para la dirección del proyecto. Y el del alcance puede ser formal o informal, según lo que se necesite.\n\nAhora te toca: escribe cómo se aceptarán los entregables de tu proyecto."
+    },
+    {
+      "id": "gp24-requisitos-v2",
+      "voz": "jBlmi27XRORxjPquUeCh",
+      "modelo": "eleven_v3",
+      "texto": "«Queremos pan rico.» Suena bien, pero no se puede comprobar.\n\nPía sale a preguntar: entrevista a los clientes, hace una encuesta en el barrio y reúne un grupo focal.\n\nTambién compara con otras panaderías y revisa los documentos que ya tiene.\n\nEstá recopilando requisitos: determina, documenta y gestiona lo que necesitan los interesados.\n\nUn requisito es una condición o capacidad que debe tener un producto, servicio o resultado para satisfacer una necesidad del negocio.\n\nY debe ser medible y comprobable: no «pan rico», sino «pan caliente antes de las siete».\n\nAdemás, trazable, completo, coherente y aceptable para los interesados clave.\n\nTodo va a la documentación de requisitos: los del negocio, los de los interesados, los de las soluciones y otros.\n\nY a la matriz de trazabilidad de requisitos: una cuadrícula que une cada requisito desde su origen hasta el entregable que lo satisface.\n\nAsí, al final, se puede comprobar que se entregó lo aprobado.\n\nAhora te toca: convierte «pan rico» en un requisito que se pueda medir."
     }
   ]
 }

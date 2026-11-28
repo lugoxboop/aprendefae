@@ -390,7 +390,7 @@ Fuente: G 4.1, 4.1.1 a 4.1.3.2, p. 75–81; Glosario, «Supuesto».
 1. El vecino que nadie invitó puede frenar tu proyecto.
 2. El primer día, el carrito de Pía tapa el garaje de don Tito, y él se queja en la alcaldía.
 3. Nadie lo había tenido en cuenta, pero también era un interesado.
-4. Un interesado es quien puede afectar el proyecto, verse afectado o sentirse afectado por él.
+4. Un interesado es quien puede afectar el proyecto, verse afectado o percibirse como afectado por él.
 5. Por eso se identifica a los interesados: quiénes son, qué intereses tienen, cuánto influyen y qué impacto pueden tener.
 6. Y no se hace una sola vez: se repite a lo largo del proyecto.
 7. Para ordenarlos, Pía los ubica en una matriz de poder e interés.
@@ -427,24 +427,24 @@ Fuente: G 4.2, 4.2.3.1, p. 82–89; Glosario, «Plan para la Dirección del Proy
 6. cómo se creará, a partir de él, la estructura de desglose del trabajo,
 7. cómo se aprobará la línea base del alcance y cómo se aceptarán formalmente los entregables.
 8. Y tiene un compañero: el plan de gestión de los requisitos.
-9. Ese dice cómo se analizarán, documentarán y gestionarán los requisitos: cómo se priorizan y quién autoriza los cambios.
+9. Ese dice cómo se analizarán, documentarán y gestionarán los requisitos: cómo se priorizan y qué autorización necesitan los cambios.
 10. Los dos son parte del plan para la dirección del proyecto. Y el del alcance puede ser formal o informal, según lo que se necesite.
 11. Ahora te toca: escribe cómo se aceptarán los entregables de tu proyecto.
 
 Fuente: G 5.1, 5.1.3.1, 5.1.3.2, p. 134–137.
 
-## GP-24 · «Pan rico» no es un requisito (G 5.2, 5.2.2.2, 5.2.3.1, 5.2.3.2, p. 138–149; Glosario, «Requisito»)
+## GP-24 · «Pan rico» no es un requisito (G 5.2, 5.2.2.2, 5.2.2.3, 5.2.3.1, 5.2.3.2, p. 138–149; Glosario, «Requisito»)
 
 1. «Queremos pan rico.» Suena bien, pero no se puede comprobar.
 2. Pía sale a preguntar: entrevista a los clientes, hace una encuesta en el barrio y reúne un grupo focal.
 3. También compara con otras panaderías y revisa los documentos que ya tiene.
 4. Está recopilando requisitos: determina, documenta y gestiona lo que necesitan los interesados.
-5. Un requisito es una condición que el producto debe cumplir para satisfacer una necesidad.
+5. Un requisito es una condición o capacidad que debe tener un producto, servicio o resultado para satisfacer una necesidad del negocio.
 6. Y debe ser medible y comprobable: no «pan rico», sino «pan caliente antes de las siete».
 7. Además, trazable, completo, coherente y aceptable para los interesados clave.
 8. Todo va a la documentación de requisitos: los del negocio, los de los interesados, los de las soluciones y otros.
-9. Y a la matriz de trazabilidad: una cuadrícula que une cada requisito con su origen y con el entregable que lo cumple.
+9. Y a la matriz de trazabilidad de requisitos: una cuadrícula que une cada requisito desde su origen hasta el entregable que lo satisface.
 10. Así, al final, se puede comprobar que se entregó lo aprobado.
 11. Ahora te toca: convierte «pan rico» en un requisito que se pueda medir.
 
-Fuente: G 5.2, 5.2.2.2, 5.2.3.1, 5.2.3.2, p. 138–149; Glosario, «Requisito».
+Fuente: G 5.2, 5.2.2.2, 5.2.2.3, 5.2.3.1, 5.2.3.2, p. 138–149; Glosario, «Requisito».
