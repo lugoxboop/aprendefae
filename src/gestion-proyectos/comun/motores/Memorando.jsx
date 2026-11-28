@@ -7,6 +7,9 @@
  * gris con la retro de por qué está bien, y cuenta en contra.
  * Puntaje (diseño H13): (errores corregidos al primer intento − frases
  * correctas tocadas, mínimo 0) / número de errores.
+ *
+ * Lote 4 (c07 H12, el libro de costos): el paso puede traer su `membrete`, su
+ * `papel` (un objeto ilustrado) y el texto del botón final (`entregar`).
  */
 import { useRef, useState } from "react";
 import { Boton, Retro } from "../../../macro2026/comun/ui.jsx";
@@ -39,7 +42,7 @@ export default function Memorando({ paso, escena = {}, alTerminar }) {
   const tocadasBien = useRef(new Set());
   const errores = paso.frases.filter((f) => f.error);
   const corregidas = errores.filter((f) => estados[f.id] === "corregida").length;
-  const papel = fuenteObjeto("memorando-clip");
+  const papel = fuenteObjeto(paso.papel ?? "memorando-clip") ?? fuenteObjeto("memorando-clip");
 
   const tocar = (f) => {
     if (estados[f.id] === "corregida") return;
@@ -87,7 +90,7 @@ export default function Memorando({ paso, escena = {}, alTerminar }) {
           <Personaje quien="pmo" alto={120} animo={corregidas === errores.length ? "feliz" : "quieta"} />
         </div>
         <div className="gp-memo" data-memo style={{ backgroundImage: papel ? `url(${papel.src})` : undefined, background: papel ? undefined : "#fbf7ee" }}>
-          <p className="gp-memo-membrete">ALTAMIRA · MEMORANDO DE INDUCCIÓN</p>
+          <p className="gp-memo-membrete">{paso.membrete ?? "ALTAMIRA · MEMORANDO DE INDUCCIÓN"}</p>
           {paso.frases.map((f) => (
             <div key={f.id}>
               <button type="button" className="gp-frase" data-frase={f.id} data-estado={estados[f.id] ?? undefined} onClick={() => tocar(f)} aria-pressed={Boolean(estados[f.id])}>
@@ -109,7 +112,7 @@ export default function Memorando({ paso, escena = {}, alTerminar }) {
       </div>
       <Retro estado={tipoRetro} key={`r${golpes}`}>{retro}</Retro>
       {corregidas === errores.length && (
-        <div className="gp-pie"><Boton primario onClick={terminar} data-terminar-memo>Entregar el memorando</Boton></div>
+        <div className="gp-pie"><Boton primario onClick={terminar} data-terminar-memo>{paso.entregar ?? "Entregar el memorando"}</Boton></div>
       )}
     </div>
   );

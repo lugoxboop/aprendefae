@@ -366,7 +366,7 @@ evaluar (H10–H12). Dentro de cada pieza, de lo directo a lo fino.
 
 | # | Consigna | Clave | Retro si falla |
 |---|---|---|---|
-| 1 | «Pon a cada curva su nombre.» (6) | Continua que llega a 1.200 = PV · guiones en 300 = EV · puntos en 375 = AC | PV: «La planeada sigue la línea base hasta 1.200.» · EV: «El valor ganado mide trabajo hecho a precio presupuestado: 300.» · AC: «El costo real es lo gastado: 375, más que lo ganado.» |
+| 1 | «Pon a cada curva su nombre.» (6) | Continua que llega a 1.200 = PV · guiones, la más baja al corte = EV · puntos, en medio al corte = AC | PV: «La planeada sigue la línea base hasta 1.200.» · EV: «El valor ganado mide trabajo hecho a precio presupuestado: 300.» · AC: «El costo real es lo gastado: 375, más que lo ganado.» |
 | 2 | «¿Cuánto valor se ganó al corte?» (6). Dato: «Terminados los estudios (150) y el 75 % de los cimientos (200).» | 300 | «EV = 150 + 75% de 200 = 150 + 150 = 300.» |
 | 3 | «Calcula la variación del costo (CV).» (6) | −75 | «CV = EV − AC = 300 − 375 = −75.» |
 | 4 | «Calcula la variación del cronograma (SV).» (6) | −100 | «SV = EV − PV = 300 − 400 = −100.» |

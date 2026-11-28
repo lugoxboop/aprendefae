@@ -12,9 +12,11 @@ import { PIEZAS_TEXTO_C3 } from "./fundamentos/textos-c3.js";
 import { PIEZAS_TEXTO_C4 } from "./integracion/textos-c4.js";
 import { PIEZAS_TEXTO_C5 } from "./alcance/textos-c5.js";
 import { PIEZAS_TEXTO_C6 } from "./cronograma/textos-c6.js";
+import { PIEZAS_TEXTO_C7 } from "./costos/textos-c7.js";
+import { PIEZAS_TEXTO_C8 } from "./calidad/textos-c8.js";
 
-/* Lote 1 (caps. 1-2), lote 2 (caps. 3-4) y lote 3 (caps. 5-6), en el orden de los diseños. */
-export const PIEZAS_TEXTO_GP = [...PIEZAS_TEXTO_INTRO, ...PIEZAS_TEXTO_ENTORNO, ...PIEZAS_TEXTO_C3, ...PIEZAS_TEXTO_C4, ...PIEZAS_TEXTO_C5, ...PIEZAS_TEXTO_C6];
+/* Lote 1 (caps. 1-2), lote 2 (caps. 3-4), lote 3 (caps. 5-6) y lote 4 (caps. 7-8), en el orden de los diseños. */
+export const PIEZAS_TEXTO_GP = [...PIEZAS_TEXTO_INTRO, ...PIEZAS_TEXTO_ENTORNO, ...PIEZAS_TEXTO_C3, ...PIEZAS_TEXTO_C4, ...PIEZAS_TEXTO_C5, ...PIEZAS_TEXTO_C6, ...PIEZAS_TEXTO_C7, ...PIEZAS_TEXTO_C8];
 
 export const ITEMS_GP = Object.fromEntries(PIEZAS_TEXTO_GP.map((p) => [p.id, itemsDePieza(p)]));
 

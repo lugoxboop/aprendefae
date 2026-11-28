@@ -7,6 +7,11 @@
  * línea llena, «Comprobar». Con `puntuaPares`, un ítem por par vecino: vale
  * si el par quedó bien al primer intento. Error: la retro del par invertido
  * (o la común), y se reordena sin puntaje hasta que quede bien.
+ *
+ * Lote 4 (caps. 7 y 8): con `escena.deAbajo` la línea se llena de abajo hacia
+ * arriba (la torre del presupuesto, los pisos del ascensor): el hueco 1 queda
+ * abajo. `escena.encimaOrden({ puestas, bien, paso })` pinta lo propio de la
+ * pieza (la polea, el ascensor, la cadena) sobre la línea.
  */
 import { useRef, useState } from "react";
 import { Boton, Retro } from "../../../macro2026/comun/ui.jsx";
@@ -22,6 +27,7 @@ const CSS = `
 .gp-hueco[data-estado="bien"] { border-style: solid; border-color: #f4f5f7; }
 .gp-orden-tarjeta { flex: 1; min-height: 44px; padding: 8px 10px; border-radius: 10px; border: 2px solid #f4f5f7; background: #fbf7ee; color: #121418; font: 600 15px/1.3 var(--planck-font-sans, system-ui, sans-serif); text-align: left; cursor: pointer; display: flex; align-items: center; gap: 8px; }
 .gp-orden-bandeja { display: grid; gap: 8px; margin-top: 12px; }
+.gp-linea[data-de-abajo="1"] { display: flex; flex-direction: column-reverse; }
 `;
 
 export default function Ordenar({ paso, escena = {}, alTerminar }) {
@@ -68,7 +74,8 @@ export default function Ordenar({ paso, escena = {}, alTerminar }) {
             {(escena.objetos ?? []).map((o) => <Objeto key={o} id={o} alto={72} />)}
           </div>
         </div>
-        <ol className="gp-linea" aria-label="Línea de tiempo" style={{ listStyle: "none", margin: 0, padding: 0 }}>
+        {escena.encimaOrden?.({ puestas, bien, paso })}
+        <ol className="gp-linea" data-de-abajo={escena.deAbajo ? "1" : undefined} aria-label={escena.deAbajo ? "De abajo hacia arriba" : "Línea de tiempo"} style={{ listStyle: "none", margin: 0, padding: 0 }}>
           {paso.items.map((_, k) => {
             const id = puestas[k];
             return (
@@ -79,7 +86,7 @@ export default function Ordenar({ paso, escena = {}, alTerminar }) {
                     aria-label={`${texto(id)}. Tócala para devolverla.`}>
                     {escena.objetoTarjeta && <Objeto id={escena.objetoTarjeta} alto={32} />}{texto(id)}
                   </button>
-                ) : <span className="da26-rotulo">Toca la que va aquí</span>}
+                ) : <span className="da26-rotulo">{escena.rotuloHueco?.(k) ?? "Toca la que va aquí"}</span>}
               </li>
             );
           })}
