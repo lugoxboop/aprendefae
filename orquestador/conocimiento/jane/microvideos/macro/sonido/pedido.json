@@ -101,28 +101,10 @@
   },
   "narrar": [
     {
-      "id": "gp61-controlar-costos",
+      "id": "gp61-controlar-costos-b",
       "voz": "jBlmi27XRORxjPquUeCh",
       "modelo": "eleven_v3",
-      "texto": "Pía decora diez puestos para la feria. Cada uno tiene un presupuesto de cien pesos.\n\nHoy debía llevar seis. Lleva cinco, y ya gastó seiscientos cincuenta. ¿Va bien?\n\nControlar los costos es monitorear el estado del proyecto para actualizar sus costos y gestionar cambios a la línea base de costos.\n\nPara eso sirve el análisis del valor ganado. Mide tres cosas.\n\nEl valor planificado: el presupuesto del trabajo programado. Seis puestos, seiscientos.\n\nEl valor ganado: el presupuesto del trabajo completado. Cinco puestos, quinientos.\n\nY el costo real: lo que de verdad se gastó. Seiscientos cincuenta.\n\nLa variación del costo es valor ganado menos costo real: menos ciento cincuenta. Se pasó del presupuesto.\n\nLa variación del cronograma es valor ganado menos valor planificado: menos cien. Va atrasada.\n\nY si el índice de desempeño del costo, valor ganado entre costo real, da menos de uno: el trabajo está costando más de lo planificado.\n\nAhora te toca: con los números de tu proyecto, calcula si vas sobre o bajo el presupuesto."
-    },
-    {
-      "id": "gp62-controlar-calidad",
-      "voz": "jBlmi27XRORxjPquUeCh",
-      "modelo": "eleven_v3",
-      "texto": "Salió el primer lote de panes para la feria. Ramón quiere empacarlos ya.\n\nPía lo detiene: ¿y si vienen quemados?\n\nControlar la calidad es monitorear y registrar los resultados de las actividades de gestión de calidad, para que las salidas sean completas, correctas y satisfagan las expectativas del cliente.\n\nSe verifica que el trabajo cumpla los requisitos, antes de la aceptación final.\n\nUna herramienta es la hoja de verificación: anota cuántas veces aparece cada defecto.\n\nOtra, el muestreo estadístico: no se revisa todo, sino una parte elegida.\n\nY la inspección: examinar el producto para ver si cumple los estándares documentados.\n\nRamón revisa veinte panes al azar y anota: tres quemados, uno crudo.\n\nCon el análisis de causa raíz, encuentran el origen: el horno calienta de más.\n\nLos resultados quedan como mediciones de control de calidad, y lo que cumple se vuelve entregable verificado, listo para validar el alcance.\n\nAhora te toca: arma una hoja de verificación con tres defectos posibles de tu entregable."
-    },
-    {
-      "id": "gp63-controlar-recursos",
-      "voz": "jBlmi27XRORxjPquUeCh",
-      "modelo": "eleven_v3",
-      "texto": "La feria empieza mañana, y faltan cinco mesas. Las tiene otro departamento.\n\n¿Quién vigila que las cosas estén donde se necesitan?\n\nControlar los recursos es asegurar que los recursos físicos asignados estén disponibles tal como se planificó, monitorear su uso planificado frente al real, y tomar acciones correctivas.\n\nAsí están en el momento y lugar adecuados, y se liberan cuando ya no se necesitan.\n\nPara resolver problemas, hay pasos: identificar, definir, investigar, analizar, resolver y comprobar.\n\nPía investiga y analiza la causa: el otro departamento no liberó las mesas a tiempo.\n\nLuego, con el análisis de alternativas, compara: pedirlas de nuevo, alquilar otras, o pagar horas extra.\n\nEl análisis costo-beneficio ayuda a elegir la mejor acción correctiva en términos de costo.\n\nY la negociación y la influencia ayudan a conseguir los recursos a tiempo.\n\nSi la solución toca el plan, sale una solicitud de cambio.\n\nAhora te toca: piensa qué recurso físico de tu proyecto podría faltar, y qué harías."
-    },
-    {
-      "id": "gp64-monitorear-comunicaciones",
-      "voz": "jBlmi27XRORxjPquUeCh",
-      "modelo": "eleven_v3",
-      "texto": "Pía mandó el horario de la feria por correo. Aun así, la mitad llegó tarde.\n\nEnviar no es lo mismo que comunicar.\n\nMonitorear las comunicaciones es asegurar que se satisfagan las necesidades de información del proyecto y de sus interesados.\n\nSe revisa si el mensaje adecuado llega a la audiencia adecuada, por el canal adecuado y en el momento adecuado.\n\nY si las comunicaciones aumentaron o mantuvieron el apoyo de los interesados.\n\nSe puede medir con encuestas de satisfacción, observaciones del equipo o el registro de incidentes.\n\nPía hace una encuesta: casi nadie leyó el correo, pero todos leen el grupo de mensajes.\n\nLa observación y la conversación con el equipo también revelan conflictos o problemas.\n\nSe comparan las comunicaciones implementadas con las planificadas.\n\nSi algo falla, sale una solicitud de cambio: otro canal, otro formato u otro contenido.\n\nAhora te toca: piensa en un mensaje de tu proyecto que no llegó, y qué canal usarías."
+      "texto": "Pía decora diez puestos para la feria. Cada uno tiene un presupuesto de cien pesos.\n\nHoy debía llevar seis. Lleva cinco, y ya gastó seiscientos cincuenta.\n\nControlar los costos es monitorear el estado del proyecto para actualizar sus costos y gestionar cambios a la línea base de costos.\n\nPara eso sirve el análisis del valor ganado. Mide tres cosas.\n\nValor planificado: el presupuesto del trabajo programado. Seiscientos.\n\nValor ganado: el presupuesto del trabajo completado. Quinientos.\n\nCosto real: lo que de verdad se gastó. Seiscientos cincuenta.\n\nVariación del costo: valor ganado menos costo real. Menos ciento cincuenta: se pasó del presupuesto.\n\nVariación del cronograma: valor ganado menos valor planificado. Menos cien: va atrasada.\n\nY el índice de desempeño del costo, valor ganado entre costo real, da menos de uno: el trabajo cuesta más de lo planificado.\n\nAhora te toca: calcula si tu proyecto va sobre o bajo el presupuesto."
     }
   ]
 }

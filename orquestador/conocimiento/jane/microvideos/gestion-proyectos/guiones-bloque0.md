@@ -968,16 +968,16 @@ Fuente: G 9.1, 9.1.3.1, 9.1.3.2, p. 312–320.
 11. Ahora te toca: busca la tarea más crítica de tu proyecto y pronostica cuándo terminará.
 ## GP-61 · Lo que vale lo hecho (G 7.4, 7.4.2.2, p. 257–264)
 1. Pía decora diez puestos para la feria. Cada uno tiene un presupuesto de cien pesos.
-2. Hoy debía llevar seis. Lleva cinco, y ya gastó seiscientos cincuenta. ¿Va bien?
+2. Hoy debía llevar seis. Lleva cinco, y ya gastó seiscientos cincuenta.
 3. Controlar los costos es monitorear el estado del proyecto para actualizar sus costos y gestionar cambios a la línea base de costos.
 4. Para eso sirve el análisis del valor ganado. Mide tres cosas.
-5. El valor planificado: el presupuesto del trabajo programado. Seis puestos, seiscientos.
-6. El valor ganado: el presupuesto del trabajo completado. Cinco puestos, quinientos.
-7. Y el costo real: lo que de verdad se gastó. Seiscientos cincuenta.
-8. La variación del costo es valor ganado menos costo real: menos ciento cincuenta. Se pasó del presupuesto.
-9. La variación del cronograma es valor ganado menos valor planificado: menos cien. Va atrasada.
-10. Y si el índice de desempeño del costo, valor ganado entre costo real, da menos de uno: el trabajo está costando más de lo planificado.
-11. Ahora te toca: con los números de tu proyecto, calcula si vas sobre o bajo el presupuesto.
+5. Valor planificado: el presupuesto del trabajo programado. Seiscientos.
+6. Valor ganado: el presupuesto del trabajo completado. Quinientos.
+7. Costo real: lo que de verdad se gastó. Seiscientos cincuenta.
+8. Variación del costo: valor ganado menos costo real. Menos ciento cincuenta: se pasó del presupuesto.
+9. Variación del cronograma: valor ganado menos valor planificado. Menos cien: va atrasada.
+10. Y el índice de desempeño del costo, valor ganado entre costo real, da menos de uno: el trabajo cuesta más de lo planificado.
+11. Ahora te toca: calcula si tu proyecto va sobre o bajo el presupuesto.
 
 ## GP-62 · Antes de entregar, revisar (G 8.3, 8.3.2.1–8.3.2.5, 8.3.3.1–8.3.3.2, p. 298–306)
 1. Salió el primer lote de panes para la feria. Ramón quiere empacarlos ya.
