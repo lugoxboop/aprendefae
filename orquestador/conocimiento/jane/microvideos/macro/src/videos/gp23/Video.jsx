@@ -29,7 +29,7 @@ const M = {
   estructura: W(6, "estructura", 0.6), trabajo: W(6, "trabajo,", 0.95),
   linea: W(7, "línea", 0.25), aceptaran: W(7, "aceptarán", 0.7), entregables7: W(7, "entregables.", 0.95),
   companero: W(8, "compañero:", 0.25), requisitos8: W(8, "requisitos.", 0.95),
-  analizaran: W(9, "analizarán,", 0.2), documentaran: W(9, "documentarán", 0.3), gestionaran: W(9, "gestionarán", 0.42), priorizan: W(9, "priorizan", 0.7), autoriza: W(9, "autoriza", 0.85), cambios: W(9, "cambios.", 0.95),
+  analizaran: W(9, "analizarán,", 0.2), documentaran: W(9, "documentarán", 0.3), gestionaran: W(9, "gestionarán", 0.42), priorizan: W(9, "priorizan", 0.7), autoriza: W(9, "autorización", 0.85), cambios: W(9, "cambios.", 0.95),
   dos: W(10, "dos", 0.05), direccion10: W(10, "dirección", 0.35), formal: W(10, "formal", 0.7), informal: W(10, "informal,", 0.8),
   toca: W(11, "toca:", 0.15), aceptaran11: W(11, "aceptarán", 0.5), proyecto11: W(11, "proyecto.", 0.95),
 };
@@ -111,7 +111,7 @@ function Alcance({ t }) {
   const cam = mover(t, { s: 1.0, x: 540, y: 968 }, [{ a: S(7) - 0.2, b: E(7), s: 1.02, x: 540, y: 960 }]);
   const enHoja = rampa(t, S(5) - 0.4, 0.4);
   const V = [[M.definira, "definir"], [M.validara, "validar"], [M.controlara, "controlar"]];
-  const FIL = [[M.enunciado, "📝", "enunciado del alcance"], [M.estructura, "🌳", "estructura de desglose del trabajo (EDT)"], [M.linea, "📏", "aprobar la línea base del alcance"], [M.aceptaran, "🤝", "aceptar formalmente los entregables"]];
+  const FIL = [[M.enunciado, "📝", "enunciado del alcance"], [M.estructura, "🌳", "estructura de desglose del trabajo (EDT/WBS)"], [M.linea, "📏", "aprobar la línea base del alcance"], [M.aceptaran, "🤝", "aceptar formalmente los entregables"]];
   return (
     <Escena cam={cam} fondo="art/oficina.jpg" filtro="blur(7px)" velo={0.3}>
       <div style={{ opacity: 1 - enHoja }}>
@@ -129,7 +129,7 @@ function Alcance({ t }) {
 /* ═════ 8–9 · El compañero: plan de gestión de los requisitos ═════ */
 function Requisitos({ t }) {
   const cam = mover(t, { s: 1.0, x: 540, y: 968 }, [{ a: S(9) - 0.2, b: E(9), s: 1.02, x: 540, y: 960 }]);
-  const FIL = [[M.analizaran, "🔎", "analizar, documentar y gestionar"], [M.priorizan, "🔢", "cómo se priorizan"], [M.autoriza, "🔐", "quién autoriza los cambios"]];
+  const FIL = [[M.analizaran, "🔎", "analizar, documentar y gestionar"], [M.priorizan, "🔢", "cómo se priorizan"], [M.autoriza, "🔐", "qué autorización necesitan los cambios"]];
   return (
     <Escena cam={cam} fondo="art/oficina.jpg" filtro="blur(7px)" velo={0.3}>
       <Cartel x={540} y={260} txt="🤝 su compañero" p={rampa(t, M.companero - 0.4, 0.35)} tam={54} fondo={MANGO} />
@@ -200,5 +200,5 @@ const CLAVE = /^(alcance|planificar|gestión|enunciado|estructura|línea|entrega
 
 export const DURACION = T.DURACION_S;
 export const GP23 = ({ sinSonido = false }) => (
-  <VideoMicro T={T} planos={PLANOS} pinta={pinta} sfx={SFX} clave={CLAVE} arte={ARTE} audio="audio/gp23-alcance-v2.mp3" sinSonido={sinSonido} />
+  <VideoMicro T={T} planos={PLANOS} pinta={pinta} sfx={SFX} clave={CLAVE} arte={ARTE} audio="audio/gp23-alcance-v3.mp3" sinSonido={sinSonido} />
 );

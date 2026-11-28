@@ -21,7 +21,7 @@ const M = {
   vecino: W(1, "vecino", 0.15), invito: W(1, "invitó", 0.4), frenar: W(1, "frenar", 0.7),
   carrito2: W(2, "carrito", 0.3), garaje: W(2, "garaje", 0.5), tito2: W(2, "Tito,", 0.65), queja: W(2, "queja", 0.8), alcaldia: W(2, "alcaldía.", 0.95),
   nadie: W(3, "Nadie", 0.1), interesado3: W(3, "interesado.", 0.95),
-  afectar: W(4, "afectar", 0.4), verse: W(4, "verse", 0.6), sentirse: W(4, "sentirse", 0.8),
+  afectar: W(4, "afectar", 0.4), verse: W(4, "verse", 0.6), sentirse: W(4, "percibirse", 0.8),
   quienes: W(5, "quiénes", 0.35), intereses: W(5, "intereses", 0.5), influyen: W(5, "influyen", 0.7), impacto: W(5, "impacto", 0.9),
   sola: W(6, "sola", 0.3), repite: W(6, "repite", 0.65), proyecto6: W(6, "proyecto.", 0.95),
   ordenarlos: W(7, "ordenarlos,", 0.15), matriz: W(7, "matriz", 0.6), poder7: W(7, "poder", 0.8), interes7: W(7, "interés.", 0.95),
@@ -74,7 +74,7 @@ function GarajeEsc({ t }) {
       <Cartel x={400} y={520} txt="🚗 garaje de don Tito" p={rampa(t, M.garaje - 0.3, 0.35)} tam={46} fondo={CREMA} />
       <Documento x={850} y={430} w={210} p={rampa(t, M.queja - 0.3, 0.4)} titulo="queja" letra={36} giro={6} />
       <Gigante x={850} y={700} txt="🏛️" p={rampa(t, M.alcaldia - 0.5, 0.35)} tam={100} />
-      <Cartel x={540} y={300} txt="también es un interesado" p={rampa(t, M.interesado3 - 0.7, 0.35)} tam={56} fondo={MANGO} giro={-2} />
+      <Cartel x={540} y={300} txt="también era un interesado" p={rampa(t, M.interesado3 - 0.7, 0.35)} tam={56} fondo={MANGO} giro={-2} />
       <Sombra x={860} y={1510} w={220} />
       <Mascota esp="perro-mochila" x={860} y={1515} alto={420} t={t} cara={t > M.tito2 - 0.3 ? "triste" : "tranquila"} bd={-90 * pulso(t, M.queja - 0.3, 1.4)} salto={20 * Math.abs(Math.sin(t * 8)) * pulso(t, M.queja - 0.3, 1.4)} semilla={12} espejo />
       <Placa x={860} y={1020} nombre="don Tito" rol="vecino" p={rampa(t, M.tito2 - 0.3, 0.35) * (1 - rampa(t, M.queja - 0.4, 0.3))} color={COLOR.CORAL} />
@@ -86,7 +86,7 @@ function GarajeEsc({ t }) {
 function Define({ t }) {
   const cam = mover(t, { s: 1.0, x: 540, y: 968 }, [{ a: S(6) - 0.2, b: E(6), s: 1.02, x: 540, y: 960 }]);
   const enP = rampa(t, S(5) - 0.4, 0.35);
-  const def = [[M.afectar, "👉", "puede afectarlo"], [M.verse, "🎯", "se ve afectado"], [M.sentirse, "💭", "se siente afectado"]];
+  const def = [[M.afectar, "👉", "puede afectarlo"], [M.verse, "🎯", "se ve afectado"], [M.sentirse, "💭", "se percibe afectado"]];
   const qq = [[M.quienes, "🧑", "¿quiénes son?"], [M.intereses, "❤️", "¿qué intereses?"], [M.influyen, "📣", "¿cuánto influyen?"], [M.impacto, "💥", "¿qué impacto?"]];
   return (
     <Escena cam={cam} fondo="art/oficina.jpg" filtro="blur(7px)" velo={0.3}>
@@ -119,7 +119,7 @@ function Matriz({ t }) {
   const ponTito = sale(rampa(t, M.menos - 0.4, 0.6));
   return (
     <Escena cam={cam} fondo="art/oficina.jpg" filtro="blur(7px)" velo={0.3}>
-      <Cartel x={540} y={250} txt="matriz de poder e interés" p={rampa(t, M.matriz - 0.4, 0.35)} tam={54} fondo={MANGO} />
+      <Cartel x={540} y={250} txt="matriz de poder/interés" p={rampa(t, M.matriz - 0.4, 0.35)} tam={54} fondo={MANGO} />
       {pM > 0 && (
         <div style={{ position: "absolute", left: X0, top: Y0, width: L, height: L, opacity: pM, transform: `scale(${lerp(0.9, 1, pM)})` }}>
           {[0, 1, 2, 3].map((k) => <div key={k} style={{ position: "absolute", left: (k % 2) * L / 2, top: Math.floor(k / 2) * L / 2, width: L / 2, height: L / 2, boxSizing: "border-box", background: k === 1 ? "rgba(231,111,81,.25)" : "rgba(255,253,247,.85)", border: `6px solid ${TINTA}` }} />)}
@@ -219,5 +219,5 @@ const CLAVE = /^(interesado|interesados|matriz|poder|interés|registro|interno|e
 
 export const DURACION = T.DURACION_S;
 export const GP21 = ({ sinSonido = false }) => (
-  <VideoMicro T={T} planos={PLANOS} pinta={pinta} sfx={SFX} clave={CLAVE} arte={ARTE} audio="audio/gp21-interesados.mp3" sinSonido={sinSonido} />
+  <VideoMicro T={T} planos={PLANOS} pinta={pinta} sfx={SFX} clave={CLAVE} arte={ARTE} audio="audio/gp21-interesados-v2.mp3" sinSonido={sinSonido} />
 );

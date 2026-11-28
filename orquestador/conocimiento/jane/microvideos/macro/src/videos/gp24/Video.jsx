@@ -24,7 +24,7 @@ const M = {
   preguntar: W(2, "preguntar:", 0.15), entrevista: W(2, "entrevista", 0.3), encuesta: W(2, "encuesta", 0.6), grupo: W(2, "grupo", 0.85),
   compara: W(3, "compara", 0.15), documentos3: W(3, "documentos", 0.75),
   recopilando: W(4, "recopilando", 0.15), determina: W(4, "determina,", 0.4), documenta: W(4, "documenta", 0.55), gestiona: W(4, "gestiona", 0.7), interesados4: W(4, "interesados.", 0.95),
-  condicion: W(5, "condición", 0.3), necesidad: W(5, "necesidad.", 0.95),
+  condicion: W(5, "condición", 0.3), necesidad: W(5, "necesidad", 0.85),
   medible: W(6, "medible", 0.2), comprobable: W(6, "comprobable:", 0.35), rico6: W(6, "rico»,", 0.55), caliente: W(6, "caliente", 0.75), siete: W(6, "siete».", 0.95),
   trazable: W(7, "trazable,", 0.15), completo: W(7, "completo,", 0.3), coherente: W(7, "coherente", 0.45), aceptable: W(7, "aceptable", 0.6),
   documentacion: W(8, "documentación", 0.2), negocio8: W(8, "negocio,", 0.45), interesados8: W(8, "interesados,", 0.65), soluciones: W(8, "soluciones", 0.85), otros: W(8, "otros.", 0.95),
@@ -65,11 +65,11 @@ function Gancho({ t }) {
 /* ═════ 2–3 · Pía sale a preguntar ═════ */
 function Pregunta({ t }) {
   const cam = mover(t, { s: 1.0, x: 540, y: 968 }, [{ a: S(3) - 0.2, b: E(3), s: 1.03, x: 540, y: 960 }]);
-  const TEC = [[M.entrevista, "🎤", "entrevistas"], [M.encuesta, "📝", "encuesta"], [M.grupo, "👥", "grupo focal"], [M.compara, "🔍", "comparar"], [M.documentos3, "📄", "documentos"]];
+  const TEC = [[M.entrevista, "🎤", "entrevistas"], [M.encuesta, "📝", "encuesta"], [M.grupo, "👥", "grupo focal"], [M.compara, "🔍", "estudios comparativos"], [M.documentos3, "📄", "análisis de documentos"]];
   const pos = [[220, 470], [540, 470], [860, 470], [380, 830], [700, 830]];
   return (
     <Escena cam={cam} fondo="art/calle.jpg" filtro="blur(5px)" velo={0.2}>
-      {TEC.map(([tw, ic, txt], k) => <Ficha key={k} x={pos[k][0]} y={pos[k][1]} w={290} icono={ic} txt={txt} p={rampa(t, tw - 0.35, 0.35)} letra={40} giro={[-3, 2, 4, -2, 3][k]} />)}
+      {TEC.map(([tw, ic, txt], k) => <Ficha key={k} x={pos[k][0]} y={pos[k][1]} w={290} icono={ic} txt={txt} p={rampa(t, tw - 0.35, 0.35)} letra={34} giro={[-3, 2, 4, -2, 3][k]} />)}
       <Sombra x={540} y={1510} w={240} />
       <Mascota esp="hamster-gorra" x={540} y={1515} alto={400} t={t} cara="feliz" bd={-80 * pulso(t, M.entrevista - 0.3, 1.2)} bi={-70 * pulso(t, M.compara - 0.3, 1.2)} semilla={3} />
       <Sombra x={170} y={1510} w={170} />
@@ -91,8 +91,8 @@ function Requisito({ t }) {
       <Cartel x={540} y={260} txt="recopilar requisitos" p={rampa(t, M.recopilando - 0.4, 0.35)} tam={62} fondo={MANGO} />
       <div style={{ opacity: 1 - en6 }}>
         {V4.map(([tw, txt], k) => <Cartel key={k} x={200 + k * 340} y={400} txt={txt} p={rampa(t, tw - 0.3, 0.3)} tam={46} fondo={CREMA} giro={(k - 1) * 3} />)}
-        <Cartel x={540} y={640} txt="📌 condición que debe cumplir" p={rampa(t, M.condicion - 0.4, 0.35)} tam={50} fondo="#E3F6EC" />
-        <Cartel x={540} y={780} txt="para satisfacer una necesidad" p={rampa(t, M.necesidad - 0.6, 0.35)} tam={42} fondo={CREMA} giro={-2} />
+        <Cartel x={540} y={640} txt="📌 condición o capacidad que debe tener" p={rampa(t, M.condicion - 0.4, 0.35)} tam={42} fondo="#E3F6EC" />
+        <Cartel x={540} y={780} txt="para satisfacer una necesidad del negocio" p={rampa(t, M.necesidad - 0.6, 0.35)} tam={42} fondo={CREMA} giro={-2} />
       </div>
       {en6 > 0 && (
         <div style={{ opacity: en6 }}>
@@ -134,11 +134,11 @@ function Doc({ t }) {
 function Matriz({ t }) {
   const cam = mover(t, { s: 1.0, x: 540, y: 968 }, [{ a: S(10) - 0.2, b: E(10), s: 1.02, x: 540, y: 960 }]);
   const pM = rampa(t, M.matriz - 0.4, 0.4);
-  const COL = [["origen", "🗣️ clientes (encuesta)", M.origen], ["requisito", "pan caliente antes de las 7", M.matriz + 0.5], ["entregable", "🔥 turno de horno a las 5", M.entregable]];
+  const COL = [["origen", "🗣️ clientes (encuesta)", M.origen], ["requisito", "pan caliente antes de las 7", M.matriz + 0.5], ["entregable", "🥖 pan listo a las 6:30", M.entregable]];
   const linea = sale(rampa(t, M.entregable + 0.1, 0.7));
   return (
     <Escena cam={cam} fondo="art/oficina.jpg" filtro="blur(7px)" velo={0.3}>
-      <Cartel x={540} y={260} txt="matriz de trazabilidad" p={rampa(t, M.matriz - 0.3, 0.35)} tam={60} fondo={MANGO} />
+      <Cartel x={540} y={260} txt="matriz de trazabilidad de requisitos" p={rampa(t, M.matriz - 0.3, 0.35)} tam={46} fondo={MANGO} />
       {pM > 0 && (
         <div style={{ position: "absolute", left: 50, top: 380, width: 980, height: 560, background: "#FFFDF7", border: `8px solid ${TINTA}`, borderRadius: 24, transform: `scale(${rebote(pM)})`, overflow: "hidden", fontFamily: "Sora", fontWeight: 800, color: TINTA }}>
           {COL.map(([cab, val, tw], c) => (
@@ -197,5 +197,5 @@ const CLAVE = /^(requisito|requisitos|medible|comprobable|trazable|matriz|trazab
 
 export const DURACION = T.DURACION_S;
 export const GP24 = ({ sinSonido = false }) => (
-  <VideoMicro T={T} planos={PLANOS} pinta={pinta} sfx={SFX} clave={CLAVE} arte={ARTE} audio="audio/gp24-requisitos.mp3" sinSonido={sinSonido} />
+  <VideoMicro T={T} planos={PLANOS} pinta={pinta} sfx={SFX} clave={CLAVE} arte={ARTE} audio="audio/gp24-requisitos-v2.mp3" sinSonido={sinSonido} />
 );

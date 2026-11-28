@@ -157,7 +157,7 @@ function Extras({ t }) {
   const fuera = sale(rampa(t, M.parte - 0.6, 0.8));
   return (
     <Escena cam={cam} fondo="art/oficina.jpg" filtro="blur(7px)" velo={0.3}>
-      <Carpeta x={540} y={300} w={760} h={720} p={1} titulo="plan para la dirección">
+      <Carpeta x={540} y={300} w={760} h={720} p={1} titulo="plan para la dirección del proyecto">
         <div style={{ position: "absolute", left: 50, top: 150, fontFamily: "Sora", fontWeight: 800, fontSize: 34, color: TINTA, opacity: 0.55 }}>📚 planes · 📏 líneas base</div>
         {X.map(([tw, txt], k) => <Chip key={k} x={50} y={220 + k * 115} txt={txt} p={rampa(t, tw - 0.35, 0.3)} fondo={MANGO} tam={46} />)}
         <div style={{ position: "absolute", left: 50, top: 580, fontFamily: "Sora", fontWeight: 800, fontSize: 36, color: COLOR.VERDE, opacity: rampa(t, M.necesidades - 0.3, 0.35) }}>🧩 según lo que necesite el proyecto</div>
