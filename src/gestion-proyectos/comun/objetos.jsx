@@ -40,3 +40,10 @@ export function Objeto({ id, alto = 80, ancho = null, nombre = null, className =
     />
   );
 }
+
+/*
+ * Lote 2 (caps. 3 y 4): el primer id de la lista que tiene ilustración. Las
+ * escenas piden primero el objeto propio de la pieza (diseño §3) y, mientras
+ * no esté, el ilustrado existente más cercano; nunca un rectángulo a mano.
+ */
+export const primero = (...ids) => ids.find((id) => hayObjeto(id)) ?? null;

@@ -16,6 +16,27 @@
  *   dilema      decisiones encadenadas sin clave (H14, exploratorio).
  *   dial        exploración libre y reto (H17).
  *
+ * Lote 3 (caps. 5 y 6): un paso puede ser `tipo: "casillas"` (motor Casillas:
+ * escribir un número o elegir en varias casillas a la vez). Entra en un banco
+ * o en un micro como cualquier paso «decidir» y vale un ítem.
+ *
+ * Lote 4 (caps. 7 y 8): `tipo: "explorar"` (motor Explorar) es una
+ * exploración sin puntaje antes del reto (c07 H03: mover las tres cifras y
+ * ver los dos resultados); vale 0 ítems. En la partida, `maxPorClave` y
+ * `minClaves` (c08 H06: 8 de 11, al menos 5 espinas y ninguna con más de 2).
+ *
+ * Lote 5 (caps. 9 y 10): en la partida, `porClave` admite `siempre` (c09 H04:
+ * 6 que van y 2 que no, siempre la «autorización formal») y `alMenosUno`
+ * (c09 H08: siempre una escena de retroceso o estancamiento).
+ *
+ * Lote 6 (caps. 11 y 12): una etapa «clasificar» con `destinosDePartida`
+ * muestra solo los destinos de los ítems que salieron (c11 H01: las seis
+ * pestañas de las seis tarjetas sorteadas; c11 H04 y H06 igual). Un paso
+ * «decidir» con `apuesta` es predecir y revelar sin puntaje (c11 H08): vale
+ * 0 ítems. Un «ordenar» con `porValor` acepta empates y nombra el par que
+ * quedó invertido con sus cifras (c11 H05); con `puntuaPosiciones` vale un
+ * ítem por posición (c12 H12: «pasos en su posición / 10»).
+ *
  * Un paso «decidir» = { tipo, id, texto, contexto?, consigna?, destinos,
  * clave, retros | retro, retroComun?, subtemas }: un ítem que se lleva a un
  * destino. Es la mecánica de casi todo: clasificar en cinta, sellar, conectar
@@ -38,10 +59,54 @@ const decidir = (item, etapa, base = {}) => ({
   subtemas: item.subtemas ?? base.subtemas ?? null,
 });
 
+/*
+ * Lote 2 (caps. 3 y 4): `cubrir` = que cada clave del banco salga al menos
+ * una vez (o `minPorClave` veces); `pares` = n pares (ítems con el mismo
+ * `par`) y nunca los dos de un par seguidos; `ordenarPorNivel` = tras el
+ * sorteo, primero los de nivel 1 (los obvios). El sorteo se repite con el
+ * mismo rng hasta cumplir: sigue siendo reproducible con semilla.
+ */
+const cuentaPorClave = (lista) => lista.reduce((m, x) => ({ ...m, [x.clave]: (m[x.clave] ?? 0) + 1 }), {});
+function cumpleCobertura(lista, banco, p) {
+  const n = cuentaPorClave(lista);
+  if (p.maxPorClave && Object.values(n).some((v) => v > p.maxPorClave)) return false;
+  if (p.minClaves && Object.keys(n).length < p.minClaves) return false;
+  if (!p.cubrir && !p.minPorClave) return true;
+  const min = p.minPorClave ?? 1;
+  return [...new Set(banco.map((x) => x.clave))].every((c) => (n[c] ?? 0) >= min);
+}
+const sinParesSeguidos = (lista) => lista.every((x, k) => k === 0 || !x.par || x.par !== lista[k - 1].par);
+export function sortearCubriendo(items, n, rng = Math.random, p = { cubrir: true }) {
+  let sale = sortear(items, n, rng);
+  for (let k = 0; k < 400 && !cumpleCobertura(sale, items, p); k += 1) sale = sortear(items, n, rng);
+  return sale;
+}
+
 /* Los ítems de un banco que entran en esta partida, en su orden de juego. */
 export function partidaDe(etapa, rng = Math.random) {
   const p = etapa.partida ?? { todas: true };
   const banco = etapa.banco;
+  if (p.alMenosUno) {
+    const sin = { ...etapa, partida: { ...p, alMenosUno: undefined } };
+    const cumple = (lista) => lista.some((x) => p.alMenosUno.includes(x.id));
+    let sale = partidaDe(sin, rng);
+    for (let k = 0; k < 400 && !cumple(sale); k += 1) sale = partidaDe(sin, rng);
+    return sale;
+  }
+  if (p.cubrir || p.minPorClave || p.maxPorClave || p.minClaves || p.pares || p.ordenarPorNivel) {
+    const base = { ...p, cubrir: false, minPorClave: undefined, maxPorClave: undefined, minClaves: undefined, pares: undefined, ordenarPorNivel: false };
+    if (p.pares) {
+      const ids = [...new Set(banco.map((x) => x.par))];
+      const elegidos = new Set(sortear(ids, p.pares, rng));
+      let sale = barajar(banco.filter((x) => elegidos.has(x.par)), rng);
+      for (let k = 0; k < 400 && !sinParesSeguidos(sale); k += 1) sale = barajar(sale, rng);
+      return sale;
+    }
+    let sale = partidaDe({ ...etapa, partida: base }, rng);
+    for (let k = 0; k < 400 && !cumpleCobertura(sale, banco, p); k += 1) sale = partidaDe({ ...etapa, partida: base }, rng);
+    if (p.ordenarPorNivel) sale = [...sale].sort((a, b) => (a.nivel ?? 1) - (b.nivel ?? 1));
+    return sale;
+  }
   if (p.porNivel) {
     return Object.keys(p.porNivel).sort().flatMap((nivel) =>
       sortear(banco.filter((x) => String(x.nivel) === String(nivel)), p.porNivel[nivel], rng));
@@ -49,7 +114,11 @@ export function partidaDe(etapa, rng = Math.random) {
   if (p.porClave) {
     const claves = [...new Set(banco.map((x) => x.clave))];
     const cuantas = (c) => (typeof p.porClave === "number" ? p.porClave : p.porClave[c] ?? 0);
-    return barajar(claves.flatMap((c) => sortear(banco.filter((x) => x.clave === c), cuantas(c), rng)), rng);
+    const fijos = (p.siempre ?? []).map((id) => banco.find((x) => x.id === id)).filter(Boolean);
+    return barajar(claves.flatMap((c) => {
+      const deC = fijos.filter((x) => x.clave === c);
+      return [...deC, ...sortear(banco.filter((x) => x.clave === c && !deC.includes(x)), Math.max(0, cuantas(c) - deC.length), rng)];
+    }), rng);
   }
   if (p.rondasPorClave) {
     /* H18: tantas rondas como ítems por clave; en cada ronda, uno de cada clave. */
@@ -83,7 +152,7 @@ function pasosDeMicros(etapa, rng) {
   for (const m of etapa.pasos) {
     if (m.tipo === "ordenar") { pasos.push(ordenarDe(m, rng)); continue; }
     if (m.items) {
-      const elegidos = m.sortear ? sortear(m.items, m.sortear, rng) : m.barajar ? barajar(m.items, rng) : m.items;
+      const elegidos = m.sortear ? (m.cubrir ? sortearCubriendo(m.items, m.sortear, rng) : sortear(m.items, m.sortear, rng)) : m.barajar ? barajar(m.items, rng) : m.items;
       for (const x of elegidos) {
         pasos.push(conDestinos(decidir(x, etapa, {
           consigna: m.consigna, destinos: m.destinos, retro: m.retro, grupo: m.grupo,
@@ -108,12 +177,18 @@ function ordenarDe(m, rng) {
 /* Los pares vecinos de un orden, como ids de ítem: «<paso>:<a>-<b>». */
 export const paresDe = (paso) => paso.items.slice(1).map((x, k) => `${paso.items[k].id}-${x.id}`);
 
+/* Los pasos que siguen al banco de una etapa «clasificar» (uno o una lista). */
+export const despuesDe = (etapa) => (etapa.despues ? [].concat(etapa.despues) : []);
+
 /* Una etapa → { consigna, pasos }. */
 export function prepararEtapa(etapa, rng = Math.random) {
   switch (etapa.tipo) {
     case "clasificar": {
-      const pasos = partidaDe(etapa, rng).map((x) => decidir(x, etapa));
-      if (etapa.despues) pasos.push(etapa.despues.tipo === "ordenar" ? ordenarDe(etapa.despues, rng) : conDestinos(decidir(etapa.despues, etapa), rng));
+      const sale = partidaDe(etapa, rng);
+      const ds = etapa.destinosDePartida ? etapa.destinos.filter((d) => sale.some((x) => x.clave === d.id)) : null;
+      const pasos = sale.map((x) => decidir(x, etapa, ds ? { destinos: ds } : {}));
+      /* `despues`: un paso o (lote 2) una lista de pasos, en orden. */
+      for (const d of despuesDe(etapa)) pasos.push(d.tipo === "ordenar" ? ordenarDe(d, rng) : conDestinos(decidir(d, etapa), rng));
       return { consigna: etapa.consigna, pasos };
     }
     case "micros":
@@ -139,9 +214,11 @@ export const prepararPieza = (pieza, rng = Math.random) => pieza.etapas.map((e) 
 
 /* Cuántos ítems puntúa un paso (la base del porcentaje). */
 export function itemsDePaso(paso) {
-  if (paso.tipo === "decidir") return 1;
+  if (paso.tipo === "explorar") return 0;
+  if (paso.tipo === "decidir" && paso.apuesta) return 0;
+  if (paso.tipo === "decidir" || paso.tipo === "casillas") return 1;
   if (paso.tipo === "emparejar") return paso.rieles.length;
-  if (paso.tipo === "ordenar") return paso.puntuaPares ? paso.items.length - 1 : 1;
+  if (paso.tipo === "ordenar") return paso.puntuaPosiciones ? paso.items.length : paso.puntuaPares ? paso.items.length - 1 : 1;
   if (paso.tipo === "memorando") return paso.partida.conError;
   if (paso.tipo === "dial") return paso.retos.length;
   return 0;
@@ -158,18 +235,26 @@ export function itemsDePieza(pieza) {
   const ponOrden = (m) => {
     const t = (id) => m.items.find((x) => x.id === id).texto;
     for (const p of paresDe(m)) { const [a, b] = p.split("-"); out[`${m.id}:${p}`] = `Orden: ${t(a)} → ${t(b)}`; }
+    /* Lote 5: un orden que vale un solo ítem (sin `puntuaPares`) manda el id del paso. */
+    if (!m.puntuaPares) out[m.id] = `Orden: ${m.items.map((x) => x.texto).join(" → ")}`;
+    /* Lote 6: un orden por posiciones manda «<paso>:<ítem>» por cada tarjeta. */
+    if (m.puntuaPosiciones) m.items.forEach((x, k) => { out[`${m.id}:${x.id}`] = `Posición ${k + 1}: ${x.texto}`; });
   };
   for (const e of pieza.etapas) {
     if (e.tipo === "clasificar") {
-      for (const x of e.banco) out[x.id] = x.texto;
-      if (e.despues) {
-        if (e.despues.tipo === "ordenar") ponOrden(e.despues);
-        else ponDecidir(e.despues);
+      /* Lote 5: un ítem sin tarjeta (la pregunta especial al final del banco) se nombra por su pregunta. */
+      for (const x of e.banco) out[x.id] = x.texto ?? [x.contexto, x.consigna].filter(Boolean).join(" ");
+      for (const d of despuesDe(e)) {
+        if (d.tipo === "ordenar") ponOrden(d);
+        else ponDecidir(d);
       }
     } else if (e.tipo === "micros") {
       for (const m of e.pasos) {
         if (m.tipo === "ordenar") ponOrden(m);
-        else if (m.items) for (const x of m.items) out[x.id] = x.texto;
+        else if (m.items) {
+          /* Lote 3: un ítem sin texto (dos versiones a elegir) se nombra por sus destinos. */
+          for (const x of m.items) out[x.id] = x.texto ?? (x.destinos ? x.destinos.map((d) => d.nombre).join(" / ") : [x.contexto, x.consigna ?? m.consigna].filter(Boolean).join(" "));
+        }
         else ponDecidir(m);
       }
     } else if (e.tipo === "emparejar") {
@@ -179,7 +264,8 @@ export function itemsDePieza(pieza) {
     } else if (e.tipo === "dilema") {
       for (const p of e.pasos) for (const o of p.opciones) out[`${p.id}:${o.id}`] = `${p.titulo}: ${o.texto}`;
     } else if (e.tipo === "dial") {
-      for (const x of e.banco) out[x.id] = x.texto;
+      /* Lote 5: un ítem sin tarjeta (la pregunta especial al final del banco) se nombra por su pregunta. */
+      for (const x of e.banco) out[x.id] = x.texto ?? [x.contexto, x.consigna].filter(Boolean).join(" ");
     }
   }
   return out;

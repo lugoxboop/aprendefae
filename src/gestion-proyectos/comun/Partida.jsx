@@ -29,6 +29,8 @@ import Ordenar from "./motores/Ordenar.jsx";
 import Memorando from "./motores/Memorando.jsx";
 import Dilema from "./motores/Dilema.jsx";
 import Dial from "./motores/Dial.jsx";
+import Casillas from "./motores/Casillas.jsx";
+import Explorar from "./motores/Explorar.jsx";
 
 /* La escena de la etapa k: la base de la pieza con lo propio de esa etapa. */
 const escenaDe = (escena, k) => ({ ...escena, ...(escena.etapas?.[k] ?? {}) });
@@ -139,6 +141,8 @@ export default function Partida({ pieza, escena = {}, onTerminar, rng = null, va
   const comunes = { paso, escena: esc, alTerminar: alTerminarPaso };
   let motor;
   if (paso.tipo === "decidir") motor = <Decidir key={clave} {...comunes} estadoEtapa={{ hechos, indice: p, total: etapa.pasos.length }} />;
+  else if (paso.tipo === "casillas") motor = <Casillas key={clave} {...comunes} estadoEtapa={{ hechos, indice: p, total: etapa.pasos.length }} />;
+  else if (paso.tipo === "explorar") motor = <Explorar key={clave} {...comunes} />;
   else if (paso.tipo === "emparejar") motor = <Emparejar key={clave} {...comunes} />;
   else if (paso.tipo === "ordenar") motor = <Ordenar key={clave} {...comunes} />;
   else if (paso.tipo === "memorando") motor = <Memorando key={clave} {...comunes} />;

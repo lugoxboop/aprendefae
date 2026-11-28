@@ -89,6 +89,15 @@ export const MODULOS = Object.freeze([
       f("gp-c2-activos", "2.3", "Activos de los procesos de la organización"),
       f("gp-c2-gobernanza", "2.4", "Sistemas organizacionales: gobernanza y elementos de gestión"),
       f("gp-c2-estructuras", "2.4.4", "Tipos de estructura organizacional y la oficina de dirección de proyectos (PMO)"),
+      /* Lote 2 (Gen): el cap. 3 «El rol del director del proyecto» no es un proceso; sus subtemas viven aquí (ficha c03, gp03-*). */
+      f("gp-c3-rol", "3.2", "Definición del director del proyecto: la orquesta; director, gerente funcional y de operaciones"),
+      f("gp-c3-esfera", "3.3", "La esfera de influencia del director del proyecto"),
+      f("gp-c3-comunicacion", "3.3", "Comunicación y redes (formales e informales); consenso"),
+      f("gp-c3-talento", "3.4", "Competencias: el triángulo de talentos del PMI"),
+      f("gp-c3-poder", "3.4.4", "Política, poder y obtención de resultados"),
+      f("gp-c3-lider-gestor", "3.4.5", "Comparación del liderazgo y la gestión"),
+      f("gp-c3-estilos", "3.4.5", "Estilos de liderazgo y los factores que los determinan"),
+      f("gp-c3-integracion", "3.5", "Realizar la integración: niveles de proceso, cognitivo y contextual; complejidad"),
     ],
   },
   {

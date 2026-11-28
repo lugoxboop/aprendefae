@@ -15,6 +15,11 @@
  * retro y segundo intento sin puntaje; si el segundo también yerra, el ítem va
  * solo a su destino con la retro a la vista. Acierto: encaja y el destino
  * reacciona con la animación de la pieza. Coral solo para el error.
+ *
+ * Lote 6 (c11 H08, predecir y revelar): con `paso.apuesta` cualquier destino
+ * vale, no hay coral ni puntos (0 ítems, preparar.js); la nota de la apuesta
+ * (`retros[destino]` si no es la `clave`) se lee junto al revelado, y el
+ * destino elegido pasa a los pasos que siguen.
  */
 import { useEffect, useRef, useState } from "react";
 import { Boton, Retro } from "../../../macro2026/comun/ui.jsx";
@@ -26,7 +31,7 @@ import { Objeto } from "../objetos.jsx";
 const ESPERA_BIEN = 900;
 const ESPERA_MAL = 2600;
 
-function Destino({ d, cfg, props, estado, recibe, marca, disabled }) {
+function Destino({ d, cfg, props, estado, recibe, marca, disabled, apuesta = false }) {
   const Icono = cfg?.icono ?? null;
   return (
     <button
@@ -43,7 +48,7 @@ function Destino({ d, cfg, props, estado, recibe, marca, disabled }) {
       {cfg?.objeto && <Objeto id={cfg.objeto} alto={cfg.alto ?? 44} />}
       <span className="gp-destino-nombre">{Icono && <Icono className="gp-icono" size={18} strokeWidth={2.4} aria-hidden="true" />}<span className="gp-destino-txt">{d.nombre}</span></span>
       {d.pista && !marca && <small>{d.pista}</small>}
-      {marca && <span className="gp-marca">{marca}</span>}
+      {marca && <span className="gp-marca" data-apuesta={apuesta ? "1" : undefined}>{marca}</span>}
     </button>
   );
 }
@@ -56,11 +61,12 @@ export default function Decidir({ paso, escena = {}, estadoEtapa = null, alTermi
   const [golpes, setGolpes] = useState(0);
   const [listo, setListo] = useState(null);
   const [ultimo, setUltimo] = useState(null);
+  const [nota, setNota] = useState(null);
   const detalle = useRef([]);
   const reloj = useRef(null);
   useEffect(() => () => clearTimeout(reloj.current), []);
 
-  const pausa = Boolean(paso.revela || paso.despues);
+  const pausa = Boolean(paso.revela || paso.despues || paso.apuesta);
   const terminar = (ok) => {
     const res = { detalle: detalle.current, puntos: ok ? 1 : 0, destino: paso.clave };
     if (pausa) { setListo(res); return; }
@@ -70,6 +76,12 @@ export default function Decidir({ paso, escena = {}, estadoEtapa = null, alTermi
   const soltar = (id, destino) => {
     if (encaja || id !== paso.id) return;
     setUltimo(destino);
+    if (paso.apuesta) {
+      setEncaja(destino);
+      setNota(destino === paso.clave ? null : retroDe(paso, destino));
+      setListo({ detalle: [], puntos: 0, destino });
+      return;
+    }
     if (destino === paso.clave) {
       if (intento === 1) detalle.current = [{ item: paso.id, ok: true, subtemas: paso.subtemas }];
       setRetro(null);
@@ -96,7 +108,8 @@ export default function Decidir({ paso, escena = {}, estadoEtapa = null, alTermi
   const conTarjeta = Boolean(paso.texto);
   const estado = { paso, encaja, intento, mal, ultimo, revelado: Boolean(encaja), etapa: estadoEtapa };
   const obj = paso.objeto ? { id: paso.objeto } : escena.objetoDe?.(paso) ?? escena.objeto ?? null;
-  const quien = escena.mesa === false ? null : escena.mesa ?? "tu";
+  /* Lote 2: un paso puede traer su propio personaje (`paso.mesa`), p. ej. el practicante en un micro. */
+  const quien = escena.mesa === false ? null : paso.mesa ?? escena.mesa ?? "tu";
   const nombreDe = (id) => destinos.find((d) => d.id === id)?.nombre ?? id;
   const disposicion = escena.disposicion ?? (destinos.length === 3 ? "fila3" : destinos.length > 3 && destinos.length <= 4 ? "rejilla" : destinos.length === 5 ? "palancas" : "rejilla");
 
@@ -142,7 +155,8 @@ export default function Decidir({ paso, escena = {}, estadoEtapa = null, alTermi
               props={destino(d.id, conTarjeta ? null : paso.id)}
               estado={mal === d.id ? "mal" : encaja === d.id ? "bien" : null}
               recibe={encaja === d.id}
-              marca={encaja === d.id ? (d.acierto ?? "Aquí va") : null}
+              marca={encaja === d.id ? (paso.apuesta ? "Tu apuesta" : d.acierto ?? "Aquí va") : null}
+              apuesta={Boolean(paso.apuesta)}
               disabled={Boolean(encaja) && encaja !== d.id}
             />
           ))}
@@ -153,6 +167,7 @@ export default function Decidir({ paso, escena = {}, estadoEtapa = null, alTermi
       {listo && (
         <>
           {paso.despues && <p className="da26-retro da26-entra" data-estado="bien" data-despues>{paso.despues}</p>}
+          {nota && <p className="da26-retro da26-entra" data-nota-apuesta>{nota}</p>}
           <div className="gp-pie"><Boton primario onClick={() => alTerminar(listo)} data-seguir>Seguir</Boton></div>
         </>
       )}

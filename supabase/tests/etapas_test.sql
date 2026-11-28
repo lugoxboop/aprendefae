@@ -75,9 +75,9 @@ insert into res select 1, 'una fila sin etapas declaradas vale 1', '1',
 insert into res select 2, 'las actividades reales que no son desafío siguen en 1 etapa', '0 con etapas>1',
   (select count(*)::text || ' con etapas>1'
      from public.actividad_catalogo
-    where etapas > 1 and activity_id not in ('proyecto-arca', 'comite-nova', 'ciclo-completo', 'da26-h2-arma-formula', 'da26-h6-meta', 'pe26-h2-grupo-logico', 'pf26-h3-factura', 'pm26-h2-cascada-meta', 'gp26-fun-h04-puente', 'gp26-fun-h05-portafolio', 'gp26-fun-h08-calendario', 'gp26-fun-h11-caso-puente', 'gp26-fun-h12-balanzas', 'gp26-fun-h15-control') and activity_id not like 'zzz-%'),
+    where etapas > 1 and activity_id not in ('proyecto-arca', 'comite-nova', 'ciclo-completo', 'da26-h2-arma-formula', 'da26-h6-meta', 'pe26-h2-grupo-logico', 'pf26-h3-factura', 'pm26-h2-cascada-meta', 'gp26-fun-h04-puente', 'gp26-fun-h05-portafolio', 'gp26-fun-h08-calendario', 'gp26-fun-h11-caso-puente', 'gp26-fun-h12-balanzas', 'gp26-fun-h15-control', 'gp26-fun-c03-h01-orquesta', 'gp26-fun-c03-h03-taburete', 'gp26-fun-c03-h05-moneda', 'gp26-fun-c03-h06-comandas', 'gp26-fun-c03-h07-mosaico', 'gp26-ini-c04-h01-acta', 'gp26-ini-c04-h02-expositor', 'gp26-pla-c04-h03-portaplanos', 'gp26-eje-c04-h05-bitacora', 'gp26-eje-c04-h06-recetario', 'gp26-moc-c04-h07-camara', 'gp26-moc-c04-h08-turnero', 'gp26-cie-c04-h09-breakers', 'gp26-cie-c04-h10-beneficiadero', 'gp26-pla-c05-h05-urna', 'gp26-pla-c05-h06-alacena', 'gp26-pla-c05-h08-mapa', 'gp26-pla-c05-h09-movil', 'gp26-pla-c05-h10-caja-fuerte', 'gp26-moc-c05-h11-embarque', 'gp26-pla-c06-h01-semaforo', 'gp26-pla-c06-h02-linterna', 'gp26-pla-c06-h03-rompecabezas', 'gp26-pla-c06-h05-sumadora', 'gp26-pla-c06-h06-alcancias', 'gp26-pla-c06-h07-metro', 'gp26-pla-c06-h09-relevos', 'gp26-pla-c06-h10-bloques', 'gp26-moc-c06-h11-rotafolio', 'gp26-pla-c07-h01-plan-costos', 'gp26-pla-c07-h03-tres-valores', 'gp26-pla-c07-h04-embudo', 'gp26-pla-c07-h05-reservas', 'gp26-pla-c07-h06-polea', 'gp26-pla-c07-h07-curva-s', 'gp26-moc-c07-h09-termometros', 'gp26-moc-c07-h10-telescopio', 'gp26-pla-c08-h01-gondola', 'gp26-pla-c08-h02-cubetas', 'gp26-pla-c08-h03-ascensor', 'gp26-pla-c08-h04-plano', 'gp26-eje-c08-h05-casilleros', 'gp26-eje-c08-h06-espina', 'gp26-moc-c08-h07-hoja', 'gp26-moc-c08-h08-monitor', 'gp26-eje-c08-h11-cadena', 'gp26-moc-c08-h12-despacho', 'gp26-pla-c09-h01-puertas', 'gp26-pla-c09-h02-gafete', 'gp26-pla-c09-h03-raci', 'gp26-pla-c09-h04-pendon', 'gp26-pla-c09-h05-sumadora', 'gp26-pla-c09-h06-rama', 'gp26-eje-c09-h07-catacion', 'gp26-eje-c09-h08-torre', 'gp26-eje-c09-h09-consola', 'gp26-eje-c09-h10-microfonos', 'gp26-moc-c09-h11-estibas', 'gp26-eje-c10-h01-casillero', 'gp26-eje-c10-h03-radios', 'gp26-pla-c10-h04-playa', 'gp26-pla-c10-h08-tablero', 'gp26-moc-c10-h10-ecosonda', 'gp26-pla-c11-h01-fichero', 'gp26-pla-c11-h02-movil', 'gp26-pla-c11-h04-muro', 'gp26-pla-c11-h05-cata', 'gp26-pla-c11-h06-burbujas', 'gp26-pla-c11-h07-montana', 'gp26-pla-c11-h08-galton', 'gp26-pla-c11-h10-espejo', 'gp26-pla-c11-h11-libro', 'gp26-pla-c12-h01-hacer-comprar', 'gp26-pla-c12-h02-contratos', 'gp26-pla-c12-h03-sobrecosto', 'gp26-pla-c12-h05-sow', 'gp26-eje-c12-h07-puntajes', 'gp26-moc-c12-h10-controlar', 'gp26-moc-c12-h11-cierre', 'gp26-pla-c12-h12-taller', 'gp26-ini-c13-h01-identificar', 'gp26-ini-c13-h03-registro', 'gp26-ini-c13-h04-poder-interes', 'gp26-ini-c13-h06-prominencia', 'gp26-pla-c13-h07-matriz-evaluacion', 'gp26-moc-c13-h10-monitorear', 'gp26-moc-c13-h11-taller') and activity_id not like 'zzz-%'),
   (select count(*) = 0 from public.actividad_catalogo
-    where etapas > 1 and activity_id not in ('proyecto-arca', 'comite-nova', 'ciclo-completo', 'da26-h2-arma-formula', 'da26-h6-meta', 'pe26-h2-grupo-logico', 'pf26-h3-factura', 'pm26-h2-cascada-meta', 'gp26-fun-h04-puente', 'gp26-fun-h05-portafolio', 'gp26-fun-h08-calendario', 'gp26-fun-h11-caso-puente', 'gp26-fun-h12-balanzas', 'gp26-fun-h15-control') and activity_id not like 'zzz-%');
+    where etapas > 1 and activity_id not in ('proyecto-arca', 'comite-nova', 'ciclo-completo', 'da26-h2-arma-formula', 'da26-h6-meta', 'pe26-h2-grupo-logico', 'pf26-h3-factura', 'pm26-h2-cascada-meta', 'gp26-fun-h04-puente', 'gp26-fun-h05-portafolio', 'gp26-fun-h08-calendario', 'gp26-fun-h11-caso-puente', 'gp26-fun-h12-balanzas', 'gp26-fun-h15-control', 'gp26-fun-c03-h01-orquesta', 'gp26-fun-c03-h03-taburete', 'gp26-fun-c03-h05-moneda', 'gp26-fun-c03-h06-comandas', 'gp26-fun-c03-h07-mosaico', 'gp26-ini-c04-h01-acta', 'gp26-ini-c04-h02-expositor', 'gp26-pla-c04-h03-portaplanos', 'gp26-eje-c04-h05-bitacora', 'gp26-eje-c04-h06-recetario', 'gp26-moc-c04-h07-camara', 'gp26-moc-c04-h08-turnero', 'gp26-cie-c04-h09-breakers', 'gp26-cie-c04-h10-beneficiadero', 'gp26-pla-c05-h05-urna', 'gp26-pla-c05-h06-alacena', 'gp26-pla-c05-h08-mapa', 'gp26-pla-c05-h09-movil', 'gp26-pla-c05-h10-caja-fuerte', 'gp26-moc-c05-h11-embarque', 'gp26-pla-c06-h01-semaforo', 'gp26-pla-c06-h02-linterna', 'gp26-pla-c06-h03-rompecabezas', 'gp26-pla-c06-h05-sumadora', 'gp26-pla-c06-h06-alcancias', 'gp26-pla-c06-h07-metro', 'gp26-pla-c06-h09-relevos', 'gp26-pla-c06-h10-bloques', 'gp26-moc-c06-h11-rotafolio', 'gp26-pla-c07-h01-plan-costos', 'gp26-pla-c07-h03-tres-valores', 'gp26-pla-c07-h04-embudo', 'gp26-pla-c07-h05-reservas', 'gp26-pla-c07-h06-polea', 'gp26-pla-c07-h07-curva-s', 'gp26-moc-c07-h09-termometros', 'gp26-moc-c07-h10-telescopio', 'gp26-pla-c08-h01-gondola', 'gp26-pla-c08-h02-cubetas', 'gp26-pla-c08-h03-ascensor', 'gp26-pla-c08-h04-plano', 'gp26-eje-c08-h05-casilleros', 'gp26-eje-c08-h06-espina', 'gp26-moc-c08-h07-hoja', 'gp26-moc-c08-h08-monitor', 'gp26-eje-c08-h11-cadena', 'gp26-moc-c08-h12-despacho', 'gp26-pla-c09-h01-puertas', 'gp26-pla-c09-h02-gafete', 'gp26-pla-c09-h03-raci', 'gp26-pla-c09-h04-pendon', 'gp26-pla-c09-h05-sumadora', 'gp26-pla-c09-h06-rama', 'gp26-eje-c09-h07-catacion', 'gp26-eje-c09-h08-torre', 'gp26-eje-c09-h09-consola', 'gp26-eje-c09-h10-microfonos', 'gp26-moc-c09-h11-estibas', 'gp26-eje-c10-h01-casillero', 'gp26-eje-c10-h03-radios', 'gp26-pla-c10-h04-playa', 'gp26-pla-c10-h08-tablero', 'gp26-moc-c10-h10-ecosonda', 'gp26-pla-c11-h01-fichero', 'gp26-pla-c11-h02-movil', 'gp26-pla-c11-h04-muro', 'gp26-pla-c11-h05-cata', 'gp26-pla-c11-h06-burbujas', 'gp26-pla-c11-h07-montana', 'gp26-pla-c11-h08-galton', 'gp26-pla-c11-h10-espejo', 'gp26-pla-c11-h11-libro', 'gp26-pla-c12-h01-hacer-comprar', 'gp26-pla-c12-h02-contratos', 'gp26-pla-c12-h03-sobrecosto', 'gp26-pla-c12-h05-sow', 'gp26-eje-c12-h07-puntajes', 'gp26-moc-c12-h10-controlar', 'gp26-moc-c12-h11-cierre', 'gp26-pla-c12-h12-taller', 'gp26-ini-c13-h01-identificar', 'gp26-ini-c13-h03-registro', 'gp26-ini-c13-h04-poder-interes', 'gp26-ini-c13-h06-prominencia', 'gp26-pla-c13-h07-matriz-evaluacion', 'gp26-moc-c13-h10-monitorear', 'gp26-moc-c13-h11-taller') and activity_id not like 'zzz-%');
 
 -- ── 13. Y los tres desafíos declaran sus cuatro etapas ─────────────────────
 -- El complemento del chequeo de arriba: excluirlos de la cuenta no puede
@@ -149,6 +149,115 @@ insert into res select 18, 'las seis Hacer por etapas de Gestión de Proyectos d
     where (activity_id = 'gp26-fun-h04-puente' and etapas = 2 and fp_base = 10)
        or (activity_id in ('gp26-fun-h05-portafolio', 'gp26-fun-h08-calendario', 'gp26-fun-h12-balanzas', 'gp26-fun-h15-control') and etapas = 2 and fp_base = 25)
        or (activity_id = 'gp26-fun-h11-caso-puente' and etapas = 3 and fp_base = 50));
+
+-- ── 19. Gestión de Proyectos: las catorce Hacer por etapas de los caps. 3 y 4 ─
+-- Diseño de Gen (gestion-proyectos/disenos/c03-hacer.md y c04-hacer.md §1),
+-- migración 0277: una Fácil (10) × 2; ocho Medio (25) × 2; una Medio × 3; tres
+-- Difícil (50) × 2 y una Difícil × 3. Se excluyen de la cuenta del chequeo 2
+-- y se miran aquí, igual que las del lote 1 (chequeo 18).
+insert into res select 19, 'las catorce Hacer por etapas de los caps. 3 y 4 de Gestión de Proyectos declaran sus etapas y su base', '14 filas',
+  (select count(*)::text || ' filas'
+     from public.actividad_catalogo
+    where (activity_id = 'gp26-fun-c03-h01-orquesta' and etapas = 2 and fp_base = 10)
+       or (activity_id in ('gp26-fun-c03-h03-taburete', 'gp26-fun-c03-h05-moneda', 'gp26-fun-c03-h06-comandas', 'gp26-ini-c04-h02-expositor', 'gp26-pla-c04-h03-portaplanos', 'gp26-eje-c04-h05-bitacora', 'gp26-moc-c04-h07-camara', 'gp26-cie-c04-h09-breakers') and etapas = 2 and fp_base = 25)
+       or (activity_id = 'gp26-eje-c04-h06-recetario' and etapas = 3 and fp_base = 25)
+       or (activity_id in ('gp26-fun-c03-h07-mosaico', 'gp26-ini-c04-h01-acta', 'gp26-moc-c04-h08-turnero') and etapas = 2 and fp_base = 50)
+       or (activity_id = 'gp26-cie-c04-h10-beneficiadero' and etapas = 3 and fp_base = 50)),
+  (select count(*) = 14 from public.actividad_catalogo
+    where (activity_id = 'gp26-fun-c03-h01-orquesta' and etapas = 2 and fp_base = 10)
+       or (activity_id in ('gp26-fun-c03-h03-taburete', 'gp26-fun-c03-h05-moneda', 'gp26-fun-c03-h06-comandas', 'gp26-ini-c04-h02-expositor', 'gp26-pla-c04-h03-portaplanos', 'gp26-eje-c04-h05-bitacora', 'gp26-moc-c04-h07-camara', 'gp26-cie-c04-h09-breakers') and etapas = 2 and fp_base = 25)
+       or (activity_id = 'gp26-eje-c04-h06-recetario' and etapas = 3 and fp_base = 25)
+       or (activity_id in ('gp26-fun-c03-h07-mosaico', 'gp26-ini-c04-h01-acta', 'gp26-moc-c04-h08-turnero') and etapas = 2 and fp_base = 50)
+       or (activity_id = 'gp26-cie-c04-h10-beneficiadero' and etapas = 3 and fp_base = 50));
+
+-- ── 20. Gestión de Proyectos: las 15 Hacer por etapas de los caps. 5 y 6 ──
+-- Diseño de Gen (gestion-proyectos/disenos/c05-hacer.md y c06-hacer.md §1),
+-- migración 0278. Se excluyen de la cuenta del chequeo 2 y se miran aquí,
+-- igual que las de los lotes 1 y 2 (chequeos 18 y 19).
+insert into res select 20, 'las 15 Hacer por etapas de los caps. 5 y 6 de Gestión de Proyectos declaran sus etapas y su base', '15 filas',
+  (select count(*)::text || ' filas'
+     from public.actividad_catalogo
+    where (activity_id in ('gp26-pla-c06-h02-linterna') and etapas = 2 and fp_base = 10)
+       or (activity_id in ('gp26-pla-c05-h05-urna', 'gp26-pla-c05-h06-alacena', 'gp26-pla-c05-h08-mapa', 'gp26-pla-c05-h10-caja-fuerte', 'gp26-moc-c05-h11-embarque', 'gp26-pla-c06-h01-semaforo', 'gp26-pla-c06-h03-rompecabezas', 'gp26-pla-c06-h06-alcancias', 'gp26-pla-c06-h10-bloques', 'gp26-moc-c06-h11-rotafolio') and etapas = 2 and fp_base = 25)
+       or (activity_id in ('gp26-pla-c06-h05-sumadora', 'gp26-pla-c06-h09-relevos') and etapas = 2 and fp_base = 50)
+       or (activity_id in ('gp26-pla-c05-h09-movil', 'gp26-pla-c06-h07-metro') and etapas = 3 and fp_base = 50)),
+  (select count(*) = 15 from public.actividad_catalogo
+    where (activity_id in ('gp26-pla-c06-h02-linterna') and etapas = 2 and fp_base = 10)
+       or (activity_id in ('gp26-pla-c05-h05-urna', 'gp26-pla-c05-h06-alacena', 'gp26-pla-c05-h08-mapa', 'gp26-pla-c05-h10-caja-fuerte', 'gp26-moc-c05-h11-embarque', 'gp26-pla-c06-h01-semaforo', 'gp26-pla-c06-h03-rompecabezas', 'gp26-pla-c06-h06-alcancias', 'gp26-pla-c06-h10-bloques', 'gp26-moc-c06-h11-rotafolio') and etapas = 2 and fp_base = 25)
+       or (activity_id in ('gp26-pla-c06-h05-sumadora', 'gp26-pla-c06-h09-relevos') and etapas = 2 and fp_base = 50)
+       or (activity_id in ('gp26-pla-c05-h09-movil', 'gp26-pla-c06-h07-metro') and etapas = 3 and fp_base = 50));
+
+-- ── 21. Gestión de Proyectos: las 18 Hacer por etapas de los caps. 7 y 8 ──
+-- Diseño de Gen (gestion-proyectos/disenos/c07-hacer.md y c08-hacer.md §1),
+-- migración 0279. Se excluyen de la cuenta del chequeo 2 y se miran aquí,
+-- igual que las de los lotes 1 a 3 (chequeos 18 a 20).
+insert into res select 21, 'las 18 Hacer por etapas de los caps. 7 y 8 de Gestión de Proyectos declaran sus etapas y su base', '18 filas',
+  (select count(*)::text || ' filas'
+     from public.actividad_catalogo
+    where (activity_id in ('gp26-pla-c07-h04-embudo', 'gp26-pla-c08-h01-gondola', 'gp26-pla-c08-h03-ascensor') and etapas = 2 and fp_base = 10)
+       or (activity_id in ('gp26-pla-c07-h01-plan-costos', 'gp26-pla-c07-h03-tres-valores', 'gp26-pla-c07-h05-reservas', 'gp26-pla-c08-h02-cubetas', 'gp26-pla-c08-h04-plano', 'gp26-eje-c08-h05-casilleros', 'gp26-eje-c08-h06-espina', 'gp26-moc-c08-h07-hoja') and etapas = 2 and fp_base = 25)
+       or (activity_id in ('gp26-pla-c07-h06-polea', 'gp26-pla-c07-h07-curva-s', 'gp26-moc-c07-h09-termometros', 'gp26-moc-c08-h08-monitor') and etapas = 2 and fp_base = 50)
+       or (activity_id in ('gp26-eje-c08-h11-cadena') and etapas = 3 and fp_base = 25)
+       or (activity_id in ('gp26-moc-c07-h10-telescopio', 'gp26-moc-c08-h12-despacho') and etapas = 3 and fp_base = 50)),
+  (select count(*) = 18 from public.actividad_catalogo
+    where (activity_id in ('gp26-pla-c07-h04-embudo', 'gp26-pla-c08-h01-gondola', 'gp26-pla-c08-h03-ascensor') and etapas = 2 and fp_base = 10)
+       or (activity_id in ('gp26-pla-c07-h01-plan-costos', 'gp26-pla-c07-h03-tres-valores', 'gp26-pla-c07-h05-reservas', 'gp26-pla-c08-h02-cubetas', 'gp26-pla-c08-h04-plano', 'gp26-eje-c08-h05-casilleros', 'gp26-eje-c08-h06-espina', 'gp26-moc-c08-h07-hoja') and etapas = 2 and fp_base = 25)
+       or (activity_id in ('gp26-pla-c07-h06-polea', 'gp26-pla-c07-h07-curva-s', 'gp26-moc-c07-h09-termometros', 'gp26-moc-c08-h08-monitor') and etapas = 2 and fp_base = 50)
+       or (activity_id in ('gp26-eje-c08-h11-cadena') and etapas = 3 and fp_base = 25)
+       or (activity_id in ('gp26-moc-c07-h10-telescopio', 'gp26-moc-c08-h12-despacho') and etapas = 3 and fp_base = 50));
+
+-- ── 22. Gestión de Proyectos: las 16 Hacer por etapas de los caps. 9 y 10 ─
+-- Diseño de Gen (gestion-proyectos/disenos/c09-hacer.md y c10-hacer.md §1),
+-- migración 0280. Se excluyen de la cuenta del chequeo 2 y se miran aquí,
+-- igual que las de los lotes 1 a 4 (chequeos 18 a 21).
+insert into res select 22, 'las 16 Hacer por etapas de los caps. 9 y 10 de Gestión de Proyectos declaran sus etapas y su base', '16 filas',
+  (select count(*)::text || ' filas'
+     from public.actividad_catalogo
+    where (activity_id in ('gp26-pla-c09-h01-puertas') and etapas = 2 and fp_base = 10)
+       or (activity_id in ('gp26-pla-c09-h02-gafete', 'gp26-pla-c09-h04-pendon', 'gp26-pla-c09-h06-rama', 'gp26-eje-c09-h08-torre', 'gp26-eje-c09-h09-consola', 'gp26-eje-c10-h03-radios', 'gp26-pla-c10-h04-playa') and etapas = 2 and fp_base = 25)
+       or (activity_id in ('gp26-pla-c09-h03-raci', 'gp26-pla-c09-h05-sumadora', 'gp26-eje-c09-h07-catacion', 'gp26-pla-c10-h08-tablero', 'gp26-moc-c10-h10-ecosonda') and etapas = 2 and fp_base = 50)
+       or (activity_id in ('gp26-eje-c10-h01-casillero') and etapas = 3 and fp_base = 10)
+       or (activity_id in ('gp26-eje-c09-h10-microfonos', 'gp26-moc-c09-h11-estibas') and etapas = 3 and fp_base = 50)),
+  (select count(*) = 16 from public.actividad_catalogo
+    where (activity_id in ('gp26-pla-c09-h01-puertas') and etapas = 2 and fp_base = 10)
+       or (activity_id in ('gp26-pla-c09-h02-gafete', 'gp26-pla-c09-h04-pendon', 'gp26-pla-c09-h06-rama', 'gp26-eje-c09-h08-torre', 'gp26-eje-c09-h09-consola', 'gp26-eje-c10-h03-radios', 'gp26-pla-c10-h04-playa') and etapas = 2 and fp_base = 25)
+       or (activity_id in ('gp26-pla-c09-h03-raci', 'gp26-pla-c09-h05-sumadora', 'gp26-eje-c09-h07-catacion', 'gp26-pla-c10-h08-tablero', 'gp26-moc-c10-h10-ecosonda') and etapas = 2 and fp_base = 50)
+       or (activity_id in ('gp26-eje-c10-h01-casillero') and etapas = 3 and fp_base = 10)
+       or (activity_id in ('gp26-eje-c09-h10-microfonos', 'gp26-moc-c09-h11-estibas') and etapas = 3 and fp_base = 50));
+
+-- ── 23. Gestión de Proyectos: las 17 Hacer por etapas de los caps. 11 y 12 ─
+-- Diseño de Gen (gestion-proyectos/disenos/c11-hacer.md y c12-hacer.md §1),
+-- migración 0281. Se excluyen de la cuenta del chequeo 2 y se miran aquí,
+-- igual que las de los lotes 1 a 5 (chequeos 18 a 22).
+insert into res select 23, 'las 17 Hacer por etapas de los caps. 11 y 12 de Gestión de Proyectos declaran sus etapas y su base', '17 filas',
+  (select count(*)::text || ' filas'
+     from public.actividad_catalogo
+    where (activity_id in ('gp26-pla-c11-h02-movil') and etapas = 2 and fp_base = 10)
+       or (activity_id in ('gp26-pla-c11-h01-fichero', 'gp26-pla-c11-h04-muro', 'gp26-pla-c11-h05-cata', 'gp26-pla-c11-h06-burbujas', 'gp26-pla-c11-h10-espejo', 'gp26-pla-c12-h01-hacer-comprar', 'gp26-pla-c12-h02-contratos', 'gp26-pla-c12-h05-sow', 'gp26-moc-c12-h10-controlar', 'gp26-moc-c12-h11-cierre') and etapas = 2 and fp_base = 25)
+       or (activity_id in ('gp26-pla-c11-h08-galton', 'gp26-pla-c11-h11-libro', 'gp26-pla-c12-h03-sobrecosto', 'gp26-eje-c12-h07-puntajes') and etapas = 2 and fp_base = 50)
+       or (activity_id in ('gp26-pla-c11-h07-montana', 'gp26-pla-c12-h12-taller') and etapas = 3 and fp_base = 50)),
+  (select count(*) = 17 from public.actividad_catalogo
+    where (activity_id in ('gp26-pla-c11-h02-movil') and etapas = 2 and fp_base = 10)
+       or (activity_id in ('gp26-pla-c11-h01-fichero', 'gp26-pla-c11-h04-muro', 'gp26-pla-c11-h05-cata', 'gp26-pla-c11-h06-burbujas', 'gp26-pla-c11-h10-espejo', 'gp26-pla-c12-h01-hacer-comprar', 'gp26-pla-c12-h02-contratos', 'gp26-pla-c12-h05-sow', 'gp26-moc-c12-h10-controlar', 'gp26-moc-c12-h11-cierre') and etapas = 2 and fp_base = 25)
+       or (activity_id in ('gp26-pla-c11-h08-galton', 'gp26-pla-c11-h11-libro', 'gp26-pla-c12-h03-sobrecosto', 'gp26-eje-c12-h07-puntajes') and etapas = 2 and fp_base = 50)
+       or (activity_id in ('gp26-pla-c11-h07-montana', 'gp26-pla-c12-h12-taller') and etapas = 3 and fp_base = 50));
+
+-- ── 24. Gestión de Proyectos: las 7 Hacer por etapas del cap. 13 ──────────
+-- Diseño de Gen (gestion-proyectos/disenos/c13-hacer.md §1), migración 0282.
+-- Se excluyen de la cuenta del chequeo 2 y se miran aquí, igual que las de
+-- los lotes 1 a 6 (chequeos 18 a 23).
+insert into res select 24, 'las 7 Hacer por etapas del cap. 13 de Gestión de Proyectos declaran sus etapas y su base', '7 filas',
+  (select count(*)::text || ' filas'
+     from public.actividad_catalogo
+    where (activity_id in ('gp26-ini-c13-h01-identificar') and etapas = 2 and fp_base = 10)
+       or (activity_id in ('gp26-ini-c13-h03-registro', 'gp26-ini-c13-h04-poder-interes', 'gp26-ini-c13-h06-prominencia', 'gp26-moc-c13-h10-monitorear') and etapas = 2 and fp_base = 25)
+       or (activity_id in ('gp26-pla-c13-h07-matriz-evaluacion') and etapas = 2 and fp_base = 50)
+       or (activity_id in ('gp26-moc-c13-h11-taller') and etapas = 3 and fp_base = 50)),
+  (select count(*) = 7 from public.actividad_catalogo
+    where (activity_id in ('gp26-ini-c13-h01-identificar') and etapas = 2 and fp_base = 10)
+       or (activity_id in ('gp26-ini-c13-h03-registro', 'gp26-ini-c13-h04-poder-interes', 'gp26-ini-c13-h06-prominencia', 'gp26-moc-c13-h10-monitorear') and etapas = 2 and fp_base = 25)
+       or (activity_id in ('gp26-pla-c13-h07-matriz-evaluacion') and etapas = 2 and fp_base = 50)
+       or (activity_id in ('gp26-moc-c13-h11-taller') and etapas = 3 and fp_base = 50));
 
 -- ── 3. Lo de siempre sigue pagando lo de siempre ───────────────────────────
 -- EL CHEQUEO MÁS IMPORTANTE DEL ARCHIVO. registrar_fp se reemplazó entera; si
