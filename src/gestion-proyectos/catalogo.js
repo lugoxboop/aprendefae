@@ -42,6 +42,25 @@ export const PIEZAS = Object.freeze({
   "gp-fundamentos": [
     /* Jane · GP-01 microvideo «El pan de cada día» (G §1.2.1, p. 4; operaciones p. 16). Aprobado por Mateo el 27-nov-2026. */
     { id: "gp26-fun-a1-proyecto-operacion", tipo: "aprender", nombre: "¿Proyecto u operación? El pan de cada día", subtemas: ["gp-c1-proyectos", "gp-c1-portafolios"], microvideo: true },
+    /* Jane · microvideos Aprender (uno por sección o proceso). Aprobados por Mateo el 28-nov-2026. */
+    { id: "gp26-fun-a02-puente-cien-anos", tipo: "aprender", nombre: "Temporal no es corto: El puente que dura cien años", subtemas: ["gp-c1-proyectos"], microvideo: true },
+    { id: "gp26-fun-a03-mostrador-celular", tipo: "aprender", nombre: "Un proyecto mueve de un estado a otro: Del mostrador al celular", subtemas: ["gp-c1-proyectos"], microvideo: true },
+    { id: "gp26-fun-a04-grieta-que-manda", tipo: "aprender", nombre: "Por qué nace un proyecto: La grieta que manda", subtemas: ["gp-c1-proyectos"], microvideo: true },
+    { id: "gp26-fun-a05-fiesta-desbordada", tipo: "aprender", nombre: "Por qué importa dirigir: La fiesta que se desbordó", subtemas: ["gp-c1-importancia"], microvideo: true },
+    { id: "gp26-fun-a06-tres-sedes", tipo: "aprender", nombre: "Proyecto, programa y portafolio: Tres sedes no son un proyecto gigante", subtemas: ["gp-c1-portafolios"], microvideo: true },
+    { id: "gp26-fun-a07-cancelar-a-tiempo", tipo: "aprender", nombre: "Fase, punto de revisión y ciclo de vida: Cancelar a tiempo", subtemas: ["gp-c1-ciclo-vida"], microvideo: true },
+    { id: "gp26-fun-a08-cinco-grupos", tipo: "aprender", nombre: "Los cinco grupos de procesos no son fases: Iniciar varias veces", subtemas: ["gp-c1-procesos-areas"], microvideo: true },
+    { id: "gp26-fun-a09-diez-areas", tipo: "aprender", nombre: "Una boda: las diez áreas de conocimiento", subtemas: ["gp-c1-procesos-areas"], microvideo: true },
+    { id: "gp26-fun-a10-datos-informes", tipo: "aprender", nombre: "Datos, información e informes de desempeño", subtemas: ["gp-c1-procesos-areas"], microvideo: true },
+    { id: "gp26-fun-a11-adaptar", tipo: "aprender", nombre: "La guía no es una receta: se adapta", subtemas: ["gp-c1-adaptacion"], microvideo: true },
+    { id: "gp26-fun-a12-caso-de-negocio", tipo: "aprender", nombre: "No hacer nada también es una opción", subtemas: ["gp-c1-negocio"], microvideo: true },
+    { id: "gp26-fun-a13-acta", tipo: "aprender", nombre: "Sin este papel, el proyecto no existe", subtemas: ["gp-c1-negocio"], microvideo: true },
+    { id: "gp26-fun-a14-exito", tipo: "aprender", nombre: "A tiempo, en presupuesto… y fracasó", subtemas: ["gp-c1-negocio"], microvideo: true },
+    { id: "gp26-fun-a15-eef-opa", tipo: "aprender", nombre: "Lo que no controlas y lo que tu organización ya sabe", subtemas: ["gp-c2-factores",  "gp-c2-activos"], microvideo: true },
+    { id: "gp26-fun-a16-estructuras", tipo: "aprender", nombre: "Director sin poder: estructuras y PMO", subtemas: ["gp-c2-estructuras"], microvideo: true },
+    { id: "gp26-fun-a17-esfera", tipo: "aprender", nombre: "No toca ningún instrumento y dirige a todos", subtemas: ["gp-c3-rol"], microvideo: true },
+    { id: "gp26-fun-a18-triangulo", tipo: "aprender", nombre: "Cronograma perfecto, proyecto hundido", subtemas: ["gp-c3-talento"], microvideo: true },
+    { id: "gp26-fun-a19-liderar", tipo: "aprender", nombre: "Mandar no es lo mismo que liderar", subtemas: ["gp-c3-lider-gestor"], microvideo: true },
     /*
      * Gen · las 18 Hacer diarias de los caps. 1 y 2 (diseño en
      * orquestador/conocimiento/gestion-proyectos/disenos/c1-c2-hacer.md; textos en
@@ -86,6 +105,9 @@ export const PIEZAS = Object.freeze({
    * cierra el capítulo en Cierre, después de H09.
    */
   "gp-inicio": [
+    /* Jane · microvideos Aprender (uno por sección o proceso). Aprobados por Mateo el 28-nov-2026. */
+    { id: "gp26-ini-a20-supuestos", tipo: "aprender", nombre: "Desarrollar el acta de constitución del proyecto: La frase que nadie comprobó", subtemas: ["gp-4-1"], microvideo: true },
+    { id: "gp26-ini-a21-interesados", tipo: "aprender", nombre: "Identificar a los interesados: El vecino que nadie invitó", subtemas: ["gp-13-1"], microvideo: true },
     { id: "gp26-ini-c04-h01-acta", tipo: "hacer", nombre: "El acta de Barranquilla", subtemas: ["gp-4-1"], clasificacion: hacer("dificil", 50, { etapas: 2 }) },
     { id: "gp26-ini-c04-h02-expositor", tipo: "hacer", nombre: "El expositor de los casos", subtemas: ["gp-4-1"], clasificacion: hacer("medio", 25, { etapas: 2 }) },
     /*
@@ -103,6 +125,31 @@ export const PIEZAS = Object.freeze({
     { id: "gp26-ini-c13-h06-prominencia", tipo: "hacer", nombre: "Los tres reflectores", subtemas: ["gp-13-1"], clasificacion: hacer("medio", 25, { etapas: 2 }) },
   ],
   "gp-planificacion": [
+    /* Jane · microvideos Aprender (uno por sección o proceso). Aprobados por Mateo el 28-nov-2026. */
+    { id: "gp26-pla-a22-plan", tipo: "aprender", nombre: "Desarrollar el plan para la dirección del proyecto: El plan que guarda todos los planes", subtemas: ["gp-4-2"], microvideo: true },
+    { id: "gp26-pla-a23-alcance", tipo: "aprender", nombre: "Planificar la gestión del alcance: ¿Y quién decide qué entra?", subtemas: ["gp-5-1"], microvideo: true },
+    { id: "gp26-pla-a24-requisitos", tipo: "aprender", nombre: "Recopilar requisitos: \"Pan rico\" no es un requisito", subtemas: ["gp-5-2"], microvideo: true },
+    { id: "gp26-pla-a25-enunciado", tipo: "aprender", nombre: "Definir el alcance: El café que nadie pidió", subtemas: ["gp-5-3"], microvideo: true },
+    { id: "gp26-pla-a26-edt", tipo: "aprender", nombre: "Crear la EDT/WBS: El carrito en pedacitos", subtemas: ["gp-5-4"], microvideo: true },
+    { id: "gp26-pla-a27-cronograma", tipo: "aprender", nombre: "Planificar la gestión del cronograma: Horas, días o semanas", subtemas: ["gp-6-1"], microvideo: true },
+    { id: "gp26-pla-a28-actividades", tipo: "aprender", nombre: "Definir las actividades: Un toldo no se hace solo", subtemas: ["gp-6-2"], microvideo: true },
+    { id: "gp26-pla-a29-red", tipo: "aprender", nombre: "Secuenciar las actividades: ¿Coser sin tela?", subtemas: ["gp-6-3"], microvideo: true },
+    { id: "gp26-pla-a30-duracion", tipo: "aprender", nombre: "Estimar la duración de las actividades: \"Un rato\" no es una duración", subtemas: ["gp-6-4"], microvideo: true },
+    { id: "gp26-pla-a31-ruta-critica", tipo: "aprender", nombre: "Desarrollar el cronograma: La ruta que no da espera", subtemas: ["gp-6-5"], microvideo: true },
+    { id: "gp26-pla-a32-costos", tipo: "aprender", nombre: "Planificar la gestión de los costos: ¿Novecientos noventa y cinco o mil?", subtemas: ["gp-7-1"], microvideo: true },
+    { id: "gp26-pla-a33-costos-est", tipo: "aprender", nombre: "Estimar los costos: ¿Entre poco y mucho?", subtemas: ["gp-7-2"], microvideo: true },
+    { id: "gp26-pla-a34-presupuesto", tipo: "aprender", nombre: "Determinar el presupuesto: ¿Cuánto y cuándo?", subtemas: ["gp-7-3"], microvideo: true },
+    { id: "gp26-pla-a35-calidad", tipo: "aprender", nombre: "Planificar la gestión de la calidad: ¿Qué es buen pan?", subtemas: ["gp-8-1"], microvideo: true },
+    { id: "gp26-pla-a36-recursos", tipo: "aprender", nombre: "Planificar la gestión de recursos: ¿Quién decide aquí?", subtemas: ["gp-9-1"], microvideo: true },
+    { id: "gp26-pla-a37-recursos-est", tipo: "aprender", nombre: "Estimar los recursos de las actividades: ¿Cuántas manos y cuánta harina?", subtemas: ["gp-9-2"], microvideo: true },
+    { id: "gp26-pla-a38-comunicaciones", tipo: "aprender", nombre: "Planificar la gestión de las comunicaciones: ¿Quién se entera de qué?", subtemas: ["gp-10-1"], microvideo: true },
+    { id: "gp26-pla-a39-plan-riesgos", tipo: "aprender", nombre: "Planificar la gestión de los riesgos: ¿Y si llueve?", subtemas: ["gp-11-1"], microvideo: true },
+    { id: "gp26-pla-a40-identificar-riesgos", tipo: "aprender", nombre: "Identificar los riesgos: ¿Qué podría salir mal… o bien?", subtemas: ["gp-11-2"], microvideo: true },
+    { id: "gp26-pla-a41-cualitativo", tipo: "aprender", nombre: "Realizar el análisis cualitativo de riesgos: ¿Cuál atiendo primero?", subtemas: ["gp-11-3"], microvideo: true },
+    { id: "gp26-pla-a42-cuantitativo", tipo: "aprender", nombre: "Realizar el análisis cuantitativo de riesgos: ¿Qué tan probable es llegar?", subtemas: ["gp-11-4"], microvideo: true },
+    { id: "gp26-pla-a43-respuestas", tipo: "aprender", nombre: "Planificar la respuesta a los riesgos: ¿Y qué hacemos con cada riesgo?", subtemas: ["gp-11-5"], microvideo: true },
+    { id: "gp26-pla-a44-adquisiciones", tipo: "aprender", nombre: "Planificar la gestión de las adquisiciones del proyecto: ¿Lo hacemos o lo compramos?", subtemas: ["gp-12-1"], microvideo: true },
+    { id: "gp26-pla-a45-involucramiento", tipo: "aprender", nombre: "Planificar el involucramiento de los interesados: ¿Cómo sumo a Don Tito?", subtemas: ["gp-13-2"], microvideo: true },
     { id: "gp26-pla-c04-h03-portaplanos", tipo: "hacer", nombre: "El portaplanos y el revistero", subtemas: ["gp-4-2"], clasificacion: hacer("medio", 25, { etapas: 2 }) },
     /*
      * Gen · lote 3: cap. 5 (Alcance, 5.1–5.4; diseño disenos/c05-hacer.md; textos
@@ -192,6 +239,17 @@ export const PIEZAS = Object.freeze({
     { id: "gp26-pla-c13-h08-plan", tipo: "hacer", nombre: "La campana de la capilla", subtemas: ["gp-13-2"], clasificacion: hacer("facil", 10) },
   ],
   "gp-ejecucion": [
+    /* Jane · microvideos Aprender (uno por sección o proceso). Aprobados por Mateo el 28-nov-2026. */
+    { id: "gp26-eje-a46-dirigir", tipo: "aprender", nombre: "Dirigir y gestionar el trabajo del proyecto: ¡A trabajar!", subtemas: ["gp-4-3"], microvideo: true },
+    { id: "gp26-eje-a47-conocimiento", tipo: "aprender", nombre: "Gestionar el conocimiento del proyecto: El truco de Carmen", subtemas: ["gp-4-4"], microvideo: true },
+    { id: "gp26-eje-a48-gestionar-calidad", tipo: "aprender", nombre: "Gestionar la calidad: ¿Vamos bien con la calidad?", subtemas: ["gp-8-2"], microvideo: true },
+    { id: "gp26-eje-a49-adquirir-recursos", tipo: "aprender", nombre: "Adquirir recursos: ¿Quién entra al equipo?", subtemas: ["gp-9-3"], microvideo: true },
+    { id: "gp26-eje-a50-desarrollar-equipo", tipo: "aprender", nombre: "Desarrollar el equipo: De grupo a equipo", subtemas: ["gp-9-4"], microvideo: true },
+    { id: "gp26-eje-a51-dirigir-equipo", tipo: "aprender", nombre: "Dirigir al equipo: Dos quieren el mismo horno", subtemas: ["gp-9-5"], microvideo: true },
+    { id: "gp26-eje-a52-gestionar-comunicaciones", tipo: "aprender", nombre: "Gestionar las comunicaciones: El mismo aviso, dos formas", subtemas: ["gp-10-2"], microvideo: true },
+    { id: "gp26-eje-a53-implementar-riesgos", tipo: "aprender", nombre: "Implementar la respuesta a los riesgos: El plan que nadie hizo", subtemas: ["gp-11-6"], microvideo: true },
+    { id: "gp26-eje-a54-efectuar-adquisiciones", tipo: "aprender", nombre: "Efectuar las adquisiciones: Elegir y firmar", subtemas: ["gp-12-2"], microvideo: true },
+    { id: "gp26-eje-a55-gestionar-involucramiento", tipo: "aprender", nombre: "Gestionar el involucramiento de los interesados: Don Tito se queja", subtemas: ["gp-13-3"], microvideo: true },
     { id: "gp26-eje-c04-h04-carretillas", tipo: "hacer", nombre: "Cuatro carretillas de cambio", subtemas: ["gp-4-3"], clasificacion: hacer("medio", 25) },
     { id: "gp26-eje-c04-h05-bitacora", tipo: "hacer", nombre: "La bitácora de obra", subtemas: ["gp-4-3"], clasificacion: hacer("medio", 25, { etapas: 2 }) },
     { id: "gp26-eje-c04-h06-recetario", tipo: "hacer", nombre: "El recetario y las manos", subtemas: ["gp-4-4"], clasificacion: hacer("medio", 25, { etapas: 3 }) },
@@ -218,6 +276,19 @@ export const PIEZAS = Object.freeze({
     { id: "gp26-eje-c13-h09-gestionar", tipo: "hacer", nombre: "La asamblea del salón comunal", subtemas: ["gp-13-3"], clasificacion: hacer("medio", 25) },
   ],
   "gp-monitoreo-control": [
+    /* Jane · microvideos Aprender (uno por sección o proceso). Aprobados por Mateo el 28-nov-2026. */
+    { id: "gp26-moc-a56-monitorear-trabajo", tipo: "aprender", nombre: "Monitorear y controlar el trabajo del proyecto: ¿Vamos bien o vamos mal?", subtemas: ["gp-4-5"], microvideo: true },
+    { id: "gp26-moc-a57-control-cambios", tipo: "aprender", nombre: "Realizar el control integrado de cambios: ¿Quién decide el cambio?", subtemas: ["gp-4-6"], microvideo: true },
+    { id: "gp26-moc-a58-validar-alcance", tipo: "aprender", nombre: "Validar el alcance: ¿Lo aceptas?", subtemas: ["gp-5-5"], microvideo: true },
+    { id: "gp26-moc-a59-controlar-alcance", tipo: "aprender", nombre: "Controlar el alcance: El alcance que crece solo", subtemas: ["gp-5-6"], microvideo: true },
+    { id: "gp26-moc-a60-controlar-cronograma", tipo: "aprender", nombre: "Controlar el cronograma: ¿Llegamos a tiempo?", subtemas: ["gp-6-6"], microvideo: true },
+    { id: "gp26-moc-a61-controlar-costos", tipo: "aprender", nombre: "Controlar los costos: Lo que vale lo hecho", subtemas: ["gp-7-4"], microvideo: true },
+    { id: "gp26-moc-a62-controlar-calidad", tipo: "aprender", nombre: "Controlar la calidad: Antes de entregar, revisar", subtemas: ["gp-8-3"], microvideo: true },
+    { id: "gp26-moc-a63-controlar-recursos", tipo: "aprender", nombre: "Controlar los recursos: Faltan mesas", subtemas: ["gp-9-6"], microvideo: true },
+    { id: "gp26-moc-a64-monitorear-comunicaciones", tipo: "aprender", nombre: "Monitorear las comunicaciones: ¿Llegó el mensaje?", subtemas: ["gp-10-3"], microvideo: true },
+    { id: "gp26-moc-a65-monitorear-riesgos", tipo: "aprender", nombre: "Monitorear los riesgos: El riesgo que cambió", subtemas: ["gp-11-7"], microvideo: true },
+    { id: "gp26-moc-a66-controlar-adquisiciones", tipo: "aprender", nombre: "Controlar las adquisiciones: El toldo que llegó roto", subtemas: ["gp-12-3"], microvideo: true },
+    { id: "gp26-moc-a67-monitorear-involucramiento", tipo: "aprender", nombre: "Monitorear el involucramiento de los interesados: ¿Siguen con nosotros?", subtemas: ["gp-13-4"], microvideo: true },
     { id: "gp26-moc-c04-h07-camara", tipo: "hacer", nombre: "La cámara del viernes", subtemas: ["gp-4-5"], clasificacion: hacer("medio", 25, { etapas: 2 }) },
     { id: "gp26-moc-c04-h08-turnero", tipo: "hacer", nombre: "El turnero de los cambios", subtemas: ["gp-4-6"], clasificacion: hacer("dificil", 50, { etapas: 2 }) },
     /* Lote 3: Validar y Controlar el alcance (5.5, 5.6) y Controlar el cronograma (6.6). */
@@ -247,6 +318,8 @@ export const PIEZAS = Object.freeze({
     { id: "gp26-moc-c13-h11-taller", tipo: "hacer", nombre: "La planta en corte", subtemas: ["gp-13-1", "gp-13-2", "gp-13-3", "gp-13-4"], clasificacion: hacer("dificil", 50, { etapas: 3 }) },
   ],
   "gp-cierre": [
+    /* Jane · microvideos Aprender (uno por sección o proceso). Aprobados por Mateo el 28-nov-2026. */
+    { id: "gp26-cie-a68-cerrar-proyecto", tipo: "aprender", nombre: "Cerrar el proyecto o fase: ¡Se acabó la feria!", subtemas: ["gp-4-7"], microvideo: true },
     { id: "gp26-cie-c04-h09-breakers", tipo: "hacer", nombre: "Apaga el proyecto", subtemas: ["gp-4-7"], clasificacion: hacer("medio", 25, { etapas: 2 }) },
     { id: "gp26-cie-c04-h10-beneficiadero", tipo: "hacer", nombre: "Los canales del beneficiadero", subtemas: ["gp-4-1", "gp-4-2", "gp-4-3", "gp-4-4", "gp-4-5", "gp-4-6", "gp-4-7"], clasificacion: hacer("dificil", 50, { etapas: 3 }) },
   ],
@@ -262,8 +335,8 @@ export const PIEZAS = Object.freeze({
 /* Lote 6 (las 24 de los caps. 11 y 12): mismo visto bueno («publicar todo»). */
 /* Lote 7 (las 11 del cap. 13, el último): mismo visto bueno («publicar todo»). */
 export const PUBLICADAS = Object.freeze([
-  "gp26-fun-a1-proyecto-operacion",
-  ...MODULOS.flatMap((m) => PIEZAS[m.id] ?? []).filter((pz) => pz.tipo === "hacer").map((pz) => pz.id),
+  /* Los microvideos Aprender (GP-01 el 27-nov; GP-02 a GP-68 el 28-nov) y todas las Hacer. */
+  ...MODULOS.flatMap((m) => PIEZAS[m.id] ?? []).filter((pz) => pz.tipo === "hacer" || pz.microvideo).map((pz) => pz.id),
 ]);
 export const estaPublicada = (id) => PUBLICADAS.includes(id);
 

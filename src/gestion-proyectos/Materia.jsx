@@ -36,6 +36,8 @@ const CSS = `
 .gpm-guia { margin: 0; color: ${TENUE}; font-size: 14px; line-height: 1.45; }
 .gpm-h2 { font: 700 20px/1.25 Sora, Inter, sans-serif; margin: 32px 0 12px; }
 .gpm-empieza { display: grid; gap: 16px; }
+.gpm-fila { display: grid; grid-auto-flow: column; grid-auto-columns: min(220px, 68vw); gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 2px 2px 12px; margin: 0 -2px; overscroll-behavior-x: contain; }
+.gpm-fila > * { scroll-snap-align: start; min-width: 0; }
 @media (min-width: 700px) { .gpm-empieza { grid-template-columns: minmax(0, 320px) minmax(0, 1fr); align-items: start; } }
 .gpm-tarjeta { border: 1px solid ${LINEA}; border-radius: 16px; background: rgba(29,53,87,0.35); padding: 16px; }
 .gpm-rotulo { margin: 0; font-size: 13px; font-weight: 600; color: #A8B6C8; }
@@ -57,7 +59,20 @@ export default function MateriaGestionProyectos({ onBack, onAbrirHacer = null, o
   const publicadas = (id) => (PIEZAS[id] ?? []).filter((pz) => estaPublicada(pz.id));
   const fundamentos = MODULOS[0];
   const grupos = MODULOS.slice(1);
-  const videos = MODULOS.flatMap((m) => publicadas(m.id)).filter((pz) => pz.microvideo);
+  const videos = publicadas(fundamentos.id).filter((pz) => pz.microvideo).slice(0, 1);
+  /* Los demás microvideos, en fila por módulo y en el orden de la guía (GP-02 a GP-68). */
+  const videosDe = (id) => publicadas(id).filter((pz) => pz.microvideo && !videos.includes(pz));
+  const aprende = (m) => videosDe(m.id).length > 0 && (
+    <section key={`a-${m.id}`} data-aprender-modulo={m.id}>
+      <h2 className="gpm-h2">Aprende · {m.titulo}</h2>
+      <p className="gpm-guia" style={{ marginBottom: 4 }}>
+        {videosDe(m.id).length === 1 ? "Un microvideo" : `${videosDe(m.id).length} microvideos`} de un minuto, uno por {m.id === fundamentos.id ? "tema de los capítulos 1, 2 y 3" : "proceso"}.{videosDe(m.id).length > 1 ? " Desliza para ver más." : ""}
+      </p>
+      <div className="gpm-fila" role="list">
+        {videosDe(m.id).map((pz) => <div role="listitem" key={pz.id}><Microvideo id={pz.id} preload="none" ancho={220} /></div>)}
+      </div>
+    </section>
+  );
   return (
     <div className="gpm" data-materia="gestion-proyectos">
       <style>{CSS}</style>
@@ -82,6 +97,8 @@ export default function MateriaGestionProyectos({ onBack, onAbrirHacer = null, o
           </div>
         </div>
 
+        {aprende(fundamentos)}
+
         {/* Gen · las Hacer diarias de cada módulo (Hacer.jsx); hoy, las 18 de los caps. 1 y 2. */}
         {hacerVisibles(fundamentos.id).length > 0 && (
           <section data-hacer-modulo={fundamentos.id}>
@@ -94,13 +111,13 @@ export default function MateriaGestionProyectos({ onBack, onAbrirHacer = null, o
         )}
 
         {/* Lote 2 · los retos de cada grupo de procesos (hoy, los del cap. 4, Integración). */}
-        {grupos.filter((m) => hacerVisibles(m.id).length > 0).map((m) => (
+        {grupos.map((m) => [aprende(m), hacerVisibles(m.id).length > 0 && (
           <section key={m.id} data-hacer-modulo={m.id}>
             <h2 className="gpm-h2">Practica · {m.titulo}</h2>
             <p className="gpm-guia" style={{ marginBottom: 12 }}>{m.resumen}</p>
             <CaminoHacerGP moduloId={m.id} onAbrir={onAbrirHacer} />
           </section>
-        ))}
+        )])}
 
         <h2 className="gpm-h2">Los cinco grupos de procesos</h2>
         <p className="gpm-guia" style={{ marginBottom: 12 }}>

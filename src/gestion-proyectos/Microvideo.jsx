@@ -5,16 +5,16 @@
  */
 import { MICROVIDEOS } from "./microvideos.js";
 
-export default function Microvideo({ id }) {
+export default function Microvideo({ id, preload = "metadata", ancho = 320 }) {
   const v = MICROVIDEOS[id];
   if (!v) return null;
   return (
-    <figure className="gp-video" data-microvideo={id} style={{ margin: "10px 0 0", maxWidth: 320 }}>
+    <figure className="gp-video" data-microvideo={id} style={{ margin: "10px 0 0", maxWidth: ancho }}>
       {/* Ancho y alto enteros (9:16) para que la página no salte al cargar. */}
       <video
         controls
         playsInline
-        preload="metadata"
+        preload={preload}
         width={360}
         height={640}
         poster={v.poster}
@@ -24,7 +24,7 @@ export default function Microvideo({ id }) {
         <source src={v.src} type="video/mp4" />
       </video>
       <figcaption style={{ fontSize: 13, marginTop: 6 }}>
-        <b>{v.titulo}</b> · {v.segundos} s
+        <b>{v.titulo}</b> <span style={{ whiteSpace: "nowrap" }}>· {v.segundos} s</span>
       </figcaption>
       <details style={{ fontSize: 13, marginTop: 4 }} data-transcripcion>
         <summary style={{ cursor: "pointer", minHeight: 24 }}>Leer lo que dice el video</summary>
