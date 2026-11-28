@@ -233,3 +233,14 @@
 - Cupo: plan creator, 45148 de 122261 créditos usados.
 - Narración gp43-respuestas-v2: lista con eleven_v3 (935 caracteres).
 - Transcripción gp43-respuestas-v2: 146 palabras.
+
+## 2026-11-28T01:37:14.532Z
+- Cupo: plan creator, 45583 de 122261 créditos usados.
+- Narración gp45-involucramiento: lista con eleven_v3 (944 caracteres).
+- Transcripción gp45-involucramiento: 156 palabras.
+- Narración gp46-dirigir: lista con eleven_v3 (1030 caracteres).
+- Transcripción gp46-dirigir: 170 palabras.
+- Narración gp47-conocimiento: lista con eleven_v3 (978 caracteres).
+- Transcripción gp47-conocimiento: 157 palabras.
+- Narración gp48-gestionar-calidad: lista con eleven_v3 (1027 caracteres).
+- Transcripción gp48-gestionar-calidad: 165 palabras.

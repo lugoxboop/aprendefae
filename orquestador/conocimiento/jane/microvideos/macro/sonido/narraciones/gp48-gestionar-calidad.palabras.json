@@ -1,0 +1,830 @@
+{
+ "texto": "El plan de gestión de la calidad de Pía dice cómo deben salir los panes, pero ¿el equipo lo está siguiendo? Ahí entra otro proceso. Gestionar la calidad es convertir el plan de gestión de la calidad en actividades ejecutables de calidad que incorporen las políticas de calidad de la organización. A veces se le llama aseguramiento de calidad. Se trata de usar bien los procesos del proyecto. Una herramienta clave es la auditoría, un proceso estructurado e independiente. Revisa si el trabajo cumple las políticas, los procesos y los procedimientos. Por lo general, la hace alguien externo al proyecto, como la oficina de dirección de proyectos. Busca buenas prácticas y también brechas y defectos. Los resultados van a los informes de calidad. Pueden ser gráficos, numéricos o cualitativos. Pueden incluir los incidentes y recomendaciones de mejora y de acciones correctivas. Si algo debe cambiar, sale una solicitud de cambio. Ahora te toca. Piensa quién podría auditar la calidad de tu proyecto y qué revisaría.",
+ "palabras": [
+  {
+   "w": "El",
+   "ini": 0.14,
+   "fin": 0.22
+  },
+  {
+   "w": "plan",
+   "ini": 0.3,
+   "fin": 0.48
+  },
+  {
+   "w": "de",
+   "ini": 0.52,
+   "fin": 0.58
+  },
+  {
+   "w": "gestión",
+   "ini": 0.64,
+   "fin": 1.02
+  },
+  {
+   "w": "de",
+   "ini": 1.06,
+   "fin": 1.12
+  },
+  {
+   "w": "la",
+   "ini": 1.16,
+   "fin": 1.2
+  },
+  {
+   "w": "calidad",
+   "ini": 1.26,
+   "fin": 1.66
+  },
+  {
+   "w": "de",
+   "ini": 1.7,
+   "fin": 1.78
+  },
+  {
+   "w": "Pía",
+   "ini": 1.88,
+   "fin": 2.12
+  },
+  {
+   "w": "dice",
+   "ini": 2.58,
+   "fin": 2.84
+  },
+  {
+   "w": "cómo",
+   "ini": 3,
+   "fin": 3.28
+  },
+  {
+   "w": "deben",
+   "ini": 3.32,
+   "fin": 3.58
+  },
+  {
+   "w": "salir",
+   "ini": 3.66,
+   "fin": 3.94
+  },
+  {
+   "w": "los",
+   "ini": 3.98,
+   "fin": 4.12
+  },
+  {
+   "w": "panes,",
+   "ini": 4.2,
+   "fin": 4.52
+  },
+  {
+   "w": "pero",
+   "ini": 5.04,
+   "fin": 5.3
+  },
+  {
+   "w": "¿el",
+   "ini": 5.6,
+   "fin": 5.72
+  },
+  {
+   "w": "equipo",
+   "ini": 5.76,
+   "fin": 6.16
+  },
+  {
+   "w": "lo",
+   "ini": 6.2,
+   "fin": 6.28
+  },
+  {
+   "w": "está",
+   "ini": 6.3,
+   "fin": 6.54
+  },
+  {
+   "w": "siguiendo?",
+   "ini": 6.6,
+   "fin": 7.08
+  },
+  {
+   "w": "Ahí",
+   "ini": 7.94,
+   "fin": 8.16
+  },
+  {
+   "w": "entra",
+   "ini": 8.24,
+   "fin": 8.66
+  },
+  {
+   "w": "otro",
+   "ini": 8.78,
+   "fin": 9
+  },
+  {
+   "w": "proceso.",
+   "ini": 9.06,
+   "fin": 9.56
+  },
+  {
+   "w": "Gestionar",
+   "ini": 10.4,
+   "fin": 10.92
+  },
+  {
+   "w": "la",
+   "ini": 10.98,
+   "fin": 11.04
+  },
+  {
+   "w": "calidad",
+   "ini": 11.1,
+   "fin": 11.54
+  },
+  {
+   "w": "es",
+   "ini": 11.9,
+   "fin": 12.02
+  },
+  {
+   "w": "convertir",
+   "ini": 12.06,
+   "fin": 12.5
+  },
+  {
+   "w": "el",
+   "ini": 12.56,
+   "fin": 12.64
+  },
+  {
+   "w": "plan",
+   "ini": 12.72,
+   "fin": 12.92
+  },
+  {
+   "w": "de",
+   "ini": 12.98,
+   "fin": 13.04
+  },
+  {
+   "w": "gestión",
+   "ini": 13.1,
+   "fin": 13.5
+  },
+  {
+   "w": "de",
+   "ini": 13.54,
+   "fin": 13.6
+  },
+  {
+   "w": "la",
+   "ini": 13.64,
+   "fin": 13.68
+  },
+  {
+   "w": "calidad",
+   "ini": 13.76,
+   "fin": 14.2
+  },
+  {
+   "w": "en",
+   "ini": 14.36,
+   "fin": 14.46
+  },
+  {
+   "w": "actividades",
+   "ini": 14.5,
+   "fin": 15.14
+  },
+  {
+   "w": "ejecutables",
+   "ini": 15.2,
+   "fin": 15.92
+  },
+  {
+   "w": "de",
+   "ini": 15.96,
+   "fin": 16.02
+  },
+  {
+   "w": "calidad",
+   "ini": 16.079,
+   "fin": 16.52
+  },
+  {
+   "w": "que",
+   "ini": 16.92,
+   "fin": 17
+  },
+  {
+   "w": "incorporen",
+   "ini": 17.02,
+   "fin": 17.5
+  },
+  {
+   "w": "las",
+   "ini": 17.52,
+   "fin": 17.64
+  },
+  {
+   "w": "políticas",
+   "ini": 17.7,
+   "fin": 18.26
+  },
+  {
+   "w": "de",
+   "ini": 18.3,
+   "fin": 18.36
+  },
+  {
+   "w": "calidad",
+   "ini": 18.42,
+   "fin": 18.82
+  },
+  {
+   "w": "de",
+   "ini": 18.86,
+   "fin": 18.92
+  },
+  {
+   "w": "la",
+   "ini": 18.96,
+   "fin": 19
+  },
+  {
+   "w": "organización.",
+   "ini": 19.04,
+   "fin": 19.78
+  },
+  {
+   "w": "A",
+   "ini": 20.46,
+   "fin": 20.5
+  },
+  {
+   "w": "veces",
+   "ini": 20.54,
+   "fin": 20.92
+  },
+  {
+   "w": "se",
+   "ini": 21.14,
+   "fin": 21.22
+  },
+  {
+   "w": "le",
+   "ini": 21.26,
+   "fin": 21.32
+  },
+  {
+   "w": "llama",
+   "ini": 21.38,
+   "fin": 21.66
+  },
+  {
+   "w": "aseguramiento",
+   "ini": 21.88,
+   "fin": 22.72
+  },
+  {
+   "w": "de",
+   "ini": 22.76,
+   "fin": 22.82
+  },
+  {
+   "w": "calidad.",
+   "ini": 22.88,
+   "fin": 23.36
+  },
+  {
+   "w": "Se",
+   "ini": 23.78,
+   "fin": 23.86
+  },
+  {
+   "w": "trata",
+   "ini": 23.94,
+   "fin": 24.2
+  },
+  {
+   "w": "de",
+   "ini": 24.24,
+   "fin": 24.32
+  },
+  {
+   "w": "usar",
+   "ini": 24.36,
+   "fin": 24.6
+  },
+  {
+   "w": "bien",
+   "ini": 24.68,
+   "fin": 25.08
+  },
+  {
+   "w": "los",
+   "ini": 25.16,
+   "fin": 25.3
+  },
+  {
+   "w": "procesos",
+   "ini": 25.38,
+   "fin": 25.9
+  },
+  {
+   "w": "del",
+   "ini": 25.96,
+   "fin": 26.08
+  },
+  {
+   "w": "proyecto.",
+   "ini": 26.12,
+   "fin": 26.62
+  },
+  {
+   "w": "Una",
+   "ini": 27.74,
+   "fin": 27.88
+  },
+  {
+   "w": "herramienta",
+   "ini": 27.9,
+   "fin": 28.42
+  },
+  {
+   "w": "clave",
+   "ini": 28.52,
+   "fin": 28.82
+  },
+  {
+   "w": "es",
+   "ini": 29.12,
+   "fin": 29.28
+  },
+  {
+   "w": "la",
+   "ini": 29.32,
+   "fin": 29.38
+  },
+  {
+   "w": "auditoría,",
+   "ini": 29.4,
+   "fin": 29.96
+  },
+  {
+   "w": "un",
+   "ini": 30.54,
+   "fin": 30.64
+  },
+  {
+   "w": "proceso",
+   "ini": 30.66,
+   "fin": 31.1
+  },
+  {
+   "w": "estructurado",
+   "ini": 31.14,
+   "fin": 31.82
+  },
+  {
+   "w": "e",
+   "ini": 32.02,
+   "fin": 32.06
+  },
+  {
+   "w": "independiente.",
+   "ini": 32.119,
+   "fin": 32.84
+  },
+  {
+   "w": "Revisa",
+   "ini": 33.46,
+   "fin": 33.82
+  },
+  {
+   "w": "si",
+   "ini": 33.88,
+   "fin": 33.94
+  },
+  {
+   "w": "el",
+   "ini": 33.98,
+   "fin": 34.04
+  },
+  {
+   "w": "trabajo",
+   "ini": 34.08,
+   "fin": 34.48
+  },
+  {
+   "w": "cumple",
+   "ini": 34.6,
+   "fin": 34.88
+  },
+  {
+   "w": "las",
+   "ini": 34.92,
+   "fin": 35.04
+  },
+  {
+   "w": "políticas,",
+   "ini": 35.1,
+   "fin": 35.7
+  },
+  {
+   "w": "los",
+   "ini": 35.98,
+   "fin": 36.12
+  },
+  {
+   "w": "procesos",
+   "ini": 36.18,
+   "fin": 36.74
+  },
+  {
+   "w": "y",
+   "ini": 36.94,
+   "fin": 36.98
+  },
+  {
+   "w": "los",
+   "ini": 37.04,
+   "fin": 37.14
+  },
+  {
+   "w": "procedimientos.",
+   "ini": 37.22,
+   "fin": 38.06
+  },
+  {
+   "w": "Por",
+   "ini": 38.6,
+   "fin": 38.7
+  },
+  {
+   "w": "lo",
+   "ini": 38.74,
+   "fin": 38.8
+  },
+  {
+   "w": "general,",
+   "ini": 38.86,
+   "fin": 39.26
+  },
+  {
+   "w": "la",
+   "ini": 39.5,
+   "fin": 39.58
+  },
+  {
+   "w": "hace",
+   "ini": 39.62,
+   "fin": 39.84
+  },
+  {
+   "w": "alguien",
+   "ini": 39.9,
+   "fin": 40.16
+  },
+  {
+   "w": "externo",
+   "ini": 40.2,
+   "fin": 40.66
+  },
+  {
+   "w": "al",
+   "ini": 40.68,
+   "fin": 40.74
+  },
+  {
+   "w": "proyecto,",
+   "ini": 40.8,
+   "fin": 41.26
+  },
+  {
+   "w": "como",
+   "ini": 41.66,
+   "fin": 41.8
+  },
+  {
+   "w": "la",
+   "ini": 41.84,
+   "fin": 41.9
+  },
+  {
+   "w": "oficina",
+   "ini": 41.92,
+   "fin": 42.38
+  },
+  {
+   "w": "de",
+   "ini": 42.42,
+   "fin": 42.48
+  },
+  {
+   "w": "dirección",
+   "ini": 42.52,
+   "fin": 43
+  },
+  {
+   "w": "de",
+   "ini": 43.02,
+   "fin": 43.08
+  },
+  {
+   "w": "proyectos.",
+   "ini": 43.14,
+   "fin": 43.72
+  },
+  {
+   "w": "Busca",
+   "ini": 44.38,
+   "fin": 44.68
+  },
+  {
+   "w": "buenas",
+   "ini": 44.78,
+   "fin": 45.04
+  },
+  {
+   "w": "prácticas",
+   "ini": 45.12,
+   "fin": 45.68
+  },
+  {
+   "w": "y",
+   "ini": 45.96,
+   "fin": 46
+  },
+  {
+   "w": "también",
+   "ini": 46.08,
+   "fin": 46.54
+  },
+  {
+   "w": "brechas",
+   "ini": 46.86,
+   "fin": 47.28
+  },
+  {
+   "w": "y",
+   "ini": 47.42,
+   "fin": 47.44
+  },
+  {
+   "w": "defectos.",
+   "ini": 47.5,
+   "fin": 48.12
+  },
+  {
+   "w": "Los",
+   "ini": 48.88,
+   "fin": 49
+  },
+  {
+   "w": "resultados",
+   "ini": 49.1,
+   "fin": 49.72
+  },
+  {
+   "w": "van",
+   "ini": 49.98,
+   "fin": 50.08
+  },
+  {
+   "w": "a",
+   "ini": 50.12,
+   "fin": 50.14
+  },
+  {
+   "w": "los",
+   "ini": 50.18,
+   "fin": 50.3
+  },
+  {
+   "w": "informes",
+   "ini": 50.36,
+   "fin": 50.8
+  },
+  {
+   "w": "de",
+   "ini": 50.84,
+   "fin": 50.9
+  },
+  {
+   "w": "calidad.",
+   "ini": 50.96,
+   "fin": 51.44
+  },
+  {
+   "w": "Pueden",
+   "ini": 51.8,
+   "fin": 52.02
+  },
+  {
+   "w": "ser",
+   "ini": 52.08,
+   "fin": 52.2
+  },
+  {
+   "w": "gráficos,",
+   "ini": 52.26,
+   "fin": 52.86
+  },
+  {
+   "w": "numéricos",
+   "ini": 53.14,
+   "fin": 53.76
+  },
+  {
+   "w": "o",
+   "ini": 53.96,
+   "fin": 54.02
+  },
+  {
+   "w": "cualitativos.",
+   "ini": 54.1,
+   "fin": 54.86
+  },
+  {
+   "w": "Pueden",
+   "ini": 55.4,
+   "fin": 55.62
+  },
+  {
+   "w": "incluir",
+   "ini": 55.66,
+   "fin": 56.06
+  },
+  {
+   "w": "los",
+   "ini": 56.12,
+   "fin": 56.24
+  },
+  {
+   "w": "incidentes",
+   "ini": 56.3,
+   "fin": 56.98
+  },
+  {
+   "w": "y",
+   "ini": 57.02,
+   "fin": 57.06
+  },
+  {
+   "w": "recomendaciones",
+   "ini": 57.14,
+   "fin": 57.92
+  },
+  {
+   "w": "de",
+   "ini": 57.94,
+   "fin": 58
+  },
+  {
+   "w": "mejora",
+   "ini": 58.06,
+   "fin": 58.46
+  },
+  {
+   "w": "y",
+   "ini": 58.64,
+   "fin": 58.66
+  },
+  {
+   "w": "de",
+   "ini": 58.72,
+   "fin": 58.76
+  },
+  {
+   "w": "acciones",
+   "ini": 58.8,
+   "fin": 59.2
+  },
+  {
+   "w": "correctivas.",
+   "ini": 59.26,
+   "fin": 59.92
+  },
+  {
+   "w": "Si",
+   "ini": 60.74,
+   "fin": 60.84
+  },
+  {
+   "w": "algo",
+   "ini": 60.92,
+   "fin": 61.12
+  },
+  {
+   "w": "debe",
+   "ini": 61.16,
+   "fin": 61.36
+  },
+  {
+   "w": "cambiar,",
+   "ini": 61.4,
+   "fin": 61.78
+  },
+  {
+   "w": "sale",
+   "ini": 62.18,
+   "fin": 62.42
+  },
+  {
+   "w": "una",
+   "ini": 62.5,
+   "fin": 62.64
+  },
+  {
+   "w": "solicitud",
+   "ini": 62.72,
+   "fin": 63.38
+  },
+  {
+   "w": "de",
+   "ini": 63.44,
+   "fin": 63.5
+  },
+  {
+   "w": "cambio.",
+   "ini": 63.58,
+   "fin": 63.96
+  },
+  {
+   "w": "Ahora",
+   "ini": 64.84,
+   "fin": 65.12
+  },
+  {
+   "w": "te",
+   "ini": 65.2,
+   "fin": 65.28
+  },
+  {
+   "w": "toca.",
+   "ini": 65.36,
+   "fin": 65.66
+  },
+  {
+   "w": "Piensa",
+   "ini": 66.34,
+   "fin": 66.7
+  },
+  {
+   "w": "quién",
+   "ini": 66.88,
+   "fin": 67.08
+  },
+  {
+   "w": "podría",
+   "ini": 67.14,
+   "fin": 67.48
+  },
+  {
+   "w": "auditar",
+   "ini": 67.52,
+   "fin": 67.98
+  },
+  {
+   "w": "la",
+   "ini": 68.04,
+   "fin": 68.1
+  },
+  {
+   "w": "calidad",
+   "ini": 68.18,
+   "fin": 68.56
+  },
+  {
+   "w": "de",
+   "ini": 68.62,
+   "fin": 68.68
+  },
+  {
+   "w": "tu",
+   "ini": 68.72,
+   "fin": 68.8
+  },
+  {
+   "w": "proyecto",
+   "ini": 68.86,
+   "fin": 69.36
+  },
+  {
+   "w": "y",
+   "ini": 69.84,
+   "fin": 69.88
+  },
+  {
+   "w": "qué",
+   "ini": 70.04,
+   "fin": 70.16
+  },
+  {
+   "w": "revisaría.",
+   "ini": 70.22,
+   "fin": 70.82
+  }
+ ]
+}
