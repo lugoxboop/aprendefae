@@ -244,3 +244,14 @@
 - Transcripción gp47-conocimiento: 157 palabras.
 - Narración gp48-gestionar-calidad: lista con eleven_v3 (1027 caracteres).
 - Transcripción gp48-gestionar-calidad: 165 palabras.
+
+## 2026-11-28T01:49:36.556Z
+- Cupo: plan creator, 47421 de 122261 créditos usados.
+- Narración gp49-adquirir-recursos: lista con eleven_v3 (1019 caracteres).
+- Transcripción gp49-adquirir-recursos: 158 palabras.
+- Narración gp50-desarrollar-equipo: lista con eleven_v3 (925 caracteres).
+- Transcripción gp50-desarrollar-equipo: 151 palabras.
+- Narración gp51-dirigir-equipo: lista con eleven_v3 (898 caracteres).
+- Transcripción gp51-dirigir-equipo: 140 palabras.
+- Narración gp52-gestionar-comunicaciones: lista con eleven_v3 (1050 caracteres).
+- Transcripción gp52-gestionar-comunicaciones: 162 palabras.
