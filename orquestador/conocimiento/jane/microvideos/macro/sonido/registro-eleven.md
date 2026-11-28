@@ -152,3 +152,10 @@
 - Cupo: plan creator, 32979 de 122261 créditos usados.
 - Narración gp23-alcance-v2: lista con eleven_v3 (990 caracteres).
 - Transcripción gp23-alcance-v2: 169 palabras.
+
+## 2026-11-28T00:08:49.230Z
+- Cupo: plan creator, 33436 de 122261 créditos usados.
+- Narración gp19-liderar-v2: lista con eleven_v3 (900 caracteres).
+- Transcripción gp19-liderar-v2: 159 palabras.
+- Narración gp20-supuestos-v2: lista con eleven_v3 (901 caracteres).
+- Transcripción gp20-supuestos-v2: 159 palabras.
