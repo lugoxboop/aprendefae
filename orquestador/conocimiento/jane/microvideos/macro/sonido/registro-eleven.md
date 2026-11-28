@@ -168,3 +168,14 @@
 - Transcripción gp23-alcance-v3: 170 palabras.
 - Narración gp24-requisitos-v2: lista con eleven_v3 (1030 caracteres).
 - Transcripción gp24-requisitos-v2: 168 palabras.
+
+## 2026-11-28T00:20:05.021Z
+- Cupo: plan creator, 35612 de 122261 créditos usados.
+- Narración gp25-enunciado: lista con eleven_v3 (892 caracteres).
+- Transcripción gp25-enunciado: 147 palabras.
+- Narración gp26-edt: lista con eleven_v3 (1005 caracteres).
+- Transcripción gp26-edt: 168 palabras.
+- Narración gp27-cronograma: lista con eleven_v3 (984 caracteres).
+- Transcripción gp27-cronograma: 162 palabras.
+- Narración gp28-actividades: lista con eleven_v3 (943 caracteres).
+- Transcripción gp28-actividades: 161 palabras.
