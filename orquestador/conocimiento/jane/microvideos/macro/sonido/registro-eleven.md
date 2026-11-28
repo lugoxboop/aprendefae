@@ -288,3 +288,8 @@
 - Transcripción gp63-controlar-recursos: 160 palabras.
 - Narración gp64-monitorear-comunicaciones: lista con eleven_v3 (954 caracteres).
 - Transcripción gp64-monitorear-comunicaciones: 156 palabras.
+
+## 2026-11-28T02:18:17.811Z
+- Cupo: plan creator, 54587 de 122261 créditos usados.
+- Narración gp61-controlar-costos-b: lista con eleven_v3 (940 caracteres).
+- Transcripción gp61-controlar-costos-b: 143 palabras.
