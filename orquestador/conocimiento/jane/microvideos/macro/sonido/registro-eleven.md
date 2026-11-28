@@ -159,3 +159,12 @@
 - Transcripción gp19-liderar-v2: 159 palabras.
 - Narración gp20-supuestos-v2: lista con eleven_v3 (901 caracteres).
 - Transcripción gp20-supuestos-v2: 159 palabras.
+
+## 2026-11-28T00:14:26.156Z
+- Cupo: plan creator, 34269 de 122261 créditos usados.
+- Narración gp21-interesados-v2: lista con eleven_v3 (876 caracteres).
+- Transcripción gp21-interesados-v2: 156 palabras.
+- Narración gp23-alcance-v3: lista con eleven_v3 (1002 caracteres).
+- Transcripción gp23-alcance-v3: 170 palabras.
+- Narración gp24-requisitos-v2: lista con eleven_v3 (1030 caracteres).
+- Transcripción gp24-requisitos-v2: 168 palabras.
