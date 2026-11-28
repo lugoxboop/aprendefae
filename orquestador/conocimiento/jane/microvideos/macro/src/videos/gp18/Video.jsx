@@ -40,8 +40,8 @@ const PLANOS = [
 
 /* Vértices del triángulo y sus habilidades (3.4.1 a 3.4.4) */
 const V = [
-  { x: 540, y: 500, nom: "dirección técnica", ic: "🛠️", col: AZUL, tw: () => M.tecnica, cosas: [[() => M.crono5, "📅"], [() => M.costo5, "💰"], [() => M.recursos5, "👥"], [() => M.riesgos, "⚠️"]] },
-  { x: 270, y: 1050, nom: "estratégica y de negocios", ic: "📊", col: COLOR.VERDE, tw: () => M.estrategica, cosas: [[() => M.estrategia, "🧭"], [() => M.mercado6, "📈"], [() => M.competencia, "🏁"]] },
+  { x: 540, y: 500, nom: "dirección técnica de proyectos", ic: "🛠️", col: AZUL, tw: () => M.tecnica, cosas: [[() => M.crono5, "📅"], [() => M.costo5, "💰"], [() => M.recursos5, "👥"], [() => M.riesgos, "⚠️"]] },
+  { x: 270, y: 1050, nom: "gestión estratégica y de negocios", ic: "📊", col: COLOR.VERDE, tw: () => M.estrategica, cosas: [[() => M.estrategia, "🧭"], [() => M.mercado6, "📈"], [() => M.competencia, "🏁"]] },
   { x: 810, y: 1050, nom: "liderazgo", ic: "🗣️", col: COLOR.CORAL, tw: () => M.liderazgo, cosas: [[() => M.guiar, "👉"], [() => M.motivar, "🔥"], [() => M.dirigir, "🎯"]] },
 ];
 
@@ -53,7 +53,7 @@ function Gancho({ t }) {
   return (
     <Escena cam={cam} fondo="art/oficina.jpg" filtro="blur(5px)" velo={0.15}>
       <Documento x={540} y={620 + hunde * 0.6} w={330} p={rampa(t, M.cronograma1 - 0.3, 0.4)} titulo="cronograma" letra={44} sello={rampa(t, M.perfecto - 0.2, 0.35)} giro={8 * agua} />
-      <Cartel x={540} y={300} txt="✨ perfecto" p={rampa(t, M.perfecto - 0.3, 0.35) * (1 - agua)} tam={62} fondo={COLOR.VERDE} color="#fff" />
+      <Cartel x={540} y={300} txt="✨ perfecto" p={rampa(t, M.perfecto - 0.3, 0.35) * (1 - clamp01(agua * 5))} tam={62} fondo={COLOR.VERDE} color="#fff" />
       <Cartel x={540} y={300} txt="y el proyecto se hunde" p={agua} tam={62} fondo={ROJO} color="#fff" giro={-3} />
       <Sombra x={540} y={1510} w={260} op={0.22 * (1 - agua)} />
       <Mascota esp="perro-corbatin" x={540} y={1515 + hunde} alto={440} t={t} cara={agua > 0.2 ? "triste" : "feliz"} orejas={agua > 0.2 ? -6 : 0} semilla={9} />
@@ -121,7 +121,7 @@ function Triangulo({ t }) {
         return (
           <div key={k}>
             <div style={{ position: "absolute", left: v.x - 85, top: v.y - 85, width: 170, height: 170, borderRadius: "50%", background: q > 0 ? v.col : "#C9C2B4", border: `8px solid ${TINTA}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 84, transform: `scale(${pv > 0 ? rebote(pv) * (1 + 0.08 * pulso(t, (eq > 0 ? M.equilibrio : V[k].tw()) - 0.4, 0.6)) : 0})`, filter: q > 0 ? "none" : "grayscale(1)", boxShadow: q > 0 ? `0 0 ${40 * q}px ${v.col}` : "none" }}>{v.ic}</div>
-            <Cartel x={k === 1 ? 330 : k === 2 ? 760 : v.x} y={v.y + (k ? 140 : -130)} txt={v.nom} p={rampa(t, v.tw() - 0.3, 0.35)} tam={k === 1 ? 38 : 44} fondo={v.col} color="#fff" borde={5} />
+            <Cartel x={k === 1 ? 350 : k === 2 ? 800 : v.x} y={v.y + (k === 1 ? 140 : k === 2 ? 215 : -130)} txt={v.nom} p={rampa(t, v.tw() - 0.3, 0.35)} tam={k === 1 ? 34 : 40} fondo={v.col} color="#fff" borde={5} />
             {v.cosas.map(([fw, ic], j) => {
               const qc = rampa(t, fw() - 0.35, 0.3) * (1 - rampa(t, M.esencial - 0.5, 0.3));
               const n = v.cosas.length;

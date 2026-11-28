@@ -45,7 +45,7 @@ const ANILLOS = [
   [M.proyecto5, "proyecto", 210, COLOR.VERDE],
   [M.organizacion, "organización", 310, AZUL],
   [M.industria, "industria", 405, COLOR.CORAL],
-  [M.profesion, "profesión", 495, MANGO],
+  [M.profesion, "disciplina profesional", 495, MANGO],
 ];
 /* Lo que aparece en cada anillo: [palabra, icono, anillo, ángulo en grados] */
 const COSAS = [
@@ -110,6 +110,7 @@ function Esfera({ t }) {
     <Escena cam={cam} fondo="art/oficina.jpg" filtro="blur(7px)" velo={0.3}>
       <Cartel x={540} y={250} txt="esfera de influencia" p={rampa(t, M.esfera4 - 0.3, 0.35)} tam={64} fondo={MANGO} />
       <svg style={{ position: "absolute", left: 0, top: 0, overflow: "visible" }} width="1" height="1">
+        {ANILLOS.map(([, , r], k) => <circle key={"g" + k} cx={CX} cy={CY} r={r * sale(rampa(t, S(4) - 0.1 + k * 0.25, 0.6))} fill="none" stroke={TINTA} strokeOpacity={0.3} strokeWidth={6} strokeDasharray="14 16" />)}
         {ANILLOS.slice().reverse().map(([tw, , r, col], k) => {
           const q = sale(rampa(t, tw - 0.4, 0.6));
           if (q <= 0) return null;
@@ -142,14 +143,14 @@ function Esfera({ t }) {
 /* ═════ 9–10 · 90 % comunicar; la red informal pesa más ═════ */
 function Comunica({ t }) {
   const cam = mover(t, { s: 1.0, x: 540, y: 968 }, [{ a: S(10) - 0.2, b: E(10), s: 1.03, x: 540, y: 960 }]);
-  const pN = sale(rampa(t, M.noventa - 0.4, 1.0));
+  const pN = sale(rampa(t, S(9) - 0.2, M.noventa - S(9) + 0.6));
   const red = rampa(t, M.informal - 0.4, 0.4);
   const nodos = [[M.expertos, "🧑‍🔬", 190, 1000], [M.expertos, "🧑‍🍳", 210, 1330], [M.lideres, "⭐", 890, 1000], [M.lideres, "🧑‍🏫", 870, 1330]];
   return (
     <Escena cam={cam} fondo="art/oficina.jpg" filtro="blur(6px)" velo={0.25}>
       <div style={{ opacity: 1 - red }}>
-        <Gigante x={540} y={470} txt={`${Math.round(90 * pN)} %`} p={rampa(t, M.noventa - 0.4, 0.3)} tam={200} color={MANGO} />
-        <div style={{ position: "absolute", left: 140, top: 640, width: 800, height: 70, border: `7px solid ${TINTA}`, borderRadius: 18, overflow: "hidden", background: "rgba(255,253,247,.9)", opacity: rampa(t, M.noventa - 0.4, 0.3) }}>
+        <Gigante x={540} y={470} txt={`${Math.round(90 * pN)} %`} p={rampa(t, S(9) - 0.3, 0.3)} tam={200} color={MANGO} />
+        <div style={{ position: "absolute", left: 140, top: 640, width: 800, height: 70, border: `7px solid ${TINTA}`, borderRadius: 18, overflow: "hidden", background: "rgba(255,253,247,.9)", opacity: rampa(t, S(9) - 0.3, 0.3) }}>
           <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${90 * pN}%`, background: COLOR.VERDE }} />
         </div>
         <Cartel x={540} y={800} txt="💬 de su tiempo, a comunicar" p={rampa(t, M.tiempo9 - 0.3, 0.35)} tam={52} fondo={CREMA} />

@@ -85,7 +85,7 @@ function Escribe({ t }) {
 /* ═════ 3–5 · De qué parten y cómo lo arman ═════ */
 function Proceso({ t }) {
   const cam = mover(t, { s: 1.0, x: 540, y: 968 }, [{ a: S(5) - 0.2, b: E(5), s: 1.02, x: 540, y: 960 }]);
-  const ENT = [[M.caso, "💼", "caso de negocio"], [M.acuerdos, "🤝", "acuerdos"], [M.factores, "🌦️", "factores del entorno"], [M.plantilla, "📋", "plantilla del acta"]];
+  const ENT = [[M.caso, "💼", "caso de negocio"], [M.acuerdos, "🤝", "acuerdos"], [M.factores, "🌦️", "factores ambientales de la empresa"], [M.plantilla, "📋", "plantilla del acta"]];
   const HER = [[M.expertos, "🧑‍🏫", "expertos"], [M.tormenta, "🌪️", "tormenta de ideas"], [M.entrevistas, "🎤", "entrevistas"], [M.reunen, "👥", "reuniones"]];
   const bloque = (lista, y0, titulo, tw0, col) => (
     <>
@@ -126,7 +126,7 @@ function Nace({ t }) {
       </div>
       <Ficha x={330} y={800} w={280} icono="📜" txt="contrato" p={pC} letra={46} giro={-4} />
       <Tachon x={330} y={760} w={260} p={rampa(t, M.contrato + 0.1, 0.3)} />
-      <Ficha x={760} y={800} w={280} icono="💸" txt="sin intercambio de dinero" p={rampa(t, M.dinero - 0.8, 0.35)} letra={34} giro={4} />
+      <Ficha x={760} y={800} w={280} icono="💸" txt="sin intercambio de dinero" p={rampa(t, M.dinero - 1.8, 0.35)} letra={34} giro={4} />
       <Sombra x={830} y={1510} w={230} />
       <Mascota esp="gato-gafas" x={830} y={1515} alto={440} t={t} cara="feliz" bd={-80 * pulso(t, M.aprueba - 0.4, 1)} semilla={6} espejo />
       <Placa x={830} y={1010} nombre="Carmen" rol="patrocinadora" p={rampa(t, M.aprueba - 0.4, 0.35) * (1 - pC)} color={COLOR.CORAL} />
@@ -149,18 +149,18 @@ function Supuesto({ t }) {
         <Gigante x={200} y={420} txt="❓" p={rampa(t, M.comprobo8 - 0.4, 0.35)} tam={110} giro={8 * Math.sin(t * 4)} />
       </div>
       <Frase x={620} y={fy} w={740} p={rampa(t, S(8) - 0.2, 0.35)} marca={marca} tam={54} />
-      <Cartel x={620} y={fy + 240} txt="supuesto: cierto sin prueba" p={marca * (1 - reg)} tam={44} fondo={MANGO} giro={-2} />
+      <Cartel x={620} y={fy + 330} txt="supuesto: cierto sin prueba" p={marca * (1 - reg)} tam={44} fondo={MANGO} giro={-2} />
       {reg > 0 && (
         <div style={{ position: "absolute", left: 90, top: 520, width: 900, height: 700, background: "#FFFDF7", border: `8px solid ${TINTA}`, borderRadius: 28, transform: `scale(${rebote(reg)})`, boxShadow: "0 14px 0 rgba(42,30,23,.28)" }}>
           <div style={{ position: "absolute", left: 0, right: 0, top: 24, textAlign: "center", fontFamily: "Sora", fontWeight: 800, fontSize: 54, color: TINTA }}>registro de supuestos</div>
-          <div style={{ position: "absolute", left: 0, right: 0, top: 96, textAlign: "center", fontFamily: "Sora", fontWeight: 800, fontSize: 32, color: COLOR.CORAL }}>salida 2 del proceso · la 1 es el acta</div>
+          <div style={{ position: "absolute", left: 0, right: 0, top: 96, textAlign: "center", fontFamily: "Sora", fontWeight: 800, fontSize: 38, color: COLOR.CORAL }}>salida 2 del proceso · la 1 es el acta</div>
           {[[M.registro + 0.2, "🤔", "supuestos", "el horno libre en las mañanas"], [M.restricciones, "🚧", "restricciones", ""]].map(([tw, ic, nom, val], k) => {
             const q = rampa(t, tw - 0.4, 0.35);
             if (q <= 0) return null;
             return (
               <div key={k} style={{ position: "absolute", left: 40, right: 40, top: 180 + k * 180, height: 150, boxSizing: "border-box", display: "flex", alignItems: "center", gap: 18, padding: "0 24px", background: "#FFF4DA", border: `6px solid ${TINTA}`, borderRadius: 22, fontFamily: "Sora", fontWeight: 800, color: TINTA, transform: `scale(${rebote(q)})` }}>
                 <span style={{ fontSize: 70 }}>{ic}</span>
-                <div><div style={{ fontSize: 46 }}>{nom}</div>{val && <div style={{ fontSize: 30, opacity: 0.7 }}>{val}</div>}</div>
+                <div><div style={{ fontSize: 46 }}>{nom}</div>{val && <div style={{ fontSize: 38, opacity: 0.75 }}>{val}</div>}</div>
               </div>
             );
           })}
@@ -210,7 +210,7 @@ fx(0.1, "papel", 0.3); fx(M.frase - 0.3, "pop", 0.35); fx(M.tumbar - 0.2, "cruji
 fx(S(2) - 0.3, "whoosh", 0.4); fx(M.acta2 - 0.3, "papel", 0.3); fx(M.escribe - 0.3, "tiza-larga", 0.35);
 fx(S(3) - 0.3, "whoosh", 0.4); [M.caso, M.acuerdos, M.factores, M.plantilla, M.expertos, M.tormenta, M.entrevistas, M.reunen].forEach((w) => fx(w - 0.4, "pop-suave", 0.25));
 fx(S(6) - 0.3, "whoosh", 0.4); fx(M.nace - 0.4, "papel", 0.3); fx(M.aprueba - 0.2, "sello", 0.45); fx(M.formal - 0.7, "campana", 0.3);
-fx(M.contrato - 0.5, "pop", 0.3); fx(M.contrato + 0.1, "tiza", 0.3); fx(M.dinero - 0.8, "monedas", 0.3);
+fx(M.contrato - 0.5, "pop", 0.3); fx(M.contrato + 0.1, "tiza", 0.3); fx(M.dinero - 1.8, "monedas", 0.3);
 fx(S(8) - 0.3, "whoosh", 0.4); fx(M.comprobo8 - 0.4, "toc-grave", 0.3); fx(M.supuesto8 - 0.3, "ding", 0.35);
 fx(M.segunda - 0.5, "papel", 0.35); fx(M.registro - 0.2, "pop", 0.3); fx(M.restricciones - 0.4, "pop", 0.3); fx(M.todo10 - 0.4, "pop-suave", 0.25);
 fx(M.toca - 0.3, "pop", 0.35); fx(E(11) + 0.1, "ding-doble", 0.4);
@@ -220,5 +220,5 @@ const CLAVE = /^(supuesto|supuestos|registro|restricciones|acta|contrato|formal|
 
 export const DURACION = T.DURACION_S;
 export const GP20 = ({ sinSonido = false }) => (
-  <VideoMicro T={T} planos={PLANOS} pinta={pinta} sfx={SFX} clave={CLAVE} arte={ARTE} audio="audio/gp20-supuestos.mp3" sinSonido={sinSonido} />
+  <VideoMicro T={T} planos={PLANOS} pinta={pinta} sfx={SFX} clave={CLAVE} arte={ARTE} audio="audio/gp20-supuestos-v2.mp3" sinSonido={sinSonido} />
 );

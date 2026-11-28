@@ -18,7 +18,7 @@ const T = crearTiempo(DATOS, { extra: [0.4, 0.3, 0.3, 0.3, 0.35, 0.3, 0.3, 0.3, 
 const { S, E, W } = T;
 
 const M = {
-  mandar: W(1, "Mandar", 0.1), liderar1: W(1, "liderar.", 0.9),
+  mandar: W(1, "Gestionar", 0.1), liderar1: W(1, "liderar.", 0.9),
   horno: W(2, "horno,", 0.25), cien: W(2, "cien", 0.65), hoy: W(2, "hoy.", 0.95),
   gestiona: W(3, "gestiona:", 0.15), turnos: W(3, "turnos,", 0.35), reloj: W(3, "reloj", 0.55), como3: W(3, "cómo", 0.8), cuando3: W(3, "cuándo.", 0.95),
   reune: W(4, "reúne", 0.15), que4: W(4, "qué", 0.35), porque4: W(4, "qué,", 0.45), debaten: W(4, "debaten", 0.8), salida: W(4, "salida.", 0.95),
@@ -52,7 +52,7 @@ function Gancho({ t }) {
   const cam = mover(t, { s: 1.1, x: 540, y: 940 }, [{ a: 0.2, b: E(1) + 0.3, s: 1.0, x: 540, y: 968 }]);
   return (
     <Escena cam={cam} fondo="art/panaderia.jpg" filtro="blur(5px)" velo={0.15}>
-      <Ficha x={270} y={600} w={330} icono="👉" txt="mandar" p={rampa(t, M.mandar - 0.3, 0.35)} fondo="#DDE3FF" giro={-4} letra={54} />
+      <Ficha x={270} y={600} w={330} icono="👉" txt="gestionar" p={rampa(t, M.mandar - 0.3, 0.35)} fondo="#DDE3FF" giro={-4} letra={54} />
       <Ficha x={810} y={600} w={330} icono="🤝" txt="liderar" p={rampa(t, M.liderar1 - 0.4, 0.35)} fondo="#FFE1D8" giro={4} letra={54} />
       <Gigante x={540} y={560} txt="≠" p={rampa(t, M.liderar1 - 0.1, 0.35)} tam={200} color={ROJO} />
       <Sombra x={540} y={1510} w={260} />
@@ -88,7 +88,7 @@ function HornoEsc({ t }) {
         <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Sora", fontWeight: 800, fontSize: 58, color: TINTA }}>¿qué? ¿por qué?</div>
       </Dicho>
       <Gigante x={540} y={760} txt="💡" p={rampa(t, M.debaten - 0.2, 0.35)} tam={130} giro={6 * Math.sin(t * 5)} />
-      {[["gato-gafas", 170, 6, 440], ["perro-mochila", 910, 12, 400]].map(([esp, x, sem, alto], k) => (
+      {[["gato-gafas", 170, 6, 440], ["perro-mochila", 870, 12, 400]].map(([esp, x, sem, alto], k) => (
         <div key={k} style={{ opacity: lid, transform: `translateX(${(1 - sale(lid)) * (k ? 300 : -300)}px)` }}>
           <Sombra x={x} y={1510} w={200} />
           <Mascota esp={esp} x={x} y={1515} alto={alto} t={t} cara={t > M.debaten ? "feliz" : "tranquila"} bi={-50 * pulso(t, M.debaten - 0.3 + k * 0.4, 0.8)} semilla={sem} espejo={k === 1} />
@@ -107,21 +107,21 @@ function Tabla({ t }) {
   return (
     <Escena cam={cam} fondo="art/oficina.jpg" filtro="blur(7px)" velo={0.3}>
       {cab.map(([tw, txt, col, x], k) => <Cartel key={k} x={x} y={300} txt={txt} p={rampa(t, tw - 0.3, 0.35)} tam={62} fondo={col} color="#fff" />)}
-      <div style={{ position: "absolute", left: 536, top: 380, width: 8, height: 1000, background: TINTA, opacity: 0.25 * rampa(t, S(5) - 0.2, 0.4), borderRadius: 4 }} />
+      <div style={{ position: "absolute", left: 536, top: 380, width: 8, height: 870, background: TINTA, opacity: 0.25 * rampa(t, S(5) - 0.2, 0.4), borderRadius: 4 }} />
       {FILAS.map(([fg, fl, ig, tg, il, tl], k) => {
         const qg = rampa(t, fg() - 0.4, 0.35);
         const ql = rampa(t, fl() - 0.4, 0.35);
-        const y = 420 + k * 240;
+        const y = 420 + k * 215;
         const caja = (q, x, ic, txt, fondo) => q > 0 && (
-          <div style={{ position: "absolute", left: x, top: y, width: 470, height: 200, boxSizing: "border-box", display: "flex", alignItems: "center", gap: 14, padding: "0 20px", background: fondo, border: `7px solid ${TINTA}`, borderRadius: 24, fontFamily: "Sora", fontWeight: 800, color: TINTA, transform: `scale(${rebote(q)})`, opacity: Math.min(1, q * 3), boxShadow: "0 9px 0 rgba(42,30,23,.25)" }}>
+          <div style={{ position: "absolute", left: x, top: y, width: 470, height: 185, boxSizing: "border-box", display: "flex", alignItems: "center", gap: 14, padding: "0 20px", background: fondo, border: `7px solid ${TINTA}`, borderRadius: 24, fontFamily: "Sora", fontWeight: 800, color: TINTA, transform: `scale(${rebote(q)})`, opacity: Math.min(1, q * 3), boxShadow: "0 9px 0 rgba(42,30,23,.25)" }}>
             <span style={{ fontSize: 76 }}>{ic}</span>
-            <span style={{ fontSize: 42, lineHeight: 1.1 }}>{txt}</span>
+            <span style={{ fontSize: 37, lineHeight: 1.1 }}>{txt}</span>
           </div>
         );
         return <div key={k}>{caja(qg, 40, ig, tg, "#DDE3FF")}{caja(ql, 570, il, tl, "#FFE1D8")}</div>;
       })}
-      <Sombra x={540} y={1510} w={120} />
-      <Mascota esp="hamster-gorra" x={540} y={1515} alto={160} t={t} cara="feliz" cab={6 * Math.sin(t * 2)} semilla={3} />
+      <Sombra x={540} y={1510} w={170} />
+      <Mascota esp="hamster-gorra" x={540} y={1515} alto={250} t={t} cara="feliz" cab={6 * Math.sin(t * 2)} semilla={3} />
     </Escena>
   );
 }
@@ -145,7 +145,7 @@ function Equilibrio({ t }) {
               {[[0, "gestión", AZUL, "👉"], [1, "liderazgo", COLOR.CORAL, "🤝"]].map(([k, txt, col, ic]) => (
                 <div key={k} style={{ position: "absolute", left: k ? 600 : -40, top: 12, width: 200, transform: `rotate(${-ang}deg)`, transformOrigin: "50% 0" }}>
                   <div style={{ marginLeft: 96, width: 8, height: 100, background: TINTA }} />
-                  <div style={{ background: col, border: `7px solid ${TINTA}`, borderRadius: "0 0 90px 90px", height: 110, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", color: "#fff", fontFamily: "Sora", fontWeight: 800, fontSize: 30 }}><span style={{ fontSize: 54 }}>{ic}</span>{txt}</div>
+                  <div style={{ background: col, border: `7px solid ${TINTA}`, borderRadius: "0 0 90px 90px", height: 130, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", color: "#fff", fontFamily: "Sora", fontWeight: 800, fontSize: 36 }}><span style={{ fontSize: 58 }}>{ic}</span>{txt}</div>
                 </div>
               ))}
             </div>
@@ -208,5 +208,5 @@ const CLAVE = /^(gestiona|gestionar|gestión|liderar|liderazgo|correctamente|cor
 
 export const DURACION = T.DURACION_S;
 export const GP19 = ({ sinSonido = false }) => (
-  <VideoMicro T={T} planos={PLANOS} pinta={pinta} sfx={SFX} clave={CLAVE} arte={ARTE} audio="audio/gp19-liderar.mp3" sinSonido={sinSonido} />
+  <VideoMicro T={T} planos={PLANOS} pinta={pinta} sfx={SFX} clave={CLAVE} arte={ARTE} audio="audio/gp19-liderar-v2.mp3" sinSonido={sinSonido} />
 );
