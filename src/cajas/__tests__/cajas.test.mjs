@@ -78,6 +78,11 @@ test("la tira de la ruleta tiene el premio bajo la marca y es la misma con la mi
   assert.equal(t1.length, LARGO_TIRA);
   assert.equal(t1[GANADOR], "c_corona_prisma");
   assert.deepEqual(t1, t2);
+  for (const sem of [1, 2, 3, 42, 999]) {
+    const t = tiraDeRuleta("legendaria", "aura_fuego", sem);
+    assert.equal(t[GANADOR], "aura_fuego");
+    for (let i = 1; i < t.length; i++) assert.notEqual(t[i], t[i - 1], `semilla ${sem}: dos iguales seguidas en ${i}`);
+  }
   const leg = tiraDeRuleta("legendaria", "aura_fuego", 3);
   const normales = new Set(cosmeticosDeRareza("normal").map((c) => c.id));
   assert.ok(leg.every((id) => !normales.has(id)), "la tira de la Legendaria no enseña Normales");

@@ -23,6 +23,8 @@ import { supabase } from "../lib/supabase.js";
 import { motivoDeError, SIN_CONFIGURAR } from "../cristales/cristales.js";
 import { COSMETICOS_CAJA, RAREZAS_CAJA, cosmeticosDeRareza } from "../mascota/cosmeticos-caja.js";
 
+const COSMETICO_RAREZA = Object.fromEntries(COSMETICOS_CAJA.map((c) => [c.id, c.rareza]));
+
 export const CAJAS = [
   {
     id: "normal", nombre: "Caja Normal", precio: 40, rgb: "79,156,255",
@@ -99,6 +101,13 @@ export function tiraDeRuleta(cajaId, ganadorId, semilla = 7) {
      queda uno de rareza alta. */
   const alto = COSMETICOS_CAJA.filter((c) => c.rareza === "legendario" || c.rareza === "elite");
   tira[GANADOR + 1] = alto[Math.floor(azar() * alto.length)].id;
+  /* Sin dos cartas iguales seguidas (el premio repetido al lado se veía raro). */
+  for (let i = 1; i < tira.length; i++) {
+    if (tira[i] !== tira[i - 1]) continue;
+    const j = i === GANADOR ? i - 1 : i;
+    const lista = COSMETICOS_CAJA.filter((c) => c.rareza === COSMETICO_RAREZA[tira[j]] && c.id !== tira[j] && c.id !== tira[j - 1] && c.id !== tira[j + 1]);
+    if (lista.length) tira[j] = lista[Math.floor(azar() * lista.length)].id;
+  }
   return tira;
 }
 

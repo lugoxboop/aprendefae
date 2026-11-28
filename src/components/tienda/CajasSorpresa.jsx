@@ -55,19 +55,19 @@ const ESTILO = `
 
 /* La apertura */
 .cjs-velo { position: fixed; inset: 0; z-index: 60; color: ${FAE.text}; font-family: Inter, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  background: radial-gradient(ellipse at 50% 45%, rgba(29,53,87,.96), rgba(6,12,22,.985) 70%); padding: 16px; box-sizing: border-box; overflow: hidden; }
+  background: radial-gradient(ellipse at 50% 45%, #1D3557, #060c16 70%); padding: 16px; box-sizing: border-box; overflow: hidden; }
 .cjs-tiembla { animation: cjs-tiembla .16s linear infinite; }
 @keyframes cjs-tiembla { 0% { transform: rotate(-3deg) translateX(-2px); } 50% { transform: rotate(3deg) translateX(2px); } 100% { transform: rotate(-3deg) translateX(-2px); } }
 .cjs-luzcaja { animation: cjs-luzcaja 1s ease-in-out infinite alternate; }
 @keyframes cjs-luzcaja { from { opacity: .35; transform: scale(.9); } to { opacity: 1; transform: scale(1.15); } }
-.cjs-ventana { position: relative; width: 100%; max-width: 920px; height: 168px; overflow: hidden; border-radius: 16px;
+.cjs-ventana { position: relative; width: 100%; max-width: 920px; height: 180px; overflow: hidden; border-radius: 16px;
   background: linear-gradient(180deg, rgba(14,27,46,.9), rgba(29,53,87,.75)); border: 1px solid rgba(248,249,250,.14);
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); }
 .cjs-tira { position: absolute; top: 14px; left: 0; display: flex; gap: 8px; will-change: transform; }
-.cjs-carta { flex: 0 0 auto; width: 112px; height: 140px; border-radius: 12px; box-sizing: border-box; position: relative; overflow: hidden;
+.cjs-carta { flex: 0 0 auto; width: 112px; height: 152px; border-radius: 12px; box-sizing: border-box; position: relative; overflow: hidden;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; transition: transform .08s ease-out, filter .08s; }
 .cjs-carta.cjs-bajo { transform: scale(1.07); filter: brightness(1.25); }
-@media (max-width: 420px) { .cjs-ventana { height: 140px; } .cjs-carta { width: 90px; height: 114px; } .cjs-tira { top: 13px; } }
+@media (max-width: 420px) { .cjs-ventana { height: 158px; } .cjs-carta { width: 96px; height: 132px; } .cjs-tira { top: 13px; } .cjs-carta svg { width: 58px; height: 58px; } }
 .cjs-marca { position: absolute; top: 0; bottom: 0; left: 50%; width: 3px; transform: translateX(-50%); background: #fff;
   box-shadow: 0 0 12px 2px rgba(255,255,255,.75); border-radius: 2px; z-index: 2; }
 .cjs-marca::before, .cjs-marca::after { content: ""; position: absolute; left: 50%; transform: translateX(-50%); border: 9px solid transparent; }
@@ -283,7 +283,7 @@ function CartaRuleta({ id, refCarta }) {
         background: `radial-gradient(closest-side, rgba(${r.rgb},0.35), transparent)` }}>
         <IconoCosmetico id={id} tamano={72} />
       </span>
-      <span style={{ fontSize: "10px", fontWeight: 600, lineHeight: 1.15, textAlign: "center", padding: "0 5px", minHeight: "24px", display: "flex", alignItems: "center", overflowWrap: "anywhere" }}>
+      <span style={{ fontSize: "10px", fontWeight: 600, lineHeight: 1.15, textAlign: "center", padding: "0 5px 9px", minHeight: "24px", display: "flex", alignItems: "center", overflowWrap: "anywhere", flexShrink: 0 }}>
         {c.nombre}
       </span>
       <span style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: "5px", background: `rgb(${r.rgb})`, boxShadow: `0 0 14px rgba(${r.rgb},0.9)` }} />
@@ -322,8 +322,13 @@ function Apertura({ cajaId, resultado, error, mascota, look, saldo, onCerrar, on
     const t = setTimeout(() => setListoSorteo(true), sinMovimiento() ? 200 : 1100);
     return () => clearTimeout(t);
   }, []);
+  /* Con el resultado y el redoble hecho, la tapa salta (0,9 s) y luego la ruleta. */
+  const [tapa, setTapa] = useState(false);
   useEffect(() => {
-    if (resultado && listoSorteo && fase === "sorteo") setFase("ruleta");
+    if (!(resultado && listoSorteo && fase === "sorteo")) return undefined;
+    setTapa(true);
+    const t = setTimeout(() => setFase("ruleta"), sinMovimiento() ? 150 : 900);
+    return () => clearTimeout(t);
   }, [resultado, listoSorteo, fase]);
 
   useEffect(() => { refDialogo.current?.focus(); }, []);
@@ -337,8 +342,8 @@ function Apertura({ cajaId, resultado, error, mascota, look, saldo, onCerrar, on
     const ancho = primera ? primera.getBoundingClientRect().width : 112;
     const paso = ancho + 8;
     const medio = ventana.clientWidth / 2;
-    /* Dónde cae la marca dentro de la carta ganadora: entre el 18 % y el 82 % de su ancho. */
-    const dentro = 0.18 + ((semilla * 9301 + 49297) % 233280) / 233280 * 0.64;
+    /* Dónde cae la marca dentro de la carta ganadora: entre el 28 % y el 72 % de su ancho (nunca en el borde: que no quede duda). */
+    const dentro = 0.28 + ((semilla * 9301 + 49297) % 233280) / 233280 * 0.44;
     const fin = -(GANADOR * paso + ancho * dentro - medio);
     const inicio = medio - ancho * 0.5;
     const dur = sinMovimiento() ? 250 : DURACION;
@@ -402,8 +407,8 @@ function Apertura({ cajaId, resultado, error, mascota, look, saldo, onCerrar, on
 
       {fase === "sorteo" && (
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "18px" }}>
-          <span className={error ? "" : "cjs-tiembla"} style={{ display: "flex", filter: `drop-shadow(0 0 30px rgba(${caja.rgb},0.7))` }}>
-            <CajaDibujo tipo={cajaId} tamano={170} abierta={!error && listoSorteo && Boolean(resultado)} />
+          <span className={error || tapa ? "" : "cjs-tiembla"} style={{ display: "flex", filter: `drop-shadow(0 0 30px rgba(${caja.rgb},0.7))` }}>
+            <CajaDibujo tipo={cajaId} tamano={170} abierta={!error && tapa} />
           </span>
           {error ? (
             <>
@@ -465,8 +470,8 @@ function Apertura({ cajaId, resultado, error, mascota, look, saldo, onCerrar, on
               </p>
             )}
             {/* Alto fijo: al cambiar «Ponérselo» por «Puesto» los botones caben en una
-                fila y, sin esto, toda la tarjeta saltaba hacia abajo al recentrarse. */}
-            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", justifyContent: "center", alignContent: "flex-start", minHeight: "92px" }}>
+                fila y saltaban (verificador, 28-nov): siempre en columna, mismo alto. */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "8px", alignItems: "stretch", width: "min(260px, 76vw)" }}>
               {!puesto && (
                 <button type="button" className="cjs-btn" data-poner-premio onClick={() => onPoner(c.id)} style={boton("lleno", r.rgb)}>
                   <Check size={15} /> Ponérselo

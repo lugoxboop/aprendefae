@@ -52,7 +52,7 @@ for (const ancho of ANCHOS) {
   let PERFIL = perfilInicial();
   const dir = join(SALIDA, `tmp-${ancho}`);
   rmSync(dir, { recursive: true, force: true });
-  const ctx = await nav.newContext({ viewport: { width: ancho, height: alto }, deviceScaleFactor: 2, recordVideo: { dir, size: { width: ancho * 2, height: alto * 2 } } });
+  const ctx = await nav.newContext({ viewport: { width: ancho, height: alto }, deviceScaleFactor: 2, recordVideo: { dir, size: { width: ancho, height: alto } } });
   const page = await ctx.newPage();
   await page.route("**/*", async (route) => {
     const req = route.request();
@@ -131,7 +131,7 @@ for (const ancho of ANCHOS) {
   const cuadros = join(SALIDA, `cuadros-${ancho}`);
   rmSync(cuadros, { recursive: true, force: true });
   mkdirSync(cuadros, { recursive: true });
-  execFileSync("ffmpeg", ["-y", "-loglevel", "error", "-i", mp4, "-vf", "fps=10,scale=360:-1", join(cuadros, "c%04d.png")]);
+  execFileSync("ffmpeg", ["-y", "-loglevel", "error", "-i", mp4, "-vf", "fps=10", join(cuadros, "c%04d.png")]);
   rmSync(dir, { recursive: true, force: true });
 }
 await nav.close();

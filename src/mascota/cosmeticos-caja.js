@@ -213,6 +213,9 @@ export function svgAura(dibujo, [cx, cy], [rx, ry]) {
   const halo = (c1, c2, op = 0.55) =>
     `<ellipse cx="${R(cx)}" cy="${R(cy)}" rx="${R(rx)}" ry="${R(ry)}" fill="url(#mta-au-${dibujo})" opacity="${op}"/>` +
     `<radialGradient id="mta-au-${dibujo}" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="${c1}" stop-opacity=".0"/><stop offset=".55" stop-color="${c1}" stop-opacity=".35"/><stop offset=".85" stop-color="${c2}" stop-opacity=".55"/><stop offset="1" stop-color="${c2}" stop-opacity="0"/></radialGradient>`;
+  /* Las partículas crecen con el aura: sobre una mascota (escenario de 600 px) se
+     verían como puntitos con el tamaño del icono (Mateo verá el aura de lejos). */
+  const k = Math.max(1, Math.min(rx, ry) / 80);
   const destello = (x, y, s, c) => `<path transform="translate(${x} ${y}) scale(${s})" d="M0 -14 Q2 -2 14 0 Q2 2 0 14 Q-2 2 -14 0 Q-2 -2 0 -14 Z" fill="${c}"/>`;
   const estrella = (x, y, s, c) => `<path transform="translate(${x} ${y}) scale(${s})" d="M0 -22 L6 -7 L22 -7 L9 3 L14 19 L0 9 L-14 19 L-9 3 L-22 -7 L-6 -7 Z" fill="${c}" stroke="#7a4a00" stroke-width="2" stroke-linejoin="round"/>`;
   const copo = (x, y, s) => `<g transform="translate(${x} ${y}) scale(${s})" stroke="#e8fbff" stroke-width="3.2" stroke-linecap="round" fill="none"><path d="M0 -14 V14 M-12 -7 L12 7 M-12 7 L12 -7"/><path d="M-4 -10 L0 -6 L4 -10 M-4 10 L0 6 L4 10"/></g>`;
@@ -220,28 +223,28 @@ export function svgAura(dibujo, [cx, cy], [rx, ry]) {
   let dentro = "";
   if (dibujo === "chispas") {
     dentro = halo("#7fc4ff", "#4f9cff", 0.4) +
-      enAnillo(9, 0.92, 0.3).map(([x, y], i) => p("mta-au-titila", i, destello(x, y, 0.9 + (i % 3) * 0.35, i % 2 ? "#ffffff" : "#bfe2ff"))).join("");
+      enAnillo(9, 0.92, 0.3).map(([x, y], i) => p("mta-au-titila", i, destello(x, y, (0.9 + (i % 3) * 0.35) * k, i % 2 ? "#ffffff" : "#bfe2ff"))).join("");
   } else if (dibujo === "burbujas") {
     dentro = halo("#c79bff", "#b56cff", 0.4) +
       enAnillo(10, 0.95, 0.15).map(([x, y], i) => p("mta-au-sube", i,
-        `<circle cx="${x}" cy="${y}" r="${8 + (i % 4) * 4}" fill="rgba(230,210,255,.18)" stroke="#e8d6ff" stroke-width="3"/><circle cx="${R(x - 3)}" cy="${R(y - 3)}" r="2.6" fill="#fff"/>`)).join("");
+        `<circle cx="${x}" cy="${y}" r="${R((8 + (i % 4) * 4) * k)}" fill="rgba(230,210,255,.18)" stroke="#e8d6ff" stroke-width="${R(3 * k)}"/><circle cx="${R(x - 3 * k)}" cy="${R(y - 3 * k)}" r="${R(2.6 * k)}" fill="#fff"/>`)).join("");
   } else if (dibujo === "copos") {
     dentro = halo("#b9f0ff", "#56c2e8", 0.4) +
-      enAnillo(9, 0.95, 0.5).map(([x, y], i) => p("mta-au-cae", i, copo(x, y, 0.8 + (i % 3) * 0.3))).join("");
+      enAnillo(9, 0.95, 0.5).map(([x, y], i) => p("mta-au-cae", i, copo(x, y, (0.8 + (i % 3) * 0.3) * k))).join("");
   } else if (dibujo === "fuego") {
     dentro = halo("#ffb347", "#ff5a00", 0.7) +
       enAnillo(8, 0.9, 0.2).filter(([, y]) => y > cy - ry * 0.6).map(([x, y], i) => p("mta-au-llama", i,
-        `<path transform="translate(${x} ${y}) scale(${1.1 + (i % 3) * 0.3})" d="M0 -26 C10 -14 14 -4 10 6 C7 14 -7 14 -10 6 C-14 -4 -6 -10 -4 -18 C-2 -10 2 -8 0 -26 Z" fill="#ff8a1a"/><path transform="translate(${x} ${R(y + 4)}) scale(${0.6 + (i % 3) * 0.2})" d="M0 -20 C8 -10 10 -2 6 6 C3 11 -3 11 -6 6 C-9 -2 -4 -8 0 -20 Z" fill="#ffe07a"/>`)).join("");
+        `<path transform="translate(${x} ${y}) scale(${R((1.1 + (i % 3) * 0.3) * k)})" d="M0 -26 C10 -14 14 -4 10 6 C7 14 -7 14 -10 6 C-14 -4 -6 -10 -4 -18 C-2 -10 2 -8 0 -26 Z" fill="#ff8a1a"/><path transform="translate(${x} ${R(y + 4)}) scale(${R((0.6 + (i % 3) * 0.2) * k)})" d="M0 -20 C8 -10 10 -2 6 6 C3 11 -3 11 -6 6 C-9 -2 -4 -8 0 -20 Z" fill="#ffe07a"/>`)).join("");
   } else if (dibujo === "estrellas") {
     dentro = halo("#ffe08a", "#ffbe3c", 0.5) +
-      enAnillo(8, 0.95, 0.2).map(([x, y], i) => p("mta-au-titila", i, estrella(x, y, 0.8 + (i % 2) * 0.35, i % 2 ? "#ffd35a" : "#fff1b0"))).join("");
+      enAnillo(8, 0.95, 0.2).map(([x, y], i) => p("mta-au-titila", i, estrella(x, y, (0.8 + (i % 2) * 0.35) * k, i % 2 ? "#ffd35a" : "#fff1b0"))).join("");
   } else if (dibujo === "prisma") {
     const colores = ["#ff4d78", "#ffb13d", "#ffe94d", "#4dff9a", "#4dc9ff", "#8a6bff", "#ff6be0"];
     dentro =
-      `<radialGradient id="mta-au-prisma" cx="50%" cy="50%" r="50%"><stop offset=".55" stop-color="#fff" stop-opacity="0"/><stop offset=".86" stop-color="#ffd6f0" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>` +
+      `<radialGradient id="mta-au-prisma" cx="50%" cy="50%" r="50%"><stop offset=".55" stop-color="#fff" stop-opacity="0"/><stop offset=".8" stop-color="#ff9be0" stop-opacity=".75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>` +
       `<ellipse cx="${R(cx)}" cy="${R(cy)}" rx="${R(rx)}" ry="${R(ry)}" fill="url(#mta-au-prisma)"/>` +
-      enAnillo(14, 0.93).map(([x, y], i) => p("mta-au-titila", i * 0.5, `<circle cx="${x}" cy="${y}" r="${7 + (i % 3) * 3}" fill="${colores[i % colores.length]}" opacity=".9"/>`)).join("") +
-      enAnillo(6, 0.7, 0.5).map(([x, y], i) => p("mta-au-titila", i, destello(x, y, 1.2, "#ffffff"))).join("");
+      enAnillo(14, 0.93).map(([x, y], i) => p("mta-au-titila", i * 0.5, `<circle cx="${x}" cy="${y}" r="${R((7 + (i % 3) * 3) * k)}" fill="${colores[i % colores.length]}" stroke="#fff" stroke-width="${R(1.5 * k)}"/>`)).join("") +
+      enAnillo(6, 0.7, 0.5).map(([x, y], i) => p("mta-au-titila", i, destello(x, y, 1.2 * k, "#ffffff"))).join("");
   }
   /* El halo va detrás de la mascota; las partículas, delante (si fueran
      detrás, el cuerpo las taparía casi todas). */
