@@ -37,8 +37,8 @@ const { PIEZAS_TEXTO_GP, ITEMS_GP } = await import("../etiquetas.js");
 const S = solucionario();
 const DIR = new URL("..", import.meta.url);
 const COMPONENTES = {};
-/* Lote 1: fundamentos/Hnn*.jsx · lote 2: fundamentos/C03Hnn*.jsx e integracion/C04Hnn*.jsx · lote 3: alcance/ y cronograma/ · lote 4: costos/ y calidad/ · lote 5: recursos/ y comunicaciones/ · lote 6: riesgos/ y adquisiciones/. */
-for (const dir of ["fundamentos", "integracion", "alcance", "cronograma", "costos", "calidad", "recursos", "comunicaciones", "riesgos", "adquisiciones"]) {
+/* Lote 1: fundamentos/Hnn*.jsx · lote 2: fundamentos/C03Hnn*.jsx e integracion/C04Hnn*.jsx · lote 3: alcance/ y cronograma/ · lote 4: costos/ y calidad/ · lote 5: recursos/ y comunicaciones/ · lote 6: riesgos/ y adquisiciones/ · lote 7: interesados/. */
+for (const dir of ["fundamentos", "integracion", "alcance", "cronograma", "costos", "calidad", "recursos", "comunicaciones", "riesgos", "adquisiciones", "interesados"]) {
   for (const f of readdirSync(new URL(`${dir}/`, DIR)).filter((x) => /^(C\d\d)?H\d\d.*\.jsx$/.test(x))) {
     const m = await import(new URL(`${dir}/${f}`, DIR).href);
     COMPONENTES[m.ID] = m.default;
@@ -120,9 +120,9 @@ async function mover(el) {
   return true;
 }
 
-test("hay 130 piezas (18 del lote 1, 17 del lote 2, 24 del lote 3, 24 del lote 4, 23 del lote 5 y 24 del lote 6), cada una con su componente", () => {
-  assert.equal(PIEZAS_TEXTO_GP.length, 130);
-  assert.equal(Object.keys(COMPONENTES).length, 130);
+test("hay 141 piezas (18 del lote 1, 17 del lote 2, 24 del lote 3, 24 del lote 4, 23 del lote 5, 24 del lote 6 y 11 del lote 7), cada una con su componente", () => {
+  assert.equal(PIEZAS_TEXTO_GP.length, 141);
+  assert.equal(Object.keys(COMPONENTES).length, 141);
   for (const p of PIEZAS_TEXTO_GP) assert.equal(typeof COMPONENTES[p.id], "function", p.id);
 });
 
@@ -140,7 +140,7 @@ test("la tarjeta de inicio: papel, contexto, consigna y protagonista grande, sin
   }
 });
 
-test("las 130 se juegan enteras: partida perfecta = 100 % y cada ítem con etiqueta", async () => {
+test("las 141 se juegan enteras: partida perfecta = 100 % y cada ítem con etiqueta", async () => {
   mock.timers.enable({ apis: ["setTimeout"] });
   try {
     for (const semilla of [1, 7]) {

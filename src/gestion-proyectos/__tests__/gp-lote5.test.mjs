@@ -45,7 +45,9 @@ const { PIEZAS_TEXTO_C10, LANZAMIENTO_C10 } = await import("../comunicaciones/te
 /* Lote 6: la prueba de las láminas cubre también los caps. 11 y 12. */
 const { PIEZAS_TEXTO_C11 } = await import("../riesgos/textos-c11.js");
 const { PIEZAS_TEXTO_C12 } = await import("../adquisiciones/textos-c12.js");
-const VIGILADAS = [...PIEZAS_TEXTO_C9, ...PIEZAS_TEXTO_C10, ...PIEZAS_TEXTO_C11, ...PIEZAS_TEXTO_C12];
+/* Lote 7: y el cap. 13. */
+const { PIEZAS_TEXTO_C13 } = await import("../interesados/textos-c13.js");
+const VIGILADAS = [...PIEZAS_TEXTO_C9, ...PIEZAS_TEXTO_C10, ...PIEZAS_TEXTO_C11, ...PIEZAS_TEXTO_C12, ...PIEZAS_TEXTO_C13];
 const { default: Casillas, casillaBien } = await import("../comun/motores/Casillas.jsx");
 const { default: Decidir } = await import("../comun/motores/Decidir.jsx");
 const { default: Explorar } = await import("../comun/motores/Explorar.jsx");
@@ -157,9 +159,9 @@ async function montar(Componente, props) {
   return { el, q: (s) => el.querySelector(s), desmontar: () => act(async () => { raiz.unmount(); el.remove(); }) };
 }
 
-/* Las escenas de las 23 (y las 24 del lote 6), por id. */
+/* Las escenas de las 23 (y las 24 del lote 6 y las 11 del lote 7), por id. */
 const ESCENAS = {};
-for (const dir of ["recursos", "comunicaciones", "riesgos", "adquisiciones"]) {
+for (const dir of ["recursos", "comunicaciones", "riesgos", "adquisiciones", "interesados"]) {
   for (const f of readdirSync(new URL(`../${dir}/`, import.meta.url)).filter((x) => /^C\d\dH\d\d.*\.jsx$/.test(x))) {
     const m = await import(`../${dir}/${f}`);
     ESCENAS[m.ID] = m.ESCENA;
