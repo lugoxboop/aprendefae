@@ -580,3 +580,17 @@ Fuente: G 6.5, 6.5.2.2, 6.5.3.1, 6.5.3.2, p. 205–221.
 11. Ahora te toca: decide qué unidades y qué redondeo usarás para estimar los costos de tu proyecto.
 
 Fuente: G 7.1, 7.1.3.1, p. 235–239.
+
+### GP-30 v2 (recorte de duración: la v1 duraba 82 s)
+
+1. «¿Cuánto tarda coser el toldo?» Ramón responde: «Un rato».
+2. Con eso no se puede planear.
+3. Estimar la duración de las actividades es calcular cuántos períodos de trabajo necesita cada una, con los recursos estimados.
+4. Pía puede mirar un proyecto parecido: el toldo de otra sede tomó tres días. Es la estimación análoga.
+5. O usar una fórmula: dos metros por día y ocho metros de tela dan cuatro días. Es la estimación paramétrica.
+6. O usar tres valores: optimista, dos días; más probable, tres; pesimista, siete. Su promedio da cuatro.
+7. O, si no hay confianza, partir la actividad en pedazos y sumarlos. Es la estimación ascendente.
+8. El resultado es la estimación de la duración, que puede indicar un rango: cuatro días, más o menos uno.
+9. Y la acompaña la base de las estimaciones: cómo se obtuvo, supuestos, restricciones, rango, confianza y riesgos.
+10. Así se entiende de dónde salió el número.
+11. Ahora te toca: estima una actividad de tu proyecto con tres valores.
