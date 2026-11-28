@@ -90,7 +90,7 @@ function Definicion({ t }) {
   const V = [[M.estimar, "estimar"], [M.adquirir, "adquirir"], [M.gestionar, "gestionar"], [M.utilizar, "utilizar"]];
   return (
     <Escena cam={cam} fondo="art/oficina.jpg" filtro="blur(7px)" velo={0.3}>
-      <Cartel x={540} y={250} txt="planificar la gestión de los recursos" p={rampa(t, M.planificar - 0.3, 0.35)} tam={48} fondo={MANGO} />
+      <Cartel x={540} y={250} txt="planificar la gestión de recursos" p={rampa(t, M.planificar - 0.3, 0.35)} tam={48} fondo={MANGO} />
       <Cartel x={540} y={390} txt="definir cómo…" p={rampa(t, M.planificar + 0.6, 0.35)} tam={40} fondo={CREMA} />
       {V.map(([tw, txt], k) => <Cartel key={k} x={k % 2 ? 760 : 320} y={530 + Math.floor(k / 2) * 125} txt={txt} p={rampa(t, tw - 0.3, 0.3)} tam={46} fondo="#DDE3FF" giro={[-2, 2, 1, -1][k]} />)}
       <Cartel x={320} y={880} txt="📦 recursos físicos" p={rampa(t, M.fisicos - 0.35, 0.35)} tam={40} fondo="#E3F6EC" giro={-2} />
