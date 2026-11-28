@@ -683,6 +683,8 @@ una tolva · hámster colgando una ficha en un móvil · hámster pegando notas 
 estación de cable · panda en la cima de una montaña · panda junto a un tanque · gato
 firmando un libro grande.
 
+**Ids de imagen (lote de imágenes 3):** H01 → rolodex, tarjeta-rolodex (pendiente) · H02 → barra-movil (ya existía), ficha-colgante (ya existía) · H03 → torre-cable, cabina-cable (pendiente), estacion-cable (pendiente) · H04 → papel-kraft, nota-adhesiva, cinta-adhesiva (pendiente), marcador, chinche (pendiente) · H05 → bandeja-cata, taza-cata (pendiente), repisa (pendiente), ficha-granos (pendiente) · H06 → tanque-fermentacion · H07 → maqueta-montana, poste-senal (pendiente), piedra (ya existía), mirador (pendiente) · H08 → tablero-galton, probeta (pendiente), granos-cafe (pendiente) · H09 → ladera-rocas, cabina-cable (pendiente), senal-vial (ya existía), camion-seguro (pendiente), muro-contencion (pendiente), saco-arena (ya existía), lupa (macro: /macro2026/ilustrados/lupa.webp) · H10 → espejo-pie, ficha-madera (ya existía) · H11 → libro-registro · H12 → silo. Archivos en `public/gestion-proyectos/ilustrados/<id>.webp` salvo los marcados «macro»; «pendiente» = aún sin imagen (la pieza usa la provisional).
+
 ## 4. Autoevaluación contra el Kit
 
 | Dimensión | Nivel esperado | Por qué |

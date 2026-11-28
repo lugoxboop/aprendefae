@@ -543,6 +543,8 @@ góndola · gato gerente funcional con casco de planta y lote en la mano · hám
 notas · hámster sosteniendo una cadena · perro PMO con credencial y linterna · hurón
 practicante señalando una hoja.
 
+**Ids de imagen (lote de imágenes 3):** H01 → gondola, capsula-basica, capsula-premium · H02 → estante-metalico, cubeta-apilable, factura · H03 → ascensor-carga · H04 → capsula-despiece · H05 → casilleros-casco · H06 → espina-pescado, nota-adhesiva · H07 → mesa-inspeccion, memorando-clip (ya existía), bandeja-capsulas, bloc-cuadriculado · H08 → selladora, baliza, caja-paquete (ya existía) · H09 → tablero-herramientas · H10 → credencial, linterna (ya existía), plano-planta · H11 → cadena-gancho, placa-metal, molino · H12 → muelle-despacho, estiba-cajas. Archivos en `public/gestion-proyectos/ilustrados/<id>.webp` salvo los marcados «macro»; «pendiente» = aún sin imagen (la pieza usa la provisional).
+
 ## 4. Autoevaluación contra el Kit
 
 | Dimensión | Nivel esperado | Por qué |

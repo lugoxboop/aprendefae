@@ -552,6 +552,8 @@ hámsters discutiendo junto a una tarima · gato junto a un candidato con carpet
 pidiendo cambiar pesos (señalando una hoja) · hurón con marcador frente a un rotafolio ·
 perro de brazos cruzados.
 
+**Ids de imagen (lote de imágenes 3):** H01 → recinto-ferial, bodega-repleta, tarima-armando, vasos-devueltos · H02 → credencial · H03 → tablero-magnetico, ficha-iman, nota-adhesiva · H04 → pendon, canasta, aguja-hilo · H05 → sumadora (ya existía) · H06 → rama-cafeto, cereza-roja, cereza-verde · H07 → hoja-catacion, vaso-cata, apreton-manos (pendiente), sobre-carta (ya existía), videollamada (pendiente), casco-electricista (ya existía), casco-obra (pendiente) · H08 → torre-truss, tablon (pendiente) · H09 → consola-mezcla · H10 → tarima-microfonos, escalones-madera · H11 → estiba-vasos, estiba-sillas (pendiente), estiba-hielo (pendiente), balanza-brazo (macro: /macro2026/ilustrados/balanza-brazo.webp), factura, estiba-vacia (pendiente) · H12 → rotafolio (ya existía), marcador. Archivos en `public/gestion-proyectos/ilustrados/<id>.webp` salvo los marcados «macro»; «pendiente» = aún sin imagen (la pieza usa la provisional).
+
 ## 4. Autoevaluación contra el Kit
 
 | Dimensión | Nivel esperado | Por qué |
