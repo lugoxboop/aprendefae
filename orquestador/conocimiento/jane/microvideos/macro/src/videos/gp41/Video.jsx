@@ -111,7 +111,7 @@ function MatrizEsc({ t }) {
     <Escena cam={cam} fondo="art/oficina.jpg" filtro="blur(7px)" velo={0.3}>
       <Cartel x={540} y={200} txt="matriz de probabilidad e impacto" p={pM} tam={42} fondo={MANGO} />
       <Matriz x={x0} y={y0} c={c} p={pM} t={t} fichas={[[0, 2, "🔥", rampa(t, M.alta7 - 0.2, 0.3)], [1, 0, "🌧️", rampa(t, M.media - 0.2, 0.3)]]} />
-      <div style={{ position: "absolute", left: x0 - 150, top: y0 + 280, width: 380, transform: "rotate(-90deg)", textAlign: "center", fontFamily: "Sora", fontWeight: 800, fontSize: 36, color: TINTA, opacity: pM }}>probabilidad ⬆️</div>
+      <div style={{ position: "absolute", left: x0 - 235, top: y0 + 290, width: 380, transform: "rotate(-90deg)", textAlign: "center", fontFamily: "Sora", fontWeight: 800, fontSize: 36, color: TINTA, opacity: pM }}>probabilidad ➡️</div>
       <div style={{ position: "absolute", left: x0, top: y0 + 3 * c + 40, width: 3 * c + 20, textAlign: "center", fontFamily: "Sora", fontWeight: 800, fontSize: 36, color: TINTA, opacity: pM }}>impacto ➡️</div>
       <Cartel x={540} y={1130} txt="🔥 horno viejo: prioridad alta" p={rampa(t, M.rojo - 0.4, 0.3)} tam={38} fondo="#FF9E9E" giro={-2} />
       <Cartel x={540} y={1240} txt="🌧️ llovizna: prioridad baja" p={rampa(t, M.verde - 0.4, 0.3)} tam={38} fondo="#C9EFD8" giro={2} />
