@@ -514,3 +514,69 @@ Fuente: G 6.1, 6.1.3.1, p. 179–182.
 11. Ahora te toca: convierte un paquete de trabajo de tu proyecto en actividades.
 
 Fuente: G 6.2, 6.2.3.1, 6.2.3.2, 6.2.3.3, p. 183–186.
+
+# Tanda 8 (GP-29 a GP-32)
+
+## GP-29 · ¿Coser sin tela? (G 6.3, 6.3.2.1, 6.3.2.2, 6.3.3.1, p. 187–194)
+
+1. Ramón quiere coser el toldo. Pero todavía no hay tela.
+2. Algunas actividades tienen que esperar a otras.
+3. Eso es secuenciar las actividades: identificar y documentar las relaciones entre ellas.
+4. La relación más común es de final a inicio: coser no puede empezar hasta que termine la compra de la tela.
+5. La que va antes se llama predecesora; la que va después, sucesora.
+6. Hay otras: de inicio a inicio, de final a final y, muy poco usada, de inicio a final.
+7. Algunas dependencias son obligatorias, por ley, por contrato o por la naturaleza del trabajo: sin tela, no hay costura.
+8. Otras son discrecionales: siguen las mejores prácticas, aunque haya otros órdenes aceptables.
+9. Y si la tela la trae un proveedor, además es externa: por lo general, está fuera del control del equipo.
+10. Todo queda en el diagrama de red del cronograma, que muestra gráficamente las relaciones entre las actividades.
+11. Ahora te toca: ordena las actividades de tu proyecto y dibuja sus relaciones.
+
+Fuente: G 6.3, 6.3.2.1, 6.3.2.2, 6.3.3.1, p. 187–194.
+
+## GP-30 · «Un rato» no es una duración (G 6.4, 6.4.2.2–6.4.2.5, 6.4.3.1, 6.4.3.2, p. 195–204)
+
+1. «¿Cuánto tarda coser el toldo?» Ramón responde: «Un rato».
+2. Con eso no se puede planear.
+3. Estimar la duración de las actividades es calcular cuántos períodos de trabajo necesita cada una, con los recursos estimados.
+4. Pía puede mirar un proyecto parecido: el toldo de otra sede tomó tres días. Es la estimación análoga.
+5. O usar una fórmula: si Ramón cose dos metros por día y son ocho metros, son cuatro días. Es la estimación paramétrica.
+6. O usar tres valores: optimista, dos días; más probable, tres; pesimista, siete. Con la distribución triangular, se esperan cuatro días.
+7. O, si no se puede estimar con confianza, partir la actividad en pedazos más pequeños y sumar sus duraciones. Es la estimación ascendente.
+8. El resultado es la estimación de la duración, que puede indicar un rango: por ejemplo, cuatro días, más o menos uno.
+9. Y la acompaña la base de las estimaciones: cómo se obtuvo, supuestos, restricciones, rango, nivel de confianza y riesgos.
+10. Así, cualquiera entiende de dónde salió el número.
+11. Ahora te toca: estima una actividad de tu proyecto con tres valores.
+
+Fuente: G 6.4, 6.4.2.2–6.4.2.5, 6.4.3.1, 6.4.3.2, p. 195–204.
+
+## GP-31 · La ruta que no da espera (G 6.5, 6.5.2.2, 6.5.3.1, 6.5.3.2, p. 205–221)
+
+1. El carrito debe estar listo el sábado. ¿Qué actividades no pueden atrasarse ni un día?
+2. Pía junta la secuencia, las duraciones, los recursos y las restricciones.
+3. Eso es desarrollar el cronograma: analizar todo eso para crear un modelo de programación con fechas planificadas.
+4. Hay dos caminos: el del toldo suma siete días; el de pintar el carrito, cuatro.
+5. El camino más largo es la ruta crítica: determina la menor duración posible del proyecto.
+6. Normalmente, su holgura total es cero: si una de sus actividades se atrasa, se atrasa el final.
+7. El camino de la pintura tiene tres días de holgura: puede demorarse sin mover la fecha de entrega.
+8. El resultado es el cronograma del proyecto: actividades con fechas, duraciones, hitos y recursos. Muchas veces se ve como un diagrama de barras, o de Gantt.
+9. La versión aprobada del modelo es la línea base del cronograma: solo cambia con control formal de cambios.
+10. Durante el proyecto, las fechas reales se comparan con ella para ver si hay desviaciones.
+11. Ahora te toca: encuentra la ruta crítica de tu proyecto.
+
+Fuente: G 6.5, 6.5.2.2, 6.5.3.1, 6.5.3.2, p. 205–221.
+
+## GP-32 · ¿Novecientos noventa y cinco o mil? (G 7.1, 7.1.3.1, p. 235–239)
+
+1. Ramón estima la tela en novecientos noventa y cinco con cincuenta y nueve; Carmen, en mil. ¿Quién tiene razón?
+2. Depende: nadie acordó cómo se iban a manejar los costos.
+3. Eso es planificar la gestión de los costos: definir cómo se van a estimar, presupuestar, gestionar, monitorear y controlar.
+4. El resultado es el plan de gestión de los costos.
+5. Define las unidades de medida de cada recurso, como metros u horas, y el nivel de precisión: cuánto se redondean las estimaciones.
+6. El nivel de exactitud: el rango aceptable, como más o menos diez por ciento.
+7. Los umbrales de control: cuánto se puede desviar el costo antes de tomar medidas.
+8. Las reglas para medir el desempeño, y el formato y la frecuencia de los informes de costos.
+9. Además, cada cuenta de control de la estructura de desglose del trabajo lleva un código único de la contabilidad de la organización.
+10. Es parte del plan para la dirección del proyecto.
+11. Ahora te toca: decide qué unidades y qué redondeo usarás para estimar los costos de tu proyecto.
+
+Fuente: G 7.1, 7.1.3.1, p. 235–239.

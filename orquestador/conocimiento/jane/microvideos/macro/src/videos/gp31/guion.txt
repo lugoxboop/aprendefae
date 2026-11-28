@@ -1,0 +1,11 @@
+El carrito debe estar listo el sábado. ¿Qué actividades no pueden atrasarse ni un día?
+Pía junta la secuencia, las duraciones, los recursos y las restricciones.
+Eso es desarrollar el cronograma: analizar todo eso para crear un modelo de programación con fechas planificadas.
+Hay dos caminos: el del toldo suma siete días; el de pintar el carrito, cuatro.
+El camino más largo es la ruta crítica: determina la menor duración posible del proyecto.
+Normalmente, su holgura total es cero: si una de sus actividades se atrasa, se atrasa el final.
+El camino de la pintura tiene tres días de holgura: puede demorarse sin mover la fecha de entrega.
+El resultado es el cronograma del proyecto: actividades con fechas, duraciones, hitos y recursos. Muchas veces se ve como un diagrama de barras, o de Gantt.
+La versión aprobada del modelo es la línea base del cronograma: solo cambia con control formal de cambios.
+Durante el proyecto, las fechas reales se comparan con ella para ver si hay desviaciones.
+Ahora te toca: encuentra la ruta crítica de tu proyecto.

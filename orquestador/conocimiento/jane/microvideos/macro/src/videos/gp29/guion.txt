@@ -1,0 +1,11 @@
+Ramón quiere coser el toldo. Pero todavía no hay tela.
+Algunas actividades tienen que esperar a otras.
+Eso es secuenciar las actividades: identificar y documentar las relaciones entre ellas.
+La relación más común es de final a inicio: coser no puede empezar hasta que termine la compra de la tela.
+La que va antes se llama predecesora; la que va después, sucesora.
+Hay otras: de inicio a inicio, de final a final y, muy poco usada, de inicio a final.
+Algunas dependencias son obligatorias, por ley, por contrato o por la naturaleza del trabajo: sin tela, no hay costura.
+Otras son discrecionales: siguen las mejores prácticas, aunque haya otros órdenes aceptables.
+Y si la tela la trae un proveedor, además es externa: por lo general, está fuera del control del equipo.
+Todo queda en el diagrama de red del cronograma, que muestra gráficamente las relaciones entre las actividades.
+Ahora te toca: ordena las actividades de tu proyecto y dibuja sus relaciones.

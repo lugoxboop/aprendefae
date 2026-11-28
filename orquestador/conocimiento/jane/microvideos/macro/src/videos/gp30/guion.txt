@@ -1,0 +1,11 @@
+«¿Cuánto tarda coser el toldo?» Ramón responde: «Un rato».
+Con eso no se puede planear.
+Estimar la duración de las actividades es calcular cuántos períodos de trabajo necesita cada una, con los recursos estimados.
+Pía puede mirar un proyecto parecido: el toldo de otra sede tomó tres días. Es la estimación análoga.
+O usar una fórmula: si Ramón cose dos metros por día y son ocho metros, son cuatro días. Es la estimación paramétrica.
+O usar tres valores: optimista, dos días; más probable, tres; pesimista, siete. Con la distribución triangular, se esperan cuatro días.
+O, si no se puede estimar con confianza, partir la actividad en pedazos más pequeños y sumar sus duraciones. Es la estimación ascendente.
+El resultado es la estimación de la duración, que puede indicar un rango: por ejemplo, cuatro días, más o menos uno.
+Y la acompaña la base de las estimaciones: cómo se obtuvo, supuestos, restricciones, rango, nivel de confianza y riesgos.
+Así, cualquiera entiende de dónde salió el número.
+Ahora te toca: estima una actividad de tu proyecto con tres valores.
