@@ -58,6 +58,10 @@ const VistaPreviaGestionProyectos = lazy(() => import("./gestion-proyectos/Vista
 const ArmaTuActa = lazy(() => import("./gestion-proyectos/simulador/ArmaTuActa.jsx"));
 /* Gestión de Proyectos, cada Hacer publicada: #/gestion-proyectos/hacer/<id> (el camino está en Materia.jsx). */
 const HacerGestionProyectos = lazy(() => import("./gestion-proyectos/Hacer.jsx"));
+/* Gestión de Proyectos como Macroeconomía (28-nov): índice de temas y cada tema con Aprender y Hacer. */
+const IndiceGestionProyectos = lazy(() => import("./gestion-proyectos/IndiceGP.jsx"));
+const TemaGestionProyectos = lazy(() => import("./gestion-proyectos/TemaGP.jsx"));
+const TEMAS_GP = new Set(["gp-fundamentos", "gp-inicio", "gp-planificacion", "gp-ejecucion", "gp-monitoreo-control", "gp-cierre"]);
 /* Macroeconomía 2026, lo publicado de cada tema: solo las piezas de PUBLICADAS_T1 / PUBLICADAS_T2. */
 const TemaMacro2026 = lazy(() => import("./macro2026/TemaMacro2026.jsx"));
 const RepasoMacroView = lazy(() => import("./macro2026/repaso/RepasoMacroView.jsx"));
@@ -84,7 +88,7 @@ const VISTAS_CONTABILIDAD = new Set([
 ]);
 
 /* Bruno no sale en el inicio, los índices de materia ni las páginas de cuenta: ahí no hay actividad que orientar. */
-const VISTAS_SIN_BRUNO = new Set(["home", "macroeconomia", "pensamiento-estrategico", "contabilidad", "docente", "que-es", "perfil", "tienda", "vivo", "vivo-profesor", "salas", "macro-2026", "gestion-proyectos"]);
+const VISTAS_SIN_BRUNO = new Set(["home", "macroeconomia", "pensamiento-estrategico", "contabilidad", "docente", "que-es", "perfil", "tienda", "vivo", "vivo-profesor", "salas", "macro-2026", "gestion-proyectos", "gp-fundamentos", "gp-inicio", "gp-planificacion", "gp-ejecucion", "gp-monitoreo-control", "gp-cierre"]);
 const VISTAS_PE = new Set(["pensamiento-sistemico", "modelo-iceberg", "fuerzas-porter"]);
 const materiaDeVista = (v) => (VISTAS_CONTABILIDAD.has(v) || v === "repaso-diario-contabilidad" ? "Contabilidad" : VISTAS_PE.has(v) ? "Pensamiento Estratégico" : "Macroeconomía");
 
@@ -229,15 +233,39 @@ export default function App() {
 
   if (view === "gestion-proyectos") {
     const volverAGestion = () => navegar("gestion-proyectos");
+    /* Al volver de un reto se cae en su tema, en la mitad Hacer y en su capítulo. */
+    const volverDelReto = (pieza) => (pieza?.moduloId
+      ? navegar(pieza.moduloId, "hacer", { extra: pieza.capitulo ? `cap-${pieza.capitulo}` : null })
+      : volverAGestion());
     return wrap(
       <Suspense fallback={siteFallback}>
         {ruta.modo === "hacer" && ruta.extra
-          ? <HacerGestionProyectos key={ruta.extra} extra={ruta.extra} onBack={volverAGestion} />
+          ? <HacerGestionProyectos key={ruta.extra} extra={ruta.extra} onBack={volverDelReto} />
           : ruta.extra === "previa"
             ? <VistaPreviaGestionProyectos onBack={goHome} />
             : ruta.extra === "acta"
-              ? <ArmaTuActa onBack={volverAGestion} />
-              : <MateriaGestionProyectos onBack={goHome} onAbrirHacer={(id) => navegar("gestion-proyectos", "hacer", { extra: id })} onSimulador={() => navegar("gestion-proyectos", null, { extra: "acta" })} />}
+              ? <ArmaTuActa onBack={() => navegar("gp-inicio", "aprender")} />
+              : ruta.extra === "pagina"
+                /* La página única de antes (27-nov), por dirección: no se borra. */
+                ? <MateriaGestionProyectos onBack={goHome} onAbrirHacer={(id) => navegar("gestion-proyectos", "hacer", { extra: id })} onSimulador={() => navegar("gestion-proyectos", null, { extra: "acta" })} />
+                : <IndiceGestionProyectos onOpenTopic={abrirTema} />}
+      </Suspense>
+    );
+  }
+
+  if (TEMAS_GP.has(view)) {
+    return wrap(
+      <Suspense fallback={siteFallback}>
+        <TemaGestionProyectos
+          key={view}
+          moduloId={view}
+          modo={modoTema}
+          extra={ruta.extra}
+          onBack={() => navegar("gestion-proyectos")}
+          onIr={(vista, modo, extra = null) => navegar(vista, modo, { extra })}
+          onAbrirReto={(id) => navegar("gestion-proyectos", "hacer", { extra: id })}
+          onSimulador={() => navegar("gestion-proyectos", null, { extra: "acta" })}
+        />
       </Suspense>
     );
   }

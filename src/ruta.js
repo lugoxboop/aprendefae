@@ -107,6 +107,16 @@ export const VISTAS = new Set([
    */
   "gestion-proyectos",
   /*
+   * Gestión de Proyectos, cada tema con sus dos mitades (TemaGP.jsx, 28-nov,
+   * como Macroeconomía): #/<módulo>/aprender[/<id>] y #/<módulo>/hacer[/cap-N].
+   */
+  "gp-fundamentos",
+  "gp-inicio",
+  "gp-planificacion",
+  "gp-ejecucion",
+  "gp-monitoreo-control",
+  "gp-cierre",
+  /*
    * Macroeconomía 2026, lo PUBLICADO (src/macro2026/TemaMacro2026.jsx): las
    * piezas de PUBLICADAS_T1 a PUBLICADAS_T5. #/<tema>/aprender[/<id>] y
    * #/<tema>/hacer[/<id>].

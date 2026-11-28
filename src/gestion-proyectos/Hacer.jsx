@@ -28,6 +28,7 @@ import { INK } from "../macro2026/comun/colores-da.js";
 import FondoGP from "./comun/FondoGP.jsx";
 import { MATERIA } from "./estructura.js";
 import { PIEZAS, estaPublicada, todasLasPiezas } from "./catalogo.js";
+import { capituloDePieza } from "./temas.js";
 
 /* Qué componente pinta cada id. Una pieza sin componente aquí no se abre. */
 export const COMPONENTES_GP = {
@@ -282,7 +283,7 @@ export default function HacerGP({ extra = null, onBack }) {
     <FondoGP style={{ color: INK }}>
       <Raiz data-gp-hacer={pieza.id}>
         <div style={{ padding: "16px 16px 56px", maxWidth: 672, margin: "0 auto" }}>
-          <Reto key={pieza.id} pieza={pieza} onVolver={onBack} />
+          <Reto key={pieza.id} pieza={pieza} onVolver={() => onBack?.({ moduloId: pieza.moduloId, capitulo: capituloDePieza(pieza) })} />
         </div>
       </Raiz>
     </FondoGP>

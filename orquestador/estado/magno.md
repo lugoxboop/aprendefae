@@ -1,3 +1,3 @@
-2026-11-27 14:41
+2026-11-27 22:52
 
-- Gestión de Proyectos: esqueleto cotejado con la guía V6 (PR #787, oculto). Falta solo el syllabus.
+- Gestión de Proyectos con la estructura de Macro: PR abierto, espera visto bueno de Mateo.
