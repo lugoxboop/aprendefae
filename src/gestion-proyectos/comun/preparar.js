@@ -29,6 +29,14 @@
  * 6 que van y 2 que no, siempre la «autorización formal») y `alMenosUno`
  * (c09 H08: siempre una escena de retroceso o estancamiento).
  *
+ * Lote 6 (caps. 11 y 12): una etapa «clasificar» con `destinosDePartida`
+ * muestra solo los destinos de los ítems que salieron (c11 H01: las seis
+ * pestañas de las seis tarjetas sorteadas; c11 H04 y H06 igual). Un paso
+ * «decidir» con `apuesta` es predecir y revelar sin puntaje (c11 H08): vale
+ * 0 ítems. Un «ordenar» con `porValor` acepta empates y nombra el par que
+ * quedó invertido con sus cifras (c11 H05); con `puntuaPosiciones` vale un
+ * ítem por posición (c12 H12: «pasos en su posición / 10»).
+ *
  * Un paso «decidir» = { tipo, id, texto, contexto?, consigna?, destinos,
  * clave, retros | retro, retroComun?, subtemas }: un ítem que se lleva a un
  * destino. Es la mecánica de casi todo: clasificar en cinta, sellar, conectar
@@ -176,7 +184,9 @@ export const despuesDe = (etapa) => (etapa.despues ? [].concat(etapa.despues) : 
 export function prepararEtapa(etapa, rng = Math.random) {
   switch (etapa.tipo) {
     case "clasificar": {
-      const pasos = partidaDe(etapa, rng).map((x) => decidir(x, etapa));
+      const sale = partidaDe(etapa, rng);
+      const ds = etapa.destinosDePartida ? etapa.destinos.filter((d) => sale.some((x) => x.clave === d.id)) : null;
+      const pasos = sale.map((x) => decidir(x, etapa, ds ? { destinos: ds } : {}));
       /* `despues`: un paso o (lote 2) una lista de pasos, en orden. */
       for (const d of despuesDe(etapa)) pasos.push(d.tipo === "ordenar" ? ordenarDe(d, rng) : conDestinos(decidir(d, etapa), rng));
       return { consigna: etapa.consigna, pasos };
@@ -205,9 +215,10 @@ export const prepararPieza = (pieza, rng = Math.random) => pieza.etapas.map((e) 
 /* Cuántos ítems puntúa un paso (la base del porcentaje). */
 export function itemsDePaso(paso) {
   if (paso.tipo === "explorar") return 0;
+  if (paso.tipo === "decidir" && paso.apuesta) return 0;
   if (paso.tipo === "decidir" || paso.tipo === "casillas") return 1;
   if (paso.tipo === "emparejar") return paso.rieles.length;
-  if (paso.tipo === "ordenar") return paso.puntuaPares ? paso.items.length - 1 : 1;
+  if (paso.tipo === "ordenar") return paso.puntuaPosiciones ? paso.items.length : paso.puntuaPares ? paso.items.length - 1 : 1;
   if (paso.tipo === "memorando") return paso.partida.conError;
   if (paso.tipo === "dial") return paso.retos.length;
   return 0;
@@ -226,6 +237,8 @@ export function itemsDePieza(pieza) {
     for (const p of paresDe(m)) { const [a, b] = p.split("-"); out[`${m.id}:${p}`] = `Orden: ${t(a)} → ${t(b)}`; }
     /* Lote 5: un orden que vale un solo ítem (sin `puntuaPares`) manda el id del paso. */
     if (!m.puntuaPares) out[m.id] = `Orden: ${m.items.map((x) => x.texto).join(" → ")}`;
+    /* Lote 6: un orden por posiciones manda «<paso>:<ítem>» por cada tarjeta. */
+    if (m.puntuaPosiciones) m.items.forEach((x, k) => { out[`${m.id}:${x.id}`] = `Posición ${k + 1}: ${x.texto}`; });
   };
   for (const e of pieza.etapas) {
     if (e.tipo === "clasificar") {

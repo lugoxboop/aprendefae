@@ -12,6 +12,16 @@
  * arriba (la torre del presupuesto, los pisos del ascensor): el hueco 1 queda
  * abajo. `escena.encimaOrden({ puestas, bien, paso })` pinta lo propio de la
  * pieza (la polea, el ascensor, la cadena) sobre la línea.
+ *
+ * Lote 6 (caps. 11 y 12):
+ *   porValor          cada ítem trae `valor` y van de mayor a menor; dos con
+ *                     el mismo valor pueden ir en cualquier orden (c11 H05,
+ *                     0,05 y 0,05). La retro nombra el primer par invertido con
+ *                     sus cifras (`retroOrden`, con {A} {pA} {B} {pB}), salvo
+ *                     que el par tenga la suya en `retrosOrden` («a-b»).
+ *   puntuaPosiciones  un ítem por tarjeta: vale si quedó en su posición al
+ *                     primer intento (c12 H12).
+ *   Con `retrosPar`, la retro es la del primer par invertido que tenga una.
  */
 import { useRef, useState } from "react";
 import { Boton, Retro } from "../../../macro2026/comun/ui.jsx";
@@ -42,14 +52,19 @@ export default function Ordenar({ paso, escena = {}, alTerminar }) {
   const libres = paso.mezcla.filter((x) => !puestas.includes(x.id));
   const texto = (id) => paso.items.find((x) => x.id === id).texto;
 
+  const valor = (id) => paso.items.find((x) => x.id === id).valor;
+  /* ¿La tarjeta puesta en k es la que va ahí? (con porValor, cualquiera del mismo valor) */
+  const vaEn = (id, k) => (paso.porValor ? valor(id) === paso.items[k].valor : paso.items[k].id === id);
   const comprobar = () => {
     const pos = Object.fromEntries(puestas.map((id, k) => [id, k]));
     const okPar = pares.map((p) => { const [a, b] = p.split("-"); return pos[a] < pos[b]; });
-    const todo = puestas.every((id, k) => paso.items[k].id === id);
+    const todo = puestas.every((id, k) => vaEn(id, k));
     if (intento === 1) {
-      detalle.current = paso.puntuaPares
-        ? pares.map((p, k) => ({ item: `${paso.id}:${p}`, ok: okPar[k], subtemas: paso.subtemas ?? null }))
-        : [{ item: paso.id, ok: todo, subtemas: paso.subtemas ?? null }];
+      detalle.current = paso.puntuaPosiciones
+        ? paso.items.map((x, k) => ({ item: `${paso.id}:${x.id}`, ok: vaEn(puestas[k], k), subtemas: paso.subtemas ?? null }))
+        : paso.puntuaPares
+          ? pares.map((p, k) => ({ item: `${paso.id}:${p}`, ok: okPar[k], subtemas: paso.subtemas ?? null }))
+          : [{ item: paso.id, ok: todo, subtemas: paso.subtemas ?? null }];
     }
     if (todo) {
       setBien(true);
@@ -57,9 +72,19 @@ export default function Ordenar({ paso, escena = {}, alTerminar }) {
       setTimeout(() => alTerminar({ detalle: detalle.current, puntos: detalle.current.filter((d) => d.ok).length }), 1100);
       return;
     }
-    const fallo = pares.find((p, k) => !okPar[k]);
-    setRetro(paso.retrosPar?.[fallo] ?? paso.retro ?? null);
-    setMalos(new Set(puestas.filter((id, k) => paso.items[k].id !== id)));
+    if (paso.porValor) {
+      const k = puestas.findIndex((id, i) => i + 1 < puestas.length && valor(id) < valor(puestas[i + 1]));
+      const [a, b] = [puestas[k], puestas[k + 1]];
+      const nombre = (id) => paso.items.find((x) => x.id === id).corto ?? texto(id);
+      const cifra = (id) => String(valor(id)).replace(".", ",");
+      setRetro(paso.retrosOrden?.[`${a}-${b}`] ?? paso.retrosOrden?.[`${b}-${a}`]
+        ?? (paso.retroOrden ?? "").replace("{A}", nombre(a)).replace("{pA}", cifra(a)).replace("{B}", nombre(b)).replace("{pB}", cifra(b)));
+    } else {
+      const fallos = pares.filter((p, k) => !okPar[k]);
+      const fallo = fallos.find((p) => paso.retrosPar?.[p]) ?? fallos[0];
+      setRetro(paso.retrosPar?.[fallo] ?? paso.retro ?? null);
+    }
+    setMalos(new Set(puestas.filter((id, k) => !vaEn(id, k))));
     setGolpes((g) => g + 1);
     setIntento(2);
   };
