@@ -217,3 +217,14 @@
 - Transcripción gp39-plan-riesgos: 157 palabras.
 - Narración gp40-identificar-riesgos: lista con eleven_v3 (946 caracteres).
 - Transcripción gp40-identificar-riesgos: 155 palabras.
+
+## 2026-11-28T01:17:10.491Z
+- Cupo: plan creator, 43346 de 122261 créditos usados.
+- Narración gp41-cualitativo: lista con eleven_v3 (939 caracteres).
+- Transcripción gp41-cualitativo: 156 palabras.
+- Narración gp42-cuantitativo: lista con eleven_v3 (968 caracteres).
+- Transcripción gp42-cuantitativo: 159 palabras.
+- Narración gp43-respuestas: lista con eleven_v3 (997 caracteres).
+- Transcripción gp43-respuestas: 156 palabras.
+- Narración gp44-adquisiciones: lista con eleven_v3 (990 caracteres).
+- Transcripción gp44-adquisiciones: 160 palabras.

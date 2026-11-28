@@ -1,0 +1,785 @@
+{
+ "texto": "El horno viejo está en rojo. ¿Qué hace Pía? ¿Lo cambia, lo asegura, lo repara o espera? Cada opción es una respuesta distinta. Planificar la respuesta a los riesgos es desarrollar opciones, seleccionar estrategias y acordar acciones para tratar los riesgos. Para las amenazas hay cinco estrategias: evitar, eliminar la amenaza, por ejemplo, cambiar el horno; transferir, pasársela a un tercero, como un seguro; mitigar, reducir su probabilidad o su impacto con mantenimiento; aceptar, reconocerla sin tomar medidas por adelantado; y escalar, si no le toca al proyecto. Para las oportunidades también hay cinco: explotar, compartir, mejorar, aceptar y escalar. Si los invitan a otra feria, explotar es asegurarse de poder ir. Algunas respuestas solo se activan si pasa algo. Son planes de contingencia con su evento desencadenante. Cada respuesta tiene un dueño y se anota en el registro de riesgos. Ahora te toca. Elige una estrategia para tu mayor amenaza y para tu mejor oportunidad.",
+ "palabras": [
+  {
+   "w": "El",
+   "ini": 0.08,
+   "fin": 0.16
+  },
+  {
+   "w": "horno",
+   "ini": 0.18,
+   "fin": 0.44
+  },
+  {
+   "w": "viejo",
+   "ini": 0.5,
+   "fin": 1.02
+  },
+  {
+   "w": "está",
+   "ini": 1.12,
+   "fin": 1.36
+  },
+  {
+   "w": "en",
+   "ini": 1.42,
+   "fin": 1.52
+  },
+  {
+   "w": "rojo.",
+   "ini": 1.6,
+   "fin": 1.9
+  },
+  {
+   "w": "¿Qué",
+   "ini": 2.52,
+   "fin": 2.66
+  },
+  {
+   "w": "hace",
+   "ini": 2.7,
+   "fin": 2.96
+  },
+  {
+   "w": "Pía?",
+   "ini": 3.02,
+   "fin": 3.24
+  },
+  {
+   "w": "¿Lo",
+   "ini": 3.7,
+   "fin": 3.8
+  },
+  {
+   "w": "cambia,",
+   "ini": 3.9,
+   "fin": 4.22
+  },
+  {
+   "w": "lo",
+   "ini": 4.68,
+   "fin": 4.74
+  },
+  {
+   "w": "asegura,",
+   "ini": 4.8,
+   "fin": 5.24
+  },
+  {
+   "w": "lo",
+   "ini": 5.72,
+   "fin": 5.8
+  },
+  {
+   "w": "repara",
+   "ini": 5.88,
+   "fin": 6.7
+  },
+  {
+   "w": "o",
+   "ini": 6.78,
+   "fin": 6.86
+  },
+  {
+   "w": "espera?",
+   "ini": 6.94,
+   "fin": 7.3
+  },
+  {
+   "w": "Cada",
+   "ini": 8.66,
+   "fin": 8.84
+  },
+  {
+   "w": "opción",
+   "ini": 8.9,
+   "fin": 9.46
+  },
+  {
+   "w": "es",
+   "ini": 9.54,
+   "fin": 9.64
+  },
+  {
+   "w": "una",
+   "ini": 9.72,
+   "fin": 9.84
+  },
+  {
+   "w": "respuesta",
+   "ini": 9.92,
+   "fin": 10.48
+  },
+  {
+   "w": "distinta.",
+   "ini": 10.54,
+   "fin": 11.12
+  },
+  {
+   "w": "Planificar",
+   "ini": 12.2,
+   "fin": 12.74
+  },
+  {
+   "w": "la",
+   "ini": 12.78,
+   "fin": 12.84
+  },
+  {
+   "w": "respuesta",
+   "ini": 12.9,
+   "fin": 13.42
+  },
+  {
+   "w": "a",
+   "ini": 13.46,
+   "fin": 13.48
+  },
+  {
+   "w": "los",
+   "ini": 13.54,
+   "fin": 13.68
+  },
+  {
+   "w": "riesgos",
+   "ini": 13.76,
+   "fin": 14.32
+  },
+  {
+   "w": "es",
+   "ini": 14.42,
+   "fin": 14.52
+  },
+  {
+   "w": "desarrollar",
+   "ini": 14.54,
+   "fin": 15.04
+  },
+  {
+   "w": "opciones,",
+   "ini": 15.1,
+   "fin": 15.62
+  },
+  {
+   "w": "seleccionar",
+   "ini": 16,
+   "fin": 16.5
+  },
+  {
+   "w": "estrategias",
+   "ini": 16.54,
+   "fin": 17.38
+  },
+  {
+   "w": "y",
+   "ini": 17.46,
+   "fin": 17.52
+  },
+  {
+   "w": "acordar",
+   "ini": 17.58,
+   "fin": 17.94
+  },
+  {
+   "w": "acciones",
+   "ini": 17.98,
+   "fin": 18.52
+  },
+  {
+   "w": "para",
+   "ini": 18.58,
+   "fin": 18.76
+  },
+  {
+   "w": "tratar",
+   "ini": 18.82,
+   "fin": 19.16
+  },
+  {
+   "w": "los",
+   "ini": 19.22,
+   "fin": 19.38
+  },
+  {
+   "w": "riesgos.",
+   "ini": 19.46,
+   "fin": 19.92
+  },
+  {
+   "w": "Para",
+   "ini": 21,
+   "fin": 21.12
+  },
+  {
+   "w": "las",
+   "ini": 21.16,
+   "fin": 21.28
+  },
+  {
+   "w": "amenazas",
+   "ini": 21.34,
+   "fin": 21.94
+  },
+  {
+   "w": "hay",
+   "ini": 22,
+   "fin": 22.2
+  },
+  {
+   "w": "cinco",
+   "ini": 22.28,
+   "fin": 22.58
+  },
+  {
+   "w": "estrategias:",
+   "ini": 22.66,
+   "fin": 23.38
+  },
+  {
+   "w": "evitar,",
+   "ini": 24.26,
+   "fin": 24.68
+  },
+  {
+   "w": "eliminar",
+   "ini": 25.38,
+   "fin": 25.88
+  },
+  {
+   "w": "la",
+   "ini": 25.94,
+   "fin": 26
+  },
+  {
+   "w": "amenaza,",
+   "ini": 26.06,
+   "fin": 26.52
+  },
+  {
+   "w": "por",
+   "ini": 26.84,
+   "fin": 26.92
+  },
+  {
+   "w": "ejemplo,",
+   "ini": 26.98,
+   "fin": 27.38
+  },
+  {
+   "w": "cambiar",
+   "ini": 27.64,
+   "fin": 28
+  },
+  {
+   "w": "el",
+   "ini": 28.04,
+   "fin": 28.12
+  },
+  {
+   "w": "horno;",
+   "ini": 28.14,
+   "fin": 28.42
+  },
+  {
+   "w": "transferir,",
+   "ini": 29.44,
+   "fin": 30.04
+  },
+  {
+   "w": "pasársela",
+   "ini": 30.8,
+   "fin": 31.44
+  },
+  {
+   "w": "a",
+   "ini": 31.52,
+   "fin": 31.58
+  },
+  {
+   "w": "un",
+   "ini": 31.64,
+   "fin": 31.72
+  },
+  {
+   "w": "tercero,",
+   "ini": 31.78,
+   "fin": 32.18
+  },
+  {
+   "w": "como",
+   "ini": 32.439,
+   "fin": 32.659
+  },
+  {
+   "w": "un",
+   "ini": 32.7,
+   "fin": 32.78
+  },
+  {
+   "w": "seguro;",
+   "ini": 32.84,
+   "fin": 33.18
+  },
+  {
+   "w": "mitigar,",
+   "ini": 34.38,
+   "fin": 34.9
+  },
+  {
+   "w": "reducir",
+   "ini": 35.68,
+   "fin": 36.1
+  },
+  {
+   "w": "su",
+   "ini": 36.16,
+   "fin": 36.26
+  },
+  {
+   "w": "probabilidad",
+   "ini": 36.3,
+   "fin": 37.08
+  },
+  {
+   "w": "o",
+   "ini": 37.14,
+   "fin": 37.2
+  },
+  {
+   "w": "su",
+   "ini": 37.26,
+   "fin": 37.34
+  },
+  {
+   "w": "impacto",
+   "ini": 37.38,
+   "fin": 37.88
+  },
+  {
+   "w": "con",
+   "ini": 38.18,
+   "fin": 38.3
+  },
+  {
+   "w": "mantenimiento;",
+   "ini": 38.34,
+   "fin": 39.08
+  },
+  {
+   "w": "aceptar,",
+   "ini": 40.24,
+   "fin": 40.78
+  },
+  {
+   "w": "reconocerla",
+   "ini": 41.54,
+   "fin": 42.4
+  },
+  {
+   "w": "sin",
+   "ini": 42.5,
+   "fin": 42.66
+  },
+  {
+   "w": "tomar",
+   "ini": 42.72,
+   "fin": 42.98
+  },
+  {
+   "w": "medidas",
+   "ini": 43.04,
+   "fin": 43.5
+  },
+  {
+   "w": "por",
+   "ini": 43.54,
+   "fin": 43.66
+  },
+  {
+   "w": "adelantado;",
+   "ini": 43.7,
+   "fin": 44.32
+  },
+  {
+   "w": "y",
+   "ini": 45.14,
+   "fin": 45.2
+  },
+  {
+   "w": "escalar,",
+   "ini": 45.28,
+   "fin": 45.78
+  },
+  {
+   "w": "si",
+   "ini": 46.18,
+   "fin": 46.28
+  },
+  {
+   "w": "no",
+   "ini": 46.34,
+   "fin": 46.42
+  },
+  {
+   "w": "le",
+   "ini": 46.46,
+   "fin": 46.58
+  },
+  {
+   "w": "toca",
+   "ini": 46.64,
+   "fin": 46.86
+  },
+  {
+   "w": "al",
+   "ini": 46.9,
+   "fin": 46.98
+  },
+  {
+   "w": "proyecto.",
+   "ini": 47.02,
+   "fin": 47.54
+  },
+  {
+   "w": "Para",
+   "ini": 48.64,
+   "fin": 48.8
+  },
+  {
+   "w": "las",
+   "ini": 48.84,
+   "fin": 48.96
+  },
+  {
+   "w": "oportunidades",
+   "ini": 49.02,
+   "fin": 49.78
+  },
+  {
+   "w": "también",
+   "ini": 49.84,
+   "fin": 50.2
+  },
+  {
+   "w": "hay",
+   "ini": 50.22,
+   "fin": 50.36
+  },
+  {
+   "w": "cinco:",
+   "ini": 50.42,
+   "fin": 50.76
+  },
+  {
+   "w": "explotar,",
+   "ini": 51.32,
+   "fin": 51.92
+  },
+  {
+   "w": "compartir,",
+   "ini": 52.32,
+   "fin": 52.92
+  },
+  {
+   "w": "mejorar,",
+   "ini": 53.5,
+   "fin": 53.96
+  },
+  {
+   "w": "aceptar",
+   "ini": 54.5,
+   "fin": 55.04
+  },
+  {
+   "w": "y",
+   "ini": 55.38,
+   "fin": 55.44
+  },
+  {
+   "w": "escalar.",
+   "ini": 55.52,
+   "fin": 55.98
+  },
+  {
+   "w": "Si",
+   "ini": 57.32,
+   "fin": 57.4
+  },
+  {
+   "w": "los",
+   "ini": 57.46,
+   "fin": 57.56
+  },
+  {
+   "w": "invitan",
+   "ini": 57.62,
+   "fin": 57.98
+  },
+  {
+   "w": "a",
+   "ini": 58.02,
+   "fin": 58.06
+  },
+  {
+   "w": "otra",
+   "ini": 58.12,
+   "fin": 58.3
+  },
+  {
+   "w": "feria,",
+   "ini": 58.36,
+   "fin": 58.68
+  },
+  {
+   "w": "explotar",
+   "ini": 58.98,
+   "fin": 59.68
+  },
+  {
+   "w": "es",
+   "ini": 59.74,
+   "fin": 59.84
+  },
+  {
+   "w": "asegurarse",
+   "ini": 59.9,
+   "fin": 60.52
+  },
+  {
+   "w": "de",
+   "ini": 60.56,
+   "fin": 60.62
+  },
+  {
+   "w": "poder",
+   "ini": 60.7,
+   "fin": 60.96
+  },
+  {
+   "w": "ir.",
+   "ini": 61.04,
+   "fin": 61.16
+  },
+  {
+   "w": "Algunas",
+   "ini": 62.04,
+   "fin": 62.42
+  },
+  {
+   "w": "respuestas",
+   "ini": 62.48,
+   "fin": 63.1
+  },
+  {
+   "w": "solo",
+   "ini": 63.26,
+   "fin": 63.46
+  },
+  {
+   "w": "se",
+   "ini": 63.5,
+   "fin": 63.54
+  },
+  {
+   "w": "activan",
+   "ini": 63.58,
+   "fin": 63.98
+  },
+  {
+   "w": "si",
+   "ini": 64.04,
+   "fin": 64.16
+  },
+  {
+   "w": "pasa",
+   "ini": 64.2,
+   "fin": 64.42
+  },
+  {
+   "w": "algo.",
+   "ini": 64.48,
+   "fin": 64.739
+  },
+  {
+   "w": "Son",
+   "ini": 65.319,
+   "fin": 65.48
+  },
+  {
+   "w": "planes",
+   "ini": 65.5,
+   "fin": 65.8
+  },
+  {
+   "w": "de",
+   "ini": 65.82,
+   "fin": 65.9
+  },
+  {
+   "w": "contingencia",
+   "ini": 65.94,
+   "fin": 66.72
+  },
+  {
+   "w": "con",
+   "ini": 66.88,
+   "fin": 67
+  },
+  {
+   "w": "su",
+   "ini": 67.06,
+   "fin": 67.14
+  },
+  {
+   "w": "evento",
+   "ini": 67.18,
+   "fin": 67.54
+  },
+  {
+   "w": "desencadenante.",
+   "ini": 67.58,
+   "fin": 68.44
+  },
+  {
+   "w": "Cada",
+   "ini": 69.4,
+   "fin": 69.6
+  },
+  {
+   "w": "respuesta",
+   "ini": 69.68,
+   "fin": 70.28
+  },
+  {
+   "w": "tiene",
+   "ini": 70.36,
+   "fin": 70.54
+  },
+  {
+   "w": "un",
+   "ini": 70.58,
+   "fin": 70.64
+  },
+  {
+   "w": "dueño",
+   "ini": 70.68,
+   "fin": 71.02
+  },
+  {
+   "w": "y",
+   "ini": 71.3,
+   "fin": 71.34
+  },
+  {
+   "w": "se",
+   "ini": 71.42,
+   "fin": 71.48
+  },
+  {
+   "w": "anota",
+   "ini": 71.52,
+   "fin": 71.82
+  },
+  {
+   "w": "en",
+   "ini": 71.84,
+   "fin": 71.9
+  },
+  {
+   "w": "el",
+   "ini": 71.94,
+   "fin": 72.02
+  },
+  {
+   "w": "registro",
+   "ini": 72.08,
+   "fin": 72.6
+  },
+  {
+   "w": "de",
+   "ini": 72.64,
+   "fin": 72.72
+  },
+  {
+   "w": "riesgos.",
+   "ini": 72.8,
+   "fin": 73.34
+  },
+  {
+   "w": "Ahora",
+   "ini": 74.46,
+   "fin": 74.72
+  },
+  {
+   "w": "te",
+   "ini": 74.78,
+   "fin": 74.86
+  },
+  {
+   "w": "toca.",
+   "ini": 74.94,
+   "fin": 75.24
+  },
+  {
+   "w": "Elige",
+   "ini": 75.88,
+   "fin": 76.18
+  },
+  {
+   "w": "una",
+   "ini": 76.22,
+   "fin": 76.32
+  },
+  {
+   "w": "estrategia",
+   "ini": 76.34,
+   "fin": 76.98
+  },
+  {
+   "w": "para",
+   "ini": 77.02,
+   "fin": 77.16
+  },
+  {
+   "w": "tu",
+   "ini": 77.22,
+   "fin": 77.3
+  },
+  {
+   "w": "mayor",
+   "ini": 77.34,
+   "fin": 77.6
+  },
+  {
+   "w": "amenaza",
+   "ini": 77.64,
+   "fin": 78.26
+  },
+  {
+   "w": "y",
+   "ini": 78.32,
+   "fin": 78.36
+  },
+  {
+   "w": "para",
+   "ini": 78.44,
+   "fin": 78.6
+  },
+  {
+   "w": "tu",
+   "ini": 78.64,
+   "fin": 78.74
+  },
+  {
+   "w": "mejor",
+   "ini": 78.78,
+   "fin": 79.08
+  },
+  {
+   "w": "oportunidad.",
+   "ini": 79.12,
+   "fin": 79.88
+  }
+ ]
+}
