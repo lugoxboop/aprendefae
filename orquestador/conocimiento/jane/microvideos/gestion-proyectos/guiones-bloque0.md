@@ -428,7 +428,7 @@ Fuente: G 4.2, 4.2.3.1, p. 82–89; Glosario, «Plan para la Dirección del Proy
 7. cómo se aprobará la línea base del alcance y cómo se aceptarán formalmente los entregables.
 8. Y tiene un compañero: el plan de gestión de los requisitos.
 9. Ese dice cómo se analizarán, documentarán y gestionarán los requisitos: cómo se priorizan y quién autoriza los cambios.
-10. Los dos son parte del plan para la dirección del proyecto, y pueden ser formales o informales, según lo que se necesite.
+10. Los dos son parte del plan para la dirección del proyecto. Y el del alcance puede ser formal o informal, según lo que se necesite.
 11. Ahora te toca: escribe cómo se aceptarán los entregables de tu proyecto.
 
 Fuente: G 5.1, 5.1.3.1, 5.1.3.2, p. 134–137.

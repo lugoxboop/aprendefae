@@ -7,5 +7,5 @@ cómo se creará, a partir de él, la estructura de desglose del trabajo,
 cómo se aprobará la línea base del alcance y cómo se aceptarán formalmente los entregables.
 Y tiene un compañero: el plan de gestión de los requisitos.
 Ese dice cómo se analizarán, documentarán y gestionarán los requisitos: cómo se priorizan y quién autoriza los cambios.
-Los dos son parte del plan para la dirección del proyecto, y pueden ser formales o informales, según lo que se necesite.
+Los dos son parte del plan para la dirección del proyecto. Y el del alcance puede ser formal o informal, según lo que se necesite.
 Ahora te toca: escribe cómo se aceptarán los entregables de tu proyecto.

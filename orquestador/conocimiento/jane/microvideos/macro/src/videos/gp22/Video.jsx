@@ -106,11 +106,11 @@ function CarpetaEsc({ t }) {
   return (
     <Escena cam={cam} fondo="art/oficina.jpg" filtro="blur(7px)" velo={0.3}>
       <Destello x={540} y={700} r={420} p={rampa(t, M.plan4 - 0.2, 0.8)} />
-      <Carpeta x={540} y={300} w={940} h={980} p={rampa(t, M.plan4 - 0.5, 0.45)}>
+      <Carpeta x={540} y={300} w={940} h={860} p={rampa(t, M.plan4 - 0.5, 0.45)}>
         <div style={{ position: "absolute", left: 60, top: 180, fontFamily: "Sora", fontWeight: 800, fontSize: 40, color: AZUL, opacity: rampa(t, M.integra - 0.3, 0.35) }}>📚 planes de gestión</div>
-        {PLANES.map(([fw, txt], k) => <Chip key={k} x={60 + (k % 3) * 280} y={250 + Math.floor(k / 3) * 100} txt={txt} p={rampa(t, fw() - 0.35, 0.3)} />)}
-        <div style={{ position: "absolute", left: 60, top: 490, fontFamily: "Sora", fontWeight: 800, fontSize: 40, color: COLOR.VERDE, opacity: rampa(t, M.lineas - 0.3, 0.35) }}>📏 líneas base</div>
-        {BASES.map(([fw, txt], k) => <Chip key={k} x={60 + k * 280} y={560} txt={txt} p={rampa(t, fw() - 0.35, 0.3)} fondo="#E3F6EC" />)}
+        {PLANES.map(([fw, txt], k) => <Chip key={k} x={70 + (k % 2) * 420} y={250 + Math.floor(k / 2) * 115} txt={txt} p={rampa(t, fw() - 0.35, 0.3)} tam={48} />)}
+        <div style={{ position: "absolute", left: 60, top: 620, fontFamily: "Sora", fontWeight: 800, fontSize: 40, color: COLOR.VERDE, opacity: rampa(t, M.lineas - 0.3, 0.35) }}>📏 líneas base</div>
+        {BASES.map(([fw, txt], k) => <Chip key={k} x={[60, 290, 640][k]} y={690} txt={txt} p={rampa(t, fw() - 0.35, 0.3)} fondo="#E3F6EC" tam={42} />)}
       </Carpeta>
       <Sombra x={540} y={1510} w={210} />
       <Mascota esp="hamster-gorra" x={540} y={1515} alto={300} t={t} cara={t > M.plan4 ? "estrellas" : "tranquila"} semilla={3} />
@@ -159,11 +159,11 @@ function Extras({ t }) {
     <Escena cam={cam} fondo="art/oficina.jpg" filtro="blur(7px)" velo={0.3}>
       <Carpeta x={540} y={300} w={760} h={720} p={1} titulo="plan para la dirección">
         <div style={{ position: "absolute", left: 50, top: 150, fontFamily: "Sora", fontWeight: 800, fontSize: 34, color: TINTA, opacity: 0.55 }}>📚 planes · 📏 líneas base</div>
-        {X.map(([tw, txt], k) => <Chip key={k} x={50} y={230 + k * 110} txt={txt} p={rampa(t, tw - 0.35, 0.3)} fondo={MANGO} tam={40} />)}
+        {X.map(([tw, txt], k) => <Chip key={k} x={50} y={220 + k * 115} txt={txt} p={rampa(t, tw - 0.35, 0.3)} fondo={MANGO} tam={46} />)}
         <div style={{ position: "absolute", left: 50, top: 580, fontFamily: "Sora", fontWeight: 800, fontSize: 36, color: COLOR.VERDE, opacity: rampa(t, M.necesidades - 0.3, 0.35) }}>🧩 según lo que necesite el proyecto</div>
       </Carpeta>
-      <Documento x={lerp(540, 820, fuera)} y={lerp(760, 1180, fuera)} w={230} p={rampa(t, M.registro10 - 0.4, 0.4)} titulo="registro de supuestos" letra={30} giro={8 * fuera} />
-      <Cartel x={540} y={1110} txt="documento del proyecto, no del plan" p={rampa(t, M.plan10 - 0.7, 0.35)} tam={42} fondo={CREMA} giro={-2} />
+      <Documento x={790} y={1200} w={200} p={rampa(t, M.registro10 - 0.4, 0.4)} titulo="registro de supuestos" letra={28} giro={8 * fuera} />
+      <Cartel x={440} y={1090} txt="no es parte del plan" p={rampa(t, M.parte - 0.4, 0.35)} tam={42} fondo={ROJO} color="#fff" giro={-2} />
       <Sombra x={220} y={1510} w={190} />
       <Mascota esp="hamster-gorra" x={220} y={1515} alto={320} t={t} cara="feliz" bd={-60 * pulso(t, M.otros - 0.3, 1)} semilla={3} />
     </Escena>
