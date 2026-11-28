@@ -161,7 +161,7 @@ function Salidas({ t }) {
       <Documento x={270} y={470} w={300} p={rampa(t, M.firma - 0.4, 0.4)} titulo="entregables aceptados" letra={34} giro={-2} />
       <Cartel x={290} y={590} txt="✍️ firmado" p={rampa(t, M.aceptados9 - 0.3, 0.3)} tam={40} fondo={CREMA} giro={-8} />
       <Cartel x={810} y={190} txt="❌ no cumple" p={rampa(t, M.razones - 0.6, 0.3)} tam={44} fondo="#FFE1D8" />
-      <Cartel x={810} y={310} txt="📝 se documentan las razones" p={rampa(t, M.razones - 0.3, 0.3)} tam={30} fondo="#FFFDF7" giro={1} />
+      <Cartel x={790} y={310} txt="📝 se documentan las razones" p={rampa(t, M.razones - 0.3, 0.3)} tam={27} fondo="#FFFDF7" giro={1} />
       <Documento x={810} y={560} w={250} p={rampa(t, M.solicitud10 - 0.4, 0.4)} titulo="solicitud de cambio" letra={30} giro={3} />
       <Cartel x={810} y={760} txt="🔧 reparar el defecto" p={rampa(t, M.defecto - 0.4, 0.3)} tam={36} fondo={CREMA} giro={-2} />
       <Sombra x={170} y={1540} w={150} />
