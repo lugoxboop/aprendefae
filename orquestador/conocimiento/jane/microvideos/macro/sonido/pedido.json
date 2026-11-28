@@ -101,10 +101,16 @@
   },
   "narrar": [
     {
-      "id": "gp23-alcance-v2",
+      "id": "gp19-liderar-v2",
       "voz": "jBlmi27XRORxjPquUeCh",
       "modelo": "eleven_v3",
-      "texto": "«Ya que estás, ponle una sombrilla al carrito.» Y después, una nevera. ¿Quién decide qué entra?\n\nCada semana, Carmen y los clientes piden algo nuevo, y Pía no sabe qué responder.\n\nLe faltó acordar, desde antes, cómo se iba a manejar el alcance.\n\nEso es planificar la gestión del alcance: crear un plan que documente cómo se definirá, validará y controlará.\n\nEl plan de gestión del alcance dice cómo se escribirá el enunciado del alcance,\n\ncómo se creará, a partir de él, la estructura de desglose del trabajo,\n\ncómo se aprobará la línea base del alcance y cómo se aceptarán formalmente los entregables.\n\nY tiene un compañero: el plan de gestión de los requisitos.\n\nEse dice cómo se analizarán, documentarán y gestionarán los requisitos: cómo se priorizan y quién autoriza los cambios.\n\nLos dos son parte del plan para la dirección del proyecto. Y el del alcance puede ser formal o informal, según lo que se necesite.\n\nAhora te toca: escribe cómo se aceptarán los entregables de tu proyecto."
+      "texto": "Gestionar no es lo mismo que liderar.\n\nSe daña el horno, y Pía tiene que sacar cien panes hoy.\n\nPrimero gestiona: reparte turnos, mira el reloj y pregunta cómo y cuándo.\n\nLuego reúne al equipo, pregunta qué y por qué, y entre todos debaten otra salida.\n\nGestionar es llevar a alguien de un punto a otro con pasos ya conocidos, usando el poder de la posición.\n\nLiderar es guiarlo con discusión y debate, usando el poder de las relaciones.\n\nLa gestión hace las cosas correctamente; el liderazgo hace las cosas correctas.\n\nUna mira el corto plazo y los sistemas; la otra, la visión a largo plazo y las personas.\n\nNo son sinónimos, y el director necesita las dos: la habilidad está en el equilibrio para cada situación.\n\nAdemás, integra en tres niveles: une los procesos donde se cruzan, aplica lo que sabe y tiene en cuenta el contexto.\n\nAhora te toca: en cada escena, ¿Pía está gestionando o liderando?"
+    },
+    {
+      "id": "gp20-supuestos-v2",
+      "voz": "jBlmi27XRORxjPquUeCh",
+      "modelo": "eleven_v3",
+      "texto": "Una frase que nadie comprobó puede tumbar tu plan.\n\nEn el acta del carrito, Pía escribe: «El horno estará libre todas las mañanas».\n\nPara llegar ahí, ella y Carmen parten del caso de negocio y de los acuerdos que ya tienen.\n\nRevisan los factores ambientales de la empresa y usan la plantilla del acta de la panadería.\n\nConsultan a expertos, hacen una tormenta de ideas y entrevistas, y se reúnen con los interesados clave.\n\nAsí nace el acta. Cuando Carmen la aprueba, el proyecto se inicia de manera formal.\n\nOjo: el acta no es un contrato, porque al crearla no hay compromisos ni intercambio de dinero.\n\n¿Y el horno? Nadie lo comprobó. Es un supuesto: algo que se da por cierto sin prueba.\n\nPor eso este proceso tiene una segunda salida: el registro de supuestos.\n\nAhí se anotan los supuestos y las restricciones, a lo largo de todo el proyecto.\n\nAhora te toca: escribe tres supuestos de tu proyecto."
     }
   ]
 }

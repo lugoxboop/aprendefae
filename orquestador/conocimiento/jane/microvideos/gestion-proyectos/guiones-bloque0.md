@@ -353,7 +353,7 @@ Fuente: G 3.4.1 a 3.4.4, Gráfico 3-2, p. 56–60.
 
 ## GP-19 · Mandar no es lo mismo que liderar (G 3.4.5, Tabla 3-1, p. 64; 3.5, p. 66–67)
 
-1. Mandar no es lo mismo que liderar.
+1. Gestionar no es lo mismo que liderar.
 2. Se daña el horno, y Pía tiene que sacar cien panes hoy.
 3. Primero gestiona: reparte turnos, mira el reloj y pregunta cómo y cuándo.
 4. Luego reúne al equipo, pregunta qué y por qué, y entre todos debaten otra salida.
@@ -372,10 +372,10 @@ Fuente: G 3.4.5, Tabla 3-1, p. 64; 3.5, p. 66–67.
 1. Una frase que nadie comprobó puede tumbar tu plan.
 2. En el acta del carrito, Pía escribe: «El horno estará libre todas las mañanas».
 3. Para llegar ahí, ella y Carmen parten del caso de negocio y de los acuerdos que ya tienen.
-4. Revisan los factores del entorno y usan la plantilla del acta de la panadería.
+4. Revisan los factores ambientales de la empresa y usan la plantilla del acta de la panadería.
 5. Consultan a expertos, hacen una tormenta de ideas y entrevistas, y se reúnen con los interesados clave.
 6. Así nace el acta. Cuando Carmen la aprueba, el proyecto se inicia de manera formal.
-7. Ojo: el acta no es un contrato, porque al crearla no hay intercambio de dinero.
+7. Ojo: el acta no es un contrato, porque al crearla no hay compromisos ni intercambio de dinero.
 8. ¿Y el horno? Nadie lo comprobó. Es un supuesto: algo que se da por cierto sin prueba.
 9. Por eso este proceso tiene una segunda salida: el registro de supuestos.
 10. Ahí se anotan los supuestos y las restricciones, a lo largo de todo el proyecto.
