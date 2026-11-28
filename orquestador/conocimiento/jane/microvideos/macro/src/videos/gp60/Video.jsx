@@ -125,7 +125,7 @@ function Ruta({ t }) {
         </>
       )}
       <Cartel x={790} y={830} txt="⏳ retraso importante" p={rampa(t, M.importante - 0.2, 0.3)} tam={34} fondo={CREMA} giro={2} />
-      <Cartel x={540} y={980} txt="fuera de la ruta: efecto mínimo" p={rampa(t, M.minimo - 0.5, 0.3)} tam={36} fondo="#E3F6EC" giro={-1} />
+      <Cartel x={540} y={980} txt="fuera de la ruta crítica: efecto mínimo" p={rampa(t, M.minimo - 0.5, 0.3)} tam={32} fondo="#E3F6EC" giro={-1} />
       <Cartel x={540} y={1100} txt="🏃 recuperar tiempo" p={rampa(t, M.recuperar - 0.3, 0.3)} tam={44} fondo={MANGO} giro={1} />
       <Sombra x={160} y={1540} w={140} />
       <Mascota esp="hamster-gorra" x={160} y={1545} alto={230} t={t} cara={t > M.toldos7 ? "tranquila" : "feliz"} semilla={3} />

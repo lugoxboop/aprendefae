@@ -146,7 +146,7 @@ function Salida({ t }) {
       <Cartel x={540} y={200} txt="🙅 no dice que no" p={rampa(t, M.noque - 0.4, 0.3)} tam={46} fondo={CREMA} giro={-2} />
       <Documento x={540} y={520} w={280} p={rampa(t, M.solicitud10 - 0.4, 0.4)} titulo="solicitud de cambio" letra={36} giro={-3} />
       <Gigante x={540} y={790} txt="⬇️" p={rampa(t, M.integrado - 0.8, 0.3)} tam={80} />
-      <Cartel x={540} y={900} txt="control integrado de cambios" p={rampa(t, M.integrado - 0.5, 0.3)} tam={40} fondo={MANGO} giro={1} />
+      <Cartel x={540} y={900} txt="realizar el control integrado de cambios" p={rampa(t, M.integrado - 0.5, 0.3)} tam={34} fondo={MANGO} giro={1} />
       <Sombra x={260} y={1510} w={200} />
       <Mascota esp="hamster-gorra" x={260} y={1515} alto={340} t={t} cara="guino" bi={-40 * pulso(t, M.solicitud10, 1.0)} semilla={3} />
       <Sombra x={820} y={1510} w={200} />
