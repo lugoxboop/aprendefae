@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ChevronLeft, LayoutGrid, Crown, Glasses, Shirt, Backpack, X, Sparkles, Check } from "lucide-react";
+import { ChevronLeft, LayoutGrid, Crown, Glasses, Shirt, Backpack, X, Sparkles, Check, Gift } from "lucide-react";
 import { FAE, ANCHO_ESTRECHO } from "../../theme.js";
 import Logo from "../Logo.jsx";
 import IconoCristal from "../shared/IconoCristal.jsx";
@@ -8,7 +8,10 @@ import MeshGradientBackground from "../backgrounds/MeshGradientBackground.jsx";
 import Entrada, { EstiloEntrada, entrada } from "../shared/Entrada.jsx";
 import { useAuth } from "../../auth/AuthProvider.jsx";
 import { marcarVisitada } from "../../tienda/novedades.js";
-import { mascotaDe, ACCESORIOS_META, ZONAS_ACCESORIO } from "../../mascota/mascotas.js";
+import { mascotaDe, ACCESORIOS_META, ZONAS_ACCESORIO, TODOS_LOS_COSMETICOS } from "../../mascota/mascotas.js";
+import { COSMETICO, RAREZA } from "../../mascota/cosmeticos-caja.js";
+import { abrirCaja } from "../../cajas/cajas.js";
+import CajasSorpresa from "./CajasSorpresa.jsx";
 import { chocaCon } from "../../mascota/accesorios-marioneta.js";
 import {
   FUENTES, comprarAccesorio, equiparAccesorio, estadoDeAccesorio, faltanParaAccesorio,
@@ -68,7 +71,7 @@ const TARJETA = {
 
 /* La rareza sale del precio. Colores fuera de coral y del ámbar de alertas. */
 const RAREZAS = [
-  { id: "comun", nombre: "Común", hasta: 45, rgb: "159,179,200" },
+  { id: "comun", nombre: "Normal", hasta: 45, rgb: "159,179,200" },
   { id: "raro", nombre: "Raro", hasta: 75, rgb: "111,134,255" },
   { id: "epico", nombre: "Épico", hasta: 110, rgb: "181,123,255" },
   { id: "legendario", nombre: "Legendario", hasta: Infinity, rgb: "255,201,92" },
@@ -111,6 +114,9 @@ const ESTILO = `
 .tnd-tabs::-webkit-scrollbar { display: none; }
 .tnd-pedestal { animation: tnd-brillo 4s ease-in-out infinite; }
 @keyframes tnd-brillo { 0%,100% { opacity: .75; } 50% { opacity: 1; } }
+/* Las dos secciones (accesorios / cajas) caben a 320 px sin desbordar. */
+.tnd-seccion { min-width: 0; }
+@media (max-width: 400px) { .tnd-seccion { font-size: 12.5px !important; gap: 5px !important; padding: 8px 6px !important; } .tnd-nuevo { display: none; } }
 @media (prefers-reduced-motion: reduce) { .tnd-carta, .tnd-pedestal { transition: none; animation: none; } .tnd-carta:hover { transform: none; } }
 /* La pastilla de la cuenta va fija arriba a la izquierda: en escritorio la
    tienda es ancha y la cabecera empieza donde está la pastilla. */
@@ -340,16 +346,18 @@ function Fuente({ fuente }) {
   );
 }
 
-const META = Object.fromEntries(ACCESORIOS_META.map((a) => [a.id, a]));
+const META = Object.fromEntries(TODOS_LOS_COSMETICOS.map((a) => [a.id, a]));
 
 /* `onComprar` y `onEquipar` son inyectables: la compra y el equipar de verdad
  * van contra la base, y la pantalla se prueba sin ella. */
-export default function TiendaView({ onBack, onComprarAccesorio = comprarAccesorio, onEquiparAccesorio = equiparAccesorio }) {
+export default function TiendaView({ onBack, onComprarAccesorio = comprarAccesorio, onEquiparAccesorio = equiparAccesorio, onAbrirCaja = abrirCaja }) {
   const { perfil, session, pedirCuenta, aplicarPerfil, refrescarPerfil } = useAuth();
   const [comprando, setComprando] = useState(null);
   const [error, setError] = useState(null);
   const [zona, setZona] = useState("todo");
   const [filtro, setFiltro] = useState("todos");
+  /* Accesorios sueltos o cajas sorpresa (28-nov). Se abre en cajas con #/tienda?cajas. */
+  const [seccion, setSeccion] = useState(() => (typeof window !== "undefined" && /cajas/.test(window.location.hash) ? "cajas" : "accesorios"));
   /* Lo que se está probando y todavía no es suyo. Vive solo en la pantalla. */
   const [probando, setProbando] = useState([]);
   /* La barrita del teléfono sale solo cuando el vestidor ya no se ve. */
@@ -423,7 +431,8 @@ export default function TiendaView({ onBack, onComprarAccesorio = comprarAccesor
 
   const especieDe = perfil ? mascotaDe(perfil) : null;
   const saldo = perfil ? saldoDe(perfil) : 0;
-  const totalProbando = probandoVisibles.reduce((s, id) => s + precioDeAccesorio(id), 0);
+  /* Lo de caja no se compra: no suma al «todo junto». */
+  const totalProbando = probandoVisibles.reduce((s, id) => s + (COSMETICO[id] ? 0 : precioDeAccesorio(id)), 0);
 
   const visibles = perfil ? ACCESORIOS_META.filter((a) => {
     if (zona !== "todo" && a.zona !== zona) return false;
@@ -588,6 +597,16 @@ export default function TiendaView({ onBack, onComprarAccesorio = comprarAccesor
                     </p>
                     <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
                       {probandoVisibles.map((id) => {
+                        if (COSMETICO[id]) {
+                          const rz = RAREZA[COSMETICO[id].rareza];
+                          return (
+                            <FilaLook key={id} meta={META[id]} onQuitar={() => probar(id)} etiquetaQuitar={`Dejar de probar ${META[id].nombre}`}>
+                              <span data-sale-en-cajas style={{ fontSize: "11px", fontWeight: 700, color: `rgb(${rz.rgb})`, whiteSpace: "nowrap" }}>
+                                {rz.nombre} · en cajas
+                              </span>
+                            </FilaLook>
+                          );
+                        }
                         const alcanza = estadoDeAccesorio(perfil, id) === "alcanzable";
                         return (
                           <FilaLook key={id} meta={META[id]} onQuitar={() => probar(id)} etiquetaQuitar={`Dejar de probar ${META[id].nombre}`}>
@@ -630,6 +649,53 @@ export default function TiendaView({ onBack, onComprarAccesorio = comprarAccesor
 
             {/* ── la tienda ── */}
             <div style={{ minWidth: 0 }}>
+              <Entrada orden={2} modo="sube">
+                <div role="tablist" aria-label="Secciones de la tienda" data-secciones style={{
+                  display: "flex", gap: "6px", padding: "5px", borderRadius: "16px", marginBottom: "18px",
+                  background: "rgba(14,27,46,0.6)", border: "1px solid rgba(248,249,250,0.10)",
+                }}>
+                  {[{ id: "accesorios", nombre: "Accesorios", Icono: Shirt }, { id: "cajas", nombre: "Cajas sorpresa", Icono: Gift }].map(({ id, nombre, Icono }) => {
+                    const on = seccion === id;
+                    return (
+                      <button key={id} type="button" role="tab" aria-selected={on} className="tnd-tab tnd-seccion" data-seccion={id}
+                        onClick={() => setSeccion(id)}
+                        style={{
+                          flex: 1, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "7px",
+                          minHeight: "44px", padding: "8px 10px", borderRadius: "12px", cursor: "pointer",
+                          fontFamily: "Sora, sans-serif", fontSize: "13.5px", fontWeight: 700, whiteSpace: "nowrap",
+                          border: "none",
+                          background: on ? (id === "cajas" ? "linear-gradient(135deg, rgba(181,108,255,0.55), rgba(255,190,60,0.42))" : "linear-gradient(180deg, rgba(42,157,143,0.45), rgba(42,157,143,0.2))") : "transparent",
+                          color: on ? FAE.text : "rgba(248,249,250,0.66)",
+                          boxShadow: on ? "0 8px 20px -10px rgba(0,0,0,0.6)" : "none",
+                        }}>
+                        <Icono size={16} />
+                        {nombre}
+                        {id === "cajas" && !on && (
+                          <span className="tnd-nuevo" style={{ fontSize: "9.5px", padding: "2px 6px", borderRadius: "999px", background: "rgba(255,190,60,0.9)", color: FAE.bg, letterSpacing: "0.04em" }}>NUEVO</span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </Entrada>
+              {seccion === "cajas" ? (
+                <Entrada orden={3} modo="sube">
+                  <div style={{ marginBottom: "26px" }}>
+                    <CajasSorpresa
+                      perfil={perfil}
+                      saldo={saldo}
+                      mascota={especieDe}
+                      puestos={puestos}
+                      probando={probandoVisibles}
+                      onProbar={probar}
+                      onPoner={poner}
+                      onAbrirCaja={onAbrirCaja}
+                      aplicarPerfil={aplicarPerfil}
+                      ponerEnLook={ponerEn}
+                    />
+                  </div>
+                </Entrada>
+              ) : (<>
               <Entrada orden={2} modo="sube">
                 <div style={{ marginBottom: "14px" }}>
                   <h2 style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "clamp(20px, 2.4vw, 26px)", letterSpacing: "-0.02em", margin: "0 0 4px" }}>
@@ -718,6 +784,7 @@ export default function TiendaView({ onBack, onComprarAccesorio = comprarAccesor
                   </p>
                 )}
               </Entrada>
+              </>)}
 
               {error && (
                 <p role="alert" style={{ fontSize: "13px", lineHeight: 1.5, color: FAE.ambar, margin: "0 0 16px" }}>

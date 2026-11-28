@@ -5,9 +5,10 @@ import { NavigationContext } from "../../navigation.js";
 import { useAuthOpcional } from "../../auth/AuthProvider.jsx";
 import Mascota from "../Mascota.jsx";
 import {
-  ESPECIES, OJOS_MASCOTA, ACCESORIOS_META, ZONAS_ACCESORIO, COMPLEXIONES, CABEZAS,
+  ESPECIES, OJOS_MASCOTA, ZONAS_MI_AVATAR, TODOS_LOS_COSMETICOS, COMPLEXIONES, CABEZAS,
   mascotaDe, razasDe, nombreRaza, ajustesDe, irisDe,
 } from "../../mascota/mascotas.js";
+import { IconoCosmetico } from "../tienda/CajasSorpresa.jsx";
 import { accesoriosDe, puestosDe } from "../../cristales/cristales.js";
 import { chocaCon } from "../../mascota/accesorios-marioneta.js";
 
@@ -527,8 +528,9 @@ export default function SeccionMascota({ perfil: perfilProp = null, completo = f
                 </div>
               ) : (
                 <>
-                  {ZONAS_ACCESORIO.map((z) => {
-                    const mios = ACCESORIOS_META.filter((a) => a.zona === z.id && tieneAcc.includes(a.id));
+                  {ZONAS_MI_AVATAR.map((z) => {
+                    /* Con los cosméticos de las cajas sorpresa (28-nov). */
+                    const mios = TODOS_LOS_COSMETICOS.filter((a) => a.zona === z.id && tieneAcc.includes(a.id));
                     if (!mios.length) return null;
                     return (
                       <div key={z.id} className="fae-ed-grupo">
@@ -539,7 +541,9 @@ export default function SeccionMascota({ perfil: perfilProp = null, completo = f
                             return (
                               <button key={a.id} type="button" aria-pressed={on} className="fae-ed-carta" data-accesorio={a.id} onClick={() => toggleAccesorio(a.id)}>
                                 {on && <span className="fae-ed-marca" aria-hidden="true">✓</span>}
-                                <img className="fae-ed-acc" src={`/mascotas/accesorios/${a.id}.webp`} alt="" loading="lazy" />
+                                {a.deCaja
+                                  ? <span className="fae-ed-acc" style={{ display: "flex", justifyContent: "center" }}><IconoCosmetico id={a.id} tamano={56} /></span>
+                                  : <img className="fae-ed-acc" src={`/mascotas/accesorios/${a.id}.webp`} alt="" loading="lazy" />}
                                 <b>{a.nombre}</b>
                                 <small>{on ? "Puesto" : "Ponérselo"}</small>
                               </button>

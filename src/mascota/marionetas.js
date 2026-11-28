@@ -501,7 +501,7 @@ export function svgMarioneta(especie, { tinte = null, uid = "m", busto = false, 
   const [bi, bd] = M.brazos || [];
   /* Con un sombrero que las tapa, las orejas quedan dentro: no se pintan. */
   const [oi, od] = orejasTapadas(especie, puestos) ? [] : C.orejas || [];
-  const acc = piezasAccesorios(especie, M, P, puestos);
+  const acc = piezasAccesorios(especie, M, P, puestos, uid);
   /* Las cajas de los accesorios, en px del escenario: el encuadre las cuenta
      para que un sombrero alto o unas alas no se salgan del recuadro. */
   const extra = acc.cajas.map(([x0, y0, x1, y1, enCabeza]) =>
@@ -663,7 +663,8 @@ export function svgMarioneta(especie, { tinte = null, uid = "m", busto = false, 
     `</g>`;
 
   const inner =
-    `<defs>${defs}</defs>` +
+    `<defs>${defs}${acc.defs || ""}</defs>` +
+    (acc.aura || "") +
     `<ellipse class="mta-aura" cx="300" cy="380" rx="300" ry="360" fill="url(#mta-aura-${uid})"/>` +
     `<ellipse class="mta-sombra" cx="300" cy="684" rx="150" ry="18" fill="#000" opacity=".22"/>` +
     `<g class="mta-todo">` +
@@ -680,6 +681,7 @@ export function svgMarioneta(especie, { tinte = null, uid = "m", busto = false, 
     birrete +
     fuego +
     `</g>` +
+    (acc.auraFrente || "") +
     confeti + estrellas + corazones + notas;
 
   return { viewBox, inner };
