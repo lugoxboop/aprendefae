@@ -190,3 +190,8 @@
 - Transcripción gp31-ruta-critica: 177 palabras.
 - Narración gp32-costos: lista con eleven_v3 (1013 caracteres).
 - Transcripción gp32-costos: 165 palabras.
+
+## 2026-11-28T00:47:26.701Z
+- Cupo: plan creator, 39282 de 122261 créditos usados.
+- Narración gp30-duracion-v2: lista con eleven_v3 (960 caracteres).
+- Transcripción gp30-duracion-v2: 160 palabras.
