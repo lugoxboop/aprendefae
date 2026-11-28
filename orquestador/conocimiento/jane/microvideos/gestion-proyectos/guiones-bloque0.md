@@ -711,3 +711,54 @@ Fuente: G 9.1, 9.1.3.1, 9.1.3.2, p. 312–320.
 9. La otra salida es el informe de riesgos: las fuentes de riesgo general y un resumen de los individuales.
 10. Y no se hace una sola vez: se repite durante todo el proyecto.
 11. Ahora te toca: escribe tres riesgos de tu proyecto, con causa y efecto.
+## GP-41 · ¿Cuál atiendo primero? (G 11.3, 11.3.2.3, 11.3.2.6, 11.3.3.1, p. 419–427)
+1. El registro de Pía ya tiene veinte riesgos. No le alcanza el tiempo para atenderlos todos.
+2. ¿Por cuál empieza?
+3. Realizar el análisis cualitativo de riesgos es priorizar los riesgos individuales, evaluando su probabilidad de ocurrencia y su impacto.
+4. Así el esfuerzo se concentra en los riesgos de alta prioridad.
+5. Para cada riesgo se pregunta: ¿qué tan probable es? Y si ocurre, ¿cuánto afecta al cronograma, al costo o a la calidad?
+6. Las respuestas van a una matriz de probabilidad e impacto.
+7. El horno viejo: probabilidad alta, impacto alto. Va arriba, en rojo.
+8. Que llueva un poco: probabilidad media, impacto bajo. Queda en verde.
+9. También se revisa si los datos sobre cada riesgo son confiables, y se agrupan por categorías.
+10. El registro de riesgos se actualiza con la prioridad, el dueño y una lista de observación para los de baja prioridad.
+11. Ahora te toca: ubica tres riesgos de tu proyecto en una matriz de probabilidad e impacto.
+
+## GP-42 · ¿Qué tan probable es llegar a tiempo? (G 11.4, 11.4.2.5, 11.4.3.1, p. 428–436)
+1. Ramón quiere saber: ¿qué probabilidad hay de terminar a tiempo y con el presupuesto que tenemos?
+2. Una matriz de colores no le da ese número.
+3. Realizar el análisis cuantitativo de riesgos es analizar numéricamente el efecto combinado de los riesgos y otras fuentes de incertidumbre sobre los objetivos del proyecto.
+4. No se requiere en todos los proyectos.
+5. Lo habitual es una simulación de Monte Carlo: el modelo se repite miles de veces con valores al azar.
+6. El resultado es una curva en S: la probabilidad de terminar con cierto costo, o antes de cierta fecha.
+7. Por ejemplo: solo un veintitrés por ciento de probabilidad de cumplir la meta de costo.
+8. El análisis de sensibilidad muestra qué riesgos pesan más, en un diagrama de tornado.
+9. Y el árbol de decisiones compara caminos según su valor esperado.
+10. Todo eso actualiza el informe de riesgos, incluida la reserva para contingencias necesaria.
+11. Ahora te toca: piensa qué riesgo movería más la fecha de tu proyecto.
+
+## GP-43 · ¿Y qué hacemos con cada riesgo? (G 11.5, 11.5.2.4–11.5.2.6, p. 437–448)
+1. El horno viejo está en rojo. ¿Qué hace Pía: lo cambia, lo asegura, lo repara o espera?
+2. Cada opción es una respuesta distinta.
+3. Planificar la respuesta a los riesgos es desarrollar opciones, seleccionar estrategias y acordar acciones para tratar los riesgos.
+4. Para las amenazas hay cinco estrategias.
+5. Evitar: eliminar la amenaza, por ejemplo, cambiar el horno. Transferir: pasársela a un tercero, como un seguro.
+6. Mitigar: reducir su probabilidad o su impacto, con mantenimiento. Aceptar: reconocerla sin tomar medidas por adelantado. Y escalar, si no le toca al proyecto.
+7. Para las oportunidades también hay cinco: explotar, compartir, mejorar, aceptar y escalar.
+8. Si los invitan a otra feria, explotar es asegurarse de poder ir.
+9. Algunas respuestas solo se activan si pasa algo: son planes de contingencia, con su evento desencadenante.
+10. Cada respuesta tiene un dueño, y se anota en el registro de riesgos.
+11. Ahora te toca: elige una estrategia para tu mayor amenaza y para tu mejor oportunidad.
+
+## GP-44 · ¿Lo hacemos o lo compramos? (G 12.1, 12.1.2.3, 12.1.2.4, 12.1.3.4–12.1.3.6, p. 466–481)
+1. Pía necesita un toldo nuevo. ¿Lo cose el equipo o lo compra hecho?
+2. Y si lo compra, ¿a quién?
+3. Planificar la gestión de las adquisiciones es documentar las decisiones de adquisiciones del proyecto, especificar el enfoque e identificar a los posibles proveedores.
+4. Primero, el análisis de hacer o comprar: ¿el equipo puede hacerlo bien, o hace falta alguien de afuera?
+5. Pesan la capacidad del equipo, la pericia necesaria y los riesgos.
+6. Si se compra, se escribe el enunciado del trabajo: solo la parte del alcance que irá en el contrato.
+7. Debe ser claro, completo y conciso: especificaciones, cantidad, calidad, plazo y lugar.
+8. Luego, los criterios de selección de proveedores: capacidad, costo, entrega y experiencia.
+9. Y el método de selección, por ejemplo: menor costo, solo por calificaciones, o basado en costos y calidad.
+10. Cada decisión queda documentada, junto al plan de gestión de las adquisiciones.
+11. Ahora te toca: decide si harías o comprarías una pieza de tu proyecto, y por qué.
