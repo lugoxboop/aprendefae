@@ -60,7 +60,7 @@ function Gancho({ t }) {
   const cam = mover(t, { s: 1.1, x: 540, y: 940 }, [{ a: 0.2, b: E(1) + 0.3, s: 1.0, x: 540, y: 968 }]);
   return (
     <Escena cam={cam} fondo="art/calle.jpg" filtro="blur(5px)" velo={0.15}>
-      <Cartel x={540} y={260} txt="estructura de desglose (EDT/WBS)" p={rampa(t, M.estructura1 - 0.4, 0.35)} tam={40} fondo={CREMA} />
+      <Cartel x={540} y={260} txt="estructura de desglose del trabajo (EDT/WBS)" p={rampa(t, M.estructura1 - 0.4, 0.35)} tam={38} fondo={CREMA} />
       <Caja x={540} y={380} w={420} p={rampa(t, M.toldo1 - 0.2, 0.35)} txt="toldo" cod="1.1.2" />
       <Gigante x={800} y={760} txt="🤷" p={rampa(t, M.solo - 0.8, 0.35)} tam={140} giro={8 * Math.sin(t * 3)} />
       <Cartel x={460} y={800} txt="no se hace solo" p={rampa(t, M.solo - 0.7, 0.35)} tam={58} fondo={ROJO} color="#fff" giro={-2} />

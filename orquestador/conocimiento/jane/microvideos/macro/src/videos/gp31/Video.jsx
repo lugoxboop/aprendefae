@@ -117,7 +117,7 @@ function Caminos({ t }) {
       <div style={{ position: "absolute", left: 880, top: (Y1 + Y2) / 2 - 70, width: 140, height: 140, borderRadius: "50%", background: "#E3F6EC", border: `6px solid ${TINTA}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 60, transform: `scale(${rebote(rampa(t, M.toldo, 0.3))})` }}>🏁</div>
       <Cartel x={460} y={360} txt="= 7 días" p={rampa(t, M.siete - 0.3, 0.3)} tam={40} fondo={rojo > 0.5 ? "#FFE1D8" : CREMA} giro={-2} />
       <Cartel x={330} y={860} txt="= 4 días" p={rampa(t, M.cuatro - 0.5, 0.3)} tam={40} fondo={CREMA} giro={2} />
-      <Cartel x={540} y={1000} txt="⏳ holgura total: 0" p={rampa(t, M.cero - 0.4, 0.35)} tam={46} fondo="#FFE1D8" giro={-2} />
+      <Cartel x={540} y={1000} txt="⏳ holgura total: normalmente 0" p={rampa(t, M.cero - 0.4, 0.35)} tam={46} fondo="#FFE1D8" giro={-2} />
       <Cartel x={540} y={1120} txt="🎨 pintura: 3 días de holgura" p={rampa(t, M.tres - 0.4, 0.35)} tam={44} fondo="#E3F6EC" giro={2} />
       <Sombra x={170} y={1510} w={170} />
       <Mascota esp="hamster-gorra" x={170} y={1515} alto={260} t={t} cara={t > M.tres ? "feliz" : t > M.atrasa - 0.3 ? "triste" : "tranquila"} semilla={3} />
@@ -144,11 +144,11 @@ function Gantt({ t }) {
           {Array.from({ length: 8 }, (_, d) => <div key={d} style={{ position: "absolute", left: X0 - 40 + d * DIA, top: 56, width: 2, height: 560, background: "#EAE3D6" }} />)}
           {F.map(([ic, a, d, crit], k) => {
             const q = rampa(t, M.fechas8 - 0.4 + k * 0.12, 0.3);
-            const corre = k === 2 ? real : 0;
+            const corre = k === 5 ? real : 0;
             return (
               <div key={k}>
                 <div style={{ position: "absolute", left: 20, top: 74 + k * 90, fontSize: 52 }}>{ic}</div>
-                {base > 0 && k === 2 && <div style={{ position: "absolute", left: X0 - 40 + a * DIA, top: 84 + k * 90, width: d * DIA, height: 56, borderRadius: 14, border: `5px dashed ${TINTA}`, opacity: base * 0.8, boxSizing: "border-box" }} />}
+                {base > 0 && k === 5 && <div style={{ position: "absolute", left: X0 - 40 + a * DIA, top: 84 + k * 90, width: d * DIA, height: 56, borderRadius: 14, border: `5px dashed ${TINTA}`, opacity: base * 0.8, boxSizing: "border-box" }} />}
                 <div style={{ position: "absolute", left: X0 - 40 + (a + corre) * DIA, top: 84 + k * 90, width: d * DIA * q, height: 56, borderRadius: 14, background: crit ? COLOR.CORAL : AZUL, border: `5px solid ${TINTA}`, boxSizing: "border-box" }} />
               </div>
             );

@@ -86,7 +86,7 @@ function Gancho({ t }) {
 function Secuenciar({ t }) {
   const cam = mover(t, { s: 1.0, x: 540, y: 968 }, [{ a: S(3), b: E(3), s: 1.03, x: 540, y: 955 }]);
   const orden = sale(rampa(t, M.relaciones3 - 0.6, 0.8));
-  const A = [["A1", "📏", "medir", [700, 560], [190, 760]], ["A2", "🛒", "tela", [260, 900], [430, 760]], ["A3", "🧵", "coser", [820, 1000], [670, 760]], ["A4", "🔧", "instalar", [420, 600], [910, 760]]];
+  const A = [["A1", "📏", "medir", [700, 560], [190, 760]], ["A2", "🛒", "comprar tela", [260, 900], [430, 760]], ["A3", "🧵", "coser", [820, 1000], [670, 760]], ["A4", "🔧", "instalar", [420, 600], [910, 760]]];
   return (
     <Escena cam={cam} fondo="art/oficina.jpg" filtro="blur(7px)" velo={0.3}>
       <Cartel x={540} y={250} txt="⏳ unas esperan a otras" p={rampa(t, M.esperar - 0.6, 0.35)} tam={50} fondo={CREMA} giro={-2} />
@@ -166,12 +166,10 @@ function Red({ t }) {
       <Fl x0={235} y0={500} x1={345} y1={500} p={pF(0)} />
       <Fl x0={565} y0={500} x1={655} y1={500} p={pF(1)} />
       <Fl x0={790} y0={570} x1={790} y1={680} p={pF(2)} />
-      <Fl x0={235} y0={800} x1={640} y1={800} p={pF(3)} />
-      <Act x={150} y={500} w={170} h={120} p={pN(0)} id="A1" ic="📏" txt="" letra={36} />
-      <Act x={455} y={500} w={210} h={120} p={pN(1)} id="A2" ic="🛒" txt="tela" letra={30} />
+      <Act x={150} y={500} w={190} h={120} p={pN(0)} id="A1" ic="📏" txt="medir" letra={26} />
+      <Act x={455} y={500} w={230} h={120} p={pN(1)} id="A2" ic="🛒" txt="comprar tela" letra={24} />
       <Act x={790} y={500} w={250} h={120} p={pN(2)} id="A3" ic="🧵" txt="coser" letra={30} />
       <Act x={790} y={800} w={280} h={120} p={pN(3)} id="A4" ic="🔧" txt="instalar" letra={30} />
-      <Act x={150} y={800} w={170} h={120} p={pN(4)} id="A5" ic="🎨" txt="" letra={36} />
       <Cartel x={540} y={1050} txt="cajas = actividades · flechas = relaciones" p={rampa(t, M.relaciones10 - 0.4, 0.35)} tam={36} fondo="#E3F6EC" />
       <Sombra x={540} y={1510} w={200} />
       <Mascota esp="hamster-gorra" x={540} y={1515} alto={290} t={t} cara={t > M.relaciones10 ? "estrellas" : "feliz"} semilla={3} />

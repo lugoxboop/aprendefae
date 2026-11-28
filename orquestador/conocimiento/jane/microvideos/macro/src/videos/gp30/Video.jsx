@@ -83,7 +83,7 @@ function Tecnicas({ t }) {
   const TEC = [
     [M.parecido, "🏪", "análoga", "otra sede tardó 3 días", M.analoga, "#FFF4DA"],
     [M.formula, "🧮", "paramétrica", "8 m ÷ 2 m por día = 4 días", M.parametrica, "#DDE3FF"],
-    [M.valores, "🔺", "tres valores", "(2 + 3 + 7) ÷ 3 = 4 días · triangular", M.promedio, "#E3F6EC"],
+    [M.valores, "🔺", "basada en tres valores", "(2 + 3 + 7) ÷ 3 = 4 días · triangular", M.promedio, "#E3F6EC"],
     [M.confianza7, "🧩", "ascendente", "partir en pedazos y sumar", M.ascendente, "#FFE1D8"],
   ];
   return (

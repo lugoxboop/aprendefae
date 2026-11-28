@@ -113,7 +113,7 @@ function Plan({ t }) {
     [M.precision, "🔢", "nivel de precisión", "redondeo: 995,59 → 1.000", "#DDE3FF"],
     [M.exactitud, "🎯", "nivel de exactitud", "rango aceptable: ± 10 %", "#E3F6EC"],
     [M.umbrales, "🚦", "umbrales de control", "cuánto desviarse antes de actuar", "#FFE1D8"],
-    [M.reglas, "📊", "desempeño e informes", "reglas · formato · frecuencia", "#FFF4DA"],
+    [M.reglas, "📊", "medición del desempeño e informes", "reglas · formato · frecuencia", "#FFF4DA"],
     [M.cuenta, "🏷️", "cuenta de control", "código único de la contabilidad", "#DDE3FF"],
   ];
   return (
@@ -133,7 +133,7 @@ function EnCarpeta({ t }) {
   return (
     <Escena cam={cam} fondo="art/oficina.jpg" filtro="blur(7px)" velo={0.3}>
       <Carpeta x={540} y={300} w={760} h={620} p={rampa(t, M.parte - 0.4, 0.4)}>
-        <Documento x={380} y={380} w={260} p={rampa(t, M.direccion10 - 0.2, 0.4)} titulo="gestión de los costos" letra={32} giro={-3} />
+        <Documento x={380} y={380} w={260} p={rampa(t, M.direccion10 - 0.2, 0.4)} titulo="plan de gestión de los costos" letra={32} giro={-3} />
       </Carpeta>
       <Sombra x={540} y={1510} w={200} />
       <Mascota esp="hamster-gorra" x={540} y={1515} alto={300} t={t} cara="feliz" semilla={3} />

@@ -118,7 +118,7 @@ function Plan({ t }) {
     [M.exactitud, "🎯", "nivel de exactitud", "rango aceptable + contingencias", "#DDE3FF"],
     [M.metodologia, "🛠️", "metodología y herramienta", "para el modelo de programación", "#E3F6EC"],
     [M.umbrales, "🚦", "umbrales de control", "ej.: 10 % respecto a la línea base", "#FFE1D8"],
-    [M.registrara, "📈", "registro del avance", "durante la ejecución", "#FFF4DA"],
+    [M.registrara, "📈", "mantenimiento del modelo", "registrar el avance durante la ejecución", "#FFF4DA"],
   ];
   return (
     <Escena cam={cam} fondo="art/oficina.jpg" filtro="blur(7px)" velo={0.3}>
@@ -137,7 +137,7 @@ function EnCarpeta({ t }) {
   return (
     <Escena cam={cam} fondo="art/oficina.jpg" filtro="blur(7px)" velo={0.3}>
       <Carpeta x={540} y={260} w={760} h={620} p={rampa(t, M.parte - 0.4, 0.4)}>
-        <Documento x={380} y={380} w={260} p={rampa(t, M.direccion10, 0.4)} titulo="gestión del cronograma" letra={32} giro={-3} />
+        <Documento x={380} y={380} w={260} p={rampa(t, M.direccion10, 0.4)} titulo="plan de gestión del cronograma" letra={32} giro={-3} />
       </Carpeta>
       <Cartel x={330} y={1010} txt="formal" p={rampa(t, M.formal - 0.3, 0.3)} tam={52} fondo="#DDE3FF" giro={-3} />
       <Cartel x={750} y={1010} txt="informal" p={rampa(t, M.informal - 0.3, 0.3)} tam={52} fondo={CREMA} giro={3} />
