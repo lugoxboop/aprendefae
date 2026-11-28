@@ -57,9 +57,9 @@ function Gancho({ t }) {
       <Dicho x={250} y={200} w={580} h={170} colaX={380} p={rampa(t, M.mil - 0.4, 0.4)}>
         <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Sora", fontWeight: 800, fontSize: 52, color: TINTA }}>🍞 × 1000</div>
       </Dicho>
-      <Cartel x={220} y={500} txt="👥 ¿cuántas?" p={rampa(t, M.personas - 0.3, 0.3)} tam={42} fondo={CREMA} giro={-3} />
+      <Cartel x={250} y={500} txt="👥 ¿cuántas?" p={rampa(t, M.personas - 0.3, 0.3)} tam={42} fondo={CREMA} giro={-3} />
       <Cartel x={540} y={580} txt="🌾 ¿cuánta?" p={rampa(t, M.harina - 0.3, 0.3)} tam={42} fondo={CREMA} giro={2} />
-      <Cartel x={860} y={500} txt="🔥 ¿cuántos?" p={rampa(t, M.hornos - 0.3, 0.3)} tam={42} fondo={CREMA} giro={-2} />
+      <Cartel x={830} y={500} txt="🔥 ¿cuántos?" p={rampa(t, M.hornos - 0.3, 0.3)} tam={42} fondo={CREMA} giro={-2} />
       <div style={{ position: "absolute", left: 190, top: 820, width: 700, height: 14, background: TINTA, borderRadius: 7, transform: `rotate(${inc}deg)`, opacity: rampa(t, M.corta - 0.4, 0.3) }}>
         <div style={{ position: "absolute", left: -10, top: -110, fontSize: 40, fontFamily: "Sora", fontWeight: 800, color: TINTA, opacity: rampa(t, M.llega - 0.3, 0.3), whiteSpace: "nowrap" }}>😰 corto</div>
         <div style={{ position: "absolute", right: -10, top: -110, fontSize: 40, fontFamily: "Sora", fontWeight: 800, color: TINTA, opacity: rampa(t, M.desperdicia - 0.4, 0.3), whiteSpace: "nowrap" }}>🗑️ de más</div>
@@ -108,7 +108,7 @@ function Tecnicas({ t }) {
           <Cartel x={540} y={260} txt="📐 paramétrica" p={1} tam={50} fondo="#DDE3FF" />
           {caja(540, 470, 560, 140, CREMA, rampa(t, M.cuatro - 0.3, 0.35), "⏱️ 4.000 h en 1 año", 50)}
           <Gigante x={540} y={630} txt="⬇️" p={rampa(t, M.dos6 - 0.5, 0.3)} tam={70} />
-          {[0, 1].map((k) => <div key={k}>{caja(370 + k * 340, 800, 280, 160, "#E3F6EC", clamp01((t - (M.dos6 - 0.3 + k * 0.25)) / 0.3), "👤 2.000 h", 46)}</div>)}
+          {[0, 1].map((k) => <div key={k}>{caja(350 + k * 380, 800, 340, 150, "#E3F6EC", clamp01((t - (M.dos6 - 0.3 + k * 0.25)) / 0.3), "👤 2.000 h", 44)}</div>)}
         </div>
       )}
       <Sombra x={540} y={1510} w={200} />
@@ -167,7 +167,7 @@ function Arbol({ t }) {
           <div key={k}>
             {linea(540, 415, x, 520, p)}
             {caja(x, 570, 300, 100, CREMA, p, txt, 34)}
-            {hijos.map((h, j) => <div key={j}>{linea(x, 620, x, 690 + j * 120, p)}{caja(x, 720 + j * 120, 220, 80, "#FFFDF7", clamp01((t - (tw - 0.1 + j * 0.15)) / 0.3), h, 30)}</div>)}
+            {hijos.map((h, j) => <div key={j}>{linea(x, j === 0 ? 620 : 760 + (j - 1) * 120, x, 680 + j * 120, p)}{caja(x, 720 + j * 120, 220, 80, "#FFFDF7", clamp01((t - (tw - 0.1 + j * 0.15)) / 0.3), h, 30)}</div>)}
           </div>
         );
       })}
