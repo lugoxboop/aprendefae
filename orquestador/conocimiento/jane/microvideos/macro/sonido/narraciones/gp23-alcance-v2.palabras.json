@@ -1,0 +1,850 @@
+{
+ "texto": "\"Ya que estás, ponle una sombrilla al carrito y después una nevera\". ¿Quién decide qué entra? Cada semana, Carmen y los clientes piden algo nuevo y Pía no sabe qué responder. Le faltó acordar desde antes cómo se iba a manejar el alcance. Eso es planificar la gestión del alcance: crear un plan que documente cómo se definirá, validará y controlará. El plan de gestión del alcance dice cómo se escribirá el enunciado del alcance, cómo se creará a partir de él la estructura de desglose del trabajo, cómo se aprobará la línea base del alcance y cómo se aceptarán formalmente los entregables. Y tiene un compañero, el plan de gestión de los requisitos. Ese dice cómo se analizarán, documentarán y gestionarán los requisitos, cómo se priorizan y quién autoriza los cambios. Los dos son parte del plan para la dirección del proyecto y el del alcance puede ser formal o informal, según lo que se necesite. Ahora te toca. Escribe cómo se aceptarán los entregables de tu proyecto.",
+ "palabras": [
+  {
+   "w": "\"Ya",
+   "ini": 0.12,
+   "fin": 0.24
+  },
+  {
+   "w": "que",
+   "ini": 0.3,
+   "fin": 0.36
+  },
+  {
+   "w": "estás,",
+   "ini": 0.4,
+   "fin": 0.82
+  },
+  {
+   "w": "ponle",
+   "ini": 1.34,
+   "fin": 1.58
+  },
+  {
+   "w": "una",
+   "ini": 1.62,
+   "fin": 1.72
+  },
+  {
+   "w": "sombrilla",
+   "ini": 1.8,
+   "fin": 2.18
+  },
+  {
+   "w": "al",
+   "ini": 2.22,
+   "fin": 2.28
+  },
+  {
+   "w": "carrito",
+   "ini": 2.34,
+   "fin": 2.76
+  },
+  {
+   "w": "y",
+   "ini": 3.46,
+   "fin": 3.5
+  },
+  {
+   "w": "después",
+   "ini": 3.56,
+   "fin": 4
+  },
+  {
+   "w": "una",
+   "ini": 4.4,
+   "fin": 4.5
+  },
+  {
+   "w": "nevera\".",
+   "ini": 4.56,
+   "fin": 4.86
+  },
+  {
+   "w": "¿Quién",
+   "ini": 4.86,
+   "fin": 5.94
+  },
+  {
+   "w": "decide",
+   "ini": 6,
+   "fin": 6.44
+  },
+  {
+   "w": "qué",
+   "ini": 6.5,
+   "fin": 6.66
+  },
+  {
+   "w": "entra?",
+   "ini": 6.74,
+   "fin": 7.04
+  },
+  {
+   "w": "Cada",
+   "ini": 7.86,
+   "fin": 8.039
+  },
+  {
+   "w": "semana,",
+   "ini": 8.119,
+   "fin": 8.48
+  },
+  {
+   "w": "Carmen",
+   "ini": 8.68,
+   "fin": 8.98
+  },
+  {
+   "w": "y",
+   "ini": 9,
+   "fin": 9.06
+  },
+  {
+   "w": "los",
+   "ini": 9.1,
+   "fin": 9.22
+  },
+  {
+   "w": "clientes",
+   "ini": 9.28,
+   "fin": 9.72
+  },
+  {
+   "w": "piden",
+   "ini": 9.82,
+   "fin": 10.06
+  },
+  {
+   "w": "algo",
+   "ini": 10.12,
+   "fin": 10.28
+  },
+  {
+   "w": "nuevo",
+   "ini": 10.34,
+   "fin": 10.62
+  },
+  {
+   "w": "y",
+   "ini": 11.06,
+   "fin": 11.1
+  },
+  {
+   "w": "Pía",
+   "ini": 11.2,
+   "fin": 11.42
+  },
+  {
+   "w": "no",
+   "ini": 11.56,
+   "fin": 11.68
+  },
+  {
+   "w": "sabe",
+   "ini": 11.8,
+   "fin": 12.08
+  },
+  {
+   "w": "qué",
+   "ini": 12.16,
+   "fin": 12.26
+  },
+  {
+   "w": "responder.",
+   "ini": 12.32,
+   "fin": 12.84
+  },
+  {
+   "w": "Le",
+   "ini": 13.68,
+   "fin": 13.76
+  },
+  {
+   "w": "faltó",
+   "ini": 13.8,
+   "fin": 14.08
+  },
+  {
+   "w": "acordar",
+   "ini": 14.14,
+   "fin": 14.56
+  },
+  {
+   "w": "desde",
+   "ini": 14.62,
+   "fin": 14.9
+  },
+  {
+   "w": "antes",
+   "ini": 14.96,
+   "fin": 15.28
+  },
+  {
+   "w": "cómo",
+   "ini": 15.62,
+   "fin": 15.8
+  },
+  {
+   "w": "se",
+   "ini": 15.88,
+   "fin": 15.96
+  },
+  {
+   "w": "iba",
+   "ini": 16,
+   "fin": 16.14
+  },
+  {
+   "w": "a",
+   "ini": 16.16,
+   "fin": 16.2
+  },
+  {
+   "w": "manejar",
+   "ini": 16.26,
+   "fin": 16.68
+  },
+  {
+   "w": "el",
+   "ini": 16.72,
+   "fin": 16.78
+  },
+  {
+   "w": "alcance.",
+   "ini": 16.84,
+   "fin": 17.32
+  },
+  {
+   "w": "Eso",
+   "ini": 17.96,
+   "fin": 18.22
+  },
+  {
+   "w": "es",
+   "ini": 18.28,
+   "fin": 18.42
+  },
+  {
+   "w": "planificar",
+   "ini": 18.46,
+   "fin": 19.14
+  },
+  {
+   "w": "la",
+   "ini": 19.18,
+   "fin": 19.26
+  },
+  {
+   "w": "gestión",
+   "ini": 19.32,
+   "fin": 19.76
+  },
+  {
+   "w": "del",
+   "ini": 19.8,
+   "fin": 19.9
+  },
+  {
+   "w": "alcance:",
+   "ini": 19.94,
+   "fin": 20.44
+  },
+  {
+   "w": "crear",
+   "ini": 21.06,
+   "fin": 21.28
+  },
+  {
+   "w": "un",
+   "ini": 21.32,
+   "fin": 21.4
+  },
+  {
+   "w": "plan",
+   "ini": 21.46,
+   "fin": 21.7
+  },
+  {
+   "w": "que",
+   "ini": 21.78,
+   "fin": 21.86
+  },
+  {
+   "w": "documente",
+   "ini": 21.9,
+   "fin": 22.44
+  },
+  {
+   "w": "cómo",
+   "ini": 22.58,
+   "fin": 22.76
+  },
+  {
+   "w": "se",
+   "ini": 22.82,
+   "fin": 22.9
+  },
+  {
+   "w": "definirá,",
+   "ini": 22.94,
+   "fin": 23.44
+  },
+  {
+   "w": "validará",
+   "ini": 23.88,
+   "fin": 24.38
+  },
+  {
+   "w": "y",
+   "ini": 24.66,
+   "fin": 24.7
+  },
+  {
+   "w": "controlará.",
+   "ini": 24.82,
+   "fin": 25.44
+  },
+  {
+   "w": "El",
+   "ini": 26.1,
+   "fin": 26.18
+  },
+  {
+   "w": "plan",
+   "ini": 26.24,
+   "fin": 26.42
+  },
+  {
+   "w": "de",
+   "ini": 26.44,
+   "fin": 26.5
+  },
+  {
+   "w": "gestión",
+   "ini": 26.56,
+   "fin": 26.9
+  },
+  {
+   "w": "del",
+   "ini": 26.94,
+   "fin": 27.02
+  },
+  {
+   "w": "alcance",
+   "ini": 27.06,
+   "fin": 27.56
+  },
+  {
+   "w": "dice",
+   "ini": 27.86,
+   "fin": 28.1
+  },
+  {
+   "w": "cómo",
+   "ini": 28.26,
+   "fin": 28.5
+  },
+  {
+   "w": "se",
+   "ini": 28.56,
+   "fin": 28.64
+  },
+  {
+   "w": "escribirá",
+   "ini": 28.68,
+   "fin": 29.2
+  },
+  {
+   "w": "el",
+   "ini": 29.24,
+   "fin": 29.3
+  },
+  {
+   "w": "enunciado",
+   "ini": 29.34,
+   "fin": 29.92
+  },
+  {
+   "w": "del",
+   "ini": 29.96,
+   "fin": 30.06
+  },
+  {
+   "w": "alcance,",
+   "ini": 30.1,
+   "fin": 30.6
+  },
+  {
+   "w": "cómo",
+   "ini": 31.1,
+   "fin": 31.3
+  },
+  {
+   "w": "se",
+   "ini": 31.36,
+   "fin": 31.44
+  },
+  {
+   "w": "creará",
+   "ini": 31.5,
+   "fin": 31.88
+  },
+  {
+   "w": "a",
+   "ini": 31.9,
+   "fin": 31.94
+  },
+  {
+   "w": "partir",
+   "ini": 32.04,
+   "fin": 32.34
+  },
+  {
+   "w": "de",
+   "ini": 32.4,
+   "fin": 32.5
+  },
+  {
+   "w": "él",
+   "ini": 32.56,
+   "fin": 32.659
+  },
+  {
+   "w": "la",
+   "ini": 33.06,
+   "fin": 33.12
+  },
+  {
+   "w": "estructura",
+   "ini": 33.16,
+   "fin": 33.72
+  },
+  {
+   "w": "de",
+   "ini": 33.76,
+   "fin": 33.82
+  },
+  {
+   "w": "desglose",
+   "ini": 33.88,
+   "fin": 34.38
+  },
+  {
+   "w": "del",
+   "ini": 34.42,
+   "fin": 34.52
+  },
+  {
+   "w": "trabajo,",
+   "ini": 34.58,
+   "fin": 35.02
+  },
+  {
+   "w": "cómo",
+   "ini": 35.72,
+   "fin": 35.92
+  },
+  {
+   "w": "se",
+   "ini": 35.98,
+   "fin": 36.06
+  },
+  {
+   "w": "aprobará",
+   "ini": 36.12,
+   "fin": 36.54
+  },
+  {
+   "w": "la",
+   "ini": 36.58,
+   "fin": 36.66
+  },
+  {
+   "w": "línea",
+   "ini": 36.72,
+   "fin": 37.02
+  },
+  {
+   "w": "base",
+   "ini": 37.06,
+   "fin": 37.32
+  },
+  {
+   "w": "del",
+   "ini": 37.36,
+   "fin": 37.46
+  },
+  {
+   "w": "alcance",
+   "ini": 37.5,
+   "fin": 38.02
+  },
+  {
+   "w": "y",
+   "ini": 38.44,
+   "fin": 38.48
+  },
+  {
+   "w": "cómo",
+   "ini": 38.58,
+   "fin": 38.78
+  },
+  {
+   "w": "se",
+   "ini": 38.84,
+   "fin": 38.9
+  },
+  {
+   "w": "aceptarán",
+   "ini": 38.94,
+   "fin": 39.52
+  },
+  {
+   "w": "formalmente",
+   "ini": 39.58,
+   "fin": 40.18
+  },
+  {
+   "w": "los",
+   "ini": 40.22,
+   "fin": 40.32
+  },
+  {
+   "w": "entregables.",
+   "ini": 40.38,
+   "fin": 41.04
+  },
+  {
+   "w": "Y",
+   "ini": 41.78,
+   "fin": 41.82
+  },
+  {
+   "w": "tiene",
+   "ini": 41.92,
+   "fin": 42.16
+  },
+  {
+   "w": "un",
+   "ini": 42.2,
+   "fin": 42.28
+  },
+  {
+   "w": "compañero,",
+   "ini": 42.32,
+   "fin": 42.84
+  },
+  {
+   "w": "el",
+   "ini": 43.32,
+   "fin": 43.4
+  },
+  {
+   "w": "plan",
+   "ini": 43.5,
+   "fin": 43.72
+  },
+  {
+   "w": "de",
+   "ini": 43.78,
+   "fin": 43.84
+  },
+  {
+   "w": "gestión",
+   "ini": 43.9,
+   "fin": 44.32
+  },
+  {
+   "w": "de",
+   "ini": 44.34,
+   "fin": 44.4
+  },
+  {
+   "w": "los",
+   "ini": 44.44,
+   "fin": 44.54
+  },
+  {
+   "w": "requisitos.",
+   "ini": 44.62,
+   "fin": 45.28
+  },
+  {
+   "w": "Ese",
+   "ini": 46,
+   "fin": 46.2
+  },
+  {
+   "w": "dice",
+   "ini": 46.26,
+   "fin": 46.52
+  },
+  {
+   "w": "cómo",
+   "ini": 46.7,
+   "fin": 46.92
+  },
+  {
+   "w": "se",
+   "ini": 47,
+   "fin": 47.08
+  },
+  {
+   "w": "analizarán,",
+   "ini": 47.1,
+   "fin": 47.74
+  },
+  {
+   "w": "documentarán",
+   "ini": 48.12,
+   "fin": 48.9
+  },
+  {
+   "w": "y",
+   "ini": 49.12,
+   "fin": 49.16
+  },
+  {
+   "w": "gestionarán",
+   "ini": 49.24,
+   "fin": 49.86
+  },
+  {
+   "w": "los",
+   "ini": 49.9,
+   "fin": 50.02
+  },
+  {
+   "w": "requisitos,",
+   "ini": 50.1,
+   "fin": 50.72
+  },
+  {
+   "w": "cómo",
+   "ini": 51.24,
+   "fin": 51.38
+  },
+  {
+   "w": "se",
+   "ini": 51.46,
+   "fin": 51.52
+  },
+  {
+   "w": "priorizan",
+   "ini": 51.6,
+   "fin": 52.2
+  },
+  {
+   "w": "y",
+   "ini": 52.48,
+   "fin": 52.54
+  },
+  {
+   "w": "quién",
+   "ini": 52.68,
+   "fin": 52.9
+  },
+  {
+   "w": "autoriza",
+   "ini": 52.94,
+   "fin": 53.4
+  },
+  {
+   "w": "los",
+   "ini": 53.44,
+   "fin": 53.56
+  },
+  {
+   "w": "cambios.",
+   "ini": 53.62,
+   "fin": 54.06
+  },
+  {
+   "w": "Los",
+   "ini": 54.86,
+   "fin": 55.02
+  },
+  {
+   "w": "dos",
+   "ini": 55.08,
+   "fin": 55.3
+  },
+  {
+   "w": "son",
+   "ini": 55.54,
+   "fin": 55.68
+  },
+  {
+   "w": "parte",
+   "ini": 55.76,
+   "fin": 56.02
+  },
+  {
+   "w": "del",
+   "ini": 56.06,
+   "fin": 56.18
+  },
+  {
+   "w": "plan",
+   "ini": 56.26,
+   "fin": 56.48
+  },
+  {
+   "w": "para",
+   "ini": 56.56,
+   "fin": 56.72
+  },
+  {
+   "w": "la",
+   "ini": 56.76,
+   "fin": 56.82
+  },
+  {
+   "w": "dirección",
+   "ini": 56.88,
+   "fin": 57.36
+  },
+  {
+   "w": "del",
+   "ini": 57.38,
+   "fin": 57.48
+  },
+  {
+   "w": "proyecto",
+   "ini": 57.54,
+   "fin": 58.06
+  },
+  {
+   "w": "y",
+   "ini": 58.62,
+   "fin": 58.66
+  },
+  {
+   "w": "el",
+   "ini": 58.7,
+   "fin": 58.78
+  },
+  {
+   "w": "del",
+   "ini": 58.82,
+   "fin": 58.92
+  },
+  {
+   "w": "alcance",
+   "ini": 58.96,
+   "fin": 59.46
+  },
+  {
+   "w": "puede",
+   "ini": 59.64,
+   "fin": 59.82
+  },
+  {
+   "w": "ser",
+   "ini": 59.9,
+   "fin": 60.02
+  },
+  {
+   "w": "formal",
+   "ini": 60.1,
+   "fin": 60.48
+  },
+  {
+   "w": "o",
+   "ini": 60.68,
+   "fin": 60.74
+  },
+  {
+   "w": "informal,",
+   "ini": 60.84,
+   "fin": 61.38
+  },
+  {
+   "w": "según",
+   "ini": 61.74,
+   "fin": 62.02
+  },
+  {
+   "w": "lo",
+   "ini": 62.06,
+   "fin": 62.14
+  },
+  {
+   "w": "que",
+   "ini": 62.2,
+   "fin": 62.3
+  },
+  {
+   "w": "se",
+   "ini": 62.34,
+   "fin": 62.4
+  },
+  {
+   "w": "necesite.",
+   "ini": 62.44,
+   "fin": 62.98
+  },
+  {
+   "w": "Ahora",
+   "ini": 63.72,
+   "fin": 63.98
+  },
+  {
+   "w": "te",
+   "ini": 64.019,
+   "fin": 64.12
+  },
+  {
+   "w": "toca.",
+   "ini": 64.18,
+   "fin": 64.48
+  },
+  {
+   "w": "Escribe",
+   "ini": 64.879,
+   "fin": 65.319
+  },
+  {
+   "w": "cómo",
+   "ini": 65.56,
+   "fin": 65.82
+  },
+  {
+   "w": "se",
+   "ini": 65.88,
+   "fin": 65.96
+  },
+  {
+   "w": "aceptarán",
+   "ini": 66,
+   "fin": 66.6
+  },
+  {
+   "w": "los",
+   "ini": 66.64,
+   "fin": 66.78
+  },
+  {
+   "w": "entregables",
+   "ini": 66.82,
+   "fin": 67.48
+  },
+  {
+   "w": "de",
+   "ini": 67.52,
+   "fin": 67.6
+  },
+  {
+   "w": "tu",
+   "ini": 67.66,
+   "fin": 67.74
+  },
+  {
+   "w": "proyecto.",
+   "ini": 67.82,
+   "fin": 68.3
+  }
+ ]
+}
