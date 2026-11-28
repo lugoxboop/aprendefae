@@ -447,6 +447,8 @@ izando una bandera · zorro presidiendo una mesa ovalada · zorro mirando una ec
 conejo cliente consultando un portal en una tableta · hurón con control remoto frente a
 una pantalla · panda leyendo un informe corto.
 
+**Ids de imagen (lote de imágenes 3):** H01 → casillero-correo, placa-laton (pendiente), sobre-carta (ya existía), bolsa-cartero (pendiente) · H02 → maquina-escribir, tecla-redonda (pendiente) · H03 → radio-escritorio, radio-mostrador (pendiente), mar-ondas (pendiente), nube-estatica (pendiente) · H04 → playa-faro, quiosco-info (pendiente), carpa-mesa (pendiente), barco-pesca (pendiente) · H05 → malecon, mesa-cafe-dos (pendiente), mesa-redonda (ya existía), tarima-atril (pendiente), torre-radio (pendiente), celular (ya existía) · H06 → mastil-banderas · H07 → muelle-madera, cuerda (macro: /macro2026/ilustrados/cuerda.webp) · H08 → pantalla-salidas (ya existía), buzon · H09 → mesa-ovalada, reloj-pared (pendiente), silla-oficina (ya existía) · H10 → ecosonda, barco-pesca (pendiente) · H11 → pantalla-proyeccion, proyector (pendiente), control-remoto (pendiente). Archivos en `public/gestion-proyectos/ilustrados/<id>.webp` salvo los marcados «macro»; «pendiente» = aún sin imagen (la pieza usa la provisional).
+
 ## 4. Autoevaluación contra el Kit
 
 | Dimensión | Nivel esperado | Por qué |

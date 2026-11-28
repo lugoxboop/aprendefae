@@ -521,6 +521,8 @@ Situaciones de mascotas nuevas (chat «Chibi Fox Model Sheet»): zorro con megá
 tirando de la cuerda de una campana · hurón con una jarra · perro en una consola de luces ·
 panda con un balde de pintura · hámster con cuentas de ábaco · conejo mirando un dibujo técnico.
 
+**Ids de imagen (lote de imágenes 3):** H01 → vereda-aerea, casa-campesina (pendiente), colegio (pendiente), salon-comunal, lote-cerca (pendiente), antena (pendiente), pancarta (pendiente), vaca (pendiente), arbol (pendiente), maletin (pendiente), carpeta-documento (ya existía) · H02 → tinaja, corredor-casa (pendiente), jarra-barro (pendiente) · H03 → carpeta-argollas, separador (pendiente), hoja-perforada (pendiente) · H04 → patio-cuadricula, piedra (ya existía), balde-pintura (pendiente) · H05 → casa-guadua · H06 → tarima-plaza, foco-teatro (ya existía), consola-mezcla · H07 → abaco · H08 → campana-capilla, cuerda (macro: /macro2026/ilustrados/cuerda.webp), puerta-aviso (pendiente), pluma (pendiente) · H09 → salon-comunal, silla-plastica (pendiente), megafono (pendiente), tablero-corcho (ya existía) · H10 → acequia, compuerta (ya existía), pozo (pendiente) · H11 → planta-agua, grifo (macro: /macro2026/ilustrados/grifo.webp) · otros: → edificio-gobierno (macro: /macro2026/ilustrados/edificio-gobierno.webp), edificio-ambiental (pendiente), universidad (pendiente), tarjeta-lazo (pendiente). Archivos en `public/gestion-proyectos/ilustrados/<id>.webp` salvo los marcados «macro»; «pendiente» = aún sin imagen (la pieza usa la provisional).
+
 ## 4. Autoevaluación contra el Kit
 
 | Dimensión | Nivel esperado | Por qué |

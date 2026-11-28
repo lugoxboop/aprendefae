@@ -537,6 +537,8 @@ blanco de obra y tableta · panda patrocinadora abriendo un candado · hámster 
 enganchando un bloque en la polea · hámster leyendo un rollo de papel · perro PMO anotando
 junto a un termómetro · hurón practicante con un libro contable.
 
+**Ids de imagen (lote de imágenes 3):** H01 → planero-siete, ficha-madera (ya existía) · H02 → mesa-dibujo, foto-bodega, plano-cuadriculado, cajas-madera, pila-monedas (macro: /macro2026/ilustrados/pila-monedas.webp), maqueta-bodega · H03 → sumadora (ya existía), ficha-domino (ya existía) · H04 → embudo, ficha-colgante (ya existía) · H05 → patio-obra, pila-ladrillos, barril-grifo, barril-candado, llave (ya existía) · H06 → polea-obra, bloque-madera (ya existía) · H07 → papel-milimetrado, caseta-obra (ya existía), escalones-madera, edificio-banco · H08 → bodega-lona, etiqueta-tela · H09 → termometro-pared · H10 → telescopio, azotea-obra, cartel-obra (ya existía), placa-datos · H11 → montacargas, rampa-metalica, letrero-meta · H12 → libro-contable. Archivos en `public/gestion-proyectos/ilustrados/<id>.webp` salvo los marcados «macro»; «pendiente» = aún sin imagen (la pieza usa la provisional).
+
 ## 4. Autoevaluación contra el Kit
 
 | Dimensión | Nivel esperado | Por qué |

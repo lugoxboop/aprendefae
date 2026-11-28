@@ -569,6 +569,8 @@ en un tubo · gato detrás de un banco de taller con libreta · hámster tomando
 banco · hurón sacando placas de un borrador · zorro con cinturón de herramientas ·
 zorro abriendo una puerta de un pasillo · panda firmando un visto bueno.
 
+**Ids de imagen (lote de imágenes 3):** H01 → banco-taller, catalogo-proveedor (pendiente), libreta-anillada (ya existía) · H02 → planero-tres, rollo-contrato (pendiente) · H03 → rampa-canicas, canica (pendiente), caja-paquete (ya existía), maletin (pendiente) · H04 → tubo-neumatico, capsula-neumatica (pendiente) · H05 → tostadora, placa-nitida (pendiente), placa-rayada (pendiente), tornillo (pendiente), soporte-metal (pendiente) · H06 → cambiavias, estacion-tren (pendiente), vagon-madera (pendiente), palanca-hierro (pendiente) · H07 → marcador-estadio, bombillo (pendiente), campanilla (pendiente) · H08 → mesa-conferencias, placa-mesa (pendiente), microfono-mesa (pendiente), lampara-mesa (pendiente) · H09 → pasillo-puertas, puerta-oficina (ya existía), mesa-tazas (pendiente), silla-oficina (ya existía), puerta-columnas (pendiente) · H10 → cinturon-herramientas, regla-madera (ya existía), calculadora (pendiente) · H11 → cerradura-combinacion, puerta-galpon (pendiente), estante-archivo (pendiente) · H12 → portacontenedores, boya (pendiente), grua-puerto (pendiente), contenedor (pendiente) · otros: → ventanilla (macro: /macro2026/ilustrados/ventanilla.webp), maletin (pendiente), casco-electricista (ya existía), portafolio (pendiente). Archivos en `public/gestion-proyectos/ilustrados/<id>.webp` salvo los marcados «macro»; «pendiente» = aún sin imagen (la pieza usa la provisional).
+
 ## 4. Autoevaluación contra el Kit
 
 | Dimensión | Nivel esperado | Por qué |
