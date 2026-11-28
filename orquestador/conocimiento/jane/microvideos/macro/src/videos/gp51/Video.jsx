@@ -84,7 +84,7 @@ function Definicion({ t }) {
 /* ═════ 4–5 · Los conflictos ═════ */
 function Conflictos({ t }) {
   const cam = mover(t, { s: 1.0, x: 540, y: 968 }, [{ a: S(5), b: E(5) + 0.3, s: 1.03, x: 540, y: 955 }]);
-  const F = [[M.recursos4, "🔥 recursos escasos"], [M.prioridades, "📅 prioridades del cronograma"], [M.estilos, "🎨 estilos de trabajo"]];
+  const F = [[M.recursos4, "🔥 recursos escasos"], [M.prioridades, "📅 prioridades de la programación"], [M.estilos, "🎨 estilos de trabajo"]];
   return (
     <Escena cam={cam} fondo="art/panaderia.jpg" filtro="blur(7px)" velo={0.3}>
       <Cartel x={540} y={190} txt="⚡ los conflictos son inevitables" p={rampa(t, M.inevitables - 0.4, 0.35)} tam={42} fondo={MANGO} />
