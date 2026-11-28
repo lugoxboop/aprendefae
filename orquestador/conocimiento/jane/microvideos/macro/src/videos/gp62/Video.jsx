@@ -74,7 +74,7 @@ function Gancho({ t }) {
 /* ═════ 3–4 · Qué es ═════ */
 function Definicion({ t }) {
   const cam = mover(t, { s: 1.0, x: 540, y: 968 }, [{ a: S(4), b: E(4) + 0.3, s: 1.03, x: 540, y: 955 }]);
-  const C = [[M.completas, "🧩 completas"], [M.correctas, "✔️ correctas"], [M.expectativas, "😊 satisfacen al cliente"]];
+  const C = [[M.completas, "🧩 completas"], [M.correctas, "✔️ correctas"], [M.expectativas, "😊 satisfacen expectativas"]];
   return (
     <Escena cam={cam} fondo="art/oficina.jpg" filtro="blur(7px)" velo={0.3}>
       <Cartel x={540} y={180} txt="controlar la calidad" p={rampa(t, M.controlar - 0.3, 0.35)} tam={54} fondo={MANGO} />

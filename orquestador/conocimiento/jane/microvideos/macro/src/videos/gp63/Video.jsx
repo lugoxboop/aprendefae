@@ -85,7 +85,7 @@ function Definicion({ t }) {
     <Escena cam={cam} fondo="art/oficina.jpg" filtro="blur(7px)" velo={0.3}>
       <Cartel x={540} y={170} txt="controlar los recursos" p={rampa(t, M.controlar - 0.3, 0.35)} tam={52} fondo={MANGO} />
       <Cartel x={540} y={300} txt="✅ recursos físicos disponibles, como se planificó" p={rampa(t, M.disponibles - 0.3, 0.3)} tam={32} fondo={CREMA} giro={-1} />
-      <Cartel x={540} y={400} txt="📊 uso planificado frente al real" p={rampa(t, M.uso - 0.3, 0.3)} tam={36} fondo="#FFFDF7" giro={1} />
+      <Cartel x={540} y={400} txt="📊 utilización planificada frente a la real" p={rampa(t, M.uso - 0.3, 0.3)} tam={33} fondo="#FFFDF7" giro={1} />
       <Cartel x={540} y={500} txt="🔧 acciones correctivas" p={rampa(t, M.correctivas3 - 0.5, 0.3)} tam={36} fondo="#DDE3FF" giro={-1} />
       <Cartel x={540} y={660} txt="📍 en el momento y lugar adecuados" p={rampa(t, M.momento - 0.3, 0.3)} tam={38} fondo="#E3F6EC" giro={1} />
       <Cartel x={540} y={770} txt="🔓 se liberan cuando ya no se necesitan" p={rampa(t, M.liberan - 0.3, 0.3)} tam={34} fondo="#E3F6EC" giro={-1} />
@@ -127,7 +127,7 @@ function Pasos({ t }) {
 /* ═════ 7–10 · Alternativas, costo-beneficio, negociación ═════ */
 function Opciones({ t }) {
   const cam = mover(t, { s: 1.0, x: 540, y: 968 }, [{ a: S(9), b: E(10) + 0.3, s: 1.02, x: 540, y: 960 }]);
-  const O = [[M.pedirlas, "🔁", "pedirlas de nuevo"], [M.alquilar, "🧾", "alquilar otras"], [M.horas, "⏰", "pagar horas extra"]];
+  const O = [[M.pedirlas, "🔁", "pedirlas de nuevo"], [M.alquilar, "🧾", "alquilar otras"], [M.horas, "⏰", "pagar horas extras"]];
   const pB = rampa(t, M.costo8 - 0.3, 0.3);
   return (
     <Escena cam={cam} fondo="art/oficina.jpg" filtro="blur(7px)" velo={0.3}>
