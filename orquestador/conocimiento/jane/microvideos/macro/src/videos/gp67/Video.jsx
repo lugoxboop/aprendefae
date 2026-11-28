@@ -3,8 +3,8 @@
  * Una idea: Monitorear el Involucramiento de los Interesados es monitorear las relaciones de los interesados y
  * adaptar las estrategias para involucrarlos; mantiene o incrementa la eficiencia y la eficacia de las actividades de
  * participación a medida que el proyecto evoluciona (13.4, p. 530). Matriz de evaluación del involucramiento
- * (13.4.2.5 / 13.2.2.5: desconocedor, reticente, neutral, de apoyo, líder); análisis de causa raíz (13.4.2.2);
- * escuchar de forma activa, retroalimentación, liderazgo (13.4.2.6); solicitudes de cambio con acciones
+ * (13.4.2.3 / 13.2.2.5: desconocedor, reticente, neutral, de apoyo, líder); análisis de causa raíz (13.4.2.1);
+ * escuchar de forma activa, retroalimentación, liderazgo (13.4.2.4, 13.4.2.5); solicitudes de cambio con acciones
  * correctivas y preventivas (13.4.3.2).
  */
 import { Mascota, Sombra, TINTA, CREMA, MANGO, AZUL } from "../../comun/base.jsx";

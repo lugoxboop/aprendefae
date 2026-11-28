@@ -107,8 +107,8 @@ function Revisar({ t }) {
       <Cartel x={540} y={150} txt="🔍 inspección" p={rampa(t, M.inspeccion - 0.3, 0.35)} tam={48} fondo={MANGO} />
       <Toldo x={400} y={560} w={300} roto p={rampa(t, M.inspeccion - 0.3, 0.4)} />
       {rampa(t, M.inspeccion, 0.3) > 0 && <Gigante x={lx} y={340} txt="🔍" p={rampa(t, M.inspeccion, 0.3)} tam={110} />}
-      <Cartel x={800} y={380} txt="el trabajo del vendedor" p={rampa(t, M.inspeccion + 0.4, 0.3)} tam={30} fondo={CREMA} giro={2} />
-      <Cartel x={800} y={470} txt="📍 en el mismo lugar" p={rampa(t, M.lugar - 0.5, 0.3)} tam={30} fondo="#FFFDF7" giro={-2} />
+      <Cartel x={800} y={380} txt="el trabajo del contratista" p={rampa(t, M.inspeccion + 0.4, 0.3)} tam={30} fondo={CREMA} giro={2} />
+      <Cartel x={800} y={470} txt="📍 recorriendo el lugar" p={rampa(t, M.lugar - 0.5, 0.3)} tam={30} fondo="#FFFDF7" giro={-2} />
       <Cartel x={540} y={680} txt="📊 revisión del desempeño" p={rampa(t, M.revision6 - 0.3, 0.3)} tam={42} fondo="#DDE3FF" giro={-1} />
       {D.map(([tw, txt], k) => <Cartel key={k} x={k % 2 ? 780 : 300} y={800 + Math.floor(k / 2) * 100} txt={txt} p={rampa(t, tw - 0.3, 0.3)} tam={36} fondo={CREMA} giro={[-2, 2, 1, -1][k]} />)}
       <Cartel x={540} y={1030} txt="📜 frente al acuerdo" p={rampa(t, M.acuerdo6 - 0.4, 0.3)} tam={38} fondo="#E3F6EC" />
