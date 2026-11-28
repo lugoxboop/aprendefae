@@ -61,14 +61,14 @@ function Gancho({ t }) {
         if (q <= 0) return null;
         return (
           <div key={k} style={{ position: "absolute", left: x - 80, top: y - 80, width: 160, height: 160, background: lista ? "#E3F6EC" : debia ? "#FFE1D8" : "#FFFDF7", border: `6px ${debia ? "dashed" : "solid"} ${TINTA}`, borderRadius: 24, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 80, transform: `scale(${rebote(q)})` }}>
-            {lista ? "🎀" : "🏪"}
+            {lista ? "🎀" : "⛺"}
           </div>
         );
       })}
-      <Cartel x={540} y={140} txt="🎪 10 puestos · $100 cada uno" p={rampa(t, M.cien - 0.4, 0.3)} tam={42} fondo={MANGO} giro={-1} />
-      <Cartel x={250} y={640} txt="📅 debía: 6" p={rampa(t, M.seis - 0.3, 0.3)} tam={38} fondo={CREMA} giro={-2} />
-      <Cartel x={540} y={640} txt="🎀 lleva: 5" p={rampa(t, M.cinco - 0.3, 0.3)} tam={38} fondo="#E3F6EC" giro={1} />
-      <Cartel x={830} y={640} txt="💸 gastó: $650" p={rampa(t, M.gasto - 0.3, 0.3)} tam={38} fondo="#FFE1D8" giro={2} />
+      <Cartel x={540} y={140} txt="⛺ 10 puestos · $100 cada uno" p={rampa(t, M.cien - 0.4, 0.3)} tam={42} fondo={MANGO} giro={-1} />
+      <Cartel x={190} y={650} txt="📅 debía: 6" p={rampa(t, M.seis - 0.3, 0.3)} tam={34} fondo={CREMA} giro={-2} />
+      <Cartel x={540} y={640} txt="🎀 lleva: 5" p={rampa(t, M.cinco - 0.3, 0.3)} tam={34} fondo="#E3F6EC" giro={1} />
+      <Cartel x={880} y={650} txt="💸 gastó: $650" p={rampa(t, M.gasto - 0.3, 0.3)} tam={34} fondo="#FFE1D8" giro={2} />
       <Sombra x={260} y={1510} w={200} />
       <Mascota esp="hamster-gorra" x={260} y={1515} alto={330} t={t} cara={t > M.gasto ? "tranquila" : "feliz"} semilla={3} />
       <Sombra x={820} y={1510} w={200} />
@@ -110,8 +110,8 @@ function Barras({ t }) {
           <div key={k}>
             <div style={{ position: "absolute", left: x - 95, top: BASE - h, width: 190, height: h, background: col, border: `6px solid ${TINTA}`, borderRadius: 14 }} />
             <Cartel x={x} y={BASE - h - 60} txt={`$${v}`} p={rampa(t, M[k2] - 0.5, 0.3)} tam={46} fondo="#FFFDF7" />
-            <Cartel x={x} y={BASE + 70} txt={nom} p={q} tam={32} fondo={CREMA} />
-            <Cartel x={x} y={BASE + 150} txt={sub} p={rampa(t, M[k1] + 0.5, 0.3)} tam={26} fondo="#FFFDF7" giro={[-2, 1, 2][k]} />
+            <Cartel x={x} y={BASE + 70} txt={nom} p={q} tam={27} fondo={CREMA} />
+            <Cartel x={x} y={BASE + 150} txt={sub} p={rampa(t, M[k1] + 0.5, 0.3)} tam={23} fondo="#FFFDF7" giro={[-2, 1, 2][k]} />
           </div>
         );
       })}
