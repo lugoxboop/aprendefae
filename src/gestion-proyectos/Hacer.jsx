@@ -120,6 +120,31 @@ export const COMPONENTES_GP = {
   "gp26-eje-c08-h10-auditoria": lazy(() => import("./calidad/C08H10Auditoria.jsx")),
   "gp26-eje-c08-h11-cadena": lazy(() => import("./calidad/C08H11Cadena.jsx")),
   "gp26-moc-c08-h12-despacho": lazy(() => import("./calidad/C08H12Despacho.jsx")),
+  /* Lote 5 · cap. 9 (Recursos) */
+  "gp26-pla-c09-h01-puertas": lazy(() => import("./recursos/C09H01Puertas.jsx")),
+  "gp26-pla-c09-h02-gafete": lazy(() => import("./recursos/C09H02Gafete.jsx")),
+  "gp26-pla-c09-h03-raci": lazy(() => import("./recursos/C09H03Raci.jsx")),
+  "gp26-pla-c09-h04-pendon": lazy(() => import("./recursos/C09H04Pendon.jsx")),
+  "gp26-pla-c09-h05-sumadora": lazy(() => import("./recursos/C09H05Sumadora.jsx")),
+  "gp26-pla-c09-h06-rama": lazy(() => import("./recursos/C09H06Rama.jsx")),
+  "gp26-eje-c09-h07-catacion": lazy(() => import("./recursos/C09H07Catacion.jsx")),
+  "gp26-eje-c09-h08-torre": lazy(() => import("./recursos/C09H08Torre.jsx")),
+  "gp26-eje-c09-h09-consola": lazy(() => import("./recursos/C09H09Consola.jsx")),
+  "gp26-eje-c09-h10-microfonos": lazy(() => import("./recursos/C09H10Microfonos.jsx")),
+  "gp26-moc-c09-h11-estibas": lazy(() => import("./recursos/C09H11Estibas.jsx")),
+  "gp26-eje-c09-h12-rotafolio": lazy(() => import("./recursos/C09H12Rotafolio.jsx")),
+  /* Lote 5 · cap. 10 (Comunicaciones) */
+  "gp26-eje-c10-h01-casillero": lazy(() => import("./comunicaciones/C10H01Casillero.jsx")),
+  "gp26-eje-c10-h02-maquina": lazy(() => import("./comunicaciones/C10H02Maquina.jsx")),
+  "gp26-eje-c10-h03-radios": lazy(() => import("./comunicaciones/C10H03Radios.jsx")),
+  "gp26-pla-c10-h04-playa": lazy(() => import("./comunicaciones/C10H04Playa.jsx")),
+  "gp26-pla-c10-h05-malecon": lazy(() => import("./comunicaciones/C10H05Malecon.jsx")),
+  "gp26-pla-c10-h06-banderas": lazy(() => import("./comunicaciones/C10H06Banderas.jsx")),
+  "gp26-pla-c10-h07-amarres": lazy(() => import("./comunicaciones/C10H07Amarres.jsx")),
+  "gp26-pla-c10-h08-tablero": lazy(() => import("./comunicaciones/C10H08Tablero.jsx")),
+  "gp26-eje-c10-h09-reunion": lazy(() => import("./comunicaciones/C10H09Reunion.jsx")),
+  "gp26-moc-c10-h10-ecosonda": lazy(() => import("./comunicaciones/C10H10Ecosonda.jsx")),
+  "gp26-moc-c10-h11-diapositiva": lazy(() => import("./comunicaciones/C10H11Diapositiva.jsx")),
 };
 
 /* Las Hacer que se ven de un módulo: publicadas y con componente, en el orden del camino. */
