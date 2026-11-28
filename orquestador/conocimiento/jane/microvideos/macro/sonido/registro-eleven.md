@@ -147,3 +147,8 @@
 - Transcripción gp23-alcance: 166 palabras.
 - Narración gp24-requisitos: lista con eleven_v3 (967 caracteres).
 - Transcripción gp24-requisitos: 159 palabras.
+
+## 2026-11-28T00:01:32.875Z
+- Cupo: plan creator, 32979 de 122261 créditos usados.
+- Narración gp23-alcance-v2: lista con eleven_v3 (990 caracteres).
+- Transcripción gp23-alcance-v2: 169 palabras.
