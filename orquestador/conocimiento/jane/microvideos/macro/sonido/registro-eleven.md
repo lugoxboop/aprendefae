@@ -293,3 +293,14 @@
 - Cupo: plan creator, 54587 de 122261 créditos usados.
 - Narración gp61-controlar-costos-b: lista con eleven_v3 (940 caracteres).
 - Transcripción gp61-controlar-costos-b: 143 palabras.
+
+## 2026-11-28T02:24:59.383Z
+- Cupo: plan creator, 55023 de 122261 créditos usados.
+- Narración gp65-monitorear-riesgos: lista con eleven_v3 (938 caracteres).
+- Transcripción gp65-monitorear-riesgos: 153 palabras.
+- Narración gp66-controlar-adquisiciones: lista con eleven_v3 (903 caracteres).
+- Transcripción gp66-controlar-adquisiciones: 142 palabras.
+- Narración gp67-monitorear-involucramiento: lista con eleven_v3 (962 caracteres).
+- Transcripción gp67-monitorear-involucramiento: 157 palabras.
+- Narración gp68-cerrar-proyecto: lista con eleven_v3 (913 caracteres).
+- Transcripción gp68-cerrar-proyecto: 153 palabras.

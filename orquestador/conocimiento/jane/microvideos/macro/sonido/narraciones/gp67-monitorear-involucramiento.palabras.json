@@ -1,0 +1,790 @@
+{
+ "texto": "Al principio, don Tito apoyaba la feria. Ahora casi no contesta. ¿Qué cambió? Monitorear el involucramiento de los interesados es monitorear sus relaciones y adaptar las estrategias para involucrarlos. Así se mantiene o se incrementa la eficiencia y la eficacia de su participación mientras el proyecto cambia. La matriz de evaluación del involucramiento sigue los cambios en el nivel de participación de cada interesado. Don Tito pasó del nivel de apoyo al neutral. Pía lo nota en la matriz. Con el análisis de causa raíz, busca el motivo de fondo: nadie le contó los nuevos horarios. Ayudan escuchar de forma activa, la retroalimentación y el liderazgo. Pía lo visita, lo escucha y le explica el plan. Don Tito vuelve a apoyar. Si hace falta, sale una solicitud de cambio con acciones correctivas o preventivas para mejorar el involucramiento. Ahora te toca. Elige un interesado de tu proyecto y anota su nivel de participación actual y el deseado.",
+ "palabras": [
+  {
+   "w": "Al",
+   "ini": 0.08,
+   "fin": 0.16
+  },
+  {
+   "w": "principio,",
+   "ini": 0.2,
+   "fin": 0.68
+  },
+  {
+   "w": "don",
+   "ini": 0.74,
+   "fin": 0.86
+  },
+  {
+   "w": "Tito",
+   "ini": 0.96,
+   "fin": 1.22
+  },
+  {
+   "w": "apoyaba",
+   "ini": 1.3,
+   "fin": 1.78
+  },
+  {
+   "w": "la",
+   "ini": 1.82,
+   "fin": 1.88
+  },
+  {
+   "w": "feria.",
+   "ini": 1.96,
+   "fin": 2.3
+  },
+  {
+   "w": "Ahora",
+   "ini": 3,
+   "fin": 3.28
+  },
+  {
+   "w": "casi",
+   "ini": 3.8,
+   "fin": 4.12
+  },
+  {
+   "w": "no",
+   "ini": 4.16,
+   "fin": 4.28
+  },
+  {
+   "w": "contesta.",
+   "ini": 4.32,
+   "fin": 4.92
+  },
+  {
+   "w": "¿Qué",
+   "ini": 4.92,
+   "fin": 6.12
+  },
+  {
+   "w": "cambió?",
+   "ini": 6.16,
+   "fin": 6.52
+  },
+  {
+   "w": "Monitorear",
+   "ini": 7.38,
+   "fin": 7.92
+  },
+  {
+   "w": "el",
+   "ini": 7.96,
+   "fin": 8.02
+  },
+  {
+   "w": "involucramiento",
+   "ini": 8.06,
+   "fin": 8.94
+  },
+  {
+   "w": "de",
+   "ini": 8.98,
+   "fin": 9.04
+  },
+  {
+   "w": "los",
+   "ini": 9.08,
+   "fin": 9.2
+  },
+  {
+   "w": "interesados",
+   "ini": 9.24,
+   "fin": 9.96
+  },
+  {
+   "w": "es",
+   "ini": 10.34,
+   "fin": 10.48
+  },
+  {
+   "w": "monitorear",
+   "ini": 10.54,
+   "fin": 11.08
+  },
+  {
+   "w": "sus",
+   "ini": 11.14,
+   "fin": 11.3
+  },
+  {
+   "w": "relaciones",
+   "ini": 11.38,
+   "fin": 12.06
+  },
+  {
+   "w": "y",
+   "ini": 12.22,
+   "fin": 12.26
+  },
+  {
+   "w": "adaptar",
+   "ini": 12.32,
+   "fin": 12.68
+  },
+  {
+   "w": "las",
+   "ini": 12.72,
+   "fin": 12.84
+  },
+  {
+   "w": "estrategias",
+   "ini": 12.9,
+   "fin": 13.62
+  },
+  {
+   "w": "para",
+   "ini": 13.7,
+   "fin": 13.82
+  },
+  {
+   "w": "involucrarlos.",
+   "ini": 13.86,
+   "fin": 14.62
+  },
+  {
+   "w": "Así",
+   "ini": 15.26,
+   "fin": 15.44
+  },
+  {
+   "w": "se",
+   "ini": 15.48,
+   "fin": 15.56
+  },
+  {
+   "w": "mantiene",
+   "ini": 15.6,
+   "fin": 16.219
+  },
+  {
+   "w": "o",
+   "ini": 16.28,
+   "fin": 16.32
+  },
+  {
+   "w": "se",
+   "ini": 16.42,
+   "fin": 16.5
+  },
+  {
+   "w": "incrementa",
+   "ini": 16.54,
+   "fin": 17.2
+  },
+  {
+   "w": "la",
+   "ini": 17.56,
+   "fin": 17.62
+  },
+  {
+   "w": "eficiencia",
+   "ini": 17.68,
+   "fin": 18.48
+  },
+  {
+   "w": "y",
+   "ini": 18.52,
+   "fin": 18.56
+  },
+  {
+   "w": "la",
+   "ini": 18.6,
+   "fin": 18.68
+  },
+  {
+   "w": "eficacia",
+   "ini": 18.72,
+   "fin": 19.34
+  },
+  {
+   "w": "de",
+   "ini": 19.38,
+   "fin": 19.44
+  },
+  {
+   "w": "su",
+   "ini": 19.48,
+   "fin": 19.56
+  },
+  {
+   "w": "participación",
+   "ini": 19.62,
+   "fin": 20.5
+  },
+  {
+   "w": "mientras",
+   "ini": 20.86,
+   "fin": 21.24
+  },
+  {
+   "w": "el",
+   "ini": 21.28,
+   "fin": 21.36
+  },
+  {
+   "w": "proyecto",
+   "ini": 21.42,
+   "fin": 21.84
+  },
+  {
+   "w": "cambia.",
+   "ini": 21.92,
+   "fin": 22.3
+  },
+  {
+   "w": "La",
+   "ini": 23.3,
+   "fin": 23.34
+  },
+  {
+   "w": "matriz",
+   "ini": 23.4,
+   "fin": 23.7
+  },
+  {
+   "w": "de",
+   "ini": 23.74,
+   "fin": 23.78
+  },
+  {
+   "w": "evaluación",
+   "ini": 23.82,
+   "fin": 24.38
+  },
+  {
+   "w": "del",
+   "ini": 24.42,
+   "fin": 24.5
+  },
+  {
+   "w": "involucramiento",
+   "ini": 24.54,
+   "fin": 25.4
+  },
+  {
+   "w": "sigue",
+   "ini": 25.78,
+   "fin": 25.98
+  },
+  {
+   "w": "los",
+   "ini": 26.02,
+   "fin": 26.16
+  },
+  {
+   "w": "cambios",
+   "ini": 26.24,
+   "fin": 26.6
+  },
+  {
+   "w": "en",
+   "ini": 26.66,
+   "fin": 26.74
+  },
+  {
+   "w": "el",
+   "ini": 26.76,
+   "fin": 26.84
+  },
+  {
+   "w": "nivel",
+   "ini": 26.88,
+   "fin": 27.12
+  },
+  {
+   "w": "de",
+   "ini": 27.16,
+   "fin": 27.22
+  },
+  {
+   "w": "participación",
+   "ini": 27.28,
+   "fin": 28.12
+  },
+  {
+   "w": "de",
+   "ini": 28.16,
+   "fin": 28.24
+  },
+  {
+   "w": "cada",
+   "ini": 28.36,
+   "fin": 28.58
+  },
+  {
+   "w": "interesado.",
+   "ini": 28.62,
+   "fin": 29.28
+  },
+  {
+   "w": "Don",
+   "ini": 30.06,
+   "fin": 30.2
+  },
+  {
+   "w": "Tito",
+   "ini": 30.3,
+   "fin": 30.6
+  },
+  {
+   "w": "pasó",
+   "ini": 31.02,
+   "fin": 31.28
+  },
+  {
+   "w": "del",
+   "ini": 31.32,
+   "fin": 31.44
+  },
+  {
+   "w": "nivel",
+   "ini": 31.5,
+   "fin": 31.78
+  },
+  {
+   "w": "de",
+   "ini": 31.82,
+   "fin": 31.88
+  },
+  {
+   "w": "apoyo",
+   "ini": 31.92,
+   "fin": 32.34
+  },
+  {
+   "w": "al",
+   "ini": 32.58,
+   "fin": 32.68
+  },
+  {
+   "w": "neutral.",
+   "ini": 32.72,
+   "fin": 33.24
+  },
+  {
+   "w": "Pía",
+   "ini": 33.96,
+   "fin": 34.22
+  },
+  {
+   "w": "lo",
+   "ini": 34.52,
+   "fin": 34.58
+  },
+  {
+   "w": "nota",
+   "ini": 34.66,
+   "fin": 34.88
+  },
+  {
+   "w": "en",
+   "ini": 34.9,
+   "fin": 34.98
+  },
+  {
+   "w": "la",
+   "ini": 35,
+   "fin": 35.06
+  },
+  {
+   "w": "matriz.",
+   "ini": 35.12,
+   "fin": 35.58
+  },
+  {
+   "w": "Con",
+   "ini": 36.34,
+   "fin": 36.46
+  },
+  {
+   "w": "el",
+   "ini": 36.5,
+   "fin": 36.58
+  },
+  {
+   "w": "análisis",
+   "ini": 36.62,
+   "fin": 37.08
+  },
+  {
+   "w": "de",
+   "ini": 37.12,
+   "fin": 37.18
+  },
+  {
+   "w": "causa",
+   "ini": 37.26,
+   "fin": 37.56
+  },
+  {
+   "w": "raíz,",
+   "ini": 37.6,
+   "fin": 37.94
+  },
+  {
+   "w": "busca",
+   "ini": 38.24,
+   "fin": 38.52
+  },
+  {
+   "w": "el",
+   "ini": 38.54,
+   "fin": 38.62
+  },
+  {
+   "w": "motivo",
+   "ini": 38.66,
+   "fin": 39.02
+  },
+  {
+   "w": "de",
+   "ini": 39.06,
+   "fin": 39.12
+  },
+  {
+   "w": "fondo:",
+   "ini": 39.24,
+   "fin": 39.54
+  },
+  {
+   "w": "nadie",
+   "ini": 40.22,
+   "fin": 40.56
+  },
+  {
+   "w": "le",
+   "ini": 40.6,
+   "fin": 40.72
+  },
+  {
+   "w": "contó",
+   "ini": 40.76,
+   "fin": 41.16
+  },
+  {
+   "w": "los",
+   "ini": 41.22,
+   "fin": 41.36
+  },
+  {
+   "w": "nuevos",
+   "ini": 41.42,
+   "fin": 41.7
+  },
+  {
+   "w": "horarios.",
+   "ini": 41.72,
+   "fin": 42.24
+  },
+  {
+   "w": "Ayudan",
+   "ini": 43.16,
+   "fin": 43.52
+  },
+  {
+   "w": "escuchar",
+   "ini": 43.56,
+   "fin": 44
+  },
+  {
+   "w": "de",
+   "ini": 44.04,
+   "fin": 44.1
+  },
+  {
+   "w": "forma",
+   "ini": 44.2,
+   "fin": 44.42
+  },
+  {
+   "w": "activa,",
+   "ini": 44.46,
+   "fin": 44.86
+  },
+  {
+   "w": "la",
+   "ini": 45.24,
+   "fin": 45.32
+  },
+  {
+   "w": "retroalimentación",
+   "ini": 45.4,
+   "fin": 46.58
+  },
+  {
+   "w": "y",
+   "ini": 46.64,
+   "fin": 46.68
+  },
+  {
+   "w": "el",
+   "ini": 46.74,
+   "fin": 46.82
+  },
+  {
+   "w": "liderazgo.",
+   "ini": 46.84,
+   "fin": 47.42
+  },
+  {
+   "w": "Pía",
+   "ini": 48.34,
+   "fin": 48.54
+  },
+  {
+   "w": "lo",
+   "ini": 48.58,
+   "fin": 48.66
+  },
+  {
+   "w": "visita,",
+   "ini": 48.7,
+   "fin": 49.16
+  },
+  {
+   "w": "lo",
+   "ini": 49.5,
+   "fin": 49.58
+  },
+  {
+   "w": "escucha",
+   "ini": 49.62,
+   "fin": 50.14
+  },
+  {
+   "w": "y",
+   "ini": 50.48,
+   "fin": 50.52
+  },
+  {
+   "w": "le",
+   "ini": 50.56,
+   "fin": 50.62
+  },
+  {
+   "w": "explica",
+   "ini": 50.64,
+   "fin": 51.12
+  },
+  {
+   "w": "el",
+   "ini": 51.16,
+   "fin": 51.22
+  },
+  {
+   "w": "plan.",
+   "ini": 51.3,
+   "fin": 51.62
+  },
+  {
+   "w": "Don",
+   "ini": 52.36,
+   "fin": 52.5
+  },
+  {
+   "w": "Tito",
+   "ini": 52.58,
+   "fin": 52.88
+  },
+  {
+   "w": "vuelve",
+   "ini": 53.18,
+   "fin": 53.5
+  },
+  {
+   "w": "a",
+   "ini": 53.52,
+   "fin": 53.54
+  },
+  {
+   "w": "apoyar.",
+   "ini": 53.56,
+   "fin": 54
+  },
+  {
+   "w": "Si",
+   "ini": 54.94,
+   "fin": 55.02
+  },
+  {
+   "w": "hace",
+   "ini": 55.08,
+   "fin": 55.34
+  },
+  {
+   "w": "falta,",
+   "ini": 55.4,
+   "fin": 55.72
+  },
+  {
+   "w": "sale",
+   "ini": 56.1,
+   "fin": 56.34
+  },
+  {
+   "w": "una",
+   "ini": 56.4,
+   "fin": 56.52
+  },
+  {
+   "w": "solicitud",
+   "ini": 56.6,
+   "fin": 57.12
+  },
+  {
+   "w": "de",
+   "ini": 57.16,
+   "fin": 57.24
+  },
+  {
+   "w": "cambio",
+   "ini": 57.32,
+   "fin": 57.68
+  },
+  {
+   "w": "con",
+   "ini": 57.98,
+   "fin": 58.1
+  },
+  {
+   "w": "acciones",
+   "ini": 58.14,
+   "fin": 58.54
+  },
+  {
+   "w": "correctivas",
+   "ini": 58.6,
+   "fin": 59.24
+  },
+  {
+   "w": "o",
+   "ini": 59.28,
+   "fin": 59.32
+  },
+  {
+   "w": "preventivas",
+   "ini": 59.4,
+   "fin": 60.08
+  },
+  {
+   "w": "para",
+   "ini": 60.2,
+   "fin": 60.36
+  },
+  {
+   "w": "mejorar",
+   "ini": 60.4,
+   "fin": 60.8
+  },
+  {
+   "w": "el",
+   "ini": 60.84,
+   "fin": 60.9
+  },
+  {
+   "w": "involucramiento.",
+   "ini": 60.94,
+   "fin": 61.78
+  },
+  {
+   "w": "Ahora",
+   "ini": 62.82,
+   "fin": 63.12
+  },
+  {
+   "w": "te",
+   "ini": 63.18,
+   "fin": 63.26
+  },
+  {
+   "w": "toca.",
+   "ini": 63.34,
+   "fin": 63.66
+  },
+  {
+   "w": "Elige",
+   "ini": 64.28,
+   "fin": 64.62
+  },
+  {
+   "w": "un",
+   "ini": 64.66,
+   "fin": 64.739
+  },
+  {
+   "w": "interesado",
+   "ini": 64.78,
+   "fin": 65.36
+  },
+  {
+   "w": "de",
+   "ini": 65.4,
+   "fin": 65.48
+  },
+  {
+   "w": "tu",
+   "ini": 65.519,
+   "fin": 65.6
+  },
+  {
+   "w": "proyecto",
+   "ini": 65.66,
+   "fin": 66.16
+  },
+  {
+   "w": "y",
+   "ini": 66.38,
+   "fin": 66.4
+  },
+  {
+   "w": "anota",
+   "ini": 66.46,
+   "fin": 66.74
+  },
+  {
+   "w": "su",
+   "ini": 66.82,
+   "fin": 66.9
+  },
+  {
+   "w": "nivel",
+   "ini": 66.94,
+   "fin": 67.2
+  },
+  {
+   "w": "de",
+   "ini": 67.22,
+   "fin": 67.28
+  },
+  {
+   "w": "participación",
+   "ini": 67.34,
+   "fin": 68.04
+  },
+  {
+   "w": "actual",
+   "ini": 68.1,
+   "fin": 68.52
+  },
+  {
+   "w": "y",
+   "ini": 68.76,
+   "fin": 68.8
+  },
+  {
+   "w": "el",
+   "ini": 68.86,
+   "fin": 68.96
+  },
+  {
+   "w": "deseado.",
+   "ini": 69,
+   "fin": 69.42
+  }
+ ]
+}
