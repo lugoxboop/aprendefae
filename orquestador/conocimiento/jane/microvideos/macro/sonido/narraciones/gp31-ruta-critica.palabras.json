@@ -1,0 +1,890 @@
+{
+ "texto": "El carrito debe estar listo el sábado. ¿Qué actividades no pueden atrasarse ni un día? Pía junta la secuencia, las duraciones, los recursos y las restricciones. Eso es desarrollar el cronograma, analizar todo eso para crear un modelo de programación con fechas planificadas. Hay dos caminos: el del toldo suma 7 días, el de pintar el carrito, 4. El camino más largo es la ruta crítica. Determina la menor duración posible del proyecto. Normalmente, su holgura total es cero. Si una de sus actividades se atrasa, se atrasa el final. El camino de la pintura tiene 3 días de holgura. Puede demorarse sin mover la fecha de entrega. El resultado es el cronograma del proyecto. Actividades con fechas, duraciones, hitos y recursos. Muchas veces se ve como un diagrama de barras o de Gantt. La versión aprobada del modelo es la línea base del cronograma. Solo cambia con control formal de cambios. Durante el proyecto, las fechas reales se comparan con ella para ver si hay desviaciones. Ahora te toca. Encuentra la ruta crítica de tu proyecto.",
+ "palabras": [
+  {
+   "w": "El",
+   "ini": 0.1,
+   "fin": 0.18
+  },
+  {
+   "w": "carrito",
+   "ini": 0.26,
+   "fin": 0.7
+  },
+  {
+   "w": "debe",
+   "ini": 0.74,
+   "fin": 0.96
+  },
+  {
+   "w": "estar",
+   "ini": 1.02,
+   "fin": 1.32
+  },
+  {
+   "w": "listo",
+   "ini": 1.38,
+   "fin": 1.66
+  },
+  {
+   "w": "el",
+   "ini": 1.7,
+   "fin": 1.78
+  },
+  {
+   "w": "sábado.",
+   "ini": 1.84,
+   "fin": 2.2
+  },
+  {
+   "w": "¿Qué",
+   "ini": 3.06,
+   "fin": 3.16
+  },
+  {
+   "w": "actividades",
+   "ini": 3.22,
+   "fin": 3.9
+  },
+  {
+   "w": "no",
+   "ini": 3.98,
+   "fin": 4.14
+  },
+  {
+   "w": "pueden",
+   "ini": 4.18,
+   "fin": 4.46
+  },
+  {
+   "w": "atrasarse",
+   "ini": 4.52,
+   "fin": 5.18
+  },
+  {
+   "w": "ni",
+   "ini": 5.3,
+   "fin": 5.44
+  },
+  {
+   "w": "un",
+   "ini": 5.5,
+   "fin": 5.62
+  },
+  {
+   "w": "día?",
+   "ini": 5.68,
+   "fin": 5.9
+  },
+  {
+   "w": "Pía",
+   "ini": 7.32,
+   "fin": 7.64
+  },
+  {
+   "w": "junta",
+   "ini": 7.74,
+   "fin": 8
+  },
+  {
+   "w": "la",
+   "ini": 8.039,
+   "fin": 8.1
+  },
+  {
+   "w": "secuencia,",
+   "ini": 8.18,
+   "fin": 8.76
+  },
+  {
+   "w": "las",
+   "ini": 9.08,
+   "fin": 9.2
+  },
+  {
+   "w": "duraciones,",
+   "ini": 9.24,
+   "fin": 9.9
+  },
+  {
+   "w": "los",
+   "ini": 10.22,
+   "fin": 10.36
+  },
+  {
+   "w": "recursos",
+   "ini": 10.48,
+   "fin": 11.2
+  },
+  {
+   "w": "y",
+   "ini": 11.26,
+   "fin": 11.3
+  },
+  {
+   "w": "las",
+   "ini": 11.36,
+   "fin": 11.48
+  },
+  {
+   "w": "restricciones.",
+   "ini": 11.54,
+   "fin": 12.32
+  },
+  {
+   "w": "Eso",
+   "ini": 13.08,
+   "fin": 13.28
+  },
+  {
+   "w": "es",
+   "ini": 13.34,
+   "fin": 13.46
+  },
+  {
+   "w": "desarrollar",
+   "ini": 13.5,
+   "fin": 14.06
+  },
+  {
+   "w": "el",
+   "ini": 14.1,
+   "fin": 14.18
+  },
+  {
+   "w": "cronograma,",
+   "ini": 14.24,
+   "fin": 14.82
+  },
+  {
+   "w": "analizar",
+   "ini": 15.42,
+   "fin": 15.92
+  },
+  {
+   "w": "todo",
+   "ini": 16.079,
+   "fin": 16.3
+  },
+  {
+   "w": "eso",
+   "ini": 16.4,
+   "fin": 16.64
+  },
+  {
+   "w": "para",
+   "ini": 16.82,
+   "fin": 17.02
+  },
+  {
+   "w": "crear",
+   "ini": 17.06,
+   "fin": 17.28
+  },
+  {
+   "w": "un",
+   "ini": 17.32,
+   "fin": 17.4
+  },
+  {
+   "w": "modelo",
+   "ini": 17.46,
+   "fin": 17.78
+  },
+  {
+   "w": "de",
+   "ini": 17.82,
+   "fin": 17.9
+  },
+  {
+   "w": "programación",
+   "ini": 17.96,
+   "fin": 18.78
+  },
+  {
+   "w": "con",
+   "ini": 18.84,
+   "fin": 19.02
+  },
+  {
+   "w": "fechas",
+   "ini": 19.08,
+   "fin": 19.4
+  },
+  {
+   "w": "planificadas.",
+   "ini": 19.48,
+   "fin": 20.28
+  },
+  {
+   "w": "Hay",
+   "ini": 21.02,
+   "fin": 21.16
+  },
+  {
+   "w": "dos",
+   "ini": 21.2,
+   "fin": 21.36
+  },
+  {
+   "w": "caminos:",
+   "ini": 21.44,
+   "fin": 21.92
+  },
+  {
+   "w": "el",
+   "ini": 22.46,
+   "fin": 22.54
+  },
+  {
+   "w": "del",
+   "ini": 22.6,
+   "fin": 22.72
+  },
+  {
+   "w": "toldo",
+   "ini": 22.84,
+   "fin": 23.2
+  },
+  {
+   "w": "suma",
+   "ini": 23.4,
+   "fin": 23.62
+  },
+  {
+   "w": "7",
+   "ini": 23.68,
+   "fin": 23.92
+  },
+  {
+   "w": "días,",
+   "ini": 23.98,
+   "fin": 24.3
+  },
+  {
+   "w": "el",
+   "ini": 24.88,
+   "fin": 24.96
+  },
+  {
+   "w": "de",
+   "ini": 25,
+   "fin": 25.06
+  },
+  {
+   "w": "pintar",
+   "ini": 25.12,
+   "fin": 25.4
+  },
+  {
+   "w": "el",
+   "ini": 25.44,
+   "fin": 25.5
+  },
+  {
+   "w": "carrito,",
+   "ini": 25.56,
+   "fin": 26
+  },
+  {
+   "w": "4.",
+   "ini": 26.38,
+   "fin": 26.74
+  },
+  {
+   "w": "El",
+   "ini": 27.6,
+   "fin": 27.66
+  },
+  {
+   "w": "camino",
+   "ini": 27.74,
+   "fin": 28.12
+  },
+  {
+   "w": "más",
+   "ini": 28.2,
+   "fin": 28.4
+  },
+  {
+   "w": "largo",
+   "ini": 28.46,
+   "fin": 28.78
+  },
+  {
+   "w": "es",
+   "ini": 29.1,
+   "fin": 29.22
+  },
+  {
+   "w": "la",
+   "ini": 29.28,
+   "fin": 29.34
+  },
+  {
+   "w": "ruta",
+   "ini": 29.46,
+   "fin": 29.72
+  },
+  {
+   "w": "crítica.",
+   "ini": 29.82,
+   "fin": 30.3
+  },
+  {
+   "w": "Determina",
+   "ini": 30.72,
+   "fin": 31.24
+  },
+  {
+   "w": "la",
+   "ini": 31.28,
+   "fin": 31.34
+  },
+  {
+   "w": "menor",
+   "ini": 31.4,
+   "fin": 31.68
+  },
+  {
+   "w": "duración",
+   "ini": 31.74,
+   "fin": 32.159
+  },
+  {
+   "w": "posible",
+   "ini": 32.22,
+   "fin": 32.659
+  },
+  {
+   "w": "del",
+   "ini": 32.7,
+   "fin": 32.8
+  },
+  {
+   "w": "proyecto.",
+   "ini": 32.86,
+   "fin": 33.36
+  },
+  {
+   "w": "Normalmente,",
+   "ini": 33.96,
+   "fin": 34.64
+  },
+  {
+   "w": "su",
+   "ini": 34.74,
+   "fin": 34.82
+  },
+  {
+   "w": "holgura",
+   "ini": 34.86,
+   "fin": 35.22
+  },
+  {
+   "w": "total",
+   "ini": 35.28,
+   "fin": 35.66
+  },
+  {
+   "w": "es",
+   "ini": 35.86,
+   "fin": 36.02
+  },
+  {
+   "w": "cero.",
+   "ini": 36.26,
+   "fin": 36.54
+  },
+  {
+   "w": "Si",
+   "ini": 37.16,
+   "fin": 37.26
+  },
+  {
+   "w": "una",
+   "ini": 37.32,
+   "fin": 37.46
+  },
+  {
+   "w": "de",
+   "ini": 37.5,
+   "fin": 37.56
+  },
+  {
+   "w": "sus",
+   "ini": 37.62,
+   "fin": 37.76
+  },
+  {
+   "w": "actividades",
+   "ini": 37.82,
+   "fin": 38.48
+  },
+  {
+   "w": "se",
+   "ini": 38.54,
+   "fin": 38.62
+  },
+  {
+   "w": "atrasa,",
+   "ini": 38.66,
+   "fin": 39.1
+  },
+  {
+   "w": "se",
+   "ini": 39.34,
+   "fin": 39.42
+  },
+  {
+   "w": "atrasa",
+   "ini": 39.48,
+   "fin": 39.84
+  },
+  {
+   "w": "el",
+   "ini": 39.88,
+   "fin": 39.94
+  },
+  {
+   "w": "final.",
+   "ini": 40,
+   "fin": 40.38
+  },
+  {
+   "w": "El",
+   "ini": 41.14,
+   "fin": 41.2
+  },
+  {
+   "w": "camino",
+   "ini": 41.28,
+   "fin": 41.6
+  },
+  {
+   "w": "de",
+   "ini": 41.64,
+   "fin": 41.68
+  },
+  {
+   "w": "la",
+   "ini": 41.72,
+   "fin": 41.76
+  },
+  {
+   "w": "pintura",
+   "ini": 41.84,
+   "fin": 42.26
+  },
+  {
+   "w": "tiene",
+   "ini": 42.34,
+   "fin": 42.6
+  },
+  {
+   "w": "3",
+   "ini": 42.66,
+   "fin": 42.86
+  },
+  {
+   "w": "días",
+   "ini": 42.92,
+   "fin": 43.14
+  },
+  {
+   "w": "de",
+   "ini": 43.18,
+   "fin": 43.24
+  },
+  {
+   "w": "holgura.",
+   "ini": 43.26,
+   "fin": 43.66
+  },
+  {
+   "w": "Puede",
+   "ini": 44.1,
+   "fin": 44.3
+  },
+  {
+   "w": "demorarse",
+   "ini": 44.36,
+   "fin": 44.9
+  },
+  {
+   "w": "sin",
+   "ini": 45.02,
+   "fin": 45.18
+  },
+  {
+   "w": "mover",
+   "ini": 45.22,
+   "fin": 45.56
+  },
+  {
+   "w": "la",
+   "ini": 45.62,
+   "fin": 45.68
+  },
+  {
+   "w": "fecha",
+   "ini": 45.76,
+   "fin": 46
+  },
+  {
+   "w": "de",
+   "ini": 46.02,
+   "fin": 46.06
+  },
+  {
+   "w": "entrega.",
+   "ini": 46.1,
+   "fin": 46.52
+  },
+  {
+   "w": "El",
+   "ini": 47.26,
+   "fin": 47.34
+  },
+  {
+   "w": "resultado",
+   "ini": 47.4,
+   "fin": 48.12
+  },
+  {
+   "w": "es",
+   "ini": 48.18,
+   "fin": 48.28
+  },
+  {
+   "w": "el",
+   "ini": 48.32,
+   "fin": 48.4
+  },
+  {
+   "w": "cronograma",
+   "ini": 48.48,
+   "fin": 49.04
+  },
+  {
+   "w": "del",
+   "ini": 49.08,
+   "fin": 49.18
+  },
+  {
+   "w": "proyecto.",
+   "ini": 49.24,
+   "fin": 49.76
+  },
+  {
+   "w": "Actividades",
+   "ini": 50.26,
+   "fin": 50.92
+  },
+  {
+   "w": "con",
+   "ini": 50.98,
+   "fin": 51.14
+  },
+  {
+   "w": "fechas,",
+   "ini": 51.2,
+   "fin": 51.62
+  },
+  {
+   "w": "duraciones,",
+   "ini": 51.86,
+   "fin": 52.54
+  },
+  {
+   "w": "hitos",
+   "ini": 52.84,
+   "fin": 53.26
+  },
+  {
+   "w": "y",
+   "ini": 53.42,
+   "fin": 53.46
+  },
+  {
+   "w": "recursos.",
+   "ini": 53.56,
+   "fin": 54.2
+  },
+  {
+   "w": "Muchas",
+   "ini": 54.98,
+   "fin": 55.3
+  },
+  {
+   "w": "veces",
+   "ini": 55.34,
+   "fin": 55.7
+  },
+  {
+   "w": "se",
+   "ini": 55.86,
+   "fin": 55.96
+  },
+  {
+   "w": "ve",
+   "ini": 55.98,
+   "fin": 56.06
+  },
+  {
+   "w": "como",
+   "ini": 56.14,
+   "fin": 56.32
+  },
+  {
+   "w": "un",
+   "ini": 56.36,
+   "fin": 56.44
+  },
+  {
+   "w": "diagrama",
+   "ini": 56.46,
+   "fin": 56.86
+  },
+  {
+   "w": "de",
+   "ini": 56.9,
+   "fin": 56.98
+  },
+  {
+   "w": "barras",
+   "ini": 57.02,
+   "fin": 57.4
+  },
+  {
+   "w": "o",
+   "ini": 57.54,
+   "fin": 57.6
+  },
+  {
+   "w": "de",
+   "ini": 57.64,
+   "fin": 57.72
+  },
+  {
+   "w": "Gantt.",
+   "ini": 57.78,
+   "fin": 58.14
+  },
+  {
+   "w": "La",
+   "ini": 58.76,
+   "fin": 58.84
+  },
+  {
+   "w": "versión",
+   "ini": 58.88,
+   "fin": 59.24
+  },
+  {
+   "w": "aprobada",
+   "ini": 59.28,
+   "fin": 59.74
+  },
+  {
+   "w": "del",
+   "ini": 59.78,
+   "fin": 59.88
+  },
+  {
+   "w": "modelo",
+   "ini": 59.96,
+   "fin": 60.34
+  },
+  {
+   "w": "es",
+   "ini": 60.52,
+   "fin": 60.66
+  },
+  {
+   "w": "la",
+   "ini": 60.72,
+   "fin": 60.8
+  },
+  {
+   "w": "línea",
+   "ini": 60.9,
+   "fin": 61.24
+  },
+  {
+   "w": "base",
+   "ini": 61.26,
+   "fin": 61.54
+  },
+  {
+   "w": "del",
+   "ini": 61.58,
+   "fin": 61.7
+  },
+  {
+   "w": "cronograma.",
+   "ini": 61.76,
+   "fin": 62.36
+  },
+  {
+   "w": "Solo",
+   "ini": 62.84,
+   "fin": 63.04
+  },
+  {
+   "w": "cambia",
+   "ini": 63.14,
+   "fin": 63.48
+  },
+  {
+   "w": "con",
+   "ini": 63.58,
+   "fin": 63.72
+  },
+  {
+   "w": "control",
+   "ini": 63.78,
+   "fin": 64.18
+  },
+  {
+   "w": "formal",
+   "ini": 64.26,
+   "fin": 64.599
+  },
+  {
+   "w": "de",
+   "ini": 64.64,
+   "fin": 64.7
+  },
+  {
+   "w": "cambios.",
+   "ini": 64.78,
+   "fin": 65.239
+  },
+  {
+   "w": "Durante",
+   "ini": 65.94,
+   "fin": 66.24
+  },
+  {
+   "w": "el",
+   "ini": 66.26,
+   "fin": 66.3
+  },
+  {
+   "w": "proyecto,",
+   "ini": 66.36,
+   "fin": 66.84
+  },
+  {
+   "w": "las",
+   "ini": 67.18,
+   "fin": 67.32
+  },
+  {
+   "w": "fechas",
+   "ini": 67.36,
+   "fin": 67.68
+  },
+  {
+   "w": "reales",
+   "ini": 67.78,
+   "fin": 68.16
+  },
+  {
+   "w": "se",
+   "ini": 68.3,
+   "fin": 68.38
+  },
+  {
+   "w": "comparan",
+   "ini": 68.44,
+   "fin": 68.82
+  },
+  {
+   "w": "con",
+   "ini": 68.86,
+   "fin": 69
+  },
+  {
+   "w": "ella",
+   "ini": 69.08,
+   "fin": 69.26
+  },
+  {
+   "w": "para",
+   "ini": 69.36,
+   "fin": 69.54
+  },
+  {
+   "w": "ver",
+   "ini": 69.56,
+   "fin": 69.7
+  },
+  {
+   "w": "si",
+   "ini": 69.78,
+   "fin": 69.86
+  },
+  {
+   "w": "hay",
+   "ini": 69.9,
+   "fin": 70.02
+  },
+  {
+   "w": "desviaciones.",
+   "ini": 70.06,
+   "fin": 70.88
+  },
+  {
+   "w": "Ahora",
+   "ini": 71.78,
+   "fin": 72.1
+  },
+  {
+   "w": "te",
+   "ini": 72.16,
+   "fin": 72.24
+  },
+  {
+   "w": "toca.",
+   "ini": 72.32,
+   "fin": 72.66
+  },
+  {
+   "w": "Encuentra",
+   "ini": 73.16,
+   "fin": 73.74
+  },
+  {
+   "w": "la",
+   "ini": 73.78,
+   "fin": 73.86
+  },
+  {
+   "w": "ruta",
+   "ini": 73.94,
+   "fin": 74.2
+  },
+  {
+   "w": "crítica",
+   "ini": 74.3,
+   "fin": 74.78
+  },
+  {
+   "w": "de",
+   "ini": 74.82,
+   "fin": 74.88
+  },
+  {
+   "w": "tu",
+   "ini": 74.94,
+   "fin": 75.02
+  },
+  {
+   "w": "proyecto.",
+   "ini": 75.08,
+   "fin": 75.58
+  }
+ ]
+}

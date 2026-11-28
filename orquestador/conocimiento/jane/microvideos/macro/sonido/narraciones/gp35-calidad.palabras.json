@@ -1,0 +1,805 @@
+{
+ "texto": "Un día, el pan sale perfecto; al otro, quemado. ¿Qué es buen pan para el carrito? Si nadie lo define, nadie puede comprobarlo. Planificar la gestión de la calidad es identificar los requisitos o estándares de calidad del proyecto y sus entregables y documentar cómo se demostrará su cumplimiento. El resultado es el plan de gestión de la calidad. Dice qué estándares y objetivos de calidad se usarán y quién es responsable de qué, qué entregables y procesos se revisarán, con qué actividades y herramientas y sus procedimientos clave, no conformidades, acciones correctivas y mejora continua. Además, se definen las métricas de calidad. Cada una describe un atributo del producto o del proyecto y cómo controlar la calidad verificará su cumplimiento. Por ejemplo, el número de panes quemados por día o la satisfacción de los clientes. Es parte del plan para la dirección del proyecto y conviene revisarlo temprano. Ahora te toca. Define una métrica de calidad para tu proyecto.",
+ "palabras": [
+  {
+   "w": "Un",
+   "ini": 0.08,
+   "fin": 0.18
+  },
+  {
+   "w": "día,",
+   "ini": 0.24,
+   "fin": 0.48
+  },
+  {
+   "w": "el",
+   "ini": 0.84,
+   "fin": 0.92
+  },
+  {
+   "w": "pan",
+   "ini": 1.02,
+   "fin": 1.2
+  },
+  {
+   "w": "sale",
+   "ini": 1.26,
+   "fin": 1.46
+  },
+  {
+   "w": "perfecto;",
+   "ini": 1.5,
+   "fin": 2
+  },
+  {
+   "w": "al",
+   "ini": 2.56,
+   "fin": 2.66
+  },
+  {
+   "w": "otro,",
+   "ini": 2.74,
+   "fin": 2.96
+  },
+  {
+   "w": "quemado.",
+   "ini": 3.28,
+   "fin": 3.76
+  },
+  {
+   "w": "¿Qué",
+   "ini": 4.5,
+   "fin": 4.68
+  },
+  {
+   "w": "es",
+   "ini": 4.78,
+   "fin": 4.94
+  },
+  {
+   "w": "buen",
+   "ini": 5.02,
+   "fin": 5.22
+  },
+  {
+   "w": "pan",
+   "ini": 5.36,
+   "fin": 5.68
+  },
+  {
+   "w": "para",
+   "ini": 5.72,
+   "fin": 5.84
+  },
+  {
+   "w": "el",
+   "ini": 5.88,
+   "fin": 5.94
+  },
+  {
+   "w": "carrito?",
+   "ini": 6,
+   "fin": 6.44
+  },
+  {
+   "w": "Si",
+   "ini": 7.4,
+   "fin": 7.5
+  },
+  {
+   "w": "nadie",
+   "ini": 7.56,
+   "fin": 7.86
+  },
+  {
+   "w": "lo",
+   "ini": 7.9,
+   "fin": 7.96
+  },
+  {
+   "w": "define,",
+   "ini": 8,
+   "fin": 8.38
+  },
+  {
+   "w": "nadie",
+   "ini": 8.98,
+   "fin": 9.34
+  },
+  {
+   "w": "puede",
+   "ini": 9.4,
+   "fin": 9.64
+  },
+  {
+   "w": "comprobarlo.",
+   "ini": 9.7,
+   "fin": 10.32
+  },
+  {
+   "w": "Planificar",
+   "ini": 11.7,
+   "fin": 12.22
+  },
+  {
+   "w": "la",
+   "ini": 12.26,
+   "fin": 12.34
+  },
+  {
+   "w": "gestión",
+   "ini": 12.4,
+   "fin": 12.76
+  },
+  {
+   "w": "de",
+   "ini": 12.8,
+   "fin": 12.84
+  },
+  {
+   "w": "la",
+   "ini": 12.88,
+   "fin": 12.92
+  },
+  {
+   "w": "calidad",
+   "ini": 12.98,
+   "fin": 13.5
+  },
+  {
+   "w": "es",
+   "ini": 13.6,
+   "fin": 13.82
+  },
+  {
+   "w": "identificar",
+   "ini": 13.92,
+   "fin": 14.68
+  },
+  {
+   "w": "los",
+   "ini": 14.74,
+   "fin": 14.88
+  },
+  {
+   "w": "requisitos",
+   "ini": 15,
+   "fin": 15.78
+  },
+  {
+   "w": "o",
+   "ini": 15.84,
+   "fin": 15.9
+  },
+  {
+   "w": "estándares",
+   "ini": 15.96,
+   "fin": 16.56
+  },
+  {
+   "w": "de",
+   "ini": 16.6,
+   "fin": 16.66
+  },
+  {
+   "w": "calidad",
+   "ini": 16.72,
+   "fin": 17.1
+  },
+  {
+   "w": "del",
+   "ini": 17.14,
+   "fin": 17.24
+  },
+  {
+   "w": "proyecto",
+   "ini": 17.3,
+   "fin": 17.78
+  },
+  {
+   "w": "y",
+   "ini": 18.04,
+   "fin": 18.1
+  },
+  {
+   "w": "sus",
+   "ini": 18.18,
+   "fin": 18.32
+  },
+  {
+   "w": "entregables",
+   "ini": 18.38,
+   "fin": 19.04
+  },
+  {
+   "w": "y",
+   "ini": 19.66,
+   "fin": 19.7
+  },
+  {
+   "w": "documentar",
+   "ini": 19.76,
+   "fin": 20.38
+  },
+  {
+   "w": "cómo",
+   "ini": 20.76,
+   "fin": 20.96
+  },
+  {
+   "w": "se",
+   "ini": 21.04,
+   "fin": 21.12
+  },
+  {
+   "w": "demostrará",
+   "ini": 21.16,
+   "fin": 21.78
+  },
+  {
+   "w": "su",
+   "ini": 21.84,
+   "fin": 21.9
+  },
+  {
+   "w": "cumplimiento.",
+   "ini": 21.98,
+   "fin": 22.64
+  },
+  {
+   "w": "El",
+   "ini": 23.54,
+   "fin": 23.6
+  },
+  {
+   "w": "resultado",
+   "ini": 23.66,
+   "fin": 24.18
+  },
+  {
+   "w": "es",
+   "ini": 24.54,
+   "fin": 24.64
+  },
+  {
+   "w": "el",
+   "ini": 24.7,
+   "fin": 24.82
+  },
+  {
+   "w": "plan",
+   "ini": 24.86,
+   "fin": 25.1
+  },
+  {
+   "w": "de",
+   "ini": 25.14,
+   "fin": 25.2
+  },
+  {
+   "w": "gestión",
+   "ini": 25.28,
+   "fin": 25.72
+  },
+  {
+   "w": "de",
+   "ini": 25.74,
+   "fin": 25.8
+  },
+  {
+   "w": "la",
+   "ini": 25.84,
+   "fin": 25.88
+  },
+  {
+   "w": "calidad.",
+   "ini": 25.96,
+   "fin": 26.4
+  },
+  {
+   "w": "Dice",
+   "ini": 27.22,
+   "fin": 27.54
+  },
+  {
+   "w": "qué",
+   "ini": 27.78,
+   "fin": 27.9
+  },
+  {
+   "w": "estándares",
+   "ini": 27.94,
+   "fin": 28.7
+  },
+  {
+   "w": "y",
+   "ini": 28.74,
+   "fin": 28.78
+  },
+  {
+   "w": "objetivos",
+   "ini": 28.86,
+   "fin": 29.42
+  },
+  {
+   "w": "de",
+   "ini": 29.46,
+   "fin": 29.54
+  },
+  {
+   "w": "calidad",
+   "ini": 29.58,
+   "fin": 30.02
+  },
+  {
+   "w": "se",
+   "ini": 30.08,
+   "fin": 30.16
+  },
+  {
+   "w": "usarán",
+   "ini": 30.22,
+   "fin": 30.64
+  },
+  {
+   "w": "y",
+   "ini": 31.14,
+   "fin": 31.2
+  },
+  {
+   "w": "quién",
+   "ini": 31.32,
+   "fin": 31.66
+  },
+  {
+   "w": "es",
+   "ini": 31.76,
+   "fin": 31.86
+  },
+  {
+   "w": "responsable",
+   "ini": 31.92,
+   "fin": 32.5
+  },
+  {
+   "w": "de",
+   "ini": 32.54,
+   "fin": 32.619
+  },
+  {
+   "w": "qué,",
+   "ini": 32.72,
+   "fin": 32.84
+  },
+  {
+   "w": "qué",
+   "ini": 33.72,
+   "fin": 33.82
+  },
+  {
+   "w": "entregables",
+   "ini": 33.86,
+   "fin": 34.48
+  },
+  {
+   "w": "y",
+   "ini": 34.52,
+   "fin": 34.56
+  },
+  {
+   "w": "procesos",
+   "ini": 34.62,
+   "fin": 35.16
+  },
+  {
+   "w": "se",
+   "ini": 35.32,
+   "fin": 35.4
+  },
+  {
+   "w": "revisarán,",
+   "ini": 35.46,
+   "fin": 36.1
+  },
+  {
+   "w": "con",
+   "ini": 36.66,
+   "fin": 36.8
+  },
+  {
+   "w": "qué",
+   "ini": 36.88,
+   "fin": 37
+  },
+  {
+   "w": "actividades",
+   "ini": 37.06,
+   "fin": 37.88
+  },
+  {
+   "w": "y",
+   "ini": 37.92,
+   "fin": 37.98
+  },
+  {
+   "w": "herramientas",
+   "ini": 38.02,
+   "fin": 38.76
+  },
+  {
+   "w": "y",
+   "ini": 39.46,
+   "fin": 39.5
+  },
+  {
+   "w": "sus",
+   "ini": 39.58,
+   "fin": 39.76
+  },
+  {
+   "w": "procedimientos",
+   "ini": 39.8,
+   "fin": 40.54
+  },
+  {
+   "w": "clave,",
+   "ini": 40.64,
+   "fin": 40.92
+  },
+  {
+   "w": "no",
+   "ini": 41.6,
+   "fin": 41.7
+  },
+  {
+   "w": "conformidades,",
+   "ini": 41.74,
+   "fin": 42.52
+  },
+  {
+   "w": "acciones",
+   "ini": 42.86,
+   "fin": 43.24
+  },
+  {
+   "w": "correctivas",
+   "ini": 43.28,
+   "fin": 43.92
+  },
+  {
+   "w": "y",
+   "ini": 44.18,
+   "fin": 44.22
+  },
+  {
+   "w": "mejora",
+   "ini": 44.3,
+   "fin": 44.64
+  },
+  {
+   "w": "continua.",
+   "ini": 44.72,
+   "fin": 45.16
+  },
+  {
+   "w": "Además,",
+   "ini": 46.12,
+   "fin": 46.48
+  },
+  {
+   "w": "se",
+   "ini": 46.86,
+   "fin": 46.94
+  },
+  {
+   "w": "definen",
+   "ini": 46.98,
+   "fin": 47.4
+  },
+  {
+   "w": "las",
+   "ini": 47.44,
+   "fin": 47.58
+  },
+  {
+   "w": "métricas",
+   "ini": 47.66,
+   "fin": 48.14
+  },
+  {
+   "w": "de",
+   "ini": 48.18,
+   "fin": 48.26
+  },
+  {
+   "w": "calidad.",
+   "ini": 48.32,
+   "fin": 48.78
+  },
+  {
+   "w": "Cada",
+   "ini": 49.52,
+   "fin": 49.76
+  },
+  {
+   "w": "una",
+   "ini": 49.82,
+   "fin": 49.98
+  },
+  {
+   "w": "describe",
+   "ini": 50,
+   "fin": 50.48
+  },
+  {
+   "w": "un",
+   "ini": 50.54,
+   "fin": 50.6
+  },
+  {
+   "w": "atributo",
+   "ini": 50.64,
+   "fin": 51.14
+  },
+  {
+   "w": "del",
+   "ini": 51.18,
+   "fin": 51.28
+  },
+  {
+   "w": "producto",
+   "ini": 51.34,
+   "fin": 51.82
+  },
+  {
+   "w": "o",
+   "ini": 52.02,
+   "fin": 52.06
+  },
+  {
+   "w": "del",
+   "ini": 52.12,
+   "fin": 52.22
+  },
+  {
+   "w": "proyecto",
+   "ini": 52.28,
+   "fin": 52.76
+  },
+  {
+   "w": "y",
+   "ini": 53.34,
+   "fin": 53.4
+  },
+  {
+   "w": "cómo",
+   "ini": 53.56,
+   "fin": 53.86
+  },
+  {
+   "w": "controlar",
+   "ini": 54.1,
+   "fin": 54.6
+  },
+  {
+   "w": "la",
+   "ini": 54.66,
+   "fin": 54.72
+  },
+  {
+   "w": "calidad",
+   "ini": 54.78,
+   "fin": 55.22
+  },
+  {
+   "w": "verificará",
+   "ini": 55.4,
+   "fin": 55.98
+  },
+  {
+   "w": "su",
+   "ini": 56.02,
+   "fin": 56.1
+  },
+  {
+   "w": "cumplimiento.",
+   "ini": 56.16,
+   "fin": 56.84
+  },
+  {
+   "w": "Por",
+   "ini": 57.52,
+   "fin": 57.62
+  },
+  {
+   "w": "ejemplo,",
+   "ini": 57.66,
+   "fin": 58.04
+  },
+  {
+   "w": "el",
+   "ini": 58.7,
+   "fin": 58.8
+  },
+  {
+   "w": "número",
+   "ini": 58.86,
+   "fin": 59.14
+  },
+  {
+   "w": "de",
+   "ini": 59.16,
+   "fin": 59.24
+  },
+  {
+   "w": "panes",
+   "ini": 59.32,
+   "fin": 59.6
+  },
+  {
+   "w": "quemados",
+   "ini": 59.66,
+   "fin": 60.06
+  },
+  {
+   "w": "por",
+   "ini": 60.1,
+   "fin": 60.2
+  },
+  {
+   "w": "día",
+   "ini": 60.26,
+   "fin": 60.5
+  },
+  {
+   "w": "o",
+   "ini": 60.98,
+   "fin": 61.04
+  },
+  {
+   "w": "la",
+   "ini": 61.1,
+   "fin": 61.16
+  },
+  {
+   "w": "satisfacción",
+   "ini": 61.22,
+   "fin": 61.9
+  },
+  {
+   "w": "de",
+   "ini": 61.94,
+   "fin": 61.98
+  },
+  {
+   "w": "los",
+   "ini": 62.02,
+   "fin": 62.12
+  },
+  {
+   "w": "clientes.",
+   "ini": 62.18,
+   "fin": 62.68
+  },
+  {
+   "w": "Es",
+   "ini": 63.62,
+   "fin": 63.78
+  },
+  {
+   "w": "parte",
+   "ini": 63.82,
+   "fin": 64.08
+  },
+  {
+   "w": "del",
+   "ini": 64.12,
+   "fin": 64.239
+  },
+  {
+   "w": "plan",
+   "ini": 64.319,
+   "fin": 64.56
+  },
+  {
+   "w": "para",
+   "ini": 64.66,
+   "fin": 64.819
+  },
+  {
+   "w": "la",
+   "ini": 64.84,
+   "fin": 64.92
+  },
+  {
+   "w": "dirección",
+   "ini": 64.959,
+   "fin": 65.42
+  },
+  {
+   "w": "del",
+   "ini": 65.459,
+   "fin": 65.56
+  },
+  {
+   "w": "proyecto",
+   "ini": 65.62,
+   "fin": 66.08
+  },
+  {
+   "w": "y",
+   "ini": 66.5,
+   "fin": 66.54
+  },
+  {
+   "w": "conviene",
+   "ini": 66.64,
+   "fin": 67.08
+  },
+  {
+   "w": "revisarlo",
+   "ini": 67.12,
+   "fin": 67.68
+  },
+  {
+   "w": "temprano.",
+   "ini": 67.74,
+   "fin": 68.2
+  },
+  {
+   "w": "Ahora",
+   "ini": 69.38,
+   "fin": 69.64
+  },
+  {
+   "w": "te",
+   "ini": 69.68,
+   "fin": 69.78
+  },
+  {
+   "w": "toca.",
+   "ini": 69.84,
+   "fin": 70.14
+  },
+  {
+   "w": "Define",
+   "ini": 70.6,
+   "fin": 71.04
+  },
+  {
+   "w": "una",
+   "ini": 71.08,
+   "fin": 71.2
+  },
+  {
+   "w": "métrica",
+   "ini": 71.3,
+   "fin": 71.76
+  },
+  {
+   "w": "de",
+   "ini": 71.78,
+   "fin": 71.86
+  },
+  {
+   "w": "calidad",
+   "ini": 71.92,
+   "fin": 72.38
+  },
+  {
+   "w": "para",
+   "ini": 72.48,
+   "fin": 72.64
+  },
+  {
+   "w": "tu",
+   "ini": 72.7,
+   "fin": 72.76
+  },
+  {
+   "w": "proyecto.",
+   "ini": 72.82,
+   "fin": 73.32
+  }
+ ]
+}

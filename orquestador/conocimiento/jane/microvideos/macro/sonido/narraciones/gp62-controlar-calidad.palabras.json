@@ -1,0 +1,820 @@
+{
+ "texto": "Salió el primer lote de panes para la feria. Ramón quiere empacarlos ya. Pía lo detiene. ¿Y si vienen quemados? Controlar la calidad es monitorear y registrar los resultados de las actividades de gestión de calidad para que las salidas sean completas, correctas y satisfagan las expectativas del cliente. Se verifica que el trabajo cumpla los requisitos antes de la aceptación final. Una herramienta es la hoja de verificación. Anota cuántas veces aparece cada defecto. Otra, el muestreo estadístico. No se revisa todo, sino una parte elegida. Y la inspección, examinar el producto para ver si cumple los estándares documentados. Ramón revisa 20 panes al azar y anota: tres quemados, uno crudo. Con el análisis de causa raíz, encuentran el origen: el horno calienta de más. Los resultados quedan como mediciones de control de calidad y lo que cumple se vuelve entregable verificado, listo para validar el alcance. Ahora te toca. Arma una hoja de verificación con tres defectos posibles de tu entregable.",
+ "palabras": [
+  {
+   "w": "Salió",
+   "ini": 0.14,
+   "fin": 0.48
+  },
+  {
+   "w": "el",
+   "ini": 0.54,
+   "fin": 0.6
+  },
+  {
+   "w": "primer",
+   "ini": 0.68,
+   "fin": 1.04
+  },
+  {
+   "w": "lote",
+   "ini": 1.12,
+   "fin": 1.36
+  },
+  {
+   "w": "de",
+   "ini": 1.4,
+   "fin": 1.48
+  },
+  {
+   "w": "panes",
+   "ini": 1.58,
+   "fin": 1.92
+  },
+  {
+   "w": "para",
+   "ini": 1.96,
+   "fin": 2.1
+  },
+  {
+   "w": "la",
+   "ini": 2.14,
+   "fin": 2.2
+  },
+  {
+   "w": "feria.",
+   "ini": 2.28,
+   "fin": 2.62
+  },
+  {
+   "w": "Ramón",
+   "ini": 3.12,
+   "fin": 3.4
+  },
+  {
+   "w": "quiere",
+   "ini": 3.44,
+   "fin": 3.6
+  },
+  {
+   "w": "empacarlos",
+   "ini": 3.64,
+   "fin": 4.24
+  },
+  {
+   "w": "ya.",
+   "ini": 4.32,
+   "fin": 4.48
+  },
+  {
+   "w": "Pía",
+   "ini": 5.26,
+   "fin": 5.44
+  },
+  {
+   "w": "lo",
+   "ini": 5.48,
+   "fin": 5.56
+  },
+  {
+   "w": "detiene.",
+   "ini": 5.6,
+   "fin": 6.02
+  },
+  {
+   "w": "¿Y",
+   "ini": 6.62,
+   "fin": 6.72
+  },
+  {
+   "w": "si",
+   "ini": 6.8,
+   "fin": 6.88
+  },
+  {
+   "w": "vienen",
+   "ini": 6.94,
+   "fin": 7.2
+  },
+  {
+   "w": "quemados?",
+   "ini": 7.24,
+   "fin": 7.74
+  },
+  {
+   "w": "Controlar",
+   "ini": 8.46,
+   "fin": 8.94
+  },
+  {
+   "w": "la",
+   "ini": 9,
+   "fin": 9.04
+  },
+  {
+   "w": "calidad",
+   "ini": 9.12,
+   "fin": 9.6
+  },
+  {
+   "w": "es",
+   "ini": 9.92,
+   "fin": 10.08
+  },
+  {
+   "w": "monitorear",
+   "ini": 10.16,
+   "fin": 10.92
+  },
+  {
+   "w": "y",
+   "ini": 11,
+   "fin": 11.06
+  },
+  {
+   "w": "registrar",
+   "ini": 11.2,
+   "fin": 11.8
+  },
+  {
+   "w": "los",
+   "ini": 11.86,
+   "fin": 11.98
+  },
+  {
+   "w": "resultados",
+   "ini": 12.04,
+   "fin": 12.64
+  },
+  {
+   "w": "de",
+   "ini": 12.66,
+   "fin": 12.72
+  },
+  {
+   "w": "las",
+   "ini": 12.76,
+   "fin": 12.86
+  },
+  {
+   "w": "actividades",
+   "ini": 12.92,
+   "fin": 13.5
+  },
+  {
+   "w": "de",
+   "ini": 13.54,
+   "fin": 13.6
+  },
+  {
+   "w": "gestión",
+   "ini": 13.64,
+   "fin": 13.98
+  },
+  {
+   "w": "de",
+   "ini": 14,
+   "fin": 14.06
+  },
+  {
+   "w": "calidad",
+   "ini": 14.12,
+   "fin": 14.52
+  },
+  {
+   "w": "para",
+   "ini": 14.9,
+   "fin": 15.04
+  },
+  {
+   "w": "que",
+   "ini": 15.08,
+   "fin": 15.16
+  },
+  {
+   "w": "las",
+   "ini": 15.18,
+   "fin": 15.28
+  },
+  {
+   "w": "salidas",
+   "ini": 15.32,
+   "fin": 15.72
+  },
+  {
+   "w": "sean",
+   "ini": 15.9,
+   "fin": 16.1
+  },
+  {
+   "w": "completas,",
+   "ini": 16.14,
+   "fin": 16.72
+  },
+  {
+   "w": "correctas",
+   "ini": 16.98,
+   "fin": 17.52
+  },
+  {
+   "w": "y",
+   "ini": 17.78,
+   "fin": 17.82
+  },
+  {
+   "w": "satisfagan",
+   "ini": 17.88,
+   "fin": 18.48
+  },
+  {
+   "w": "las",
+   "ini": 18.52,
+   "fin": 18.64
+  },
+  {
+   "w": "expectativas",
+   "ini": 18.7,
+   "fin": 19.46
+  },
+  {
+   "w": "del",
+   "ini": 19.48,
+   "fin": 19.6
+  },
+  {
+   "w": "cliente.",
+   "ini": 19.66,
+   "fin": 20.1
+  },
+  {
+   "w": "Se",
+   "ini": 20.62,
+   "fin": 20.7
+  },
+  {
+   "w": "verifica",
+   "ini": 20.74,
+   "fin": 21.14
+  },
+  {
+   "w": "que",
+   "ini": 21.2,
+   "fin": 21.26
+  },
+  {
+   "w": "el",
+   "ini": 21.3,
+   "fin": 21.36
+  },
+  {
+   "w": "trabajo",
+   "ini": 21.4,
+   "fin": 21.82
+  },
+  {
+   "w": "cumpla",
+   "ini": 22,
+   "fin": 22.3
+  },
+  {
+   "w": "los",
+   "ini": 22.34,
+   "fin": 22.48
+  },
+  {
+   "w": "requisitos",
+   "ini": 22.56,
+   "fin": 23.2
+  },
+  {
+   "w": "antes",
+   "ini": 23.54,
+   "fin": 23.82
+  },
+  {
+   "w": "de",
+   "ini": 23.84,
+   "fin": 23.9
+  },
+  {
+   "w": "la",
+   "ini": 23.94,
+   "fin": 23.98
+  },
+  {
+   "w": "aceptación",
+   "ini": 24.02,
+   "fin": 24.52
+  },
+  {
+   "w": "final.",
+   "ini": 24.58,
+   "fin": 24.92
+  },
+  {
+   "w": "Una",
+   "ini": 25.72,
+   "fin": 25.82
+  },
+  {
+   "w": "herramienta",
+   "ini": 25.86,
+   "fin": 26.48
+  },
+  {
+   "w": "es",
+   "ini": 26.84,
+   "fin": 26.98
+  },
+  {
+   "w": "la",
+   "ini": 27.04,
+   "fin": 27.14
+  },
+  {
+   "w": "hoja",
+   "ini": 27.18,
+   "fin": 27.42
+  },
+  {
+   "w": "de",
+   "ini": 27.46,
+   "fin": 27.54
+  },
+  {
+   "w": "verificación.",
+   "ini": 27.58,
+   "fin": 28.34
+  },
+  {
+   "w": "Anota",
+   "ini": 28.88,
+   "fin": 29.18
+  },
+  {
+   "w": "cuántas",
+   "ini": 29.26,
+   "fin": 29.62
+  },
+  {
+   "w": "veces",
+   "ini": 29.68,
+   "fin": 30.02
+  },
+  {
+   "w": "aparece",
+   "ini": 30.08,
+   "fin": 30.52
+  },
+  {
+   "w": "cada",
+   "ini": 30.56,
+   "fin": 30.76
+  },
+  {
+   "w": "defecto.",
+   "ini": 30.8,
+   "fin": 31.28
+  },
+  {
+   "w": "Otra,",
+   "ini": 31.96,
+   "fin": 32.2
+  },
+  {
+   "w": "el",
+   "ini": 32.6,
+   "fin": 32.68
+  },
+  {
+   "w": "muestreo",
+   "ini": 32.74,
+   "fin": 33.18
+  },
+  {
+   "w": "estadístico.",
+   "ini": 33.24,
+   "fin": 33.9
+  },
+  {
+   "w": "No",
+   "ini": 34.48,
+   "fin": 34.56
+  },
+  {
+   "w": "se",
+   "ini": 34.64,
+   "fin": 34.72
+  },
+  {
+   "w": "revisa",
+   "ini": 34.78,
+   "fin": 35.14
+  },
+  {
+   "w": "todo,",
+   "ini": 35.2,
+   "fin": 35.42
+  },
+  {
+   "w": "sino",
+   "ini": 35.74,
+   "fin": 35.96
+  },
+  {
+   "w": "una",
+   "ini": 36.02,
+   "fin": 36.14
+  },
+  {
+   "w": "parte",
+   "ini": 36.24,
+   "fin": 36.48
+  },
+  {
+   "w": "elegida.",
+   "ini": 36.54,
+   "fin": 36.98
+  },
+  {
+   "w": "Y",
+   "ini": 37.76,
+   "fin": 37.8
+  },
+  {
+   "w": "la",
+   "ini": 37.86,
+   "fin": 37.94
+  },
+  {
+   "w": "inspección,",
+   "ini": 37.98,
+   "fin": 38.62
+  },
+  {
+   "w": "examinar",
+   "ini": 39.14,
+   "fin": 39.62
+  },
+  {
+   "w": "el",
+   "ini": 39.66,
+   "fin": 39.74
+  },
+  {
+   "w": "producto",
+   "ini": 39.78,
+   "fin": 40.18
+  },
+  {
+   "w": "para",
+   "ini": 40.26,
+   "fin": 40.42
+  },
+  {
+   "w": "ver",
+   "ini": 40.44,
+   "fin": 40.58
+  },
+  {
+   "w": "si",
+   "ini": 40.64,
+   "fin": 40.72
+  },
+  {
+   "w": "cumple",
+   "ini": 40.82,
+   "fin": 41.12
+  },
+  {
+   "w": "los",
+   "ini": 41.16,
+   "fin": 41.28
+  },
+  {
+   "w": "estándares",
+   "ini": 41.34,
+   "fin": 41.9
+  },
+  {
+   "w": "documentados.",
+   "ini": 41.94,
+   "fin": 42.72
+  },
+  {
+   "w": "Ramón",
+   "ini": 43.58,
+   "fin": 43.9
+  },
+  {
+   "w": "revisa",
+   "ini": 43.96,
+   "fin": 44.4
+  },
+  {
+   "w": "20",
+   "ini": 44.58,
+   "fin": 44.82
+  },
+  {
+   "w": "panes",
+   "ini": 44.86,
+   "fin": 45.16
+  },
+  {
+   "w": "al",
+   "ini": 45.2,
+   "fin": 45.28
+  },
+  {
+   "w": "azar",
+   "ini": 45.32,
+   "fin": 45.62
+  },
+  {
+   "w": "y",
+   "ini": 45.78,
+   "fin": 45.82
+  },
+  {
+   "w": "anota:",
+   "ini": 45.88,
+   "fin": 46.28
+  },
+  {
+   "w": "tres",
+   "ini": 46.86,
+   "fin": 47.06
+  },
+  {
+   "w": "quemados,",
+   "ini": 47.12,
+   "fin": 47.62
+  },
+  {
+   "w": "uno",
+   "ini": 48.1,
+   "fin": 48.24
+  },
+  {
+   "w": "crudo.",
+   "ini": 48.32,
+   "fin": 48.62
+  },
+  {
+   "w": "Con",
+   "ini": 49.34,
+   "fin": 49.46
+  },
+  {
+   "w": "el",
+   "ini": 49.5,
+   "fin": 49.58
+  },
+  {
+   "w": "análisis",
+   "ini": 49.62,
+   "fin": 50.12
+  },
+  {
+   "w": "de",
+   "ini": 50.16,
+   "fin": 50.24
+  },
+  {
+   "w": "causa",
+   "ini": 50.32,
+   "fin": 50.6
+  },
+  {
+   "w": "raíz,",
+   "ini": 50.66,
+   "fin": 51
+  },
+  {
+   "w": "encuentran",
+   "ini": 51.34,
+   "fin": 51.84
+  },
+  {
+   "w": "el",
+   "ini": 51.88,
+   "fin": 51.94
+  },
+  {
+   "w": "origen:",
+   "ini": 52,
+   "fin": 52.46
+  },
+  {
+   "w": "el",
+   "ini": 52.94,
+   "fin": 53.06
+  },
+  {
+   "w": "horno",
+   "ini": 53.1,
+   "fin": 53.42
+  },
+  {
+   "w": "calienta",
+   "ini": 53.54,
+   "fin": 54
+  },
+  {
+   "w": "de",
+   "ini": 54.06,
+   "fin": 54.12
+  },
+  {
+   "w": "más.",
+   "ini": 54.18,
+   "fin": 54.42
+  },
+  {
+   "w": "Los",
+   "ini": 55.2,
+   "fin": 55.34
+  },
+  {
+   "w": "resultados",
+   "ini": 55.44,
+   "fin": 56.1
+  },
+  {
+   "w": "quedan",
+   "ini": 56.18,
+   "fin": 56.42
+  },
+  {
+   "w": "como",
+   "ini": 56.46,
+   "fin": 56.62
+  },
+  {
+   "w": "mediciones",
+   "ini": 56.68,
+   "fin": 57.28
+  },
+  {
+   "w": "de",
+   "ini": 57.32,
+   "fin": 57.38
+  },
+  {
+   "w": "control",
+   "ini": 57.44,
+   "fin": 57.76
+  },
+  {
+   "w": "de",
+   "ini": 57.8,
+   "fin": 57.86
+  },
+  {
+   "w": "calidad",
+   "ini": 57.92,
+   "fin": 58.36
+  },
+  {
+   "w": "y",
+   "ini": 58.68,
+   "fin": 58.72
+  },
+  {
+   "w": "lo",
+   "ini": 58.76,
+   "fin": 58.84
+  },
+  {
+   "w": "que",
+   "ini": 58.88,
+   "fin": 59.02
+  },
+  {
+   "w": "cumple",
+   "ini": 59.06,
+   "fin": 59.4
+  },
+  {
+   "w": "se",
+   "ini": 59.66,
+   "fin": 59.74
+  },
+  {
+   "w": "vuelve",
+   "ini": 59.78,
+   "fin": 60.02
+  },
+  {
+   "w": "entregable",
+   "ini": 60.04,
+   "fin": 60.66
+  },
+  {
+   "w": "verificado,",
+   "ini": 60.7,
+   "fin": 61.34
+  },
+  {
+   "w": "listo",
+   "ini": 61.72,
+   "fin": 62.06
+  },
+  {
+   "w": "para",
+   "ini": 62.12,
+   "fin": 62.26
+  },
+  {
+   "w": "validar",
+   "ini": 62.3,
+   "fin": 62.64
+  },
+  {
+   "w": "el",
+   "ini": 62.68,
+   "fin": 62.74
+  },
+  {
+   "w": "alcance.",
+   "ini": 62.78,
+   "fin": 63.24
+  },
+  {
+   "w": "Ahora",
+   "ini": 63.98,
+   "fin": 64.22
+  },
+  {
+   "w": "te",
+   "ini": 64.28,
+   "fin": 64.36
+  },
+  {
+   "w": "toca.",
+   "ini": 64.42,
+   "fin": 64.72
+  },
+  {
+   "w": "Arma",
+   "ini": 65.26,
+   "fin": 65.48
+  },
+  {
+   "w": "una",
+   "ini": 65.54,
+   "fin": 65.7
+  },
+  {
+   "w": "hoja",
+   "ini": 65.72,
+   "fin": 65.94
+  },
+  {
+   "w": "de",
+   "ini": 65.98,
+   "fin": 66.06
+  },
+  {
+   "w": "verificación",
+   "ini": 66.08,
+   "fin": 66.88
+  },
+  {
+   "w": "con",
+   "ini": 67.02,
+   "fin": 67.16
+  },
+  {
+   "w": "tres",
+   "ini": 67.22,
+   "fin": 67.38
+  },
+  {
+   "w": "defectos",
+   "ini": 67.42,
+   "fin": 67.86
+  },
+  {
+   "w": "posibles",
+   "ini": 67.94,
+   "fin": 68.46
+  },
+  {
+   "w": "de",
+   "ini": 68.5,
+   "fin": 68.56
+  },
+  {
+   "w": "tu",
+   "ini": 68.6,
+   "fin": 68.66
+  },
+  {
+   "w": "entregable.",
+   "ini": 68.7,
+   "fin": 69.24
+  }
+ ]
+}

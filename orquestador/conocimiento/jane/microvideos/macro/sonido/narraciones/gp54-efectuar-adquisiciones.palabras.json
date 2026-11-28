@@ -1,0 +1,750 @@
+{
+ "texto": "Pía decidió comprar el toldo. Ahora tiene que elegir a quién y firmar. ¿Cómo se hace bien? Efectuar las adquisiciones es obtener respuestas de los proveedores, seleccionarlos y adjudicarles un contrato. Puede empezar con publicidad para encontrar más vendedores posibles. Luego, una conferencia de oferentes. Todos escuchan lo mismo y nadie recibe trato preferencial. Después, se evalúan las propuestas. ¿Están completas? ¿Responden al enunciado del trabajo relativo a las adquisiciones y a los criterios? Con el elegido se negocia derechos, obligaciones y términos antes de firmar. Dos salidas clave son los vendedores seleccionados y los acuerdos. Un contrato obliga al vendedor a entregar lo pactado y al comprador a pagarle. Es una relación legal. Puede incluir el trabajo a entregar, el cronograma, los precios, la garantía y cómo se manejan los cambios. Ahora te toca. Escribe cinco cosas que pondrías en el contrato de algo que vas a comprar.",
+ "palabras": [
+  {
+   "w": "Pía",
+   "ini": 0.12,
+   "fin": 0.32
+  },
+  {
+   "w": "decidió",
+   "ini": 0.36,
+   "fin": 0.86
+  },
+  {
+   "w": "comprar",
+   "ini": 0.92,
+   "fin": 1.26
+  },
+  {
+   "w": "el",
+   "ini": 1.32,
+   "fin": 1.4
+  },
+  {
+   "w": "toldo.",
+   "ini": 1.48,
+   "fin": 1.82
+  },
+  {
+   "w": "Ahora",
+   "ini": 2.76,
+   "fin": 3.06
+  },
+  {
+   "w": "tiene",
+   "ini": 3.12,
+   "fin": 3.32
+  },
+  {
+   "w": "que",
+   "ini": 3.36,
+   "fin": 3.44
+  },
+  {
+   "w": "elegir",
+   "ini": 3.5,
+   "fin": 3.96
+  },
+  {
+   "w": "a",
+   "ini": 4.019,
+   "fin": 4.059
+  },
+  {
+   "w": "quién",
+   "ini": 4.18,
+   "fin": 4.76
+  },
+  {
+   "w": "y",
+   "ini": 4.82,
+   "fin": 4.88
+  },
+  {
+   "w": "firmar.",
+   "ini": 4.96,
+   "fin": 5.32
+  },
+  {
+   "w": "¿Cómo",
+   "ini": 6.3,
+   "fin": 6.54
+  },
+  {
+   "w": "se",
+   "ini": 6.6,
+   "fin": 6.68
+  },
+  {
+   "w": "hace",
+   "ini": 6.7,
+   "fin": 6.9
+  },
+  {
+   "w": "bien?",
+   "ini": 6.96,
+   "fin": 7.2
+  },
+  {
+   "w": "Efectuar",
+   "ini": 8.1,
+   "fin": 8.52
+  },
+  {
+   "w": "las",
+   "ini": 8.58,
+   "fin": 8.7
+  },
+  {
+   "w": "adquisiciones",
+   "ini": 8.78,
+   "fin": 9.66
+  },
+  {
+   "w": "es",
+   "ini": 9.72,
+   "fin": 9.82
+  },
+  {
+   "w": "obtener",
+   "ini": 9.88,
+   "fin": 10.38
+  },
+  {
+   "w": "respuestas",
+   "ini": 10.48,
+   "fin": 11.04
+  },
+  {
+   "w": "de",
+   "ini": 11.08,
+   "fin": 11.14
+  },
+  {
+   "w": "los",
+   "ini": 11.18,
+   "fin": 11.28
+  },
+  {
+   "w": "proveedores,",
+   "ini": 11.36,
+   "fin": 12.06
+  },
+  {
+   "w": "seleccionarlos",
+   "ini": 12.5,
+   "fin": 13.3
+  },
+  {
+   "w": "y",
+   "ini": 13.62,
+   "fin": 13.66
+  },
+  {
+   "w": "adjudicarles",
+   "ini": 13.74,
+   "fin": 14.5
+  },
+  {
+   "w": "un",
+   "ini": 14.54,
+   "fin": 14.64
+  },
+  {
+   "w": "contrato.",
+   "ini": 14.68,
+   "fin": 15.18
+  },
+  {
+   "w": "Puede",
+   "ini": 15.98,
+   "fin": 16.14
+  },
+  {
+   "w": "empezar",
+   "ini": 16.18,
+   "fin": 16.56
+  },
+  {
+   "w": "con",
+   "ini": 16.62,
+   "fin": 16.74
+  },
+  {
+   "w": "publicidad",
+   "ini": 16.78,
+   "fin": 17.48
+  },
+  {
+   "w": "para",
+   "ini": 17.54,
+   "fin": 17.64
+  },
+  {
+   "w": "encontrar",
+   "ini": 17.68,
+   "fin": 18.16
+  },
+  {
+   "w": "más",
+   "ini": 18.36,
+   "fin": 18.54
+  },
+  {
+   "w": "vendedores",
+   "ini": 18.6,
+   "fin": 19.12
+  },
+  {
+   "w": "posibles.",
+   "ini": 19.16,
+   "fin": 19.64
+  },
+  {
+   "w": "Luego,",
+   "ini": 20.32,
+   "fin": 20.6
+  },
+  {
+   "w": "una",
+   "ini": 21,
+   "fin": 21.14
+  },
+  {
+   "w": "conferencia",
+   "ini": 21.18,
+   "fin": 21.78
+  },
+  {
+   "w": "de",
+   "ini": 21.8,
+   "fin": 21.84
+  },
+  {
+   "w": "oferentes.",
+   "ini": 21.88,
+   "fin": 22.42
+  },
+  {
+   "w": "Todos",
+   "ini": 22.86,
+   "fin": 23.14
+  },
+  {
+   "w": "escuchan",
+   "ini": 23.2,
+   "fin": 23.58
+  },
+  {
+   "w": "lo",
+   "ini": 23.6,
+   "fin": 23.68
+  },
+  {
+   "w": "mismo",
+   "ini": 23.74,
+   "fin": 24.02
+  },
+  {
+   "w": "y",
+   "ini": 24.46,
+   "fin": 24.5
+  },
+  {
+   "w": "nadie",
+   "ini": 24.62,
+   "fin": 25
+  },
+  {
+   "w": "recibe",
+   "ini": 25.08,
+   "fin": 25.5
+  },
+  {
+   "w": "trato",
+   "ini": 25.56,
+   "fin": 25.82
+  },
+  {
+   "w": "preferencial.",
+   "ini": 25.9,
+   "fin": 26.58
+  },
+  {
+   "w": "Después,",
+   "ini": 27.4,
+   "fin": 27.8
+  },
+  {
+   "w": "se",
+   "ini": 27.98,
+   "fin": 28.08
+  },
+  {
+   "w": "evalúan",
+   "ini": 28.14,
+   "fin": 28.56
+  },
+  {
+   "w": "las",
+   "ini": 28.6,
+   "fin": 28.72
+  },
+  {
+   "w": "propuestas.",
+   "ini": 28.76,
+   "fin": 29.34
+  },
+  {
+   "w": "¿Están",
+   "ini": 29.9,
+   "fin": 30.14
+  },
+  {
+   "w": "completas?",
+   "ini": 30.22,
+   "fin": 30.74
+  },
+  {
+   "w": "¿Responden",
+   "ini": 31.48,
+   "fin": 32.02
+  },
+  {
+   "w": "al",
+   "ini": 32.06,
+   "fin": 32.119
+  },
+  {
+   "w": "enunciado",
+   "ini": 32.159,
+   "fin": 32.68
+  },
+  {
+   "w": "del",
+   "ini": 32.74,
+   "fin": 32.84
+  },
+  {
+   "w": "trabajo",
+   "ini": 32.9,
+   "fin": 33.3
+  },
+  {
+   "w": "relativo",
+   "ini": 33.36,
+   "fin": 33.78
+  },
+  {
+   "w": "a",
+   "ini": 33.82,
+   "fin": 33.84
+  },
+  {
+   "w": "las",
+   "ini": 33.88,
+   "fin": 34
+  },
+  {
+   "w": "adquisiciones",
+   "ini": 34.06,
+   "fin": 34.94
+  },
+  {
+   "w": "y",
+   "ini": 34.98,
+   "fin": 35.04
+  },
+  {
+   "w": "a",
+   "ini": 35.08,
+   "fin": 35.1
+  },
+  {
+   "w": "los",
+   "ini": 35.14,
+   "fin": 35.26
+  },
+  {
+   "w": "criterios?",
+   "ini": 35.3,
+   "fin": 35.86
+  },
+  {
+   "w": "Con",
+   "ini": 36.74,
+   "fin": 36.86
+  },
+  {
+   "w": "el",
+   "ini": 36.9,
+   "fin": 36.98
+  },
+  {
+   "w": "elegido",
+   "ini": 37.02,
+   "fin": 37.48
+  },
+  {
+   "w": "se",
+   "ini": 37.56,
+   "fin": 37.64
+  },
+  {
+   "w": "negocia",
+   "ini": 37.68,
+   "fin": 38.14
+  },
+  {
+   "w": "derechos,",
+   "ini": 38.62,
+   "fin": 39.14
+  },
+  {
+   "w": "obligaciones",
+   "ini": 39.48,
+   "fin": 40.2
+  },
+  {
+   "w": "y",
+   "ini": 40.24,
+   "fin": 40.28
+  },
+  {
+   "w": "términos",
+   "ini": 40.36,
+   "fin": 40.8
+  },
+  {
+   "w": "antes",
+   "ini": 41.12,
+   "fin": 41.38
+  },
+  {
+   "w": "de",
+   "ini": 41.4,
+   "fin": 41.48
+  },
+  {
+   "w": "firmar.",
+   "ini": 41.52,
+   "fin": 41.84
+  },
+  {
+   "w": "Dos",
+   "ini": 42.82,
+   "fin": 42.96
+  },
+  {
+   "w": "salidas",
+   "ini": 43,
+   "fin": 43.36
+  },
+  {
+   "w": "clave",
+   "ini": 43.4,
+   "fin": 43.68
+  },
+  {
+   "w": "son",
+   "ini": 43.9,
+   "fin": 44.04
+  },
+  {
+   "w": "los",
+   "ini": 44.06,
+   "fin": 44.16
+  },
+  {
+   "w": "vendedores",
+   "ini": 44.22,
+   "fin": 44.7
+  },
+  {
+   "w": "seleccionados",
+   "ini": 44.72,
+   "fin": 45.58
+  },
+  {
+   "w": "y",
+   "ini": 45.64,
+   "fin": 45.68
+  },
+  {
+   "w": "los",
+   "ini": 45.72,
+   "fin": 45.84
+  },
+  {
+   "w": "acuerdos.",
+   "ini": 45.9,
+   "fin": 46.4
+  },
+  {
+   "w": "Un",
+   "ini": 47.12,
+   "fin": 47.22
+  },
+  {
+   "w": "contrato",
+   "ini": 47.26,
+   "fin": 47.72
+  },
+  {
+   "w": "obliga",
+   "ini": 47.76,
+   "fin": 48.06
+  },
+  {
+   "w": "al",
+   "ini": 48.08,
+   "fin": 48.16
+  },
+  {
+   "w": "vendedor",
+   "ini": 48.2,
+   "fin": 48.72
+  },
+  {
+   "w": "a",
+   "ini": 48.78,
+   "fin": 48.84
+  },
+  {
+   "w": "entregar",
+   "ini": 48.88,
+   "fin": 49.32
+  },
+  {
+   "w": "lo",
+   "ini": 49.36,
+   "fin": 49.46
+  },
+  {
+   "w": "pactado",
+   "ini": 49.5,
+   "fin": 50.22
+  },
+  {
+   "w": "y",
+   "ini": 50.28,
+   "fin": 50.32
+  },
+  {
+   "w": "al",
+   "ini": 50.38,
+   "fin": 50.46
+  },
+  {
+   "w": "comprador",
+   "ini": 50.52,
+   "fin": 51.1
+  },
+  {
+   "w": "a",
+   "ini": 51.16,
+   "fin": 51.2
+  },
+  {
+   "w": "pagarle.",
+   "ini": 51.28,
+   "fin": 51.72
+  },
+  {
+   "w": "Es",
+   "ini": 52.32,
+   "fin": 52.42
+  },
+  {
+   "w": "una",
+   "ini": 52.46,
+   "fin": 52.6
+  },
+  {
+   "w": "relación",
+   "ini": 52.64,
+   "fin": 53.12
+  },
+  {
+   "w": "legal.",
+   "ini": 53.18,
+   "fin": 53.58
+  },
+  {
+   "w": "Puede",
+   "ini": 54.34,
+   "fin": 54.5
+  },
+  {
+   "w": "incluir",
+   "ini": 54.54,
+   "fin": 54.94
+  },
+  {
+   "w": "el",
+   "ini": 54.98,
+   "fin": 55.06
+  },
+  {
+   "w": "trabajo",
+   "ini": 55.12,
+   "fin": 55.46
+  },
+  {
+   "w": "a",
+   "ini": 55.48,
+   "fin": 55.5
+  },
+  {
+   "w": "entregar,",
+   "ini": 55.54,
+   "fin": 56
+  },
+  {
+   "w": "el",
+   "ini": 56.3,
+   "fin": 56.38
+  },
+  {
+   "w": "cronograma,",
+   "ini": 56.44,
+   "fin": 57.06
+  },
+  {
+   "w": "los",
+   "ini": 57.3,
+   "fin": 57.44
+  },
+  {
+   "w": "precios,",
+   "ini": 57.52,
+   "fin": 57.96
+  },
+  {
+   "w": "la",
+   "ini": 58.16,
+   "fin": 58.24
+  },
+  {
+   "w": "garantía",
+   "ini": 58.28,
+   "fin": 59.08
+  },
+  {
+   "w": "y",
+   "ini": 59.16,
+   "fin": 59.2
+  },
+  {
+   "w": "cómo",
+   "ini": 59.34,
+   "fin": 59.6
+  },
+  {
+   "w": "se",
+   "ini": 59.64,
+   "fin": 59.74
+  },
+  {
+   "w": "manejan",
+   "ini": 59.78,
+   "fin": 60.18
+  },
+  {
+   "w": "los",
+   "ini": 60.2,
+   "fin": 60.34
+  },
+  {
+   "w": "cambios.",
+   "ini": 60.4,
+   "fin": 60.82
+  },
+  {
+   "w": "Ahora",
+   "ini": 61.88,
+   "fin": 62.16
+  },
+  {
+   "w": "te",
+   "ini": 62.22,
+   "fin": 62.32
+  },
+  {
+   "w": "toca.",
+   "ini": 62.38,
+   "fin": 62.68
+  },
+  {
+   "w": "Escribe",
+   "ini": 63.16,
+   "fin": 63.54
+  },
+  {
+   "w": "cinco",
+   "ini": 63.62,
+   "fin": 63.92
+  },
+  {
+   "w": "cosas",
+   "ini": 64.04,
+   "fin": 64.4
+  },
+  {
+   "w": "que",
+   "ini": 64.44,
+   "fin": 64.56
+  },
+  {
+   "w": "pondrías",
+   "ini": 64.599,
+   "fin": 65.019
+  },
+  {
+   "w": "en",
+   "ini": 65.08,
+   "fin": 65.14
+  },
+  {
+   "w": "el",
+   "ini": 65.18,
+   "fin": 65.26
+  },
+  {
+   "w": "contrato",
+   "ini": 65.319,
+   "fin": 65.98
+  },
+  {
+   "w": "de",
+   "ini": 66.04,
+   "fin": 66.14
+  },
+  {
+   "w": "algo",
+   "ini": 66.24,
+   "fin": 66.5
+  },
+  {
+   "w": "que",
+   "ini": 66.54,
+   "fin": 66.64
+  },
+  {
+   "w": "vas",
+   "ini": 66.68,
+   "fin": 66.86
+  },
+  {
+   "w": "a",
+   "ini": 66.9,
+   "fin": 66.94
+  },
+  {
+   "w": "comprar.",
+   "ini": 67,
+   "fin": 67.4
+  }
+ ]
+}

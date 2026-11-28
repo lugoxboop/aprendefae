@@ -1,0 +1,870 @@
+{
+ "texto": "Un programa no es un proyecto grande. Mira por qué. Pía sueña con abrir tres sedes nuevas en la ciudad. Cada sede es un proyecto: su obra, su permiso, su apertura. Pero si las maneja juntas, compra los hornos al por mayor y capacita a todos a la vez. Ese ahorro no existiría si cada sede fuera por su lado. Eso es un programa: proyectos relacionados, gestionados de forma coordinada para lograr beneficios que solos no darían. Y un proyecto enorme, como un metro para toda la ciudad, no es un programa, se llama megaproyecto. Ahora Pía mira todo lo que hace la panadería, las sedes, la tienda en línea y el pan de cada día. Decide qué va primero y a qué le pone plata, según hacia dónde quiere llevar el negocio. Ese conjunto, gestionado como grupo para alcanzar objetivos estratégicos, es un portafolio. Proyecto, programa y portafolio. Tres maneras de mirar el trabajo, no tres tamaños de obra. Ahora te toca. ¿Cada caso es un proyecto, un programa o un portafolio?",
+ "palabras": [
+  {
+   "w": "Un",
+   "ini": 0.1,
+   "fin": 0.18
+  },
+  {
+   "w": "programa",
+   "ini": 0.24,
+   "fin": 0.7
+  },
+  {
+   "w": "no",
+   "ini": 1,
+   "fin": 1.1
+  },
+  {
+   "w": "es",
+   "ini": 1.14,
+   "fin": 1.26
+  },
+  {
+   "w": "un",
+   "ini": 1.3,
+   "fin": 1.36
+  },
+  {
+   "w": "proyecto",
+   "ini": 1.4,
+   "fin": 1.78
+  },
+  {
+   "w": "grande.",
+   "ini": 1.84,
+   "fin": 2.2
+  },
+  {
+   "w": "Mira",
+   "ini": 2.6,
+   "fin": 2.78
+  },
+  {
+   "w": "por",
+   "ini": 2.84,
+   "fin": 2.94
+  },
+  {
+   "w": "qué.",
+   "ini": 3,
+   "fin": 3.14
+  },
+  {
+   "w": "Pía",
+   "ini": 4.26,
+   "fin": 4.44
+  },
+  {
+   "w": "sueña",
+   "ini": 4.54,
+   "fin": 4.82
+  },
+  {
+   "w": "con",
+   "ini": 4.9,
+   "fin": 5.02
+  },
+  {
+   "w": "abrir",
+   "ini": 5.06,
+   "fin": 5.3
+  },
+  {
+   "w": "tres",
+   "ini": 5.46,
+   "fin": 5.66
+  },
+  {
+   "w": "sedes",
+   "ini": 5.72,
+   "fin": 6.02
+  },
+  {
+   "w": "nuevas",
+   "ini": 6.08,
+   "fin": 6.36
+  },
+  {
+   "w": "en",
+   "ini": 6.4,
+   "fin": 6.48
+  },
+  {
+   "w": "la",
+   "ini": 6.5,
+   "fin": 6.56
+  },
+  {
+   "w": "ciudad.",
+   "ini": 6.64,
+   "fin": 6.98
+  },
+  {
+   "w": "Cada",
+   "ini": 7.56,
+   "fin": 7.74
+  },
+  {
+   "w": "sede",
+   "ini": 7.84,
+   "fin": 8.14
+  },
+  {
+   "w": "es",
+   "ini": 8.2,
+   "fin": 8.3
+  },
+  {
+   "w": "un",
+   "ini": 8.34,
+   "fin": 8.42
+  },
+  {
+   "w": "proyecto:",
+   "ini": 8.46,
+   "fin": 8.92
+  },
+  {
+   "w": "su",
+   "ini": 9.34,
+   "fin": 9.46
+  },
+  {
+   "w": "obra,",
+   "ini": 9.6,
+   "fin": 9.84
+  },
+  {
+   "w": "su",
+   "ini": 10.1,
+   "fin": 10.18
+  },
+  {
+   "w": "permiso,",
+   "ini": 10.26,
+   "fin": 10.8
+  },
+  {
+   "w": "su",
+   "ini": 11,
+   "fin": 11.06
+  },
+  {
+   "w": "apertura.",
+   "ini": 11.1,
+   "fin": 11.6
+  },
+  {
+   "w": "Pero",
+   "ini": 12.3,
+   "fin": 12.46
+  },
+  {
+   "w": "si",
+   "ini": 12.5,
+   "fin": 12.56
+  },
+  {
+   "w": "las",
+   "ini": 12.62,
+   "fin": 12.74
+  },
+  {
+   "w": "maneja",
+   "ini": 12.78,
+   "fin": 13.08
+  },
+  {
+   "w": "juntas,",
+   "ini": 13.2,
+   "fin": 13.6
+  },
+  {
+   "w": "compra",
+   "ini": 13.94,
+   "fin": 14.2
+  },
+  {
+   "w": "los",
+   "ini": 14.24,
+   "fin": 14.38
+  },
+  {
+   "w": "hornos",
+   "ini": 14.42,
+   "fin": 14.72
+  },
+  {
+   "w": "al",
+   "ini": 14.76,
+   "fin": 14.84
+  },
+  {
+   "w": "por",
+   "ini": 14.92,
+   "fin": 15.04
+  },
+  {
+   "w": "mayor",
+   "ini": 15.08,
+   "fin": 15.38
+  },
+  {
+   "w": "y",
+   "ini": 15.58,
+   "fin": 15.62
+  },
+  {
+   "w": "capacita",
+   "ini": 15.72,
+   "fin": 16.3
+  },
+  {
+   "w": "a",
+   "ini": 16.32,
+   "fin": 16.36
+  },
+  {
+   "w": "todos",
+   "ini": 16.52,
+   "fin": 16.82
+  },
+  {
+   "w": "a",
+   "ini": 16.86,
+   "fin": 16.9
+  },
+  {
+   "w": "la",
+   "ini": 16.94,
+   "fin": 17.02
+  },
+  {
+   "w": "vez.",
+   "ini": 17.06,
+   "fin": 17.3
+  },
+  {
+   "w": "Ese",
+   "ini": 17.98,
+   "fin": 18.16
+  },
+  {
+   "w": "ahorro",
+   "ini": 18.2,
+   "fin": 18.48
+  },
+  {
+   "w": "no",
+   "ini": 18.56,
+   "fin": 18.66
+  },
+  {
+   "w": "existiría",
+   "ini": 18.72,
+   "fin": 19.3
+  },
+  {
+   "w": "si",
+   "ini": 19.4,
+   "fin": 19.48
+  },
+  {
+   "w": "cada",
+   "ini": 19.6,
+   "fin": 19.8
+  },
+  {
+   "w": "sede",
+   "ini": 19.92,
+   "fin": 20.18
+  },
+  {
+   "w": "fuera",
+   "ini": 20.24,
+   "fin": 20.44
+  },
+  {
+   "w": "por",
+   "ini": 20.52,
+   "fin": 20.6
+  },
+  {
+   "w": "su",
+   "ini": 20.66,
+   "fin": 20.74
+  },
+  {
+   "w": "lado.",
+   "ini": 20.8,
+   "fin": 21.04
+  },
+  {
+   "w": "Eso",
+   "ini": 21.8,
+   "fin": 22.02
+  },
+  {
+   "w": "es",
+   "ini": 22.06,
+   "fin": 22.2
+  },
+  {
+   "w": "un",
+   "ini": 22.24,
+   "fin": 22.32
+  },
+  {
+   "w": "programa:",
+   "ini": 22.36,
+   "fin": 22.78
+  },
+  {
+   "w": "proyectos",
+   "ini": 23.3,
+   "fin": 23.8
+  },
+  {
+   "w": "relacionados,",
+   "ini": 23.9,
+   "fin": 24.58
+  },
+  {
+   "w": "gestionados",
+   "ini": 24.92,
+   "fin": 25.5
+  },
+  {
+   "w": "de",
+   "ini": 25.54,
+   "fin": 25.6
+  },
+  {
+   "w": "forma",
+   "ini": 25.68,
+   "fin": 25.9
+  },
+  {
+   "w": "coordinada",
+   "ini": 25.98,
+   "fin": 26.56
+  },
+  {
+   "w": "para",
+   "ini": 26.9,
+   "fin": 27.04
+  },
+  {
+   "w": "lograr",
+   "ini": 27.1,
+   "fin": 27.36
+  },
+  {
+   "w": "beneficios",
+   "ini": 27.42,
+   "fin": 28.02
+  },
+  {
+   "w": "que",
+   "ini": 28.08,
+   "fin": 28.2
+  },
+  {
+   "w": "solos",
+   "ini": 28.26,
+   "fin": 28.58
+  },
+  {
+   "w": "no",
+   "ini": 28.7,
+   "fin": 28.8
+  },
+  {
+   "w": "darían.",
+   "ini": 28.82,
+   "fin": 29.3
+  },
+  {
+   "w": "Y",
+   "ini": 29.98,
+   "fin": 30.02
+  },
+  {
+   "w": "un",
+   "ini": 30.08,
+   "fin": 30.18
+  },
+  {
+   "w": "proyecto",
+   "ini": 30.2,
+   "fin": 30.62
+  },
+  {
+   "w": "enorme,",
+   "ini": 30.68,
+   "fin": 31.1
+  },
+  {
+   "w": "como",
+   "ini": 31.3,
+   "fin": 31.48
+  },
+  {
+   "w": "un",
+   "ini": 31.52,
+   "fin": 31.6
+  },
+  {
+   "w": "metro",
+   "ini": 31.64,
+   "fin": 31.9
+  },
+  {
+   "w": "para",
+   "ini": 31.98,
+   "fin": 32.119
+  },
+  {
+   "w": "toda",
+   "ini": 32.22,
+   "fin": 32.4
+  },
+  {
+   "w": "la",
+   "ini": 32.46,
+   "fin": 32.52
+  },
+  {
+   "w": "ciudad,",
+   "ini": 32.58,
+   "fin": 32.94
+  },
+  {
+   "w": "no",
+   "ini": 33.26,
+   "fin": 33.38
+  },
+  {
+   "w": "es",
+   "ini": 33.42,
+   "fin": 33.54
+  },
+  {
+   "w": "un",
+   "ini": 33.6,
+   "fin": 33.68
+  },
+  {
+   "w": "programa,",
+   "ini": 33.7,
+   "fin": 34.14
+  },
+  {
+   "w": "se",
+   "ini": 34.56,
+   "fin": 34.64
+  },
+  {
+   "w": "llama",
+   "ini": 34.7,
+   "fin": 34.98
+  },
+  {
+   "w": "megaproyecto.",
+   "ini": 35.26,
+   "fin": 36.06
+  },
+  {
+   "w": "Ahora",
+   "ini": 36.64,
+   "fin": 36.86
+  },
+  {
+   "w": "Pía",
+   "ini": 36.96,
+   "fin": 37.16
+  },
+  {
+   "w": "mira",
+   "ini": 37.22,
+   "fin": 37.44
+  },
+  {
+   "w": "todo",
+   "ini": 37.58,
+   "fin": 37.78
+  },
+  {
+   "w": "lo",
+   "ini": 37.82,
+   "fin": 37.88
+  },
+  {
+   "w": "que",
+   "ini": 37.96,
+   "fin": 38.04
+  },
+  {
+   "w": "hace",
+   "ini": 38.06,
+   "fin": 38.24
+  },
+  {
+   "w": "la",
+   "ini": 38.28,
+   "fin": 38.34
+  },
+  {
+   "w": "panadería,",
+   "ini": 38.4,
+   "fin": 38.94
+  },
+  {
+   "w": "las",
+   "ini": 39.32,
+   "fin": 39.46
+  },
+  {
+   "w": "sedes,",
+   "ini": 39.54,
+   "fin": 39.88
+  },
+  {
+   "w": "la",
+   "ini": 40.1,
+   "fin": 40.18
+  },
+  {
+   "w": "tienda",
+   "ini": 40.26,
+   "fin": 40.48
+  },
+  {
+   "w": "en",
+   "ini": 40.5,
+   "fin": 40.58
+  },
+  {
+   "w": "línea",
+   "ini": 40.64,
+   "fin": 40.94
+  },
+  {
+   "w": "y",
+   "ini": 41.12,
+   "fin": 41.18
+  },
+  {
+   "w": "el",
+   "ini": 41.22,
+   "fin": 41.3
+  },
+  {
+   "w": "pan",
+   "ini": 41.4,
+   "fin": 41.58
+  },
+  {
+   "w": "de",
+   "ini": 41.62,
+   "fin": 41.7
+  },
+  {
+   "w": "cada",
+   "ini": 41.78,
+   "fin": 41.98
+  },
+  {
+   "w": "día.",
+   "ini": 42.04,
+   "fin": 42.26
+  },
+  {
+   "w": "Decide",
+   "ini": 43.06,
+   "fin": 43.42
+  },
+  {
+   "w": "qué",
+   "ini": 43.54,
+   "fin": 43.66
+  },
+  {
+   "w": "va",
+   "ini": 43.7,
+   "fin": 43.76
+  },
+  {
+   "w": "primero",
+   "ini": 43.84,
+   "fin": 44.2
+  },
+  {
+   "w": "y",
+   "ini": 44.52,
+   "fin": 44.56
+  },
+  {
+   "w": "a",
+   "ini": 44.62,
+   "fin": 44.66
+  },
+  {
+   "w": "qué",
+   "ini": 44.76,
+   "fin": 44.86
+  },
+  {
+   "w": "le",
+   "ini": 44.88,
+   "fin": 45
+  },
+  {
+   "w": "pone",
+   "ini": 45.02,
+   "fin": 45.22
+  },
+  {
+   "w": "plata,",
+   "ini": 45.3,
+   "fin": 45.6
+  },
+  {
+   "w": "según",
+   "ini": 45.9,
+   "fin": 46.18
+  },
+  {
+   "w": "hacia",
+   "ini": 46.22,
+   "fin": 46.44
+  },
+  {
+   "w": "dónde",
+   "ini": 46.52,
+   "fin": 46.76
+  },
+  {
+   "w": "quiere",
+   "ini": 46.84,
+   "fin": 47.06
+  },
+  {
+   "w": "llevar",
+   "ini": 47.1,
+   "fin": 47.34
+  },
+  {
+   "w": "el",
+   "ini": 47.38,
+   "fin": 47.46
+  },
+  {
+   "w": "negocio.",
+   "ini": 47.48,
+   "fin": 47.92
+  },
+  {
+   "w": "Ese",
+   "ini": 48.66,
+   "fin": 48.84
+  },
+  {
+   "w": "conjunto,",
+   "ini": 48.9,
+   "fin": 49.42
+  },
+  {
+   "w": "gestionado",
+   "ini": 49.66,
+   "fin": 50.18
+  },
+  {
+   "w": "como",
+   "ini": 50.24,
+   "fin": 50.42
+  },
+  {
+   "w": "grupo",
+   "ini": 50.46,
+   "fin": 50.74
+  },
+  {
+   "w": "para",
+   "ini": 50.82,
+   "fin": 50.94
+  },
+  {
+   "w": "alcanzar",
+   "ini": 50.96,
+   "fin": 51.36
+  },
+  {
+   "w": "objetivos",
+   "ini": 51.42,
+   "fin": 51.9
+  },
+  {
+   "w": "estratégicos,",
+   "ini": 51.96,
+   "fin": 52.74
+  },
+  {
+   "w": "es",
+   "ini": 53.2,
+   "fin": 53.46
+  },
+  {
+   "w": "un",
+   "ini": 53.54,
+   "fin": 53.64
+  },
+  {
+   "w": "portafolio.",
+   "ini": 53.7,
+   "fin": 54.34
+  },
+  {
+   "w": "Proyecto,",
+   "ini": 55.1,
+   "fin": 55.62
+  },
+  {
+   "w": "programa",
+   "ini": 55.88,
+   "fin": 56.34
+  },
+  {
+   "w": "y",
+   "ini": 56.54,
+   "fin": 56.58
+  },
+  {
+   "w": "portafolio.",
+   "ini": 56.68,
+   "fin": 57.32
+  },
+  {
+   "w": "Tres",
+   "ini": 57.86,
+   "fin": 58.02
+  },
+  {
+   "w": "maneras",
+   "ini": 58.1,
+   "fin": 58.42
+  },
+  {
+   "w": "de",
+   "ini": 58.46,
+   "fin": 58.5
+  },
+  {
+   "w": "mirar",
+   "ini": 58.56,
+   "fin": 58.76
+  },
+  {
+   "w": "el",
+   "ini": 58.8,
+   "fin": 58.86
+  },
+  {
+   "w": "trabajo,",
+   "ini": 58.92,
+   "fin": 59.32
+  },
+  {
+   "w": "no",
+   "ini": 59.72,
+   "fin": 59.82
+  },
+  {
+   "w": "tres",
+   "ini": 59.92,
+   "fin": 60.12
+  },
+  {
+   "w": "tamaños",
+   "ini": 60.16,
+   "fin": 60.58
+  },
+  {
+   "w": "de",
+   "ini": 60.6,
+   "fin": 60.68
+  },
+  {
+   "w": "obra.",
+   "ini": 60.74,
+   "fin": 60.96
+  },
+  {
+   "w": "Ahora",
+   "ini": 61.6,
+   "fin": 61.82
+  },
+  {
+   "w": "te",
+   "ini": 61.88,
+   "fin": 61.96
+  },
+  {
+   "w": "toca.",
+   "ini": 62.02,
+   "fin": 62.3
+  },
+  {
+   "w": "¿Cada",
+   "ini": 62.74,
+   "fin": 62.94
+  },
+  {
+   "w": "caso",
+   "ini": 63.04,
+   "fin": 63.28
+  },
+  {
+   "w": "es",
+   "ini": 63.3,
+   "fin": 63.4
+  },
+  {
+   "w": "un",
+   "ini": 63.44,
+   "fin": 63.5
+  },
+  {
+   "w": "proyecto,",
+   "ini": 63.56,
+   "fin": 64.04
+  },
+  {
+   "w": "un",
+   "ini": 64.26,
+   "fin": 64.34
+  },
+  {
+   "w": "programa",
+   "ini": 64.379,
+   "fin": 64.819
+  },
+  {
+   "w": "o",
+   "ini": 65.019,
+   "fin": 65.08
+  },
+  {
+   "w": "un",
+   "ini": 65.14,
+   "fin": 65.239
+  },
+  {
+   "w": "portafolio?",
+   "ini": 65.26,
+   "fin": 65.82
+  }
+ ]
+}

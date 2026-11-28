@@ -1,0 +1,815 @@
+{
+ "texto": "El plan de gestión de las comunicaciones de Pía está listo. Ahora hay que comunicar de verdad. Hay nuevo horario. ¿Cómo se avisa? Gestionar las comunicaciones es garantizar que la información del proyecto se recopile, se distribuya y se guarde, entre otras cosas, de forma oportuna y adecuada. Una herramienta es la generación de informes, recopilar y distribuir la información del proyecto, pero adaptada a cada interesado, con el nivel, el formato y el detalle adecuados. Don Tito recibe un mensaje corto. El equipo, la presentación completa. También cuentan las habilidades de comunicación, la retroalimentación, el lenguaje no verbal y las presentaciones. Una buena presentación piensa en la audiencia, sus expectativas y necesidades. El resultado son las comunicaciones del proyecto, como informes de desempeño, estado de los entregables, avance del cronograma y costos. Y si cambian sus necesidades, los métodos de comunicación deben poder ajustarse. Ahora te toca. Escribe el mismo aviso de dos formas: para tu jefe y para tu equipo.",
+ "palabras": [
+  {
+   "w": "El",
+   "ini": 0.08,
+   "fin": 0.16
+  },
+  {
+   "w": "plan",
+   "ini": 0.24,
+   "fin": 0.4
+  },
+  {
+   "w": "de",
+   "ini": 0.44,
+   "fin": 0.5
+  },
+  {
+   "w": "gestión",
+   "ini": 0.56,
+   "fin": 0.94
+  },
+  {
+   "w": "de",
+   "ini": 0.98,
+   "fin": 1.04
+  },
+  {
+   "w": "las",
+   "ini": 1.06,
+   "fin": 1.16
+  },
+  {
+   "w": "comunicaciones",
+   "ini": 1.22,
+   "fin": 1.96
+  },
+  {
+   "w": "de",
+   "ini": 2,
+   "fin": 2.06
+  },
+  {
+   "w": "Pía",
+   "ini": 2.18,
+   "fin": 2.42
+  },
+  {
+   "w": "está",
+   "ini": 2.62,
+   "fin": 2.84
+  },
+  {
+   "w": "listo.",
+   "ini": 2.88,
+   "fin": 3.22
+  },
+  {
+   "w": "Ahora",
+   "ini": 3.8,
+   "fin": 4.1
+  },
+  {
+   "w": "hay",
+   "ini": 4.46,
+   "fin": 4.6
+  },
+  {
+   "w": "que",
+   "ini": 4.64,
+   "fin": 4.76
+  },
+  {
+   "w": "comunicar",
+   "ini": 4.8,
+   "fin": 5.44
+  },
+  {
+   "w": "de",
+   "ini": 5.48,
+   "fin": 5.54
+  },
+  {
+   "w": "verdad.",
+   "ini": 5.6,
+   "fin": 5.98
+  },
+  {
+   "w": "Hay",
+   "ini": 6.62,
+   "fin": 6.78
+  },
+  {
+   "w": "nuevo",
+   "ini": 6.86,
+   "fin": 7.12
+  },
+  {
+   "w": "horario.",
+   "ini": 7.16,
+   "fin": 7.56
+  },
+  {
+   "w": "¿Cómo",
+   "ini": 8.039,
+   "fin": 8.24
+  },
+  {
+   "w": "se",
+   "ini": 8.3,
+   "fin": 8.38
+  },
+  {
+   "w": "avisa?",
+   "ini": 8.42,
+   "fin": 8.74
+  },
+  {
+   "w": "Gestionar",
+   "ini": 9.7,
+   "fin": 10.18
+  },
+  {
+   "w": "las",
+   "ini": 10.24,
+   "fin": 10.36
+  },
+  {
+   "w": "comunicaciones",
+   "ini": 10.4,
+   "fin": 11.22
+  },
+  {
+   "w": "es",
+   "ini": 11.36,
+   "fin": 11.48
+  },
+  {
+   "w": "garantizar",
+   "ini": 11.52,
+   "fin": 12.1
+  },
+  {
+   "w": "que",
+   "ini": 12.16,
+   "fin": 12.22
+  },
+  {
+   "w": "la",
+   "ini": 12.26,
+   "fin": 12.3
+  },
+  {
+   "w": "información",
+   "ini": 12.34,
+   "fin": 12.86
+  },
+  {
+   "w": "del",
+   "ini": 12.9,
+   "fin": 13
+  },
+  {
+   "w": "proyecto",
+   "ini": 13.06,
+   "fin": 13.52
+  },
+  {
+   "w": "se",
+   "ini": 13.6,
+   "fin": 13.68
+  },
+  {
+   "w": "recopile,",
+   "ini": 13.74,
+   "fin": 14.28
+  },
+  {
+   "w": "se",
+   "ini": 14.66,
+   "fin": 14.74
+  },
+  {
+   "w": "distribuya",
+   "ini": 14.78,
+   "fin": 15.42
+  },
+  {
+   "w": "y",
+   "ini": 15.6,
+   "fin": 15.64
+  },
+  {
+   "w": "se",
+   "ini": 15.74,
+   "fin": 15.84
+  },
+  {
+   "w": "guarde,",
+   "ini": 15.88,
+   "fin": 16.239
+  },
+  {
+   "w": "entre",
+   "ini": 16.42,
+   "fin": 16.68
+  },
+  {
+   "w": "otras",
+   "ini": 16.72,
+   "fin": 16.96
+  },
+  {
+   "w": "cosas,",
+   "ini": 17.02,
+   "fin": 17.34
+  },
+  {
+   "w": "de",
+   "ini": 17.7,
+   "fin": 17.76
+  },
+  {
+   "w": "forma",
+   "ini": 17.84,
+   "fin": 18.08
+  },
+  {
+   "w": "oportuna",
+   "ini": 18.14,
+   "fin": 18.72
+  },
+  {
+   "w": "y",
+   "ini": 18.78,
+   "fin": 18.82
+  },
+  {
+   "w": "adecuada.",
+   "ini": 18.86,
+   "fin": 19.36
+  },
+  {
+   "w": "Una",
+   "ini": 20.06,
+   "fin": 20.18
+  },
+  {
+   "w": "herramienta",
+   "ini": 20.2,
+   "fin": 20.88
+  },
+  {
+   "w": "es",
+   "ini": 20.94,
+   "fin": 21.06
+  },
+  {
+   "w": "la",
+   "ini": 21.1,
+   "fin": 21.16
+  },
+  {
+   "w": "generación",
+   "ini": 21.22,
+   "fin": 21.74
+  },
+  {
+   "w": "de",
+   "ini": 21.76,
+   "fin": 21.8
+  },
+  {
+   "w": "informes,",
+   "ini": 21.84,
+   "fin": 22.32
+  },
+  {
+   "w": "recopilar",
+   "ini": 22.96,
+   "fin": 23.54
+  },
+  {
+   "w": "y",
+   "ini": 23.56,
+   "fin": 23.6
+  },
+  {
+   "w": "distribuir",
+   "ini": 23.66,
+   "fin": 24.24
+  },
+  {
+   "w": "la",
+   "ini": 24.28,
+   "fin": 24.34
+  },
+  {
+   "w": "información",
+   "ini": 24.36,
+   "fin": 24.88
+  },
+  {
+   "w": "del",
+   "ini": 24.92,
+   "fin": 25
+  },
+  {
+   "w": "proyecto,",
+   "ini": 25.06,
+   "fin": 25.52
+  },
+  {
+   "w": "pero",
+   "ini": 26.14,
+   "fin": 26.42
+  },
+  {
+   "w": "adaptada",
+   "ini": 26.5,
+   "fin": 27.04
+  },
+  {
+   "w": "a",
+   "ini": 27.06,
+   "fin": 27.12
+  },
+  {
+   "w": "cada",
+   "ini": 27.2,
+   "fin": 27.38
+  },
+  {
+   "w": "interesado,",
+   "ini": 27.42,
+   "fin": 27.94
+  },
+  {
+   "w": "con",
+   "ini": 28.48,
+   "fin": 28.6
+  },
+  {
+   "w": "el",
+   "ini": 28.64,
+   "fin": 28.74
+  },
+  {
+   "w": "nivel,",
+   "ini": 28.78,
+   "fin": 29.14
+  },
+  {
+   "w": "el",
+   "ini": 29.48,
+   "fin": 29.54
+  },
+  {
+   "w": "formato",
+   "ini": 29.62,
+   "fin": 30.1
+  },
+  {
+   "w": "y",
+   "ini": 30.3,
+   "fin": 30.34
+  },
+  {
+   "w": "el",
+   "ini": 30.4,
+   "fin": 30.48
+  },
+  {
+   "w": "detalle",
+   "ini": 30.52,
+   "fin": 30.86
+  },
+  {
+   "w": "adecuados.",
+   "ini": 30.9,
+   "fin": 31.46
+  },
+  {
+   "w": "Don",
+   "ini": 32.4,
+   "fin": 32.54
+  },
+  {
+   "w": "Tito",
+   "ini": 32.619,
+   "fin": 32.86
+  },
+  {
+   "w": "recibe",
+   "ini": 32.96,
+   "fin": 33.3
+  },
+  {
+   "w": "un",
+   "ini": 33.32,
+   "fin": 33.38
+  },
+  {
+   "w": "mensaje",
+   "ini": 33.4,
+   "fin": 33.78
+  },
+  {
+   "w": "corto.",
+   "ini": 33.88,
+   "fin": 34.24
+  },
+  {
+   "w": "El",
+   "ini": 34.76,
+   "fin": 34.84
+  },
+  {
+   "w": "equipo,",
+   "ini": 34.88,
+   "fin": 35.26
+  },
+  {
+   "w": "la",
+   "ini": 35.62,
+   "fin": 35.68
+  },
+  {
+   "w": "presentación",
+   "ini": 35.74,
+   "fin": 36.38
+  },
+  {
+   "w": "completa.",
+   "ini": 36.44,
+   "fin": 36.94
+  },
+  {
+   "w": "También",
+   "ini": 37.58,
+   "fin": 37.88
+  },
+  {
+   "w": "cuentan",
+   "ini": 37.96,
+   "fin": 38.28
+  },
+  {
+   "w": "las",
+   "ini": 38.3,
+   "fin": 38.42
+  },
+  {
+   "w": "habilidades",
+   "ini": 38.46,
+   "fin": 39.02
+  },
+  {
+   "w": "de",
+   "ini": 39.06,
+   "fin": 39.12
+  },
+  {
+   "w": "comunicación,",
+   "ini": 39.18,
+   "fin": 39.9
+  },
+  {
+   "w": "la",
+   "ini": 40.46,
+   "fin": 40.52
+  },
+  {
+   "w": "retroalimentación,",
+   "ini": 40.6,
+   "fin": 41.6
+  },
+  {
+   "w": "el",
+   "ini": 41.94,
+   "fin": 42
+  },
+  {
+   "w": "lenguaje",
+   "ini": 42.04,
+   "fin": 42.46
+  },
+  {
+   "w": "no",
+   "ini": 42.6,
+   "fin": 42.7
+  },
+  {
+   "w": "verbal",
+   "ini": 42.74,
+   "fin": 43.12
+  },
+  {
+   "w": "y",
+   "ini": 43.46,
+   "fin": 43.5
+  },
+  {
+   "w": "las",
+   "ini": 43.56,
+   "fin": 43.68
+  },
+  {
+   "w": "presentaciones.",
+   "ini": 43.74,
+   "fin": 44.6
+  },
+  {
+   "w": "Una",
+   "ini": 45.44,
+   "fin": 45.56
+  },
+  {
+   "w": "buena",
+   "ini": 45.62,
+   "fin": 45.82
+  },
+  {
+   "w": "presentación",
+   "ini": 45.88,
+   "fin": 46.58
+  },
+  {
+   "w": "piensa",
+   "ini": 46.76,
+   "fin": 47.06
+  },
+  {
+   "w": "en",
+   "ini": 47.08,
+   "fin": 47.14
+  },
+  {
+   "w": "la",
+   "ini": 47.18,
+   "fin": 47.22
+  },
+  {
+   "w": "audiencia,",
+   "ini": 47.24,
+   "fin": 47.74
+  },
+  {
+   "w": "sus",
+   "ini": 48.14,
+   "fin": 48.3
+  },
+  {
+   "w": "expectativas",
+   "ini": 48.34,
+   "fin": 49.16
+  },
+  {
+   "w": "y",
+   "ini": 49.2,
+   "fin": 49.22
+  },
+  {
+   "w": "necesidades.",
+   "ini": 49.28,
+   "fin": 50.02
+  },
+  {
+   "w": "El",
+   "ini": 50.82,
+   "fin": 50.9
+  },
+  {
+   "w": "resultado",
+   "ini": 50.96,
+   "fin": 51.52
+  },
+  {
+   "w": "son",
+   "ini": 51.66,
+   "fin": 51.78
+  },
+  {
+   "w": "las",
+   "ini": 51.82,
+   "fin": 51.92
+  },
+  {
+   "w": "comunicaciones",
+   "ini": 51.98,
+   "fin": 52.7
+  },
+  {
+   "w": "del",
+   "ini": 52.74,
+   "fin": 52.84
+  },
+  {
+   "w": "proyecto,",
+   "ini": 52.9,
+   "fin": 53.36
+  },
+  {
+   "w": "como",
+   "ini": 53.74,
+   "fin": 53.9
+  },
+  {
+   "w": "informes",
+   "ini": 53.92,
+   "fin": 54.32
+  },
+  {
+   "w": "de",
+   "ini": 54.36,
+   "fin": 54.42
+  },
+  {
+   "w": "desempeño,",
+   "ini": 54.46,
+   "fin": 55.12
+  },
+  {
+   "w": "estado",
+   "ini": 55.5,
+   "fin": 55.88
+  },
+  {
+   "w": "de",
+   "ini": 55.92,
+   "fin": 55.98
+  },
+  {
+   "w": "los",
+   "ini": 56.02,
+   "fin": 56.12
+  },
+  {
+   "w": "entregables,",
+   "ini": 56.18,
+   "fin": 56.84
+  },
+  {
+   "w": "avance",
+   "ini": 57.2,
+   "fin": 57.6
+  },
+  {
+   "w": "del",
+   "ini": 57.64,
+   "fin": 57.74
+  },
+  {
+   "w": "cronograma",
+   "ini": 57.82,
+   "fin": 58.44
+  },
+  {
+   "w": "y",
+   "ini": 58.64,
+   "fin": 58.68
+  },
+  {
+   "w": "costos.",
+   "ini": 58.8,
+   "fin": 59.3
+  },
+  {
+   "w": "Y",
+   "ini": 60.02,
+   "fin": 60.06
+  },
+  {
+   "w": "si",
+   "ini": 60.14,
+   "fin": 60.22
+  },
+  {
+   "w": "cambian",
+   "ini": 60.32,
+   "fin": 60.66
+  },
+  {
+   "w": "sus",
+   "ini": 60.72,
+   "fin": 60.86
+  },
+  {
+   "w": "necesidades,",
+   "ini": 60.9,
+   "fin": 61.6
+  },
+  {
+   "w": "los",
+   "ini": 61.96,
+   "fin": 62.08
+  },
+  {
+   "w": "métodos",
+   "ini": 62.16,
+   "fin": 62.58
+  },
+  {
+   "w": "de",
+   "ini": 62.62,
+   "fin": 62.68
+  },
+  {
+   "w": "comunicación",
+   "ini": 62.74,
+   "fin": 63.52
+  },
+  {
+   "w": "deben",
+   "ini": 63.7,
+   "fin": 63.96
+  },
+  {
+   "w": "poder",
+   "ini": 64.019,
+   "fin": 64.239
+  },
+  {
+   "w": "ajustarse.",
+   "ini": 64.28,
+   "fin": 64.879
+  },
+  {
+   "w": "Ahora",
+   "ini": 65.8,
+   "fin": 66.04
+  },
+  {
+   "w": "te",
+   "ini": 66.1,
+   "fin": 66.2
+  },
+  {
+   "w": "toca.",
+   "ini": 66.26,
+   "fin": 66.56
+  },
+  {
+   "w": "Escribe",
+   "ini": 66.9,
+   "fin": 67.28
+  },
+  {
+   "w": "el",
+   "ini": 67.32,
+   "fin": 67.38
+  },
+  {
+   "w": "mismo",
+   "ini": 67.44,
+   "fin": 67.7
+  },
+  {
+   "w": "aviso",
+   "ini": 67.74,
+   "fin": 68.08
+  },
+  {
+   "w": "de",
+   "ini": 68.12,
+   "fin": 68.2
+  },
+  {
+   "w": "dos",
+   "ini": 68.24,
+   "fin": 68.38
+  },
+  {
+   "w": "formas:",
+   "ini": 68.44,
+   "fin": 68.84
+  },
+  {
+   "w": "para",
+   "ini": 69.08,
+   "fin": 69.24
+  },
+  {
+   "w": "tu",
+   "ini": 69.3,
+   "fin": 69.38
+  },
+  {
+   "w": "jefe",
+   "ini": 69.46,
+   "fin": 69.78
+  },
+  {
+   "w": "y",
+   "ini": 70.02,
+   "fin": 70.08
+  },
+  {
+   "w": "para",
+   "ini": 70.16,
+   "fin": 70.3
+  },
+  {
+   "w": "tu",
+   "ini": 70.36,
+   "fin": 70.42
+  },
+  {
+   "w": "equipo.",
+   "ini": 70.46,
+   "fin": 70.84
+  }
+ ]
+}

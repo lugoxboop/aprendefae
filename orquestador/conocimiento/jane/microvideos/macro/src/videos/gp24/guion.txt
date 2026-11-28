@@ -1,0 +1,11 @@
+«Queremos pan rico.» Suena bien, pero no se puede comprobar.
+Pía sale a preguntar: entrevista a los clientes, hace una encuesta en el barrio y reúne un grupo focal.
+También compara con otras panaderías y revisa los documentos que ya tiene.
+Está recopilando requisitos: determina, documenta y gestiona lo que necesitan los interesados.
+Un requisito es una condición o capacidad que debe tener un producto, servicio o resultado para satisfacer una necesidad del negocio.
+Y debe ser medible y comprobable: no «pan rico», sino «pan caliente antes de las siete».
+Además, trazable, completo, coherente y aceptable para los interesados clave.
+Todo va a la documentación de requisitos: los del negocio, los de los interesados, los de las soluciones y otros.
+Y a la matriz de trazabilidad de requisitos: una cuadrícula que une cada requisito desde su origen hasta el entregable que lo satisface.
+Así, al final, se puede comprobar que se entregó lo aprobado.
+Ahora te toca: convierte «pan rico» en un requisito que se pueda medir.

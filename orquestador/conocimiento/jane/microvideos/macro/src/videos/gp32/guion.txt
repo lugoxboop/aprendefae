@@ -1,0 +1,11 @@
+Ramón estima la tela en novecientos noventa y cinco con cincuenta y nueve; Carmen, en mil. ¿Quién tiene razón?
+Depende: nadie acordó cómo se iban a manejar los costos.
+Eso es planificar la gestión de los costos: definir cómo se van a estimar, presupuestar, gestionar, monitorear y controlar.
+El resultado es el plan de gestión de los costos.
+Define las unidades de medida de cada recurso, como metros u horas, y el nivel de precisión: cuánto se redondean las estimaciones.
+El nivel de exactitud: el rango aceptable, como más o menos diez por ciento.
+Los umbrales de control: cuánto se puede desviar el costo antes de tomar medidas.
+Las reglas para medir el desempeño, y el formato y la frecuencia de los informes de costos.
+Además, cada cuenta de control de la estructura de desglose del trabajo lleva un código único de la contabilidad de la organización.
+Es parte del plan para la dirección del proyecto.
+Ahora te toca: decide qué unidades y qué redondeo usarás para estimar los costos de tu proyecto.

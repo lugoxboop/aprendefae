@@ -1,0 +1,11 @@
+«Toldo» está en la estructura. Pero un toldo no se hace solo.
+Pía toma el paquete de trabajo «toldo» y se pregunta: ¿qué hay que hacer?
+Medir, comprar la tela, coser e instalar.
+Eso es definir las actividades: identificar y documentar las acciones específicas que se deben realizar para elaborar los entregables.
+Las saca de los paquetes de trabajo, y lo hace a lo largo de todo el proyecto.
+El resultado es la lista de actividades: cada una con un identificador y una descripción clara del trabajo.
+Cada actividad tiene atributos: su nombre, su código y el del paquete del que sale; más adelante, qué actividades van antes y cuáles después.
+Aparte, Pía arma la lista de hitos.
+Un hito es un punto o evento significativo, como «carrito aprobado por el parque». Su duración es cero.
+Un hito puede ser obligatorio, como uno exigido por contrato, u opcional.
+Ahora te toca: convierte un paquete de trabajo de tu proyecto en actividades.

@@ -1,0 +1,11 @@
+«Yo pensé que el carrito traía café», dice Carmen. Pero eso nunca se escribió.
+El acta de Pía solo decía: «un carrito para vender pan en el parque».
+Eso es información de alto nivel. Para trabajar, el equipo necesita el detalle.
+Por eso Pía define el alcance: desarrolla una descripción detallada del proyecto y del producto.
+Lo escribe en el enunciado del alcance del proyecto.
+Primero, la descripción del alcance del producto: un carrito con vitrina, toldo y caja.
+Después, los entregables: el carrito listo, el permiso del parque y el menú impreso.
+Luego, los criterios de aceptación: las condiciones que deben cumplirse antes de aceptar cada entregable.
+Y las exclusiones: lo que queda fuera. «Café: no incluido.»
+Así todos entienden lo mismo, y cuando alguien pide algo nuevo, se sabe si está dentro o fuera del proyecto.
+Ahora te toca: escribe tres exclusiones de tu proyecto.

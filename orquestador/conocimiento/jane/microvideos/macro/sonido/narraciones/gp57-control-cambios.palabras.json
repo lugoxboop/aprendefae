@@ -1,0 +1,845 @@
+{
+ "texto": "Ramón quiere cambiar el horno por uno más grande, hoy mismo. ¿Se cambia así, sin más? Realizar el control integrado de cambios es revisar todas las solicitudes de cambio, aprobar y gestionar los cambios y comunicar las decisiones. Una vez definidas las líneas base, todo cambio pasa por aquí. Aunque se pida de palabra, el cambio debe quedar por escrito. Si hace falta, decide un comité de control de cambios, revisa y evalúa, y luego aprueba, aplaza o rechaza. Casi todo cambio impacta el tiempo, el costo, los recursos o los riesgos. Evaluar ese impacto es clave. El comité de PIA compara el costo y el beneficio del horno grande y lo aprueba. Los cambios aprobados se implementan al dirigir y gestionar el trabajo del proyecto. Los aplazados o rechazados se comunican a quien los pidió y el estado de cada solicitud queda en el registro de cambios. Ahora te toca. Piensa en un cambio para tu proyecto y decide si lo apruebas, lo aplazas o lo rechazas.",
+ "palabras": [
+  {
+   "w": "Ramón",
+   "ini": 0.1,
+   "fin": 0.44
+  },
+  {
+   "w": "quiere",
+   "ini": 0.5,
+   "fin": 0.7
+  },
+  {
+   "w": "cambiar",
+   "ini": 0.76,
+   "fin": 1.04
+  },
+  {
+   "w": "el",
+   "ini": 1.08,
+   "fin": 1.16
+  },
+  {
+   "w": "horno",
+   "ini": 1.2,
+   "fin": 1.48
+  },
+  {
+   "w": "por",
+   "ini": 1.54,
+   "fin": 1.64
+  },
+  {
+   "w": "uno",
+   "ini": 1.7,
+   "fin": 1.88
+  },
+  {
+   "w": "más",
+   "ini": 1.94,
+   "fin": 2.14
+  },
+  {
+   "w": "grande,",
+   "ini": 2.2,
+   "fin": 2.56
+  },
+  {
+   "w": "hoy",
+   "ini": 3.02,
+   "fin": 3.2
+  },
+  {
+   "w": "mismo.",
+   "ini": 3.26,
+   "fin": 3.6
+  },
+  {
+   "w": "¿Se",
+   "ini": 4.22,
+   "fin": 4.38
+  },
+  {
+   "w": "cambia",
+   "ini": 4.46,
+   "fin": 4.76
+  },
+  {
+   "w": "así,",
+   "ini": 4.78,
+   "fin": 5.04
+  },
+  {
+   "w": "sin",
+   "ini": 5.42,
+   "fin": 5.6
+  },
+  {
+   "w": "más?",
+   "ini": 5.66,
+   "fin": 5.94
+  },
+  {
+   "w": "Realizar",
+   "ini": 7.32,
+   "fin": 7.7
+  },
+  {
+   "w": "el",
+   "ini": 7.74,
+   "fin": 7.82
+  },
+  {
+   "w": "control",
+   "ini": 7.88,
+   "fin": 8.2
+  },
+  {
+   "w": "integrado",
+   "ini": 8.26,
+   "fin": 8.74
+  },
+  {
+   "w": "de",
+   "ini": 8.78,
+   "fin": 8.88
+  },
+  {
+   "w": "cambios",
+   "ini": 8.94,
+   "fin": 9.62
+  },
+  {
+   "w": "es",
+   "ini": 9.7,
+   "fin": 9.94
+  },
+  {
+   "w": "revisar",
+   "ini": 10.04,
+   "fin": 10.56
+  },
+  {
+   "w": "todas",
+   "ini": 10.64,
+   "fin": 10.92
+  },
+  {
+   "w": "las",
+   "ini": 10.98,
+   "fin": 11.08
+  },
+  {
+   "w": "solicitudes",
+   "ini": 11.12,
+   "fin": 11.74
+  },
+  {
+   "w": "de",
+   "ini": 11.78,
+   "fin": 11.88
+  },
+  {
+   "w": "cambio,",
+   "ini": 11.94,
+   "fin": 12.28
+  },
+  {
+   "w": "aprobar",
+   "ini": 12.7,
+   "fin": 13.08
+  },
+  {
+   "w": "y",
+   "ini": 13.12,
+   "fin": 13.16
+  },
+  {
+   "w": "gestionar",
+   "ini": 13.2,
+   "fin": 13.66
+  },
+  {
+   "w": "los",
+   "ini": 13.7,
+   "fin": 13.84
+  },
+  {
+   "w": "cambios",
+   "ini": 13.9,
+   "fin": 14.54
+  },
+  {
+   "w": "y",
+   "ini": 14.6,
+   "fin": 14.66
+  },
+  {
+   "w": "comunicar",
+   "ini": 14.74,
+   "fin": 15.28
+  },
+  {
+   "w": "las",
+   "ini": 15.32,
+   "fin": 15.44
+  },
+  {
+   "w": "decisiones.",
+   "ini": 15.48,
+   "fin": 16.14
+  },
+  {
+   "w": "Una",
+   "ini": 17.1,
+   "fin": 17.24
+  },
+  {
+   "w": "vez",
+   "ini": 17.26,
+   "fin": 17.42
+  },
+  {
+   "w": "definidas",
+   "ini": 17.46,
+   "fin": 18.02
+  },
+  {
+   "w": "las",
+   "ini": 18.08,
+   "fin": 18.24
+  },
+  {
+   "w": "líneas",
+   "ini": 18.3,
+   "fin": 18.64
+  },
+  {
+   "w": "base,",
+   "ini": 18.68,
+   "fin": 18.98
+  },
+  {
+   "w": "todo",
+   "ini": 19.38,
+   "fin": 19.6
+  },
+  {
+   "w": "cambio",
+   "ini": 19.66,
+   "fin": 20.04
+  },
+  {
+   "w": "pasa",
+   "ini": 20.1,
+   "fin": 20.4
+  },
+  {
+   "w": "por",
+   "ini": 20.44,
+   "fin": 20.54
+  },
+  {
+   "w": "aquí.",
+   "ini": 20.6,
+   "fin": 20.84
+  },
+  {
+   "w": "Aunque",
+   "ini": 21.7,
+   "fin": 21.98
+  },
+  {
+   "w": "se",
+   "ini": 22.02,
+   "fin": 22.14
+  },
+  {
+   "w": "pida",
+   "ini": 22.18,
+   "fin": 22.38
+  },
+  {
+   "w": "de",
+   "ini": 22.42,
+   "fin": 22.52
+  },
+  {
+   "w": "palabra,",
+   "ini": 22.56,
+   "fin": 22.94
+  },
+  {
+   "w": "el",
+   "ini": 23.28,
+   "fin": 23.38
+  },
+  {
+   "w": "cambio",
+   "ini": 23.44,
+   "fin": 23.76
+  },
+  {
+   "w": "debe",
+   "ini": 23.9,
+   "fin": 24.14
+  },
+  {
+   "w": "quedar",
+   "ini": 24.18,
+   "fin": 24.44
+  },
+  {
+   "w": "por",
+   "ini": 24.5,
+   "fin": 24.58
+  },
+  {
+   "w": "escrito.",
+   "ini": 24.64,
+   "fin": 25.1
+  },
+  {
+   "w": "Si",
+   "ini": 25.66,
+   "fin": 25.76
+  },
+  {
+   "w": "hace",
+   "ini": 25.8,
+   "fin": 26
+  },
+  {
+   "w": "falta,",
+   "ini": 26.06,
+   "fin": 26.36
+  },
+  {
+   "w": "decide",
+   "ini": 26.7,
+   "fin": 27.06
+  },
+  {
+   "w": "un",
+   "ini": 27.1,
+   "fin": 27.18
+  },
+  {
+   "w": "comité",
+   "ini": 27.24,
+   "fin": 27.56
+  },
+  {
+   "w": "de",
+   "ini": 27.6,
+   "fin": 27.68
+  },
+  {
+   "w": "control",
+   "ini": 27.74,
+   "fin": 28.1
+  },
+  {
+   "w": "de",
+   "ini": 28.12,
+   "fin": 28.22
+  },
+  {
+   "w": "cambios,",
+   "ini": 28.28,
+   "fin": 28.68
+  },
+  {
+   "w": "revisa",
+   "ini": 29.1,
+   "fin": 29.68
+  },
+  {
+   "w": "y",
+   "ini": 29.74,
+   "fin": 29.8
+  },
+  {
+   "w": "evalúa,",
+   "ini": 29.88,
+   "fin": 30.34
+  },
+  {
+   "w": "y",
+   "ini": 30.74,
+   "fin": 30.8
+  },
+  {
+   "w": "luego",
+   "ini": 30.88,
+   "fin": 31.36
+  },
+  {
+   "w": "aprueba,",
+   "ini": 31.48,
+   "fin": 31.92
+  },
+  {
+   "w": "aplaza",
+   "ini": 32.18,
+   "fin": 32.78
+  },
+  {
+   "w": "o",
+   "ini": 32.84,
+   "fin": 32.9
+  },
+  {
+   "w": "rechaza.",
+   "ini": 32.98,
+   "fin": 33.48
+  },
+  {
+   "w": "Casi",
+   "ini": 34.5,
+   "fin": 34.78
+  },
+  {
+   "w": "todo",
+   "ini": 34.84,
+   "fin": 35.06
+  },
+  {
+   "w": "cambio",
+   "ini": 35.12,
+   "fin": 35.46
+  },
+  {
+   "w": "impacta",
+   "ini": 35.52,
+   "fin": 35.9
+  },
+  {
+   "w": "el",
+   "ini": 35.94,
+   "fin": 36.02
+  },
+  {
+   "w": "tiempo,",
+   "ini": 36.12,
+   "fin": 36.5
+  },
+  {
+   "w": "el",
+   "ini": 36.78,
+   "fin": 36.88
+  },
+  {
+   "w": "costo,",
+   "ini": 36.98,
+   "fin": 37.36
+  },
+  {
+   "w": "los",
+   "ini": 37.7,
+   "fin": 37.84
+  },
+  {
+   "w": "recursos",
+   "ini": 37.96,
+   "fin": 38.64
+  },
+  {
+   "w": "o",
+   "ini": 38.7,
+   "fin": 38.76
+  },
+  {
+   "w": "los",
+   "ini": 38.8,
+   "fin": 38.94
+  },
+  {
+   "w": "riesgos.",
+   "ini": 39.06,
+   "fin": 39.52
+  },
+  {
+   "w": "Evaluar",
+   "ini": 40.12,
+   "fin": 40.46
+  },
+  {
+   "w": "ese",
+   "ini": 40.52,
+   "fin": 40.64
+  },
+  {
+   "w": "impacto",
+   "ini": 40.68,
+   "fin": 41.14
+  },
+  {
+   "w": "es",
+   "ini": 41.42,
+   "fin": 41.58
+  },
+  {
+   "w": "clave.",
+   "ini": 41.66,
+   "fin": 41.98
+  },
+  {
+   "w": "El",
+   "ini": 43.12,
+   "fin": 43.2
+  },
+  {
+   "w": "comité",
+   "ini": 43.24,
+   "fin": 43.52
+  },
+  {
+   "w": "de",
+   "ini": 43.56,
+   "fin": 43.68
+  },
+  {
+   "w": "PIA",
+   "ini": 43.72,
+   "fin": 43.96
+  },
+  {
+   "w": "compara",
+   "ini": 44.18,
+   "fin": 44.48
+  },
+  {
+   "w": "el",
+   "ini": 44.52,
+   "fin": 44.6
+  },
+  {
+   "w": "costo",
+   "ini": 44.68,
+   "fin": 44.96
+  },
+  {
+   "w": "y",
+   "ini": 44.98,
+   "fin": 45.02
+  },
+  {
+   "w": "el",
+   "ini": 45.06,
+   "fin": 45.12
+  },
+  {
+   "w": "beneficio",
+   "ini": 45.16,
+   "fin": 45.66
+  },
+  {
+   "w": "del",
+   "ini": 45.7,
+   "fin": 45.8
+  },
+  {
+   "w": "horno",
+   "ini": 45.84,
+   "fin": 46.08
+  },
+  {
+   "w": "grande",
+   "ini": 46.12,
+   "fin": 46.64
+  },
+  {
+   "w": "y",
+   "ini": 46.7,
+   "fin": 46.74
+  },
+  {
+   "w": "lo",
+   "ini": 46.78,
+   "fin": 46.84
+  },
+  {
+   "w": "aprueba.",
+   "ini": 46.9,
+   "fin": 47.3
+  },
+  {
+   "w": "Los",
+   "ini": 48.02,
+   "fin": 48.14
+  },
+  {
+   "w": "cambios",
+   "ini": 48.2,
+   "fin": 48.48
+  },
+  {
+   "w": "aprobados",
+   "ini": 48.54,
+   "fin": 49.14
+  },
+  {
+   "w": "se",
+   "ini": 49.2,
+   "fin": 49.3
+  },
+  {
+   "w": "implementan",
+   "ini": 49.34,
+   "fin": 50.08
+  },
+  {
+   "w": "al",
+   "ini": 50.56,
+   "fin": 50.66
+  },
+  {
+   "w": "dirigir",
+   "ini": 50.7,
+   "fin": 51.22
+  },
+  {
+   "w": "y",
+   "ini": 51.28,
+   "fin": 51.34
+  },
+  {
+   "w": "gestionar",
+   "ini": 51.4,
+   "fin": 51.9
+  },
+  {
+   "w": "el",
+   "ini": 51.94,
+   "fin": 52
+  },
+  {
+   "w": "trabajo",
+   "ini": 52.04,
+   "fin": 52.4
+  },
+  {
+   "w": "del",
+   "ini": 52.44,
+   "fin": 52.56
+  },
+  {
+   "w": "proyecto.",
+   "ini": 52.62,
+   "fin": 53.08
+  },
+  {
+   "w": "Los",
+   "ini": 53.5,
+   "fin": 53.62
+  },
+  {
+   "w": "aplazados",
+   "ini": 53.68,
+   "fin": 54.36
+  },
+  {
+   "w": "o",
+   "ini": 54.4,
+   "fin": 54.46
+  },
+  {
+   "w": "rechazados",
+   "ini": 54.54,
+   "fin": 55.12
+  },
+  {
+   "w": "se",
+   "ini": 55.44,
+   "fin": 55.52
+  },
+  {
+   "w": "comunican",
+   "ini": 55.56,
+   "fin": 56.08
+  },
+  {
+   "w": "a",
+   "ini": 56.1,
+   "fin": 56.14
+  },
+  {
+   "w": "quien",
+   "ini": 56.22,
+   "fin": 56.36
+  },
+  {
+   "w": "los",
+   "ini": 56.4,
+   "fin": 56.52
+  },
+  {
+   "w": "pidió",
+   "ini": 56.6,
+   "fin": 56.92
+  },
+  {
+   "w": "y",
+   "ini": 57.56,
+   "fin": 57.6
+  },
+  {
+   "w": "el",
+   "ini": 57.66,
+   "fin": 57.72
+  },
+  {
+   "w": "estado",
+   "ini": 57.78,
+   "fin": 58.12
+  },
+  {
+   "w": "de",
+   "ini": 58.16,
+   "fin": 58.3
+  },
+  {
+   "w": "cada",
+   "ini": 58.34,
+   "fin": 58.56
+  },
+  {
+   "w": "solicitud",
+   "ini": 58.62,
+   "fin": 59.22
+  },
+  {
+   "w": "queda",
+   "ini": 59.5,
+   "fin": 59.74
+  },
+  {
+   "w": "en",
+   "ini": 59.76,
+   "fin": 59.84
+  },
+  {
+   "w": "el",
+   "ini": 59.88,
+   "fin": 59.98
+  },
+  {
+   "w": "registro",
+   "ini": 60.04,
+   "fin": 60.54
+  },
+  {
+   "w": "de",
+   "ini": 60.58,
+   "fin": 60.68
+  },
+  {
+   "w": "cambios.",
+   "ini": 60.74,
+   "fin": 61.22
+  },
+  {
+   "w": "Ahora",
+   "ini": 62.46,
+   "fin": 62.68
+  },
+  {
+   "w": "te",
+   "ini": 62.72,
+   "fin": 62.82
+  },
+  {
+   "w": "toca.",
+   "ini": 62.88,
+   "fin": 63.16
+  },
+  {
+   "w": "Piensa",
+   "ini": 63.74,
+   "fin": 64.04
+  },
+  {
+   "w": "en",
+   "ini": 64.08,
+   "fin": 64.14
+  },
+  {
+   "w": "un",
+   "ini": 64.18,
+   "fin": 64.28
+  },
+  {
+   "w": "cambio",
+   "ini": 64.319,
+   "fin": 64.599
+  },
+  {
+   "w": "para",
+   "ini": 64.64,
+   "fin": 64.8
+  },
+  {
+   "w": "tu",
+   "ini": 64.84,
+   "fin": 64.92
+  },
+  {
+   "w": "proyecto",
+   "ini": 64.959,
+   "fin": 65.459
+  },
+  {
+   "w": "y",
+   "ini": 65.72,
+   "fin": 65.76
+  },
+  {
+   "w": "decide",
+   "ini": 65.8,
+   "fin": 66.2
+  },
+  {
+   "w": "si",
+   "ini": 66.26,
+   "fin": 66.34
+  },
+  {
+   "w": "lo",
+   "ini": 66.38,
+   "fin": 66.44
+  },
+  {
+   "w": "apruebas,",
+   "ini": 66.48,
+   "fin": 67
+  },
+  {
+   "w": "lo",
+   "ini": 67.28,
+   "fin": 67.34
+  },
+  {
+   "w": "aplazas",
+   "ini": 67.4,
+   "fin": 67.94
+  },
+  {
+   "w": "o",
+   "ini": 68.18,
+   "fin": 68.24
+  },
+  {
+   "w": "lo",
+   "ini": 68.28,
+   "fin": 68.38
+  },
+  {
+   "w": "rechazas.",
+   "ini": 68.44,
+   "fin": 69
+  }
+ ]
+}

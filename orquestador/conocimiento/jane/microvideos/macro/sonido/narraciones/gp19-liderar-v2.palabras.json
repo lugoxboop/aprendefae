@@ -1,0 +1,800 @@
+{
+ "texto": "Gestionar no es lo mismo que liderar. Se daña el horno y Pía tiene que sacar 100 panes hoy. Primero gestiona, reparte turnos, mira el reloj y pregunta cómo y cuándo. Luego reúne el equipo, pregunta qué y por qué, y entre todos debaten otra salida. Gestionar es llevar a alguien de un punto a otro con pasos ya conocidos, usando el poder de la posición. Liderar es guiarlo con discusión y debate, usando el poder de las relaciones. La gestión hace las cosas correctamente, el liderazgo hace las cosas correctas. Una mira el corto plazo y los sistemas, la otra, la visión a largo plazo y las personas. No son sinónimos y el director necesita las dos. La habilidad está en el equilibrio para cada situación. Además, integra en tres niveles, une los procesos donde se cruzan, aplica lo que sabe y tiene en cuenta el contexto. Ahora te toca. En cada escena, ¿Pía está gestionando o liderando?",
+ "palabras": [
+  {
+   "w": "Gestionar",
+   "ini": 0.1,
+   "fin": 0.72
+  },
+  {
+   "w": "no",
+   "ini": 1,
+   "fin": 1.1
+  },
+  {
+   "w": "es",
+   "ini": 1.12,
+   "fin": 1.26
+  },
+  {
+   "w": "lo",
+   "ini": 1.3,
+   "fin": 1.36
+  },
+  {
+   "w": "mismo",
+   "ini": 1.44,
+   "fin": 1.76
+  },
+  {
+   "w": "que",
+   "ini": 1.82,
+   "fin": 1.9
+  },
+  {
+   "w": "liderar.",
+   "ini": 1.94,
+   "fin": 2.3
+  },
+  {
+   "w": "Se",
+   "ini": 3.18,
+   "fin": 3.28
+  },
+  {
+   "w": "daña",
+   "ini": 3.32,
+   "fin": 3.58
+  },
+  {
+   "w": "el",
+   "ini": 3.6,
+   "fin": 3.7
+  },
+  {
+   "w": "horno",
+   "ini": 3.74,
+   "fin": 4.019
+  },
+  {
+   "w": "y",
+   "ini": 4.42,
+   "fin": 4.48
+  },
+  {
+   "w": "Pía",
+   "ini": 4.58,
+   "fin": 4.78
+  },
+  {
+   "w": "tiene",
+   "ini": 4.84,
+   "fin": 5.06
+  },
+  {
+   "w": "que",
+   "ini": 5.12,
+   "fin": 5.2
+  },
+  {
+   "w": "sacar",
+   "ini": 5.26,
+   "fin": 5.62
+  },
+  {
+   "w": "100",
+   "ini": 5.88,
+   "fin": 6.14
+  },
+  {
+   "w": "panes",
+   "ini": 6.24,
+   "fin": 6.58
+  },
+  {
+   "w": "hoy.",
+   "ini": 6.62,
+   "fin": 6.86
+  },
+  {
+   "w": "Primero",
+   "ini": 7.82,
+   "fin": 8.16
+  },
+  {
+   "w": "gestiona,",
+   "ini": 8.24,
+   "fin": 8.74
+  },
+  {
+   "w": "reparte",
+   "ini": 9.16,
+   "fin": 9.54
+  },
+  {
+   "w": "turnos,",
+   "ini": 9.62,
+   "fin": 10
+  },
+  {
+   "w": "mira",
+   "ini": 10.28,
+   "fin": 10.42
+  },
+  {
+   "w": "el",
+   "ini": 10.46,
+   "fin": 10.52
+  },
+  {
+   "w": "reloj",
+   "ini": 10.58,
+   "fin": 10.92
+  },
+  {
+   "w": "y",
+   "ini": 11.26,
+   "fin": 11.28
+  },
+  {
+   "w": "pregunta",
+   "ini": 11.38,
+   "fin": 11.86
+  },
+  {
+   "w": "cómo",
+   "ini": 12.08,
+   "fin": 12.38
+  },
+  {
+   "w": "y",
+   "ini": 12.66,
+   "fin": 12.72
+  },
+  {
+   "w": "cuándo.",
+   "ini": 12.82,
+   "fin": 13.22
+  },
+  {
+   "w": "Luego",
+   "ini": 14.16,
+   "fin": 14.42
+  },
+  {
+   "w": "reúne",
+   "ini": 14.52,
+   "fin": 14.8
+  },
+  {
+   "w": "el",
+   "ini": 14.84,
+   "fin": 14.9
+  },
+  {
+   "w": "equipo,",
+   "ini": 14.94,
+   "fin": 15.32
+  },
+  {
+   "w": "pregunta",
+   "ini": 15.74,
+   "fin": 16.219
+  },
+  {
+   "w": "qué",
+   "ini": 16.4,
+   "fin": 16.56
+  },
+  {
+   "w": "y",
+   "ini": 16.86,
+   "fin": 16.9
+  },
+  {
+   "w": "por",
+   "ini": 17,
+   "fin": 17.12
+  },
+  {
+   "w": "qué,",
+   "ini": 17.22,
+   "fin": 17.36
+  },
+  {
+   "w": "y",
+   "ini": 17.88,
+   "fin": 17.92
+  },
+  {
+   "w": "entre",
+   "ini": 17.98,
+   "fin": 18.24
+  },
+  {
+   "w": "todos",
+   "ini": 18.28,
+   "fin": 18.6
+  },
+  {
+   "w": "debaten",
+   "ini": 18.66,
+   "fin": 19.24
+  },
+  {
+   "w": "otra",
+   "ini": 19.34,
+   "fin": 19.52
+  },
+  {
+   "w": "salida.",
+   "ini": 19.6,
+   "fin": 19.96
+  },
+  {
+   "w": "Gestionar",
+   "ini": 20.66,
+   "fin": 21.12
+  },
+  {
+   "w": "es",
+   "ini": 21.16,
+   "fin": 21.26
+  },
+  {
+   "w": "llevar",
+   "ini": 21.28,
+   "fin": 21.54
+  },
+  {
+   "w": "a",
+   "ini": 21.56,
+   "fin": 21.64
+  },
+  {
+   "w": "alguien",
+   "ini": 21.68,
+   "fin": 22.04
+  },
+  {
+   "w": "de",
+   "ini": 22.1,
+   "fin": 22.18
+  },
+  {
+   "w": "un",
+   "ini": 22.24,
+   "fin": 22.36
+  },
+  {
+   "w": "punto",
+   "ini": 22.4,
+   "fin": 22.66
+  },
+  {
+   "w": "a",
+   "ini": 22.7,
+   "fin": 22.76
+  },
+  {
+   "w": "otro",
+   "ini": 22.84,
+   "fin": 23.08
+  },
+  {
+   "w": "con",
+   "ini": 23.26,
+   "fin": 23.4
+  },
+  {
+   "w": "pasos",
+   "ini": 23.48,
+   "fin": 23.84
+  },
+  {
+   "w": "ya",
+   "ini": 23.98,
+   "fin": 24.08
+  },
+  {
+   "w": "conocidos,",
+   "ini": 24.16,
+   "fin": 24.74
+  },
+  {
+   "w": "usando",
+   "ini": 25.14,
+   "fin": 25.46
+  },
+  {
+   "w": "el",
+   "ini": 25.5,
+   "fin": 25.56
+  },
+  {
+   "w": "poder",
+   "ini": 25.64,
+   "fin": 25.92
+  },
+  {
+   "w": "de",
+   "ini": 25.96,
+   "fin": 26.02
+  },
+  {
+   "w": "la",
+   "ini": 26.06,
+   "fin": 26.12
+  },
+  {
+   "w": "posición.",
+   "ini": 26.18,
+   "fin": 26.74
+  },
+  {
+   "w": "Liderar",
+   "ini": 27.62,
+   "fin": 28.02
+  },
+  {
+   "w": "es",
+   "ini": 28.44,
+   "fin": 28.58
+  },
+  {
+   "w": "guiarlo",
+   "ini": 28.64,
+   "fin": 29.1
+  },
+  {
+   "w": "con",
+   "ini": 29.18,
+   "fin": 29.3
+  },
+  {
+   "w": "discusión",
+   "ini": 29.34,
+   "fin": 30.02
+  },
+  {
+   "w": "y",
+   "ini": 30.08,
+   "fin": 30.12
+  },
+  {
+   "w": "debate,",
+   "ini": 30.18,
+   "fin": 30.6
+  },
+  {
+   "w": "usando",
+   "ini": 31,
+   "fin": 31.36
+  },
+  {
+   "w": "el",
+   "ini": 31.38,
+   "fin": 31.44
+  },
+  {
+   "w": "poder",
+   "ini": 31.52,
+   "fin": 31.82
+  },
+  {
+   "w": "de",
+   "ini": 31.88,
+   "fin": 31.96
+  },
+  {
+   "w": "las",
+   "ini": 32,
+   "fin": 32.14
+  },
+  {
+   "w": "relaciones.",
+   "ini": 32.24,
+   "fin": 32.84
+  },
+  {
+   "w": "La",
+   "ini": 33.74,
+   "fin": 33.82
+  },
+  {
+   "w": "gestión",
+   "ini": 33.88,
+   "fin": 34.24
+  },
+  {
+   "w": "hace",
+   "ini": 34.28,
+   "fin": 34.44
+  },
+  {
+   "w": "las",
+   "ini": 34.46,
+   "fin": 34.6
+  },
+  {
+   "w": "cosas",
+   "ini": 34.64,
+   "fin": 34.98
+  },
+  {
+   "w": "correctamente,",
+   "ini": 35.06,
+   "fin": 35.86
+  },
+  {
+   "w": "el",
+   "ini": 36.38,
+   "fin": 36.48
+  },
+  {
+   "w": "liderazgo",
+   "ini": 36.52,
+   "fin": 37.1
+  },
+  {
+   "w": "hace",
+   "ini": 37.46,
+   "fin": 37.74
+  },
+  {
+   "w": "las",
+   "ini": 37.78,
+   "fin": 37.92
+  },
+  {
+   "w": "cosas",
+   "ini": 38,
+   "fin": 38.4
+  },
+  {
+   "w": "correctas.",
+   "ini": 38.58,
+   "fin": 39.24
+  },
+  {
+   "w": "Una",
+   "ini": 40.3,
+   "fin": 40.44
+  },
+  {
+   "w": "mira",
+   "ini": 40.52,
+   "fin": 40.72
+  },
+  {
+   "w": "el",
+   "ini": 40.76,
+   "fin": 40.82
+  },
+  {
+   "w": "corto",
+   "ini": 40.92,
+   "fin": 41.18
+  },
+  {
+   "w": "plazo",
+   "ini": 41.28,
+   "fin": 41.56
+  },
+  {
+   "w": "y",
+   "ini": 41.6,
+   "fin": 41.62
+  },
+  {
+   "w": "los",
+   "ini": 41.66,
+   "fin": 41.78
+  },
+  {
+   "w": "sistemas,",
+   "ini": 41.82,
+   "fin": 42.36
+  },
+  {
+   "w": "la",
+   "ini": 42.82,
+   "fin": 42.94
+  },
+  {
+   "w": "otra,",
+   "ini": 43.02,
+   "fin": 43.26
+  },
+  {
+   "w": "la",
+   "ini": 43.56,
+   "fin": 43.62
+  },
+  {
+   "w": "visión",
+   "ini": 43.68,
+   "fin": 44.18
+  },
+  {
+   "w": "a",
+   "ini": 44.26,
+   "fin": 44.3
+  },
+  {
+   "w": "largo",
+   "ini": 44.36,
+   "fin": 44.62
+  },
+  {
+   "w": "plazo",
+   "ini": 44.72,
+   "fin": 45.26
+  },
+  {
+   "w": "y",
+   "ini": 45.3,
+   "fin": 45.36
+  },
+  {
+   "w": "las",
+   "ini": 45.4,
+   "fin": 45.52
+  },
+  {
+   "w": "personas.",
+   "ini": 45.6,
+   "fin": 46.12
+  },
+  {
+   "w": "No",
+   "ini": 46.74,
+   "fin": 46.82
+  },
+  {
+   "w": "son",
+   "ini": 46.9,
+   "fin": 47.06
+  },
+  {
+   "w": "sinónimos",
+   "ini": 47.12,
+   "fin": 47.7
+  },
+  {
+   "w": "y",
+   "ini": 48.02,
+   "fin": 48.06
+  },
+  {
+   "w": "el",
+   "ini": 48.1,
+   "fin": 48.16
+  },
+  {
+   "w": "director",
+   "ini": 48.2,
+   "fin": 48.64
+  },
+  {
+   "w": "necesita",
+   "ini": 48.86,
+   "fin": 49.4
+  },
+  {
+   "w": "las",
+   "ini": 49.44,
+   "fin": 49.58
+  },
+  {
+   "w": "dos.",
+   "ini": 49.66,
+   "fin": 49.9
+  },
+  {
+   "w": "La",
+   "ini": 50.52,
+   "fin": 50.58
+  },
+  {
+   "w": "habilidad",
+   "ini": 50.62,
+   "fin": 51.1
+  },
+  {
+   "w": "está",
+   "ini": 51.16,
+   "fin": 51.38
+  },
+  {
+   "w": "en",
+   "ini": 51.4,
+   "fin": 51.48
+  },
+  {
+   "w": "el",
+   "ini": 51.52,
+   "fin": 51.58
+  },
+  {
+   "w": "equilibrio",
+   "ini": 51.62,
+   "fin": 52.16
+  },
+  {
+   "w": "para",
+   "ini": 52.28,
+   "fin": 52.44
+  },
+  {
+   "w": "cada",
+   "ini": 52.54,
+   "fin": 52.78
+  },
+  {
+   "w": "situación.",
+   "ini": 52.86,
+   "fin": 53.42
+  },
+  {
+   "w": "Además,",
+   "ini": 54.22,
+   "fin": 54.6
+  },
+  {
+   "w": "integra",
+   "ini": 54.86,
+   "fin": 55.32
+  },
+  {
+   "w": "en",
+   "ini": 55.34,
+   "fin": 55.44
+  },
+  {
+   "w": "tres",
+   "ini": 55.5,
+   "fin": 55.66
+  },
+  {
+   "w": "niveles,",
+   "ini": 55.72,
+   "fin": 56.16
+  },
+  {
+   "w": "une",
+   "ini": 56.78,
+   "fin": 56.94
+  },
+  {
+   "w": "los",
+   "ini": 56.98,
+   "fin": 57.1
+  },
+  {
+   "w": "procesos",
+   "ini": 57.16,
+   "fin": 57.68
+  },
+  {
+   "w": "donde",
+   "ini": 57.76,
+   "fin": 57.98
+  },
+  {
+   "w": "se",
+   "ini": 58.02,
+   "fin": 58.1
+  },
+  {
+   "w": "cruzan,",
+   "ini": 58.16,
+   "fin": 58.56
+  },
+  {
+   "w": "aplica",
+   "ini": 59.1,
+   "fin": 59.46
+  },
+  {
+   "w": "lo",
+   "ini": 59.5,
+   "fin": 59.56
+  },
+  {
+   "w": "que",
+   "ini": 59.62,
+   "fin": 59.74
+  },
+  {
+   "w": "sabe",
+   "ini": 59.8,
+   "fin": 60.04
+  },
+  {
+   "w": "y",
+   "ini": 60.4,
+   "fin": 60.44
+  },
+  {
+   "w": "tiene",
+   "ini": 60.56,
+   "fin": 60.8
+  },
+  {
+   "w": "en",
+   "ini": 60.82,
+   "fin": 60.94
+  },
+  {
+   "w": "cuenta",
+   "ini": 61,
+   "fin": 61.26
+  },
+  {
+   "w": "el",
+   "ini": 61.3,
+   "fin": 61.36
+  },
+  {
+   "w": "contexto.",
+   "ini": 61.4,
+   "fin": 62
+  },
+  {
+   "w": "Ahora",
+   "ini": 63.08,
+   "fin": 63.36
+  },
+  {
+   "w": "te",
+   "ini": 63.4,
+   "fin": 63.5
+  },
+  {
+   "w": "toca.",
+   "ini": 63.56,
+   "fin": 63.86
+  },
+  {
+   "w": "En",
+   "ini": 64.3,
+   "fin": 64.4
+  },
+  {
+   "w": "cada",
+   "ini": 64.459,
+   "fin": 64.68
+  },
+  {
+   "w": "escena,",
+   "ini": 64.72,
+   "fin": 65.08
+  },
+  {
+   "w": "¿Pía",
+   "ini": 65.4,
+   "fin": 65.64
+  },
+  {
+   "w": "está",
+   "ini": 65.7,
+   "fin": 65.96
+  },
+  {
+   "w": "gestionando",
+   "ini": 66,
+   "fin": 66.66
+  },
+  {
+   "w": "o",
+   "ini": 66.98,
+   "fin": 67.02
+  },
+  {
+   "w": "liderando?",
+   "ini": 67.1,
+   "fin": 67.62
+  }
+ ]
+}

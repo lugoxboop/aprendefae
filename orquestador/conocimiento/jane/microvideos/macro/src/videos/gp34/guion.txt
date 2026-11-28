@@ -1,0 +1,11 @@
+Carmen pregunta: «¿Cuánto dinero necesito tener y cuándo?»
+Pía no puede darle solo un número: necesita un presupuesto.
+Determinar el presupuesto es sumar los costos estimados de las actividades o paquetes de trabajo para establecer una línea base de costos autorizada.
+Las actividades se suman en paquetes de trabajo; los paquetes, en cuentas de control; y las cuentas dan la línea base de costos.
+En cada nivel entran sus reservas para contingencias.
+Es la versión aprobada del presupuesto en el tiempo, y solo cambia con control formal de cambios.
+Repartida en el tiempo, suele dibujarse como una curva en S.
+Aparte queda la reserva de gestión, para trabajo no previsto dentro del alcance: lo que nadie vio venir.
+Línea base más reserva de gestión: ese es el presupuesto del proyecto.
+Con eso se fijan los requisitos de financiamiento: cuánto dinero y cuándo, muchas veces por tramos.
+Ahora te toca: arma la línea base de costos de tu proyecto.

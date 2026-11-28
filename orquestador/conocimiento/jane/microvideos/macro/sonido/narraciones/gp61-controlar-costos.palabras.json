@@ -1,0 +1,820 @@
+{
+ "texto": "Pía decora 10 puestos para la feria. Cada uno tiene un presupuesto de 100 pesos. Hoy debía llevar seis. Lleva cinco y ya gastó 650. ¿Va bien? Controlar los costos es monitorear el estado del proyecto para actualizar sus costos y gestionar cambios a la línea base de costos. Para eso sirve el análisis del valor ganado. Mide tres cosas: el valor planificado, el presupuesto del trabajo programado, seis puestos, 600. El valor ganado, el presupuesto del trabajo completado, cinco puestos, 500. Y el costo real, lo que de verdad se gastó, 650. La variación del costo es valor ganado menos costo real, -150. Se pasó del presupuesto. La variación del cronograma es valor ganado menos valor planificado, -100. Va atrasada. Y si el índice de desempeño del costo, valor ganado entre costo real, da menos de uno, el trabajo está costando más de lo planificado. Ahora te toca. Con los números de tu proyecto, calcula si vas sobre o bajo el presupuesto.",
+ "palabras": [
+  {
+   "w": "Pía",
+   "ini": 0.1,
+   "fin": 0.32
+  },
+  {
+   "w": "decora",
+   "ini": 0.36,
+   "fin": 0.72
+  },
+  {
+   "w": "10",
+   "ini": 0.78,
+   "fin": 1.06
+  },
+  {
+   "w": "puestos",
+   "ini": 1.14,
+   "fin": 1.5
+  },
+  {
+   "w": "para",
+   "ini": 1.56,
+   "fin": 1.7
+  },
+  {
+   "w": "la",
+   "ini": 1.72,
+   "fin": 1.78
+  },
+  {
+   "w": "feria.",
+   "ini": 1.86,
+   "fin": 2.18
+  },
+  {
+   "w": "Cada",
+   "ini": 2.64,
+   "fin": 2.86
+  },
+  {
+   "w": "uno",
+   "ini": 2.94,
+   "fin": 3.1
+  },
+  {
+   "w": "tiene",
+   "ini": 3.4,
+   "fin": 3.62
+  },
+  {
+   "w": "un",
+   "ini": 3.64,
+   "fin": 3.7
+  },
+  {
+   "w": "presupuesto",
+   "ini": 3.74,
+   "fin": 4.36
+  },
+  {
+   "w": "de",
+   "ini": 4.42,
+   "fin": 4.54
+  },
+  {
+   "w": "100",
+   "ini": 4.6,
+   "fin": 4.84
+  },
+  {
+   "w": "pesos.",
+   "ini": 4.94,
+   "fin": 5.34
+  },
+  {
+   "w": "Hoy",
+   "ini": 5.96,
+   "fin": 6.12
+  },
+  {
+   "w": "debía",
+   "ini": 6.2,
+   "fin": 6.56
+  },
+  {
+   "w": "llevar",
+   "ini": 6.6,
+   "fin": 6.92
+  },
+  {
+   "w": "seis.",
+   "ini": 7.04,
+   "fin": 7.36
+  },
+  {
+   "w": "Lleva",
+   "ini": 7.9,
+   "fin": 8.119
+  },
+  {
+   "w": "cinco",
+   "ini": 8.22,
+   "fin": 8.52
+  },
+  {
+   "w": "y",
+   "ini": 8.92,
+   "fin": 8.96
+  },
+  {
+   "w": "ya",
+   "ini": 9.1,
+   "fin": 9.2
+  },
+  {
+   "w": "gastó",
+   "ini": 9.24,
+   "fin": 9.62
+  },
+  {
+   "w": "650.",
+   "ini": 9.94,
+   "fin": 10.98
+  },
+  {
+   "w": "¿Va",
+   "ini": 11.46,
+   "fin": 11.56
+  },
+  {
+   "w": "bien?",
+   "ini": 11.64,
+   "fin": 11.88
+  },
+  {
+   "w": "Controlar",
+   "ini": 12.86,
+   "fin": 13.32
+  },
+  {
+   "w": "los",
+   "ini": 13.38,
+   "fin": 13.52
+  },
+  {
+   "w": "costos",
+   "ini": 13.58,
+   "fin": 14.02
+  },
+  {
+   "w": "es",
+   "ini": 14.24,
+   "fin": 14.4
+  },
+  {
+   "w": "monitorear",
+   "ini": 14.44,
+   "fin": 15.06
+  },
+  {
+   "w": "el",
+   "ini": 15.1,
+   "fin": 15.16
+  },
+  {
+   "w": "estado",
+   "ini": 15.2,
+   "fin": 15.54
+  },
+  {
+   "w": "del",
+   "ini": 15.58,
+   "fin": 15.68
+  },
+  {
+   "w": "proyecto",
+   "ini": 15.74,
+   "fin": 16.18
+  },
+  {
+   "w": "para",
+   "ini": 16.28,
+   "fin": 16.42
+  },
+  {
+   "w": "actualizar",
+   "ini": 16.46,
+   "fin": 16.98
+  },
+  {
+   "w": "sus",
+   "ini": 17.06,
+   "fin": 17.22
+  },
+  {
+   "w": "costos",
+   "ini": 17.3,
+   "fin": 17.72
+  },
+  {
+   "w": "y",
+   "ini": 17.88,
+   "fin": 17.92
+  },
+  {
+   "w": "gestionar",
+   "ini": 17.98,
+   "fin": 18.44
+  },
+  {
+   "w": "cambios",
+   "ini": 18.54,
+   "fin": 19.02
+  },
+  {
+   "w": "a",
+   "ini": 19.08,
+   "fin": 19.12
+  },
+  {
+   "w": "la",
+   "ini": 19.18,
+   "fin": 19.24
+  },
+  {
+   "w": "línea",
+   "ini": 19.32,
+   "fin": 19.64
+  },
+  {
+   "w": "base",
+   "ini": 19.68,
+   "fin": 19.92
+  },
+  {
+   "w": "de",
+   "ini": 19.96,
+   "fin": 20.02
+  },
+  {
+   "w": "costos.",
+   "ini": 20.12,
+   "fin": 20.56
+  },
+  {
+   "w": "Para",
+   "ini": 21.18,
+   "fin": 21.36
+  },
+  {
+   "w": "eso",
+   "ini": 21.42,
+   "fin": 21.6
+  },
+  {
+   "w": "sirve",
+   "ini": 21.7,
+   "fin": 22.02
+  },
+  {
+   "w": "el",
+   "ini": 22.22,
+   "fin": 22.3
+  },
+  {
+   "w": "análisis",
+   "ini": 22.34,
+   "fin": 22.86
+  },
+  {
+   "w": "del",
+   "ini": 22.9,
+   "fin": 23.02
+  },
+  {
+   "w": "valor",
+   "ini": 23.06,
+   "fin": 23.3
+  },
+  {
+   "w": "ganado.",
+   "ini": 23.36,
+   "fin": 23.72
+  },
+  {
+   "w": "Mide",
+   "ini": 24.48,
+   "fin": 24.76
+  },
+  {
+   "w": "tres",
+   "ini": 24.8,
+   "fin": 25
+  },
+  {
+   "w": "cosas:",
+   "ini": 25.08,
+   "fin": 25.48
+  },
+  {
+   "w": "el",
+   "ini": 26.26,
+   "fin": 26.36
+  },
+  {
+   "w": "valor",
+   "ini": 26.42,
+   "fin": 26.7
+  },
+  {
+   "w": "planificado,",
+   "ini": 26.78,
+   "fin": 27.44
+  },
+  {
+   "w": "el",
+   "ini": 28.02,
+   "fin": 28.08
+  },
+  {
+   "w": "presupuesto",
+   "ini": 28.14,
+   "fin": 28.8
+  },
+  {
+   "w": "del",
+   "ini": 28.84,
+   "fin": 28.96
+  },
+  {
+   "w": "trabajo",
+   "ini": 29.04,
+   "fin": 29.42
+  },
+  {
+   "w": "programado,",
+   "ini": 29.52,
+   "fin": 30.04
+  },
+  {
+   "w": "seis",
+   "ini": 30.74,
+   "fin": 30.96
+  },
+  {
+   "w": "puestos,",
+   "ini": 31.04,
+   "fin": 31.5
+  },
+  {
+   "w": "600.",
+   "ini": 32.04,
+   "fin": 32.58
+  },
+  {
+   "w": "El",
+   "ini": 33.52,
+   "fin": 33.6
+  },
+  {
+   "w": "valor",
+   "ini": 33.66,
+   "fin": 33.92
+  },
+  {
+   "w": "ganado,",
+   "ini": 33.98,
+   "fin": 34.36
+  },
+  {
+   "w": "el",
+   "ini": 35,
+   "fin": 35.08
+  },
+  {
+   "w": "presupuesto",
+   "ini": 35.14,
+   "fin": 35.78
+  },
+  {
+   "w": "del",
+   "ini": 35.84,
+   "fin": 35.96
+  },
+  {
+   "w": "trabajo",
+   "ini": 36.02,
+   "fin": 36.42
+  },
+  {
+   "w": "completado,",
+   "ini": 36.46,
+   "fin": 37.04
+  },
+  {
+   "w": "cinco",
+   "ini": 37.72,
+   "fin": 38.02
+  },
+  {
+   "w": "puestos,",
+   "ini": 38.12,
+   "fin": 38.58
+  },
+  {
+   "w": "500.",
+   "ini": 39,
+   "fin": 39.58
+  },
+  {
+   "w": "Y",
+   "ini": 40.5,
+   "fin": 40.56
+  },
+  {
+   "w": "el",
+   "ini": 40.62,
+   "fin": 40.7
+  },
+  {
+   "w": "costo",
+   "ini": 40.8,
+   "fin": 41.1
+  },
+  {
+   "w": "real,",
+   "ini": 41.18,
+   "fin": 41.5
+  },
+  {
+   "w": "lo",
+   "ini": 42.06,
+   "fin": 42.14
+  },
+  {
+   "w": "que",
+   "ini": 42.24,
+   "fin": 42.34
+  },
+  {
+   "w": "de",
+   "ini": 42.38,
+   "fin": 42.48
+  },
+  {
+   "w": "verdad",
+   "ini": 42.52,
+   "fin": 42.98
+  },
+  {
+   "w": "se",
+   "ini": 43.02,
+   "fin": 43.12
+  },
+  {
+   "w": "gastó,",
+   "ini": 43.16,
+   "fin": 43.52
+  },
+  {
+   "w": "650.",
+   "ini": 44.38,
+   "fin": 45.38
+  },
+  {
+   "w": "La",
+   "ini": 46.24,
+   "fin": 46.3
+  },
+  {
+   "w": "variación",
+   "ini": 46.36,
+   "fin": 46.86
+  },
+  {
+   "w": "del",
+   "ini": 46.9,
+   "fin": 47
+  },
+  {
+   "w": "costo",
+   "ini": 47.08,
+   "fin": 47.44
+  },
+  {
+   "w": "es",
+   "ini": 47.7,
+   "fin": 47.88
+  },
+  {
+   "w": "valor",
+   "ini": 48.2,
+   "fin": 48.48
+  },
+  {
+   "w": "ganado",
+   "ini": 48.54,
+   "fin": 48.94
+  },
+  {
+   "w": "menos",
+   "ini": 49.22,
+   "fin": 49.5
+  },
+  {
+   "w": "costo",
+   "ini": 49.58,
+   "fin": 49.92
+  },
+  {
+   "w": "real,",
+   "ini": 50,
+   "fin": 50.34
+  },
+  {
+   "w": "-150.",
+   "ini": 50.92,
+   "fin": 52.38
+  },
+  {
+   "w": "Se",
+   "ini": 53.06,
+   "fin": 53.16
+  },
+  {
+   "w": "pasó",
+   "ini": 53.26,
+   "fin": 53.6
+  },
+  {
+   "w": "del",
+   "ini": 53.64,
+   "fin": 53.76
+  },
+  {
+   "w": "presupuesto.",
+   "ini": 53.82,
+   "fin": 54.48
+  },
+  {
+   "w": "La",
+   "ini": 55.54,
+   "fin": 55.6
+  },
+  {
+   "w": "variación",
+   "ini": 55.64,
+   "fin": 56.1
+  },
+  {
+   "w": "del",
+   "ini": 56.12,
+   "fin": 56.22
+  },
+  {
+   "w": "cronograma",
+   "ini": 56.28,
+   "fin": 56.94
+  },
+  {
+   "w": "es",
+   "ini": 57.04,
+   "fin": 57.24
+  },
+  {
+   "w": "valor",
+   "ini": 57.64,
+   "fin": 57.9
+  },
+  {
+   "w": "ganado",
+   "ini": 57.96,
+   "fin": 58.36
+  },
+  {
+   "w": "menos",
+   "ini": 58.66,
+   "fin": 58.98
+  },
+  {
+   "w": "valor",
+   "ini": 59.08,
+   "fin": 59.34
+  },
+  {
+   "w": "planificado,",
+   "ini": 59.42,
+   "fin": 60.1
+  },
+  {
+   "w": "-100.",
+   "ini": 60.1,
+   "fin": 61.62
+  },
+  {
+   "w": "Va",
+   "ini": 62.34,
+   "fin": 62.46
+  },
+  {
+   "w": "atrasada.",
+   "ini": 62.54,
+   "fin": 63.14
+  },
+  {
+   "w": "Y",
+   "ini": 64.18,
+   "fin": 64.22
+  },
+  {
+   "w": "si",
+   "ini": 64.3,
+   "fin": 64.379
+  },
+  {
+   "w": "el",
+   "ini": 64.42,
+   "fin": 64.5
+  },
+  {
+   "w": "índice",
+   "ini": 64.58,
+   "fin": 64.92
+  },
+  {
+   "w": "de",
+   "ini": 64.959,
+   "fin": 65.04
+  },
+  {
+   "w": "desempeño",
+   "ini": 65.08,
+   "fin": 65.6
+  },
+  {
+   "w": "del",
+   "ini": 65.66,
+   "fin": 65.76
+  },
+  {
+   "w": "costo,",
+   "ini": 65.84,
+   "fin": 66.2
+  },
+  {
+   "w": "valor",
+   "ini": 66.52,
+   "fin": 66.8
+  },
+  {
+   "w": "ganado",
+   "ini": 66.86,
+   "fin": 67.4
+  },
+  {
+   "w": "entre",
+   "ini": 67.44,
+   "fin": 67.7
+  },
+  {
+   "w": "costo",
+   "ini": 67.78,
+   "fin": 68.08
+  },
+  {
+   "w": "real,",
+   "ini": 68.16,
+   "fin": 68.48
+  },
+  {
+   "w": "da",
+   "ini": 68.72,
+   "fin": 68.82
+  },
+  {
+   "w": "menos",
+   "ini": 69,
+   "fin": 69.3
+  },
+  {
+   "w": "de",
+   "ini": 69.36,
+   "fin": 69.44
+  },
+  {
+   "w": "uno,",
+   "ini": 69.54,
+   "fin": 69.72
+  },
+  {
+   "w": "el",
+   "ini": 70.32,
+   "fin": 70.4
+  },
+  {
+   "w": "trabajo",
+   "ini": 70.46,
+   "fin": 70.86
+  },
+  {
+   "w": "está",
+   "ini": 70.9,
+   "fin": 71.12
+  },
+  {
+   "w": "costando",
+   "ini": 71.18,
+   "fin": 71.68
+  },
+  {
+   "w": "más",
+   "ini": 71.82,
+   "fin": 72.08
+  },
+  {
+   "w": "de",
+   "ini": 72.12,
+   "fin": 72.18
+  },
+  {
+   "w": "lo",
+   "ini": 72.22,
+   "fin": 72.28
+  },
+  {
+   "w": "planificado.",
+   "ini": 72.34,
+   "fin": 73.02
+  },
+  {
+   "w": "Ahora",
+   "ini": 73.96,
+   "fin": 74.24
+  },
+  {
+   "w": "te",
+   "ini": 74.28,
+   "fin": 74.38
+  },
+  {
+   "w": "toca.",
+   "ini": 74.44,
+   "fin": 74.72
+  },
+  {
+   "w": "Con",
+   "ini": 75.26,
+   "fin": 75.36
+  },
+  {
+   "w": "los",
+   "ini": 75.38,
+   "fin": 75.52
+  },
+  {
+   "w": "números",
+   "ini": 75.58,
+   "fin": 75.86
+  },
+  {
+   "w": "de",
+   "ini": 75.88,
+   "fin": 75.96
+  },
+  {
+   "w": "tu",
+   "ini": 76,
+   "fin": 76.08
+  },
+  {
+   "w": "proyecto,",
+   "ini": 76.12,
+   "fin": 76.6
+  },
+  {
+   "w": "calcula",
+   "ini": 76.78,
+   "fin": 77.16
+  },
+  {
+   "w": "si",
+   "ini": 77.24,
+   "fin": 77.34
+  },
+  {
+   "w": "vas",
+   "ini": 77.4,
+   "fin": 77.6
+  },
+  {
+   "w": "sobre",
+   "ini": 77.8,
+   "fin": 78.3
+  },
+  {
+   "w": "o",
+   "ini": 78.36,
+   "fin": 78.42
+  },
+  {
+   "w": "bajo",
+   "ini": 78.48,
+   "fin": 78.76
+  },
+  {
+   "w": "el",
+   "ini": 78.8,
+   "fin": 78.88
+  },
+  {
+   "w": "presupuesto.",
+   "ini": 78.9,
+   "fin": 79.5
+  }
+ ]
+}

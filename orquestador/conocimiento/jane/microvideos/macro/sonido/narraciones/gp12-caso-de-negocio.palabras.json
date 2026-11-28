@@ -1,0 +1,875 @@
+{
+ "texto": "Un caso de negocio puede incluir una opción muy seria: no hacer nada. Pía quiere abrir una segunda sede. Carmen, la socia que pone la plata, arma con ella el caso de negocio. Primero, la necesidad: en el barrio norte, la gente hace fila y se va sin pan. Luego, el análisis: ¿qué causa el problema? ¿Qué riesgos hay? ¿Con qué criterios van a decidir? Y las opciones: una, no hacer nada, seguir como hasta ahora. Si la eligen, no hay proyecto. Dos, lo mínimo, un carrito que vende pan en el barrio norte. Tres, más que el mínimo, una sede completa con cafetería. Al final, la recomendación, la opción elegida con sus riesgos y sus medidas de éxito. Eso es el caso de negocio, un estudio de viabilidad económica que sirve de base para autorizar el proyecto. Pía y Carmen eligen el carrito y arman el plan de gestión de beneficios. Qué beneficio llega, cuándo, cómo se mide y quién lo vigila. Ahora te toca. Arma las tres opciones de tu propio proyecto.",
+ "palabras": [
+  {
+   "w": "Un",
+   "ini": 0.1,
+   "fin": 0.2
+  },
+  {
+   "w": "caso",
+   "ini": 0.26,
+   "fin": 0.54
+  },
+  {
+   "w": "de",
+   "ini": 0.58,
+   "fin": 0.64
+  },
+  {
+   "w": "negocio",
+   "ini": 0.7,
+   "fin": 1.18
+  },
+  {
+   "w": "puede",
+   "ini": 1.52,
+   "fin": 1.72
+  },
+  {
+   "w": "incluir",
+   "ini": 1.76,
+   "fin": 2.26
+  },
+  {
+   "w": "una",
+   "ini": 2.36,
+   "fin": 2.5
+  },
+  {
+   "w": "opción",
+   "ini": 2.54,
+   "fin": 3
+  },
+  {
+   "w": "muy",
+   "ini": 3.08,
+   "fin": 3.26
+  },
+  {
+   "w": "seria:",
+   "ini": 3.32,
+   "fin": 3.66
+  },
+  {
+   "w": "no",
+   "ini": 4.24,
+   "fin": 4.38
+  },
+  {
+   "w": "hacer",
+   "ini": 4.42,
+   "fin": 4.78
+  },
+  {
+   "w": "nada.",
+   "ini": 4.86,
+   "fin": 5.16
+  },
+  {
+   "w": "Pía",
+   "ini": 6.28,
+   "fin": 6.72
+  },
+  {
+   "w": "quiere",
+   "ini": 6.78,
+   "fin": 7
+  },
+  {
+   "w": "abrir",
+   "ini": 7.04,
+   "fin": 7.28
+  },
+  {
+   "w": "una",
+   "ini": 7.32,
+   "fin": 7.48
+  },
+  {
+   "w": "segunda",
+   "ini": 7.54,
+   "fin": 7.94
+  },
+  {
+   "w": "sede.",
+   "ini": 8,
+   "fin": 8.26
+  },
+  {
+   "w": "Carmen,",
+   "ini": 8.78,
+   "fin": 9.16
+  },
+  {
+   "w": "la",
+   "ini": 9.34,
+   "fin": 9.42
+  },
+  {
+   "w": "socia",
+   "ini": 9.54,
+   "fin": 9.9
+  },
+  {
+   "w": "que",
+   "ini": 9.94,
+   "fin": 10.06
+  },
+  {
+   "w": "pone",
+   "ini": 10.1,
+   "fin": 10.28
+  },
+  {
+   "w": "la",
+   "ini": 10.32,
+   "fin": 10.38
+  },
+  {
+   "w": "plata,",
+   "ini": 10.46,
+   "fin": 10.78
+  },
+  {
+   "w": "arma",
+   "ini": 11.22,
+   "fin": 11.44
+  },
+  {
+   "w": "con",
+   "ini": 11.48,
+   "fin": 11.62
+  },
+  {
+   "w": "ella",
+   "ini": 11.7,
+   "fin": 11.86
+  },
+  {
+   "w": "el",
+   "ini": 11.9,
+   "fin": 12
+  },
+  {
+   "w": "caso",
+   "ini": 12.06,
+   "fin": 12.32
+  },
+  {
+   "w": "de",
+   "ini": 12.36,
+   "fin": 12.44
+  },
+  {
+   "w": "negocio.",
+   "ini": 12.48,
+   "fin": 12.96
+  },
+  {
+   "w": "Primero,",
+   "ini": 13.6,
+   "fin": 13.98
+  },
+  {
+   "w": "la",
+   "ini": 14.28,
+   "fin": 14.34
+  },
+  {
+   "w": "necesidad:",
+   "ini": 14.4,
+   "fin": 15
+  },
+  {
+   "w": "en",
+   "ini": 15.48,
+   "fin": 15.54
+  },
+  {
+   "w": "el",
+   "ini": 15.58,
+   "fin": 15.66
+  },
+  {
+   "w": "barrio",
+   "ini": 15.7,
+   "fin": 15.94
+  },
+  {
+   "w": "norte,",
+   "ini": 16,
+   "fin": 16.32
+  },
+  {
+   "w": "la",
+   "ini": 16.48,
+   "fin": 16.54
+  },
+  {
+   "w": "gente",
+   "ini": 16.62,
+   "fin": 16.86
+  },
+  {
+   "w": "hace",
+   "ini": 16.9,
+   "fin": 17.14
+  },
+  {
+   "w": "fila",
+   "ini": 17.22,
+   "fin": 17.68
+  },
+  {
+   "w": "y",
+   "ini": 17.76,
+   "fin": 17.8
+  },
+  {
+   "w": "se",
+   "ini": 17.88,
+   "fin": 17.98
+  },
+  {
+   "w": "va",
+   "ini": 18.02,
+   "fin": 18.12
+  },
+  {
+   "w": "sin",
+   "ini": 18.24,
+   "fin": 18.44
+  },
+  {
+   "w": "pan.",
+   "ini": 18.5,
+   "fin": 18.78
+  },
+  {
+   "w": "Luego,",
+   "ini": 19.8,
+   "fin": 20.12
+  },
+  {
+   "w": "el",
+   "ini": 20.34,
+   "fin": 20.42
+  },
+  {
+   "w": "análisis:",
+   "ini": 20.46,
+   "fin": 21.02
+  },
+  {
+   "w": "¿qué",
+   "ini": 21.54,
+   "fin": 21.68
+  },
+  {
+   "w": "causa",
+   "ini": 21.74,
+   "fin": 22
+  },
+  {
+   "w": "el",
+   "ini": 22.04,
+   "fin": 22.12
+  },
+  {
+   "w": "problema?",
+   "ini": 22.16,
+   "fin": 22.58
+  },
+  {
+   "w": "¿Qué",
+   "ini": 23.08,
+   "fin": 23.2
+  },
+  {
+   "w": "riesgos",
+   "ini": 23.26,
+   "fin": 23.68
+  },
+  {
+   "w": "hay?",
+   "ini": 23.72,
+   "fin": 23.92
+  },
+  {
+   "w": "¿Con",
+   "ini": 24.46,
+   "fin": 24.6
+  },
+  {
+   "w": "qué",
+   "ini": 24.66,
+   "fin": 24.76
+  },
+  {
+   "w": "criterios",
+   "ini": 24.8,
+   "fin": 25.42
+  },
+  {
+   "w": "van",
+   "ini": 25.5,
+   "fin": 25.62
+  },
+  {
+   "w": "a",
+   "ini": 25.66,
+   "fin": 25.7
+  },
+  {
+   "w": "decidir?",
+   "ini": 25.74,
+   "fin": 26.18
+  },
+  {
+   "w": "Y",
+   "ini": 27,
+   "fin": 27.04
+  },
+  {
+   "w": "las",
+   "ini": 27.1,
+   "fin": 27.22
+  },
+  {
+   "w": "opciones:",
+   "ini": 27.28,
+   "fin": 27.78
+  },
+  {
+   "w": "una,",
+   "ini": 28.42,
+   "fin": 28.6
+  },
+  {
+   "w": "no",
+   "ini": 29.04,
+   "fin": 29.16
+  },
+  {
+   "w": "hacer",
+   "ini": 29.18,
+   "fin": 29.44
+  },
+  {
+   "w": "nada,",
+   "ini": 29.5,
+   "fin": 29.74
+  },
+  {
+   "w": "seguir",
+   "ini": 30.14,
+   "fin": 30.48
+  },
+  {
+   "w": "como",
+   "ini": 30.56,
+   "fin": 30.72
+  },
+  {
+   "w": "hasta",
+   "ini": 30.74,
+   "fin": 30.94
+  },
+  {
+   "w": "ahora.",
+   "ini": 30.98,
+   "fin": 31.26
+  },
+  {
+   "w": "Si",
+   "ini": 31.94,
+   "fin": 32.02
+  },
+  {
+   "w": "la",
+   "ini": 32.08,
+   "fin": 32.14
+  },
+  {
+   "w": "eligen,",
+   "ini": 32.18,
+   "fin": 32.659
+  },
+  {
+   "w": "no",
+   "ini": 32.96,
+   "fin": 33.06
+  },
+  {
+   "w": "hay",
+   "ini": 33.1,
+   "fin": 33.26
+  },
+  {
+   "w": "proyecto.",
+   "ini": 33.3,
+   "fin": 33.8
+  },
+  {
+   "w": "Dos,",
+   "ini": 34.74,
+   "fin": 35.02
+  },
+  {
+   "w": "lo",
+   "ini": 35.44,
+   "fin": 35.52
+  },
+  {
+   "w": "mínimo,",
+   "ini": 35.6,
+   "fin": 36.02
+  },
+  {
+   "w": "un",
+   "ini": 36.42,
+   "fin": 36.52
+  },
+  {
+   "w": "carrito",
+   "ini": 36.56,
+   "fin": 36.98
+  },
+  {
+   "w": "que",
+   "ini": 37.04,
+   "fin": 37.14
+  },
+  {
+   "w": "vende",
+   "ini": 37.18,
+   "fin": 37.42
+  },
+  {
+   "w": "pan",
+   "ini": 37.54,
+   "fin": 37.86
+  },
+  {
+   "w": "en",
+   "ini": 37.92,
+   "fin": 38
+  },
+  {
+   "w": "el",
+   "ini": 38.04,
+   "fin": 38.12
+  },
+  {
+   "w": "barrio",
+   "ini": 38.16,
+   "fin": 38.44
+  },
+  {
+   "w": "norte.",
+   "ini": 38.5,
+   "fin": 38.88
+  },
+  {
+   "w": "Tres,",
+   "ini": 39.74,
+   "fin": 40
+  },
+  {
+   "w": "más",
+   "ini": 40.4,
+   "fin": 40.58
+  },
+  {
+   "w": "que",
+   "ini": 40.64,
+   "fin": 40.72
+  },
+  {
+   "w": "el",
+   "ini": 40.76,
+   "fin": 40.82
+  },
+  {
+   "w": "mínimo,",
+   "ini": 40.88,
+   "fin": 41.26
+  },
+  {
+   "w": "una",
+   "ini": 41.7,
+   "fin": 41.84
+  },
+  {
+   "w": "sede",
+   "ini": 41.94,
+   "fin": 42.22
+  },
+  {
+   "w": "completa",
+   "ini": 42.26,
+   "fin": 42.82
+  },
+  {
+   "w": "con",
+   "ini": 42.9,
+   "fin": 43.02
+  },
+  {
+   "w": "cafetería.",
+   "ini": 43.08,
+   "fin": 43.72
+  },
+  {
+   "w": "Al",
+   "ini": 44.48,
+   "fin": 44.54
+  },
+  {
+   "w": "final,",
+   "ini": 44.62,
+   "fin": 44.96
+  },
+  {
+   "w": "la",
+   "ini": 45.14,
+   "fin": 45.22
+  },
+  {
+   "w": "recomendación,",
+   "ini": 45.28,
+   "fin": 46.08
+  },
+  {
+   "w": "la",
+   "ini": 46.58,
+   "fin": 46.66
+  },
+  {
+   "w": "opción",
+   "ini": 46.7,
+   "fin": 47.02
+  },
+  {
+   "w": "elegida",
+   "ini": 47.06,
+   "fin": 47.54
+  },
+  {
+   "w": "con",
+   "ini": 47.68,
+   "fin": 47.8
+  },
+  {
+   "w": "sus",
+   "ini": 47.84,
+   "fin": 48.04
+  },
+  {
+   "w": "riesgos",
+   "ini": 48.12,
+   "fin": 48.58
+  },
+  {
+   "w": "y",
+   "ini": 48.7,
+   "fin": 48.72
+  },
+  {
+   "w": "sus",
+   "ini": 48.8,
+   "fin": 48.96
+  },
+  {
+   "w": "medidas",
+   "ini": 49.02,
+   "fin": 49.42
+  },
+  {
+   "w": "de",
+   "ini": 49.46,
+   "fin": 49.56
+  },
+  {
+   "w": "éxito.",
+   "ini": 49.62,
+   "fin": 50.04
+  },
+  {
+   "w": "Eso",
+   "ini": 50.84,
+   "fin": 51.04
+  },
+  {
+   "w": "es",
+   "ini": 51.1,
+   "fin": 51.22
+  },
+  {
+   "w": "el",
+   "ini": 51.26,
+   "fin": 51.34
+  },
+  {
+   "w": "caso",
+   "ini": 51.44,
+   "fin": 51.72
+  },
+  {
+   "w": "de",
+   "ini": 51.76,
+   "fin": 51.82
+  },
+  {
+   "w": "negocio,",
+   "ini": 51.88,
+   "fin": 52.32
+  },
+  {
+   "w": "un",
+   "ini": 52.8,
+   "fin": 52.88
+  },
+  {
+   "w": "estudio",
+   "ini": 52.92,
+   "fin": 53.4
+  },
+  {
+   "w": "de",
+   "ini": 53.44,
+   "fin": 53.52
+  },
+  {
+   "w": "viabilidad",
+   "ini": 53.58,
+   "fin": 54.14
+  },
+  {
+   "w": "económica",
+   "ini": 54.2,
+   "fin": 54.8
+  },
+  {
+   "w": "que",
+   "ini": 55.16,
+   "fin": 55.26
+  },
+  {
+   "w": "sirve",
+   "ini": 55.3,
+   "fin": 55.56
+  },
+  {
+   "w": "de",
+   "ini": 55.6,
+   "fin": 55.68
+  },
+  {
+   "w": "base",
+   "ini": 55.7,
+   "fin": 56.02
+  },
+  {
+   "w": "para",
+   "ini": 56.1,
+   "fin": 56.24
+  },
+  {
+   "w": "autorizar",
+   "ini": 56.28,
+   "fin": 56.8
+  },
+  {
+   "w": "el",
+   "ini": 56.84,
+   "fin": 56.92
+  },
+  {
+   "w": "proyecto.",
+   "ini": 56.98,
+   "fin": 57.5
+  },
+  {
+   "w": "Pía",
+   "ini": 58.36,
+   "fin": 58.54
+  },
+  {
+   "w": "y",
+   "ini": 58.56,
+   "fin": 58.6
+  },
+  {
+   "w": "Carmen",
+   "ini": 58.68,
+   "fin": 59.08
+  },
+  {
+   "w": "eligen",
+   "ini": 59.28,
+   "fin": 59.62
+  },
+  {
+   "w": "el",
+   "ini": 59.64,
+   "fin": 59.72
+  },
+  {
+   "w": "carrito",
+   "ini": 59.78,
+   "fin": 60.2
+  },
+  {
+   "w": "y",
+   "ini": 60.86,
+   "fin": 60.9
+  },
+  {
+   "w": "arman",
+   "ini": 61.02,
+   "fin": 61.26
+  },
+  {
+   "w": "el",
+   "ini": 61.3,
+   "fin": 61.38
+  },
+  {
+   "w": "plan",
+   "ini": 61.46,
+   "fin": 61.66
+  },
+  {
+   "w": "de",
+   "ini": 61.68,
+   "fin": 61.74
+  },
+  {
+   "w": "gestión",
+   "ini": 61.8,
+   "fin": 62.18
+  },
+  {
+   "w": "de",
+   "ini": 62.2,
+   "fin": 62.26
+  },
+  {
+   "w": "beneficios.",
+   "ini": 62.3,
+   "fin": 62.94
+  },
+  {
+   "w": "Qué",
+   "ini": 63.46,
+   "fin": 63.54
+  },
+  {
+   "w": "beneficio",
+   "ini": 63.58,
+   "fin": 64.06
+  },
+  {
+   "w": "llega,",
+   "ini": 64.12,
+   "fin": 64.42
+  },
+  {
+   "w": "cuándo,",
+   "ini": 64.819,
+   "fin": 65.18
+  },
+  {
+   "w": "cómo",
+   "ini": 65.54,
+   "fin": 65.72
+  },
+  {
+   "w": "se",
+   "ini": 65.8,
+   "fin": 65.88
+  },
+  {
+   "w": "mide",
+   "ini": 65.94,
+   "fin": 66.36
+  },
+  {
+   "w": "y",
+   "ini": 66.42,
+   "fin": 66.48
+  },
+  {
+   "w": "quién",
+   "ini": 66.62,
+   "fin": 66.8
+  },
+  {
+   "w": "lo",
+   "ini": 66.84,
+   "fin": 66.92
+  },
+  {
+   "w": "vigila.",
+   "ini": 66.96,
+   "fin": 67.4
+  },
+  {
+   "w": "Ahora",
+   "ini": 68.3,
+   "fin": 68.54
+  },
+  {
+   "w": "te",
+   "ini": 68.6,
+   "fin": 68.68
+  },
+  {
+   "w": "toca.",
+   "ini": 68.76,
+   "fin": 69.02
+  },
+  {
+   "w": "Arma",
+   "ini": 69.44,
+   "fin": 69.66
+  },
+  {
+   "w": "las",
+   "ini": 69.72,
+   "fin": 69.86
+  },
+  {
+   "w": "tres",
+   "ini": 69.9,
+   "fin": 70.08
+  },
+  {
+   "w": "opciones",
+   "ini": 70.12,
+   "fin": 70.64
+  },
+  {
+   "w": "de",
+   "ini": 70.76,
+   "fin": 70.84
+  },
+  {
+   "w": "tu",
+   "ini": 70.9,
+   "fin": 70.98
+  },
+  {
+   "w": "propio",
+   "ini": 71.08,
+   "fin": 71.38
+  },
+  {
+   "w": "proyecto.",
+   "ini": 71.46,
+   "fin": 72
+  }
+ ]
+}

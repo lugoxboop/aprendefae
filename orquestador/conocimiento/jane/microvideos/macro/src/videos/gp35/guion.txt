@@ -1,0 +1,11 @@
+Un día el pan sale perfecto; al otro, quemado. ¿Qué es «buen pan» para el carrito?
+Si nadie lo define, nadie puede comprobarlo.
+Planificar la gestión de la calidad es identificar los requisitos o estándares de calidad del proyecto y sus entregables, y documentar cómo se demostrará su cumplimiento.
+El resultado es el plan de gestión de la calidad.
+Dice qué estándares y objetivos de calidad se usarán, y quién es responsable de qué.
+Qué entregables y procesos se revisarán, con qué actividades y herramientas.
+Y sus procedimientos clave: no conformidades, acciones correctivas y mejora continua.
+Además, se definen las métricas de calidad: cada una describe un atributo del producto o del proyecto, y cómo Controlar la Calidad verificará su cumplimiento.
+Por ejemplo: el número de panes quemados por día, o la satisfacción de los clientes.
+Es parte del plan para la dirección del proyecto, y conviene revisarlo temprano.
+Ahora te toca: define una métrica de calidad para tu proyecto.

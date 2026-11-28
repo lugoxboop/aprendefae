@@ -1,0 +1,700 @@
+{
+ "texto": "\"Gastamos 3 millones\" no dice nada. Pía remodela la cocina y cada día el maestro de obra anota cosas. Hoy se gastó medio millón, va el 40% de la baldosa. Eso son datos de desempeño del trabajo, observaciones y mediciones en bruto. Solos no dicen si la obra va bien o mal. Pía los compara con el plan. Llevamos 3 millones de 2 previstos y vamos por la mitad. Eso ya es información de desempeño del trabajo, datos analizados en contexto. Luego, le arma a Carmen una hoja con semáforo: costo en rojo, plazo en verde. Ese es el informe de desempeño del trabajo. Está hecho para tomar decisiones. Carmen lo lee y decide: \"Paremos el gasto en adornos\". Datos en bruto, información en contexto, informes para decidir. Ahora te toca. ¿Esto es un dato, información o un informe?",
+ "palabras": [
+  {
+   "w": "\"Gastamos",
+   "ini": 0.12,
+   "fin": 0.74
+  },
+  {
+   "w": "3",
+   "ini": 0.84,
+   "fin": 1.02
+  },
+  {
+   "w": "millones\"",
+   "ini": 1.06,
+   "fin": 1.58
+  },
+  {
+   "w": "no",
+   "ini": 2.16,
+   "fin": 2.3
+  },
+  {
+   "w": "dice",
+   "ini": 2.36,
+   "fin": 2.66
+  },
+  {
+   "w": "nada.",
+   "ini": 2.7,
+   "fin": 2.98
+  },
+  {
+   "w": "Pía",
+   "ini": 4.08,
+   "fin": 4.3
+  },
+  {
+   "w": "remodela",
+   "ini": 4.36,
+   "fin": 4.8
+  },
+  {
+   "w": "la",
+   "ini": 4.84,
+   "fin": 4.9
+  },
+  {
+   "w": "cocina",
+   "ini": 4.96,
+   "fin": 5.38
+  },
+  {
+   "w": "y",
+   "ini": 5.8,
+   "fin": 5.86
+  },
+  {
+   "w": "cada",
+   "ini": 5.98,
+   "fin": 6.2
+  },
+  {
+   "w": "día",
+   "ini": 6.26,
+   "fin": 6.5
+  },
+  {
+   "w": "el",
+   "ini": 6.8,
+   "fin": 6.88
+  },
+  {
+   "w": "maestro",
+   "ini": 6.92,
+   "fin": 7.3
+  },
+  {
+   "w": "de",
+   "ini": 7.34,
+   "fin": 7.42
+  },
+  {
+   "w": "obra",
+   "ini": 7.52,
+   "fin": 7.78
+  },
+  {
+   "w": "anota",
+   "ini": 7.86,
+   "fin": 8.18
+  },
+  {
+   "w": "cosas.",
+   "ini": 8.28,
+   "fin": 8.7
+  },
+  {
+   "w": "Hoy",
+   "ini": 9.42,
+   "fin": 9.58
+  },
+  {
+   "w": "se",
+   "ini": 9.66,
+   "fin": 9.76
+  },
+  {
+   "w": "gastó",
+   "ini": 9.8,
+   "fin": 10.14
+  },
+  {
+   "w": "medio",
+   "ini": 10.36,
+   "fin": 10.64
+  },
+  {
+   "w": "millón,",
+   "ini": 10.7,
+   "fin": 11.1
+  },
+  {
+   "w": "va",
+   "ini": 11.64,
+   "fin": 11.7
+  },
+  {
+   "w": "el",
+   "ini": 11.76,
+   "fin": 11.84
+  },
+  {
+   "w": "40%",
+   "ini": 12.1,
+   "fin": 12.82
+  },
+  {
+   "w": "de",
+   "ini": 12.86,
+   "fin": 12.92
+  },
+  {
+   "w": "la",
+   "ini": 12.96,
+   "fin": 13
+  },
+  {
+   "w": "baldosa.",
+   "ini": 13.06,
+   "fin": 13.54
+  },
+  {
+   "w": "Eso",
+   "ini": 14.46,
+   "fin": 14.7
+  },
+  {
+   "w": "son",
+   "ini": 14.92,
+   "fin": 15.06
+  },
+  {
+   "w": "datos",
+   "ini": 15.1,
+   "fin": 15.44
+  },
+  {
+   "w": "de",
+   "ini": 15.5,
+   "fin": 15.56
+  },
+  {
+   "w": "desempeño",
+   "ini": 15.6,
+   "fin": 16.2
+  },
+  {
+   "w": "del",
+   "ini": 16.239,
+   "fin": 16.36
+  },
+  {
+   "w": "trabajo,",
+   "ini": 16.42,
+   "fin": 16.86
+  },
+  {
+   "w": "observaciones",
+   "ini": 17.22,
+   "fin": 17.94
+  },
+  {
+   "w": "y",
+   "ini": 17.98,
+   "fin": 18.02
+  },
+  {
+   "w": "mediciones",
+   "ini": 18.08,
+   "fin": 18.64
+  },
+  {
+   "w": "en",
+   "ini": 18.68,
+   "fin": 18.78
+  },
+  {
+   "w": "bruto.",
+   "ini": 18.82,
+   "fin": 19.14
+  },
+  {
+   "w": "Solos",
+   "ini": 19.78,
+   "fin": 20.14
+  },
+  {
+   "w": "no",
+   "ini": 20.46,
+   "fin": 20.58
+  },
+  {
+   "w": "dicen",
+   "ini": 20.62,
+   "fin": 21.02
+  },
+  {
+   "w": "si",
+   "ini": 21.1,
+   "fin": 21.2
+  },
+  {
+   "w": "la",
+   "ini": 21.24,
+   "fin": 21.34
+  },
+  {
+   "w": "obra",
+   "ini": 21.4,
+   "fin": 21.62
+  },
+  {
+   "w": "va",
+   "ini": 21.66,
+   "fin": 21.74
+  },
+  {
+   "w": "bien",
+   "ini": 21.84,
+   "fin": 22.18
+  },
+  {
+   "w": "o",
+   "ini": 22.44,
+   "fin": 22.48
+  },
+  {
+   "w": "mal.",
+   "ini": 22.56,
+   "fin": 22.84
+  },
+  {
+   "w": "Pía",
+   "ini": 23.74,
+   "fin": 24
+  },
+  {
+   "w": "los",
+   "ini": 24.06,
+   "fin": 24.2
+  },
+  {
+   "w": "compara",
+   "ini": 24.28,
+   "fin": 24.7
+  },
+  {
+   "w": "con",
+   "ini": 24.76,
+   "fin": 24.86
+  },
+  {
+   "w": "el",
+   "ini": 24.9,
+   "fin": 24.98
+  },
+  {
+   "w": "plan.",
+   "ini": 25.04,
+   "fin": 25.36
+  },
+  {
+   "w": "Llevamos",
+   "ini": 25.92,
+   "fin": 26.4
+  },
+  {
+   "w": "3",
+   "ini": 26.48,
+   "fin": 26.7
+  },
+  {
+   "w": "millones",
+   "ini": 26.74,
+   "fin": 27.3
+  },
+  {
+   "w": "de",
+   "ini": 27.46,
+   "fin": 27.54
+  },
+  {
+   "w": "2",
+   "ini": 27.58,
+   "fin": 27.76
+  },
+  {
+   "w": "previstos",
+   "ini": 27.82,
+   "fin": 28.4
+  },
+  {
+   "w": "y",
+   "ini": 28.62,
+   "fin": 28.66
+  },
+  {
+   "w": "vamos",
+   "ini": 28.74,
+   "fin": 29.08
+  },
+  {
+   "w": "por",
+   "ini": 29.12,
+   "fin": 29.24
+  },
+  {
+   "w": "la",
+   "ini": 29.28,
+   "fin": 29.34
+  },
+  {
+   "w": "mitad.",
+   "ini": 29.4,
+   "fin": 29.78
+  },
+  {
+   "w": "Eso",
+   "ini": 30.52,
+   "fin": 30.78
+  },
+  {
+   "w": "ya",
+   "ini": 31.02,
+   "fin": 31.12
+  },
+  {
+   "w": "es",
+   "ini": 31.16,
+   "fin": 31.26
+  },
+  {
+   "w": "información",
+   "ini": 31.32,
+   "fin": 31.94
+  },
+  {
+   "w": "de",
+   "ini": 31.98,
+   "fin": 32.04
+  },
+  {
+   "w": "desempeño",
+   "ini": 32.08,
+   "fin": 32.659
+  },
+  {
+   "w": "del",
+   "ini": 32.72,
+   "fin": 32.82
+  },
+  {
+   "w": "trabajo,",
+   "ini": 32.88,
+   "fin": 33.3
+  },
+  {
+   "w": "datos",
+   "ini": 33.94,
+   "fin": 34.28
+  },
+  {
+   "w": "analizados",
+   "ini": 34.34,
+   "fin": 34.98
+  },
+  {
+   "w": "en",
+   "ini": 35.04,
+   "fin": 35.12
+  },
+  {
+   "w": "contexto.",
+   "ini": 35.16,
+   "fin": 35.78
+  },
+  {
+   "w": "Luego,",
+   "ini": 36.92,
+   "fin": 37.24
+  },
+  {
+   "w": "le",
+   "ini": 37.4,
+   "fin": 37.48
+  },
+  {
+   "w": "arma",
+   "ini": 37.52,
+   "fin": 37.72
+  },
+  {
+   "w": "a",
+   "ini": 37.74,
+   "fin": 37.78
+  },
+  {
+   "w": "Carmen",
+   "ini": 37.86,
+   "fin": 38.28
+  },
+  {
+   "w": "una",
+   "ini": 38.36,
+   "fin": 38.52
+  },
+  {
+   "w": "hoja",
+   "ini": 38.56,
+   "fin": 38.78
+  },
+  {
+   "w": "con",
+   "ini": 38.86,
+   "fin": 38.98
+  },
+  {
+   "w": "semáforo:",
+   "ini": 39.04,
+   "fin": 39.54
+  },
+  {
+   "w": "costo",
+   "ini": 40.2,
+   "fin": 40.54
+  },
+  {
+   "w": "en",
+   "ini": 40.56,
+   "fin": 40.66
+  },
+  {
+   "w": "rojo,",
+   "ini": 40.72,
+   "fin": 41.02
+  },
+  {
+   "w": "plazo",
+   "ini": 41.42,
+   "fin": 41.78
+  },
+  {
+   "w": "en",
+   "ini": 41.82,
+   "fin": 41.92
+  },
+  {
+   "w": "verde.",
+   "ini": 41.98,
+   "fin": 42.28
+  },
+  {
+   "w": "Ese",
+   "ini": 43.1,
+   "fin": 43.36
+  },
+  {
+   "w": "es",
+   "ini": 43.5,
+   "fin": 43.6
+  },
+  {
+   "w": "el",
+   "ini": 43.64,
+   "fin": 43.72
+  },
+  {
+   "w": "informe",
+   "ini": 43.78,
+   "fin": 44.24
+  },
+  {
+   "w": "de",
+   "ini": 44.28,
+   "fin": 44.34
+  },
+  {
+   "w": "desempeño",
+   "ini": 44.38,
+   "fin": 44.98
+  },
+  {
+   "w": "del",
+   "ini": 45.04,
+   "fin": 45.14
+  },
+  {
+   "w": "trabajo.",
+   "ini": 45.2,
+   "fin": 45.62
+  },
+  {
+   "w": "Está",
+   "ini": 46.08,
+   "fin": 46.32
+  },
+  {
+   "w": "hecho",
+   "ini": 46.34,
+   "fin": 46.62
+  },
+  {
+   "w": "para",
+   "ini": 46.74,
+   "fin": 46.92
+  },
+  {
+   "w": "tomar",
+   "ini": 47,
+   "fin": 47.34
+  },
+  {
+   "w": "decisiones.",
+   "ini": 47.4,
+   "fin": 48.12
+  },
+  {
+   "w": "Carmen",
+   "ini": 49.08,
+   "fin": 49.42
+  },
+  {
+   "w": "lo",
+   "ini": 49.48,
+   "fin": 49.54
+  },
+  {
+   "w": "lee",
+   "ini": 49.62,
+   "fin": 49.96
+  },
+  {
+   "w": "y",
+   "ini": 50.02,
+   "fin": 50.06
+  },
+  {
+   "w": "decide:",
+   "ini": 50.12,
+   "fin": 50.56
+  },
+  {
+   "w": "\"Paremos",
+   "ini": 51.06,
+   "fin": 51.44
+  },
+  {
+   "w": "el",
+   "ini": 51.48,
+   "fin": 51.56
+  },
+  {
+   "w": "gasto",
+   "ini": 51.64,
+   "fin": 51.94
+  },
+  {
+   "w": "en",
+   "ini": 51.98,
+   "fin": 52.06
+  },
+  {
+   "w": "adornos\".",
+   "ini": 52.1,
+   "fin": 52.6
+  },
+  {
+   "w": "Datos",
+   "ini": 53.28,
+   "fin": 53.58
+  },
+  {
+   "w": "en",
+   "ini": 53.62,
+   "fin": 53.72
+  },
+  {
+   "w": "bruto,",
+   "ini": 53.76,
+   "fin": 54.1
+  },
+  {
+   "w": "información",
+   "ini": 54.48,
+   "fin": 55.12
+  },
+  {
+   "w": "en",
+   "ini": 55.16,
+   "fin": 55.24
+  },
+  {
+   "w": "contexto,",
+   "ini": 55.28,
+   "fin": 55.84
+  },
+  {
+   "w": "informes",
+   "ini": 56.28,
+   "fin": 56.92
+  },
+  {
+   "w": "para",
+   "ini": 57.04,
+   "fin": 57.22
+  },
+  {
+   "w": "decidir.",
+   "ini": 57.26,
+   "fin": 57.76
+  },
+  {
+   "w": "Ahora",
+   "ini": 58.76,
+   "fin": 59.02
+  },
+  {
+   "w": "te",
+   "ini": 59.08,
+   "fin": 59.18
+  },
+  {
+   "w": "toca.",
+   "ini": 59.26,
+   "fin": 59.58
+  },
+  {
+   "w": "¿Esto",
+   "ini": 60.12,
+   "fin": 60.42
+  },
+  {
+   "w": "es",
+   "ini": 60.46,
+   "fin": 60.58
+  },
+  {
+   "w": "un",
+   "ini": 60.64,
+   "fin": 60.74
+  },
+  {
+   "w": "dato,",
+   "ini": 60.78,
+   "fin": 61.1
+  },
+  {
+   "w": "información",
+   "ini": 61.54,
+   "fin": 62.4
+  },
+  {
+   "w": "o",
+   "ini": 62.8,
+   "fin": 62.86
+  },
+  {
+   "w": "un",
+   "ini": 62.94,
+   "fin": 63.04
+  },
+  {
+   "w": "informe?",
+   "ini": 63.08,
+   "fin": 63.56
+  }
+ ]
+}
