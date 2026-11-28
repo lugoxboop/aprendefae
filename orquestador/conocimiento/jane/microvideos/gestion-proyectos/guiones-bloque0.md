@@ -864,3 +864,54 @@ Fuente: G 9.1, 9.1.3.1, 9.1.3.2, p. 312–320.
 9. El resultado son las comunicaciones del proyecto, como informes de desempeño, estado de los entregables, avance del cronograma y costos.
 10. Y si cambian sus necesidades, los métodos de comunicación deben poder ajustarse.
 11. Ahora te toca: escribe el mismo aviso de dos formas, para tu jefe y para tu equipo.
+## GP-53 · El plan que nadie hizo (G 11.6, 11.6.2.2, 11.6.3, p. 449–452)
+1. Para el horno viejo, Pía planeó mantenimiento cada mes. Pero nadie lo hizo.
+2. Un plan que no se ejecuta no protege a nadie.
+3. Implementar la respuesta a los riesgos es implementar los planes acordados de respuesta a los riesgos.
+4. Así se asegura que las respuestas se ejecuten tal como se planificaron.
+5. Un problema común: se analizan los riesgos, se documentan las respuestas… y no se toma ninguna medida.
+6. La clave son los dueños de los riesgos: ellos deben poner el esfuerzo para cumplir lo acordado.
+7. Si el dueño tiene otras tareas, el director usa su influencia para animarlo a actuar.
+8. Ramón es el dueño del riesgo del horno. Pía habla con él: el mantenimiento será el viernes.
+9. Al implementar, pueden salir solicitudes de cambio, por ejemplo a la línea base de costos o del cronograma.
+10. Si aparecen incidentes, van al registro de incidentes. Y lo aprendido, al registro de lecciones aprendidas.
+11. Ahora te toca: elige un riesgo de tu proyecto y escribe quién es su dueño y qué hará.
+
+## GP-54 · Elegir y firmar (G 12.2, 12.2.2.2–12.2.2.5, 12.2.3.1–12.2.3.2, p. 482–491)
+1. Pía decidió comprar el toldo. Ahora tiene que elegir a quién, y firmar.
+2. ¿Cómo se hace bien?
+3. Efectuar las adquisiciones es obtener respuestas de los proveedores, seleccionarlos y adjudicarles un contrato.
+4. Puede empezar con publicidad, para encontrar más vendedores posibles.
+5. Luego, una conferencia de oferentes: todos escuchan lo mismo, y nadie recibe trato preferencial.
+6. Después se evalúan las propuestas: ¿están completas? ¿Responden al enunciado del trabajo relativo a las adquisiciones y a los criterios?
+7. Con el elegido se negocia: derechos, obligaciones y términos, antes de firmar.
+8. Dos salidas clave son los vendedores seleccionados y los acuerdos.
+9. Un contrato obliga al vendedor a entregar lo pactado, y al comprador a pagarle. Es una relación legal.
+10. Puede incluir el trabajo a entregar, el cronograma, los precios, la garantía y cómo se manejan los cambios.
+11. Ahora te toca: escribe cinco cosas que pondrías en el contrato de algo que vas a comprar.
+
+## GP-55 · Don Tito se queja (G 13.3, 13.3.2.2–13.3.2.5, 13.3.3.1, p. 523–529)
+1. Don Tito ya apoya la feria. Pero ahora se queja del ruido.
+2. ¿Cómo se mantiene a un interesado de tu lado?
+3. Gestionar el involucramiento de los interesados es comunicarse y trabajar con ellos para satisfacer sus necesidades y expectativas, abordar los incidentes y fomentar su participación adecuada.
+4. Así se aumenta el apoyo y se reduce la resistencia.
+5. Primero, escuchar: la retroalimentación se recoge, por ejemplo, en conversaciones, reuniones, informes de avance y encuestas.
+6. Luego, habilidades como la gestión de conflictos, la negociación y la conciencia cultural y política.
+7. Pía negocia con Don Tito: música más baja después de las ocho.
+8. Las reglas básicas dicen cómo se espera que se comporten el equipo y los interesados.
+9. Y las reuniones sirven para resolver incidentes y tomar decisiones.
+10. Si cambia algo del alcance, sale una solicitud de cambio.
+11. Ahora te toca: piensa en un interesado que se queja, y en cómo lo escucharías.
+
+## GP-56 · ¿Vamos bien o vamos mal? (G 4.5, 4.5.2.2, 4.5.3.1–4.5.3.2, p. 105–112; datos, información e informes, p. 26)
+1. A mitad de la feria, Pía se pregunta: ¿vamos bien o vamos mal?
+2. Los datos sueltos no se lo dicen.
+3. Monitorear y controlar el trabajo del proyecto es hacer seguimiento, revisar e informar el avance general, para cumplir los objetivos de desempeño del plan.
+4. Primero están los datos de desempeño: observaciones en bruto, como los costos reales.
+5. Analizados en contexto, se vuelven información de desempeño.
+6. Y compilada en un documento, esa información se vuelve un informe de desempeño del trabajo.
+7. Se analiza la variación: la diferencia entre lo planificado y lo real.
+8. Y las tendencias: si todo sigue así, ¿habrá problemas más adelante?
+9. El informe puede ser un tablero, o un semáforo: verde, amarillo y rojo.
+10. Si hay desviaciones, salen solicitudes de cambio, como acciones correctivas o preventivas.
+11. Ahora te toca: arma un semáforo con tres indicadores de tu proyecto.
