@@ -27,6 +27,10 @@
  *               invertido, 1,25).
  *   marcar      varias opciones a la vez (tocar las que son); `clave` es la
  *               lista de las que van. Cada opción puede traer su `retro`.
+ *
+ * Lote 5 (caps. 9 y 10): `miles` en una casilla de número lee el punto como
+ * separador de miles («15.000», «1.000.000»: así se escribe aquí), y la
+ * respuesta que se muestra al final va con sus puntos.
  */
 import { useEffect, useRef, useState } from "react";
 import { Boton, Retro } from "../../../macro2026/comun/ui.jsx";
@@ -71,7 +75,7 @@ export function casillaBien(c, valor) {
     return puestas.size === c.clave.length && c.clave.every((k) => puestas.has(k));
   }
   if (c.opciones) return valor === c.clave;
-  const n = numeroDe(valor);
+  const n = numeroDe(c.miles ? String(valor ?? "").replace(/\./g, "") : valor);
   if (n == null) return false;
   const tol = (c.tolerancia ?? 0) + 1e-9;
   return [c.clave, ...(c.aceptadas ?? [])].some((k) => Math.abs(Number(k) - n) <= tol);
@@ -85,14 +89,14 @@ export function retroDeCasilla(c, valor) {
     const propias = malas.map((o) => o.retro).filter(Boolean);
     return propias.length ? propias.join(" ") : c.retro ?? null;
   }
-  const n = numeroDe(valor);
+  const n = numeroDe(c.miles ? String(valor ?? "").replace(/\./g, "") : valor);
   const trampa = n == null ? null : (c.trampas ?? []).find((t) => Math.abs(Number(t.valor) - n) <= (c.tolerancia ?? 0) + 1e-9);
   return trampa?.retro ?? c.retro ?? null;
 }
 
 const coma = (v) => String(v).replace(".", ",").replace(/^-/, "−");
 const textoClave = (c) => (c.marcar ? c.opciones.filter((o) => c.clave.includes(o.id)).map((o) => o.nombre).join(" · ")
-  : c.opciones ? c.opciones.find((o) => o.id === c.clave)?.nombre : coma(c.clave));
+  : c.opciones ? c.opciones.find((o) => o.id === c.clave)?.nombre : c.miles ? String(c.clave).replace(/\B(?=(\d{3})+(?!\d))/g, ".") : coma(c.clave));
 const valorClave = (c) => (c.marcar ? c.clave.join(",") : c.opciones ? c.clave : String(c.clave));
 
 export default function Casillas({ paso, escena = {}, estadoEtapa = null, alTerminar }) {

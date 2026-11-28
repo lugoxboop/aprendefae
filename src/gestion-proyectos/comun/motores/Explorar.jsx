@@ -7,6 +7,11 @@
  * escena pinte con esos valores (`escena.explorar(valores)`: las dos
  * pantallas de la calculadora). Con `minimo` movimientos aparece «Seguir».
  * No manda detalle ni puntos: vale 0 ítems (preparar.js, itemsDePaso).
+ *
+ * Lote 5 (c10 H04, predecir y revelar): con `paso.apuesta` el paso es una
+ * apuesta sin puntaje; los valores elegidos van como `destino` a los pasos
+ * que siguen en la etapa (la escena del revelado los lee), y `paso.listo`
+ * cambia el rótulo de abajo.
  */
 import { useState } from "react";
 import { Boton } from "../../../macro2026/comun/ui.jsx";
@@ -57,10 +62,10 @@ export default function Explorar({ paso, escena = {}, alTerminar }) {
             );
           })}
         </div>
-        <p className="gp-explora-cuenta" data-movimientos={movs}>{movs < minimo ? `Prueba ${minimo - movs} ${minimo - movs === 1 ? "movimiento" : "movimientos"} más` : "Ya viste cómo cambian: sigue al reto"}</p>
+        <p className="gp-explora-cuenta" data-movimientos={movs}>{movs < minimo ? `Prueba ${minimo - movs} ${minimo - movs === 1 ? "movimiento" : "movimientos"} más` : paso.listo ?? "Ya viste cómo cambian: sigue al reto"}</p>
       </div>
       {movs >= minimo && (
-        <div className="gp-pie"><Boton primario onClick={() => alTerminar({ detalle: [], puntos: 0 })} data-seguir>Seguir</Boton></div>
+        <div className="gp-pie"><Boton primario onClick={() => alTerminar({ detalle: [], puntos: 0, ...(paso.apuesta ? { destino: valores } : {}) })} data-seguir>Seguir</Boton></div>
       )}
     </div>
   );
