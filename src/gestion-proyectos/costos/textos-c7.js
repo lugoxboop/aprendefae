@@ -446,8 +446,8 @@ export const GP_C7_H08 = {
         consigna: "Pon a cada curva su nombre.",
         casillas: [
           { id: "continua", nombre: "Continua, llega a 1.200", opciones: CURVAS, clave: "pv", columnas: 3, retro: "La planeada sigue la línea base hasta 1.200." },
-          { id: "guiones", nombre: "Guiones, en 300 al corte", opciones: CURVAS, clave: "ev", columnas: 3, retro: "El valor ganado mide trabajo hecho a precio presupuestado: 300." },
-          { id: "puntos", nombre: "Puntos, en 375 al corte", opciones: CURVAS, clave: "ac", columnas: 3, retro: "El costo real es lo gastado: 375, más que lo ganado." },
+          { id: "guiones", nombre: "Guiones, la más baja al corte", opciones: CURVAS, clave: "ev", columnas: 3, retro: "El valor ganado mide trabajo hecho a precio presupuestado: 300." },
+          { id: "puntos", nombre: "Puntos, en medio al corte", opciones: CURVAS, clave: "ac", columnas: 3, retro: "El costo real es lo gastado: 375, más que lo ganado." },
         ] },
       { tipo: "casillas", id: "c7h08-02", subtemas: ["gp-7-4"], lona: "corte",
         consigna: "¿Cuánto valor se ganó al corte?",
