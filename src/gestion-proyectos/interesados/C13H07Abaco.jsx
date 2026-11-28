@@ -23,7 +23,7 @@ const FILAS = [
   { id: "familias", nombre: "Familias" }, { id: "duena", nombre: "Dueña" }, { id: "autoridad", nombre: "Autoridad" },
   { id: "alcaldia", nombre: "Alcaldía" }, { id: "jac", nombre: "JAC" },
 ];
-const COLUMNAS = NIVELES_C13.map((n) => ({ id: n.id, nombre: n.corto }));
+const COLUMNAS = NIVELES_C13.map((n) => ({ id: n.id, nombre: n.corto.replace(".", "") }));
 
 function Abaco({ c = {}, d = false, brechas = false }) {
   const celda = (f, col) => {
@@ -32,7 +32,7 @@ function Abaco({ c = {}, d = false, brechas = false }) {
     return marcas.length ? marcas.join("·") : null;
   };
   return (
-    <Lamina titulo="El ábaco · C hoy · D deseado" data-abaco>
+    <Lamina titulo="El ábaco · C hoy · D deseado" data-abaco className="gp4-lamina gp7-abaco">
       <Rejilla filas={FILAS} columnas={COLUMNAS} celda={celda} nombre="Matriz de evaluación del involucramiento" />
       {d && (
         <div className="gp5-chips" style={{ marginTop: 6 }} data-brechas={brechas ? "medidas" : "por-medir"}>
@@ -58,7 +58,8 @@ export const ESCENA = {
   etapas: [{}, {
     mesa: "equipo",
     encima: (e) => <Abaco c={C_TODAS} d brechas={resuelto(e, "c13h07-11")} />,
-    encimaOrden: () => <Abaco c={C_TODAS} d brechas />,
+    /* Ordenar no monta `antes`: la hoja va con la lámina. */
+    encimaOrden: () => <><EstiloLote7 /><Abaco c={C_TODAS} d brechas /></>,
   }],
 };
 
