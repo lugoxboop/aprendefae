@@ -762,3 +762,54 @@ Fuente: G 9.1, 9.1.3.1, 9.1.3.2, p. 312–320.
 9. Y el método de selección, por ejemplo: menor costo, solo por calificaciones, o basado en costos y calidad.
 10. Cada decisión queda documentada, junto al plan de gestión de las adquisiciones.
 11. Ahora te toca: decide si harías o comprarías una pieza de tu proyecto, y por qué.
+## GP-45 · ¿Cómo sumo a Don Tito? (G 13.2, 13.2.2.5, 13.2.3.1, p. 516–522)
+1. Don Tito, el dueño del local, no sabe nada de la feria de Pía. Y su permiso es clave.
+2. ¿Cómo lo suma al proyecto?
+3. Planificar el involucramiento de los interesados es desarrollar enfoques para involucrarlos, con base en sus necesidades, expectativas, intereses y el posible impacto en el proyecto.
+4. Una herramienta clave es la matriz de evaluación del involucramiento.
+5. Tiene cinco niveles: desconocedor, reticente, neutral, de apoyo y líder.
+6. Para cada interesado se marca dónde está hoy, y dónde debería estar para que el proyecto salga bien.
+7. Don Tito hoy es desconocedor. Pía lo necesita de apoyo.
+8. Esa brecha dice cuánta comunicación hace falta para involucrarlo.
+9. Ramón ya es líder: ahí no hay brecha.
+10. Todo queda en el plan de involucramiento de los interesados: las estrategias y acciones para cada uno. Puede ser formal o informal.
+11. Ahora te toca: ubica a tres interesados de tu proyecto en la matriz, con su nivel actual y el deseado.
+
+## GP-46 · ¡A trabajar! (G 4.3, 4.3.3.1–4.3.3.4, p. 90–97)
+1. El plan de Pía está listo. Hoy empieza la feria, y hay que hornear de verdad.
+2. ¿Qué proceso dirige todo ese trabajo?
+3. Dirigir y gestionar el trabajo del proyecto es liderar y llevar a cabo el trabajo definido en el plan para la dirección del proyecto, e implementar los cambios aprobados.
+4. De aquí salen los entregables: los panes, las tortas, el puesto armado.
+5. También los datos de desempeño del trabajo: observaciones brutas, como cuánto se gastó y cuánto tardó cada tarea.
+6. Si algo inesperado pasa, va al registro de incidentes.
+7. Se dañó la batidora: se anota la prioridad, quién lo resuelve y para cuándo.
+8. Y para cambiar algo, una solicitud de cambio: una propuesta formal para modificar un documento, un entregable o una línea base.
+9. Cualquier interesado puede pedirla, y pasa a Realizar el Control Integrado de Cambios.
+10. Puede ser una acción correctiva, una preventiva, una reparación de defectos o una actualización.
+11. Ahora te toca: escribe un incidente que podría pasar en tu proyecto, con su prioridad y su responsable.
+
+## GP-47 · El truco de Carmen (G 4.4, 4.4.2.2, 4.4.3.1, p. 98–104)
+1. Carmen sabe cuándo el pan está listo con solo mirarlo. Pero eso no está escrito.
+2. ¿Cómo se comparte lo que alguien sabe?
+3. Gestionar el conocimiento del proyecto es utilizar el conocimiento existente y crear nuevo conocimiento, para alcanzar los objetivos y contribuir al aprendizaje de la organización.
+4. Hay dos tipos. El explícito se puede escribir con palabras, imágenes y números, como una receta.
+5. El tácito es personal y difícil de expresar, como el ojo de Carmen.
+6. El tácito se comparte sobre todo conversando y trabajando juntos.
+7. Por ejemplo: Pía observa a Carmen mientras hornea, o hacen un taller.
+8. Lo aprendido va al registro de lecciones aprendidas: la situación, su impacto, las recomendaciones y las acciones propuestas.
+9. Ojo: no se espera al final. Se crea temprano y se actualiza durante todo el proyecto.
+10. Al cierre, pasa al repositorio de lecciones aprendidas de la organización.
+11. Ahora te toca: escribe una lección aprendida de un proyecto que ya hayas hecho.
+
+## GP-48 · ¿Vamos bien con la calidad? (G 8.2, 8.2.2.5, 8.2.3.1, p. 288–297)
+1. El plan de gestión de la calidad de Pía dice cómo deben salir los panes. Pero, ¿el equipo lo está siguiendo?
+2. Ahí entra otro proceso.
+3. Gestionar la calidad es convertir el plan de gestión de la calidad en actividades ejecutables de calidad, que incorporen las políticas de calidad de la organización.
+4. A veces se le llama aseguramiento de calidad: se trata de usar bien los procesos del proyecto.
+5. Una herramienta clave es la auditoría: un proceso estructurado e independiente.
+6. Revisa si el trabajo cumple las políticas, los procesos y los procedimientos.
+7. Por lo general la hace alguien externo al proyecto, como la oficina de dirección de proyectos.
+8. Busca buenas prácticas, y también brechas y defectos.
+9. Los resultados van a los informes de calidad: pueden ser gráficos, numéricos o cualitativos.
+10. Pueden incluir los incidentes y recomendaciones de mejora y de acciones correctivas. Si algo debe cambiar, sale una solicitud de cambio.
+11. Ahora te toca: piensa quién podría auditar la calidad de tu proyecto, y qué revisaría.

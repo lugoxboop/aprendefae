@@ -101,10 +101,28 @@
   },
   "narrar": [
     {
-      "id": "gp43-respuestas-v2",
+      "id": "gp45-involucramiento",
       "voz": "jBlmi27XRORxjPquUeCh",
       "modelo": "eleven_v3",
-      "texto": "El horno viejo está en rojo. ¿Qué hace Pía: lo cambia, lo asegura, lo repara o espera?\n\nCada opción es una respuesta.\n\nPlanificar la respuesta a los riesgos es desarrollar opciones, seleccionar estrategias y acordar acciones para tratar los riesgos.\n\nPara las amenazas hay cinco estrategias.\n\nEvitar: eliminarla, como cambiar el horno. Transferir: pasarla a un tercero, como un seguro.\n\nMitigar: reducir su probabilidad o impacto, con mantenimiento. Aceptar: reconocerla, sin medidas por adelantado. Y escalar, si no le toca al proyecto.\n\nPara las oportunidades también hay cinco: explotar, compartir, mejorar, aceptar y escalar.\n\nSi los invitan a otra feria, explotar es asegurar que puedan ir.\n\nAlgunas solo se activan si pasa algo: son planes de contingencia, con su evento desencadenante.\n\nCada respuesta tiene un dueño y va al registro de riesgos.\n\nAhora te toca: elige una estrategia para tu mayor amenaza y tu mejor oportunidad."
+      "texto": "Don Tito, el dueño del local, no sabe nada de la feria de Pía. Y su permiso es clave.\n\n¿Cómo lo suma al proyecto?\n\nPlanificar el involucramiento de los interesados es desarrollar enfoques para involucrarlos, con base en sus necesidades, expectativas, intereses y el posible impacto en el proyecto.\n\nUna herramienta clave es la matriz de evaluación del involucramiento.\n\nTiene cinco niveles: desconocedor, reticente, neutral, de apoyo y líder.\n\nPara cada interesado se marca dónde está hoy, y dónde debería estar para que el proyecto salga bien.\n\nDon Tito hoy es desconocedor. Pía lo necesita de apoyo.\n\nEsa brecha dice cuánta comunicación hace falta para involucrarlo.\n\nRamón ya es líder: ahí no hay brecha.\n\nTodo queda en el plan de involucramiento de los interesados: las estrategias y acciones para cada uno. Puede ser formal o informal.\n\nAhora te toca: ubica a tres interesados de tu proyecto en la matriz, con su nivel actual y el deseado."
+    },
+    {
+      "id": "gp46-dirigir",
+      "voz": "jBlmi27XRORxjPquUeCh",
+      "modelo": "eleven_v3",
+      "texto": "El plan de Pía está listo. Hoy empieza la feria, y hay que hornear de verdad.\n\n¿Qué proceso dirige todo ese trabajo?\n\nDirigir y gestionar el trabajo del proyecto es liderar y llevar a cabo el trabajo definido en el plan para la dirección del proyecto, e implementar los cambios aprobados.\n\nDe aquí salen los entregables: los panes, las tortas, el puesto armado.\n\nTambién los datos de desempeño del trabajo: observaciones brutas, como cuánto se gastó y cuánto tardó cada tarea.\n\nSi algo inesperado pasa, va al registro de incidentes.\n\nSe dañó la batidora: se anota la prioridad, quién lo resuelve y para cuándo.\n\nY para cambiar algo, una solicitud de cambio: una propuesta formal para modificar un documento, un entregable o una línea base.\n\nCualquier interesado puede pedirla, y pasa a Realizar el Control Integrado de Cambios.\n\nPuede ser una acción correctiva, una preventiva, una reparación de defectos o una actualización.\n\nAhora te toca: escribe un incidente que podría pasar en tu proyecto, con su prioridad y su responsable."
+    },
+    {
+      "id": "gp47-conocimiento",
+      "voz": "jBlmi27XRORxjPquUeCh",
+      "modelo": "eleven_v3",
+      "texto": "Carmen sabe cuándo el pan está listo con solo mirarlo. Pero eso no está escrito.\n\n¿Cómo se comparte lo que alguien sabe?\n\nGestionar el conocimiento del proyecto es utilizar el conocimiento existente y crear nuevo conocimiento, para alcanzar los objetivos y contribuir al aprendizaje de la organización.\n\nHay dos tipos. El explícito se puede escribir con palabras, imágenes y números, como una receta.\n\nEl tácito es personal y difícil de expresar, como el ojo de Carmen.\n\nEl tácito se comparte sobre todo conversando y trabajando juntos.\n\nPor ejemplo: Pía observa a Carmen mientras hornea, o hacen un taller.\n\nLo aprendido va al registro de lecciones aprendidas: la situación, su impacto, las recomendaciones y las acciones propuestas.\n\nOjo: no se espera al final. Se crea temprano y se actualiza durante todo el proyecto.\n\nAl cierre, pasa al repositorio de lecciones aprendidas de la organización.\n\nAhora te toca: escribe una lección aprendida de un proyecto que ya hayas hecho."
+    },
+    {
+      "id": "gp48-gestionar-calidad",
+      "voz": "jBlmi27XRORxjPquUeCh",
+      "modelo": "eleven_v3",
+      "texto": "El plan de gestión de la calidad de Pía dice cómo deben salir los panes. Pero, ¿el equipo lo está siguiendo?\n\nAhí entra otro proceso.\n\nGestionar la calidad es convertir el plan de gestión de la calidad en actividades ejecutables de calidad, que incorporen las políticas de calidad de la organización.\n\nA veces se le llama aseguramiento de calidad: se trata de usar bien los procesos del proyecto.\n\nUna herramienta clave es la auditoría: un proceso estructurado e independiente.\n\nRevisa si el trabajo cumple las políticas, los procesos y los procedimientos.\n\nPor lo general la hace alguien externo al proyecto, como la oficina de dirección de proyectos.\n\nBusca buenas prácticas, y también brechas y defectos.\n\nLos resultados van a los informes de calidad: pueden ser gráficos, numéricos o cualitativos.\n\nPueden incluir los incidentes y recomendaciones de mejora y de acciones correctivas. Si algo debe cambiar, sale una solicitud de cambio.\n\nAhora te toca: piensa quién podría auditar la calidad de tu proyecto, y qué revisaría."
     }
   ]
 }
