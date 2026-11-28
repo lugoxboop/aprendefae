@@ -966,3 +966,54 @@ Fuente: G 9.1, 9.1.3.1, 9.1.3.2, p. 312–320.
 9. Con todo eso se emiten pronósticos del cronograma: predicciones del futuro según la información disponible.
 10. Y si hay que mover la línea base, sale una solicitud de cambio.
 11. Ahora te toca: busca la tarea más crítica de tu proyecto y pronostica cuándo terminará.
+## GP-61 · Lo que vale lo hecho (G 7.4, 7.4.2.2, p. 257–264)
+1. Pía decora diez puestos para la feria. Cada uno tiene un presupuesto de cien pesos.
+2. Hoy debía llevar seis. Lleva cinco, y ya gastó seiscientos cincuenta. ¿Va bien?
+3. Controlar los costos es monitorear el estado del proyecto para actualizar sus costos y gestionar cambios a la línea base de costos.
+4. Para eso sirve el análisis del valor ganado. Mide tres cosas.
+5. El valor planificado: el presupuesto del trabajo programado. Seis puestos, seiscientos.
+6. El valor ganado: el presupuesto del trabajo completado. Cinco puestos, quinientos.
+7. Y el costo real: lo que de verdad se gastó. Seiscientos cincuenta.
+8. La variación del costo es valor ganado menos costo real: menos ciento cincuenta. Se pasó del presupuesto.
+9. La variación del cronograma es valor ganado menos valor planificado: menos cien. Va atrasada.
+10. Y si el índice de desempeño del costo, valor ganado entre costo real, da menos de uno: el trabajo está costando más de lo planificado.
+11. Ahora te toca: con los números de tu proyecto, calcula si vas sobre o bajo el presupuesto.
+
+## GP-62 · Antes de entregar, revisar (G 8.3, 8.3.2.1–8.3.2.5, 8.3.3.1–8.3.3.2, p. 298–306)
+1. Salió el primer lote de panes para la feria. Ramón quiere empacarlos ya.
+2. Pía lo detiene: ¿y si vienen quemados?
+3. Controlar la calidad es monitorear y registrar los resultados de las actividades de gestión de calidad, para que las salidas sean completas, correctas y satisfagan las expectativas del cliente.
+4. Se verifica que el trabajo cumpla los requisitos, antes de la aceptación final.
+5. Una herramienta es la hoja de verificación: anota cuántas veces aparece cada defecto.
+6. Otra, el muestreo estadístico: no se revisa todo, sino una parte elegida.
+7. Y la inspección: examinar el producto para ver si cumple los estándares documentados.
+8. Ramón revisa veinte panes al azar y anota: tres quemados, uno crudo.
+9. Con el análisis de causa raíz, encuentran el origen: el horno calienta de más.
+10. Los resultados quedan como mediciones de control de calidad, y lo que cumple se vuelve entregable verificado, listo para validar el alcance.
+11. Ahora te toca: arma una hoja de verificación con tres defectos posibles de tu entregable.
+
+## GP-63 · Faltan mesas (G 9.6, 9.6.2.1–9.6.2.3, 9.6.3.1–9.6.3.2, p. 352–358)
+1. La feria empieza mañana, y faltan cinco mesas. Las tiene otro departamento.
+2. ¿Quién vigila que las cosas estén donde se necesitan?
+3. Controlar los recursos es asegurar que los recursos físicos asignados estén disponibles tal como se planificó, monitorear su uso planificado frente al real, y tomar acciones correctivas.
+4. Así están en el momento y lugar adecuados, y se liberan cuando ya no se necesitan.
+5. Para resolver problemas, hay pasos: identificar, definir, investigar, analizar, resolver y comprobar.
+6. Pía investiga y analiza la causa: el otro departamento no liberó las mesas a tiempo.
+7. Luego, con el análisis de alternativas, compara: pedirlas de nuevo, alquilar otras, o pagar horas extra.
+8. El análisis costo-beneficio ayuda a elegir la mejor acción correctiva en términos de costo.
+9. Y la negociación y la influencia ayudan a conseguir los recursos a tiempo.
+10. Si la solución toca el plan, sale una solicitud de cambio.
+11. Ahora te toca: piensa qué recurso físico de tu proyecto podría faltar, y qué harías.
+
+## GP-64 · ¿Llegó el mensaje? (G 10.3, 10.3.2.2–10.3.2.5, 10.3.3.1–10.3.3.2, p. 388–394)
+1. Pía mandó el horario de la feria por correo. Aun así, la mitad llegó tarde.
+2. Enviar no es lo mismo que comunicar.
+3. Monitorear las comunicaciones es asegurar que se satisfagan las necesidades de información del proyecto y de sus interesados.
+4. Se revisa si el mensaje adecuado llega a la audiencia adecuada, por el canal adecuado y en el momento adecuado.
+5. Y si las comunicaciones aumentaron o mantuvieron el apoyo de los interesados.
+6. Se puede medir con encuestas de satisfacción, observaciones del equipo o el registro de incidentes.
+7. Pía hace una encuesta: casi nadie leyó el correo, pero todos leen el grupo de mensajes.
+8. La observación y la conversación con el equipo también revelan conflictos o problemas.
+9. Se comparan las comunicaciones implementadas con las planificadas.
+10. Si algo falla, sale una solicitud de cambio: otro canal, otro formato u otro contenido.
+11. Ahora te toca: piensa en un mensaje de tu proyecto que no llegó, y qué canal usarías.
