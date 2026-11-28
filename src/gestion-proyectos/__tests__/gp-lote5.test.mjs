@@ -42,6 +42,10 @@ const { conSemilla } = await import("../../macro2026/comun/azar.js");
 const { partidaDe, prepararPieza, itemsDePaso } = await import("../comun/preparar.js");
 const { PIEZAS_TEXTO_C9, FESTIVAL_C9 } = await import("../recursos/textos-c9.js");
 const { PIEZAS_TEXTO_C10, LANZAMIENTO_C10 } = await import("../comunicaciones/textos-c10.js");
+/* Lote 6: la prueba de las láminas cubre también los caps. 11 y 12. */
+const { PIEZAS_TEXTO_C11 } = await import("../riesgos/textos-c11.js");
+const { PIEZAS_TEXTO_C12 } = await import("../adquisiciones/textos-c12.js");
+const VIGILADAS = [...PIEZAS_TEXTO_C9, ...PIEZAS_TEXTO_C10, ...PIEZAS_TEXTO_C11, ...PIEZAS_TEXTO_C12];
 const { default: Casillas, casillaBien } = await import("../comun/motores/Casillas.jsx");
 const { default: Decidir } = await import("../comun/motores/Decidir.jsx");
 const { default: Explorar } = await import("../comun/motores/Explorar.jsx");
@@ -153,9 +157,9 @@ async function montar(Componente, props) {
   return { el, q: (s) => el.querySelector(s), desmontar: () => act(async () => { raiz.unmount(); el.remove(); }) };
 }
 
-/* Las escenas de las 23, por id. */
+/* Las escenas de las 23 (y las 24 del lote 6), por id. */
 const ESCENAS = {};
-for (const dir of ["recursos", "comunicaciones"]) {
+for (const dir of ["recursos", "comunicaciones", "riesgos", "adquisiciones"]) {
   for (const f of readdirSync(new URL(`../${dir}/`, import.meta.url)).filter((x) => /^C\d\dH\d\d.*\.jsx$/.test(x))) {
     const m = await import(`../${dir}/${f}`);
     ESCENAS[m.ID] = m.ESCENA;
@@ -168,12 +172,14 @@ const laminas = (el) => [...el.querySelectorAll(".gp4-lamina, .gp2-pista, .gp5-c
 const formas = (c) => {
   const n = Number(c.clave);
   const conPuntos = String(Math.trunc(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-  return [...new Set(Number.isInteger(n) ? [String(n), conPuntos] : [String(c.clave).replace(".", ","), n.toFixed(2).replace(".", ",")])];
+  const base = Number.isInteger(n) ? [String(n), conPuntos] : [String(c.clave).replace(".", ","), n.toFixed(2).replace(".", ",")];
+  /* Un negativo se escribe también con el signo menos tipográfico (−200). */
+  return [...new Set(n < 0 ? [...base, ...base.map((f) => f.replace("-", "−"))] : base)];
 };
 
 test("ninguna lámina adelanta la clave de un cálculo antes de comprobar", async () => {
   let revisadas = 0;
-  for (const p of [...PIEZAS_TEXTO_C9, ...PIEZAS_TEXTO_C10]) {
+  for (const p of VIGILADAS) {
     const etapas = prepararPieza(p, conSemilla(4));
     for (const [k, etapa] of etapas.entries()) {
       const escena = escenaDe(ESCENAS[p.id], k);
@@ -190,7 +196,29 @@ test("ninguna lámina adelanta la clave de un cálculo antes de comprobar", asyn
       }
     }
   }
-  assert.ok(revisadas >= 14, `casillas revisadas: ${revisadas}`);
+  assert.ok(revisadas >= 30, `casillas revisadas: ${revisadas}`);
+});
+
+/* Lote 6: los pasos de elegir entre cifras (los VME del árbol, «n520») tampoco
+ * pueden tener la cifra correcta escrita en la lámina antes de elegir. */
+test("ninguna lámina adelanta la cifra correcta de un paso de elegir entre números", async () => {
+  let revisados = 0;
+  for (const p of VIGILADAS) {
+    const etapas = prepararPieza(p, conSemilla(4));
+    for (const [k, etapa] of etapas.entries()) {
+      const escena = escenaDe(ESCENAS[p.id], k);
+      for (const [i, paso] of etapa.pasos.entries()) {
+        if (paso.tipo !== "decidir" || !/^n-?\d+$/.test(String(paso.clave))) continue;
+        const hechos = etapa.pasos.slice(0, i).map((x) => ({ paso: x, destino: x.clave ?? "bien" }));
+        const m = await montar(Decidir, { paso, escena, estadoEtapa: { hechos, indice: i, total: etapa.pasos.length }, alTerminar: () => {} });
+        const texto = laminas(m.el);
+        for (const f of formas({ clave: Number(String(paso.clave).slice(1)) })) assert.ok(!new RegExp(`(^|[^\\d.,])${f.replace(/\./g, "\\.")}([^\\d,]|$)`).test(texto), `${p.id} ${paso.id}: la lámina ya dice ${f} («${texto.slice(0, 160)}»)`);
+        revisados += 1;
+        await m.desmontar();
+      }
+    }
+  }
+  assert.ok(revisados >= 3, `pasos revisados: ${revisados}`);
 });
 
 test("las láminas que se llenan paso a paso: la fila del turno va en «?»", async () => {

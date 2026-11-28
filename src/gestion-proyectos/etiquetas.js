@@ -16,9 +16,11 @@ import { PIEZAS_TEXTO_C7 } from "./costos/textos-c7.js";
 import { PIEZAS_TEXTO_C8 } from "./calidad/textos-c8.js";
 import { PIEZAS_TEXTO_C9 } from "./recursos/textos-c9.js";
 import { PIEZAS_TEXTO_C10 } from "./comunicaciones/textos-c10.js";
+import { PIEZAS_TEXTO_C11 } from "./riesgos/textos-c11.js";
+import { PIEZAS_TEXTO_C12 } from "./adquisiciones/textos-c12.js";
 
-/* Lote 1 (caps. 1-2), lote 2 (caps. 3-4), lote 3 (caps. 5-6), lote 4 (caps. 7-8) y lote 5 (caps. 9-10), en el orden de los diseños. */
-export const PIEZAS_TEXTO_GP = [...PIEZAS_TEXTO_INTRO, ...PIEZAS_TEXTO_ENTORNO, ...PIEZAS_TEXTO_C3, ...PIEZAS_TEXTO_C4, ...PIEZAS_TEXTO_C5, ...PIEZAS_TEXTO_C6, ...PIEZAS_TEXTO_C7, ...PIEZAS_TEXTO_C8, ...PIEZAS_TEXTO_C9, ...PIEZAS_TEXTO_C10];
+/* Lote 1 (caps. 1-2), lote 2 (caps. 3-4), lote 3 (caps. 5-6), lote 4 (caps. 7-8), lote 5 (caps. 9-10) y lote 6 (caps. 11-12), en el orden de los diseños. */
+export const PIEZAS_TEXTO_GP = [...PIEZAS_TEXTO_INTRO, ...PIEZAS_TEXTO_ENTORNO, ...PIEZAS_TEXTO_C3, ...PIEZAS_TEXTO_C4, ...PIEZAS_TEXTO_C5, ...PIEZAS_TEXTO_C6, ...PIEZAS_TEXTO_C7, ...PIEZAS_TEXTO_C8, ...PIEZAS_TEXTO_C9, ...PIEZAS_TEXTO_C10, ...PIEZAS_TEXTO_C11, ...PIEZAS_TEXTO_C12];
 
 export const ITEMS_GP = Object.fromEntries(PIEZAS_TEXTO_GP.map((p) => [p.id, itemsDePieza(p)]));
 
