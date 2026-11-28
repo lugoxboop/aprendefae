@@ -171,6 +171,18 @@ export const COMPONENTES_GP = {
   "gp26-moc-c12-h10-controlar": lazy(() => import("./adquisiciones/C12H10Cinturon.jsx")),
   "gp26-moc-c12-h11-cierre": lazy(() => import("./adquisiciones/C12H11Cerradura.jsx")),
   "gp26-pla-c12-h12-taller": lazy(() => import("./adquisiciones/C12H12Contenedor.jsx")),
+  /* Lote 7 · cap. 13 (Interesados, repartido por grupo de procesos) */
+  "gp26-ini-c13-h01-identificar": lazy(() => import("./interesados/C13H01Vereda.jsx")),
+  "gp26-ini-c13-h02-intereses": lazy(() => import("./interesados/C13H02Tinajas.jsx")),
+  "gp26-ini-c13-h03-registro": lazy(() => import("./interesados/C13H03Carpeta.jsx")),
+  "gp26-ini-c13-h04-poder-interes": lazy(() => import("./interesados/C13H04Patio.jsx")),
+  "gp26-ini-c13-h05-direccion": lazy(() => import("./interesados/C13H05Casa.jsx")),
+  "gp26-ini-c13-h06-prominencia": lazy(() => import("./interesados/C13H06Reflectores.jsx")),
+  "gp26-pla-c13-h07-matriz-evaluacion": lazy(() => import("./interesados/C13H07Abaco.jsx")),
+  "gp26-pla-c13-h08-plan": lazy(() => import("./interesados/C13H08Campana.jsx")),
+  "gp26-eje-c13-h09-gestionar": lazy(() => import("./interesados/C13H09Asamblea.jsx")),
+  "gp26-moc-c13-h10-monitorear": lazy(() => import("./interesados/C13H10Acequia.jsx")),
+  "gp26-moc-c13-h11-taller": lazy(() => import("./interesados/C13H11Planta.jsx")),
 };
 
 /* Las Hacer que se ven de un módulo: publicadas y con componente, en el orden del camino. */

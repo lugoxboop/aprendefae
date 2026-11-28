@@ -88,6 +88,19 @@ export const PIEZAS = Object.freeze({
   "gp-inicio": [
     { id: "gp26-ini-c04-h01-acta", tipo: "hacer", nombre: "El acta de Barranquilla", subtemas: ["gp-4-1"], clasificacion: hacer("dificil", 50, { etapas: 2 }) },
     { id: "gp26-ini-c04-h02-expositor", tipo: "hacer", nombre: "El expositor de los casos", subtemas: ["gp-4-1"], clasificacion: hacer("medio", 25, { etapas: 2 }) },
+    /*
+     * Gen · lote 7: cap. 13 (Interesados; diseño disenos/c13-hacer.md; textos en
+     * interesados/textos-c13.js). Cada pieza en el módulo del grupo de procesos de
+     * su proceso: 13.1 Inicio, 13.2 Planificación, 13.3 Ejecución, 13.4 Monitoreo
+     * y Control (el taller H11, que recorre los cuatro, cierra en 13.4). Misma
+     * clasificación que su fila de la 0282.
+     */
+    { id: "gp26-ini-c13-h01-identificar", tipo: "hacer", nombre: "La vereda desde el aire", subtemas: ["gp-13-1"], clasificacion: hacer("facil", 10, { etapas: 2 }) },
+    { id: "gp26-ini-c13-h02-intereses", tipo: "hacer", nombre: "Las cinco tinajas", subtemas: ["gp-13-1"], clasificacion: hacer("medio", 25) },
+    { id: "gp26-ini-c13-h03-registro", tipo: "hacer", nombre: "La carpeta de tres argollas", subtemas: ["gp-13-1"], clasificacion: hacer("medio", 25, { etapas: 2 }) },
+    { id: "gp26-ini-c13-h04-poder-interes", tipo: "hacer", nombre: "El patio de la escuela", subtemas: ["gp-13-1"], clasificacion: hacer("medio", 25, { etapas: 2 }) },
+    { id: "gp26-ini-c13-h05-direccion", tipo: "hacer", nombre: "La casa de guadua", subtemas: ["gp-13-1"], clasificacion: hacer("medio", 25) },
+    { id: "gp26-ini-c13-h06-prominencia", tipo: "hacer", nombre: "Los tres reflectores", subtemas: ["gp-13-1"], clasificacion: hacer("medio", 25, { etapas: 2 }) },
   ],
   "gp-planificacion": [
     { id: "gp26-pla-c04-h03-portaplanos", tipo: "hacer", nombre: "El portaplanos y el revistero", subtemas: ["gp-4-2"], clasificacion: hacer("medio", 25, { etapas: 2 }) },
@@ -174,6 +187,9 @@ export const PIEZAS = Object.freeze({
     { id: "gp26-pla-c12-h05-sow", tipo: "hacer", nombre: "Las placas de la tostadora", subtemas: ["gp-12-1"], clasificacion: hacer("medio", 25, { etapas: 2 }) },
     { id: "gp26-pla-c12-h06-metodo-seleccion", tipo: "hacer", nombre: "El cambiavías", subtemas: ["gp-12-1"], clasificacion: hacer("medio", 25) },
     { id: "gp26-pla-c12-h12-taller", tipo: "hacer", nombre: "La ruta del contenedor", subtemas: ["gp-12-1", "gp-12-2"], clasificacion: hacer("dificil", 50, { etapas: 3 }) },
+    /* Lote 7: Planificar el involucramiento de los interesados (13.2). */
+    { id: "gp26-pla-c13-h07-matriz-evaluacion", tipo: "hacer", nombre: "El ábaco del involucramiento", subtemas: ["gp-13-2"], clasificacion: hacer("dificil", 50, { etapas: 2 }) },
+    { id: "gp26-pla-c13-h08-plan", tipo: "hacer", nombre: "La campana de la capilla", subtemas: ["gp-13-2"], clasificacion: hacer("facil", 10) },
   ],
   "gp-ejecucion": [
     { id: "gp26-eje-c04-h04-carretillas", tipo: "hacer", nombre: "Cuatro carretillas de cambio", subtemas: ["gp-4-3"], clasificacion: hacer("medio", 25) },
@@ -198,6 +214,8 @@ export const PIEZAS = Object.freeze({
     /* Lote 6: Efectuar las adquisiciones (12.2). */
     { id: "gp26-eje-c12-h07-puntajes", tipo: "hacer", nombre: "El marcador de las propuestas", subtemas: ["gp-12-2"], clasificacion: hacer("dificil", 50, { etapas: 2 }) },
     { id: "gp26-eje-c12-h08-conferencia", tipo: "hacer", nombre: "La conferencia de oferentes", subtemas: ["gp-12-2"], clasificacion: hacer("medio", 25) },
+    /* Lote 7: Gestionar el involucramiento de los interesados (13.3). */
+    { id: "gp26-eje-c13-h09-gestionar", tipo: "hacer", nombre: "La asamblea del salón comunal", subtemas: ["gp-13-3"], clasificacion: hacer("medio", 25) },
   ],
   "gp-monitoreo-control": [
     { id: "gp26-moc-c04-h07-camara", tipo: "hacer", nombre: "La cámara del viernes", subtemas: ["gp-4-5"], clasificacion: hacer("medio", 25, { etapas: 2 }) },
@@ -224,6 +242,9 @@ export const PIEZAS = Object.freeze({
     { id: "gp26-moc-c12-h09-reclamacion", tipo: "hacer", nombre: "El pasillo de la reclamación", subtemas: ["gp-12-3"], clasificacion: hacer("medio", 25) },
     { id: "gp26-moc-c12-h10-controlar", tipo: "hacer", nombre: "El cinturón del supervisor", subtemas: ["gp-12-3"], clasificacion: hacer("medio", 25, { etapas: 2 }) },
     { id: "gp26-moc-c12-h11-cierre", tipo: "hacer", nombre: "La cerradura del cierre", subtemas: ["gp-12-3"], clasificacion: hacer("medio", 25, { etapas: 2 }) },
+    /* Lote 7: Monitorear el involucramiento de los interesados (13.4; el taller H11 recorre los cuatro). */
+    { id: "gp26-moc-c13-h10-monitorear", tipo: "hacer", nombre: "Las compuertas de la acequia", subtemas: ["gp-13-4"], clasificacion: hacer("medio", 25, { etapas: 2 }) },
+    { id: "gp26-moc-c13-h11-taller", tipo: "hacer", nombre: "La planta en corte", subtemas: ["gp-13-1", "gp-13-2", "gp-13-3", "gp-13-4"], clasificacion: hacer("dificil", 50, { etapas: 3 }) },
   ],
   "gp-cierre": [
     { id: "gp26-cie-c04-h09-breakers", tipo: "hacer", nombre: "Apaga el proyecto", subtemas: ["gp-4-7"], clasificacion: hacer("medio", 25, { etapas: 2 }) },
@@ -239,6 +260,7 @@ export const PIEZAS = Object.freeze({
 /* Lote 4 (las 24 de los caps. 7 y 8): mismo visto bueno («publicar todo»). */
 /* Lote 5 (las 23 de los caps. 9 y 10): mismo visto bueno («publicar todo»). */
 /* Lote 6 (las 24 de los caps. 11 y 12): mismo visto bueno («publicar todo»). */
+/* Lote 7 (las 11 del cap. 13, el último): mismo visto bueno («publicar todo»). */
 export const PUBLICADAS = Object.freeze([
   "gp26-fun-a1-proyecto-operacion",
   ...MODULOS.flatMap((m) => PIEZAS[m.id] ?? []).filter((pz) => pz.tipo === "hacer").map((pz) => pz.id),
