@@ -594,3 +594,69 @@ Fuente: G 7.1, 7.1.3.1, p. 235–239.
 9. Y la acompaña la base de las estimaciones: cómo se obtuvo, supuestos, restricciones, rango, confianza y riesgos.
 10. Así se entiende de dónde salió el número.
 11. Ahora te toca: estima una actividad de tu proyecto con tres valores.
+
+# Tanda 9 (GP-33 a GP-36)
+
+## GP-33 · ¿Entre poco y mucho? (G 7.2, 7.2.2.6, 7.2.3.1, 7.2.3.2, p. 240–247)
+
+1. «¿Cuánto cuesta el carrito?» Al principio, Pía solo puede dar un rango amplio.
+2. Y es normal: al inicio, una estimación por orden de magnitud puede ir de menos veinticinco a más setenta y cinco por ciento.
+3. Con más información, el rango se cierra; por ejemplo, de menos cinco a más diez por ciento.
+4. Eso es estimar los costos: desarrollar una aproximación del costo de los recursos necesarios para completar el trabajo del proyecto.
+5. Se estiman todos los recursos: personal, materiales, equipos, servicios e instalaciones.
+6. Sirven las técnicas de la duración: análoga, paramétrica, ascendente y basada en tres valores.
+7. Pía suma madera, tela, vitrina y mano de obra: dos millones.
+8. Y suma una reserva para contingencias, para riesgos identificados, como que suba la tela.
+9. El resultado son las estimaciones de costos y su base: cómo se calcularon, supuestos, restricciones, rango y confianza.
+10. Y se refinan a medida que se conocen más detalles.
+11. Ahora te toca: estima el costo de tu proyecto con su rango.
+
+Fuente: G 7.2, 7.2.2.6, 7.2.3.1, 7.2.3.2, p. 240–247.
+
+## GP-34 · ¿Cuánto dinero y cuándo? (G 7.3, 7.3.2.2, 7.3.2.3, 7.3.3.1, 7.3.3.2, p. 248–256)
+
+1. Carmen pregunta: «¿Cuánto dinero necesito tener y cuándo?»
+2. Pía no puede darle solo un número: necesita un presupuesto.
+3. Determinar el presupuesto es sumar los costos estimados de las actividades o paquetes de trabajo para establecer una línea base de costos autorizada.
+4. Las actividades se suman en paquetes de trabajo; los paquetes, en cuentas de control; y las cuentas dan la línea base de costos.
+5. En cada nivel entran sus reservas para contingencias.
+6. Es la versión aprobada del presupuesto en el tiempo, y solo cambia con control formal de cambios.
+7. Repartida en el tiempo, suele dibujarse como una curva en S.
+8. Aparte queda la reserva de gestión, para trabajo no previsto dentro del alcance: lo que nadie vio venir.
+9. Línea base más reserva de gestión: ese es el presupuesto del proyecto.
+10. Con eso se fijan los requisitos de financiamiento: cuánto dinero y cuándo, muchas veces por tramos.
+11. Ahora te toca: arma la línea base de costos de tu proyecto.
+
+Fuente: G 7.3, 7.3.2.2, 7.3.2.3, 7.3.3.1, 7.3.3.2, p. 248–256.
+
+## GP-35 · ¿Qué es «buen pan»? (G 8.1, 8.1.3.1, 8.1.3.2, p. 277–287)
+
+1. Un día el pan sale perfecto; al otro, quemado. ¿Qué es «buen pan» para el carrito?
+2. Si nadie lo define, nadie puede comprobarlo.
+3. Planificar la gestión de la calidad es identificar los requisitos o estándares de calidad del proyecto y sus entregables, y documentar cómo se demostrará su cumplimiento.
+4. El resultado es el plan de gestión de la calidad.
+5. Dice qué estándares y objetivos de calidad se usarán, y quién es responsable de qué.
+6. Qué entregables y procesos se revisarán, con qué actividades y herramientas.
+7. Y sus procedimientos clave: no conformidades, acciones correctivas y mejora continua.
+8. Además, se definen las métricas de calidad: cada una describe un atributo del producto o del proyecto, y cómo Controlar la Calidad verificará su cumplimiento.
+9. Por ejemplo: el número de panes quemados por día, o la satisfacción de los clientes.
+10. Es parte del plan para la dirección del proyecto, y conviene revisarlo temprano.
+11. Ahora te toca: define una métrica de calidad para tu proyecto.
+
+Fuente: G 8.1, 8.1.3.1, 8.1.3.2, p. 277–287.
+
+## GP-36 · ¿Quién decide aquí? (G 9.1, 9.1.3.1, 9.1.3.2, p. 312–320)
+
+1. Ramón llega tarde a las reuniones, nadie sabe quién decide, y la harina se acaba sin aviso.
+2. Falta acordar cómo se manejan las personas y las cosas del proyecto.
+3. Planificar la gestión de recursos es definir cómo estimar, adquirir, gestionar y utilizar los recursos físicos y del equipo.
+4. El resultado es el plan de gestión de los recursos: cómo se categorizan, asignan, gestionan y liberan.
+5. Define roles y responsabilidades: el rol de cada quien, su autoridad, su responsabilidad y sus competencias.
+6. Incluye el organigrama, la capacitación, el desarrollo del equipo y el control de los recursos físicos, como la harina.
+7. Y un plan de reconocimiento: qué reconocimientos y recompensas se darán, y cuándo.
+8. La otra salida es el acta de constitución del equipo.
+9. Recoge sus valores, sus pautas de comunicación y de reuniones, cómo deciden y cómo resuelven conflictos.
+10. Funciona mejor si el equipo la escribe, y todos responden por cumplirla.
+11. Ahora te toca: escribe tres reglas para el acta de constitución de tu equipo.
+
+Fuente: G 9.1, 9.1.3.1, 9.1.3.2, p. 312–320.

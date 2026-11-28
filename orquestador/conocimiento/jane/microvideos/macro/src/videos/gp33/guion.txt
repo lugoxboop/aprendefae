@@ -1,0 +1,11 @@
+«¿Cuánto cuesta el carrito?» Al principio, Pía solo puede dar un rango amplio.
+Y es normal: al inicio, una estimación por orden de magnitud puede ir de menos veinticinco a más setenta y cinco por ciento.
+Con más información, el rango se cierra; por ejemplo, de menos cinco a más diez por ciento.
+Eso es estimar los costos: desarrollar una aproximación del costo de los recursos necesarios para completar el trabajo del proyecto.
+Se estiman todos los recursos: personal, materiales, equipos, servicios e instalaciones.
+Sirven las técnicas de la duración: análoga, paramétrica, ascendente y basada en tres valores.
+Pía suma madera, tela, vitrina y mano de obra: dos millones.
+Y suma una reserva para contingencias, para riesgos identificados, como que suba la tela.
+El resultado son las estimaciones de costos y su base: cómo se calcularon, supuestos, restricciones, rango y confianza.
+Y se refinan a medida que se conocen más detalles.
+Ahora te toca: estima el costo de tu proyecto con su rango.
