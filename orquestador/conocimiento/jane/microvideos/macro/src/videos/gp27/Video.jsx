@@ -23,7 +23,7 @@ const M = {
   horas: W(1, "horas,", 0.25), dias: W(1, "días", 0.45), semanas: W(1, "semanas.", 0.7), nadie: W(1, "Nadie", 0.85),
   armar: W(2, "armar", 0.3), reglas: W(2, "reglas.", 0.95),
   planificar3: W(3, "planificar", 0.12), politicas: W(3, "políticas,", 0.3), procedimientos: W(3, "procedimientos", 0.4), documentacion: W(3, "documentación", 0.5),
-  planificar3b: W(3, "planificar,", 0.6), desarrollar: W(3, "desarrollar,", 0.68), gestionar: W(3, "gestionar,", 0.76), ejecutar: W(3, "ejecutar", 0.84), controlar: W(3, "controlar", 0.9),
+  planificar3b: W(3, "planificar,", 0.6, 1), desarrollar: W(3, "desarrollar,", 0.68), gestionar: W(3, "gestionar,", 0.76), ejecutar: W(3, "ejecutar", 0.84), controlar: W(3, "controlar", 0.9),
   plan4: W(4, "plan", 0.6),
   unidades: W(5, "unidades", 0.3), todo5: W(5, "todo", 0.8),
   exactitud: W(6, "exactitud:", 0.2), rango: W(6, "rango", 0.35), contingencias: W(6, "contingencias.", 0.95),

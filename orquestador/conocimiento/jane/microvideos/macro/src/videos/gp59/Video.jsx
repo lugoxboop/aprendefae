@@ -37,7 +37,7 @@ const M = {
   variacion: W(7, "variación", 0.4), linea7: W(7, "línea", 0.65), reales: W(7, "reales.", 0.97),
   tendencias: W(8, "tendencias", 0.2), mejora: W(8, "mejora", 0.55), deteriora: W(8, "deteriora", 0.75),
   causa: W(9, "causa", 0.25), grado: W(9, "grado", 0.35), correctiva: W(9, "correctiva", 0.85), preventiva: W(9, "preventiva.", 0.97),
-  noque: W(10, "no.", 0.25), solicitud10: W(10, "solicitud", 0.45), integrado: W(10, "integrado", 0.85),
+  noque: W(10, "no.", 0.25, 1), solicitud10: W(10, "solicitud", 0.45), integrado: W(10, "integrado", 0.85),
   toca: W(11, "toca:", 0.1), crecio: W(11, "creció", 0.3), frenado: W(11, "frenado.", 0.97),
 };
 

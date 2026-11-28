@@ -32,7 +32,7 @@ const M = {
   tareas: W(7, "tareas,", 0.25), influencia: W(7, "influencia", 0.6), actuar: W(7, "actuar.", 0.97),
   ramon8: W(8, "Ramón", 0.05), habla: W(8, "habla", 0.55), viernes: W(8, "viernes.", 0.97),
   solicitudes: W(9, "solicitudes", 0.4), costos9: W(9, "costos", 0.8), cronograma9: W(9, "cronograma.", 0.97),
-  incidentes10: W(10, "incidentes.", 0.42), lecciones: W(10, "lecciones", 0.9),
+  incidentes10: W(10, "incidentes.", 0.42, 1), lecciones: W(10, "lecciones", 0.9),
   toca: W(11, "toca:", 0.15), riesgo11: W(11, "riesgo", 0.3), dueno11: W(11, "dueño", 0.75), hara: W(11, "hará.", 0.97),
 };
 

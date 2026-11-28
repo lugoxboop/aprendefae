@@ -25,7 +25,7 @@ const M = {
   secuenciar: W(3, "secuenciar", 0.2), identificar: W(3, "identificar", 0.5), relaciones3: W(3, "relaciones", 0.85),
   comun: W(4, "común", 0.15), final4: W(4, "final", 0.25), inicio4: W(4, "inicio:", 0.35), coser4: W(4, "coser", 0.45), termine: W(4, "termine", 0.75),
   predecesora: W(5, "predecesora;", 0.45), sucesora: W(5, "sucesora.", 0.95),
-  ii: W(6, "inicio", 0.25), ff: W(6, "final", 0.5), poco: W(6, "poco", 0.7), fi: W(6, "inicio", 0.88),
+  ii: W(6, "inicio", 0.25), ff: W(6, "final", 0.5), poco: W(6, "poco", 0.7), fi: W(6, "inicio", 0.88, 2),
   obligatorias: W(7, "obligatorias,", 0.25), ley: W(7, "ley,", 0.35), contrato: W(7, "contrato", 0.45), naturaleza: W(7, "naturaleza", 0.6), costura: W(7, "costura.", 0.95),
   discrecionales: W(8, "discrecionales:", 0.2), practicas: W(8, "prácticas,", 0.5), aceptables: W(8, "aceptables.", 0.95),
   proveedor: W(9, "proveedor,", 0.3), externa: W(9, "externa:", 0.5), control9: W(9, "control", 0.85),

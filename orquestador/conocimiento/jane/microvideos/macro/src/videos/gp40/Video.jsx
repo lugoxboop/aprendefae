@@ -23,7 +23,7 @@ const M = {
   identificar: W(3, "Identificar", 0.05), individuales: W(3, "individuales", 0.35), general3: W(3, "general,", 0.6), documentar: W(3, "documentar", 0.8),
   tormenta: W(4, "tormenta", 0.2), listas: W(4, "listas", 0.5), entrevistas: W(4, "entrevistas.", 0.9),
   supuestos: W(5, "supuestos", 0.25), foda: W(5, "FODA:", 0.5), fortalezas: W(5, "fortalezas,", 0.6), debilidades: W(5, "debilidades,", 0.72), oportunidades: W(5, "oportunidades", 0.84), amenazas: W(5, "amenazas.", 0.96),
-  claro: W(6, "claro:", 0.4), causa6: W(6, "causa,", 0.6), riesgo6: W(6, "riesgo", 0.75), efecto6: W(6, "efecto.", 0.95),
+  claro: W(6, "claro:", 0.4), causa6: W(6, "causa,", 0.6), riesgo6: W(6, "riesgo", 0.75, 1), efecto6: W(6, "efecto.", 0.95),
   viejo: W(7, "viejo,", 0.3), danarse: W(7, "dañarse,", 0.55), retrasarian: W(7, "retrasarían", 0.8),
   registro: W(8, "registro", 0.15), identificador: W(8, "identificador,", 0.5), dueno: W(8, "dueño", 0.65), respuestas: W(8, "respuestas", 0.85),
   informe: W(9, "informe", 0.3), fuentes9: W(9, "fuentes", 0.55), resumen: W(9, "resumen", 0.8),

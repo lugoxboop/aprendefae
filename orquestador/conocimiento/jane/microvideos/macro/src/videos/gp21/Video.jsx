@@ -25,7 +25,7 @@ const M = {
   quienes: W(5, "quiénes", 0.35), intereses: W(5, "intereses", 0.5), influyen: W(5, "influyen", 0.7), impacto: W(5, "impacto", 0.9),
   sola: W(6, "sola", 0.3), repite: W(6, "repite", 0.65), proyecto6: W(6, "proyecto.", 0.95),
   ordenarlos: W(7, "ordenarlos,", 0.15), matriz: W(7, "matriz", 0.6), poder7: W(7, "poder", 0.8), interes7: W(7, "interés.", 0.95),
-  carmen8: W(8, "Carmen", 0.05), mucho8: W(8, "mucho", 0.2), tito8: W(8, "Tito,", 0.55), menos: W(8, "menos", 0.65), interes8: W(8, "interés.", 0.95),
+  carmen8: W(8, "Carmen", 0.05), mucho8: W(8, "mucho", 0.2), tito8: W(8, "Tito,", 0.55), menos: W(8, "menos", 0.65), interes8: W(8, "interés.", 0.95, 1),
   registro9: W(9, "registro", 0.6), interesados9: W(9, "interesados.", 0.95),
   rol: W(10, "rol,", 0.2), espera: W(10, "espera,", 0.35), influir: W(10, "influir", 0.5), clasifica: W(10, "clasifica:", 0.65), interno: W(10, "interno", 0.85), externo: W(10, "externo.", 0.95),
   toca: W(11, "toca:", 0.15), arma: W(11, "arma", 0.3), proyecto11: W(11, "proyecto.", 0.95),

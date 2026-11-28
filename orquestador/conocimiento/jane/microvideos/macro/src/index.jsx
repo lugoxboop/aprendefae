@@ -72,6 +72,10 @@ import * as gp61 from "./videos/gp61/Video.jsx";
 import * as gp62 from "./videos/gp62/Video.jsx";
 import * as gp63 from "./videos/gp63/Video.jsx";
 import * as gp64 from "./videos/gp64/Video.jsx";
+import * as gp65 from "./videos/gp65/Video.jsx";
+import * as gp66 from "./videos/gp66/Video.jsx";
+import * as gp67 from "./videos/gp67/Video.jsx";
+import * as gp68 from "./videos/gp68/Video.jsx";
 import { Pia } from "./retratos/Pia.jsx";
 const FPS = 30;
 const V = [["A1", a1.A1, a1.DURACION], ["A2", a2.A2, a2.DURACION], ["A3", a3.A3, a3.DURACION], ["A4", a4.A4, a4.DURACION], ["A5", a5.A5, a5.DURACION], ["A6", a6.A6, a6.DURACION], ["B1", b1.B1, b1.DURACION], ["B2", b2.B2, b2.DURACION], ["B3", b3.B3, b3.DURACION], ["GP01", gp01.GP01, gp01.DURACION], ["GP02", gp02.GP02, gp02.DURACION], ["GP03", gp03.GP03, gp03.DURACION], ["GP04", gp04.GP04, gp04.DURACION], ["GP05", gp05.GP05, gp05.DURACION], ["GP06", gp06.GP06, gp06.DURACION], ["GP07", gp07.GP07, gp07.DURACION], ["GP08", gp08.GP08, gp08.DURACION], ["GP09", gp09.GP09, gp09.DURACION], ["GP10", gp10.GP10, gp10.DURACION], ["GP11", gp11.GP11, gp11.DURACION], ["GP12", gp12.GP12, gp12.DURACION], ["GP13", gp13.GP13, gp13.DURACION], ["GP14", gp14.GP14, gp14.DURACION], ["GP15", gp15.GP15, gp15.DURACION], ["GP16", gp16.GP16, gp16.DURACION], ["GP17", gp17.GP17, gp17.DURACION], ["GP18", gp18.GP18, gp18.DURACION], ["GP19", gp19.GP19, gp19.DURACION], ["GP20", gp20.GP20, gp20.DURACION], ["GP21", gp21.GP21, gp21.DURACION], ["GP22", gp22.GP22, gp22.DURACION], ["GP23", gp23.GP23, gp23.DURACION], ["GP24", gp24.GP24, gp24.DURACION], ["GP25", gp25.GP25, gp25.DURACION], ["GP26", gp26.GP26, gp26.DURACION], ["GP27", gp27.GP27, gp27.DURACION], ["GP28", gp28.GP28, gp28.DURACION], ["GP29", gp29.GP29, gp29.DURACION], ["GP30", gp30.GP30, gp30.DURACION], ["GP31", gp31.GP31, gp31.DURACION], ["GP32", gp32.GP32, gp32.DURACION], ["GP33", gp33.GP33, gp33.DURACION], ["GP34", gp34.GP34, gp34.DURACION], ["GP35", gp35.GP35, gp35.DURACION], ["GP36", gp36.GP36, gp36.DURACION], ["GP37", gp37.GP37, gp37.DURACION], ["GP38", gp38.GP38, gp38.DURACION], ["GP39", gp39.GP39, gp39.DURACION], ["GP40", gp40.GP40, gp40.DURACION], ["GP41", gp41.GP41, gp41.DURACION], ["GP42", gp42.GP42, gp42.DURACION], ["GP43", gp43.GP43, gp43.DURACION], ["GP44", gp44.GP44, gp44.DURACION], ["GP45", gp45.GP45, gp45.DURACION], ["GP46", gp46.GP46, gp46.DURACION], ["GP47", gp47.GP47, gp47.DURACION], ["GP48", gp48.GP48, gp48.DURACION], ["GP49", gp49.GP49, gp49.DURACION], ["GP50", gp50.GP50, gp50.DURACION], ["GP51", gp51.GP51, gp51.DURACION], ["GP52", gp52.GP52, gp52.DURACION],
@@ -86,7 +90,11 @@ const V = [["A1", a1.A1, a1.DURACION], ["A2", a2.A2, a2.DURACION], ["A3", a3.A3,
   ["GP61", gp61.GP61, gp61.DURACION],
   ["GP62", gp62.GP62, gp62.DURACION],
   ["GP63", gp63.GP63, gp63.DURACION],
-  ["GP64", gp64.GP64, gp64.DURACION]];
+  ["GP64", gp64.GP64, gp64.DURACION],
+  ["GP65", gp65.GP65, gp65.DURACION],
+  ["GP66", gp66.GP66, gp66.DURACION],
+  ["GP67", gp67.GP67, gp67.DURACION],
+  ["GP68", gp68.GP68, gp68.DURACION]];
 const Root = () => (<>{V.map(([id, C, d]) => (
   <Composition key={id} id={id} component={C} durationInFrames={Math.round(d * FPS)} fps={FPS} width={1080} height={1920} defaultProps={{ sinSonido: false }} />
 ))}

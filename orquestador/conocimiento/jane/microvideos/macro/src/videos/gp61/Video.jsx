@@ -33,8 +33,8 @@ const M = {
   planificado5: W(5, "planificado:", 0.15), seiscientos5: W(5, "Seiscientos.", 0.95),
   ganado6: W(6, "ganado:", 0.15), quinientos: W(6, "Quinientos.", 0.95),
   costo7: W(7, "Costo", 0.05), cincuenta7: W(7, "cincuenta.", 0.95),
-  variacion8: W(8, "Variación", 0.05), menos8: W(8, "Menos", 0.55), paso: W(8, "pasó", 0.8),
-  variacion9: W(9, "Variación", 0.05), menos9: W(9, "Menos", 0.7), atrasada: W(9, "atrasada.", 0.97),
+  variacion8: W(8, "Variación", 0.05), menos8: W(8, "Menos", 0.55, 1), paso: W(8, "pasó", 0.8),
+  variacion9: W(9, "Variación", 0.05), menos9: W(9, "Menos", 0.7, 1), atrasada: W(9, "atrasada.", 0.97),
   indice: W(10, "índice", 0.1), uno: W(10, "uno:", 0.6), cuesta: W(10, "cuesta", 0.8),
   toca: W(11, "toca:", 0.15), presupuesto11: W(11, "presupuesto.", 0.97),
 };

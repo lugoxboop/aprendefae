@@ -29,7 +29,7 @@ const M = {
   proposito: W(8, "propósito:", 0.2), norte: W(8, "norte.", 0.95),
   objetivos: W(9, "objetivos", 0.15), cien: W(9, "cien", 0.45), diciembre: W(9, "diciembre.", 0.95),
   riesgo: W(10, "riesgo", 0.15), hitos: W(10, "hitos,", 0.3), preaprobada: W(10, "preaprobada,", 0.5), interesados: W(10, "interesados", 0.65), firma: W(10, "firma", 0.85), aprobacion: W(10, "aprobación.", 0.95),
-  mismo: W(11, "mismo:", 0.3), entrega: W(11, "entrega,", 0.55), cuando: W(11, "cuándo", 0.7), que11: W(11, "qué.", 0.95),
+  mismo: W(11, "mismo:", 0.3), entrega: W(11, "entrega,", 0.55), cuando: W(11, "cuándo", 0.7), que11: W(11, "qué.", 0.95, 1),
   toca: W(12, "toca:", 0.15), acta12: W(12, "acta", 0.55), proyecto12: W(12, "proyecto.", 0.95),
 };
 

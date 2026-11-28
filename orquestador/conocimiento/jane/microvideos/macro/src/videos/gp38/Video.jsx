@@ -19,9 +19,9 @@ const { S, E, W } = T;
 
 const M = {
   horario: W(1, "horario.", 0.3), vecino: W(1, "vecino;", 0.75), nunca: W(1, "nunca.", 0.95),
-  quien2: W(2, "quién", 0.3), aquien: W(2, "quién,", 0.6), como2: W(2, "cómo.", 0.95),
+  quien2: W(2, "quién", 0.3), aquien: W(2, "quién,", 0.6, 1), como2: W(2, "cómo.", 0.95),
   planificar: W(3, "Planificar", 0.05), enfoque: W(3, "enfoque", 0.45), plan3: W(3, "plan", 0.55), interesado: W(3, "interesado.", 0.95),
-  analiza: W(4, "analiza", 0.1), canales: W(4, "canales", 0.5), uno1: W(4, "uno", 0.62), muchos1: W(4, "muchos,", 0.78), muchos2: W(4, "muchos.", 0.95),
+  analiza: W(4, "analiza", 0.1), canales: W(4, "canales", 0.5), uno1: W(4, "uno", 0.62), muchos1: W(4, "muchos,", 0.78), muchos2: W(4, "muchos.", 0.95, 2),
   metodo: W(5, "método.", 0.8),
   interactiva: W(6, "Interactiva:", 0.05), reunion: W(6, "reunión", 0.7),
   push: W(7, "push:", 0.1), correo: W(7, "correo;", 0.35), sale7: W(7, "sale,", 0.55), entienda: W(7, "entienda.", 0.95),

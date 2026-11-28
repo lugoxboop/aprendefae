@@ -30,7 +30,7 @@ const M = {
   vigila: W(2, "vigila", 0.2), necesitan: W(2, "necesitan?", 0.9),
   controlar: W(3, "Controlar", 0.03), disponibles: W(3, "disponibles", 0.35), uso: W(3, "uso", 0.6), correctivas3: W(3, "correctivas.", 0.97),
   momento: W(4, "momento", 0.25), liberan: W(4, "liberan", 0.7),
-  identificar: W(5, "identificar,", 0.4), definir: W(5, "definir,", 0.5), investigar: W(5, "investigar,", 0.6), analizar: W(5, "analizar,", 0.7), resolver: W(5, "resolver", 0.82), comprobar: W(5, "comprobar.", 0.95),
+  identificar: W(5, "identificar,", 0.4), definir: W(5, "definir,", 0.5), investigar: W(5, "investigar,", 0.6), analizar: W(5, "analizar,", 0.7), resolver: W(5, "resolver", 0.82, 1), comprobar: W(5, "comprobar.", 0.95),
   investiga6: W(6, "investiga", 0.1), causa6: W(6, "causa:", 0.3), libero: W(6, "liberó", 0.75),
   alternativas: W(7, "alternativas,", 0.35), pedirlas: W(7, "pedirlas", 0.55), alquilar: W(7, "alquilar", 0.72), horas: W(7, "horas", 0.9),
   costo8: W(8, "costo-beneficio", 0.1), mejor: W(8, "mejor", 0.5),
