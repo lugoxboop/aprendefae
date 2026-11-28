@@ -1,5 +1,6 @@
 import {
   ArrowRight, ShoppingCart, Landmark, Coins, PiggyBank, Network, Mountain, Swords, Sparkles,
+  Compass, Flag, ClipboardList, Hammer, Gauge, CircleCheckBig,
 } from "lucide-react";
 import { APRENDER, HACER, actividadesDeTipo } from "../../data/subjects.js";
 import IdentificadorDeTema, { tieneIdentificador } from "./IdentificadorDeTema.jsx";
@@ -51,6 +52,13 @@ const IDENTIDAD = {
   "macroeconomia/politica-economica": { tono: "cielo", Glifo: Landmark },
   "macroeconomia/politica-fiscal": { tono: "ambar", Glifo: Coins },
   "macroeconomia/politica-monetaria": { tono: "menta", Glifo: PiggyBank },
+  /* Gestión de Proyectos (Magno, 28-nov): un tono y un dibujo por grupo de procesos. */
+  "gestion-proyectos/gp-fundamentos": { tono: "indigo", Glifo: Compass },
+  "gestion-proyectos/gp-inicio": { tono: "menta", Glifo: Flag },
+  "gestion-proyectos/gp-planificacion": { tono: "cielo", Glifo: ClipboardList },
+  "gestion-proyectos/gp-ejecucion": { tono: "durazno", Glifo: Hammer },
+  "gestion-proyectos/gp-monitoreo-control": { tono: "violeta", Glifo: Gauge },
+  "gestion-proyectos/gp-cierre": { tono: "rosa", Glifo: CircleCheckBig },
   "pensamiento-estrategico/pensamiento-sistemico": { tono: "indigo", Glifo: Network },
   "pensamiento-estrategico/modelo-iceberg": { tono: "cielo", Glifo: Mountain },
   "pensamiento-estrategico/fuerzas-porter": { tono: "rosa", Glifo: Swords },
