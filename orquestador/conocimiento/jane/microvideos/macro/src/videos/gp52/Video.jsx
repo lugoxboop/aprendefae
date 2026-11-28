@@ -84,7 +84,7 @@ function Informes({ t }) {
   const A = [[M.nivel, "📶 nivel"], [M.formato, "🧾 formato"], [M.detalle, "🔍 detalle"]];
   return (
     <Escena cam={cam} fondo="art/calle.jpg" filtro="blur(7px)" velo={0.3}>
-      <Cartel x={540} y={160} txt="generación de informes" p={rampa(t, M.informes - 0.4, 0.35)} tam={46} fondo={MANGO} />
+      <Cartel x={540} y={160} txt="generación de informes del proyecto" p={rampa(t, M.informes - 0.4, 0.35)} tam={46} fondo={MANGO} />
       <Cartel x={300} y={270} txt="📥 recopilar" p={rampa(t, M.recopilar - 0.3, 0.3)} tam={36} fondo={CREMA} giro={-2} />
       <Cartel x={780} y={270} txt="📤 distribuir" p={rampa(t, M.distribuir - 0.3, 0.3)} tam={36} fondo={CREMA} giro={2} />
       <Cartel x={540} y={390} txt="🎯 adaptada a cada interesado" p={rampa(t, M.adaptada - 0.3, 0.3)} tam={38} fondo="#DDE3FF" />
